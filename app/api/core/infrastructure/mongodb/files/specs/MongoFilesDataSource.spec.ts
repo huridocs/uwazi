@@ -588,7 +588,7 @@ describe('MongoFilesDataSource', () => {
 
       expect(fullTextIndexer.sync).toHaveBeenCalledWith([]);
 
-      processedPdf.markForFullTextIndexing();
+      processedPdf.languageChanged();
 
       await ds.update(processedPdf);
 

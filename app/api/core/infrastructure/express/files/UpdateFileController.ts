@@ -1,8 +1,8 @@
+import { z } from 'zod';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { UpdateFileInput } from '#api/core/application/UpdateFile.js';
 import { UpdateFileUseCaseFactory } from '../../factories/UpdateFileUseCaseFactory.js';
 import { LanguageUtils } from '#shared/language/index.js';
-import { z } from 'zod';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { createError } from '#api/utils/index.js';
@@ -53,7 +53,7 @@ class UpdateFileController extends AbstractController {
         durationMs: Date.now() - start,
       });
 
-      this.response.json(output);
+      this.response.json(output.toDTO());
     } catch (error: unknown) {
       ExecutionContext.logger.info(
         `Update file execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`,

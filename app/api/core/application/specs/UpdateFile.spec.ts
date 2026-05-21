@@ -1,4 +1,3 @@
-import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
 import { EntityPermissionChecker } from '#api/core/domain/entityAccessPolicy/EntityPermissionChecker.js';
 import { FileNotFound } from '#api/core/domain/files/errors.js';
 import { Result } from '#api/core/libs/Result.js';
@@ -20,18 +19,24 @@ const fixtures: DBFixture = {
       entity: 'entity1',
       originalname: 'original.pdf',
       mimetype: 'application/pdf',
+      creationDate: 0,
+      size: 0,
     }),
     f.file('attach2', {
       type: 'attachment',
       entity: 'entity1',
       originalname: 'file.pdf',
       mimetype: 'application/pdf',
+      creationDate: 0,
+      size: 0,
     }),
     f.file('attach3', {
       type: 'attachment',
       entity: 'entity1',
       originalname: 'unchanged.pdf',
       mimetype: 'application/pdf',
+      creationDate: 0,
+      size: 0,
     }),
     f.file('attach4', {
       type: 'attachment',
@@ -43,16 +48,28 @@ const fixtures: DBFixture = {
       entity: 'entity1',
       language: 'en',
       mimetype: 'application/pdf',
+      creationDate: 0,
+      size: 0,
+      generatedToc: false,
+      totalPages: 0,
     }),
     ...f.processedDocument('doc2', {
       entity: 'entity1',
       language: 'en',
       mimetype: 'application/pdf',
+      creationDate: 0,
+      size: 0,
+      generatedToc: false,
+      totalPages: 0,
     }),
     ...f.processedDocument('doc3', {
       entity: 'entity1',
       language: 'en',
       mimetype: 'application/pdf',
+      creationDate: 0,
+      size: 0,
+      generatedToc: false,
+      totalPages: 0,
     }),
   ],
 };
@@ -102,62 +119,122 @@ describe('UpdateFile', () => {
 
   describe('FileAttachment', () => {
     it('renames originalname', async () => {
-      const result = await createSut().sut.execute({
+      const fileBefore = await getDbFile('attach1');
+      await createSut().sut.execute({
         fileId: f.idString('attach1'),
         originalname: 'renamed.pdf',
       });
 
-      expect(result.originalname).toBe('renamed.pdf');
-      expect((await getDbFile('attach1')).originalname).toBe('renamed.pdf');
+      const result = await getDbFile('attach1');
+
+      expect(result).toEqual({
+        ...fileBefore,
+        originalname: 'renamed.pdf',
+      });
     });
 
-    it('ignores language updates', async () => {
-      const result = await createSut().sut.execute({
+    it('ignores language and toc updates', async () => {
+      const fileBefore = await getDbFile('attach2');
+
+      const toc = [
+        {
+          indentation: 0,
+          label: 'Chapter 1',
+          selectionRectangles: [
+            {
+              height: 100,
+              width: 100,
+              left: 0,
+              top: 0,
+            },
+          ],
+        },
+      ];
+
+      await createSut().sut.execute({
         fileId: f.idString('attach2'),
         language: 'es',
+        toc,
       });
 
-      expect(result.originalname).toBe('file.pdf');
-      expect((result as any).language).toBeUndefined();
+      const result = await getDbFile('attach2');
+
+      expect(result).toEqual(fileBefore);
     });
 
     it('returns unchanged state on an empty update', async () => {
-      const result = await createSut().sut.execute({ fileId: f.idString('attach3') });
+      const fileBefore = await getDbFile('attach3');
 
-      expect(result.originalname).toBe('unchanged.pdf');
-      expect((await getDbFile('attach3')).originalname).toBe('unchanged.pdf');
+      await createSut().sut.execute({ fileId: f.idString('attach3') });
+      const result = await getDbFile('attach3');
+
+      expect(result).toEqual(fileBefore);
     });
   });
 
   describe('ProcessedPDF', () => {
     it('renames originalname', async () => {
-      const result = await createSut().sut.execute({
+      const fileBefore = await getDbFile('doc1');
+
+      await createSut().sut.execute({
         fileId: f.idString('doc1'),
         originalname: 'renamed.pdf',
       });
 
-      expect(result.originalname).toBe('renamed.pdf');
-      expect((await getDbFile('doc1')).originalname).toBe('renamed.pdf');
+      const result = await getDbFile('doc1');
+
+      expect(result).toEqual({
+        ...fileBefore,
+        originalname: 'renamed.pdf',
+      });
     });
 
     it('updates language', async () => {
-      const result = await createSut().sut.execute({ fileId: f.idString('doc2'), language: 'es' });
+      const fileBefore = await getDbFile('doc2');
 
-      expect((result as ProcessedPDF).language).toBe('es');
-      expect((await getDbFile('doc2')).language).toBe('spa');
+      await createSut().sut.execute({ fileId: f.idString('doc2'), language: 'es' });
+
+      const result = await getDbFile('doc2');
+
+      expect(result).toEqual({
+        ...fileBefore,
+        language: 'spa',
+      });
     });
 
-    it('updates both originalname and language', async () => {
-      const result = await createSut().sut.execute({
+    it('updates originalname, language and toc', async () => {
+      const fileBefore = await getDbFile('doc3');
+
+      const toc = [
+        {
+          indentation: 0,
+          label: 'Chapter 1',
+          selectionRectangles: [
+            {
+              height: 100,
+              width: 100,
+              left: 0,
+              top: 0,
+            },
+          ],
+        },
+      ];
+
+      await createSut().sut.execute({
         fileId: f.idString('doc3'),
         originalname: 'both.pdf',
         language: 'es',
+        toc,
       });
 
-      expect(result.originalname).toBe('both.pdf');
-      expect((result as ProcessedPDF).language).toBe('es');
-      expect((await getDbFile('doc3')).originalname).toBe('both.pdf');
-      expect((await getDbFile('doc3')).language).toBe('spa');
+      const result = await getDbFile('doc3');
+
+      expect(result).toEqual({
+        ...fileBefore,
+        language: 'spa',
+        originalname: 'both.pdf',
+        toc,
+      });
     });
   });
 });

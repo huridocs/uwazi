@@ -75,7 +75,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       );
 
       const processedPDFs = files
-        .filter(f => f instanceof ProcessedPDF && f.pendingFullTextIndexing)
+        .filter(f => f instanceof ProcessedPDF && f.languageHasChanged)
         .map(f => FileMappers.toDBO(f));
 
       await this.fullTextIndexer.sync(processedPDFs.map(f => f._id));

@@ -1,0 +1,93 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProcessedPDF validation throws on entity is empty 1`] = `
+"[
+  {
+    \\"code\\": \\"too_small\\",
+    \\"minimum\\": 1,
+    \\"type\\": \\"string\\",
+    \\"inclusive\\": true,
+    \\"exact\\": false,
+    \\"message\\": \\"String must contain at least 1 character(s)\\",
+    \\"path\\": [
+      \\"entity\\"
+    ]
+  }
+]"
+`;
+
+exports[`ProcessedPDF validation throws on entity is undefined 1`] = `
+"[
+  {
+    \\"code\\": \\"invalid_type\\",
+    \\"expected\\": \\"string\\",
+    \\"received\\": \\"undefined\\",
+    \\"path\\": [
+      \\"entity\\"
+    ],
+    \\"message\\": \\"Required\\"
+  }
+]"
+`;
+
+exports[`ProcessedPDF validation throws on language is empty 1`] = `
+"[
+  {
+    \\"code\\": \\"too_small\\",
+    \\"minimum\\": 2,
+    \\"type\\": \\"string\\",
+    \\"inclusive\\": true,
+    \\"exact\\": false,
+    \\"message\\": \\"String must contain at least 2 character(s)\\",
+    \\"path\\": [
+      \\"language\\"
+    ]
+  }
+]"
+`;
+
+exports[`ProcessedPDF validation throws on language is not 2 digits 1`] = `
+"[
+  {
+    \\"code\\": \\"too_big\\",
+    \\"maximum\\": 2,
+    \\"type\\": \\"string\\",
+    \\"inclusive\\": true,
+    \\"exact\\": false,
+    \\"message\\": \\"String must contain at most 2 character(s)\\",
+    \\"path\\": [
+      \\"language\\"
+    ]
+  }
+]"
+`;
+
+exports[`ProcessedPDF validation throws on language is undefined 1`] = `
+"[
+  {
+    \\"code\\": \\"invalid_type\\",
+    \\"expected\\": \\"string\\",
+    \\"received\\": \\"undefined\\",
+    \\"path\\": [
+      \\"language\\"
+    ],
+    \\"message\\": \\"Required\\"
+  }
+]"
+`;
+
+exports[`ProcessedPDF validation throws on totalPages is negative 1`] = `
+"[
+  {
+    \\"code\\": \\"too_small\\",
+    \\"minimum\\": 0,
+    \\"type\\": \\"number\\",
+    \\"inclusive\\": true,
+    \\"exact\\": false,
+    \\"message\\": \\"Number must be greater than or equal to 0\\",
+    \\"path\\": [
+      \\"totalPages\\"
+    ]
+  }
+]"
+`;

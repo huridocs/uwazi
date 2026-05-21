@@ -38,6 +38,7 @@ const validProps: TestFileProps = {
   mimetype: 'application/pdf',
   size: 1024,
   creationDate: 1234567890,
+  uploaded: true,
 };
 
 describe('BaseFile', () => {
@@ -143,6 +144,22 @@ describe('BaseFile', () => {
     it('preserves unchanged properties', () => {
       const file = new TestFile(validProps);
       const updated = file.update({ originalname: 'new-name.pdf' });
+
+      expect(updated.toDTO()).toEqual({ ...file.toDTO(), originalname: 'new-name.pdf' });
+    });
+
+    it('should only update allowed properties', () => {
+      const file = new TestFile(validProps);
+
+      const updated = file.update({
+        originalname: 'new-name.pdf',
+        id: 'not_allowed',
+        creationDate: 9999,
+        mimetype: 'not_allowed/pdf',
+        size: 9999,
+        filename: 'not_allowed.pdf',
+        uploaded: false,
+      });
 
       expect(updated.toDTO()).toEqual({ ...file.toDTO(), originalname: 'new-name.pdf' });
     });

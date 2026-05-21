@@ -46,7 +46,7 @@ export class PDFPostProcessJob extends AbstractUseCase<Input, Output, Deps, [boo
       ).getDataOrThrow();
 
       await this.transactionManager.run(async () => {
-        processedPDF.markForFullTextIndexing();
+        processedPDF.languageChanged();
         await this.deps.filesDS.update(processedPDF);
 
         await this.deps.filesDS.create(thumbnail);

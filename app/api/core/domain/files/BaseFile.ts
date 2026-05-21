@@ -57,8 +57,11 @@ const Schema = z.object({
       /^[a-zA-Z0-9][a-zA-Z0-9!#$&^_+-]*\/[a-zA-Z0-9][a-zA-Z0-9!#$&^_.+-]*(;\s*[\w-]+=[\w-]+)*$/,
       'Invalid MIME type format'
     ),
-  size: z.number().int('File size must be an integer'),
-  creationDate: z.number().int('Creation date must be an integer'),
+  size: z.number().int('File size must be an integer').default(0),
+  creationDate: z
+    .number()
+    .int('Creation date must be an integer')
+    .default(() => Date.now()),
   uploaded: z.boolean().optional(),
 });
 
@@ -84,17 +87,8 @@ export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
   private previousProps?: TProps;
 
   constructor(props: TProps) {
-    const validated = Schema.parse({
-      id: props.id,
-      originalname: props.originalname ?? props.filename,
-      filename: props.filename,
-      mimetype: props.mimetype,
-      size: props.size ?? 0,
-      creationDate: props.creationDate ?? 0,
-      uploaded: props.uploaded,
-    });
-
-    this.props = { ...props, ...validated } as TProps;
+    const validated = Schema.parse(props);
+    this.props = { ...props, ...validated };
 
     this.id = validated.id;
     this.originalname = validated.originalname;
@@ -109,8 +103,15 @@ export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
     return this._type;
   }
 
-  protected clone(updateProps: Partial<TProps>): this {
-    const newProps = { ...this.props, ...updateProps };
+  protected clone(props: Partial<TProps>): this {
+    Object.entries(props).forEach(
+      ([key, value]) => value === undefined && delete props[key as keyof TProps]
+    );
+
+    const newProps = {
+      ...this.props,
+      ...props,
+    };
 
     const instance = new (this.constructor as any)(newProps) as this;
 
@@ -133,8 +134,15 @@ export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
     return stringify(this.props) !== stringify(this.previousProps);
   }
 
-  update(updateProps: Partial<TProps>): this {
-    return this.clone(updateProps);
+  update<ExtendedProps>(props: Partial<TProps> & Partial<ExtendedProps>): this {
+    delete props.id;
+    delete props.creationDate;
+    delete props.mimetype;
+    delete props.size;
+    delete props.filename;
+    delete props.uploaded;
+
+    return this.clone(props);
   }
 
   isEntityFile(): this is this & { entity: string } {
