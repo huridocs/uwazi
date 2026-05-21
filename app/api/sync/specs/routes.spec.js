@@ -20,6 +20,7 @@ jest.mock('#api/sync/ElasticSlotsSyncHandler.js', () => ({
     save: jest.fn().mockResolvedValue(undefined),
     saveMultiple: jest.fn().mockResolvedValue(undefined),
     getById: jest.fn().mockResolvedValue(null),
+    delete: jest.fn().mockResolvedValue(undefined),
   })),
 }));
 
@@ -334,7 +335,11 @@ describe('sync', () => {
 
     describe('when namespace is entities', () => {
       beforeEach(() => {
-        const entities = { save: jest.fn(), delete: jest.fn() };
+        const entities = {
+          save: jest.fn(),
+          delete: jest.fn(),
+          getById: jest.fn().mockResolvedValue({ _id: 'id', sharedId: 'sharedId1' }),
+        };
         models.entities = () => entities;
 
         req.query = {
@@ -346,6 +351,7 @@ describe('sync', () => {
       it('should delete it from elastic', async () => {
         await routes.delete('/api/sync', req);
         expect(search.delete).toHaveBeenCalledWith({ _id: 'id' });
+        expect(mockIndexerSync).toHaveBeenCalledWith(['sharedId1']);
       });
 
       it('should not fail if elastic path has already been deleted (statusCode 404)', async () => {

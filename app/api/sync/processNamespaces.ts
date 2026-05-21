@@ -109,7 +109,10 @@ class ProcessNamespaces {
     const { namespace, mongoId } = this.change;
     const odmModel = models[namespace]?.();
     const handler = odmModel ?? SyncHandlerRegistry.get(namespace);
-    const data = handler ? await handler.getById(mongoId.toString()) : null;
+    if (!odmModel && !handler) {
+      throw new Error(`No sync handler registered for namespace: ${namespace}`);
+    }
+    const data = await handler!.getById(mongoId.toString());
     if (data) {
       return data;
     }

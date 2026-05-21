@@ -22,6 +22,7 @@ export class ElasticSlotsSyncHandler
 
   async save(document: Partial<SlotDocument>): Promise<SlotDocument> {
     const { _id, ...rest } = document as SlotDocument;
+    if (!_id) throw new Error('ElasticSlotsSyncHandler: document._id is required');
     const id = _id instanceof ObjectId ? _id : new ObjectId(_id as unknown as string);
     await this.getCollection().replaceOne({ _id: id }, { _id: id, ...rest } as SlotDocument, {
       upsert: true,
@@ -36,6 +37,7 @@ export class ElasticSlotsSyncHandler
     await this.getCollection().bulkWrite(
       documents.map(doc => {
         const { _id, ...rest } = doc as SlotDocument;
+        if (!_id) throw new Error('ElasticSlotsSyncHandler: document._id is required');
         const id = _id instanceof ObjectId ? _id : new ObjectId(_id as unknown as string);
         return {
           replaceOne: {
@@ -50,11 +52,17 @@ export class ElasticSlotsSyncHandler
 
     const ids = documents.map(doc => {
       const id = (doc as SlotDocument)._id;
+      if (!id) throw new Error('ElasticSlotsSyncHandler: document._id is required');
       return id instanceof ObjectId ? id : new ObjectId(id as unknown as string);
     });
 
     return this.getCollection()
       .find({ _id: { $in: ids } })
       .toArray();
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async delete(_id: string): Promise<void> {
+    // Slots are never deleted via sync; this is intentionally a no-op.
   }
 }

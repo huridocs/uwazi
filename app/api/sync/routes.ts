@@ -60,9 +60,13 @@ const deleteEntityFromIndex = async (entityId: string) => {
   }
 };
 
-const deleteFromIndex = async (req: Request<{}, {}, {}, { data: string; namespace: string }>) => {
+const deleteFromIndex = async (
+  req: Request<{}, {}, {}, { data: string; namespace: string }>,
+  entitySharedId: string
+) => {
   if (req.query.namespace === 'entities') {
     await deleteEntityFromIndex(JSON.parse(req.query.data)._id);
+    await EntityIndexerServiceFactory.default().sync([entitySharedId]);
   }
 };
 
@@ -187,17 +191,28 @@ export default (app: Application) => {
     needsAuthorization(['admin']),
     async (req: Request<{}, {}, {}, { data: string; namespace: string }>, res) => {
       if (SyncHandlerRegistry.has(req.query.namespace)) {
+        const handler = SyncHandlerRegistry.get(req.query.namespace)!;
+        await handler.delete(JSON.parse(req.query.data)._id);
         res.json('ok');
         return;
       }
+
+      let entitySharedId: string | undefined;
+      if (req.query.namespace === 'entities') {
+        const entityDoc = await models.entities().getById(JSON.parse(req.query.data)._id);
+        entitySharedId = entityDoc?.sharedId;
+      }
+
       await models[req.query.namespace]().delete(JSON.parse(req.query.data));
 
       if (req.query.namespace === 'files') {
         await deleteFile(JSON.parse(req.query.data)._id);
       }
 
-      if (req.query.namespace === 'entities') {
-        await deleteFromIndex(req);
+      if (req.query.namespace === 'entities' && entitySharedId) {
+        await deleteFromIndex(req, entitySharedId);
+      } else if (req.query.namespace === 'entities') {
+        await deleteEntityFromIndex(JSON.parse(req.query.data)._id);
       }
 
       res.json('ok');
