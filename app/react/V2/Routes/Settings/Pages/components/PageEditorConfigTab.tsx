@@ -11,7 +11,7 @@ import { Translate } from '#app/I18N/index.js';
 import { CopyValueInput, Tabs, ToggleButton } from '#V2/Components/UI/index.js';
 import { InputField } from '#app/V2/Components/Forms/index.js';
 import { Page } from '#V2/shared/types.js';
-import { getPageUrlSlugOnly, getPageUrlWithSharedId } from './pageUrls.js';
+import { getPageUrl } from './pageUrls.js';
 import { MarkdownDeprecationBanner } from './PageEditorComponents.js';
 
 export interface PageEditorConfigTabProps {
@@ -58,41 +58,21 @@ const PageEditorConfigTab = ({
           errorMessage={errors.title && <Translate>This field is required</Translate>}
         />
 
-        <InputField
-          id="slug"
-          label={<Translate>Slug</Translate>}
-          {...register('slug', { required: true })}
-          hasErrors={errors.slug !== undefined}
-          errorMessage={errors.slug && <Translate>This field is required</Translate>}
-        />
-
-        {getValues('sharedId') && !getValues('entityView') && getValues('slug') && (
+        {getValues('sharedId') && !getValues('entityView') && (
           <>
             <CopyValueInput
-              value={`/${getPageUrlWithSharedId(getValues('sharedId')!, getValues('slug')!)}`}
-              label={<Translate>URL (with ID)</Translate>}
+              value={`/${getPageUrl(getValues('sharedId')!)}`}
+              label={<Translate>URL</Translate>}
               className="w-full"
-              id="page-url-with-id"
+              id="page-url"
             />
-            <CopyValueInput
-              value={`/${getPageUrlSlugOnly(getValues('slug')!)}`}
-              label={<Translate>URL (slug only)</Translate>}
-              className="w-full mb-4"
-              id="page-url-slug-only"
-            />
+            <Link target="_blank" to={`/${getPageUrl(getValues('sharedId')!)}`}>
+              <div className="flex gap-2 hover:font-bold hover:cursor-pointer">
+                <ArrowTopRightOnSquareIcon className="w-4" />
+                <Translate className="underline hover:text-primary-700">View page</Translate>
+              </div>
+            </Link>
           </>
-        )}
-
-        {getValues('sharedId') && !getValues('entityView') && getValues('slug') && (
-          <Link
-            target="_blank"
-            to={`/${getPageUrlWithSharedId(getValues('sharedId')!, getValues('slug')!)}`}
-          >
-            <div className="flex gap-2 hover:font-bold hover:cursor-pointer">
-              <ArrowTopRightOnSquareIcon className="w-4" />
-              <Translate className="underline hover:text-primary-700">View page</Translate>
-            </div>
-          </Link>
         )}
       </div>
     </form>

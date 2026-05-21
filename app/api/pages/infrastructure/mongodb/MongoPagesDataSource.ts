@@ -1,4 +1,4 @@
-import { Db, ObjectId } from 'mongodb';
+import { Db } from 'mongodb';
 import { PagesDataSource } from '#api/pages/application/contracts/PagesDataSource.js';
 import { Page } from '#api/pages/domain/Page.js';
 import { PageNotFoundError } from '#api/pages/domain/errors.js';
@@ -7,9 +7,6 @@ import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDa
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { PageDBO } from './PageDBO.js';
 import { PageMapper } from './PageMapper.js';
-
-const pageHasSlug = (page: Page, slug: string) =>
-  page.getLocaleKeys().some(lang => page.getLocale(lang).slug === slug);
 
 class MongoPagesDataSource extends MongoDataSource<PageDBO> implements PagesDataSource {
   protected collectionName = 'pages';
@@ -24,23 +21,6 @@ class MongoPagesDataSource extends MongoDataSource<PageDBO> implements PagesData
       return Result.fail(new PageNotFoundError(sharedId));
     }
     return Result.ok(PageMapper.toDomain(dbo));
-  }
-
-  /** See app/api/pages/TECH_DEBT.md — full scan until slug index exists. */
-  async getBySlug(slug: string) {
-    const pages = await this.getAll();
-    const page = pages.find(p => pageHasSlug(p, slug));
-    if (!page) {
-      return Result.fail(new PageNotFoundError(slug));
-    }
-    return Result.ok(page);
-  }
-
-  async existsWithSlug(slug: string, excludeSharedId?: string): Promise<boolean> {
-    const pages = await this.getAll();
-    return pages.some(
-      p => p.sharedId !== excludeSharedId && pageHasSlug(p, slug)
-    );
   }
 
   async getAll(): Promise<Page[]> {

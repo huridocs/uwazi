@@ -41,14 +41,12 @@ type ILink = Omit<SettingsLinkSchema, 'sublinks'> & {
 
 type PageLocaleForm = {
   title: string;
-  slug: string;
   draft?: PageDraft;
 };
 
 type Page = {
   _id?: string;
   title?: string;
-  slug?: string;
   language?: string;
   sharedId?: string;
   creationDate?: number;

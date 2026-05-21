@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { t } from '#app/I18N/index.js';
 import type { Page, PageLocaleForm } from '#V2/shared/types.js';
 import type { PageDraft } from '#shared/types/pageType.js';
@@ -20,7 +19,6 @@ const emptyDraft = (): PageDraft => ({ content: '', script: '', css: '' });
 
 const emptyLocale = (title = ''): PageLocaleForm => ({
   title,
-  slug: 'page',
   draft: emptyDraft(),
 });
 
@@ -42,7 +40,6 @@ export const buildInitialLocales = (
       const draft = fromServer.draft ?? emptyDraft();
       locales[lang.key] = {
         title: fromServer.title ?? '',
-        slug: fromServer.slug ?? 'page',
         draft: {
           content: draft.content ?? '',
           script: draft.script ?? '',
@@ -53,9 +50,7 @@ export const buildInitialLocales = (
     }
 
     const title = isNewPage ? newPageDefaultTitle() : '';
-    const slug = isNewPage ? _.kebabCase(title) || 'page' : 'page';
     locales[lang.key] = emptyLocale(title);
-    locales[lang.key].slug = slug;
   });
 
   return locales;
@@ -86,7 +81,6 @@ export const buildEditorSavePayload = (data: Page): Page => {
       const draft = locale.draft ?? emptyDraft();
       payload.locales![lang] = {
         title: locale.title ?? '',
-        slug: locale.slug ?? 'page',
         draft: {
           content: draft.content ?? '',
           script: draft.script ?? '',

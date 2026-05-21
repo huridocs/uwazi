@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import {
   Link,
@@ -13,7 +13,6 @@ import {
 } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
-import _ from 'lodash';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import { Translate, t } from '#app/I18N/index.js';
 import * as pagesAPI from '#V2/api/pages/index.js';
@@ -30,10 +29,7 @@ import {
 import { InputField } from '#app/V2/Components/Forms/index.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { getPageDraftUrl } from './components/PageListTable.js';
-import {
-  getPageUrlSlugOnly,
-  getPageUrlWithSharedId,
-} from './components/pageUrls.js';
+import { getPageUrl } from './components/pageUrls.js';
 import { MarkdownDeprecationBanner } from './components/PageEditorComponents.js';
 import { PageReleaseModal } from './components/PageReleaseModal.js';
 import { PageRestoreModal, type PageRestoreReleaseRow } from './components/PageRestoreModal.js';
@@ -76,7 +72,6 @@ const PageEditor = () => {
   const [releaseMessage, setReleaseMessage] = useState('');
   const [restoreSelected, setRestoreSelected] = useState<string[]>([]);
   const [editorLayoutKey, setEditorLayoutKey] = useState(0);
-  const slugManuallyEdited = useRef<Record<string, boolean>>({});
   const isNewPage = !page.sharedId;
   const { notify } = useRequestStatus();
 
@@ -157,37 +152,16 @@ const PageEditor = () => {
   const showMarkdownDeprecation = !!watch('sharedId') && markdownSupport;
   const entityView = watch('entityView') === true;
   const pageSharedId = watch('sharedId') || page.sharedId;
-  const pageSlug = watch(`locales.${activeLocale}.slug`) || 'page';
-  const showPageUrlPreviews = !entityView && !!pageSlug;
+  const showPageUrlPreviews = !entityView && !!pageSharedId;
   const isDirty = !!Object.keys(dirtyFields).length;
   const activeLocaleTitle = watch(`locales.${activeLocale}.title`);
   const headerTitle =
     activeLocaleTitle?.trim() !== ''
       ? activeLocaleTitle
       : isNewPage
-        ? newPageDefaultTitle(activeLocale)
+        ? newPageDefaultTitle()
         : '';
   const localeDraft = watch(`locales.${activeLocale}.draft`) ?? {};
-
-  useEffect(() => {
-    if (page.sharedId) {
-      languages.forEach(lang => {
-        slugManuallyEdited.current[lang.key] = true;
-      });
-    }
-  }, [page.sharedId, languages]);
-
-  const titleValue = watch(`locales.${activeLocale}.title`);
-  useEffect(() => {
-    if (!isNewPage || slugManuallyEdited.current[activeLocale]) {
-      return;
-    }
-    const generatedSlug = _.kebabCase(titleValue ?? '') || 'page';
-    const slugPath = `locales.${activeLocale}.slug` as const;
-    if (getValues(slugPath) !== generatedSlug) {
-      setValue(slugPath, generatedSlug, { shouldDirty: false });
-    }
-  }, [titleValue, isNewPage, activeLocale, getValues, setValue]);
 
   const blocker = useBlocker(isDirty && !isSubmitting);
 
@@ -242,8 +216,7 @@ const PageEditor = () => {
     handleSaveNotification(response);
 
     if (!hasErrors) {
-      const slug = response.locales?.[activeLocale]?.slug ?? pageSlug;
-      const draftPath = getPageDraftUrl(response.sharedId!, slug);
+      const draftPath = getPageDraftUrl(response.sharedId!);
       const langPrefix = `${activeLocale}/`;
       window.open(`${window.location.origin}/${langPrefix}${draftPath}`);
       await handleRevalidate(response);
@@ -298,7 +271,6 @@ const PageEditor = () => {
     setEditorLayoutKey(k => k + 1);
   };
 
-  const slugField = register(`locales.${activeLocale}.slug`, { required: true });
   const localeErrors = errors.locales?.[activeLocale];
 
   return (
@@ -348,43 +320,19 @@ const PageEditor = () => {
                     }
                   />
 
-                  <InputField
-                    id={`slug-${activeLocale}`}
-                    label={<Translate>Slug</Translate>}
-                    {...slugField}
-                    onChange={event => {
-                      slugManuallyEdited.current[activeLocale] = true;
-                      slugField.onChange(event);
-                    }}
-                    hasErrors={localeErrors?.slug !== undefined}
-                    errorMessage={
-                      localeErrors?.slug && <Translate>This field is required</Translate>
-                    }
-                  />
-
                   {showPageUrlPreviews && (
-                    <>
-                      {pageSharedId && (
-                        <CopyValueInput
-                          value={`/${activeLocale}/${getPageUrlWithSharedId(pageSharedId, pageSlug)}`}
-                          label={<Translate>URL (with ID)</Translate>}
-                          className="w-full"
-                          id={`page-url-with-id-${activeLocale}`}
-                        />
-                      )}
-                      <CopyValueInput
-                        value={`/${activeLocale}/${getPageUrlSlugOnly(pageSlug)}`}
-                        label={<Translate>URL (slug only)</Translate>}
-                        className="w-full"
-                        id={`page-url-slug-only-${activeLocale}`}
-                      />
-                    </>
+                    <CopyValueInput
+                      value={`/${activeLocale}/${getPageUrl(pageSharedId)}`}
+                      label={<Translate>URL</Translate>}
+                      className="w-full"
+                      id={`page-url-${activeLocale}`}
+                    />
                   )}
 
                   {pageSharedId && showPageUrlPreviews && (
                     <Link
                       target="_blank"
-                      to={`/${activeLocale}/${getPageUrlWithSharedId(pageSharedId, pageSlug)}`}
+                      to={`/${activeLocale}/${getPageUrl(pageSharedId)}`}
                     >
                       <div className="flex gap-2 hover:font-bold hover:cursor-pointer">
                         <ArrowTopRightOnSquareIcon className="w-4" />

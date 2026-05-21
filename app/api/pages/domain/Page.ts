@@ -1,4 +1,3 @@
-import kebabCase from 'lodash/kebabCase.js';
 import {
   CannotRemoveLastLocaleError,
   InvalidPageReleaseError,
@@ -13,7 +12,6 @@ export type PageContent = {
 
 export type PageLocaleData = {
   title: string;
-  slug: string;
   draft: PageContent;
 };
 
@@ -41,19 +39,8 @@ const emptyContent = (): PageContent => ({
   css: '',
 });
 
-export const slugFromTitle = (title: string) => kebabCase(title.trim()) || 'page';
-
-/** Non-empty slug; normalizes user input or falls back to title. */
-export const normalizeSlug = (raw: string | undefined, fallbackTitle: string): string => {
-  const trimmed = (raw ?? '').trim();
-  const fromInput = trimmed ? slugFromTitle(trimmed) : '';
-  const fromTitle = slugFromTitle(fallbackTitle);
-  return fromInput || fromTitle || 'page';
-};
-
 const cloneLocale = (locale: PageLocaleData): PageLocaleData => ({
   title: locale.title,
-  slug: locale.slug,
   draft: { ...locale.draft },
 });
 
@@ -102,16 +89,8 @@ export class Page {
 
   updateLocale(language: string, patch: Partial<PageLocaleData>): void {
     const current = this.getLocale(language);
-    const title = patch.title ?? current.title;
-    const slug =
-      patch.slug !== undefined
-        ? normalizeSlug(patch.slug, title)
-        : patch.title !== undefined
-          ? slugFromTitle(title)
-          : normalizeSlug(current.slug, title);
     this.locales[language] = {
-      title,
-      slug,
+      title: patch.title ?? current.title,
       draft: patch.draft ? { ...current.draft, ...patch.draft } : current.draft,
     };
   }
@@ -158,7 +137,6 @@ export class Page {
       if (!locale) {
         snapshotLocales[lang] = {
           title: '',
-          slug: slugFromTitle(''),
           draft: emptyContent(),
         };
         return;
@@ -194,7 +172,6 @@ export class Page {
       }
       this.locales[lang] = {
         title: snapshot.title,
-        slug: snapshot.slug,
         draft: { ...snapshot.draft },
       };
     });
@@ -203,7 +180,6 @@ export class Page {
   static createEmptyLocale(title: string): PageLocaleData {
     return {
       title,
-      slug: slugFromTitle(title),
       draft: emptyContent(),
     };
   }

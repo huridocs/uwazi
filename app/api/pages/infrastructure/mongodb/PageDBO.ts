@@ -8,7 +8,6 @@ export type PageContentDBO = {
 
 export type PageLocaleDBO = {
   title?: string;
-  slug?: string;
   draft?: PageContentDBO;
 };
 
@@ -24,7 +23,6 @@ export type PageDBO = {
 
 export type PageReleaseLocaleDBO = {
   title?: string;
-  slug?: string;
   content?: string;
   script?: string;
   css?: string;

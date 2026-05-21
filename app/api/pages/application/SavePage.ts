@@ -16,7 +16,6 @@ import {
   hasEditorLocalesPayload,
   pageToEditorClient,
 } from '#api/pages/pageProjection.js';
-import { ensurePageSlugsAreUnique } from './ensurePageSlugsAreUnique.js';
 import { loadClientPage, loadClientPageForEditor } from './pageClientLoader.js';
 
 type Input = {
@@ -63,8 +62,6 @@ class SavePageUseCase extends AbstractUseCase<Input, Output, Deps> {
         page.markdownSupport = clientPage.markdownSupport ?? page.markdownSupport;
         applyClientToPage(page, clientPage, lang);
       }
-      await ensurePageSlugsAreUnique(page, this.deps.pagesDS);
-
       await this.transactionManager.run(async () => {
         await this.deps.pagesDS.update(page);
       });
@@ -109,8 +106,6 @@ class SavePageUseCase extends AbstractUseCase<Input, Output, Deps> {
     } else {
       applyClientToPage(newPage, clientPage, lang);
     }
-    await ensurePageSlugsAreUnique(newPage, this.deps.pagesDS);
-
     await this.transactionManager.run(async () => {
       await this.deps.pagesDS.create(newPage);
     });

@@ -24,7 +24,6 @@ const fixtures: DBFixture = {
       locales: {
         en: {
           title: 'Test page',
-          slug: 'test-page',
           draft: { content: '<p>en</p>', script: '', css: '' },
         },
       },

@@ -54,7 +54,7 @@ describe('Pages Routes (to be updated)', () => {
       };
       jest.spyOn(pages, 'getById').mockImplementation(async () => Promise.resolve('page'));
       const response = await routes.get('/api/page', req);
-      expect(pages.getById).toHaveBeenCalledWith({ sharedId: '123', slug: undefined }, 'es');
+      expect(pages.getById).toHaveBeenCalledWith({ sharedId: '123' }, 'es', undefined);
       expect(response).toBe('page');
     });
   });

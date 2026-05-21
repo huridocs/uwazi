@@ -145,7 +145,7 @@ describe('Pages use cases (integration)', () => {
   });
 
   describe('pages service with data layer', () => {
-    it('should save, publish, and resolve by slug through pages service', async () => {
+    it('should save, publish, and resolve by sharedId through pages service', async () => {
       await withContext(async () => {
         mockID('pages-flow-id');
         const user = { _id: db.id() };
@@ -153,7 +153,6 @@ describe('Pages use cases (integration)', () => {
         const created = await pages.save(
           {
             title: 'Flow Page',
-            slug: 'flow-page',
             draft: { content: '<p>Flow</p>', script: '', css: '' },
           },
           user,
@@ -167,8 +166,8 @@ describe('Pages use cases (integration)', () => {
           language: 'en',
         });
 
-        const bySlug = await pages.getById({ slug: 'flow-page' }, 'en');
-        expect(bySlug.sharedId).toBe(sharedId);
+        const loaded = await pages.getById(sharedId, 'en');
+        expect(loaded.sharedId).toBe(sharedId);
 
         const pagesDS = PagesDataSourceFactory.default();
         const page = (await pagesDS.getBySharedId(sharedId)).getDataOrThrow();

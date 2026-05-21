@@ -165,16 +165,16 @@ describe('pages', () => {
         const created = await pages.save(
           {
             locales: {
-              es: { title: 'Título ES', slug: 'titulo-es', draft: { content: '<p>es</p>' } },
-              en: { title: 'Title EN', slug: 'title-en', draft: { content: '<p>en</p>' } },
-              pt: { title: 'Título PT', slug: 'titulo-pt', draft: { content: '<p>pt</p>' } },
+              es: { title: 'Título ES', draft: { content: '<p>es</p>' } },
+              en: { title: 'Title EN', draft: { content: '<p>en</p>' } },
+              pt: { title: 'Título PT', draft: { content: '<p>pt</p>' } },
             },
           },
           user
         );
 
         expect(created.locales?.es?.title).toBe('Título ES');
-        expect(created.locales?.en?.slug).toBe('title-en');
+        expect(created.locales?.en?.title).toBe('Title EN');
 
         const loaded = await pages.getById(created.sharedId!, undefined, 'editor');
         expect(loaded.locales?.es?.draft?.content).toBe('<p>es</p>');
@@ -191,7 +191,7 @@ describe('pages', () => {
             {
               sharedId: '2',
               locales: {
-                xx: { title: 'Bad', slug: 'bad' },
+                xx: { title: 'Bad' },
               },
             },
             user
@@ -216,7 +216,6 @@ describe('pages', () => {
             locales: {
               es: {
                 title: 'Solo ES cambiado',
-                slug: editorBefore.locales!.es!.slug!,
                 draft: editorBefore.locales!.es!.draft ?? { content: '', script: '', css: '' },
               },
             },
@@ -244,60 +243,12 @@ describe('pages', () => {
     });
   });
 
-  describe('slug uniqueness and lookup', () => {
-    it('should detect slug collisions across pages', async () => {
+  describe('getById lookup', () => {
+    it('should resolve page only by sharedId', async () => {
       await withContext(async () => {
-        const pagesDS = (await import('#api/pages/infrastructure/factories/PagesDataSourceFactory.js')).PagesDataSourceFactory.default();
-        const user = { _id: db.id() };
-        await pages.save({ title: 'Slug Collision' }, user, 'en');
-        expect(await pagesDS.existsWithSlug('slug-collision', 'other-id')).toBe(true);
-      });
-    });
-
-    it('should resolve getById by slug when sharedId is not found', async () => {
-      await withContext(async () => {
-        const page = await pages.getById({ slug: 'batman-finishes' }, 'es');
+        const page = await pages.getById('1', 'es');
         expect(page.sharedId).toBe('1');
-        expect(page.slug).toBe('batman-finishes');
-      });
-    });
-
-    it('should reject when sharedId and slug do not match for the request language', async () => {
-      await withContext(async () => {
-        expect.assertions(1);
-        try {
-          await pages.getById({ sharedId: '2', slug: 'batman-finishes' }, 'es');
-        } catch (error) {
-          expect((error as { code?: number }).code).toBe(404);
-        }
-      });
-    });
-
-
-    it('should allow the same slug on different locales of one page', async () => {
-      await withContext(async () => {
-        const pagesDS = (await import('#api/pages/infrastructure/factories/PagesDataSourceFactory.js')).PagesDataSourceFactory.default();
-        const user = { _id: db.id() };
-        mockID('slug-shared-page');
-        const created = await pages.save({ title: 'Shared Slug Page', slug: 'shared-slug' }, user, 'en');
-        const domain = (await pagesDS.getBySharedId(created.sharedId!)).getDataOrThrow();
-        domain.updateLocale('es', { slug: 'shared-slug' });
-        await pagesDS.update(domain);
-        const es = await pages.getById({ sharedId: created.sharedId! }, 'es');
-        const en = await pages.getById({ sharedId: created.sharedId! }, 'en');
-        expect(es.slug).toBe('shared-slug');
-        expect(en.slug).toBe('shared-slug');
-      });
-    });
-
-    it('should assign unique slugs when two new pages share the same title', async () => {
-      await withContext(async () => {
-        const user = { _id: db.id() };
-        mockID('page-a');
-        const first = await pages.save({ title: 'Same Title' }, user, 'en');
-        mockID('page-b');
-        const second = await pages.save({ title: 'Same Title' }, user, 'en');
-        expect(first.slug).not.toBe(second.slug);
+        expect(page.title).toBe('Batman finishes');
       });
     });
   });

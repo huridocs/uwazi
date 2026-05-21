@@ -49,30 +49,23 @@ export default (app: Application) => {
             sharedId: {
               type: 'string',
             },
-            slug: {
-              type: 'string',
-            },
             mode: {
               type: 'string',
               enum: ['editor'],
             },
           },
-          anyOf: [{ required: ['sharedId'] }, { required: ['slug'] }],
+          required: ['sharedId'],
         },
       },
       required: ['query'],
     }),
     (
-      req: Request<{}, {}, {}, { sharedId?: string; slug?: string; mode?: 'editor' }>,
+      req: Request<{}, {}, {}, { sharedId: string; mode?: 'editor' }>,
       res,
       next
     ) => {
       pages
-        .getById(
-          { sharedId: req.query.sharedId, slug: req.query.slug },
-          req.language,
-          req.query.mode
-        )
+        .getById({ sharedId: req.query.sharedId }, req.language, req.query.mode)
         .then(res.json.bind(res))
         .catch(next);
     }

@@ -15,8 +15,8 @@ export const fixtures: DBFixture = {
       entityView: true,
       creationDate: 1,
       locales: {
-        es: { title: 'Batman finishes', slug: 'batman-finishes', draft: emptyDraft },
-        en: { title: 'Batman finishes', slug: 'batman-finishes', draft: emptyDraft },
+        es: { title: 'Batman finishes', draft: emptyDraft },
+        en: { title: 'Batman finishes', draft: emptyDraft },
       },
     },
     {
@@ -25,8 +25,8 @@ export const fixtures: DBFixture = {
       user: userId,
       creationDate: 1,
       locales: {
-        es: { title: 'Penguin almost done', slug: 'penguin-almost-done', draft: emptyDraft },
-        fr: { title: 'Right there', slug: 'right-there', draft: emptyDraft },
+        es: { title: 'Penguin almost done', draft: emptyDraft },
+        fr: { title: 'Right there', draft: emptyDraft },
       },
     },
     {
@@ -35,10 +35,9 @@ export const fixtures: DBFixture = {
       user: userId,
       entityView: false,
       locales: {
-        es: { title: 'Pagina que sera entityView', slug: 'pagina-entity-view', draft: emptyDraft },
+        es: { title: 'Pagina que sera entityView', draft: emptyDraft },
         en: {
           title: 'Page that will be for entityView',
-          slug: 'page-entity-view',
           draft: emptyDraft,
         },
       },

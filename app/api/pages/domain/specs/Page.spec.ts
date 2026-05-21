@@ -1,4 +1,4 @@
-import { Page, normalizeSlug, slugFromTitle } from '../Page.js';
+import { Page } from '../Page.js';
 import {
   CannotRemoveLastLocaleError,
   InvalidPageReleaseError,
@@ -7,7 +7,6 @@ import {
 
 const baseLocale = (title: string, content: string) => ({
   title,
-  slug: title.toLowerCase().replace(/\s+/g, '-'),
   draft: { content, script: '', css: '' },
 });
 
@@ -26,35 +25,6 @@ const bilingualPage = () =>
   });
 
 describe('Page', () => {
-  describe('normalizeSlug', () => {
-    it('should never return an empty slug', () => {
-      expect(normalizeSlug('', 'Hello')).toBe('hello');
-      expect(normalizeSlug('   ', 'World')).toBe('world');
-      expect(normalizeSlug(undefined, '')).toBe('page');
-    });
-
-    it('should normalize user-provided slug', () => {
-      expect(normalizeSlug('My Custom Slug', 'Title')).toBe('my-custom-slug');
-    });
-  });
-
-  describe('updateLocale slug', () => {
-    it('should keep explicit slug when title changes if slug is sent', () => {
-      const page = bilingualPage();
-      page.updateLocale('en', { title: 'New Title', slug: 'custom-slug' });
-      expect(page.getLocale('en').slug).toBe('custom-slug');
-    });
-
-    it('should allow the same slug on different locales of one page', () => {
-      const page = bilingualPage();
-      page.updateLocale('en', { slug: 'shared-slug' });
-      page.updateLocale('es', { slug: 'shared-slug' });
-      expect(page.getLocale('en').slug).toBe('shared-slug');
-      expect(page.getLocale('es').slug).toBe('shared-slug');
-    });
-  });
-
-
   it('should add a locale by cloning source', () => {
     const p = new Page({
       id: '507f1f77bcf86cd799439011',

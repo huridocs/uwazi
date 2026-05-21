@@ -28,13 +28,6 @@ const releaseUserId = (user: unknown): ObjectId => {
   return new ObjectId();
 };
 
-const slugFromTitle = (title: string) =>
-  title
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '') || 'page';
-
 const contentFromDoc = (doc: LegacyPageDoc) => {
   const draft = doc.draft;
   const meta = doc.metadata ?? {};
@@ -83,7 +76,7 @@ export default {
     for (const [sharedId, docs] of byShared) {
       const canonical =
         docs.find(d => d.language === defaultLang) ?? docs[0];
-      const locales: Record<string, { title: string; slug: string; draft: object }> = {};
+      const locales: Record<string, { title: string; draft: object }> = {};
 
       docs.forEach(doc => {
         const lang = doc.language ?? defaultLang;
@@ -91,7 +84,6 @@ export default {
         const draft = contentFromDoc(doc);
         locales[lang] = {
           title,
-          slug: slugFromTitle(title),
           draft,
         };
       });
@@ -111,7 +103,6 @@ export default {
       Object.entries(locales).forEach(([lang, locale]) => {
         releaseDoc[lang] = {
           title: locale.title,
-          slug: locale.slug,
           content: (locale.draft as { content: string }).content,
           script: (locale.draft as { script: string }).script,
           css: (locale.draft as { css: string }).css,
@@ -150,45 +141,6 @@ export default {
       }
 
       consolidated += 1;
-    }
-
-
-    const slugOwnerByPage = new Map<string, string>();
-    const pagesWithLocales = (await db
-      .collection('pages')
-      .find({ locales: { $exists: true } })
-      .toArray()) as LegacyPageDoc[];
-
-    for (const doc of pagesWithLocales) {
-      const sharedId = doc.sharedId ?? doc._id.toString();
-      const locales = doc.locales as Record<
-        string,
-        { title: string; slug: string; draft: object }
-      >;
-      if (!locales) {
-        continue;
-      }
-
-      let changed = false;
-      Object.entries(locales).forEach(([_lang, locale]) => {
-        let slug = locale.slug || slugFromTitle(locale.title ?? '') || 'page';
-        const base = slug;
-        let suffix = 2;
-        while (slugOwnerByPage.has(slug) && slugOwnerByPage.get(slug) !== sharedId) {
-          slug = `${base}-${suffix}`;
-          suffix += 1;
-          changed = true;
-        }
-        if (locale.slug !== slug) {
-          locale.slug = slug;
-          changed = true;
-        }
-        slugOwnerByPage.set(slug, sharedId);
-      });
-
-      if (changed) {
-        await db.collection('pages').updateOne({ _id: doc._id }, { $set: { locales } });
-      }
     }
 
     process.stdout.write(`${this.name}: consolidated ${consolidated} page group(s).\r\n`);

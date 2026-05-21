@@ -3,8 +3,6 @@ import { PagesDataSource } from './contracts/PagesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
-import { ensurePageSlugsAreUnique } from './ensurePageSlugsAreUnique.js';
-
 type Input = {
   language: LanguageISO6391;
   defaultLanguage: LanguageISO6391;
@@ -37,7 +35,6 @@ class AddLanguageToPagesUseCase extends AbstractUseCase<Input, Output, Deps> {
     await this.transactionManager.run(async () => {
       for (const page of pages) {
         page.addLocale(input.language, input.defaultLanguage);
-        await ensurePageSlugsAreUnique(page, this.deps.pagesDS);
         // eslint-disable-next-line no-await-in-loop
         await this.deps.pagesDS.update(page);
       }

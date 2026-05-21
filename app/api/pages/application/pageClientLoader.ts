@@ -6,32 +6,20 @@ import { PageReleasesDataSource } from './contracts/PageReleasesDataSource.js';
 import { pageToClient, pageToEditorClient } from '#api/pages/pageProjection.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 
-export type PageLookup = { sharedId?: string; slug?: string };
+export type PageLookup = { sharedId?: string };
 
 export const normalizePageLookup = (
   lookup: string | PageLookup
 ): PageLookup => (typeof lookup === 'string' ? { sharedId: lookup } : lookup);
 
 export const findPageForLookup = async (lookup: PageLookup, pagesDS: PagesDataSource) => {
-  const { sharedId, slug } = lookup;
+  const { sharedId } = lookup;
 
-  if (!sharedId && !slug) {
+  if (!sharedId) {
     return null;
   }
 
-  if (sharedId && slug) {
-    return pagesDS.getBySharedId(sharedId);
-  }
-
-  if (sharedId) {
-    const bySharedId = await pagesDS.getBySharedId(sharedId);
-    if (bySharedId.isOk()) {
-      return bySharedId;
-    }
-    return pagesDS.getBySlug(sharedId);
-  }
-
-  return pagesDS.getBySlug(slug!);
+  return pagesDS.getBySharedId(sharedId);
 };
 
 export const loadClientPage = async (
@@ -48,21 +36,6 @@ export const loadClientPage = async (
   }
 
   const page = result.getDataOrThrow();
-
-  if (resolved.sharedId && resolved.slug) {
-    try {
-      const locale = page.getLocale(language);
-      if (locale.slug !== resolved.slug) {
-        return Promise.reject(createError('Page not found', 404));
-      }
-    } catch (error) {
-      if (error instanceof PageLocaleNotFoundError) {
-        return Promise.reject(createError('Page not found', 404));
-      }
-      throw error;
-    }
-  }
-
   const releases = await releasesDS.listByPageId(page.id);
   try {
     return pageToClient(page, language, releases);

@@ -62,7 +62,6 @@ export const PageSchema = {
       additionalProperties: false,
       properties: {
         title: { type: 'string' },
-        slug: { type: 'string', minLength: 1 },
         draft: { $ref: '#/definitions/pageDraft' },
       },
     },
@@ -84,7 +83,6 @@ export const PageSchema = {
   properties: {
     _id: objectIdSchema,
     title: { type: 'string' },
-    slug: { type: 'string', minLength: 1 },
     language: { type: 'string' },
     sharedId: { type: 'string' },
     creationDate: { type: 'number' },
@@ -137,10 +135,9 @@ export const PageEditorSchema = {
       additionalProperties: {
         type: 'object',
         additionalProperties: false,
-        required: ['title', 'slug'],
+        required: ['title'],
         properties: {
           title: { type: 'string' },
-          slug: { type: 'string', minLength: 1 },
           draft: { $ref: '#/definitions/pageDraft' },
         },
       },

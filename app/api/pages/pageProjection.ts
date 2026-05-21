@@ -16,7 +16,7 @@ const releaseToClient = (snapshot: PageReleaseSnapshot, language: string): PageR
   };
 };
 
-/** Flat PageType for a single request language (editor / public API). */
+/** Flat PageType for a single request language (public / legacy clients). */
 export const pageToClient = (
   page: Page,
   language: string,
@@ -29,7 +29,6 @@ export const pageToClient = (
     _id: page.id,
     sharedId: page.sharedId,
     title: locale.title,
-    slug: locale.slug,
     language,
     creationDate: page.creationDate,
     user: page.userId,
@@ -62,7 +61,6 @@ export const applyClientToPage = (page: Page, client: PageType, language: string
 
   const patch = {
     title: client.title,
-    slug: client.slug,
     draft: {
       content: draft.content ?? '',
       script: draft.script ?? '',
@@ -83,7 +81,6 @@ const localePayloadToPatch = (locale: PageLocale) => {
   const draft = locale.draft ?? { content: '', script: '', css: '' };
   return {
     title: locale.title ?? '',
-    slug: locale.slug,
     draft: {
       content: draft.content ?? '',
       script: draft.script ?? '',
@@ -92,7 +89,7 @@ const localePayloadToPatch = (locale: PageLocale) => {
   };
 };
 
-/** Full editor payload: all locales, no duplicated root title/slug/draft. */
+/** Full editor payload: all locales, no duplicated root title/draft. */
 export const pageToEditorClient = (
   page: Page,
   languageKeys: string[],
@@ -106,12 +103,11 @@ export const pageToEditorClient = (
       const locale = page.getLocale(lang);
       locales[lang] = {
         title: locale.title,
-        slug: locale.slug,
         draft: { ...locale.draft },
       };
     } catch (error) {
       if (error instanceof PageLocaleNotFoundError) {
-        locales[lang] = { title: '', slug: 'page', draft: { content: '', script: '', css: '' } };
+        locales[lang] = { title: '', draft: { content: '', script: '', css: '' } };
       } else {
         throw error;
       }

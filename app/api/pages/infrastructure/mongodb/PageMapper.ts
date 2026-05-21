@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { Page, PageContent, PageLocaleData, PageReleaseSnapshot, slugFromTitle } from '#api/pages/domain/Page.js';
+import { Page, PageContent, PageLocaleData, PageReleaseSnapshot } from '#api/pages/domain/Page.js';
 import {
   PageDBO,
   PageContentDBO,
@@ -14,14 +14,10 @@ const toContent = (dbo?: PageContentDBO): PageContent => ({
   css: dbo?.css ?? '',
 });
 
-const toLocale = (dbo: PageLocaleDBO | undefined, fallbackTitle: string): PageLocaleData => {
-  const title = dbo?.title ?? fallbackTitle;
-  return {
-    title,
-    slug: dbo?.slug ?? slugFromTitle(title),
-    draft: toContent(dbo?.draft),
-  };
-};
+const toLocale = (dbo: PageLocaleDBO | undefined, fallbackTitle: string): PageLocaleData => ({
+  title: dbo?.title ?? fallbackTitle,
+  draft: toContent(dbo?.draft),
+});
 
 const contentToDBO = (content: PageContent): PageContentDBO => ({
   content: content.content,
@@ -57,7 +53,6 @@ export class PageMapper {
     Object.entries(page.getLocales()).forEach(([lang, locale]) => {
       locales[lang] = {
         title: locale.title,
-        slug: locale.slug,
         draft: contentToDBO(locale.draft),
       };
     });
@@ -88,7 +83,6 @@ export class PageMapper {
     Object.entries(snapshot.locales).forEach(([lang, locale]) => {
       dbo[lang] = {
         title: locale.title,
-        slug: locale.slug,
         content: locale.draft.content,
         script: locale.draft.script,
         css: locale.draft.css,
@@ -105,10 +99,8 @@ export class PageMapper {
       if (!raw || typeof raw !== 'object' || !('content' in raw)) {
         return;
       }
-      const title = raw.title ?? '';
       locales[lang] = {
-        title,
-        slug: raw.slug ?? slugFromTitle(title),
+        title: raw.title ?? '',
         draft: {
           content: raw.content ?? '',
           script: raw.script ?? '',
@@ -136,7 +128,6 @@ export class PageMapper {
     const draft = dbo.draft ? toContent(dbo.draft) : toContent(dbo.metadata);
     return {
       title,
-      slug: slugFromTitle(title),
       draft,
     };
   }

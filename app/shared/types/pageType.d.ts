@@ -11,7 +11,6 @@ export interface PageDraft {
 
 export interface PageLocale {
   title?: string;
-  slug?: string;
   draft?: PageDraft;
 }
 
@@ -29,7 +28,6 @@ export interface PageType {
   _id?: ObjectIdSchema;
   /** Flat view for one request language; source of truth is `locales`. */
   title?: string;
-  slug?: string;
   language?: string;
   sharedId?: string;
   creationDate?: number;

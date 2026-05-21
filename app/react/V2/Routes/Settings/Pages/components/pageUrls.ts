@@ -1,7 +1,5 @@
-const getPageUrlWithSharedId = (sharedId: string, slug: string) => `page/${sharedId}/${slug}`;
+const getPageUrl = (sharedId: string) => `page/${sharedId}`;
 
-const getPageUrlSlugOnly = (slug: string) => `page/${slug}`;
+const getPageDraftUrl = (sharedId: string) => `page-draft/${sharedId}`;
 
-const getPageDraftUrl = (sharedId: string, slug: string) => `page-draft/${sharedId}/${slug}`;
-
-export { getPageUrlWithSharedId, getPageUrlSlugOnly, getPageDraftUrl };
+export { getPageUrl, getPageDraftUrl };

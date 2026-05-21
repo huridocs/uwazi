@@ -4,13 +4,7 @@ import { CellContext } from '@tanstack/react-table';
 import { Button, Pill } from '#app/V2/Components/UI/index.js';
 import { I18NLinkV2 as I18NLink, Translate } from '#app/I18N/index.js';
 import { TablePage } from '../PagesList.js';
-import {
-  getPageDraftUrl,
-  getPageUrlSlugOnly,
-  getPageUrlWithSharedId,
-} from './pageUrls.js';
-
-const getPageUrl = getPageUrlWithSharedId;
+import { getPageDraftUrl, getPageUrl } from './pageUrls.js';
 
 const EntityViewHeader = () => <Translate>Entity Page</Translate>;
 const TitleHeader = () => <Translate>Title</Translate>;
@@ -18,8 +12,7 @@ const UrlHeader = () => <Translate>URL</Translate>;
 const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
 
 const ActionCell = ({ cell }: CellContext<TablePage, string>) => {
-  const slug = cell.row.original.slug ?? 'page';
-  const pageUrl = getPageUrlWithSharedId(cell.getValue(), slug);
+  const pageUrl = getPageUrl(cell.getValue());
   const isEntityView = cell.row.original.entityView;
 
   return (
@@ -47,9 +40,7 @@ const YesNoPill = ({ cell }: CellContext<TablePage, boolean>) => {
 };
 
 const UrlCell = ({ cell }: CellContext<TablePage, string>) => {
-  const sharedId = cell.getValue();
-  const slug = cell.row.original.slug ?? 'page';
-  const url = `/${getPageUrlWithSharedId(sharedId, slug)}`;
+  const url = `/${getPageUrl(cell.getValue())}`;
   return url;
 };
 
@@ -71,7 +62,5 @@ export {
   UrlCell,
   getPageUrl,
   getPageDraftUrl,
-  getPageUrlSlugOnly,
-  getPageUrlWithSharedId,
   List,
 };

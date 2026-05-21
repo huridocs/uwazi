@@ -92,7 +92,6 @@ const fixtures: DBFixture = {
       locales: {
         en: {
           title: 'Page',
-          slug: 'page',
           draft: { content: '', script: '', css: '' },
         },
       },

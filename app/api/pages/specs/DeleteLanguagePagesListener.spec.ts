@@ -24,12 +24,10 @@ const fixtures: DBFixture = {
       locales: {
         en: {
           title: 'Test page',
-          slug: 'test-page',
           draft: { content: '', script: '', css: '' },
         },
         es: {
           title: 'Página de prueba',
-          slug: 'pagina-de-prueba',
           draft: { content: '', script: '', css: '' },
         },
       },
