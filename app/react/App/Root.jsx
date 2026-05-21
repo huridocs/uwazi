@@ -7,10 +7,10 @@ import { getThemeAsset } from '#V2/theme/themes.js';
 
 const determineHotAssets = query => {
   const webpackPort = process.env.WEBPACK_PORT || 8080;
-  const webpackHost = `http://localhost:${webpackPort}`;
+  const webpackURL = process.env.WEBPACK_PUBLIC_URL || `http://localhost:${webpackPort}`;
   return {
-    JS: [`${webpackHost}/nprogress.js`, `${webpackHost}/main.js`, `${webpackHost}/vendor.js`],
-    CSS: [`${webpackHost}/CSS/vendor.css${query}`, `${webpackHost}/CSS/main.css${query}`],
+    JS: [`${webpackURL}/nprogress.js`, `${webpackURL}/main.js`, `${webpackURL}/vendor.js`],
+    CSS: [`${webpackURL}/CSS/vendor.css${query}`, `${webpackURL}/CSS/main.css${query}`],
   };
 };
 

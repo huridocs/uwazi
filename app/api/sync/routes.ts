@@ -11,6 +11,9 @@ import { FileType } from '#shared/types/fileType.js';
 
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { needsAuthorization } from '../auth/index.js';
+import { SyncHandlerRegistry } from './SyncHandlerRegistry.js';
+import { registerSyncHandlers } from './registerSyncHandlers.js';
+import { EntityIndexerServiceFactory } from '#api/core/infrastructure/factories/EntityIndexerServiceFactory.js';
 
 const diskStorage = multer.diskStorage({
   filename(_req, file, cb) {
@@ -21,10 +24,16 @@ const diskStorage = multer.diskStorage({
 const indexEntities = async (req: Request) => {
   if (req.body.namespace === 'entities') {
     await search.indexEntities({ _id: req.body.data._id }, '+fullText');
+    if (req.body.data.sharedId) {
+      await EntityIndexerServiceFactory.default().sync([req.body.data.sharedId]);
+    }
   }
 
   if (req.body.namespace === 'files') {
     await search.indexEntities({ sharedId: req.body.data.entity }, '+fullText');
+    if (req.body.data.entity) {
+      await EntityIndexerServiceFactory.default().sync([req.body.data.entity]);
+    }
   }
 };
 
@@ -34,8 +43,12 @@ const updateMappings = async (req: Request) => {
   }
 };
 
-const deleteFileFromIndex = async (file: FileType) =>
-  search.indexEntities({ sharedId: file.entity });
+const deleteFileFromIndex = async (file: FileType) => {
+  await search.indexEntities({ sharedId: file.entity });
+  if (file.entity) {
+    await EntityIndexerServiceFactory.default().sync([file.entity]);
+  }
+};
 
 const deleteEntityFromIndex = async (entityId: string) => {
   try {
@@ -47,9 +60,13 @@ const deleteEntityFromIndex = async (entityId: string) => {
   }
 };
 
-const deleteFromIndex = async (req: Request<{}, {}, {}, { data: string; namespace: string }>) => {
+const deleteFromIndex = async (
+  req: Request<{}, {}, {}, { data: string; namespace: string }>,
+  entitySharedId: string
+) => {
   if (req.query.namespace === 'entities') {
     await deleteEntityFromIndex(JSON.parse(req.query.data)._id);
+    await EntityIndexerServiceFactory.default().remove([entitySharedId]);
   }
 };
 
@@ -104,6 +121,8 @@ const keepOnlyOneDefaultTemplate = async (
 };
 
 export default (app: Application) => {
+  registerSyncHandlers();
+
   app.post('/api/sync', needsAuthorization(['admin']), async (req, res, next) => {
     try {
       if (req.body.namespace === 'settings') {
@@ -130,9 +149,14 @@ export default (app: Application) => {
         );
         await models[req.body.namespace]().save(req.body.data);
       } else {
+        const odmModel = models[req.body.namespace]?.();
+        const handler = odmModel ?? SyncHandlerRegistry.get(req.body.namespace);
+        if (!handler) {
+          throw new Error(`No sync handler for namespace: ${req.body.namespace}`);
+        }
         await (Array.isArray(req.body.data)
-          ? models[req.body.namespace]().saveMultiple(req.body.data)
-          : models[req.body.namespace]().save(req.body.data));
+          ? handler.saveMultiple(req.body.data)
+          : handler.save(req.body.data));
       }
 
       await updateMappings(req);
@@ -166,14 +190,29 @@ export default (app: Application) => {
     '/api/sync',
     needsAuthorization(['admin']),
     async (req: Request<{}, {}, {}, { data: string; namespace: string }>, res) => {
+      if (SyncHandlerRegistry.has(req.query.namespace)) {
+        const handler = SyncHandlerRegistry.get(req.query.namespace)!;
+        await handler.delete(JSON.parse(req.query.data)._id);
+        res.json('ok');
+        return;
+      }
+
+      let entitySharedId: string | undefined;
+      if (req.query.namespace === 'entities') {
+        const entityDoc = await models.entities().getById(JSON.parse(req.query.data)._id);
+        entitySharedId = entityDoc?.sharedId;
+      }
+
       await models[req.query.namespace]().delete(JSON.parse(req.query.data));
 
       if (req.query.namespace === 'files') {
         await deleteFile(JSON.parse(req.query.data)._id);
       }
 
-      if (req.query.namespace === 'entities') {
-        await deleteFromIndex(req);
+      if (req.query.namespace === 'entities' && entitySharedId) {
+        await deleteFromIndex(req, entitySharedId);
+      } else if (req.query.namespace === 'entities') {
+        await deleteEntityFromIndex(JSON.parse(req.query.data)._id);
       }
 
       res.json('ok');

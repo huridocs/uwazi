@@ -11,6 +11,7 @@ export interface MultiLanguageEntityDataSource {
   update(entity: Entity): Promise<void>;
 
   deleteMetadataProperties(propertyNames: string[], sharedIds: string[]): Promise<void>;
+  touchEntitiesBySharedIds(sharedIds: string[]): Promise<void>;
   bulkDelete(sharedIds: string[]): Promise<void>;
   deleteReferencesToSharedIds(sharedIds: string[]): Promise<void>;
 

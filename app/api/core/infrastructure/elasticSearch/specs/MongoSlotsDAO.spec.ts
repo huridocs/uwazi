@@ -30,7 +30,17 @@ describe('MongoSlotsDAO', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({});
 
-    const bootstrapper = new MongoSlotsBootstrapper({ database: getConnection() });
+    const bootstrapper = new MongoSlotsBootstrapper({
+      database: getConnection(),
+      slotsDAO: new MongoSlotsDAO({
+        db: getConnection(),
+        transactionManager: TransactionManagerFactory.default(),
+        tenantName: 'bootstrapper-tenant',
+        settingsDS: TestUtils.mockClass<SettingsDataSource>({
+          getInstalledLanguages: async () => [],
+        }),
+      }),
+    });
     await bootstrapper.createIndexes();
   });
 
