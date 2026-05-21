@@ -15,6 +15,7 @@ type Params = UserAwareDispatchableParams & {
   deletedProperties: string[];
   renamedProperties: { [oldName: string]: string };
   fullReindex: boolean;
+  resaveForFilterChange: boolean;
 };
 
 type JobDependencies = {
@@ -37,6 +38,7 @@ export class TemplatePostProcessEntitiesJob extends UserAwareDispatchable<Params
       renamedProperties: this.params.renamedProperties,
       templateId: this.params.templateId,
       fullReindex: this.params.fullReindex,
+      resaveForFilterChange: this.params.resaveForFilterChange,
       onAllEntitiesDenormalized: () =>
         emitToTenant(this.tenantName, 'templateProcessed', { templateId: this.params.templateId }),
       onProgress: (processing: { active: boolean; totalJobs: number; completedJobs: number }) =>

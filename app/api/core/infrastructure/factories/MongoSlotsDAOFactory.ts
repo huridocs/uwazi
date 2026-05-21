@@ -20,6 +20,7 @@ export class MongoSlotsDAOFactory {
         touchSentinel: async () => Promise.resolve(),
         getSlotMap: async () => Promise.resolve(new Map()),
         invalidateCache: () => null,
+        getCollection: () => ({ bulkWrite: async () => ({}) }) as any,
       });
     }
 

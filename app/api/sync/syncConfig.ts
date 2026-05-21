@@ -63,6 +63,7 @@ const COLLECTION_SYNC_ORDER = [
   'templates',
   'files',
   'connections',
+  'elasticSlots',
   'entities',
 ];
 const TEMPLATE_DEPENDENCIES = [
@@ -73,6 +74,7 @@ const TEMPLATE_DEPENDENCIES = [
   'dictionaries',
   'translationsV2',
   'relationtypes',
+  'elasticSlots',
 ];
 
 const getApprovedCollections = (config: SyncConfig['config']) => {
