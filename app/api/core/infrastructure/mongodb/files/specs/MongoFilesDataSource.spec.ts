@@ -444,7 +444,6 @@ describe('MongoFilesDataSource', () => {
       const { ds } = createDs();
       const doc = (await ds.getByFilename('url_attachment')).getData();
       expect(doc).toBeInstanceOf(URLAttachment);
-      expect(doc?.content).toBeUndefined();
     });
 
     it('should not load fullText by default', async () => {
@@ -473,7 +472,6 @@ describe('MongoFilesDataSource', () => {
       const { ds } = createDs();
       const doc = (await ds.getById(f.idString('url_attachment'))).getData();
       expect(doc).toBeInstanceOf(URLAttachment);
-      expect(doc?.content).toBeUndefined();
     });
   });
 

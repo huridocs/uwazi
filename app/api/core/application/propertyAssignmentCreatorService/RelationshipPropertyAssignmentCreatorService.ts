@@ -73,9 +73,12 @@ export class RelationshipPropertyAssignmentCreatorService extends AbstractProper
         const base: RelationshipEntry = {
           value: id,
           label: related.getTitle(language),
-          icon: related.icon,
           type: 'entity',
         };
+
+        if (related.icon) {
+          base.icon = related.icon;
+        }
 
         if (property.inheritedPropertyId) {
           const inheritedProp = related.template.properties.find(

@@ -9,6 +9,7 @@ import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
 import { TemplateDBO } from '../template/DBOs/TemplateDBO.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
 import { MongoTemplateMapper } from '../template/MongoTemplateMapper.js';
+import { MongoRelationshipMetadataMapper } from './MongoRelationshipMetadataMapper.js';
 
 class MongoEntityLanguageMapper {
   static toDomain(dbo: EntityDBO, template: Template): EntityTranslationProps {
@@ -30,10 +31,15 @@ class MongoEntityLanguageMapper {
         return acc;
       }
 
+      const mappedValue =
+        property.getData().type === 'relationship' && Array.isArray(value)
+          ? MongoRelationshipMetadataMapper.toDomain(value)
+          : value;
+
       return {
         ...acc,
         [name]: {
-          value,
+          value: mappedValue,
           name,
           type: property.getData().type,
           language: dbo.language,
@@ -86,10 +92,16 @@ class MongoEntityMapper {
 
       icon,
       preview: translation.preview,
-      metadata: Object.entries(translation.properties).reduce(
-        (acc, [key, propertyValue]) => ({ ...acc, [key]: propertyValue.value }),
-        {}
-      ),
+      metadata: Object.entries(translation.properties).reduce((acc, [key, propertyValue]) => {
+        if (propertyValue.type === 'relationship') {
+          return {
+            ...acc,
+            [key]: MongoRelationshipMetadataMapper.toDBO(propertyValue.value),
+          };
+        }
+
+        return { ...acc, [key]: propertyValue.value };
+      }, {}),
 
       obsoleteMetadata: [], // Todo: handle obsolete metadata
       published: undefined as any,

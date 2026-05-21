@@ -14,7 +14,7 @@ type Props = BaseFileProps & {
   content: FileContents;
 };
 
-export class Thumbnail extends FileWithContents {
+export class Thumbnail extends FileWithContents<Props> {
   readonly entity: string;
 
   readonly language: LanguageISO6391;
@@ -22,17 +22,9 @@ export class Thumbnail extends FileWithContents {
   protected _type = 'thumbnail' as const;
 
   constructor(props: Props) {
-    const { entity, language, ...baseProps } = props;
-    super({ ...baseProps, mimetype: baseProps.mimetype ?? 'image/jpeg' });
-    this.entity = entity;
-    this.language = language;
-
-    this.props = {
-      ...this.props,
-      entity: this.entity,
-      language: this.language,
-      content: this.content,
-    } as Props;
+    super({ ...props, mimetype: props.mimetype ?? 'image/jpeg' });
+    this.entity = props.entity;
+    this.language = props.language;
   }
 
   toDTO(): ThumbnailDTO {

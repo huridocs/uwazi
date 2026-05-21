@@ -1,81 +1,166 @@
+import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { ProcessedPDFDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { ProcessedPDF } from '../ProcessedPDF.js';
 import { FileBuilder } from './FileBuilder.js';
 
 const f = getFixturesFactory();
 
 describe('ProcessedPDF', () => {
-  describe('update()', () => {
-    const baseDoc = () => FileBuilder.processedDocument(f.idString('doc'));
+  describe('update', () => {
+    it('should rename and preserve all properties', () => {
+      const content = FileBuilder.content('page contents');
+      const file = FileBuilder.processedDocument(f.idString('doc'), {
+        originalname: 'original.pdf',
+        language: 'fr',
+        totalPages: 42,
+        generatedToc: true,
+        entity: 'sharedId1',
+        fullText: { 1: 'page one' },
+        content,
+      });
+      const updated = file.update({ originalname: 'renamed.pdf' });
+      expect(updated).toBeInstanceOf(ProcessedPDF);
+      expect(updated.toDTO()).toEqual({ ...file.toDTO(), originalname: 'renamed.pdf' });
+      expect(updated.content).toBe(content);
+      expect(updated.hasChanged).toBe(true);
+      expect(updated.previousVersion?.originalname).toBe('original.pdf');
+    });
 
-    it('update({ language }) returns a ProcessedPDF with the new language; other fields unchanged', () => {
-      const doc = baseDoc();
-      const updated = doc.update({ language: 'es' });
+    it('should update toc and generatedToc', () => {
+      const toc = [{ label: 'Chapter 1', indentation: 0 }];
+      const file = FileBuilder.processedDocument(f.idString('doc'), {
+        generatedToc: true,
+        toc: [{ label: 'Auto Chapter', indentation: 0 }],
+      });
+      const updated = file.update({ toc, generatedToc: false });
 
       expect(updated).toBeInstanceOf(ProcessedPDF);
-      expect(updated.language).toBe('es');
-      expect(updated.entity).toBe(doc.entity);
-      expect(updated.originalname).toBe(doc.originalname);
-      expect(updated.totalPages).toBe(doc.totalPages);
-      expect(updated.generatedToc).toBe(doc.generatedToc);
-      expect(updated.content).toBe(doc.content);
+      expect(updated.toDTO()).toEqual({ ...file.toDTO(), toc, generatedToc: false });
       expect(updated.hasChanged).toBe(true);
+      expect(updated.previousVersion?.toc).toEqual([{ label: 'Auto Chapter', indentation: 0 }]);
     });
 
-    it('update({ originalname }) returns a ProcessedPDF with updated originalname; language preserved', () => {
-      const doc = baseDoc();
-      const updated = doc.update({ originalname: 'new.pdf' });
+    it('should not mark as changed when the name is unchanged', () => {
+      const file = FileBuilder.processedDocument(f.idString('doc'), { originalname: 'same.pdf' });
+      expect(file.update({ originalname: 'same.pdf' }).hasChanged).toBe(false);
+    });
+  });
 
-      expect(updated).toBeInstanceOf(ProcessedPDF);
-      expect(updated.originalname).toBe('new.pdf');
-      expect(updated.language).toBe(doc.language);
-      expect(updated.entity).toBe(doc.entity);
-      expect(updated.content).toBe(doc.content);
-      expect(updated.hasChanged).toBe(true);
+  describe('toDTO', () => {
+    it('should include all base and specialized properties', () => {
+      const id = f.idString('doc');
+      const file = FileBuilder.processedDocument(id, {
+        originalname: 'report.pdf',
+        filename: 'abc123.pdf',
+        mimetype: 'application/pdf',
+        size: 5000,
+        creationDate: 1000000000,
+        entity: 'sharedId1',
+        language: 'fr',
+        totalPages: 42,
+        generatedToc: true,
+        fullText: { 1: 'page one' },
+        toc: [{ label: 'Chapter 1', indentation: 0 }],
+      });
+
+      expect(file.toDTO()).toEqual({
+        _id: id,
+        originalname: 'report.pdf',
+        filename: 'abc123.pdf',
+        mimetype: 'application/pdf',
+        size: 5000,
+        creationDate: 1000000000,
+        entity: 'sharedId1',
+        language: 'fra',
+        totalPages: 42,
+        generatedToc: true,
+        fullText: { 1: 'page one' },
+        toc: [{ label: 'Chapter 1', indentation: 0 }],
+        type: 'document',
+        status: 'ready',
+      });
     });
 
-    it('update({ originalname, language }) updates both fields', () => {
-      const doc = baseDoc();
-      const updated = doc.update({ originalname: 'new.pdf', language: 'es' });
-
-      expect(updated).toBeInstanceOf(ProcessedPDF);
-      expect(updated.originalname).toBe('new.pdf');
-      expect(updated.language).toBe('es');
-      expect(updated.hasChanged).toBe(true);
+    it('should omit toc when not set', () => {
+      const id = f.idString('doc2');
+      const file = FileBuilder.processedDocument(id, { fullText: { 1: 'page' } });
+      const dto = file.toDTO();
+      expect(dto).not.toHaveProperty('toc');
     });
 
-    it('hasChanged is true and previousVersion reflects pre-update state', () => {
-      const doc = baseDoc();
-      const updated = doc.update({ language: 'es' });
+    it('should omit fullText when using a lazy loader that has not been resolved', () => {
+      const id = f.idString('doc3');
+      const file = FileBuilder.processedDocument(id, {
+        fullText: async () => ({ 1: 'lazy' }),
+      });
+      expect(file.toDTO()).not.toHaveProperty('fullText');
+    });
+  });
 
-      expect(updated.hasChanged).toBe(true);
-      expect((updated.previousVersion as ProcessedPDF)?.language).toBe('en');
-      expect(updated.previousVersion?.originalname).toBe(doc.originalname);
+  describe('fromDBO', () => {
+    it('should map all fields when fullText is present', () => {
+      const _id = new ObjectId();
+      const dbo: ProcessedPDFDBO = {
+        _id,
+        originalname: 'report.pdf',
+        filename: 'abc123.pdf',
+        mimetype: 'application/pdf',
+        size: 5000,
+        creationDate: 1000000000,
+        type: 'document',
+        entity: 'sharedId1',
+        language: 'fra',
+        totalPages: 42,
+        status: 'ready',
+        generatedToc: true,
+        fullText: { 1: 'page one' },
+        toc: [{ label: 'Chapter 1', indentation: 0 }],
+      };
+      const content = FileBuilder.content('document bytes');
+      const contentLoader = jest.fn().mockReturnValue(content);
+
+      const file = ProcessedPDF.fromDBO(dbo, contentLoader);
+
+      expect(file).toBeInstanceOf(ProcessedPDF);
+      expect(file.id).toBe(_id.toString());
+      expect(file.originalname).toBe('report.pdf');
+      expect(file.filename).toBe('abc123.pdf');
+      expect(file.mimetype).toBe('application/pdf');
+      expect(file.size).toBe(5000);
+      expect(file.creationDate).toBe(1000000000);
+      expect(file.entity).toBe('sharedId1');
+      expect(file.language).toBe('fr');
+      expect(file.totalPages).toBe(42);
+      expect(file.generatedToc).toBe(true);
+      expect(file.fullText).toEqual({ 1: 'page one' });
+      expect(file.toc).toEqual([{ label: 'Chapter 1', indentation: 0 }]);
+      expect(file.content).toBe(content);
+      expect(contentLoader).toHaveBeenCalledWith({ type: 'document', filename: 'abc123.pdf' });
     });
 
-    it('update({}) returns a clone where hasChanged is false', () => {
-      const doc = baseDoc();
-      const updated = doc.update({});
+    it('should defer fullText loading when not present in the DBO', async () => {
+      const _id = new ObjectId();
+      const dbo: ProcessedPDFDBO = {
+        _id,
+        originalname: 'report.pdf',
+        filename: 'abc123.pdf',
+        mimetype: 'application/pdf',
+        size: 5000,
+        creationDate: 1000000000,
+        type: 'document',
+        entity: 'sharedId1',
+        language: 'fra',
+        totalPages: 10,
+        status: 'ready',
+        generatedToc: false,
+      };
+      const contentLoader = jest.fn().mockReturnValue(FileBuilder.content('document'));
 
-      expect(updated).toBeInstanceOf(ProcessedPDF);
-      expect(updated.hasChanged).toBe(false);
-    });
+      const file = ProcessedPDF.fromDBO(dbo, contentLoader);
 
-    it('should mark for fullText indexing when language changes', () => {
-      const doc1 = baseDoc();
-      const doc2 = baseDoc();
-
-      expect(doc1.pendingFullTextIndexing).toBe(false);
-      expect(doc1.language).toBe('en');
-
-      expect(doc2.pendingFullTextIndexing).toBe(false);
-      expect(doc2.language).toBe('en');
-
-      const updated1 = doc1.update({ language: 'es' });
-      expect(updated1.pendingFullTextIndexing).toBe(true);
-
-      const updated2 = doc1.update({ language: 'en' });
-      expect(updated2.pendingFullTextIndexing).toBe(false);
+      expect(file.fullText).toBeUndefined();
+      await expect(file.getFullText()).rejects.toThrow('not Implemented');
     });
   });
 

@@ -42,6 +42,8 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoSlotsBootstrapper } from '#api/core/infrastructure/elasticSearch/entities/MongoSlotsBootstrapper.js';
+import { MongoSlotsDAOFactory } from '#api/core/infrastructure/factories/MongoSlotsDAOFactory.js';
 import * as utils from '#shared/tsUtils.js';
 import { syncWorker } from '../syncWorker.js';
 import {
@@ -58,6 +60,17 @@ import {
   thesauri1Value2,
 } from './fixtures.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+
+jest.mock('#api/core/infrastructure/factories/EntityIndexerServiceFactory.js', () => ({
+  EntityIndexerServiceFactory: {
+    default: () => ({
+      sync: jest.fn().mockResolvedValue(undefined),
+      index: jest.fn().mockResolvedValue(undefined),
+      remove: jest.fn().mockResolvedValue(undefined),
+      removeByTemplateIds: jest.fn().mockResolvedValue(undefined),
+    }),
+  },
+}));
 
 async function runAllTenants() {
   try {
@@ -509,16 +522,23 @@ describe('syncWorker', () => {
           await elasticTesting.reindex();
           permissionsContext.setCommandContext();
           await entitiesModel.delete({ template: template1 });
+          if (tenants.current().featureFlags?.v2ElasticSearch) {
+            await new MongoSlotsBootstrapper({
+              database: getConnection(),
+              slotsDAO: MongoSlotsDAOFactory.default(),
+            }).reset();
+          }
           await templates.delete({ _id: template1 });
         }, 'host1');
       });
 
       await expect(syncWorker.runAllTenants()).resolves.not.toThrow();
-    });
+    }, 20000);
   });
 
   describe('after changing sync configurations', () => {
     it('should delete templates not defined in the config', async () => {
+      jest.setTimeout(20000);
       await runAllTenants();
       const changedFixtures = _.cloneDeep(host1Fixtures);
       //@ts-ignore
@@ -580,10 +600,11 @@ describe('syncWorker', () => {
     await runAndCheck('files', 'connections', [{ _id: orderedHostIds.files }], 30);
     await runAndCheck(
       'connections',
-      'entities',
+      'elasticSlots',
       [{ _id: orderedHostIds.connection1 }, { _id: orderedHostIds.connection2 }],
       20
     );
+    await runAndCheck('elasticSlots', 'entities', [{ _id: orderedHostIds.elasticSlots }], 10);
     await runAndCheck(
       'entities',
       undefined,

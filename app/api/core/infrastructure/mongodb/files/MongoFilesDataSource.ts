@@ -70,7 +70,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       if (!files.length) return;
 
       await search.indexEntities(
-        { sharedId: { $in: files.map(f => f.entity) } },
+        { sharedId: { $in: files.filter(f => f.isEntityFile()).map(f => f.entity) } },
         files.some(f => f instanceof ProcessedPDF) ? '+fullText' : undefined
       );
 

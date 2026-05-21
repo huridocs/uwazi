@@ -13,6 +13,18 @@ type fullTextProp = { [k: string]: string };
 
 type fullTextLoader = fullTextProp | (() => Promise<fullTextProp>);
 
+type TableOfContent = {
+  selectionRectangles?: {
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+    page?: string;
+  }[];
+  label?: string;
+  indentation?: number;
+};
+
 type Props = BaseFileProps & {
   entity: string;
   content: FileContents;
@@ -20,6 +32,7 @@ type Props = BaseFileProps & {
   totalPages: number;
   generatedToc: boolean;
   fullText: fullTextLoader;
+  toc?: TableOfContent[];
 };
 
 const SpecializedSchema = z.object({
@@ -29,7 +42,7 @@ const SpecializedSchema = z.object({
   generatedToc: z.boolean().optional().default(false),
 });
 
-export class ProcessedPDF extends FileWithContents {
+export class ProcessedPDF extends FileWithContents<Props> {
   readonly entity: string;
 
   protected _type = 'document' as const;
@@ -39,6 +52,8 @@ export class ProcessedPDF extends FileWithContents {
   readonly totalPages: number;
 
   readonly generatedToc: boolean;
+
+  readonly toc?: TableOfContent[];
 
   public fullText?: fullTextProp;
 
@@ -55,37 +70,16 @@ export class ProcessedPDF extends FileWithContents {
   }
 
   constructor(props: Props) {
-    const { entity, language, totalPages, fullText, generatedToc, ...baseProps } = props;
-    SpecializedSchema.parse({ entity, language, totalPages, generatedToc });
-    super(baseProps);
-    this.language = language;
-    this.totalPages = totalPages;
-    this.fullTextLoader = fullText;
-    this.generatedToc = generatedToc;
-    this.entity = entity;
-    if (typeof fullText !== 'function') {
-      this.fullText = fullText;
+    super(props);
+    this.language = props.language;
+    this.totalPages = props.totalPages;
+    this.fullTextLoader = props.fullText;
+    this.generatedToc = props.generatedToc;
+    this.toc = props.toc;
+    this.entity = props.entity;
+    if (typeof props.fullText !== 'function') {
+      this.fullText = props.fullText;
     }
-
-    this.props = {
-      ...this.props,
-      entity,
-      language,
-      totalPages,
-      fullText,
-      generatedToc,
-      content: this.content,
-    } as Props;
-  }
-
-  update(props: UpdateProps): ProcessedPDF {
-    const changed = this.clone(props) as ProcessedPDF;
-
-    if (this.language !== changed.language) {
-      changed.markForFullTextIndexing();
-    }
-
-    return changed;
   }
 
   async getFullText() {
@@ -103,6 +97,7 @@ export class ProcessedPDF extends FileWithContents {
       language: LanguageUtils.fromISO639_1(this.language).ISO639_3,
       ...(this.fullText ? { fullText: this.fullText } : {}),
       generatedToc: this.generatedToc,
+      ...(this.toc !== undefined ? { toc: this.toc } : {}),
       type: 'document',
       status: 'ready',
     };
@@ -121,8 +116,9 @@ export class ProcessedPDF extends FileWithContents {
           throw new Error('not Implemented');
         }),
       generatedToc: dbo.generatedToc,
+      toc: dbo.toc,
     });
   }
 }
 
-export type { fullTextProp };
+export type { fullTextProp, TableOfContent };

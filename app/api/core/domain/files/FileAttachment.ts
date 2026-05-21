@@ -7,17 +7,14 @@ import { FileContents } from './FileContents.js';
 import { FileWithContents } from './FileWithContents.js';
 
 type Props = BaseFileProps & { entity: string; content: FileContents };
-export class FileAttachment extends FileWithContents {
+export class FileAttachment extends FileWithContents<Props> {
   readonly entity: string;
 
   protected _type = 'attachment' as const;
 
   constructor(props: Props) {
-    const { entity, ...baseProps } = props;
-    super(baseProps);
-    this.entity = entity;
-
-    this.props = { ...this.props, entity };
+    super(props);
+    this.entity = props.entity;
   }
 
   static fromDBO(dbo: FileAttachmentDBO, contentLoader: FileContentLoader) {

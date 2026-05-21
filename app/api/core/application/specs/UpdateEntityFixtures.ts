@@ -187,7 +187,10 @@ const fixtures: DBFixture = {
       'related_entity',
       'Related Template',
       {},
-      { title: 'Related Entity' },
+      {
+        title: 'Related Entity',
+        icon: { _id: 'related_entity_icon', label: 'Related Entity Icon', type: 'img' },
+      },
       {
         en: {
           title: 'Related Entity EN',
@@ -263,6 +266,14 @@ const fixtures: DBFixture = {
                 inheritedType: 'text',
                 inheritedValue: [factory.metadataValue('Related Text EN')],
               },
+              {
+                value: 'related_entity_2',
+                label: 'Related Entity 2 EN',
+                type: 'entity',
+                inheritedType: 'text',
+                inheritedValue: [factory.metadataValue('Related Text 2 EN')],
+                icon: { _id: 'stale_icon', label: 'Stale Icon', type: 'img' },
+              },
             ],
             nested: [
               factory.metadataValue({
@@ -307,6 +318,14 @@ const fixtures: DBFixture = {
                 inheritedType: 'text',
                 inheritedValue: [factory.metadataValue('Related Text PT')],
               },
+              {
+                value: 'related_entity_2',
+                label: 'Related Entity 2 PT',
+                type: 'entity',
+                inheritedType: 'text',
+                inheritedValue: [factory.metadataValue('Related Text 2 PT')],
+                icon: { _id: 'stale_icon', label: 'Stale Icon', type: 'img' },
+              },
             ],
             nested: [
               factory.metadataValue({
@@ -340,7 +359,7 @@ const fixtures: DBFixture = {
       entity: 'entity1',
       type: 'thumbnail',
       filename: `${factory.id('entity1_doc1').toHexString()}.jpg`,
-      language: 'en',
+      language: 'eng',
       mimetype: 'image/jpeg',
       size: 10000,
       creationDate: 1609459200000,
@@ -359,7 +378,7 @@ const fixtures: DBFixture = {
       entity: 'entity1',
       type: 'thumbnail',
       filename: `${factory.id('entity1_doc2').toHexString()}.jpg`,
-      language: 'en',
+      language: 'eng',
       mimetype: 'image/jpeg',
       size: 12000,
       creationDate: 1609459200000,
@@ -367,7 +386,6 @@ const fixtures: DBFixture = {
     factory.attachment('entity1_attach1', {
       entity: 'entity1',
       originalname: 'Attachment 1.txt',
-      language: 'en',
       mimetype: 'text/plain',
       size: 5000,
       creationDate: 1609459200000,
