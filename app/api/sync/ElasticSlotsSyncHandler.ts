@@ -23,36 +23,37 @@ export class ElasticSlotsSyncHandler
   async save(document: Partial<SlotDocument>): Promise<SlotDocument> {
     const { _id, ...rest } = document as SlotDocument;
     if (!_id) throw new Error('ElasticSlotsSyncHandler: document._id is required');
-    await this.getCollection().replaceOne({ _id }, { _id, ...rest } as SlotDocument, {
+    const id = _id instanceof ObjectId ? _id : new ObjectId(_id as unknown as string);
+    await this.getCollection().replaceOne({ _id: id }, { _id: id, ...rest } as SlotDocument, {
       upsert: true,
     });
     MongoSlotsDAO.clearCache();
-    return this.getCollection().findOne({ _id }) as Promise<SlotDocument>;
+    return this.getCollection().findOne({ _id: id }) as Promise<SlotDocument>;
   }
 
   async saveMultiple(documents: Partial<SlotDocument>[]): Promise<SlotDocument[]> {
     if (documents.length === 0) return [];
 
+    const ids = documents.map(doc => {
+      const rawId = (doc as SlotDocument)._id;
+      if (!rawId) throw new Error('ElasticSlotsSyncHandler: document._id is required');
+      return rawId instanceof ObjectId ? rawId : new ObjectId(rawId as unknown as string);
+    });
+
     await this.getCollection().bulkWrite(
-      documents.map(doc => {
-        const { _id, ...rest } = doc as SlotDocument;
-        if (!_id) throw new Error('ElasticSlotsSyncHandler: document._id is required');
+      documents.map((doc, i) => {
+        const { _id: _ignored, ...rest } = doc as SlotDocument;
+        const id = ids[i];
         return {
           replaceOne: {
-            filter: { _id },
-            replacement: { _id, ...rest } as SlotDocument,
+            filter: { _id: id },
+            replacement: { _id: id, ...rest } as SlotDocument,
             upsert: true,
           },
         };
       })
     );
     MongoSlotsDAO.clearCache();
-
-    const ids = documents.map(doc => {
-      const id = (doc as SlotDocument)._id;
-      if (!id) throw new Error('ElasticSlotsSyncHandler: document._id is required');
-      return id;
-    });
 
     return this.getCollection()
       .find({ _id: { $in: ids } })
