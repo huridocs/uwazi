@@ -3,6 +3,7 @@ import { Square3Stack3DIcon, DocumentIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { Entity, FileType } from '#V2/api/entities/types.js';
 import { formatReferences } from '#V2/formatters/index.js';
+import { EntityReference } from '#V2/formatters/relationships/types.js';
 import { Cluster, Point } from './Components/index.js';
 import { groupReferences, groupDocumentReferences } from './groupReferences.js';
 
@@ -10,9 +11,15 @@ type ReferencesDisplayProps = {
   entity: Entity;
   document: FileType;
   currentPage?: number;
+  onPointClick?: (reference: EntityReference) => void;
 };
 
-const ReferencesDisplay = ({ entity, document, currentPage }: ReferencesDisplayProps) => {
+const ReferencesDisplay = ({
+  entity,
+  document,
+  currentPage,
+  onPointClick,
+}: ReferencesDisplayProps) => {
   const [fullMode, setFullMode] = useState(true);
   const markerLayerRef = useRef<HTMLDivElement>(null);
   const [markerLayerHeight, setMarkerLayerHeight] = useState(0);
@@ -41,7 +48,7 @@ const ReferencesDisplay = ({ entity, document, currentPage }: ReferencesDisplayP
   const referencesGroups = useMemo(() => groupReferences(formatReferences(entity)), [entity]);
 
   const documentClusters = useMemo(
-    () => groupDocumentReferences(referencesGroups, document.totalPages!),
+    () => groupDocumentReferences(referencesGroups, document.totalPages),
     [document, referencesGroups]
   );
 
@@ -78,21 +85,55 @@ const ReferencesDisplay = ({ entity, document, currentPage }: ReferencesDisplayP
                 const position = element.position * markerLayerHeight;
 
                 if (element.type === 'cluster') {
-                  return <Cluster key={key} position={position} references={element.references} />;
+                  return (
+                    <Cluster
+                      key={key}
+                      position={position}
+                      references={element.references}
+                      onPointClick={reference => {
+                        onPointClick?.(reference);
+                      }}
+                    />
+                  );
                 }
 
-                return <Point key={key} position={position} reference={element.references[0]} />;
+                return (
+                  <Point
+                    key={key}
+                    position={position}
+                    reference={element.references[0]}
+                    onClick={reference => {
+                      onPointClick?.(reference);
+                    }}
+                  />
+                );
               })
             : pageClusters.map((element, index) => {
                 const key = `page-${element.page}-${element.top}-${index}`;
 
                 if (element.type === 'cluster') {
                   return (
-                    <Cluster key={key} position={element.top} references={element.references} />
+                    <Cluster
+                      key={key}
+                      position={element.top}
+                      references={element.references}
+                      onPointClick={reference => {
+                        onPointClick?.(reference);
+                      }}
+                    />
                   );
                 }
 
-                return <Point key={key} position={element.top} reference={element.reference} />;
+                return (
+                  <Point
+                    key={key}
+                    position={element.top}
+                    reference={element.reference}
+                    onClick={reference => {
+                      onPointClick?.(reference);
+                    }}
+                  />
+                );
               })}
         </div>
       </div>
