@@ -33,7 +33,7 @@ class UpdateFile extends AbstractUseCase<Input, Output, Deps> {
       throw createError('file not found', 404);
     }
 
-    const updatedFile = file.update<ProcessedPDFProps>({
+    const updatedFile = file.update({
       originalname: input.originalname,
       language: input.language,
       toc: input.toc,

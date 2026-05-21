@@ -37,7 +37,7 @@ type Props = BaseFileProps & {
 
 const Schema = z.object({
   entity: z.string().trim().min(1),
-  language: z.string().trim().min(2).max(2) as z.ZodType<LanguageISO6391>,
+  language: z.string().trim().min(2) as z.ZodType<LanguageISO6391>,
   totalPages: z.number().int().min(0).default(0),
   generatedToc: z.boolean().default(false),
 });

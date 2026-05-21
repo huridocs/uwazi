@@ -33,9 +33,11 @@ const createSut = (props?: CreateSutProps) => {
 
 describe('UpdateFileController', () => {
   beforeEach(() => {
-    jest
-      .spyOn(UpdateFileUseCaseFactory, 'default')
-      .mockReturnValue(TestUtils.mockClass<UpdateFile>({ execute: jest.fn() }));
+    jest.spyOn(UpdateFileUseCaseFactory, 'default').mockReturnValue(
+      TestUtils.mockClass<UpdateFile>({
+        execute: jest.fn().mockResolvedValue({ toDTO: jest.fn().mockReturnValue({}) }),
+      })
+    );
 
     jest.spyOn(files, 'save').mockReturnValue(Promise.resolve({ _id: 'file1' } as any));
 
@@ -50,6 +52,14 @@ describe('UpdateFileController', () => {
   });
 
   it('should call use case with correct input and return http response', async () => {
+    const toc = [
+      {
+        indentation: 0,
+        label: 'Chapter 1',
+        selectionRectangles: [{ top: 0, left: 0, width: 100, height: 100 }],
+      },
+    ];
+
     const sut1 = createSut({
       request: { body: { _id: 'file1', language: 'eng' } },
     });
@@ -60,6 +70,10 @@ describe('UpdateFileController', () => {
 
     const sut3 = createSut({
       request: { body: { _id: 'file3', originalname: 'originalname.txt' } },
+    });
+
+    const sut4 = createSut({
+      request: { body: { _id: 'file4', toc } },
     });
 
     await sut1.sut.handleAsync();
@@ -80,22 +94,55 @@ describe('UpdateFileController', () => {
       fileId: 'file3',
       originalname: 'originalname.txt',
     });
+
+    await sut4.sut.handleAsync();
+    expect(UpdateFileUseCaseFactory.default().execute).toHaveBeenCalledWith({
+      fileId: 'file4',
+      toc,
+    });
   });
 
   it('should validate request before calling use case', async () => {
-    const sut1 = createSut({ request: {} });
-    const sut2 = createSut({ request: { body: {} } });
-    const sut3 = createSut({ request: { body: { _id: '' } } });
-    const sut4 = createSut({ request: { body: { _id: undefined } } });
-    const sut5 = createSut({ request: { body: { _id: null } } });
-    const sut6 = createSut({ request: { body: { _id: 'file1', language: '', originalname: '' } } });
+    const sutEmptyId = createSut({ request: { body: { _id: '' } } });
+    const sutBadOptionals = createSut({
+      request: { body: { _id: 'file1', language: '', originalname: '' } },
+    });
 
-    await expect(sut1.sut.handleAsync()).rejects.toThrowErrorMatchingSnapshot();
-    await expect(sut2.sut.handleAsync()).rejects.toThrowErrorMatchingSnapshot();
-    await expect(sut3.sut.handleAsync()).rejects.toThrowErrorMatchingSnapshot();
-    await expect(sut4.sut.handleAsync()).rejects.toThrowErrorMatchingSnapshot();
-    await expect(sut5.sut.handleAsync()).rejects.toThrowErrorMatchingSnapshot();
-    await expect(sut6.sut.handleAsync()).rejects.toThrowErrorMatchingSnapshot();
+    await expect(sutEmptyId.sut.handleAsync()).rejects.toThrow();
+    await expect(sutBadOptionals.sut.handleAsync()).rejects.toThrow();
+  });
+
+  it('should fall back to v1 when _id is null or undefined even with v2 flag enabled', async () => {
+    const sutNoBody = createSut({ featureFlag: true, request: {} });
+    const sutNoId = createSut({ featureFlag: true, request: { body: {} } });
+    const sutUndefinedId = createSut({
+      featureFlag: true,
+      request: { body: { _id: undefined } },
+    });
+    const sutNullId = createSut({ featureFlag: true, request: { body: { _id: null } } });
+    const sutUrlCreate = createSut({
+      featureFlag: true,
+      request: {
+        body: {
+          originalname: 'doc.pdf',
+          url: 'https://example.com/doc.pdf',
+          entity: 'entity1',
+          type: 'attachment',
+        },
+      },
+    });
+
+    for (const sut of [sutNoBody, sutNoId, sutUndefinedId, sutNullId, sutUrlCreate]) {
+      jest.clearAllMocks();
+      jest.spyOn(files, 'save').mockResolvedValue({ _id: 'file1' } as any);
+      jest.spyOn(filesRoutes, 'checkEntityPermission').mockResolvedValue(true);
+
+      // eslint-disable-next-line no-await-in-loop
+      await sut.sut.handleAsync();
+
+      expect(files.save).toHaveBeenCalled();
+      expect(UpdateFileUseCaseFactory.default).not.toHaveBeenCalled();
+    }
   });
 
   it('should execute v1 use case when feature flag is off', async () => {

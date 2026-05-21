@@ -9,15 +9,32 @@ import { createError } from '#api/utils/index.js';
 import { files } from '#api/files/files.js';
 import { checkEntityPermission } from '#api/files/routes.js';
 
+const TocEntrySchema = z.object({
+  label: z.string().optional(),
+  indentation: z.number().optional(),
+  selectionRectangles: z
+    .array(
+      z.object({
+        top: z.number(),
+        left: z.number(),
+        width: z.number(),
+        height: z.number(),
+        page: z.string().optional(),
+      })
+    )
+    .optional(),
+});
+
 const RequestSchema = z.object({
   _id: z.string().min(1),
   originalname: z.string().min(1).optional(),
-  language: z.string().min(3).max(3).optional(),
+  language: z.string().min(3).optional(),
+  toc: z.array(TocEntrySchema).optional(),
 });
 
 class UpdateFileController extends AbstractController {
   protected async handle(): Promise<void> {
-    if (!ExecutionContext.tenant.featureFlags?.v2UpdateFile) {
+    if (!ExecutionContext.tenant.featureFlags?.v2UpdateFile || this.request.body?._id == null) {
       if (
         !(await checkEntityPermission(
           this.request.body,
@@ -43,6 +60,7 @@ class UpdateFileController extends AbstractController {
         language: request.language
           ? LanguageUtils.fromISO639_3(request.language).ISO639_1
           : undefined,
+        toc: request.toc,
       };
 
       const output = await UpdateFileUseCaseFactory.default().execute(input);
