@@ -30,7 +30,11 @@ const ReferencesDisplayComponent = ({ locale }: { locale: 'en' | 'es' }) => {
                 <PDF fileUrl="/sample.pdf" />
               </div>
               <div className="w-1/6">
-                <ReferencesDisplay entity={apiEntity} currentPage={1} />
+                <ReferencesDisplay
+                  entity={apiEntity}
+                  document={apiEntity.documents![0]}
+                  currentPage={1}
+                />
               </div>
             </div>
           </div>
