@@ -6,7 +6,7 @@ import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/da
 import { CreateTemplateUseCase } from '#api/core/application/CreateTemplate.js';
 import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService.js';
 import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS.js';
-import { LegacyPageService } from '../mongodb/page/LegacyPageService.js';
+import { LegacyPageServiceFactory } from '#api/pages/infrastructure/factories/LegacyPageServiceFactory.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 
 class CreateTemplateUseCaseFactory {
@@ -17,7 +17,7 @@ class CreateTemplateUseCaseFactory {
     const translationService = new LegacyTranslationService();
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const idGenerator = IdGeneratorFactory.default();
-    const pageService = new LegacyPageService();
+    const pageService = LegacyPageServiceFactory.default();
     const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
 
     return new CreateTemplateUseCase({

@@ -30,6 +30,19 @@ const getBySharedId = async (sharedId: string, headers?: IncomingHttpHeaders): P
   }
 };
 
+const getBySharedIdForEditor = async (
+  sharedId: string,
+  headers?: IncomingHttpHeaders
+): Promise<Page> => {
+  try {
+    const requestParams = new RequestParams({ sharedId, mode: 'editor' }, headers);
+    const response = await api.get('page', requestParams);
+    return response.json;
+  } catch (e) {
+    return e;
+  }
+};
+
 const save = async (
   page: Page,
   headers?: IncomingHttpHeaders
@@ -52,4 +65,32 @@ const deleteBySharedId = async (sharedId: string, headers?: IncomingHttpHeaders)
   }
 };
 
-export { get, getBySharedId, deleteBySharedId, save };
+const release = async (
+  sharedId: string,
+  release_message: string,
+  headers?: IncomingHttpHeaders
+): Promise<Page | FetchResponseError> => {
+  try {
+    const requestParams = new RequestParams({ sharedId, release_message }, headers);
+    const response = await api.post('pages/release', requestParams);
+    return response.json;
+  } catch (e) {
+    return e;
+  }
+};
+
+const restore = async (
+  sharedId: string,
+  version: number,
+  headers?: IncomingHttpHeaders
+): Promise<Page | FetchResponseError> => {
+  try {
+    const requestParams = new RequestParams({ sharedId, version }, headers);
+    const response = await api.post('pages/restore', requestParams);
+    return response.json;
+  } catch (e) {
+    return e;
+  }
+};
+
+export { get, getBySharedId, getBySharedIdForEditor, deleteBySharedId, save, release, restore };

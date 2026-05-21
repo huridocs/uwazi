@@ -1,72 +1,20 @@
-import ID from '#shared/uniqueID.js';
-import { PageType } from '#shared/types/pageType.js';
-import { validatePage } from '#shared/types/pageSchema.js';
-import date from '#api/utils/date.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { createError } from '#api/utils/index.js';
-import { UwaziFilterQuery } from '#api/odm/index.js';
-import { User } from '#api/users/usersModel.js';
-
-import model from './pagesModel.js';
-import settings from '../settings/index.js';
-
-const assignUserAndDate = (page: PageType, user?: User) => {
-  if (!user) {
-    throw new Error('missing user');
-  }
-  return {
-    ...page,
-    user: user._id,
-    creationDate: date.currentUTC(),
-  };
-};
-
-const entityViewSyncing = async (page: PageType) => {
-  const pageInAllLaguangues = await model.get({ sharedId: page.sharedId }, '_id entityView');
-  const updatedPages = pageInAllLaguangues.map(_id => ({
-    ..._id,
-    entityView: page.entityView || false,
-  }));
-  await model.saveMultiple(updatedPages);
-};
+import { PagesDataSourceFactory } from '#api/pages/infrastructure/factories/PagesDataSourceFactory.js';
+import pagesService from './pagesService.js';
 
 export default {
-  // eslint-disable-next-line max-statements
-  async save(_page: PageType, user?: User, language?: string) {
-    let page: PageType = { ..._page };
+  save: pagesService.save.bind(pagesService),
 
-    await validatePage(page);
+  get: pagesService.get.bind(pagesService),
 
-    if (!page.sharedId) {
-      page = assignUserAndDate(page, user);
-    }
-
-    if (page.sharedId) {
-      await entityViewSyncing(page);
-      return model.save(page);
-    }
-
-    const { languages = [] } = await settings.get();
-    const sharedId = ID();
-    const pages = languages.map(lang => ({
-      ...page,
-      language: lang.key,
-      sharedId,
-    }));
-    await model.saveMultiple(pages);
-    return this.getById(sharedId, language);
-  },
-
-  async get(query: UwaziFilterQuery<PageType>, select?: string) {
-    return model.get(query, select);
-  },
-
-  async getById(sharedId: string, language?: string, select?: string) {
-    const results = await this.get({ sharedId, language }, select);
-    if (!results[0]) {
-      return Promise.reject(createError('Page not found', 404));
-    }
-    return results[0];
+  getById(
+    lookup: Parameters<typeof pagesService.getById>[0],
+    language?: string,
+    mode?: 'editor'
+  ) {
+    return pagesService.getById(lookup, language, mode);
   },
 
   async delete(sharedId: string) {
@@ -84,38 +32,24 @@ export default {
         )
       );
     }
-    return model.delete({ sharedId });
+    return pagesService.delete(sharedId);
   },
 
   async addLanguage(language: string) {
-    const [lanuageTranslationAlreadyExists] = await this.get({ language });
-    if (lanuageTranslationAlreadyExists) {
-      return Promise.resolve();
-    }
-
+    const settings = (await import('../settings/index.js')).default;
     const { languages } = await settings.get();
-
-    const defaultLanguage = languages?.find(l => l.default)?.key;
-
-    const duplicate = async () => {
-      const pages = await this.get({ language: defaultLanguage });
-      const savePages = pages.map(async _page => {
-        const page: PageType = { ..._page, language };
-        delete page._id;
-        delete page.__v;
-        return this.save(page);
-      });
-
-      return Promise.all(savePages);
-    };
-
-    return duplicate();
+    const defaultLanguage = languages?.find(l => l.default)?.key ?? 'en';
+    return pagesService.addLanguage(
+      language as LanguageISO6391,
+      defaultLanguage as LanguageISO6391
+    );
   },
 
-  // TEST!!!
-  async removeLanguage(language: string) {
-    return model.delete({ language });
-  },
+  removeLanguage: pagesService.removeLanguage.bind(pagesService),
 
-  count: model.count.bind(model),
+  count: async () => {
+    const pagesDS = PagesDataSourceFactory.default();
+    const all = await pagesDS.getAll();
+    return all.length;
+  },
 };

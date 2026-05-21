@@ -21,29 +21,31 @@ describe('migration pages-draft-releases', () => {
     expect(migration.delta).toBe(189);
   });
 
-  it('should set draft, releases, markdownSupport and unset legacy fields', async () => {
+  it('should consolidate to locales and page_releases', async () => {
     const page = await db!.collection('pages').findOne({ _id: pageId });
     expect(page).not.toBeNull();
-    expect(page!.draft).toEqual({
+    expect(page!.locales?.en?.draft).toEqual({
       content: '<p>hi</p>',
       script: '/* page script */',
       css: 'body{}',
     });
-    expect(page!.releases).toHaveLength(1);
-    expect(page!.releases[0].version).toBe(1);
-    expect(page!.releases[0].content).toBe('<p>hi</p>');
-    expect(page!.releases[0].release_message).toContain('migration');
-    expect(page!.releases[0].user?.toString()).toBe(userId.toString());
-    expect(page!.releases[0].date).toBe(1000);
+    expect(page!.locales?.en?.title).toBe('Test');
+    expect(page!.releases).toBeUndefined();
+    expect(page!.language).toBeUndefined();
     expect(page!.markdownSupport).toBe(true);
-    expect(page!.disableMarkdown).toBeUndefined();
-    expect(page!.version).toBeUndefined();
-    expect(page!.metadata?.content).toBeUndefined();
+
+    const releases = await db!.collection('page_releases').find({ page: pageId }).toArray();
+    expect(releases).toHaveLength(1);
+    expect(releases[0].version).toBe(1);
+    expect(releases[0].en?.content).toBe('<p>hi</p>');
+    expect(releases[0].release_message).toContain('migration');
+    expect(releases[0].user?.toString()).toBe(userId.toString());
+    expect(releases[0].date).toBe(1000);
   });
 
-  it('should be idempotent', async () => {
+  it('should be idempotent for already migrated pages', async () => {
     await migration.up(db!);
-    const page = await db!.collection('pages').findOne({ _id: pageId });
-    expect(page!.releases).toHaveLength(1);
+    const count = await db!.collection('pages').countDocuments({ sharedId: 'mig-page-1' });
+    expect(count).toBe(1);
   });
 });

@@ -1,5 +1,7 @@
 import type { Application, Request } from 'express';
 
+import { PublishPageReleaseController } from '#api/pages/infrastructure/express/PublishPageReleaseController.js';
+import { RestorePageDraftController } from '#api/pages/infrastructure/express/RestorePageDraftController.js';
 import { validation } from '#api/utils/index.js';
 import needsAuthorization from '../auth/authMiddleware.js';
 import pages from './pages.js';
@@ -50,14 +52,42 @@ export default (app: Application) => {
             slug: {
               type: 'string',
             },
+            mode: {
+              type: 'string',
+              enum: ['editor'],
+            },
           },
+          anyOf: [{ required: ['sharedId'] }, { required: ['slug'] }],
         },
       },
       required: ['query'],
     }),
-    (req: Request<{}, {}, {}, { sharedId: string }>, res, next) => {
-      pages.getById(req.query.sharedId, req.language).then(res.json.bind(res)).catch(next);
+    (
+      req: Request<{}, {}, {}, { sharedId?: string; slug?: string; mode?: 'editor' }>,
+      res,
+      next
+    ) => {
+      pages
+        .getById(
+          { sharedId: req.query.sharedId, slug: req.query.slug },
+          req.language,
+          req.query.mode
+        )
+        .then(res.json.bind(res))
+        .catch(next);
     }
+  );
+
+  app.post(
+    '/api/pages/release',
+    needsAuthorization(['admin']),
+    PublishPageReleaseController.createHandler()
+  );
+
+  app.post(
+    '/api/pages/restore',
+    needsAuthorization(['admin']),
+    RestorePageDraftController.createHandler()
   );
 
   app.delete(

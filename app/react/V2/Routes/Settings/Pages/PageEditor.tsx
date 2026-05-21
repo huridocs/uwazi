@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import {
   Link,
@@ -12,34 +12,50 @@ import {
   useRevalidator,
 } from 'react-router';
 import { useForm } from 'react-hook-form';
+import { useAtomValue } from 'jotai';
 import _ from 'lodash';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import { Translate, t } from '#app/I18N/index.js';
 import * as pagesAPI from '#V2/api/pages/index.js';
 import { Page } from '#V2/shared/types.js';
+import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
-import { Button, CopyValueInput, Tabs, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
-import { CodeEditor } from '#V2/Components/CodeEditor/index.js';
-import { EnableButtonCheckbox, InputField } from '#app/V2/Components/Forms/index.js';
-import { FetchResponseError } from '#shared/JSONRequest.js';
-import type { PageRelease } from '#shared/types/pageType.js';
-import { getPageUrl, getPageDraftUrl } from './components/PageListTable.js';
 import {
-  HTMLNotification,
-  JSNotification,
-  MarkdownDeprecationBanner,
-} from './components/PageEditorComponents.js';
+  Button,
+  CopyValueInput,
+  Tabs,
+  ToggleButton,
+  ConfirmNavigationModal,
+} from '#V2/Components/UI/index.js';
+import { InputField } from '#app/V2/Components/Forms/index.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
+import { getPageDraftUrl } from './components/PageListTable.js';
+import {
+  getPageUrlSlugOnly,
+  getPageUrlWithSharedId,
+} from './components/pageUrls.js';
+import { MarkdownDeprecationBanner } from './components/PageEditorComponents.js';
 import { PageReleaseModal } from './components/PageReleaseModal.js';
 import { PageRestoreModal, type PageRestoreReleaseRow } from './components/PageRestoreModal.js';
+import { PageEditorLanguageSelector } from './components/PageEditorLanguageSelector.js';
+import {
+  PageEditorCssPanel,
+  PageEditorHtmlPanel,
+  PageEditorJavascriptPanel,
+} from './components/PageEditorCodeTabs.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import {
+  buildEditorSavePayload,
+  buildPageEditorFormValues,
+  defaultActiveLocale,
+  newPageDefaultTitle,
+} from './pageEditorForm.js';
 
 const pageEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params }) => {
     if (params.sharedId) {
-      const page = await pagesAPI.getBySharedId(params.sharedId, headers);
-
-      return page;
+      return pagesAPI.getBySharedIdForEditor(params.sharedId, headers);
     }
 
     return {};
@@ -49,45 +65,56 @@ const PageEditor = () => {
   const page = useLoaderData() as Page;
   const revalidator = useRevalidator();
   const navigate = useNavigate();
+  const { languages: collectionLanguages = [] } = useAtomValue(settingsAtom);
+  const languages = collectionLanguages;
+  const defaultLangKey = defaultActiveLocale(languages);
+
+  const [activeLocale, setActiveLocale] = useState(defaultLangKey);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [releaseModalOpen, setReleaseModalOpen] = useState(false);
   const [restoreModalOpen, setRestoreModalOpen] = useState(false);
   const [releaseMessage, setReleaseMessage] = useState('');
   const [restoreSelected, setRestoreSelected] = useState<string[]>([]);
   const [editorLayoutKey, setEditorLayoutKey] = useState(0);
+  const slugManuallyEdited = useRef<Record<string, boolean>>({});
+  const isNewPage = !page.sharedId;
   const { notify } = useRequestStatus();
 
-  const formValues: Page = useMemo(() => {
-    const p = page as Page;
-    const draftContent = p.draft?.content ?? p.metadata?.content ?? '';
-    const draftScript = p.draft?.script ?? p.metadata?.script ?? '';
-    const draftCss = p.draft?.css ?? p.metadata?.css ?? '';
-    return {
-      ...p,
-      title: p.title ?? t('System', 'New page', null, false),
-      metadata: {
-        ...p.metadata,
-        content: draftContent,
-        script: draftScript,
-        css: draftCss,
-      },
-      draft: {
-        content: draftContent,
-        script: draftScript,
-        css: draftCss,
-      },
-      releases: p.releases ?? [],
-    };
-  }, [page]);
+  const languagesSignature = useMemo(
+    () => languages.map(l => l.key).sort().join(','),
+    [languages]
+  );
+
+  const pageLoaderSignature = useMemo(
+    () =>
+      JSON.stringify({
+        sharedId: page.sharedId,
+        _id: page._id,
+        entityView: page.entityView,
+        markdownSupport: page.markdownSupport,
+        locales: page.locales,
+        releasesByLocale: page.releasesByLocale,
+      }),
+    [page]
+  );
+
+  const serverFormSeed = useMemo(
+    () => buildPageEditorFormValues(page, languages),
+    [pageLoaderSignature, languagesSignature, page, languages]
+  );
+
+  useEffect(() => {
+    setActiveLocale(defaultLangKey);
+  }, [defaultLangKey, page.sharedId]);
 
   const releaseRows: PageRestoreReleaseRow[] = useMemo(
     () =>
-      (page.releases ?? []).map(r => ({
+      (page.releasesByLocale?.[activeLocale] ?? page.releases ?? []).map(r => ({
         version: r.version,
         date: r.date,
         release_message: r.release_message,
       })),
-    [page.releases]
+    [page.releasesByLocale, page.releases, activeLocale]
   );
 
   useEffect(() => {
@@ -106,13 +133,62 @@ const PageEditor = () => {
     getValues,
     setValue,
     handleSubmit,
+    reset,
   } = useForm({
-    values: formValues,
+    defaultValues: serverFormSeed,
   });
+
+  const formSharedId = watch('sharedId');
+
+  // Re-sync form when loader data changes (after revalidate or navigation), not from save response.
+  useEffect(() => {
+    if (languages.length === 0) {
+      return;
+    }
+    // After first save, navigate is pending — loader still has {}; skip until loader catches up.
+    if (!page.sharedId && formSharedId) {
+      return;
+    }
+    reset(buildPageEditorFormValues(page, languages));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageLoaderSignature, languagesSignature, formSharedId, reset]);
 
   const markdownSupport = watch('markdownSupport') === true;
   const showMarkdownDeprecation = !!watch('sharedId') && markdownSupport;
+  const entityView = watch('entityView') === true;
+  const pageSharedId = watch('sharedId') || page.sharedId;
+  const pageSlug = watch(`locales.${activeLocale}.slug`) || 'page';
+  const showPageUrlPreviews = !entityView && !!pageSlug;
   const isDirty = !!Object.keys(dirtyFields).length;
+  const activeLocaleTitle = watch(`locales.${activeLocale}.title`);
+  const headerTitle =
+    activeLocaleTitle?.trim() !== ''
+      ? activeLocaleTitle
+      : isNewPage
+        ? newPageDefaultTitle(activeLocale)
+        : '';
+  const localeDraft = watch(`locales.${activeLocale}.draft`) ?? {};
+
+  useEffect(() => {
+    if (page.sharedId) {
+      languages.forEach(lang => {
+        slugManuallyEdited.current[lang.key] = true;
+      });
+    }
+  }, [page.sharedId, languages]);
+
+  const titleValue = watch(`locales.${activeLocale}.title`);
+  useEffect(() => {
+    if (!isNewPage || slugManuallyEdited.current[activeLocale]) {
+      return;
+    }
+    const generatedSlug = _.kebabCase(titleValue ?? '') || 'page';
+    const slugPath = `locales.${activeLocale}.slug` as const;
+    if (getValues(slugPath) !== generatedSlug) {
+      setValue(slugPath, generatedSlug, { shouldDirty: false });
+    }
+  }, [titleValue, isNewPage, activeLocale, getValues, setValue]);
+
   const blocker = useBlocker(isDirty && !isSubmitting);
 
   useEffect(() => {
@@ -135,38 +211,16 @@ const PageEditor = () => {
     }
   };
 
-  const handleRevalidate = async (response: Page) => {
-    if (!page.sharedId) {
-      await navigate(`/${response.language}/settings/pages/edit/${response.sharedId}`, {
-        replace: true,
-      });
-    } else {
-      await revalidator.revalidate();
+  const handleRevalidate = async (saved?: Page) => {
+    if (!page.sharedId && saved?.sharedId) {
+      await navigate(`/settings/pages/edit/${saved.sharedId}`, { replace: true });
+      return;
     }
-  };
-
-  const buildSavePayload = (data: Page): Page => {
-    const payload: Page = { ...data };
-    const d = payload.draft ?? {};
-    const content = d.content ?? payload.metadata?.content ?? '';
-    const script = d.script ?? payload.metadata?.script ?? '';
-    const css = d.css ?? payload.metadata?.css ?? '';
-    payload.metadata = {
-      ...payload.metadata,
-      content,
-      script,
-      css,
-    };
-    payload.draft = { content, script, css };
-    if (!payload.sharedId && payload.markdownSupport !== false) {
-      delete (payload as { markdownSupport?: boolean }).markdownSupport;
-    }
-    return payload;
+    await revalidator.revalidate();
   };
 
   const save = async (data: Page) => {
-    const response = await pagesAPI.save(buildSavePayload(data));
-
+    const response = await pagesAPI.save(buildEditorSavePayload(data));
     return response;
   };
 
@@ -188,8 +242,9 @@ const PageEditor = () => {
     handleSaveNotification(response);
 
     if (!hasErrors) {
-      const draftPath = getPageDraftUrl(response.sharedId!, response.title);
-      const langPrefix = response.language ? `${response.language}/` : '';
+      const slug = response.locales?.[activeLocale]?.slug ?? pageSlug;
+      const draftPath = getPageDraftUrl(response.sharedId!, slug);
+      const langPrefix = `${activeLocale}/`;
       window.open(`${window.location.origin}/${langPrefix}${draftPath}`);
       await handleRevalidate(response);
     }
@@ -201,39 +256,16 @@ const PageEditor = () => {
       return;
     }
     const data = getValues();
-    const saveRes = await save(buildSavePayload(data));
+    const saveRes = await save(data);
     if (saveRes instanceof FetchResponseError) {
       handleSaveNotification(saveRes);
       return;
     }
     const saved = saveRes as Page;
-    const prior = [...(saved.releases ?? [])];
-    const nextVersion = prior.length ? prior[prior.length - 1].version + 1 : 1;
-    const d =
-      saved.draft ??
-      ({
-        content: saved.metadata?.content ?? '',
-        script: saved.metadata?.script ?? '',
-        css: saved.metadata?.css ?? '',
-      } as NonNullable<Page['draft']>);
-    const nextReleases: PageRelease[] = [
-      ...prior,
-      {
-        version: nextVersion,
-        content: d.content ?? '',
-        script: d.script,
-        css: d.css,
-        release_message: message,
-        date: Date.now(),
-      },
-    ];
-    const publishRes = await save(
-      buildSavePayload({
-        ...saved,
-        releases: nextReleases,
-        draft: d,
-      })
-    );
+    if (!saved.sharedId) {
+      return;
+    }
+    const publishRes = await pagesAPI.release(saved.sharedId, message);
     if (publishRes instanceof FetchResponseError) {
       notify('error', t('System', 'An error occurred', null, false), undefined, publishRes.message);
       await revalidator.revalidate();
@@ -242,7 +274,7 @@ const PageEditor = () => {
     notify('success', t('System', 'Page published successfully.', null, false));
     setReleaseModalOpen(false);
     setReleaseMessage('');
-    await handleRevalidate(publishRes as Page);
+    await revalidator.revalidate();
   };
 
   const handleRestoreConfirm = async () => {
@@ -250,28 +282,11 @@ const PageEditor = () => {
     if (!versionStr) {
       return;
     }
-    const base = getValues();
-    const releases = base.releases ?? [];
-    const rel = releases.find(r => String(r.version) === versionStr);
-    if (!rel) {
-      notify(
-        'error',
-        t('System', 'An error occurred', null, false),
-        undefined,
-        t('System', 'Version not found', null, false)
-      );
+    const sharedId = getValues('sharedId');
+    if (!sharedId) {
       return;
     }
-    const restoreRes = await save(
-      buildSavePayload({
-        ...base,
-        draft: {
-          content: rel.content ?? '',
-          script: rel.script ?? '',
-          css: rel.css ?? '',
-        },
-      })
-    );
+    const restoreRes = await pagesAPI.restore(sharedId, Number(versionStr));
     if (restoreRes instanceof FetchResponseError) {
       notify('error', t('System', 'An error occurred', null, false), undefined, restoreRes.message);
       return;
@@ -283,60 +298,93 @@ const PageEditor = () => {
     setEditorLayoutKey(k => k + 1);
   };
 
-  const canUsePageActions = !watch('entityView') && !!watch('sharedId');
+  const slugField = register(`locales.${activeLocale}.slug`, { required: true });
+  const localeErrors = errors.locales?.[activeLocale];
 
   return (
-    <div className="tw-content" style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
+    <div className="tw-content flex h-full min-h-0 w-full flex-col" style={{ height: '100%' }}>
       <SettingsContent>
         <SettingsContent.Header
           path={new Map([['Pages', '/settings/pages']])}
-          title={watch('title')}
+          title={headerTitle}
         />
 
-        <SettingsContent.Body>
-          <Tabs unmountTabs={false} tabListClassName="md:w-2/3 w-full">
+        <SettingsContent.Body className="flex min-h-0 flex-1 flex-col">
+          <div className="mb-4 flex shrink-0 flex-wrap items-center justify-between gap-2">
+            <div className="min-w-0 flex-1" />
+            <PageEditorLanguageSelector
+              languages={languages}
+              activeLanguage={activeLocale}
+              onChange={setActiveLocale}
+            />
+          </div>
+
+          <Tabs unmountTabs={false} tabListClassName="md:w-2/3 w-full" className="min-h-0 flex-1">
             <Tabs.Tab id="Configuration" label={<Translate>Configuration</Translate>}>
-              <form>
+              <form className="pb-6">
                 <input className="hidden" {...register('sharedId')} />
-                <div className="flex flex-col max-w-2xl gap-4">
+                <div className="flex flex-col max-w-2xl gap-4 pt-2">
                   {showMarkdownDeprecation && (
                     <MarkdownDeprecationBanner
                       onUpgrade={() => setValue('markdownSupport', false, { shouldDirty: true })}
                     />
                   )}
-                  <div className="flex items-center gap-4">
-                    <Translate className="font-bold">
-                      Enable this page to be used as an entity view page:
+                  <ToggleButton
+                    checked={entityView}
+                    onToggle={() => setValue('entityView', !entityView, { shouldDirty: true })}
+                  >
+                    <Translate className="text-sm font-semibold text-ink">
+                      Enable this page to be used as an entity view page
                     </Translate>
-                    <EnableButtonCheckbox
-                      {...register('entityView')}
-                      defaultChecked={page.entityView}
-                    />
-                  </div>
+                  </ToggleButton>
 
                   <InputField
-                    id="title"
+                    id={`title-${activeLocale}`}
                     label={<Translate>Title</Translate>}
-                    {...register('title', { required: true })}
-                    hasErrors={errors.title !== undefined}
-                    errorMessage={errors.title && <Translate>This field is required</Translate>}
-                  />
-
-                  <CopyValueInput
-                    value={
-                      !getValues('entityView') && getValues('sharedId')
-                        ? `/${getPageUrl(getValues('sharedId')!, getValues('title'))}`
-                        : ''
+                    {...register(`locales.${activeLocale}.title`, { required: true })}
+                    hasErrors={localeErrors?.title !== undefined}
+                    errorMessage={
+                      localeErrors?.title && <Translate>This field is required</Translate>
                     }
-                    label={<Translate>URL</Translate>}
-                    className="w-full mb-4"
-                    id="page-url"
                   />
 
-                  {getValues('sharedId') && !getValues('entityView') && (
+                  <InputField
+                    id={`slug-${activeLocale}`}
+                    label={<Translate>Slug</Translate>}
+                    {...slugField}
+                    onChange={event => {
+                      slugManuallyEdited.current[activeLocale] = true;
+                      slugField.onChange(event);
+                    }}
+                    hasErrors={localeErrors?.slug !== undefined}
+                    errorMessage={
+                      localeErrors?.slug && <Translate>This field is required</Translate>
+                    }
+                  />
+
+                  {showPageUrlPreviews && (
+                    <>
+                      {pageSharedId && (
+                        <CopyValueInput
+                          value={`/${activeLocale}/${getPageUrlWithSharedId(pageSharedId, pageSlug)}`}
+                          label={<Translate>URL (with ID)</Translate>}
+                          className="w-full"
+                          id={`page-url-with-id-${activeLocale}`}
+                        />
+                      )}
+                      <CopyValueInput
+                        value={`/${activeLocale}/${getPageUrlSlugOnly(pageSlug)}`}
+                        label={<Translate>URL (slug only)</Translate>}
+                        className="w-full"
+                        id={`page-url-slug-only-${activeLocale}`}
+                      />
+                    </>
+                  )}
+
+                  {pageSharedId && showPageUrlPreviews && (
                     <Link
                       target="_blank"
-                      to={`/${getPageUrl(getValues('sharedId')!, getValues('title'))}`}
+                      to={`/${activeLocale}/${getPageUrlWithSharedId(pageSharedId, pageSlug)}`}
                     >
                       <div className="flex gap-2 hover:font-bold hover:cursor-pointer">
                         <ArrowTopRightOnSquareIcon className="w-4" />
@@ -347,12 +395,12 @@ const PageEditor = () => {
                     </Link>
                   )}
 
-                  {canUsePageActions && (
+                  {!entityView && (
                     <div className="flex flex-wrap gap-2 pt-2">
                       <Button
                         variant="secondary"
                         type="button"
-                        disabled={isSubmitting}
+                        disabled={!pageSharedId || isSubmitting}
                         onClick={() => {
                           setRestoreSelected([]);
                           setRestoreModalOpen(true);
@@ -363,7 +411,7 @@ const PageEditor = () => {
                       <Button
                         variant="secondary"
                         type="button"
-                        disabled={isSubmitting}
+                        disabled={!pageSharedId || isSubmitting}
                         onClick={() => {
                           setReleaseMessage('');
                           setReleaseModalOpen(true);
@@ -377,72 +425,38 @@ const PageEditor = () => {
               </form>
             </Tabs.Tab>
 
-            <Tabs.Tab id="HTML" key="html" label={<Translate>HTML</Translate>}>
-              <div className="flex flex-col h-full gap-2">
-                <HTMLNotification useLegacyMarkdown={markdownSupport} />
-                <div className="h-full pt-2">
-                  <CodeEditor
-                    key={`html-${editorLayoutKey}`}
-                    language="html"
-                    intialValue={watch('draft.content') ?? ''}
-                    onMount={(editor: any) => {
-                      editor.getModel()?.onDidChangeContent(
-                        debouncedChangeHandler(() => {
-                          setValue('draft.content', editor.getValue(), { shouldDirty: true });
-                        })
-                      );
-                    }}
-                    fallbackElement={
-                      <textarea {...register('draft.content')} className="w-full h-full" />
-                    }
-                  />
-                </div>
-              </div>
+            <Tabs.Tab id="HTML" label={<Translate>HTML</Translate>}>
+              <PageEditorHtmlPanel
+                activeLocale={activeLocale}
+                localeDraft={localeDraft}
+                register={register}
+                setValue={setValue}
+                debouncedChangeHandler={debouncedChangeHandler}
+                useLegacyMarkdown={markdownSupport}
+                editorLayoutKey={editorLayoutKey}
+              />
             </Tabs.Tab>
 
             <Tabs.Tab id="Javascript" label={<Translate>Javascript</Translate>}>
-              <div className="flex flex-col h-full gap-2">
-                <JSNotification />
-                <div className="h-full pt-2">
-                  <CodeEditor
-                    key={`js-${editorLayoutKey}`}
-                    language="javascript"
-                    intialValue={watch('draft.script') ?? ''}
-                    onMount={(editor: any) => {
-                      editor.getModel()?.onDidChangeContent(
-                        debouncedChangeHandler(() => {
-                          setValue('draft.script', editor.getValue(), { shouldDirty: true });
-                        })
-                      );
-                    }}
-                    fallbackElement={
-                      <textarea {...register('draft.script')} className="w-full h-full" />
-                    }
-                  />
-                </div>
-              </div>
+              <PageEditorJavascriptPanel
+                activeLocale={activeLocale}
+                localeDraft={localeDraft}
+                register={register}
+                setValue={setValue}
+                debouncedChangeHandler={debouncedChangeHandler}
+                editorLayoutKey={editorLayoutKey}
+              />
             </Tabs.Tab>
 
             <Tabs.Tab id="CSS" label={<Translate>CSS</Translate>}>
-              <div className="flex flex-col h-full gap-2">
-                <div className="h-full pt-2">
-                  <CodeEditor
-                    key={`css-${editorLayoutKey}`}
-                    language="css"
-                    intialValue={watch('draft.css') ?? ''}
-                    onMount={(editor: any) => {
-                      editor.getModel()?.onDidChangeContent(
-                        debouncedChangeHandler(() => {
-                          setValue('draft.css', editor.getValue(), { shouldDirty: true });
-                        })
-                      );
-                    }}
-                    fallbackElement={
-                      <textarea {...register('draft.css')} className="w-full h-full" />
-                    }
-                  />
-                </div>
-              </div>
+              <PageEditorCssPanel
+                activeLocale={activeLocale}
+                localeDraft={localeDraft}
+                register={register}
+                setValue={setValue}
+                debouncedChangeHandler={debouncedChangeHandler}
+                editorLayoutKey={editorLayoutKey}
+              />
             </Tabs.Tab>
           </Tabs>
         </SettingsContent.Body>

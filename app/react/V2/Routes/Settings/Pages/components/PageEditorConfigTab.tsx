@@ -8,13 +8,10 @@ import type {
   UseFormSetValue,
 } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
-import { CopyValueInput, Tabs } from '#V2/Components/UI/index.js';
-import {
-  EnableButtonCheckbox,
-  InputField,
-} from '#app/V2/Components/Forms/index.js';
+import { CopyValueInput, Tabs, ToggleButton } from '#V2/Components/UI/index.js';
+import { InputField } from '#app/V2/Components/Forms/index.js';
 import { Page } from '#V2/shared/types.js';
-import { getPageUrl } from './PageListTable.js';
+import { getPageUrlSlugOnly, getPageUrlWithSharedId } from './pageUrls.js';
 import { MarkdownDeprecationBanner } from './PageEditorComponents.js';
 
 export interface PageEditorConfigTabProps {
@@ -24,6 +21,8 @@ export interface PageEditorConfigTabProps {
   setValue: UseFormSetValue<Page>;
   errors: FieldErrors<Page>;
   showMarkdownDeprecation: boolean;
+  entityView: boolean;
+  onEntityViewToggle: () => void;
 }
 
 const PageEditorConfigTab = ({
@@ -33,6 +32,8 @@ const PageEditorConfigTab = ({
   setValue,
   errors,
   showMarkdownDeprecation,
+  entityView,
+  onEntityViewToggle,
 }: PageEditorConfigTabProps) => (
   <Tabs.Tab id="Configuration" label={<Translate>Configuration</Translate>}>
     <form>
@@ -43,12 +44,11 @@ const PageEditorConfigTab = ({
             onUpgrade={() => setValue('markdownSupport', false, { shouldDirty: true })}
           />
         )}
-        <div className="flex items-center gap-4">
-          <Translate className="font-bold">
-            Enable this page to be used as an entity view page:
+        <ToggleButton checked={entityView} onToggle={onEntityViewToggle}>
+          <Translate className="text-sm font-semibold text-ink">
+            Enable this page to be used as an entity view page
           </Translate>
-          <EnableButtonCheckbox {...register('entityView')} defaultChecked={page.entityView} />
-        </div>
+        </ToggleButton>
 
         <InputField
           id="title"
@@ -58,19 +58,36 @@ const PageEditorConfigTab = ({
           errorMessage={errors.title && <Translate>This field is required</Translate>}
         />
 
-        <CopyValueInput
-          value={
-            !getValues('entityView') && getValues('sharedId')
-              ? `/${getPageUrl(getValues('sharedId')!, getValues('title'))}`
-              : ''
-          }
-          label={<Translate>URL</Translate>}
-          className="w-full mb-4"
-          id="page-url"
+        <InputField
+          id="slug"
+          label={<Translate>Slug</Translate>}
+          {...register('slug', { required: true })}
+          hasErrors={errors.slug !== undefined}
+          errorMessage={errors.slug && <Translate>This field is required</Translate>}
         />
 
-        {getValues('sharedId') && !getValues('entityView') && (
-          <Link target="_blank" to={`/${getPageUrl(getValues('sharedId')!, getValues('title'))}`}>
+        {getValues('sharedId') && !getValues('entityView') && getValues('slug') && (
+          <>
+            <CopyValueInput
+              value={`/${getPageUrlWithSharedId(getValues('sharedId')!, getValues('slug')!)}`}
+              label={<Translate>URL (with ID)</Translate>}
+              className="w-full"
+              id="page-url-with-id"
+            />
+            <CopyValueInput
+              value={`/${getPageUrlSlugOnly(getValues('slug')!)}`}
+              label={<Translate>URL (slug only)</Translate>}
+              className="w-full mb-4"
+              id="page-url-slug-only"
+            />
+          </>
+        )}
+
+        {getValues('sharedId') && !getValues('entityView') && getValues('slug') && (
+          <Link
+            target="_blank"
+            to={`/${getPageUrlWithSharedId(getValues('sharedId')!, getValues('slug')!)}`}
+          >
             <div className="flex gap-2 hover:font-bold hover:cursor-pointer">
               <ArrowTopRightOnSquareIcon className="w-4" />
               <Translate className="underline hover:text-primary-700">View page</Translate>

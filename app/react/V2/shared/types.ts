@@ -39,9 +39,16 @@ type ILink = Omit<SettingsLinkSchema, 'sublinks'> & {
   sublinks: [ISublink];
 };
 
+type PageLocaleForm = {
+  title: string;
+  slug: string;
+  draft?: PageDraft;
+};
+
 type Page = {
   _id?: string;
-  title: string;
+  title?: string;
+  slug?: string;
   language?: string;
   sharedId?: string;
   creationDate?: number;
@@ -51,8 +58,10 @@ type Page = {
     script?: string;
     css?: string;
   };
+  locales?: Record<string, PageLocaleForm>;
   draft?: PageDraft;
   releases?: PageRelease[];
+  releasesByLocale?: Record<string, PageRelease[]>;
   user?: string;
   entityView?: boolean;
   markdownSupport?: boolean;

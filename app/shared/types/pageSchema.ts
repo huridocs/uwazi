@@ -57,6 +57,15 @@ export const PageSchema = {
         css: { type: 'string' },
       },
     },
+    pageLocale: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        title: { type: 'string' },
+        slug: { type: 'string', minLength: 1 },
+        draft: { $ref: '#/definitions/pageDraft' },
+      },
+    },
     pageRelease: {
       type: 'object',
       additionalProperties: false,
@@ -75,6 +84,7 @@ export const PageSchema = {
   properties: {
     _id: objectIdSchema,
     title: { type: 'string' },
+    slug: { type: 'string', minLength: 1 },
     language: { type: 'string' },
     sharedId: { type: 'string' },
     creationDate: { type: 'number' },
@@ -89,6 +99,10 @@ export const PageSchema = {
         css: { type: 'string' },
       },
     },
+    locales: {
+      type: 'object',
+      additionalProperties: { $ref: '#/definitions/pageLocale' },
+    },
     draft: { $ref: '#/definitions/pageDraft' },
     releases: {
       type: 'array',
@@ -102,6 +116,40 @@ export const PageSchema = {
   required: ['title'],
 };
 
+export const PageEditorSchema = {
+  $schema: 'http://json-schema.org/schema#',
+  $async: true,
+  type: 'object',
+  validatePageIsNotEntityView: true,
+  additionalProperties: false,
+  title: 'PageEditorPayload',
+  definitions: PageSchema.definitions,
+  properties: {
+    _id: objectIdSchema,
+    sharedId: { type: 'string' },
+    creationDate: { type: 'number' },
+    user: objectIdSchema,
+    entityView: { type: 'boolean' },
+    markdownSupport: { type: 'boolean' },
+    locales: {
+      type: 'object',
+      minProperties: 1,
+      additionalProperties: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['title', 'slug'],
+        properties: {
+          title: { type: 'string' },
+          slug: { type: 'string', minLength: 1 },
+          draft: { $ref: '#/definitions/pageDraft' },
+        },
+      },
+    },
+  },
+  required: ['locales'],
+};
+
 const validatePage = wrapValidator(ajv.compile(PageSchema));
-export { validatePage };
+const validatePageEditor = wrapValidator(ajv.compile(PageEditorSchema));
+export { validatePage, validatePageEditor };
 export const emitSchemaTypes = true;

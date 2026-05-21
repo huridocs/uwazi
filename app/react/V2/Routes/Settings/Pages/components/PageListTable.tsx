@@ -1,15 +1,16 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import kebabCase from 'lodash/kebabCase.js';
 import { CellContext } from '@tanstack/react-table';
 import { Button, Pill } from '#app/V2/Components/UI/index.js';
 import { I18NLinkV2 as I18NLink, Translate } from '#app/I18N/index.js';
 import { TablePage } from '../PagesList.js';
+import {
+  getPageDraftUrl,
+  getPageUrlSlugOnly,
+  getPageUrlWithSharedId,
+} from './pageUrls.js';
 
-const getPageUrl = (sharedId: string, title: string) => `page/${sharedId}/${kebabCase(title)}`;
-
-const getPageDraftUrl = (sharedId: string, title: string) =>
-  `page-draft/${sharedId}/${kebabCase(title)}`;
+const getPageUrl = getPageUrlWithSharedId;
 
 const EntityViewHeader = () => <Translate>Entity Page</Translate>;
 const TitleHeader = () => <Translate>Title</Translate>;
@@ -17,7 +18,8 @@ const UrlHeader = () => <Translate>URL</Translate>;
 const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
 
 const ActionCell = ({ cell }: CellContext<TablePage, string>) => {
-  const pageUrl = getPageUrl(cell.getValue(), cell.row.original.title);
+  const slug = cell.row.original.slug ?? 'page';
+  const pageUrl = getPageUrlWithSharedId(cell.getValue(), slug);
   const isEntityView = cell.row.original.entityView;
 
   return (
@@ -46,8 +48,8 @@ const YesNoPill = ({ cell }: CellContext<TablePage, boolean>) => {
 
 const UrlCell = ({ cell }: CellContext<TablePage, string>) => {
   const sharedId = cell.getValue();
-  const { title } = cell.row.original;
-  const url = `/${getPageUrl(sharedId, title)}`;
+  const slug = cell.row.original.slug ?? 'page';
+  const url = `/${getPageUrlWithSharedId(sharedId, slug)}`;
   return url;
 };
 
@@ -69,5 +71,7 @@ export {
   UrlCell,
   getPageUrl,
   getPageDraftUrl,
+  getPageUrlSlugOnly,
+  getPageUrlWithSharedId,
   List,
 };

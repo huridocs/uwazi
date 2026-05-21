@@ -2,52 +2,46 @@ import db, { DBFixture } from '#api/utils/testing_db.js';
 
 export const pageToUpdate = db.id();
 
+const emptyDraft = { content: '', script: '', css: '' };
+
+const userId = db.id();
+
 export const fixtures: DBFixture = {
   pages: [
     {
       _id: db.id(),
       sharedId: '1',
-      language: 'es',
-      title: 'Batman finishes',
-      user: 'user',
+      user: userId,
       entityView: true,
-    },
-    {
-      _id: db.id(),
-      sharedId: '1',
-      language: 'en',
-      title: 'Batman finishes',
-      user: 'user',
-      entityView: true,
+      creationDate: 1,
+      locales: {
+        es: { title: 'Batman finishes', slug: 'batman-finishes', draft: emptyDraft },
+        en: { title: 'Batman finishes', slug: 'batman-finishes', draft: emptyDraft },
+      },
     },
     {
       _id: pageToUpdate,
       sharedId: '2',
-      language: 'es',
-      title: 'Penguin almost done',
+      user: userId,
       creationDate: 1,
-      user: 'user',
-    },
-    {
-      _id: db.id(),
-      sharedId: '2',
-      language: 'fr',
-      title: 'Right there',
-      user: 'user',
+      locales: {
+        es: { title: 'Penguin almost done', slug: 'penguin-almost-done', draft: emptyDraft },
+        fr: { title: 'Right there', slug: 'right-there', draft: emptyDraft },
+      },
     },
     {
       _id: db.id(),
       sharedId: '3',
-      language: 'es',
-      title: 'Pagina que sera entityView',
+      user: userId,
       entityView: false,
-    },
-    {
-      _id: db.id(),
-      sharedId: '3',
-      language: 'en',
-      title: 'Page that will be for entityView',
-      entityView: false,
+      locales: {
+        es: { title: 'Pagina que sera entityView', slug: 'pagina-entity-view', draft: emptyDraft },
+        en: {
+          title: 'Page that will be for entityView',
+          slug: 'page-entity-view',
+          draft: emptyDraft,
+        },
+      },
     },
   ],
 

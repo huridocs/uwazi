@@ -41,6 +41,32 @@ const ParsedActions: { [key: string]: EntryValue } = {
     idField: 'sharedId',
     nameField: 'title',
   },
+  'POST/api/pages/release': {
+    desc: 'Published page release',
+    method: Methods.Update,
+    nameField: 'sharedId',
+    nameFunc: data => {
+      const title = data.title || data.sharedId || '';
+      return data.sharedId ? `${title} (${data.sharedId})` : title;
+    },
+    extra: (data: { version?: number; release_message?: string }) => {
+      const parts: string[] = [];
+      if (data.version != null) {
+        parts.push(`v${data.version}`);
+      }
+      if (data.release_message) {
+        parts.push(`"${data.release_message}"`);
+      }
+      return parts.join(' ');
+    },
+  },
+  'POST/api/pages/restore': {
+    desc: 'Restored page draft from release',
+    method: Methods.Update,
+    nameField: 'sharedId',
+    extra: (data: { version?: number }) =>
+      data.version != null ? `version ${data.version}` : '',
+  },
   'POST/api/templates': {
     desc: 'Created template',
     method: Methods.Create,

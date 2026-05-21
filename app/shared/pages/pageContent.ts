@@ -2,13 +2,22 @@ import { PageType } from '#shared/types/pageType.js';
 
 export type PageContentMode = 'published' | 'draft';
 
-const emptyDraft = (): NonNullable<PageType['draft']> => ({
+const emptyDraft = () => ({
   content: '',
   script: '',
   css: '',
 });
 
-const draftFromPage = (page: PageType): NonNullable<PageType['draft']> => {
+const localeDraft = (page: PageType, language?: string) => {
+  const lang = language ?? page.language;
+  if (lang && page.locales?.[lang]?.draft) {
+    const d = page.locales[lang].draft!;
+    return {
+      content: d.content ?? '',
+      script: d.script ?? '',
+      css: d.css ?? '',
+    };
+  }
   if (page.draft) {
     return {
       content: page.draft.content ?? '',
@@ -26,18 +35,18 @@ const draftFromPage = (page: PageType): NonNullable<PageType['draft']> => {
   return emptyDraft();
 };
 
-/** Published: last release, or legacy metadata when `releases` is not yet an array. Draft: always `draft` (or metadata fallback). */
-export const resolvePageForClient = (page: PageType, mode: PageContentMode): PageType => {
+/** Published: last release for language, or draft/metadata fallback. Draft: locale/draft. */
+export const resolvePageForClient = (
+  page: PageType,
+  mode: PageContentMode,
+  language?: string
+): PageType => {
   const next: PageType = { ...page };
-  const draft = draftFromPage(page);
+  const lang = language ?? page.language;
+  const draft = localeDraft(page, lang);
 
   if (mode === 'draft') {
-    next.metadata = {
-      ...next.metadata,
-      content: draft.content,
-      script: draft.script,
-      css: draft.css,
-    };
+    next.metadata = { ...next.metadata, ...draft };
     return next;
   }
 
@@ -52,22 +61,8 @@ export const resolvePageForClient = (page: PageType, mode: PageContentMode): Pag
     };
     return next;
   }
-  if (Array.isArray(releases) && releases.length === 0) {
-    next.metadata = {
-      ...next.metadata,
-      content: draft.content,
-      script: draft.script,
-      css: draft.css,
-    };
-    return next;
-  }
 
-  next.metadata = {
-    ...next.metadata,
-    content: draft.content,
-    script: draft.script,
-    css: draft.css,
-  };
+  next.metadata = { ...next.metadata, ...draft };
   return next;
 };
 

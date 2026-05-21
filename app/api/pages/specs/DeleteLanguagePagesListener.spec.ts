@@ -19,31 +19,36 @@ const fixtures: DBFixture = {
     {
       _id: db.id(),
       sharedId: 'page1',
-      language: 'en',
-      title: 'Test page',
       user: userId,
-    },
-    {
-      _id: db.id(),
-      sharedId: 'page1',
-      language: 'es',
-      title: 'Test page (es)',
-      user: userId,
+      creationDate: 1000,
+      locales: {
+        en: {
+          title: 'Test page',
+          slug: 'test-page',
+          draft: { content: '', script: '', css: '' },
+        },
+        es: {
+          title: 'Página de prueba',
+          slug: 'pagina-de-prueba',
+          draft: { content: '', script: '', css: '' },
+        },
+      },
     },
   ],
 };
 
 const heartbeat = jest.fn();
 
-const createSUT = () =>
-  testingEnvironment.runWithContext(() => new DeleteLanguagePagesListener({}));
+const createSUT = () => testingEnvironment.runWithContext(() => new DeleteLanguagePagesListener({}));
 
 const dispatch = async (listener: DeleteLanguagePagesListener, language: string): Promise<void> => {
-  await listener.handleDispatch(heartbeat, {
-    tenantName: 'localhost',
-    userId: userId.toString(),
-    language,
-  } as any);
+  await testingEnvironment.runWithContext(async () => {
+    await listener.handleDispatch(heartbeat, {
+      tenantName: 'localhost',
+      userId: userId.toString(),
+      language,
+    } as any);
+  });
 };
 
 beforeEach(async () => {
@@ -55,19 +60,23 @@ afterAll(async () => {
 });
 
 describe('DeleteLanguagePagesListener', () => {
-  it('should delete pages for the deleted language', async () => {
+  it('should remove locale for the deleted language', async () => {
     const listener = await createSUT();
     await dispatch(listener, 'es');
 
-    const esPages = await pages.get({ language: 'es' });
-    expect(esPages).toHaveLength(0);
+    await expect(
+      testingEnvironment.runWithContext(() => pages.getById('page1', 'es'))
+    ).rejects.toMatchObject({ code: 404 });
+    const enPage = await testingEnvironment.runWithContext(() => pages.getById('page1', 'en'));
+    expect(enPage.title).toBe('Test page');
   });
 
-  it('should leave pages for other languages intact', async () => {
+  it('should keep the page document', async () => {
     const listener = await createSUT();
     await dispatch(listener, 'es');
 
-    const enPages = await pages.get({ language: 'en' });
-    expect(enPages.length).toBeGreaterThan(0);
+    const enPages = await testingEnvironment.runWithContext(() => pages.get({ language: 'en' }));
+    expect(enPages).toHaveLength(1);
+    expect(enPages[0].sharedId).toBe('page1');
   });
 });

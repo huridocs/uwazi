@@ -1,7 +1,7 @@
 import Ajv from 'ajv';
 import { PageService } from '#api/core/domain/template/PageService.js';
-import pages from '#api/pages/index.js';
 import { Template } from '#api/core/domain/template/Template.js';
+import { PagesDataSourceFactory } from '../factories/PagesDataSourceFactory.js';
 
 class LegacyPageService implements PageService {
   // eslint-disable-next-line class-methods-use-this
@@ -10,9 +10,10 @@ class LegacyPageService implements PageService {
       return;
     }
 
-    const page = await pages.get({ sharedId: template.entityViewPage });
+    const pagesDS = PagesDataSourceFactory.default();
+    const result = await pagesDS.getBySharedId(template.entityViewPage);
 
-    if (page.length === 0) {
+    if (result.isError()) {
       throw new Ajv.ValidationError([
         {
           keyword: 'entityViewPageExists',
@@ -24,7 +25,9 @@ class LegacyPageService implements PageService {
       ]);
     }
 
-    if (!page[0].entityView) {
+    const page = result.getDataOrThrow();
+
+    if (!page.entityView) {
       throw new Ajv.ValidationError([
         {
           keyword: 'entityViewPageIsEnabled',

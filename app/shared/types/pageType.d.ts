@@ -9,6 +9,12 @@ export interface PageDraft {
   css?: string;
 }
 
+export interface PageLocale {
+  title?: string;
+  slug?: string;
+  draft?: PageDraft;
+}
+
 export interface PageRelease {
   version: number;
   content: string;
@@ -21,7 +27,9 @@ export interface PageRelease {
 
 export interface PageType {
   _id?: ObjectIdSchema;
-  title: string;
+  /** Flat view for one request language; source of truth is `locales`. */
+  title?: string;
+  slug?: string;
   language?: string;
   sharedId?: string;
   creationDate?: number;
@@ -31,8 +39,11 @@ export interface PageType {
     script?: string;
     css?: string;
   };
+  locales?: Record<string, PageLocale>;
   draft?: PageDraft;
   releases?: PageRelease[];
+  /** Editor API: releases grouped by locale key */
+  releasesByLocale?: Record<string, PageRelease[]>;
   user?: ObjectIdSchema;
   entityView?: boolean;
   markdownSupport?: boolean;

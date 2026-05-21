@@ -1,27 +1,39 @@
-import React from 'react';
+import React, { type ReactNode } from 'react';
 import type { UseFormRegister, UseFormSetValue } from 'react-hook-form';
 import _ from 'lodash';
-import { Translate } from '#app/I18N/index.js';
-import { Tabs } from '#V2/Components/UI/index.js';
 import { CodeEditor } from '#V2/Components/CodeEditor/index.js';
 import { Page } from '#V2/shared/types.js';
 import { HTMLNotification, JSNotification } from './PageEditorComponents.js';
 
 type DebouncedBinder = (handler: () => void) => ReturnType<typeof _.debounce>;
 
-export interface PageEditorCodeTabsProps {
-  page: Page;
+type DraftField =
+  | `locales.${string}.draft.content`
+  | `locales.${string}.draft.script`
+  | `locales.${string}.draft.css`;
+
+export interface PageEditorCodePanelProps {
+  activeLocale: string;
+  localeDraft: {
+    content?: string;
+    script?: string;
+    css?: string;
+  };
   register: UseFormRegister<Page>;
   setValue: UseFormSetValue<Page>;
   debouncedChangeHandler: DebouncedBinder;
   useLegacyMarkdown: boolean;
+  editorLayoutKey: number;
 }
 
 const bindEditorDraftField = (
-  editor: { getModel: () => { onDidChangeContent: (cb: () => void) => void } | null; getValue: () => string },
+  editor: {
+    getModel: () => { onDidChangeContent: (cb: () => void) => void } | null;
+    getValue: () => string;
+  },
   debouncedChangeHandler: DebouncedBinder,
   setValue: UseFormSetValue<Page>,
-  field: 'draft.content' | 'draft.script' | 'draft.css'
+  field: DraftField
 ) => {
   editor.getModel()?.onDidChangeContent(
     debouncedChangeHandler(() => {
@@ -30,73 +42,99 @@ const bindEditorDraftField = (
   );
 };
 
-const PageEditorHtmlTab = ({
-  page,
+const PageEditorCodePanelLayout = ({
+  notification,
+  children,
+}: {
+  notification?: ReactNode;
+  children: ReactNode;
+}) => (
+  <div className="flex h-full min-h-0 flex-col gap-2">
+    {notification ? <div className="shrink-0">{notification}</div> : null}
+    <div className="min-h-0 flex-1 pt-2">{children}</div>
+  </div>
+);
+
+const PageEditorHtmlPanel = ({
+  activeLocale,
+  localeDraft,
   register,
   setValue,
   debouncedChangeHandler,
   useLegacyMarkdown,
-}: PageEditorCodeTabsProps) => (
-  <Tabs.Tab id="HTML" key="html" label={<Translate>HTML</Translate>}>
-    <div className="flex flex-col h-full gap-2">
-      <HTMLNotification useLegacyMarkdown={useLegacyMarkdown} />
-      <div className="h-full pt-2">
-        <CodeEditor
-          language="html"
-          intialValue={page.draft?.content ?? page.metadata?.content}
-          onMount={(editor: any) => {
-            bindEditorDraftField(editor, debouncedChangeHandler, setValue, 'draft.content');
-          }}
-          fallbackElement={<textarea {...register('draft.content')} className="w-full h-full" />}
-        />
-      </div>
-    </div>
-  </Tabs.Tab>
-);
+  editorLayoutKey,
+}: PageEditorCodePanelProps) => {
+  const contentField = `locales.${activeLocale}.draft.content` as DraftField;
 
-const PageEditorJavascriptTab = ({
-  page,
+  return (
+    <PageEditorCodePanelLayout
+      notification={<HTMLNotification useLegacyMarkdown={useLegacyMarkdown} />}
+    >
+      <CodeEditor
+        key={`html-${activeLocale}-${editorLayoutKey}`}
+        language="html"
+        intialValue={localeDraft.content ?? ''}
+        onMount={(editor: any) => {
+          bindEditorDraftField(editor, debouncedChangeHandler, setValue, contentField);
+        }}
+        fallbackElement={
+          <textarea {...register(contentField)} className="w-full h-full" />
+        }
+      />
+    </PageEditorCodePanelLayout>
+  );
+};
+
+const PageEditorJavascriptPanel = ({
+  activeLocale,
+  localeDraft,
   register,
   setValue,
   debouncedChangeHandler,
-}: Omit<PageEditorCodeTabsProps, 'useLegacyMarkdown'>) => (
-  <Tabs.Tab id="Javascript" label={<Translate>Javascript</Translate>}>
-    <div className="flex flex-col h-full gap-2">
-      <JSNotification />
-      <div className="h-full pt-2">
-        <CodeEditor
-          language="javascript"
-          intialValue={page.draft?.script ?? page.metadata?.script}
-          onMount={(editor: any) => {
-            bindEditorDraftField(editor, debouncedChangeHandler, setValue, 'draft.script');
-          }}
-          fallbackElement={<textarea {...register('draft.script')} className="w-full h-full" />}
-        />
-      </div>
-    </div>
-  </Tabs.Tab>
-);
+  editorLayoutKey,
+}: Omit<PageEditorCodePanelProps, 'useLegacyMarkdown'>) => {
+  const scriptField = `locales.${activeLocale}.draft.script` as DraftField;
 
-const PageEditorCssTab = ({
-  page,
+  return (
+    <PageEditorCodePanelLayout notification={<JSNotification />}>
+      <CodeEditor
+        key={`js-${activeLocale}-${editorLayoutKey}`}
+        language="javascript"
+        intialValue={localeDraft.script ?? ''}
+        onMount={(editor: any) => {
+          bindEditorDraftField(editor, debouncedChangeHandler, setValue, scriptField);
+        }}
+        fallbackElement={
+          <textarea {...register(scriptField)} className="w-full h-full" />
+        }
+      />
+    </PageEditorCodePanelLayout>
+  );
+};
+
+const PageEditorCssPanel = ({
+  activeLocale,
+  localeDraft,
   register,
   setValue,
   debouncedChangeHandler,
-}: Omit<PageEditorCodeTabsProps, 'useLegacyMarkdown'>) => (
-  <Tabs.Tab id="CSS" label={<Translate>CSS</Translate>}>
-    <div className="flex flex-col h-full gap-2">
-      <div className="h-full pt-2">
-        <CodeEditor
-          language="css"
-          intialValue={page.draft?.css ?? page.metadata?.css}
-          onMount={(editor: any) => {
-            bindEditorDraftField(editor, debouncedChangeHandler, setValue, 'draft.css');
-          }}
-          fallbackElement={<textarea {...register('draft.css')} className="w-full h-full" />}
-        />
-      </div>
-    </div>
-  </Tabs.Tab>
-);
+  editorLayoutKey,
+}: Omit<PageEditorCodePanelProps, 'useLegacyMarkdown'>) => {
+  const cssField = `locales.${activeLocale}.draft.css` as DraftField;
 
-export { PageEditorHtmlTab, PageEditorJavascriptTab, PageEditorCssTab };
+  return (
+    <PageEditorCodePanelLayout>
+      <CodeEditor
+        key={`css-${activeLocale}-${editorLayoutKey}`}
+        language="css"
+        intialValue={localeDraft.css ?? ''}
+        onMount={(editor: any) => {
+          bindEditorDraftField(editor, debouncedChangeHandler, setValue, cssField);
+        }}
+        fallbackElement={<textarea {...register(cssField)} className="w-full h-full" />}
+      />
+    </PageEditorCodePanelLayout>
+  );
+};
+
+export { PageEditorHtmlPanel, PageEditorJavascriptPanel, PageEditorCssPanel };
