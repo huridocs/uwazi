@@ -17,6 +17,7 @@ import { DistributedLoop } from '#api/services/tasksmanager/DistributedLoop.js';
 import { TwitterIntegration } from '#api/services/twitterintegration/TwitterIntegration.js';
 import { setupWorkerSockets } from '#api/socketio/setupSockets.js';
 import { syncWorker } from '#api/sync/syncWorker.js';
+import { registerSyncHandlers } from '#api/sync/registerSyncHandlers.js';
 import { tenants } from '#api/tenants/index.js';
 import { tocService } from '#api/toc_generation/tocService.js';
 import { sleep } from '#shared/tsUtils.js';
@@ -36,6 +37,7 @@ DB.connect(config.DBHOST, config.DBAUTH)
   .then(async () => {
     await tenants.setupTenants();
     permissionsContext.setCommandContextAsDefault();
+    registerSyncHandlers();
     setupWorkerSockets(await Redis.connect());
 
     systemLogger.info('[Worker] - ==> 📡 starting external services...');
