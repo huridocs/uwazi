@@ -1,16 +1,17 @@
 import { BaseFile, BaseFileProps } from './BaseFile.js';
 import { FileContents } from './FileContents.js';
 
-export type BaseDocumentProps = BaseFileProps & {
-  content: FileContents;
-};
+type WithContentProps = BaseFileProps & { content: FileContents };
 
-export abstract class FileWithContents extends BaseFile {
+export type BaseDocumentProps = WithContentProps;
+
+export abstract class FileWithContents<
+  TProps extends WithContentProps = WithContentProps,
+> extends BaseFile<TProps> {
   readonly content: FileContents;
 
-  constructor(props: BaseDocumentProps) {
-    const { content, ...baseProps } = props;
-    super(baseProps);
-    this.content = content;
+  constructor(props: TProps) {
+    super(props);
+    this.content = props.content;
   }
 }

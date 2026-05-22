@@ -1,0 +1,412 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable max-lines */
+/* eslint-disable no-shadow */
+/* eslint-disable no-use-before-define */
+/* eslint-disable import/exports-last */
+/* eslint-disable max-statements */
+/* eslint-disable no-plusplus */
+/**
+ * @typedef {[string, number]} TrigramTuple
+ *
+ * @typedef Options
+ * @property {Array<string>} [only]
+ *   Languages to allow.
+ * @property {Array<string>} [ignore]
+ *   Languages to ignore.
+ * @property {number} [minLength=10]
+ *   Minimum length to accept.
+ */
+
+/* Load `expressions` (regular expressions matching
+ * scripts). */
+import { expressions } from './expressions.js';
+/* Load `data` (trigram information per language,
+ * per script). */
+import { data } from './data.js';
+
+/* Maximum sample length. */
+const MAX_LENGTH = 2048;
+
+/* Minimum sample length. */
+const MIN_LENGTH = 10;
+
+/* The maximum distance to add when a given trigram does
+ * not exist in a trigram dictionary. */
+const MAX_DIFFERENCE = 300;
+
+const own = {}.hasOwnProperty;
+
+// --- inlined from collapse-white-space ---
+/**
+ * @param {string} value
+ * @returns {string}
+ */
+function collapseWhiteSpace(value) {
+  return String(value).replace(/\s+/g, ' ');
+}
+
+// --- inlined from n-gram (trigram = nGram(3)) ---
+/**
+ * @param {string} [value]
+ * @returns {Array<string>}
+ */
+function ngramTrigram(value) {
+  /** @type {Array<string>} */
+  const nGrams = [];
+  if (value === null || value === undefined) return nGrams;
+  const source = String(value);
+  let index = source.length - 3 + 1;
+  if (index < 1) return nGrams;
+  while (index--) nGrams[index] = source.slice(index, index + 3);
+  return nGrams;
+}
+
+// --- inlined from trigram-utils ---
+/**
+ * @param {string|null} [value]
+ * @returns {string}
+ */
+function cleanValue(value) {
+  if (value === null || value === undefined) return '';
+  return collapseWhiteSpace(String(value).replace(/[\u0021-\u0040]+/g, ' '))
+    .trim()
+    .toLowerCase();
+}
+
+/**
+ * @param {string} value
+ * @returns {Array<TrigramTuple>}
+ */
+function asTuples(value) {
+  const grams = ngramTrigram(` ${cleanValue(value)} `);
+  /** @type {Record<string, number>} */
+  const dictionary = {};
+  let i = -1;
+  while (++i < grams.length) {
+    if (own.call(dictionary, grams[i])) {
+      dictionary[grams[i]]++;
+    } else {
+      dictionary[grams[i]] = 1;
+    }
+  }
+  /** @type {Array<TrigramTuple>} */
+  const tuples = [];
+  /** @type {string} */
+  let trigram;
+  for (trigram in dictionary) {
+    if (own.call(dictionary, trigram)) tuples.push([trigram, dictionary[trigram]]);
+  }
+  tuples.sort(sort);
+  return tuples;
+}
+
+/* Construct trigram dictionaries. */
+
+/** @type {string} */
+let script;
+
+/** @type {Record<string, Record<string, Record<string, number>>>} */
+const numericData = {};
+
+for (script in data) {
+  if (own.call(data, script)) {
+    const languages = data[script];
+    /** @type {string} */
+    let name;
+
+    numericData[script] = {};
+
+    for (name in languages) {
+      if (own.call(languages, name)) {
+        const model = languages[name].split('|');
+        /** @type {Record<string, number>} */
+        const trigrams = {};
+        let weight = model.length;
+
+        while (weight--) {
+          trigrams[model[weight]] = weight;
+        }
+
+        numericData[script][name] = trigrams;
+      }
+    }
+  }
+}
+
+/**
+ * Get the most probable language for the given value.
+ *
+ * @param {string} [value]
+ *   The value to test.
+ * @param {Options} [options]
+ *   Configuration.
+ * @return {string}
+ *  The most probable language.
+ */
+export function franc(value, options) {
+  return francAll(value, options)[0][0];
+}
+
+/**
+ * Get a list of probable languages the given value is
+ * written in.
+ *
+ * @param {string} [value]
+ *   The value to test.
+ * @param {Options} [options]
+ *   Configuration.
+ * @return {Array<TrigramTuple>}
+ *   An array containing language—distance tuples.
+ */
+export function francAll(value, options = {}) {
+  /** @type {Array<string>} */
+  // @ts-expect-error: `whitelist` is from long ago.
+  const only = [...(options.whitelist || []), ...(options.only || [])];
+  /** @type {Array<string>} */
+  // @ts-expect-error: `blacklist` is from long ago.
+  const ignore = [...(options.blacklist || []), ...(options.ignore || [])];
+  const minLength =
+    options.minLength !== null && options.minLength !== undefined ? options.minLength : MIN_LENGTH;
+
+  if (!value || value.length < minLength) {
+    return und();
+  }
+
+  value = value.slice(0, MAX_LENGTH);
+
+  /* Get the script which characters occur the most
+   * in `value`. */
+  const script = getTopScript(value, expressions);
+
+  /* One languages exists for the most-used script. */
+  if (!script[0] || !(script[0] in numericData)) {
+    /* If no matches occured, such as a digit only string,
+     * or because the language is ignored, exit with `und`. */
+    if (!script[0] || script[1] === 0 || !allow(script[0], only, ignore)) {
+      return und();
+    }
+
+    return singleLanguageTuples(script[0]);
+  }
+
+  /* Get all distances for a given script, and
+   * normalize the distance values. */
+  return normalize(value, getDistances(asTuples(value), numericData[script[0]], only, ignore));
+}
+
+/**
+ * Normalize the difference for each tuple in
+ * `distances`.
+ *
+ * @param {string} value
+ *   Value to normalize.
+ * @param {Array<TrigramTuple>} distances
+ *   List of distances.
+ * @return {Array<TrigramTuple>}
+ *   Normalized distances.
+ */
+function normalize(value, distances) {
+  const min = distances[0][1];
+  const max = value.length * MAX_DIFFERENCE - min;
+  let index = -1;
+
+  while (++index < distances.length) {
+    distances[index][1] = 1 - (distances[index][1] - min) / max || 0;
+  }
+
+  return distances;
+}
+
+/**
+ * From `scripts`, get the most occurring expression for
+ * `value`.
+ *
+ * @param {string} value
+ *   Value to check.
+ * @param {Record<string, RegExp>} scripts
+ *   Top-Scripts.
+ * @return {[string|undefined, number]}
+ *   Top script and its occurrence percentage.
+ */
+function getTopScript(value, scripts) {
+  let topCount = -1;
+  /** @type {string|undefined} */
+  let topScript;
+  /** @type {string} */
+  let script;
+
+  for (script in scripts) {
+    if (own.call(scripts, script)) {
+      const count = getOccurrence(value, scripts[script]);
+
+      if (count > topCount) {
+        topCount = count;
+        topScript = script;
+      }
+    }
+  }
+
+  return [topScript, topCount];
+}
+
+/**
+ * Get the occurrence ratio of `expression` for `value`.
+ *
+ * @param {string} value
+ *   Value to check.
+ * @param {RegExp} expression
+ *   Code-point expression.
+ * @return {number}
+ *   Float between 0 and 1.
+ */
+function getOccurrence(value, expression) {
+  const count = value.match(expression);
+
+  return (count ? count.length : 0) / value.length || 0;
+}
+
+/**
+ * Get the distance between an array of trigram—count
+ * tuples, and multiple trigram dictionaries.
+ *
+ * @param {Array<TrigramTuple>} trigrams
+ *   An array containing trigram—count tuples.
+ * @param {Record<string, Record<string, number>>} languages
+ *   Multiple trigrams to test against.
+ * @param {Array<string>} only
+ *   Allowed languages; if non-empty, only included languages are kept.
+ * @param {Array<string>} ignore
+ *   Disallowed languages; included languages are ignored.
+ * @return {Array<TrigramTuple>} An array
+ *   containing language—distance tuples.
+ */
+function getDistances(trigrams, languages, only, ignore) {
+  languages = filterLanguages(languages, only, ignore);
+
+  /** @type {Array<TrigramTuple>} */
+  const distances = [];
+  /** @type {string} */
+  let language;
+
+  if (languages) {
+    for (language in languages) {
+      if (own.call(languages, language)) {
+        distances.push([language, getDistance(trigrams, languages[language])]);
+      }
+    }
+  }
+
+  return distances.length === 0 ? und() : distances.sort(sort);
+}
+
+/**
+ * Get the distance between an array of trigram—count
+ * tuples, and a language dictionary.
+ *
+ * @param {Array<TrigramTuple>} trigrams
+ *   An array containing trigram—count tuples.
+ * @param {Record<string, number>} model
+ *   Object containing weighted trigrams.
+ * @return {number}
+ *   The distance between the two.
+ */
+function getDistance(trigrams, model) {
+  let distance = 0;
+  let index = -1;
+
+  while (++index < trigrams.length) {
+    const trigram = trigrams[index];
+    let difference = MAX_DIFFERENCE;
+
+    if (trigram[0] in model) {
+      difference = trigram[1] - model[trigram[0]] - 1;
+
+      if (difference < 0) {
+        difference = -difference;
+      }
+    }
+
+    distance += difference;
+  }
+
+  return distance;
+}
+
+/**
+ * Filter `languages` by removing languages in
+ * `ignore`, or including languages in `only`.
+ *
+ * @param {Record<string, Record<string, number>>} languages
+ *   Languages to filter
+ * @param {Array<string>} only
+ *   Allowed languages; if non-empty, only included languages are kept.
+ * @param {Array<string>} ignore
+ *   Disallowed languages; included languages are ignored.
+ * @return {Record<string, Record<string, number>>}
+ *   Filtered array of languages.
+ */
+function filterLanguages(languages, only, ignore) {
+  if (only.length === 0 && ignore.length === 0) {
+    return languages;
+  }
+
+  /** @type {Record<string, Record<string, number>>} */
+  const filteredLanguages = {};
+  /** @type {string} */
+  let language;
+
+  for (language in languages) {
+    if (allow(language, only, ignore)) {
+      filteredLanguages[language] = languages[language];
+    }
+  }
+
+  return filteredLanguages;
+}
+
+/**
+ * Check if `language` can match according to settings.
+ *
+ * @param {string} language
+ *   Languages to filter
+ * @param {Array<string>} only
+ *   Allowed languages; if non-empty, only included languages are kept.
+ * @param {Array<string>} ignore
+ *   Disallowed languages; included languages are ignored.
+ * @return {boolean}
+ *   Whether `language` can match
+ */
+function allow(language, only, ignore) {
+  if (only.length === 0 && ignore.length === 0) {
+    return true;
+  }
+
+  return (only.length === 0 || only.includes(language)) && !ignore.includes(language);
+}
+
+/**
+ * Create a single `und` tuple.
+ */
+function und() {
+  return singleLanguageTuples('und');
+}
+
+/**
+ * Create a single tuple as a list of tuples from a given language code.
+ *
+ * @param {string} language
+ * @returns {Array<TrigramTuple>}
+ */
+function singleLanguageTuples(language) {
+  return [[language, 1]];
+}
+
+/**
+ * Deep regular sort on the number at `1` in both objects.
+ *
+ * @param {TrigramTuple} a
+ * @param {TrigramTuple} b
+ */
+function sort(a, b) {
+  return a[1] - b[1];
+}

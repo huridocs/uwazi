@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { LanguageISO6393 } from '#shared/language/languageISO639_3.js';
+import type { TableOfContent } from '#api/core/domain/files/ProcessedPDF.js';
 
 /**
  * Transforms DBO types (with ObjectId _id) to DTO types (with string _id).
@@ -35,6 +36,7 @@ export type ProcessedPDFDBO = BaseDocument & {
   status: 'ready';
   fullText?: { [k: string]: string };
   generatedToc: boolean;
+  toc?: TableOfContent[];
 };
 
 export type FileAttachmentDBO = BaseFileDBO & {
