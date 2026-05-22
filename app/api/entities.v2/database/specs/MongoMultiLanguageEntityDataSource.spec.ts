@@ -439,6 +439,35 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       );
     });
 
+    it('updates editDate and indexes entities via touchEntitiesBySharedIds on commit', async () => {
+      const template = createSampleTemplate();
+      const entity = createEntity(['en', 'es'], template);
+
+      const { sut: setupSut, transactionManager: setupTm } = createSut();
+      await setupSut.bulkInsert([entity]);
+      await setupTm.executeOnCommitHandlers(undefined);
+
+      const before = Date.now();
+      const { sut, entityIndexerService, transactionManager } = createSut();
+      await sut.touchEntitiesBySharedIds([entity.sharedId]);
+      await transactionManager.executeOnCommitHandlers(undefined);
+
+      const updatedDocs = await testingEnvironment.db
+        .getCollection('entities')!
+        .find({ sharedId: entity.sharedId })
+        .toArray();
+
+      expect(updatedDocs).toHaveLength(2);
+      updatedDocs.forEach(doc => {
+        expect(doc.editDate).toBeGreaterThanOrEqual(before);
+      });
+
+      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
+      expect(entityIndexerService.sync).toHaveBeenCalledWith(
+        expect.arrayContaining([entity.sharedId])
+      );
+    });
+
     it('indexes affected entities after deleting references on commit', async () => {
       const selectTemplate = factory.template('SelectTemplate', [
         factory.property('ref_prop', 'select'),
