@@ -82,14 +82,20 @@ const ReferencesDisplay = ({
           {fullMode
             ? documentClusters.map((element, index) => {
                 const key = `doc-${element.startPage}-${element.endPage}-${index}`;
-                const normalizedPosition = element.page / (document.totalPages ?? 1) || 0;
-                const position = normalizedPosition * markerLayerHeight;
+                const documentPages = (document.totalPages ?? 1) || 0;
+                const position = (markerLayerHeight / documentPages) * (element.page - 1);
+                let positionByPage = position;
+                if (element.page === 1) {
+                  positionByPage += 5;
+                } else if (element.page === documentPages) {
+                  positionByPage -= 5;
+                }
 
                 if (element.type === 'cluster') {
                   return (
                     <Cluster
                       key={key}
-                      position={position}
+                      position={positionByPage}
                       references={element.references}
                       onPointClick={reference => {
                         onPointClick?.(reference);
@@ -101,7 +107,7 @@ const ReferencesDisplay = ({
                 return (
                   <Point
                     key={key}
-                    position={position}
+                    position={positionByPage}
                     reference={element.references[0]}
                     onClick={reference => {
                       onPointClick?.(reference);

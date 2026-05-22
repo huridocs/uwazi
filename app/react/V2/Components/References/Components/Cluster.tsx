@@ -9,13 +9,19 @@ type ClusterProps = {
   onPointClick: (reference: EntityReference) => void;
 };
 
+const POINT_SPACING = 24;
+const POINT_SIZE = 10;
+const CONNECTOR_WIDTH = 20;
+
 const Cluster = ({ position, references, onPointClick }: ClusterProps) => {
   const animatedPosition = useAnimateToPosition(position);
   const [isOpen, setIsOpen] = useState(false);
+  const pointsHeight = (references.length - 1) * POINT_SPACING + POINT_SIZE;
+  const connectorY = pointsHeight / 2;
 
   return (
     <div
-      className="absolute transition-property:top] duration-500 ease-out"
+      className="absolute [transition-property:top] duration-500 ease-out"
       style={{ top: `${animatedPosition}px` }}
     >
       <button
@@ -23,39 +29,56 @@ const Cluster = ({ position, references, onPointClick }: ClusterProps) => {
         onClick={() => {
           setIsOpen(currentValue => !currentValue);
         }}
-        className="relative h-6 w-6 items-center rounded-full border bg-(--color-theme-surface-raised) text-[10px] cursor-pointer"
+        className="relative flex h-6 w-6 items-center justify-center rounded-full border bg-(--color-theme-surface-raised) text-[10px] cursor-pointer"
       >
         {references.length}
       </button>
 
       {isOpen && (
-        <>
-          <div className="h-0.5 w-4 bg-alert-800 absolute top-1/2 -left-4">
-            <div
-              className="w-0.5 bg-alert-800 absolute"
-              style={{
-                height: `${24 * references.length}px`,
-                top: `-${10 * references.length}px`,
-              }}
-            />
-          </div>
+        <div
+          className="absolute top-1/2"
+          style={{
+            right: '100%',
+            transform: 'translateY(-50%)',
+            width: `${CONNECTOR_WIDTH}px`,
+            height: `${pointsHeight}px`,
+          }}
+        >
+          <div
+            className="absolute h-0.5 bg-(--color-theme-border-soft)"
+            style={{
+              top: `${connectorY}px`,
+              left: 0,
+              width: `${CONNECTOR_WIDTH}px`,
+            }}
+          />
+          <div
+            className="absolute w-0.5 bg-(--color-theme-border-soft)"
+            style={{
+              top: 0,
+              left: 0,
+              height: `${pointsHeight}px`,
+            }}
+          />
           <div
             className="absolute"
             style={{
-              top: `-${5 * references.length}px`,
-              right: '60px',
+              left: `-${POINT_SIZE / 2 - 1}px`,
+              top: 0,
+              height: `${pointsHeight}px`,
+              width: `${POINT_SIZE}px`,
             }}
           >
             {references.map((reference, index) => (
               <Point
                 key={reference._id || `cluster-point-${index}`}
-                position={index * 24}
+                position={index * POINT_SPACING}
                 reference={reference}
                 onClick={onPointClick}
               />
             ))}
           </div>
-        </>
+        </div>
       )}
     </div>
   );
