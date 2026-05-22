@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { connect } from 'react-redux';
 import { useLocation } from 'react-router';
 import rison from '@huridocs/rison';
@@ -102,6 +102,20 @@ const getPropertyType = (property, templates) => {
   return property.type;
 };
 
+const SELECT_FILTER_TYPES = new Set(['select', 'multiselect', 'relationship']);
+
+const createAggregationLookups = (storeKey, properties, templates) => {
+  const lookups = {};
+  properties.forEach(property => {
+    const type = getPropertyType(property, templates);
+    if (SELECT_FILTER_TYPES.has(type)) {
+      lookups[property.name] = searchTerm =>
+        getAggregationSuggestions(storeKey, property.name, searchTerm);
+    }
+  });
+  return lookups;
+};
+
 const FiltersFromProperties = ({
   onChange = () => {},
   properties,
@@ -113,6 +127,17 @@ const FiltersFromProperties = ({
   ...props
 }) => {
   const location = useLocation();
+
+  const propertyNamesKey = useMemo(
+    () => properties.map(property => property.name).join('\0'),
+    [properties]
+  );
+
+  const aggregationLookups = useMemo(
+    () => createAggregationLookups(storeKey, properties, templates),
+    [storeKey, propertyNamesKey, templates]
+  );
+
   return (
     <>
       {properties.map(property => {
@@ -141,7 +166,7 @@ const FiltersFromProperties = ({
             filter = (
               <SelectFilter
                 {...commonProps}
-                lookup={getAggregationSuggestions.bind(null, storeKey, property.name)}
+                lookup={aggregationLookups[property.name]}
                 options={propertyOptions}
                 prefix={property.name}
                 showBoolSwitch={property.type === 'multiselect' || property.type === 'relationship'}
