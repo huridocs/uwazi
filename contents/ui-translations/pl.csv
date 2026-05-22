@@ -1,5 +1,4 @@
 Key,Polish
-% of sentences above threshold,% zdań powyżej progu
 *please keep this key secret and don't share it.,*proszę zachować ten klucz w tajemnicy i nie udostępniać go nikomu.
 + click to select multiple cards.,"(+) kliknij, aby wybrać wiele kart."
 2FA,2FA
@@ -12,6 +11,7 @@ A valid email is required,Wymagany jest prawidłowy adres e-mail
 Accept,Zaakceptuj
 Accepted suggestion on entity,Zaakceptowano sugestię dotyczącą obiektu
 Accepting suggestions,Akceptowanie sugestii
+Accessibility checks need attention,Accessibility checks need attention
 Account,Konto
 Account locked,Konto zablokowane
 Account unlocked successfully,Konto pomyślnie odblokowane
@@ -65,12 +65,15 @@ added to hub with the following errors:,dodano do huba z następującymi błęda
 added to hub.,dodano do huba.
 Adding a group and its items.,Dodawanie grupy i jej elementów.
 Adding items to the thesauri,Dodawanie elementów do tezaurusów
+Adjust a few colors; secondary text and muted backgrounds update automatically.,Adjust a few colors; secondary text and muted backgrounds update automatically.
 Admin,Administrator
 Administrators and Editors,Administratorzy i Redaktorzy
 Admins,Administratorzy
+Advanced colors,Advanced colors
 ALL,WSZYSTKO
 All,Wszystko
 "All changes will be lost, are you sure you want to proceed?","Wszystkie zmiany zostaną utracone, czy na pewno chcesz kontynuować?"
+All clear,All clear
 All data,Wszystkie dane
 All editing options will be disabled.,Wszystkie opcje edycji zostaną wyłączone.
 All of the paragraphs will be deleted,Wszystkie akapity zostaną usunięte
@@ -82,6 +85,8 @@ An error has occured while deleting a language:,Wystąpił błąd podczas usuwan
 An error has occured while installing languages:,Wystąpił błąd podczas instalowania języków:
 An error has occurred,Wystąpił błąd
 An error has occurred during data export,Wystąpił błąd podczas eksportu danych
+An error has occurred while installing languages:,An error has occurred while installing languages:
+An error has occurred while uninstalling a language:,An error has occurred while uninstalling a language:
 An error occurred,Wystąpił błąd
 Analytics,Analityka
 Analytics description,"Jeśli chcesz śledzić analitykę związaną z odwiedzinami kolekcji, Uwazi wspiera Google Analytics oraz Matomo."
@@ -93,6 +98,7 @@ Are you sure you want to delete this connection?,Czy na pewno chcesz usunąć to
 Are you sure you want to delete this entity?,Czy na pewno chcesz usunąć ten obiekt?
 Are you sure you want to delete this file?,Czy na pewno chcesz usunąć ten plik?
 Are you sure you want to delete this item?,Czy na pewno chcesz usunąć ten element?
+Are you sure you want to delete this reference? This action cannot be undone.,Are you sure you want to delete this reference? This action cannot be undone.
 Are you sure?,Czy na pewno?
 Attachment,Załącznik
 Attachment deleted,Załącznik usunięty
@@ -118,8 +124,11 @@ Can edit,Może edytować
 Can see,Może widzieć
 Can view,Może wyświetlać
 Cancel,Anuluj
+cancel csv import,Cancel the import process. This will stop the creation of new entities. Already created entities will not be affected
 Canceling,Anulowanie
 Canceling...,Anulowanie...
+Cancelled,Cancelled
+Cannot connect to server,Cannot connect to server
 Cannot find extractor,Nie można znaleźć ekstraktora
 Captcha,Captcha
 Captcha bypass,"Włączając tę opcję, możesz zezwolić użytkownikom na przesyłanie formularzy z szablonów znajdujących się na białej liście bez konieczności wypełniania CAPTCHA. 
@@ -128,6 +137,7 @@ Ta opcja jest niebezpieczna i może zostać wykorzystana do zalania Twojej insta
 złośliwą treścią."
 Cards,Karty
 Cards view,Widok kart
+Change,Change
 Change password,Zmień hasło
 Change Password,Zmień hasło
 Changes in the thesaurus will impact all the entities using these values.,Zmiany w tezaurusie będą miały wpływ na wszystkie obiekty korzystające z tych wartości.
@@ -136,7 +146,10 @@ Character support description,Ta opcja zwiększa wsparcie dla języków niełaci
 Character support process warning,"Wybranie tej opcji spowoduje automatyczną aktualizację wszystkich właściwości szablonu. Proces ten może potrwać kilka minut. Wybranie tej opcji prawdopodobnie zmieni adresy URL filtrów biblioteki. W konsekwencji, jeśli posiadasz menu lub linki korzystające z takich adresów URL, prawdopodobnie przestaną one działać."
 Character support revert warning,"Konieczne będzie ręczne ich zaktualizowanie. Po wybraniu tej opcji nie będzie można powrócić do używania starszego nazewnictwa właściwości. Jeśli nie masz problemów z nazwami właściwości szablonu, zalecamy pozostawienie tej opcji niezaznaczonej."
 Check to make this instance public (non-logged in users can see public documents and entities),"Zaznacz, aby uczynić tę instancję publiczną (niezalogowani użytkownicy mogą widzieć publiczne dokumenty i obiekty)"
+Checking which images fit the requirements,Checking which images fit the requirements...
+Choose,Choose
 Choose which data to use for training,"Wybierz, których danych użyć do trenowania"
+Chrome header,Chrome header
 Clear,Wyczyść
 Clear all,Wyczyść wszystko
 Clear All,Wyczyść Wszystko
@@ -147,6 +160,7 @@ Click,Kliknij
 Click here,Kliknij tutaj
 Click to fill,"Kliknij, aby wypełnić"
 Close,Zamknij
+Code,Code
 Collaborator,Współpracownik
 Collaborators,Współpracownicy
 Collapse all,Zwiń wszystko
@@ -154,6 +168,8 @@ Collapse All,Zwiń wszystko
 Collection,Kolekcja
 Collection Name,Nazwa kolekcji
 Common sources,Wspólne źródła
+Completed,Completed
+Completed with errors,Completed with errors
 Configuration,Konfiguracja
 Configure filters,Konfiguruj filtry
 Configure templates,Konfiguruj szablony
@@ -211,6 +227,15 @@ Created relationship,Utworzono powiązanie
 Created template,Utworzono szablon
 Created thesaurus,Utworzono tezaurus
 Created user group,Utworzono grupę użytkowników
+Creating entities,Creating entities
+Creating relationships,Creating relationships
+Creating thesauri,Creating thesauri
+csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
+CSV Import,CSV Import
+CSV import cancelled,CSV import cancelled
+CSV import completed,CSV import completed
+CSV import failed,CSV import failed
+CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Bieżąca wartość/sugestia
 Custom component error,Błąd znaczników komponentu niestandardowego: nieobsługiwane wartości! Sprawdź konfigurację
 Custom CSS,Niestandardowy CSS
@@ -219,8 +244,12 @@ Custom JS,Niestandardowy JS
 Custom landing page,Niestandardowa strona główna
 custom page error warning,"Na tej niestandardowej stronie wystąpił nieoczekiwany błąd, może nie działać poprawnie. Proszę skontaktować się z administratorem, aby uzyskać szczegóły."
 Custom Uploads,Niestandardowe przesyłanie
+Customize,Customize
+Customized,Customized
 Dark,Ciemny
+Dark Theme,Dark Theme
 Dashboard,Panel
+Date,Date
 Date added,Data dodania
 Date format,Format daty
 Date modified,Data modyfikacji
@@ -238,6 +267,7 @@ DELETE,USUŃ
 Delete entities and documents,Usuń obiekty i dokumenty
 Delete file,Usuń plik
 Delete language,Usuń język
+Delete reference,Delete reference
 Delete?,Usunąć?
 Deleted attachment,Usunięto załącznik
 Deleted custom file,Usunięto plik niestandardowy
@@ -273,8 +303,15 @@ Documentation,Dokumentacja
 documents,dokumenty
 Documents,Dokumenty
 documents.,dokumenty.
+Done,Done
+Done creating entities,Done creating entities
+Done creating relationships,Done creating relationships
+Done creating thesauri,Done creating thesauri
+Done extracting files,Done extracting files
+Done scanning,Done scanning
 Download,Pobierz
 Download a third-party authenticator app from your mobile store.,Pobierz aplikację uwierzytelniającą innej firmy ze sklepu mobilnego.
+Download failed rows,Download failed rows
 Drag and drop file in this window to upload,"Przeciągnij i upuść plik w tym oknie, aby przesłać"
 Drag row,Przeciągnij wiersz
 Drop your files here to upload or,"Upuść pliki tutaj, aby przesłać lub"
@@ -284,12 +321,12 @@ Duplicated name,Zduplikowana nazwa
 Duplicated username,Zduplikowana nazwa użytkownika
 Duration,Czas trwania
 Edit,Edytuj
-Edit all documents matching this criteria,Edytuj wszystkie dokumenty spełniające te kryteria
 Edit Extractor,Edytuj ekstraktor
 Edit File,Edytuj plik
 Edit group,Edytuj grupę
 Edit item,Edytuj element
 Edit metadata of entities,Edytuj metadane obiektów
+Edit theme,Edit theme
 Edit user,Edytuj użytkownika
 Editor,Redaktor
 editor,redaktor
@@ -307,7 +344,9 @@ Enter your current password to confirm,"Wprowadź aktualne hasło, aby potwierdz
 Entities,Obiekty
 entities,obiektów
 Entities across all languages,Obiekty we wszystkich językach
+Entities created,Entities created
 Entity,Obiekt
+Entity creation stage completed.,Entity creation stage completed.
 Entity deleted,Usunięto obiekt
 Entity Page,Strona obiektu
 Entity saved,Zapisano obiekt
@@ -322,32 +361,38 @@ Error setting default template,Błąd ustawiania szablonu domyślnego
 Error updating thesauri.,Błąd aktualizacji tezaurusów.
 Expand all,Rozwiń wszystko
 Expand All,Rozwiń wszystko
-Exploration,Eksploracja
 Export CSV,Eksportuj CSV
 Exporting entities to CSV,Eksportowanie obiektów do CSV
 Extension Token,Token rozszerzenia
 Extract new paragraphs,Wyodrębnij nowe akapity
 Extract paragraphs,Wyodrębnij akapity
+Extracting files,Extracting files
+Extracting files from uploaded package.,Extracting files from uploaded package.
 Extraction configuration,Konfiguracja ekstrakcji
 Extractor Name,Nazwa ekstraktora
 Extractor name,Nazwa ekstraktora
 Extractor/s deleted,Ekstraktor/y usunięty/e
 Extractors,Ekstraktory
+Failed,Failed
 Failed to save table of contents,Nie udało się zapisać spisu treści
+Failure details,Failure details
 Favicon description,"Favicon to mała ikona reprezentująca Twoją kolekcję w kartach przeglądarki i zakładkach. Domyślnie jest to logo Uwazi. Aby użyć własnej ikony:
 
 1. Prześlij swoją ikonę w Niestandardowych plikach.
 2. Skopiuj jej adres URL.
 3. Wybierz „Niestandardowa ikona"" i wklej adres URL we wskazanym polu.
 4. Odśwież stronę, aby zobaczyć swoją ikonę w działaniu."
+Favicon no images hint,Favicon no images hint
 FEATURED,WYRÓŻNIONE
 File,Plik
 File deleted,Plik usunięty
+File extraction completed successfully.,File extraction completed successfully.
 File name,Nazwa pliku
 File updated,Plik zaktualizowany
 Files,Pliki
 Files and database usage,Użycie plików i bazy danych
 Fill,Wypełnij
+Filter unauthorized relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
 Filters,Filtry
 Filters AND operator,ORAZ
 Filters configuration,Filtry
@@ -361,23 +406,25 @@ Find suggestions after training,Znajdź sugestie po trenowaniu
 Find suggestions for,Znajdź sugestie dla
 Find suggestions for selected,Znajdź sugestie dla wybranych
 Finding suggestions,Wyszukiwanie sugestii
-Fine tune,Dostrajanie
 Fit,Dopasuj
 Flag,Flaga
 for,dla
 For all entities,Dla wszystkich obiektów
 For entities with blank values,Dla obiektów z pustymi wartościami
+Forgot Password or Username?,Forgot Password or Username?
 Forgot Password?,Nie pamiętasz hasła?
 Forms and email configuration,Konfiguracja formularzy i poczty
 From,Od
 From all suggestions,Ze wszystkich sugestii
 From previous step,Z poprzedniego kroku
+Full mode,Full mode
 Full width,Pełna szerokość
 General,Ogólne
 General Information,Informacje ogólne
 Generated ID,Wygenerowany identyfikator
 Global CSS,Globalny CSS
 Global CSS & JS,Globalny CSS i JS
+Global JS,Global JS
 Google,Google
 Google Analytics,Google Analytics
 Google Analytics ID,Identyfikator Google Analytics
@@ -386,11 +433,20 @@ Group,Grupa
 Group Options,Opcje grupy
 Group saved,Zapisano grupę
 Group updated,Zaktualizowano grupę
+Grouped geolocation properties,Grouped geolocation properties
 Groups,Grupy
+Header and button preview,Header and button preview
+Header bar active background,Header bar active background
+Header bar background,Header bar background
+Header bar divider,Header bar divider
+Header bar hover background,Header bar hover background
+Header bar text,Header bar text
 help,pomoc
 here,tutaj
+Hide,Hide
 Hide actions,Ukryj akcje
 Hide label,Ukryj etykietę
+Hide restricted relationships from public,Hide restricted relationships from public
 Hide toolbar,Ukryj pasek narzędzi
 https://yourdomain,https://twojadomena
 hubs,huby
@@ -398,13 +454,24 @@ Hybrid,Hybrydowy
 Icon,Ikona
 ID,ID
 ID:,ID:
+"If an account exists with the email you provided, you will receive an email
+                        with instructions to reset your password.","If an account exists with the email you provided, you will receive an email
+                        with instructions to reset your password."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Jeśli jest to zewnętrzny URL, użyj pełnego adresu URL, np. http://www.uwazi.io."
 "If you want to continue, please type","Jeśli chcesz kontynuować, wpisz"
+Image doesn't match the required size.,Image doesn't match the required size.
 Import,Importuj
 Import asset,Importuj zasób
 Import completed,Import zakończony. Liczba utworzonych obiektów:
 Import CSV,Importuj CSV
+Import failed. Review details below.,Import failed. Review details below.
+Import finished successfully.,Import finished successfully.
+Import finished with errors. Review details below.,Import finished with errors. Review details below.
 Import instructions,Instrukcje importu
+Import is currently processing rows.,Import is currently processing rows.
+Import is retrying after an error.,Import is retrying after an error.
+Import theme instance file,Import theme instance file
+Import was cancelled.,Import was cancelled.
 Imported entities from file,Zaimportowano obiekty z pliku
 Imported translations from file,Zaimportowano tłumaczenia z pliku
 Importing data in progress,Trwa importowanie danych
@@ -421,6 +488,7 @@ Input,Dane wejściowe
 Install,Instaluj
 Install Language(s),Instaluj język(i)
 Install the browser extension.,Zainstaluj rozszerzenie przeglądarki.
+Installing languages,Installing languages
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instrukcje mogą się różnić w zależności od używanej aplikacji, proszę zapoznać się z dokumentacją danej aplikacji."
 Instructions to reset password,"Jeśli podany adres e-mail jest poprawny, wyślemy instrukcje resetowania hasła."
 Instructions to reset the password were sent to the user,Instrukcje resetowania hasła zostały wysłane do użytkownika
@@ -450,9 +518,7 @@ Ważne: Należy używać względnych adresów URL. Zaczynają się one od ukośn
 Language,Język
 Language Code,Kod języka
 Language deleted,Język usunięto
-Language Install Start Message,Rozpoczęto proces instalacji języka. Może to potrwać kilka minut w zależności od rozmiaru kolekcji. Proszę czekać do zakończenia procesu instalacji.
 Language reset success,Pomyślnie zresetowano język
-Language Uninstall Start Message,Rozpoczęto proces odinstalowania języka. Może to potrwać kilka minut w zależności od rozmiaru kolekcji. Proszę czekać do zakończenia procesu odinstalowania.
 Language uninstalled successfully,Język odinstalowano pomyślnie
 Language(s),Język(i)
 Language:,Język:
@@ -467,8 +533,11 @@ Library,Biblioteka
 library list view,widok listy biblioteki
 library map view,widok mapy biblioteki
 library table view,widok tabeli biblioteki
+Light,Light
+Light Theme,Light Theme
 Link,Link
 linked,powiązany
+Live preview,Live preview
 Live translate,Tłumaczenie na żywo
 Loading,Ładowanie
 Login,Logowanie
@@ -479,6 +548,7 @@ Longitude,Długość geograficzna
 Lost connection to the server. Your changes may be lost,Utracono połączenie z serwerem. Twoje zmiany mogą zostać utracone
 low,niski
 Manage site settings and configuration,Zarządzaj ustawieniami i konfiguracją strony
+Manually set a color,Manually set a color
 Map,Mapa
 Map api key,Klucz API mapy
 Map API key,Klucz API mapy
@@ -548,6 +618,7 @@ No common filters,Brak wspólnych filtrów
 No Connections,Brak połączeń
 No Connections description,Połączenia to bezpośrednie relacje między tym dokumentem a innymi dokumentami i obiektami.
 No context,Brak kontekstu
+No CSVs yet,No CSVs yet
 NO DATA AVAILABLE,BRAK DOSTĘPNYCH DANYCH
 NO EXTRACTORS,BRAK EKSTRAKTORÓW
 No files available,Brak dostępnych plików
@@ -557,6 +628,7 @@ No icon / flag,Bez ikony / flagi
 No items available,Brak dostępnych elementów
 No Label,Bez etykiety
 No label,Bez etykiety
+No notifications or active tasks.,No notifications or active tasks.
 No options,Brak opcji
 No options found,Nie znaleziono opcji
 No property,Element nie posiada tej właściwości
@@ -572,18 +644,20 @@ No table of contents description,"Możesz zacząć od zaznaczenia tekstu w dokum
 No text match,Brak dopasowania tekstu
 No text match description,"Możesz wpisać coś innego w polu wyszukiwania, aby uzyskać wyniki."
 No type,Brak typu
+No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,Brak dostępnego prawidłowego szablonu docelowego
 No value,Brak wartości
 No Value,Brak wartości
 "No, cancel","Nie, anuluj"
 Non processed,Nieprzetworzone
 Non-labeled,Nieoznaczone
+Non-latin characters support,Non-latin characters support
 Normal view,Widok normalny
 Not already been use as source template in another extractor,Nieużywany jeszcze jako szablon źródłowy w innym ekstraktorze
 Not already been use as target template,Nieużywany jeszcze jako szablon docelowy
 Not Found,Nie znaleziono
 Nothing selected,Nic nie zaznaczono
-Number of sentences above threshold,Liczba zdań powyżej progu
+Notifications,Notifications
 Obsolete,Przestarzałe
 obsolete,przestarzałe
 OCR,OCR
@@ -614,7 +688,6 @@ Other,Inne
 other,inne
 Other users will be affected by this action!,Ta akcja wpłynie na innych użytkowników!
 Others,Inni
-out of,z
 Page,Strona
 Page not found,Nie znaleziono strony
 Pages,Strony
@@ -639,17 +712,21 @@ per page,na stronę
 Permission,Uprawnienie
 Permission on entities explicitly shared with the user,Uprawnienie do obiektów jawnie udostępnionych użytkownikowi
 Permissions,Uprawnienia
+Pick a color,Pick a color
 Plain text,Tekst zwykły
 Please contact an admin for details.,Skontaktuj się z administratorem po szczegóły.
 Please type in,Proszę wpisać
 Please type in letters and numbers from the image to start the export.,"Wpisz litery i cyfry z obrazu, aby rozpocząć eksport."
-Precision,Precyzja
+Preflight scan completed.,Preflight scan completed.
+Preparing required relationships.,Preparing required relationships.
+Preparing required thesauri values.,Preparing required thesauri values.
 Preserve,Zachowaj
 Preserve Extension,Zachowaj rozszerzenie
 Preserve Setup Description,"Jeśli znasz swój adres URL i TOKEN Uwazi, kliknij poniższy link i wypełnij wymagane informacje."
 Press enter to add,"Naciśnij Enter, aby dodać"
 Preview,Podgląd
 Previous,Poprzednie
+Primary button,Primary button
 Primary Documents,Dokumenty główne
 Priority sorting,Sortowanie priorytetowe
 Priority sorting description,"Właściwości oznaczone jako priorytetowe do sortowania będą używane jako domyślne kryteria sortowania. Jeśli więcej niż jedna właściwość jest oznaczona jako priorytetowa, system spróbuje wybrać najlepsze dopasowanie. Przy wyświetlaniu mieszanych typów szablonów system wybierze najlepsze połączone sortowanie priorytetowe."
@@ -659,7 +736,9 @@ Process,Proces
 Process extractor,Ekstraktor procesów
 Process selected,Przetwórz wybrane
 Processed,Przetworzono
+Processed rows,Processed rows
 Processing,Przetwarzanie
+Progress,Progress
 Properties,Właściwości
 Properties from other templates in the collection using the same label,Właściwości z innych szablonów w kolekcji używające tej samej etykiety
 Properties from other templates in the collection using the same label.,Właściwości z innych szablonów w kolekcji używające tej samej etykiety.
@@ -690,17 +769,21 @@ Public form settings description,Tutaj możesz skonfigurować miejsce docelowe f
 Public Form submit URL,URL przesyłania formularza publicznego
 Public form URL description,"Jeśli skonfigurowałeś formularz publiczny i chcesz, aby inna kolekcja Uwazi otrzymywała zgłoszenia, wpisz tutaj jej URL."
 Public form whitelist description,"Jeśli chcesz umieścić formularze publiczne na swoich stronach, musisz dodać do białej listy identyfikatory szablonów, dla których oczekiwane są formularze publiczne."
+Public instance,Public instance
 Publish,Opublikuj
 Published,Opublikowano
 QR Code,Kod QR
 Query,Zapytanie
+Queued,Queued
 RAW,SUROWY
 Re-uploaded document,Ponownie przesłany dokument
 Receiving email,Adres e-mail odbiorcy
 Receiving email description,"Jeśli masz formularz kontaktowy, jest to adres e-mail, na który będą wysyłane zgłoszenia z formularza."
+Recommended,Recommended
 Reference,Odniesienie
 References,Odniesienia
 Reject,Odrzuć
+Related entities created,Related entities created
 Relation type,Typ relacji
 Relationship,Powiązanie
 Relationship Type,Typ powiązania
@@ -726,6 +809,8 @@ Request id #,Numer żądania #
 Request token,Token żądania
 Required,Wymagane
 Required property,Wymagana właściwość
+Required relationships were prepared.,Required relationships were prepared.
+Required thesauri values were prepared.,Required thesauri values were prepared.
 Reset,Resetuj
 Reset 2FA,Resetuj 2FA
 Reset default translation,Przywróć domyślne tłumaczenie
@@ -733,12 +818,16 @@ Reset language,Resetuj język
 Reset Password,Resetuj hasło
 Reset passwords,Resetuj hasła
 Restricted,Ograniczony
+Retryable,Retryable
+Retrying,Retrying
 Return to login,Powrót do logowania
 Review,Przegląd
 Reviewed,Sprawdzono
 Role,Rola
 Route,Trasa
 Row,Wiersz
+Rows failed,Rows failed
+Rows processed,Rows processed
 Sample,Próbka
 Satellite,Satelita
 Save,Zapisz
@@ -748,9 +837,10 @@ Save password,Zapisz hasło
 Save your work to make change permanent,"Zapisz swoją pracę, aby utrwalić zmiany"
 Saved successfully.,Zapisano pomyślnie.
 Saving...,Zapisywanie...
+Scanning,Scanning
+Scanning rows before import.,Scanning rows before import.
 Search,Szukaj
 Search item,Szukaj elementu
-Search not found,Brak wyników wyszukiwania
 Search related entities or documents,Szukaj powiązanych obiektów lub dokumentów
 Search relevance,Trafność wyszukiwania
 Search text,Szukaj tekstu
@@ -762,14 +852,18 @@ Search Tips: one char wildcard,"? jako znak zastępczy dla jednego znaku. Np. ""
 Search Tips: proximity,"~ dla wyszukiwań zbliżeniowych. Np. ""the status""~5 znajdzie wszystko, co zawiera ""the"" i ""status"" w odległości 5 słów, np. ""the procedural status"", ""the specific legal status""."
 Search Tips: wildcard,"Użyj * jako znaku zastępczego. Np. ""juris*"" dopasuje słowa takie jak jurisdiction, jurisdictional, jurists, jurisprudence itp."
 Searching...,Wyszukiwanie...
+Secondary button,Secondary button
 Secret keys,Tajne klucze
 Security,Bezpieczeństwo
 Select,Wybór
 Select & Search,Wybierz i szukaj
 Select all,Zaznacz wszystko
+Select an existing image,Select an existing image
+Select favicon image,Select favicon image
 Select files on your device,Wybierz pliki z urządzenia
 Select from computer,Wybierz z komputera
 Select relationship type,Wybierz typ relacji
+Select site logo image,Select site logo image
 Select target paragraph,Wybierz akapit docelowy
 Select the template to store the extracted paragraphs.,Wybierz szablon do przechowywania wyodrębnionych akapitów.
 Select the template with the source documents.,Wybierz szablon z dokumentami źródłowymi.
@@ -779,18 +873,11 @@ selected,wybrano
 selected of,wybrano z
 Selected or suggested,Wybrane lub sugerowane
 Selected templates,Wybrane szablony
-Semantic search,Wyszukiwanie semantyczne
-Semantic Search,Wyszukiwanie semantyczne
-Semantic search minimum sentences help,Wyszukiwanie semantyczne jest stosowane do każdego zdania w dokumencie. Filtruj dokumenty według minimalnej liczby zdań przekraczających próg.
-Semantic search overview,"Wyszukiwanie semantyczne to technika dostarczania wyników kontekstowych. Jej zdolność do uchwycenia pojęć i skojarzeń słownych w języku ludzkim umożliwia wyszukiwanie powiązanych informacji, takich jak synonimy, powiązane kategorie lub obiekty itp."
-Semantic search results,Wyniki wyszukiwania semantycznego
-Semantic search threshold help,"Próg określa, jak blisko wyniki odpowiadają wyszukiwanemu pojęciu. Przesuń suwak w prawo, aby zawęzić pojęcie zapytania. Uzyskane wyniki będą bardziej precyzyjne. Przesuń suwak w lewo, aby poszerzyć pojęcie i zbadać powiązaną treść."
 Send,Wyślij
 Send recovery email,Wyślij e-mail odzyskiwania
 Sending email,Wysyłanie e-maila
 Sending email description,"To jest adres e-mail, który będzie widoczny jako nadawca, gdy e-mail zostanie wysłany z Twojej kolekcji Uwazi do zarejestrowanych użytkowników. Domyślny adres to *no-reply@uwazi.io*. Możesz ustawić własny, wpisując tutaj wybrany adres e-mail."
 Sending labeled data,Wysyłanie oznaczonych danych
-Sentences above threshold,Zdania powyżej progu
 Services,Usługi
 Set as default,Ustaw jako domyślny
 Set default language,Ustaw domyślny język
@@ -798,6 +885,8 @@ Set default template,Ustaw domyślny szablon
 Set the default starting point for your geolocation properties.,Ustaw domyślny punkt startowy dla właściwości geolokalizacji.
 Settings,Ustawienia
 settings,ustawienia
+Settings navigation active background,Settings navigation active background
+Settings sidebar background,Settings sidebar background
 Settings updated,Ustawienia zaktualizowano.
 Share,Udostępnij
 Share edit access with other users,Udostępnij dostęp do edycji innym użytkownikom
@@ -814,7 +903,13 @@ Show toolbar,Pokaż pasek narzędzi
 Showing,Wyświetlanie
 shown of,wyświetlono z
 Sign in,Zaloguj się
+Simple mode,Simple mode
 Single relationships must have a hub,Pojedyncze powiązania muszą mieć węzeł
+Site logo description,"The logo appears in the top bar next to your collection name (about 200×32 pixels).
+
+1. Upload images in Custom Uploads if needed.
+2. Click ""Select site logo image"" and pick a file; only images from Custom Uploads are listed."
+Site logo no images hint,"No image files from Custom Uploads yet. Add PNG, SVG, or JPEG images there first."
 Size,Rozmiar
 Skip to main content,Przejdź do głównej treści
 Something went wrong,Coś poszło nie tak
@@ -828,6 +923,7 @@ Source relationship type,Źródłowy typ powiązania
 Source template,Szablon źródłowy
 Source Template,Szablon źródłowy
 Source's role in the relationship Source-Target.,Rola źródła w powiązaniu Źródło-Cel.
+Stage,Stage
 State,Stan
 Statistics,Statystyki
 Stats & Filters,Statystyki i filtry
@@ -845,8 +941,8 @@ Suggestion,Sugestia
 Suggestion:,Sugestia:
 Suggestions,Sugestie
 suggestions,sugestie
-Suggestions have been updated,Sugestie zostały zaktualizowane
 Suggestions sent,Sugestie wysłane
+Suggestions updated,Suggestions updated
 Supporting files,Pliki pomocnicze
 Synced template,Zsynchronizowany szablon
 Synced Template,Zsynchronizowany szablon
@@ -862,8 +958,10 @@ Target relationship type,Docelowy typ relacji
 Target Template,Szablon docelowy
 Target template,Szablon docelowy
 Target's role in the relationship Source-Target.,Rola celu w relacji Źródło-Cel.
+Tasks,Tasks
 Template,Szablon
 Template changes are being applied to all related entities.,Zmiany szablonu są stosowane do wszystkich powiązanych obiektów.
+Template color,Template color
 Template conflict,Konflikt szablonów
 Template name,Nazwa szablonu
 Template name already exists,Nazwa szablonu już istnieje
@@ -884,6 +982,14 @@ The request could not be processed.,Żądanie nie mogło zostać przetworzone.
 The source of this template is a sync.,Źródłem tego szablonu jest synchronizacja.
 The token does not validate against the secret key,Token nie jest zgodny z tajnym kluczem
 The token does not validate against the secret key!,Token nie jest zgodny z tajnym kluczem!
+Theme and branding,Theme and branding
+Theme colors,Theme colors
+Theme colors imported,Theme colors imported
+Theme favicon,Theme favicon
+Theme instance file invalid,Theme instance file invalid
+Theme logotype,Theme logotype
+Theme presets,Theme presets
+Theme preview,Theme preview
 There are no pages enabled for entity view,Brak stron włączonych dla widoku obiektu
 There are no untranslated terms,Brak nieprzetłumaczonych terminów
 Thesauri,Tezaurusy
@@ -893,6 +999,7 @@ Thesauri name,Nazwa tezaurusa
 thesauri new group desc,opis nowej grupy tezaurusa
 thesauri new item desc,opis nowego elementu tezaurusa
 Thesauri updated.,Tezaurusy zaktualizowane.
+Thesauri values created,Thesauri values created
 Thesaurus,Tezaurus
 Thesaurus created successfully.,Tezaurus utworzony pomyślnie.
 Thesaurus name,Nazwa tezaurusa
@@ -904,8 +1011,17 @@ This content is automatically generated,Ta treść jest generowana automatycznie
 "This entity has no document, you probably want to see the metadata","Ten obiekt nie ma dokumentu, prawdopodobnie chcesz zobaczyć metadane"
 This entity is restricted from public view.,Ten obiekt jest niedostępny publicznie.
 This field is required,To pole jest wymagane
+This file could not be displayed. Try refreshing the page.,This file could not be displayed. Try refreshing the page.
+This file could not be opened. It may be corrupted or not a valid PDF.,This file could not be opened. It may be corrupted or not a valid PDF.
+"This file is currently unavailable. Please contact your administrator if the issue
+                  persists.","This file is currently unavailable. Please contact your administrator if the issue
+                  persists."
+"This file is currently unavailable. Please contact your administrator if the issue
+              persists.","This file is currently unavailable. Please contact your administrator if the issue
+              persists."
 This file type is not supported on media fields,Ten typ pliku nie jest obsługiwany w polach multimedialnych
 This group is empty,Ta grupa jest pusta
+This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,Ta etykieta już istnieje w tym szablonie
 This option will show a notification about the use of cookies in your instance.,Ta opcja wyświetli powiadomienie o użyciu plików cookie w Twojej instancji.
 This property can not be deleted,Tej właściwości nie można usunąć
@@ -917,7 +1033,6 @@ This property will be the default filter in the library for this template.,Ta w�
 This table of contents was automatically created by the system.,Ten spis treści został automatycznie utworzony przez system.
 this template,ten szablon
 This template is in use by existing entities and cannot be deleted.,Ten szablon jest używany przez istniejące obiekty i nie może zostać usunięty.
-Threshold,Próg
 Time,Czas
 Timelinks,Odniesienia czasowe
 Timestamp,Znacznik czasu
@@ -935,6 +1050,7 @@ total entities,obiektów łącznie
 Total files,Pliki ogółem
 total files,plików ogółem
 "Total files from main documents, supporting files and uploads","Całkowita liczba plików z dokumentów głównych, plików pomocniczych i przesłanych"
+Total imports,Total imports
 total users,użytkowników łącznie
 Train,Trenuj
 Train model,Trenuj model
@@ -958,11 +1074,13 @@ Two-factor verification failed,Weryfikacja dwuskładnikowa nie powiodła się
 Two-step verification,Weryfikacja dwuetapowa
 Two-step verification token required,Wymagany token weryfikacji dwuetapowej
 Type,Typ
+U,U
 "Unable to save, failed response","Nie udało się zapisać, błędna odpowiedź"
 Unauthorized,Brak autoryzacji
 Unexpected error,Nieoczekiwany błąd
 Uninstall,Odinstaluj
 Uninstall language,Odinstaluj język
+Uninstalling language,Uninstalling language
 Unlink,Odłącz
 Unlock account,Odblokuj konto
 Unsupported OCR language,Nieobsługiwany język OCR
@@ -982,6 +1100,7 @@ Updating template properties across,Aktualizowanie właściwości szablonu we ws
 Upload a ZIP or CSV file.,Prześlij plik ZIP lub CSV.
 Upload and select file,Prześlij i wybierz plik
 Upload from computer,Prześlij z komputera
+Upload image,Upload image
 Upload PDF,Prześlij PDF
 Upload PDF(s) to create,"Prześlij PDF, aby utworzyć"
 Uploaded attachment,Przesłano załącznik
@@ -1009,8 +1128,11 @@ Users,Użytkownicy
 Users & Groups,Użytkownicy i grupy
 Using Authenticator,Używanie Authenticatora
 Using URLs,Używanie URL-i
+Uwazi,Uwazi
 Uwazi is developed by,Uwazi jest rozwijane przez
 Uwazi UI,Interfejs Uwazi
+Validating,Validating
+Validating file structure and headers.,Validating file structure and headers.
 Value,Wartość
 Value cannot be transformed to the correct type,Wartości nie można przekształcić do prawidłowego typu
 values,wartości
@@ -1021,8 +1143,6 @@ view,wyświetl
 View entities,Wyświetl obiekty
 View entity,Wyświetl obiekt
 View in library,Wyświetl w bibliotece
-View less,Pokaż mniej
-View more,Pokaż więcej
 View page,Wyświetl stronę
 WARNING,OSTRZEŻENIE
 Warning: you are editing multiple entities. Fields marked with a,Ostrzeżenie: edytujesz wiele obiektów. Pola oznaczone
@@ -1045,6 +1165,7 @@ You can also enter this secret key into your Authenticator app.,Możesz równie�
 You can create metadata templates in,Możesz tworzyć szablony metadanych w
 "You can start by selecting text in the document and clicking the ""Add to ToC""
                   button.","Możesz zacząć od zaznaczenia tekstu w dokumencie i kliknięcia przycisku ""Dodaj do spisu treści""."
+You do not have write permission on all entities,You do not have write permission on all entities
 You have unsaved changes. Do you want to continue?,Masz niezapisane zmiany. Czy chcesz kontynuować?
 You should activate this feature for enhanced account security,Powinieneś aktywować tę funkcję w celu zwiększenia bezpieczeństwa konta
 You should activate this feature for enhanced account security.,Powinieneś aktywować tę funkcję w celu zwiększenia bezpieczeństwa konta.
