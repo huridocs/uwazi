@@ -806,33 +806,61 @@ describe('UpdateEntityUseCase', () => {
       const filesAfter = await getAllFiles('entity1');
 
       expect(filesBefore).toMatchObject([
-        { entity: 'entity1', originalname: 'Document 1.pdf' },
         {
+          _id: factory.id('entity1_doc1'),
+          entity: 'entity1',
+          originalname: 'Document 1.pdf',
+          language: 'eng',
+        },
+        {
+          _id: factory.id('entity1_doc1_thumbnail'),
           entity: 'entity1',
           type: 'thumbnail',
           filename: `${factory.id('entity1_doc1').toHexString()}.jpg`,
+          language: 'eng',
         },
-        { entity: 'entity1', originalname: 'Document 2.pdf' },
         {
+          _id: factory.id('entity1_doc2'),
+          entity: 'entity1',
+          originalname: 'Document 2.pdf',
+          language: 'eng',
+        },
+        {
+          _id: factory.id('entity1_doc2_thumbnail'),
           entity: 'entity1',
           type: 'thumbnail',
           filename: `${factory.id('entity1_doc2').toHexString()}.jpg`,
+          language: 'eng',
         },
         { entity: 'entity1', originalname: 'Attachment 1.txt' },
       ]);
 
       expect(filesAfter).toMatchObject([
-        { entity: 'entity1', originalname: 'Document 1 Renamed.pdf' },
         {
+          _id: factory.id('entity1_doc1'),
+          entity: 'entity1',
+          originalname: 'Document 1 Renamed.pdf',
+          language: 'eng',
+        },
+        {
+          _id: factory.id('entity1_doc1_thumbnail'),
           entity: 'entity1',
           type: 'thumbnail',
           filename: `${factory.id('entity1_doc1').toHexString()}.jpg`,
+          language: 'eng',
         },
-        { entity: 'entity1', originalname: 'Document 2 Renamed.pdf' },
         {
+          _id: factory.id('entity1_doc2'),
+          entity: 'entity1',
+          originalname: 'Document 2 Renamed.pdf',
+          language: 'eng',
+        },
+        {
+          _id: factory.id('entity1_doc2_thumbnail'),
           entity: 'entity1',
           type: 'thumbnail',
           filename: `${factory.id('entity1_doc2').toHexString()}.jpg`,
+          language: 'eng',
         },
         { entity: 'entity1', originalname: 'Attachment 1 Renamed.txt' },
       ]);
