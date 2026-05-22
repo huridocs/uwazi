@@ -57,7 +57,7 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
 
           pipeline: [
             {
-              $project: { fullText: 0 },
+              $project: { fullText: 0, __v: 0 },
             },
           ],
         },
