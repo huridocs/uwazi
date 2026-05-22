@@ -15,6 +15,7 @@ type Props = BaseFileProps & {
 };
 
 export class ProcessingPDF extends FileWithContents<Props> {
+export class ProcessingPDF extends FileWithContents<Props> {
   status: 'processing' | 'failed';
 
   protected _type = 'document' as const;
@@ -22,6 +23,9 @@ export class ProcessingPDF extends FileWithContents<Props> {
   readonly entity: string;
 
   constructor(props: Props) {
+    super(props);
+    this.status = props.status;
+    this.entity = props.entity;
     super(props);
     this.status = props.status;
     this.entity = props.entity;

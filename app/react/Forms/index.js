@@ -22,7 +22,7 @@ import { RadioButtons } from './components/RadioButtons.js';
 import { Switcher } from './components/Switcher.js';
 import { Geolocation } from './components/Geolocation.js';
 import { LinkField } from './components/LinkField.js';
-import { FormValue } from './components/FormValue.js';
+import { FormValueConnected as FormValue } from './components/FormValue.js';
 import { MediaField } from './components/MediaField.js';
 
 export {

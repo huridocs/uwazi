@@ -1,5 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { BaseFile, BaseFileProps } from '../BaseFile.js';
+import { ObjectId } from 'mongodb';
+import { BaseFile, BaseFileProps } from '../BaseFile.js';
 import { FileContents } from '../FileContents.js';
 
 // Minimal concrete implementation to test BaseFile in isolation
@@ -58,8 +60,14 @@ describe('BaseFile', () => {
       it('defaults size to 0 when not provided', () => {
         const file = new TestFile({ ...validProps, size: undefined });
         expect(file.size).toBe(0);
+      it('defaults size to 0 when not provided', () => {
+        const file = new TestFile({ ...validProps, size: undefined });
+        expect(file.size).toBe(0);
       });
 
+      it('defaults creationDate to 0 when not provided', () => {
+        const file = new TestFile({ ...validProps, creationDate: undefined });
+        expect(file.creationDate).toBe(0);
       it('defaults creationDate to 0 when not provided', () => {
         const file = new TestFile({ ...validProps, creationDate: undefined });
         expect(file.creationDate).toBe(0);
@@ -69,9 +77,29 @@ describe('BaseFile', () => {
         const { originalname: _orig, ...props } = validProps;
         const file = new TestFile(props as TestFileProps);
         expect(file.originalname).toBe(validProps.filename);
+      it('defaults originalname to filename when originalname is not provided', () => {
+        const { originalname: _orig, ...props } = validProps;
+        const file = new TestFile(props as TestFileProps);
+        expect(file.originalname).toBe(validProps.filename);
       });
     });
 
+    describe('validation', () => {
+      it.each<[string, Partial<BaseFileProps>]>([
+        ['empty id', { id: '' }],
+        ['empty originalname', { originalname: '' }],
+        ['originalname too long', { originalname: 'a'.repeat(256) }],
+        ['empty filename', { filename: '' }],
+        ['filename too long', { filename: 'a'.repeat(256) }],
+        ['empty mimetype', { mimetype: '' }],
+        ['mimetype missing slash', { mimetype: 'applicationpdf' }],
+        ['mimetype starts with slash', { mimetype: '/pdf' }],
+        ['mimetype ends with slash', { mimetype: 'application/' }],
+        ['mimetype with invalid semicolon format', { mimetype: 'application/pdf;malicious' }],
+        ['non-integer size', { size: 123.45 }],
+        ['non-integer creationDate', { creationDate: 123.456 }],
+      ])('throws on %s', (_name, overrides) => {
+        expect(() => new TestFile({ ...validProps, ...overrides })).toThrowErrorMatchingSnapshot();
     describe('validation', () => {
       it.each<[string, Partial<BaseFileProps>]>([
         ['empty id', { id: '' }],
@@ -227,6 +255,39 @@ describe('BaseFile', () => {
     });
   });
 
+  describe('dtoBaseFields()', () => {
+    it('returns an object with all base DTO fields', () => {
+      const file = new TestFile(validProps);
+      expect(file.getDtoBaseFields()).toEqual({
+        _id: 'file123',
+        originalname: 'document.pdf',
+        filename: 'doc_abc123.pdf',
+        mimetype: 'application/pdf',
+        size: 1024,
+        creationDate: 1234567890,
+      });
+    });
+  });
+
+  describe('dboCommonFields()', () => {
+    it('maps DBO fields to domain fields', () => {
+      const _id = new ObjectId();
+      const dbo = {
+        _id,
+        originalname: 'doc.pdf',
+        filename: 'doc_abc.pdf',
+        mimetype: 'application/pdf',
+        size: 512,
+        creationDate: 9999,
+        type: 'custom' as const,
+      };
+      expect(BaseFile.dboCommonFields(dbo as any)).toEqual({
+        id: _id.toString(),
+        originalname: 'doc.pdf',
+        filename: 'doc_abc.pdf',
+        mimetype: 'application/pdf',
+        size: 512,
+        creationDate: 9999,
   describe('dtoBaseFields()', () => {
     it('returns an object with all base DTO fields', () => {
       const file = new TestFile(validProps);

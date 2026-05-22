@@ -113,6 +113,7 @@ export class ProcessedPDF extends FileWithContents<Props> {
       ...(this.fullText ? { fullText: this.fullText } : {}),
       generatedToc: this.generatedToc,
       ...(this.toc !== undefined ? { toc: this.toc } : {}),
+      ...(this.toc !== undefined ? { toc: this.toc } : {}),
       type: 'document',
       status: 'ready',
     };
@@ -131,6 +132,7 @@ export class ProcessedPDF extends FileWithContents<Props> {
           throw new Error('not Implemented');
         }),
       generatedToc: dbo.generatedToc,
+      toc: dbo.toc,
       toc: dbo.toc,
     });
   }
