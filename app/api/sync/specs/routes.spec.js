@@ -366,7 +366,7 @@ describe('sync', () => {
         expect(response).toBe('ok');
       });
 
-      it('should not fail if v2 elastic path has already been deleted (statusCode 404)', async () => {
+      it('should not fail if v2 elastic path has already been deleted (statusCode 409)', async () => {
         const error = new Error('Not Found :: 409');
         error.statusCode = 409;
 
