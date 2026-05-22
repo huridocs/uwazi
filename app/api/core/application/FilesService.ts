@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
@@ -10,7 +11,6 @@ import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { tenants } from '#api/tenants/index.js';
 import date from '#api/utils/date.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { ObjectId } from 'mongodb';
 import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
 import { BaseFile } from '../domain/files/BaseFile.js';
 import { FileContentsIO } from '../infrastructure/files/FileContentIO.js';
@@ -23,6 +23,7 @@ import { Result } from '../libs/Result.js';
 import { IdGenerator } from './contracts/IdGenerator.js';
 import { TransactionManager } from './contracts/TransactionManager.js';
 import { PathManager } from '../infrastructure/files/PathManager.js';
+import { FileWithContents } from '../domain/files/FileWithContents.js';
 
 type Deps = {
   idGenerator: IdGenerator;
@@ -48,7 +49,7 @@ class FilesService {
     await ArrayUtils.sequentialFor(
       files.filter(f => f.hasContent()),
       async file => {
-        await this.deps.fileStorage.storeFile(file);
+        await this.deps.fileStorage.storeFile(file as FileWithContents);
       }
     );
   }
@@ -163,7 +164,7 @@ class FilesService {
     const contentFiles = allFilesToDelete.filter(f => f.hasContent());
 
     await this.deps.filesDS.delete(allFilesToDelete);
-    await this.deps.relV1DS.deleteByFiles(contentFiles);
+    await this.deps.relV1DS.deleteByFiles(contentFiles as FileWithContents[]);
 
     this.deps.transactionManager.onCommitted(async () => {
       await this.deps.eventBus.emit(

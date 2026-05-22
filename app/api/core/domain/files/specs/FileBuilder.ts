@@ -89,10 +89,9 @@ export class FileBuilder {
     });
   }
 
-  static customUpload(id: string, props?: PartialFirstConstructorArg<typeof Thumbnail>) {
+  static customUpload(id: string, props?: PartialFirstConstructorArg<typeof CustomUpload>) {
     return new CustomUpload({
       id,
-      language: 'es',
       originalname: 'thumb.jpg',
       filename: 'thumb.jpg',
       mimetype: 'image/jpeg',
