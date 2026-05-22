@@ -64,9 +64,9 @@ const deleteEntityFromV2Index = async (entitySharedId: string) => {
   try {
     await EntityIndexerServiceFactory.default().remove([entitySharedId]);
   } catch (err) {
-    if (err.statusCode !== 409) {
-      throw err;
-    }
+    const isAlreadyDeleted =
+      err.statusCode === 409 && err.message?.includes('but no document was found');
+    if (!isAlreadyDeleted) throw err;
   }
 };
 
@@ -199,33 +199,37 @@ export default (app: Application) => {
   app.delete(
     '/api/sync',
     needsAuthorization(['admin']),
-    async (req: Request<{}, {}, {}, { data: string; namespace: string }>, res) => {
-      if (SyncHandlerRegistry.has(req.query.namespace)) {
-        const handler = SyncHandlerRegistry.get(req.query.namespace)!;
-        await handler.delete(JSON.parse(req.query.data)._id);
+    async (req: Request<{}, {}, {}, { data: string; namespace: string }>, res, next) => {
+      try {
+        if (SyncHandlerRegistry.has(req.query.namespace)) {
+          const handler = SyncHandlerRegistry.get(req.query.namespace)!;
+          await handler.delete(JSON.parse(req.query.data)._id);
+          res.json('ok');
+          return;
+        }
+
+        let entitySharedId: string | undefined;
+        if (req.query.namespace === 'entities') {
+          const entityDoc = await models.entities().getById(JSON.parse(req.query.data)._id);
+          entitySharedId = entityDoc?.sharedId;
+        }
+
+        await models[req.query.namespace]().delete(JSON.parse(req.query.data));
+
+        if (req.query.namespace === 'files') {
+          await deleteFile(JSON.parse(req.query.data)._id);
+        }
+
+        if (req.query.namespace === 'entities' && entitySharedId) {
+          await deleteFromIndex(req, entitySharedId);
+        } else if (req.query.namespace === 'entities') {
+          await deleteEntityFromIndex(JSON.parse(req.query.data)._id);
+        }
+
         res.json('ok');
-        return;
+      } catch (e) {
+        next(e);
       }
-
-      let entitySharedId: string | undefined;
-      if (req.query.namespace === 'entities') {
-        const entityDoc = await models.entities().getById(JSON.parse(req.query.data)._id);
-        entitySharedId = entityDoc?.sharedId;
-      }
-
-      await models[req.query.namespace]().delete(JSON.parse(req.query.data));
-
-      if (req.query.namespace === 'files') {
-        await deleteFile(JSON.parse(req.query.data)._id);
-      }
-
-      if (req.query.namespace === 'entities' && entitySharedId) {
-        await deleteFromIndex(req, entitySharedId);
-      } else if (req.query.namespace === 'entities') {
-        await deleteEntityFromIndex(JSON.parse(req.query.data)._id);
-      }
-
-      res.json('ok');
     }
   );
 };
