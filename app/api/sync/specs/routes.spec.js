@@ -365,6 +365,15 @@ describe('sync', () => {
         const response = await routes.delete('/api/sync', req);
         expect(response).toBe('ok');
       });
+
+      it('should not fail if v2 elastic path has already been deleted (statusCode 404)', async () => {
+        const error = new Error('Not Found :: 409');
+        error.statusCode = 409;
+
+        mockIndexerRemove.mockReturnValue(Promise.reject(error));
+        const response = await routes.delete('/api/sync', req);
+        expect(response).toBe('ok');
+      });
     });
 
     describe('when namespace is elasticSlots', () => {

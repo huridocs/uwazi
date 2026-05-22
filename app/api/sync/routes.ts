@@ -60,13 +60,23 @@ const deleteEntityFromIndex = async (entityId: string) => {
   }
 };
 
+const deleteEntityFromV2Index = async (entitySharedId: string) => {
+  try {
+    await EntityIndexerServiceFactory.default().remove([entitySharedId]);
+  } catch (err) {
+    if (err.statusCode !== 409) {
+      throw err;
+    }
+  }
+};
+
 const deleteFromIndex = async (
   req: Request<{}, {}, {}, { data: string; namespace: string }>,
   entitySharedId: string
 ) => {
   if (req.query.namespace === 'entities') {
     await deleteEntityFromIndex(JSON.parse(req.query.data)._id);
-    await EntityIndexerServiceFactory.default().remove([entitySharedId]);
+    await deleteEntityFromV2Index(entitySharedId);
   }
 };
 

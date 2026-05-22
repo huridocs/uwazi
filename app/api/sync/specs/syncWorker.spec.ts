@@ -522,12 +522,6 @@ describe('syncWorker', () => {
           await elasticTesting.reindex();
           permissionsContext.setCommandContext();
           await entitiesModel.delete({ template: template1 });
-          if (tenants.current().featureFlags?.v2ElasticSearch) {
-            await new MongoSlotsBootstrapper({
-              database: getConnection(),
-              slotsDAO: MongoSlotsDAOFactory.default(),
-            }).reset();
-          }
           await templates.delete({ _id: template1 });
         }, 'host1');
       });
