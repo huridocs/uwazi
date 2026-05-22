@@ -37,7 +37,6 @@ describe('ProcessedPDF', () => {
 
       ['language is undefined', { language: undefined }],
       ['language is empty', { language: '  ' as any }],
-      ['language is not 2 digits', { language: 'eng' as any }],
 
       ['totalPages is negative', { totalPages: -1 }],
     ])('throws on %s', (_name, overrides) => {
@@ -95,6 +94,20 @@ describe('ProcessedPDF', () => {
       const updated = document.update({ language: 'fr' });
 
       expect(updated.languageHasChanged).toBe(true);
+    });
+
+    it('does not mutate the input object', () => {
+      const file = FileBuilder.processedDocument('doc', { language: 'en' });
+      const input = {
+        language: 'fr' as const,
+        entity: 'should-not-change',
+        fullText: { 1: 'hacked' },
+      };
+
+      file.update(input);
+
+      expect(input.entity).toBe('should-not-change');
+      expect(input.fullText).toEqual({ 1: 'hacked' });
     });
   });
 

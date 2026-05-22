@@ -5,6 +5,7 @@ import {
 } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { ObjectUtils } from '#api/common.v2/utils/Object.js';
 import { BaseFile, BaseFileProps, FileContentLoader } from './BaseFile.js';
 import { FileContents } from './FileContents.js';
 import { FileWithContents } from './FileWithContents.js';
@@ -41,6 +42,12 @@ const Schema = z.object({
   totalPages: z.number().int().min(0).default(0),
   generatedToc: z.boolean().default(false),
 });
+
+const IMMUTABLE_PROCESSED_PDF_KEYS = [
+  'fullText',
+  'entity',
+  'totalPages',
+] as const satisfies ReadonlyArray<keyof Props>;
 
 export class ProcessedPDF extends FileWithContents<Props> {
   readonly entity: string;
@@ -85,11 +92,7 @@ export class ProcessedPDF extends FileWithContents<Props> {
   }
 
   update(props: Partial<Props>): this {
-    delete props.fullText;
-    delete props.entity;
-    delete props.totalPages;
-
-    const updated = super.update(props);
+    const updated = super.update(ObjectUtils.sanitize(props, IMMUTABLE_PROCESSED_PDF_KEYS));
     if (this.language !== updated.language) {
       updated.languageChanged();
     }
@@ -113,7 +116,6 @@ export class ProcessedPDF extends FileWithContents<Props> {
       ...(this.fullText ? { fullText: this.fullText } : {}),
       generatedToc: this.generatedToc,
       ...(this.toc !== undefined ? { toc: this.toc } : {}),
-      ...(this.toc !== undefined ? { toc: this.toc } : {}),
       type: 'document',
       status: 'ready',
     };
@@ -132,7 +134,6 @@ export class ProcessedPDF extends FileWithContents<Props> {
           throw new Error('not Implemented');
         }),
       generatedToc: dbo.generatedToc,
-      toc: dbo.toc,
       toc: dbo.toc,
     });
   }

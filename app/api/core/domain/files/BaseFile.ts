@@ -3,6 +3,7 @@ import stringify from 'fast-json-stable-stringify';
 import { fileDBO, fileDTO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import type { FileTypes } from '#api/files/storage.js';
 import type { FileContents } from './FileContents.js';
+import { ObjectUtils } from '#api/common.v2/utils/Object.js';
 
 type BaseFileProps = {
   id: string;
@@ -65,6 +66,15 @@ const Schema = z.object({
   uploaded: z.boolean().optional(),
 });
 
+const IMMUTABLE_BASE_FILE_KEYS = [
+  'id',
+  'creationDate',
+  'mimetype',
+  'size',
+  'filename',
+  'uploaded',
+] as const satisfies ReadonlyArray<keyof BaseFileProps>;
+
 export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
   readonly id: string;
 
@@ -104,13 +114,9 @@ export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
   }
 
   protected clone(props: Partial<TProps>): this {
-    Object.entries(props).forEach(
-      ([key, value]) => value === undefined && delete props[key as keyof TProps]
-    );
-
     const newProps = {
       ...this.props,
-      ...props,
+      ...ObjectUtils.sanitizeUndefined(props),
     };
 
     const instance = new (this.constructor as any)(newProps) as this;
@@ -134,15 +140,10 @@ export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
     return stringify(this.props) !== stringify(this.previousProps);
   }
 
-  update<ExtendedProps>(props: Partial<TProps> & Partial<ExtendedProps>): this {
-    delete props.id;
-    delete props.creationDate;
-    delete props.mimetype;
-    delete props.size;
-    delete props.filename;
-    delete props.uploaded;
+  update<ExtendedProps>(_props: Partial<TProps> & ExtendedProps): this {
+    const sanitized = ObjectUtils.sanitize(_props, IMMUTABLE_BASE_FILE_KEYS);
 
-    return this.clone(props);
+    return this.clone(sanitized);
   }
 
   isEntityFile(): this is this & { entity: string } {

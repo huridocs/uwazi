@@ -5,7 +5,7 @@ import { FilesDataSource } from './contracts/FilesDataSource.js';
 import { FilesService } from './FilesService.js';
 import { BaseFile } from '../domain/files/BaseFile.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { ProcessedPDFProps, TableOfContent } from '../domain/files/ProcessedPDF.js';
+import { TableOfContent } from '../domain/files/ProcessedPDF.js';
 
 type Input = {
   fileId: string;

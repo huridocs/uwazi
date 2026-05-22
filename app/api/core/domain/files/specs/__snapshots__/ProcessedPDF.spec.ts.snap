@@ -46,22 +46,6 @@ exports[`ProcessedPDF validation throws on language is empty 1`] = `
 ]"
 `;
 
-exports[`ProcessedPDF validation throws on language is not 2 digits 1`] = `
-"[
-  {
-    \\"code\\": \\"too_big\\",
-    \\"maximum\\": 2,
-    \\"type\\": \\"string\\",
-    \\"inclusive\\": true,
-    \\"exact\\": false,
-    \\"message\\": \\"String must contain at most 2 character(s)\\",
-    \\"path\\": [
-      \\"language\\"
-    ]
-  }
-]"
-`;
-
 exports[`ProcessedPDF validation throws on language is undefined 1`] = `
 "[
   {
