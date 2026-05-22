@@ -17,7 +17,7 @@ const ReferencesDisplayComponent = ({ locale }: { locale: 'en' | 'es' }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   return (
-    <div className="h-screen">
+    <div className="h-screen max-h-200">
       <BrowserRouter>
         <Provider store={store}>
           <div className="flex flex-col gap-4 w-full h-full">

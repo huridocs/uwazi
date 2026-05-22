@@ -7,15 +7,18 @@ type ClusterProps = {
   position: number;
   references: EntityReference[];
   onPointClick: (reference: EntityReference) => void;
+  isOpen?: boolean;
+  onToggle?: () => void;
 };
 
 const POINT_SPACING = 24;
 const POINT_SIZE = 10;
 const CONNECTOR_WIDTH = 20;
 
-const Cluster = ({ position, references, onPointClick }: ClusterProps) => {
+const Cluster = ({ position, references, onPointClick, isOpen, onToggle }: ClusterProps) => {
   const animatedPosition = useAnimateToPosition(position);
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const clusterIsOpen = isOpen ?? internalIsOpen;
   const pointsHeight = (references.length - 1) * POINT_SPACING + POINT_SIZE;
   const connectorY = pointsHeight / 2;
 
@@ -27,14 +30,19 @@ const Cluster = ({ position, references, onPointClick }: ClusterProps) => {
       <button
         type="button"
         onClick={() => {
-          setIsOpen(currentValue => !currentValue);
+          if (onToggle) {
+            onToggle();
+            return;
+          }
+
+          setInternalIsOpen(currentValue => !currentValue);
         }}
         className="relative flex h-6 w-6 items-center justify-center rounded-full border bg-(--color-theme-surface-raised) text-[10px] cursor-pointer"
       >
         {references.length}
       </button>
 
-      {isOpen && (
+      {clusterIsOpen && (
         <div
           className="absolute top-1/2"
           style={{

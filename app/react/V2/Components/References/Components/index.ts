@@ -1,2 +1,2 @@
-export { Cluster } from './Cluster';
-export { Point } from './Point';
+export { FullMode } from './FullMode';
+export { PageMode } from './PageMode';
