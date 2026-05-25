@@ -1,7 +1,7 @@
 import { ObjectUtils } from '../Object.js';
 
 describe('ObjectUtils', () => {
-  describe('omitUndefined()', () => {
+  describe('sanitizeUndefined()', () => {
     it('removes keys with undefined values', () => {
       const input = { a: 1, b: undefined, c: 'hello' };
       expect(ObjectUtils.sanitizeUndefined(input)).toEqual({ a: 1, c: 'hello' });
@@ -40,7 +40,7 @@ describe('ObjectUtils', () => {
     });
   });
 
-  describe('omitKeys()', () => {
+  describe('sanitize()', () => {
     it('removes the specified keys', () => {
       const input = { a: 1, b: 2, c: 3 };
       expect(ObjectUtils.sanitize(input, ['a', 'c'])).toEqual({ b: 2 });
