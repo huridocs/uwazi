@@ -37,6 +37,7 @@ type PositionedGroup = {
   group: ReferenceGroup;
   page: number;
 };
+
 const getGroupReferences = (group: ReferenceGroup): EntityReference[] =>
   group.type === 'cluster' ? group.references : [group.reference];
 
@@ -50,8 +51,9 @@ const toClusterGroup = (
   top,
   references,
 });
+
 // Maximum vertical distance (in px) to merge references on the same page.
-const PAGE_CLUSTER_PROXIMITY = 100;
+const PAGE_CLUSTER_PROXIMITY = 25;
 // Minimum number of pages to enable multi-page document clustering.
 const DOCUMENT_MULTIPAGE_MIN_PAGES = 50;
 // Minimum average references per page to enable multi-page document clustering.
@@ -60,6 +62,7 @@ const DOCUMENT_MULTIPAGE_MIN_REFS_PER_PAGE = 2;
 const DOCUMENT_CLUSTER_RATIO = 0.03;
 // Minimum document-level merge window (in pages) when multi-page clustering is enabled.
 const DOCUMENT_CLUSTER_MIN_PAGES = 1;
+
 const getPositionedReference = (reference: EntityReference): PositionedReference | null => {
   const firstRectangle = reference.reference.selectionRectangles?.[0];
   if (!firstRectangle?.page || typeof firstRectangle.top !== 'number') {
@@ -243,4 +246,5 @@ const groupDocumentReferences = (
   return appendDocumentCluster(finalState.grouped, finalState.cluster);
 };
 
+export type { DocumentReferenceGroup, ReferenceGroup };
 export { groupReferences, groupDocumentReferences };
