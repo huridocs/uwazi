@@ -1,5 +1,12 @@
 import { collaborators } from '#api/permissions/collaborators.js';
-import { fixtures, groupA, groupB, userA, userB } from '#api/permissions/specs/fixtures.js';
+import {
+  fixtures,
+  groupA,
+  groupB,
+  userA,
+  userB,
+  userPlusCollab,
+} from '#api/permissions/specs/fixtures.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { PermissionType } from '#shared/types/permissionSchema.js';
 import { UserInContextMockFactory } from '../../utils/testingUserInContext.js';
@@ -38,6 +45,14 @@ describe('collaborators', () => {
         const availableCollaborators = await collaborators.search('usera@domain.org');
         assertUserAsCollaborator(availableCollaborators[0], userA);
         assertPublicOption(availableCollaborators);
+      });
+
+      it('should return exact matched when username contains regex metacharacters', async () => {
+        const availableCollaborators = await collaborators.search('user+collab');
+        const matchedUser = availableCollaborators.find(
+          collaborator => collaborator.refId === userPlusCollab._id.toString()
+        );
+        assertUserAsCollaborator(matchedUser, userPlusCollab);
       });
     });
 
