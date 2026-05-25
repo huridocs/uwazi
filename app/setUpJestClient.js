@@ -3,11 +3,32 @@ import '@testing-library/jest-dom';
 import { TextEncoder, TextDecoder } from 'util';
 import AdapterModule from '@cfaester/enzyme-adapter-react-18';
 import Enzyme from 'enzyme';
+import fetchMock from 'fetch-mock';
+import { APIURL } from '#app/config.js';
 
 Object.assign(global, { TextDecoder, TextEncoder });
 
 const Adapter = AdapterModule.default || AdapterModule;
 Enzyme.configure({ adapter: new Adapter() });
+
+const addSSRQueryParam = matcher => {
+  if (typeof matcher !== 'string' || !matcher.startsWith(APIURL) || matcher.includes('ssr=')) {
+    return null;
+  }
+
+  return `${matcher}${matcher.includes('?') ? '&' : '?'}ssr=true`;
+};
+
+const originalGet = fetchMock.get.bind(fetchMock);
+fetchMock.get = (...args) => {
+  const ssrMatcher = addSSRQueryParam(args[0]);
+
+  if (ssrMatcher) {
+    originalGet(ssrMatcher, ...args.slice(1));
+  }
+
+  return originalGet(...args);
+};
 
 const warn = console.warn.bind(console);
 console.warn = function (message) {
