@@ -77,6 +77,25 @@ describe('ProcessingPDF', () => {
   });
 
   describe('asProcessed()', () => {
+    it('should mark ProcessedPDF as changed language', async () => {
+      const id = f.idString('doc');
+      const content = FileBuilder.content('document bytes');
+      const file = FileBuilder.document(id, {
+        originalname: 'report.pdf',
+        filename: 'abc123.pdf',
+        mimetype: 'application/pdf',
+        size: 5000,
+        creationDate: 1000000000,
+        entity: 'sharedId1',
+        content,
+      });
+      const fullText = { 1: 'page one' };
+
+      const processed = file.asProcessed({ language: 'fr', totalPages: 42, fullText });
+
+      expect(processed.languageHasChanged).toBe(true);
+    });
+
     it('should return a ProcessedPDF preserving all base fields and applying pdfInfo', () => {
       const id = f.idString('doc');
       const content = FileBuilder.content('document bytes');

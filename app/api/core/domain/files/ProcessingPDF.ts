@@ -32,7 +32,7 @@ export class ProcessingPDF extends FileWithContents<Props> {
   }
 
   asProcessed(pdfInfo: { language: LanguageISO6391; totalPages: number; fullText: FullText }) {
-    return new ProcessedPDF({
+    const processed = new ProcessedPDF({
       id: this.id,
       originalname: this.originalname,
       filename: this.filename,
@@ -46,6 +46,10 @@ export class ProcessingPDF extends FileWithContents<Props> {
       fullText: pdfInfo.fullText,
       generatedToc: false,
     });
+
+    processed.languageChanged();
+
+    return processed;
   }
 
   static fromDBO(dbo: ProcessingPDFDBO, contentLoader: FileContentLoader) {
