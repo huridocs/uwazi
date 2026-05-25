@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable max-statements */
 /* eslint-disable no-await-in-loop */
 import { ObjectId } from 'mongodb';
@@ -119,13 +118,11 @@ class FullTextIndexerService {
   async sync(fileIds: ObjectId[], refresh = false): Promise<void> {
     if (fileIds.length === 0) return;
 
-    const total = fileIds.length;
     const cursor = this.deps.filesDAO.streamProcessedDocsByIds(fileIds);
     const { tenantId } = this.deps.writer;
     const sem = new Semaphore(this.maxConcurrentWrites);
     const inFlight: Promise<void>[] = [];
     const errors: unknown[] = [];
-    let totalIndexed = 0;
     let overflow: MappedDocument | null = null;
     let overflowFileId: string | null = null;
 
@@ -166,7 +163,6 @@ class FullTextIndexerService {
     try {
       let result = await readBatch();
       while (result.ops.length > 0) {
-        totalIndexed += result.ops.length;
         await sem.acquire();
         const { ops } = result;
         inFlight.push(
