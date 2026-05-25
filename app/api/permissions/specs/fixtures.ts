@@ -25,6 +25,15 @@ const userB = {
   email: 'userb@domain.org',
 };
 
+const idUserPlusCollab = db.id();
+
+const userPlusCollab = {
+  _id: idUserPlusCollab,
+  username: 'user+collab',
+  role: UserRole.COLLABORATOR,
+  email: 'user+collab@domain.org',
+};
+
 const groupA = {
   _id: idGroupA,
   name: 'Users GroupA',
@@ -152,8 +161,8 @@ const fixtures: DBFixture = {
       language: 'en',
     },
   ],
-  users: [{ ...userA }, { ...userB }],
+  users: [{ ...userA }, { ...userB }, { ...userPlusCollab }],
   usergroups: [{ ...groupA }, { ...groupB }],
 };
 
-export { fixtures, userA, userB, groupA, groupB };
+export { fixtures, userA, userB, userPlusCollab, groupA, groupB };
