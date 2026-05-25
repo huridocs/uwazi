@@ -52,14 +52,6 @@ const ReferencesDisplay = ({
     [document.totalPages, referencesGroups]
   );
 
-  const pageClusters = useMemo(
-    () =>
-      currentPage === undefined
-        ? referencesGroups
-        : referencesGroups.filter(reference => Number.parseInt(reference.page, 10) === currentPage),
-    [currentPage, referencesGroups]
-  );
-
   return (
     <div className="w-full h-full flex flex-col gap-2 items-center px-4">
       <button
@@ -89,7 +81,8 @@ const ReferencesDisplay = ({
           ) : (
             <PageMode
               markerLayerHeight={markerLayerHeight}
-              pageClusters={pageClusters}
+              referencesGroups={referencesGroups}
+              currentPage={currentPage}
               onPointClick={onPointClick}
             />
           )}
