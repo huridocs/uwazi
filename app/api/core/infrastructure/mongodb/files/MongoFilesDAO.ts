@@ -43,6 +43,20 @@ class MongoFilesDAO extends MongoDataSource<ProcessedPDFDBO> {
     return this.getCollection().find(filter).sort({ _id: 1 });
   }
 
+  streamProcessedDocsByIds(ids: ObjectId[]): FindCursor<ProcessedPDFDBO> {
+    if (ids.length === 0) {
+      return this.getCollection().find({ _id: { $in: [] } } as any);
+    }
+    return this.getCollection()
+      .find({
+        _id: { $in: ids },
+        type: 'document',
+        status: 'ready',
+        $expr: MongoFilesDAO.HAS_INDEXABLE_FULLTEXT,
+      } as any)
+      .sort({ _id: 1 });
+  }
+
   async countProcessedDocs(): Promise<number> {
     return this.getCollection().countDocuments({
       type: 'document',

@@ -1,10 +1,10 @@
+import { ObjectId } from 'mongodb';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
 import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
 import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { ObjectId } from 'mongodb';
 import { FileAttachment } from '../../../../domain/files/FileAttachment.js';
 import { CustomUpload } from '../../../../domain/files/CustomUpload.js';
 import { ProcessingPDF } from '../../../../domain/files/ProcessingPDF.js';
@@ -130,16 +130,6 @@ describe('FileMappers', () => {
       const result = FileMappers.toDBO(document) as ProcessedPDFDBO;
 
       expect(result.language).toBe('eng');
-    });
-
-    it('should handle language conversion fallback when language is undefined', () => {
-      const document = FileBuilder.processedDocument(f.idString('processed'), {
-        language: undefined,
-      });
-
-      const result = FileMappers.toDBO(document) as ProcessedPDFDBO;
-
-      expect(result.language).toBe('other');
     });
   });
 

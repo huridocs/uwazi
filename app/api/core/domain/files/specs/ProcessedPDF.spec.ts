@@ -1,14 +1,53 @@
 import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { ProcessedPDFDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
-import { ProcessedPDF } from '../ProcessedPDF.js';
+import { ProcessedPDF, ProcessedPDFProps } from '../ProcessedPDF.js';
 import { FileBuilder } from './FileBuilder.js';
 
 const f = getFixturesFactory();
 
 describe('ProcessedPDF', () => {
+  describe('validation', () => {
+    const validProps: ProcessedPDFProps = {
+      id: 'file123',
+      originalname: 'document.pdf',
+      filename: 'doc_abc123.pdf',
+      mimetype: 'application/pdf',
+      size: 1024,
+      creationDate: 1234567890,
+      uploaded: true,
+      entity: 'sharedId1',
+      fullText: { 1: 'page one' },
+      generatedToc: false,
+      language: 'en',
+      totalPages: 1,
+      toc: [
+        {
+          label: 'Chapter 1',
+          indentation: 0,
+          selectionRectangles: [{ top: 10, left: 10, width: 100, height: 20, page: '1' }],
+        },
+      ],
+      content: FileBuilder.content('file content'),
+    };
+
+    it.each<[string, Partial<ProcessedPDFProps>]>([
+      ['entity is undefined', { entity: undefined }],
+      ['entity is empty', { entity: '  ' }],
+
+      ['language is undefined', { language: undefined }],
+      ['language is empty', { language: '  ' as any }],
+
+      ['totalPages is negative', { totalPages: -1 }],
+    ])('throws on %s', (_name, overrides) => {
+      expect(
+        () => new ProcessedPDF({ ...validProps, ...overrides })
+      ).toThrowErrorMatchingSnapshot();
+    });
+  });
+
   describe('update', () => {
-    it('should rename and preserve all properties', () => {
+    it('should only update allowed properties', () => {
       const content = FileBuilder.content('page contents');
       const file = FileBuilder.processedDocument(f.idString('doc'), {
         originalname: 'original.pdf',
@@ -19,31 +58,56 @@ describe('ProcessedPDF', () => {
         fullText: { 1: 'page one' },
         content,
       });
-      const updated = file.update({ originalname: 'renamed.pdf' });
+      const toc = [{ label: 'Chapter 1', indentation: 0 }];
+
+      const updated = file.update({
+        originalname: 'renamed.pdf',
+        language: 'en',
+        toc,
+        generatedToc: false,
+        fullText: {},
+        entity: 'not_allowed',
+        totalPages: 1,
+      });
+
       expect(updated).toBeInstanceOf(ProcessedPDF);
-      expect(updated.toDTO()).toEqual({ ...file.toDTO(), originalname: 'renamed.pdf' });
+      expect(updated.toDTO()).toEqual({
+        ...file.toDTO(),
+        originalname: 'renamed.pdf',
+        language: 'eng',
+        toc,
+        generatedToc: false,
+      });
       expect(updated.content).toBe(content);
       expect(updated.hasChanged).toBe(true);
       expect(updated.previousVersion?.originalname).toBe('original.pdf');
     });
 
-    it('should update toc and generatedToc', () => {
-      const toc = [{ label: 'Chapter 1', indentation: 0 }];
-      const file = FileBuilder.processedDocument(f.idString('doc'), {
-        generatedToc: true,
-        toc: [{ label: 'Auto Chapter', indentation: 0 }],
-      });
-      const updated = file.update({ toc, generatedToc: false });
-
-      expect(updated).toBeInstanceOf(ProcessedPDF);
-      expect(updated.toDTO()).toEqual({ ...file.toDTO(), toc, generatedToc: false });
-      expect(updated.hasChanged).toBe(true);
-      expect(updated.previousVersion?.toc).toEqual([{ label: 'Auto Chapter', indentation: 0 }]);
-    });
-
     it('should not mark as changed when the name is unchanged', () => {
       const file = FileBuilder.processedDocument(f.idString('doc'), { originalname: 'same.pdf' });
       expect(file.update({ originalname: 'same.pdf' }).hasChanged).toBe(false);
+    });
+
+    it("should set language change flag when file's language is changed", () => {
+      const document = FileBuilder.processedDocument('doc', { language: 'en' });
+
+      const updated = document.update({ language: 'fr' });
+
+      expect(updated.languageHasChanged).toBe(true);
+    });
+
+    it('does not mutate the input object', () => {
+      const file = FileBuilder.processedDocument('doc', { language: 'en' });
+      const input = {
+        language: 'fr' as const,
+        entity: 'should-not-change',
+        fullText: { 1: 'hacked' },
+      };
+
+      file.update(input);
+
+      expect(input.entity).toBe('should-not-change');
+      expect(input.fullText).toEqual({ 1: 'hacked' });
     });
   });
 

@@ -40,7 +40,7 @@ describe('migrate', () => {
       expect(migrateSpy).toBeCalledWith(connection.db);
     });
 
-    it('prints result when migrations do not need reindex', async () => {
+    it('returns migration status when migrations do not need reindex', async () => {
       jest.spyOn(migrator, 'migrate').mockResolvedValue([
         {
           _id: '61e6b524f5de4b24d561391b',
@@ -68,10 +68,10 @@ describe('migrate', () => {
 
       const result = await runMigration();
 
-      expect(result).toEqual({ reindex: false });
+      expect(result).toEqual({ migrated: true, reindex: false });
     });
 
-    it('prints result when migrations need reindex', async () => {
+    it('returns migration status when migrations need reindex', async () => {
       jest.spyOn(migrator, 'migrate').mockResolvedValue([
         {
           _id: testingDB.id(),
@@ -99,7 +99,15 @@ describe('migrate', () => {
       ]);
 
       const result = await runMigration();
-      expect(result).toEqual({ reindex: true });
+      expect(result).toEqual({ migrated: true, reindex: true });
+    });
+
+    it('returns migrated false when there are no pending migrations', async () => {
+      jest.spyOn(migrator, 'migrate').mockResolvedValue([]);
+
+      const result = await runMigration();
+
+      expect(result).toEqual({ migrated: false, reindex: false });
     });
   });
 });

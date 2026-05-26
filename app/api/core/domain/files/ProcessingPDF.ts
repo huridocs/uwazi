@@ -6,7 +6,7 @@ import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { BaseFile, BaseFileProps, FileContentLoader } from './BaseFile.js';
 import { FileContents } from './FileContents.js';
 import { FileWithContents } from './FileWithContents.js';
-import { fullTextProp, ProcessedPDF } from './ProcessedPDF.js';
+import { FullText, ProcessedPDF } from './ProcessedPDF.js';
 
 type Props = BaseFileProps & {
   entity: string;
@@ -31,8 +31,8 @@ export class ProcessingPDF extends FileWithContents<Props> {
     this.status = 'failed';
   }
 
-  asProcessed(pdfInfo: { language: LanguageISO6391; totalPages: number; fullText: fullTextProp }) {
-    return new ProcessedPDF({
+  asProcessed(pdfInfo: { language: LanguageISO6391; totalPages: number; fullText: FullText }) {
+    const processed = new ProcessedPDF({
       id: this.id,
       originalname: this.originalname,
       filename: this.filename,
@@ -46,6 +46,10 @@ export class ProcessingPDF extends FileWithContents<Props> {
       fullText: pdfInfo.fullText,
       generatedToc: false,
     });
+
+    processed.languageChanged();
+
+    return processed;
   }
 
   static fromDBO(dbo: ProcessingPDFDBO, contentLoader: FileContentLoader) {

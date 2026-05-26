@@ -8,6 +8,7 @@ import { Specification } from '#api/core/domain/entityAccessPolicy/EntityPermiss
 import { MongoEntityPermissionChecker } from '../MongoEntityPermissionChecker.js';
 import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
 import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
+import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
 
 const factory = getFixturesFactory();
 
@@ -18,6 +19,11 @@ const collaboratorUser = new User(factory.id('collab_user').toString(), 'collabo
 ]);
 const otherCollaborator = new User(factory.id('other_collab').toString(), 'collaborator', []);
 const anonymousUser = User.createFrom(null);
+
+const entityFile = (entitySharedId: string) =>
+  FileBuilder.attachment('file-for-check', { entity: entitySharedId });
+
+const customFile = () => FileBuilder.customUpload('custom-for-check');
 
 const readSpec = (actor: User) =>
   new Specification({ type: GrantType.User, level: AccessLevel.Read, actor });
@@ -78,6 +84,52 @@ const fixtures: DBFixture = {
     ),
 
     factory.entity('entity_5', 'template_1', {}, { language: 'en', published: true }),
+
+    factory.entity(
+      'entity_read_only',
+      'template_1',
+      {},
+      {
+        language: 'en',
+        permissions: [
+          { refId: collaboratorUser._id, type: 'user' as const, level: 'read' as const },
+        ],
+      }
+    ),
+
+    factory.entity(
+      'entity_write_collab',
+      'template_1',
+      {},
+      {
+        language: 'en',
+        permissions: [
+          { refId: collaboratorUser._id, type: 'user' as const, level: 'write' as const },
+        ],
+      }
+    ),
+
+    factory.entity(
+      'entity_write_editor',
+      'template_1',
+      {},
+      {
+        language: 'en',
+        permissions: [{ refId: editorUser._id, type: 'user' as const, level: 'write' as const }],
+      }
+    ),
+
+    factory.entity(
+      'entity_write_group',
+      'template_1',
+      {},
+      {
+        language: 'en',
+        permissions: [
+          { refId: collaboratorUser.groups[0], type: 'group' as const, level: 'write' as const },
+        ],
+      }
+    ),
   ],
 };
 
@@ -189,6 +241,120 @@ describe('MongoEntityPermissionChecker', () => {
       const sut = createSut();
       const result = await sut.filterEntities(ALL_SHARED_IDS, writeSpec(otherCollaborator));
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('checkWritePermission()', () => {
+    describe('anonymous user', () => {
+      it('is always denied', async () => {
+        const sut = createSut();
+        const result = await sut.checkWritePermission(entityFile('entity_1'), anonymousUser);
+        expect(result.getDataOrThrow()).toBe(false);
+      });
+    });
+
+    describe('admin user', () => {
+      it('is allowed on entity files', async () => {
+        const sut = createSut();
+        const result = await sut.checkWritePermission(entityFile('entity_1'), adminUser);
+        expect(result.getDataOrThrow()).toBe(true);
+      });
+
+      it('is allowed on custom (non-entity) files', async () => {
+        const sut = createSut();
+        const result = await sut.checkWritePermission(customFile(), adminUser);
+        expect(result.getDataOrThrow()).toBe(true);
+      });
+    });
+
+    describe('editor user', () => {
+      it('is denied on custom (non-entity) files', async () => {
+        const sut = createSut();
+        const result = await sut.checkWritePermission(customFile(), editorUser);
+        expect(result.getDataOrThrow()).toBe(false);
+      });
+
+      it('is denied on entity files when the editor has no explicit permission', async () => {
+        const sut = createSut();
+        const result = await sut.checkWritePermission(entityFile('entity_2'), editorUser);
+        expect(result.getDataOrThrow()).toBe(false);
+      });
+
+      it('is allowed on entity files when the editor has explicit write permission', async () => {
+        const sut = createSut();
+        const result = await sut.checkWritePermission(
+          entityFile('entity_write_editor'),
+          editorUser
+        );
+        expect(result.getDataOrThrow()).toBe(true);
+      });
+
+      it('is denied on entity files when the editor has only read-level permission', async () => {
+        const sut = createSut();
+        const result = await sut.checkWritePermission(entityFile('entity_read_only'), editorUser);
+        expect(result.getDataOrThrow()).toBe(false);
+      });
+    });
+
+    describe('collaborator user', () => {
+      it('is denied on custom (non-entity) files', async () => {
+        const sut = createSut();
+        const result = await sut.checkWritePermission(customFile(), collaboratorUser);
+        expect(result.getDataOrThrow()).toBe(false);
+      });
+
+      it('is denied on entity files with no permissions', async () => {
+        const sut = createSut();
+        const result = await sut.checkWritePermission(entityFile('entity_2'), collaboratorUser);
+        expect(result.getDataOrThrow()).toBe(false);
+      });
+
+      it('is denied on entity files where the user has only read-level permission', async () => {
+        const sut = createSut();
+        const result = await sut.checkWritePermission(
+          entityFile('entity_read_only'),
+          collaboratorUser
+        );
+        expect(result.getDataOrThrow()).toBe(false);
+      });
+
+      it('is allowed on entity files where the user has explicit write permission (direct)', async () => {
+        const sut = createSut();
+        const result = await sut.checkWritePermission(
+          entityFile('entity_write_collab'),
+          collaboratorUser
+        );
+        expect(result.getDataOrThrow()).toBe(true);
+      });
+
+      it('is allowed on entity files where the user belongs to a group with write permission', async () => {
+        const sut = createSut();
+        const result = await sut.checkWritePermission(
+          entityFile('entity_write_group'),
+          collaboratorUser
+        );
+        expect(result.getDataOrThrow()).toBe(true);
+      });
+
+      it('other collaborator (not in permissions) is denied', async () => {
+        const sut = createSut();
+        const result = await sut.checkWritePermission(
+          entityFile('entity_write_collab'),
+          otherCollaborator
+        );
+        expect(result.getDataOrThrow()).toBe(false);
+      });
+    });
+
+    describe('entity not found in DB', () => {
+      it('returns false instead of throwing', async () => {
+        const sut = createSut();
+        const result = await sut.checkWritePermission(
+          entityFile('does_not_exist'),
+          collaboratorUser
+        );
+        expect(result.getDataOrThrow()).toBe(false);
+      });
     });
   });
 });
