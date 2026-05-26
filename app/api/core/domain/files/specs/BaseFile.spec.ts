@@ -38,6 +38,7 @@ const validProps: TestFileProps = {
   mimetype: 'application/pdf',
   size: 1024,
   creationDate: 1234567890,
+  uploaded: true,
 };
 
 describe('BaseFile', () => {
@@ -59,15 +60,14 @@ describe('BaseFile', () => {
         expect(file.size).toBe(0);
       });
 
-      it('defaults creationDate to 0 when not provided', () => {
-        const file = new TestFile({ ...validProps, creationDate: undefined });
-        expect(file.creationDate).toBe(0);
-      });
+      it('defaults creationDate to now when not provided', () => {
+        const now = Date.now();
 
-      it('defaults originalname to filename when originalname is not provided', () => {
-        const { originalname: _orig, ...props } = validProps;
-        const file = new TestFile(props as TestFileProps);
-        expect(file.originalname).toBe(validProps.filename);
+        jest.spyOn(Date, 'now').mockReturnValue(now);
+
+        const file = new TestFile({ ...validProps, creationDate: undefined });
+
+        expect(file.creationDate).toEqual(now);
       });
     });
 
@@ -145,6 +145,68 @@ describe('BaseFile', () => {
       const updated = file.update({ originalname: 'new-name.pdf' });
 
       expect(updated.toDTO()).toEqual({ ...file.toDTO(), originalname: 'new-name.pdf' });
+    });
+
+    it('should only update allowed properties', () => {
+      const file = new TestFile(validProps);
+
+      const updated = file.update({
+        originalname: 'new-name.pdf',
+        id: 'not_allowed',
+        creationDate: 9999,
+        mimetype: 'not_allowed/pdf',
+        size: 9999,
+        filename: 'not_allowed.pdf',
+        uploaded: false,
+      });
+
+      expect(updated.toDTO()).toEqual({ ...file.toDTO(), originalname: 'new-name.pdf' });
+    });
+
+    describe("does not mutate the caller's props argument", () => {
+      it('does not mutate the input object passed to update()', () => {
+        const file = new TestFile(validProps);
+        const input = {
+          originalname: 'new-name.pdf',
+          id: 'should-be-ignored',
+          creationDate: 9999,
+          mimetype: 'text/plain',
+          size: 9999,
+          filename: 'ignored.pdf',
+          uploaded: false,
+        };
+
+        file.update(input);
+
+        expect(input.id).toBe('should-be-ignored');
+        expect(input.creationDate).toBe(9999);
+        expect(input.mimetype).toBe('text/plain');
+        expect(input.size).toBe(9999);
+        expect(input.filename).toBe('ignored.pdf');
+        expect(input.uploaded).toBe(false);
+        expect(input.originalname).toBe('new-name.pdf');
+      });
+
+      it('calling update() twice with the same input object produces the same result', () => {
+        const file = new TestFile(validProps);
+        const input = { originalname: 'twice.pdf' };
+
+        const first = file.update(input);
+        const second = file.update(input);
+
+        expect(first.originalname).toBe('twice.pdf');
+        expect(second.originalname).toBe('twice.pdf');
+      });
+
+      it('does not mutate the input object passed to clone() (via update with undefined values)', () => {
+        const file = new TestFile(validProps);
+        const input: Partial<TestFileProps> = { originalname: 'new.pdf', uploaded: undefined };
+
+        file.update(input);
+
+        expect(Object.prototype.hasOwnProperty.call(input, 'uploaded')).toBe(true);
+        expect(input.uploaded).toBeUndefined();
+      });
     });
   });
 

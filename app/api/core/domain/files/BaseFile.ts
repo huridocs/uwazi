@@ -3,6 +3,7 @@ import stringify from 'fast-json-stable-stringify';
 import { fileDBO, fileDTO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import type { FileTypes } from '#api/files/storage.js';
 import type { FileContents } from './FileContents.js';
+import { ObjectUtils } from '#api/common.v2/utils/Object.js';
 
 type BaseFileProps = {
   id: string;
@@ -57,10 +58,22 @@ const Schema = z.object({
       /^[a-zA-Z0-9][a-zA-Z0-9!#$&^_+-]*\/[a-zA-Z0-9][a-zA-Z0-9!#$&^_.+-]*(;\s*[\w-]+=[\w-]+)*$/,
       'Invalid MIME type format'
     ),
-  size: z.number().int('File size must be an integer'),
-  creationDate: z.number().int('Creation date must be an integer'),
+  size: z.number().int('File size must be an integer').default(0),
+  creationDate: z
+    .number()
+    .int('Creation date must be an integer')
+    .default(() => Date.now()),
   uploaded: z.boolean().optional(),
 });
+
+const IMMUTABLE_BASE_FILE_KEYS = [
+  'id',
+  'creationDate',
+  'mimetype',
+  'size',
+  'filename',
+  'uploaded',
+] as const satisfies ReadonlyArray<keyof BaseFileProps>;
 
 export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
   readonly id: string;
@@ -84,17 +97,8 @@ export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
   private previousProps?: TProps;
 
   constructor(props: TProps) {
-    const validated = Schema.parse({
-      id: props.id,
-      originalname: props.originalname ?? props.filename,
-      filename: props.filename,
-      mimetype: props.mimetype,
-      size: props.size ?? 0,
-      creationDate: props.creationDate ?? 0,
-      uploaded: props.uploaded,
-    });
-
-    this.props = { ...props, ...validated } as TProps;
+    const validated = Schema.parse(props);
+    this.props = { ...props, ...validated };
 
     this.id = validated.id;
     this.originalname = validated.originalname;
@@ -109,8 +113,11 @@ export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
     return this._type;
   }
 
-  protected clone(updateProps: Partial<TProps>): this {
-    const newProps = { ...this.props, ...updateProps };
+  protected clone(props: Partial<TProps>): this {
+    const newProps = {
+      ...this.props,
+      ...ObjectUtils.sanitizeUndefined(props),
+    };
 
     const instance = new (this.constructor as any)(newProps) as this;
 
@@ -133,8 +140,10 @@ export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
     return stringify(this.props) !== stringify(this.previousProps);
   }
 
-  update(updateProps: Partial<TProps>): this {
-    return this.clone(updateProps);
+  update<ExtendedProps>(_props: Partial<TProps> & ExtendedProps): this {
+    const sanitized = ObjectUtils.sanitize(_props, IMMUTABLE_BASE_FILE_KEYS);
+
+    return this.clone(sanitized);
   }
 
   isEntityFile(): this is this & { entity: string } {
