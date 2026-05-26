@@ -55,8 +55,6 @@
     "describe-database": "node --no-experimental-fetch ./scripts/describeDatabase.mjs",
     "tailwind": "npx @tailwindcss/cli -i ./app/react/App/styles/tailwind.css -o ./app/react/App/styles/globals.css",
     "tailwind:watch": "npx @tailwindcss/cli -i ./app/react/App/styles/tailwind.css -o ./app/react/App/styles/globals.css --watch",
-    "pre:hot": "node --no-experimental-fetch ./scripts/runner.js ./scripts/preHot.ts",
-    "prehot": "yarn pre:hot",
     "hot": "HOT=true BABEL_ENV=debug concurrently \"yarn run watch-types\" \"yarn run dev-server\" \"yarn run webpack-server\"",
     "hotter": "node --no-experimental-fetch ./scripts/hotter.mjs",
     "hot-e2e": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e EXTERNAL_SERVICES=true SKIP_MIGRATION_CHECK=true yarn hot",
