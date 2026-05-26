@@ -1,2 +1,2 @@
-export { FullMode } from './FullMode';
-export { PageMode } from './PageMode';
+export { FullMode } from './FullMode.js';
+export { PageMode } from './PageMode.js';

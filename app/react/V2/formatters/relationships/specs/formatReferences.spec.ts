@@ -139,7 +139,7 @@ describe('formatReferences', () => {
     expect(result).toEqual([]);
   });
 
-  it('should skip references whose hub target has no template since they represent the slef end of the relationship', () => {
+  it('should skip references whose hub target has no template since they represent the self end of the relationship', () => {
     const entity = {
       _id: 'entity4',
       sharedId: 'sharedId4',

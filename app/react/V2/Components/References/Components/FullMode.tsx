@@ -46,8 +46,8 @@ const FullMode = ({
           onPointClick={reference => {
             onPointClick?.(reference);
           }}
-          onMoreClick={referneces => {
-            onMoreClick?.(referneces);
+          onMoreClick={references => {
+            onMoreClick?.(references);
           }}
         />
       );

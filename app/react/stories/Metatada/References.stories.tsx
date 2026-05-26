@@ -13,7 +13,7 @@ const ReferencesDisplayComponent = ({ locale }: { locale: 'en' | 'es' }) => {
   store.set(templatesAtom, templates);
   store.set(localeAtom, locale);
   store.set(translationsAtom, translations);
-  const documentControlls = useRef<PDFControls>();
+  const documentControls = useRef<PDFControls>();
   const [currentPage, setCurrentPage] = useState(1);
 
   return (
@@ -32,7 +32,7 @@ const ReferencesDisplayComponent = ({ locale }: { locale: 'en' | 'es' }) => {
                 <PDF
                   fileUrl="/sample.pdf"
                   onPdfReady={controls => {
-                    documentControlls.current = controls;
+                    documentControls.current = controls;
                   }}
                   onPageChange={page => {
                     setCurrentPage(page);
@@ -45,7 +45,7 @@ const ReferencesDisplayComponent = ({ locale }: { locale: 'en' | 'es' }) => {
                   document={apiEntity.documents![0]}
                   currentPage={currentPage}
                   onPointClick={reference => {
-                    documentControlls.current?.goToPage(
+                    documentControls.current?.goToPage(
                       Number(reference.reference.selectionRectangles?.[0].page || '0')
                     );
                   }}
