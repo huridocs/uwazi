@@ -121,7 +121,7 @@ afterAll(async () => {
 const createDs = () => {
   const transactionManager = TransactionManagerFactory.default();
   const fullTextIndexer = TestUtils.mockClass<FullTextIndexerService>({
-    index: jest.fn().mockResolvedValue(undefined),
+    sync: jest.fn().mockResolvedValue(undefined),
     remove: jest.fn().mockResolvedValue(undefined),
   });
   const ds = new MongoFilesDataSource(
@@ -586,15 +586,15 @@ describe('MongoFilesDataSource', () => {
 
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(fullTextIndexer.index).toHaveBeenCalledWith([]);
+      expect(fullTextIndexer.sync).toHaveBeenCalledWith([]);
 
-      processedPdf.markForFullTextIndexing();
+      processedPdf.languageChanged();
 
       await ds.update(processedPdf);
 
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(fullTextIndexer.index).toHaveBeenCalledWith([FileMappers.toDBO(processedPdf)]);
+      expect(fullTextIndexer.sync).toHaveBeenCalledWith([FileMappers.toDBO(processedPdf)._id]);
     });
 
     it('should only deleted full text documents on file delete', async () => {
