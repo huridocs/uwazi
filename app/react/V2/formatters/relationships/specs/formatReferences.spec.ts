@@ -11,6 +11,7 @@ const entityWithReferences = {
   user: 'user1',
   relations: [
     {
+      template: 'relationshipType1',
       _id: 'conn1',
       hub: 'hub1',
       file: 'file1',
@@ -21,6 +22,7 @@ const entityWithReferences = {
       },
     },
     {
+      template: null,
       _id: 'conn2',
       hub: 'hub1',
       entity: 'targetSharedId',
@@ -31,6 +33,7 @@ const entityWithReferences = {
       },
     },
     {
+      template: 'relationshipType2',
       _id: 'conn3',
       hub: 'hub2',
       file: 'file2',
@@ -41,6 +44,7 @@ const entityWithReferences = {
       },
     },
     {
+      template: null,
       _id: 'conn4',
       hub: 'hub2',
       entity: 'anotherSharedId',
@@ -63,6 +67,7 @@ const entityWithNoReferences = {
   user: 'user1',
   relations: [
     {
+      template: null,
       _id: 'conn5',
       hub: 'hub3',
       entity: 'someSharedId',
@@ -134,7 +139,7 @@ describe('formatReferences', () => {
     expect(result).toEqual([]);
   });
 
-  it('should skip connections whose hub partner has no template', () => {
+  it('should skip references whose hub target has no template since they represent the self end of the relationship', () => {
     const entity = {
       _id: 'entity4',
       sharedId: 'sharedId4',
@@ -145,6 +150,7 @@ describe('formatReferences', () => {
       user: 'user1',
       relations: [
         {
+          template: 'relationshipType3',
           _id: 'conn6',
           hub: 'hub4',
           file: 'file3',
@@ -155,48 +161,95 @@ describe('formatReferences', () => {
           },
         },
         {
+          template: null,
           _id: 'conn7',
           hub: 'hub4',
           entity: 'noTemplateSharedId',
           entityData: { _id: 'noTemplateId', title: 'No Template Entity' },
         },
       ],
-    } as unknown as Entity;
+    } as Entity;
 
     const result = formatReferences(entity);
     expect(result).toEqual([]);
   });
 
-  it('should use an empty string for file when source connection has no file', () => {
+  it('should include self-references', () => {
     const entity = {
-      _id: 'entity5',
-      sharedId: 'sharedId5',
+      _id: 'entity6',
+      sharedId: 'sharedId6',
       language: 'en',
-      title: 'Entity',
-      template: 'template1',
+      title: 'Self-Referencing Entity',
+      template: 'entityTemplate1',
       creationDate: 1,
       user: 'user1',
       relations: [
         {
-          _id: 'conn8',
-          hub: 'hub5',
-          entity: 'sharedId5',
+          template: 'relationshipType1',
+          _id: 'conn10',
+          hub: 'hub6',
+          file: 'file4',
+          entity: 'sharedId6',
+          entityData: {
+            _id: 'entity6',
+            title: 'Self-Referencing Entity',
+            template: 'entityTemplate1',
+          },
           reference: {
-            text: 'text without file',
-            selectionRectangles: [{ top: 0, left: 0, width: 10, height: 10, page: '1' }],
+            text: 'first selection',
+            selectionRectangles: [{ top: 10, left: 20, width: 100, height: 30, page: '3' }],
           },
         },
         {
-          _id: 'conn9',
-          hub: 'hub5',
-          entity: 'targetSharedId2',
-          entityData: { _id: 'targetId2', title: 'Target 2', template: 'targetTemplate3' },
+          template: null,
+          _id: 'conn11',
+          hub: 'hub6',
+          file: 'file4',
+          entity: 'sharedId6',
+          entityData: {
+            _id: 'entity6',
+            title: 'Self-Referencing Entity',
+            template: 'entityTemplate1',
+          },
+          reference: {
+            text: 'second selection',
+            selectionRectangles: [{ top: 50, left: 20, width: 200, height: 30, page: '1' }],
+          },
         },
       ],
     } as unknown as Entity;
 
     const result = formatReferences(entity);
-    expect(result).toHaveLength(1);
-    expect(result[0].file).toBe('');
+    expect(result).toHaveLength(2);
+    expect(result[0]).toEqual({
+      _id: 'conn11',
+      hub: 'hub6',
+      file: 'file4',
+      reference: {
+        text: 'first selection',
+        selectionRectangles: [{ top: 10, left: 20, width: 100, height: 30, page: '3' }],
+      },
+      targetEntity: {
+        _id: 'conn11',
+        sharedId: 'sharedId6',
+        title: 'Self-Referencing Entity',
+        templateId: 'entityTemplate1',
+      },
+    });
+    expect(result[1]).toEqual({
+      _id: 'conn10',
+      hub: 'hub6',
+      file: 'file4',
+      reference: {
+        text: 'second selection',
+        selectionRectangles: [{ top: 50, left: 20, width: 200, height: 30, page: '1' }],
+      },
+      targetEntity: {
+        _id: 'conn10',
+        sharedId: 'sharedId6',
+        title: 'Self-Referencing Entity',
+        templateId: 'entityTemplate1',
+      },
+    });
   });
 });
