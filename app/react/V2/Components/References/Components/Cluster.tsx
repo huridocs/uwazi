@@ -10,6 +10,7 @@ type ClusterProps = {
   references: EntityReference[];
   onPointClick: (reference: EntityReference) => void;
   onMoreClick: (references: EntityReference[]) => void;
+  activePointId?: string | null;
   onClusterClick?: (references: EntityReference[]) => void;
   isOpen?: boolean;
   onToggle?: () => void;
@@ -26,6 +27,7 @@ const Cluster = ({
   references,
   onPointClick,
   onMoreClick,
+  activePointId,
   onClusterClick,
   isOpen,
   onToggle,
@@ -127,6 +129,7 @@ const Cluster = ({
                   position={index * POINT_SPACING}
                   reference={reference}
                   onClick={onPointClick}
+                  isActive={activePointId === reference._id}
                 />
               ))}
               {extraPoints?.length ? (

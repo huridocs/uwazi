@@ -9,9 +9,10 @@ type PointProps = {
   position: number;
   reference: EntityReference;
   onClick: (reference: EntityReference) => void;
+  isActive?: boolean;
 };
 
-const Point = ({ position, reference, onClick }: PointProps) => {
+const Point = ({ position, reference, onClick, isActive = false }: PointProps) => {
   const animatedPosition = useAnimateToPosition(position);
   const templates = useAtomValue(templatesAtom);
   const targetTemplate = useMemo(
@@ -22,7 +23,7 @@ const Point = ({ position, reference, onClick }: PointProps) => {
   return (
     <button
       type="button"
-      className="absolute [transition-property:top] duration-500 ease-out cursor-pointer"
+      className="absolute cursor-pointer [transition-property:top] duration-500 ease-out"
       style={{ top: `${animatedPosition}px` }}
       onClick={() => {
         onClick(reference);
@@ -33,7 +34,9 @@ const Point = ({ position, reference, onClick }: PointProps) => {
       </span>
       <Tooltip content={reference.targetEntity.title} placement="left">
         <span
-          className="block h-2.5 w-2.5 rounded-full"
+          className={`block h-2.5 w-2.5 rounded-full transition-transform duration-150 ease-out ${
+            isActive ? 'scale-150' : 'hover:scale-125'
+          }`}
           style={{
             backgroundColor: targetTemplate?.color || '#000000',
           }}

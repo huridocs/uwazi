@@ -27,6 +27,7 @@ const PageMode = ({
   currentPage,
 }: PageModeProps) => {
   const [openClusterKey, setOpenClusterKey] = useState<string | null>(null);
+  const [activePointId, setActivePointId] = useState<string | null>(null);
   const [pageHeight, setPageHeight] = useState<number | null>(null);
   const hasCurrentPage = currentPage !== undefined;
 
@@ -137,11 +138,14 @@ const PageMode = ({
               key={key}
               position={position}
               references={element.references}
+              activePointId={activePointId}
               isOpen={openClusterKey === key}
               onToggle={() => {
+                setActivePointId(null);
                 setOpenClusterKey(currentValue => (currentValue === key ? null : key));
               }}
               onPointClick={reference => {
+                setActivePointId(reference._id);
                 onPointClick?.(reference);
               }}
               onMoreClick={references => {
@@ -156,7 +160,9 @@ const PageMode = ({
             key={key}
             position={position}
             reference={element.reference}
+            isActive={activePointId === element.reference._id}
             onClick={reference => {
+              setActivePointId(reference._id);
               setOpenClusterKey(null);
               onPointClick?.(reference);
             }}

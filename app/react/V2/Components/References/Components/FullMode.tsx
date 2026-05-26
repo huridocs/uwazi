@@ -23,6 +23,7 @@ const FullMode = ({
   documentClusters,
 }: FullModeProps) => {
   const [openClusterKey, setOpenClusterKey] = useState<string | null>(null);
+  const [activePointId, setActivePointId] = useState<string | null>(null);
 
   return documentClusters?.map((element, index) => {
     const key = `doc-${element.startPage}-${element.endPage}-${index}`;
@@ -41,17 +42,21 @@ const FullMode = ({
           key={key}
           position={positionByPage}
           references={element.references}
+          activePointId={activePointId}
           isOpen={openClusterKey === key}
           onToggle={() => {
+            setActivePointId(null);
             setOpenClusterKey(currentValue => (currentValue === key ? null : key));
           }}
           onPointClick={reference => {
+            setActivePointId(reference._id);
             onPointClick?.(reference);
           }}
           onMoreClick={references => {
             onMoreClick?.(references);
           }}
           onClusterClick={references => {
+            setActivePointId(null);
             onClusterClick?.(references);
           }}
         />
@@ -63,7 +68,9 @@ const FullMode = ({
         key={key}
         position={positionByPage}
         reference={element.references[0]}
+        isActive={activePointId === element.references[0]._id}
         onClick={reference => {
+          setActivePointId(reference._id);
           setOpenClusterKey(null);
           onPointClick?.(reference);
         }}
