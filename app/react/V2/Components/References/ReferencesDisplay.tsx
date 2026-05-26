@@ -12,6 +12,7 @@ type ReferencesDisplayProps = {
   document: FileType;
   currentPage?: number;
   onPointClick?: (reference: EntityReference) => void;
+  onClusterClick?: (references: EntityReference[]) => void;
 };
 
 const ReferencesDisplay = ({
@@ -19,6 +20,7 @@ const ReferencesDisplay = ({
   document,
   currentPage,
   onPointClick,
+  onClusterClick,
 }: ReferencesDisplayProps) => {
   const [fullMode, setFullMode] = useState(true);
   const markerLayerRef = useRef<HTMLDivElement>(null);
@@ -77,6 +79,7 @@ const ReferencesDisplay = ({
               markerLayerHeight={markerLayerHeight}
               documentClusters={documentClusters}
               onPointClick={onPointClick}
+              onClusterClick={onClusterClick}
             />
           ) : (
             <PageMode

@@ -10,6 +10,7 @@ type ClusterProps = {
   references: EntityReference[];
   onPointClick: (reference: EntityReference) => void;
   onMoreClick: (references: EntityReference[]) => void;
+  onClusterClick?: (references: EntityReference[]) => void;
   isOpen?: boolean;
   onToggle?: () => void;
 };
@@ -25,6 +26,7 @@ const Cluster = ({
   references,
   onPointClick,
   onMoreClick,
+  onClusterClick,
   isOpen,
   onToggle,
 }: ClusterProps) => {
@@ -66,6 +68,8 @@ const Cluster = ({
         ref={setReferenceElement}
         type="button"
         onClick={() => {
+          onClusterClick?.(references);
+
           if (onToggle) {
             onToggle();
             return;

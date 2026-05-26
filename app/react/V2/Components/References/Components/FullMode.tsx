@@ -10,6 +10,7 @@ type FullModeProps = {
   markerLayerHeight: number;
   onPointClick?: (reference: EntityReference) => void;
   onMoreClick?: (references: EntityReference[]) => void;
+  onClusterClick?: (references: EntityReference[]) => void;
   documentClusters?: DocumentReferenceGroup[];
 };
 
@@ -18,6 +19,7 @@ const FullMode = ({
   markerLayerHeight,
   onPointClick,
   onMoreClick,
+  onClusterClick,
   documentClusters,
 }: FullModeProps) => {
   const [openClusterKey, setOpenClusterKey] = useState<string | null>(null);
@@ -48,6 +50,9 @@ const FullMode = ({
           }}
           onMoreClick={references => {
             onMoreClick?.(references);
+          }}
+          onClusterClick={references => {
+            onClusterClick?.(references);
           }}
         />
       );

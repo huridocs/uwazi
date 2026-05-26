@@ -49,6 +49,11 @@ const ReferencesDisplayComponent = ({ locale }: { locale: 'en' | 'es' }) => {
                       Number(reference.reference.selectionRectangles?.[0].page || '0')
                     );
                   }}
+                  onClusterClick={references => {
+                    documentControls.current?.goToPage(
+                      Number(references?.[0].reference.selectionRectangles?.[0].page || '0')
+                    );
+                  }}
                 />
               </div>
             </div>
