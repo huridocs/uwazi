@@ -13,27 +13,27 @@ const formatReferences = (entity: Entity): EntityReference[] => {
   );
 
   return sourceConnections.reduce<EntityReference[]>((acc, source) => {
-    const partner = relations.find(
+    const target = relations.find(
       (rel: ConnectionSchema) => rel._id !== source._id && rel.hub === source.hub
     );
 
-    if (!partner?._id || !partner.hub || !partner.entityData?.template) {
+    if (!target?._id || !target.hub || !target.entityData?.template) {
       return acc;
     }
 
     acc.push({
-      _id: String(partner._id),
-      hub: String(partner.hub),
+      _id: String(target._id),
+      hub: String(target.hub),
       file: source.file ? String(source.file) : '',
       reference: {
         text: source.reference?.text,
         selectionRectangles: source.reference?.selectionRectangles,
       },
       targetEntity: {
-        _id: String(partner._id),
-        sharedId: partner.entity || '',
-        title: partner.entityData?.title || '',
-        templateId: String(partner.entityData.template),
+        _id: String(target._id),
+        sharedId: target.entity || '',
+        title: target.entityData?.title || '',
+        templateId: String(target.entityData.template),
       },
     });
 
