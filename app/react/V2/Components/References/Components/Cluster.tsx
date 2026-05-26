@@ -54,7 +54,8 @@ const Cluster = ({
   );
 
   const clusterIsOpen = isOpen ?? internalIsOpen;
-  const pointsHeight = points.length * POINT_SPACING + POINT_SIZE;
+  const pointsHeight =
+    (points.length - (extraPoints.length > 0 ? 0 : 1)) * POINT_SPACING + POINT_SIZE;
 
   return (
     <div
@@ -124,14 +125,14 @@ const Cluster = ({
                   onClick={onPointClick}
                 />
               ))}
-              {extraPoints?.length && (
+              {extraPoints?.length ? (
                 <ShowMoreButton
                   key="show-more-button"
                   position={points.length * POINT_SPACING}
                   references={extraPoints}
                   onClick={onMoreClick}
                 />
-              )}
+              ) : undefined}
             </div>
           </div>
         </div>
