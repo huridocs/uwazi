@@ -6,7 +6,7 @@ import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { BaseFile, BaseFileProps, FileContentLoader } from './BaseFile.js';
 import { FileContents } from './FileContents.js';
 import { FileWithContents } from './FileWithContents.js';
-import { fullTextProp, ProcessedPDF } from './ProcessedPDF.js';
+import { FullText, ProcessedPDF } from './ProcessedPDF.js';
 
 type Props = BaseFileProps & {
   entity: string;
@@ -14,7 +14,7 @@ type Props = BaseFileProps & {
   status: 'processing' | 'failed';
 };
 
-export class ProcessingPDF extends FileWithContents {
+export class ProcessingPDF extends FileWithContents<Props> {
   status: 'processing' | 'failed';
 
   protected _type = 'document' as const;
@@ -22,20 +22,34 @@ export class ProcessingPDF extends FileWithContents {
   readonly entity: string;
 
   constructor(props: Props) {
-    const { entity, status, ...baseProps } = props;
-    super(baseProps);
-    this.status = status;
-    this.entity = entity;
-
-    this.props = { ...this.props, entity, status } as Props;
+    super(props);
+    this.status = props.status;
+    this.entity = props.entity;
   }
 
   failed() {
     this.status = 'failed';
   }
 
-  asProcessed(pdfInfo: { language: LanguageISO6391; totalPages: number; fullText: fullTextProp }) {
-    return new ProcessedPDF({ ...this, ...pdfInfo, generatedToc: false });
+  asProcessed(pdfInfo: { language: LanguageISO6391; totalPages: number; fullText: FullText }) {
+    const processed = new ProcessedPDF({
+      id: this.id,
+      originalname: this.originalname,
+      filename: this.filename,
+      mimetype: this.mimetype,
+      size: this.size,
+      creationDate: this.creationDate,
+      entity: this.entity,
+      content: this.content,
+      language: pdfInfo.language,
+      totalPages: pdfInfo.totalPages,
+      fullText: pdfInfo.fullText,
+      generatedToc: false,
+    });
+
+    processed.languageChanged();
+
+    return processed;
   }
 
   static fromDBO(dbo: ProcessingPDFDBO, contentLoader: FileContentLoader) {
