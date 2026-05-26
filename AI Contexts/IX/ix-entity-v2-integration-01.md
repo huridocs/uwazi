@@ -112,6 +112,8 @@ Findings (to validate further, no design decision yet):
 - IX training/inference pipelines consume `files.extractedMetadata` as labeled PDF context (selection text/rectangles), so this data is not only UI decoration.
 - `__extractedMetadata` appears to be a transport-level field name, while persisted data is file-level extracted metadata.
 - With `v2UpdateEntity` enabled, flows that relied on passing `__extractedMetadata` through `/api/entities` may regress if v2 DTO/mapper path ignores this payload.
+- `entities.save` itself does not contain direct IX model/suggestion orchestration logic; IX behavior is triggered via dedicated IX endpoints/use-cases and event/listener flows.  
+  (Exception in scope: `entities.save` persists file selections via `saveSelections`, which IX later reads from files.)
 
 ## Consolidated problem hypotheses
 
@@ -174,6 +176,22 @@ Why this path is being explored:
 - Same mechanism appears in both regular viewer metadata flow and IX labeling flow.
 - Could provide a cleaner boundary: entity update remains entity-focused; file-annotation updates use explicit contract/use case.
 
+### Path 5 (suggested naming/intervention track): rename to `metadataSelections`
+
+Suggested naming direction (not yet approved):
+- Persisted file property: rename `files.extractedMetadata` -> `files.metadataSelections`.
+- Transport/input field (if still needed during transition): rename `__extractedMetadata` -> `metadataSelections` (or `__metadataSelections` only as short-lived backward-compat bridge).
+
+Suggested intervention shape (not yet approved):
+1. Introduce explicit file-selection update contract/use case (backend-owned), using `metadataSelections` naming.
+2. Update regular viewer and IX labeling callers to this contract.
+3. Keep entity update contract clean (entity fields only), while allowing orchestration from IX/metadata endpoints.
+4. Extend IX internals to read/write renamed file property consistently.
+5. Run a migration-only rename strategy (no compatibility alias layer) for persisted data and payload naming.
+6. Decide ML integration naming strategy:
+   - Option A: stop rename at Uwazi->ML service boundary (Uwazi uses new names internally, translates to legacy names when calling ML service and maps responses back), or
+   - Option B: update ML service contract to new naming and remove Uwazi boundary translation/post-processing.
+
 ## Alignment status (important for future agents)
 
 ### Already aligned / agreed direction
@@ -196,6 +214,8 @@ Why this path is being explored:
 5. Exact runtime wiring for v2 event bridge in multi-instance deployments (app instances + queue workers).
 6. Whether to treat current `__extractedMetadata` behavior as IX-only concern or shared file-annotation concern used by both IX and regular viewer workflows.
 7. Naming/contract redesign options for `__extractedMetadata` transport field (if we replace it).
+8. Whether to rename persisted file field from `extractedMetadata` to `metadataSelections` now or defer behind compatibility aliasing.
+9. Whether ML service naming is translated at boundary or updated end-to-end to new contract.
 
 ## Recommended implementation sequence (for future work)
 
@@ -211,6 +231,13 @@ Why this path is being explored:
    - v2 flags ON/OFF,
    - persistence + suggestion refresh assertions.
 5. Add targeted regression tests for regular viewer click-to-fill + save path under v2 flags, verifying file-level extracted metadata persistence.
+6. If rename is approved, add end-to-end rename rollout tasks:
+   - migration scripts (no compatibility alias),
+   - caller migration (viewer + IX),
+   - data migration/check script,
+   - ML contract decision implementation:
+     - boundary translation mapping, or
+     - direct new-name contract adoption in ML service and Uwazi client.
 
 ## Explicit constraints for future agents
 
