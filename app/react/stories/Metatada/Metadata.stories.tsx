@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
 import { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.js';
 import { localeAtom, settingsAtom, templatesAtom, translationsAtom } from '#V2/atoms/index.js';
-import { apiEntity, templates } from './fixtures/MetadataDisplayFixtures.js';
+import { apiEntity, templates } from '../fixtures/MetadataDisplayFixtures.js';
 import { Entity, MetadataSchema } from '#V2/api/entities/types.js';
 
 const MetadataDisplayComponent = ({
@@ -92,7 +92,7 @@ const MetadataDisplayComponent = ({
 };
 
 const meta: Meta<typeof MetadataDisplayComponent> = {
-  title: 'Components/Metadata',
+  title: 'Metadata/MedataDisplay',
   component: MetadataDisplayComponent,
 };
 
