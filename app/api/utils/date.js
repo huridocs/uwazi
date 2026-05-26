@@ -64,6 +64,7 @@ export default {
       }
     }
 
+    //If no date is found, return NaN
     return NaN;
   },
 };
