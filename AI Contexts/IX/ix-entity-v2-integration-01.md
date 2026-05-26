@@ -201,6 +201,9 @@ Suggested intervention shape (not yet approved):
 3. Preferred approach is integration via adapters/listeners (infrastructure boundary), not embedding IX behavior in core entities/use cases.
 4. Labeling phase must be treated as first-class scope (not only table accept path).
 5. **Non-negotiable:** NO IX INSIDE CORE, period.
+6. v2 entity update path must keep producing legacy-compatible entity update emits/signals consumed by current IX listeners.
+   - This is considered a required compatibility part of the solution, not a temporary workaround.
+   - It should remain in place while IX is not fully migrated to a v2-native event contract.
 
 ### Under discussion / not yet aligned
 
@@ -219,11 +222,12 @@ Suggested intervention shape (not yet approved):
 
 ## Recommended implementation sequence (for future work)
 
-1. Add observability first (temporary targeted logs/metrics) around:
+1. Implement the already-decided compatibility step:
+   - ensure v2 entity update path emits legacy-compatible entity update events/signals for existing IX listeners.
+2. Add observability first (temporary targeted logs/metrics) around:
    - sidepanel entity save path (v1 vs v2),
    - IX refresh listener execution,
    - extracted metadata persistence.
-2. Implement v2→IX refresh bridge in adapter/infrastructure layer.
 3. Implement v2-safe labeling selection persistence path.
 4. Add tests for full matrix:
    - title/text/select,
