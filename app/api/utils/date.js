@@ -27,20 +27,43 @@ export default {
     return newDate;
   },
 
-  dateToSeconds(value, locale) {
-    let parsedValue = value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-
+  stripStopwords(parsedValue, locale) {
     const { removeStopwords, ...languages } = stopword;
-
-    if (locale) {
-      parsedValue = removeStopwords(parsedValue.split(' '), languages[locale]).join(' ');
+    if (!locale) {
+      return parsedValue;
     }
 
-    let getDate = parser.fromString(parsedValue, locale);
-    if (getDate.invalid) {
+    return removeStopwords(parsedValue.split(' '), languages[locale]).join(' ');
+  },
+
+  dateToSeconds(value, locale) {
+    //Remove diacritics
+    const normalizedValue = value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    //Remove stopwords
+    const originalValueWithoutStopwords = this.stripStopwords(value, locale);
+    //Remove stopwords and diacritics
+    const normalizedValueWithoutStopwords = this.stripStopwords(normalizedValue, locale);
+
+    const parsingAttempts = [
+      value,
+      originalValueWithoutStopwords,
+      normalizedValue,
+      normalizedValueWithoutStopwords,
+    ];
+
+    for (const parsedValue of parsingAttempts) {
+      let getDate = parser.fromString(parsedValue, locale);
+
+      if (!getDate.invalid) {
+        return getDate / 1000;
+      }
+
       getDate = Date.parse(`${parsedValue} GMT`);
+      if (!Number.isNaN(getDate)) {
+        return getDate / 1000;
+      }
     }
-    const formattedDate = getDate / 1000;
-    return formattedDate;
+
+    return NaN;
   },
 };
