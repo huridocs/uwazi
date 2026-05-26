@@ -8,6 +8,7 @@ const END_WEBPACK_PORT = 8180;
 const START_INSPECT_PORT = 9229;
 const END_INSPECT_PORT = 9329;
 const DB_PREFIX = 'uwazi_development';
+const MIGRATION_RESULT_PREFIX = '__UWAZI_MIGRATE_RESULT__=';
 const requestedOffset = process.argv[2];
 
 const isPortFree = port =>
@@ -109,6 +110,40 @@ const runCommandCapture = (command, args, env) =>
     });
   });
 
+const runCommandObserve = (command, args, env) =>
+  new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      env,
+      stdio: ['inherit', 'pipe', 'pipe'],
+    });
+    let stdout = '';
+    let stderr = '';
+
+    child.stdout.on('data', data => {
+      const text = data.toString();
+      stdout += text;
+      process.stdout.write(text);
+    });
+
+    child.stderr.on('data', data => {
+      const text = data.toString();
+      stderr += text;
+      process.stderr.write(text);
+    });
+
+    child.on('close', code => {
+      if (code === 0) {
+        resolve({ stdout, stderr });
+        return;
+      }
+      reject(new Error(`Command failed: ${command} ${args.join(' ')} (exit ${code})`));
+    });
+
+    child.on('error', error => {
+      reject(error);
+    });
+  });
+
 const getMongoHost = env => {
   if (env.MONGO_URI) {
     try {
@@ -129,6 +164,23 @@ const databaseExists = async (dbName, env) => {
     env
   );
   return output === 'true';
+};
+
+const parseMigrationResult = output => {
+  const resultLine = output
+    .split(/\r?\n/)
+    .find(line => line.startsWith(MIGRATION_RESULT_PREFIX));
+
+  if (!resultLine) {
+    throw new Error('Could not determine whether yarn migrate applied migrations.');
+  }
+
+  const result = JSON.parse(resultLine.slice(MIGRATION_RESULT_PREFIX.length));
+  if (typeof result?.migrated !== 'boolean') {
+    throw new Error('yarn migrate did not report a valid migration result.');
+  }
+
+  return result;
 };
 
 const main = async () => {
@@ -177,11 +229,19 @@ const main = async () => {
 
   const dbAlreadyExists = await databaseExists(tenantName, env);
   if (dbAlreadyExists) {
-    console.log(`Database ${tenantName} already exists. Skipping blank-state and admin-user.`);
+    console.log(`Database ${tenantName} already exists. Skipping blank-state.`);
   } else {
     await runCommand('yarn', ['blank-state', '--force', tenantName], env);
-    await runCommand('yarn', ['admin-user', tenantName], env);
   }
+
+  await runCommand('yarn', ['admin-user', tenantName], env);
+
+  const { stdout: migrateOutput } = await runCommandObserve('yarn', ['migrate'], env);
+  const migrationResult = parseMigrationResult(migrateOutput);
+  if (migrationResult.migrated) {
+    await runCommand('yarn', ['reindex'], env);
+  }
+
   await runCommand('yarn', ['hot'], env);
 };
 
