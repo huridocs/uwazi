@@ -87,35 +87,38 @@ class MongoEntityPermissionChecker
     if (user.isAnonymous()) {
       return Result.ok(false);
     }
-    if (user.isPrivileged()) {
+
+    if (user.role === 'admin') {
       return Result.ok(true);
     }
 
-    if (file.isEntityFile()) {
-      const [entity] = await this.getCollection()
-        .aggregate([
-          { $match: { sharedId: file.entity } },
-          {
-            $group: {
-              _id: '$sharedId',
-              sharedId: { $first: '$sharedId' },
-              template: { $first: '$template' },
-              permissions: { $first: '$permissions' },
-              published: { $first: '$published' },
-            },
-          },
-        ])
-        .toArray();
-
-      // groups not tested
-      const userRefIds = [user._id, ...user.groups];
-      //
-      const userRefIdsAsStrings = userRefIds.map(id => id.toString());
-      return Result.ok(
-        entity.permissions?.some((perm: any) => userRefIdsAsStrings.includes(perm.refId.toString()))
-      );
+    if (!file.isEntityFile()) {
+      return Result.ok(false);
     }
-    return Result.ok(true);
+
+    const [entity] = await this.getCollection()
+      .aggregate([
+        { $match: { sharedId: file.entity } },
+        {
+          $group: {
+            _id: '$sharedId',
+            sharedId: { $first: '$sharedId' },
+            permissions: { $first: '$permissions' },
+          },
+        },
+      ])
+      .toArray();
+
+    if (!entity) {
+      return Result.ok(false);
+    }
+
+    const userRefIds = [user._id, ...user.groups].map(id => id.toString());
+    return Result.ok(
+      entity.permissions?.some(
+        (perm: any) => userRefIds.includes(perm.refId.toString()) && perm.level === 'write'
+      ) ?? false
+    );
   }
 }
 
