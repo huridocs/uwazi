@@ -92,6 +92,27 @@ Key gaps:
   2) suggestion denormalization refresh.
 - Labeling phase (sidepanel save + extracted metadata persistence + refresh) is under-asserted.
 
+### E) Additional findings: regular entity click-to-fill flow (not only IX settings)
+
+Reviewed:
+- `app/react/Metadata/components/MetadataExtractor.tsx`
+- `app/react/Viewer/actions/documentActions.js`
+- `app/react/Library/actions/saveEntityWithFiles.ts`
+- `app/api/entities/entities.js`
+- `app/api/entities/metadataExtraction/saveSelections.ts`
+- `app/react/Viewer/components/PageSelections.tsx`
+- `app/api/services/informationextraction/InformationExtraction.ts`
+- `app/api/services/informationextraction/TrainModelForPDF.ts`
+- `app/api/services/informationextraction/IXServices.ts`
+
+Findings (to validate further, no design decision yet):
+- Legacy/regular viewer metadata workflow also sends `__extractedMetadata` when saving entities (same transport mechanism as IX sidepanel PDF flow).
+- Backend persistence happens through `saveSelections` and writes into `files.extractedMetadata` (not entity metadata fields directly).
+- In viewer UX, `files.extractedMetadata` drives PDF highlight overlays and clear-selection behavior.
+- IX training/inference pipelines consume `files.extractedMetadata` as labeled PDF context (selection text/rectangles), so this data is not only UI decoration.
+- `__extractedMetadata` appears to be a transport-level field name, while persisted data is file-level extracted metadata.
+- With `v2UpdateEntity` enabled, flows that relied on passing `__extractedMetadata` through `/api/entities` may regress if v2 DTO/mapper path ignores this payload.
+
 ## Consolidated problem hypotheses
 
 ### High-probability root causes
@@ -102,7 +123,10 @@ Key gaps:
 2. **Labeling payload compatibility gap (`__extractedMetadata`) under v2 update**  
    PDF labeling selection persistence likely depends on legacy save hook and is dropped in v2 path.
 
-3. **Text labeling save gate / form state fragility (low-confidence hypothesis)**  
+3. **Regular viewer click-to-fill compatibility gap under v2 update**  
+   Non-IX document metadata editing appears to use the same `__extractedMetadata` transport and may be impacted by the same v2 payload drop.
+
+4. **Text labeling save gate / form state fragility (low-confidence hypothesis)**  
    `dirtyFields.field` + current RHF input wiring could theoretically miss saves, but this is **not prioritized** and may be incorrect.
 
 ### Secondary/related causes
@@ -141,6 +165,15 @@ Avoid silent partial success patterns where persistence fails but UI shows gener
 Why this path:
 - Reduces operator confusion and false positives.
 
+### Path 4 (investigation track): model `__extractedMetadata` as file-annotation semantics
+
+Investigation question (not decided):
+- Should we formalize this as a file-annotation contract (persisted in `files.extractedMetadata`) and stop relying on ad-hoc `__extractedMetadata` payload pass-through in entity update DTOs?
+
+Why this path is being explored:
+- Same mechanism appears in both regular viewer metadata flow and IX labeling flow.
+- Could provide a cleaner boundary: entity update remains entity-focused; file-annotation updates use explicit contract/use case.
+
 ## Alignment status (important for future agents)
 
 ### Already aligned / agreed direction
@@ -161,6 +194,8 @@ Why this path:
 3. Final API shape for dedicated IX labeling persistence endpoint and how it orchestrates v2 entity update.
 4. Scope and sequencing (single release hardening vs staged rollout).
 5. Exact runtime wiring for v2 event bridge in multi-instance deployments (app instances + queue workers).
+6. Whether to treat current `__extractedMetadata` behavior as IX-only concern or shared file-annotation concern used by both IX and regular viewer workflows.
+7. Naming/contract redesign options for `__extractedMetadata` transport field (if we replace it).
 
 ## Recommended implementation sequence (for future work)
 
@@ -175,6 +210,7 @@ Why this path:
    - sidepanel labeling and table accept,
    - v2 flags ON/OFF,
    - persistence + suggestion refresh assertions.
+5. Add targeted regression tests for regular viewer click-to-fill + save path under v2 flags, verifying file-level extracted metadata persistence.
 
 ## Explicit constraints for future agents
 
