@@ -21,6 +21,7 @@ import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
+import { EntityUpdatedEvent as LegacyEntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { EntitiesServiceDeps } from '../EntitiesService.js';
 import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
 import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
@@ -442,13 +443,25 @@ describe('EntitiesService', () => {
       const entitiesDS = TestUtils.mockClass<MongoMultiLanguageEntityDataSource>({
         update: jest.fn(),
       });
-      const { sut, transactionManager } = createSut({ eventEmitter, entitiesDS });
-
-      const entity = new Entity({
-        template: createSampleTemplate(),
-        sharedId: 'sharedId',
-        translations: [{ language: 'en', id: 'id_1', metadata: {} }],
+      const { sut, transactionManager, eventBus } = createSut({ eventEmitter, entitiesDS });
+      await testingEnvironment.setFixtures({
+        ...fixtures,
+        entities: [
+          ...factory.entityInMultipleLanguages(
+            ['en', 'es'],
+            'entity-1',
+            'Document',
+            { text: [{ value: 'Entity 1 original text' }], numeric: [{ value: 10 }] },
+            {
+              title: 'Entity 1 original title',
+              icon: { _id: 'icon-original-1', type: 'image', label: 'Original Icon 1' },
+              obsoleteMetadata: [],
+            }
+          ),
+        ],
       });
+
+      const [entity] = await loadEntities(['entity-1']);
 
       await transactionManager.run(async () =>
         sut.update(entity, { actorId: 'actorId', targetLanguage: 'en' })
@@ -465,6 +478,13 @@ describe('EntitiesService', () => {
 
       expect(entitiesDS.update).toHaveBeenCalled();
       expect(eventEmitter.emit).toHaveBeenCalled();
+      expect(eventBus.emit).toHaveBeenCalledWith(
+        new LegacyEntityUpdatedEvent({
+          before: MongoEntityMapper.toDBO(entity.previousVersion) as any,
+          after: MongoEntityMapper.toDBO(entity) as any,
+          targetLanguageKey: 'en',
+        })
+      );
     });
   });
 
@@ -607,7 +627,7 @@ describe('EntitiesService', () => {
 
     it('should emit an EntityUpdatedEvent with correct before/after payload for each changed entity', async () => {
       const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
-      const { sut, transactionManager } = createSut({ eventEmitter });
+      const { sut, transactionManager, eventBus } = createSut({ eventEmitter });
       const template = await getTemplate(factory.id('Document'));
 
       const entities = await loadEntities(['entity-1', 'entity-2']);
@@ -646,11 +666,27 @@ describe('EntitiesService', () => {
       expect(eventEmitter.emit).toHaveBeenCalledTimes(2);
       expect(eventEmitter.emit).toHaveBeenCalledWith(expectedEvent1);
       expect(eventEmitter.emit).toHaveBeenCalledWith(expectedEvent2);
+
+      expect(eventBus.emit).toHaveBeenCalledTimes(2);
+      expect(eventBus.emit).toHaveBeenCalledWith(
+        new LegacyEntityUpdatedEvent({
+          before: MongoEntityMapper.toDBO(entity1.previousVersion) as any,
+          after: MongoEntityMapper.toDBO(entity1) as any,
+          targetLanguageKey: 'en',
+        })
+      );
+      expect(eventBus.emit).toHaveBeenCalledWith(
+        new LegacyEntityUpdatedEvent({
+          before: MongoEntityMapper.toDBO(entity2.previousVersion) as any,
+          after: MongoEntityMapper.toDBO(entity2) as any,
+          targetLanguageKey: 'en',
+        })
+      );
     });
 
     it('should not update the database or emit events when no entity has changed', async () => {
       const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
-      const { sut, transactionManager } = createSut({ eventEmitter });
+      const { sut, transactionManager, eventBus } = createSut({ eventEmitter });
 
       const entities = await loadEntities(['entity-1', 'entity-2']);
 
@@ -679,11 +715,12 @@ describe('EntitiesService', () => {
         });
 
       expect(eventEmitter.emit).not.toHaveBeenCalled();
+      expect(eventBus.emit).not.toHaveBeenCalled();
     });
 
     it('should do nothing when passed an empty array', async () => {
       const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
-      const { sut, transactionManager } = createSut({ eventEmitter });
+      const { sut, transactionManager, eventBus } = createSut({ eventEmitter });
 
       await transactionManager.run(async () => {
         await sut.updateMultiple([], { actorId: 'actorId', targetLanguage: 'en' });
@@ -693,6 +730,7 @@ describe('EntitiesService', () => {
       expect(allDocs.filter(d => d.sharedId === 'entity-1')).toHaveLength(2);
       expect(allDocs.filter(d => d.sharedId === 'entity-2')).toHaveLength(2);
       expect(eventEmitter.emit).not.toHaveBeenCalled();
+      expect(eventBus.emit).not.toHaveBeenCalled();
     });
 
     it('should throw when called outside a transaction', async () => {

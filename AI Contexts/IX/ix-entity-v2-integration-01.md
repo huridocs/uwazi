@@ -1,12 +1,32 @@
 # IX Entity V2 Integration Diagnosis (01)
 
-Last updated: 2026-05-21
-Status: diagnosis only (no implementation yet)
+Last updated: 2026-05-26
+Status: diagnosis + partial implementation (step 1 completed)
 
 ## Purpose of this document
 
 This file is a handoff context for future agents working on IX (Information Extraction / Metadata Extraction) regressions after v2 entity create/update rollout.  
 Goal: avoid re-discovery, preserve alignment decisions, and separate **agreed direction** from **open discussion**.
+
+## Implementation update (2026-05-26)
+
+Implemented work from the recommended sequence:
+
+1. **Compatibility emits for v2 entity update paths are now in place.**
+   - `app/api/core/application/EntitiesService.ts` now emits legacy `EntityUpdatedEvent` on `applicationEventsBus` in:
+     - `update(...)`
+     - `updateMultiple(...)` (one event per changed entity)
+   - Existing core domain `EntityUpdatedEvent` emission on v2 `eventEmitter` was preserved.
+   - Legacy event naming is explicit via aliasing (`LegacyEntityUpdatedEvent`); core domain event keeps its normal name (`EntityUpdatedEvent`).
+
+2. **v2 create path compatibility status**
+   - `EntityCreatedEvent` compatibility emission on `applicationEventsBus` was already present in `insert(...)` and `bulkInsert(...)`; no behavior change was needed there.
+
+3. **Verification**
+   - Updated and passed tests in:
+     - `app/api/core/application/specs/EntitiesService.spec.ts`
+   - Validation command used:
+     - `node --no-experimental-fetch ./node_modules/.bin/jest app/api/core/application/specs/EntitiesService.spec.ts --testTimeout=30000 -w=1`
 
 ## Naming note
 
@@ -80,6 +100,10 @@ Key findings:
 - This creates a likely integration gap: entity updates can succeed while IX suggestion refresh listener never runs.
 - For PDF labeling, sidepanel includes `__extractedMetadata` payload; legacy path persists it via `saveSelections`.
 - v2 update request schema/mapper does not include `__extractedMetadata`; this is currently the **main suspected regression vector** for labeling selection persistence in v2 mode.
+
+Update (2026-05-26):
+- The update-event integration gap above was addressed in `EntitiesService` by adding legacy `EntityUpdatedEvent` emits to v2 update paths while preserving v2 domain event emits.
+- Remaining open concern in this area is labeling payload compatibility (`__extractedMetadata`) for v2 update requests.
 
 ### D) Test coverage review
 
@@ -204,6 +228,7 @@ Suggested intervention shape (not yet approved):
 6. v2 entity update path must keep producing legacy-compatible entity update emits/signals consumed by current IX listeners.
    - This is considered a required compatibility part of the solution, not a temporary workaround.
    - It should remain in place while IX is not fully migrated to a v2-native event contract.
+   - **Implementation status (2026-05-26): done for `EntitiesService.update` and `EntitiesService.updateMultiple`.**
 
 ### Under discussion / not yet aligned
 
@@ -222,8 +247,9 @@ Suggested intervention shape (not yet approved):
 
 ## Recommended implementation sequence (for future work)
 
-1. Implement the already-decided compatibility step:
+1. ✅ Implement the already-decided compatibility step:
    - ensure v2 entity update path emits legacy-compatible entity update events/signals for existing IX listeners.
+   - Status: completed on 2026-05-26 (`EntitiesService.update` + `EntitiesService.updateMultiple`).
 2. Add observability first (temporary targeted logs/metrics) around:
    - sidepanel entity save path (v1 vs v2),
    - IX refresh listener execution,
