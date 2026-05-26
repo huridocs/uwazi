@@ -55,7 +55,7 @@ const ReferencesDisplay = ({
   );
 
   return (
-    <div className="w-full h-full flex flex-col gap-2 items-center px-4">
+    <div className="w-full h-full flex flex-col gap-2 items-center px-4 text-ink-tertiary">
       <button
         type="button"
         onClick={() => {
@@ -71,7 +71,7 @@ const ReferencesDisplay = ({
         )}
       </button>
       <div className="h-full w-4 flex flex-col items-center relative">
-        <div className="h-full w-0.5 bg-(--color-theme-border-soft)" />
+        <div className="h-full w-0.5 bg-(--color-theme-border-default)" />
         <div ref={markerLayerRef} className="absolute inset-0 flex flex-col items-center">
           {fullMode ? (
             <FullMode

@@ -77,14 +77,14 @@ const Cluster = ({
 
           setInternalIsOpen(currentValue => !currentValue);
         }}
-        className="relative flex h-6 w-6 items-center justify-center rounded-full border bg-(--color-theme-surface-raised) text-[10px] cursor-pointer"
+        className={`relative flex h-6 w-6 items-center justify-center rounded-full text-[10px] cursor-pointer border ${clusterIsOpen ? 'border-(--border-primary) bg-(--bg-muted)' : 'border-(--border-soft) bg-(--color-theme-surface-raised)'}`}
       >
         {references.length}
       </button>
 
       {clusterIsOpen && (
         <div
-          className="absolute bg-(--color-theme-border-soft)"
+          className="absolute bg-(--color-theme-border-default)"
           style={{
             top: `${BUTTON_SIZE / 2 - CONNECTOR_HEIGHT / 2}px`,
             left: `${-BUTTON_SIZE / 2}px`,
@@ -105,7 +105,7 @@ const Cluster = ({
             }}
           >
             <div
-              className="absolute w-0.5 bg-(--color-theme-border-soft)"
+              className="absolute w-0.5 bg-(--color-theme-border-default)"
               style={{
                 top: 0,
                 left: `${POINT_SIZE / 2 - 1}px`,
