@@ -10,6 +10,7 @@ type PageModeProps = {
   markerLayerHeight: number;
   onPointClick?: (reference: EntityReference) => void;
   referencesGroups?: ReferenceGroup[];
+  onMoreClick?: (references: EntityReference[]) => void;
   currentPage?: number;
 };
 
@@ -22,6 +23,7 @@ const PageMode = ({
   markerLayerHeight,
   onPointClick,
   referencesGroups,
+  onMoreClick,
   currentPage,
 }: PageModeProps) => {
   const [openClusterKey, setOpenClusterKey] = useState<string | null>(null);
@@ -141,6 +143,9 @@ const PageMode = ({
               }}
               onPointClick={reference => {
                 onPointClick?.(reference);
+              }}
+              onMoreClick={referneces => {
+                onMoreClick?.(referneces);
               }}
             />
           );

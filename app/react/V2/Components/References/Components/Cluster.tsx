@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { usePopper } from 'react-popper';
 import { EntityReference } from '#V2/formatters/relationships/types.js';
 import { useAnimateToPosition } from '../hooks/useAnimateToPosition.js';
 import { Point } from './Point.js';
+import { ShowMoreButton } from './ShowMoreButton.js';
 
 type ClusterProps = {
   position: number;
   references: EntityReference[];
   onPointClick: (reference: EntityReference) => void;
+  onMoreClick: (references: EntityReference[]) => void;
   isOpen?: boolean;
   onToggle?: () => void;
 };
@@ -18,14 +20,18 @@ const BUTTON_SIZE = 24;
 const CONNECTOR_HEIGHT = 2;
 const CONNECTOR_WIDTH = 13;
 
-const Cluster = ({ position, references, onPointClick, isOpen, onToggle }: ClusterProps) => {
+const Cluster = ({
+  position,
+  references,
+  onPointClick,
+  onMoreClick,
+  isOpen,
+  onToggle,
+}: ClusterProps) => {
   const animatedPosition = useAnimateToPosition(position);
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
-
-  const clusterIsOpen = isOpen ?? internalIsOpen;
-  const pointsHeight = (references.length - 1) * POINT_SPACING + POINT_SIZE;
 
   const { styles } = usePopper(referenceElement, popperElement, {
     placement: 'left',
@@ -38,6 +44,17 @@ const Cluster = ({ position, references, onPointClick, isOpen, onToggle }: Clust
       },
     ],
   });
+
+  const { points, extraPoints } = useMemo(
+    () => ({
+      points: references.slice(0, 10),
+      extraPoints: references.slice(10, references.length),
+    }),
+    [references]
+  );
+
+  const clusterIsOpen = isOpen ?? internalIsOpen;
+  const pointsHeight = points.length * POINT_SPACING + POINT_SIZE;
 
   return (
     <div
@@ -99,7 +116,7 @@ const Cluster = ({ position, references, onPointClick, isOpen, onToggle }: Clust
                 width: `${POINT_SIZE}px`,
               }}
             >
-              {references.map((reference, index) => (
+              {points?.map((reference, index) => (
                 <Point
                   key={reference._id || `cluster-point-${index}`}
                   position={index * POINT_SPACING}
@@ -107,6 +124,14 @@ const Cluster = ({ position, references, onPointClick, isOpen, onToggle }: Clust
                   onClick={onPointClick}
                 />
               ))}
+              {extraPoints?.length && (
+                <ShowMoreButton
+                  key="show-more-button"
+                  position={points.length * POINT_SPACING}
+                  references={extraPoints}
+                  onClick={onMoreClick}
+                />
+              )}
             </div>
           </div>
         </div>
