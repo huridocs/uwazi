@@ -106,7 +106,6 @@ export const PageSchema = {
       type: 'array',
       items: { $ref: '#/definitions/pageRelease' },
     },
-    user: objectIdSchema,
     entityView: { type: 'boolean' },
     markdownSupport: { type: 'boolean' },
     __v: { type: 'number' },
@@ -126,7 +125,6 @@ export const PageEditorSchema = {
     _id: objectIdSchema,
     sharedId: { type: 'string' },
     creationDate: { type: 'number' },
-    user: objectIdSchema,
     entityView: { type: 'boolean' },
     markdownSupport: { type: 'boolean' },
     locales: {

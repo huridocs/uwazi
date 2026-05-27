@@ -36,9 +36,9 @@ describe('pages', () => {
         ]);
 
         expect([es.title, en.title, pt.title]).toEqual([page.title, page.title, page.title]);
-        expect(es.user?.toString()).toBe(user._id.toString());
+        expect(es.user).toBeUndefined();
         expect(es.creationDate).toEqual(1);
-        expect(es.markdownSupport).toBe(true);
+        expect(es.markdownSupport).toBe(false);
 
         const allDocs = await pages.get({});
         const created = allDocs.filter(p => p.sharedId === sharedId);
@@ -73,7 +73,7 @@ describe('pages', () => {
     });
 
     describe('when updating', () => {
-      it('should not assign again user and creation date and partial update data', async () => {
+      it('should not change creation date on partial update', async () => {
         await withContext(async () => {
           jest.spyOn(date, 'currentUTC').mockReturnValue(10);
 
@@ -85,7 +85,7 @@ describe('pages', () => {
           expect(modifiedDoc.title).toBe('Edited title');
 
           const doc = await pages.getById('2', 'es');
-          expect(doc.user).not.toBe('another_user');
+          expect(doc.user).toBeUndefined();
           expect(doc.creationDate).toBe(1);
         });
       });

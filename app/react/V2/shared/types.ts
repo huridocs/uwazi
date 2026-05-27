@@ -60,7 +60,6 @@ type Page = {
   draft?: PageDraft;
   releases?: PageRelease[];
   releasesByLocale?: Record<string, PageRelease[]>;
-  user?: string;
   entityView?: boolean;
   markdownSupport?: boolean;
 };

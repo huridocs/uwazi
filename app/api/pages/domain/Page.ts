@@ -27,7 +27,6 @@ export type PageProps = {
   id: string;
   sharedId: string;
   creationDate: number;
-  userId: string;
   entityView: boolean;
   markdownSupport: boolean;
   locales: Record<string, PageLocaleData>;
@@ -51,8 +50,6 @@ export class Page {
 
   readonly creationDate: number;
 
-  readonly userId: string;
-
   entityView: boolean;
 
   markdownSupport: boolean;
@@ -63,7 +60,6 @@ export class Page {
     this.id = props.id;
     this.sharedId = props.sharedId;
     this.creationDate = props.creationDate;
-    this.userId = props.userId;
     this.entityView = props.entityView ?? false;
     this.markdownSupport = props.markdownSupport ?? false;
     this.locales = { ...props.locales };
@@ -130,7 +126,6 @@ export class Page {
     }
 
     const snapshotLocales: Record<string, PageLocaleData> = {};
-    let hasPublishableContent = false;
 
     params.languageKeys.forEach(lang => {
       const locale = this.locales[lang];
@@ -142,14 +137,7 @@ export class Page {
         return;
       }
       snapshotLocales[lang] = cloneLocale(locale);
-      if (locale.draft.content.trim()) {
-        hasPublishableContent = true;
-      }
     });
-
-    if (!hasPublishableContent) {
-      throw new InvalidPageReleaseError('At least one locale must have non-empty content to publish');
-    }
 
     return {
       version: params.nextVersion,
@@ -187,7 +175,6 @@ export class Page {
   static createForNewPage(params: {
     id: string;
     sharedId: string;
-    userId: string;
     creationDate: number;
     languageKeys: string[];
     title: string;
@@ -203,9 +190,8 @@ export class Page {
       id: params.id,
       sharedId: params.sharedId,
       creationDate: params.creationDate,
-      userId: params.userId,
       entityView: params.entityView ?? false,
-      markdownSupport: params.markdownSupport ?? true,
+      markdownSupport: params.markdownSupport ?? false,
       locales,
     });
   }

@@ -93,12 +93,11 @@ class SavePageUseCase extends AbstractUseCase<Input, Output, Deps> {
     const newPage = Page.createForNewPage({
       id: new ObjectId().toHexString(),
       sharedId,
-      userId: input.user._id.toString(),
       creationDate: date.currentUTC(),
       languageKeys,
       title: defaultTitle || 'New page',
       entityView: clientPage.entityView,
-      markdownSupport: clientPage.markdownSupport !== false,
+      markdownSupport: clientPage.markdownSupport === true,
     });
 
     if (useEditorPayload) {

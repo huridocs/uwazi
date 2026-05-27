@@ -15,7 +15,6 @@ export type PageDBO = {
   _id: ObjectId;
   sharedId: string;
   creationDate?: number;
-  user?: ObjectId;
   entityView?: boolean;
   markdownSupport?: boolean;
   locales?: Record<string, PageLocaleDBO>;

@@ -62,7 +62,7 @@ export const buildPageEditorFormValues = (page: Page, languages: PageEditorLangu
     ...page,
     sharedId: page.sharedId,
     entityView: page.entityView ?? false,
-    markdownSupport: page.markdownSupport !== false,
+    markdownSupport: page.markdownSupport === true,
     locales: buildInitialLocales(languages, page, isNewPage),
   };
 };
@@ -90,7 +90,7 @@ export const buildEditorSavePayload = (data: Page): Page => {
     });
   }
 
-  if (!payload.sharedId && payload.markdownSupport !== false) {
+  if (!payload.sharedId && !payload.markdownSupport) {
     delete payload.markdownSupport;
   }
 

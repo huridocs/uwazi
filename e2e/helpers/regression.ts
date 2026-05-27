@@ -20,7 +20,7 @@ const displayGraph = async () => {
     input.getAttribute('value')
   );
 
-  const pageUrl = `${host}/page/${pageID}`;
+  const pageUrl = `${host}/page/${pageID}/${_.kebabCase(pageTitle || '')}`;
 
   await expect(page).toClick('a', { text: '(view page)' });
 

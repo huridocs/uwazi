@@ -15,7 +15,6 @@ const bilingualPage = () =>
     id: '507f1f77bcf86cd799439011',
     sharedId: 'shared1',
     creationDate: 1000,
-    userId: '507f1f77bcf86cd799439012',
     entityView: false,
     markdownSupport: true,
     locales: {
@@ -30,7 +29,6 @@ describe('Page', () => {
       id: '507f1f77bcf86cd799439011',
       sharedId: 's2',
       creationDate: 1,
-      userId: 'u',
       entityView: false,
       markdownSupport: true,
       locales: { en: baseLocale('Home', '<p>x</p>') },
@@ -51,7 +49,6 @@ describe('Page', () => {
       id: '507f1f77bcf86cd799439011',
       sharedId: 's3',
       creationDate: 1,
-      userId: 'u',
       entityView: false,
       markdownSupport: true,
       locales: { en: baseLocale('Only', '') },
@@ -69,11 +66,12 @@ describe('Page', () => {
       nextVersion: 2,
     });
     expect(release.version).toBe(2);
+    expect(release.userId).toBe('actor1');
     expect(release.locales.en.draft.content).toBe('<p>en</p>');
     expect(release.locales.es.draft.content).toBe('<p>es</p>');
   });
 
-  it('should reject publish without message or content', () => {
+  it('should reject publish without release message', () => {
     const page = bilingualPage();
     expect(() =>
       page.buildRelease({
@@ -84,25 +82,26 @@ describe('Page', () => {
         nextVersion: 1,
       })
     ).toThrow(InvalidPageReleaseError);
+  });
 
+  it('should allow publish when all locale content is empty', () => {
     const empty = new Page({
       id: '507f1f77bcf86cd799439011',
       sharedId: 's4',
       creationDate: 1,
-      userId: 'u',
       entityView: false,
-      markdownSupport: true,
+      markdownSupport: false,
       locales: { en: baseLocale('T', '   ') },
     });
-    expect(() =>
-      empty.buildRelease({
-        releaseMessage: 'msg',
-        actorId: 'a',
-        date: 1,
-        languageKeys: ['en'],
-        nextVersion: 1,
-      })
-    ).toThrow(InvalidPageReleaseError);
+    const release = empty.buildRelease({
+      releaseMessage: 'msg',
+      actorId: 'publisher1',
+      date: 1,
+      languageKeys: ['en'],
+      nextVersion: 1,
+    });
+    expect(release.userId).toBe('publisher1');
+    expect(release.locales.en.draft.content).toBe('   ');
   });
 
   it('should apply release to draft only for installed languages', () => {
@@ -118,7 +117,6 @@ describe('Page', () => {
       id: '507f1f77bcf86cd799439011',
       sharedId: 's5',
       creationDate: 1,
-      userId: 'u',
       entityView: false,
       markdownSupport: true,
       locales: {

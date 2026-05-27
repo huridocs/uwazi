@@ -161,6 +161,8 @@ const PageEditor = () => {
       : isNewPage
         ? newPageDefaultTitle()
         : '';
+  const urlTitle =
+    activeLocaleTitle?.trim() !== '' ? activeLocaleTitle : newPageDefaultTitle();
   const localeDraft = watch(`locales.${activeLocale}.draft`) ?? {};
 
   const blocker = useBlocker(isDirty && !isSubmitting);
@@ -216,7 +218,11 @@ const PageEditor = () => {
     handleSaveNotification(response);
 
     if (!hasErrors) {
-      const draftPath = getPageDraftUrl(response.sharedId!);
+      const previewTitle =
+        response.locales?.[activeLocale]?.title ??
+        getValues(`locales.${activeLocale}.title`) ??
+        '';
+      const draftPath = getPageDraftUrl(response.sharedId!, previewTitle);
       const langPrefix = `${activeLocale}/`;
       window.open(`${window.location.origin}/${langPrefix}${draftPath}`);
       await handleRevalidate(response);
@@ -322,7 +328,7 @@ const PageEditor = () => {
 
                   {showPageUrlPreviews && (
                     <CopyValueInput
-                      value={`/${activeLocale}/${getPageUrl(pageSharedId)}`}
+                      value={`/${activeLocale}/${getPageUrl(pageSharedId, urlTitle)}`}
                       label={<Translate>URL</Translate>}
                       className="w-full"
                       id={`page-url-${activeLocale}`}
@@ -332,7 +338,7 @@ const PageEditor = () => {
                   {pageSharedId && showPageUrlPreviews && (
                     <Link
                       target="_blank"
-                      to={`/${activeLocale}/${getPageUrl(pageSharedId)}`}
+                      to={`/${activeLocale}/${getPageUrl(pageSharedId, urlTitle)}`}
                     >
                       <div className="flex gap-2 hover:font-bold hover:cursor-pointer">
                         <ArrowTopRightOnSquareIcon className="w-4" />

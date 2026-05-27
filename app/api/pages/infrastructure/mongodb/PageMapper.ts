@@ -36,12 +36,6 @@ export class PageMapper {
       id: dbo._id.toHexString(),
       sharedId: dbo.sharedId,
       creationDate: dbo.creationDate ?? Date.now(),
-      userId:
-        dbo.user instanceof ObjectId
-          ? dbo.user.toHexString()
-          : dbo.user
-            ? String(dbo.user)
-            : new ObjectId().toHexString(),
       entityView: dbo.entityView ?? false,
       markdownSupport: dbo.markdownSupport ?? false,
       locales,
@@ -61,7 +55,6 @@ export class PageMapper {
       _id: ObjectId.createFromHexString(page.id),
       sharedId: page.sharedId,
       creationDate: page.creationDate,
-      user: ObjectId.createFromHexString(page.userId),
       entityView: page.entityView,
       markdownSupport: page.markdownSupport,
       locales,

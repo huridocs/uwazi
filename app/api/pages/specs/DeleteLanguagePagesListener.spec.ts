@@ -19,7 +19,6 @@ const fixtures: DBFixture = {
     {
       _id: db.id(),
       sharedId: 'page1',
-      user: userId,
       creationDate: 1000,
       locales: {
         en: {

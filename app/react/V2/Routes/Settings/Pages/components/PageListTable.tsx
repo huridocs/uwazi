@@ -12,7 +12,7 @@ const UrlHeader = () => <Translate>URL</Translate>;
 const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
 
 const ActionCell = ({ cell }: CellContext<TablePage, string>) => {
-  const pageUrl = getPageUrl(cell.getValue());
+  const pageUrl = getPageUrl(cell.getValue(), cell.row.original.title ?? '');
   const isEntityView = cell.row.original.entityView;
 
   return (
@@ -40,7 +40,7 @@ const YesNoPill = ({ cell }: CellContext<TablePage, boolean>) => {
 };
 
 const UrlCell = ({ cell }: CellContext<TablePage, string>) => {
-  const url = `/${getPageUrl(cell.getValue())}`;
+  const url = `/${getPageUrl(cell.getValue(), cell.row.original.title ?? '')}`;
   return url;
 };
 

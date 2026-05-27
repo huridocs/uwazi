@@ -120,7 +120,6 @@ export default {
             markdownSupport: canonical.markdownSupport !== false,
             entityView: canonical.entityView ?? false,
             creationDate,
-            user,
           },
           $unset: {
             language: '',
@@ -128,6 +127,7 @@ export default {
             version: '',
             disableMarkdown: '',
             draft: '',
+            user: '',
             'metadata.content': '',
             'metadata.script': '',
             'metadata.css': '',

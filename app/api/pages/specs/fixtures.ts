@@ -4,14 +4,11 @@ export const pageToUpdate = db.id();
 
 const emptyDraft = { content: '', script: '', css: '' };
 
-const userId = db.id();
-
 export const fixtures: DBFixture = {
   pages: [
     {
       _id: db.id(),
       sharedId: '1',
-      user: userId,
       entityView: true,
       creationDate: 1,
       locales: {
@@ -22,7 +19,6 @@ export const fixtures: DBFixture = {
     {
       _id: pageToUpdate,
       sharedId: '2',
-      user: userId,
       creationDate: 1,
       locales: {
         es: { title: 'Penguin almost done', draft: emptyDraft },
@@ -32,7 +28,6 @@ export const fixtures: DBFixture = {
     {
       _id: db.id(),
       sharedId: '3',
-      user: userId,
       entityView: false,
       locales: {
         es: { title: 'Pagina que sera entityView', draft: emptyDraft },

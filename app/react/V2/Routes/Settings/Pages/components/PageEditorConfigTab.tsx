@@ -61,12 +61,15 @@ const PageEditorConfigTab = ({
         {getValues('sharedId') && !getValues('entityView') && (
           <>
             <CopyValueInput
-              value={`/${getPageUrl(getValues('sharedId')!)}`}
+              value={`/${getPageUrl(getValues('sharedId')!, getValues('title') ?? '')}`}
               label={<Translate>URL</Translate>}
               className="w-full"
               id="page-url"
             />
-            <Link target="_blank" to={`/${getPageUrl(getValues('sharedId')!)}`}>
+            <Link
+              target="_blank"
+              to={`/${getPageUrl(getValues('sharedId')!, getValues('title') ?? '')}`}
+            >
               <div className="flex gap-2 hover:font-bold hover:cursor-pointer">
                 <ArrowTopRightOnSquareIcon className="w-4" />
                 <Translate className="underline hover:text-primary-700">View page</Translate>

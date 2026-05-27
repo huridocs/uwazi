@@ -42,7 +42,6 @@ export interface PageType {
   releases?: PageRelease[];
   /** Editor API: releases grouped by locale key */
   releasesByLocale?: Record<string, PageRelease[]>;
-  user?: ObjectIdSchema;
   entityView?: boolean;
   markdownSupport?: boolean;
   __v?: number;

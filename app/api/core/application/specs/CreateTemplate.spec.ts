@@ -86,7 +86,6 @@ const fixtures: DBFixture = {
     {
       _id: factory.id('entityViewPageDisabled'),
       sharedId: 'existing_not_enabled',
-      user: factory.id('user'),
       entityView: false,
       creationDate: 1,
       locales: {

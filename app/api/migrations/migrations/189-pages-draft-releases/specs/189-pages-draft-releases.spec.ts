@@ -33,6 +33,7 @@ describe('migration pages-draft-releases', () => {
     expect(page!.releases).toBeUndefined();
     expect(page!.language).toBeUndefined();
     expect(page!.markdownSupport).toBe(true);
+    expect(page!.user).toBeUndefined();
 
     const releases = await db!.collection('page_releases').find({ page: pageId }).toArray();
     expect(releases).toHaveLength(1);
