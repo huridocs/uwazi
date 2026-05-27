@@ -12,6 +12,7 @@ export const runMigration = async () => {
   });
   await DB.disconnect();
 
+  const migrated = migrations.length > 0;
   const reindexNeeded = migrations.some(migration => migration.reindex === true);
-  return { reindex: reindexNeeded };
+  return { migrated, reindex: reindexNeeded };
 };

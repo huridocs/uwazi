@@ -26,7 +26,7 @@ import { Segmentation } from '../../../domain/files/Segmentation.js';
 import { FileNotFound, ProcessingFileNotFound } from '../../../domain/files/errors.js';
 import { FileMappers } from './FilesMappers.js';
 import { SegmentationMapper } from './SegmentationMapper.js';
-import { ProcessedPDFDBO, fileDBO } from './schemas/filesTypes.js';
+import { fileDBO } from './schemas/filesTypes.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 type GetDocumentsForEntityQuery = {
@@ -75,10 +75,10 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       );
 
       const processedPDFs = files
-        .filter(f => f instanceof ProcessedPDF && f.pendingFullTextIndexing)
+        .filter(f => f instanceof ProcessedPDF && f.languageHasChanged)
         .map(f => FileMappers.toDBO(f));
 
-      await this.fullTextIndexer.index(processedPDFs as ProcessedPDFDBO[]);
+      await this.fullTextIndexer.sync(processedPDFs.map(f => f._id));
 
       this.filesToReindex = new Set<BaseFile>();
     });

@@ -42,8 +42,6 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoSlotsBootstrapper } from '#api/core/infrastructure/elasticSearch/entities/MongoSlotsBootstrapper.js';
-import { MongoSlotsDAOFactory } from '#api/core/infrastructure/factories/MongoSlotsDAOFactory.js';
 import * as utils from '#shared/tsUtils.js';
 import { syncWorker } from '../syncWorker.js';
 import {

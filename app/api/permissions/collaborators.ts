@@ -1,3 +1,4 @@
+import escapeRegExp from 'lodash/escapeRegExp.js';
 import users from '#api/users/users.js';
 import userGroups from '#api/usergroups/userGroups.js';
 import { PermissionType } from '#shared/types/permissionSchema.js';
@@ -9,8 +10,9 @@ import { PUBLIC_PERMISSION } from './publicPermission.js';
 
 export const collaborators = {
   search: async (filterTerm: string) => {
-    const exactFilterTerm = new RegExp(`^${filterTerm}$`, 'i');
-    const partialFilterTerm = new RegExp(`^${filterTerm}`, 'i');
+    const escapedFilterTerm = escapeRegExp(filterTerm);
+    const exactFilterTerm = new RegExp(`^${escapedFilterTerm}$`, 'i');
+    const partialFilterTerm = new RegExp(`^${escapedFilterTerm}`, 'i');
 
     const matchedUsers = await users.get({
       $or: [{ email: exactFilterTerm }, { username: exactFilterTerm }],

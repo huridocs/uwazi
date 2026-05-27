@@ -307,4 +307,112 @@ describe('FullTextIndexerService', () => {
       expect(writeOrder.sort()).toEqual([1, 2, 3]);
     });
   });
+
+  describe('sync()', () => {
+    const getFileIds = async (filenames: string[]): Promise<ObjectId[]> => {
+      const docs = await getConnection()
+        .collection('files')
+        .find({ filename: { $in: filenames } })
+        .toArray();
+      return docs.map(d => d._id as unknown as ObjectId);
+    };
+
+    it('indexes only the specified files', async () => {
+      const { sut, tenantClient } = createSut();
+      const ids = await getFileIds(['doc_a', 'doc_b']);
+
+      await sut.sync(ids, true);
+
+      const result = await searchFulltextDocs(tenantClient);
+      const filenames = result.hits.hits.map((h: any) => h._source?.filename).sort();
+      expect(filenames).toEqual(['doc_a', 'doc_b']);
+    });
+
+    it('does not index files that fail the processed-PDF filter', async () => {
+      const { sut, tenantClient } = createSut();
+      const ids = await getFileIds(['doc_a', 'doc_processing', 'att_a']);
+
+      await sut.sync(ids, true);
+
+      const result = await searchFulltextDocs(tenantClient);
+      const filenames = result.hits.hits.map((h: any) => h._source?.filename);
+      expect(filenames).toContain('doc_a');
+      expect(filenames).not.toContain('doc_processing');
+      expect(filenames).not.toContain('att_a');
+    });
+
+    it('indexes nothing when fileIds is empty', async () => {
+      const { sut, tenantClient } = createSut();
+
+      await sut.sync([], true);
+
+      const result = await searchFulltextDocs(tenantClient);
+      expect(result.hits.hits).toHaveLength(0);
+    });
+
+    it('re-throws a single write failure as-is', async () => {
+      const writeError = new Error('write failed');
+      const mockWriter = {
+        tenantId: testTenantId,
+        deleteByFilenames: jest.fn(),
+        index: jest.fn().mockRejectedValue(writeError),
+      } as unknown as FullTextESWriter;
+
+      const db = getConnection();
+      const transactionManager = TransactionManagerFactory.default();
+      const filesDAO = new MongoFilesDAO({ db, transactionManager });
+      const sut = new FullTextIndexerService({ writer: mockWriter, filesDAO });
+
+      const ids = await getFileIds(['doc_a']);
+      await expect(sut.sync(ids, false)).rejects.toThrow('write failed');
+    });
+
+    it('wraps multiple write failures in AggregateError', async () => {
+      let batchNum = 0;
+      const mockWriter = {
+        tenantId: testTenantId,
+        deleteByFilenames: jest.fn(),
+        index: jest.fn().mockImplementation(async () => {
+          // eslint-disable-next-line no-plusplus
+          batchNum++;
+          throw new Error(`batch ${batchNum} failed`);
+        }),
+      } as unknown as FullTextESWriter;
+
+      const db = getConnection();
+      const transactionManager = TransactionManagerFactory.default();
+      const filesDAO = new MongoFilesDAO({ db, transactionManager });
+      const sut = new FullTextIndexerService({
+        writer: mockWriter,
+        filesDAO,
+        byteThreshold: 1,
+        maxConcurrentWrites: 2,
+      });
+
+      const ids = await getFileIds(['doc_a', 'doc_b', 'doc_c']);
+      const error = await sut.sync(ids, false).catch(e => e);
+
+      expect(error).toBeInstanceOf(AggregateError);
+      expect((error as AggregateError).errors).toHaveLength(3);
+    });
+
+    it('updates content when re-indexing an already-indexed file', async () => {
+      const { sut, tenantClient } = createSut();
+      const ids = await getFileIds(['doc_a']);
+
+      await sut.sync(ids, true);
+
+      const before = await searchByFilename(tenantClient, 'doc_a');
+      expect((before.hits.hits[0] as any)._source?.fullText_english).toBe('content of doc_a');
+
+      await getConnection()
+        .collection('files')
+        .updateOne({ filename: 'doc_a' }, { $set: { fullText: { 1: 'updated content' } } });
+
+      await sut.sync(ids, true);
+
+      const after = await searchByFilename(tenantClient, 'doc_a');
+      expect((after.hits.hits[0] as any)._source?.fullText_english).toBe('updated content');
+    });
+  });
 });
