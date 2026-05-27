@@ -122,7 +122,10 @@ const saveResultFile = async (message: ResultsMessage, originalFile: FileType) =
   await filesService.storeFiles([processingPDF]);
 
   await transactionManager.run(async () => {
-    await filesService.insert([processingPDF]);
+    await filesService.insert([processingPDF], {
+      userId: permissionsContext.getUserInContext()?._id?.toString(),
+      tenantName: tenants.current().name,
+    });
   });
 
   return {

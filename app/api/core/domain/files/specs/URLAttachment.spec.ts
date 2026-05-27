@@ -9,7 +9,6 @@ describe('URLAttachment', () => {
     const file = new URLAttachment({
       id: 'id',
       url: 'https://example.com/document.pdf',
-      entity: 'sharedId1',
       mimetype: 'application/pdf',
     } as any);
 
@@ -19,7 +18,20 @@ describe('URLAttachment', () => {
   });
 
   describe('validation', () => {
-    it('throws when entity is empty', () => {
+    it('allows creation without entity (legacy support)', () => {
+      expect(
+        () =>
+          new URLAttachment({
+            id: 'id',
+            url: 'https://example.com/document.pdf',
+            filename: 'document.pdf',
+            originalname: 'document.pdf',
+            mimetype: 'application/pdf',
+          })
+      ).not.toThrow();
+    });
+
+    it('throws when entity is provided but empty', () => {
       expect(
         () =>
           new URLAttachment({

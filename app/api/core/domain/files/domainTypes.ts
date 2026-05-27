@@ -36,7 +36,7 @@ export type FileAttachmentDTO = BaseFileDTO & {
 
 export type URLAttachmentDTO = BaseFileDTO & {
   type: 'attachment';
-  entity: string;
+  entity?: string;
   url: string;
 };
 

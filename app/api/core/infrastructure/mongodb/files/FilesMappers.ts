@@ -106,5 +106,5 @@ export const FileMappers = {
     }
   },
 
-  toDBO: (file: BaseFile): fileDBO => ({ ...file.toDTO(), _id: new ObjectId(file.id) } as fileDBO),
+  toDBO: (file: BaseFile): fileDBO => ({ ...file.toDTO(), _id: new ObjectId(file.id) }) as fileDBO,
 };

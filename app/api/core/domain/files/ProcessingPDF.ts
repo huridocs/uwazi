@@ -1,5 +1,5 @@
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { BaseFile, BaseFileProps } from './BaseFile.js';
+import { BaseFileProps } from './BaseFile.js';
 import { ProcessingPDFDTO } from './domainTypes.js';
 import { FileContents } from './FileContents.js';
 import { FileWithContents } from './FileWithContents.js';

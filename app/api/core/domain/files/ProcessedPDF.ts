@@ -3,7 +3,7 @@ import { ProcessedPDFDTO } from './domainTypes.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { ObjectUtils } from '#api/common.v2/utils/Object.js';
-import { BaseFile, BaseFileProps } from './BaseFile.js';
+import { BaseFileProps } from './BaseFile.js';
 import { FileContents } from './FileContents.js';
 import { FileWithContents } from './FileWithContents.js';
 
@@ -38,7 +38,6 @@ const IMMUTABLE_PROCESSED_PDF_KEYS = [
   'entity',
   'totalPages',
 ] as const satisfies ReadonlyArray<keyof Props>;
-
 
 const Schema = z.object({
   entity: z.string().trim().min(1),
@@ -97,7 +96,9 @@ export class ProcessedPDF extends FileWithContents<Props> {
   }
 
   update(props: UpdateableProps): this {
-    const updated = super.update(ObjectUtils.sanitize(props as Partial<Props>, IMMUTABLE_PROCESSED_PDF_KEYS) as Partial<Props>);
+    const updated = super.update(
+      ObjectUtils.sanitize(props as Partial<Props>, IMMUTABLE_PROCESSED_PDF_KEYS) as Partial<Props>
+    );
     if (this.language !== updated.language) {
       updated.languageChanged();
     }

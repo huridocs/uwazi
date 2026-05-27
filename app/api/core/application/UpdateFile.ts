@@ -34,9 +34,14 @@ class UpdateFile extends AbstractUseCase<Input, Output, Deps> {
       throw createError('file not found', 404);
     }
 
-    const updatedFile = file instanceof ProcessedPDF
-      ? file.update({ originalname: input.originalname, language: input.language, toc: input.toc })
-      : file.update({ originalname: input.originalname });
+    const updatedFile =
+      file instanceof ProcessedPDF
+        ? file.update({
+            originalname: input.originalname,
+            language: input.language,
+            toc: input.toc,
+          })
+        : file.update({ originalname: input.originalname });
 
     await this.transactionManager.run(async () => this.deps.filesService.bulkUpsert([updatedFile]));
 
