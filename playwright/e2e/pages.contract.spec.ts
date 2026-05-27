@@ -82,8 +82,9 @@ test('pages contract creates a custom page that renders at its URL', async ({ pa
     expect(pageUrl).toMatch(/\/page\/[a-z0-9]+\/.+/i);
   });
 
-  await test.step('Navigate to the page URL and verify the custom marker renders', async () => {
-    await gotoWithRetry(pageUrl, page);
+  await test.step('Navigate to the draft URL and verify the custom marker renders', async () => {
+    const draftPageUrl = pageUrl.replace('/page/', '/page-draft/');
+    await gotoWithRetry(draftPageUrl, page);
     await expect(page.locator('h1#e2e-marker')).toHaveText(PAGE_MARKER_TEXT);
   });
 });
