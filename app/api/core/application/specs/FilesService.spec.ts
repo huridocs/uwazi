@@ -23,7 +23,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { tenants } from '#api/tenants/index.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
@@ -104,13 +104,25 @@ describe('FilesService', () => {
   describe('insert', () => {
     const document = FileBuilder.document(f.idString('document_id'), { filename: 'doc' });
     const attachment = FileBuilder.attachment(f.idString('attachment_id'), { filename: 'attach' });
+    let capturedUserId: string | undefined;
 
     beforeAll(async () => {
-      const { service } = createService();
-      await service.insert([document, attachment], {
-        userId: permissionsContext.getUserInContext()?._id?.toString(),
-        tenantName: tenants.current().name,
-      });
+      const transactionManager = TransactionManagerFactory.fake();
+      const { service } = testingEnvironment.runWithContext(
+        () => {
+          capturedUserId = ExecutionContext.actor?._id?.toString();
+          const filesDataSource = FilesDataSourceFactory.default();
+          const service = FilesServiceFactory.default({
+            filesDS: filesDataSource,
+            fileStorage,
+            jobsDispatcher,
+            transactionManager,
+          });
+          return { service, transactionManager };
+        },
+        { factories: { transactionManager: () => transactionManager } }
+      );
+      await service.insert([document, attachment]);
     });
 
     it('should insert uwazi files in the db', async () => {
@@ -127,7 +139,7 @@ describe('FilesService', () => {
       expect(jobsDispatcher.postProcessPDFs).toHaveBeenCalledWith([
         {
           documentId: document.id,
-          userId: permissionsContext.getUserInContext()?._id?.toString(),
+          userId: capturedUserId,
           tenantName: tenants.current().name,
         },
       ]);

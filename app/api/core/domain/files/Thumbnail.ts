@@ -25,14 +25,16 @@ export class Thumbnail extends FileWithContents<Props> {
   protected _type = 'thumbnail' as const;
 
   constructor(props: Props) {
+    const validated = Schema.parse(props);
     super({
       ...props,
+      entity: validated.entity,
+      language: validated.language,
       mimetype: props.mimetype ?? 'image/jpeg',
       originalname: props.originalname ?? props.filename,
     });
-    const validated = Schema.parse(props);
-    this.entity = validated.entity;
-    this.language = validated.language;
+    this.entity = this.props.entity;
+    this.language = this.props.language;
   }
 
   toDTO(): ThumbnailDTO {

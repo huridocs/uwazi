@@ -496,8 +496,7 @@ describe('CreateEntityUseCase', () => {
         expect.objectContaining({ originalname: 'Attachment 3.mp4' }),
         expect.objectContaining({ originalname: 'Attachment 4.mp4' }),
         expect.objectContaining({ originalname: 'URL_attachment.png' }),
-      ],
-      expect.objectContaining({ userId: expect.any(String), tenantName: expect.any(String) })
+      ]
     );
   });
 

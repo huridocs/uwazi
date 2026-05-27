@@ -35,10 +35,7 @@ export class FileUploadForEntity extends AbstractUseCase<Input, Output, Deps> {
     await this.deps.filesService.storeFiles([file]);
 
     await this.transactionManager.run(async () => {
-      await this.deps.filesService.insert([file], {
-        userId: this.actorId,
-        tenantName: this.tenant.name,
-      });
+      await this.deps.filesService.insert([file]);
     });
 
     return file.toDTO();

@@ -50,10 +50,7 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
         targetLanguage: this.targetLanguage,
       });
 
-      await this.deps.fileService.insert(documentsOrAttachments, {
-        userId: this.actorId,
-        tenantName: this.tenant.name,
-      });
+      await this.deps.fileService.insert(documentsOrAttachments);
     });
 
     return entity;

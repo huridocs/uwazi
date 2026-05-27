@@ -17,8 +17,8 @@ export class FileAttachment extends FileWithContents<Props> {
 
   constructor(props: Props) {
     const validated = Schema.parse(props);
-    super(props);
-    this.entity = validated.entity;
+    super({ ...props, entity: validated.entity });
+    this.entity = this.props.entity;
   }
 
   toDTO(): FileAttachmentDTO {

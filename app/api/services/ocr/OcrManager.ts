@@ -117,15 +117,18 @@ const saveResultFile = async (message: ResultsMessage, originalFile: FileType) =
   const processingPDF = inputFile.toEntityFile(originalFile.entity!, fileId) as ProcessingPDF;
 
   const transactionManager = TransactionManagerFactory.default();
-  const filesService = FilesServiceFactory.default();
+  const filesService = FilesServiceFactory.default(
+    {},
+    {
+      userId: permissionsContext.getUserInContext()?._id?.toString(),
+      tenantName: tenants.current().name,
+    }
+  );
 
   await filesService.storeFiles([processingPDF]);
 
   await transactionManager.run(async () => {
-    await filesService.insert([processingPDF], {
-      userId: permissionsContext.getUserInContext()?._id?.toString(),
-      tenantName: tenants.current().name,
-    });
+    await filesService.insert([processingPDF]);
   });
 
   return {
