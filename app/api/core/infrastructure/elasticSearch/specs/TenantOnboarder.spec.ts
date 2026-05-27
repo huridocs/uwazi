@@ -112,7 +112,7 @@ const createSut = (deps?: Partial<TenantOnboarderDeps>) => {
     }),
   });
 
-  const slotsBootstrapper = new MongoSlotsBootstrapper({ database: db });
+  const slotsBootstrapper = new MongoSlotsBootstrapper({ database: db, slotsDAO });
   const slotsReconciler = new SlotsReconciler({ slotsDAO, templatesDAO });
 
   const resolver = TestUtils.mockClass<IndexNameResolver>({

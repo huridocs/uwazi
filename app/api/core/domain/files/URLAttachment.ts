@@ -4,33 +4,24 @@ import {
 } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { BaseFile, BaseFileProps } from './BaseFile.js';
 
-type Props = Omit<BaseFileProps, 'content'> & { entity: string; url: string };
+type Props = BaseFileProps & { entity: string; url: string };
 
-export class URLAttachment extends BaseFile {
+export class URLAttachment extends BaseFile<Props> {
   readonly url: string;
 
   readonly entity: string;
 
   protected _type = 'attachment' as const;
 
-  readonly content: undefined;
-
   constructor(props: Props) {
-    const { entity, url, ...baseProps } = props;
-    const filename = baseProps?.filename ?? url;
-    const originalname = baseProps?.originalname ?? url;
+    const filename = props.filename ?? props.url;
+    const originalname = props.originalname ?? props.url;
 
-    super({
-      ...baseProps,
-      filename,
-      originalname,
-    });
+    super({ ...props, filename, originalname });
     this.filename = filename;
     this.originalname = originalname;
-    this.url = url;
-    this.entity = entity;
-    // keeping this since it still possible to pass content with prop spread
-    this.content = undefined;
+    this.url = props.url;
+    this.entity = props.entity;
   }
 
   static fromDBO(dbo: URLAttachmentDBO) {

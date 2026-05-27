@@ -131,13 +131,11 @@ export class SyncedCollection<TSchema extends Document = Document>
       .map((op: any) => op.deleteOne?.filter || op.deleteMany?.filter)
       .filter((op: any) => op);
     await this.upsertSyncLogs(deleteConditions, true);
+    await this.upsertSyncLogs(updateConditions);
     const result = await this.collection.bulkWrite(operations, options);
-    await Promise.all([
-      this.upsertSyncLogs(updateConditions),
-      this.insertSyncLogs(
-        Object.values(result.upsertedIds).concat(Object.values(result.insertedIds))
-      ),
-    ]);
+    await this.insertSyncLogs(
+      Object.values(result.upsertedIds).concat(Object.values(result.insertedIds))
+    );
     return result;
   }
 
@@ -146,8 +144,11 @@ export class SyncedCollection<TSchema extends Document = Document>
     update: UpdateFilter<TSchema> | Document[],
     options?: UpdateOptions
   ): Promise<UpdateResult<TSchema>> {
-    const result = await this.collection.updateOne(filter, update, options);
     await this.upsertSyncLogs([filter]);
+    const result = await this.collection.updateOne(filter, update, options);
+    if (result.upsertedId) {
+      await this.insertSyncLogs([result.upsertedId]);
+    }
     return result;
   }
 
@@ -166,8 +167,11 @@ export class SyncedCollection<TSchema extends Document = Document>
     update: UpdateFilter<TSchema>,
     options?: UpdateOptions | undefined
   ): Promise<UpdateResult<TSchema>> {
-    const result = await this.collection.updateMany(filter, update, options);
     await this.upsertSyncLogs([filter]);
+    const result = await this.collection.updateMany(filter, update, options);
+    if (result.upsertedId) {
+      await this.insertSyncLogs([result.upsertedId]);
+    }
     return result;
   }
 

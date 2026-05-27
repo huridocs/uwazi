@@ -2,7 +2,7 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
 import { composeStories } from '@storybook/react';
-import * as stories from '#app/stories/Metadata.stories.jsx';
+import * as stories from '#app/stories/Metatada/Metadata.stories.js';
 
 describe('Metadata Display', () => {
   const { Basic } = composeStories(stories);

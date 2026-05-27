@@ -1,27 +1,21 @@
-/* eslint-disable max-statements */
-import { fileDBO, fileDTO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
-import { FileTypes } from '#api/files/storage.js';
 import { z } from 'zod';
 import stringify from 'fast-json-stable-stringify';
-import { FileContents } from './FileContents.js';
+import { fileDBO, fileDTO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+import type { FileTypes } from '#api/files/storage.js';
+import type { FileContents } from './FileContents.js';
+import { ObjectUtils } from '#api/common.v2/utils/Object.js';
 
-type Props = {
+type BaseFileProps = {
   id: string;
-  originalname: string;
+  originalname?: string;
   filename: string;
   mimetype: string;
-  size: number;
-  creationDate: number;
+  size?: number;
+  creationDate?: number;
   uploaded?: boolean;
-  content?: FileContents;
-  entity?: string;
 };
 
 type FileContentLoader = (options: { type: fileDBO['type']; filename: string }) => FileContents;
-
-type UpdateProps = {
-  originalname?: string;
-};
 
 const sanitizeFilename = (filename: string) => {
   let sanitized = filename;
@@ -64,14 +58,24 @@ const Schema = z.object({
       /^[a-zA-Z0-9][a-zA-Z0-9!#$&^_+-]*\/[a-zA-Z0-9][a-zA-Z0-9!#$&^_.+-]*(;\s*[\w-]+=[\w-]+)*$/,
       'Invalid MIME type format'
     ),
-  size: z.number().int('File size must be an integer'),
-  creationDate: z.number().int('Creation date must be an integer'),
+  size: z.number().int('File size must be an integer').default(0),
+  creationDate: z
+    .number()
+    .int('Creation date must be an integer')
+    .default(() => Date.now()),
   uploaded: z.boolean().optional(),
-  content: z.any().optional(),
-  entity: z.union([z.string().min(1, 'Entity ID must not be empty'), z.undefined()]),
 });
 
-export abstract class BaseFile {
+const IMMUTABLE_BASE_FILE_KEYS = [
+  'id',
+  'creationDate',
+  'mimetype',
+  'size',
+  'filename',
+  'uploaded',
+] as const satisfies ReadonlyArray<keyof BaseFileProps>;
+
+export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
   readonly id: string;
 
   originalname: string;
@@ -84,88 +88,70 @@ export abstract class BaseFile {
 
   readonly creationDate: number;
 
-  readonly content?: FileContents;
-
   readonly uploaded?: boolean;
-
-  readonly entity?: string;
 
   protected abstract _type: FileTypes;
 
-  protected props: Props;
+  protected props: TProps;
 
-  private previousProps?: Props;
+  private previousProps?: TProps;
 
-  constructor(props: Props) {
-    const _props = Schema.parse({
-      ...props,
-      originalname: props.originalname ?? props.filename,
-      creationDate: props.creationDate ?? 0,
-      size: props.size ?? 0,
-    });
+  constructor(props: TProps) {
+    const validated = Schema.parse(props);
+    this.props = { ...props, ...validated };
 
-    this.props = _props;
-
-    this.id = _props.id;
-    this.originalname = _props.originalname;
-    this.filename = _props.filename;
-    this.mimetype = _props.mimetype;
-    this.size = _props.size;
-    this.creationDate = _props.creationDate;
-    this.content = _props.content;
-    this.uploaded = _props.uploaded;
-    this.entity = _props.entity;
+    this.id = validated.id;
+    this.originalname = validated.originalname;
+    this.filename = validated.filename;
+    this.mimetype = validated.mimetype;
+    this.size = validated.size;
+    this.creationDate = validated.creationDate;
+    this.uploaded = validated.uploaded;
   }
 
   get type() {
     return this._type;
   }
 
-  private clone(props: Partial<Props>): BaseFile {
-    const newProps: Props = {
-      id: this.id,
-      creationDate: this.creationDate,
-
-      filename: props.filename ?? this.filename,
-      mimetype: props.mimetype ?? this.mimetype,
-      originalname: props.originalname ?? this.originalname,
-      size: props.size ?? this.size,
-      uploaded: props.uploaded ?? this.uploaded,
-      content: props.content ?? this.content,
-      entity: props.entity ?? this.entity,
+  protected clone(props: Partial<TProps>): this {
+    const newProps = {
+      ...this.props,
+      ...ObjectUtils.sanitizeUndefined(props),
     };
 
-    const instance = new (this.constructor as any)(newProps) as BaseFile;
+    const instance = new (this.constructor as any)(newProps) as this;
 
     instance.previousProps = this.props;
 
     return instance;
   }
 
-  get previousVersion(): BaseFile | undefined {
+  get previousVersion(): this | undefined {
     if (!this.previousProps) {
       return undefined;
     }
 
-    return new (this.constructor as any)(this.previousProps) as BaseFile;
+    return new (this.constructor as any)(this.previousProps) as this;
   }
 
-  get hasChanged() {
+  get hasChanged(): boolean {
     if (this.previousProps === undefined) return false;
 
     return stringify(this.props) !== stringify(this.previousProps);
   }
 
-  update(props: UpdateProps): BaseFile {
-    return this.clone(props);
+  update<ExtendedProps>(_props: Partial<TProps> & ExtendedProps): this {
+    const sanitized = ObjectUtils.sanitize(_props, IMMUTABLE_BASE_FILE_KEYS);
+
+    return this.clone(sanitized);
   }
 
   isEntityFile(): this is this & { entity: string } {
-    return Boolean(this.entity);
+    return 'entity' in this.props && Boolean(this.props.entity);
   }
 
   hasContent(): this is this & { content: FileContents } {
-    return Boolean(this.content);
+    return 'content' in this.props && Boolean(this.props.content);
   }
 
   protected dtoBaseFields() {
@@ -192,7 +178,7 @@ export abstract class BaseFile {
     };
   }
 
-  static fromDBO?(dbo: fileDBO, contentLoader: FileContentLoader): BaseFile;
+  static fromDBO?(dbo: fileDBO, contentLoader: FileContentLoader): BaseFile<BaseFileProps>;
 }
 
-export type { Props as BaseFileProps, FileContentLoader };
+export type { BaseFileProps, FileContentLoader };

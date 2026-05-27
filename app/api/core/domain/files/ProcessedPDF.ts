@@ -1,16 +1,30 @@
+import { z } from 'zod';
 import {
   ProcessedPDFDBO,
   ProcessedPDFDTO,
 } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { ObjectUtils } from '#api/common.v2/utils/Object.js';
 import { BaseFile, BaseFileProps, FileContentLoader } from './BaseFile.js';
 import { FileContents } from './FileContents.js';
 import { FileWithContents } from './FileWithContents.js';
 
-type fullTextProp = { [k: string]: string };
+type FullText = Record<string, string>;
 
-type fullTextLoader = fullTextProp | (() => Promise<fullTextProp>);
+type FullTextLoader = FullText | (() => Promise<FullText>);
+
+type TableOfContent = {
+  selectionRectangles?: {
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+    page?: string;
+  }[];
+  label?: string;
+  indentation?: number;
+};
 
 type Props = BaseFileProps & {
   entity: string;
@@ -18,10 +32,24 @@ type Props = BaseFileProps & {
   language: LanguageISO6391;
   totalPages: number;
   generatedToc: boolean;
-  fullText: fullTextLoader;
+  fullText: FullTextLoader;
+  toc?: TableOfContent[];
 };
 
-export class ProcessedPDF extends FileWithContents {
+const Schema = z.object({
+  entity: z.string().trim().min(1),
+  language: z.string().trim().min(2) as z.ZodType<LanguageISO6391>,
+  totalPages: z.number().int().min(0).default(0),
+  generatedToc: z.boolean().default(false),
+});
+
+const IMMUTABLE_PROCESSED_PDF_KEYS = [
+  'fullText',
+  'entity',
+  'totalPages',
+] as const satisfies ReadonlyArray<keyof Props>;
+
+export class ProcessedPDF extends FileWithContents<Props> {
   readonly entity: string;
 
   protected _type = 'document' as const;
@@ -32,33 +60,44 @@ export class ProcessedPDF extends FileWithContents {
 
   readonly generatedToc: boolean;
 
-  public fullText?: fullTextProp;
+  readonly toc?: TableOfContent[];
 
-  private fullTextLoader: fullTextLoader;
+  public fullText?: FullText;
 
-  private _pendingFullTextIndexing = false;
+  private fullTextLoader: FullTextLoader;
 
-  get pendingFullTextIndexing(): boolean {
-    return this._pendingFullTextIndexing;
+  private _languageHasChanged = false;
+
+  get languageHasChanged(): boolean {
+    return this._languageHasChanged;
   }
 
-  markForFullTextIndexing(): void {
-    this._pendingFullTextIndexing = true;
+  languageChanged(): void {
+    this._languageHasChanged = true;
   }
 
   constructor(props: Props) {
-    const { entity, language, totalPages, fullText, generatedToc, ...baseProps } = props;
-    super(baseProps);
-    this.language = language;
-    this.totalPages = totalPages;
-    this.fullTextLoader = fullText;
-    this.generatedToc = generatedToc;
-    this.entity = entity;
-    if (typeof fullText !== 'function') {
-      this.fullText = fullText;
+    const validated = Schema.parse(props);
+    super({ ...props, ...validated });
+    this.language = validated.language;
+    this.totalPages = validated.totalPages;
+    this.generatedToc = validated.generatedToc;
+    this.entity = validated.entity;
+
+    this.fullTextLoader = props.fullText;
+    this.toc = props.toc;
+    if (typeof props.fullText !== 'function') {
+      this.fullText = props.fullText;
+    }
+  }
+
+  update(props: Partial<Props>): this {
+    const updated = super.update(ObjectUtils.sanitize(props, IMMUTABLE_PROCESSED_PDF_KEYS));
+    if (this.language !== updated.language) {
+      updated.languageChanged();
     }
 
-    this.props = { ...this.props, entity, language, totalPages, fullText, generatedToc } as Props;
+    return updated;
   }
 
   async getFullText() {
@@ -76,6 +115,7 @@ export class ProcessedPDF extends FileWithContents {
       language: LanguageUtils.fromISO639_1(this.language).ISO639_3,
       ...(this.fullText ? { fullText: this.fullText } : {}),
       generatedToc: this.generatedToc,
+      ...(this.toc !== undefined ? { toc: this.toc } : {}),
       type: 'document',
       status: 'ready',
     };
@@ -94,8 +134,9 @@ export class ProcessedPDF extends FileWithContents {
           throw new Error('not Implemented');
         }),
       generatedToc: dbo.generatedToc,
+      toc: dbo.toc,
     });
   }
 }
 
-export type { fullTextProp };
+export type { FullText, TableOfContent, Props as ProcessedPDFProps };
