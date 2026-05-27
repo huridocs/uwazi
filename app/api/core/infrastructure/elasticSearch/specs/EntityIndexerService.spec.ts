@@ -13,7 +13,7 @@ import { TenantAwareESClient } from '../TenantAwareESClient.js';
 import { EntityESWriter } from '../entities/EntityESWriter.js';
 import { EntityIndexMappingDefinition } from '../entities/EntityIndexMappingDefinition.js';
 import type { MongoSlotsDAO } from '../entities/MongoSlotsDAO.js';
-import { MongoEntityDAO } from '../../mongodb/entity/MongoEntityDAO.js';
+import { MongoEntitiesDAO } from '../../mongodb/entity/MongoEntityDAO.js';
 import { EntityIndexerService, EntityBatchInfo } from '../entities/EntityIndexerService.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 
@@ -81,7 +81,7 @@ const createSut = (overrides?: { batchSize?: number; maxConcurrentWrites?: numbe
   });
 
   const writer = new EntityESWriter({ esClient: tenantClient });
-  const entityDAO = new MongoEntityDAO(db, transactionManager, User.createFrom(null));
+  const entityDAO = new MongoEntitiesDAO(db, transactionManager, User.createFrom(null));
   const sut = new EntityIndexerService({ writer, entityDAO, slotsDAO, ...overrides });
 
   return { sut, slotsDAO, tenantClient };
@@ -126,7 +126,7 @@ describe('EntityIndexerService', () => {
     it('fetches slotMap, maps provided entities, and writes them to ES', async () => {
       const { sut, slotsDAO, tenantClient } = createSut();
       const db = getConnection();
-      const entityDAO = new MongoEntityDAO(
+      const entityDAO = new MongoEntitiesDAO(
         db,
         TransactionManagerFactory.default(),
         User.createFrom(null)
@@ -375,7 +375,7 @@ describe('EntityIndexerService', () => {
 
       const db = getConnection();
       const transactionManager = TransactionManagerFactory.default();
-      const entityDAO = new MongoEntityDAO(db, transactionManager, User.createFrom(null));
+      const entityDAO = new MongoEntitiesDAO(db, transactionManager, User.createFrom(null));
       const slotsDAO = TestUtils.mockClass<MongoSlotsDAO>({
         getSlotMap: jest.fn().mockResolvedValue(new Map()),
       });

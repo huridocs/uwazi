@@ -5,9 +5,14 @@ import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { CreateEntityFromPDFUseCaseFactory } from '#api/core/infrastructure/factories/CreateEntityFromPDFUseCaseFactory.js';
 import { User } from '#api/users.v2/model/User.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
 import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { CreateEntityFromPDFUseCaseInput } from '../CreateEntityFromPDF.js';
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
+import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
+import { CannotCreateEntityFromNonPDFError } from '#api/core/domain/entity/errors.js';
 
 const factory = getFixturesFactory();
 
@@ -22,39 +27,37 @@ const fixtures: DBFixture = {
   ],
 
   templates: [
-    factory.template('PDF Document', [
-      factory.property('description', 'text'),
+    factory.template('Document_1', []),
+    factory.template('Document_2', [
       factory.property('required_field', 'text', { required: true }),
     ]),
   ],
 };
 
-type CreateSutProps = {
-  actor?: User;
-  targetLanguage?: LanguageISO6391;
-};
+const createSut = () => {
+  const actor = User.createFrom({
+    _id: new ObjectId(),
+    role: 'admin',
+    groups: [],
+    email: '',
+    username: '',
+  });
 
-const createSut = (props: CreateSutProps = {}) => {
-  const actor =
-    props.actor ??
-    User.createFrom({
-      _id: new ObjectId(),
-      role: 'admin',
-      groups: [],
-      email: '',
-      username: '',
-    });
+  return testingEnvironment.runWithContext(
+    () => {
+      const fileStorage = FileStorageFactory.forTests();
 
-  const { sut } = testingEnvironment.runWithContext(
-    () => ({
-      sut: CreateEntityFromPDFUseCaseFactory.default({
-        targetLanguage: props.targetLanguage ?? 'en',
-      }),
-    }),
+      return {
+        sut: CreateEntityFromPDFUseCaseFactory.default({
+          targetLanguage: 'en',
+          filesService: FilesServiceFactory.default({ fileStorage }),
+        }),
+        actor,
+        fileStorage,
+      };
+    },
     { actor }
   );
-
-  return { sut };
 };
 
 describe('CreateEntityFromPDFUseCase', () => {
@@ -68,49 +71,49 @@ describe('CreateEntityFromPDFUseCase', () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should create a basic entity from PDF', async () => {
-    const actor = User.createFrom({
-      _id: factory.id('user1').toString(),
-      username: 'username',
-      email: 'email@email.com',
-      role: 'collaborator',
-    });
+  it('should create a entity from a PDF file', async () => {
+    const { sut, actor } = createSut();
 
-    const { sut } = createSut({ actor, targetLanguage: 'en' });
+    const input: CreateEntityFromPDFUseCaseInput = {
+      templateId: factory.id('Document_1').toHexString(),
+      inputFile: new InputFile(
+        {
+          fieldname: 'file',
+          originalname: 'PDF Entity Title.pdf',
+          filename: 'PDF Entity Title.pdf',
+          mimetype: 'application/pdf',
+          size: 1024,
+          destination: '/tmp/uploads',
+          encoding: '7-bit',
+          path: '/tmp/uploads/PDF Entity Title.pdf',
+        },
+        'document'
+      ),
+    };
 
-    const entity = await sut.execute({
-      templateId: factory.id('PDF Document').toHexString(),
-      propertyAssignments: [
-        { name: 'title', value: [{ value: 'PDF Entity Title' }] },
-        { name: 'description', value: [{ value: 'A description extracted from PDF' }] },
-      ],
-    });
+    const entity = await sut.execute(input);
 
     const entities = await testingEnvironment.db
       .getCollection('entities')
       ?.find({ sharedId: entity.sharedId })
       .toArray();
 
-    expect(entities).toHaveLength(2); // One per language (en, es)
-
     const commonProperties = {
       sharedId: expect.any(String),
-      template: factory.id('PDF Document'),
-      title: 'PDF Entity Title',
-      user: factory.id('user1'),
+      template: factory.id('Document_1'),
+      title: input.inputFile.metadata.originalname,
+      user: new ObjectId(actor._id),
       creationDate: expect.any(Number),
       editDate: expect.any(Number),
       icon: { _id: null, type: 'Empty' },
       permissions: [
         {
-          refId: factory.id('user1').toHexString(),
+          refId: actor._id,
           type: GrantType.User,
           level: AccessLevel.Write,
         },
       ],
-      metadata: expect.objectContaining({
-        description: [{ value: 'A description extracted from PDF' }],
-      }),
+      metadata: {},
       published: false,
       obsoleteMetadata: [],
     };
@@ -129,27 +132,100 @@ describe('CreateEntityFromPDFUseCase', () => {
     ]);
   });
 
-  it('should NOT validate required properties', async () => {
-    const actor = User.createFrom({
-      _id: factory.id('user1').toString(),
-      username: 'username',
-      email: 'email@email.com',
-      role: 'collaborator',
-    });
+  it('should create PDF along with the entity', async () => {
+    const { sut, fileStorage } = createSut();
 
-    const { sut } = createSut({ actor, targetLanguage: 'en' });
+    const input: CreateEntityFromPDFUseCaseInput = {
+      templateId: factory.id('Document_1').toHexString(),
+      inputFile: new InputFile(
+        {
+          fieldname: 'file',
+          originalname: 'PDF Entity Title.pdf',
+          filename: 'PDF Entity Title.pdf',
+          mimetype: 'application/pdf',
+          size: 1024,
+          destination: '/tmp/uploads',
+          encoding: '7-bit',
+          path: '/tmp/uploads/PDF Entity Title.pdf',
+        },
+        'document'
+      ),
+    };
 
-    // The required_field property is marked as required, but we don't provide a value
-    // This use case should NOT throw an error - it's a permissive operation for PDF creation
-    const entity = await sut.execute({
-      templateId: factory.id('PDF Document').toHexString(),
-      propertyAssignments: [
-        { name: 'title', value: [{ value: 'PDF without required field' }] },
-        // Intentionally omitting required_field
-      ],
-    });
+    const entity = await sut.execute(input);
 
-    expect(entity).toBeDefined();
-    expect(entity.sharedId).toBeDefined();
+    const files = await testingEnvironment.db
+      .getCollection('files')
+      ?.find({ entity: entity.sharedId })
+      .toArray();
+
+    expect(fileStorage.storeFile).toHaveBeenCalledWith(expect.any(ProcessingPDF));
+
+    expect(files).toEqual([
+      {
+        _id: expect.any(ObjectId),
+        originalname: 'PDF Entity Title.pdf',
+        filename: 'PDF Entity Title.pdf',
+        mimetype: 'application/pdf',
+        size: 1024,
+        creationDate: expect.any(Number),
+        entity: entity.sharedId,
+        status: 'processing',
+        type: 'document',
+      },
+    ]);
+  });
+
+  it('should not validate for required properties in the template', async () => {
+    const { sut } = createSut();
+
+    const input: CreateEntityFromPDFUseCaseInput = {
+      templateId: factory.id('Document_2').toHexString(),
+      inputFile: new InputFile(
+        {
+          fieldname: 'file',
+          originalname: 'PDF Entity Title.pdf',
+          filename: 'PDF Entity Title.pdf',
+          mimetype: 'application/pdf',
+          size: 1024,
+          destination: '/tmp/uploads',
+          encoding: '7-bit',
+          path: '/tmp/uploads/PDF Entity Title.pdf',
+        },
+        'document'
+      ),
+    };
+
+    const entity = await sut.execute(input);
+
+    const entities = await testingEnvironment.db
+      .getCollection('entities')
+      ?.find({ sharedId: entity.sharedId })
+      .toArray();
+
+    expect(entities).toHaveLength(2);
+  });
+
+  it('should throw when File is not a PDF', async () => {
+    const { sut } = createSut();
+
+    const input: CreateEntityFromPDFUseCaseInput = {
+      templateId: factory.id('Document_2').toHexString(),
+      inputFile: new InputFile(
+        {
+          fieldname: 'file',
+          originalname: 'PDF Entity Title.pdf',
+          filename: 'PDF Entity Title.pdf',
+          mimetype: 'application/pdf',
+          size: 1024,
+          destination: '/tmp/uploads',
+          encoding: '7-bit',
+          path: '/tmp/uploads/PDF Entity Title.pdf',
+        },
+        'attachment'
+      ),
+    };
+
+    await expect(sut.execute(input)).rejects.toThrow(CannotCreateEntityFromNonPDFError);
   });
 });

@@ -10,12 +10,13 @@ import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.
 import { BulkDeleteEntityController } from '#api/core/infrastructure/express/entity/BulkDeleteEntityController.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { MongoEntityDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntityDAO.js';
+import { MongoEntitiesDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntityDAO.js';
 import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
 import { UpdateEntityController } from '#api/core/infrastructure/express/entity/UpdateEntityController.js';
 import { GetEntityController } from '#api/core/infrastructure/express/entity/GetEntityController.js';
 import { MultiUpdateEntityController } from '#api/core/infrastructure/express/entity/MultiUpdateEntityController.js';
 import { DeleteEntityController } from '#api/core/infrastructure/express/entity/DeleteEntityController.js';
+import { CreateEntityFromPDFController } from '#api/core/infrastructure/express/entity/CreateEntityFromPDFController.js';
 import needsAuthorization from '../auth/authMiddleware.js';
 import templates from '../core/v1_layer/templates/templates.js';
 import { thesauri } from '../thesauri/thesauri.js';
@@ -106,7 +107,7 @@ export default app => {
       const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
 
       if (!entityToSave?.sharedId) {
-        const entityDAO = new MongoEntityDAO(
+        const entityDAO = new MongoEntitiesDAO(
           getConnection(),
           TransactionManagerFactory.default(),
           User.createFrom(req.user)
@@ -268,5 +269,14 @@ export default app => {
     '/api/entities/bulkdelete',
     needsAuthorization(['admin', 'editor']),
     BulkDeleteEntityController.createHandler()
+  );
+
+  app.post(
+    '/api/entities/create-from-file',
+    needsAuthorization(['admin', 'editor', 'collaborator']),
+    (req, res, next) =>
+      new UploadMiddleware(LoggerFactory.default()).singleUpload('document')(req, res, next),
+    CreateEntityFromPDFController.createHandler(),
+    activitylogMiddleware
   );
 };

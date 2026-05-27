@@ -4,7 +4,7 @@ import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoEntityDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntityDAO.js';
+import { MongoEntitiesDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntityDAO.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import settings from '#api/settings/index.js';
 import { PUBLIC_USER_ID } from '#api/users/publicUser.js';
@@ -76,7 +76,7 @@ const routes = app => {
 
         const result = await EntityFacade.create(entity, req.language, req.inputFiles);
 
-        const entityDAO = new MongoEntityDAO(
+        const entityDAO = new MongoEntitiesDAO(
           getConnection(),
           TransactionManagerFactory.default(),
           User.createFrom(userForContext)

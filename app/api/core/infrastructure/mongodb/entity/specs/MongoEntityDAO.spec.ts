@@ -4,7 +4,7 @@ import { DBFixture } from '#api/utils/testing_db.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { User } from '#api/users.v2/model/User.js';
-import { MongoEntityDAO } from '../MongoEntityDAO.js';
+import { MongoEntitiesDAO } from '../MongoEntityDAO.js';
 
 const factory = getFixturesFactory();
 
@@ -130,7 +130,7 @@ const fixtures: DBFixture = {
 };
 
 const createSut = (user: User = adminUser) =>
-  new MongoEntityDAO(getConnection(), TransactionManagerFactory.default(), user);
+  new MongoEntitiesDAO(getConnection(), TransactionManagerFactory.default(), user);
 
 describe('MongoEntityDAO', () => {
   beforeAll(async () => {
@@ -229,7 +229,7 @@ describe('MongoEntityDAO', () => {
 
   describe('streamAll()', () => {
     it('returns all entity documents regardless of permissions or published status', async () => {
-      const dao = new MongoEntityDAO(
+      const dao = new MongoEntitiesDAO(
         getConnection(),
         TransactionManagerFactory.default(),
         User.createFrom(null)
@@ -240,7 +240,7 @@ describe('MongoEntityDAO', () => {
     });
 
     it('returns results sorted by sharedId so language variants are contiguous', async () => {
-      const dao = new MongoEntityDAO(
+      const dao = new MongoEntitiesDAO(
         getConnection(),
         TransactionManagerFactory.default(),
         User.createFrom(null)
@@ -251,7 +251,7 @@ describe('MongoEntityDAO', () => {
     });
 
     it('with afterSharedId returns only entities whose sharedId is lexically after the checkpoint', async () => {
-      const dao = new MongoEntityDAO(
+      const dao = new MongoEntitiesDAO(
         getConnection(),
         TransactionManagerFactory.default(),
         User.createFrom(null)
@@ -262,7 +262,7 @@ describe('MongoEntityDAO', () => {
     });
 
     it('with afterSharedId returns empty cursor when no entities follow the checkpoint', async () => {
-      const dao = new MongoEntityDAO(
+      const dao = new MongoEntitiesDAO(
         getConnection(),
         TransactionManagerFactory.default(),
         User.createFrom(null)
@@ -277,7 +277,7 @@ describe('MongoEntityDAO', () => {
       });
 
       it('returns an empty cursor', async () => {
-        const dao = new MongoEntityDAO(
+        const dao = new MongoEntitiesDAO(
           getConnection(),
           TransactionManagerFactory.default(),
           User.createFrom(null)

@@ -1,5 +1,5 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoEntityDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntityDAO.js';
+import { MongoEntitiesDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntityDAO.js';
 import { User } from '#api/users.v2/model/User.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -17,7 +17,7 @@ class CloneLanguageEntitiesJobFactory {
   ): CloneLanguageEntitiesJob {
     const transactionManager = TransactionManagerFactory.default() as MongoTransactionManager;
     const db = getConnection();
-    const entityDAO = new MongoEntityDAO(db, transactionManager, User.createFrom(null));
+    const entityDAO = new MongoEntitiesDAO(db, transactionManager, User.createFrom(null));
     const filesCollection = db.collection('files');
     const jobsDispatcher = ExecutionContext.jobsDispatcher;
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });

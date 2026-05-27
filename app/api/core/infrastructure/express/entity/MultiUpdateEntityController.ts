@@ -3,7 +3,7 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MultiUpdateEntity } from '#api/core/application/MultiUpdateEntity.js';
 import { MultiUpdateEntityUseCaseFactory } from '../../factories/MultiUpdateEntityUseCaseFactory.js';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoEntityDAO } from '../../mongodb/entity/MongoEntityDAO.js';
+import { MongoEntitiesDAO } from '../../mongodb/entity/MongoEntityDAO.js';
 import { MongoTransactionManager } from '../../mongodb/common/MongoTransactionManager.js';
 import { PropertyAssignmentInput } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
 
@@ -44,7 +44,7 @@ class MultiUpdateEntityController extends AbstractController<RequestDto> {
 
       const sharedIds = [...new Set(output.map(e => e.sharedId))];
 
-      const entityDAO = new MongoEntityDAO(
+      const entityDAO = new MongoEntitiesDAO(
         getConnection(),
         ExecutionContext.transactionManager as MongoTransactionManager,
         this.user

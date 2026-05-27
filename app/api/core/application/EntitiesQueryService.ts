@@ -12,7 +12,7 @@ import { PropertyTypeEnum } from '../domain/template/PropertyType.js';
 import { Template } from '../domain/template/Template.js';
 import {
   EntityWithFiles,
-  MongoEntityDAO,
+  MongoEntitiesDAO,
 } from '../infrastructure/mongodb/entity/MongoEntityDAO.js';
 import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { GetEntityResponseDTO, RelationDTO } from './GetEntityResponseDTO.js';
@@ -24,7 +24,7 @@ type Deps = {
   templatesDS: TemplatesDataSource;
   settingsDS: SettingsDataSource;
   entityPermissionChecker: EntityPermissionChecker;
-  entityDAO: MongoEntityDAO;
+  entityDAO: MongoEntitiesDAO;
   relationshipsDataSource: MongoRelationshipsV1DataSource;
 };
 
