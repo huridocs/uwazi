@@ -1,6 +1,4 @@
-import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { URLAttachmentDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { URLAttachment } from '../URLAttachment.js';
 import { FileBuilder } from './FileBuilder.js';
 
@@ -11,12 +9,43 @@ describe('URLAttachment', () => {
     const file = new URLAttachment({
       id: 'id',
       url: 'https://example.com/document.pdf',
+      entity: 'sharedId1',
       mimetype: 'application/pdf',
     } as any);
 
     expect(file.filename).toBe('https://example.com/document.pdf');
     expect(file.originalname).toBe('https://example.com/document.pdf');
     expect(file.url).toBe('https://example.com/document.pdf');
+  });
+
+  describe('validation', () => {
+    it('throws when entity is empty', () => {
+      expect(
+        () =>
+          new URLAttachment({
+            id: 'id',
+            entity: '  ',
+            url: 'https://example.com/document.pdf',
+            filename: 'document.pdf',
+            originalname: 'document.pdf',
+            mimetype: 'application/pdf',
+          })
+      ).toThrow();
+    });
+
+    it('throws when url is not a valid URL', () => {
+      expect(
+        () =>
+          new URLAttachment({
+            id: 'id',
+            entity: 'sharedId1',
+            url: 'not-a-url',
+            filename: 'not-a-url',
+            originalname: 'not-a-url',
+            mimetype: 'application/pdf',
+          })
+      ).toThrow();
+    });
   });
 
   describe('toDTO', () => {
@@ -43,35 +72,6 @@ describe('URLAttachment', () => {
         url: 'https://example.com/document.pdf',
         type: 'attachment',
       });
-    });
-  });
-
-  describe('fromDBO', () => {
-    it('should map all fields from the DBO', () => {
-      const _id = new ObjectId();
-      const dbo: URLAttachmentDBO = {
-        _id,
-        originalname: 'document.pdf',
-        filename: 'document.pdf',
-        mimetype: 'application/pdf',
-        size: 2048,
-        creationDate: 1000000000,
-        type: 'attachment',
-        entity: 'sharedId1',
-        url: 'https://example.com/document.pdf',
-      };
-
-      const file = URLAttachment.fromDBO(dbo);
-
-      expect(file).toBeInstanceOf(URLAttachment);
-      expect(file.id).toBe(_id.toString());
-      expect(file.originalname).toBe('document.pdf');
-      expect(file.filename).toBe('document.pdf');
-      expect(file.mimetype).toBe('application/pdf');
-      expect(file.size).toBe(2048);
-      expect(file.creationDate).toBe(1000000000);
-      expect(file.entity).toBe('sharedId1');
-      expect(file.url).toBe('https://example.com/document.pdf');
     });
   });
 

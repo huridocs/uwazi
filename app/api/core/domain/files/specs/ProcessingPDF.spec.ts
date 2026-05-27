@@ -1,6 +1,4 @@
-import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { ProcessingPDFDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { ProcessedPDF } from '../ProcessedPDF.js';
 import { ProcessingPDF } from '../ProcessingPDF.js';
 import { FileBuilder } from './FileBuilder.js';
@@ -32,39 +30,6 @@ describe('ProcessingPDF', () => {
         status: 'failed',
         type: 'document',
       });
-    });
-  });
-
-  describe('fromDBO', () => {
-    it('should map all fields including status and content loader', () => {
-      const _id = new ObjectId();
-      const dbo: ProcessingPDFDBO = {
-        _id,
-        originalname: 'report.pdf',
-        filename: 'abc123.pdf',
-        mimetype: 'application/pdf',
-        size: 5000,
-        creationDate: 1000000000,
-        type: 'document',
-        entity: 'sharedId1',
-        status: 'failed',
-      };
-      const content = FileBuilder.content('document bytes');
-      const contentLoader = jest.fn().mockReturnValue(content);
-
-      const file = ProcessingPDF.fromDBO(dbo, contentLoader);
-
-      expect(file).toBeInstanceOf(ProcessingPDF);
-      expect(file.id).toBe(_id.toString());
-      expect(file.originalname).toBe('report.pdf');
-      expect(file.filename).toBe('abc123.pdf');
-      expect(file.mimetype).toBe('application/pdf');
-      expect(file.size).toBe(5000);
-      expect(file.creationDate).toBe(1000000000);
-      expect(file.entity).toBe('sharedId1');
-      expect(file.status).toBe('failed');
-      expect(file.content).toBe(content);
-      expect(contentLoader).toHaveBeenCalledWith({ type: 'document', filename: 'abc123.pdf' });
     });
   });
 

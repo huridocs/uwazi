@@ -107,7 +107,10 @@ describe('FilesService', () => {
 
     beforeAll(async () => {
       const { service } = createService();
-      await service.insert([document, attachment]);
+      await service.insert([document, attachment], {
+        userId: permissionsContext.getUserInContext()?._id?.toString(),
+        tenantName: tenants.current().name,
+      });
     });
 
     it('should insert uwazi files in the db', async () => {

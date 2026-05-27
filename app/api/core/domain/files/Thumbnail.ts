@@ -1,10 +1,8 @@
-import {
-  ThumbnailDBO,
-  ThumbnailDTO,
-} from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+import { z } from 'zod';
 import { LanguageUtils } from '#shared/language/index.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { BaseFile, BaseFileProps, FileContentLoader } from './BaseFile.js';
+import { BaseFileProps } from './BaseFile.js';
+import { ThumbnailDTO } from './domainTypes.js';
 import { FileContents } from './FileContents.js';
 import { FileWithContents } from './FileWithContents.js';
 
@@ -13,6 +11,11 @@ type Props = BaseFileProps & {
   language: LanguageISO6391;
   content: FileContents;
 };
+
+const Schema = z.object({
+  entity: z.string().trim().min(1, 'Entity is required'),
+  language: z.string().trim().min(2, 'Language is required') as z.ZodType<LanguageISO6391>,
+});
 
 export class Thumbnail extends FileWithContents<Props> {
   readonly entity: string;
@@ -27,8 +30,9 @@ export class Thumbnail extends FileWithContents<Props> {
       mimetype: props.mimetype ?? 'image/jpeg',
       originalname: props.originalname ?? props.filename,
     });
-    this.entity = props.entity;
-    this.language = props.language;
+    const validated = Schema.parse(props);
+    this.entity = validated.entity;
+    this.language = validated.language;
   }
 
   toDTO(): ThumbnailDTO {
@@ -38,14 +42,5 @@ export class Thumbnail extends FileWithContents<Props> {
       language: LanguageUtils.fromISO639_1(this.language).ISO639_3,
       type: 'thumbnail',
     };
-  }
-
-  static fromDBO(dbo: ThumbnailDBO, contentLoader: FileContentLoader) {
-    return new Thumbnail({
-      ...BaseFile.dboCommonFields(dbo),
-      language: LanguageUtils.fromISO639_3(dbo.language).ISO639_1,
-      content: contentLoader({ type: dbo.type, filename: dbo.filename }),
-      entity: dbo.entity,
-    });
   }
 }

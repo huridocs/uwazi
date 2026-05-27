@@ -100,7 +100,10 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
         actorId: this.actorId,
         targetLanguage: input.language,
       });
-      await this.deps.fileService.insert(filesCreated);
+      await this.deps.fileService.insert(filesCreated, {
+        userId: this.actorId,
+        tenantName: this.tenant.name,
+      });
       await this.deps.fileService.delete(removedFiles);
       await this.deps.fileService.bulkUpsert(updatedFiles);
     });

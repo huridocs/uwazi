@@ -1,9 +1,6 @@
-import {
-  ProcessingPDFDBO,
-  ProcessingPDFDTO,
-} from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { BaseFile, BaseFileProps, FileContentLoader } from './BaseFile.js';
+import { BaseFile, BaseFileProps } from './BaseFile.js';
+import { ProcessingPDFDTO } from './domainTypes.js';
 import { FileContents } from './FileContents.js';
 import { FileWithContents } from './FileWithContents.js';
 import { FullText, ProcessedPDF } from './ProcessedPDF.js';
@@ -50,15 +47,6 @@ export class ProcessingPDF extends FileWithContents<Props> {
     processed.languageChanged();
 
     return processed;
-  }
-
-  static fromDBO(dbo: ProcessingPDFDBO, contentLoader: FileContentLoader) {
-    return new ProcessingPDF({
-      ...BaseFile.dboCommonFields(dbo),
-      content: contentLoader({ type: dbo.type, filename: dbo.filename }),
-      entity: dbo.entity,
-      status: dbo.status,
-    });
   }
 
   toDTO(): ProcessingPDFDTO {

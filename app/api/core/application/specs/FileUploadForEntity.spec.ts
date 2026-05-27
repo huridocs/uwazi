@@ -11,7 +11,6 @@ import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
 import { fileExistsOnPath } from '#api/files/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { tenants } from '#api/tenants/index.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
@@ -30,6 +29,8 @@ describe('FileUploadForEntity', () => {
   let result: any;
   let eventBus: EventsBus;
   let pathManager: PathManager;
+  let actorId: string | undefined;
+  let tenantName: string;
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, true);
@@ -45,6 +46,8 @@ describe('FileUploadForEntity', () => {
     const { useCase } = testingEnvironment.runWithContext(() => {
       const { transactionManager } = ExecutionContext;
       const filesService = FilesServiceFactory.default({ jobsDispatcher, eventBus });
+      actorId = ExecutionContext.actor?._id?.toString();
+      tenantName = tenants.current().name;
       return {
         useCase: FileUploadForEntityFactory.default({
           transactionManager,
@@ -92,8 +95,8 @@ describe('FileUploadForEntity', () => {
     expect(schedulePDFPostProcessMock).toHaveBeenCalledWith([
       {
         documentId: result._id,
-        userId: permissionsContext.getUserInContext()?._id?.toString(),
-        tenantName: tenants.current().name,
+        userId: actorId,
+        tenantName,
       },
     ]);
   });

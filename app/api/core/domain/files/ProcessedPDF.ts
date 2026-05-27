@@ -1,12 +1,9 @@
 import { z } from 'zod';
-import {
-  ProcessedPDFDBO,
-  ProcessedPDFDTO,
-} from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+import { ProcessedPDFDTO } from './domainTypes.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { ObjectUtils } from '#api/common.v2/utils/Object.js';
-import { BaseFile, BaseFileProps, FileContentLoader } from './BaseFile.js';
+import { BaseFile, BaseFileProps } from './BaseFile.js';
 import { FileContents } from './FileContents.js';
 import { FileWithContents } from './FileWithContents.js';
 
@@ -36,6 +33,13 @@ type Props = BaseFileProps & {
   toc?: TableOfContent[];
 };
 
+const IMMUTABLE_PROCESSED_PDF_KEYS = [
+  'fullText',
+  'entity',
+  'totalPages',
+] as const satisfies ReadonlyArray<keyof Props>;
+
+
 const Schema = z.object({
   entity: z.string().trim().min(1),
   language: z.string().trim().min(2) as z.ZodType<LanguageISO6391>,
@@ -43,11 +47,12 @@ const Schema = z.object({
   generatedToc: z.boolean().default(false),
 });
 
-const IMMUTABLE_PROCESSED_PDF_KEYS = [
-  'fullText',
-  'entity',
-  'totalPages',
-] as const satisfies ReadonlyArray<keyof Props>;
+type UpdateableProps = {
+  originalname?: string;
+  toc?: TableOfContent[];
+  generatedToc?: boolean;
+  language?: LanguageISO6391;
+};
 
 export class ProcessedPDF extends FileWithContents<Props> {
   readonly entity: string;
@@ -91,8 +96,8 @@ export class ProcessedPDF extends FileWithContents<Props> {
     }
   }
 
-  update(props: Partial<Props>): this {
-    const updated = super.update(ObjectUtils.sanitize(props, IMMUTABLE_PROCESSED_PDF_KEYS));
+  update(props: UpdateableProps): this {
+    const updated = super.update(ObjectUtils.sanitize(props as Partial<Props>, IMMUTABLE_PROCESSED_PDF_KEYS) as Partial<Props>);
     if (this.language !== updated.language) {
       updated.languageChanged();
     }
@@ -119,23 +124,6 @@ export class ProcessedPDF extends FileWithContents<Props> {
       type: 'document',
       status: 'ready',
     };
-  }
-
-  static fromDBO(dbo: ProcessedPDFDBO, contentLoader: FileContentLoader) {
-    return new ProcessedPDF({
-      ...BaseFile.dboCommonFields(dbo),
-      content: contentLoader({ type: dbo.type, filename: dbo.filename }),
-      entity: dbo.entity,
-      language: LanguageUtils.fromISO639_3(dbo.language).ISO639_1,
-      totalPages: dbo.totalPages,
-      fullText:
-        dbo.fullText ||
-        (async () => {
-          throw new Error('not Implemented');
-        }),
-      generatedToc: dbo.generatedToc,
-      toc: dbo.toc,
-    });
   }
 }
 
