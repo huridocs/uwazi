@@ -103,7 +103,7 @@ const captureError: QueueWorkerErrorHandler = (error, context) => {
   }
 };
 
-export function setupQueueWorker(props?: Props) {
+function setupQueueWorker(props?: Props) {
   const standAloneProcess = props?.standAloneProcess ?? false;
 
   if (standAloneProcess) {
@@ -158,3 +158,5 @@ export function setupQueueWorker(props?: Props) {
       process.exit(1);
     });
 }
+
+export { setupQueueWorker, register };
