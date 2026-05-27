@@ -382,7 +382,7 @@
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-storybook": "10.3.6",
+    "eslint-plugin-storybook": "10.4.1",
     "fetch-mock": "^9.11.0",
     "flowbite-typography": "1.0.5",
     "globals": "^15.14.0",
