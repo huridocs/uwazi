@@ -17,8 +17,8 @@ describe('migration pages-draft-releases', () => {
     await testingDB.tearDown();
   });
 
-  it('should have delta 189', () => {
-    expect(migration.delta).toBe(189);
+  it('should have delta 191', () => {
+    expect(migration.delta).toBe(191);
   });
 
   it('should consolidate to locales and page_releases', async () => {

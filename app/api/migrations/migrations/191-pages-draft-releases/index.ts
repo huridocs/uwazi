@@ -39,7 +39,7 @@ const contentFromDoc = (doc: LegacyPageDoc) => {
 };
 
 export default {
-  delta: 189,
+  delta: 191,
 
   reindex: false,
 
