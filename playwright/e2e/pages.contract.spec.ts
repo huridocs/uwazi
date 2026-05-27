@@ -56,8 +56,11 @@ test('pages contract creates a custom page that renders at its URL', async ({ pa
     await expect(monacoEditor).toBeVisible();
     await monacoEditor.click();
     await page.keyboard.insertText(PAGE_HTML_CONTENT);
-    // The CodeEditor commits content via a 500ms debounce; wait for it before saving.
-    await page.waitForTimeout(800);
+    // Force blur/commit for Monaco-backed editors before saving.
+    await page.getByRole('tab', { name: 'Configuration' }).click();
+    await page.getByRole('tab', { name: 'HTML' }).click();
+    // The editor commits content with debounce after blur.
+    await page.waitForTimeout(1000);
   });
 
   let pageUrl = '';
