@@ -95,6 +95,7 @@ export type {
   IDraggable,
   DraggableValue,
   Page,
+  PageLocaleForm,
   TranslationValue,
   ClientTemplateSchema,
   ClientProperty,

@@ -6,7 +6,7 @@ import db from '#api/utils/testing_db.js';
 import { fixtures, pageToUpdate } from './fixtures.js';
 import pages from '../pages.js';
 
-const withContext = <T>(fn: () => Promise<T>) => testingEnvironment.runWithContext(fn);
+const withContext = async <T>(fn: () => Promise<T>) => testingEnvironment.runWithContext(fn);
 
 describe('pages', () => {
   beforeEach(async () => {
@@ -36,7 +36,6 @@ describe('pages', () => {
         ]);
 
         expect([es.title, en.title, pt.title]).toEqual([page.title, page.title, page.title]);
-        expect(es.user).toBeUndefined();
         expect(es.creationDate).toEqual(1);
         expect(es.markdownSupport).toBe(false);
 
@@ -85,7 +84,6 @@ describe('pages', () => {
           expect(modifiedDoc.title).toBe('Edited title');
 
           const doc = await pages.getById('2', 'es');
-          expect(doc.user).toBeUndefined();
           expect(doc.creationDate).toBe(1);
         });
       });
@@ -120,7 +118,9 @@ describe('pages', () => {
         try {
           await pages.delete(sharedId);
         } catch (err) {
-          expect((err as Error).message).toContain('This page is in use by the following templates:');
+          expect((err as Error).message).toContain(
+            'This page is in use by the following templates:'
+          );
         }
       });
     });
@@ -204,9 +204,8 @@ describe('pages', () => {
 
     it('should update only provided locales without wiping others', async () => {
       await withContext(async () => {
-        const { PagesDataSourceFactory } = await import(
-          '#api/pages/infrastructure/factories/PagesDataSourceFactory.js'
-        );
+        const { PagesDataSourceFactory } =
+          await import('#api/pages/infrastructure/factories/PagesDataSourceFactory.js');
         const pagesDS = PagesDataSourceFactory.default();
         const user = { _id: db.id() };
         const editorBefore = await pages.getById('2', undefined, 'editor');

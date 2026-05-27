@@ -9,8 +9,14 @@ const getTextareaSelector = (mode: 'html' | 'javascript' | 'css') => {
 };
 
 const getMonacoSelector = (mode: 'html' | 'javascript' | 'css') => {
-  const panelId =
-    mode === 'html' ? 'HTML' : mode === 'javascript' ? 'Javascript' : 'CSS';
+  let panelId: string;
+  if (mode === 'html') {
+    panelId = 'HTML';
+  } else if (mode === 'javascript') {
+    panelId = 'Javascript';
+  } else {
+    panelId = 'CSS';
+  }
   return `#panel-${panelId} .monaco-editor textarea`;
 };
 
@@ -50,7 +56,7 @@ const typeMonaco = (selector: string, value: string, blurAndVerify?: string, pas
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(600);
     const panel = getPanelFromSelector(selector);
-    const tabLabel = panel === 'Javascript' ? 'Javascript' : panel === 'CSS' ? 'CSS' : 'HTML';
+    const tabLabel = panel === 'Javascript' ? 'Javascript' : panel;
     cy.contains('[role="tab"]', tabLabel).click();
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(300);

@@ -119,31 +119,33 @@ const headTag = (head, CSS, reduxData, documentHeadPageCss) => {
       : null;
   return (
     <head>
-    {safeHelmet(head.title?.toComponent?.())}
-    {safeHelmet(head.meta?.toComponent?.())}
-    {safeHelmet(head.link?.toComponent?.())}
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    {CSS.map((style, key) => (
-      <link key={key} href={style} rel="stylesheet" type="text/css" />
-    ))}
-    <style
-      type="text/css"
-      dangerouslySetInnerHTML={{ __html: reduxData.settings.collection.get('customCSS') }}
-    />
-    {ssrPageCss != null && (
+      {safeHelmet(head.title?.toComponent?.())}
+      {safeHelmet(head.meta?.toComponent?.())}
+      {safeHelmet(head.link?.toComponent?.())}
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      {CSS.map((style, key) => (
+        <link key={key} href={style} rel="stylesheet" type="text/css" />
+      ))}
       <style
-        id={PAGE_STYLE_ELEMENT_ID}
-        key="uwazi-page-custom-css"
         type="text/css"
-        data-uwazi-page-style="true"
-        dangerouslySetInnerHTML={{ __html: ssrPageCss }}
+        dangerouslySetInnerHTML={{ __html: reduxData.settings.collection.get('customCSS') }}
       />
-    )}
-    {reduxData.settings.collection.get('allowcustomJS') && (
-      <script dangerouslySetInnerHTML={{ __html: reduxData.settings.collection.get('customJS') }} />
-    )}
-    {googelFonts}
-    {getFaviconLinks(reduxData)}
+      {ssrPageCss != null && (
+        <style
+          id={PAGE_STYLE_ELEMENT_ID}
+          key="uwazi-page-custom-css"
+          type="text/css"
+          data-uwazi-page-style="true"
+          dangerouslySetInnerHTML={{ __html: ssrPageCss }}
+        />
+      )}
+      {reduxData.settings.collection.get('allowcustomJS') && (
+        <script
+          dangerouslySetInnerHTML={{ __html: reduxData.settings.collection.get('customJS') }}
+        />
+      )}
+      {googelFonts}
+      {getFaviconLinks(reduxData)}
     </head>
   );
 };

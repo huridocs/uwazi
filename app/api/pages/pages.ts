@@ -9,7 +9,7 @@ export default {
 
   get: pagesService.get.bind(pagesService),
 
-  getById(
+  async getById(
     lookup: Parameters<typeof pagesService.getById>[0],
     language?: string,
     mode?: 'editor'

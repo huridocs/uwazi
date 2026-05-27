@@ -24,7 +24,7 @@ const createSut = () =>
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const translationService = new LegacyTranslationService();
     const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
-    const pageService = LegacyPageServiceFactory.default();
+    const pageService = LegacyPageServiceFactory.default({ transactionManager });
 
     const sut = new CreateTemplateUseCase({
       templatesDS,

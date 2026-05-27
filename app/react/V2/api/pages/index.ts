@@ -67,11 +67,12 @@ const deleteBySharedId = async (sharedId: string, headers?: IncomingHttpHeaders)
 
 const release = async (
   sharedId: string,
-  release_message: string,
+  releaseMessage: string,
   headers?: IncomingHttpHeaders
 ): Promise<Page | FetchResponseError> => {
   try {
-    const requestParams = new RequestParams({ sharedId, release_message }, headers);
+    // eslint-disable-next-line camelcase
+    const requestParams = new RequestParams({ sharedId, release_message: releaseMessage }, headers);
     const response = await api.post('pages/release', requestParams);
     return response.json;
   } catch (e) {

@@ -1,8 +1,5 @@
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
-import {
-  CannotRemoveLastLocaleError,
-  PageLocaleNotFoundError,
-} from '#api/pages/domain/errors.js';
+import { CannotRemoveLastLocaleError, PageLocaleNotFoundError } from '#api/pages/domain/errors.js';
 import { PagesDataSource } from './contracts/PagesDataSource.js';
 
 type Input = {
@@ -30,10 +27,10 @@ class RemoveLanguageFromPagesUseCase extends AbstractUseCase<Input, Output, Deps
             error instanceof PageLocaleNotFoundError ||
             error instanceof CannotRemoveLastLocaleError
           ) {
-            // locale absent or last locale — skip
-            continue;
+            // locale absent or last locale — skip silently
+          } else {
+            throw error;
           }
-          throw error;
         }
       }
     });

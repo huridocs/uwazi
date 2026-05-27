@@ -25,7 +25,9 @@ describe('Root component', () => {
         },
       };
 
-      const component = shallow(<html lang="en">{headTag(dummyHelmet, [], reduxData, undefined)}</html>);
+      const component = shallow(
+        <html lang="en">{headTag(dummyHelmet, [], reduxData, undefined)}</html>
+      );
 
       expect(component.find({ rel: 'shortcut icon' }).props().href).toBe('/public/favicon.ico');
     });
@@ -39,7 +41,9 @@ describe('Root component', () => {
         },
       };
 
-      const component = shallow(<html lang="en">{headTag(dummyHelmet, [], reduxData, undefined)}</html>);
+      const component = shallow(
+        <html lang="en">{headTag(dummyHelmet, [], reduxData, undefined)}</html>
+      );
 
       expect(component.find({ rel: 'shortcut icon' }).props().href).toBe('custom_icon_url');
     });
@@ -60,9 +64,7 @@ describe('Root component', () => {
       };
 
       const component = shallow(
-        <html lang="en">
-          {headTag(dummyHelmet, [], reduxData, 'header { display: none }')}
-        </html>
+        <html lang="en">{headTag(dummyHelmet, [], reduxData, 'header { display: none }')}</html>
       );
 
       const pageStyle = component.find(`#${PAGE_STYLE_ELEMENT_ID}`);
@@ -77,9 +79,7 @@ describe('Root component', () => {
         },
       };
 
-      const component = shallow(
-        <html lang="en">{headTag(dummyHelmet, [], reduxData, '')}</html>
-      );
+      const component = shallow(<html lang="en">{headTag(dummyHelmet, [], reduxData, '')}</html>);
 
       expect(component.find(`#${PAGE_STYLE_ELEMENT_ID}`)).toHaveLength(0);
     });

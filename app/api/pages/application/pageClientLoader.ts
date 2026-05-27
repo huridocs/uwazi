@@ -8,9 +8,8 @@ import { SettingsDataSource } from '#api/core/application/contracts/SettingsData
 
 export type PageLookup = { sharedId?: string };
 
-export const normalizePageLookup = (
-  lookup: string | PageLookup
-): PageLookup => (typeof lookup === 'string' ? { sharedId: lookup } : lookup);
+export const normalizePageLookup = (lookup: string | PageLookup): PageLookup =>
+  typeof lookup === 'string' ? { sharedId: lookup } : lookup;
 
 export const findPageForLookup = async (lookup: PageLookup, pagesDS: PagesDataSource) => {
   const { sharedId } = lookup;

@@ -36,7 +36,8 @@ const fixtures: DBFixture = {
 
 const heartbeat = jest.fn();
 
-const createSUT = () => testingEnvironment.runWithContext(() => new DeleteLanguagePagesListener({}));
+const createSUT = () =>
+  testingEnvironment.runWithContext(() => new DeleteLanguagePagesListener({}));
 
 const dispatch = async (listener: DeleteLanguagePagesListener, language: string): Promise<void> => {
   await testingEnvironment.runWithContext(async () => {
@@ -62,9 +63,11 @@ describe('DeleteLanguagePagesListener', () => {
     await dispatch(listener, 'es');
 
     await expect(
-      testingEnvironment.runWithContext(() => pages.getById('page1', 'es'))
+      testingEnvironment.runWithContext(async () => pages.getById('page1', 'es'))
     ).rejects.toMatchObject({ code: 404 });
-    const enPage = await testingEnvironment.runWithContext(() => pages.getById('page1', 'en'));
+    const enPage = await testingEnvironment.runWithContext(async () =>
+      pages.getById('page1', 'en')
+    );
     expect(enPage.title).toBe('Test page');
   });
 
@@ -72,7 +75,9 @@ describe('DeleteLanguagePagesListener', () => {
     const listener = await createSUT();
     await dispatch(listener, 'es');
 
-    const enPages = await testingEnvironment.runWithContext(() => pages.get({ language: 'en' }));
+    const enPages = await testingEnvironment.runWithContext(async () =>
+      pages.get({ language: 'en' })
+    );
     expect(enPages).toHaveLength(1);
     expect(enPages[0].sharedId).toBe('page1');
   });

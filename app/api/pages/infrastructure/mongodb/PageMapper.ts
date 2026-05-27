@@ -61,10 +61,7 @@ export class PageMapper {
     };
   }
 
-  static releaseSnapshotToDBO(
-    pageId: string,
-    snapshot: PageReleaseSnapshot
-  ): PageReleaseDBO {
+  static releaseSnapshotToDBO(pageId: string, snapshot: PageReleaseSnapshot): PageReleaseDBO {
     const dbo: PageReleaseDBO = {
       page: ObjectId.createFromHexString(pageId),
       version: snapshot.version,

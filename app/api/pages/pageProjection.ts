@@ -150,8 +150,7 @@ export const applyEditorClientToPage = (
   }
 
   const fallbackLang =
-    installedLanguageKeys.find(k => page.getLocaleKeys().includes(k)) ??
-    installedLanguageKeys[0];
+    installedLanguageKeys.find(k => page.getLocaleKeys().includes(k)) ?? installedLanguageKeys[0];
 
   keys.forEach(lang => {
     const patch = localePayloadToPatch(clientLocales[lang]!);

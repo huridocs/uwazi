@@ -59,11 +59,7 @@ export default (app: Application) => {
       },
       required: ['query'],
     }),
-    (
-      req: Request<{}, {}, {}, { sharedId: string; mode?: 'editor' }>,
-      res,
-      next
-    ) => {
+    (req: Request<{}, {}, {}, { sharedId: string; mode?: 'editor' }>, res, next) => {
       pages
         .getById({ sharedId: req.query.sharedId }, req.language, req.query.mode)
         .then(res.json.bind(res))

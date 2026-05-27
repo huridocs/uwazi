@@ -15,7 +15,6 @@ import { getPageUrl } from './pageUrls.js';
 import { MarkdownDeprecationBanner } from './PageEditorComponents.js';
 
 export interface PageEditorConfigTabProps {
-  page: Page;
   register: UseFormRegister<Page>;
   getValues: UseFormGetValues<Page>;
   setValue: UseFormSetValue<Page>;
@@ -26,7 +25,6 @@ export interface PageEditorConfigTabProps {
 }
 
 const PageEditorConfigTab = ({
-  page,
   register,
   getValues,
   setValue,
@@ -46,7 +44,7 @@ const PageEditorConfigTab = ({
         )}
         <ToggleButton checked={entityView} onToggle={onEntityViewToggle}>
           <Translate className="text-sm font-semibold text-ink">
-            Enable this page to be used as an entity view page
+            Enable this page to be used as an entity view page:
           </Translate>
         </ToggleButton>
 

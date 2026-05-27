@@ -16,7 +16,7 @@ import {
   hasEditorLocalesPayload,
   pageToEditorClient,
 } from '#api/pages/pageProjection.js';
-import { loadClientPage, loadClientPageForEditor } from './pageClientLoader.js';
+import { loadClientPage } from './pageClientLoader.js';
 
 type Input = {
   page: PageType;

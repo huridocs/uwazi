@@ -44,13 +44,14 @@ test('pages contract creates a custom page that renders at its URL', async ({ pa
   await test.step('Open the new page editor and set the title', async () => {
     await page.getByRole('link', { name: 'Add page' }).click();
     await expect(page).toHaveURL(/\/settings\/pages\/new/);
-    const titleInput = page.locator('#title');
+    // The title input id is locale-prefixed, e.g. #title-en
+    const titleInput = page.locator('[id^="title-"]').first();
     await expect(titleInput).toBeVisible();
     await titleInput.fill(PAGE_TITLE);
   });
 
-  await test.step('Switch to the Markdown tab and type the HTML content', async () => {
-    await page.getByRole('tab', { name: 'Markdown' }).click();
+  await test.step('Switch to the HTML tab and type the HTML content', async () => {
+    await page.getByRole('tab', { name: 'HTML' }).click();
     const monacoEditor = page.locator('.monaco-editor').first();
     await expect(monacoEditor).toBeVisible();
     await monacoEditor.click();
@@ -60,7 +61,7 @@ test('pages contract creates a custom page that renders at its URL', async ({ pa
   });
 
   let pageUrl = '';
-  await test.step('Save the page and read the published URL from the basic tab', async () => {
+  await test.step('Save the page and read the published URL from the configuration tab', async () => {
     const saveResponsePromise = page.waitForResponse(
       response =>
         response.url().includes('/api/pages') &&
@@ -72,8 +73,9 @@ test('pages contract creates a custom page that renders at its URL', async ({ pa
     await expect(page.getByText('Saved successfully').first()).toBeVisible();
     await expect(page).toHaveURL(/\/settings\/pages\/edit\/[a-z0-9]+/i);
 
-    await page.getByRole('tab', { name: 'Basic' }).click();
-    const pageUrlInput = page.locator('#page-url');
+    await page.getByRole('tab', { name: 'Configuration' }).click();
+    // The URL input id is locale-prefixed, e.g. #page-url-en
+    const pageUrlInput = page.locator('[id^="page-url-"]').first();
     await expect(pageUrlInput).toBeVisible();
     await expect(pageUrlInput).toHaveValue(/\/page\/[a-z0-9]+\/.+/i);
     pageUrl = (await pageUrlInput.inputValue()).trim();

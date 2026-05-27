@@ -1,16 +1,22 @@
 import Ajv from 'ajv';
 import { PageService } from '#api/core/domain/template/PageService.js';
 import { Template } from '#api/core/domain/template/Template.js';
+import { PagesDataSource } from '#api/pages/application/contracts/PagesDataSource.js';
 import { PagesDataSourceFactory } from '../factories/PagesDataSourceFactory.js';
 
 class LegacyPageService implements PageService {
-  // eslint-disable-next-line class-methods-use-this
+  private readonly pagesDS?: PagesDataSource;
+
+  constructor(pagesDS?: PagesDataSource) {
+    this.pagesDS = pagesDS;
+  }
+
   async ensurePageIsValid(template: Template): Promise<void> {
     if (!template?.entityViewPage?.length) {
       return;
     }
 
-    const pagesDS = PagesDataSourceFactory.default();
+    const pagesDS = this.pagesDS ?? PagesDataSourceFactory.default();
     const result = await pagesDS.getBySharedId(template.entityViewPage);
 
     if (result.isError()) {

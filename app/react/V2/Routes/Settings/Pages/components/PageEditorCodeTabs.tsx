@@ -77,9 +77,7 @@ const PageEditorHtmlPanel = ({
         onMount={(editor: any) => {
           bindEditorDraftField(editor, debouncedChangeHandler, setValue, contentField);
         }}
-        fallbackElement={
-          <textarea {...register(contentField)} className="w-full h-full" />
-        }
+        fallbackElement={<textarea {...register(contentField)} className="w-full h-full" />}
       />
     </PageEditorCodePanelLayout>
   );
@@ -104,9 +102,7 @@ const PageEditorJavascriptPanel = ({
         onMount={(editor: any) => {
           bindEditorDraftField(editor, debouncedChangeHandler, setValue, scriptField);
         }}
-        fallbackElement={
-          <textarea {...register(scriptField)} className="w-full h-full" />
-        }
+        fallbackElement={<textarea {...register(scriptField)} className="w-full h-full" />}
       />
     </PageEditorCodePanelLayout>
   );

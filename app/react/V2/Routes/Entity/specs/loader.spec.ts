@@ -50,7 +50,7 @@ describe('Entity loader with cache integration', () => {
       request: new Request(fullUrl),
       unstable_pattern: '',
       context: {},
-    } as LoaderFunctionArgs);
+    } as unknown as LoaderFunctionArgs);
   };
 
   describe('Entity loading', () => {

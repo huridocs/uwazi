@@ -9,9 +9,29 @@ export interface PageDraft {
   css?: string;
 }
 
+export interface PageEditorPayload {
+  _id?: ObjectIdSchema;
+  sharedId?: string;
+  creationDate?: number;
+  entityView?: boolean;
+  markdownSupport?: boolean;
+  locales: {
+    [k: string]:
+      | {
+          title: string;
+          draft?: PageDraft;
+        }
+      | undefined;
+  };
+}
+
 export interface PageLocale {
   title?: string;
-  draft?: PageDraft;
+  draft?: {
+    content?: string;
+    script?: string;
+    css?: string;
+  };
 }
 
 export interface PageRelease {
@@ -20,13 +40,12 @@ export interface PageRelease {
   script?: string;
   css?: string;
   release_message?: string;
-  user?: ObjectIdSchema;
+  user?: string | ObjectId;
   date: number;
 }
 
 export interface PageType {
   _id?: ObjectIdSchema;
-  /** Flat view for one request language; source of truth is `locales`. */
   title?: string;
   language?: string;
   sharedId?: string;
@@ -37,11 +56,14 @@ export interface PageType {
     script?: string;
     css?: string;
   };
-  locales?: Record<string, PageLocale>;
+  locales?: {
+    [k: string]: PageLocale | undefined;
+  };
   draft?: PageDraft;
   releases?: PageRelease[];
-  /** Editor API: releases grouped by locale key */
-  releasesByLocale?: Record<string, PageRelease[]>;
+  releasesByLocale?: {
+    [k: string]: PageRelease[] | undefined;
+  };
   entityView?: boolean;
   markdownSupport?: boolean;
   __v?: number;

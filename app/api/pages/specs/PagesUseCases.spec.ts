@@ -15,7 +15,7 @@ import db from '#api/utils/testing_db.js';
 const PUBLISHABLE_SHARED_ID = '3';
 const editor = new User(new ObjectId().toString(), 'editor', []);
 
-const withContext = <T>(fn: () => Promise<T>) =>
+const withContext = async <T>(fn: () => Promise<T>) =>
   testingEnvironment.runWithContext(fn, { actor: editor });
 
 const seedPublishableDraft = async () => {
@@ -57,9 +57,12 @@ describe('Pages use cases (integration)', () => {
 
         const pagesDS = PagesDataSourceFactory.default();
         const page = (await pagesDS.getBySharedId(PUBLISHABLE_SHARED_ID)).getDataOrThrow();
-        const releases = await testingEnvironment.db.getCollection('page_releases')!.find({
-          page: ObjectId.createFromHexString(page.id),
-        }).toArray();
+        const releases = await testingEnvironment.db
+          .getCollection('page_releases')!
+          .find({
+            page: ObjectId.createFromHexString(page.id),
+          })
+          .toArray();
 
         expect(releases).toHaveLength(1);
         expect(releases[0].version).toBe(1);

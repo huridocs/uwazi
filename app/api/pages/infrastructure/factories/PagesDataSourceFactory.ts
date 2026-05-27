@@ -1,4 +1,3 @@
-import { PagesDataSource } from '#api/pages/application/contracts/PagesDataSource.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';

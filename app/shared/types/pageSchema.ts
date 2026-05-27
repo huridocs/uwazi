@@ -39,6 +39,55 @@ ajv.addKeyword({
   },
 });
 
+export const PageDraftSchema = {
+  $schema: 'http://json-schema.org/schema#',
+  type: 'object',
+  title: 'PageDraft',
+  additionalProperties: false,
+  properties: {
+    content: { type: 'string' },
+    script: { type: 'string' },
+    css: { type: 'string' },
+  },
+};
+
+export const PageReleaseSchema = {
+  $schema: 'http://json-schema.org/schema#',
+  type: 'object',
+  title: 'PageRelease',
+  additionalProperties: false,
+  properties: {
+    version: { type: 'integer', minimum: 1 },
+    content: { type: 'string' },
+    script: { type: 'string' },
+    css: { type: 'string' },
+    // eslint-disable-next-line camelcase
+    release_message: { type: 'string' },
+    user: objectIdSchema,
+    date: { type: 'number' },
+  },
+  required: ['version', 'content', 'date'],
+};
+
+export const PageLocaleSchema = {
+  $schema: 'http://json-schema.org/schema#',
+  type: 'object',
+  title: 'PageLocale',
+  additionalProperties: false,
+  properties: {
+    title: { type: 'string' },
+    draft: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        content: { type: 'string' },
+        script: { type: 'string' },
+        css: { type: 'string' },
+      },
+    },
+  },
+};
+
 export const PageSchema = {
   $schema: 'http://json-schema.org/schema#',
   $async: true,
@@ -106,11 +155,17 @@ export const PageSchema = {
       type: 'array',
       items: { $ref: '#/definitions/pageRelease' },
     },
+    releasesByLocale: {
+      type: 'object',
+      additionalProperties: {
+        type: 'array',
+        items: { $ref: '#/definitions/pageRelease' },
+      },
+    },
     entityView: { type: 'boolean' },
     markdownSupport: { type: 'boolean' },
     __v: { type: 'number' },
   },
-  required: ['title'],
 };
 
 export const PageEditorSchema = {

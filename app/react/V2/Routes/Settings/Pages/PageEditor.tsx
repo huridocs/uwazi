@@ -14,6 +14,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
+import _ from 'lodash';
 import { Translate, t } from '#app/I18N/index.js';
 import * as pagesAPI from '#V2/api/pages/index.js';
 import { Page } from '#V2/shared/types.js';
@@ -76,7 +77,11 @@ const PageEditor = () => {
   const { notify } = useRequestStatus();
 
   const languagesSignature = useMemo(
-    () => languages.map(l => l.key).sort().join(','),
+    () =>
+      languages
+        .map(l => l.key)
+        .sort()
+        .join(','),
     [languages]
   );
 
@@ -155,14 +160,9 @@ const PageEditor = () => {
   const showPageUrlPreviews = !entityView && !!pageSharedId;
   const isDirty = !!Object.keys(dirtyFields).length;
   const activeLocaleTitle = watch(`locales.${activeLocale}.title`);
-  const headerTitle =
-    activeLocaleTitle?.trim() !== ''
-      ? activeLocaleTitle
-      : isNewPage
-        ? newPageDefaultTitle()
-        : '';
-  const urlTitle =
-    activeLocaleTitle?.trim() !== '' ? activeLocaleTitle : newPageDefaultTitle();
+  const defaultHeaderTitle = isNewPage ? newPageDefaultTitle() : '';
+  const headerTitle = activeLocaleTitle?.trim() !== '' ? activeLocaleTitle : defaultHeaderTitle;
+  const urlTitle = activeLocaleTitle?.trim() !== '' ? activeLocaleTitle : newPageDefaultTitle();
   const localeDraft = watch(`locales.${activeLocale}.draft`) ?? {};
 
   const blocker = useBlocker(isDirty && !isSubmitting);
@@ -219,9 +219,7 @@ const PageEditor = () => {
 
     if (!hasErrors) {
       const previewTitle =
-        response.locales?.[activeLocale]?.title ??
-        getValues(`locales.${activeLocale}.title`) ??
-        '';
+        response.locales?.[activeLocale]?.title ?? getValues(`locales.${activeLocale}.title`) ?? '';
       const draftPath = getPageDraftUrl(response.sharedId!, previewTitle);
       const langPrefix = `${activeLocale}/`;
       window.open(`${window.location.origin}/${langPrefix}${draftPath}`);
@@ -312,7 +310,7 @@ const PageEditor = () => {
                     onToggle={() => setValue('entityView', !entityView, { shouldDirty: true })}
                   >
                     <Translate className="text-sm font-semibold text-ink">
-                      Enable this page to be used as an entity view page
+                      Enable this page to be used as an entity view page:
                     </Translate>
                   </ToggleButton>
 
@@ -328,7 +326,7 @@ const PageEditor = () => {
 
                   {showPageUrlPreviews && (
                     <CopyValueInput
-                      value={`/${activeLocale}/${getPageUrl(pageSharedId, urlTitle)}`}
+                      value={`/${activeLocale}/${getPageUrl(pageSharedId!, urlTitle ?? '')}`}
                       label={<Translate>URL</Translate>}
                       className="w-full"
                       id={`page-url-${activeLocale}`}
@@ -338,7 +336,7 @@ const PageEditor = () => {
                   {pageSharedId && showPageUrlPreviews && (
                     <Link
                       target="_blank"
-                      to={`/${activeLocale}/${getPageUrl(pageSharedId, urlTitle)}`}
+                      to={`/${activeLocale}/${getPageUrl(pageSharedId!, urlTitle ?? '')}`}
                     >
                       <div className="flex gap-2 hover:font-bold hover:cursor-pointer">
                         <ArrowTopRightOnSquareIcon className="w-4" />

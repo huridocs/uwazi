@@ -74,8 +74,7 @@ export default {
     let consolidated = 0;
 
     for (const [sharedId, docs] of byShared) {
-      const canonical =
-        docs.find(d => d.language === defaultLang) ?? docs[0];
+      const canonical = docs.find(d => d.language === defaultLang) ?? docs[0];
       const locales: Record<string, { title: string; draft: object }> = {};
 
       docs.forEach(doc => {

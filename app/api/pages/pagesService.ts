@@ -12,7 +12,7 @@ import type { PageLookup } from '#api/pages/application/pageClientLoader.js';
 export type { PageLookup };
 
 export default {
-  save(page: PageType, user?: User, language?: string) {
+  async save(page: PageType, user?: User, language?: string) {
     const editorResponse = !!page.locales && Object.keys(page.locales).length > 0;
     return SavePageUseCaseFactory.default().execute({
       page,
@@ -22,15 +22,15 @@ export default {
     });
   },
 
-  get(query: { sharedId?: string; language?: string }) {
+  async get(query: { sharedId?: string; language?: string }) {
     return ListPagesUseCaseFactory.default().execute(query);
   },
 
-  getById(lookup: string | PageLookup, language?: string, mode?: 'editor') {
+  async getById(lookup: string | PageLookup, language?: string, mode?: 'editor') {
     return GetPageUseCaseFactory.default().execute({ lookup, language, mode });
   },
 
-  delete(sharedId: string) {
+  async delete(sharedId: string) {
     return DeletePageUseCaseFactory.default().execute({ sharedId });
   },
 

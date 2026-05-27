@@ -64,8 +64,7 @@ const ParsedActions: { [key: string]: EntryValue } = {
     desc: 'Restored page draft from release',
     method: Methods.Update,
     nameField: 'sharedId',
-    extra: (data: { version?: number }) =>
-      data.version != null ? `version ${data.version}` : '',
+    extra: (data: { version?: number }) => (data.version != null ? `version ${data.version}` : ''),
   },
   'POST/api/templates': {
     desc: 'Created template',

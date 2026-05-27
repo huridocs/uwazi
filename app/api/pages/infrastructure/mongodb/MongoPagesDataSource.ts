@@ -24,7 +24,9 @@ class MongoPagesDataSource extends MongoDataSource<PageDBO> implements PagesData
   }
 
   async getAll(): Promise<Page[]> {
-    const dbos = await this.getCollection().find({ locales: { $exists: true } }).toArray();
+    const dbos = await this.getCollection()
+      .find({ locales: { $exists: true } })
+      .toArray();
     return dbos.map(dbo => PageMapper.toDomain(dbo));
   }
 

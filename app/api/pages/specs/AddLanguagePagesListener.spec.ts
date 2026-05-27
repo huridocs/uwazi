@@ -59,10 +59,14 @@ describe('AddLanguagePagesListener', () => {
       const listener = await createSUT();
       await dispatch(listener, 'es');
 
-      const page = await testingEnvironment.runWithContext(() => pages.getById('page1', 'es'));
+      const page = await testingEnvironment.runWithContext(async () =>
+        pages.getById('page1', 'es')
+      );
       expect(page.title).toBe('Test page');
       expect(page.draft?.content).toBe('<p>en</p>');
-      const all = await testingEnvironment.runWithContext(() => pages.get({ language: 'en' }));
+      const all = await testingEnvironment.runWithContext(async () =>
+        pages.get({ language: 'en' })
+      );
       expect(all).toHaveLength(1);
     });
   });
@@ -73,7 +77,7 @@ describe('AddLanguagePagesListener', () => {
       await expect(dispatch(listener, 'fr')).rejects.toThrow(NonRetryableJobError);
 
       await expect(
-        testingEnvironment.runWithContext(() => pages.getById('page1', 'fr'))
+        testingEnvironment.runWithContext(async () => pages.getById('page1', 'fr'))
       ).rejects.toMatchObject({ code: 404 });
     });
   });

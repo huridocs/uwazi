@@ -28,8 +28,7 @@ class PublishPageReleaseUseCase extends AbstractUseCase<Input, Output, Deps> {
 
     const page = pageResult.getDataOrThrow();
     const languageKeys = await this.deps.settingsDS.getLanguageKeys();
-    const nextVersion =
-      (await this.deps.pageReleasesDS.getMaxVersion(page.id)) + 1;
+    const nextVersion = (await this.deps.pageReleasesDS.getMaxVersion(page.id)) + 1;
 
     const snapshot = page.buildRelease({
       releaseMessage: input.release_message,
