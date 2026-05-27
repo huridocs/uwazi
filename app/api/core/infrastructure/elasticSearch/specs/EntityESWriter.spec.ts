@@ -329,6 +329,22 @@ describe('EntityESWriter', () => {
       const { sut } = createSut('tenant-a');
       await expect(sut.deleteBySharedIds([])).resolves.toBeUndefined();
     });
+
+    it('concurrent deletes of the same sharedId produce a 409 version conflict with "but no document was found"', async () => {
+      const { sut } = createSut('tenant-a');
+
+      await sut.index(toMapped([createEntity('shared-concurrent', 'en', 'hello')]), true);
+
+      const results = await Promise.allSettled([
+        sut.deleteBySharedIds(['shared-concurrent'], true),
+        sut.deleteBySharedIds(['shared-concurrent'], true),
+      ]);
+
+      const rejected = results.filter(r => r.status === 'rejected') as PromiseRejectedResult[];
+      expect(rejected).toHaveLength(1);
+      expect(rejected[0].reason.statusCode).toBe(409);
+      expect(rejected[0].reason.message).toContain('but no document was found');
+    });
   });
 
   describe('deleteByTemplateIds()', () => {
