@@ -1,16 +1,18 @@
+import { z } from 'zod';
 import {
   ProcessedPDFDBO,
   ProcessedPDFDTO,
 } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { ObjectUtils } from '#api/common.v2/utils/Object.js';
 import { BaseFile, BaseFileProps, FileContentLoader } from './BaseFile.js';
 import { FileContents } from './FileContents.js';
 import { FileWithContents } from './FileWithContents.js';
 
-type fullTextProp = { [k: string]: string };
+type FullText = Record<string, string>;
 
-type fullTextLoader = fullTextProp | (() => Promise<fullTextProp>);
+type FullTextLoader = FullText | (() => Promise<FullText>);
 
 type TableOfContent = {
   selectionRectangles?: {
@@ -30,9 +32,22 @@ type Props = BaseFileProps & {
   language: LanguageISO6391;
   totalPages: number;
   generatedToc: boolean;
-  fullText: fullTextLoader;
+  fullText: FullTextLoader;
   toc?: TableOfContent[];
 };
+
+const Schema = z.object({
+  entity: z.string().trim().min(1),
+  language: z.string().trim().min(2) as z.ZodType<LanguageISO6391>,
+  totalPages: z.number().int().min(0).default(0),
+  generatedToc: z.boolean().default(false),
+});
+
+const IMMUTABLE_PROCESSED_PDF_KEYS = [
+  'fullText',
+  'entity',
+  'totalPages',
+] as const satisfies ReadonlyArray<keyof Props>;
 
 export class ProcessedPDF extends FileWithContents<Props> {
   readonly entity: string;
@@ -47,31 +62,42 @@ export class ProcessedPDF extends FileWithContents<Props> {
 
   readonly toc?: TableOfContent[];
 
-  public fullText?: fullTextProp;
+  public fullText?: FullText;
 
-  private fullTextLoader: fullTextLoader;
+  private fullTextLoader: FullTextLoader;
 
-  private _pendingFullTextIndexing = false;
+  private _languageHasChanged = false;
 
-  get pendingFullTextIndexing(): boolean {
-    return this._pendingFullTextIndexing;
+  get languageHasChanged(): boolean {
+    return this._languageHasChanged;
   }
 
-  markForFullTextIndexing(): void {
-    this._pendingFullTextIndexing = true;
+  languageChanged(): void {
+    this._languageHasChanged = true;
   }
 
   constructor(props: Props) {
-    super(props);
-    this.language = props.language;
-    this.totalPages = props.totalPages;
+    const validated = Schema.parse(props);
+    super({ ...props, ...validated });
+    this.language = validated.language;
+    this.totalPages = validated.totalPages;
+    this.generatedToc = validated.generatedToc;
+    this.entity = validated.entity;
+
     this.fullTextLoader = props.fullText;
-    this.generatedToc = props.generatedToc;
     this.toc = props.toc;
-    this.entity = props.entity;
     if (typeof props.fullText !== 'function') {
       this.fullText = props.fullText;
     }
+  }
+
+  update(props: Partial<Props>): this {
+    const updated = super.update(ObjectUtils.sanitize(props, IMMUTABLE_PROCESSED_PDF_KEYS));
+    if (this.language !== updated.language) {
+      updated.languageChanged();
+    }
+
+    return updated;
   }
 
   async getFullText() {
@@ -113,4 +139,4 @@ export class ProcessedPDF extends FileWithContents<Props> {
   }
 }
 
-export type { fullTextProp, TableOfContent };
+export type { FullText, TableOfContent, Props as ProcessedPDFProps };

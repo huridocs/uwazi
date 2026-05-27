@@ -42,8 +42,6 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoSlotsBootstrapper } from '#api/core/infrastructure/elasticSearch/entities/MongoSlotsBootstrapper.js';
-import { MongoSlotsDAOFactory } from '#api/core/infrastructure/factories/MongoSlotsDAOFactory.js';
 import * as utils from '#shared/tsUtils.js';
 import { syncWorker } from '../syncWorker.js';
 import {
@@ -522,12 +520,6 @@ describe('syncWorker', () => {
           await elasticTesting.reindex();
           permissionsContext.setCommandContext();
           await entitiesModel.delete({ template: template1 });
-          if (tenants.current().featureFlags?.v2ElasticSearch) {
-            await new MongoSlotsBootstrapper({
-              database: getConnection(),
-              slotsDAO: MongoSlotsDAOFactory.default(),
-            }).reset();
-          }
           await templates.delete({ _id: template1 });
         }, 'host1');
       });
