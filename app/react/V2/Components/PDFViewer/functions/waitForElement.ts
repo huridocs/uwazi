@@ -1,8 +1,16 @@
+/* eslint-disable max-statements */
+import { isClient } from '#app/utils/index.js';
+
 const waitForElement = async <T extends Element = Element>(
   getter: string,
   timeout = 5000
 ): Promise<T> =>
   new Promise((resolve, reject) => {
+    if (!isClient) {
+      reject();
+      return;
+    }
+
     const element = document.querySelector<T>(getter);
 
     if (element) {
