@@ -36,6 +36,12 @@ In code and UI, both names appear:
 
 They refer to the same subsystem in this context.
 
+## Legacy naming transition note
+
+- Historical sections in this document still mention legacy names (`__extractedMetadata`, `files.extractedMetadata`) because they describe what existed at the time of diagnosis.
+- Forward-looking design/implementation decisions in this document use the approved naming (`propertySelections` / `files.propertySelections`).
+- Interpretation rule for future work: when historical findings mention legacy names, treat them as the predecessor of the approved `propertySelections` contract unless explicitly talking about ML boundary translation.
+
 ## Original reported symptoms
 
 Reported from production/users:
