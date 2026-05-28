@@ -7,7 +7,7 @@ import {
 import { V1CompatTenantDispatchable } from '#api/core/libs/queue/application/contracts/V1CompatTenantDispatchable.js';
 import { WebSockets } from '#api/core/application/contracts/WebSockets.js';
 import { EntityIndexerService } from '../elasticSearch/entities/EntityIndexerService.js';
-import { MongoEntitiesDAO } from '../mongodb/entity/MongoEntityDAO.js';
+import { MongoEntitiesDAO } from '../mongodb/entity/MongoEntitiesDAO.js';
 
 type Params = {
   language: LanguageISO6391;

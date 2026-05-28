@@ -13,7 +13,7 @@ import { TenantAwareESClient } from '../TenantAwareESClient.js';
 import { EntityESWriter } from '../entities/EntityESWriter.js';
 import { EntityIndexMappingDefinition } from '../entities/EntityIndexMappingDefinition.js';
 import type { MongoSlotsDAO } from '../entities/MongoSlotsDAO.js';
-import { MongoEntitiesDAO } from '../../mongodb/entity/MongoEntityDAO.js';
+import { MongoEntitiesDAO } from '../../mongodb/entity/MongoEntitiesDAO.js';
 import { EntityIndexerService, EntityBatchInfo } from '../entities/EntityIndexerService.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 

@@ -25,7 +25,7 @@ import { ElasticSearchBootstrapper } from '../provision/ElasticSearchBootstrappe
 import { TenantAwareESClient } from '../TenantAwareESClient.js';
 import { IndexNameResolver } from '../IndexNameResolver.js';
 import { MongoTemplatesDAO } from '../../mongodb/template/MongoTemplatesDAO.js';
-import { MongoEntitiesDAO } from '../../mongodb/entity/MongoEntityDAO.js';
+import { MongoEntitiesDAO } from '../../mongodb/entity/MongoEntitiesDAO.js';
 import { MongoFilesDAO } from '../../mongodb/files/MongoFilesDAO.js';
 import { ESIndexRebuilder, ESIndexRebuilderDeps, ProgressEvent } from '../ESIndexRebuilder.js';
 import type { IndexDefinition } from '../Types.js';

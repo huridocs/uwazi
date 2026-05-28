@@ -1,5 +1,5 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoEntitiesDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntityDAO.js';
+import { MongoEntitiesDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntitiesDAO.js';
 import { User } from '#api/users.v2/model/User.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';

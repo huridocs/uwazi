@@ -23,7 +23,7 @@ import { EntityIndexMappingDefinition } from '../entities/EntityIndexMappingDefi
 import { TenantAwareESClient } from '../TenantAwareESClient.js';
 import { IndexNameResolver } from '../IndexNameResolver.js';
 import { MongoTemplatesDAO } from '../../mongodb/template/MongoTemplatesDAO.js';
-import { MongoEntitiesDAO } from '../../mongodb/entity/MongoEntityDAO.js';
+import { MongoEntitiesDAO } from '../../mongodb/entity/MongoEntitiesDAO.js';
 import { MongoFilesDAO } from '../../mongodb/files/MongoFilesDAO.js';
 import { TenantOnboarder, TenantOnboarderDeps, ProgressEvent } from '../TenantOnboarder.js';
 import { User } from '#api/users.v2/model/User.js';

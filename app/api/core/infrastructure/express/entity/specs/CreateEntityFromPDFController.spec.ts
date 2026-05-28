@@ -7,7 +7,7 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { CreateEntityFromPDFUseCaseFactory } from '#api/core/infrastructure/factories/CreateEntityFromPDFUseCaseFactory.js';
 import { CreateEntityFromPDFUseCase } from '#api/core/application/CreateEntityFromPDF.js';
 import { MongoEntitiesDAOFactory } from '#api/core/infrastructure/factories/MongoEntitiesDAOFactory.js';
-import { MongoEntitiesDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntityDAO.js';
+import { MongoEntitiesDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntitiesDAO.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 
 type CreateSutProps = {

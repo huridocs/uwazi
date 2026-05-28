@@ -12,7 +12,7 @@ import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsD
 import { WebSockets } from '#api/core/application/contracts/WebSockets.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { EntityIndexerService } from '../elasticSearch/entities/EntityIndexerService.js';
-import { MongoEntitiesDAO } from '../mongodb/entity/MongoEntityDAO.js';
+import { MongoEntitiesDAO } from '../mongodb/entity/MongoEntitiesDAO.js';
 import { EntityPreviewBatchHandler } from './EntityPreviewBatchHandler.js';
 
 type Pair = {

@@ -13,7 +13,7 @@ import { Template } from '../domain/template/Template.js';
 import {
   EntityWithFiles,
   MongoEntitiesDAO,
-} from '../infrastructure/mongodb/entity/MongoEntityDAO.js';
+} from '../infrastructure/mongodb/entity/MongoEntitiesDAO.js';
 import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { GetEntityResponseDTO, RelationDTO } from './GetEntityResponseDTO.js';
 import { EntityNotFoundError } from '../domain/entity/errors.js';

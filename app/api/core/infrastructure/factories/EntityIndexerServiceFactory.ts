@@ -3,7 +3,7 @@ import {
   EntityIndexerService,
   EntityIndexerServiceDeps,
 } from '../elasticSearch/entities/EntityIndexerService.js';
-import { MongoEntitiesDAO } from '../mongodb/entity/MongoEntityDAO.js';
+import { MongoEntitiesDAO } from '../mongodb/entity/MongoEntitiesDAO.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { User } from '#api/users.v2/model/User.js';

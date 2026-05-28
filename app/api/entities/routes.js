@@ -10,7 +10,7 @@ import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.
 import { BulkDeleteEntityController } from '#api/core/infrastructure/express/entity/BulkDeleteEntityController.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { MongoEntitiesDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntityDAO.js';
+import { MongoEntitiesDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntitiesDAO.js';
 import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
 import { UpdateEntityController } from '#api/core/infrastructure/express/entity/UpdateEntityController.js';
 import { GetEntityController } from '#api/core/infrastructure/express/entity/GetEntityController.js';
@@ -272,7 +272,7 @@ export default app => {
   );
 
   app.post(
-    '/api/entities/create-from-file',
+    '/api/entities/create-from-pdf',
     needsAuthorization(['admin', 'editor', 'collaborator']),
     (req, res, next) =>
       new UploadMiddleware(LoggerFactory.default()).singleUpload('document')(req, res, next),

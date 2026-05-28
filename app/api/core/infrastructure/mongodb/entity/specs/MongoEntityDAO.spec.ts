@@ -4,7 +4,7 @@ import { DBFixture } from '#api/utils/testing_db.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { User } from '#api/users.v2/model/User.js';
-import { MongoEntitiesDAO } from '../MongoEntityDAO.js';
+import { MongoEntitiesDAO } from '../MongoEntitiesDAO.js';
 
 const factory = getFixturesFactory();
 
@@ -132,7 +132,7 @@ const fixtures: DBFixture = {
 const createSut = (user: User = adminUser) =>
   new MongoEntitiesDAO(getConnection(), TransactionManagerFactory.default(), user);
 
-describe('MongoEntityDAO', () => {
+describe('MongoEntitiesDAO', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
   });

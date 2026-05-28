@@ -6,7 +6,7 @@ import { User } from '#api/users.v2/model/User.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker.js';
-import { MongoEntitiesDAO } from '../mongodb/entity/MongoEntityDAO.js';
+import { MongoEntitiesDAO } from '../mongodb/entity/MongoEntitiesDAO.js';
 import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1DataSource.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';

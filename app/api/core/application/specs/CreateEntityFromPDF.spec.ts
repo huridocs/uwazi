@@ -71,7 +71,7 @@ describe('CreateEntityFromPDFUseCase', () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should create a entity from a PDF file', async () => {
+  it('should create an entity from a PDF file', async () => {
     const { sut, actor } = createSut();
 
     const input: CreateEntityFromPDFUseCaseInput = {
