@@ -86,6 +86,30 @@ function customUploadFromDBO(dbo: CustomDBO, contentLoader: FileContentLoader) {
   });
 }
 
+function processedPDFToDBO(file: ProcessedPDF): ProcessedPDFDBO {
+  return { ...file.toDTO(), _id: new ObjectId(file.id) };
+}
+
+function processingPDFToDBO(file: ProcessingPDF): ProcessingPDFDBO {
+  return { ...file.toDTO(), _id: new ObjectId(file.id) };
+}
+
+function fileAttachmentToDBO(file: FileAttachment): FileAttachmentDBO {
+  return { ...file.toDTO(), _id: new ObjectId(file.id) };
+}
+
+function urlAttachmentToDBO(file: URLAttachment): URLAttachmentDBO {
+  return { ...file.toDTO(), _id: new ObjectId(file.id) };
+}
+
+function thumbnailToDBO(file: Thumbnail): ThumbnailDBO {
+  return { ...file.toDTO(), _id: new ObjectId(file.id) };
+}
+
+function customUploadToDBO(file: CustomUpload): CustomDBO {
+  return { ...file.toDTO(), _id: new ObjectId(file.id) };
+}
+
 export const FileMappers = {
   toModel(dbo: fileDBO, { contentLoader }: { contentLoader: FileContentLoader }) {
     switch (dbo.type) {
@@ -106,5 +130,13 @@ export const FileMappers = {
     }
   },
 
-  toDBO: (file: BaseFile): fileDBO => ({ ...file.toDTO(), _id: new ObjectId(file.id) }) as fileDBO,
+  toDBO(file: BaseFile): fileDBO {
+    if (file instanceof ProcessedPDF) return processedPDFToDBO(file);
+    if (file instanceof ProcessingPDF) return processingPDFToDBO(file);
+    if (file instanceof FileAttachment) return fileAttachmentToDBO(file);
+    if (file instanceof URLAttachment) return urlAttachmentToDBO(file);
+    if (file instanceof Thumbnail) return thumbnailToDBO(file);
+    if (file instanceof CustomUpload) return customUploadToDBO(file);
+    throw new Error('Unknown file type');
+  },
 };

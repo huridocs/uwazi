@@ -47,7 +47,7 @@ export type FileAttachmentDBO = BaseFileDBO & {
 
 export type URLAttachmentDBO = BaseFileDBO & {
   type: 'attachment';
-  entity?: string;
+  entity: string;
   url: string;
 };
 

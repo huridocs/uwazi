@@ -1,7 +1,5 @@
 import { LanguageISO6393 } from '#shared/language/languageISO639_3.js';
-import type { TableOfContent } from './ProcessedPDF.js';
-
-type FullText = Record<string, string>;
+import type { FullText, TableOfContent } from './ProcessedPDF.js';
 
 type BaseFileDTO = {
   _id: string;
@@ -36,7 +34,7 @@ export type FileAttachmentDTO = BaseFileDTO & {
 
 export type URLAttachmentDTO = BaseFileDTO & {
   type: 'attachment';
-  entity?: string;
+  entity: string;
   url: string;
 };
 

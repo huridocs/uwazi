@@ -8,6 +8,7 @@ describe('URLAttachment', () => {
   it('should fallback filename and originalname to url if not provided', () => {
     const file = new URLAttachment({
       id: 'id',
+      entity: 'sharedId1',
       url: 'https://example.com/document.pdf',
       mimetype: 'application/pdf',
     } as any);
@@ -18,7 +19,7 @@ describe('URLAttachment', () => {
   });
 
   describe('validation', () => {
-    it('allows creation without entity (legacy support)', () => {
+    it('throws when entity is missing', () => {
       expect(
         () =>
           new URLAttachment({
@@ -27,11 +28,11 @@ describe('URLAttachment', () => {
             filename: 'document.pdf',
             originalname: 'document.pdf',
             mimetype: 'application/pdf',
-          })
-      ).not.toThrow();
+          } as any)
+      ).toThrow();
     });
 
-    it('throws when entity is provided but empty', () => {
+    it('throws when entity is empty', () => {
       expect(
         () =>
           new URLAttachment({

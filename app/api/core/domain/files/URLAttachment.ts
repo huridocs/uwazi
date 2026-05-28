@@ -2,17 +2,17 @@ import { z } from 'zod';
 import { BaseFile, BaseFileProps } from './BaseFile.js';
 import { URLAttachmentDTO } from './domainTypes.js';
 
-type Props = BaseFileProps & { entity?: string; url: string };
+type Props = BaseFileProps & { entity: string; url: string };
 
 const Schema = z.object({
-  entity: z.string().trim().min(1).optional(),
+  entity: z.string().trim().min(1, 'Entity is required'),
   url: z.string().url('URL must be a valid URL'),
 });
 
 export class URLAttachment extends BaseFile<Props> {
   readonly url: string;
 
-  readonly entity?: string;
+  readonly entity: string;
 
   protected _type = 'attachment' as const;
 
@@ -32,7 +32,7 @@ export class URLAttachment extends BaseFile<Props> {
   toDTO(): URLAttachmentDTO {
     return {
       ...this.dtoBaseFields(),
-      ...(this.entity !== undefined ? { entity: this.entity } : {}),
+      entity: this.entity,
       url: this.url,
       type: 'attachment',
     };
