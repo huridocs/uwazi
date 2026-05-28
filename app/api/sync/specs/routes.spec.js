@@ -365,6 +365,27 @@ describe('sync', () => {
         const response = await routes.delete('/api/sync', req);
         expect(response).toBe('ok');
       });
+
+      it('should not fail if v2 elastic doc was already deleted (version conflict 409 with missing document)', async () => {
+        const error = new Error(
+          '[tenant__shared-1]: version conflict, required seqNo [0], primary term [1]. but no document was found'
+        );
+        error.statusCode = 409;
+
+        mockIndexerRemove.mockReturnValue(Promise.reject(error));
+        const response = await routes.delete('/api/sync', req);
+        expect(response).toBe('ok');
+      });
+
+      it('should rethrow a 409 that is not a missing document version conflict', async () => {
+        const error = new Error(
+          'version conflict, current version [2] is different than the one provided [1]'
+        );
+        error.statusCode = 409;
+
+        mockIndexerRemove.mockReturnValue(Promise.reject(error));
+        await expect(routes.delete('/api/sync', req)).rejects.toThrow(error);
+      });
     });
 
     describe('when namespace is elasticSlots', () => {

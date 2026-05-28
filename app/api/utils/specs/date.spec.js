@@ -52,6 +52,7 @@ describe('date helper', () => {
       ${'28 августа 2017'}           | ${'rus'}     | ${1503878400}
       ${'августа 28, 2017'}          | ${'rus'}     | ${1503878400}
       ${'1 de septiembre de 2001'}   | ${'spa'}     | ${999302400}
+      ${'12 Οκτωβρίου 2018'}         | ${'ell'}     | ${1539302400}
     `(
       'should convert $stringDate to $expectedMilliseconds',
       ({ stringDate, language, expectedMilliseconds }) => {
