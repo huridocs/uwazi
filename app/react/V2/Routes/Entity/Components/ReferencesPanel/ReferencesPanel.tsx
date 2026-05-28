@@ -70,8 +70,34 @@ const ReferencesPanel = ({ entity, mainDocument }: ReferencesPanelProps) => {
       if (selectionRectangles && selectionRectangles.length > 0) {
         const rect = selectionRectangles.find(r => r.page);
         if (rect?.page) {
-          const pageNumber = Number.parseInt(rect.page, 10);
-          mainPdfController?.goToPage(pageNumber);
+          const page = Number(rect.page);
+
+          const rectanglesForPage = selectionRectangles
+            .filter(r => r.page === rect.page)
+            .map(r => ({
+              top: r.top,
+              left: r.left,
+              width: r.width,
+              height: r.height,
+              regionId: r.page,
+            }));
+
+          const textSelection = {
+            text: reference.reference?.text || '',
+            selectionRectangles: rectanglesForPage,
+          };
+
+          const highlight = {
+            [page]: [
+              {
+                key: page,
+                textSelection,
+                color: reference.targetEntity.template.color,
+              },
+            ],
+          };
+
+          mainPdfController?.toggleHighlights([highlight]);
         }
       }
     },
