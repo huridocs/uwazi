@@ -1,6 +1,4 @@
-import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { ProcessedPDFDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { ProcessedPDF, ProcessedPDFProps } from '../ProcessedPDF.js';
 import { FileBuilder } from './FileBuilder.js';
 
@@ -65,9 +63,6 @@ describe('ProcessedPDF', () => {
         language: 'en',
         toc,
         generatedToc: false,
-        fullText: {},
-        entity: 'not_allowed',
-        totalPages: 1,
       });
 
       expect(updated).toBeInstanceOf(ProcessedPDF);
@@ -96,18 +91,20 @@ describe('ProcessedPDF', () => {
       expect(updated.languageHasChanged).toBe(true);
     });
 
-    it('does not mutate the input object', () => {
-      const file = FileBuilder.processedDocument('doc', { language: 'en' });
-      const input = {
-        language: 'fr' as const,
-        entity: 'should-not-change',
-        fullText: { 1: 'hacked' },
-      };
+    it('preserves immutable fields (entity, totalPages, fullText) on the returned file', () => {
+      const fullText = { 1: 'page one' };
+      const file = FileBuilder.processedDocument('doc', {
+        language: 'en',
+        entity: 'sharedId1',
+        totalPages: 10,
+        fullText,
+      });
 
-      file.update(input);
+      const updated = file.update({ language: 'fr' });
 
-      expect(input.entity).toBe('should-not-change');
-      expect(input.fullText).toEqual({ 1: 'hacked' });
+      expect(updated.entity).toBe('sharedId1');
+      expect(updated.totalPages).toBe(10);
+      expect(updated.fullText).toBe(fullText);
     });
   });
 
@@ -159,72 +156,6 @@ describe('ProcessedPDF', () => {
         fullText: async () => ({ 1: 'lazy' }),
       });
       expect(file.toDTO()).not.toHaveProperty('fullText');
-    });
-  });
-
-  describe('fromDBO', () => {
-    it('should map all fields when fullText is present', () => {
-      const _id = new ObjectId();
-      const dbo: ProcessedPDFDBO = {
-        _id,
-        originalname: 'report.pdf',
-        filename: 'abc123.pdf',
-        mimetype: 'application/pdf',
-        size: 5000,
-        creationDate: 1000000000,
-        type: 'document',
-        entity: 'sharedId1',
-        language: 'fra',
-        totalPages: 42,
-        status: 'ready',
-        generatedToc: true,
-        fullText: { 1: 'page one' },
-        toc: [{ label: 'Chapter 1', indentation: 0 }],
-      };
-      const content = FileBuilder.content('document bytes');
-      const contentLoader = jest.fn().mockReturnValue(content);
-
-      const file = ProcessedPDF.fromDBO(dbo, contentLoader);
-
-      expect(file).toBeInstanceOf(ProcessedPDF);
-      expect(file.id).toBe(_id.toString());
-      expect(file.originalname).toBe('report.pdf');
-      expect(file.filename).toBe('abc123.pdf');
-      expect(file.mimetype).toBe('application/pdf');
-      expect(file.size).toBe(5000);
-      expect(file.creationDate).toBe(1000000000);
-      expect(file.entity).toBe('sharedId1');
-      expect(file.language).toBe('fr');
-      expect(file.totalPages).toBe(42);
-      expect(file.generatedToc).toBe(true);
-      expect(file.fullText).toEqual({ 1: 'page one' });
-      expect(file.toc).toEqual([{ label: 'Chapter 1', indentation: 0 }]);
-      expect(file.content).toBe(content);
-      expect(contentLoader).toHaveBeenCalledWith({ type: 'document', filename: 'abc123.pdf' });
-    });
-
-    it('should defer fullText loading when not present in the DBO', async () => {
-      const _id = new ObjectId();
-      const dbo: ProcessedPDFDBO = {
-        _id,
-        originalname: 'report.pdf',
-        filename: 'abc123.pdf',
-        mimetype: 'application/pdf',
-        size: 5000,
-        creationDate: 1000000000,
-        type: 'document',
-        entity: 'sharedId1',
-        language: 'fra',
-        totalPages: 10,
-        status: 'ready',
-        generatedToc: false,
-      };
-      const contentLoader = jest.fn().mockReturnValue(FileBuilder.content('document'));
-
-      const file = ProcessedPDF.fromDBO(dbo, contentLoader);
-
-      expect(file.fullText).toBeUndefined();
-      await expect(file.getFullText()).rejects.toThrow('not Implemented');
     });
   });
 

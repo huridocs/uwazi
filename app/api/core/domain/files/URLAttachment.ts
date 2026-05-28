@@ -1,10 +1,13 @@
-import {
-  URLAttachmentDBO,
-  URLAttachmentDTO,
-} from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+import { z } from 'zod';
 import { BaseFile, BaseFileProps } from './BaseFile.js';
+import { URLAttachmentDTO } from './domainTypes.js';
 
 type Props = BaseFileProps & { entity: string; url: string };
+
+const Schema = z.object({
+  entity: z.string().trim().min(1, 'Entity is required'),
+  url: z.string().url('URL must be a valid URL'),
+});
 
 export class URLAttachment extends BaseFile<Props> {
   readonly url: string;
@@ -16,20 +19,14 @@ export class URLAttachment extends BaseFile<Props> {
   constructor(props: Props) {
     const filename = props.filename ?? props.url;
     const originalname = props.originalname ?? props.url;
-
-    super({ ...props, filename, originalname });
+    const validated = Schema.parse({ ...props, filename, originalname });
+    super({ ...props, filename, originalname, entity: validated.entity, url: validated.url });
+    // Override filename/originalname after super because BaseFile sanitizes them,
+    // which would mangle URLs used as fallback values.
     this.filename = filename;
     this.originalname = originalname;
-    this.url = props.url;
-    this.entity = props.entity;
-  }
-
-  static fromDBO(dbo: URLAttachmentDBO) {
-    return new URLAttachment({
-      ...BaseFile.dboCommonFields(dbo),
-      url: dbo.url,
-      entity: dbo.entity,
-    });
+    this.url = validated.url;
+    this.entity = validated.entity;
   }
 
   toDTO(): URLAttachmentDTO {

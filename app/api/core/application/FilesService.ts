@@ -7,8 +7,6 @@ import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
 import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
 import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
 import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { tenants } from '#api/tenants/index.js';
 import date from '#api/utils/date.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
@@ -38,12 +36,20 @@ type Deps = {
   pathManager: PathManager;
 };
 
+type FilesServiceContext = {
+  userId?: string;
+  tenantName?: string;
+};
+
 function isNonEmptyArray<T>(arr: T[]): arr is [T, ...T[]] {
   return arr.length > 0;
 }
 
 class FilesService {
-  constructor(protected deps: Deps) {}
+  constructor(
+    protected deps: Deps,
+    private context: FilesServiceContext = {}
+  ) {}
 
   async storeFiles(files: BaseFile[]) {
     await ArrayUtils.sequentialFor(
@@ -64,28 +70,12 @@ class FilesService {
    * transactionManager.run(). Events are emitted only after the transaction
    * successfully commits to ensure data consistency.
    *
+   * Actor (userId) and tenant (tenantName) are injected at construction time via
+   * FilesServiceFactory, which reads them from ExecutionContext. Do not pass them
+   * as method arguments.
+   *
    * @param files - Array of BaseFile domain objects to insert
-   * @throws {Error} If PDFPostProcess is dispatched but no user context exists
-   *
-   * @example
-   * // For use cases (typical pattern):
-   * await this.transactionManager.run(async () => {
-   *   await this.deps.filesService.insert([file]);
-   * });
-   * // FileCreatedEvent is emitted automatically after commit
-   *
-   * @example
-   * // For external integrations (PreserveSync, etc.):
-   * const filesService = FilesServiceFactory.default();
-   *
-   * // 1. Store files to disk first
-   * await filesService.storeFiles([attachment]);
-   *
-   * // 2. Insert within transaction
-   * await transactionManager.run(async () => {
-   *   await filesService.insert([attachment]);
-   * });
-   * // FileCreatedEvent is emitted automatically after commit
+   * @throws {Error} If ProcessingPDF files are inserted but no userId/tenantName in context
    */
   async insert(files: BaseFile[]) {
     if (isNonEmptyArray<BaseFile>(files)) {
@@ -94,12 +84,15 @@ class FilesService {
       const processingPDFs = files
         .filter((f): f is ProcessingPDF => f instanceof ProcessingPDF)
         .map(f => {
-          const userId = permissionsContext.getUserInContext()?._id?.toString();
+          const { userId, tenantName } = this.context;
           if (!userId) {
             throw new Error('PDFPostProcess needs a user Id');
           }
+          if (!tenantName) {
+            throw new Error('PDFPostProcess needs a tenant name');
+          }
           return {
-            tenantName: tenants.current().name,
+            tenantName,
             documentId: f.id,
             userId,
           };
@@ -200,4 +193,4 @@ class FilesService {
 }
 
 export { FilesService };
-export type { Deps as FilesServiceDeps };
+export type { Deps as FilesServiceDeps, FilesServiceContext };
