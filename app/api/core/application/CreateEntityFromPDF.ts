@@ -1,18 +1,22 @@
 import { Entity } from '#api/core/domain/entity/Entity.js';
+import { CannotCreateEntityFromNonPDFError } from '../domain/entity/errors.js';
+import { ProcessingPDF } from '../domain/files/ProcessingPDF.js';
+import { InputFile } from '../infrastructure/files/InputFile.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { EntitiesService } from './EntitiesService.js';
-import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
+import { FilesService } from './FilesService.js';
 import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 
 type Input = {
-  propertyAssignments: PropertyAssignmentInput[];
   templateId?: string;
+  inputFile: InputFile;
 };
 
 type Output = Entity;
 
 type Deps = {
   entitiesService: EntitiesService;
+  filesService: FilesService;
   propertyAssignmentCreatorServiceStrategy: PropertyAssignmentCreatorServiceStrategy;
 };
 
@@ -23,20 +27,35 @@ class CreateEntityFromPDFUseCase extends AbstractUseCase<Input, Output, Deps> {
       userId: this.actor?.id,
     });
 
+    const document = input.inputFile.toEntityFile(entity.sharedId, this.idGenerator.generate());
+    if (!(document instanceof ProcessingPDF)) {
+      throw new CannotCreateEntityFromNonPDFError();
+    }
+
     const propertyAssignments = await this.deps.propertyAssignmentCreatorServiceStrategy.bulkCreate(
-      input.propertyAssignments,
+      [
+        {
+          name: 'title',
+          language: this.targetLanguage,
+          value: [{ value: document.originalname }],
+        },
+      ],
       entity.template
     );
 
     entity.setPropertyAssignmentsInAllLanguages(propertyAssignments);
 
-    await this.transactionManager.run(async () =>
-      this.deps.entitiesService.insert(entity, {
+    await this.deps.filesService.storeFiles([document]);
+
+    await this.transactionManager.run(async () => {
+      await this.deps.entitiesService.insert(entity, {
         actorId: this.actorId,
         tenantName: this.tenant.name,
         targetLanguage: this.targetLanguage,
-      })
-    );
+      });
+
+      await this.deps.filesService.insert([document]);
+    });
 
     return entity;
   }
