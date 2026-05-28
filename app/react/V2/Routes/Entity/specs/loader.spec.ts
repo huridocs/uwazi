@@ -47,8 +47,7 @@ describe('Entity loader with cache integration', () => {
     return entityLoader()({
       params: { sharedId, ...(lang ? { lang } : {}) },
       request: new Request(fullUrl),
-      url: fullUrl,
-      pattern: '',
+      unstable_pattern: '',
       context: undefined,
     });
   };
