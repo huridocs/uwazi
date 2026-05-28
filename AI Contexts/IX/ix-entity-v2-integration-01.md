@@ -1,7 +1,7 @@
 # IX Entity V2 Integration Diagnosis (01)
 
 Last updated: 2026-05-28
-Status: diagnosis + partial implementation (step 1 completed)
+Status: diagnosis + implementation in progress (step 1 and core naming rollout implemented)
 
 ## Purpose of this document
 
@@ -27,6 +27,67 @@ Implemented work from the recommended sequence:
      - `app/api/core/application/specs/EntitiesService.spec.ts`
    - Validation command used:
      - `node --no-experimental-fetch ./node_modules/.bin/jest app/api/core/application/specs/EntitiesService.spec.ts --testTimeout=30000 -w=1`
+
+## Implementation update (2026-05-28)
+
+Implemented and validated:
+
+1. **Core contract naming migrated to `propertySelections` semantics.**
+   - Shared schema/type names were renamed from `ExtractedMetadata*` to `PropertySelection*` (types, schema exports, and downstream imports/usages).
+   - Root file payload naming remains `propertySelections` with unchanged item footprint (`selection.selectionRectangles`, `name`, `propertyID`, etc.).
+
+2. **Entity update v2 now supports core `propertySelections` persistence.**
+   - v2 DTO schema + mapper accept/map `propertySelections`.
+   - v2 `UpdateEntity` use case persists selections through `filesDS.savePropertySelections(...)`.
+   - File ownership check was added before persisting selections on v2 update.
+
+3. **Files data-source contract and implementation were aligned semantically.**
+   - `FilesDataSource` now exposes `savePropertySelections`, `deletePropertySelections`, `renamePropertySelections`.
+   - MongoDB implementation follows same names and behavior.
+
+4. **Legacy `__extractedMetadata` was removed from Uwazi-internal contracts/routes.**
+   - Internal entity/file payload handling now uses `propertySelections` terminology.
+   - Any legacy naming should only remain where explicitly required for historical migration context or external ML boundary translation.
+
+5. **Validation**
+   - Targeted backend + frontend suites covering mapper/schema/use case/files datasource/IX flows passed after rename + v2 integration.
+
+6. **New test coverage added for introduced functionality gaps**
+   - Added `savePropertySelections` behavior tests in:
+     - `app/api/core/infrastructure/mongodb/files/specs/MongoFilesDataSource.spec.ts`
+       - merge + deduplicate + `deleteSelection` filtering persistence path,
+       - no-op when target file does not exist.
+   - Added v2 guard-path test in:
+     - `app/api/core/application/specs/UpdateEntity.spec.ts`
+       - does not persist selections when `propertySelections.fileId` does not belong to the entity.
+   - Validation command used:
+     - `node --no-experimental-fetch ./node_modules/.bin/jest app/api/core/infrastructure/mongodb/files/specs/MongoFilesDataSource.spec.ts app/api/core/application/specs/UpdateEntity.spec.ts -w=1`
+
+## Behavior assessment (2026-05-28)
+
+Current runtime behavior after implementation:
+
+1. **v2 entity update path (`POST /api/entities` with `v2UpdateEntity`)**
+   - If request includes `propertySelections`, v2 persists them via `UpdateEntityUseCase` -> `filesDS.savePropertySelections(...)`.
+   - If request omits `propertySelections`, existing file `propertySelections` are left untouched.
+   - Persistence is guarded by file ownership check (`filesExistForEntities`) to prevent writing selections to unrelated files.
+
+2. **Merge semantics for selection updates**
+   - `savePropertySelections` merges incoming + stored selections by property `name`, preserves non-mentioned items, and removes only entries explicitly marked with `deleteSelection`.
+   - This avoids destructive replace-all behavior when clients send partial selection payloads.
+
+3. **Suggestion acceptance / auto-accept paths**
+   - Manual `POST /api/suggestions/accept` and auto-accept do not go through v2 `UpdateEntityUseCase`.
+   - They update entity values through `suggestions/updateEntities.ts` and update file `propertySelections` through `suggestions/suggestions.ts` (`updatePropertySelections` -> `files.save(file)`).
+
+4. **ML service boundary contract status**
+   - Uwazi does not send `__extractedMetadata` to ML service.
+   - ML boundary payloads use materials + suggestion DTOs (`xml_file_name`, `label_text`, `label_segments_boxes`, `values`, `entity_name`, etc.).
+   - ML service response parsing is based on suggestion DTO schemas, not `__extractedMetadata`.
+
+5. **File update behavior**
+   - `files.save` uses partial update semantics; omitting `propertySelections` in a file update does not implicitly delete them.
+   - Explicit writes to `propertySelections` can overwrite that field (as expected for direct file writes).
 
 ## Naming note
 
@@ -120,7 +181,7 @@ Key gaps:
 - Assertions often verify partial behavior (e.g., click/notification) without asserting both:
   1) entity persistence and
   2) suggestion denormalization refresh.
-- Labeling phase (sidepanel save + extracted metadata persistence + refresh) is under-asserted.
+- Labeling phase (sidepanel save + property selections persistence + refresh) is under-asserted.
 
 ### E) Additional findings: regular entity click-to-fill flow (not only IX settings)
 
@@ -140,7 +201,7 @@ Findings (to validate further, no design decision yet):
 - Backend persistence happens through `saveSelections` and writes into `files.extractedMetadata` (not entity metadata fields directly).
 - In viewer UX, `files.extractedMetadata` drives PDF highlight overlays and clear-selection behavior.
 - IX training/inference pipelines consume `files.extractedMetadata` as labeled PDF context (selection text/rectangles), so this data is not only UI decoration.
-- `__extractedMetadata` appears to be a transport-level field name, while persisted data is file-level extracted metadata.
+- `__extractedMetadata` appears to be a legacy transport-level field name, while persisted data is file-level property selections.
 - With `v2UpdateEntity` enabled, flows that relied on passing `__extractedMetadata` through `/api/entities` may regress if v2 DTO/mapper path ignores this payload.
 - `entities.save` itself does not contain direct IX model/suggestion orchestration logic; IX behavior is triggered via dedicated IX endpoints/use-cases and event/listener flows.  
   (Exception in scope: `entities.save` persists file selections via `saveSelections`, which IX later reads from files.)
@@ -212,6 +273,7 @@ Approved naming direction:
 - Persisted file property: rename `files.extractedMetadata` -> `files.propertySelections`.
 - Keep the stored item footprint identical for now (including `selection.selectionRectangles`, `name`, `propertyID`, `deleteSelection`, `timestamp`, etc.).
 - Keep property keying by current property name for now (future enhancement can migrate to stable property ID keying).
+- Rename semantics application-wide (not only field keys): domain terms, type names, schema exports, function names, and contract names should use `propertySelection(s)` terminology whenever they refer to this file-root selection data.
 
 Approved transition rule:
 - Do not keep/introduce backward compatibility with `__extractedMetadata` in Uwazi contracts and internal code.
@@ -267,20 +329,46 @@ Approved intervention shape:
 2. Add observability first (temporary targeted logs/metrics) around:
    - sidepanel entity save path (v1 vs v2),
    - IX refresh listener execution,
-   - extracted metadata persistence.
+   - property selections persistence.
 3. Implement v2-safe labeling selection persistence path.
 4. Add tests for full matrix:
    - title/text/select,
    - sidepanel labeling and table accept,
    - v2 flags ON/OFF,
    - persistence + suggestion refresh assertions.
-5. Add targeted regression tests for regular viewer click-to-fill + save path under v2 flags, verifying file-level extracted metadata persistence.
+5. Add targeted regression tests for regular viewer click-to-fill + save path under v2 flags, verifying file-level property selections persistence.
 6. Execute end-to-end rename rollout tasks:
    - migration scripts to rename persisted file root field `extractedMetadata` -> `propertySelections`,
    - caller migration (viewer + IX) to `propertySelections`,
    - data migration/check script,
    - no compatibility alias for `__extractedMetadata` in Uwazi contracts,
    - ML boundary translation only if external ML contract still requires legacy naming.
+
+## Follow-up checklist (post-implementation)
+
+1. **Run persisted-data migration (mandatory)**
+   - Create and run migration to rename stored file field `extractedMetadata` -> `propertySelections`.
+   - Include verification script/report:
+     - count files still containing `extractedMetadata`,
+     - count files containing `propertySelections`,
+     - sample diff/spot-check.
+   - Ensure migrations are deployment-safe and decoupled from release rollout.
+
+2. **Add regression tests for accept/auto-accept data safety**
+   - Assert manual accept updates `propertySelections` correctly for text/select-like properties.
+   - Assert auto-accept updates `propertySelections` correctly and does not regress existing values unexpectedly.
+
+3. **Strengthen no-destructive-update guarantees**
+   - Add explicit test that v2 update with no `propertySelections` leaves existing file selections intact.
+   - Add explicit test that partial `propertySelections` payload does not remove unmentioned properties unless `deleteSelection` is set.
+
+4. **Review/align file-list contract in v2 entity update**
+   - Confirm client behavior always sends intended `files` list.
+   - Document and/or protect against unintended file removal side effects from incomplete `files` payloads.
+
+5. **Keep ML boundary contract explicit**
+   - Keep current ML payload DTO unchanged unless external service versioning is coordinated.
+   - If ML naming changes later, implement translation only at boundary adapters.
 
 ## Explicit constraints for future agents
 

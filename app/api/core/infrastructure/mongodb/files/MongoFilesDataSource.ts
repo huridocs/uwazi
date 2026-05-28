@@ -1,7 +1,9 @@
+/* eslint-disable max-lines */
 import { Db, ObjectId } from 'mongodb';
+import uniqBy from 'lodash/uniqBy.js';
 
 import { LanguageUtils } from '#shared/language/index.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { PropertySelectionSchema, LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { SegmentationType } from '#shared/types/segmentationType.js';
 
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
@@ -36,13 +38,31 @@ type GetDocumentsForEntityQuery = {
   status: 'ready';
 };
 
-export type SegmentationDBO = SegmentationType & {
+type SegmentationDBO = SegmentationType & {
   _id: ObjectId;
   fileID: ObjectId;
 };
 
-export type MongoFilesDataSourceOptions = MongoDSOptions & {
+type MongoFilesDataSourceOptions = MongoDSOptions & {
   fullTextIndexer: FullTextIndexerService;
+};
+
+const mergePropertySelections = (
+  newSelections: PropertySelectionSchema[],
+  storedSelections: PropertySelectionSchema[]
+) => uniqBy(newSelections.concat(storedSelections), 'name').filter(s => !s.deleteSelection);
+
+const propertySelectionsHaveChanged = (
+  storedSelections: PropertySelectionSchema[],
+  mergedSelections: PropertySelectionSchema[]
+) => {
+  if (storedSelections.length !== mergedSelections.length) {
+    return true;
+  }
+
+  return storedSelections.some(
+    (selection, index) => selection.selection?.text !== mergedSelections[index].selection?.text
+  );
 };
 
 export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements FilesDataSource {
@@ -204,17 +224,39 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     this.setFilesToReindex(files);
   }
 
-  async deleteExtractedMetadata(entityPropertyNames: string[], entitySharedIds: string[]) {
-    await this.getCollection().updateMany(
-      {
-        entity: { $in: entitySharedIds },
-        extractedMetadata: { $exists: true, $ne: [] },
-      },
-      { $pull: { extractedMetadata: { name: { $in: entityPropertyNames } } } }
+  async savePropertySelections(fileId: string, propertySelections: PropertySelectionSchema[]) {
+    const file = await this.getCollection<{
+      propertySelections?: PropertySelectionSchema[];
+    }>().findOne({ _id: new ObjectId(fileId) }, { projection: { propertySelections: 1 } });
+
+    if (!file) {
+      return;
+    }
+
+    const storedPropertySelections = file.propertySelections || [];
+    const mergedSelections = mergePropertySelections(propertySelections, storedPropertySelections);
+
+    if (!propertySelectionsHaveChanged(storedPropertySelections, mergedSelections)) {
+      return;
+    }
+
+    await this.getCollection().updateOne(
+      { _id: new ObjectId(fileId) },
+      { $set: { propertySelections: mergedSelections } }
     );
   }
 
-  async renameExtractedMetadata(
+  async deletePropertySelections(entityPropertyNames: string[], entitySharedIds: string[]) {
+    await this.getCollection().updateMany(
+      {
+        entity: { $in: entitySharedIds },
+        propertySelections: { $exists: true, $ne: [] },
+      },
+      { $pull: { propertySelections: { name: { $in: entityPropertyNames } } } }
+    );
+  }
+
+  async renamePropertySelections(
     renamedPropertyNames: { [previousName: string]: string },
     entitySharedIds: string[]
   ) {
@@ -226,9 +268,9 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     const pipeline = [
       {
         $set: {
-          extractedMetadata: {
+          propertySelections: {
             $map: {
-              input: '$extractedMetadata',
+              input: '$propertySelections',
               as: 'item',
               in: {
                 $mergeObjects: [
@@ -250,7 +292,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     ];
     await this.getCollection().updateMany(
       {
-        'extractedMetadata.name': { $in: Object.keys(renamedPropertyNames) },
+        'propertySelections.name': { $in: Object.keys(renamedPropertyNames) },
         entity: { $in: entitySharedIds },
       },
       pipeline
@@ -342,3 +384,5 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     return Result.ok(this.toModel(dbo));
   }
 }
+
+export type { SegmentationDBO, MongoFilesDataSourceOptions };

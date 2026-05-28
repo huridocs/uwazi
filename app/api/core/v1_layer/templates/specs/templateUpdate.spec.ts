@@ -11,7 +11,8 @@ import {
   TemplateUpdatedEvent,
 } from '../../../domain/template/events/TemplateUpdatedEvent.js';
 import templates from '../templates.js';
-import fixtures, {
+import {
+  fixtures,
   factory,
   swapTemplate,
   templateToBeEditedId,

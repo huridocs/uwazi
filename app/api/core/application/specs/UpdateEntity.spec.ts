@@ -38,6 +38,8 @@ describe('UpdateEntityUseCase', () => {
 
   const getAllFiles = async (entity: string) =>
     testingEnvironment.db.getCollection('files')!.find({ entity }).toArray();
+  const getFileById = async (id: string) =>
+    testingEnvironment.db.getCollection('files')!.findOne({ _id: factory.id(id) });
 
   const getAllJobs = async () => getConnection().collection('jobs').find().toArray();
   const clearJobs = async () => getConnection().collection('jobs').deleteMany({});
@@ -864,6 +866,94 @@ describe('UpdateEntityUseCase', () => {
         },
         { entity: 'entity1', originalname: 'Attachment 1 Renamed.txt' },
       ]);
+    });
+
+    it('should persist property selections on the selected file', async () => {
+      const { sut } = createSut();
+
+      await sut.execute({
+        language: 'en',
+        sharedId: 'entity1',
+        propertyAssignments: [],
+        files: [
+          {
+            id: factory.id('entity1_doc1').toHexString(),
+            originalname: 'Document 1.pdf',
+          },
+          {
+            id: factory.id('entity1_doc2').toHexString(),
+            originalname: 'Document 2.pdf',
+          },
+          {
+            id: factory.id('entity1_attach1').toHexString(),
+            originalname: 'Attachment 1.txt',
+          },
+        ],
+        propertySelections: {
+          fileId: factory.id('entity1_doc1').toHexString(),
+          selections: [
+            {
+              name: 'title',
+              selection: {
+                text: 'Entity 1 EN',
+                selectionRectangles: [{ top: 10, left: 20, width: 30, height: 40, page: '1' }],
+              },
+            },
+          ],
+        },
+      });
+
+      const file = await getFileById('entity1_doc1');
+
+      expect(file?.propertySelections).toEqual([
+        {
+          name: 'title',
+          selection: {
+            text: 'Entity 1 EN',
+            selectionRectangles: [{ top: 10, left: 20, width: 30, height: 40, page: '1' }],
+          },
+        },
+      ]);
+    });
+
+    it('should not persist property selections if selected file does not belong to entity', async () => {
+      const { sut } = createSut();
+
+      await sut.execute({
+        language: 'en',
+        sharedId: 'entity1',
+        propertyAssignments: [],
+        files: [
+          {
+            id: factory.id('entity1_doc1').toHexString(),
+            originalname: 'Document 1.pdf',
+          },
+          {
+            id: factory.id('entity1_doc2').toHexString(),
+            originalname: 'Document 2.pdf',
+          },
+          {
+            id: factory.id('entity1_attach1').toHexString(),
+            originalname: 'Attachment 1.txt',
+          },
+        ],
+        propertySelections: {
+          fileId: factory.id('non_existing_file').toHexString(),
+          selections: [
+            {
+              name: 'title',
+              selection: {
+                text: 'Should not be saved',
+                selectionRectangles: [{ top: 10, left: 20, width: 30, height: 40, page: '1' }],
+              },
+            },
+          ],
+        },
+      });
+
+      const file = await getFileById('entity1_doc1');
+
+      expect(file?.propertySelections).toBeUndefined();
     });
   });
 

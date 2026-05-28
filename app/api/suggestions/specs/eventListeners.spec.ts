@@ -561,8 +561,8 @@ describe('On EntityCreatedEvent', () => {
 describe(`On ${FileUpdatedEvent.name}`, () => {
   const fileId = db.id();
 
-  const extractedMetadata = {
-    extractedMetadata: [
+  const propertySelections = {
+    propertySelections: [
       {
         name: 'propertyName',
         selection: {
@@ -583,7 +583,7 @@ describe(`On ${FileUpdatedEvent.name}`, () => {
     language: 'eng',
   };
 
-  it('should not update the ix suggestion state if the extractedMetadata does not change', async () => {
+  it('should not update the ix suggestion state if propertySelections does not change', async () => {
     const updateSpy = jest.spyOn(Suggestions, 'updateStates');
 
     await applicationEventsBus.emit(new FileUpdatedEvent({ before: original, after: original }));
@@ -594,8 +594,8 @@ describe(`On ${FileUpdatedEvent.name}`, () => {
 
     await applicationEventsBus.emit(
       new FileUpdatedEvent({
-        before: { ...original, ...extractedMetadata },
-        after: { ...original, ...extractedMetadata },
+        before: { ...original, ...propertySelections },
+        after: { ...original, ...propertySelections },
       })
     );
 
@@ -608,7 +608,7 @@ describe(`On ${FileUpdatedEvent.name}`, () => {
     const updateSpy = jest.spyOn(Suggestions, 'updateStates');
 
     await applicationEventsBus.emit(
-      new FileUpdatedEvent({ before: original, after: { ...original, ...extractedMetadata } })
+      new FileUpdatedEvent({ before: original, after: { ...original, ...propertySelections } })
     );
 
     expect(updateSpy).not.toHaveBeenCalled();

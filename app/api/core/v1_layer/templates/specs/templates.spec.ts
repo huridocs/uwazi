@@ -10,7 +10,8 @@ import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { TemplateSchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
 import templates from '../templates.js';
-import fixtures, {
+import {
+  fixtures,
   factory,
   propertyToBeInherited,
   relatedTo,

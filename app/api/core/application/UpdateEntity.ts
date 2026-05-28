@@ -1,5 +1,5 @@
 import { Entity, EntityIcon } from '#api/core/domain/entity/Entity.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { LanguageISO6391, PropertySelectionSchema } from '#shared/types/commonTypes.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
@@ -23,6 +23,10 @@ type Input = {
   templateId?: string;
   uploadedFiles?: InputFile[];
   files?: { id: string; originalname: string }[];
+  propertySelections?: {
+    fileId: string;
+    selections: PropertySelectionSchema[];
+  };
 };
 
 type Output = Entity;
@@ -103,6 +107,19 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
       await this.deps.fileService.insert(filesCreated);
       await this.deps.fileService.delete(removedFiles);
       await this.deps.fileService.bulkUpsert(updatedFiles);
+
+      if (input.propertySelections) {
+        const fileBelongsToEntity = await this.deps.filesDS.filesExistForEntities([
+          { entity: entity.sharedId, _id: input.propertySelections.fileId },
+        ]);
+
+        if (fileBelongsToEntity) {
+          await this.deps.filesDS.savePropertySelections(
+            input.propertySelections.fileId,
+            input.propertySelections.selections
+          );
+        }
+      }
     });
 
     return entity;

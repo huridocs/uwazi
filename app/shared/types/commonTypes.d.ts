@@ -207,7 +207,7 @@ export interface DateRangeSchema {
   to?: number | null;
 }
 
-export interface ExtractedMetadataSchema {
+export interface PropertySelectionSchema {
   propertyID?: string;
   name?: string;
   timestamp?: string;
