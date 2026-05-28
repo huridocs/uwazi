@@ -71,14 +71,19 @@ const ReferencesPanel = ({ entity, mainDocument }: ReferencesPanelProps) => {
 
   const handleReferenceClick = useCallback(
     (reference: FormattedReference) => {
-      setSelectedReferenceId(reference._id);
+      if (reference._id === selectedReferenceId) {
+        setSelectedReferenceId(null);
+        mainPdfController?.toggleHighlights([]);
+      } else {
+        setSelectedReferenceId(reference._id);
 
-      const highlight = referenceToHighlight(reference);
-      if (highlight) {
-        mainPdfController?.toggleHighlights([highlight]);
+        const highlight = referenceToHighlight(reference);
+        if (highlight) {
+          mainPdfController?.toggleHighlights([highlight]);
+        }
       }
     },
-    [mainPdfController]
+    [mainPdfController, selectedReferenceId]
   );
 
   const handleView = useCallback((_reference: EntityReference) => {

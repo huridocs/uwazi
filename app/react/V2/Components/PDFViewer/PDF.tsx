@@ -6,6 +6,7 @@ import {
   TextSelection,
 } from '@huridocs/react-text-selection-handler';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import 'pdfjs-dist/web/pdf_viewer.css';
 import { Translate } from '#app/I18N/index.js';
 import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
 import { TextHighlight } from './types.js';
@@ -17,7 +18,6 @@ import { PDFJS, CMAP_URL, EventBus, PDFDocumentProxy } from './pdfjs.js';
 import { useContainerWidth } from './hooks/useContainerWidth.js';
 import { PDFPage } from './PDFPage.js';
 import { BlankState, ProgressBar } from '../UI/index.js';
-import 'pdfjs-dist/web/pdf_viewer.css';
 import { reportErrorToSentry } from '#app/V2/shared/errorUtils.js';
 
 const CHANGE_PAGE_THRESHOLD: number = 0.4;
