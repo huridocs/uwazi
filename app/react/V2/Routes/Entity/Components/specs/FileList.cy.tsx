@@ -1,27 +1,48 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react';
-import * as stories from '#app/stories/FileList.stories.js';
+import { Entity } from '#V2/Routes/Entity/Entity.js';
+import { TestAtomStoreProvider, TestRouterContext } from '#V2/testing/index.js';
+import { templatesAtom } from '#V2/atoms/index.js';
 import { logA11yViolations } from '../../../../../../../cypress/support/helpers/a11y.js';
 
-const { Empty, WithFiles } = composeStories(stories);
+describe('Files tab', () => {
+  const sampleEntity: any = {
+    _id: 'ent1',
+    sharedId: 'shared1',
+    title: 'Sample Entity',
+    template: 'template1',
+    documents: [{ filename: 'file.pdf', _id: '1', language: 'en' }],
+    attachments: [{ filename: 'song.mp3', _id: '2', mimetype: 'audio/mpeg' }],
+    metadata: {},
+  };
 
-describe('FileList', () => {
+  const sampleTemplate = [{ _id: 'template1', name: 'Template 1', properties: [], commonProperties: [] }];
+
+  const mountEntity = () =>
+    mount(
+      <TestRouterContext
+        loaderData={{ entity: sampleEntity, mainDocument: sampleEntity.documents[0], pagePlaintext: '' }}
+      >
+        <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
+          <Entity />
+        </TestAtomStoreProvider>
+      </TestRouterContext>
+    );
+
   it('should be accessible', () => {
-    mount(<WithFiles />);
+    mountEntity();
+    cy.contains('Files').click();
     cy.injectAxe();
     cy.checkA11y(undefined, undefined, logA11yViolations);
   });
 
-  it('should render empty state when entity has no files', () => {
-    mount(<Empty />);
-    cy.contains('No files available').should('exist');
-  });
-
-  it('should render file cards when entity has files', () => {
-    mount(<WithFiles />);
-    cy.get('[role="listitem"]').should('have.length.at.least', 1);
-    cy.get('[role="region"][aria-label="Files list"]').should('exist');
+  it('should render table sections and side panel tabs', () => {
+    mountEntity();
+    cy.contains('Files').click();
+    cy.contains('PRIMARY DOCUMENTS').should('exist');
+    cy.contains('SUPPORTING FILES').should('exist');
+    cy.contains('File').should('exist');
+    cy.contains('Translations').should('exist');
   });
 });

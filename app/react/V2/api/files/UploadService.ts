@@ -19,9 +19,11 @@ class UploadService {
   private filesQueue: File[] = [];
 
   private route: string;
+  private extraFields: Record<string, string>;
 
-  constructor(endpoint: Endpoint) {
+  constructor(endpoint: Endpoint, extraFields: Record<string, string> = {}) {
     this.route = `${APIURL}files/upload/${endpoint}`;
+    this.extraFields = extraFields;
   }
 
   // eslint-disable-next-line max-statements
@@ -46,6 +48,9 @@ class UploadService {
           this.onProgressCallback(file.name, Math.floor(event.percent), event.total);
         }
       });
+    Object.entries(this.extraFields).forEach(([key, value]) => {
+      request.field(key, value);
+    });
 
     this.requests.push(request);
 

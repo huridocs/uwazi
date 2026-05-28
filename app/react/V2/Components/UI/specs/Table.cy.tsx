@@ -68,6 +68,12 @@ describe('Table', () => {
     });
   });
 
+  it('should highlight the focused row using table focusedRowId prop', () => {
+    Basic.args.focusedRowId = 'A1';
+    mount(<Basic />);
+    cy.contains('tr', 'Entity 1').should('have.class', 'bg-(--color-theme-surface-muted)');
+  });
+
   it('should trigger the custom action for the buttons', () => {
     Custom.args.actionFn = cy.spy().as('actionSpy');
     mount(<Custom />);

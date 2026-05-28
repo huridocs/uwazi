@@ -23,7 +23,9 @@ import {
   SIDE_TAB_PARAM,
   SearchResults,
   ToCPanel,
-  FileList,
+  EntityFilesProvider,
+  FilesMainPanel,
+  FilesSidePanel,
 } from './Components/index.js';
 import { LoaderResponse } from './types.js';
 
@@ -63,6 +65,7 @@ const Entity = () => {
 
   const mainTabElements = useMemo(() => {
     const tabs: React.ReactElement[] = [];
+    const filesCount = (entity?.documents?.length || 0) + (entity?.attachments?.length || 0);
 
     if (entity && mainDocument?.filename) {
       tabs.push(
@@ -105,14 +108,20 @@ const Entity = () => {
         <span no-translate="true">Relationships</span>
       </Tabs.Tab>
     );
-    if (entity?.documents?.length || entity?.attachments?.length) {
+    if (filesCount > 0) {
       tabs.push(
         <Tabs.Tab
           id={MAIN_TABS.FILES}
           key={MAIN_TABS.FILES}
-          label={<TabLabel text="Files" icon={<PaperClipIcon className="w-5 h-5" />} />}
+          label={
+            <TabLabel
+              text="Files"
+              icon={<PaperClipIcon className="w-5 h-5" />}
+              count={filesCount}
+            />
+          }
         >
-          <FileList entity={entity} />
+          <FilesMainPanel />
         </Tabs.Tab>
       );
     }
@@ -319,32 +328,41 @@ const Entity = () => {
 
   return (
     <>
-      <PaneLayout defaultRatios={[0.62, 0.38]} className="bg-(--color-theme-surface-page) text-ink">
-        <PaneLayout.Pane>
-          <Tabs
-            unmountTabs={false}
-            domIdPrefix="entity-main"
-            initialTabId={activeMainTab}
-            onTabSelected={onMainTabChange}
-            tabListAriaLabel="Entity primary"
-          >
-            {mainTabElements}
-          </Tabs>
-        </PaneLayout.Pane>
-        <PaneLayout.Pane>
-          <Tabs
-            key={activeMainTab}
-            className="min-w-0 w-full border-l border-[color-mix(in_srgb,var(--color-theme-border-default)_65%,transparent)]"
-            unmountTabs={false}
-            domIdPrefix="entity-side"
-            initialTabId={activeSideTab}
-            onTabSelected={onSideTabChange}
-            tabListAriaLabel="Side panel tabs"
-          >
-            {sideTabElements}
-          </Tabs>
-        </PaneLayout.Pane>
-      </PaneLayout>
+      <EntityFilesProvider entity={entity}>
+        <PaneLayout
+          defaultRatios={[0.62, 0.38]}
+          className="bg-(--color-theme-surface-page) text-ink"
+        >
+          <PaneLayout.Pane>
+            <Tabs
+              unmountTabs={false}
+              domIdPrefix="entity-main"
+              initialTabId={activeMainTab}
+              onTabSelected={onMainTabChange}
+              tabListAriaLabel="Entity primary"
+            >
+              {mainTabElements}
+            </Tabs>
+          </PaneLayout.Pane>
+          <PaneLayout.Pane>
+            {activeMainTab === MAIN_TABS.FILES ? (
+              <FilesSidePanel />
+            ) : (
+              <Tabs
+                key={activeMainTab}
+                className="min-w-0 w-full border-l border-[color-mix(in_srgb,var(--color-theme-border-default)_65%,transparent)]"
+                unmountTabs={false}
+                domIdPrefix="entity-side"
+                initialTabId={activeSideTab}
+                onTabSelected={onSideTabChange}
+                tabListAriaLabel="Side panel tabs"
+              >
+                {sideTabElements}
+              </Tabs>
+            )}
+          </PaneLayout.Pane>
+        </PaneLayout>
+      </EntityFilesProvider>
 
       <SearchHintsModal />
     </>

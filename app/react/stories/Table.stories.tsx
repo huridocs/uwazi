@@ -14,6 +14,7 @@ type StoryProps = {
   defaultSorting?: SortingState;
   controlledSorting?: boolean;
   actionFn?: () => void;
+  focusedRowId?: string;
 };
 
 const CustomDateCell = ({ cell }: { cell: Cell<BasicData, number> }) => (
@@ -92,6 +93,7 @@ const StoryComponent = ({
   defaultSorting,
   actionFn,
   controlledSorting,
+  focusedRowId,
 }: StoryProps) => {
   const [dataState, setDataState] = useState(tableData);
   const [selected, setSelected] = useState({});
@@ -167,6 +169,7 @@ const StoryComponent = ({
           manualSorting={controlledSorting}
           dnd={dnd}
           enableSelections={enableSelections}
+          focusedRowId={focusedRowId}
           header={
             <div className="flex flex-col gap-1 items-start">
               <h2 className="text-lg">Table heading</h2>
@@ -257,6 +260,7 @@ const Primary: Story = {
       defaultSorting={args.defaultSorting}
       actionFn={args.actionFn}
       controlledSorting={args.controlledSorting}
+    focusedRowId={args.focusedRowId}
     />
   ),
 };
@@ -272,6 +276,7 @@ const Basic = {
     sortingFn: undefined,
     actionFn: undefined,
     controlledSorting: false,
+    focusedRowId: undefined,
   },
 };
 

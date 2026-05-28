@@ -15,7 +15,7 @@ const Tab = ({ id, label, children }: TabProps) => (
 );
 
 interface TabsProps {
-  children: React.ReactElement<TabProps> | React.ReactElement<TabProps>[];
+  children: React.ReactNode;
   onTabSelected?: (activeTab: string) => void;
   initialTabId?: string;
   unmountTabs?: boolean;
@@ -37,7 +37,13 @@ const Tabs = ({
 }: TabsProps) => {
   const generatedPrefix = useId().replace(/:/g, '');
   const domPrefix = domIdPrefix ?? generatedPrefix;
-  const tabChildren = useMemo(() => (Array.isArray(children) ? children : [children]), [children]);
+  const tabChildren = useMemo(
+    () =>
+      React.Children.toArray(children).filter((child): child is React.ReactElement<TabProps> =>
+        React.isValidElement<TabProps>(child)
+      ),
+    [children]
+  );
   const totalTabs = tabChildren.length;
   const selectedIndex = useMemo(() => {
     if (tabChildren.length === 0) return 0;
@@ -49,9 +55,7 @@ const Tabs = ({
   const inactiveClass = 'text-ink-tertiary bg-paper hover:text-ink-secondary';
   const tabListChromeClass = 'tabs-segmented-list';
 
-  const tabScrollWrapClass = [
-    'tabs-segmented-scroll mx-[var(--spacing-theme-3)] my-[var(--spacing-theme-2)] md:my-[var(--spacing-theme-2-5)]',
-  ].join(' ');
+  const tabScrollWrapClass = 'tabs-segmented-scroll';
 
   const handleChange = (index: number) => {
     onTabSelected?.(tabChildren[index].props.id);

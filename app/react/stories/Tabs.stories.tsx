@@ -51,3 +51,42 @@ export const Basic = {
     tabListAriaLabel: 'Entity detail sections',
   },
 };
+
+export const WithCounter: Story = {
+  render: args => (
+    <div className="tw-content">
+      <Tabs
+        unmountTabs={args.unmountTabs}
+        onTabSelected={args.onTabSelected}
+        tabListClassName="md:w-2/3 w-full"
+        tabListAriaLabel={args.tabListAriaLabel}
+      >
+        <Tabs.Tab id="file" label="File">
+          <div className="py-4">
+            <h2 className="mb-2 text-lg font-medium text-ink">File tab content</h2>
+          </div>
+        </Tabs.Tab>
+        <Tabs.Tab
+          id="translations"
+          label={
+            <span className="inline-flex items-center gap-1">
+              Translations
+              <span className="rounded bg-(--color-theme-surface-warm) px-1 text-xs font-semibold text-ink-tertiary shrink-0">
+                4
+              </span>
+            </span>
+          }
+        >
+          <div className="py-4">
+            <h2 className="mb-2 text-lg font-medium text-ink">Translations tab content</h2>
+          </div>
+        </Tabs.Tab>
+      </Tabs>
+    </div>
+  ),
+  args: {
+    onTabSelected: undefined,
+    unmountTabs: undefined,
+    tabListAriaLabel: 'Entity files side panel tabs',
+  },
+};

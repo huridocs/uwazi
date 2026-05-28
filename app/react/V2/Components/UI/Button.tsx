@@ -40,52 +40,52 @@ const Button = ({
     Record<NonNullable<ButtonProps['size']> | 'default', string>
   > = {
     primary: {
-      small: 'px-3 py-1.5 text-xs',
+      small: 'px-2 py-1.5 text-xs',
       medium: 'px-4 py-2 text-sm',
       default: 'px-3 py-1.5 text-xs',
     },
     secondary: {
-      small: 'px-3 py-1.5 text-xs',
+      small: 'px-2 py-1.5 text-xs',
       medium: 'px-4 py-2 text-sm',
       default: 'px-3 py-1.5 text-xs',
     },
     danger: {
-      small: 'px-3 py-1.5 text-xs',
+      small: 'px-2 py-1.5 text-xs',
       medium: 'px-4 py-2 text-sm',
       default: 'px-3 py-1.5 text-xs',
     },
     ghost: {
-      small: 'px-3 py-1.5 text-xs',
+      small: 'px-2 py-1.5 text-xs',
       medium: 'px-3 py-1.5 text-xs',
       default: 'px-3 py-1.5 text-xs',
     },
     compact: {
-      small: 'px-2.5 py-1 text-xs',
+      small: 'px-2 py-1 text-xs',
       medium: 'px-3 py-1 text-[0.8125rem]',
       default: 'px-3 py-1 text-[0.8125rem]',
     },
     success: {
-      small: 'px-3 py-1.5 text-xs',
+      small: 'px-2 py-1.5 text-xs',
       medium: 'px-4 py-2 text-sm',
       default: 'px-3 py-1.5 text-xs',
     },
     dangerSecondary: {
-      small: 'px-3 py-1.5 text-xs',
+      small: 'px-2 py-1.5 text-xs',
       medium: 'px-4 py-2 text-sm',
       default: 'px-3 py-1.5 text-xs',
     },
     successSecondary: {
-      small: 'px-3 py-1.5 text-xs',
+      small: 'px-2 py-1.5 text-xs',
       medium: 'px-4 py-2 text-sm',
       default: 'px-3 py-1.5 text-xs',
     },
     dangerSubtle: {
-      small: 'px-3 py-1.5 text-xs',
+      small: 'px-2 py-1.5 text-xs',
       medium: 'px-3 py-1.5 text-xs',
       default: 'px-3 py-1.5 text-xs',
     },
     successSubtle: {
-      small: 'px-3 py-1.5 text-xs',
+      small: 'px-2 py-1.5 text-xs',
       medium: 'px-3 py-1.5 text-xs',
       default: 'px-3 py-1.5 text-xs',
     },

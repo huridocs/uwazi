@@ -56,6 +56,9 @@ type TableProps<T extends TableRow<T>> = {
   containerClassName?: string;
   groupColumnPosition?: number;
   manualSorting?: boolean;
+  focusedRowId?: string;
+  focusedRowClassName?: string;
+  getRowClassName?: (row: T) => string;
 };
 
 const Table = <T extends TableRow<T>>({
@@ -75,6 +78,9 @@ const Table = <T extends TableRow<T>>({
   groupColumnPosition = 0,
   initialSelection = [],
   manualSorting,
+  focusedRowId,
+  focusedRowClassName = 'bg-(--color-theme-surface-muted) hover:bg-(--color-theme-surface-muted)',
+  getRowClassName,
 }: TableProps<T>) => {
   const [dataState, setDataState] = useState(data);
   const initialRowSelection = useMemo(
@@ -301,6 +307,12 @@ const Table = <T extends TableRow<T>>({
                     colSpan={memoizedColumns.length}
                     groupColumnIndex={groupColumnIndex}
                     dndEnabled={!!dnd?.enable}
+                    rowClassName={[
+                      row.original.rowId === focusedRowId ? focusedRowClassName : '',
+                      getRowClassName?.(row.original) || '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
                   />
                 ))}
               </SortableContext>
