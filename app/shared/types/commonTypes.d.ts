@@ -207,23 +207,6 @@ export interface DateRangeSchema {
   to?: number | null;
 }
 
-export interface PropertySelectionSchema {
-  propertyID?: string;
-  name?: string;
-  timestamp?: string;
-  deleteSelection?: boolean;
-  selection?: {
-    text?: string;
-    selectionRectangles?: {
-      top: number;
-      left: number;
-      width: number;
-      height: number;
-      page?: string;
-    }[];
-  };
-}
-
 export type GeolocationSchema = {
   label?: string;
   lat: number;
@@ -321,6 +304,23 @@ export interface PropertySchema {
   query?: unknown[];
   denormalizedProperty?: string;
   targetTemplates?: false | string[];
+}
+
+export interface PropertySelectionSchema {
+  propertyID?: string;
+  name?: string;
+  timestamp?: string;
+  deleteSelection?: boolean;
+  selection?: {
+    text?: string;
+    selectionRectangles?: {
+      top: number;
+      left: number;
+      width: number;
+      height: number;
+      page?: string;
+    }[];
+  };
 }
 
 export type PropertyTypeSchema =
