@@ -370,6 +370,31 @@ Approved intervention shape:
    - Keep current ML payload DTO unchanged unless external service versioning is coordinated.
    - If ML naming changes later, implement translation only at boundary adapters.
 
+## After IX is fully compatible with V2 (explicitly out of current scope)
+
+The following is intentionally **not** part of this development scope, but should be treated as a high-priority architectural follow-up once IX is fully stable on v2 paths:
+
+1. **Migrate suggestion acceptance write paths to v2-owned application contracts**
+   - Current `Suggestions.accept` still writes through legacy-oriented paths (`updateEntitiesWithSuggestion` + direct `files.save(...)` update flow).
+   - Target direction is to use v2 application/use-case boundaries for both entity value updates and file `propertySelections` updates.
+
+2. **First, migrate file selection writes in suggestions to v2 files data source contract**
+   - Replace direct file-model save behavior with v2 files DS behavior (`savePropertySelections`) to consolidate merge/delete semantics in one place.
+   - Keep behavior parity with current acceptance and auto-accept flows.
+
+3. **Then, migrate entity updates in suggestions to a v2-safe use case**
+   - Do not directly force current suggestion updates through existing `UpdateEntityUseCase` without contract review, because that use case currently manages file lists and may remove files when payloads are incomplete.
+   - Prefer either:
+     - a dedicated v2 suggestion-accept use case, or
+     - a hardening/refactor of v2 update contracts that supports metadata-only updates safely.
+
+4. **Why to watch this closely**
+   - This area is a likely source of regressions if migrated partially.
+   - A staged migration (files path first, then entity path) is recommended to avoid accidental data loss and keep acceptance/auto-accept behavior stable.
+
+5. **Scope guard**
+   - These items are documented as **future work** and should not block the current propertySelections rollout/migration.
+
 ## Explicit constraints for future agents
 
 - Do not move IX logic into core domain models.
