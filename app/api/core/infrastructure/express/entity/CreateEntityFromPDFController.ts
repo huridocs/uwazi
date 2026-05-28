@@ -39,8 +39,9 @@ class CreateEntityFromPDFController extends AbstractController<Request> {
       data: entityWithFiles as any as EntityWithFilesSchema,
     };
 
-    this.response.json(response);
+    this.response.status(201).json(response);
   }
 }
 
 export { CreateEntityFromPDFController };
+export type { Request as CreateEntityFromPDFRequest };
