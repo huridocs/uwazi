@@ -14,7 +14,7 @@ type GetWithFilesMatch = {
 
 type EntityWithFiles = EntityDBO & { documents: fileDBO[]; attachments: fileDBO[] };
 
-class MongoEntityDAO extends MongoDataSource<EntityDBO> {
+class MongoEntitiesDAO extends MongoDataSource<EntityDBO> {
   protected collectionName = 'entities';
 
   private user: User;
@@ -209,5 +209,5 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
   }
 }
 
-export { MongoEntityDAO };
+export { MongoEntitiesDAO };
 export type { EntityWithFiles };

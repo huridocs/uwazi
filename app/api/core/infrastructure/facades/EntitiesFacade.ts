@@ -5,8 +5,8 @@ import { CreateEntityDTO, CreateEntitySchema } from '../express/entity/Schemas.j
 import { CreateEntityUseCaseFactory } from '../factories/CreateEntityUseCaseFactory.js';
 import { LoggerFactory } from '../factories/LoggerFactory.js';
 import { ExpressEntityMapper } from '../express/entity/ExpressEntityMapper.js';
+import { CreateEntityFromPDFV1UseCaseFactory } from '../factories/CreateEntityFromPDFV1UseCaseFactory.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
-import { CreateEntityFromPDFUseCaseFactory } from '../factories/CreateEntityFromPDFUseCaseFactory.js';
 
 export class EntityFacade {
   static async create(
@@ -26,7 +26,7 @@ export class EntityFacade {
       let entity: Entity;
 
       if (Object.keys(parsed).length === 1 && parsed.title) {
-        const useCase = CreateEntityFromPDFUseCaseFactory.default({ targetLanguage });
+        const useCase = CreateEntityFromPDFV1UseCaseFactory.default({ targetLanguage });
 
         entity = await useCase.execute(input);
       } else {
