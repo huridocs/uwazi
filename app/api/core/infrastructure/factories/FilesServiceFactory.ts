@@ -1,4 +1,8 @@
-import { FilesService, FilesServiceDeps } from '#api/core/application/FilesService.js';
+import {
+  FilesService,
+  FilesServiceContext,
+  FilesServiceDeps,
+} from '#api/core/application/FilesService.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
@@ -12,22 +16,28 @@ import { IdGeneratorFactory } from './IdGeneratorFactory.js';
 import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 
 class FilesServiceFactory {
-  static default(deps: Partial<FilesServiceDeps> = {}) {
+  static default(deps: Partial<FilesServiceDeps> = {}, context?: FilesServiceContext) {
     const { transactionManager } = ExecutionContext;
 
-    return new FilesService({
-      transactionManager,
-      filesDS: FilesDataSourceFactory.default(),
-      relV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
-      pathManager: new PathManager({ tenant: ExecutionContext.tenant }),
-      idGenerator: IdGeneratorFactory.default(),
-      fileStorage: FileStorageFactory.default(),
-      jobsDispatcher: new DispatcherAdapter(ExecutionContext.jobsDispatcher),
-      pdfService: new PDFService(),
-      filesIO: new FileContentsIO(),
-      eventBus: applicationEventsBus,
-      ...deps,
-    });
+    return new FilesService(
+      {
+        transactionManager,
+        filesDS: FilesDataSourceFactory.default(),
+        relV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
+        pathManager: new PathManager({ tenant: ExecutionContext.tenant }),
+        idGenerator: IdGeneratorFactory.default(),
+        fileStorage: FileStorageFactory.default(),
+        jobsDispatcher: new DispatcherAdapter(ExecutionContext.jobsDispatcher),
+        pdfService: new PDFService(),
+        filesIO: new FileContentsIO(),
+        eventBus: applicationEventsBus,
+        ...deps,
+      },
+      context ?? {
+        userId: ExecutionContext.actor?._id?.toString(),
+        tenantName: ExecutionContext.tenant.name,
+      }
+    );
   }
 }
 

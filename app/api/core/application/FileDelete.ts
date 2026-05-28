@@ -1,4 +1,4 @@
-import { fileDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+import { FileDTO } from '#api/core/domain/files/domainTypes.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { createError } from '#api/utils/index.js';
 import { z } from 'zod';
@@ -9,7 +9,7 @@ import { FilesDataSource } from './contracts/FilesDataSource.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 import { FilesService } from './FilesService.js';
 
-type Output = Omit<fileDBO, '_id'> & { _id: string };
+type Output = FileDTO;
 
 type Deps = {
   filesDS: FilesDataSource;
