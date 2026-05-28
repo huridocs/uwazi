@@ -91,15 +91,20 @@ describe('ProcessedPDF', () => {
       expect(updated.languageHasChanged).toBe(true);
     });
 
-    it('does not mutate the input object', () => {
-      const file = FileBuilder.processedDocument('doc', { language: 'en' });
-      const input = {
-        language: 'fr' as const,
-      };
+    it('preserves immutable fields (entity, totalPages, fullText) on the returned file', () => {
+      const fullText = { 1: 'page one' };
+      const file = FileBuilder.processedDocument('doc', {
+        language: 'en',
+        entity: 'sharedId1',
+        totalPages: 10,
+        fullText,
+      });
 
-      file.update(input);
+      const updated = file.update({ language: 'fr' });
 
-      expect(input.language).toBe('fr');
+      expect(updated.entity).toBe('sharedId1');
+      expect(updated.totalPages).toBe(10);
+      expect(updated.fullText).toBe(fullText);
     });
   });
 

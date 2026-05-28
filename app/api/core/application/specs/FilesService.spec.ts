@@ -112,13 +112,15 @@ describe('FilesService', () => {
         () => {
           capturedUserId = ExecutionContext.actor?._id?.toString();
           const filesDataSource = FilesDataSourceFactory.default();
-          const service = FilesServiceFactory.default({
-            filesDS: filesDataSource,
-            fileStorage,
-            jobsDispatcher,
+          return {
+            service: FilesServiceFactory.default({
+              filesDS: filesDataSource,
+              fileStorage,
+              jobsDispatcher,
+              transactionManager,
+            }),
             transactionManager,
-          });
-          return { service, transactionManager };
+          };
         },
         { factories: { transactionManager: () => transactionManager } }
       );

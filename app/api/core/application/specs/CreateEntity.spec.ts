@@ -488,16 +488,14 @@ describe('CreateEntityUseCase', () => {
       expect.objectContaining({ originalname: 'URL_attachment.png' }),
     ]);
 
-    expect(fileService.insert).toHaveBeenCalledWith(
-      [
-        expect.objectContaining({ originalname: 'Attachment 1.png' }),
-        expect.objectContaining({ originalname: 'primary.pdf' }),
-        expect.objectContaining({ originalname: 'Attachment 2.png' }),
-        expect.objectContaining({ originalname: 'Attachment 3.mp4' }),
-        expect.objectContaining({ originalname: 'Attachment 4.mp4' }),
-        expect.objectContaining({ originalname: 'URL_attachment.png' }),
-      ]
-    );
+    expect(fileService.insert).toHaveBeenCalledWith([
+      expect.objectContaining({ originalname: 'Attachment 1.png' }),
+      expect.objectContaining({ originalname: 'primary.pdf' }),
+      expect.objectContaining({ originalname: 'Attachment 2.png' }),
+      expect.objectContaining({ originalname: 'Attachment 3.mp4' }),
+      expect.objectContaining({ originalname: 'Attachment 4.mp4' }),
+      expect.objectContaining({ originalname: 'URL_attachment.png' }),
+    ]);
   });
 
   it('should emit EntityCreatedEvent with request target language', async () => {

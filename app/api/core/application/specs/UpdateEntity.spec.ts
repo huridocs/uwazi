@@ -607,13 +607,11 @@ describe('UpdateEntityUseCase', () => {
         expect.objectContaining({ originalname: 'attachment_1.png' }),
       ]);
 
-      expect(fileService.insert).toHaveBeenCalledWith(
-        [
-          expect.objectContaining({ originalname: 'primary_1.pdf' }),
-          expect.objectContaining({ originalname: 'primary_2.pdf' }),
-          expect.objectContaining({ originalname: 'attachment_1.png' }),
-        ]
-      );
+      expect(fileService.insert).toHaveBeenCalledWith([
+        expect.objectContaining({ originalname: 'primary_1.pdf' }),
+        expect.objectContaining({ originalname: 'primary_2.pdf' }),
+        expect.objectContaining({ originalname: 'attachment_1.png' }),
+      ]);
     });
 
     it('should link image property to uploaded file', async () => {

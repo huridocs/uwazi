@@ -9,7 +9,6 @@ export type {
   URLAttachmentDTO,
   ThumbnailDTO,
   CustomDTO,
-  FileDTO as fileDTO,
 } from '#api/core/domain/files/domainTypes.js';
 
 type BaseFileDBO = {

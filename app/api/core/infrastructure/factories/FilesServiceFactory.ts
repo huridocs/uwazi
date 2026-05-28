@@ -1,4 +1,8 @@
-import { FilesService, FilesServiceContext, FilesServiceDeps } from '#api/core/application/FilesService.js';
+import {
+  FilesService,
+  FilesServiceContext,
+  FilesServiceDeps,
+} from '#api/core/application/FilesService.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
