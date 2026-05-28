@@ -1,6 +1,6 @@
 # IX Entity V2 Integration Diagnosis (01)
 
-Last updated: 2026-05-26
+Last updated: 2026-05-28
 Status: diagnosis + partial implementation (step 1 completed)
 
 ## Purpose of this document
@@ -200,21 +200,24 @@ Why this path is being explored:
 - Same mechanism appears in both regular viewer metadata flow and IX labeling flow.
 - Could provide a cleaner boundary: entity update remains entity-focused; file-annotation updates use explicit contract/use case.
 
-### Path 5 (suggested naming/intervention track): rename to `metadataSelections`
+### Path 5 (approved naming/intervention track): rename root field to `propertySelections`
 
-Suggested naming direction (not yet approved):
-- Persisted file property: rename `files.extractedMetadata` -> `files.metadataSelections`.
-- Transport/input field (if still needed during transition): rename `__extractedMetadata` -> `metadataSelections` (or `__metadataSelections` only as short-lived backward-compat bridge).
+Approved naming direction:
+- Persisted file property: rename `files.extractedMetadata` -> `files.propertySelections`.
+- Keep the stored item footprint identical for now (including `selection.selectionRectangles`, `name`, `propertyID`, `deleteSelection`, `timestamp`, etc.).
+- Keep property keying by current property name for now (future enhancement can migrate to stable property ID keying).
 
-Suggested intervention shape (not yet approved):
-1. Introduce explicit file-selection update contract/use case (backend-owned), using `metadataSelections` naming.
-2. Update regular viewer and IX labeling callers to this contract.
+Approved transition rule:
+- Do not keep/introduce backward compatibility with `__extractedMetadata` in Uwazi contracts and internal code.
+- The only allowed mention/use of legacy naming is at the Uwazi->ML service boundary if that external contract still requires it.
+
+Approved intervention shape:
+1. Introduce/keep explicit file-selection update contract/use case (backend-owned), using `propertySelections` naming.
+2. Update regular viewer and IX labeling callers to this contract naming.
 3. Keep entity update contract clean (entity fields only), while allowing orchestration from IX/metadata endpoints.
 4. Extend IX internals to read/write renamed file property consistently.
-5. Run a migration-only rename strategy (no compatibility alias layer) for persisted data and payload naming.
-6. Decide ML integration naming strategy:
-   - Option A: stop rename at Uwazi->ML service boundary (Uwazi uses new names internally, translates to legacy names when calling ML service and maps responses back), or
-   - Option B: update ML service contract to new naming and remove Uwazi boundary translation/post-processing.
+5. Run migration-based rename for persisted data and caller payload naming.
+6. Keep ML contract unchanged for now and translate only at boundary if needed.
 
 ## Alignment status (important for future agents)
 
@@ -229,6 +232,12 @@ Suggested intervention shape (not yet approved):
    - This is considered a required compatibility part of the solution, not a temporary workaround.
    - It should remain in place while IX is not fully migrated to a v2-native event contract.
    - **Implementation status (2026-05-26): done for `EntitiesService.update` and `EntitiesService.updateMultiple`.**
+7. Naming decision is approved:
+   - `files.extractedMetadata` is renamed to `files.propertySelections`.
+   - Root rename only for now: keep item payload/geometry shape intact (`selection.selectionRectangles` stays as-is).
+8. Property keying remains by property name in this phase; move to property ID can be done later.
+9. No backward compatibility for `__extractedMetadata` in Uwazi internal/API contracts.
+   - Only ML boundary translation is allowed if external ML contract still uses legacy naming.
 
 ### Under discussion / not yet aligned
 
@@ -240,10 +249,9 @@ Suggested intervention shape (not yet approved):
 3. Final API shape for dedicated IX labeling persistence endpoint and how it orchestrates v2 entity update.
 4. Scope and sequencing (single release hardening vs staged rollout).
 5. Exact runtime wiring for v2 event bridge in multi-instance deployments (app instances + queue workers).
-6. Whether to treat current `__extractedMetadata` behavior as IX-only concern or shared file-annotation concern used by both IX and regular viewer workflows.
-7. Naming/contract redesign options for `__extractedMetadata` transport field (if we replace it).
-8. Whether to rename persisted file field from `extractedMetadata` to `metadataSelections` now or defer behind compatibility aliasing.
-9. Whether ML service naming is translated at boundary or updated end-to-end to new contract.
+6. Whether to treat current file-selection behavior as IX-only concern or shared file-annotation concern used by both IX and regular viewer workflows.
+7. Whether to move property keying from property name to stable property ID in a later phase.
+8. Whether ML service naming is translated at boundary or updated end-to-end to new contract.
 
 ## Recommended implementation sequence (for future work)
 
@@ -261,13 +269,12 @@ Suggested intervention shape (not yet approved):
    - v2 flags ON/OFF,
    - persistence + suggestion refresh assertions.
 5. Add targeted regression tests for regular viewer click-to-fill + save path under v2 flags, verifying file-level extracted metadata persistence.
-6. If rename is approved, add end-to-end rename rollout tasks:
-   - migration scripts (no compatibility alias),
-   - caller migration (viewer + IX),
+6. Execute end-to-end rename rollout tasks:
+   - migration scripts to rename persisted file root field `extractedMetadata` -> `propertySelections`,
+   - caller migration (viewer + IX) to `propertySelections`,
    - data migration/check script,
-   - ML contract decision implementation:
-     - boundary translation mapping, or
-     - direct new-name contract adoption in ML service and Uwazi client.
+   - no compatibility alias for `__extractedMetadata` in Uwazi contracts,
+   - ML boundary translation only if external ML contract still requires legacy naming.
 
 ## Explicit constraints for future agents
 
