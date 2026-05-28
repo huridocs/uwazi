@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import stringify from 'fast-json-stable-stringify';
-import { fileDBO, fileDTO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
-import type { FileTypes } from '#api/files/storage.js';
 import type { FileContents } from './FileContents.js';
 import { ObjectUtils } from '#api/common.v2/utils/Object.js';
+import { FileType } from './FileType.js';
+import { FileDTO } from './domainTypes.js';
 
 type BaseFileProps = {
   id: string;
@@ -15,7 +15,7 @@ type BaseFileProps = {
   uploaded?: boolean;
 };
 
-type FileContentLoader = (options: { type: fileDBO['type']; filename: string }) => FileContents;
+type FileContentLoader = (options: { type: FileType; filename: string }) => FileContents;
 
 const sanitizeFilename = (filename: string) => {
   let sanitized = filename;
@@ -90,7 +90,7 @@ export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
 
   readonly uploaded?: boolean;
 
-  protected abstract _type: FileTypes;
+  protected abstract _type: FileType;
 
   protected props: TProps;
 
@@ -140,10 +140,10 @@ export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
     return stringify(this.props) !== stringify(this.previousProps);
   }
 
-  update<ExtendedProps>(_props: Partial<TProps> & ExtendedProps): this {
-    const sanitized = ObjectUtils.sanitize(_props, IMMUTABLE_BASE_FILE_KEYS);
+  update(props: Partial<TProps>): this {
+    const sanitized = ObjectUtils.sanitize(props, IMMUTABLE_BASE_FILE_KEYS);
 
-    return this.clone(sanitized);
+    return this.clone(sanitized as Partial<TProps>);
   }
 
   isEntityFile(): this is this & { entity: string } {
@@ -165,20 +165,7 @@ export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
     };
   }
 
-  abstract toDTO(): fileDTO;
-
-  static dboCommonFields(dbo: fileDBO) {
-    return {
-      id: dbo._id.toString(),
-      originalname: dbo.originalname,
-      filename: dbo.filename,
-      mimetype: dbo.mimetype,
-      size: dbo.size,
-      creationDate: dbo.creationDate,
-    };
-  }
-
-  static fromDBO?(dbo: fileDBO, contentLoader: FileContentLoader): BaseFile<BaseFileProps>;
+  abstract toDTO(): FileDTO;
 }
 
 export type { BaseFileProps, FileContentLoader };
