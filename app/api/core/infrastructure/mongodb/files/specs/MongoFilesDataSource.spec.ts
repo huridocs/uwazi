@@ -95,7 +95,8 @@ const fixtures = {
       creationDate: 1000,
     }),
     f.attachment('url_attachment', {
-      url: 'my_url',
+      url: 'https://example.com/my-url',
+      entity: 'entity1',
       mimetype: 'text/html',
       size: 100,
       creationDate: 1000,

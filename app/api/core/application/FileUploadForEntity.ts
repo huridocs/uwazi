@@ -1,13 +1,13 @@
 // eslint-disable-next-line node/no-restricted-import
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
-import { fileDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+import { FileDTO } from '#api/core/domain/files/domainTypes.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { z } from 'zod';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { FilesService } from './FilesService.js';
 import { EntityNotFoundError } from './errors.js';
 
-type Output = Omit<fileDBO, '_id'> & { _id: string };
+type Output = FileDTO;
 
 type Deps = {
   entitiesDS: MultiLanguageEntityDataSource;
