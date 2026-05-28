@@ -4,7 +4,6 @@ import { Response as SuperTestResponse } from 'supertest';
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import errorHandlingMiddleware from '#api/utils/error_handling_middleware.js';
 import languageMiddleware from '#api/utils/languageMiddleware.js';
-import { ssrQueryCleanupMiddleware } from '#api/utils/ssrQueryCleanupMiddleware.js';
 import { routesErrorHandler } from '#api/utils/routesErrorHandler.js';
 import { appContext } from './AppContext.js';
 import { extendSupertest } from './supertestExtensions.js';
@@ -50,7 +49,6 @@ const setUpApp = (
       .catch(next);
   });
   app.use(languageMiddleware);
-  app.use(ssrQueryCleanupMiddleware);
   customMiddleware.forEach(middlewareElement => app.use(middlewareElement));
   app.use(dependenciesContextMiddleware);
 
