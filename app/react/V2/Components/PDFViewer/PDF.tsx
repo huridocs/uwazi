@@ -142,36 +142,33 @@ const PDF = ({
     });
   }, []);
 
-  const toggleHighlights = useCallback(
-    (newHighlights?: { [page: number]: TextHighlight[] }[]) => {
-      if (newHighlights?.length) {
-        setInternalHighlights([highlights, ...newHighlights]);
-        const [firstHighlight] = Object.entries(newHighlights[0] || {});
-        if (firstHighlight) {
-          const [page, highlight] = firstHighlight;
+  const toggleHighlights = useCallback((newHighlights?: { [page: number]: TextHighlight[] }[]) => {
+    if (newHighlights?.length) {
+      setInternalHighlights(newHighlights);
+      const [firstHighlight] = Object.entries(newHighlights[0] || {});
+      if (firstHighlight) {
+        const [page, highlight] = firstHighlight;
 
-          const pageContainer = pageRefsMap.current[Number(page)];
-          if (pageContainer) {
-            const selector = `#page-${page}-container [data-highlight-key="${page}-${highlight[0].key}"]`;
-            waitForElement(selector, 5000)
-              .then(found => {
-                const highlightRectangle = found.querySelector('.highlight-rectangle');
-                scrollIntoView(highlightRectangle || found, {
-                  block: 'center',
-                  behavior: 'smooth',
-                });
-              })
-              .catch(() => {
-                // ignore timeout
+        const pageContainer = pageRefsMap.current[Number(page)];
+        if (pageContainer) {
+          const selector = `#page-${page}-container [data-highlight-key="${page}-${highlight[0].key}"]`;
+          waitForElement(selector, 5000)
+            .then(found => {
+              const highlightRectangle = found.querySelector('.highlight-rectangle');
+              scrollIntoView(highlightRectangle || found, {
+                block: 'center',
+                behavior: 'smooth',
               });
-          }
+            })
+            .catch(() => {
+              // ignore timeout
+            });
         }
-      } else {
-        setInternalHighlights([highlights]);
       }
-    },
-    [highlights]
-  );
+    } else {
+      setInternalHighlights([]);
+    }
+  }, []);
 
   const pdfReadyCallback = useCallback(() => {
     if (isReady.current) {
@@ -356,9 +353,10 @@ const PDF = ({
             ? Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
                 const regionId = number;
                 let pageHighlights;
+                const allHighlights = [highlights, ...internalHighlights];
 
-                if (internalHighlights.length) {
-                  const highlightsForPage = internalHighlights.find(
+                if (allHighlights.length) {
+                  const highlightsForPage = allHighlights.find(
                     highligh => highligh && highligh[regionId]
                   );
                   pageHighlights = highlightsForPage?.[regionId];
