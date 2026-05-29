@@ -1,5 +1,5 @@
 import React from 'react';
-import { hydrateRoot } from 'react-dom/client';
+import { hydrateRoot, type Root } from 'react-dom/client';
 import * as Sentry from '@sentry/react';
 
 import {
@@ -43,7 +43,7 @@ if (window.SENTRY_APP_DSN) {
   });
 }
 
-const router = createBrowserRouter(getAppRoutes());
+let router = createBrowserRouter(getAppRoutes());
 
 const App = () => {
   const atomStore = getStore();
@@ -63,7 +63,42 @@ const App = () => {
 };
 
 const container = document.getElementById('root');
-const root = window.__loadingError__ === undefined ? hydrateRoot(container!, <App />) : container;
+
+const clientRoot: Root | null =
+  window.__loadingError__ === undefined ? hydrateRoot(container!, <App />) : null;
+
+// Library-mode RR has no HMR API: recreate the router after webpack applies updates so
+// lazy route modules are resolved again (dynamic import picks up HMR replacements).
+const renderClient = () => {
+  if (!clientRoot) {
+    return;
+  }
+  router = createBrowserRouter(getAppRoutes());
+  clientRoot.render(<App />);
+};
+
+if (typeof module !== 'undefined' && module.hot && clientRoot) {
+  let pendingHotRender = false;
+  const scheduleRenderClient = () => {
+    if (pendingHotRender) {
+      return;
+    }
+    pendingHotRender = true;
+    queueMicrotask(() => {
+      pendingHotRender = false;
+      renderClient();
+    });
+  };
+
+  module.hot.accept('./Routes.tsx', scheduleRenderClient);
+  module.hot.accept('./appRoutes.js', scheduleRenderClient);
+
+  module.hot.addStatusHandler(status => {
+    if (status === 'idle') {
+      scheduleRenderClient();
+    }
+  });
+}
 const silentWarnings = [
   'Warning: %s uses the legacy childContextTypes API which is no longer supported and will be removed in the next major release.',
   'Warning: %s: Support for defaultProps will be removed from function components in a future major release. Use JavaScript default parameters instead.%s',
@@ -97,4 +132,4 @@ window.console.error = (...args) => {
   }
 };
 
-export { root };
+export { clientRoot as root };

@@ -107,7 +107,8 @@ module.exports = production => {
             {
               loader: 'babel-loader?cacheDirectory',
               options: {
-                sourceMap: process.env.BABEL_ENV === 'debug',
+                sourceMap: process.env.BABEL_ENV === 'debug' || process.env.HOT === 'true',
+                ...(process.env.HOT === 'true' ? { envName: 'debug' } : {}),
               },
             },
           ],

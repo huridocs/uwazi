@@ -3,92 +3,31 @@ import React from 'react';
 import { createRoutesFromElements, Navigate, Route } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import { App } from '#app/App/App.js';
-import { LibraryRoot } from './Library/Library.js';
-import { LibraryMap } from './Library/LibraryMap.js';
-import { LibraryCards } from './Library/LibraryCards.js';
-import { LibraryTable } from './Library/LibraryTable.js';
-import { Preserve } from '#V2/Routes/Settings/Preserve/Preserve.js';
-import { Settings } from '#V2/Routes/Settings/Settings.js';
-import { Login } from './Users/Login.js';
-import { Users, usersLoader, userAction } from '#V2/Routes/Settings/Users/Users.js';
-import { Collection, collectionLoader } from '#V2/Routes/Settings/Collection/Collection.js';
-import { ViewerRoute } from './Viewer/ViewerRoute.js';
-import { ClientSettings } from '#app/apiResponseTypes.js';
-import {
-  TranslationsList,
-  translationsListLoader,
-} from '#V2/Routes/Settings/Translations/TranslationsList.js';
-import {
-  EditTranslations,
-  editTranslationsLoader,
-  editTranslationsAction,
-} from '#V2/Routes/Settings/Translations/EditTranslations.js';
-import { Dashboard, dashboardLoader } from '#V2/Routes/Settings/Dashboard/Dashboard.js';
-import {
-  EditThesaurus,
-  thesauriLoader,
-  ThesauriList,
-  editThesaurusLoader,
-} from '#app/V2/Routes/Settings/Thesauri/index.js';
-import { MenuConfig, menuConfigloader } from '#V2/Routes/Settings/MenuConfig/MenuConfig.js';
-import {
-  RelationshipTypes,
-  relationshipTypesLoader,
-} from '#V2/Routes/Settings/RelationshipTypes/RelationshipTypes.js';
-import { LanguagesList, languagesListLoader } from '#V2/Routes/Settings/Languages/LanguagesList.js';
-import { Account, accountLoader } from '#V2/Routes/Settings/Account/Account.js';
-import { IXdashboardLoader, IXDashboard } from '#V2/Routes/Settings/IX/IXDashboard.js';
-import { IXSuggestions, IXSuggestionsLoader } from '#V2/Routes/Settings/IX/IXSuggestions.js';
-import {
-  PageEditor,
-  pageEditorLoader,
-  PagesList,
-  pagesListLoader,
-} from '#V2/Routes/Settings/Pages/index.js';
-import {
-  customisationLoader,
-  Customisation,
-} from '#V2/Routes/Settings/Customization/Customization.js';
-import { ActivityLog, activityLogLoader } from '#V2/Routes/Settings/ActivityLog/index.js';
-import {
-  CustomUploads,
-  customUploadsLoader,
-} from '#V2/Routes/Settings/CustomUploads/CustomUploads.js';
-import { FiltersTable, filtersLoader } from '#V2/Routes/Settings/Filters/index.js';
 import { RouteErrorBoundary, GeneralError } from '#V2/Components/ErrorHandling/index.js';
-import {
-  ParagraphExtractorLoader,
-  PXEntityLoader,
-  PXParagraphLoader,
-} from '#V2/Routes/Settings/ParagraphExtraction/Loaders.js';
-import { ParagraphExtractorDashboard } from '#V2/Routes/Settings/ParagraphExtraction/ParagraphExtraction.js';
-import { PXEntityDashboard } from '#V2/Routes/Settings/ParagraphExtraction/PXEntities.js';
-import { PXParagraphDashboard } from '#V2/Routes/Settings/ParagraphExtraction/PXParagraphs.js';
-import {
-  Templates,
-  templatesLoader,
-  TemplatesEditor,
-  templatesEditorLoader,
-} from '#V2/Routes/Settings/Templates/index.js';
-import { Entity, entityLoader } from '#V2/Routes/Entity/index.js';
-import {
-  loggedInUsersRoute,
-  adminsOnlyRoute,
-  privateRoute,
-  ProtectedRoute,
-} from './ProtectedRoute.js';
+import { ClientSettings } from '#app/apiResponseTypes.js';
 import type { IndexDescriptor } from './getIndexElement.js';
 import { getIndexDescriptor } from './getIndexElement.js';
-import { PageView } from './Pages/PageView.js';
-import { ResetPassword } from './Users/ResetPassword.js';
-import { UnlockAccount } from './Users/UnlockAccount.js';
-import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard.js';
 import {
-  CSVList,
-  csvListLoader,
-  UploadStatus,
-  uploadStatusLoader,
-} from './V2/Routes/Settings/CSVUpload/index.js';
+  LibraryRoot,
+  LibraryCards,
+  LibraryTable,
+  LibraryMap,
+  Login,
+  PageView,
+  ViewerRoute,
+} from './indexRouteComponents.js';
+import { adminsOnlyRoute } from './ProtectedRoute.js';
+import {
+  lazyAdminsOnly,
+  lazyComponent,
+  lazyLoggedIn,
+  lazyPrivate,
+  lazyProtectedRoles,
+  lazyWithLoader,
+  lazyWithLoaderAndAction,
+  type RouteContext,
+} from './lazyRoute.js';
+import { RoutePending } from './RoutePending.js';
 
 const deconstructSearchQuery = (query?: string) => {
   if (!query) return '';
@@ -178,209 +117,451 @@ const buildIndexElement = (
 const getRoutesLayout = (
   settings: ClientSettings | undefined,
   indexElement: React.ReactNode,
-  headers?: IncomingHttpHeaders,
+  ctx: RouteContext,
   defaultToLibrary?: boolean
 ) => (
-  <Route errorElement={<RouteErrorBoundary />}>
+  <Route errorElement={<RouteErrorBoundary />} hydrateFallbackElement={<RoutePending />}>
     <Route
       index
       element={indexElement}
       {...(defaultToLibrary ? { handle: { library: true } } : {})}
     />
-    <Route path="login" element={<Login />} />
-    <Route path="library/*" element={privateRoute(<LibraryRoot />, settings)}>
-      <Route index element={privateRoute(<LibraryCards />, settings)} handle={{ library: true }} />
+    <Route
+      path="login"
+      lazy={lazyComponent(() => import('./Users/Login.js'), 'Login')}
+      hydrateFallbackElement={<RoutePending />}
+    />
+    <Route
+      path="library/*"
+      lazy={lazyPrivate(() => import('./Library/Library.js'), 'LibraryRoot', ctx)}
+      hydrateFallbackElement={<RoutePending />}
+    >
+      <Route
+        index
+        lazy={lazyPrivate(() => import('./Library/LibraryCards.js'), 'LibraryCards', ctx)}
+        handle={{ library: true }}
+        hydrateFallbackElement={<RoutePending />}
+      />
       <Route
         path="map"
-        element={privateRoute(<LibraryMap />, settings)}
+        lazy={lazyPrivate(() => import('./Library/LibraryMap.js'), 'LibraryMap', ctx)}
         handle={{ library: true }}
+        hydrateFallbackElement={<RoutePending />}
       />
       <Route
         path="table"
-        element={privateRoute(<LibraryTable />, settings)}
+        lazy={lazyPrivate(() => import('./Library/LibraryTable.js'), 'LibraryTable', ctx)}
         handle={{ library: true }}
+        hydrateFallbackElement={<RoutePending />}
       />
     </Route>
-    <Route path="document/:sharedId" element={privateRoute(<ViewerRoute />, settings)}>
-      <Route path="*" element={privateRoute(<ViewerRoute />, settings)} />
+    <Route
+      path="document/:sharedId"
+      lazy={lazyPrivate(() => import('./Viewer/ViewerRoute.js'), 'ViewerRoute', ctx)}
+      hydrateFallbackElement={<RoutePending />}
+    >
+      <Route
+        path="*"
+        lazy={lazyPrivate(() => import('./Viewer/ViewerRoute.js'), 'ViewerRoute', ctx)}
+        hydrateFallbackElement={<RoutePending />}
+      />
     </Route>
-    <Route path="entity/:sharedId" element={privateRoute(<ViewerRoute />, settings)}>
-      <Route path="*" element={privateRoute(<ViewerRoute />, settings)} />
+    <Route
+      path="entity/:sharedId"
+      lazy={lazyPrivate(() => import('./Viewer/ViewerRoute.js'), 'ViewerRoute', ctx)}
+      hydrateFallbackElement={<RoutePending />}
+    >
+      <Route
+        path="*"
+        lazy={lazyPrivate(() => import('./Viewer/ViewerRoute.js'), 'ViewerRoute', ctx)}
+        hydrateFallbackElement={<RoutePending />}
+      />
     </Route>
-    <Route path="entity/:sharedId/:tabView" element={privateRoute(<ViewerRoute />, settings)} />
-    <Route path="entityv2/:sharedId" element={<Entity />} loader={entityLoader(headers)} />
+    <Route
+      path="entity/:sharedId/:tabView"
+      lazy={lazyPrivate(() => import('./Viewer/ViewerRoute.js'), 'ViewerRoute', ctx)}
+      hydrateFallbackElement={<RoutePending />}
+    />
+    <Route
+      path="entityv2/:sharedId"
+      lazy={lazyWithLoader(
+        () => import('#V2/Routes/Entity/Entity.js'),
+        'Entity',
+        () => import('#V2/Routes/Entity/loader.js'),
+        'entityLoader',
+        ctx
+      )}
+      hydrateFallbackElement={<RoutePending />}
+    />
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
-    <Route path="page/:sharedId" element={<PageView />} />
-    <Route path="page/:sharedId/:slug" element={<PageView />} />
-    <Route path="setpassword/:key" element={<ResetPassword />} />
-    <Route path="unlockaccount/:username/:code" element={<UnlockAccount />} />
-    <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
-      <Route path="account" element={<Account />} loader={accountLoader(headers)} />
+    <Route
+      path="page/:sharedId"
+      lazy={lazyComponent(() => import('./Pages/PageView.js'), 'PageView')}
+      hydrateFallbackElement={<RoutePending />}
+    />
+    <Route
+      path="page/:sharedId/:slug"
+      lazy={lazyComponent(() => import('./Pages/PageView.js'), 'PageView')}
+      hydrateFallbackElement={<RoutePending />}
+    />
+    <Route
+      path="setpassword/:key"
+      lazy={lazyComponent(() => import('./Users/ResetPassword.js'), 'ResetPassword')}
+      hydrateFallbackElement={<RoutePending />}
+    />
+    <Route
+      path="unlockaccount/:username/:code"
+      lazy={lazyComponent(() => import('./Users/UnlockAccount.js'), 'UnlockAccount')}
+      hydrateFallbackElement={<RoutePending />}
+    />
+    <Route
+      path="settings"
+      lazy={lazyLoggedIn(() => import('#V2/Routes/Settings/Settings.js'), 'Settings')}
+      hydrateFallbackElement={<RoutePending />}
+    >
+      <Route
+        path="account"
+        lazy={lazyWithLoader(
+          () => import('#V2/Routes/Settings/Account/Account.js'),
+          'Account',
+          () => import('#V2/Routes/Settings/Account/Account.js'),
+          'accountLoader',
+          ctx
+        )}
+        hydrateFallbackElement={<RoutePending />}
+      />
       <Route
         path="dashboard"
-        element={adminsOnlyRoute(<Dashboard />)}
-        loader={dashboardLoader(headers)}
+        lazy={lazyAdminsOnly(
+          () => import('#V2/Routes/Settings/Dashboard/Dashboard.js'),
+          'Dashboard',
+          ctx,
+          'dashboardLoader'
+        )}
+        hydrateFallbackElement={<RoutePending />}
       />
       <Route
         path="navlinks"
-        element={adminsOnlyRoute(<MenuConfig />)}
-        loader={menuConfigloader(headers)}
+        lazy={lazyAdminsOnly(
+          () => import('#V2/Routes/Settings/MenuConfig/MenuConfig.js'),
+          'MenuConfig',
+          ctx,
+          'menuConfigloader'
+        )}
+        hydrateFallbackElement={<RoutePending />}
       />
       <Route
         path="collection"
-        element={adminsOnlyRoute(<Collection />)}
-        loader={collectionLoader(headers)}
+        lazy={lazyAdminsOnly(
+          () => import('#V2/Routes/Settings/Collection/Collection.js'),
+          'Collection',
+          ctx,
+          'collectionLoader'
+        )}
+        hydrateFallbackElement={<RoutePending />}
       />
       <Route
         path="users"
-        element={adminsOnlyRoute(<Users />)}
-        loader={usersLoader(headers)}
-        action={userAction()}
+        lazy={lazyWithLoaderAndAction(
+          () => import('#V2/Routes/Settings/Users/Users.js'),
+          'Users',
+          () => import('#V2/Routes/Settings/Users/Users.js'),
+          'usersLoader',
+          'userAction',
+          ctx,
+          Component => {
+            const Wrapped = () => adminsOnlyRoute(<Component />);
+            return Wrapped;
+          }
+        )}
+        hydrateFallbackElement={<RoutePending />}
       />
-      <Route path="preserve" element={adminsOnlyRoute(<Preserve />)} />
+      <Route
+        path="preserve"
+        lazy={lazyAdminsOnly(() => import('#V2/Routes/Settings/Preserve/Preserve.js'), 'Preserve', ctx)}
+        hydrateFallbackElement={<RoutePending />}
+      />
       <Route path="pages">
-        <Route index element={adminsOnlyRoute(<PagesList />)} loader={pagesListLoader(headers)} />
+        <Route
+          index
+          lazy={lazyAdminsOnly(
+            () => import('#V2/Routes/Settings/Pages/index.js'),
+            'PagesList',
+            ctx,
+            'pagesListLoader'
+          )}
+          hydrateFallbackElement={<RoutePending />}
+        />
         <Route
           path="new"
-          element={adminsOnlyRoute(<PageEditor />)}
-          loader={pageEditorLoader(headers)}
+          lazy={lazyAdminsOnly(
+            () => import('#V2/Routes/Settings/Pages/index.js'),
+            'PageEditor',
+            ctx,
+            'pageEditorLoader'
+          )}
+          hydrateFallbackElement={<RoutePending />}
         />
         <Route
           path="edit/:sharedId?"
-          element={adminsOnlyRoute(<PageEditor />)}
-          loader={pageEditorLoader(headers)}
+          lazy={lazyAdminsOnly(
+            () => import('#V2/Routes/Settings/Pages/index.js'),
+            'PageEditor',
+            ctx,
+            'pageEditorLoader'
+          )}
+          hydrateFallbackElement={<RoutePending />}
         />
       </Route>
       <Route path="templates">
-        <Route index element={adminsOnlyRoute(<Templates />)} loader={templatesLoader(headers)} />
+        <Route
+          index
+          lazy={lazyAdminsOnly(
+            () => import('#V2/Routes/Settings/Templates/index.js'),
+            'Templates',
+            ctx,
+            'templatesLoader'
+          )}
+          hydrateFallbackElement={<RoutePending />}
+        />
         <Route
           path="new"
-          element={adminsOnlyRoute(<TemplatesEditor />)}
-          loader={templatesEditorLoader(headers)}
+          lazy={lazyAdminsOnly(
+            () => import('#V2/Routes/Settings/Templates/index.js'),
+            'TemplatesEditor',
+            ctx,
+            'templatesEditorLoader'
+          )}
+          hydrateFallbackElement={<RoutePending />}
         />
         <Route
           path="edit/:templateId"
-          element={adminsOnlyRoute(<TemplatesEditor />)}
-          loader={templatesEditorLoader(headers)}
+          lazy={lazyAdminsOnly(
+            () => import('#V2/Routes/Settings/Templates/index.js'),
+            'TemplatesEditor',
+            ctx,
+            'templatesEditorLoader'
+          )}
+          hydrateFallbackElement={<RoutePending />}
         />
       </Route>
       <Route path="metadata_extraction">
         <Route
           index
-          element={
-            <ProtectedRoute allowedRoles={['admin', 'editor']}>
-              <IXDashboard />
-            </ProtectedRoute>
-          }
-          loader={IXdashboardLoader(headers)}
+          lazy={lazyProtectedRoles(
+            () => import('#V2/Routes/Settings/IX/IXDashboard.js'),
+            'IXDashboard',
+            ['admin', 'editor'],
+            ctx,
+            () => import('#V2/Routes/Settings/IX/IXDashboard.js'),
+            'IXdashboardLoader'
+          )}
+          hydrateFallbackElement={<RoutePending />}
         />
         <Route
           path="suggestions/:extractorId"
-          loader={IXSuggestionsLoader(headers)}
-          element={
-            <ProtectedRoute allowedRoles={['admin', 'editor']}>
-              <IXSuggestions />
-            </ProtectedRoute>
-          }
+          lazy={lazyProtectedRoles(
+            () => import('#V2/Routes/Settings/IX/IXSuggestions.js'),
+            'IXSuggestions',
+            ['admin', 'editor'],
+            ctx,
+            () => import('#V2/Routes/Settings/IX/IXSuggestions.js'),
+            'IXSuggestionsLoader'
+          )}
+          hydrateFallbackElement={<RoutePending />}
         />
       </Route>
       <Route path="paragraph-extraction">
         <Route
-          loader={ParagraphExtractorLoader(headers)}
           index
-          element={
-            <ProtectedRoute allowedRoles={['admin', 'editor']}>
-              <ParagraphExtractorDashboard />
-            </ProtectedRoute>
-          }
+          lazy={lazyProtectedRoles(
+            () => import('#V2/Routes/Settings/ParagraphExtraction/ParagraphExtraction.js'),
+            'ParagraphExtractorDashboard',
+            ['admin', 'editor'],
+            ctx,
+            () => import('#V2/Routes/Settings/ParagraphExtraction/Loaders.js'),
+            'ParagraphExtractorLoader'
+          )}
+          hydrateFallbackElement={<RoutePending />}
         />
         <Route
-          loader={PXEntityLoader(headers)}
           path=":extractorId/entities"
-          element={
-            <ProtectedRoute allowedRoles={['admin', 'editor']}>
-              <PXEntityDashboard />
-            </ProtectedRoute>
-          }
+          lazy={lazyProtectedRoles(
+            () => import('#V2/Routes/Settings/ParagraphExtraction/PXEntities.js'),
+            'PXEntityDashboard',
+            ['admin', 'editor'],
+            ctx,
+            () => import('#V2/Routes/Settings/ParagraphExtraction/Loaders.js'),
+            'PXEntityLoader'
+          )}
+          hydrateFallbackElement={<RoutePending />}
         />
         <Route
-          loader={PXParagraphLoader(headers)}
           path=":extractorId/entities/:sharedId/paragraphs"
-          element={
-            <ProtectedRoute allowedRoles={['admin', 'editor']}>
-              <PXParagraphDashboard />
-            </ProtectedRoute>
-          }
+          lazy={lazyProtectedRoles(
+            () => import('#V2/Routes/Settings/ParagraphExtraction/PXParagraphs.js'),
+            'PXParagraphDashboard',
+            ['admin', 'editor'],
+            ctx,
+            () => import('#V2/Routes/Settings/ParagraphExtraction/Loaders.js'),
+            'PXParagraphLoader'
+          )}
+          hydrateFallbackElement={<RoutePending />}
         />
       </Route>
       <Route path="relationship-types">
         <Route
           index
-          element={adminsOnlyRoute(<RelationshipTypes />)}
-          loader={relationshipTypesLoader(headers)}
+          lazy={lazyAdminsOnly(
+            () => import('#V2/Routes/Settings/RelationshipTypes/RelationshipTypes.js'),
+            'RelationshipTypes',
+            ctx,
+            'relationshipTypesLoader'
+          )}
+          hydrateFallbackElement={<RoutePending />}
         />
       </Route>
 
       <Route path="thesauri">
-        <Route index element={adminsOnlyRoute(<ThesauriList />)} loader={thesauriLoader(headers)} />
-        <Route path="new" element={adminsOnlyRoute(<EditThesaurus />)} />
+        <Route
+          index
+          lazy={lazyAdminsOnly(
+            () => import('#app/V2/Routes/Settings/Thesauri/index.js'),
+            'ThesauriList',
+            ctx,
+            'thesauriLoader'
+          )}
+          hydrateFallbackElement={<RoutePending />}
+        />
+        <Route
+          path="new"
+          lazy={lazyAdminsOnly(() => import('#app/V2/Routes/Settings/Thesauri/index.js'), 'EditThesaurus', ctx)}
+          hydrateFallbackElement={<RoutePending />}
+        />
         <Route
           path="edit/:_id"
-          element={adminsOnlyRoute(<EditThesaurus />)}
-          loader={editThesaurusLoader(headers)}
+          lazy={lazyAdminsOnly(
+            () => import('#app/V2/Routes/Settings/Thesauri/index.js'),
+            'EditThesaurus',
+            ctx,
+            'editThesaurusLoader'
+          )}
+          hydrateFallbackElement={<RoutePending />}
         />
       </Route>
       <Route
         path="languages"
-        element={adminsOnlyRoute(<LanguagesList />)}
-        loader={languagesListLoader(headers)}
+        lazy={lazyAdminsOnly(
+          () => import('#V2/Routes/Settings/Languages/LanguagesList.js'),
+          'LanguagesList',
+          ctx,
+          'languagesListLoader'
+        )}
+        hydrateFallbackElement={<RoutePending />}
       />
       <Route path="translations">
         <Route
           index
-          element={adminsOnlyRoute(<TranslationsList />)}
-          loader={translationsListLoader(headers)}
+          lazy={lazyAdminsOnly(
+            () => import('#V2/Routes/Settings/Translations/TranslationsList.js'),
+            'TranslationsList',
+            ctx,
+            'translationsListLoader'
+          )}
+          hydrateFallbackElement={<RoutePending />}
         />
         <Route
           path="edit/:context"
-          element={adminsOnlyRoute(<EditTranslations />)}
-          loader={editTranslationsLoader(headers)}
-          action={editTranslationsAction()}
+          lazy={lazyWithLoaderAndAction(
+            () => import('#V2/Routes/Settings/Translations/EditTranslations.js'),
+            'EditTranslations',
+            () => import('#V2/Routes/Settings/Translations/EditTranslations.js'),
+            'editTranslationsLoader',
+            'editTranslationsAction',
+            ctx,
+            Component => {
+              const Wrapped = () => adminsOnlyRoute(<Component />);
+              return Wrapped;
+            }
+          )}
+          hydrateFallbackElement={<RoutePending />}
         />
       </Route>
       <Route
         path="filters"
-        element={adminsOnlyRoute(<FiltersTable />)}
-        loader={filtersLoader(headers)}
+        lazy={lazyAdminsOnly(
+          () => import('#V2/Routes/Settings/Filters/index.js'),
+          'FiltersTable',
+          ctx,
+          'filtersLoader'
+        )}
+        hydrateFallbackElement={<RoutePending />}
       />
       <Route
         path="customisation"
-        element={adminsOnlyRoute(<Customisation />)}
-        loader={customisationLoader(headers)}
+        lazy={lazyAdminsOnly(
+          () => import('#V2/Routes/Settings/Customization/Customization.js'),
+          'Customisation',
+          ctx,
+          'customisationLoader'
+        )}
+        hydrateFallbackElement={<RoutePending />}
       />
       <Route
         path="activitylog"
-        element={adminsOnlyRoute(<ActivityLog />)}
-        loader={activityLogLoader(headers, { settings })}
+        lazy={async () => {
+          const mod = await import('#V2/Routes/Settings/ActivityLog/index.js');
+          const Component = mod.ActivityLog;
+          const Wrapped = () => adminsOnlyRoute(<Component />);
+          return {
+            Component: Wrapped,
+            loader: mod.activityLogLoader(ctx.headers, { settings: ctx.settings }),
+          };
+        }}
+        hydrateFallbackElement={<RoutePending />}
       />
       <Route
         path="custom-uploads"
-        element={adminsOnlyRoute(<CustomUploads />)}
-        loader={customUploadsLoader(headers)}
+        lazy={lazyAdminsOnly(
+          () => import('#V2/Routes/Settings/CustomUploads/CustomUploads.js'),
+          'CustomUploads',
+          ctx,
+          'customUploadsLoader'
+        )}
+        hydrateFallbackElement={<RoutePending />}
       />
       <Route
         path="newrelmigration"
-        element={
-          settings?.features?.newRelationships ? <NewRelMigrationDashboard /> : <GeneralError />
-        }
+        lazy={async () => {
+          if (settings?.features?.newRelationships) {
+            const mod = await import('./Settings/components/relV2MigrationDashboard.js');
+            return { Component: mod.NewRelMigrationDashboard };
+          }
+          return { Component: GeneralError };
+        }}
+        hydrateFallbackElement={<RoutePending />}
       />
       <Route path="csv">
-        <Route index element={adminsOnlyRoute(<CSVList />)} loader={csvListLoader(headers)} />
+        <Route
+          index
+          lazy={lazyAdminsOnly(
+            () => import('./V2/Routes/Settings/CSVUpload/index.js'),
+            'CSVList',
+            ctx,
+            'csvListLoader'
+          )}
+          hydrateFallbackElement={<RoutePending />}
+        />
         <Route
           path=":entry"
-          element={adminsOnlyRoute(<UploadStatus />)}
-          loader={uploadStatusLoader(headers)}
+          lazy={lazyAdminsOnly(
+            () => import('./V2/Routes/Settings/CSVUpload/index.js'),
+            'UploadStatus',
+            ctx,
+            'uploadStatusLoader'
+          )}
+          hydrateFallbackElement={<RoutePending />}
         />
       </Route>
     </Route>
@@ -388,7 +569,7 @@ const getRoutesLayout = (
 );
 
 const languageLayout = (langKey: string, layout: React.JSX.Element) => (
-  <Route key={langKey} path={langKey}>
+  <Route key={langKey} path={langKey} hydrateFallbackElement={<RoutePending />}>
     {layout}
     <Route path="*" element={<GeneralError />} />
   </Route>
@@ -400,17 +581,19 @@ const getRoutes = (
   headers?: IncomingHttpHeaders,
   indexComponents?: IndexComponents
 ) => {
+  const ctx: RouteContext = { headers, settings };
   const descriptor = getIndexDescriptor(settings, userId);
   const indexElement = buildIndexElement(descriptor, indexComponents);
   const { parameters } = descriptor;
   const { defaultToLibrary } = descriptor;
-  const layout = getRoutesLayout(settings, indexElement, headers, defaultToLibrary);
+  const layout = getRoutesLayout(settings, indexElement, ctx, defaultToLibrary);
   const languageKeys = settings?.languages?.map(lang => lang.key) || [];
   return createRoutesFromElements(
     <Route
       path="/"
       element={<App customParams={parameters} />}
       errorElement={<RouteErrorBoundary />}
+      hydrateFallbackElement={<RoutePending />}
     >
       {layout}
       {languageKeys.map(langKey => languageLayout(langKey, layout))}

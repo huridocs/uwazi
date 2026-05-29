@@ -63,6 +63,7 @@
         "@babel/preset-react",
         "@babel/preset-typescript"
       ],
+      "plugins": [["react-refresh/babel", { "skipEnvCheck": true }]],
       "sourceMaps": "inline",
       "retainLines": true
     }
