@@ -4,9 +4,9 @@ import { BrowserRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { localeAtom, templatesAtom, translationsAtom } from '#V2/atoms/index.js';
-import { apiEntity, translations, templates } from '../fixtures/referencesFixtures.js';
-import { PDF, PDFControls } from '#V2/Components/PDFViewer/index.js';
+import { PDF, PDFControls, referenceToHighlight } from '#V2/Components/PDFViewer/index.js';
 import { ReferencesDisplay } from '#V2/Components/References/index.js';
+import { apiEntity, translations, templates } from '../fixtures/referencesFixtures.js';
 
 const ReferencesDisplayComponent = ({ locale }: { locale: 'en' | 'es' }) => {
   const store = createStore();
@@ -15,6 +15,8 @@ const ReferencesDisplayComponent = ({ locale }: { locale: 'en' | 'es' }) => {
   store.set(translationsAtom, translations);
   const documentControls = useRef<PDFControls>();
   const [currentPage, setCurrentPage] = useState(1);
+  const [activeReferenceId, setActiveReferenceId] = useState<string | null>(null);
+  const [currentClusterPage, setCurrentClusterPage] = useState<number | null>(null);
 
   return (
     <div className="h-screen max-h-200 bg-(--color-theme-surface-raised)">
@@ -45,14 +47,30 @@ const ReferencesDisplayComponent = ({ locale }: { locale: 'en' | 'es' }) => {
                   document={apiEntity.documents![0]}
                   currentPage={currentPage}
                   onPointClick={reference => {
-                    documentControls.current?.goToPage(
-                      Number(reference.reference.selectionRectangles?.[0].page || '0')
-                    );
+                    if (activeReferenceId === reference._id) {
+                      setActiveReferenceId(null);
+                      documentControls.current?.toggleHighlights([]);
+                    } else {
+                      setActiveReferenceId(reference._id);
+                      const highligh = referenceToHighlight(reference);
+                      if (highligh) {
+                        documentControls.current?.toggleHighlights([highligh]);
+                      }
+                    }
                   }}
                   onClusterClick={references => {
-                    documentControls.current?.goToPage(
-                      Number(references?.[0].reference.selectionRectangles?.[0].page || '0')
+                    const page = Number(
+                      references?.[0].reference.selectionRectangles?.[0].page || '0'
                     );
+                    if (page !== currentClusterPage) {
+                      setCurrentClusterPage(page);
+                      documentControls.current?.goToPage(
+                        Number(references?.[0].reference.selectionRectangles?.[0].page || '0')
+                      );
+                    } else {
+                      setActiveReferenceId(null);
+                      documentControls.current?.toggleHighlights([]);
+                    }
                   }}
                 />
               </div>

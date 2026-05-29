@@ -13,6 +13,7 @@ import { EntityReference } from '#V2/formatters/relationships/types.js';
 import { deleteReference, saveTextReference } from '#V2/api/relationships/index.js';
 import { ConfirmationModal, BlankState } from '#V2/Components/UI/index.js';
 import { referenceToHighlight } from '#V2/Components/PDFViewer/index.js';
+import type { ReferenceWithTemplate } from '#V2/Components/References/types.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { CreateReference } from './CreateReference.js';
 import { Reference } from './Reference.js';
@@ -22,12 +23,6 @@ import { pdfController } from '../atoms.js';
 type ReferencesPanelProps = {
   entity?: Entity;
   mainDocument?: FileType;
-};
-
-type FormattedReference = EntityReference & {
-  targetEntity: EntityReference['targetEntity'] & {
-    template: { _id: string; name: string; color: string };
-  };
 };
 
 // eslint-disable-next-line max-statements
@@ -41,7 +36,7 @@ const ReferencesPanel = ({ entity, mainDocument }: ReferencesPanelProps) => {
   const revalidator = useRevalidator();
   const mainPdfController = useAtomValue(pdfController);
   const templates = useAtomValue(templatesAtom);
-  const references = useMemo<FormattedReference[]>(() => {
+  const references = useMemo<ReferenceWithTemplate[]>(() => {
     if (!entity) return [];
     return formatReferences(entity).map(ref => {
       const template = templates.find(t => t._id === ref.targetEntity.templateId);
@@ -70,7 +65,7 @@ const ReferencesPanel = ({ entity, mainDocument }: ReferencesPanelProps) => {
   );
 
   const handleReferenceClick = useCallback(
-    (reference: FormattedReference) => {
+    (reference: ReferenceWithTemplate) => {
       if (reference._id === selectedReferenceId) {
         setSelectedReferenceId(null);
         mainPdfController?.toggleHighlights([]);
