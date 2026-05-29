@@ -56,6 +56,19 @@ recreate_database() {
     fi
   fi
 
+  if [ -n "$POSTGRES_HOST" ]; then
+    PG_HOST="${POSTGRES_HOST:-127.0.0.1}"
+    PG_PORT="${POSTGRES_PORT:-5432}"
+    PG_USER="${POSTGRES_USER:-uwazi}"
+    PG_DB="${POSTGRES_DB:-uwazi_development}"
+    echo "Applying PostgreSQL schema..."
+    PGPASSWORD="${POSTGRES_PASSWORD:-uwazi}" psql \
+      -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d "$PG_DB" \
+      -f "$repo_root/app/api/core/infrastructure/postgresql/schema/entity.sql" \
+      && echo "PostgreSQL schema applied." \
+      || echo "WARNING: PostgreSQL schema failed, skipping."
+  fi
+
   exit 0
 }
 
