@@ -1,17 +1,22 @@
 import type { Application, Request } from 'express';
 
-import { PublishPageReleaseController } from '#api/pages/infrastructure/express/PublishPageReleaseController.js';
-import { RestorePageDraftController } from '#api/pages/infrastructure/express/RestorePageDraftController.js';
 import { validation } from '#api/utils/index.js';
 import needsAuthorization from '../auth/authMiddleware.js';
 import pages from './pages.js';
+import { toLegacyHttpError } from './legacyHttpErrors.js';
+
+const legacyCatch =
+  (next: (error: unknown) => void) =>
+  (error: unknown): void => {
+    next(toLegacyHttpError(error));
+  };
 
 export default (app: Application) => {
   app.post('/api/pages', needsAuthorization(['admin']), (req, res, next) => {
     pages
       .save(req.body, req.user, req.language)
       .then(response => res.json(response))
-      .catch(next);
+      .catch(legacyCatch(next));
   });
 
   app.get(
@@ -34,7 +39,7 @@ export default (app: Application) => {
       pages
         .get({ ...req.query, language: req.language })
         .then(res.json.bind(res))
-        .catch(next);
+        .catch(legacyCatch(next));
     }
   );
 
@@ -63,20 +68,8 @@ export default (app: Application) => {
       pages
         .getById({ sharedId: req.query.sharedId }, req.language, req.query.mode)
         .then(res.json.bind(res))
-        .catch(next);
+        .catch(legacyCatch(next));
     }
-  );
-
-  app.post(
-    '/api/pages/release',
-    needsAuthorization(['admin']),
-    PublishPageReleaseController.createHandler()
-  );
-
-  app.post(
-    '/api/pages/restore',
-    needsAuthorization(['admin']),
-    RestorePageDraftController.createHandler()
   );
 
   app.delete(
@@ -100,7 +93,7 @@ export default (app: Application) => {
       pages
         .delete(req.query.sharedId)
         .then(response => res.json(response))
-        .catch(next);
+        .catch(legacyCatch(next));
     }
   );
 };

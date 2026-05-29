@@ -135,12 +135,23 @@ describe('pages', () => {
       });
     });
 
-    it('should not duplicate locale if the language already exists', async () => {
+    it('should backfill locale on pages that are missing it', async () => {
       await withContext(async () => {
-        const oldCount = await pages.get({ language: 'en' });
+        const before = await pages.get({ language: 'en' });
+        expect(before.length).toBe(2);
         await pages.addLanguage('en');
-        const newCount = await pages.get({ language: 'en' });
-        expect(newCount.length).toBe(oldCount.length);
+        const after = await pages.get({ language: 'en' });
+        expect(after.length).toBe(3);
+      });
+    });
+
+    it('should be idempotent when all pages already have the locale', async () => {
+      await withContext(async () => {
+        await pages.addLanguage('en');
+        const countBefore = await pages.get({ language: 'en' });
+        await pages.addLanguage('en');
+        const countAfter = await pages.get({ language: 'en' });
+        expect(countAfter.length).toBe(countBefore.length);
       });
     });
   });
@@ -205,7 +216,7 @@ describe('pages', () => {
     it('should update only provided locales without wiping others', async () => {
       await withContext(async () => {
         const { PagesDataSourceFactory } =
-          await import('#api/pages/infrastructure/factories/PagesDataSourceFactory.js');
+          await import('#api/pages.v2/infrastructure/factories/PagesDataSourceFactory.js');
         const pagesDS = PagesDataSourceFactory.default();
         const user = { _id: db.id() };
         const editorBefore = await pages.getById('2', undefined, 'editor');

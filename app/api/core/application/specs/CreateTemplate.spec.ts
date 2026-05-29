@@ -9,7 +9,7 @@ import { LegacyTranslationService } from '#api/core/infrastructure/mongodb/templ
 import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
-import { LegacyPageServiceFactory } from '#api/pages/infrastructure/factories/LegacyPageServiceFactory.js';
+import { LegacyPageServiceFactory } from '#api/pages.v2/infrastructure/factories/LegacyPageServiceFactory.js';
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';

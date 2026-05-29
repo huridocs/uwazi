@@ -1,20 +1,37 @@
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { createError } from '#api/utils/index.js';
-import { PagesDataSourceFactory } from '#api/pages/infrastructure/factories/PagesDataSourceFactory.js';
+import { PagesDataSourceFactory } from '#api/pages.v2/infrastructure/factories/PagesDataSourceFactory.js';
 import pagesService from './pagesService.js';
+import { toLegacyHttpError } from './legacyHttpErrors.js';
+
+const withLegacyErrors = async <T>(promise: Promise<T>): Promise<T> => {
+  try {
+    return await promise;
+  } catch (error) {
+    throw toLegacyHttpError(error);
+  }
+};
 
 export default {
-  save: pagesService.save.bind(pagesService),
+  async save(
+    page: Parameters<typeof pagesService.save>[0],
+    user?: Parameters<typeof pagesService.save>[1],
+    language?: Parameters<typeof pagesService.save>[2]
+  ) {
+    return withLegacyErrors(pagesService.save(page, user, language));
+  },
 
-  get: pagesService.get.bind(pagesService),
+  async get(query: Parameters<typeof pagesService.get>[0]) {
+    return withLegacyErrors(pagesService.get(query));
+  },
 
   async getById(
     lookup: Parameters<typeof pagesService.getById>[0],
     language?: string,
     mode?: 'editor'
   ) {
-    return pagesService.getById(lookup, language, mode);
+    return withLegacyErrors(pagesService.getById(lookup, language, mode));
   },
 
   async delete(sharedId: string) {
@@ -32,20 +49,21 @@ export default {
         )
       );
     }
-    return pagesService.delete(sharedId);
+    return withLegacyErrors(pagesService.delete(sharedId));
   },
 
   async addLanguage(language: string) {
     const settings = (await import('../settings/index.js')).default;
     const { languages } = await settings.get();
     const defaultLanguage = languages?.find(l => l.default)?.key ?? 'en';
-    return pagesService.addLanguage(
-      language as LanguageISO6391,
-      defaultLanguage as LanguageISO6391
+    return withLegacyErrors(
+      pagesService.addLanguage(language as LanguageISO6391, defaultLanguage as LanguageISO6391)
     );
   },
 
-  removeLanguage: pagesService.removeLanguage.bind(pagesService),
+  async removeLanguage(language: LanguageISO6391) {
+    return withLegacyErrors(pagesService.removeLanguage(language));
+  },
 
   count: async () => {
     const pagesDS = PagesDataSourceFactory.default();

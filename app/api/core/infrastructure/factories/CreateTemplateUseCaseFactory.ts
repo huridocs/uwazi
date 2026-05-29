@@ -6,7 +6,7 @@ import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/da
 import { CreateTemplateUseCase } from '#api/core/application/CreateTemplate.js';
 import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService.js';
 import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS.js';
-import { LegacyPageServiceFactory } from '#api/pages/infrastructure/factories/LegacyPageServiceFactory.js';
+import { LegacyPageServiceFactory } from '#api/pages.v2/infrastructure/factories/LegacyPageServiceFactory.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 
 class CreateTemplateUseCaseFactory {
