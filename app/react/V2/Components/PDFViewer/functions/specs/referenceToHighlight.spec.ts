@@ -43,20 +43,31 @@ describe('referenceToHighlight', () => {
     };
 
     const highlight = referenceToHighlight(reference);
-    const page = 3;
-    const highlightsForPage = highlight![page];
-    expect(highlightsForPage).toHaveLength(1);
-    const firstHightlight = highlightsForPage[0];
-    expect(firstHightlight.key).toBe(page.toString());
-    expect(firstHightlight.color).toBe('#00FF00');
-    expect(firstHightlight.textSelection.text).toBe('Selected text');
-    expect(firstHightlight.textSelection.selectionRectangles).toHaveLength(2);
-    expect(firstHightlight.textSelection.selectionRectangles[0]).toEqual({
-      top: 10,
-      left: 20,
-      width: 30,
-      height: 40,
-      regionId: '3',
+
+    expect(highlight).toEqual({
+      3: [
+        {
+          key: '3',
+          textSelection: {
+            text: 'Selected text',
+            selectionRectangles: [
+              { top: 10, left: 20, width: 30, height: 40, regionId: '3' },
+              { top: 15, left: 25, width: 35, height: 45, regionId: '3' },
+            ],
+          },
+          color: '#00FF00',
+        },
+      ],
+      4: [
+        {
+          key: '4',
+          textSelection: {
+            text: 'Selected text',
+            selectionRectangles: [{ top: 5, left: 5, width: 10, height: 10, regionId: '4' }],
+          },
+          color: '#00FF00',
+        },
+      ],
     });
   });
 });
