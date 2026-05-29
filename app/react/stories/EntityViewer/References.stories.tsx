@@ -83,7 +83,7 @@ const ReferencesDisplayComponent = ({ locale }: { locale: 'en' | 'es' }) => {
 };
 
 const meta: Meta<typeof ReferencesDisplayComponent> = {
-  title: 'Metadata/ReferencesDisplay',
+  title: 'EntityViewer/ReferencesDisplay',
   component: ReferencesDisplayComponent,
 };
 
