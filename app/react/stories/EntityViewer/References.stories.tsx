@@ -47,15 +47,10 @@ const ReferencesDisplayComponent = ({ locale }: { locale: 'en' | 'es' }) => {
                   document={apiEntity.documents![0]}
                   currentPage={currentPage}
                   onPointClick={reference => {
-                    if (activeReferenceId === reference._id) {
-                      setActiveReferenceId(null);
-                      documentControls.current?.toggleHighlights([]);
-                    } else {
-                      setActiveReferenceId(reference._id);
-                      const highligh = referenceToHighlight(reference);
-                      if (highligh) {
-                        documentControls.current?.toggleHighlights([highligh]);
-                      }
+                    setActiveReferenceId(reference._id);
+                    const highligh = referenceToHighlight(reference);
+                    if (highligh) {
+                      documentControls.current?.toggleHighlights([highligh]);
                     }
                   }}
                   onClusterClick={references => {
