@@ -31,7 +31,7 @@ type PDFControls = {
   scrollToHighlight: (page: number, highlightKey: string) => void;
   activateSnippet: (snippet: Snippet) => void;
   deactivateSnippet: () => void;
-  toggleHighlights: (highlighs?: { [page: number]: TextHighlight[] }[]) => void;
+  toggleHighlights: (highlights?: { [page: number]: TextHighlight[] }[]) => void;
 };
 
 interface PDFProps {
