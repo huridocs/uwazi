@@ -15,7 +15,6 @@ const ReferencesDisplayComponent = ({ locale }: { locale: 'en' | 'es' }) => {
   store.set(translationsAtom, translations);
   const documentControls = useRef<PDFControls>();
   const [currentPage, setCurrentPage] = useState(1);
-  const [activeReferenceId, setActiveReferenceId] = useState<string | null>(null);
   const [currentClusterPage, setCurrentClusterPage] = useState<number | null>(null);
 
   return (
@@ -47,7 +46,6 @@ const ReferencesDisplayComponent = ({ locale }: { locale: 'en' | 'es' }) => {
                   document={apiEntity.documents![0]}
                   currentPage={currentPage}
                   onPointClick={reference => {
-                    setActiveReferenceId(reference._id);
                     const highligh = referenceToHighlight(reference);
                     if (highligh) {
                       documentControls.current?.toggleHighlights([highligh]);
@@ -63,7 +61,6 @@ const ReferencesDisplayComponent = ({ locale }: { locale: 'en' | 'es' }) => {
                         Number(references?.[0].reference.selectionRectangles?.[0].page || '0')
                       );
                     } else {
-                      setActiveReferenceId(null);
                       documentControls.current?.toggleHighlights([]);
                     }
                   }}
