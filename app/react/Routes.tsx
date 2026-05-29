@@ -128,66 +128,66 @@ const getRoutesLayout = (
     />
     <Route
       path="login"
-      lazy={lazyComponent(() => import('./Users/Login.js'), 'Login')}
+      lazy={lazyComponent(async () => import('./Users/Login.js'), 'Login')}
       hydrateFallbackElement={<RoutePending />}
     />
     <Route
       path="library/*"
-      lazy={lazyPrivate(() => import('./Library/Library.js'), 'LibraryRoot', ctx)}
+      lazy={lazyPrivate(async () => import('./Library/Library.js'), 'LibraryRoot', ctx)}
       hydrateFallbackElement={<RoutePending />}
     >
       <Route
         index
-        lazy={lazyPrivate(() => import('./Library/LibraryCards.js'), 'LibraryCards', ctx)}
+        lazy={lazyPrivate(async () => import('./Library/LibraryCards.js'), 'LibraryCards', ctx)}
         handle={{ library: true }}
         hydrateFallbackElement={<RoutePending />}
       />
       <Route
         path="map"
-        lazy={lazyPrivate(() => import('./Library/LibraryMap.js'), 'LibraryMap', ctx)}
+        lazy={lazyPrivate(async () => import('./Library/LibraryMap.js'), 'LibraryMap', ctx)}
         handle={{ library: true }}
         hydrateFallbackElement={<RoutePending />}
       />
       <Route
         path="table"
-        lazy={lazyPrivate(() => import('./Library/LibraryTable.js'), 'LibraryTable', ctx)}
+        lazy={lazyPrivate(async () => import('./Library/LibraryTable.js'), 'LibraryTable', ctx)}
         handle={{ library: true }}
         hydrateFallbackElement={<RoutePending />}
       />
     </Route>
     <Route
       path="document/:sharedId"
-      lazy={lazyPrivate(() => import('./Viewer/ViewerRoute.js'), 'ViewerRoute', ctx)}
+      lazy={lazyPrivate(async () => import('./Viewer/ViewerRoute.js'), 'ViewerRoute', ctx)}
       hydrateFallbackElement={<RoutePending />}
     >
       <Route
         path="*"
-        lazy={lazyPrivate(() => import('./Viewer/ViewerRoute.js'), 'ViewerRoute', ctx)}
+        lazy={lazyPrivate(async () => import('./Viewer/ViewerRoute.js'), 'ViewerRoute', ctx)}
         hydrateFallbackElement={<RoutePending />}
       />
     </Route>
     <Route
       path="entity/:sharedId"
-      lazy={lazyPrivate(() => import('./Viewer/ViewerRoute.js'), 'ViewerRoute', ctx)}
+      lazy={lazyPrivate(async () => import('./Viewer/ViewerRoute.js'), 'ViewerRoute', ctx)}
       hydrateFallbackElement={<RoutePending />}
     >
       <Route
         path="*"
-        lazy={lazyPrivate(() => import('./Viewer/ViewerRoute.js'), 'ViewerRoute', ctx)}
+        lazy={lazyPrivate(async () => import('./Viewer/ViewerRoute.js'), 'ViewerRoute', ctx)}
         hydrateFallbackElement={<RoutePending />}
       />
     </Route>
     <Route
       path="entity/:sharedId/:tabView"
-      lazy={lazyPrivate(() => import('./Viewer/ViewerRoute.js'), 'ViewerRoute', ctx)}
+      lazy={lazyPrivate(async () => import('./Viewer/ViewerRoute.js'), 'ViewerRoute', ctx)}
       hydrateFallbackElement={<RoutePending />}
     />
     <Route
       path="entityv2/:sharedId"
       lazy={lazyWithLoader(
-        () => import('#V2/Routes/Entity/Entity.js'),
+        async () => import('#V2/Routes/Entity/Entity.js'),
         'Entity',
-        () => import('#V2/Routes/Entity/loader.js'),
+        async () => import('#V2/Routes/Entity/loader.js'),
         'entityLoader',
         ctx
       )}
@@ -197,35 +197,35 @@ const getRoutesLayout = (
     <Route path="404" element={<GeneralError />} />
     <Route
       path="page/:sharedId"
-      lazy={lazyComponent(() => import('./Pages/PageView.js'), 'PageView')}
+      lazy={lazyComponent(async () => import('./Pages/PageView.js'), 'PageView')}
       hydrateFallbackElement={<RoutePending />}
     />
     <Route
       path="page/:sharedId/:slug"
-      lazy={lazyComponent(() => import('./Pages/PageView.js'), 'PageView')}
+      lazy={lazyComponent(async () => import('./Pages/PageView.js'), 'PageView')}
       hydrateFallbackElement={<RoutePending />}
     />
     <Route
       path="setpassword/:key"
-      lazy={lazyComponent(() => import('./Users/ResetPassword.js'), 'ResetPassword')}
+      lazy={lazyComponent(async () => import('./Users/ResetPassword.js'), 'ResetPassword')}
       hydrateFallbackElement={<RoutePending />}
     />
     <Route
       path="unlockaccount/:username/:code"
-      lazy={lazyComponent(() => import('./Users/UnlockAccount.js'), 'UnlockAccount')}
+      lazy={lazyComponent(async () => import('./Users/UnlockAccount.js'), 'UnlockAccount')}
       hydrateFallbackElement={<RoutePending />}
     />
     <Route
       path="settings"
-      lazy={lazyLoggedIn(() => import('#V2/Routes/Settings/Settings.js'), 'Settings')}
+      lazy={lazyLoggedIn(async () => import('#V2/Routes/Settings/Settings.js'), 'Settings')}
       hydrateFallbackElement={<RoutePending />}
     >
       <Route
         path="account"
         lazy={lazyWithLoader(
-          () => import('#V2/Routes/Settings/Account/Account.js'),
+          async () => import('#V2/Routes/Settings/Account/Account.js'),
           'Account',
-          () => import('#V2/Routes/Settings/Account/Account.js'),
+          async () => import('#V2/Routes/Settings/Account/Account.js'),
           'accountLoader',
           ctx
         )}
@@ -234,7 +234,7 @@ const getRoutesLayout = (
       <Route
         path="dashboard"
         lazy={lazyAdminsOnly(
-          () => import('#V2/Routes/Settings/Dashboard/Dashboard.js'),
+          async () => import('#V2/Routes/Settings/Dashboard/Dashboard.js'),
           'Dashboard',
           ctx,
           'dashboardLoader'
@@ -244,7 +244,7 @@ const getRoutesLayout = (
       <Route
         path="navlinks"
         lazy={lazyAdminsOnly(
-          () => import('#V2/Routes/Settings/MenuConfig/MenuConfig.js'),
+          async () => import('#V2/Routes/Settings/MenuConfig/MenuConfig.js'),
           'MenuConfig',
           ctx,
           'menuConfigloader'
@@ -254,7 +254,7 @@ const getRoutesLayout = (
       <Route
         path="collection"
         lazy={lazyAdminsOnly(
-          () => import('#V2/Routes/Settings/Collection/Collection.js'),
+          async () => import('#V2/Routes/Settings/Collection/Collection.js'),
           'Collection',
           ctx,
           'collectionLoader'
@@ -264,9 +264,9 @@ const getRoutesLayout = (
       <Route
         path="users"
         lazy={lazyWithLoaderAndAction(
-          () => import('#V2/Routes/Settings/Users/Users.js'),
+          async () => import('#V2/Routes/Settings/Users/Users.js'),
           'Users',
-          () => import('#V2/Routes/Settings/Users/Users.js'),
+          async () => import('#V2/Routes/Settings/Users/Users.js'),
           'usersLoader',
           'userAction',
           ctx,
@@ -279,14 +279,18 @@ const getRoutesLayout = (
       />
       <Route
         path="preserve"
-        lazy={lazyAdminsOnly(() => import('#V2/Routes/Settings/Preserve/Preserve.js'), 'Preserve', ctx)}
+        lazy={lazyAdminsOnly(
+          async () => import('#V2/Routes/Settings/Preserve/Preserve.js'),
+          'Preserve',
+          ctx
+        )}
         hydrateFallbackElement={<RoutePending />}
       />
       <Route path="pages">
         <Route
           index
           lazy={lazyAdminsOnly(
-            () => import('#V2/Routes/Settings/Pages/index.js'),
+            async () => import('#V2/Routes/Settings/Pages/index.js'),
             'PagesList',
             ctx,
             'pagesListLoader'
@@ -296,7 +300,7 @@ const getRoutesLayout = (
         <Route
           path="new"
           lazy={lazyAdminsOnly(
-            () => import('#V2/Routes/Settings/Pages/index.js'),
+            async () => import('#V2/Routes/Settings/Pages/index.js'),
             'PageEditor',
             ctx,
             'pageEditorLoader'
@@ -306,7 +310,7 @@ const getRoutesLayout = (
         <Route
           path="edit/:sharedId?"
           lazy={lazyAdminsOnly(
-            () => import('#V2/Routes/Settings/Pages/index.js'),
+            async () => import('#V2/Routes/Settings/Pages/index.js'),
             'PageEditor',
             ctx,
             'pageEditorLoader'
@@ -318,7 +322,7 @@ const getRoutesLayout = (
         <Route
           index
           lazy={lazyAdminsOnly(
-            () => import('#V2/Routes/Settings/Templates/index.js'),
+            async () => import('#V2/Routes/Settings/Templates/index.js'),
             'Templates',
             ctx,
             'templatesLoader'
@@ -328,7 +332,7 @@ const getRoutesLayout = (
         <Route
           path="new"
           lazy={lazyAdminsOnly(
-            () => import('#V2/Routes/Settings/Templates/index.js'),
+            async () => import('#V2/Routes/Settings/Templates/index.js'),
             'TemplatesEditor',
             ctx,
             'templatesEditorLoader'
@@ -338,7 +342,7 @@ const getRoutesLayout = (
         <Route
           path="edit/:templateId"
           lazy={lazyAdminsOnly(
-            () => import('#V2/Routes/Settings/Templates/index.js'),
+            async () => import('#V2/Routes/Settings/Templates/index.js'),
             'TemplatesEditor',
             ctx,
             'templatesEditorLoader'
@@ -350,11 +354,11 @@ const getRoutesLayout = (
         <Route
           index
           lazy={lazyProtectedRoles(
-            () => import('#V2/Routes/Settings/IX/IXDashboard.js'),
+            async () => import('#V2/Routes/Settings/IX/IXDashboard.js'),
             'IXDashboard',
             ['admin', 'editor'],
             ctx,
-            () => import('#V2/Routes/Settings/IX/IXDashboard.js'),
+            async () => import('#V2/Routes/Settings/IX/IXDashboard.js'),
             'IXdashboardLoader'
           )}
           hydrateFallbackElement={<RoutePending />}
@@ -362,11 +366,11 @@ const getRoutesLayout = (
         <Route
           path="suggestions/:extractorId"
           lazy={lazyProtectedRoles(
-            () => import('#V2/Routes/Settings/IX/IXSuggestions.js'),
+            async () => import('#V2/Routes/Settings/IX/IXSuggestions.js'),
             'IXSuggestions',
             ['admin', 'editor'],
             ctx,
-            () => import('#V2/Routes/Settings/IX/IXSuggestions.js'),
+            async () => import('#V2/Routes/Settings/IX/IXSuggestions.js'),
             'IXSuggestionsLoader'
           )}
           hydrateFallbackElement={<RoutePending />}
@@ -376,11 +380,11 @@ const getRoutesLayout = (
         <Route
           index
           lazy={lazyProtectedRoles(
-            () => import('#V2/Routes/Settings/ParagraphExtraction/ParagraphExtraction.js'),
+            async () => import('#V2/Routes/Settings/ParagraphExtraction/ParagraphExtraction.js'),
             'ParagraphExtractorDashboard',
             ['admin', 'editor'],
             ctx,
-            () => import('#V2/Routes/Settings/ParagraphExtraction/Loaders.js'),
+            async () => import('#V2/Routes/Settings/ParagraphExtraction/Loaders.js'),
             'ParagraphExtractorLoader'
           )}
           hydrateFallbackElement={<RoutePending />}
@@ -388,11 +392,11 @@ const getRoutesLayout = (
         <Route
           path=":extractorId/entities"
           lazy={lazyProtectedRoles(
-            () => import('#V2/Routes/Settings/ParagraphExtraction/PXEntities.js'),
+            async () => import('#V2/Routes/Settings/ParagraphExtraction/PXEntities.js'),
             'PXEntityDashboard',
             ['admin', 'editor'],
             ctx,
-            () => import('#V2/Routes/Settings/ParagraphExtraction/Loaders.js'),
+            async () => import('#V2/Routes/Settings/ParagraphExtraction/Loaders.js'),
             'PXEntityLoader'
           )}
           hydrateFallbackElement={<RoutePending />}
@@ -400,11 +404,11 @@ const getRoutesLayout = (
         <Route
           path=":extractorId/entities/:sharedId/paragraphs"
           lazy={lazyProtectedRoles(
-            () => import('#V2/Routes/Settings/ParagraphExtraction/PXParagraphs.js'),
+            async () => import('#V2/Routes/Settings/ParagraphExtraction/PXParagraphs.js'),
             'PXParagraphDashboard',
             ['admin', 'editor'],
             ctx,
-            () => import('#V2/Routes/Settings/ParagraphExtraction/Loaders.js'),
+            async () => import('#V2/Routes/Settings/ParagraphExtraction/Loaders.js'),
             'PXParagraphLoader'
           )}
           hydrateFallbackElement={<RoutePending />}
@@ -414,7 +418,7 @@ const getRoutesLayout = (
         <Route
           index
           lazy={lazyAdminsOnly(
-            () => import('#V2/Routes/Settings/RelationshipTypes/RelationshipTypes.js'),
+            async () => import('#V2/Routes/Settings/RelationshipTypes/RelationshipTypes.js'),
             'RelationshipTypes',
             ctx,
             'relationshipTypesLoader'
@@ -427,7 +431,7 @@ const getRoutesLayout = (
         <Route
           index
           lazy={lazyAdminsOnly(
-            () => import('#app/V2/Routes/Settings/Thesauri/index.js'),
+            async () => import('#app/V2/Routes/Settings/Thesauri/index.js'),
             'ThesauriList',
             ctx,
             'thesauriLoader'
@@ -436,13 +440,17 @@ const getRoutesLayout = (
         />
         <Route
           path="new"
-          lazy={lazyAdminsOnly(() => import('#app/V2/Routes/Settings/Thesauri/index.js'), 'EditThesaurus', ctx)}
+          lazy={lazyAdminsOnly(
+            async () => import('#app/V2/Routes/Settings/Thesauri/index.js'),
+            'EditThesaurus',
+            ctx
+          )}
           hydrateFallbackElement={<RoutePending />}
         />
         <Route
           path="edit/:_id"
           lazy={lazyAdminsOnly(
-            () => import('#app/V2/Routes/Settings/Thesauri/index.js'),
+            async () => import('#app/V2/Routes/Settings/Thesauri/index.js'),
             'EditThesaurus',
             ctx,
             'editThesaurusLoader'
@@ -453,7 +461,7 @@ const getRoutesLayout = (
       <Route
         path="languages"
         lazy={lazyAdminsOnly(
-          () => import('#V2/Routes/Settings/Languages/LanguagesList.js'),
+          async () => import('#V2/Routes/Settings/Languages/LanguagesList.js'),
           'LanguagesList',
           ctx,
           'languagesListLoader'
@@ -464,7 +472,7 @@ const getRoutesLayout = (
         <Route
           index
           lazy={lazyAdminsOnly(
-            () => import('#V2/Routes/Settings/Translations/TranslationsList.js'),
+            async () => import('#V2/Routes/Settings/Translations/TranslationsList.js'),
             'TranslationsList',
             ctx,
             'translationsListLoader'
@@ -474,9 +482,9 @@ const getRoutesLayout = (
         <Route
           path="edit/:context"
           lazy={lazyWithLoaderAndAction(
-            () => import('#V2/Routes/Settings/Translations/EditTranslations.js'),
+            async () => import('#V2/Routes/Settings/Translations/EditTranslations.js'),
             'EditTranslations',
-            () => import('#V2/Routes/Settings/Translations/EditTranslations.js'),
+            async () => import('#V2/Routes/Settings/Translations/EditTranslations.js'),
             'editTranslationsLoader',
             'editTranslationsAction',
             ctx,
@@ -491,7 +499,7 @@ const getRoutesLayout = (
       <Route
         path="filters"
         lazy={lazyAdminsOnly(
-          () => import('#V2/Routes/Settings/Filters/index.js'),
+          async () => import('#V2/Routes/Settings/Filters/index.js'),
           'FiltersTable',
           ctx,
           'filtersLoader'
@@ -501,7 +509,7 @@ const getRoutesLayout = (
       <Route
         path="customisation"
         lazy={lazyAdminsOnly(
-          () => import('#V2/Routes/Settings/Customization/Customization.js'),
+          async () => import('#V2/Routes/Settings/Customization/Customization.js'),
           'Customisation',
           ctx,
           'customisationLoader'
@@ -524,7 +532,7 @@ const getRoutesLayout = (
       <Route
         path="custom-uploads"
         lazy={lazyAdminsOnly(
-          () => import('#V2/Routes/Settings/CustomUploads/CustomUploads.js'),
+          async () => import('#V2/Routes/Settings/CustomUploads/CustomUploads.js'),
           'CustomUploads',
           ctx,
           'customUploadsLoader'
@@ -546,7 +554,7 @@ const getRoutesLayout = (
         <Route
           index
           lazy={lazyAdminsOnly(
-            () => import('./V2/Routes/Settings/CSVUpload/index.js'),
+            async () => import('./V2/Routes/Settings/CSVUpload/index.js'),
             'CSVList',
             ctx,
             'csvListLoader'
@@ -556,7 +564,7 @@ const getRoutesLayout = (
         <Route
           path=":entry"
           lazy={lazyAdminsOnly(
-            () => import('./V2/Routes/Settings/CSVUpload/index.js'),
+            async () => import('./V2/Routes/Settings/CSVUpload/index.js'),
             'UploadStatus',
             ctx,
             'uploadStatusLoader'

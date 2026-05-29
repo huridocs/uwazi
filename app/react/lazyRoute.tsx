@@ -1,5 +1,5 @@
 import React from 'react';
-import type { LazyRouteFunction, RouteObject } from 'react-router';
+import type { ActionFunction, LazyRouteFunction, LoaderFunction, RouteObject } from 'react-router';
 import type { IncomingHttpHeaders } from 'http';
 import type { ClientSettings } from '#app/apiResponseTypes.js';
 import {
@@ -16,13 +16,15 @@ export type RouteContext = {
 
 type RouteModule = Record<string, unknown>;
 
-const pickExport = <T,>(mod: RouteModule, name: string): T => {
+type ModuleImport = () => Promise<RouteModule>;
+
+function pickExport<T>(mod: RouteModule, name: string): T {
   const value = mod[name] ?? mod.default;
   if (value === undefined) {
     throw new Error(`lazyRoute: missing export "${name}"`);
   }
   return value as T;
-};
+}
 
 const wrapComponent = (
   Component: React.ComponentType,
@@ -30,7 +32,7 @@ const wrapComponent = (
 ) => (wrap ? wrap(Component) : Component);
 
 export const lazyComponent = (
-  importFn: () => Promise<RouteModule>,
+  importFn: ModuleImport,
   exportName: string,
   wrap?: (component: React.ComponentType) => React.ComponentType
 ): LazyRouteFunction<RouteObject> => {
@@ -42,9 +44,9 @@ export const lazyComponent = (
 };
 
 export const lazyWithLoader = (
-  componentImport: () => Promise<RouteModule>,
+  componentImport: ModuleImport,
   componentName: string,
-  loaderImport: () => Promise<RouteModule>,
+  loaderImport: ModuleImport,
   loaderExport: string,
   ctx: RouteContext,
   wrap?: (component: React.ComponentType) => React.ComponentType
@@ -52,7 +54,7 @@ export const lazyWithLoader = (
   return async () => {
     const [componentMod, loaderMod] = await Promise.all([componentImport(), loaderImport()]);
     const Component = pickExport<React.ComponentType>(componentMod, componentName);
-    const loaderFactory = pickExport<(headers?: IncomingHttpHeaders) => unknown>(
+    const loaderFactory = pickExport<(headers?: IncomingHttpHeaders) => LoaderFunction>(
       loaderMod,
       loaderExport
     );
@@ -64,22 +66,22 @@ export const lazyWithLoader = (
 };
 
 export const lazyWithLoaderAndAction = (
-  componentImport: () => Promise<RouteModule>,
+  componentImport: ModuleImport,
   componentName: string,
-  moduleImport: () => Promise<RouteModule>,
+  moduleImport: ModuleImport,
   loaderExport: string,
   actionExport: string,
   ctx: RouteContext,
   wrap?: (component: React.ComponentType) => React.ComponentType
 ): LazyRouteFunction<RouteObject> => {
   return async () => {
-    const mod = await moduleImport();
-    const Component = pickExport<React.ComponentType>(mod, componentName);
-    const loaderFactory = pickExport<(headers?: IncomingHttpHeaders) => unknown>(
+    const [componentMod, mod] = await Promise.all([componentImport(), moduleImport()]);
+    const Component = pickExport<React.ComponentType>(componentMod, componentName);
+    const loaderFactory = pickExport<(headers?: IncomingHttpHeaders) => LoaderFunction>(
       mod,
       loaderExport
     );
-    const actionFactory = pickExport<() => unknown>(mod, actionExport);
+    const actionFactory = pickExport<() => ActionFunction>(mod, actionExport);
     return {
       Component: wrapComponent(Component, wrap),
       loader: loaderFactory(ctx.headers),
@@ -89,7 +91,7 @@ export const lazyWithLoaderAndAction = (
 };
 
 export const lazyAdminsOnly = (
-  importFn: () => Promise<RouteModule>,
+  importFn: ModuleImport,
   exportName: string,
   ctx: RouteContext,
   loaderExport?: string
@@ -107,7 +109,7 @@ export const lazyAdminsOnly = (
 };
 
 export const lazyPrivate = (
-  importFn: () => Promise<RouteModule>,
+  importFn: ModuleImport,
   exportName: string,
   ctx: RouteContext
 ): LazyRouteFunction<RouteObject> =>
@@ -117,7 +119,7 @@ export const lazyPrivate = (
   });
 
 export const lazyLoggedIn = (
-  importFn: () => Promise<RouteModule>,
+  importFn: ModuleImport,
   exportName: string
 ): LazyRouteFunction<RouteObject> =>
   lazyComponent(importFn, exportName, Component => {
@@ -126,11 +128,11 @@ export const lazyLoggedIn = (
   });
 
 export const lazyProtectedRoles = (
-  importFn: () => Promise<RouteModule>,
+  importFn: ModuleImport,
   exportName: string,
   roles: string[],
   ctx: RouteContext,
-  loaderImport?: () => Promise<RouteModule>,
+  loaderImport?: ModuleImport,
   loaderExport?: string
 ): LazyRouteFunction<RouteObject> => {
   const wrap = (Component: React.ComponentType) => {
