@@ -75,7 +75,7 @@ const PDF = ({
     progress: 0,
   });
   const onPageChangeRef = useRef(onPageChange);
-  const [internalHighlights, setInternalHighlights] = useState([highlights]);
+  const [internalHighlights, setInternalHighlights] = useState([]);
 
   const setPdfContainer = useCallback((element: HTMLDivElement | null) => {
     pdfContainerRef.current = element;
