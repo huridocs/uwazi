@@ -155,11 +155,11 @@ const PDF = ({
             const selector = `#page-${page}-container [data-highlight-key="${page}-${highlight[0].key}"]`;
             waitForElement(selector, 5000)
               .then(found => {
-                const highlightRectangle = (found as Element).querySelector
-                  ? (found as Element).querySelector('.highlight-rectangle')
-                  : null;
-                const elementToScroll = highlightRectangle;
-                scrollIntoView(elementToScroll, { block: 'center', behavior: 'smooth' });
+                const highlightRectangle = found.querySelector('.highlight-rectangle');
+                scrollIntoView(highlightRectangle || found, {
+                  block: 'center',
+                  behavior: 'smooth',
+                });
               })
               .catch(() => {
                 // ignore timeout
