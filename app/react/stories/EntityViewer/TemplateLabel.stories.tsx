@@ -41,7 +41,7 @@ const store = createStore();
 store.set(templatesAtom, templates);
 
 const meta: Meta<typeof TemplateLabel> = {
-  title: 'Metadata/TemplateLabel',
+  title: 'EntityViewer/TemplateLabel',
   component: TemplateLabel,
 };
 
