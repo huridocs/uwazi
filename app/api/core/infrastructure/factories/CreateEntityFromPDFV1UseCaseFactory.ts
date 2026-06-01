@@ -8,14 +8,13 @@ import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 import { EntitiesServiceFactory } from './EntitiesServiceFactory.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
-import { CreateEntityFromPDFUseCase } from '#api/core/application/CreateEntityFromPDF.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { User } from '#api/users.v2/model/User.js';
-import { FilesServiceFactory } from './FilesServiceFactory.js';
+import { CreateEntityFromPDFV1UseCase } from '#api/core/application/CreateEntityFromPDFV1.js';
 
-class CreateEntityFromPDFUseCaseFactory {
+class CreateEntityFromPDFV1UseCaseFactory {
   static default(
-    overrides: Partial<ConstructorParameters<typeof CreateEntityFromPDFUseCase>[0]> & {
+    overrides: Partial<ConstructorParameters<typeof CreateEntityFromPDFV1UseCase>[0]> & {
       targetLanguage?: LanguageISO6391;
     } = {}
   ) {
@@ -48,15 +47,13 @@ class CreateEntityFromPDFUseCaseFactory {
       });
 
     const entitiesService = EntitiesServiceFactory.default();
-    const filesService = FilesServiceFactory.default();
 
-    return new CreateEntityFromPDFUseCase(
+    return new CreateEntityFromPDFV1UseCase(
       {
         entitiesService,
         propertyAssignmentCreatorServiceStrategy,
         idGenerator,
         transactionManager,
-        filesService,
         ...depsOverrides,
       },
       { actor, tenant, targetLanguage }
@@ -64,4 +61,4 @@ class CreateEntityFromPDFUseCaseFactory {
   }
 }
 
-export { CreateEntityFromPDFUseCaseFactory };
+export { CreateEntityFromPDFV1UseCaseFactory };

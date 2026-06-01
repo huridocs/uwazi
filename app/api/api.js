@@ -4,17 +4,14 @@ export default async (app, server) => {
     { default: activitylogMiddleware },
     { default: CSRFMiddleware },
     { default: languageMiddleware },
-    { ssrQueryCleanupMiddleware },
   ] = await Promise.all([
     import('./activitylog/activitylogMiddleware.js'),
     import('./auth/CSRFMiddleware.js'),
     import('./utils/languageMiddleware.js'),
-    import('./utils/ssrQueryCleanupMiddleware.js'),
   ]);
 
   //common middlewares
   app.use(CSRFMiddleware);
-  app.use(ssrQueryCleanupMiddleware);
   app.use(languageMiddleware);
   app.use(activitylogMiddleware);
 

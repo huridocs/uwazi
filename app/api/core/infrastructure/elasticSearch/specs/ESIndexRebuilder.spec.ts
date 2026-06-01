@@ -25,7 +25,7 @@ import { ElasticSearchBootstrapper } from '../provision/ElasticSearchBootstrappe
 import { TenantAwareESClient } from '../TenantAwareESClient.js';
 import { IndexNameResolver } from '../IndexNameResolver.js';
 import { MongoTemplatesDAO } from '../../mongodb/template/MongoTemplatesDAO.js';
-import { MongoEntityDAO } from '../../mongodb/entity/MongoEntityDAO.js';
+import { MongoEntitiesDAO } from '../../mongodb/entity/MongoEntitiesDAO.js';
 import { MongoFilesDAO } from '../../mongodb/files/MongoFilesDAO.js';
 import { ESIndexRebuilder, ESIndexRebuilderDeps, ProgressEvent } from '../ESIndexRebuilder.js';
 import type { IndexDefinition } from '../Types.js';
@@ -141,7 +141,7 @@ const createSut = (deps?: Partial<ESIndexRebuilderDeps>) => {
 
   const entityWriter = new EntityESWriter({ esClient: tenantAwareClient });
   const fullTextWriter = new FullTextESWriter({ esClient: tenantAwareClient });
-  const entityDAO = new MongoEntityDAO(db, transactionManager, User.createFrom(null));
+  const entityDAO = new MongoEntitiesDAO(db, transactionManager, User.createFrom(null));
   const filesDAO = new MongoFilesDAO({ db, transactionManager });
 
   const entityIndexer = new EntityIndexerService({ writer: entityWriter, entityDAO, slotsDAO });
