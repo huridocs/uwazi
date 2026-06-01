@@ -1,10 +1,9 @@
 import { z } from 'zod';
 import { LanguageUtils } from '#shared/language/index.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { BaseFileProps } from './BaseFile.js';
+import { BaseFile, BaseFileProps } from './BaseFile.js';
 import { ThumbnailDTO } from './domainTypes.js';
 import { FileContents } from './FileContents.js';
-import { FileWithContents } from './FileWithContents.js';
 
 type Props = BaseFileProps & {
   entity: string;
@@ -17,8 +16,12 @@ const Schema = z.object({
   language: z.string().trim().min(2, 'Language is required') as z.ZodType<LanguageISO6391>,
 });
 
-export class Thumbnail extends FileWithContents<Props> {
+export class Thumbnail extends BaseFile<Props> {
   readonly entity: string;
+
+  override get content(): FileContents {
+    return this.props.content;
+  }
 
   readonly language: LanguageISO6391;
 

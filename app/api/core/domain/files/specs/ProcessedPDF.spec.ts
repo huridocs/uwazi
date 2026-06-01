@@ -1,12 +1,12 @@
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { ProcessedPDF, ProcessedPDFProps } from '../ProcessedPDF.js';
+import { PDFDocument, PDFDocumentProps } from '../PDFDocument.js';
 import { FileBuilder } from './FileBuilder.js';
 
 const f = getFixturesFactory();
 
-describe('ProcessedPDF', () => {
+describe('PDFDocument (ready/processed)', () => {
   describe('validation', () => {
-    const validProps: ProcessedPDFProps = {
+    const validProps: PDFDocumentProps = {
       id: 'file123',
       originalname: 'document.pdf',
       filename: 'doc_abc123.pdf',
@@ -15,6 +15,7 @@ describe('ProcessedPDF', () => {
       creationDate: 1234567890,
       uploaded: true,
       entity: 'sharedId1',
+      status: 'ready',
       fullText: { 1: 'page one' },
       generatedToc: false,
       language: 'en',
@@ -29,18 +30,13 @@ describe('ProcessedPDF', () => {
       content: FileBuilder.content('file content'),
     };
 
-    it.each<[string, Partial<ProcessedPDFProps>]>([
+    it.each<[string, Partial<PDFDocumentProps>]>([
       ['entity is undefined', { entity: undefined }],
       ['entity is empty', { entity: '  ' }],
 
-      ['language is undefined', { language: undefined }],
-      ['language is empty', { language: '  ' as any }],
-
       ['totalPages is negative', { totalPages: -1 }],
     ])('throws on %s', (_name, overrides) => {
-      expect(
-        () => new ProcessedPDF({ ...validProps, ...overrides })
-      ).toThrowErrorMatchingSnapshot();
+      expect(() => new PDFDocument({ ...validProps, ...overrides })).toThrowErrorMatchingSnapshot();
     });
   });
 
@@ -65,7 +61,7 @@ describe('ProcessedPDF', () => {
         generatedToc: false,
       });
 
-      expect(updated).toBeInstanceOf(ProcessedPDF);
+      expect(updated).toBeInstanceOf(PDFDocument);
       expect(updated.toDTO()).toEqual({
         ...file.toDTO(),
         originalname: 'renamed.pdf',

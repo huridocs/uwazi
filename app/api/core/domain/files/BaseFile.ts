@@ -3,7 +3,7 @@ import stringify from 'fast-json-stable-stringify';
 import type { FileContents } from './FileContents.js';
 import { ObjectUtils } from '#api/common.v2/utils/Object.js';
 import { FileType } from './FileType.js';
-import { FileDTO } from './domainTypes.js';
+import { FileDTO, FileUpdateInput } from './domainTypes.js';
 
 type BaseFileProps = {
   id: string;
@@ -13,6 +13,7 @@ type BaseFileProps = {
   size?: number;
   creationDate?: number;
   uploaded?: boolean;
+  content?: FileContents;
 };
 
 type FileContentLoader = (options: { type: FileType; filename: string }) => FileContents;
@@ -66,15 +67,6 @@ const Schema = z.object({
   uploaded: z.boolean().optional(),
 });
 
-const IMMUTABLE_BASE_FILE_KEYS = [
-  'id',
-  'creationDate',
-  'mimetype',
-  'size',
-  'filename',
-  'uploaded',
-] as const satisfies ReadonlyArray<keyof BaseFileProps>;
-
 export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
   readonly id: string;
 
@@ -89,6 +81,10 @@ export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
   readonly creationDate: number;
 
   readonly uploaded?: boolean;
+
+  get content(): FileContents | undefined {
+    return this.props.content;
+  }
 
   protected abstract _type: FileType;
 
@@ -140,10 +136,8 @@ export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
     return stringify(this.props) !== stringify(this.previousProps);
   }
 
-  update(props: Partial<TProps>): this {
-    const sanitized = ObjectUtils.sanitize(props, IMMUTABLE_BASE_FILE_KEYS);
-
-    return this.clone(sanitized as Partial<TProps>);
+  update(input: FileUpdateInput): this {
+    return this.clone({ originalname: input.originalname } as Partial<TProps>);
   }
 
   isEntityFile(): this is this & { entity: string } {
@@ -151,7 +145,7 @@ export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
   }
 
   hasContent(): this is this & { content: FileContents } {
-    return 'content' in this.props && Boolean(this.props.content);
+    return this.content !== undefined;
   }
 
   protected dtoBaseFields() {

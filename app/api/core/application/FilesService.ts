@@ -2,8 +2,7 @@ import { ObjectId } from 'mongodb';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
-import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
-import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
 import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
 import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
@@ -21,7 +20,6 @@ import { Result } from '../libs/Result.js';
 import { IdGenerator } from './contracts/IdGenerator.js';
 import { TransactionManager } from './contracts/TransactionManager.js';
 import { PathManager } from '../infrastructure/files/PathManager.js';
-import { FileWithContents } from '../domain/files/FileWithContents.js';
 
 type Deps = {
   idGenerator: IdGenerator;
@@ -55,7 +53,7 @@ class FilesService {
     await ArrayUtils.sequentialFor(
       files.filter(f => f.hasContent()),
       async file => {
-        await this.deps.fileStorage.storeFile(file as FileWithContents);
+        await this.deps.fileStorage.storeFile(file as BaseFile & { content: NonNullable<BaseFile['content']> });
       }
     );
   }
@@ -75,14 +73,14 @@ class FilesService {
    * as method arguments.
    *
    * @param files - Array of BaseFile domain objects to insert
-   * @throws {Error} If ProcessingPDF files are inserted but no userId/tenantName in context
+   * @throws {Error} If PDFDocument files in processing status are inserted but no userId/tenantName in context
    */
   async insert(files: BaseFile[]) {
     if (isNonEmptyArray<BaseFile>(files)) {
       await this.deps.filesDS.bulkCreate(files);
 
       const processingPDFs = files
-        .filter((f): f is ProcessingPDF => f instanceof ProcessingPDF)
+        .filter((f): f is PDFDocument => f instanceof PDFDocument && f.isProcessing())
         .map(f => {
           const { userId, tenantName } = this.context;
           if (!userId) {
@@ -147,9 +145,9 @@ class FilesService {
 
   async delete(files: BaseFile[]) {
     if (!files.length) return;
-    const processedPDFs = files.filter((f): f is ProcessedPDF => f instanceof ProcessedPDF);
+    const pdfDocuments = files.filter((f): f is PDFDocument => f instanceof PDFDocument && f.isReady());
     const thumbnails = await this.deps.filesDS
-      .getThumbnailsForProcessedPDFs(processedPDFs.map(f => f.id))
+      .getThumbnailsForProcessedPDFs(pdfDocuments.map(f => f.id))
       .all();
 
     const allFilesToDelete = [...files, ...thumbnails];
@@ -157,7 +155,7 @@ class FilesService {
     const contentFiles = allFilesToDelete.filter(f => f.hasContent());
 
     await this.deps.filesDS.delete(allFilesToDelete);
-    await this.deps.relV1DS.deleteByFiles(contentFiles as FileWithContents[]);
+    await this.deps.relV1DS.deleteByFiles(contentFiles);
 
     this.deps.transactionManager.onCommitted(async () => {
       await this.deps.eventBus.emit(
@@ -169,7 +167,10 @@ class FilesService {
     });
   }
 
-  async createThumbnail(doc: ProcessedPDF, language: LanguageISO6391) {
+  async createThumbnail(doc: PDFDocument, language: LanguageISO6391) {
+    if (!doc.content) {
+      throw new Error('PDFDocument has no content to create thumbnail from');
+    }
     const thumbnailResult = await this.deps.pdfService.createThumbnail(doc.content);
     if (thumbnailResult.isError()) {
       return thumbnailResult;

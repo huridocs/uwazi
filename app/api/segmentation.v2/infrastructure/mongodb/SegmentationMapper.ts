@@ -1,11 +1,12 @@
-import { Segmentation } from '#api/core/domain/files/Segmentation.js';
-import { SegmentationDBO } from './MongoFilesDataSource.js';
+import { Segmentation } from '../../domain/Segmentation.js';
+import { SegmentationDBO } from './MongoSegmentationDataSource.js';
 
 export class SegmentationMapper {
   static toDomain(dbo: SegmentationDBO): Segmentation {
     return {
       id: dbo._id.toString(),
       fileId: dbo.fileID.toString(),
+      documentId: dbo.fileID.toString(),
       status: dbo.status!,
       filename: dbo.filename!,
       pageHeight: dbo.segmentation?.page_height,

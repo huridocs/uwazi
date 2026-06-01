@@ -11,6 +11,7 @@ export interface Paragraph {
 export interface Segmentation {
   id: string;
   fileId: string;
+  documentId: string;
   filename: string;
   status: 'processing' | 'failed' | 'ready';
   autoExpire?: number;

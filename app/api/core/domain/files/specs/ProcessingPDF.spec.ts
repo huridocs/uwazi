@@ -1,11 +1,10 @@
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { ProcessedPDF } from '../ProcessedPDF.js';
-import { ProcessingPDF } from '../ProcessingPDF.js';
+import { PDFDocument } from '../PDFDocument.js';
 import { FileBuilder } from './FileBuilder.js';
 
 const f = getFixturesFactory();
 
-describe('ProcessingPDF', () => {
+describe('PDFDocument (processing/failed)', () => {
   describe('toDTO', () => {
     it('should include all base and specialized properties', () => {
       const id = f.idString('doc');
@@ -34,15 +33,15 @@ describe('ProcessingPDF', () => {
   });
 
   describe('failed()', () => {
-    it('should set status to failed', () => {
+    it('should return a new instance with status failed', () => {
       const file = FileBuilder.document(f.idString('doc'), { status: 'processing' });
-      file.failed();
-      expect(file.status).toBe('failed');
+      const failed = file.failed();
+      expect(failed.status).toBe('failed');
     });
   });
 
-  describe('asProcessed()', () => {
-    it('should mark ProcessedPDF as changed language', async () => {
+  describe('processed()', () => {
+    it('should mark returned PDFDocument as changed language', async () => {
       const id = f.idString('doc');
       const content = FileBuilder.content('document bytes');
       const file = FileBuilder.document(id, {
@@ -56,12 +55,12 @@ describe('ProcessingPDF', () => {
       });
       const fullText = { 1: 'page one' };
 
-      const processed = file.asProcessed({ language: 'fr', totalPages: 42, fullText });
+      const processed = file.processed({ language: 'fr', totalPages: 42, fullText });
 
       expect(processed.languageHasChanged).toBe(true);
     });
 
-    it('should return a ProcessedPDF preserving all base fields and applying pdfInfo', () => {
+    it('should return a PDFDocument with status ready, preserving all base fields and applying pdfInfo', () => {
       const id = f.idString('doc');
       const content = FileBuilder.content('document bytes');
       const file = FileBuilder.document(id, {
@@ -75,9 +74,10 @@ describe('ProcessingPDF', () => {
       });
       const fullText = { 1: 'page one' };
 
-      const processed = file.asProcessed({ language: 'fr', totalPages: 42, fullText });
+      const processed = file.processed({ language: 'fr', totalPages: 42, fullText });
 
-      expect(processed).toBeInstanceOf(ProcessedPDF);
+      expect(processed).toBeInstanceOf(PDFDocument);
+      expect(processed.status).toBe('ready');
       expect(processed.id).toBe(id);
       expect(processed.originalname).toBe('report.pdf');
       expect(processed.filename).toBe('abc123.pdf');
@@ -104,7 +104,7 @@ describe('ProcessingPDF', () => {
       });
       const updated = file.update({ originalname: 'renamed.pdf' });
 
-      expect(updated).toBeInstanceOf(ProcessingPDF);
+      expect(updated).toBeInstanceOf(PDFDocument);
       expect(updated.toDTO()).toEqual({ ...file.toDTO(), originalname: 'renamed.pdf' });
       expect(updated.content).toBe(content);
       expect(updated.hasChanged).toBe(true);
