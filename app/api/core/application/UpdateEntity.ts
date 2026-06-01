@@ -11,7 +11,7 @@ import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
 import { FilesDataSource } from './contracts/FilesDataSource.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 import { BaseFile } from '../domain/files/BaseFile.js';
-import { ProcessedPDF } from '../domain/files/ProcessedPDF.js';
+import { PDFDocument } from '../domain/files/PDFDocument.js';
 import { EntitiesService } from './EntitiesService.js';
 
 type Input = {
@@ -82,7 +82,7 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     }
 
     const removedPDFIds = removedFiles
-      .filter((f): f is ProcessedPDF => f instanceof ProcessedPDF)
+      .filter((f): f is PDFDocument => f instanceof PDFDocument && f.isReady())
       .map(f => f.id);
 
     const allEntityThumbnails = await this.deps.filesDS.getThumbnails([entity.sharedId]).all();

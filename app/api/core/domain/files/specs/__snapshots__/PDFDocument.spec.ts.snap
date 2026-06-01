@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ProcessedPDF validation throws on entity is empty 1`] = `
+exports[`PDFDocument validation throws on entity is empty 1`] = `
 "[
   {
     \\"code\\": \\"too_small\\",
@@ -16,7 +16,7 @@ exports[`ProcessedPDF validation throws on entity is empty 1`] = `
 ]"
 `;
 
-exports[`ProcessedPDF validation throws on entity is undefined 1`] = `
+exports[`PDFDocument validation throws on entity is undefined 1`] = `
 "[
   {
     \\"code\\": \\"invalid_type\\",
@@ -30,7 +30,34 @@ exports[`ProcessedPDF validation throws on entity is undefined 1`] = `
 ]"
 `;
 
-exports[`ProcessedPDF validation throws on language is empty 1`] = `
+exports[`PDFDocument validation throws on status is ready but language is empty 1`] = `
+"[
+  {
+    \\"code\\": \\"too_small\\",
+    \\"minimum\\": 2,
+    \\"type\\": \\"string\\",
+    \\"inclusive\\": true,
+    \\"exact\\": false,
+    \\"message\\": \\"String must contain at least 2 character(s)\\",
+    \\"path\\": [
+      \\"language\\"
+    ]
+  },
+  {
+    \\"code\\": \\"too_small\\",
+    \\"minimum\\": 2,
+    \\"type\\": \\"string\\",
+    \\"inclusive\\": true,
+    \\"exact\\": false,
+    \\"message\\": \\"String must contain at least 2 character(s)\\",
+    \\"path\\": [
+      \\"language\\"
+    ]
+  }
+]"
+`;
+
+exports[`PDFDocument validation throws on status is ready but language is undefined 1`] = `
 "[
   {
     \\"code\\": \\"too_small\\",
@@ -46,21 +73,7 @@ exports[`ProcessedPDF validation throws on language is empty 1`] = `
 ]"
 `;
 
-exports[`ProcessedPDF validation throws on language is undefined 1`] = `
-"[
-  {
-    \\"code\\": \\"invalid_type\\",
-    \\"expected\\": \\"string\\",
-    \\"received\\": \\"undefined\\",
-    \\"path\\": [
-      \\"language\\"
-    ],
-    \\"message\\": \\"Required\\"
-  }
-]"
-`;
-
-exports[`ProcessedPDF validation throws on totalPages is negative 1`] = `
+exports[`PDFDocument validation throws on totalPages is negative 1`] = `
 "[
   {
     \\"code\\": \\"too_small\\",

@@ -1,8 +1,7 @@
 import { FileAttachment } from '../FileAttachment.js';
 import { CustomUpload } from '../CustomUpload.js';
-import { ProcessingPDF } from '../ProcessingPDF.js';
+import { PDFDocument } from '../PDFDocument.js';
 import { FileContents } from '../FileContents.js';
-import { ProcessedPDF } from '../ProcessedPDF.js';
 import { Thumbnail } from '../Thumbnail.js';
 import { URLAttachment } from '../URLAttachment.js';
 
@@ -13,8 +12,8 @@ type PartialFirstConstructorArg<T> = T extends new (arg: infer A, ...args: any[]
   : never;
 
 export class FileBuilder {
-  static document(id: string, props?: PartialFirstConstructorArg<typeof ProcessingPDF>) {
-    return new ProcessingPDF({
+  static document(id: string, props?: PartialFirstConstructorArg<typeof PDFDocument>) {
+    return new PDFDocument({
       id,
       entity: 'entity1',
       originalname: 'doc.pdf',
@@ -28,8 +27,8 @@ export class FileBuilder {
     });
   }
 
-  static processedDocument(id: string, props?: PartialFirstConstructorArg<typeof ProcessedPDF>) {
-    return new ProcessedPDF({
+  static processedDocument(id: string, props?: PartialFirstConstructorArg<typeof PDFDocument>) {
+    return new PDFDocument({
       id,
       entity: 'entity1',
       originalname: 'doc.pdf',
@@ -37,6 +36,7 @@ export class FileBuilder {
       mimetype: 'application/pdf',
       size: 1024,
       creationDate: 1234567890,
+      status: 'ready',
       content: FileBuilder.content('document'),
       language: 'en',
       totalPages: 10,

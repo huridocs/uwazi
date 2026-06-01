@@ -13,7 +13,7 @@ import { pipeline } from 'stream/promises';
 import { CustomUpload } from '../../domain/files/CustomUpload.js';
 import { FileAttachment } from '../../domain/files/FileAttachment.js';
 import { FileContents } from '../../domain/files/FileContents.js';
-import { ProcessingPDF } from '../../domain/files/ProcessingPDF.js';
+import { PDFDocument } from '../../domain/files/PDFDocument.js';
 import { URLAttachment } from '../../domain/files/URLAttachment.js';
 
 type FileMetadata = {
@@ -96,7 +96,7 @@ export class InputFile {
 
     switch (this.type) {
       case 'document':
-        return new ProcessingPDF({ ...fileProps, status: 'processing' });
+        return new PDFDocument({ ...fileProps, status: 'processing' });
       case 'attachment':
         return new FileAttachment(fileProps);
       case 'url_attachment':

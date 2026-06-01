@@ -1,10 +1,9 @@
 import { ObjectId } from 'mongodb';
 import { LanguageISO6393 } from '#shared/language/languageISO639_3.js';
-import type { TableOfContent } from '#api/core/domain/files/ProcessedPDF.js';
+import type { TableOfContent } from '#api/core/domain/files/domainTypes.js';
 
 export type {
-  ProcessingPDFDTO,
-  ProcessedPDFDTO,
+  PDFDocumentDTO,
   FileAttachmentDTO,
   URLAttachmentDTO,
   ThumbnailDTO,
@@ -37,6 +36,8 @@ export type ProcessedPDFDBO = BaseDocument & {
   generatedToc: boolean;
   toc?: TableOfContent[];
 };
+
+export type PDFDocumentDBO = ProcessingPDFDBO | ProcessedPDFDBO;
 
 export type FileAttachmentDBO = BaseFileDBO & {
   type: 'attachment';
