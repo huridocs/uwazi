@@ -19,15 +19,13 @@ import {
 import type { MetadataProperty } from '#V2/formatters/types.js';
 import { useFormatMetadata } from './hooks/useFormatMetadata.js';
 import { buildTemplatePropertyById } from './buildTemplatePropertyById.js';
-import { MetadataHeaderStrip } from './MetadataHeaderStrip.js';
 import { metadataGridClassForProperty } from './metadataPropertyLayout.js';
 
 type MetadataDisplayProps = {
   entity: Entity;
-  headerLayout?: 'inline' | 'stacked';
 };
 
-const MetadataDisplay = ({ entity, headerLayout = 'inline' }: MetadataDisplayProps) => {
+const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
   const templates = useAtomValue(templatesAtom);
 
   const { entityTemplate, metadata } = useFormatMetadata(entity, templates, {
@@ -183,9 +181,7 @@ const MetadataDisplay = ({ entity, headerLayout = 'inline' }: MetadataDisplayPro
     <Panel>
       <Panel.Body>
         <>
-          <MetadataHeaderStrip entity={entity} headerLayout={headerLayout} />
-
-          <dl className="flex min-w-0 flex-wrap gap-(--spacing-theme-3)">
+          <dl className="flex min-w-0 flex-wrap gap-3">
             {typeof entity.creationDate === 'number' && (
               <Date
                 values={[
@@ -215,8 +211,8 @@ const MetadataDisplay = ({ entity, headerLayout = 'inline' }: MetadataDisplayPro
         </>
       </Panel.Body>
       <Panel.Footer>
-        <div className="flex flex-row items-center justify-between w-full gap-(--spacing-theme-3)">
-          <div className="flex gap-(--spacing-theme-2)">
+        <div className="flex flex-row items-center justify-between w-full gap-3">
+          <div className="flex gap-2">
             <Button variant="secondary">
               <Translate>Edit</Translate>
             </Button>

@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { CheckIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
+import { InputField } from '#V2/Components/Forms/InputField.js';
+import { Select } from '#V2/Components/Forms/Select.js';
 import { Button } from '#V2/Components/UI/index.js';
 import { settingsAtom } from '#V2/atoms/index.js';
 import { useAtomValue } from 'jotai';
@@ -25,7 +27,7 @@ const FileDetailsEditor = ({
   );
 
   return (
-    <div className="rounded-md border border-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] bg-(--color-theme-surface-warm) p-4">
+    <div className="rounded-md border border-border-soft bg-warm p-4">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
           <Translate>File details</Translate>
@@ -49,29 +51,23 @@ const FileDetailsEditor = ({
         </Button>
       </div>
       <div className="space-y-3">
-        <label className="block">
-          <span className="mb-1 block text-xs text-ink-tertiary">NAME</span>
-          <input
-            className="w-full rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) px-3 py-2 text-sm text-ink"
-            value={originalname}
-            onChange={event => setOriginalname(event.target.value)}
-          />
-        </label>
-        <label className="block">
-          <span className="mb-1 block text-xs text-ink-tertiary">LANGUAGE</span>
-          <select
-            className="w-full rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) px-3 py-2 text-sm text-ink"
-            value={language}
-            onChange={event => setLanguage(event.target.value)}
-          >
-            <option value="">—</option>
-            {languages.map(key => (
-              <option value={key} key={key}>
-                {key.toUpperCase()}
-              </option>
-            ))}
-          </select>
-        </label>
+        <InputField
+          id={`file-name-${row.raw._id}`}
+          label="NAME"
+          hideLabel={false}
+          value={originalname}
+          onChange={event => setOriginalname(event.target.value)}
+        />
+        <Select
+          id={`file-language-${row.raw._id}`}
+          label="LANGUAGE"
+          value={language}
+          onChange={event => setLanguage(event.target.value)}
+          options={[
+            { value: '', label: '—' },
+            ...languages.map(key => ({ value: key, label: key.toUpperCase() })),
+          ]}
+        />
       </div>
       <div className="mt-3">
         <Button variant="ghost" onClick={onCancel}>

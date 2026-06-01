@@ -34,7 +34,7 @@ const TranslationsPanel = ({
         {translations.map(file => (
           <div
             key={file.rowId}
-            className="flex items-center gap-2 rounded-md border border-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] p-2"
+            className="flex items-center gap-2 rounded-md border border-border-soft p-2"
           >
             <Pill className="text-[10px]">{file.languageKey}</Pill>
             <DocumentTextIcon className="h-4 w-4" />
@@ -67,7 +67,7 @@ const TranslationsPanel = ({
         ))}
       </div>
 
-      <div className="mt-3 border-t border-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] pt-3">
+      <div className="mt-3 border-t border-border-soft pt-3">
         <FileDropzone multiple={false} onChange={files => onUpload(files)} />
       </div>
     </div>

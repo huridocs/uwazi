@@ -22,7 +22,7 @@ const FileDetailsView = ({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="rounded-md border border-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] bg-(--color-theme-surface-warm) p-4">
+      <div className="rounded-md border border-border-soft bg-warm p-4">
         <div className="mb-3 flex items-center justify-between">
           <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
             <Translate>File details</Translate>
@@ -55,7 +55,7 @@ const FileDetailsView = ({
         </dl>
       </div>
 
-      <div className="mt-3 rounded-md border border-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] p-4">
+      <div className="mt-3 rounded-md border border-border-soft p-4">
         <div className="mb-2 flex items-center gap-2">
           <span className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
             <Translate>Document</Translate>
@@ -80,7 +80,7 @@ const FileDetailsView = ({
         </NeedAuthorization>
       </div>
 
-      <div className="mt-auto flex items-center gap-2 border-t border-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] pt-3">
+      <div className="mt-auto flex items-center gap-2 border-t border-border-soft pt-3">
         <a href={fileUrl} className="inline-flex">
           <Button variant="ghost" className="inline-flex items-center gap-1">
             <EyeIcon className="h-4 w-4" />

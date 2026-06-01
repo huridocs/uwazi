@@ -18,7 +18,7 @@ const FilesToolbar = ({
   onSelectAll,
   onDeselectAll,
 }: FilesToolbarProps) => (
-  <div className="flex items-center gap-2 border-t border-[color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)] p-3">
+  <div className="flex items-center gap-2 border-t border-border-soft p-3">
     <Button variant="ghost" onClick={onAddFile} className="inline-flex items-center gap-1">
       <PlusIcon className="h-4 w-4" />
       <Translate>Add file</Translate>

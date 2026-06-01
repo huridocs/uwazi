@@ -44,7 +44,7 @@ const FilesTableSection = ({
         onSelectRows(ids);
       }}
       noDataMessage={<Translate>No files available</Translate>}
-      containerClassName="rounded-md border border-[color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]"
+      containerClassName="rounded-md border border-border-soft"
       focusedRowId={focusedRowId}
     />
   </section>

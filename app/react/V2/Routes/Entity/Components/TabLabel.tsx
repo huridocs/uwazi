@@ -16,7 +16,7 @@ const TabLabel = ({
       {icon}
     </span>
     {count !== undefined && (
-      <span className="text-xs font-semibold text-ink-tertiary px-1 rounded shrink-0 bg-(--color-theme-surface-warm)">
+      <span className="text-xs font-semibold text-ink-tertiary px-1 rounded shrink-0 bg-warm">
         {count}
       </span>
     )}

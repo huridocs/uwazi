@@ -14,7 +14,7 @@ const FilesMainPanel = () => {
     selectedRowIds,
     setFocusedRowId,
     setSelectedRowIds,
-    setDrawerTab,
+    navigateToFilesSideTab,
     setIsEditing,
     requestDeleteRow,
   } = useEntityFiles();
@@ -23,7 +23,7 @@ const FilesMainPanel = () => {
 
   const onFocus = (row: EntityFileRow) => {
     setFocusedRowId(row.rowId);
-    setDrawerTab('file');
+    navigateToFilesSideTab('file');
   };
 
   return (
@@ -63,7 +63,7 @@ const FilesMainPanel = () => {
       <FilesToolbar
         totalCount={allRows.length}
         selectedCount={selectedRowIds.length}
-        onAddFile={() => setDrawerTab('translations')}
+        onAddFile={() => navigateToFilesSideTab('translations')}
         onSelectAll={() => setSelectedRowIds(allRows.map(row => row.rowId))}
         onDeselectAll={() => setSelectedRowIds([])}
       />

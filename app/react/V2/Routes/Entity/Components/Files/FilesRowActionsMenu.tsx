@@ -19,7 +19,7 @@ type FilesRowActionsMenuProps = {
 };
 
 const menuItemClass =
-  'flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-ink hover:bg-(--color-theme-surface-warm)';
+  'flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-ink hover:bg-warm';
 
 const FilesRowActionsMenu = ({
   row,
@@ -31,12 +31,12 @@ const FilesRowActionsMenu = ({
   <Menu as="div" className="relative inline-flex">
     <Menu.Button
       type="button"
-      className="rounded p-1 text-ink-secondary hover:bg-(--color-theme-surface-warm)"
+      className="rounded p-1 text-ink-secondary hover:bg-warm"
       aria-label="File actions"
     >
       <EllipsisVerticalIcon className="h-5 w-5" />
     </Menu.Button>
-    <Menu.Items className="absolute right-0 z-20 mt-1 min-w-44 overflow-hidden rounded-md border border-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] bg-paper shadow-sm">
+    <Menu.Items className="absolute right-0 z-20 mt-1 min-w-44 overflow-hidden rounded-md border border-border-soft bg-paper shadow-sm">
       <Menu.Item>
         <button type="button" className={menuItemClass} onClick={() => onView(row)}>
           <EyeIcon className="h-4 w-4" />

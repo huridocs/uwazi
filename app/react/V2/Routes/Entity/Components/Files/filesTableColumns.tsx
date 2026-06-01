@@ -33,7 +33,11 @@ const getRowIcon = (row: EntityFileRow) => {
     return <PhotoIcon className="h-5 w-5 shrink-0" />;
   }
 
-  if (mime === 'application/pdf' || row.fileType === 'mainDocument' || row.fileType === 'document') {
+  if (
+    mime === 'application/pdf' ||
+    row.fileType === 'mainDocument' ||
+    row.fileType === 'document'
+  ) {
     return <DocumentTextIcon className="h-5 w-5 shrink-0" />;
   }
 
@@ -56,7 +60,7 @@ const filesTableColumns = ({
       return (
         <button
           type="button"
-          className="flex w-full items-center gap-2 rounded px-2 py-1 text-left"
+          className="flex w-full items-center gap-2 rounded text-left"
           onClick={() => onFocus(current)}
         >
           {getRowIcon(current)}

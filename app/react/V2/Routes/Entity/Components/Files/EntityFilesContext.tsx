@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { useAtomValue } from 'jotai';
-import { useRevalidator } from 'react-router';
+import { useRevalidator, useSearchParams } from 'react-router';
+import { MAIN_TAB_PARAM, SIDE_TAB_PARAM } from '../../urlParams.js';
 import { FileType } from '#shared/types/fileType.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { remove, update, UploadService } from '#V2/api/files/index.js';
@@ -9,7 +10,7 @@ import { localeAtom } from '#V2/atoms/translationsAtoms.js';
 import { buildEntityFileRows } from './buildEntityFileRows.js';
 import { EntityFileRow } from './types.js';
 
-type DrawerTab = 'file' | 'translations';
+type FilesSideTabId = 'file' | 'translations';
 
 type EntityFilesContextValue = {
   entity: Entity;
@@ -17,10 +18,9 @@ type EntityFilesContextValue = {
   supportingRows: EntityFileRow[];
   focusedRow?: EntityFileRow;
   selectedRowIds: string[];
-  drawerTab: DrawerTab;
   isEditing: boolean;
   pendingDeleteRow?: EntityFileRow;
-  setDrawerTab: (tab: DrawerTab) => void;
+  navigateToFilesSideTab: (tab: FilesSideTabId) => void;
   setIsEditing: (editing: boolean) => void;
   setFocusedRowId: (rowId: string) => void;
   setSelectedRowIds: (ids: string[]) => void;
@@ -39,9 +39,9 @@ const EntityFilesProvider = ({ entity, children }: { entity: Entity; children: R
   const settings = useAtomValue(settingsAtom);
   const defaultLanguage = settings?.languages?.find(language => language.default)?.key;
   const { revalidate } = useRevalidator();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedRowIds, setSelectedRowIds] = useState<string[]>([]);
   const [focusedRowId, setFocusedRowId] = useState<string>();
-  const [drawerTab, setDrawerTab] = useState<DrawerTab>('file');
   const [isEditing, setIsEditing] = useState(false);
   const [pendingDeleteRow, setPendingDeleteRow] = useState<EntityFileRow>();
 
@@ -80,15 +80,25 @@ const EntityFilesProvider = ({ entity, children }: { entity: Entity; children: R
     await revalidate();
   }, [pendingDeleteRow, revalidate]);
 
+  const navigateToFilesSideTab = useCallback(
+    (tab: FilesSideTabId) => {
+      const next = new URLSearchParams(searchParams.toString());
+      next.set(MAIN_TAB_PARAM, 'files');
+      next.set(SIDE_TAB_PARAM, tab);
+      setSearchParams(next, { replace: true, preventScrollReset: true });
+    },
+    [searchParams, setSearchParams]
+  );
+
   const uploadTranslation = useCallback(
     async (files: File[]) => {
       if (!files.length) return;
       const service = new UploadService('document', { entity: entity.sharedId });
       await service.upload(files);
       await revalidate();
-      setDrawerTab('translations');
+      navigateToFilesSideTab('translations');
     },
-    [entity.sharedId, revalidate]
+    [entity.sharedId, navigateToFilesSideTab, revalidate]
   );
 
   const value = useMemo(
@@ -98,10 +108,9 @@ const EntityFilesProvider = ({ entity, children }: { entity: Entity; children: R
       supportingRows,
       focusedRow,
       selectedRowIds,
-      drawerTab,
       isEditing,
       pendingDeleteRow,
-      setDrawerTab,
+      navigateToFilesSideTab,
       setIsEditing,
       setFocusedRowId,
       setSelectedRowIds,
@@ -117,9 +126,9 @@ const EntityFilesProvider = ({ entity, children }: { entity: Entity; children: R
       supportingRows,
       focusedRow,
       selectedRowIds,
-      drawerTab,
       isEditing,
       pendingDeleteRow,
+      navigateToFilesSideTab,
       requestDeleteRow,
       closeDeleteModal,
       deleteRow,
