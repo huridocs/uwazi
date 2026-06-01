@@ -1,5 +1,5 @@
 import { EntityReference } from '#V2/formatters/relationships/types.js';
-import { TextHighlight } from '../types';
+import type { TextHighlight } from '../types.js';
 
 type Reference = EntityReference & {
   targetEntity: EntityReference['targetEntity'] & {

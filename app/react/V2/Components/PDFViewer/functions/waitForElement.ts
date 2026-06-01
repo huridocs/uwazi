@@ -18,7 +18,7 @@ const waitForElement = async <T extends Element = Element>(
       return;
     }
 
-    let timer: NodeJS.Timeout;
+    let timer: ReturnType<typeof setTimeout>;
 
     const root = document.body || document.documentElement || document;
 

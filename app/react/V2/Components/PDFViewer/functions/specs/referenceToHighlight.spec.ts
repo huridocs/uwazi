@@ -1,4 +1,4 @@
-import { referenceToHighlight } from '../ReferenceToHighlight';
+import { referenceToHighlight } from '../ReferenceToHighlight.js';
 
 describe('referenceToHighlight', () => {
   it('returns undefined when there are no selection rectangles', () => {
