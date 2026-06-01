@@ -27,13 +27,29 @@ type ReadyProps = Props & {
   fullText: FullTextLoader;
 };
 
-const Schema = z.object({
-  entity: z.string().trim().min(1),
-  status: z.enum(['processing', 'failed', 'ready']),
-  language: (z.string().trim().min(2) as z.ZodType<LanguageISO6391>).optional(),
-  totalPages: z.number().int().min(0).default(0).optional(),
-  generatedToc: z.boolean().default(false).optional(),
-});
+const Schema = z
+  .object({
+    entity: z.string().trim().min(1),
+    status: z.enum(['processing', 'failed', 'ready']),
+    language: (z.string().trim().min(2) as z.ZodType<LanguageISO6391>).optional(),
+    totalPages: z.number().int().min(0).default(0).optional(),
+    generatedToc: z.boolean().default(false).optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.status === 'ready') {
+      if (!data.language || data.language.trim().length < 2) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.too_small,
+          minimum: 2,
+          type: 'string',
+          inclusive: true,
+          exact: false,
+          message: 'String must contain at least 2 character(s)',
+          path: ['language'],
+        });
+      }
+    }
+  });
 
 const IMMUTABLE_PDF_KEYS = ['fullText', 'entity', 'totalPages'] as const satisfies ReadonlyArray<
   keyof Props

@@ -12,6 +12,10 @@ const Schema = z.object({
 export class FileAttachment extends BaseFile<Props> {
   readonly entity: string;
 
+  override get content(): FileContents {
+    return this.props.content;
+  }
+
   protected _type = 'attachment' as const;
 
   constructor(props: Props) {

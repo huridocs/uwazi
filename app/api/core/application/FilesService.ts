@@ -53,7 +53,7 @@ class FilesService {
     await ArrayUtils.sequentialFor(
       files.filter(f => f.hasContent()),
       async file => {
-        await this.deps.fileStorage.storeFile(file as BaseFile & { content: NonNullable<BaseFile['content']> });
+        await this.deps.fileStorage.storeFile(file);
       }
     );
   }
@@ -145,7 +145,9 @@ class FilesService {
 
   async delete(files: BaseFile[]) {
     if (!files.length) return;
-    const pdfDocuments = files.filter((f): f is PDFDocument => f instanceof PDFDocument && f.isReady());
+    const pdfDocuments = files.filter(
+      (f): f is PDFDocument => f instanceof PDFDocument && f.isReady()
+    );
     const thumbnails = await this.deps.filesDS
       .getThumbnailsForProcessedPDFs(pdfDocuments.map(f => f.id))
       .all();
@@ -168,9 +170,6 @@ class FilesService {
   }
 
   async createThumbnail(doc: PDFDocument, language: LanguageISO6391) {
-    if (!doc.content) {
-      throw new Error('PDFDocument has no content to create thumbnail from');
-    }
     const thumbnailResult = await this.deps.pdfService.createThumbnail(doc.content);
     if (thumbnailResult.isError()) {
       return thumbnailResult;
