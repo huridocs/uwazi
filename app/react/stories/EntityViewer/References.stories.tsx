@@ -8,7 +8,13 @@ import { PDF, PDFControls, referenceToHighlight } from '#V2/Components/PDFViewer
 import { ReferencesDisplay } from '#V2/Components/References/index.js';
 import { apiEntity, translations, templates } from '../fixtures/referencesFixtures.js';
 
-const ReferencesDisplayComponent = ({ locale }: { locale: 'en' | 'es' }) => {
+const ReferencesDisplayComponent = ({
+  locale,
+  fileUrl = '/sample.pdf',
+}: {
+  locale: 'en' | 'es';
+  fileUrl?: string;
+}) => {
   const store = createStore();
   store.set(templatesAtom, templates);
   store.set(localeAtom, locale);
@@ -31,7 +37,7 @@ const ReferencesDisplayComponent = ({ locale }: { locale: 'en' | 'es' }) => {
             <div className="flex flex-row gap-4 flex-1 overflow-hidden min-h-0">
               <div className="w-5/6 overflow-y-auto">
                 <PDF
-                  fileUrl="/sample.pdf"
+                  fileUrl={fileUrl}
                   onPdfReady={controls => {
                     documentControls.current = controls;
                   }}
@@ -82,13 +88,14 @@ const meta: Meta<typeof ReferencesDisplayComponent> = {
 type Story = StoryObj<typeof ReferencesDisplayComponent>;
 
 const Primary: Story = {
-  render: args => <ReferencesDisplayComponent locale={args.locale} />,
+  render: args => <ReferencesDisplayComponent locale={args.locale} fileUrl={args.fileUrl} />,
 };
 
 const Basic: Story = {
   ...Primary,
   args: {
     locale: 'en',
+    fileUrl: undefined,
   },
 };
 

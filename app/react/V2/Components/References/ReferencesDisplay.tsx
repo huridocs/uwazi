@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Square3Stack3DIcon, DocumentIcon } from '@heroicons/react/24/outline';
 import { useAtomValue } from 'jotai';
+import throttle from 'lodash/throttle.js';
 import { Translate } from '#app/I18N/index.js';
 import { Entity, FileType } from '#V2/api/entities/types.js';
 import { formatReferences } from '#V2/formatters/index.js';
@@ -62,9 +63,9 @@ const ReferencesDisplay = ({
       return undefined;
     }
 
-    const updateHeight = () => {
+    const updateHeight = throttle(() => {
       setMarkerLayerHeight(markerLayerElement.clientHeight);
-    };
+    }, 1000);
 
     updateHeight();
 
