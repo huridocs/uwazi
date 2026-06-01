@@ -3,7 +3,7 @@ import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiL
 import { createError } from '#api/utils/index.js';
 import { z } from 'zod';
 import { EntityPermissionChecker } from '../domain/entityAccessPolicy/EntityPermissionChecker.js';
-import { ProcessedPDF } from '../domain/files/ProcessedPDF.js';
+import { PDFDocument } from '../domain/files/PDFDocument.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { FilesDataSource } from './contracts/FilesDataSource.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
@@ -42,7 +42,7 @@ class FileDelete extends AbstractUseCase<Input, Output, Deps> {
     await this.transactionManager.run(async () => {
       await this.deps.filesService.delete([file]);
 
-      if (file instanceof ProcessedPDF) {
+      if (file instanceof PDFDocument && file.isReady()) {
         const entity = (await this.deps.entitiesDS.getById(file.entity)).getDataOrThrow();
 
         const allThumbnails = await this.deps.filesDS.getThumbnails([entity.sharedId]).all();

@@ -14,7 +14,7 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { FileContents } from '#api/core/domain/files/FileContents.js';
-import { FileWithContents } from '#api/core/domain/files/FileWithContents.js';
+import { FileWithContent } from '#api/core/application/contracts/FileStorage.js';
 import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
 import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
@@ -40,7 +40,7 @@ const storedFiles: { [k: string]: FileContents[] } = {
 };
 const dispatchedDeletes: string[] = [];
 const fileStorage = TestUtils.mockClass<FileStorage>({
-  async storeFile(file: FileWithContents) {
+  async storeFile(file: FileWithContent) {
     storedFiles[file.type].push(file.content);
   },
 });

@@ -1,5 +1,5 @@
 import { LanguageISO6393 } from '#shared/language/languageISO639_3.js';
-import type { FullText, TableOfContent } from './ProcessedPDF.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 type BaseFileDTO = {
   _id: string;
@@ -10,22 +10,45 @@ type BaseFileDTO = {
   creationDate: number;
 };
 
-export type ProcessingPDFDTO = BaseFileDTO & {
-  type: 'document';
-  status: 'processing' | 'failed';
-  entity: string;
+export type TableOfContent = {
+  selectionRectangles?: {
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+    page?: string;
+  }[];
+  label?: string;
+  indentation?: number;
 };
 
-export type ProcessedPDFDTO = BaseFileDTO & {
-  type: 'document';
-  status: 'ready';
-  entity: string;
-  language: LanguageISO6393;
-  totalPages: number;
-  generatedToc: boolean;
+export type FullText = Record<string, string>;
+
+export type FileUpdateInput = {
+  originalname?: string;
+  language?: LanguageISO6391;
   toc?: TableOfContent[];
-  fullText?: FullText;
+  generatedToc?: boolean;
 };
+
+export type PDFDocumentDTO = BaseFileDTO &
+  (
+    | {
+        type: 'document';
+        status: 'processing' | 'failed';
+        entity: string;
+      }
+    | {
+        type: 'document';
+        status: 'ready';
+        entity: string;
+        language: LanguageISO6393;
+        totalPages: number;
+        generatedToc: boolean;
+        toc?: TableOfContent[];
+        fullText?: FullText;
+      }
+  );
 
 export type FileAttachmentDTO = BaseFileDTO & {
   type: 'attachment';
@@ -49,8 +72,7 @@ export type CustomDTO = BaseFileDTO & {
 };
 
 export type FileDTO =
-  | ProcessingPDFDTO
-  | ProcessedPDFDTO
+  | PDFDocumentDTO
   | FileAttachmentDTO
   | URLAttachmentDTO
   | ThumbnailDTO

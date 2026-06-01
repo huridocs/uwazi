@@ -57,6 +57,7 @@ import {
   userId,
 } from './fixtures.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { MongoSegmentationDataSource } from '#api/segmentation.v2/infrastructure/mongodb/MongoSegmentationDataSource.js';
 import { User } from '#api/users.v2/model/User.js';
 
 const createFixtures = (): DBFixture => ({
@@ -108,6 +109,7 @@ const setUpUseCase = () =>
     });
     const idGenerator = MongoIdHandler;
     const tenantName = tenants.current().name;
+    const segmentationDS = new MongoSegmentationDataSource(connection, mongoTransactionManager);
 
     const entitiesService = EntitiesServiceFactory.default({
       transactionManager: mongoTransactionManager,
@@ -127,6 +129,7 @@ const setUpUseCase = () =>
         idGenerator,
         logger: createMockLogger(),
         tenantName,
+        segmentationDS,
       },
       { tenant: tenants.current(), actor: User.createFrom(permissionsContext.getUserInContext()!) }
     );
