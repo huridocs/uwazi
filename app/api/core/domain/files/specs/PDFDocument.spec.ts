@@ -56,7 +56,7 @@ describe('PDFDocument', () => {
   });
 
   describe('isReady()', () => {
-    it('returns true for status ready', () => {
+    it('returns true when status is ready and all required fields are present', () => {
       const doc = FileBuilder.processedDocument(f.idString('doc'));
       expect(doc.isReady()).toBe(true);
     });
@@ -68,6 +68,26 @@ describe('PDFDocument', () => {
 
     it('returns false for status failed', () => {
       const doc = FileBuilder.document(f.idString('doc'), { status: 'failed' });
+      expect(doc.isReady()).toBe(false);
+    });
+
+    it('returns false when status is ready but language is missing', () => {
+      // bypass superRefine by using processing first, then manually set status
+      // instead, construct directly with a workaround: use Object.assign on a processing doc
+      const doc = FileBuilder.document(f.idString('doc'), { status: 'processing' });
+      Object.assign(doc, { status: 'ready' });
+      expect(doc.isReady()).toBe(false);
+    });
+
+    it('returns false when status is ready but totalPages is missing', () => {
+      const doc = FileBuilder.processedDocument(f.idString('doc'), { totalPages: 5 });
+      Object.assign(doc, { totalPages: undefined });
+      expect(doc.isReady()).toBe(false);
+    });
+
+    it('returns false when status is ready but generatedToc is missing', () => {
+      const doc = FileBuilder.processedDocument(f.idString('doc'));
+      Object.assign(doc, { generatedToc: undefined });
       expect(doc.isReady()).toBe(false);
     });
   });

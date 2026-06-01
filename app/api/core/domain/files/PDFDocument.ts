@@ -32,8 +32,8 @@ const Schema = z
     entity: z.string().trim().min(1),
     status: z.enum(['processing', 'failed', 'ready']),
     language: (z.string().trim().min(2) as z.ZodType<LanguageISO6391>).optional(),
-    totalPages: z.number().int().min(0).default(0).optional(),
-    generatedToc: z.boolean().default(false).optional(),
+    totalPages: z.number().int().min(0).default(0),
+    generatedToc: z.boolean().default(false),
   })
   .superRefine((data, ctx) => {
     if (data.status === 'ready') {
@@ -110,7 +110,12 @@ export class PDFDocument extends BaseFile<Props> {
     totalPages: number;
     generatedToc: boolean;
   } {
-    return this.status === 'ready';
+    return (
+      this.status === 'ready' &&
+      this.language !== undefined &&
+      this.totalPages !== undefined &&
+      this.generatedToc !== undefined
+    );
   }
 
   isProcessing(): this is this & { status: 'processing' | 'failed' } {

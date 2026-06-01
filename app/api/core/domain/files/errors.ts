@@ -11,7 +11,7 @@ export class ProcessingFileFailed extends DomainError {
   readonly file: PDFDocument;
 
   constructor(file: PDFDocument, cause: Error) {
-    super(`Failed PostProcess for file with Id "${file.id}"`, 'file.post_proces_failed', cause);
+    super(`Failed PostProcess for file with Id "${file.id}"`, 'file.post_process_failed', cause);
     this.file = file;
   }
 }

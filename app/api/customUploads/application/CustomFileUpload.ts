@@ -1,6 +1,6 @@
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
-import { FileStorage, FileWithContent } from '#api/core/application/contracts/FileStorage.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
 import { CustomDTO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { ObjectId } from 'mongodb';
@@ -24,7 +24,7 @@ export class CustomFileUpload extends AbstractUseCase<Input, CustomDTO, Deps> {
   async execute({ uploadedFile }: Input): Promise<CustomDTO> {
     const file = uploadedFile.toCustomFile(this.idGenerator.generate());
 
-    await this.deps.fileStorage.storeFile(file as FileWithContent);
+    await this.deps.fileStorage.storeFile(file);
 
     await this.transactionManager.run(async () => {
       await this.deps.filesDS.create(file);
