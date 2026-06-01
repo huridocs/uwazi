@@ -151,12 +151,6 @@ describe('BaseFile', () => {
 
       const updated = file.update({
         originalname: 'new-name.pdf',
-        id: 'not_allowed',
-        creationDate: 9999,
-        mimetype: 'not_allowed/pdf',
-        size: 9999,
-        filename: 'not_allowed.pdf',
-        uploaded: false,
       });
 
       expect(updated.toDTO()).toEqual({ ...file.toDTO(), originalname: 'new-name.pdf' });

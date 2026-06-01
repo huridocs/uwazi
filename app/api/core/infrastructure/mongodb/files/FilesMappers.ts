@@ -2,8 +2,7 @@ import { BaseFile, FileContentLoader } from '#api/core/domain/files/BaseFile.js'
 import { ObjectId } from 'mongodb';
 import { FileAttachment } from '../../../domain/files/FileAttachment.js';
 import { CustomUpload } from '../../../domain/files/CustomUpload.js';
-import { ProcessingPDF } from '../../../domain/files/ProcessingPDF.js';
-import { ProcessedPDF } from '../../../domain/files/ProcessedPDF.js';
+import { PDFDocument } from '../../../domain/files/PDFDocument.js';
 import { Thumbnail } from '../../../domain/files/Thumbnail.js';
 import { URLAttachment } from '../../../domain/files/URLAttachment.js';
 import { LanguageUtils } from '#shared/language/index.js';
@@ -28,29 +27,32 @@ function dboCommonFields(dbo: fileDBO) {
   };
 }
 
-function processedPDFFromDBO(dbo: ProcessedPDFDBO, contentLoader: FileContentLoader) {
-  return new ProcessedPDF({
+function pdfDocumentFromDBO(
+  dbo: ProcessedPDFDBO | ProcessingPDFDBO,
+  contentLoader: FileContentLoader
+) {
+  if (dbo.status === 'ready') {
+    return new PDFDocument({
+      ...dboCommonFields(dbo),
+      content: contentLoader({ type: dbo.type, filename: dbo.filename }),
+      entity: dbo.entity,
+      status: 'ready',
+      language: LanguageUtils.fromISO639_3(dbo.language).ISO639_1,
+      totalPages: dbo.totalPages,
+      fullText:
+        dbo.fullText ||
+        (async () => {
+          throw new Error('not Implemented');
+        }),
+      generatedToc: dbo.generatedToc,
+      toc: dbo.toc,
+    });
+  }
+  return new PDFDocument({
     ...dboCommonFields(dbo),
     content: contentLoader({ type: dbo.type, filename: dbo.filename }),
     entity: dbo.entity,
-    language: LanguageUtils.fromISO639_3(dbo.language).ISO639_1,
-    totalPages: dbo.totalPages,
-    fullText:
-      dbo.fullText ||
-      (async () => {
-        throw new Error('not Implemented');
-      }),
-    generatedToc: dbo.generatedToc,
-    toc: dbo.toc,
-  });
-}
-
-function processingPDFFromDBO(dbo: ProcessingPDFDBO, contentLoader: FileContentLoader) {
-  return new ProcessingPDF({
-    ...dboCommonFields(dbo),
-    content: contentLoader({ type: dbo.type, filename: dbo.filename }),
-    entity: dbo.entity,
-    status: dbo.status,
+    status: dbo.status ?? 'processing',
   });
 }
 
@@ -86,12 +88,8 @@ function customUploadFromDBO(dbo: CustomDBO, contentLoader: FileContentLoader) {
   });
 }
 
-function processedPDFToDBO(file: ProcessedPDF): ProcessedPDFDBO {
-  return { ...file.toDTO(), _id: new ObjectId(file.id) };
-}
-
-function processingPDFToDBO(file: ProcessingPDF): ProcessingPDFDBO {
-  return { ...file.toDTO(), _id: new ObjectId(file.id) };
+function pdfDocumentToDBO(file: PDFDocument): ProcessedPDFDBO | ProcessingPDFDBO {
+  return { ...file.toDTO(), _id: new ObjectId(file.id) } as ProcessedPDFDBO | ProcessingPDFDBO;
 }
 
 function fileAttachmentToDBO(file: FileAttachment): FileAttachmentDBO {
@@ -114,9 +112,7 @@ export const FileMappers = {
   toModel(dbo: fileDBO, { contentLoader }: { contentLoader: FileContentLoader }) {
     switch (dbo.type) {
       case 'document':
-        return dbo.status === 'ready'
-          ? processedPDFFromDBO(dbo, contentLoader)
-          : processingPDFFromDBO(dbo, contentLoader);
+        return pdfDocumentFromDBO(dbo, contentLoader);
       case 'attachment':
         return dbo.url
           ? urlAttachmentFromDBO(dbo)
@@ -131,8 +127,7 @@ export const FileMappers = {
   },
 
   toDBO(file: BaseFile): fileDBO {
-    if (file instanceof ProcessedPDF) return processedPDFToDBO(file);
-    if (file instanceof ProcessingPDF) return processingPDFToDBO(file);
+    if (file instanceof PDFDocument) return pdfDocumentToDBO(file);
     if (file instanceof FileAttachment) return fileAttachmentToDBO(file);
     if (file instanceof URLAttachment) return urlAttachmentToDBO(file);
     if (file instanceof Thumbnail) return thumbnailToDBO(file);

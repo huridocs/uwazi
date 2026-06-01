@@ -1,7 +1,7 @@
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { ProcessingFileFailed } from '#api/core/domain/files/errors.js';
-import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { FileIsNotAPDF } from '../infrastructure/services/PDFService.js';
@@ -15,7 +15,7 @@ type Input = {
   documentId: string;
 };
 
-type Output = ProcessedPDF;
+type Output = PDFDocument;
 
 type Deps = {
   eventBus: EventsBus;
@@ -35,7 +35,7 @@ export class PDFPostProcessJob extends AbstractUseCase<Input, Output, Deps, [boo
         await this.deps.pdfService.extractText(processingPDF.content)
       ).getDataOrThrow();
 
-      const processedPDF = processingPDF.asProcessed({
+      const processedPDF = processingPDF.processed({
         language: pdfInfo.language.key,
         totalPages: pdfInfo.totalPages,
         fullText: pdfInfo.pages,
@@ -70,13 +70,13 @@ export class PDFPostProcessJob extends AbstractUseCase<Input, Output, Deps, [boo
 
       return processedPDF;
     } catch (e) {
+      const failedPDF = processingPDF.failed();
       if (!retriesLeft || e instanceof FileIsNotAPDF) {
         await this.transactionManager.run(async () => {
-          processingPDF.failed();
-          await this.deps.filesDS.update(processingPDF);
+          await this.deps.filesDS.update(failedPDF);
         });
       }
-      throw new ProcessingFileFailed(processingPDF, e);
+      throw new ProcessingFileFailed(failedPDF, e);
     }
   }
 }

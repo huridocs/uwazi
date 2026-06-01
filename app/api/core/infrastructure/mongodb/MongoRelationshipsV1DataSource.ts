@@ -1,4 +1,4 @@
-import { FileWithContents } from '#api/core/domain/files/FileWithContents.js';
+import { BaseFile } from '#api/core/domain/files/BaseFile.js';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import entities from '#api/entities/index.js';
 import { dbSessionContext } from '#api/odm/sessionsContext.js';
@@ -66,7 +66,7 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
     );
   }
 
-  async deleteByFiles(files: FileWithContents[]) {
+  async deleteByFiles(files: BaseFile[]) {
     const session = this.transactionManager.getSession();
     if (session) {
       dbSessionContext.setSession(session);
