@@ -35,6 +35,11 @@ const {
   UPLOADS_FOLDER,
   USER_SESSION_SECRET,
   NEW_HEADER,
+  POSTGRES_HOST,
+  POSTGRES_PORT,
+  POSTGRES_DB,
+  POSTGRES_USER,
+  POSTGRES_PASSWORD,
 } = process.env;
 
 const rootPath = ROOT_PATH || `${__dirname}/../../`;
@@ -173,4 +178,12 @@ export const config = {
   },
   githubToken: process.env.GITHUB_TOKEN || '',
   queueName: QUEUE_NAME || 'uwazi_jobs',
+
+  postgres: {
+    host: POSTGRES_HOST || '127.0.0.1',
+    port: parseInt(POSTGRES_PORT || '', 10) || 5432,
+    database: POSTGRES_DB || 'uwazi_development',
+    user: POSTGRES_USER || 'uwazi',
+    password: POSTGRES_PASSWORD || 'uwazi',
+  },
 };

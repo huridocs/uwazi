@@ -33,6 +33,7 @@ type Tenant = {
     v2EntityPermission?: boolean;
     newHeader?: boolean;
     v2Languages?: boolean;
+    postgresThesauri?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

@@ -24,6 +24,7 @@ import { elasticTesting } from '#api/utils/elastic_testing.js';
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
+import { testingPG } from '#api/utils/testing_pg.js';
 import { User } from '#api/users.v2/model/User.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { ObjectId } from 'mongodb';
@@ -37,6 +38,7 @@ let appContextSetMock: jest.SpyInstance<unknown, [key: string, value: unknown], 
 const testingEnvironment = {
   elasticIndex: '',
   uploadSubPath: '',
+  pgEnabled: false,
   userInContextMockFactory: new UserInContextMockFactory(),
 
   async setUp(fixtures?: DBFixture, elasticIndex?: string | boolean) {
@@ -48,6 +50,11 @@ const testingEnvironment = {
     this.setFakeContext();
     await this.setFixtures(fixtures);
     await this.setElastic(elasticIndex);
+  },
+
+  async setUpPostgres(): Promise<void> {
+    await testingPG.connect();
+    this.pgEnabled = true;
   },
 
   testingFilesPath(fileName: string) {
@@ -238,6 +245,10 @@ const testingEnvironment = {
         console.warn(`Failed to cleanup Elasticsearch index ${this.elasticIndex}:`, error.message);
       }
     }
+    if (this.pgEnabled) {
+      await testingPG.disconnect();
+      this.pgEnabled = false;
+    }
     await testingDB.disconnect();
   },
 
@@ -251,6 +262,18 @@ const testingEnvironment = {
 
     getCollection(collectionName: string) {
       return testingDB.mongodb?.collection(collectionName);
+    },
+  },
+
+  pg: {
+    async getAllFrom<T extends Record<string, unknown> = Record<string, unknown>>(
+      table: string
+    ): Promise<T[]> {
+      return testingPG.getAllFrom<T>(table);
+    },
+
+    get pool() {
+      return testingPG.pool;
     },
   },
 };
