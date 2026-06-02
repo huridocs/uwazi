@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import 'cypress-axe';
-import { clearCookiesAndLogin } from '../helpers/login';
-import { changeLanguage } from '../helpers';
-import { clickOnCreateEntity } from '../helpers/entities';
+import { clearCookiesAndLogin } from '../helpers/login.js';
+import { changeLanguage } from '../helpers/index.js';
+import { clickOnCreateEntity } from '../helpers/entities.js';
 
 describe('Thesauri configuration', () => {
   before(() => {
@@ -27,7 +27,6 @@ describe('Thesauri configuration', () => {
 
   const saveThesaurus = () => {
     cy.contains('button', 'Save').click();
-    cy.contains('Dismiss').click();
     cy.wait('@editThesauri');
   };
 
@@ -160,14 +159,15 @@ describe('Thesauri configuration', () => {
 
     cy.get('select[id="property-type"]').select('Select');
     cy.get('select[name="content"]').select('New Thesaurus');
-
     cy.contains('aside button', 'Add property').click();
+
+    cy.intercept('GET', '/api/templates').as('getUpdatedTemplates');
     cy.contains('Save').click();
-    cy.contains('Dismiss').click();
+    cy.wait('@getUpdatedTemplates');
   });
 
   it('should list the thesauri', () => {
-    cy.contains('span', 'Thesauri').click();
+    cy.contains('a', 'Thesauri').click();
     cy.contains('tr', 'New Thesaurus').contains('País');
   });
 
@@ -203,7 +203,6 @@ describe('Thesauri configuration', () => {
       force: true,
     });
     cy.contains('Thesauri updated.');
-    cy.contains('Dismiss').click();
     // Verify imported items are present
     cy.get('tbody').should('contain.text', 'Imported Colors');
     //click on the group

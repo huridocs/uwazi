@@ -1,15 +1,23 @@
+/* eslint-disable max-statements */
 import request from 'supertest';
 import express, { Application } from 'express';
 import { Server } from 'http';
 import io from 'socket.io-client';
-import { multitenantMiddleware } from 'api/utils/multitenantMiddleware';
-import { tenants, Tenant } from 'api/tenants/tenantContext';
-import { appContextMiddleware } from 'api/utils/appContextMiddleware';
-import { config } from 'api/config';
+import { multitenantMiddleware } from '#api/utils/multitenantMiddleware.js';
+import { tenants, Tenant } from '#api/tenants/tenantContext.js';
+import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
+import { config } from '#api/config.js';
 import waitForExpect from 'wait-for-expect';
+import type { SessionData, Store as SessionStore } from 'express-session';
+import users from '#api/users/users.js';
 
-import { endSocketServer, setupApiSockets } from '../setupSockets';
-import { emitSocketEvent } from '../standaloneEmitSocketEvent';
+import {
+  endSocketServer,
+  setupApiSockets,
+  emitToTenantAdmins,
+  __testUtils,
+} from '../setupSockets.js';
+import { emitSocketEvent } from '../standaloneEmitSocketEvent.js';
 
 const closeServer = async (httpServer: Server): Promise<void> =>
   new Promise(resolve => {
@@ -112,12 +120,12 @@ describe('socket middlewares setup', () => {
   const requestTestRoute = async (
     tenant?: string,
     route: string = '/api/test',
-    session: string = ''
+    sessionId: string = ''
   ) => {
     const req = request(server).get(route);
 
-    if (session) {
-      await req.set('Cookie', `connect.sid=session:${session}`);
+    if (sessionId) {
+      await req.set('Cookie', `connect.sid=session:${sessionId}`);
     }
 
     if (tenant) {
@@ -238,6 +246,95 @@ describe('socket middlewares setup', () => {
           socket2Tenant1: 'data',
           socket3Tenant2: 'data',
           socket4TenantDefault: 'data',
+        });
+      });
+    });
+  });
+
+  describe('tenant admins room', () => {
+    let adminSocketTenant1: SocketIOClient.Socket;
+    let nonAdminSocketTenant1: SocketIOClient.Socket;
+    let adminSocketTenant2: SocketIOClient.Socket;
+
+    let sessionStore: SessionStore;
+
+    beforeAll(async () => {
+      sessionStore = __testUtils.getSessionStore();
+
+      const setSession = async (sid: string, userId: string, tenantName: string) =>
+        new Promise<void>((resolve, reject) => {
+          const session: SessionData = {
+            cookie: {
+              originalMaxAge: null,
+              expires: undefined,
+              secure: false,
+              httpOnly: true,
+              path: '/',
+            },
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            passport: {
+              user: `${userId}///${tenantName}`,
+            } as any,
+          } as any;
+
+          sessionStore.set(sid, session, (err: unknown) => {
+            if (err) {
+              reject(err);
+              return;
+            }
+            resolve();
+          });
+        });
+
+      await Promise.all([
+        setSession('admin-session-tenant1', 'admin-user-tenant1', 'tenant1'),
+        setSession('nonadmin-session-tenant1', 'editor-user-tenant1', 'tenant1'),
+        setSession('admin-session-tenant2', 'admin-user-tenant2', 'tenant2'),
+      ]);
+
+      jest.spyOn(users, 'getById').mockImplementation(async (id: string) => {
+        if (id === 'admin-user-tenant1' || id === 'admin-user-tenant2') {
+          return { _id: id, role: 'admin' } as any;
+        }
+        return { _id: id, role: 'editor' } as any;
+      });
+
+      adminSocketTenant1 = await connectSocket(port, 'tenant1', 'admin-session-tenant1');
+      nonAdminSocketTenant1 = await connectSocket(port, 'tenant1', 'nonadmin-session-tenant1');
+      adminSocketTenant2 = await connectSocket(port, 'tenant2', 'admin-session-tenant2');
+    });
+
+    afterAll(() => {
+      adminSocketTenant1.disconnect();
+      nonAdminSocketTenant1.disconnect();
+      adminSocketTenant2.disconnect();
+      jest.restoreAllMocks();
+    });
+
+    it('should emit only to admin sockets of the target tenant', async () => {
+      const events = {
+        adminTenant1: '',
+        nonAdminTenant1: '',
+        adminTenant2: '',
+      };
+
+      adminSocketTenant1.once('adminEvent', (data: string) => {
+        events.adminTenant1 = data;
+      });
+      nonAdminSocketTenant1.once('adminEvent', (data: string) => {
+        events.nonAdminTenant1 = data;
+      });
+      adminSocketTenant2.once('adminEvent', (data: string) => {
+        events.adminTenant2 = data;
+      });
+
+      emitToTenantAdmins('tenant1', 'adminEvent', 'payload');
+
+      await waitForExpect(() => {
+        expect(events).toEqual({
+          adminTenant1: 'payload',
+          nonAdminTenant1: '',
+          adminTenant2: '',
         });
       });
     });

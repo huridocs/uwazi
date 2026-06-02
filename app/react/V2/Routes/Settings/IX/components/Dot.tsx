@@ -1,21 +1,13 @@
 import React from 'react';
 
 const Dot = ({ color }: { color?: 'red' | 'orange' | 'green' }) => {
-  let colorClass = 'bg-green-400';
-  switch (color) {
-    case 'red':
-      colorClass = 'bg-orange-500';
-      break;
-    case 'green':
-      colorClass = 'bg-green-400';
-      break;
-    case 'orange':
-      colorClass = 'bg-orange-300';
-      break;
-    default:
-      colorClass = 'bg-green-400';
-  }
-  return <div className={`block w-3 h-3 ${colorClass} rounded-xl`}></div>;
+  const palette: Record<string, string> = {
+    red: 'bg-error-500',
+    orange: 'bg-alert-500',
+    green: 'bg-success-500',
+  };
+  const colorClass = palette[color || 'green'] || palette.green;
+  return <div className={`block w-3 h-3 ${colorClass} rounded-xl`} aria-hidden />;
 };
 
 export { Dot };

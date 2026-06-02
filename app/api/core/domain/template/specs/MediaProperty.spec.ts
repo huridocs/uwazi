@@ -1,6 +1,6 @@
-import { PropertyTypeInvalidTypeError } from '../errors';
-import { MediaProperty } from '../MediaProperty';
-import { PropertyTypeEnum } from '../PropertyType';
+import { PropertyTypeInvalidTypeError } from '../errors.js';
+import { MediaProperty } from '../MediaProperty.js';
+import { PropertyTypeEnum } from '../PropertyType.js';
 
 describe('MediaProperty', () => {
   it('should set defaults values if not provided', () => {
@@ -42,6 +42,7 @@ describe('MediaProperty', () => {
           ],
         })
       ).toEqual({
+        isTranslatable: true,
         name: media.name,
         type: media.type,
         value: [
@@ -61,6 +62,7 @@ describe('MediaProperty', () => {
           ],
         })
       ).toEqual({
+        isTranslatable: true,
         name: media.name,
         type: media.type,
         value: [
@@ -86,7 +88,12 @@ describe('MediaProperty', () => {
 
       const assignment = media.createPropertyAssignment({ value: [] });
 
-      expect(assignment).toEqual({ name: media.name, type: media.type, value: [] });
+      expect(assignment).toEqual({
+        name: media.name,
+        type: media.type,
+        isTranslatable: true,
+        value: [],
+      });
     });
 
     it('should throw if more than one value is provided', () => {

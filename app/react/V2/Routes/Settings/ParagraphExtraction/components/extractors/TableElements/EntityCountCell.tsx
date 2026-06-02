@@ -1,7 +1,7 @@
 import React from 'react';
 import { CellContext } from '@tanstack/react-table';
-import { PXTable } from '../../../types';
-import { generateDisplayPill } from '../../../utils/generateDisplayPill';
+import { PXTable } from '../../../types.js';
+import { generateDisplayPill } from '../../../utils/generateDisplayPill.js';
 
 const DisplayPill = generateDisplayPill({
   label: 'New',
@@ -14,7 +14,7 @@ const EntityCountCell = ({ cell }: CellContext<PXTable, PXTable['statusCount']>)
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sm font-normal text-gray-500">{values.total}</span>
+      <span className="text-sm font-normal text-ink-secondary">{values.total}</span>
       {Boolean(newCount) && <DisplayPill count={newCount} />}
     </div>
   );

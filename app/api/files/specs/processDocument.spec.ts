@@ -1,24 +1,34 @@
-import testingDB from 'api/utils/testing_db';
+// eslint-disable-next-line node/no-restricted-import
+import { writeFile } from 'fs/promises';
+import entitiesModel from '#api/entities/entitiesModel.js';
+import { search } from '#api/search/search.js';
 import {
   convertToPDFService,
   MimeTypeNotSupportedForConversion,
-} from 'api/services/convertToPDF/convertToPdfService';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-// eslint-disable-next-line node/no-restricted-import
-import { writeFile } from 'fs/promises';
-import { files, UpdateFileError } from '../files';
-import { attachmentsPath, setupTestUploadedPaths } from '../filesystem';
-import { processDocument } from '../processDocument';
+} from '#api/services/convertToPDF/convertToPdfService.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import testingDB from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { files, UpdateFileError } from '../files.js';
+import { attachmentsPath, setupTestUploadedPaths } from '../filesystem.js';
+import { PDF } from '../PDF.js';
+import { convertPDF, processDocument } from '../processDocument.js';
+
+const f = getFixturesFactory();
 
 describe('processDocument', () => {
   beforeEach(async () => {
     jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
+    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     await testingEnvironment.setUp({});
     await setupTestUploadedPaths();
     await writeFile(attachmentsPath('test.docx'), 'data');
   });
 
-  afterAll(async () => testingEnvironment.tearDown());
+  afterAll(async () => {
+    jest.resetAllMocks();
+    await testingEnvironment.tearDown();
+  });
 
   describe('process non pdf document', () => {
     it('should go through the normal pdf flow (when feature is not active)', async () => {
@@ -93,5 +103,74 @@ describe('processDocument', () => {
 
     expect(file).toBeUndefined();
     expect(thumbnail).toBeUndefined();
+  });
+
+  describe('convertPDF - entity preview', () => {
+    const sharedId = 'previewEntity';
+
+    beforeEach(async () => {
+      await testingEnvironment.setUp({
+        settings: [
+          {
+            languages: [
+              { default: true, key: 'en', label: 'English' },
+              { key: 'es', label: 'Spanish' },
+            ],
+          },
+        ],
+        templates: [f.template('t1')],
+        entities: [
+          f.entity(sharedId, 't1', {}, { language: 'en' }),
+          f.entity(sharedId, 't1', {}, { language: 'es' }),
+        ],
+      });
+      await setupTestUploadedPaths();
+    });
+
+    it('should set preview on all entity language rows after thumbnail creation', async () => {
+      const thumbnailFilename = 'preview-thumb.jpg';
+
+      jest.spyOn(PDF.prototype, 'convert').mockResolvedValue({
+        language: 'eng', // ISO639-3 for English
+        fullText: {},
+        totalPages: 1,
+        generatedToc: false,
+      } as any);
+
+      jest.spyOn(PDF.prototype, 'createThumbnail').mockResolvedValue({
+        filename: thumbnailFilename,
+        size: 1024,
+      } as any);
+
+      await testingEnvironment.runWithContext(async () => {
+        const upload = await files.save({
+          entity: sharedId,
+          type: 'document',
+          status: 'processing',
+          filename: 'doc.pdf',
+          originalname: 'doc.pdf',
+          mimetype: 'application/pdf',
+        });
+
+        await new Promise<void>((resolve, reject) => {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          convertPDF(
+            upload as any,
+            sharedId,
+            { filename: 'doc.pdf', destination: attachmentsPath('doc.pdf') },
+            false,
+            () => resolve(),
+            e => reject(e)
+          );
+        });
+      });
+
+      const entityRows = await entitiesModel.get({ sharedId });
+      const en = entityRows.find(e => e.language === 'en');
+      const es = entityRows.find(e => e.language === 'es');
+
+      expect(en?.preview).toBe(thumbnailFilename);
+      expect(es?.preview).toBe(thumbnailFilename);
+    });
   });
 });

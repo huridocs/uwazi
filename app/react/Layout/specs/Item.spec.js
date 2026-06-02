@@ -1,17 +1,17 @@
-import { fromJS as Immutable } from 'immutable';
+import Immutable from 'immutable';
 import React from 'react';
 import { shallow } from 'enzyme';
-import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
-import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
-import { FavoriteBanner } from 'app/Favorites';
-import { Translate } from 'app/I18N';
-import { FormatMetadata } from '../../Metadata';
-import { Item, mapStateToProps } from '../Item';
-import { RowList, ItemFooter } from '../Lists';
-import DocumentLanguage from '../DocumentLanguage';
-import * as Icon from '../Icon';
-import TemplateLabel from '../TemplateLabel';
-import ItemSnippet from '../ItemSnippet';
+import { prioritySortingCriteria } from '#app/utils/prioritySortingCriteria.js';
+import { FeatureToggle } from '#app/components/Elements/FeatureToggle.js';
+import { FavoriteBanner } from '#app/Favorites/index.js';
+import { Translate } from '#app/I18N/index.js';
+import { FormatMetadata } from '../../Metadata.js';
+import { ItemView as Item, mapStateToProps } from '../Item.js';
+import { RowList, ItemFooter } from '../Lists.js';
+import { DocumentLanguage } from '../DocumentLanguage.js';
+import { Icon } from '../Icon.js';
+import { TemplateLabel } from '../TemplateLabel.js';
+import { ItemSnippet } from '../ItemSnippet.js';
 
 describe('Item', () => {
   let component;
@@ -19,7 +19,7 @@ describe('Item', () => {
 
   beforeEach(() => {
     props = {
-      doc: Immutable({
+      doc: Immutable.fromJS({
         type: 'entity',
         icon: { _id: 'icon', type: 'Icons' },
         title: 'doc title',
@@ -36,8 +36,8 @@ describe('Item', () => {
       onMouseLeave: jasmine.createSpy('onMouseLeave'),
       additionalIcon: <div>additionalIcon</div>,
       buttons: <div>Buttons</div>,
-      templates: Immutable([]),
-      thesauris: Immutable([]),
+      templates: Immutable.fromJS([]),
+      thesauris: Immutable.fromJS([]),
     };
   });
 
@@ -102,7 +102,7 @@ describe('Item', () => {
     render();
     expect(component.find('.item-name').text()).toContain('additionalIcon');
     expect(component.find('.item-name').text()).toContain('doc title');
-    expect(component.find('.item-name').find(Icon.default).props().data).toEqual({
+    expect(component.find('.item-name').find(Icon).props().data).toEqual({
       _id: 'icon',
       type: 'Icons',
     });
@@ -148,7 +148,7 @@ describe('Item', () => {
 
   describe('when doc have no snippets', () => {
     it('should not render snippet secction when undefined', () => {
-      props.doc = Immutable({
+      props.doc = Immutable.fromJS({
         type: 'entity',
         icon: { _id: 'icon', type: 'Icons' },
         title: 'doc title',
@@ -160,7 +160,7 @@ describe('Item', () => {
       expect(component.find('.item-snippet').length).toBe(0);
     });
     it('should not render snippet secction when empty', () => {
-      props.doc = Immutable({
+      props.doc = Immutable.fromJS({
         type: 'entity',
         icon: { _id: 'icon', type: 'Icons' },
         title: 'doc title',
@@ -176,7 +176,7 @@ describe('Item', () => {
 
   describe('when doc have snippets', () => {
     it('should render ItemSnippet including doc, snippets and onSnippetClick props', () => {
-      props.doc = Immutable({
+      props.doc = Immutable.fromJS({
         type: 'entity',
         icon: { _id: 'icon', type: 'Icons' },
         title: 'doc title',

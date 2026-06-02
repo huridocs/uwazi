@@ -1,8 +1,11 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useRef, useState } from 'react';
-import ReactPlayer, { ReactPlayerProps } from 'react-player';
+import ReactPlayerModule, { ReactPlayerProps } from 'react-player';
+import { resolveDefaultExport } from '#shared/resolveDefaultExport.js';
+
+const ReactPlayer = resolveDefaultExport(ReactPlayerModule);
 import { PlayIcon } from '@heroicons/react/20/solid';
-import { Translate } from 'app/I18N';
+import { Translate } from '#app/I18N/index.js';
 
 type MediaType = 'embedded' | 'internal' | 'invalid';
 
@@ -12,12 +15,12 @@ interface MediaPlayerProps extends ReactPlayerProps {
     url?: string;
     fileName?: string;
   };
-  playerRef?: React.RefObject<ReactPlayer>;
+  playerRef?: React.RefObject<React.ComponentRef<typeof ReactPlayer>>;
   className?: string;
 }
 
 const verifyUrl = (url: string): MediaType => {
-  if (!ReactPlayer.canPlay(url)) {
+  if (ReactPlayer.canPlay && !ReactPlayer.canPlay(url)) {
     return 'invalid';
   }
 
@@ -42,7 +45,7 @@ const ThumbnailOverlay = ({ thumbnail }: { thumbnail?: MediaPlayerProps['thumbna
   return (
     <div className="relative w-full h-full" style={overlayBackgroundStyle}>
       <p
-        className={`overflow-hidden p-4 font-normal text-left overflow-ellipsis whitespace-nowrap opacity-1 ${mediaTitleStyle}`}
+        className={`overflow-hidden p-4 font-normal text-left text-ellipsis whitespace-nowrap opacity-1 ${mediaTitleStyle}`}
       >
         {thumbnail?.fileName}
       </p>
@@ -85,7 +88,7 @@ const MediaPlayer = ({
       ref={containerRef}
     >
       {mediaType === 'invalid' && (
-        <div className="flex absolute top-0 left-0 justify-center items-center p-4 w-full h-full bg-gray-50 rounded border">
+        <div className="flex absolute top-0 left-0 justify-center items-center p-4 w-full h-full bg-gray-50 rounded-sm border">
           <p className="text-center">
             <Translate>This file type is not supported on media fields</Translate>
           </p>

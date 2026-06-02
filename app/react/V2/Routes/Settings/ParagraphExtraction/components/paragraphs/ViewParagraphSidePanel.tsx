@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router';
-import { Translate } from 'app/I18N';
-import { Button } from 'app/V2/Components/UI';
-import { Sidepanel } from 'app/V2/Components/UI/Sidepanel';
-import { TablePXEntityParagraphRow } from 'app/V2/shared/ParagraphExtractionTypes';
-import { ViewParagraph } from './ViewParagraph';
+import { Translate } from '#app/I18N/index.js';
+import { Button } from '#app/V2/Components/UI/index.js';
+import { Sidepanel } from '#app/V2/Components/UI/Sidepanel.js';
+import { TablePXEntityParagraphRow } from '#app/V2/shared/ParagraphExtractionTypes.js';
+import { ViewParagraph } from './ViewParagraph.js';
 
 type ViewParagraphSidePanelProps = {
   isSidePanelOpen: boolean;
@@ -24,12 +24,12 @@ const ViewParagraphSidePanel = ({
       setIsSidePanelOpen(false);
     }}
     title={
-      <span className="text-base font-semibold text-gray-500 leading-6 uppercase">
+      <span className="text-base font-semibold uppercase leading-6 text-ink-secondary">
         <Translate>Entity</Translate>
       </span>
     }
   >
-    <Sidepanel.Body className="flex-grow overflow-y-auto">
+    <Sidepanel.Body className="grow overflow-y-auto">
       {paragraphOnView && <ViewParagraph paragraphData={paragraphOnView} />}
     </Sidepanel.Body>
     <Sidepanel.Footer className="px-4 py-3 border-t">
@@ -38,7 +38,7 @@ const ViewParagraphSidePanel = ({
           to={`/${paragraphOnView?.language}/entity/${paragraphOnView?.sharedId}`}
           target="_blank"
         >
-          <Button size="small" styling="outline">
+          <Button size="small" variant="secondary">
             <Translate>View entity</Translate>
           </Button>
         </Link>

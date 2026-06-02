@@ -1,9 +1,16 @@
 {
   "workerIdleMemoryLimit": 0.2,
   "displayName": "Server",
-  "testMatch": ["**/app/api/**/specs/*spec.(j|t)s?(x)", "**/app/shared/**/specs/*spec.(j|t)s?(x)"],
+  "testMatch": [
+    "**/app/api/**/specs/*spec.(j|t)s?(x)",
+    "**/app/shared/**/specs/*spec.(j|t)s?(x)",
+    "**/app/specs/*spec.(j|t)s?(x)"
+  ],
   "testEnvironment": "node",
-  "setupFilesAfterEnv": ["<rootDir>/setUpJestServer.js", "<rootDir>/api/utils/jestCustomMatchers.ts"],
+  "setupFilesAfterEnv": [
+    "<rootDir>/setUpJestServer.js",
+    "<rootDir>/api/utils/jestCustomMatchers.ts"
+  ],
   "snapshotFormat": {
     "escapeString": true,
     "printBasicPrototype": true
@@ -11,12 +18,19 @@
   "fakeTimers": {
     "legacyFakeTimers": true
   },
+  "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
   "transform": {
-    "\\.[jt]sx?$": ["babel-jest", { "rootMode": "upward" }]
+    "\\.[jt]sx?$": ["babel-jest", { "rootMode": "upward" }],
+    "^.*/setUpJestServer\\.js$": ["babel-jest", { "rootMode": "upward" }]
   },
   "moduleNameMapper": {
+    "^#api/(.*)\\.js$": "<rootDir>/api/$1",
+    "^#api/(.*)": "<rootDir>/api/$1",
+    "^#shared/(.*)\\.js$": "<rootDir>/shared/$1",
+    "^#shared/(.*)": "<rootDir>/shared/$1",
     "^api/(.*)": "<rootDir>/api/$1",
     "^shared/(.*)": "<rootDir>/shared/$1",
-    "^uuid$": "<rootDir>/../node_modules/uuid/dist/index.js"
+    "^app/(.*)\\.js$": "<rootDir>/$1",
+    "^app/(.*)": "<rootDir>/$1"
   }
 }

@@ -1,10 +1,10 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
-import { t, Translate } from 'app/I18N';
-import { Button, Pill } from 'V2/Components/UI';
-import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes';
-import { ThesauriRow } from './ThesauriTable';
+import { t, Translate } from '#app/I18N/index.js';
+import { Button, Pill } from '#V2/Components/UI/index.js';
+import { ClientThesaurus, ClientThesaurusValue } from '#app/apiResponseTypes.js';
+import { ThesauriRow } from './ThesauriTable.js';
 
 const TemplateHeader = () => <Translate>Templates</Translate>;
 
@@ -18,14 +18,14 @@ const ThesaurusLabel = ({ cell }: any) => {
   const hidden = translated === cell.row.original.name;
   return (
     <div className="flex items-center">
-      <span className="text-indigo-700">{cell.row.original.name}</span>
+      <span className="text-ink">{cell.row.original.name}</span>
       {hidden && (
-        <div className="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0">
+        <div className="has-[span:not(.active)]:hidden ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 border-(--color-theme-border-default)">
           <Translate context={cell.row.original._id}>{cell.row.original.name}</Translate>
         </div>
       )}
       {!hidden && (
-        <div className="h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0 ">
+        <div className="ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 border-(--color-theme-border-default)">
           <Translate context={cell.row.original._id}>{cell.row.original.name}</Translate>
         </div>
       )}
@@ -42,17 +42,17 @@ const ThesaurusValueLabel = ({ getValue, cell }: CellContext<ThesaurusRow, strin
   const hidden = translated === label;
   return (
     <div className="flex items-center gap-2">
-      <span className="text-indigo-700">{label}</span>
+      <span className="text-ink">{label}</span>
       {thesaurus !== undefined && hidden && (
-        <div className="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0">
-          <Translate context={thesaurus._id} className="text-gray-700 ">
+        <div className="has-[span:not(.active)]:hidden ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 border-(--color-theme-border-default)">
+          <Translate context={thesaurus._id} className="text-ink-secondary">
             {label}
           </Translate>
         </div>
       )}
       {thesaurus !== undefined && !hidden && (
-        <div className="h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0">
-          <Translate context={thesaurus._id} className="text-gray-700 ">
+        <div className="ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 border-(--color-theme-border-default)">
+          <Translate context={thesaurus._id} className="text-ink-secondary">
             {label}
           </Translate>
         </div>
@@ -78,7 +78,7 @@ const EditButton = ({
   column,
 }: CellContext<ThesauriRow, string> | CellContext<ThesaurusRow, string>) => (
   <Button
-    styling="light"
+    variant="ghost"
     onClick={() => column.columnDef.meta?.action?.(cell.row)}
     className="leading-4"
   >

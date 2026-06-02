@@ -2,16 +2,15 @@
 import React from 'react';
 import { useNavigate, useRevalidator } from 'react-router';
 import { SubmitHandler, UseFormReturn } from 'react-hook-form';
-import { useSetAtom } from 'jotai';
 import { Row } from '@tanstack/react-table';
-import { Translate } from 'app/I18N';
-import { ClientThesaurus } from 'app/apiResponseTypes';
-import * as thesauriAPI from 'V2/api/thesauri';
-import { notificationAtom } from 'app/V2/atoms';
-import { Table } from 'V2/Components/UI';
-import { InputField } from 'V2/Components/Forms';
-import { addSelection, sanitizeThesaurusValues } from './helpers';
-import { columnsThesaurus, ThesaurusRow } from './components/TableComponents';
+import { t } from '#app/I18N/index.js';
+import { ClientThesaurus } from '#app/apiResponseTypes.js';
+import * as thesauriAPI from '#V2/api/thesauri/index.js';
+import { Table } from '#V2/Components/UI/index.js';
+import { InputField } from '#V2/Components/Forms/index.js';
+import { addSelection, sanitizeThesaurusValues } from './helpers.js';
+import { columnsThesaurus, ThesaurusRow } from './components/TableComponents.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 interface ThesaurusFormProps {
   thesaurus: ClientThesaurus;
@@ -39,7 +38,7 @@ const ThesaurusForm = ({
 
   const navigate = useNavigate();
   const revalidator = useRevalidator();
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
 
   const handleRevalidate = async (savedThesaurus: ClientThesaurus) => {
     if (!thesaurus?._id) {
@@ -53,14 +52,12 @@ const ThesaurusForm = ({
     const thesaurusToUpdate = { ...data, values: sanitizeThesaurusValues(thesaurusValues) };
     const savedThesaurus = await thesauriAPI.save(thesaurusToUpdate);
     setValue('_id', savedThesaurus._id);
-    setNotifications({
-      type: 'success',
-      text: thesaurus ? (
-        <Translate>Thesauri updated.</Translate>
-      ) : (
-        <Translate>Thesauri added.</Translate>
-      ),
-    });
+    notify(
+      'success',
+      thesaurus
+        ? t('System', 'Thesauri updated.', null, false)
+        : t('System', 'Thesauri added.', null, false)
+    );
     await handleRevalidate(savedThesaurus);
   };
 
@@ -68,16 +65,13 @@ const ThesaurusForm = ({
     try {
       await saveThesaurus(data);
     } catch (e) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>Error updating thesauri.</Translate>,
-      });
+      notify('error', t('System', 'Error updating thesauri.', null, false));
     }
   };
 
   return (
     <form onSubmit={handleSubmit(formSubmit)} id="edit-thesaurus">
-      <div data-testid="thesauri" className="border rounded-md shadow-sm border-gray-50">
+      <div data-testid="thesauri" className="border rounded-md shadow-md border-gray-50">
         <Table
           data={thesaurusValues}
           columns={columnsThesaurus({ edit }, thesaurus)}
@@ -87,9 +81,9 @@ const ThesaurusForm = ({
             <InputField
               clearFieldAction={() => {}}
               id="thesauri-name"
-              placeholder="Thesauri name"
+              placeholder={t('System', 'Thesauri name', null, false)}
               hasErrors={!!errors.name}
-              className="flex-grow"
+              className="grow"
               {...register('name', { required: true })}
             />
           }

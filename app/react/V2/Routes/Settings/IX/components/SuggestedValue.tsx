@@ -1,14 +1,15 @@
 import React from 'react';
 import { useParams } from 'react-router';
 import { useAtomValue } from 'jotai';
-import { get, isArray } from 'lodash';
-import { ClientTemplateSchema } from 'app/istore';
-import { Translate } from 'app/I18N';
-import { secondsToDate } from 'V2/shared/dateHelpers';
-import { Truncate } from 'V2/Components/UI';
-import { thesauriAtom } from 'V2/atoms';
-import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes';
-import { EntitySuggestion } from '../types';
+import get from 'lodash/get.js';
+import isArray from 'lodash/isArray.js';
+import { ClientTemplateSchema } from '#app/istore.js';
+import { Translate } from '#app/I18N/index.js';
+import { secondsToDate } from '#V2/shared/dateHelpers.js';
+import { Truncate } from '#V2/Components/UI/index.js';
+import { thesauriAtom } from '#V2/atoms/index.js';
+import { ClientThesaurus, ClientThesaurusValue } from '#app/apiResponseTypes.js';
+import { EntitySuggestion } from '../types.js';
 
 // eslint-disable-next-line max-statements
 const SuggestedValue = ({
@@ -23,17 +24,15 @@ const SuggestedValue = ({
   const locale = useParams().lang;
   const thesauris = useAtomValue(thesauriAtom);
 
-  let colorClass = '';
-  if (!suggestion || suggestion.suggestedValue === '') {
-    colorClass = 'text-orange-600';
-  }
+  const mismatchColor = 'text-alert-800';
+  const matchColor = 'text-success-600';
+
+  let colorClass = mismatchColor;
   if (
     value === suggestion.suggestedValue ||
     (get(value, 'id') !== undefined && get(value, 'id') === get(suggestion.suggestedValue, 'id'))
   ) {
-    colorClass = 'text-green-600';
-  } else {
-    colorClass = 'text-orange-600';
+    colorClass = matchColor;
   }
 
   const property = templateProperties.find(prop => prop.name === suggestion.propertyName);

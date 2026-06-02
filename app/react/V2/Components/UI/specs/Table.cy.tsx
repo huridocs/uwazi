@@ -1,11 +1,10 @@
-/* eslint-disable max-statements */
 import React from 'react';
 import 'cypress-axe';
-import { mount } from '@cypress/react18';
+import { mount } from 'cypress/react';
 import { composeStories } from '@storybook/react';
-import { map } from 'lodash';
-import * as stories from 'app/stories/Table.stories';
-import { tableWithDisabled } from '../Table/specs/fixtures';
+import map from 'lodash/map.js';
+import * as stories from '#app/stories/Table.stories.js';
+import { tableWithDisabled } from '../Table/specs/fixtures.js';
 
 const { Basic, Nested, Custom, BasicWithDisabledDnD, NestedWithDisabledDnD } =
   composeStories(stories);
@@ -52,7 +51,7 @@ describe('Table', () => {
       cy.contains('th', 'Description').should(
         'have.attr',
         'class',
-        'p-4 text-sm text-gray-500 uppercase border-b bg-blue-700 text-white'
+        'border-b p-4 text-sm uppercase bg-blue-700 text-white'
       );
       cy.contains('td', 'Entity 2').should(
         'have.attr',
@@ -64,7 +63,7 @@ describe('Table', () => {
         'class',
         'relative px-4 py-2 bg-gray-100 text-red-700 '
       );
-      cy.get('div[class="text-white bg-orange-500"]').should('have.length', 5);
+      cy.get('div[class="text-white bg-alert-500"]').should('have.length', 5);
       cy.get('button').should('have.length', 5);
     });
   });

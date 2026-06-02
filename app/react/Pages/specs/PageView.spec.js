@@ -2,18 +2,29 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import RouteHandler from 'app/App/RouteHandler';
+import { RouteHandler } from '#app/App/RouteHandler.js';
 import { shallow } from 'enzyme';
-import { actions } from 'app/BasicReducer';
-import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
-import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
-import { PageViewer } from 'app/Pages/components/PageViewer';
-import { RequestParams } from 'app/utils/RequestParams';
 
-import { ErrorFallback } from 'app/V2/Components/ErrorHandling';
-import { renderConnectedMount } from 'app/utils/test/renderConnected';
-import PageView from '../PageView';
-import * as assetsUtils from '../utils/getPageAssets';
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
+  useLocation: () => ({}),
+  useNavigate: () => () => {},
+  useParams: () => ({}),
+  useMatches: () => [],
+  useSearchParams: () => [new Map(), () => {}],
+  useOutlet: () => null,
+}));
+import { actions } from '#app/BasicReducer/index.js';
+import { ViewMetadataPanel } from '#app/Library/components/ViewMetadataPanel.js';
+import { SelectMultiplePanelContainer } from '#app/Library/containers/SelectMultiplePanelContainer.js';
+import { PageViewer } from '#app/Pages/components/PageViewer.js';
+import * as sidePanelUtils from '#app/Pages/utils/openEntitySidePanel.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
+
+import { ErrorFallback } from '#app/V2/Components/ErrorHandling.js';
+import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
+import { PageView } from '../PageView.js';
+import * as assetsUtils from '../utils/getPageAssets.js';
 
 describe('PageView', () => {
   let component;
@@ -24,7 +35,7 @@ describe('PageView', () => {
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
     context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
-    component = shallow(<PageView />, { context });
+    component = shallow(<PageView />, { context }).dive();
     instance = component.instance();
     assetsUtilsSpy = spyOn(assetsUtils, 'getPageAssets').and.returnValue(
       Promise.resolve({
@@ -108,6 +119,12 @@ describe('PageView', () => {
   describe('dataset functions', () => {
     it('should expose a function to update page datasets', () => {
       expect(window.updatePageDatasets).not.toBeUndefined();
+    });
+
+    it('should expose a function to open entity side panel', () => {
+      spyOn(sidePanelUtils, 'openEntitySidePanel');
+      instance.componentDidMount();
+      expect(window.openEntitySidePanel).toBe(sidePanelUtils.openEntitySidePanel);
     });
   });
 });

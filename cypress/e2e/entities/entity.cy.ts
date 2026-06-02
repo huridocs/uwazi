@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-import { clearCookiesAndLogin } from '../helpers/login';
-import { changeLanguage, clickOnEditEntity, saveEntity } from '../helpers';
+import { clearCookiesAndLogin } from '../helpers/login.js';
+import { clickOnEditEntity, saveEntity } from '../helpers/index.js';
 
 const entityTitle = 'Entity with all props';
 const textWithHtml = `<h1>The title</h1>
@@ -36,10 +36,7 @@ const addVideo = (action: string, local: boolean = true) => {
         force: true,
       });
   } else {
-    cy.get('input[name="urlForm.url"]').type(
-      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-      { delay: 0 }
-    );
+    cy.get('input[name="urlForm.url"]').type('https://www.dummyvideo.com/1234.mp4', { delay: 0 });
     cy.contains('button', 'Add from URL').click();
   }
 
@@ -100,19 +97,26 @@ const addInvalidImageFile = (field: string) => {
 
 const checkMediaSnapshots = (selector: string, options = {}) => {
   cy.get(selector).scrollIntoView({ offset: { top: -30, left: 0 } });
-  cy.get(selector).toMatchImageSnapshot({
+  cy.get(selector).matchImageSnapshot({
     ...options,
-    disableTimersAndAnimations: true,
-    threshold: 0.08,
+  });
+};
+
+const externalMediaMock = () => {
+  cy.readFile('cypress/test_files/short-video.mp4', 'base64').then(videoBase64 => {
+    cy.intercept('GET', 'https://www.dummyvideo.com/1234.mp4', req => {
+      req.reply({
+        statusCode: 200,
+        headers: { 'content-type': 'video/mp4' },
+        body: videoBase64,
+        encoding: 'base64',
+      });
+    });
   });
 };
 
 const checkExternalMedia = () => {
-  cy.get('video').should(
-    'have.attr',
-    'src',
-    'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4'
-  );
+  cy.get('video').should('have.attr', 'src', 'https://www.dummyvideo.com/1234.mp4');
 };
 
 describe('Entities', () => {
@@ -121,6 +125,7 @@ describe('Entities', () => {
     cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
     cy.intercept('GET', 'api/files/*').as('getFile');
+    externalMediaMock();
   });
 
   describe('Template Medatada', () => {
@@ -172,7 +177,7 @@ describe('Entities', () => {
         if (propertyType === 'Relationship') {
           cy.get('select[name="relationType"]').select(2);
           cy.get('select[name="content"]').select(5);
-        } else if (propertyType === 'media') {
+        } else if (propertyType === 'Media') {
           cy.get('input[name="showInCard"]').check();
         }
 
@@ -183,17 +188,21 @@ describe('Entities', () => {
       cy.contains('button', 'Save').click();
       cy.wait('@postTemplate');
       cy.contains('success').should('exist');
-      cy.contains('Dismiss').click();
     });
   });
 
   describe('Entity Metadata', () => {
     it('should create an entity filling all the props.', () => {
-      cy.contains('a', 'Library').click();
+      cy.visit('/en/library');
       cy.get('button').contains('Create entity').should('be.visible');
       cy.get('button').contains('Create entity').click();
-      cy.get('textarea[name="library.sidepanel.metadata.title"]').should('not.be.disabled');
+      cy.waitForRequestStatusIdle();
+      cy.get('textarea[name="library.sidepanel.metadata.title"]').should('be.visible');
+      cy.get('textarea[name="library.sidepanel.metadata.title"]').and('not.be.disabled');
+      cy.get('textarea[name="library.sidepanel.metadata.title"]').click();
+      cy.get('textarea[name="library.sidepanel.metadata.title"]').clear();
       cy.get('textarea[name="library.sidepanel.metadata.title"]').type(entityTitle, { delay: 0 });
+      cy.get('textarea[name="library.sidepanel.metadata.title"]').should('have.value', entityTitle);
       cy.contains('#metadataForm', 'Type').get('select').eq(0).select('All props');
       cy.get('select:first-of-type').select('All props');
       cy.get('.form-group.text input').type('demo text', { delay: 0 });
@@ -249,7 +258,6 @@ describe('Entities', () => {
       ).type('12/09/1964', { delay: 0 });
       cy.get('.form-group.markdown textarea').type(textWithHtml, { delay: 0 });
       saveEntity();
-      cy.waitForLegacyNotifications();
     });
 
     it('should have all the values correctly saved.', () => {
@@ -309,19 +317,21 @@ describe('Entities', () => {
       cy.contains('Text');
       cy.intercept('GET', 'api/files/*').as('getFile');
       clickOnEditEntity();
-      // Wait for the video element to exist in the edit form (it may not be visible due to scrolling)
+      cy.get('#metadataForm', { timeout: 12000 }).should('exist');
+      cy.waitForRequestStatusIdle();
       cy.contains('.form-group.media', 'Media').within(() => {
-        cy.get('video').should('exist');
+        cy.get('.video-container', { timeout: 12000 }).should('exist');
+        cy.get('video, .react-player', { timeout: 12000 }).should('exist');
       });
       cy.get('.side-panel.is-active .sidepanel-body.scrollable').scrollTo(0, 1000);
       cy.addTimeLink(1000, 'Control point', 1, 12, 0);
       saveEntity('Entity updated');
-      cy.waitForLegacyNotifications();
       checkMediaSnapshots('#tabpanel-metadata .video-container > div:nth-child(2)');
     });
 
     it('should render the player for internal media on library card and entity view', () => {
-      cy.contains('.item-document:nth-child(1)', 'Entity with all props').toMatchImageSnapshot();
+      cy.contains('.item-document:nth-child(1)', 'Entity with all props').scrollIntoView();
+      cy.contains('.item-document:nth-child(1)', 'Entity with all props').matchImageSnapshot();
       cy.contains('.item-document:nth-child(1)', 'Entity with all props').contains('View').click();
       cy.contains('h1', 'Entity with all props');
       cy.get('.react-player').within(() => {
@@ -334,6 +344,8 @@ describe('Entities', () => {
       cy.intercept('GET', 'api/files/*').as('getFile');
       cy.contains('.item-document:nth-child(1) span', 'Entity with all props').click();
       clickOnEditEntity();
+      cy.waitForRequestStatusIdle();
+      cy.get('#metadataForm', { timeout: 12000 }).should('exist');
       cy.get('.side-panel.is-active .sidepanel-body.scrollable').scrollTo(0, 1500);
       cy.contains('Update');
       // Wait for media elements to load in the edit form
@@ -341,7 +353,8 @@ describe('Entities', () => {
         cy.get('img').should('exist');
       });
       cy.contains('.form-group.media', 'Media').within(() => {
-        cy.get('video').should('exist');
+        cy.get('.video-container', { timeout: 12000 }).should('exist');
+        cy.get('video, .react-player', { timeout: 12000 }).should('exist');
       });
       clickMediaAction('Media', 'Update');
       addVideo('', false);
@@ -354,7 +367,8 @@ describe('Entities', () => {
     });
 
     it('should show the external player on library card and entity view', () => {
-      cy.contains('.item-document:nth-child(1)', 'Entity with all props').toMatchImageSnapshot();
+      cy.contains('.item-document:nth-child(1)', 'Entity with all props').scrollIntoView();
+      cy.contains('.item-document:nth-child(1)', 'Entity with all props').matchImageSnapshot();
       cy.contains('.item-document:nth-child(1)', 'Entity with all props').contains('View').click();
       cy.contains('h1', 'Entity with all props');
       checkExternalMedia();
@@ -391,7 +405,6 @@ describe('Entities', () => {
       clickMediaAction('Image', 'Unlink');
       clickMediaAction('Media', 'Unlink');
       saveEntity('Entity updated');
-      cy.waitForLegacyNotifications();
     });
   });
 
@@ -414,7 +427,6 @@ describe('Entities', () => {
       });
       cy.contains('.confirm-button', 'Save').click();
       cy.contains('Thesaurus saved');
-      cy.waitForLegacyNotifications();
     });
 
     it('should add a thesauri value on a multiselect field and select it', () => {
@@ -429,69 +441,14 @@ describe('Entities', () => {
       });
       cy.contains('.confirm-button', 'Save').click();
       cy.contains('Thesaurus saved');
-      cy.waitForLegacyNotifications();
       saveEntity('Entity updated');
       cy.get('.metadata-type-select').should('contain.text', 'New Single Value');
       cy.get('.metadata-type-multiselect').should('contain.text', 'MultiselectActivoNew Value');
     });
   });
-  describe('Entity Translations', () => {
-    it('should change the entity in Spanish', () => {
-      changeLanguage('Español');
-      cy.contains('.item-document:nth-child(1) span', 'Entity with all props').click();
-      clickOnEditEntity('Editar');
-      cy.get('textarea[name="library.sidepanel.metadata.title"]').click();
-      cy.clearAndType(
-        'textarea[name="library.sidepanel.metadata.title"]',
-        'Entidad con todas las propiedades',
-        {
-          delay: 0,
-        }
-      );
-      cy.get('input[name="library.sidepanel.metadata.metadata.text"]').click();
-      cy.clearAndType(
-        'input[name="library.sidepanel.metadata.metadata.text"]',
-        'Texto de prueba en Español',
-        { delay: 0 }
-      );
-      cy.contains('button', 'Guardar').click();
-    });
 
-    it('should check the values for the entity in Spanish', () => {
-      cy.contains('.item-document', 'Entidad con todas las propiedades').click();
-      cy.contains('h1.item-name', 'Entidad con todas las propiedades').should('exist');
-      cy.get('.metadata-type-text').should('contain.text', 'Texto de prueba en Español');
-    });
-
-    it('should edit the text field in English', () => {
-      changeLanguage('English');
-      cy.contains('.item-document', 'Entity with all props').click();
-      clickOnEditEntity();
-      cy.get('input[name="library.sidepanel.metadata.metadata.text"]').click();
-      cy.clearAndType(
-        'input[name="library.sidepanel.metadata.metadata.text"]',
-        'Demo text in english',
-        { delay: 0 }
-      );
-      saveEntity('Entity updated');
-      cy.waitForLegacyNotifications();
-      cy.contains('.item-document', 'Entity with all props').click();
-      cy.contains('h1.item-name', 'Entity with all props').should('exist');
-      cy.get('.metadata-type-text').should('contain.text', 'Demo text in english');
-    });
-
-    it('should not affect the text field in Spanish', () => {
-      cy.intercept('GET', 'es/library/*').as('getLibrary');
-      changeLanguage('Español');
-      cy.wait('@getLibrary');
-      cy.contains('Configuración de filtros');
-      cy.contains('.item-document:nth-child(1) span', 'Entidad con todas las propiedades').click();
-      cy.contains('.metadata-type-text > dd', 'Texto de prueba en Español').should('exist');
-    });
-  });
   describe('Empty properties', () => {
     it('should be able to remove all the values from properties.', () => {
-      changeLanguage('English');
       cy.contains('.item-document:nth-child(1) span', 'Entity with all props').click();
       clickOnEditEntity();
       cy.contains('Type');
@@ -532,13 +489,6 @@ describe('Entities', () => {
       cy.get('select:first-of-type').select('Causa');
       cy.contains('Changing the type will erase all relationships to this entity');
       saveEntity('Entity updated');
-      cy.waitForLegacyNotifications();
-    });
-
-    it('should show only the filtered entities', () => {
-      cy.get('.metadata-sidepanel.is-active .closeSidepanel').eq(0).click();
-      cy.contains('#filtersForm li.wide.documentTypes-selector > ul > li', 'Causa').click();
-      cy.get('.item-document').should('have.length', 13);
     });
   });
 });

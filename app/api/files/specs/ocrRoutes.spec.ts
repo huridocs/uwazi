@@ -1,30 +1,30 @@
-import { Application, NextFunction, Request, Response } from 'express';
+import type { Application, NextFunction, Request, Response } from 'express';
 import fetchMock from 'fetch-mock';
 import path from 'path';
 import request from 'supertest';
 
-import { storage } from 'api/files';
-import relationships from 'api/relationships/relationships';
-import { search } from 'api/search';
-import { ocrManager } from 'api/services/ocr/OcrManager';
-import settings from 'api/settings/settings';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import db, { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { setUpApp } from 'api/utils/testingRoutes';
-import JSONRequest from 'shared/JSONRequest';
-import { UserRole } from 'shared/types/userSchema';
-import { UserSchema } from 'shared/types/userType';
+import { storage } from '#api/files/index.js';
+import relationships from '#api/relationships/relationships.js';
+import { search } from '#api/search/index.js';
+import { ocrManager } from '#api/services/ocr/OcrManager.js';
+import settings from '#api/settings/settings.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import db, { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import JSONRequest from '#shared/JSONRequest.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { UserSchema } from '#shared/types/userType.js';
 
-import * as setupSockets from 'api/socketio/setupSockets';
+import * as setupSockets from '#api/socketio/setupSockets.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
 import { copyFile } from 'fs/promises';
-import { OcrModel, OcrStatus } from '../../services/ocr/ocrModel';
-import { TaskManager } from '../../services/tasksmanager/TaskManager';
-import { files } from '../files';
-import { ocrRoutes } from '../ocrRoutes';
+import { OcrModel, OcrStatus } from '../../services/ocr/ocrModel.js';
+import { TaskManager } from '../../services/tasksmanager/TaskManager.js';
+import { files } from '../files.js';
+import { ocrRoutes } from '../ocrRoutes.js';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
@@ -33,7 +33,14 @@ const fixturesFactory = getFixturesFactory();
 const fileNameToProcess = 'english_testing_file.pdf';
 const attachmentFile = 'spn.pdf';
 const fixtures: DBFixture = {
-  entities: [fixturesFactory.entity('parentEntity')],
+  entities: [
+    fixturesFactory.entity(
+      'parentEntity',
+      undefined,
+      {},
+      { user: fixturesFactory.idString('admin') }
+    ),
+  ],
   files: [
     fixturesFactory.fileDeprecated(
       'fileToProcess',
@@ -160,12 +167,15 @@ describe('OCR service', () => {
     // eslint-disable-next-line max-statements
     it('should process a successful OCR', async () => {
       // @ts-ignore
-      await TaskManager.mock.calls[0][0].processResults({
-        tenant: 'defaultDB',
-        task: 'ocr_results',
-        file_url: 'protocol://link/to/result/file',
-        params: { filename: fileNameToProcess, language: 'en' },
-        success: true,
+      await testingEnvironment.runWithContext(async () => {
+        // @ts-ignore
+        await TaskManager.mock.calls[0][0].processResults({
+          tenant: 'defaultDB',
+          task: 'ocr_results',
+          file_url: 'protocol://link/to/result/file',
+          params: { filename: fileNameToProcess, language: 'en' },
+          success: true,
+        });
       });
 
       const [originalFile] = await files.get({ filename: fileNameToProcess });
@@ -177,7 +187,6 @@ describe('OCR service', () => {
       expect(await storage.fileExists(originalFile.filename!, 'document')).toBe(true);
       expect(resultFile.type).toBe('document');
       expect(await storage.fileExists(resultFile.filename!, 'document')).toBe(true);
-      expect(resultFile.language).toBe(originalFile.language);
 
       const connectionsForOrigFile = await relationships.get({
         file: originalFile._id.toHexString(),

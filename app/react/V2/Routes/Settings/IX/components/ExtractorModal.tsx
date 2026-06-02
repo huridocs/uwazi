@@ -1,20 +1,20 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import React, { useState, useEffect } from 'react';
-import { uniq } from 'lodash';
+import uniq from 'lodash/uniq.js';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { Translate } from 'app/I18N';
-import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
-import { ClientIXExtractorType } from 'V2/shared/types';
-import { InputField } from 'V2/Components/Forms/InputField';
-import { defaultSearch, MultiselectList, RadioSelect } from 'V2/Components/Forms';
-import { Modal, Button, Pill } from 'V2/Components/UI';
-import { propertyIcons } from '../../../../Components/UI/Icons';
+import { t, Translate } from '#app/I18N/index.js';
+import { ClientPropertySchema, ClientTemplateSchema } from '#app/istore.js';
+import { ClientIXExtractorType } from '#V2/shared/types.js';
+import { InputField } from '#V2/Components/Forms/InputField.js';
+import { defaultSearch, MultiselectList, RadioSelect } from '#V2/Components/Forms/index.js';
+import { Modal, Button, Pill } from '#V2/Components/UI/index.js';
+import { propertyIcons } from '../../../../Components/UI/Icons.js';
 import {
   getAvailableSources,
   getPropertyNameFromExtractPair,
   getTemplateFromExtractPair,
-} from '../helpers';
+} from '../helpers/index.js';
 
 const SUPPORTED_PROPERTIES = [
   'text',
@@ -184,7 +184,7 @@ const ExtractorModal = ({
   return (
     <Modal size="xxl">
       <Modal.Header>
-        <h1 className="text-xl font-medium text-gray-900">
+        <h1 className="text-xl font-medium text-ink">
           {extractor ? <Translate>Edit Extractor</Translate> : <Translate>Add Extractor</Translate>}
         </h1>
         <Modal.CloseButton onClick={() => setShowModal(false)} />
@@ -194,7 +194,7 @@ const ExtractorModal = ({
         <InputField
           className="mt-6"
           id="extractor-name"
-          placeholder="Extractor name"
+          placeholder={t('System', 'Extractor name', null, false)}
           hasErrors={hasNameError}
           value={name}
           onChange={event => {
@@ -251,8 +251,12 @@ const ExtractorModal = ({
         </div>
 
         <div className="flex justify-center w-full gap-2">
-          <div className={`w-2 h-2 rounded-full ${step === 1 ? 'bg-indigo-700' : 'bg-gray-200'}`} />
-          <div className={`w-2 h-2 rounded-full ${step === 2 ? 'bg-indigo-700' : 'bg-gray-200'}`} />
+          <div
+            className={`w-2 h-2 rounded-full ${step === 1 ? 'bg-primary-700' : 'bg-primary-200'}`}
+          />
+          <div
+            className={`w-2 h-2 rounded-full ${step === 2 ? 'bg-primary-700' : 'bg-primary-200'}`}
+          />
         </div>
       </Modal.Body>
 
@@ -261,7 +265,7 @@ const ExtractorModal = ({
           <div className="flex gap-2">
             {step === 1 ? (
               <>
-                <Button styling="light" onClick={() => setShowModal(false)} className="grow">
+                <Button variant="ghost" onClick={() => setShowModal(false)} className="grow">
                   <Translate>Cancel</Translate>
                 </Button>
                 <Button className="grow" onClick={() => setStep(2)} disabled={values.length === 0}>
@@ -273,10 +277,10 @@ const ExtractorModal = ({
               </>
             ) : (
               <>
-                <Button styling="light" onClick={() => setStep(1)} className="grow">
+                <Button variant="ghost" onClick={() => setStep(1)} className="grow">
                   <Translate>Back</Translate>
                 </Button>
-                <Button className="grow" onClick={() => handleSubmit()} color="success">
+                <Button className="grow" onClick={() => handleSubmit()} variant="success">
                   {extractor ? <Translate>Update</Translate> : <Translate>Create</Translate>}
                 </Button>
               </>

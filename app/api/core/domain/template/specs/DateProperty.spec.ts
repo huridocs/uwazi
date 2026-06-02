@@ -1,7 +1,7 @@
-import { PropertyTypeInvalidTypeError } from '../errors';
-import { DateProperty } from '../DateProperty';
-import { MultiDateProperty } from '../MultiDateProperty';
-import { PropertyTypeEnum } from '../PropertyType';
+import { PropertyTypeInvalidTypeError } from '../errors.js';
+import { DateProperty } from '../DateProperty.js';
+import { MultiDateProperty } from '../MultiDateProperty.js';
+import { PropertyTypeEnum } from '../PropertyType.js';
 
 describe('DateProperty', () => {
   it('should set defaults values if not provided', () => {
@@ -54,6 +54,7 @@ describe('DateProperty', () => {
         name: date.name,
         value: [{ value: 1761576489 }],
         type: date.type,
+        isTranslatable: false,
       });
     });
 
@@ -66,6 +67,7 @@ describe('DateProperty', () => {
         name: date.name,
         value: [],
         type: date.type,
+        isTranslatable: false,
       });
     });
 

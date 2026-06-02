@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
-import { User } from 'api/users/usersModel';
-import usersModel from '../users/users';
-import { comparePasswords } from './encryptPassword';
+import type { Request, Response, NextFunction } from 'express';
+import { User } from '#api/users/usersModel.js';
+import usersModel from '../users/users.js';
+import { comparePasswords } from './encryptPassword.js';
 
 const validatePassword = async (submittedPassword: string, requestUser: User) => {
   const user = await usersModel.getById(requestUser._id, '+password');
@@ -14,7 +14,8 @@ const validatePasswordMiddleWare = async (req: Request, res: Response, next: Nex
   const submittedPassword = headers?.authorization?.split('Basic ')[1];
 
   if (submittedPassword) {
-    const validPassword = await validatePassword(submittedPassword, user);
+    const decodedPassword = Buffer.from(submittedPassword, 'base64').toString('utf8');
+    const validPassword = await validatePassword(decodedPassword, user);
 
     if (validPassword) {
       return next();

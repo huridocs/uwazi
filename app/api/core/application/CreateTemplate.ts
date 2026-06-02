@@ -1,15 +1,15 @@
-import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
-import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';
-import { TemplateWithDuplicatedNameOnTheSystemError } from '../domain/template/errors';
-import { PageService } from '../domain/template/PageService';
-import { TemplatesDataSource } from './contracts/TemplatesDataSource';
-import { TranslationService } from '../domain/template/TranslationService';
-import { AbstractUseCase } from '../libs/UseCase';
-import { PropertyCreatorServiceStrategy } from './propertyCreatorService/PropertyCreatorServiceStrategy';
-import { ThesauriDataSource } from './propertyCreatorService/SelectPropertyCreatorService';
-import { CreateTemplateDTO } from './TemplateDTOs';
-import { Template } from '../domain/template/Template';
+import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory.js';
+import { TemplateWithDuplicatedNameOnTheSystemError } from '../domain/template/errors.js';
+import { PageService } from '../domain/template/PageService.js';
+import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
+import { TranslationService } from '../domain/template/TranslationService.js';
+import { AbstractUseCase } from '../libs/UseCase.js';
+import { PropertyCreatorServiceStrategy } from './propertyCreatorService/PropertyCreatorServiceStrategy.js';
+import { ThesauriDataSource } from './propertyCreatorService/SelectPropertyCreatorService.js';
+import { CreateTemplateDTO } from './TemplateDTOs.js';
+import { Template } from '../domain/template/Template.js';
 
 type Input = CreateTemplateDTO;
 
@@ -25,7 +25,7 @@ type Deps = {
 };
 
 class CreateTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
-  protected async executeAsync(input: Input): Promise<Output> {
+  async execute(input: Input): Promise<Output> {
     const propertyCreatorServiceStrategy = PropertyCreatorServiceStrategy.create({
       ...this.deps,
       idGenerator: this.idGenerator,

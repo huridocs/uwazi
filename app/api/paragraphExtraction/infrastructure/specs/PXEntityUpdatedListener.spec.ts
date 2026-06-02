@@ -1,16 +1,16 @@
-import { EventsBus } from 'api/core/libs/eventsbus';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DBFixture } from 'api/utils/testing_db';
-import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
 import { ObjectId } from 'mongodb';
-import { tenants } from 'api/tenants';
-import { PXEntityUpdatedListener } from '../PXEntityUpdatedListener';
-import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO';
-import { MongoExtractorBuilder } from './MongoPXExtractorBuilder';
-import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource';
-import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';
+import { tenants } from '#api/tenants/index.js';
+import { PXEntityUpdatedListener } from '../PXEntityUpdatedListener.js';
+import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO.js';
+import { MongoExtractorBuilder } from './MongoPXExtractorBuilder.js';
+import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource.js';
+import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource.js';
 
 const languages = ['en', 'es'];
 
@@ -60,6 +60,7 @@ const entityStatus3: MongoPXEntityStatusDBO = {
 const document1En = factory.processedDocument('document_1_En', {
   entity: entity1[0].sharedId,
   language: 'en',
+  mimetype: 'application/pdf',
 });
 
 const createFixtures = (): DBFixture => ({
@@ -101,7 +102,7 @@ describe('PXEntityUpdatedListener', () => {
     it('should do nothing if feature flag not enabled', async () => {
       await testingEnvironment.setFixtures({
         ...createFixtures(),
-        files: [document1En],
+        files: [...document1En],
       });
 
       tenants.current().featureFlags!.paragraphExtraction = false;
@@ -126,18 +127,20 @@ describe('PXEntityUpdatedListener', () => {
     it('should create EntityStatus as new if source Entity can be used for extraction', async () => {
       await testingEnvironment.setFixtures({
         ...createFixtures(),
-        files: [document1En],
+        files: [...document1En],
       });
 
       const { eventsBus } = createSut();
 
-      await eventsBus.emit(
-        new EntityUpdatedEvent({
-          before: entity1.map(e => ({ ...e, template: template._id })),
-          after: entity1,
-          targetLanguageKey: 'en',
-        })
-      );
+      await testingEnvironment.runWithContext(async () => {
+        await eventsBus.emit(
+          new EntityUpdatedEvent({
+            before: entity1.map(e => ({ ...e, template: template._id })),
+            after: entity1,
+            targetLanguageKey: 'en',
+          })
+        );
+      });
 
       const entitiesStatus = await testingEnvironment.db.getAllFrom(
         mongoPXEntitiesStatusCollection
@@ -161,13 +164,15 @@ describe('PXEntityUpdatedListener', () => {
 
       const { eventsBus } = createSut();
 
-      await eventsBus.emit(
-        new EntityUpdatedEvent({
-          before: entity1,
-          after: entity1.map(e => ({ ...e, template: template._id })),
-          targetLanguageKey: 'en',
-        })
-      );
+      await testingEnvironment.runWithContext(async () => {
+        await eventsBus.emit(
+          new EntityUpdatedEvent({
+            before: entity1,
+            after: entity1.map(e => ({ ...e, template: template._id })),
+            targetLanguageKey: 'en',
+          })
+        );
+      });
 
       const entitiesStatus = await testingEnvironment.db.getAllFrom(
         mongoPXEntitiesStatusCollection
@@ -181,18 +186,20 @@ describe('PXEntityUpdatedListener', () => {
       await testingEnvironment.setFixtures({
         ...createFixtures(),
         [mongoPXEntitiesStatusCollection]: [entityStatus1, entityStatus2, entityStatus3],
-        files: [document1En],
+        files: [...document1En],
       });
 
       const { eventsBus } = createSut();
 
-      await eventsBus.emit(
-        new EntityUpdatedEvent({
-          before: entity1,
-          after: entity1.map(e => ({ ...e, template: sourceTemplate2._id })),
-          targetLanguageKey: 'en',
-        })
-      );
+      await testingEnvironment.runWithContext(async () => {
+        await eventsBus.emit(
+          new EntityUpdatedEvent({
+            before: entity1,
+            after: entity1.map(e => ({ ...e, template: sourceTemplate2._id })),
+            targetLanguageKey: 'en',
+          })
+        );
+      });
 
       const entitiesStatus = await testingEnvironment.db.getAllFrom(
         mongoPXEntitiesStatusCollection

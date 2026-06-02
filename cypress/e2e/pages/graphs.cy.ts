@@ -1,9 +1,8 @@
-import { clearCookiesAndLogin } from '../helpers/login';
+import { clearCookiesAndLogin } from '../helpers/login.js';
+import { dismissModalIfVisible, typeInEditor } from '../helpers/pageEditor.js';
 
-const updateDatasetScript = `window.updatePageDatasets("default",{rows:[],totalRows:292,relation:"eq",aggregations:
-{all:{tipo:{meta:{},doc_count:915,buckets:[{key:"57d8a9c4-f0cd-4290-b15e-ddf2b3c6ef91",doc_count:6,filtered:
-{meta:{},doc_count:2},label:"De asunto"},{key:"d79ab686-a987-4a1e-a26a-0a604a5f3aae",doc_count:6,filtered:
-{meta:{},doc_count:2},label:"En casos"}],count:11}}}});`;
+const updateDatasetScript =
+  'window.updatePageDatasets("default",{rows:[],totalRows:292,relation:"eq",aggregations:{all:{tipo:{meta:{},doc_count:915,buckets:[{key:"57d8a9c4-f0cd-4290-b15e-ddf2b3c6ef91",doc_count:6,filtered:{meta:{},doc_count:2},label:"De asunto"},{key:"d79ab686-a987-4a1e-a26a-0a604a5f3aae",doc_count:6,filtered:{meta:{},doc_count:2},label:"En casos"}],count:11}}}});';
 
 const graphs = {
   barChart: '<BarChart property="tipo" context="58ada34c299e8267485450fb" />',
@@ -15,17 +14,17 @@ const graphs = {
 };
 
 const insertChart = (chart: string, chartName: string) => {
-  cy.clearAndType('input[name="title"]', chartName, { delay: 0 });
+  cy.get('input[name="title"]').should('be.visible').click();
+  cy.get('input[name="title"]').type('{selectAll}{backspace}', { delay: 0 });
+  cy.get('input[name="title"]').type(chartName, { delay: 0 });
   cy.contains('Markdown').click();
-  cy.get('div[data-mode-id="html"]').type(`<Dataset />\n${chart}`, {
-    parseSpecialCharSequences: false,
-  });
+  typeInEditor('html', `<Dataset />\n${chart}`, false, 'property', true);
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(501);
 };
 
 const savePage = () => {
-  cy.contains('button.bg-success-700', 'Save').click();
+  cy.get('[data-testid="settings-content-footer"]').contains('button', 'Save').click();
   cy.contains('Saved successfully');
 };
 
@@ -33,19 +32,28 @@ const visitPage = () => {
   cy.contains('a', 'View page').then(a => {
     const href = a.attr('href') || '';
     cy.visit(href);
+    cy.get('body', { timeout: 20000 }).should('be.visible');
   });
 };
 
 const newPage = () => {
+  dismissModalIfVisible();
   cy.contains('a', 'Settings').click();
+  dismissModalIfVisible();
   cy.contains('a', 'Pages').click();
+  dismissModalIfVisible();
   cy.contains('a', 'Add page').click();
 };
 
 const takeSnapshot = () => {
-  cy.get('.markdown-viewer').should('be.visible');
-  // eslint-disable-next-line cypress/no-unnecessary-waiting
-  cy.get('.markdown-viewer').wait(2000).toMatchImageSnapshot();
+  cy.get('body', { timeout: 30000 }).then($body => {
+    if (!$body.find('.markdown-viewer').length) {
+      cy.reload();
+    }
+  });
+  cy.get('.markdown-viewer', { timeout: 30000 }).should('be.visible');
+  cy.waitForMarkdownChartSettled();
+  cy.get('.markdown-viewer').matchImageSnapshot();
 };
 
 const testChart = (chart: string, name: string) => {
@@ -89,21 +97,18 @@ describe('Graphs in Page ', () => {
 
   describe('dataset updates', () => {
     it('should update a graph via the page script using the updated function', () => {
+      dismissModalIfVisible();
       cy.contains('a', 'Settings').click();
+      dismissModalIfVisible();
       cy.contains('a', 'Pages').click();
+      dismissModalIfVisible();
       cy.contains('tr', 'Bar chart graph').contains('button', 'Edit').click();
-      cy.contains('Javascript').click();
-      // delete extra closing keys added by the code editor when writing this text
-      // eslint-disable-next-line cypress/unsafe-to-chain-command
-      cy.get('div[data-mode-id="javascript"]')
-        .type(updateDatasetScript, {
-          parseSpecialCharSequences: false,
-          delay: 0,
-        })
-        .type('{backspace}{backspace}');
-      // wait for editor to update
-      // eslint-disable-next-line cypress/no-unnecessary-waiting
-      cy.wait(501);
+      cy.contains('[role="tab"]', 'Javascript').click();
+      cy.get('#panel-Advanced .monaco-editor textarea', { timeout: 10000 }).should('exist');
+      typeInEditor('javascript', updateDatasetScript, true, 'updatePageDatasets', true);
+      cy.get('[data-testid="settings-content-footer"]')
+        .contains('button', 'Save')
+        .should('not.be.disabled');
       savePage();
       visitPage();
       takeSnapshot();

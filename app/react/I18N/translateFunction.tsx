@@ -1,7 +1,8 @@
 import React from 'react';
-import { atomStore, translationsAtom, localeAtom } from 'V2/atoms';
-import translate, { getLocaleTranslation, getContext } from 'shared/translate';
-import { Translate } from './Translate';
+import { getStore } from '#shared/atomStore/index.js';
+import { translationsAtom, localeAtom } from '#V2/atoms/index.js';
+import translate, { getLocaleTranslation, getContext } from '#shared/translate.js';
+import { Translate } from './Translate.js';
 
 //return type as any since there is no way to create conditional returns based on parameters
 interface TranslationFunction {
@@ -21,6 +22,8 @@ const t: TranslationFunction = (
   returnComponent = true,
   truncate = undefined
 ) => {
+  const atomStore = getStore();
+
   if (!contextId) {
     // eslint-disable-next-line no-console
     console.warn(`You cannot translate "${key}", because context id is "${contextId}"`);

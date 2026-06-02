@@ -1,9 +1,10 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
-import { Translate } from 'app/I18N';
-import { Button, FileIcon } from 'V2/Components/UI';
-import { CustomUpload } from '../CustomUploads';
+
+import { Translate } from '#app/I18N/index.js';
+import { Button, FileIcon } from '#V2/Components/UI/index.js';
+import { CustomUpload } from '../CustomUploads.js';
 
 const columnHelper = createColumnHelper<CustomUpload>();
 
@@ -36,17 +37,15 @@ const ActionCell = ({ cell }: CellContext<CustomUpload, any>) => {
   return (
     <div className="flex flex-nowrap gap-2">
       <Button
-        styling="outline"
-        color="primary"
+        variant="secondary"
         className="leading-3"
         onClick={() => actions.edit(cell.row.original)}
       >
         <Translate>Edit</Translate>
       </Button>
       <Button
-        styling="outline"
-        color="error"
-        className="leading-3"
+        variant="dangerSecondary"
+        className="leading-3 text-error-900"
         onClick={() => actions.delete(cell.row.original)}
       >
         <Translate>Delete</Translate>

@@ -1,24 +1,24 @@
-import { omit } from 'lodash';
-import api from 'app/utils/api';
-import referencesAPI from 'app/Viewer/referencesAPI';
-import * as types from 'app/Viewer/actions/actionTypes';
-import * as connectionsTypes from 'app/Connections/actions/actionTypes';
-import { entityDefaultDocument } from 'shared/entityDefaultDocument';
-
-import { actions } from 'app/BasicReducer';
+import omit from 'lodash/omit.js';
+import { api } from '#app/utils/api.js';
+import { ReferencesAPI as referencesAPI } from '#app/Viewer/referencesAPI.js';
+import * as types from '#app/Viewer/actions/actionTypes.js';
+import * as connectionsTypes from '#app/Connections/actions/actionTypes.js';
+import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
+import { actions } from '#app/BasicReducer/index.js';
 import { actions as formActions } from 'react-redux-form';
-import { documentsApi } from 'app/Documents';
-import { notificationActions } from 'app/Notifications';
-import { removeDocument, unselectAllDocuments } from 'app/Library/actions/libraryActions';
-import { actions as relationshipActions } from 'app/Relationships';
-import { RequestParams } from 'app/utils/RequestParams';
-import { closePanel as closeConnectionPanel } from 'app/Connections/actions/uiActions.js';
-import { atomStore, deletedEntityAtom } from 'V2/atoms';
-import { saveEntityWithFiles } from '../../Library/actions/saveEntityWithFiles';
-import * as selectionActions from './selectionActions';
-import * as uiActions from './uiActions';
-import { sortTextSelections } from '../utils/sortTextSelections';
-import EntitiesApi from '../../Entities/EntitiesAPI';
+import { getStore } from '#shared/atomStore/index.js';
+import { documentsAPI } from '#app/Documents/index.js';
+import { notificationActions } from '#app/Notifications/index.js';
+import { removeDocument, unselectAllDocuments } from '#app/Library/actions/libraryActions.js';
+import { actions as relationshipActions } from '#app/Relationships/index.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { closePanel as closeConnectionPanel } from '#app/Connections/actions/uiActions.js';
+import { deletedEntityAtom } from '#V2/atoms/index.js';
+import { saveEntityWithFiles } from '../../Library/actions/saveEntityWithFiles.js';
+import * as selectionActions from './selectionActions.js';
+import * as uiActions from './uiActions.js';
+import { sortTextSelections } from '../utils/sortTextSelections.js';
+import { EntitiesAPI as EntitiesApi } from '../../Entities/EntitiesAPI.js';
 
 function getEntityDoc(entity, filename, defaultLanguage) {
   let docByFilename = entity.documents.find(d => d.filename === filename);
@@ -97,11 +97,11 @@ export function saveToc(toc, fileId) {
 
 export function deleteDocument(doc) {
   return async dispatch => {
-    await documentsApi.delete(new RequestParams({ sharedId: doc.sharedId }));
+    await documentsAPI.delete(new RequestParams({ sharedId: doc.sharedId }));
     dispatch(notificationActions.notify('Document deleted', 'success'));
     dispatch(resetDocumentViewer());
     dispatch(removeDocument(doc));
-    atomStore.set(deletedEntityAtom, doc.sharedId);
+    getStore().set(deletedEntityAtom, doc.sharedId);
     await dispatch(unselectAllDocuments());
   };
 }
@@ -114,8 +114,14 @@ export async function getDocument(requestParams, defaultLanguage, filename) {
 }
 
 export function loadTargetDocument(sharedId) {
-  return (dispatch, getState) =>
-    getDocument(new RequestParams({ sharedId }), getState().locale).then(entity => {
+  return (dispatch, getState) => {
+    if (!sharedId) {
+      return Promise.resolve();
+    }
+    return getDocument(new RequestParams({ sharedId }), getState().locale).then(entity => {
+      if (!entity) {
+        return undefined;
+      }
       dispatch(actions.set('viewer/targetDoc', entity));
       return referencesAPI
         .get(new RequestParams({ sharedId, file: entity.defaultDoc._id, onlyTextReferences: true }))
@@ -123,6 +129,7 @@ export function loadTargetDocument(sharedId) {
           dispatch(actions.set('viewer/targetDocReferences', references));
         });
     });
+  };
 }
 
 export function reloadDocument(sharedId) {
@@ -189,9 +196,9 @@ export function indentTocElement(tocElement, indentation) {
 export function addToToc(textSelectedObject, currentToc) {
   return (dispatch, getState) => {
     const state = getState();
-    let toc = state.documentViewer.tocForm.concat();
-    if (!toc.length) {
-      toc = currentToc;
+    let toc = (state.documentViewer.tocForm || []).concat();
+    if (!toc.length && Array.isArray(currentToc)) {
+      toc = currentToc.concat();
     }
     const tocElement = {
       selectionRectangles: textSelectedObject.sourceRange.selectionRectangles,

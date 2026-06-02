@@ -1,6 +1,6 @@
 /** @format */
 
-import { objectIdSchema } from 'shared/types/commonSchemas';
+import { objectIdSchema } from '#shared/types/commonSchemas.js';
 
 export const emitSchemaTypes = true;
 
@@ -10,7 +10,6 @@ export const thesaurusValueSchema = {
   required: ['label'],
   additionalProperties: false,
   properties: {
-    _id: objectIdSchema,
     id: {
       type: 'string',
       minLength: 1,
@@ -26,7 +25,6 @@ export const thesaurusValueSchema = {
         required: ['label'],
         additionalProperties: false,
         properties: {
-          _id: objectIdSchema,
           id: {
             type: 'string',
             minLength: 1,

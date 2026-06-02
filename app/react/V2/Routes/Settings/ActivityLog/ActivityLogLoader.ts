@@ -1,13 +1,16 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { LoaderFunction, SetURLSearchParams, createSearchParams, Location } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
-import _, { isArray, isEqual, isObject } from 'lodash';
-import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
-import { ClientSettings } from 'app/apiResponseTypes';
-import * as activityLogAPI from 'V2/api/activityLog';
-import type { ActivityLogResponse } from 'V2/api/activityLog';
-import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
+import _ from 'lodash';
+import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
+import { ClientSettings } from '#app/apiResponseTypes.js';
+import * as activityLogAPI from '#V2/api/activityLog/index.js';
+import type { ActivityLogResponse } from '#V2/api/activityLog/index.js';
+import { ActivityLogEntryType } from '#shared/types/activityLogEntryType.js';
 
+const isArray = _.isArray;
+const isEqual = _.isEqual;
+const isObject = _.isObject;
 const ITEMS_PER_PAGE = 100;
 
 type LogEntry = ActivityLogEntryType & { rowId: string };
@@ -81,7 +84,6 @@ const getAppliedFilters = (searchParams: URLSearchParams) => {
       : appliedFilters;
   const { from, to, ...rest } = appliedFilters;
 
-  // Convert string timestamps from URL to numbers for DateRangePicker
   const dateRange = {
     from: from ? Number(from) : null,
     to: to ? Number(to) : null,
@@ -174,10 +176,7 @@ const updateSearch = (
     setSearchParams((prev: URLSearchParams) => {
       prev.delete('page');
       plainFilters.forEach(([key, value]) => {
-        if (
-          value !== undefined &&
-          ((isArray(value) && value.length > 0) || (!isArray(value) && value !== ''))
-        ) {
+        if (value && ((isArray(value) && value.length > 0) || (!isArray(value) && value !== ''))) {
           setSearchValue(prev, key, value);
         } else {
           prev.delete(key);

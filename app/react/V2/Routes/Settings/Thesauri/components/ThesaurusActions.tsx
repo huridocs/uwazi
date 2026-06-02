@@ -1,9 +1,9 @@
 /* eslint-disable react/no-multi-comp */
 import React, { Dispatch, SetStateAction } from 'react';
 import { Link } from 'react-router';
-import { Translate } from 'app/I18N';
-import { Button, ConfirmationModal } from 'app/V2/Components/UI';
-import { ConfirmationCallback } from '../helpers';
+import { Translate } from '#app/I18N/index.js';
+import { Button, ConfirmationModal } from '#app/V2/Components/UI/index.js';
+import { ConfirmationCallback } from '../helpers.js';
 
 interface DeletionModalProps {
   confirmCallback: ConfirmationCallback;
@@ -33,11 +33,11 @@ const DeletionModal = ({ confirmCallback, setConfirmCallback }: DeletionModalPro
 const ThesaurusActions = ({ disabled }: { disabled: boolean }) => (
   <div className="flex gap-2">
     <Link to="/settings/thesauri">
-      <Button styling="light" type="button" disabled={disabled}>
+      <Button variant="ghost" type="button" disabled={disabled}>
         <Translate>Cancel</Translate>
       </Button>
     </Link>
-    <Button styling="solid" color="success" type="submit" form="edit-thesaurus" disabled={disabled}>
+    <Button variant="success" type="submit" form="edit-thesaurus" disabled={disabled}>
       <Translate>Save</Translate>
     </Button>
   </div>

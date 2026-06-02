@@ -1,8 +1,16 @@
-import api from 'app/utils/api';
-import { RequestParams } from 'app/utils/RequestParams';
+import { api } from '#app/utils/api.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 import { IncomingHttpHeaders } from 'http';
-import { FetchResponseError } from 'shared/JSONRequest';
-import { FileType } from 'shared/types/fileType';
+import { FetchResponseError } from '#shared/JSONRequest.js';
+import { FileType } from '#shared/types/fileType.js';
+
+enum OcrStatus {
+  NONE = 'noOCR',
+  PROCESSING = 'inQueue',
+  ERROR = 'cannotProcess',
+  READY = 'withOCR',
+  UNSUPPORTED_LANGUAGE = 'unsupported_language',
+}
 
 const getById = async (_id: string): Promise<FileType[]> => {
   try {
@@ -47,5 +55,43 @@ const remove = async (_id: FileType['_id']): Promise<FileType | FetchResponseErr
   }
 };
 
-export { UploadService } from './UploadService';
-export { getById, getByType, update, remove };
+const getPagePlaintext = async (
+  _id: string,
+  page: number,
+  header?: IncomingHttpHeaders
+): Promise<string | FetchResponseError> => {
+  try {
+    const requestParams = new RequestParams({ _id, page }, header);
+    const response = await api.get('documents/page', requestParams);
+    return response.json.data;
+  } catch (e) {
+    return e;
+  }
+};
+
+const postToOcr = async (filename: string): Promise<{ status: number } | FetchResponseError> => {
+  try {
+    const status = await api.post(`files/${filename}/ocr`);
+    return { status };
+  } catch (e) {
+    return e;
+  }
+};
+
+const getOcrStatus = async (
+  filename: string
+): Promise<{ status: OcrStatus; lastUpdated?: number } | FetchResponseError> => {
+  try {
+    const {
+      json: { status, lastUpdated },
+    } = await api.get(`files/${filename}/ocr`);
+
+    return { status, lastUpdated };
+  } catch (e) {
+    return e;
+  }
+};
+
+export { OcrStatus };
+export { UploadService } from './UploadService.js';
+export { getById, getByType, update, remove, getPagePlaintext, postToOcr, getOcrStatus };

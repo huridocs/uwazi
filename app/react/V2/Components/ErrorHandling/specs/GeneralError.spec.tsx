@@ -3,9 +3,9 @@
  */
 import React from 'react';
 import { screen } from '@testing-library/react';
-import { renderConnectedContainer, defaultState } from 'app/utils/test/renderConnected';
-import { fromJS } from 'immutable';
-import { GeneralError } from '../GeneralError';
+import { renderConnectedContainer, defaultState } from '#app/utils/test/renderConnected.js';
+import Immutable from 'immutable';
+import { GeneralError } from '../GeneralError.js';
 
 let requestId = '';
 let errorCode = 500;
@@ -39,9 +39,9 @@ describe('General Error', () => {
 
   const state = {
     ...defaultState,
-    connections: { connection: fromJS({}) },
-    user: fromJS({ _id: 'user1' }),
-    settings: { collection: fromJS({}) },
+    connections: { connection: Immutable.fromJS({}) },
+    user: Immutable.fromJS({ _id: 'user1' }),
+    settings: { collection: Immutable.fromJS({}) },
   };
 
   describe('when a page could not be rendered at server', () => {

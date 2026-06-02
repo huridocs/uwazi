@@ -1,18 +1,18 @@
 /* eslint-disable max-statements */
 /* eslint-disable no-void */
 /* eslint-disable max-classes-per-file */
-import { createMockLogger } from 'api/core/libs/logger/infrastructure/MockLogger';
+import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
 import {
   Dispatchable,
   HeartbeatCallback,
   JobInfo,
-} from 'api/core/libs/queue/application/contracts/Dispatchable';
-import { DefaultTestingQueueAdapter } from 'api/core/libs/queue/configuration/factories';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { NamespacedDispatcher } from '../NamespacedDispatcher';
-import { QueueWorker } from '../QueueWorker';
-import { createSignals } from './Signals';
-import { NonRetryableJobError } from '../errors';
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { NamespacedDispatcher } from '../NamespacedDispatcher.js';
+import { QueueWorker } from '../QueueWorker.js';
+import { createSignals } from './Signals.js';
+import { NonRetryableJobError } from '../errors.js';
 
 class TestJob implements Dispatchable {
   static shouldFail = false;
@@ -329,6 +329,39 @@ it('should double the lockWindow time on every retry', async () => {
   TestJob.shouldFail = false;
 
   expect(lockWindows).toEqual([initialLockWindow, initialLockWindow * 2, initialLockWindow * 4]);
+});
+
+it('should not update lock window when job reaches max retries', async () => {
+  const initialLockWindow = 1;
+  const maxRetries = 2;
+
+  const { adapter, worker, signals } = await setUpWorker();
+
+  const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter, {
+    lockWindow: initialLockWindow,
+    maxRetries,
+  });
+
+  const updateLockWindowSpy = jest.spyOn(adapter, 'updateLockWindow');
+  const markJobAsFailedSpy = jest.spyOn(adapter, 'markJobAsFailed');
+
+  await dispatcher.dispatch(TestJob, { aNumber: 1 });
+  TestJob.shouldFail = true;
+
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  worker.start();
+  await signals.signaled('starting-1', maxRetries);
+  await worker.stop();
+  TestJob.shouldFail = false;
+
+  expect(updateLockWindowSpy).toHaveBeenCalledWith(
+    expect.objectContaining({ retryCount: 1 }),
+    initialLockWindow * 2
+  );
+
+  expect(markJobAsFailedSpy).toHaveBeenCalledWith(expect.objectContaining({ retryCount: 2 }));
+
+  expect(updateLockWindowSpy).toHaveBeenCalledTimes(1);
 });
 
 describe('dispatchMany', () => {

@@ -1,16 +1,18 @@
-import users from 'api/users/users';
-import userGroups from 'api/usergroups/userGroups';
-import { PermissionType } from 'shared/types/permissionSchema';
-import { MemberWithPermission } from 'shared/types/entityPermisions';
-import { UserSchema } from 'shared/types/userType';
-import { WithId } from 'api/odm';
-import { permissionsContext } from './permissionsContext';
-import { PUBLIC_PERMISSION } from './publicPermission';
+import escapeRegExp from 'lodash/escapeRegExp.js';
+import users from '#api/users/users.js';
+import userGroups from '#api/usergroups/userGroups.js';
+import { PermissionType } from '#shared/types/permissionSchema.js';
+import { MemberWithPermission } from '#shared/types/entityPermisions.js';
+import { UserSchema } from '#shared/types/userType.js';
+import { WithId } from '#api/odm/index.js';
+import { permissionsContext } from './permissionsContext.js';
+import { PUBLIC_PERMISSION } from './publicPermission.js';
 
 export const collaborators = {
   search: async (filterTerm: string) => {
-    const exactFilterTerm = new RegExp(`^${filterTerm}$`, 'i');
-    const partialFilterTerm = new RegExp(`^${filterTerm}`, 'i');
+    const escapedFilterTerm = escapeRegExp(filterTerm);
+    const exactFilterTerm = new RegExp(`^${escapedFilterTerm}$`, 'i');
+    const partialFilterTerm = new RegExp(`^${escapedFilterTerm}`, 'i');
 
     const matchedUsers = await users.get({
       $or: [{ email: exactFilterTerm }, { username: exactFilterTerm }],
@@ -21,7 +23,7 @@ export const collaborators = {
 
     matchedUsers.forEach((user: WithId<UserSchema>) => {
       availableCollaborators.push({
-        refId: user._id,
+        refId: user._id.toString(),
         type: PermissionType.USER,
         label: user.username!,
       });

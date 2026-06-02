@@ -1,9 +1,8 @@
 /* eslint-disable react/no-multi-comp */
-/* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useRef } from 'react';
 import { Row, Table } from '@tanstack/react-table';
-import { Translate } from 'app/I18N';
-import { Tooltip } from 'flowbite-react';
+import { Translate } from '#app/I18N/index.js';
+import { Tooltip } from '#V2/Components/UI/Tooltip.js';
 
 const IndeterminateCheckboxRow = <
   T extends { rowId: string; disableRowSelection?: string | boolean | React.ReactNode },
@@ -17,6 +16,10 @@ const IndeterminateCheckboxRow = <
   const disabled = !row.getCanSelect();
   const onChange = row.getToggleSelectedHandler();
   const disableReason = row.original.disableRowSelection;
+  const checkboxStyle = {
+    backgroundColor: 'var(--color-theme-control-bg)',
+    borderColor: 'var(--color-theme-control-border)',
+  };
   useEffect(() => {
     ref.current.checked = Boolean(checked);
   }, [ref, checked]);
@@ -25,12 +28,13 @@ const IndeterminateCheckboxRow = <
     <input
       type="checkbox"
       ref={ref}
-      className="bg-gray-50 rounded border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+      className="cursor-pointer rounded-sm disabled:cursor-not-allowed disabled:opacity-50"
       disabled={disabled}
       onChange={onChange}
       key={row.id}
       id={row.id}
       checked={checked}
+      style={checkboxStyle}
     />
   );
 
@@ -38,11 +42,7 @@ const IndeterminateCheckboxRow = <
     <label>
       <Translate className="sr-only">Select</Translate>
       {disabled && typeof disableReason !== 'boolean' ? (
-        <Tooltip
-          content={<div className="text-xs text-gray-600 w-40">{disableReason}</div>}
-          // eslint-disable-next-line react/style-prop-object
-          style="light"
-        >
+        <Tooltip content={<div className="w-40 text-xs text-ink-secondary">{disableReason}</div>}>
           <span>{checkbox}</span>
         </Tooltip>
       ) : (
@@ -58,6 +58,10 @@ const IndeterminateCheckboxHeader = <T,>({ table }: { table: Table<T> }) => {
   const checked = table.getIsAllRowsSelected();
   const indeterminate = table.getIsSomeRowsSelected();
   const onChange = table.getToggleAllRowsSelectedHandler();
+  const checkboxStyle = {
+    backgroundColor: 'var(--color-theme-control-bg)',
+    borderColor: 'var(--color-theme-control-border)',
+  };
 
   useEffect(() => {
     ref.current.checked = Boolean(checked);
@@ -70,10 +74,11 @@ const IndeterminateCheckboxHeader = <T,>({ table }: { table: Table<T> }) => {
       <input
         type="checkbox"
         ref={ref}
-        className="bg-gray-50 rounded border-gray-300 cursor-pointer"
+        className="cursor-pointer rounded-sm"
         onChange={onChange}
         key="checkbox-header"
         id="checkbox-header"
+        style={checkboxStyle}
       />
     </label>
   );

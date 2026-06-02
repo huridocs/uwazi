@@ -1,27 +1,29 @@
-import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
-import { saveEntity } from 'api/entities/entitySavingManager';
-import { processDocument } from 'api/files/processDocument';
-import { search } from 'api/search';
-import settings from 'api/settings';
-import mailer from 'api/utils/mailer';
+import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
+import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
+import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoEntitiesDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntitiesDAO.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import settings from '#api/settings/index.js';
+import { PUBLIC_USER_ID } from '#api/users/publicUser.js';
 import cors from 'cors';
-import { withTransaction } from 'api/utils/withTransaction';
 import proxy from 'express-http-proxy';
-// eslint-disable-next-line node/no-restricted-import
-import { createReadStream } from 'fs';
-import { publicAPIMiddleware } from '../auth/publicAPIMiddleware';
-import { createError, validation } from '../utils';
-import { storage } from './storage';
-import { uploadMiddleware } from './uploadMiddleware';
+import { publicAPIMiddleware } from '../auth/publicAPIMiddleware.js';
+import { createError } from '../utils/index.js';
+import { User } from '#api/users.v2/model/User.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
-const processEntityDocument = async (req, entitySharedId) => {
-  const file = req.files.find(_file => _file.fieldname.includes('file'));
-  if (file) {
-    await storage.storeFile(file.filename, createReadStream(file.path), 'document');
-    await processDocument(entitySharedId, file);
-    await search.indexEntities({ sharedId: entitySharedId }, '+fullText');
-    req.emitToSessionSocket('documentProcessed', entitySharedId);
+const getPublicUser = async () => {
+  const usersModel = getConnection().collection('users');
+  const publicUser = await usersModel.findOne({ _id: PUBLIC_USER_ID });
+
+  if (!publicUser) {
+    throw createError('Public user not configured. Migration required.', 500);
   }
+
+  return publicUser;
 };
 
 const routes = app => {
@@ -36,45 +38,21 @@ const routes = app => {
   app.post(
     '/api/public',
     cors(corsOptions),
-    uploadMiddleware.multiple(),
+    (req, res, next) => new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next),
     publicAPIMiddleware,
     activitylogMiddleware,
     (req, _res, next) => {
       try {
         req.body.entity = JSON.parse(req.body.entity);
-        if (req.body.email) {
-          req.body.email = JSON.parse(req.body.email);
-        }
       } catch (err) {
         next(err);
         return;
       }
       next();
     },
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        body: {
-          type: 'object',
-          properties: {
-            email: {
-              type: 'object',
-              properties: {
-                to: { type: 'string' },
-                from: { type: 'string' },
-                text: { type: 'string' },
-                html: { type: 'string' },
-                subject: { type: 'string' },
-              },
-              required: ['to', 'from', 'text', 'subject'],
-            },
-          },
-        },
-      },
-    }),
     async (req, res, next) => {
       const { allowedPublicTemplates } = await settings.get();
-      const { entity, email } = req.body;
+      const { entity } = req.body;
 
       if (entity._id) {
         next(createError('Unauthorized _id property', 403));
@@ -86,24 +64,31 @@ const routes = app => {
         return;
       }
 
-      const result = await withTransaction(async () => {
-        const { entity: savedEntity } = await saveEntity(entity, {
-          user: {},
-          language: req.language,
-          socketEmiter: req.emitToSessionSocket,
-          files: req.files,
-        });
+      try {
+        const userForContext = req.user || (await getPublicUser());
 
-        await processEntityDocument(req, savedEntity.sharedId);
-
-        if (email) {
-          await mailer.send(email);
+        if (!req.user) {
+          req.user = userForContext;
         }
 
-        return savedEntity;
-      }, 'POST /api/public');
+        permissionsContext.setUserInContext(userForContext);
+        ExecutionContext.actor = User.createFrom(userForContext);
 
-      res.json(result);
+        const result = await EntityFacade.create(entity, req.language, req.inputFiles);
+
+        const entityDAO = new MongoEntitiesDAO(
+          getConnection(),
+          TransactionManagerFactory.default(),
+          User.createFrom(userForContext)
+        );
+        const entityWithFiles = await entityDAO
+          .getWithFiles({ language: req.language, sharedId: result.sharedId })
+          .next();
+
+        res.json(entityWithFiles);
+      } catch (error) {
+        next(error);
+      }
     }
   );
 

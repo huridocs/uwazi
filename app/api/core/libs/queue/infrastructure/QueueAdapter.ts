@@ -1,3 +1,5 @@
+import { Params } from '../application/contracts/Dispatchable.js';
+
 export interface Job {
   id: string;
   queue: string;
@@ -21,5 +23,5 @@ export interface QueueAdapter {
   markJobAsFailed(job: Job): Promise<Job>;
   updateLockWindow(job: Job, newLockWindow: number): Promise<Job>;
   deleteJob(job: Job): Promise<void>;
-  moveToFailedJobs(job: Job): Promise<void>;
+  deleteByParams(jobName: string, params: Partial<Params>, tenantName: string): Promise<void>;
 }

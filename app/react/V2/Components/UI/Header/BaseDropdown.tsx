@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback, ReactNode } from 'react';
-import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
+import { useOnClickOutsideElement } from '#app/utils/useOnClickOutsideElementHook.js';
 
 export interface BaseDropdownProps {
   trigger: ReactNode;
@@ -9,6 +9,7 @@ export interface BaseDropdownProps {
   onToggle?: (isOpen: boolean) => void;
   isOpen?: boolean;
   defaultOpen?: boolean;
+  align?: 'left' | 'right';
 }
 
 export const BaseDropdown: React.FC<BaseDropdownProps> = ({
@@ -19,6 +20,7 @@ export const BaseDropdown: React.FC<BaseDropdownProps> = ({
   onToggle,
   isOpen: controlledIsOpen,
   defaultOpen = false,
+  align = 'left',
 }) => {
   const [internalIsOpen, setInternalIsOpen] = useState(defaultOpen);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -45,14 +47,21 @@ export const BaseDropdown: React.FC<BaseDropdownProps> = ({
 
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
-      {React.cloneElement(trigger as React.ReactElement, {
-        onClick: toggleDropdown,
-      })}
+      {React.isValidElement(trigger)
+        ? React.cloneElement(trigger, {
+            onClick: (event: React.MouseEvent) => {
+              trigger.props.onClick?.(event);
+              if (!event.defaultPrevented) toggleDropdown();
+            },
+          })
+        : trigger}
 
       <ul
         className={`${dropdownClassName} ${
           isOpen
-            ? 'absolute top-full left-0 mt-1 min-w-max bg-white border border-gray-200 rounded-md shadow-lg z-50'
+            ? `header-bar-panel absolute top-full mt-1.5 min-w-max z-50 ${
+                align === 'right' ? 'right-0' : 'left-0'
+              }`
             : 'absolute left-[-9999px] top-0 w-0 h-0 overflow-hidden'
         }`}
         aria-hidden={!isOpen}

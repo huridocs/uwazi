@@ -12,7 +12,7 @@ const Pill = ({ children, color = 'gray', className }: PillProps) => {
 
   switch (color) {
     case 'gray':
-      pillColors = 'bg-gray-100';
+      pillColors = 'bg-(--color-theme-surface-warm) text-ink-secondary';
       break;
 
     case 'yellow':
@@ -28,7 +28,7 @@ const Pill = ({ children, color = 'gray', className }: PillProps) => {
       pillColors = 'bg-red-100 text-red-800';
       break;
     case 'indigo':
-      pillColors = 'bg-indigo-100 text-indigo-800';
+      pillColors = 'bg-primary-100 text-indigo-800';
       break;
 
     default:
@@ -37,7 +37,9 @@ const Pill = ({ children, color = 'gray', className }: PillProps) => {
   }
   return (
     <span
-      className={`${className} ${pillColors} px-2.5 py-1 rounded-md text-xs `}
+      className={[className, pillColors, 'px-2.5 py-1 rounded-md text-xs']
+        .filter(Boolean)
+        .join(' ')}
       data-testid="pill-comp"
     >
       {children}

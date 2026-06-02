@@ -1,6 +1,6 @@
-import { PropertyTypeInvalidTypeError } from '../errors';
-import { NumericProperty } from '../NumericProperty';
-import { PropertyTypeEnum } from '../PropertyType';
+import { PropertyTypeInvalidTypeError } from '../errors.js';
+import { NumericProperty } from '../NumericProperty.js';
+import { PropertyTypeEnum } from '../PropertyType.js';
 
 describe('NumericProperty', () => {
   it('should set defaults values if not provided', () => {
@@ -37,6 +37,7 @@ describe('NumericProperty', () => {
         name: numeric.name,
         value: [{ value: 42 }],
         type: numeric.type,
+        isTranslatable: false,
       });
     });
 
@@ -49,6 +50,7 @@ describe('NumericProperty', () => {
         name: numeric.name,
         value: [{ value: 42 }],
         type: numeric.type,
+        isTranslatable: false,
       });
     });
 
@@ -61,6 +63,7 @@ describe('NumericProperty', () => {
         name: numeric.name,
         value: [],
         type: numeric.type,
+        isTranslatable: false,
       });
     });
 
@@ -94,7 +97,48 @@ describe('NumericProperty', () => {
         name: numeric.name,
         value: [],
         type: numeric.type,
+        isTranslatable: false,
       });
+    });
+
+    it('should handle whitespace-only strings by coercing to 0', () => {
+      const numeric = new NumericProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = numeric.createPropertyAssignment({ value: [{ value: '   ' } as any] });
+
+      expect(assignment).toEqual({
+        name: numeric.name,
+        value: [{ value: 0 }], // Whitespace coerced to 0
+        type: numeric.type,
+        isTranslatable: false,
+      });
+    });
+
+    it('should handle null and undefined values', () => {
+      const numeric = new NumericProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment1 = numeric.createPropertyAssignment({ value: [{ value: null } as any] });
+      expect(assignment1.value).toEqual([]);
+
+      const assignment2 = numeric.createPropertyAssignment({
+        value: [{ value: undefined } as any],
+      });
+      expect(assignment2.value).toEqual([]);
+    });
+
+    it('should throw if required and empty string provided', () => {
+      const numeric = new NumericProperty({
+        id: 'any_id',
+        label: 'A Title',
+        template: 'any',
+        required: true,
+      });
+
+      expect(() =>
+        numeric.createPropertyAssignment({ value: [{ value: '' } as any] }, true)
+      ).toThrow('Numeric Property is required');
+
+      // Note: Whitespace strings are coerced to 0, so they don't get filtered out
     });
   });
 });

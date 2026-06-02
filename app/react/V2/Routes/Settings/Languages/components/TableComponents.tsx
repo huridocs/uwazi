@@ -1,24 +1,24 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { StarIcon } from '@heroicons/react/20/solid';
-import { Translate } from 'app/I18N';
-import { Button } from 'V2/Components/UI/Button';
+import { Translate } from '#app/I18N/index.js';
+import { Button } from '#V2/Components/UI/Button.js';
 import { CellContext } from '@tanstack/react-table';
-import { TableLanguages } from '../LanguagesList';
+import { TableLanguages } from '../LanguagesList.js';
 
 const DefaultButton = ({ cell, column }: CellContext<TableLanguages, boolean>) => (
   <Button
-    styling={cell.row.original.default ? 'solid' : 'light'}
+    variant={cell.row.original.default ? 'primary' : 'secondary'}
     onClick={async () => column.columnDef.meta?.action?.(cell.row)}
     className="leading-4"
   >
     <Translate className="sr-only">Default</Translate>
     <StarIcon
-      className={`${
+      className={
         !cell.row.original.default
-          ? ' w-4 text-white stroke-current stroke-gray-300 stroke-2'
-          : 'w-4'
-      }`}
+          ? 'w-4 text-(--color-theme-button-secondary-bg) stroke-(--color-theme-border-default) stroke-2'
+          : 'w-4 text-white'
+      }
     />
   </Button>
 );
@@ -26,7 +26,7 @@ const DefaultButton = ({ cell, column }: CellContext<TableLanguages, boolean>) =
 const UninstallButton = ({ cell, column }: CellContext<TableLanguages, string>) =>
   !cell.row.original.default ? (
     <Button
-      styling="light"
+      variant="ghost"
       onClick={() => column.columnDef.meta?.action?.(cell.row)}
       className="leading-4"
     >
@@ -39,7 +39,7 @@ const UninstallButton = ({ cell, column }: CellContext<TableLanguages, string>) 
 const ResetButton = ({ cell, column }: CellContext<TableLanguages, string>) =>
   cell.row.original.translationAvailable ? (
     <Button
-      styling="light"
+      variant="ghost"
       onClick={() => column.columnDef.meta?.action?.(cell.row)}
       className="leading-4"
     >

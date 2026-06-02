@@ -1,44 +1,51 @@
 import loadable from '@loadable/component';
 
 import { Link } from 'react-router';
-import { Icon } from 'UI';
-import Counter from './Counter';
-import ContactForm from './ContactForm';
-import { EntityData } from './EntityData';
-import { EntitySection } from './EntitySection';
-import EntityLink from './EntityLink';
-import ItemList from './ItemList';
-import Repeat from './Repeat';
-import Context from './Context';
-import Map from './Map';
-import MarkdownLink from './MarkdownLink';
-import MarkdownMedia from './MarkdownMedia';
-import PayPalDonateLink from './PayPalDonateLink';
-import PublicForm from './PublicForm';
-import Value from './Value';
-import SearchBox from './SearchBox';
-import EntityInfo from './EntityInfo';
+import { Icon } from '#app/UI/index.js';
+import { Counter } from './Counter.js';
+import { ContactForm } from './ContactForm.js';
+import { EntityData } from './EntityData.js';
+import { EntitySection } from './EntitySection.js';
+import { EntityLink } from './EntityLink.js';
+import { ItemList } from './ItemList.js';
+import { Repeat } from './Repeat.js';
+import { Context } from './Context.js';
+import { MarkdownMap as Map } from './Map.js';
+import { MarkdownLink } from './MarkdownLink.js';
+import { MarkdownMedia } from './MarkdownMedia.js';
+import { PayPalDonateLink } from './PayPalDonateLink.js';
+import { PublicForm } from './PublicForm.js';
+import { Value } from './Value.js';
+import { SearchBox } from './SearchBox.js';
+import { EntityInfo } from './EntityInfo.js';
 
 const BarChart = loadable(
-  async () => import(/* webpackChunkName: "LazyLoadBarChart" */ './BarChart.js')
+  () => import(/* webpackChunkName: "LazyLoadBarChart" */ './BarChart.js'),
+  { resolveComponent: m => m.BarChartComponent }
 );
 const FreeBarChart = loadable(
-  async () => import(/* webpackChunkName: "LazyLoadFreeBarChart" */ './FreeBarChart.tsx')
+  () => import(/* webpackChunkName: "LazyLoadFreeBarChart" */ './FreeBarChart.tsx'),
+  { resolveComponent: m => m.FreeBarChart }
 );
 
 const Slideshow = loadable(
-  async () => import(/* webpackChunkName: "LazyLoadSlideshow" */ './Slideshow.js')
+  () => import(/* webpackChunkName: "LazyLoadSlideshow" */ './Slideshow.js'),
+  { resolveComponent: m => m.Slideshow }
 );
 
 const PieChart = loadable(
-  async () => import(/* webpackChunkName: "LazyLoadPieChart" */ './PieChart.js')
+  () => import(/* webpackChunkName: "LazyLoadPieChart" */ './PieChart.js'),
+  { resolveComponent: m => m.PieChart }
 );
 
 const ListChart = loadable(
-  async () => import(/* webpackChunkName: "LazyLoadListChart" */ './ListChart.js')
+  () => import(/* webpackChunkName: "LazyLoadListChart" */ './ListChart.js'),
+  { resolveComponent: m => m.ListChart }
 );
+
 const GaugeChart = loadable(
-  async () => import(/* webpackChunkName: "LazyLoadGaugeChart" */ './GaugeChart.js')
+  () => import(/* webpackChunkName: "LazyLoadGaugeChart" */ './GaugeChart.js'),
+  { resolveComponent: m => m.GaugeChart }
 );
 
 export {

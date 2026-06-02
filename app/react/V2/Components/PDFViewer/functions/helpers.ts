@@ -1,3 +1,5 @@
+import { scrollIntoView } from '#app/V2/helpers/scrollIntoView.js';
+
 const triggerScroll = (ref: React.RefObject<HTMLDivElement>, frameId: number): number => {
   let attempts = 0;
   let id = frameId;
@@ -8,7 +10,7 @@ const triggerScroll = (ref: React.RefObject<HTMLDivElement>, frameId: number): n
     }
 
     if (ref.current && ref.current.clientHeight > 0) {
-      ref.current.scrollIntoView({ behavior: 'instant' });
+      scrollIntoView(ref.current);
       return;
     }
 

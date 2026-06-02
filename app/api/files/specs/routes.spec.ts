@@ -1,32 +1,35 @@
-import { Application, NextFunction, Request, Response } from 'express';
+/* eslint-disable max-statements */
+import type { Application, NextFunction, Request, Response } from 'express';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 
-import { spyOnEmit, toEmitEvent, toEmitEventWith } from 'api/core/libs/eventsbus/eventTesting';
-import entities from 'api/entities';
-import { editorUser } from 'api/entities/specs/entitySavingManagerFixtures';
-// import { legacyLogger } from 'api/log';
-import connections from 'api/relationships';
-import { search } from 'api/search';
-import * as ocrRecords from 'api/services/ocr/ocrRecords';
-import { appContext } from 'api/utils/AppContext';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { setUpApp, socketEmit } from 'api/utils/testingRoutes';
-import db from 'api/utils/testing_db';
-import { FileType } from 'shared/types/fileType';
-import { UserSchema } from 'shared/types/userType';
-import { FileCreatedEvent } from '../events/FileCreatedEvent';
-import { FileUpdatedEvent } from '../events/FileUpdatedEvent';
-import { FilesDeletedEvent } from '../events/FilesDeletedEvent';
-import { files } from '../files';
-import jsRoutes from '../jsRoutes';
-import uploadRoutes from '../routes';
-import { storage } from '../storage';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { spyOnEmit, toEmitEvent, toEmitEventWith } from '#api/core/libs/eventsbus/eventTesting.js';
+import entities from '#api/entities/index.js';
+import { editorUser } from '#api/entities/specs/entitySavingManagerFixtures.js';
+import connections from '#api/relationships/index.js';
+import { search } from '#api/search/index.js';
+import * as ocrRecords from '#api/services/ocr/ocrRecords.js';
+import { registerEventListeners as registerOcrListeners } from '#api/services/ocr/eventListeners.js';
+import { appContext } from '#api/utils/AppContext.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import db from '#api/utils/testing_db.js';
+import { FileType } from '#shared/types/fileType.js';
+import { UserSchema } from '#shared/types/userType.js';
+import { FileCreatedEvent } from '../events/FileCreatedEvent.js';
+import { FileUpdatedEvent } from '../events/FileUpdatedEvent.js';
+import { FilesDeletedEvent } from '../events/FilesDeletedEvent.js';
+import { files } from '../files.js';
+import jsRoutes from '../jsRoutes.js';
+import uploadRoutes from '../routes.js';
+import { storage } from '../storage.js';
 import {
   adminUser,
   allowedPublicTemplate,
   collabUser,
   customFileId,
+  downloadFixtures,
   externalUrlFileId,
   fixtures,
   readOnlyUploadId,
@@ -34,9 +37,11 @@ import {
   uploadId,
   uploadId2,
   writerUser,
-} from './fixtures';
+} from './fixtures.js';
 
 expect.extend({ toEmitEvent, toEmitEventWith });
+
+registerOcrListeners(applicationEventsBus);
 
 describe('files routes', () => {
   let requestMockedUser: UserSchema = collabUser;
@@ -55,7 +60,7 @@ describe('files routes', () => {
   };
 
   beforeEach(async () => {
-    jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
+    // jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     await testingEnvironment.setUp(fixtures);
     mockCurrentUser(collabUser);
@@ -67,9 +72,11 @@ describe('files routes', () => {
     describe('editor user', () => {
       it('should not have permissions to post files that are of type custom', async () => {
         mockCurrentUser(editorUser);
-        const response = await request(app)
-          .post('/api/files')
-          .send({ _id: uploadId.toString(), originalname: 'custom_file', type: 'custom' });
+        const response = await request(app).post('/api/files').send({
+          _id: uploadId.toString(),
+          originalname: 'custom_file',
+          type: 'custom',
+        });
 
         expect(response.status).toBe(404);
       });
@@ -78,22 +85,25 @@ describe('files routes', () => {
     describe('collaborator user', () => {
       it('should allow modification if and only if user has write permission for the entity', async () => {
         mockCurrentUser(collabUser);
-        let response = await request(app)
-          .post('/api/files')
-          .send({ _id: restrictedUploadId2.toString(), originalname: 'changed' });
+        let response = await request(app).post('/api/files').send({
+          _id: restrictedUploadId2.toString(),
+          originalname: 'changed',
+        });
 
         expect(response.status).toBe(404);
 
         mockCurrentUser(writerUser);
-        response = await request(app)
-          .post('/api/files')
-          .send({ _id: restrictedUploadId2.toString(), originalname: 'changed2' });
+        response = await request(app).post('/api/files').send({
+          _id: restrictedUploadId2.toString(),
+          originalname: 'changed2',
+        });
 
         expect(response.status).toBe(200);
 
-        response = await request(app)
-          .post('/api/files')
-          .send({ _id: readOnlyUploadId.toString(), originalname: 'changed read only' });
+        response = await request(app).post('/api/files').send({
+          _id: readOnlyUploadId.toString(),
+          originalname: 'changed read only',
+        });
 
         expect(response.status).toBe(404);
       });
@@ -102,7 +112,11 @@ describe('files routes', () => {
         mockCurrentUser(collabUser);
         await request(app)
           .post('/api/files')
-          .send({ _id: uploadId.toString(), originalname: 'custom_file', type: 'custom' })
+          .send({
+            _id: uploadId.toString(),
+            originalname: 'custom_file',
+            type: 'custom',
+          })
           .expect(404);
       });
     });
@@ -112,7 +126,11 @@ describe('files routes', () => {
         mockCurrentUser(adminUser);
         await request(app)
           .post('/api/files')
-          .send({ _id: uploadId.toString(), originalname: 'newName', entity: 'sharedId1' })
+          .send({
+            _id: uploadId.toString(),
+            originalname: 'newName',
+            entity: 'sharedId1',
+          })
           .expect(200);
       });
 
@@ -126,7 +144,12 @@ describe('files routes', () => {
       });
 
       it('should reindex all entities that are related to the saved file', async () => {
-        expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'sharedId1' }, '+fullText');
+        expect(search.indexEntities).toHaveBeenCalledWith(
+          {
+            sharedId: 'sharedId1',
+          },
+          '+fullText'
+        );
       });
 
       it(`should emit a ${FileUpdatedEvent.name} an existing file as been saved`, async () => {
@@ -143,14 +166,25 @@ describe('files routes', () => {
                 name: 'propertyName',
                 selection: {
                   text: 'something',
-                  selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+                  selectionRectangles: [
+                    {
+                      top: 0,
+                      left: 0,
+                      width: 0,
+                      height: 0,
+                      page: '1',
+                    },
+                  ],
                 },
               },
             ],
           });
 
         const [after] = await files.get({ _id: uploadId });
-        emitSpy.expectToEmitEventWith(FileUpdatedEvent, { before: original, after });
+        emitSpy.expectToEmitEventWith(FileUpdatedEvent, {
+          before: original,
+          after,
+        });
         emitSpy.restore();
       });
 
@@ -171,18 +205,22 @@ describe('files routes', () => {
 
       describe('when external url file', () => {
         it('should guess the mimetype', async () => {
-          await request(app)
-            .post('/api/files')
-            .send({ url: 'https://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
+          await request(app).post('/api/files').send({
+            url: 'https://awesomecats.org/ahappycat.png',
+            originalname: 'A Happy Cat',
+          });
 
-          const [file]: FileType[] = await files.get({ originalname: 'A Happy Cat' });
+          const [file]: FileType[] = await files.get({
+            originalname: 'A Happy Cat',
+          });
           expect(file.mimetype).toBe('image/png');
         });
 
         it('should return a validation error for a no secured url', async () => {
-          const rest = await request(app)
-            .post('/api/files')
-            .send({ url: 'http://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
+          const rest = await request(app).post('/api/files').send({
+            url: 'http://awesomecats.org/ahappycat.png',
+            originalname: 'A Happy Cat',
+          });
 
           expect(rest.status).toBe(400);
         });
@@ -199,7 +237,9 @@ describe('files routes', () => {
         .expect(200);
 
       expect(response.body.map((file: FileType) => file.originalname)).toEqual([
+        '테스트 한글chinese-file',
         'publicEntityFile',
+        'fileNotInDisk',
         'restrictedUpload',
         'restrictedUpload2',
         'readOnlyUpload',
@@ -215,8 +255,8 @@ describe('files routes', () => {
         .expect(200);
 
       expect(response.body.map((file: FileType) => file.originalname)).toEqual([
+        '테스트 한글chinese-file',
         'publicEntityFile',
-        'upload1',
         'fileNotInDisk',
         'restrictedUpload',
         'restrictedUpload2',
@@ -228,59 +268,68 @@ describe('files routes', () => {
     it('should only allow properly typed id and type parameters in the query', async () => {
       mockCurrentUser(adminUser);
 
-      await request(app).get('/api/files').query({ $where: '1===1' }).expect(400);
+      expect(await request(app).get('/api/files').query({ $where: '1===1' })).toHaveStatus(400);
 
-      await request(app)
-        .get('/api/files')
-        .query({ type: { $exists: 1 } })
-        .expect(400);
+      expect(
+        await request(app)
+          .get('/api/files')
+          .query({ type: { $exists: 1 } })
+      ).toHaveStatus(400);
 
       const response: SuperTestResponse = await request(app)
         .get('/api/files')
-        .query({ _id: uploadId.toString(), type: 'document' })
-        .expect(200);
+        .query({ _id: uploadId.toString(), type: 'document' });
 
-      expect(response.body.map((file: FileType) => file.originalname)).toEqual(['upload1']);
+      expect(response).toHaveStatus(200);
+      expect(response.body.map((file: FileType) => file.filename)).toEqual([
+        'english_testing_file.pdf',
+      ]);
     });
   });
 
-  describe('DELETE/api/files', () => {
-    beforeEach(() => {
+  describe('DELETE /api/files', () => {
+    beforeEach(async () => {
+      await testingEnvironment.setUp(fixtures);
       mockCurrentUser(adminUser);
     });
 
     it('should properly delete files that are external urls', async () => {
-      await request(app)
+      const response = await request(app)
         .delete('/api/files')
-        .query({ _id: externalUrlFileId.toString() })
-        .expect(200);
+        .query({ _id: externalUrlFileId.toString() });
+
+      expect(response).toHaveStatus(200);
 
       const [file] = await files.get({ _id: externalUrlFileId.toString() });
       expect(file).toBeUndefined();
     });
 
-    it('should not allow any extra parameters aside from a properly typed id', async () => {
-      await request(app)
-        .delete('/api/files')
-        .query({ _id: 'someid', __property__: 'should_not_be_here' })
-        .expect(400);
+    it('should return an array with the deleted file in the response', async () => {
+      const [fileBeforeDelete] = await files.get({ _id: uploadId2.toString() });
 
-      await request(app)
-        .delete('/api/files')
-        .query({ _id: { $eq: 1234 } })
-        .expect(400);
+      const response = await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
+
+      expect(response).toHaveStatus(200);
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body).toHaveLength(1);
+      expect(response.body[0]).toMatchObject({
+        _id: uploadId2.toString(),
+        originalname: fileBeforeDelete.originalname,
+        entity: fileBeforeDelete.entity,
+      });
     });
 
     it('should delete upload and return the response', async () => {
-      await socketEmit('conversionFailed', async () =>
-        request(app)
-          .post('/api/files/upload/document')
-          .attach('file', path.join(__dirname, 'test.txt'))
-      );
+      await request(app)
+        .post('/api/files/upload/document')
+        .field('entity', 'sharedId1')
+        .attach('file', path.join(__dirname, 'test.txt'));
 
       const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
 
-      await request(app).delete('/api/files').query({ _id: file._id?.toString() });
+      await request(app).delete('/api/files').query({
+        _id: file._id?.toString(),
+      });
 
       expect(await storage.fileExists(file.filename!, 'document')).toBe(false);
     });
@@ -290,13 +339,15 @@ describe('files routes', () => {
       let response = await request(app)
         .delete('/api/files')
         .query({ _id: restrictedUploadId2.toString() });
-      expect(response.status).toBe(404);
+
+      expect(response).toHaveStatus(404);
 
       mockCurrentUser(writerUser);
       response = await request(app)
         .delete('/api/files')
         .query({ _id: restrictedUploadId2.toString() });
-      expect(response.status).toBe(200);
+
+      expect(response).toHaveStatus(200);
     });
 
     it('should allow deletion of custom files only if the user is an admin', async () => {
@@ -307,16 +358,26 @@ describe('files routes', () => {
       expect(response.status).toBe(404);
 
       mockCurrentUser(collabUser);
-      response = await request(app).delete('/api/files').query({ _id: customFileId.toString() });
+      response = await request(app).delete('/api/files').query({
+        _id: customFileId.toString(),
+      });
       expect(response.status).toBe(404);
 
       mockCurrentUser(adminUser);
-      response = await request(app).delete('/api/files').query({ _id: customFileId.toString() });
+      response = await request(app).delete('/api/files').query({
+        _id: downloadFixtures.customPDF._id.toString(),
+      });
       expect(response.status).toBe(200);
     });
 
     it('should reindex all entities that are related to the files deleted', async () => {
-      await request(app).delete('/api/files').query({ _id: uploadId2.toString() }).expect(200);
+      // @ts-ignore
+      search.indexEntities.mockReset();
+      const response = await request(app).delete('/api/files').query({
+        _id: uploadId2.toString(),
+      });
+
+      expect(response).toHaveStatus(200);
 
       expect(search.indexEntities).toHaveBeenCalledWith(
         { sharedId: { $in: ['sharedId1'] } },
@@ -325,7 +386,9 @@ describe('files routes', () => {
     });
 
     it('should delete all connections related to the file', async () => {
-      await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
+      await request(app).delete('/api/files').query({
+        _id: uploadId2.toString(),
+      });
 
       const allConnections = await connections.get();
       expect(allConnections.length).toBe(2);
@@ -335,7 +398,9 @@ describe('files routes', () => {
 
     it('should cleanup the ocr records related to the file', async () => {
       const ocrCleanupSpy = jest.spyOn(ocrRecords, 'cleanupRecordsOfFiles');
-      await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
+      await request(app).delete('/api/files').query({
+        _id: uploadId2.toString(),
+      });
       expect(ocrCleanupSpy).toHaveBeenCalledWith([uploadId2]);
     });
 
@@ -343,8 +408,13 @@ describe('files routes', () => {
       it(`should emit a ${FilesDeletedEvent.name} when a file is deleted`, async () => {
         const emitSpy = spyOnEmit();
 
-        const file = await db.mongodb?.collection('files').findOne({ _id: uploadId2 });
-        await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
+        const file = await db.mongodb?.collection('files').findOne({
+          _id: uploadId2,
+        });
+        const response = await request(app).delete('/api/files').query({
+          _id: uploadId2.toString(),
+        });
+        expect(response).toHaveStatus(200);
 
         emitSpy.expectToEmitEventWith(FilesDeletedEvent, { files: [file!] });
         emitSpy.restore();
@@ -356,7 +426,8 @@ describe('files routes', () => {
         .delete('/api/files')
         .query({ _id: { test: 'test' } });
 
-      expect(response.body.errors[0].message).toBe('must be string');
+      expect(response.status).toBe(422);
+      expect(response.body.error).toContain('Expected string, received object');
     });
 
     describe('api/files/tocReviewed', () => {
@@ -399,52 +470,6 @@ describe('files routes', () => {
     });
   });
 
-  describe('POST/files/attachment', () => {
-    it('should save file on the body', async () => {
-      const entityId = db.id();
-      await request(app)
-        .post('/api/files/upload/attachment')
-        .field('entity', entityId.toString())
-        .attach('file', Buffer.from('attachment content'), 'Dont bring me down - 1979')
-        .expect(200);
-
-      const [attachment] = await files.get({ entity: entityId.toString() });
-      expect(attachment).toEqual(
-        expect.objectContaining({
-          originalname: 'Dont bring me down - 1979',
-          type: 'attachment',
-        })
-      );
-    });
-  });
-
-  describe('POST/files/upload/*', () => {
-    describe.each(['document', 'attachment'] as FileType['type'][])('when file is a %s', type => {
-      it.each(['Hello, World.pdf', 'Aló mundo.pdf', 'Привет, мир.pdf', '헬로월드.pdf'])(
-        'should accept the filename %s in a field',
-        async filename => {
-          let res: request.Response;
-          if (type === 'document') {
-            res = await socketEmit('documentProcessed', async () =>
-              request(app)
-                .post(`/api/files/upload/${type}`)
-                .field('originalname', filename)
-                .attach('file', path.join(__dirname, filename))
-            );
-          } else {
-            res = await request(app)
-              .post(`/api/files/upload/${type}`)
-              .field('originalname', filename)
-              .attach('file', path.join(__dirname, filename));
-          }
-          expect(res.status).toBe(200);
-          const [file]: FileType[] = await files.get({ originalname: filename, type });
-          expect(file).not.toBe(undefined);
-        }
-      );
-    });
-  });
-
   describe('api/public', () => {
     it('should run as a transaction', async () => {
       const jsRoutesApp: Application = setUpApp(
@@ -464,7 +489,10 @@ describe('files routes', () => {
         .set('Bypass-Captcha', 'true')
         .field(
           'entity',
-          JSON.stringify({ title: 'my entity', template: allowedPublicTemplate.toString() })
+          JSON.stringify({
+            title: 'my entity',
+            template: allowedPublicTemplate.toString(),
+          })
         )
         .attach('attachments[0]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español')
         .field('attachments_originalname[0]', 'Nombre en español')

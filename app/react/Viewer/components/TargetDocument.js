@@ -1,16 +1,16 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { setTargetSelection, unsetTargetSelection } from 'app/Viewer/actions/selectionActions';
-import Document from 'app/Viewer/components/Document';
+import { setTargetSelection, unsetTargetSelection } from '#app/Viewer/actions/selectionActions.js';
+import { Document } from '#app/Viewer/components/Document.js';
 import {
   highlightReference,
   selectReference,
   deactivateReference,
-} from 'app/Viewer/actions/uiActions';
-import { selectTargetDoc, selectTargetReferences } from '../selectors';
+} from '#app/Viewer/actions/uiActions.js';
+import { selectTargetDoc, selectTargetReferences } from '../selectors.js';
 
-import TargetDocumentHeader from './TargetDocumentHeader';
+import { TargetDocumentHeaderConnected as TargetDocumentHeader } from './TargetDocumentHeader.js';
 
 const mapStateToProps = state => {
   const { documentViewer } = state;
@@ -44,4 +44,5 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Document);
+const TargetDocument = connect(mapStateToProps, mapDispatchToProps)(Document);
+export { TargetDocument };

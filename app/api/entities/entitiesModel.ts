@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import { instanceModelWithPermissions } from 'api/odm/ModelWithPermissions';
-import { MetadataObjectSchema, PropertyValueSchema } from 'shared/types/commonTypes';
-import { EntitySchema } from 'shared/types/entityType';
+import { instanceModelWithPermissions } from '#api/odm/ModelWithPermissions.js';
+import { MetadataObjectSchema, PropertyValueSchema } from '#shared/types/commonTypes.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
 export interface MetadataObject<T extends PropertyValueSchema> extends MetadataObjectSchema {
   value: T | null;
@@ -27,6 +27,7 @@ const mongoSchema = new mongoose.Schema(
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
     permissions: { type: mongoose.Schema.Types.Mixed, select: false },
     obsoleteMetadata: { type: [String] },
+    preview: { type: String },
   },
   { minimize: false }
 );

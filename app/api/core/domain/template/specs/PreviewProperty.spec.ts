@@ -1,6 +1,6 @@
-import { PropertyTypeInvalidTypeError } from '../errors';
-import { PreviewProperty } from '../PreviewProperty';
-import { PropertyTypeEnum } from '../PropertyType';
+import { PropertyTypeInvalidTypeError } from '../errors.js';
+import { PreviewProperty } from '../PreviewProperty.js';
+import { PropertyTypeEnum } from '../PropertyType.js';
 
 describe('PreviewProperty', () => {
   it('should set defaults values if not provided', () => {
@@ -36,6 +36,7 @@ describe('PreviewProperty', () => {
       expect(assignment).toEqual({
         name: preview.name,
         type: preview.type,
+        isTranslatable: true,
         value: [],
       });
     });

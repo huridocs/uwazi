@@ -1,15 +1,15 @@
-import { ArrayUtils } from 'api/common.v2/utils/Array'; // Todo
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource'; // Todo
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource'; // Todo
-import { DefaultTemplateDeletionError, TemplateInUseError } from '../domain/template/errors';
-import { TemplateDeletedEvent } from '../domain/template/events/TemplateDeletedEvent';
-import { TemplateUpdatedEvent } from '../domain/template/events/TemplateUpdatedEvent';
-import { TemplatesDataSource } from './contracts/TemplatesDataSource';
-import { AbstractUseCase } from '../libs/UseCase';
-import { TemplatePostProcessService } from './TemplatePostProcessService';
-import { MongoTemplateMapper } from '../infrastructure/mongodb/template/MongoTemplateMapper';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js'; // Todo
+import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js'; // Todo
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js'; // Todo
+import { DefaultTemplateDeletionError, TemplateInUseError } from '../domain/template/errors.js';
+import { TemplateDeletedEvent } from '../domain/template/events/TemplateDeletedEvent.js';
+import { TemplateUpdatedEvent } from '../domain/template/events/TemplateUpdatedEvent.js';
+import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
+import { AbstractUseCase } from '../libs/UseCase.js';
+import { TemplatePostProcessService } from './TemplatePostProcessService.js';
+import { MongoTemplateMapper } from '../infrastructure/mongodb/template/MongoTemplateMapper.js';
 
 type Input = {
   templateId: string;
@@ -26,7 +26,7 @@ type Deps = {
 };
 
 class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
-  protected async executeAsync({ templateId }: Input): Promise<Output> {
+  async execute({ templateId }: Input): Promise<Output> {
     const templateToBeDeleted = (await this.deps.templatesDS.getById(templateId)).getData();
     if (!templateToBeDeleted) {
       return { templateId };
@@ -44,7 +44,7 @@ class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
 
     const service = new TemplatePostProcessService({
       ...this.deps,
-      jobsDispatcher: this.jobsDispatcher,
+      dispatcher: this.dispatcher,
       entitiesDS: this.deps.multiLanguageEntitiesDS,
     });
 

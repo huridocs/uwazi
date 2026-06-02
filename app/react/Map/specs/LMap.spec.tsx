@@ -11,17 +11,18 @@ import {
   waitFor,
   render as renderComponent,
 } from '@testing-library/react';
-import { Map } from 'app/Map';
-import * as MapHelper from 'app/Map/MapHelper';
+
+import { Map } from '#app/Map/index.jsx';
+import * as MapHelper from '#app/Map/MapHelper.jsx';
 import {
   deletedEntityAtom,
   localeAtom,
   settingsAtom,
   templatesAtom,
   translationsAtom,
-} from 'V2/atoms';
+} from '#V2/atoms/index.js';
 
-jest.mock('app/Map/GoogleMapLayer', () => ({
+jest.mock('#app/Map/GoogleMapLayer', () => ({
   getGoogleLayer: jest.fn(),
 }));
 
@@ -110,7 +111,7 @@ describe('Map', () => {
         const presentation = renderResult.container.querySelector('.leaflet-tile') as HTMLElement;
         // @ts-ignore
         expect(presentation.src).toEqual(
-          'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/1/1/0?access_token=abd'
+          'https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/1/1/0?access_token=abd'
         );
         // @ts-ignore
         expect(presentation._leaflet_pos).toEqual({

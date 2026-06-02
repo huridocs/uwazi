@@ -22,15 +22,15 @@ import {
 } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Translate } from 'app/I18N';
-import { DraggableRow, RowDragHandleCell, DnDHeader } from './DnDComponents';
-import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSelectComponents';
-import { dndSortHandler, getRowIds } from './helpers';
-import { SortingChevrons } from './SortingChevrons';
-import { GroupCell, GroupHeader } from './GroupComponents';
-import { NoDataRow } from './NoDataRow';
-import { DefaultNoDataMessage } from './DefaultNoDataMessage';
-import { Button } from '../Button';
+import { Translate } from '#app/I18N/index.js';
+import { DraggableRow, RowDragHandleCell, DnDHeader } from './DnDComponents.js';
+import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSelectComponents.js';
+import { dndSortHandler, getRowIds } from './helpers.js';
+import { SortingChevrons } from './SortingChevrons.js';
+import { GroupCell, GroupHeader } from './GroupComponents.js';
+import { NoDataRow } from './NoDataRow.js';
+import { DefaultNoDataMessage } from './DefaultNoDataMessage.js';
+import { Button } from '../Button.js';
 
 type TableRow<T> = {
   rowId: string;
@@ -53,6 +53,7 @@ type TableProps<T extends TableRow<T>> = {
   footer?: React.ReactNode;
   noDataMessage?: string | React.ReactNode;
   className?: string;
+  containerClassName?: string;
   groupColumnPosition?: number;
   manualSorting?: boolean;
 };
@@ -69,6 +70,7 @@ const Table = <T extends TableRow<T>>({
   actions,
   footer,
   className,
+  containerClassName,
   noDataMessage = <DefaultNoDataMessage />,
   groupColumnPosition = 0,
   initialSelection = [],
@@ -224,16 +226,29 @@ const Table = <T extends TableRow<T>>({
       onDragEnd={handleDragEnd}
       sensors={sensors}
     >
-      <div className="w-full overflow-auto rounded-md shadow">
-        <div data-testid="table-header" className="flex justify-between items-center p-4 gap-4">
-          {header && <div className="flex-grow">{header}</div>}
+      <div
+        className={`flex w-full flex-col overflow-auto rounded-md shadow-sm ${containerClassName || ''}`}
+        style={{
+          backgroundColor: 'var(--color-theme-surface-raised)',
+          boxShadow: 'var(--color-theme-card-shadow)',
+        }}
+      >
+        <div
+          data-testid="table-header"
+          className="flex items-center justify-between gap-4 p-4"
+          style={{
+            backgroundColor: 'var(--color-theme-surface-raised)',
+            color: 'var(--color-theme-text-primary)',
+          }}
+        >
+          {header && <div className="grow">{header}</div>}
           <div className="flex gap-2">
             {hasGroups && (
               <>
-                <Button disabled={!canCollapse} styling="light" onClick={collapseAll}>
+                <Button disabled={!canCollapse} variant="ghost" onClick={collapseAll}>
                   <Translate>Collapse all</Translate>
                 </Button>
-                <Button disabled={!canExpand} styling="light" onClick={expandAll}>
+                <Button disabled={!canExpand} variant="ghost" onClick={expandAll}>
                   <Translate>Expand all</Translate>
                 </Button>
               </>
@@ -242,7 +257,7 @@ const Table = <T extends TableRow<T>>({
           </div>
         </div>
         <table className={`w-full ${className || ''}`}>
-          <thead className="bg-gray-50">
+          <thead className="bg-(--color-theme-section-header-bg)">
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map(hdr => {
@@ -253,7 +268,12 @@ const Table = <T extends TableRow<T>>({
                       key={hdr.id}
                       colSpan={hdr.colSpan}
                       scope="col"
-                      className={`p-4 text-sm text-gray-500 uppercase border-b ${customClassName || ''}`}
+                      className={`border-b p-4 text-sm uppercase ${customClassName || ''}`}
+                      style={{
+                        color: 'var(--color-theme-section-header-fg)',
+                        borderColor:
+                          'color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)',
+                      }}
                       onClick={headerSorting ? hdr.column.getToggleSortingHandler() : undefined}
                     >
                       <span
@@ -287,8 +307,18 @@ const Table = <T extends TableRow<T>>({
             )}
           </tbody>
         </table>
-        {footer && dataState.length > 0 && <div className="p-4">{footer}</div>}
       </div>
+      {footer && dataState.length > 0 && (
+        <div
+          className="border-t p-4"
+          style={{
+            borderColor: 'color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)',
+            backgroundColor: 'var(--color-theme-surface-raised)',
+          }}
+        >
+          {footer}
+        </div>
+      )}
     </DndContext>
   );
 };

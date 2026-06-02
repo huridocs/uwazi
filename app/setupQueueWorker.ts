@@ -1,28 +1,40 @@
 /* eslint-disable max-statements */
-import * as Sentry from '@sentry/node';
-import { config } from 'api/config';
-import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { LogEntry } from 'api/core/libs/logger/infrastructure/LogEntry';
-import { LogWriter } from 'api/core/libs/logger/infrastructure/LogWriter';
-import { withFeature } from 'api/core/libs/logger/infrastructure/StandardLogger';
-import { StandardJSONWriter } from 'api/core/libs/logger/infrastructure/writers/StandardJSONWriter';
-import { Dispatchable } from 'api/core/libs/queue/application/contracts/Dispatchable';
-import { DispatchableClass } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { RoundRobinQueueAdapter } from 'api/core/libs/queue/configuration/factories';
+import { getCurrentScope, captureException, close } from '@sentry/node-core/light';
+import { inspect } from 'util';
+import { config } from '#api/config.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { LogEntry } from '#api/core/libs/logger/infrastructure/LogEntry.js';
+import { LogWriter } from '#api/core/libs/logger/infrastructure/LogWriter.js';
+import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
+import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
+import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import {
+  DefaultDispatcher,
+  RoundRobinQueueAdapter,
+} from '#api/core/libs/queue/configuration/factories.js';
 import {
   QueueWorker,
   QueueWorkerErrorHandler,
-} from 'api/core/libs/queue/infrastructure/QueueWorker';
-import { registerEventListeners } from 'api/eventListeners';
-import { Redis } from 'api/infrastructure/Redis';
-import { DB } from 'api/odm';
-import { setupWorkerSockets } from 'api/socketio/setupSockets';
-import { tenants } from 'api/tenants';
-import { prettifyError } from 'api/utils/handleError';
-import { initSentry } from './initSentry';
-import { registerJobs } from './queueRegistry';
-import { inspect } from 'util';
+} from '#api/core/libs/queue/infrastructure/QueueWorker.js';
+import { registerEventListeners } from '#api/eventListeners.js';
+import { Redis } from '#api/infrastructure/Redis.js';
+import { DB } from '#api/odm/index.js';
+import { setupWorkerSockets } from '#api/socketio/setupSockets.js';
+import { tenants } from '#api/tenants/index.js';
+import { prettifyError } from '#api/utils/handleError.js';
+import { initSentry } from './initSentry.js';
+import { registerJobs } from './queueRegistry.js';
+import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { ExecutionContext, ExecutionContextDeps } from '#api/core/libs/ExecutionContext.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { Job } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
+import { UserSchema } from '#shared/types/userType.js';
+import users from '#api/users/users.js';
+import { User } from '#api/users.v2/model/User.js';
 
 type Props = {
   standAloneProcess?: boolean;
@@ -46,35 +58,52 @@ const logger = LoggerFactory.systemLogger(
 function register<T extends Dispatchable>(
   this: QueueWorker,
   dispatchable: DispatchableClass<T>,
-  factory: (namespace: string) => Promise<T>
+  factory: (namespace: string, job: Job) => Promise<T>
 ) {
-  this.register(
-    dispatchable,
-    async namespace =>
-      new Promise((resolve, reject) => {
-        tenants
-          .run(async () => {
-            resolve(await factory(namespace));
-          }, namespace)
-          .catch(reject);
-      })
-  );
+  this.register(dispatchable, async (namespace, job) => {
+    let deps!: ExecutionContextDeps;
+    let instance!: T;
+    await tenants.run(async () => {
+      let actor: UserSchema | null = null;
+      if (job.params.userId) {
+        actor = await users.getById(job.params.userId, '-password', true);
+      }
+      deps = {
+        actor: User.createFrom(actor),
+        tenant: tenants.current(),
+        factories: {
+          transactionManager: TransactionManagerFactory.default,
+          jobsDispatcher: () => DefaultDispatcher(namespace, ExecutionContext.transactionManager),
+          eventEmitter: EventEmitterFactory.default,
+          idGenerator: IdGeneratorFactory.default,
+          logger: LoggerFactory.default,
+          elasticClient: ElasticSearchClientFactory.tenantAware,
+          authorizedEntityESClient: ElasticSearchClientFactory.authorizedEntityClient,
+        },
+      };
+      instance = await ExecutionContext.run(deps, async () => factory(namespace, job));
+    }, namespace);
+
+    // v1 backwards compatibility only (probably)
+    ExecutionContext.attachContext(instance, 'handleDispatch', deps);
+
+    return instance;
+  });
 }
 
 const captureError: QueueWorkerErrorHandler = (error, context) => {
   const prettyError: { logLevel: 'debug' | 'error'; message: string } = prettifyError(error);
   logger[prettyError.logLevel](inspect(error), { job: context?.job });
   if (prettyError.logLevel === 'error') {
-    Sentry.withScope(scope => {
-      if (context?.job) {
-        scope.setExtra('job', context.job);
-      }
-      Sentry.captureException(error);
-    });
+    const scope = getCurrentScope();
+    if (context?.job) {
+      scope.setExtra('job', context.job);
+    }
+    captureException(error);
   }
 };
 
-export function setupQueueWorker(props?: Props) {
+function setupQueueWorker(props?: Props) {
   const standAloneProcess = props?.standAloneProcess ?? false;
 
   if (standAloneProcess) {
@@ -125,7 +154,9 @@ export function setupQueueWorker(props?: Props) {
     })
     .catch(async e => {
       captureError(e);
-      await Sentry.close(2000);
+      await close(2000);
       process.exit(1);
     });
 }
+
+export { setupQueueWorker, register };

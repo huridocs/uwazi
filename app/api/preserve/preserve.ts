@@ -1,14 +1,24 @@
-import { WithId } from 'api/odm';
-import thesauri from 'api/thesauri';
-import settings from 'api/settings';
-import request from 'shared/JSONRequest';
-import createError from 'api/utils/Error';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { User } from 'api/users/usersModel';
-import { PreserveConfig } from 'shared/types/settingsType';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
-import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
-import { TemplateFacade } from 'api/core/infrastructure/facades/TemplateFacade';
+import { WithId } from '#api/odm/index.js';
+import settings from '#api/settings/index.js';
+import request from '#shared/JSONRequest.js';
+import createError from '#api/utils/Error.js';
+import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
+import { User } from '#api/users/usersModel.js';
+import { PreserveConfig } from '#shared/types/settingsType.js';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
+import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
+import { ThesauriService } from '#api/core/application/ThesauriService.js';
+import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
+import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
+import { MongoThesaurusMapper } from '#api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
+import { tenants } from '../tenants/index.js';
 
 export const Preserve = {
   async setup(language: string, user: User) {
@@ -64,6 +74,16 @@ export const Preserve = {
     return resp.json.data.token;
   },
 
+  /**
+   * Note: Re-usability of features are wrong here (Create Template and Create Thesaurus).
+   * Still needs to check but the actual feature here is the process of setting up the preserve, so
+   * it is expected that this should be a use case the control the transaction, so it's up to this use case
+   * decide either or not have creation of Template, Thesaurus transactional consistent (inside same transaction).
+   *
+   * For now, we are creating separated transaction for Thesaurus creation inside `createEmptyThesauri` method and
+   * another for Template creation here - this is not ideal at all.
+   */
+
   async createTemplate(_language: string) {
     const fetchedThesauri = await Preserve.createEmptyThesauri();
 
@@ -81,12 +101,26 @@ export const Preserve = {
   },
 
   async createEmptyThesauri(name?: string): Promise<WithId<ThesaurusSchema>> {
-    const internalName = name || 'Preserve';
-    const toSave = {
-      name: internalName,
+    const transactionManager = TransactionManagerFactory.default();
+
+    const thesauriService = new ThesauriService({
+      thesauriDS: ThesauriDataSourceFactory.default({ transactionManager }),
+      thesaurusTranslationService: new ThesaurusTranslationService({
+        settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
+        translationsDS: DefaultTranslationsDataSource(transactionManager),
+      }),
+      dispatcher: new DispatcherAdapter(
+        DefaultDispatcher(tenants.current().name, transactionManager)
+      ),
+    });
+
+    const thesaurus = Thesaurus.create({
+      name: name || 'Preserve',
       values: [],
-    };
-    const createdThesauri = await thesauri.save(toSave);
-    return createdThesauri;
+    });
+
+    await transactionManager.run(async () => thesauriService.insert(thesaurus));
+
+    return MongoThesaurusMapper.toDBO(thesaurus) as WithId<ThesaurusSchema>;
   },
 };

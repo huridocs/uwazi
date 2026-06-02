@@ -1,9 +1,9 @@
-import { RetrieveStatsService } from 'api/stats/services/RetrieveStatsService';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { fixtures } from 'api/stats/specs/fixtures';
-import testingDB from 'api/utils/testing_db';
-import { elastic } from 'api/search/elastic';
 import { Db } from 'mongodb';
+import { RetrieveStatsService } from '#api/stats/services/RetrieveStatsService.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { fixtures } from '#api/stats/specs/fixtures.js';
+import testingDB from '#api/utils/testing_db.js';
+import { elastic } from '#api/search/elastic.js';
 
 describe('RetrieveStats', () => {
   let elasticMock: jest.SpyInstance;
@@ -32,11 +32,11 @@ describe('RetrieveStats', () => {
   afterAll(async () => testingEnvironment.tearDown());
 
   it('calculates the aggregated stats when collection has files', async () => {
-    const stats = await new RetrieveStatsService(db).execute();
+    const stats = await new RetrieveStatsService(db).execute('en');
 
     expect(stats).toEqual({
       users: { total: 3, admin: 1, editor: 1, collaborator: 1 },
-      entities: { total: 10 },
+      entities: { total: 5 },
       files: { total: 2 },
       storage: { total: 30000 },
     });
@@ -45,18 +45,18 @@ describe('RetrieveStats', () => {
   it('calculates the aggregated stats when collection has no files', async () => {
     await db.collection('files').deleteMany({});
 
-    const stats = await new RetrieveStatsService(db).execute();
+    const stats = await new RetrieveStatsService(db).execute('en');
 
     expect(stats).toEqual({
       users: { total: 3, admin: 1, editor: 1, collaborator: 1 },
-      entities: { total: 10 },
+      entities: { total: 5 },
       files: { total: 0 },
       storage: { total: 20000 },
     });
   });
 
   it('retrieves elastic stats with proper format', async () => {
-    await new RetrieveStatsService(db).execute();
+    await new RetrieveStatsService(db).execute('en');
 
     expect(elasticMock).toHaveBeenCalledWith({
       pretty: true,

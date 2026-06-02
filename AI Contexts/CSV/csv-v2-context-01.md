@@ -13,7 +13,7 @@ This document tracks decisions, scope, ToDos, open questions, and references for
 - **Processing model**: The upload endpoint returns quickly and enqueues background jobs for processing stages (but we will NOT enqueue in the first milestone).
 - **Collection**: Create a new MongoDB collection `csv_imports` to track each import (file metadata, status, errors, timestamps, counters, etc.).
 - **Storage**: Use the existing `fileStorage` interface to store the original uploaded ZIP/CSV in a dedicated location (tenant namespacing handled by infra; no tenant field or path segment needed).
-- **Routing**: Keep the existing endpoint name and fork behavior via tenant feature flag `v2CSVImport` (v1 vs v2), similar to file upload.
+- **Routing (current baseline, Apr 2026)**: `POST /api/import` is V1-only. CSV V2 register/import entrypoint is `POST /api/csvImportEntities`. `v2CSVImport` is now client-facing only (menu visibility), not a backend routing switch.
 - **Reference**: Route flow closely follows `app/api/files/routes.ts` for upload handling.
 - **Permissions**: Admin-only for MVP (same as current `/api/import`).
 - **Response format**: 200 OK with JSON body to preserve client footprint (mimic current behavior).
@@ -34,7 +34,7 @@ This document tracks decisions, scope, ToDos, open questions, and references for
 ### Proposed API (initial)
 
 - **Method**: POST
-- **Path**: `/api/import` (same as current, toggle v1/v2 via `v2CSVImport` feature flag)
+- **Path (current baseline, Apr 2026)**: `/api/csvImportEntities` (V2-only register endpoint). `/api/import` remains the legacy V1 route.
 - **Auth**: Admin-only (confirmed).
 - **Request**: `multipart/form-data`
   - `file`: required (CSV or ZIP)
@@ -103,12 +103,12 @@ Note on domain mapping: In code, we map Mongo `_id` to domain `id` for responses
 - Add request validation (file present, `templateId` valid, size/type constraints).
 - Basic error handling and consistent API responses.
 - Unit/integration tests for route + persistence + storage handoff.
-- Enqueue next-step jobs after commit: use `transactionManager.onCommitted` to dispatch processing/extraction jobs only if the insert/update transaction succeeds. Define job payload to include tenant and `importId`.
+- Enqueue next-step jobs as the final step inside the same `transactionManager.run` that persists the DB change. Dispatching (e.g., extraction) happens only after the insert succeeds and before exiting the transaction block. Define job payload to include tenant and `importId`.
 
 ### Implementation progress (current status)
 
 - Route ownership moved to `app/api/csv.v2/routes/routes.ts` and wired in `app/api/api.js`.
-- Feature flag `v2CSVImport` switches between v1 and v2 flow on `POST /api/import`.
+- Backend routing no longer switches on `v2CSVImport`. Route split is explicit: `/api/import` (V1) and `/api/csvImportEntities` (V2).
 - V2 controller uses Zod and the common v2 `AbstractController`:
   - Controller: `app/api/csv.v2/routes/RegisterCsvImportController.ts`.
   - Validates `{ template: string }`, reads `req.file`, returns 200 JSON.
@@ -123,7 +123,7 @@ Note on domain mapping: In code, we map Mongo `_id` to domain `id` for responses
   - Endpoint requires `userId`; controller ensures presence from `req.user._id` and fails with 401 if missing; no role re-check (authorization middleware handles that).
   - Stored file uses the multer-generated filename; DB storage path is `csv-imports/{importId}/{filename}`.
   - Legacy v1 logic extracted as `v1Import(req, res)` within `routes.ts` for easy future removal; minimal validation ensures `body.template` is a string.
-  - Feature flag `v2CSVImport` added to tenant context and default config; used to switch v1/v2 paths.
+  - Feature flag `v2CSVImport` remains in tenant context/config as a client-facing toggle (menu visibility), not as backend import-flow routing.
 - Upload middleware mirrors v2 document upload:
   - If `v2UploadFile` is enabled: use `multer.diskStorage` with `generateFileName` and `single('file')`.
   - Else: `uploadMiddleware()`.
@@ -145,7 +145,8 @@ Note on domain mapping: In code, we map Mongo `_id` to domain `id` for responses
   - Models in `model/*`; public types/DTOs in `types/*`.
 - Routing:
   - Co-locate routes under `csv.v2` and register from `api.js`.
-  - Use feature flag `v2CSVImport` to switch v1/v2; keep v1 fallback until fully migrated.
+  - Keep route split explicit: `/api/import` (V1 only), `/api/csvImportEntities` (V2 only).
+  - `v2CSVImport` can be used by client UI feature visibility, not import backend flow selection.
   - For uploads: mirror `files/upload/document` v2 pattern (conditional `multer` vs `uploadMiddleware`).
 - Files handling:
   - Always use `InputFile` in controllers to pass uploaded files to use cases.
@@ -211,6 +212,8 @@ Note on domain mapping: In code, we map Mongo `_id` to domain `id` for responses
   - Avoid using `as any` unless absolutely indispensable; prefer proper typings, narrowing, or adapter types.
   - Extract legacy blocks into helpers to reduce lint noise and ease future removal.
   - Use explicit, descriptive names (e.g., `RegisterCsvImport*`).
+  - Keep one class per file; extract helper functions (or new modules) instead of nesting additional classes so lint stays happy and files read top-down.
+  - Within a module, define depended-upon helpers before their callers so the file reads naturally from top to bottom.
 
 ### Open questions / pending decisions
 
@@ -238,7 +241,7 @@ Note on domain mapping: In code, we map Mongo `_id` to domain `id` for responses
     - `infrastructure/mongodb/MongoCsvImportsRepository.ts` (maps domain ↔ DBO)
     - `infrastructure/storage/FileStorageAdapter.ts` (wraps existing `fileStorage`)
     - `dtos/CreateImportDTO.ts` (request/response DTOs)
-- **Feature flag**: Use `v2CSVImport` (v2-style flag pattern, similar to `v2UploadFile`).
+- **Feature flag (current baseline, Apr 2026)**: `v2CSVImport` is client-facing (menu visibility); backend routes no longer use it to choose V1 vs V2 import flow.
 
 ### Non-goals (for now)
 
@@ -254,7 +257,9 @@ Note on domain mapping: In code, we map Mongo `_id` to domain `id` for responses
 ### References
 
 - `app/api/files/routes.ts` — mirrors desired upload/route behavior and feature-flag pattern (`v2UploadFile`).
-- Current CSV import route: `POST /api/import` in `app/api/files/routes.ts` (returns 200 today).
+- Current routes:
+  - `POST /api/import` (legacy V1 flow, now in `app/api/csv.v2/infrastructure/http/routes.ts`).
+  - `POST /api/csvImportEntities` (V2 register/import endpoint).
 - Feature-flag helper: `app/api/common.v2/utils/featureFlaggedHandler.ts`.
 - V2 examples: templates v2, paragraph extraction — follow hexagonal structure and patterns.
 

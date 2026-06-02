@@ -1,7 +1,8 @@
 import { Db, ObjectId } from 'mongodb';
-import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
-import { Job, QueueAdapter } from './QueueAdapter';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { Job, QueueAdapter } from './QueueAdapter.js';
+import { Params } from '../application/contracts/Dispatchable.js';
 
 export interface JobDBO {
   _id: ObjectId;
@@ -21,10 +22,30 @@ export interface JobDBO {
 
 export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueAdapter {
   protected collectionName = 'jobs';
-  private failedJobsCollectionName = 'jobs_failed';
 
   constructor(db: Db, transactionManager: MongoTransactionManager) {
     super(db, transactionManager, { useSyncedCollection: false });
+  }
+
+  async deleteByParams(
+    jobName: string,
+    params: Partial<Params>,
+    tenantName: string
+  ): Promise<void> {
+    if (Object.keys(params).length === 0) {
+      return;
+    }
+
+    const query = Object.fromEntries(
+      Object.entries(params).map(([key, value]) => [`params.${key}`, value])
+    );
+
+    await this.getCollection().deleteMany({
+      ...query,
+      name: jobName,
+      namespace: tenantName,
+      lockedUntil: { $lt: Date.now() },
+    });
   }
 
   async renewJobLock(job: Job) {
@@ -43,28 +64,17 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
   }
 
   protected async markExceededRetryJobsAsFailed(queueName: string): Promise<void> {
-    const exceededRetryJobs = await this.getCollection()
-      .find({
+    await this.getCollection().updateMany(
+      {
         queue: queueName,
         retryCount: { $exists: true },
         'options.maxRetries': { $exists: true },
         $expr: { $gte: ['$retryCount', '$options.maxRetries'] },
         $or: [{ failed: false }, { failed: { $exists: false } }],
-      })
-      .toArray();
-
-    if (exceededRetryJobs.length === 0) {
-      return;
-    }
-
-    if (exceededRetryJobs.length > 0) {
-      await this.getCollection(this.failedJobsCollectionName).insertMany(
-        exceededRetryJobs.map(job => ({ ...job, failed: true }))
-      );
-
-      const jobIds = exceededRetryJobs.map(job => job._id);
-      await this.getCollection().deleteMany({ _id: { $in: jobIds } });
-    }
+        lockedUntil: { $lt: Date.now() },
+      },
+      { $set: { failed: true } }
+    );
   }
 
   async pickJob(queueName: string): Promise<Job | null> {
@@ -103,16 +113,6 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
     return null;
   }
 
-  async moveToFailedJobs(job: Job) {
-    const jobToMove = await this.getCollection().findOne({ _id: new ObjectId(job.id) });
-    if (!jobToMove) {
-      throw new Error(`Job not found: ${job.id}`);
-    }
-
-    await this.getCollection(this.failedJobsCollectionName).insertOne(jobToMove);
-    await this.deleteJob(job);
-  }
-
   async markJobAsFailed(job: Job) {
     const result = await this.getCollection().findOneAndUpdate(
       {
@@ -131,7 +131,6 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
       ...result,
     };
 
-    await this.moveToFailedJobs(updatedJob);
     return updatedJob;
   }
 

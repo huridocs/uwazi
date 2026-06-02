@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useAtom, useAtomValue } from 'jotai';
-import { Translate } from 'app/I18N';
-import { Button, Sidepanel } from 'V2/Components/UI';
-import { Extractor } from 'V2/shared/ParagraphExtractionTypes';
-import { EntityFilter, Filters } from './Filters';
-import { filterSidepanelAtom, filterSidepanelStatusAtom } from './filterSidepanelAtom';
+import { Translate } from '#app/I18N/index.js';
+import { Button, Sidepanel } from '#V2/Components/UI/index.js';
+import { Extractor } from '#V2/shared/ParagraphExtractionTypes.js';
+import { EntityFilter, Filters } from './Filters.js';
+import { filterSidepanelAtom, filterSidepanelStatusAtom } from './filterSidepanelAtom.js';
 
 const getFilterStatus = (
   searchParams: object,
@@ -82,7 +82,7 @@ const EntityFilterSidepanel = () => {
         setOpen(false);
       }}
       title={
-        <span className="text-base font-semibold leading-6 text-gray-500 uppercase">
+        <span className="text-base font-semibold uppercase leading-6 text-ink-secondary">
           <Translate>Filters</Translate>
         </span>
       }
@@ -93,15 +93,15 @@ const EntityFilterSidepanel = () => {
       <Sidepanel.Footer className="px-4 py-3 border-t">
         <form
           className="flex justify-end gap-2"
-          onSubmit={e => {
+          onSubmit={(e: any) => {
             e.preventDefault();
             handleSubmit();
           }}
         >
-          <Button size="small" styling="outline" onClick={clearFilters}>
+          <Button size="small" variant="secondary" onClick={clearFilters}>
             <Translate>Clear All</Translate>
           </Button>
-          <Button size="small" type="submit" color="success">
+          <Button size="small" type="submit" variant="success">
             <Translate>Apply</Translate>
           </Button>
         </form>

@@ -1,12 +1,17 @@
-import { EntitySchema } from 'shared/types/entityType';
-import { update } from '../formatter';
+import { update } from '../formatter.js';
+import { Entity } from '../types.js';
 
 describe('update entity', () => {
-  let entity: EntitySchema;
+  let entity: Entity;
 
   beforeEach(() => {
     entity = {
       _id: '1',
+      sharedId: '1a',
+      language: 'en',
+      template: 'template',
+      creationDate: 1,
+      user: 'user',
       title: 'Entity original title',
       metadata: { textProperty: [{ value: 'property 1 value' }], otherProperty: [{ value: 5 }] },
     };

@@ -1,13 +1,14 @@
 import React from 'react';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import type { Meta, StoryObj } from '@storybook/react';
-import { EmbededButton } from 'V2/Components/UI/EmbededButton';
-import { Translate } from 'app/I18N';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import { EmbededButton } from '#V2/Components/UI/EmbededButton.js';
+import { Translate } from '#app/I18N/index.js';
 
 const meta: Meta<typeof EmbededButton> = {
   title: 'Components/Buttons/EmbededButton',
   component: EmbededButton,
 };
+export default meta;
 
 type Story = StoryObj<typeof EmbededButton>;
 
@@ -37,4 +38,3 @@ const Basic: Story = {
   },
 };
 export { Basic };
-export default meta;

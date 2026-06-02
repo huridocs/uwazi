@@ -1,29 +1,31 @@
 import React from 'react';
 import 'cypress-axe';
-import { mount } from '@cypress/react18';
+import { mount } from 'cypress/react';
 import { composeStories } from '@storybook/react';
-import * as stories from 'app/stories/Layouts/PaneLayout.stories';
-import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
+import * as stories from '#app/stories/Layouts/PaneLayout.stories.js';
+import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
 
 const { Basic } = composeStories(stories);
 
 describe('PaneLayout', () => {
   const render = ({
     localStorageKey,
-    defaultWidthsPercents,
+    defaultRatios,
   }: {
     localStorageKey?: string;
-    defaultWidthsPercents?: number[];
+    defaultRatios?: number[];
   } = {}) => {
-    mount(
-      <Basic localStorageKey={localStorageKey} defaultWidthsPercents={defaultWidthsPercents} />
-    );
+    mount(<Basic localStorageKey={localStorageKey} defaultRatios={defaultRatios} />);
   };
 
   describe('Desktop', () => {
     it('should be accessible', () => {
       render();
       cy.injectAxe();
+      cy.get('div[role="separator"]')
+        .first()
+        .should('have.attr', 'aria-orientation', 'vertical')
+        .and('have.class', 'w-1');
       cy.checkA11y();
     });
 
@@ -52,8 +54,9 @@ describe('PaneLayout', () => {
       cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 407px;');
       cy.realDrag(cy.get('div[role="separator"]'), 50, 0);
       cy.getAllLocalStorage().then(result => {
+        const host = Object.keys(result)[0];
         expect(result).to.deep.equal({
-          'http://localhost:8080': {
+          [host]: {
             cypressComponentTest: '[0.3799837266069976,0.2823433685923515,0.33116354759967453]',
           },
         });
@@ -73,7 +76,7 @@ describe('PaneLayout', () => {
     });
 
     it('should allow passing default widths for panes', () => {
-      render({ defaultWidthsPercents: [0.2, 0.2, 0.6] });
+      render({ defaultRatios: [0.2, 0.2, 0.6] });
       cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 245.8px;');
       cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 245.8px;');
       cy.get('section').eq(2).should('have.attr', 'style').and('equal', 'width: 737.4px;');
@@ -87,7 +90,7 @@ describe('PaneLayout', () => {
             <button type="button" id="replace" onClick={() => setV(x => !x)}>
               replace
             </button>
-            <PaneLayout defaultWidthsPercents={[0.4, 0.6]}>
+            <PaneLayout defaultRatios={[0.4, 0.6]}>
               <PaneLayout.Pane key={`p1-${v ? 'b' : 'a'}`}>
                 <div>{v ? 'A2' : 'A1'}</div>
               </PaneLayout.Pane>

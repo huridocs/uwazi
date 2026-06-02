@@ -3,13 +3,13 @@ import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { useLoaderData } from 'react-router';
-import uniqueID from 'shared/uniqueID';
-import { Translate } from 'app/I18N';
-import { ClientTemplateSchema } from 'app/istore';
-import { Button, Card, Sidepanel } from 'V2/Components/UI';
-import { InputField, MultiSelect } from 'V2/Components/Forms';
-import { sidepanelAtom } from './sidepanelAtom';
-import { Filter, LoaderData } from './helpers';
+import uniqueID from '#shared/uniqueID.js';
+import { Translate } from '#app/I18N/index.js';
+import { ClientTemplateSchema } from '#app/istore.js';
+import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
+import { InputField, MultiSelect } from '#V2/Components/Forms/index.js';
+import { sidepanelAtom } from './sidepanelAtom.js';
+import { Filter, LoaderData } from './helpers.js';
 
 type FiltersSidepanelProps = {
   showSidepanel: boolean;
@@ -127,16 +127,16 @@ const FiltersSidepanel = ({
       <Sidepanel.Footer className="px-4 py-3">
         <div className="flex gap-2">
           <Button
-            className="flex-grow"
+            className="grow"
             type="button"
-            styling="outline"
+            variant="secondary"
             onClick={() => {
               closeSidepanel();
             }}
           >
             <Translate>Cancel</Translate>
           </Button>
-          <Button className="flex-grow" type="submit" form="group-edit-form">
+          <Button className="grow" type="submit" form="group-edit-form">
             {filter?.id ? <Translate>Update</Translate> : <Translate>Add</Translate>}
           </Button>
         </div>

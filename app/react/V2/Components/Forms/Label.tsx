@@ -1,6 +1,6 @@
 import React from 'react';
-import { Translate } from 'app/I18N';
-import { isString } from 'lodash';
+import isString from 'lodash/isString.js';
+import { Translate } from '#app/I18N/index.js';
 
 interface LabelProps {
   htmlFor: string;
@@ -13,14 +13,14 @@ const renderChild = (child: string | React.ReactNode) =>
   isString(child) ? <Translate>{child}</Translate> : child;
 
 const Label = ({ htmlFor, children, hasErrors, hideLabel }: LabelProps) => {
-  let labelStyles = 'block mb-2 text-sm font-medium text-gray-700';
-
-  if (hasErrors) {
-    labelStyles = 'block mb-2 text-sm font-medium text-error-700';
-  }
+  const color = hasErrors ? 'text-emphasis' : 'text-ink-secondary';
 
   return (
-    <label htmlFor={htmlFor} className={hideLabel ? 'sr-only' : labelStyles}>
+    <label
+      htmlFor={htmlFor}
+      className={hideLabel ? 'sr-only' : 'mb-2 block text-sm font-medium'}
+      style={hideLabel ? undefined : { color }}
+    >
       {renderChild(children)}
     </label>
   );

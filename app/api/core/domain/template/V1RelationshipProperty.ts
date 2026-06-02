@@ -1,14 +1,22 @@
 import {
   FilterableProperty,
   FilterablePropertyProps,
-} from 'api/core/domain/template/FilterableProperty';
-import { PropertyInheritedTypeMismatchError } from 'api/core/domain/template/errors';
+} from '#api/core/domain/template/FilterableProperty.js';
+import {
+  PropertyInheritedTypeMismatchError,
+  InvalidPropertyComparisonTypeError,
+} from '#api/core/domain/template/errors.js';
 import { z } from 'zod';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { Context, CreatePropertyAssignmentInput, Property, PropertyUpdateInfo } from './Property';
-import { PropertyType, PropertyTypeEnum } from './PropertyType';
-import { RelationshipEntry, RelationshipPropertyAssignment } from './PropertyValue';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import {
+  Context,
+  CreatePropertyAssignmentInput,
+  Property,
+  PropertyUpdateInfo,
+} from './Property.js';
+import { PropertyType, PropertyTypeEnum } from './PropertyType.js';
+import { RelationshipEntry, RelationshipPropertyAssignment } from './PropertyValue.js';
 
 type Inherit = {
   property: string;
@@ -82,9 +90,13 @@ class V1RelationshipProperty extends FilterableProperty {
     }
   }
 
+  get isTranslatable(): boolean {
+    return false;
+  }
+
   override updatedAttributes(other: Property): PropertyUpdateInfo {
     if (!(other instanceof V1RelationshipProperty)) {
-      throw new Error('Can only compare with another V1RelationshipProperty');
+      throw new InvalidPropertyComparisonTypeError('V1RelationshipProperty');
     }
 
     const updateInfo = super.updatedAttributes(other);
@@ -116,6 +128,7 @@ class V1RelationshipProperty extends FilterableProperty {
       type: this.type,
       language: 'n/a' as LanguageISO6391,
       value: [],
+      isTranslatable: this.isTranslatable,
     };
   }
 
@@ -135,6 +148,7 @@ class V1RelationshipProperty extends FilterableProperty {
       type: this.type,
       value: parsed.value,
       language: parsed.language as LanguageISO6391,
+      isTranslatable: this.isTranslatable,
     };
   }
 

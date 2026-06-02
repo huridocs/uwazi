@@ -1,15 +1,16 @@
-import { setUpApp } from 'api/utils/testingRoutes';
+import type { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
-
-import { WithId } from 'api/odm/model.js';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { NextFunction, Request, Response } from 'express';
 import { DeleteResult } from 'mongodb';
-import { UserRole } from 'shared/types/userSchema';
-import { UserSchema } from 'shared/types/userType';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import { WithId } from '#api/odm/model.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { DomainError } from '#api/core/domain/error/DomainError.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { UserSchema } from '#shared/types/userType.js';
 import userRoutes from '../routes.js';
 import users from '../users.js';
 import { User } from '../usersModel.js';
+import { PUBLIC_USER_ID } from '../publicUser.js';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -213,13 +214,15 @@ describe('users routes', () => {
       });
 
       it('should return an error if recover password fails', async () => {
+        class ErrorSample extends DomainError {}
+
         jest.spyOn(users, 'recoverPassword').mockImplementation(() => {
-          throw new Error('error on recoverPassword');
+          throw new ErrorSample('error on recoverPassword', 'error_code');
         });
         const response = await request(app)
           .post('/api/recoverpassword')
           .send({ email: 'recover@me.com' });
-        expect(response.status).toBe(500);
+        expect(response.status).toBe(400);
         expect(response.body.prettyMessage).toContain('error on recoverPassword');
       });
     });
@@ -275,12 +278,26 @@ describe('users routes', () => {
       expect(response.status).toBe(401);
     });
 
-    it('should call users get', async () => {
-      jest.spyOn(users, 'get').mockImplementation(async () => Promise.resolve(['users']));
+    it('should call users get and filter out Public user', async () => {
+      const mockUsers = [
+        { _id: 'user1', username: 'User1' },
+        { _id: PUBLIC_USER_ID, username: 'PublicUser' },
+        { _id: 'user2', username: 'User2' },
+      ];
+      jest.spyOn(users, 'get').mockImplementation(async () => Promise.resolve(mockUsers as any));
+
       const response = await request(app).get('/api/users');
+
       expect(response.status).toBe(200);
       expect(users.get).toHaveBeenCalledWith({}, '+groups +failedLogins +accountLocked');
-      expect(response.body).toEqual(['users']);
+      expect(response.body).toHaveLength(2);
+      expect(
+        response.body.find((u: any) => u._id.toString() === PUBLIC_USER_ID.toString())
+      ).toBeUndefined();
+      expect(response.body).toEqual([
+        { _id: 'user1', username: 'User1' },
+        { _id: 'user2', username: 'User2' },
+      ]);
     });
   });
 

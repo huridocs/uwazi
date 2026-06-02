@@ -1,5 +1,5 @@
-import { NestedProperty } from '../NestedProperty';
-import { PropertyTypeEnum } from '../PropertyType';
+import { NestedProperty } from '../NestedProperty.js';
+import { PropertyTypeEnum } from '../PropertyType.js';
 
 describe('NestedProperty', () => {
   it('should include nested type at the end of the PropertyName', () => {
@@ -31,7 +31,12 @@ describe('NestedProperty', () => {
 
       const assignment = nested.createPropertyAssignment({ value: [] });
 
-      expect(assignment).toEqual({ name: nested.name, type: nested.type, value: [] });
+      expect(assignment).toEqual({
+        name: nested.name,
+        type: nested.type,
+        isTranslatable: false,
+        value: [],
+      });
     });
 
     it('should throw if required and no value is provided', () => {
@@ -55,8 +60,28 @@ describe('NestedProperty', () => {
       expect(assignment).toEqual({
         name: nested.name,
         type: nested.type,
+        isTranslatable: false,
         value: [{ value: null }],
       });
+    });
+
+    it('should allow empty nested objects by design', () => {
+      const nested = new NestedProperty({ id: 'any_id', label: 'A label', template: 'any' });
+
+      // Nested properties allow null values as they represent intentionally empty nested structures
+      const assignment = nested.createPropertyAssignment({
+        value: [
+          { value: null as any },
+          { value: {} },
+          { value: { child_text: [{ value: 'some text' }] } },
+        ],
+      });
+
+      expect(assignment.value).toEqual([
+        { value: null },
+        { value: {} },
+        { value: { child_text: [{ value: 'some text' }] } },
+      ]);
     });
 
     it('should create property assignment with nested children', () => {
@@ -82,6 +107,7 @@ describe('NestedProperty', () => {
       expect(assignment).toEqual({
         name: nested.name,
         type: nested.type,
+        isTranslatable: false,
         value: [
           {
             value: {

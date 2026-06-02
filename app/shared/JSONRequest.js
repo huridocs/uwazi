@@ -1,8 +1,8 @@
 import 'isomorphic-fetch';
 import superagent from 'superagent';
 import rison from '@huridocs/rison';
-import { assign } from 'lodash';
-import { getResponseType } from 'shared/apiClient/httpResponses';
+import assign from 'lodash/assign.js';
+import { getResponseType } from '#shared/apiClient/httpResponses.js';
 
 let cookie;
 
@@ -22,6 +22,14 @@ class FetchResponseError extends Error {
     this.additionalInfo = rest;
   }
 }
+
+const attemptURIEncode = string => {
+  try {
+    return encodeURIComponent(string);
+  } catch (_e) {
+    return string;
+  }
+};
 
 const attemptRisonDecode = string => {
   const errcb = e => {
@@ -47,25 +55,29 @@ function toUrlParams(_data) {
   }
 
   return `?${Object.keys(data)
+    // eslint-disable-next-line max-statements
     .map(key => {
       if (typeof data[key] === 'undefined' || data[key] === null) {
-        return;
+        return undefined;
       }
 
       if (typeof data[key] === 'object') {
         data[key] = JSON.stringify(data[key]);
       }
 
-      let encodedValue = encodeURIComponent(data[key]);
+      let encodedValue;
+
+      encodedValue = attemptURIEncode(data[key]);
 
       if (encodeURIComponent(key) === 'q') {
         try {
           attemptRisonDecode(data[key]);
           encodedValue = data[key];
         } catch (err) {
-          encodedValue = encodeURIComponent(data[key]);
+          encodedValue = attemptURIEncode(data[key]);
         }
       }
+
       return `${encodeURIComponent(key)}=${encodedValue}`;
     })
     .filter(param => param)

@@ -1,18 +1,20 @@
 import superagent, { MultipartValueSingle } from 'superagent';
 import { Dispatch } from 'redux';
-import { groupBy } from 'lodash';
-import { ClientBlobFile, ClientEntitySchema, ClientFile } from 'app/istore';
-import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
-import * as uploadsActionTypes from 'app/Uploads/actions/actionTypes';
-import { ensure } from 'shared/tsUtils';
-import { constructFile } from 'shared/fileUploadUtils';
-import loadingBar from 'app/App/LoadingProgressBar';
+import groupBy from 'lodash/groupBy.js';
+import { ClientBlobFile, ClientEntitySchema, ClientFile } from '#app/istore.js';
+import * as attachmentsTypes from '#app/Attachments/actions/actionTypes.js';
+import * as uploadsActionTypes from '#app/Uploads/actions/actionTypes.js';
+
+import { ensure } from '#shared/tsUtils.js';
+
+import { constructFile } from '#shared/fileUploadUtils.js';
+import { loadingProgressBar as loadingBar } from '#app/App/LoadingProgressBar.js';
 
 const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
   new Promise<void>(resolve => {
     const reader = new FileReader();
 
-    reader.onload = base64 => {
+    reader.onload = (base64: any) => {
       const info = ensure<ArrayBuffer>(base64.target!.result);
       cb(info);
       resolve();
@@ -40,9 +42,16 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
   );
   const entityToSave = { ...entity, documents: oldDocuments };
 
-  const addedDocuments = await Promise.all(
-    (newDocuments as ClientBlobFile[]).map(async file => file.originalFile)
-  );
+  const addedDocuments = (newDocuments as ClientBlobFile[]).map(file => {
+    const { originalFile } = file;
+
+    if (file.originalName && file.originalName !== originalFile.name) {
+      const type = originalFile.type || undefined;
+      return new File([originalFile], file.originalName, { type });
+    }
+
+    return originalFile;
+  });
 
   return new Promise((resolve, reject) => {
     loadingBar.start();
@@ -59,7 +68,6 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
       .field('entity', JSON.stringify(entityToSend));
 
     if (dispatch) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       request.on('progress', data => {
         if (data.percent && Math.floor(data.percent) === 100) {
           return dispatch({
@@ -77,16 +85,12 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
     }
 
     supportingFiles.forEach((file, index) => {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       request.attach(`attachments[${index}]`, file as unknown as MultipartValueSingle);
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       request.field(`attachments_originalname[${index}]`, file.name);
     });
 
     addedDocuments.forEach((file, index) => {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       request.attach(`documents[${index}]`, file as unknown as MultipartValueSingle);
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       request.field(`documents_originalname[${index}]`, file.name);
     });
 

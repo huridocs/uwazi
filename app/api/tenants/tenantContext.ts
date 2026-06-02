@@ -1,7 +1,7 @@
-import { config } from 'api/config';
-import { handleError } from 'api/utils';
-import { appContext } from 'api/utils/AppContext';
-import { TenantDocument, TenantsModel, DBTenant, tenantsModel } from './tenantsModel';
+import { config } from '#api/config.js';
+import { handleError } from '#api/utils/index.js';
+import { appContext } from '#api/utils/AppContext.js';
+import { TenantDocument, TenantsModel, DBTenant, tenantsModel } from './tenantsModel.js';
 
 type TenantFeatureFlags = keyof NonNullable<Required<Tenant>['featureFlags']>;
 
@@ -13,16 +13,26 @@ type Tenant = {
   attachments: string;
   customUploads: string;
   activityLogs: string;
+  domain: string;
   featureFlags?: {
     s3Storage?: boolean;
     esReplicas?: number;
     sync?: boolean;
     deactivateTestJob?: boolean;
     paragraphExtraction?: boolean;
-    v2CreateEntity?: boolean;
+    v2UpdateEntity?: boolean;
     fileCacheHeaders?: boolean;
-    v2UploadFile?: boolean;
     v2CSVImport?: boolean;
+    v2UpdateThesaurus?: boolean;
+    themeCustomization?: boolean;
+    v2GetEntity?: boolean;
+    v2ElasticSearch?: boolean;
+    v2MultipleUpdateEntity?: boolean;
+    v2DeleteEntity?: boolean;
+    v2UpdateFile?: boolean;
+    v2EntityPermission?: boolean;
+    newHeader?: boolean;
+    v2Languages?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;
@@ -97,7 +107,11 @@ class Tenants {
   }
 
   add(tenant: DBTenant) {
-    this.tenants[tenant.name] = { ...this.defaultTenant, ...tenant };
+    this.tenants[tenant.name] = {
+      ...this.defaultTenant,
+      ...tenant,
+      featureFlags: { ...this.defaultTenant.featureFlags, ...tenant.featureFlags },
+    };
   }
 
   getTenantsForFeatureFlag(featureFlag: TenantFeatureFlags) {

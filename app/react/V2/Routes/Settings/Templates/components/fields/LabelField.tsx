@@ -1,8 +1,8 @@
 import React from 'react';
-import { InputField } from 'V2/Components/Forms';
-import { Translate } from 'app/I18N';
-import { ClientTemplateSchema } from 'V2/shared/types';
-import { PropertyRow } from '../../types';
+import { InputField } from '#V2/Components/Forms/index.js';
+import { t, Translate } from '#app/I18N/index.js';
+import { ClientTemplateSchema } from '#V2/shared/types.js';
+import { PropertyRow } from '../../types.js';
 
 export const LabelField = ({
   register,
@@ -23,7 +23,7 @@ export const LabelField = ({
         <span>*</span>
       </div>
     }
-    placeholder="Text"
+    placeholder={t('System', 'Text', null, false)}
     hasErrors={!!errors.label || !!errors.duplicateLabel}
     disabled={propertyToEdit?.isCommonProperty && propertyToEdit.type === 'date'}
     errorMessage={

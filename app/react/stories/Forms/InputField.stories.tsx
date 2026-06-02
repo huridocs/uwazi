@@ -1,12 +1,14 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React from 'react';
-import { Meta, StoryObj } from '@storybook/react';
-import { InputField } from 'V2/Components/Forms';
+import React, { useState } from 'react';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { InputField } from '#V2/Components/Forms/index.js';
 
 const meta: Meta<typeof InputField> = {
   title: 'Forms/InputField',
   component: InputField,
 };
+export default meta;
 
 type Story = StoryObj<typeof InputField>;
 
@@ -18,6 +20,45 @@ const InputFieldStory: Story = {
       </div>
     </div>
   ),
+};
+
+const InteractiveWrapper = ({
+  initialValue = '',
+  clearFieldAction,
+  icon,
+  id,
+  onChange,
+  ...props
+}: {
+  initialValue?: string;
+  clearFieldAction?: () => void;
+  icon?: React.ReactNode;
+  id: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  [key: string]: any;
+}) => {
+  const [value, setValue] = useState(initialValue);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value);
+    onChange?.(e);
+  };
+
+  const handleClear = () => {
+    setValue('');
+    clearFieldAction?.();
+  };
+
+  return (
+    <InputField
+      {...props}
+      id={id}
+      value={value}
+      onChange={handleChange}
+      clearFieldAction={clearFieldAction ? handleClear : undefined}
+      icon={icon}
+    />
+  );
 };
 
 const Basic = {
@@ -72,6 +113,67 @@ const WithPreText = {
   },
 };
 
-export { Basic, WithClearFieldButton, WithError, WithErrorMessage, WithPreText };
+const WithIcon: Story = {
+  render: args => (
+    <div className="tw-content">
+      <div className="md:w-1/2">
+        <InteractiveWrapper
+          {...args}
+          placeholder="Search..."
+          icon={<MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />}
+        />
+      </div>
+    </div>
+  ),
+  args: {
+    ...Basic.args,
+  },
+};
 
-export default meta;
+const WithIconAndClearButton: Story = {
+  render: args => (
+    <div className="tw-content">
+      <div className="md:w-1/2">
+        <InteractiveWrapper
+          {...args}
+          placeholder="Search..."
+          icon={<MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />}
+          clearFieldAction={() => {}}
+        />
+      </div>
+    </div>
+  ),
+  args: {
+    ...Basic.args,
+  },
+};
+
+const WithIconAndClearButtonWithValue: Story = {
+  render: args => (
+    <div className="tw-content">
+      <div className="md:w-1/2">
+        <InteractiveWrapper
+          {...args}
+          initialValue="Search query"
+          placeholder="Search..."
+          icon={<MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />}
+          clearFieldAction={() => {}}
+        />
+      </div>
+    </div>
+  ),
+  args: {
+    ...Basic.args,
+  },
+};
+
+export {
+  Basic,
+  WithClearFieldButton,
+  WithError,
+  WithErrorMessage,
+  WithPreText,
+  WithIcon,
+  WithIconAndClearButton,
+  WithIconAndClearButtonWithValue,
+};

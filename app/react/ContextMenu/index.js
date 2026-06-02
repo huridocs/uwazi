@@ -1,5 +1,4 @@
-import ContextMenu from './components/ContextMenu';
-import * as MenuButtons from './components/Buttons';
+import { ContextMenu } from './components/ContextMenu.js';
+import * as MenuButtons from './components/Buttons.js';
 
-export default ContextMenu;
-export { MenuButtons };
+export { ContextMenu, MenuButtons };

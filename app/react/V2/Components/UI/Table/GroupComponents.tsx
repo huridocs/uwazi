@@ -2,9 +2,9 @@
 import React from 'react';
 import { Row } from '@tanstack/react-table';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
-import { Translate } from 'app/I18N';
-import { EmbededButton } from '../EmbededButton';
-import { TableRow } from './Table';
+import { Translate } from '#app/I18N/index.js';
+import { EmbededButton } from '../EmbededButton.js';
+import { TableRow } from './Table.js';
 
 const GroupHeader = () => <Translate className="sr-only">Empty</Translate>;
 
@@ -17,7 +17,7 @@ const GroupCell = <T extends TableRow<T>>({ row }: { row: Row<T> }) => {
       icon={expanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
       onClick={() => row.toggleExpanded()}
       color="indigo"
-      className={`${expanded ? 'bg-indigo-300' : 'bg-indigo-100'} rounded-md border-none drop-shadow-none`}
+      className={`${expanded ? 'bg-primary-300' : 'bg-primary-100'} rounded-md border-none drop-shadow-none`}
     >
       <Translate className={`${expanded ? 'text-indigo-800' : 'text-indigo-700'}`}>Group</Translate>
       <Translate className="sr-only">Open group</Translate>

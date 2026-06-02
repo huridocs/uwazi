@@ -1,4 +1,4 @@
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 type ContextType = 'Entity' | 'Relationship Type' | 'Uwazi UI' | 'Thesaurus';
 
@@ -20,6 +20,9 @@ export class Translation {
   constructor(key: string, value: string, language: LanguageISO6391, context: TranslationContext) {
     if (typeof context.id !== 'string') {
       throw new Error(`context.id is of type "${typeof context.id}", should be a string`);
+    }
+    if (value === null || value === undefined) {
+      throw new Error(`Translation value for key "${key}" cannot be null or undefined`);
     }
     this.key = key;
     this.value = value;

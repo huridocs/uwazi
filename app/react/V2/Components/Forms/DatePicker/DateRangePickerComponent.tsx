@@ -1,15 +1,18 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, Ref, useRef, useImperativeHandle } from 'react';
 //@ts-ignore
 import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
 //@ts-ignore
 import Datepicker from 'flowbite-datepicker/Datepicker';
 import 'flowbite/dist/flowbite.min.css';
-import uniqueID from 'shared/uniqueID';
-import { Label } from '../Label';
-import { InputError } from '../InputError';
-import { InputField } from '../InputField';
-import { DatePickerProps, datePickerOptionsByLocale, validateLocale } from './DatePickerComponent';
+import uniqueID from '#shared/uniqueID.js';
+import { Label } from '../Label.js';
+import { InputError } from '../InputError.js';
+import { InputField } from '../InputField.js';
+import {
+  DatePickerProps,
+  datePickerOptionsByLocale,
+  validateLocale,
+} from './DatePickerComponent.js';
 
 interface DateRangePickerProps extends Omit<DatePickerProps, 'dateFormat'> {
   dateFormat?: string;
@@ -51,10 +54,7 @@ const DateRangePickerComponent = React.forwardRef(
     const toRef = useRef<HTMLInputElement>(null);
     useImperativeHandle(forwardedRef, () => divRef.current);
 
-    const fieldStyles = !(hasErrors || errorMessage)
-      ? // eslint-disable-next-line max-len
-        `${inputClassName || ''} bg-gray-50 border border-gray-300`
-      : `${inputClassName || ''} border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700`;
+    const fieldStyles = inputClassName || '';
     const instance = useRef<DateRangePicker | null>(null);
     const locale = validateLocale(language);
 
@@ -164,13 +164,10 @@ const DateRangePickerComponent = React.forwardRef(
             datepicker-autoselect-today="true"
             className="flex items-center gap-4"
           >
-            <div
-              // eslint-disable-next-line max-len
-              className="relative "
-            >
-              <div className="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
+            <div className="relative ">
+              <div className="absolute inset-y-0 flex items-center pointer-events-none inset-s-0 ps-3">
                 <svg
-                  className="w-4 h-4 text-gray-500 dark:text-gray-400 z-3"
+                  className="z-3 h-4 w-4 text-(--color-theme-control-text-muted)"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -188,8 +185,8 @@ const DateRangePickerComponent = React.forwardRef(
                 datepicker-autoselect-today={true}
                 type="text"
                 disabled={disabled}
-                // eslint-disable-next-line max-len
-                className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${fieldStyles} bg-gray-50 border border-gray-300 rounded-lg`}
+                hasErrors={Boolean(hasErrors || errorMessage)}
+                className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${fieldStyles}`}
                 placeholder={placeholderStart}
                 ref={fromRef}
                 clearFieldAction={() => {
@@ -200,9 +197,9 @@ const DateRangePickerComponent = React.forwardRef(
               />
             </div>
             <div className="relative">
-              <div className="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
+              <div className="absolute inset-y-0 flex items-center pointer-events-none inset-s-0 ps-3">
                 <svg
-                  className="w-4 h-4 text-gray-500 dark:text-gray-400 z-3"
+                  className="z-3 h-4 w-4 text-(--color-theme-control-text-muted)"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -220,8 +217,8 @@ const DateRangePickerComponent = React.forwardRef(
                 datepicker-autoselect-today={true}
                 type="text"
                 disabled={disabled}
-                // eslint-disable-next-line max-len
-                className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${fieldStyles} bg-gray-50 border border-gray-300 rounded-lg`}
+                hasErrors={Boolean(hasErrors || errorMessage)}
+                className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${fieldStyles}`}
                 placeholder={placeholderEnd}
                 clearFieldAction={() => {
                   const fromDate = from ? new Date(from) : undefined;

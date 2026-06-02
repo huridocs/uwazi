@@ -1,9 +1,9 @@
-import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
+import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { z } from 'zod';
-import { PropertyTypeInvalidTypeError } from './errors';
-import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
-import { PropertyTypeEnum } from './PropertyType';
-import { PropertyAssignment, TextPropertyValue } from './PropertyValue';
+import { PropertyTypeInvalidTypeError } from './errors.js';
+import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty.js';
+import { PropertyTypeEnum } from './PropertyType.js';
+import { PropertyAssignment, TextPropertyValue } from './PropertyValue.js';
 
 type Props = {
   type?: PropertyTypeEnum.Text;
@@ -11,7 +11,7 @@ type Props = {
 } & Omit<FilterablePropertyProps, 'type'>;
 
 const EntrySchema = z.object({
-  value: z.string().trim().min(1, 'Text Property must be a non-empty string.'),
+  value: z.string().trim(),
 });
 
 const createSchema = (isRequired: boolean) =>
@@ -37,18 +37,23 @@ class TextProperty extends FilterableProperty {
     }
   }
 
+  get isTranslatable(): boolean {
+    return true;
+  }
+
   createPropertyAssignment(
     { value }: CreatePropertyAssignmentInput<TextPropertyValue>,
     shouldValidateForRequired = false
   ) {
     const parsedValue = createSchema(shouldValidateForRequired ? this.required : false).parse(
-      value
+      value.filter(v => v?.value?.trim()?.length)
     );
 
     return {
       name: this.name,
       type: this.type,
       value: parsedValue,
+      isTranslatable: this.isTranslatable,
     };
   }
 

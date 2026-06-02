@@ -1,9 +1,18 @@
-import uniqueID from 'shared/uniqueID';
 import dotenv from 'dotenv';
-import { Tenant } from './tenants/tenantContext';
-import { version } from '../../package.json';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+// eslint-disable-next-line node/no-restricted-import
+import { readFileSync } from 'fs';
+import { hostname } from 'os';
+import { Tenant } from './tenants/tenantContext.js';
+import uniqueID from '#shared/uniqueID.js';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const packageJson = JSON.parse(readFileSync(`${__dirname}/../../package.json`, 'utf-8'));
+const { version } = packageJson;
 
 const {
   ACTIVITY_LOGS_FOLDER,
@@ -13,6 +22,9 @@ const {
   ENVIRONMENT,
   FEATURE_FLAG_FILE_CACHE_HEADERS,
   FEATURE_FLAG_PARAGRAPH_EXTRACTION,
+  FEATURE_FLAG_THEME_CUSTOMIZATION,
+  FEATURE_FLAG_V2_CSV_IMPORT,
+  DEV_FLAG_TESTING,
   FILES_ROOT_PATH,
   JSON_LOGS,
   MONGO_CONNECTION_POOL_SIZE,
@@ -22,6 +34,7 @@ const {
   SENTRY_API_DSN,
   UPLOADS_FOLDER,
   USER_SESSION_SECRET,
+  NEW_HEADER,
 } = process.env;
 
 const rootPath = ROOT_PATH || `${__dirname}/../../`;
@@ -32,6 +45,28 @@ const filesRootPath = FILES_ROOT_PATH || rootPath;
 const CLUSTER_MODE = process.env.CLUSTER_MODE || false;
 
 const onlyDBHOST = () => (DBHOST ? `mongodb://${DBHOST}/` : 'mongodb://127.0.0.1/');
+
+const defaultTenantS3Storage = false;
+const defaultTenantName = 'default';
+
+const getDefaultTenantPaths = () => {
+  if (defaultTenantS3Storage) {
+    return {
+      uploadedDocuments: `${defaultTenantName}/uploaded_documents/`,
+      attachments: `${defaultTenantName}/uploaded_documents/`,
+      customUploads: `${defaultTenantName}/custom_uploads/`,
+      activityLogs: `${defaultTenantName}/log/`,
+    };
+  }
+  return {
+    uploadedDocuments: UPLOADS_FOLDER || `${filesRootPath}/uploaded_documents/`,
+    attachments: UPLOADS_FOLDER || `${filesRootPath}/uploaded_documents/`,
+    customUploads: CUSTOM_UPLOADS_FOLDER || `${filesRootPath}/custom_uploads/`,
+    activityLogs: ACTIVITY_LOGS_FOLDER || `${filesRootPath}/log/`,
+  };
+};
+
+const defaultTenantPaths = getDefaultTenantPaths();
 
 export const config = {
   VERSION: ENVIRONMENT ? version : `development-${version}`,
@@ -64,32 +99,52 @@ export const config = {
     },
   },
 
-  // db for tenants list and sessions
-  SHARED_DB: 'uwazi_shared_db',
+  elasticSearchMultiTenant: {
+    nodes: process.env.ELASTIC_SEARCH_NODES
+      ? process.env.ELASTIC_SEARCH_NODES.split(',')
+      : ['http://localhost:9200'],
+    requestTimeout: 60000,
+    auth: {
+      apiKey: process.env.ELASTIC_SEARCH_API_KEY || '',
+    },
+  },
+
+  SHARED_DB: process.env.NODE_ENV === 'test' ? 'uwazi_shared_db_testing' : 'uwazi_shared_db',
 
   multiTenant: process.env.MULTI_TENANT || false,
   clusterMode: CLUSTER_MODE,
   defaultTenant: <Tenant>{
-    name: 'default',
+    name: defaultTenantName,
     dbName:
       process.env.DATABASE_NAME ||
       (process.env.NODE_ENV === 'test' ? 'uwazi_testing' : 'uwazi_development'),
     indexName:
       process.env.INDEX_NAME ||
       (process.env.NODE_ENV === 'test' ? 'uwazi_testing' : 'uwazi_development'),
-    uploadedDocuments: UPLOADS_FOLDER || `${filesRootPath}/uploaded_documents/`,
-    attachments: UPLOADS_FOLDER || `${filesRootPath}/uploaded_documents/`,
-    customUploads: CUSTOM_UPLOADS_FOLDER || `${filesRootPath}/custom_uploads/`,
-    activityLogs: ACTIVITY_LOGS_FOLDER || `${filesRootPath}/log/`,
+    uploadedDocuments: defaultTenantPaths.uploadedDocuments,
+    attachments: defaultTenantPaths.attachments,
+    customUploads: defaultTenantPaths.customUploads,
+    activityLogs: defaultTenantPaths.activityLogs,
+    domain: process.env.DEFAULT_TENANT_DOMAIN || `${hostname()}:${process.env.PORT || 3000}`,
     featureFlags: {
-      s3Storage: false,
+      s3Storage: defaultTenantS3Storage,
       esReplicas: 0,
       deactivateTestJob: false,
       paragraphExtraction: FEATURE_FLAG_PARAGRAPH_EXTRACTION === 'true' || false,
       fileCacheHeaders: FEATURE_FLAG_FILE_CACHE_HEADERS === 'true' || false,
-      v2UploadFile: false,
-      v2CreateEntity: false,
-      v2CSVImport: false,
+      themeCustomization: FEATURE_FLAG_THEME_CUSTOMIZATION === 'true' || false,
+      testing: DEV_FLAG_TESTING === 'true' || false,
+      v2UpdateEntity: false,
+      v2CSVImport: FEATURE_FLAG_V2_CSV_IMPORT === 'true' || false,
+      v2UpdateThesaurus: false,
+      v2GetEntity: false,
+      v2MultipleUpdateEntity: false,
+      v2ElasticSearch: false,
+      v2DeleteEntity: false,
+      v2UpdateFile: false,
+      v2Languages: false,
+      v2EntityPermission: false,
+      newHeader: NEW_HEADER === 'true' || false,
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',

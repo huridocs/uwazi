@@ -1,15 +1,15 @@
 import { combineReducers } from 'redux';
 import Immutable from 'immutable';
-import createReducer from 'app/BasicReducer';
-import { isClient } from 'app/utils';
+import { createReducer } from '#app/BasicReducer/index.js';
+import { isClient } from '#app/utils/index.js';
 
 import { modelReducer, formReducer } from 'react-redux-form';
-import { manageAttachmentsReducer } from 'app/Attachments';
-import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
-import { documentsReducer } from './documentsReducer';
-import libraryUI from './uiReducer';
-import libraryFilters from './filtersReducer';
-import aggregationsReducer from './aggregationsReducer';
+import { manageAttachmentsReducer } from '#app/Attachments/index.js';
+import { prioritySortingCriteria } from '#app/utils/prioritySortingCriteria.js';
+import { documentsReducer } from './documentsReducer.js';
+import { uiReducer as libraryUI } from './uiReducer.js';
+import libraryFilters from './filtersReducer.js';
+import { aggregationsReducer } from './aggregationsReducer.js';
 
 let templates = null;
 if (isClient) {
@@ -22,11 +22,10 @@ if (isClient) {
 const defaultSearch = prioritySortingCriteria.get({ templates });
 defaultSearch.searchTerm = '';
 defaultSearch.filters = {};
-defaultSearch.allAggregations = true;
 defaultSearch.includeUnpublished = true;
 defaultSearch.publishedStatus = { values: ['published', 'restricted'] };
 
-export default storeKey =>
+const reducer = storeKey =>
   combineReducers({
     aggregations: aggregationsReducer,
     documents: documentsReducer,
@@ -39,7 +38,6 @@ export default storeKey =>
     searchForm: formReducer(`${storeKey}.search`, defaultSearch),
     selectedSorting: createReducer(`${storeKey}.selectedSorting`, {}),
     markers: createReducer(`${storeKey}.markers`, { rows: [] }),
-    //
     sidepanel: combineReducers({
       metadata: modelReducer(`${storeKey}.sidepanel.metadata`, {}),
       metadataForm: formReducer(`${storeKey}.sidepanel.metadata`, {}),
@@ -58,3 +56,5 @@ export default storeKey =>
       view: createReducer(`${storeKey}.sidepanel.view`, ''),
     }),
   });
+
+export { reducer };

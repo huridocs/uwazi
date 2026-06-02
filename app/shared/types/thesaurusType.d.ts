@@ -1,7 +1,7 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 
 export interface ThesaurusSchema {
   _id?: ObjectIdSchema;
@@ -11,11 +11,9 @@ export interface ThesaurusSchema {
 }
 
 export interface ThesaurusValueSchema {
-  _id?: ObjectIdSchema;
   id?: string;
   label: string;
   values?: {
-    _id?: ObjectIdSchema;
     id?: string;
     label: string;
     name?: string;

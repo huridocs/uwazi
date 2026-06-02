@@ -1,11 +1,11 @@
 import { EventEmitter } from 'events';
 import mongoose, { Model, Document } from 'mongoose';
-import { config } from 'api/config';
-import { DB } from 'api/odm/DB';
-import { handleError } from 'api/utils';
 import { ChangeStream, MongoError } from 'mongodb';
+import { config } from '#api/config.js';
+import { DB } from '#api/odm/DB.js';
+import { handleError } from '#api/utils/index.js';
 
-import { Tenant } from './tenantContext';
+import type { Tenant } from './tenantContext.js';
 
 const schemaValidator = {
   $jsonSchema: {
@@ -28,15 +28,26 @@ const mongoSchema = new mongoose.Schema({
   attachments: String,
   customUploads: String,
   activityLogs: String,
+  domain: String,
   featureFlags: {
     s3Storage: Boolean,
     esReplicas: Number,
     sync: Boolean,
     deactivateTestJob: Boolean,
     paragraphExtraction: Boolean,
-    v2CreateEntity: Boolean,
+    v2UpdateEntity: Boolean,
+    v2CSVImport: Boolean,
     fileCacheHeaders: Boolean,
-    v2UploadFile: Boolean,
+    v2UpdateThesaurus: Boolean,
+    themeCustomization: Boolean,
+    v2GetEntity: Boolean,
+    v2MultipleUpdateEntity: Boolean,
+    v2ElasticSearch: Boolean,
+    v2DeleteEntity: Boolean,
+    v2Languages: Boolean,
+    v2UpdateFile: Boolean,
+    newHeader: Boolean,
+    v2EntityPermission: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,

@@ -1,19 +1,16 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { Application, NextFunction, Request, Response } from 'express';
+import type { Application, NextFunction, Request, Response } from 'express';
 import os from 'os';
 import path from 'path';
-import { EntityWithFilesSchema } from 'shared/types/entityType';
 import request from 'supertest';
-
-import entities from 'api/entities';
-import { setupTestUploadedPaths, storage } from 'api/files';
-import { search } from 'api/search';
-import mailer from 'api/utils/mailer';
-import { setUpApp, socketEmit } from 'api/utils/testingRoutes';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-import { routes } from '../jsRoutes';
-import { fixtures, templateId } from './fixtures';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { setupTestUploadedPaths, storage } from '#api/files/index.js';
+import { search } from '#api/search/index.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import { PUBLIC_USER_ID } from '#api/users/publicUser.js';
+import { fixtures, templateId, writerUser } from './fixtures.js';
+import { routes } from '../jsRoutes.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -35,78 +32,119 @@ describe('public routes', () => {
   beforeEach(async () => {
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     jest.spyOn(Date, 'now').mockReturnValue(1000);
-    await testingEnvironment.setUp(fixtures);
     await setupTestUploadedPaths();
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => testingEnvironment.tearDown());
 
   describe('POST /api/public', () => {
+    // eslint-disable-next-line max-statements
     it('should create the entity and store the files', async () => {
+      testingEnvironment.unsetFakeContext();
+      testingEnvironment.resetPermissions();
       await fs.writeFile(path.join(os.tmpdir(), 'attachment.txt'), 'attachment');
 
-      await socketEmit('documentProcessed', async () =>
-        request(app)
-          .post('/api/public')
-          .field(
-            'entity',
-            JSON.stringify({ title: 'public submit', template: templateId.toString() })
-          )
-          .attach('file', `${__dirname}/12345.test.pdf`)
-          .attach(
-            'attachments[0]',
-            path.join(os.tmpdir(), 'attachment.txt'),
-            'filename with special char ñ.txt'
-          )
-          .field('attachments_originalname[0]', 'filename with special char ñ.txt')
-          .expect(200)
-      );
+      const response = await request(app)
+        .post('/api/public')
+        .field(
+          'entity',
+          JSON.stringify({ title: 'public submit', template: templateId.toString() })
+        )
+        .attach('file', `${__dirname}/12345.test.pdf`)
+        .attach(
+          'attachments[0]',
+          path.join(os.tmpdir(), 'attachment.txt'),
+          'filename with special char ñ.txt'
+        )
+        .field('attachments_originalname[0]', 'filename with special char ñ.txt');
 
-      const [newEntity] = (await entities.get({
-        title: 'public submit',
-      })) as EntityWithFilesSchema[];
+      expect(response).toHaveStatus(200);
 
-      const textAttachment = (newEntity.attachments || []).find(
-        attachment => attachment.originalname === 'filename with special char ñ.txt'
+      const { sharedId } = response.body;
+
+      const [newEntity] = await testingEnvironment.db
+        .getCollection('entities')!
+        .find({ sharedId, language: 'es' })
+        .toArray();
+
+      const files = await testingEnvironment.db
+        .getCollection('files')!
+        .find({ entity: newEntity.sharedId })
+        .toArray();
+
+      const documents = files.filter((f: any) => f.type === 'document');
+      const attachments = files.filter((f: any) => f.type === 'attachment');
+
+      const textAttachment = attachments.find(
+        (attachment: any) => attachment.originalname === 'filename with special char ñ.txt'
       );
       expect(textAttachment).not.toBeUndefined();
       expect(await storage.fileExists(textAttachment?.filename!, 'attachment')).toBe(true);
 
-      const [document] = newEntity.documents!;
+      const [document] = documents;
       expect(document).toEqual(
-        expect.objectContaining({ originalname: '12345.test.pdf', status: 'ready' })
+        expect.objectContaining({ originalname: '12345.test.pdf', status: 'processing' })
       );
       expect(await storage.fileExists(document.filename!, 'document')).toBe(true);
     });
 
-    it('should send an email', async () => {
-      jest.spyOn(mailer, 'send').mockImplementation(async () => Promise.resolve());
-      await request(app)
+    it('should set req.user to Public user when not authenticated', async () => {
+      let capturedUser: any = null;
+
+      const appWithSpy: Application = setUpApp(
+        routes,
+        (req: Request, res: Response, next: NextFunction) => {
+          res.on('finish', () => {
+            capturedUser = req.user;
+          });
+          next();
+        }
+      );
+
+      await request(appWithSpy)
         .post('/api/public')
         .field(
-          'email',
-          JSON.stringify({
-            from: 'test',
-            to: 'batman@gotham.com',
-            subject: 'help!',
-            text: 'The joker is back!',
-          })
+          'entity',
+          JSON.stringify({ title: 'test req.user', template: templateId.toString() })
         )
+        .expect(200);
+
+      expect(capturedUser).toBeDefined();
+      expect(capturedUser._id.toString()).toBe(PUBLIC_USER_ID.toString());
+      expect(capturedUser.username).toBe('PublicUser');
+    });
+
+    it('should not overwrite req.user when user is authenticated', async () => {
+      let capturedUser: any = null;
+
+      const appWithAuthenticatedUser: Application = setUpApp(
+        routes,
+        (req: Request, res: Response, next: NextFunction) => {
+          req.user = writerUser;
+
+          res.on('finish', () => {
+            capturedUser = req.user;
+          });
+          next();
+        }
+      );
+
+      await request(appWithAuthenticatedUser)
+        .post('/api/public')
         .field(
           'entity',
           JSON.stringify({
-            title: 'test',
+            title: 'test authenticated user',
             template: templateId.toString(),
           })
         )
         .expect(200);
 
-      expect(mailer.send).toHaveBeenCalledWith({
-        from: 'test',
-        subject: 'help!',
-        text: 'The joker is back!',
-        to: 'batman@gotham.com',
-      });
+      expect(capturedUser).toBeDefined();
+      expect(capturedUser._id.toString()).toBe(writerUser._id.toString());
+      expect(capturedUser.username).toBe(writerUser.username);
+      expect(capturedUser._id.toString()).not.toBe(PUBLIC_USER_ID.toString());
     });
   });
 });

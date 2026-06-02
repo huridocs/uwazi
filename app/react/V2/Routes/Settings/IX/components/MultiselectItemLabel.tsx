@@ -1,6 +1,6 @@
 import React from 'react';
-import { Translate } from 'app/I18N';
-import { ClientPropertySchema } from 'app/istore';
+import { Translate } from '#app/I18N/index.js';
+import { ClientPropertySchema } from '#app/istore.js';
 
 const MultiselectItemLabel = ({
   isSelected,
@@ -14,7 +14,7 @@ const MultiselectItemLabel = ({
   isSelected?: boolean;
 }) => {
   const matchingStyles = 'bg-success-50 text-success-800';
-  const nonMatchingStyles = 'bg-orange-50 text-orange-800';
+  const nonMatchingStyles = 'bg-alert-50 text-alert-800';
 
   let styles = '';
 

@@ -1,8 +1,8 @@
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { FileContents } from 'api/files.v2/model/FileContents';
+import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
+import { FileContents } from '#api/core/domain/files/FileContents.js';
 import superagent from 'superagent';
-import { GetInput, HttpClient, PostFormDataInput } from '../contracts/HttpClient';
-import { HttpField } from '../contracts/HttpField';
+import type { GetInput, HttpClient, PostFormDataInput } from '../contracts/HttpClient.js';
+import type { HttpField } from '../contracts/HttpField.js';
 
 export class SuperAgentHttpClient implements HttpClient {
   private client = superagent;

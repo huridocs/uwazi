@@ -1,20 +1,22 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { FetchResponseError } from 'shared/JSONRequest';
-import { Modal } from 'V2/Components/UI';
-import { settingsAtom, translationsAtom, inlineEditAtom, notificationAtom } from 'V2/atoms';
-import { InputField } from 'app/V2/Components/Forms';
-import { Button } from 'V2/Components/UI/Button';
-import { TranslationValue } from 'V2/shared/types';
-import { postV2 } from 'V2/api/translations';
-import { t } from './translateFunction';
+import { FetchResponseError } from '#shared/JSONRequest.js';
+import { Modal } from '#V2/Components/UI/index.js';
+import { settingsAtom, translationsAtom, inlineEditAtom } from '#V2/atoms/index.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+
+import { InputField } from '#V2/Components/Forms/index.js';
+import { Button } from '#V2/Components/UI/Button.js';
+import { postV2 } from '#V2/api/translations/index.js';
+import { TranslationValue } from '#V2/shared/types.js';
+import { t } from './translateFunction.js';
 
 const TranslateModal = () => {
   const [inlineEditState, setInlineEditState] = useAtom(inlineEditAtom);
   const [translations] = useAtom(translationsAtom);
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const context = translations[0].contexts.find(ctx => ctx.id === inlineEditState.context)!;
   const { languages = [] } = useAtomValue(settingsAtom);
 
@@ -53,20 +55,13 @@ const TranslateModal = () => {
     if (isDirty) {
       const response = await postV2(data, context);
       if (response === 200) {
-        setNotifications({
-          type: 'success',
-          text: t('System', 'Translations saved', null, false),
-        });
+        notify('success', t('System', 'Translations saved', null, false));
       }
       if (response instanceof FetchResponseError) {
         const message = response.json?.prettyMessage
           ? response.json.prettyMessage
           : response.message;
-        setNotifications({
-          type: 'error',
-          text: t('System', 'An error occurred', null, false),
-          details: message,
-        });
+        notify('error', t('System', 'An error occurred', null, false), undefined, message);
       }
     }
     closeModal();
@@ -75,7 +70,7 @@ const TranslateModal = () => {
   return (
     inlineEditState.context && (
       <div className="tw-content">
-        <div className="z-[10000] relative">
+        <div className="z-10000 relative">
           <Modal size="xxxl" id="translationsFormModal">
             <form onSubmit={handleSubmit(submit)}>
               <Modal.Header>
@@ -102,7 +97,7 @@ const TranslateModal = () => {
               </Modal.Body>
               <Modal.Footer>
                 <Button
-                  styling="light"
+                  variant="ghost"
                   onClick={closeModal}
                   className="grow"
                   data-testid="cancel-button"
@@ -112,7 +107,7 @@ const TranslateModal = () => {
                 </Button>
                 <Button
                   type="submit"
-                  color="primary"
+                  variant="primary"
                   className="grow"
                   data-testid="save-button"
                   disabled={isSubmitting}

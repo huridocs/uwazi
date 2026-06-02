@@ -1,12 +1,12 @@
-import { CommonProperty, CommonPropertyProps } from 'api/core/domain/template/CommonProperty';
-import { Context } from 'api/core/domain/template/Property';
-import date from 'api/utils/date';
+import { CommonProperty, CommonPropertyProps } from '#api/core/domain/template/CommonProperty.js';
+import { Context } from '#api/core/domain/template/Property.js';
+import date from '#api/utils/date.js';
 import {
   CreationDatePropertyInvalidNameError,
   CreationDatePropertyInvalidTypeError,
-} from './errors';
-import { PropertyType } from './PropertyType';
-import { PropertyAssignment } from './PropertyValue';
+} from './errors.js';
+import { PropertyType } from './PropertyType.js';
+import { PropertyAssignment } from './PropertyValue.js';
 
 type Props = { prioritySorting?: boolean; type?: PropertyType } & Omit<CommonPropertyProps, 'type'>;
 
@@ -39,6 +39,7 @@ class CreationDateProperty extends CommonProperty {
       name: this.name,
       value: [{ value: this.defaultCreationDate }],
       type: this.type,
+      isTranslatable: this.isTranslatable,
     };
   }
 }

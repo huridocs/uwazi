@@ -1,10 +1,10 @@
-import { UseCase } from 'api/core/libs/UseCase';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
-import { EnforcedWithId } from 'api/odm';
-import { IXModelType } from 'shared/types/IXModelType';
-import ixmodels from 'api/services/informationextraction/ixmodels';
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import { Suggestions } from 'api/suggestions/suggestions';
+import { UseCase } from '#api/core/libs/UseCase.js';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
+import { EnforcedWithId } from '#api/odm/index.js';
+import { IXModelType } from '#shared/types/IXModelType.js';
+import ixmodels from '#api/services/informationextraction/ixmodels.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { Suggestions } from '#api/suggestions/suggestions.js';
 // IXServices intentionally not used directly here
 
 type Input = { extractorId: ObjectIdSchema };

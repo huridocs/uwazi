@@ -1,5 +1,5 @@
 import React from 'react';
-import { t } from 'app/I18N';
+import { t } from '#app/I18N/index.js';
 
 const SearchTipsContent = () => (
   <ul>

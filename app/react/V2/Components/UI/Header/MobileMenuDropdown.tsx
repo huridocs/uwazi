@@ -1,14 +1,23 @@
 import React, { useState } from 'react';
 import { useAtomValue } from 'jotai';
-import { t } from 'app/I18N';
-import { I18NLink } from 'app/I18N/I18NLinkV2';
 import { Bars3BottomLeftIcon, Bars3BottomRightIcon } from '@heroicons/react/24/outline';
-import { availableLanguages } from 'shared/language';
-import { localeAtom, settingsAtom } from '../../../atoms';
-import { BaseDropdown } from './BaseDropdown';
+import { t } from '#app/I18N/index.js';
+import { I18NLink } from '#app/I18N/I18NLinkV2.js';
+import { availableLanguages } from '#shared/language/index.js';
+import { localeAtom, settingsAtom } from '../../../atoms/index.js';
+import { BaseDropdown } from './BaseDropdown.js';
+
+type HeaderLink = {
+  _id?: string;
+  localId?: string;
+  title: string;
+  url?: string;
+  type: 'link' | 'group';
+  sublinks?: HeaderLink[];
+};
 
 interface MobileMenuDropdownProps {
-  links: any[] | undefined;
+  links?: HeaderLink[];
 }
 
 const MobileMenuDropdown: React.FC<MobileMenuDropdownProps> = ({ links }) => {
@@ -24,19 +33,23 @@ const MobileMenuDropdown: React.FC<MobileMenuDropdownProps> = ({ links }) => {
 
   const HamburgerIcon = isRTL ? Bars3BottomRightIcon : Bars3BottomLeftIcon;
 
-  const renderMobileLink = (link: any, level = 0, roundedClasses = '') => {
+  const renderMobileLink = (
+    link: HeaderLink & { level?: number; group?: boolean },
+    level = 0,
+    roundedClasses = ''
+  ) => {
     if (!link) return null;
 
     const paddingLeft = level > 0 ? 'pl-8' : 'pl-4';
     const url = link.url || '/';
     const isExternal = url.startsWith('http');
 
-    // Check if this link has sublinks (groups/dropdowns)
-    if (link.type === 'group') {
+    if (link.group) {
+      const key = String(link._id ?? link.localId ?? link.title);
       return (
-        <div key={`mobile-group-${link._id}`}>
+        <div key={`mobile-group-${key}`}>
           <div
-            className={`py-3 ${paddingLeft} text-sm font-semibold text-gray-900 bg-gray-50 border-b border-gray-100 ${roundedClasses}`}
+            className={`header-bar-panel-group py-2 ${paddingLeft} text-[0.6875rem] font-semibold uppercase tracking-wider ${roundedClasses}`}
           >
             {t('Menu', link.title)}
           </div>
@@ -45,14 +58,13 @@ const MobileMenuDropdown: React.FC<MobileMenuDropdownProps> = ({ links }) => {
     }
 
     return (
-      <div key={`mobile-link-${link._id}`}>
+      <div key={`mobile-link-${String(link._id ?? link.localId ?? link.title)}`}>
         {isExternal ? (
           <a
             href={url}
             className={[
-              'block py-3',
+              'header-bar-panel-item block py-2.5 text-sm transition-colors',
               paddingLeft,
-              'text-sm text-gray-700 hover:bg-gray-100 transition-colors border-b border-gray-100',
               roundedClasses,
             ].join(' ')}
             target="_blank"
@@ -66,9 +78,8 @@ const MobileMenuDropdown: React.FC<MobileMenuDropdownProps> = ({ links }) => {
           <I18NLink
             to={url}
             className={[
-              'block py-3',
+              'header-bar-panel-item block py-2.5 text-sm transition-colors',
               paddingLeft,
-              'text-sm text-gray-700 hover:bg-gray-100 transition-colors border-b border-gray-100',
               roundedClasses,
             ].join(' ')}
             onClick={() => setIsOpen(false)}
@@ -84,11 +95,11 @@ const MobileMenuDropdown: React.FC<MobileMenuDropdownProps> = ({ links }) => {
   const trigger = (
     <button
       type="button"
-      className="flex items-center justify-center w-10 h-10 text-gray-700 hover:text-primary-600 hover:bg-gray-100 rounded-md transition-colors"
+      className="header-bar-icon-button flex h-9 w-9 items-center justify-center rounded-md transition-colors"
       aria-expanded={isOpen}
       aria-label="Toggle navigation menu"
     >
-      <HamburgerIcon className="h-6 w-6" />
+      <HamburgerIcon className="h-5 w-5" />
     </button>
   );
 
@@ -100,11 +111,14 @@ const MobileMenuDropdown: React.FC<MobileMenuDropdownProps> = ({ links }) => {
   };
 
   // Flatten all links to apply rounded corners to first and last items
-  const flattenLinks = (linkList: any[], level = 0): any[] => {
-    const flattened: any[] = [];
+  const flattenLinks = (
+    linkList: HeaderLink[] = [],
+    level = 0
+  ): (HeaderLink & { level?: number; group?: boolean })[] => {
+    const flattened: (HeaderLink & { level?: number; group?: boolean })[] = [];
     linkList?.forEach(link => {
       if (link.sublinks && link.sublinks.length > 0) {
-        flattened.push({ ...link, type: 'group', level });
+        flattened.push({ ...link, group: true, level });
         flattened.push(...flattenLinks(link.sublinks, level + 1));
       } else {
         flattened.push({ ...link, level });
@@ -116,7 +130,7 @@ const MobileMenuDropdown: React.FC<MobileMenuDropdownProps> = ({ links }) => {
   const flatLinks = flattenLinks(links || []);
 
   const dropdownContent = (
-    <div className="max-h-[80vh] overflow-y-auto">
+    <div className="max-h-[80vh] overflow-y-auto py-1">
       {flatLinks.map((link, index) => {
         const isFirst = index === 0;
         const isLast = index === flatLinks.length - 1;
@@ -132,7 +146,7 @@ const MobileMenuDropdown: React.FC<MobileMenuDropdownProps> = ({ links }) => {
       trigger={trigger}
       isOpen={isOpen}
       onToggle={setIsOpen}
-      dropdownClassName="w-80 max-w-[calc(100vw-2rem)] mt-2"
+      dropdownClassName="w-80 max-w-[calc(100vw-2rem)]"
     >
       {dropdownContent}
     </BaseDropdown>

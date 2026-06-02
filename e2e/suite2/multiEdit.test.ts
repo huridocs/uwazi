@@ -2,10 +2,10 @@
 /* eslint-disable no-await-in-loop */
 /*global page*/
 
-import { adminLogin, logout } from '../helpers/login';
-import proxyMock from '../helpers/proxyMock';
-import insertFixtures from '../helpers/insertFixtures';
-import { refreshIndex } from '../helpers/elastichelpers';
+import { adminLogin, logout } from '../helpers/login.js';
+import proxyMock from '../helpers/proxyMock.js';
+import insertFixtures from '../helpers/insertFixtures.js';
+import { refreshIndex } from '../helpers/elastichelpers.js';
 
 describe('multi edit', () => {
   beforeAll(async () => {
@@ -25,7 +25,7 @@ describe('multi edit', () => {
       text: option,
     });
     await expect(page).toClick('button', { text: 'Save changes' });
-    await expect(page).toClick('.alert.alert-success');
+    await page.waitForNetworkIdle();
     await refreshIndex();
   };
 
@@ -35,7 +35,7 @@ describe('multi edit', () => {
     await expect(page).toFill('#metadataForm textarea:first-child', title);
     await expect(page).toSelect('#metadataForm select:first-child', type);
     await expect(page).toClick('button', { text: 'Save' });
-    await expect(page).toClick('.alert.alert-success');
+    await page.waitForNetworkIdle();
     await expect(page).toClick('button.close-modal');
   };
 
@@ -80,7 +80,7 @@ describe('multi edit', () => {
     }
 
     await expect(page).toClick('.multi-edit button', { text: 'Save' });
-    await expect(page).toClick('.alert.alert-success');
+    await page.waitForNetworkIdle();
   };
 
   it('should create 3 entities', async () => {
@@ -130,7 +130,7 @@ describe('multi edit', () => {
       );
 
       await expect(page).toClick('.multi-edit button', { text: 'Save' });
-      await expect(page).toClick('.alert.alert-success');
+      await page.waitForNetworkIdle();
 
       await expectValues('A sentence', ['edited value', 'ArgentinaBahamas']);
       await expectValues('Another sentence', ['edited value', 'ArgentinaBahamas']);
@@ -142,7 +142,7 @@ describe('multi edit', () => {
       await (await selectFromLibrary('Another sentence')).shiftSelectUntil('A case');
       await expect(page).toClick('.multi-edit button', { text: 'Delete' });
       await expect(page).toClick('button', { text: 'Accept' });
-      await expect(page).toClick('.alert.alert-success');
+      await page.waitForNetworkIdle();
 
       await reloadLibrary();
 

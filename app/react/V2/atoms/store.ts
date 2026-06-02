@@ -1,20 +1,24 @@
 import { createStore } from 'jotai';
-import { sortBy } from 'lodash';
-import { isClient } from 'app/utils';
-import { store } from 'app/store';
-import { ClientSettings, ClientThesaurus, ClientUserSchema } from 'app/apiResponseTypes';
-import { ClientTemplateSchema, ClientTranslationSchema, RelationshipTypesType } from 'app/istore';
-import { globalMatomoAtom } from './globalMatomoAtom';
-import { ciMatomoActiveAtom } from './ciMatomoActiveAtom';
-import { relationshipTypesAtom } from './relationshipTypes';
-import { settingsAtom } from './settingsAtom';
-import { templatesAtom } from './templatesAtom';
-import { translationsAtom, localeAtom } from './translationsAtoms';
-import { userAtom } from './userAtom';
-import { thesauriAtom } from './thesauriAtom';
-import { pdfScaleAtom } from './pdfScaleAtom';
-import { serverIsMobileAtom } from './isMobileAtom';
-import { acceptedSuggestions as ixAcceptedSuggestions } from '../Routes/Settings/IX/components/atoms';
+import sortBy from 'lodash/sortBy.js';
+import { isClient } from '#app/utils/index.js';
+import { store as reduxStore } from '#app/store.js';
+import { ClientSettings, ClientThesaurus, ClientUserSchema } from '#app/apiResponseTypes.js';
+import {
+  ClientTemplateSchema,
+  ClientTranslationSchema,
+  RelationshipTypesType,
+} from '#app/istore.js';
+import { getStore } from '#shared/atomStore/client.store.js';
+import { globalMatomoAtom } from './globalMatomoAtom.js';
+import { ciMatomoActiveAtom } from './ciMatomoActiveAtom.js';
+import { relationshipTypesAtom } from './relationshipTypes.js';
+import { settingsAtom } from './settingsAtom.js';
+import { templatesAtom } from './templatesAtom.js';
+import { translationsAtom, localeAtom } from './translationsAtoms.js';
+import { userAtom } from './userAtom.js';
+import { thesauriAtom } from './thesauriAtom.js';
+import { serverIsMobileAtom } from './isMobileAtom.js';
+import { acceptedSuggestions as ixAcceptedSuggestions } from '../Routes/Settings/IX/components/atoms/index.js';
 
 type AtomStoreData = {
   globalMatomo?: { url: string; id: string };
@@ -30,51 +34,47 @@ type AtomStoreData = {
   isMobile?: boolean;
 };
 
-const atomStore = createStore();
-
-const hydrateAtomStore = (data: AtomStoreData) => {
-  if (data.ciMatomoActive) atomStore.set(ciMatomoActiveAtom, data.ciMatomoActive);
-  if (data.globalMatomo) atomStore.set(globalMatomoAtom, { ...data.globalMatomo });
-  if (data.settings) atomStore.set(settingsAtom, data.settings);
-  if (data.thesauri) atomStore.set(thesauriAtom, data.thesauri);
-  if (data.templates) atomStore.set(templatesAtom, data.templates);
-  if (data.relationTypes) atomStore.set(relationshipTypesAtom, data.relationTypes);
-  if (data.isMobile !== undefined) atomStore.set(serverIsMobileAtom, data.isMobile);
-  atomStore.set(userAtom, data.user);
-  atomStore.set(translationsAtom, data.translations);
-  atomStore.set(localeAtom, data.locale || 'en');
-  atomStore.set(ixAcceptedSuggestions, new Set<string>());
+// eslint-disable-next-line max-statements
+const hydrateAtomStore = (data: AtomStoreData, store: ReturnType<typeof createStore>) => {
+  if (data.ciMatomoActive) store.set(ciMatomoActiveAtom, data.ciMatomoActive);
+  if (data.globalMatomo) store.set(globalMatomoAtom, { ...data.globalMatomo });
+  if (data.settings) store.set(settingsAtom, data.settings);
+  if (data.thesauri) store.set(thesauriAtom, data.thesauri);
+  if (data.templates) store.set(templatesAtom, data.templates);
+  if (data.relationTypes) store.set(relationshipTypesAtom, data.relationTypes);
+  if (data.isMobile !== undefined) store.set(serverIsMobileAtom, data.isMobile);
+  store.set(userAtom, data.user);
+  store.set(translationsAtom, data.translations);
+  store.set(localeAtom, data.locale || 'en');
+  store.set(ixAcceptedSuggestions, new Set<string>());
 };
 
 if (isClient && window.__atomStoreData__) {
-  hydrateAtomStore(window.__atomStoreData__);
+  const atomStore = getStore();
+  hydrateAtomStore(window.__atomStoreData__, atomStore);
 
   //sync deprecated redux store
   atomStore.sub(settingsAtom, () => {
     const value = atomStore.get(settingsAtom);
-    store?.dispatch({ type: 'settings/collection/SET', value });
+    reduxStore?.dispatch({ type: 'settings/collection/SET', value });
   });
   atomStore.sub(templatesAtom, () => {
     const value = sortBy(atomStore.get(templatesAtom), 'name');
-    store?.dispatch({ type: 'templates/SET', value });
+    reduxStore?.dispatch({ type: 'templates/SET', value });
   });
   atomStore.sub(relationshipTypesAtom, () => {
     const value = sortBy(atomStore.get(relationshipTypesAtom), 'name');
-    store?.dispatch({ type: 'relationTypes/SET', value });
+    reduxStore?.dispatch({ type: 'relationTypes/SET', value });
   });
   atomStore.sub(thesauriAtom, () => {
     const value = atomStore.get(thesauriAtom);
-    store?.dispatch({ type: 'dictionaries/SET', value });
-  });
-  atomStore.sub(pdfScaleAtom, () => {
-    const value = atomStore.get(pdfScaleAtom);
-    store?.dispatch({ type: 'viewer/documentScale/SET', value });
+    reduxStore?.dispatch({ type: 'dictionaries/SET', value });
   });
   atomStore.sub(translationsAtom, () => {
     const value = atomStore.get(translationsAtom);
-    store?.dispatch({ type: 'translations/SET', value });
+    reduxStore?.dispatch({ type: 'translations/SET', value });
   });
 }
 
 export type { AtomStoreData };
-export { atomStore, hydrateAtomStore };
+export { hydrateAtomStore };

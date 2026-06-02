@@ -1,6 +1,6 @@
 import { Location } from 'react-router';
-import { risonDecodeOrIgnore } from 'app/utils';
-import { isArray } from 'lodash';
+import isArray from 'lodash/isArray.js';
+import { risonDecodeOrIgnore } from '#app/utils/index.js';
 
 const validateHomePageRoute = (route: string) => {
   const queryParams = '(\\?.*)?)';
@@ -12,7 +12,10 @@ const validateHomePageRoute = (route: string) => {
   return route.match(matcher) !== null;
 };
 
-const searchParamsFromLocationSearch = (location: Location, param: string = 'q') => {
+const searchParamsFromLocationSearch = (
+  location: Pick<Location, 'search'>,
+  param: string = 'q'
+) => {
   const urlSearchParams = new URLSearchParams(location.search);
   const paramJSON = risonDecodeOrIgnore(urlSearchParams.get(param) || '()');
   return paramJSON;

@@ -2,13 +2,14 @@
 import React, { useEffect } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import CheckCircleIcon from '@heroicons/react/20/solid/CheckCircleIcon';
-import { isEmpty, last } from 'lodash';
-import { Translate } from 'app/I18N';
-import { InputField, Select } from 'V2/Components/Forms';
-import { Button, Card, Sidepanel } from 'V2/Components/UI';
-import uniqueID from 'shared/uniqueID';
-import { ThesaurusRow } from './TableComponents';
-import { sanitizeThesaurusLabel } from '../helpers';
+import isEmpty from 'lodash/isEmpty.js';
+import last from 'lodash/last.js';
+import { Translate } from '#app/I18N/index.js';
+import { InputField, Select } from '#V2/Components/Forms/index.js';
+import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
+import uniqueID from '#shared/uniqueID.js';
+import { ThesaurusRow } from './TableComponents.js';
+import { sanitizeThesaurusLabel } from '../helpers.js';
 
 interface ThesauriValueFormSidepanelProps {
   closePanel: () => void;
@@ -80,7 +81,14 @@ const ThesauriValueFormSidepanel = ({
       >
         <Sidepanel.Body>
           {value.length === 0 && (
-            <div className="p-4 mb-4 border rounded-md shadow-sm border-gray-50 bg-primary-100 text-primary-700">
+            <div
+              className="mb-4 rounded-md border p-4 shadow-md"
+              style={{
+                backgroundColor: 'var(--color-theme-info-banner-bg)',
+                borderColor: 'var(--color-theme-info-banner-border)',
+                color: 'var(--color-theme-info-banner-fg)',
+              }}
+            >
               <div className="flex items-center gap-1 text-base font-semibold">
                 <div className="w-5 h-5 text-sm">
                   <CheckCircleIcon />
@@ -98,39 +106,41 @@ const ThesauriValueFormSidepanel = ({
             </div>
           )}
           {fields.map((localValue, index) => (
-            <Card title={<Translate>Item</Translate>} key={localValue.rowId}>
-              <div className="flex flex-col gap-4">
-                <InputField
-                  id="item-name"
-                  data-testid="thesauri-form-item-name"
-                  label={<Translate>Title</Translate>}
-                  {...register(`newValues.${index}.label`)}
-                />
-                {groups && (
-                  <Select
-                    id="item-group"
-                    data-testid="thesauri-form-item-group"
-                    label={<Translate>Group</Translate>}
-                    {...register(`newValues.${index}.groupId`)}
-                    disabled={value.length > 0}
-                    options={[
-                      { value: '', label: 'No Group', key: '0' },
-                      ...groups.map(group => ({
-                        value: group.rowId,
-                        label: group.label,
-                        key: group.rowId,
-                      })),
-                    ]}
+            <div className="mt-2" key={localValue.rowId}>
+              <Card title={<Translate>Item</Translate>}>
+                <div className="flex flex-col gap-4">
+                  <InputField
+                    id="item-name"
+                    data-testid="thesauri-form-item-name"
+                    label={<Translate>Title</Translate>}
+                    {...register(`newValues.${index}.label`)}
                   />
-                )}
-              </div>
-            </Card>
+                  {groups && (
+                    <Select
+                      id="item-group"
+                      data-testid="thesauri-form-item-group"
+                      label={<Translate>Group</Translate>}
+                      {...register(`newValues.${index}.groupId`)}
+                      disabled={value.length > 0}
+                      options={[
+                        { value: '', label: 'No Group', key: '0' },
+                        ...groups.map(group => ({
+                          value: group.rowId,
+                          label: group.label,
+                          key: group.rowId,
+                        })),
+                      ]}
+                    />
+                  )}
+                </div>
+              </Card>
+            </div>
           ))}
         </Sidepanel.Body>
         <Sidepanel.Footer className="bottom-0 px-4 py-3">
           <div className="flex gap-2">
             <Button
-              styling="light"
+              variant="ghost"
               onClick={closePanel}
               className="grow"
               data-testid="thesaurus-form-cancel"

@@ -1,5 +1,5 @@
-import db, { testingDB, DBFixture } from 'api/utils/testing_db';
-import { FileType } from 'shared/types/fileType';
+import db, { testingDB, DBFixture } from '#api/utils/testing_db.js';
+import { FileType } from '#shared/types/fileType.js';
 
 const entity1enId = testingDB.id();
 const entity2enId = testingDB.id();
@@ -40,10 +40,10 @@ const fixturesSnippetsSearch: DBFixture = {
       _id: thesaurusId,
       name: 'Countries',
       values: [
-        { _id: db.id(), id: 'country_one', label: 'Republic of Gabriel' },
-        { _id: db.id(), id: 'country_two', label: 'Country Two' },
-        { _id: db.id(), id: 'country_three', label: 'Republic of Rafa' },
-        { _id: db.id(), id: 'country_four', label: 'Country Four' },
+        { id: 'country_one', label: 'Republic of Gabriel' },
+        { id: 'country_two', label: 'Country Two' },
+        { id: 'country_three', label: 'Republic of Rafa' },
+        { id: 'country_four', label: 'Country Four' },
       ],
     },
   ],

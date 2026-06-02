@@ -1,6 +1,6 @@
-import { TemplateBuilder } from './TemplateBuilder';
-import { SelectProperty } from '../select/SelectProperty';
-import { MultiSelectProperty } from '../select/MultiSelectProperty';
+import { TemplateBuilder } from './TemplateBuilder.js';
+import { SelectProperty } from '../select/SelectProperty.js';
+import { MultiSelectProperty } from '../select/MultiSelectProperty.js';
 
 describe('Select/MultiSelect duplicate removal', () => {
   const buildTemplate = () =>
@@ -57,5 +57,68 @@ describe('Select/MultiSelect duplicate removal', () => {
     expect(assignment.type).toBe('select');
     // After dedupe there will be only one entry and schema enforces max 1
     expect(assignment.value).toEqual([{ value: 'apple', label: 'Apple' }]);
+  });
+
+  it('should filter out empty and whitespace-only values', () => {
+    const template = buildTemplate();
+
+    const assignment = template.createPropertyAssignment('select', {
+      language: 'en',
+      value: [
+        { value: '', label: 'Empty' },
+        { value: '   ', label: 'Whitespace' },
+        { value: 'apple', label: 'Apple' },
+      ],
+    });
+
+    expect(assignment.value).toEqual([{ value: 'apple', label: 'Apple' }]);
+  });
+
+  it('should handle null and undefined values', () => {
+    const template = buildTemplate();
+
+    const assignment = template.createPropertyAssignment('select', {
+      language: 'en',
+      value: [
+        { value: null as any, label: 'Null' },
+        { value: undefined as any, label: 'Undefined' },
+        { value: 'apple', label: 'Apple' },
+      ],
+    });
+
+    expect(assignment.value).toEqual([{ value: 'apple', label: 'Apple' }]);
+  });
+
+  it('should return empty array when all values are empty/whitespace', () => {
+    const template = buildTemplate();
+
+    const assignment = template.createPropertyAssignment('select', {
+      language: 'en',
+      value: [
+        { value: '', label: 'Empty' },
+        { value: '   ', label: 'Whitespace' },
+      ],
+    });
+
+    expect(assignment.value).toEqual([]);
+  });
+
+  it('should filter out empty values in multiselect', () => {
+    const template = buildTemplate();
+
+    const assignment = template.createPropertyAssignment('multiselect', {
+      language: 'en',
+      value: [
+        { value: '', label: 'Empty' },
+        { value: 'apple', label: 'Apple' },
+        { value: '   ', label: 'Whitespace' },
+        { value: 'banana', label: 'Banana' },
+      ],
+    });
+
+    expect(assignment.value).toEqual([
+      { value: 'apple', label: 'Apple' },
+      { value: 'banana', label: 'Banana' },
+    ]);
   });
 });

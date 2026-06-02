@@ -1,20 +1,19 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-
-import { createError } from 'api/utils';
-import mailer from 'api/utils/mailer';
-import db from 'api/utils/testing_db';
-import * as random from 'shared/uniqueID';
-
-import { comparePasswords, encryptPassword } from 'api/auth/encryptPassword';
-import * as usersUtils from 'api/auth2fa/usersUtils';
-import { settingsModel } from 'api/settings/settingsModel';
-import userGroups from 'api/usergroups/userGroups';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import * as unlockCode from '../generateUnlockCode';
-import passwordRecoveriesModel from '../passwordRecoveriesModel';
+import { createError } from '#api/utils/index.js';
+import mailer from '#api/utils/mailer.js';
+import db from '#api/utils/testing_db.js';
+import * as random from '#shared/uniqueID.js';
+import { comparePasswords, encryptPassword } from '#api/auth/encryptPassword.js';
+import * as usersUtils from '#api/auth2fa/usersUtils.js';
+import { settingsModel } from '#api/settings/settingsModel.js';
+import userGroups from '#api/usergroups/userGroups.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import * as unlockCode from '../generateUnlockCode.js';
+import passwordRecoveriesModel from '../passwordRecoveriesModel.js';
 import users from '../users.js';
-import usersModel from '../usersModel';
+import usersModel from '../usersModel.js';
+import { PUBLIC_USER_ID } from '../publicUser.js';
 import fixtures, {
   blockedUserId,
   expectedKey,
@@ -353,14 +352,35 @@ describe('Users', () => {
       }
     });
 
-    it('after locking account, it should send user and email with the unlock link', async () => {
-      testUser.failedLogins = 5;
-      try {
-        await createUserAndTestLogin('someuser1', 'incorrect');
-        fail('should throw error');
-      } catch (e) {
-        expect(mailer.send.mock.calls[0]).toMatchSnapshot();
-      }
+    describe('after locking account', () => {
+      it('should send user and email with the unlock link', async () => {
+        testUser.failedLogins = 5;
+        try {
+          await createUserAndTestLogin('someuser1', 'incorrect');
+          fail('should throw error');
+        } catch (e) {
+          expect(mailer.send.mock.calls[0]).toMatchSnapshot();
+        }
+      });
+
+      it('should validate domain url before blocking the user', async () => {
+        testUser.failedLogins = 5;
+        try {
+          await usersModel.save(testUser);
+          await users.login(
+            { username: 'someuser1', password: 'incorrect' },
+            'http://host.domain\">http://host.domain</a></p><h1>injected html</h1>'
+          );
+          fail('should throw error');
+        } catch (e) {
+          expect(e.message).toBe('Invalid URL');
+        }
+
+        const dbUser = (await testingEnvironment.db.getAllFrom('users')).find(
+          u => u.username === testUser.username
+        );
+        expect(dbUser.failedLogins).toBe(5);
+      });
     });
 
     it('should prevent login if account is locked when credentials are correct', async () => {
@@ -571,8 +591,12 @@ describe('Users', () => {
       const expectedMailOptions = {
         from: emailSender,
         to: 'test@email.com',
-        subject: 'Password set',
-        text: `To set your password click on the following link:\ndomain/setpassword/${key}\nThis link will be valid for 24 hours.`,
+        subject: 'Password recovery',
+        text:
+          'Your username is: username\n' +
+          'To set your password click on the following link:\n' +
+          `domain/setpassword/${key}\n` +
+          'This link will be valid for 24 hours.',
       };
       expect(mailer.send).toHaveBeenCalledWith(expectedMailOptions);
     });
@@ -805,16 +829,79 @@ describe('Users', () => {
   describe('get', () => {
     it('should return all users without group data', async () => {
       const userList = await users.get();
-      expect(userList.length).toBe(5);
+      expect(userList.length).toBe(6);
       const groupData = userList.filter(u => u.groups !== undefined);
       expect(groupData.length).toBe(0);
     });
 
     it('should return all users with groups to which they belong', async () => {
       const userList = await users.get({}, '+groups');
-      expect(userList.length).toBe(5);
+      expect(userList.length).toBe(6);
       expect(userList[0].groups[0].name).toBe('Group 2');
       expect(userList[1].groups[0].name).toBe('Group 1');
+    });
+  });
+
+  describe('protection of system users', () => {
+    describe('delete', () => {
+      it('should prevent deletion of the Public user', async () => {
+        try {
+          await users.delete([PUBLIC_USER_ID], { _id: userId, role: 'admin' });
+          fail('should have thrown an error');
+        } catch (error) {
+          expect(error.message).toBe('Cannot delete system users');
+          expect(error.code).toBe(403);
+        }
+      });
+
+      it('should prevent deletion when Public user is in bulk delete', async () => {
+        try {
+          await users.delete([userToDelete, PUBLIC_USER_ID], { _id: userId, role: 'admin' });
+          fail('should have thrown an error');
+        } catch (error) {
+          expect(error.message).toBe('Cannot delete system users');
+          expect(error.code).toBe(403);
+        }
+      });
+
+      it('should not count Public user when checking last user - cannot delete last regular user', async () => {
+        await users.delete([userToDelete.toString()], { _id: 'someone' });
+        await users.delete([userToDelete2.toString()], { _id: 'someone' });
+        await users.delete([recoveryUserId.toString()], { _id: 'someone' });
+        await users.delete([blockedUserId.toString()], { _id: 'someone' });
+
+        const userCount = await db.mongodb
+          .collection('users')
+          .countDocuments({ _id: { $ne: PUBLIC_USER_ID } });
+        expect(userCount).toBe(1);
+
+        try {
+          await users.delete([userId.toString()], { _id: 'someone' });
+          fail('should have thrown an error');
+        } catch (error) {
+          expect(error.message).toBe('Can not delete last user(s).');
+          expect(error.code).toBe(403);
+
+          const userAfterAttempt = await users.getById(userId);
+          expect(userAfterAttempt).toBeDefined();
+          expect(userAfterAttempt.username).toBe('username');
+        }
+      });
+    });
+
+    describe('save', () => {
+      it('should prevent updates to the Public user', async () => {
+        try {
+          await users.save(
+            { _id: PUBLIC_USER_ID.toString(), username: 'Modified' },
+            { _id: userId, role: 'admin' }
+          );
+          fail('should have thrown an error');
+        } catch (error) {
+          expect(error.message).toBe('Cannot modify system users');
+          expect(error.code).toBe(403);
+        }
+      });
     });
   });
 });

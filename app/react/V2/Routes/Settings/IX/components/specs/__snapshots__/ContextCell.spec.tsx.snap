@@ -2,11 +2,11 @@
 
 exports[`ContextCell Truncation Logic should truncate html with multiple matching paragraphs and only show relevant paragraphs 1`] = `
 <span
-  class="ix_matching_paragraph text-black px-1"
+  class="ix_matching_paragraph px-1 text-ink"
 >
   ...thats part of the matching paragraph 
   <span
-    class="ix_match bg-[#FFE29A] text-black"
+    class="ix_match bg-[#FFE29A] text-ink"
   >
     Praesent sed molestie risus, vitae laoreet elit.
   </span>
@@ -15,11 +15,11 @@ exports[`ContextCell Truncation Logic should truncate html with multiple matchin
 
 exports[`ContextCell Truncation Logic should truncate html with single matching paragraph and only show relevant paragraphs 1`] = `
 <span
-  class="ix_matching_paragraph text-black px-1"
+  class="ix_matching_paragraph px-1 text-ink"
 >
   ...cus dapibus euismod. 
   <span
-    class="ix_match bg-[#FFE29A] text-black"
+    class="ix_match bg-[#FFE29A] text-ink"
   >
      Praesent sed molestie risus, vitae laoreet elit.
   </span>
@@ -29,23 +29,23 @@ exports[`ContextCell Truncation Logic should truncate html with single matching 
 
 exports[`ContextCell Truncation Logic should work when a matching paragraph has multiple match words 1`] = `
 <span
-  class="ix_matching_paragraph text-black px-1"
+  class="ix_matching_paragraph px-1 text-ink"
 >
   The quarterly report shows 
   <span
-    class="ix_match bg-[#FFE29A] text-black"
+    class="ix_match bg-[#FFE29A] text-ink"
   >
     Revenue: $1.2M
   </span>
   ,
   <span
-    class="ix_match bg-[#FFE29A] text-black"
+    class="ix_match bg-[#FFE29A] text-ink"
   >
     Expenses: $800K
   </span>
   ,and a net profit of 
   <span
-    class="ix_match bg-[#FFE29A] text-black"
+    class="ix_match bg-[#FFE29A] text-ink"
   >
     $400K
   </span>

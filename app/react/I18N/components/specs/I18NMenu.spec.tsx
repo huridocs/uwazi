@@ -5,12 +5,12 @@ import React from 'react';
 import { act, fireEvent, RenderResult, screen, render } from '@testing-library/react';
 import { Location, MemoryRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
-import { ClientUserSchema } from 'app/apiResponseTypes';
-import { inlineEditAtom, localeAtom, settingsAtom, userAtom } from 'V2/atoms';
-import { TestAtomStoreProvider } from 'V2/testing';
-import { UserRole } from 'shared/types/userSchema';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { I18NMenu } from '../I18NMenu';
+import { ClientUserSchema } from '#app/apiResponseTypes.js';
+import { inlineEditAtom, localeAtom, settingsAtom, userAtom } from '#V2/atoms/index.js';
+import { TestAtomStoreProvider } from '#V2/testing/index.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { I18NMenu } from '../I18NMenu.js';
 
 const defaultLanguages = [
   {
@@ -41,8 +41,10 @@ describe('I18NMenu', () => {
   let settingsAtomValue = { languages: defaultLanguages };
   let localeAtomValue = 'en';
 
-  Reflect.deleteProperty(global.window, 'location');
-  window.location = { ...window.location, assign: jest.fn() };
+  Object.defineProperty(window, 'location', {
+    value: { ...window.location, assign: jest.fn() },
+    writable: true,
+  });
 
   const renderComponent = (user?: ClientUserSchema) => {
     renderResult = render(

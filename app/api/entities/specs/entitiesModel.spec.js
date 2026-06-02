@@ -1,6 +1,6 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import entitiesModel from '../entitiesModel';
-import testingDB from '../../utils/testing_db';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import entitiesModel from '../entitiesModel.js';
+import testingDB from '../../utils/testing_db.js';
 
 describe('entitiesModel', () => {
   beforeEach(async () => {

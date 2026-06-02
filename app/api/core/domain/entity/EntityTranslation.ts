@@ -1,6 +1,8 @@
 /* eslint-disable max-statements */
-import date from 'api/utils/date';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import date from '#api/utils/date.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { Id, IdProps } from '#api/core/libs/Id.js';
+import stringify from 'fast-json-stable-stringify';
 import {
   DateEntry,
   PropertyAssignment,
@@ -8,25 +10,30 @@ import {
   RelationshipPropertyAssignment,
   SelectPropertyAssignment,
   TextPropertyValue,
-} from '../template/PropertyValue';
+} from '../template/PropertyValue.js';
+import { PropertyDoesNotExistError, PropertyTypeMismatchOnSetError } from './errors.js';
+import { PropertyType } from '../template/PropertyType.js';
 
 type Props = {
-  id?: string;
   language: LanguageISO6391;
   metadata?: Record<string, PropertyAssignment>;
-};
+  preview?: string;
+} & IdProps;
 
 class EntityTranslation {
-  id?: string;
+  id: Id;
 
   language: LanguageISO6391;
 
   metadata: Record<string, PropertyAssignment>;
 
+  preview?: string;
+
   constructor(props: Props) {
-    this.id = props.id;
+    this.id = new Id(props);
     this.metadata = props.metadata || {};
     this.language = props.language;
+    this.preview = props.preview;
   }
 
   get properties(): Record<string, PropertyAssignment> {
@@ -50,19 +57,43 @@ class EntityTranslation {
     return this.getValue<DateEntry>('editDate');
   }
 
+  get asDTO() {
+    return {
+      id: this.id.value,
+      language: this.language,
+      metadata: this.metadata,
+      preview: this.preview,
+    };
+  }
+
+  mergeMetadata(newMetadata: Record<string, PropertyAssignment>) {
+    Object.values(this.metadata).forEach(propertyAssignment => {
+      const ofSameName = newMetadata[propertyAssignment.name];
+      const differentType = ofSameName?.type !== propertyAssignment.type;
+
+      if ((ofSameName && differentType) || !ofSameName) {
+        delete this.metadata[propertyAssignment.name];
+      }
+    });
+
+    this.metadata = { ...newMetadata, ...this.metadata };
+  }
+
   setValue(propertyValue: PropertyAssignment) {
     const currentValue = this.metadata[propertyValue.name];
     if (!currentValue) {
-      throw new Error(`Property ${propertyValue.name} does not exist in entity metadata`);
+      throw new PropertyDoesNotExistError(propertyValue.name);
     }
 
     if (currentValue.type !== propertyValue.type) {
-      throw new Error(
-        `Cannot change the type of property ${propertyValue.name} from ${currentValue.type} to ${propertyValue.type}`
+      throw new PropertyTypeMismatchOnSetError(
+        propertyValue.name,
+        currentValue.type,
+        propertyValue.type
       );
     }
 
-    if (JSON.stringify(currentValue) === JSON.stringify(propertyValue)) {
+    if (stringify(currentValue) === stringify(propertyValue)) {
       return;
     }
 
@@ -75,15 +106,23 @@ class EntityTranslation {
     }
 
     this.metadata[propertyValue.name] = propertyValue;
-    this.editDate.value = [{ value: date.currentUTC() }];
+    this.refreshEditDate();
+  }
+
+  refreshEditDate(value = date.currentUTC()) {
+    this.editDate.value = [{ value }];
   }
 
   getValue<Value = PropertyValue>(name: string): PropertyAssignment<Value> {
     if (!this.metadata[name]) {
-      throw new Error(`Property ${name} does not exist in entity metadata`);
+      throw new PropertyDoesNotExistError(name);
     }
 
     return this.metadata[name] as unknown as PropertyAssignment<Value>;
+  }
+
+  getByType(type: PropertyType[]): PropertyAssignment[] {
+    return Object.values(this.metadata).filter(pa => type.includes(pa.type));
   }
 }
 

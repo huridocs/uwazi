@@ -1,8 +1,8 @@
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { UserSchema } from 'shared/types/userType';
-import { UserRole } from 'shared/types/userSchema';
-import { DataType } from 'api/odm';
 import { ObjectId } from 'mongodb';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { UserSchema } from '#shared/types/userType.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { DataType } from '#api/odm/index.js';
 
 export class UserInContextMockFactory {
   spy: jest.SpyInstance | undefined;

@@ -1,4 +1,4 @@
-import settings from '../settings';
+import settings from '../settings/index.js';
 
 const allowedRoutes = ['login', 'setpassword/', 'unlockaccount/'];
 const allowedRoutesMatch = new RegExp(allowedRoutes.join('|'));
@@ -11,7 +11,7 @@ const allowedApiCalls = [
 ];
 const allowedApiMatch = new RegExp(allowedApiCalls.join('|'));
 
-const forbiddenRoutes = ['/api/', '/uploaded_documents/'];
+const forbiddenRoutes = ['/api/', '/files/', '/assets/', '/uploaded_documents/'];
 const forbiddenRoutesMatch = new RegExp(forbiddenRoutes.join('|'));
 
 export default function (req, res, next) {

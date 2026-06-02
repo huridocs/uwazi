@@ -2,30 +2,34 @@
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
 
-import { testingDB } from 'api/utils/testing_db';
-import { EntitySchema } from 'shared/types/entityType';
-import { FileType } from 'shared/types/fileType';
-import { UserRole } from 'shared/types/userSchema';
-import { UserSchema } from 'shared/types/userType';
-import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
+import { testingDB } from '#api/utils/testing_db.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { FileType } from '#shared/types/fileType.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { UserSchema } from '#shared/types/userType.js';
+import { ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
 import {
   PropertySchema,
   MetadataSchema,
   PropertyValueSchema,
   MetadataObjectSchema,
   ExtractedMetadataSchema,
-} from 'shared/types/commonTypes';
-import { UpdateLog } from 'api/updatelogs';
-import { IXExtractorType } from 'shared/types/extractorType';
-import { IXSuggestionType } from 'shared/types/suggestionType';
-import { WithId } from 'api/odm/model';
-import { TemplateSchema } from 'shared/types/templateType';
-import { getV2FixturesFactoryElements } from 'api/common.v2/testing/fixturesFactory';
-import { IXModelType } from 'shared/types/IXModelType';
-import { PermissionSchema } from 'shared/types/permissionType';
-import { MongoSegmentationBuilder } from 'api/files.v2/database/specs/MongoSegmentationBuilder';
-import { LanguageUtils } from 'shared/language';
-import { ConnectionSchema } from 'shared/types/connectionType';
+} from '#shared/types/commonTypes.js';
+import { UpdateLog } from '#api/updatelogs/index.js';
+import { IXExtractorType } from '#shared/types/extractorType.js';
+import { IXSuggestionType } from '#shared/types/suggestionType.js';
+import { WithId } from '#api/odm/model.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
+import { getV2FixturesFactoryElements } from '#api/common.v2/testing/fixturesFactory.js';
+import { IXModelType } from '#shared/types/IXModelType.js';
+import { PermissionSchema } from '#shared/types/permissionType.js';
+import { MongoSegmentationBuilder } from '#api/core/infrastructure/mongodb/files/specs/MongoSegmentationBuilder.js';
+import { LanguageUtils } from '#shared/language/index.js';
+import { ConnectionSchema } from '#shared/types/connectionType.js';
+import {
+  ProcessedPDFDBO,
+  ThumbnailDBO,
+} from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 
 type PartialSuggestion = Partial<Omit<IXSuggestionType, 'state'>> & {
   state?: Partial<IXSuggestionType['state']>;
@@ -88,17 +92,12 @@ const commonProperties = (
   ];
 };
 
-const thesaurusNestedValues = (
-  rootValue: string,
-  children: Array<string>,
-  idMapper: (key: string) => ObjectId
-) => {
+const thesaurusNestedValues = (rootValue: string, children: Array<string>) => {
   const nestedValues = children.map(nestedValue => ({
-    _id: idMapper(nestedValue),
     id: nestedValue,
     label: nestedValue,
   }));
-  return { _id: idMapper(rootValue), id: rootValue, label: rootValue, values: nestedValues };
+  return { id: rootValue, label: rootValue, values: nestedValues };
 };
 
 function getFixturesFactory() {
@@ -128,7 +127,7 @@ function getFixturesFactory() {
       type: PermissionSchema['type'],
       level: PermissionSchema['level']
     ): PermissionSchema => ({
-      refId: idMapper(user),
+      refId: idMapper(user).toString(),
       type,
       level,
     }),
@@ -200,8 +199,18 @@ function getFixturesFactory() {
       return this.file(id, { ...extra, type: 'document' });
     },
 
-    processedDocument(id: string, extra: Partial<FileType> = {}): WithId<FileType> {
-      return this.file(id, { ...extra, type: 'document', status: 'ready' });
+    processedDocument(id: string, extra: Partial<FileType> = {}): [ProcessedPDFDBO, ThumbnailDBO] {
+      return [
+        this.file(id, { ...extra, type: 'document', status: 'ready' }) as ProcessedPDFDBO,
+        this.file(`${id}-thumb`, {
+          filename: `${idMapper(id)}.jpg`,
+          type: 'thumbnail',
+          entity: extra?.entity,
+          mimetype: 'image/jpeg',
+          size: extra?.size || 1000,
+          creationDate: extra?.creationDate || 1000,
+        }) as ThumbnailDBO,
+      ];
     },
 
     custom_upload(id: string, extra: Partial<FileType> = {}): WithId<FileType> {
@@ -351,9 +360,7 @@ function getFixturesFactory() {
       name,
       _id: idMapper(name),
       values: values.map(value =>
-        typeof value === 'string'
-          ? { _id: idMapper(value), id: value, label: value }
-          : { _id: idMapper(value[0]), id: value[0], label: value[1] }
+        typeof value === 'string' ? { id: value, label: value } : { id: value[0], label: value[1] }
       ),
     }),
 
@@ -362,9 +369,9 @@ function getFixturesFactory() {
         (accumulator: ThesaurusValueSchema[], item: { [k: string]: Array<string> } | string) => {
           const nestedItems =
             typeof item === 'string'
-              ? [{ _id: idMapper(item), id: item, label: item }]
+              ? [{ id: item, label: item }]
               : Object.entries(item).map(([rootValue, children]) =>
-                  thesaurusNestedValues(rootValue, children, idMapper)
+                  thesaurusNestedValues(rootValue, children)
                 );
           return [...accumulator, ...nestedItems];
         },

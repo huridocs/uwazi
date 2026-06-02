@@ -1,5 +1,8 @@
 # Uwazi V1 Entity Creation: Deep Dive
 
+> **Note (February 2025):** V1 is now used only for entity UPDATES and legacy systems (CSV import, external integrations).
+> NEW entity creation uses V2 (see `CreateEntity` use case in `app/api/core/application/`).
+
 This document explains the end-to-end flow for creating entities via the V1 API, focusing strictly on entity data (metadata, validation/business rules, language sync, denormalization). Files/attachments and V2 flows are intentionally out of scope except where V1 code interfaces with them.
 
 Updated: 2025-10-30
@@ -41,7 +44,7 @@ Out of scope here: `handleAttachmentInMetadataProperties`, `processFiles`, `save
 
 File: `app/api/entities/entities.js`
 
-- Feature flag bypass: This section applies when `tenants.current().featureFlags.v2CreateEntity === false`.
+- Feature flag bypass: This section applies to entity UPDATES and legacy systems. New entity creation uses V2.
 - Steps:
   1. `validateEntity(_doc)`
      - Schema validation and business rules (see “Business rules” below).

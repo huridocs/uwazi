@@ -1,14 +1,15 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react';
-import { Modal } from 'V2/Components/UI/Modal';
-import { Button } from 'V2/Components/UI/Button';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
+import { Modal } from '#V2/Components/UI/Modal.js';
+import { Button } from '#V2/Components/UI/Button.js';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
-import { GeneratedContent } from './helpers/GeneratedContent';
+import { GeneratedContent } from './helpers/GeneratedContent.js';
 
 const meta: Meta<typeof Modal> = {
   title: 'Components/Modal',
   component: Modal,
 };
+export default meta;
 
 type Story = StoryObj<typeof Modal>;
 
@@ -34,7 +35,7 @@ const Basic = {
           ornare, a volutpat massa interdum.
         </Modal.Body>
         <Modal.Footer>
-          <Button styling="light" className="grow">
+          <Button variant="ghost" className="grow">
             Decline
           </Button>
           <Button className="grow">Accept</Button>
@@ -60,10 +61,10 @@ const Warning = {
           Are you sure you want to delete this product?
         </h3>
         <div className="flex gap-4 justify-center">
-          <Button styling="light" className="grow">
+          <Button variant="ghost" className="grow">
             No, cancel
           </Button>
-          <Button color="error" className="grow">
+          <Button variant="danger" className="grow">
             Yes, I&apos;m sure
           </Button>
         </div>
@@ -86,7 +87,7 @@ const LargeContent = {
           <GeneratedContent />
         </Modal.Body>
         <Modal.Footer>
-          <Button styling="light" className="grow">
+          <Button variant="ghost" className="grow">
             Close
           </Button>
         </Modal.Footer>
@@ -97,5 +98,3 @@ const LargeContent = {
 };
 
 export { Basic, Warning, LargeContent };
-
-export default meta;

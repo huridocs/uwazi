@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import db, { DBFixture } from 'api/utils/testing_db';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import db, { DBFixture } from '#api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
-import { propertyTypes } from 'shared/propertyTypes';
-import { LanguagesListSchema, MetadataSchema } from 'shared/types/commonTypes';
+import { propertyTypes } from '#shared/propertyTypes.js';
+import { LanguagesListSchema, MetadataSchema } from '#shared/types/commonTypes.js';
 
 const factory = getFixturesFactory();
 
@@ -90,6 +90,72 @@ const fixtures: DBFixture = {
     {
       _id: db.id(),
       language: 'en',
+      key: 'Property C',
+      value: 'Property C',
+      context: {
+        type: 'Entity',
+        label: 'Property C',
+        id: templateWithExtractedMetadata.toString(),
+      },
+    },
+    {
+      _id: db.id(),
+      language: 'es',
+      key: 'Property C',
+      value: 'Property C',
+      context: {
+        type: 'Entity',
+        label: 'Property C',
+        id: templateWithExtractedMetadata.toString(),
+      },
+    },
+    {
+      _id: db.id(),
+      language: 'pt',
+      key: 'Property C',
+      value: 'Property C',
+      context: {
+        type: 'Entity',
+        label: 'Property C',
+        id: templateWithExtractedMetadata.toString(),
+      },
+    },
+    {
+      _id: db.id(),
+      language: 'en',
+      key: 'template to be edited',
+      value: 'templateToBeDeleted',
+      context: {
+        type: 'Entity',
+        label: 'templateToBeEdited',
+        id: templateToBeEditedId.toString(),
+      },
+    },
+    {
+      _id: db.id(),
+      language: 'es',
+      key: 'template to be edited',
+      value: 'templateToBeDeleted',
+      context: {
+        type: 'Entity',
+        label: 'templateToBeEdited',
+        id: templateToBeEditedId.toString(),
+      },
+    },
+    {
+      _id: db.id(),
+      language: 'pt',
+      key: 'template to be edited',
+      value: 'templateToBeDeleted',
+      context: {
+        type: 'Entity',
+        label: 'templateToBeEdited',
+        id: templateToBeEditedId.toString(),
+      },
+    },
+    {
+      _id: db.id(),
+      language: 'en',
       key: 'templateToBeDeleted',
       value: 'templateToBeDeleted',
       context: {
@@ -144,7 +210,6 @@ const fixtures: DBFixture = {
       language: 'en',
       value: 'other property',
     },
-
     {
       _id: db.id(),
       context: {

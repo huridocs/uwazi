@@ -1,16 +1,16 @@
 /* eslint-disable max-statements */
-import { SetTemplateAsDefaultUseCaseFactory } from 'api/core/infrastructure/factories/SetTemplateAsDefaultUseCaseFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { SetTemplateAsDefaultUseCaseFactory } from '#api/core/infrastructure/factories/SetTemplateAsDefaultUseCaseFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import {
   TemplateDoesNotExistError,
   DefaultTemplateConflictError,
-} from 'api/core/domain/template/errors';
+} from '#api/core/domain/template/errors.js';
 
 const factory = getFixturesFactory();
 
 describe('SetTemplateAsDefaultUseCase', () => {
-  beforeEach(async () => {
+  beforeAll(async () => {
     await testingEnvironment.setUp({}, true);
   });
 
@@ -26,7 +26,7 @@ describe('SetTemplateAsDefaultUseCase', () => {
       templates: [factory.template('templateA', []), factory.template('templateB', [])],
     });
 
-    const sut = SetTemplateAsDefaultUseCaseFactory.create();
+    const sut = SetTemplateAsDefaultUseCaseFactory.default();
 
     const output = await sut.execute({ templateId: idA });
 
@@ -55,7 +55,7 @@ describe('SetTemplateAsDefaultUseCase', () => {
       ],
     });
 
-    const sut = SetTemplateAsDefaultUseCaseFactory.create();
+    const sut = SetTemplateAsDefaultUseCaseFactory.default();
 
     const output = await sut.execute({ templateId: newId });
 
@@ -78,7 +78,7 @@ describe('SetTemplateAsDefaultUseCase', () => {
       templates: [factory.template('onlyOne', [])],
     });
 
-    const sut = SetTemplateAsDefaultUseCaseFactory.create();
+    const sut = SetTemplateAsDefaultUseCaseFactory.default();
 
     await expect(sut.execute({ templateId: '000000000000000000000000' })).rejects.toThrow(
       TemplateDoesNotExistError
@@ -95,7 +95,7 @@ describe('SetTemplateAsDefaultUseCase', () => {
       ],
     });
 
-    const sut = SetTemplateAsDefaultUseCaseFactory.create();
+    const sut = SetTemplateAsDefaultUseCaseFactory.default();
 
     await expect(sut.execute({ templateId: id })).rejects.toThrow(DefaultTemplateConflictError);
   });

@@ -1,6 +1,6 @@
-import { PropertyTypeInvalidTypeError } from '../errors';
-import { GenerateIdProperty } from '../GenerateIdProperty';
-import { PropertyTypeEnum } from '../PropertyType';
+import { PropertyTypeInvalidTypeError } from '../errors.js';
+import { GenerateIdProperty } from '../GenerateIdProperty.js';
+import { PropertyTypeEnum } from '../PropertyType.js';
 
 describe('GenerateIdProperty', () => {
   it('should set defaults values if not provided', () => {
@@ -36,6 +36,7 @@ describe('GenerateIdProperty', () => {
       expect(assignment).toEqual({
         name: prop.name,
         type: prop.type,
+        isTranslatable: false,
         value: [{ value: 'CPW6528-7568' }],
       });
     });

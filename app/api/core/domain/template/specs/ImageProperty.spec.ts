@@ -1,6 +1,6 @@
-import { PropertyTypeInvalidTypeError } from '../errors';
-import { ImageProperty } from '../ImageProperty';
-import { PropertyTypeEnum } from '../PropertyType';
+import { PropertyTypeInvalidTypeError } from '../errors.js';
+import { ImageProperty } from '../ImageProperty.js';
+import { PropertyTypeEnum } from '../PropertyType.js';
 
 describe('ImageProperty', () => {
   it('should set defaults values if not provided', () => {
@@ -42,12 +42,14 @@ describe('ImageProperty', () => {
       expect(assignment).toEqual({
         name: image.name,
         type: image.type,
+        isTranslatable: true,
         value: [{ value: 'http://url.to/image.png' }],
       });
 
       expect(assignment2).toEqual({
         name: image.name,
         type: image.type,
+        isTranslatable: true,
         value: [{ value: 'https://url.to/image.png' }],
       });
     });
@@ -60,6 +62,7 @@ describe('ImageProperty', () => {
           value: [{ value: 'file.jpg' }],
         })
       ).toEqual({
+        isTranslatable: true,
         name: image.name,
         type: image.type,
         value: [{ value: '/api/files/file.jpg' }],
@@ -70,6 +73,7 @@ describe('ImageProperty', () => {
           value: [{ value: 'https://domain.com/file.jpg' }],
         })
       ).toEqual({
+        isTranslatable: true,
         name: image.name,
         type: image.type,
         value: [{ value: 'https://domain.com/file.jpg' }],
@@ -80,6 +84,7 @@ describe('ImageProperty', () => {
           value: [{ value: '/api/files/file.jpg' }],
         })
       ).toEqual({
+        isTranslatable: true,
         name: image.name,
         type: image.type,
         value: [{ value: '/api/files/file.jpg' }],
@@ -110,6 +115,7 @@ describe('ImageProperty', () => {
       expect(assignment).toEqual({
         name: image.name,
         type: image.type,
+        isTranslatable: true,
         value: [{ value: '/api/files/file.jpg' }],
       });
     });
@@ -119,7 +125,12 @@ describe('ImageProperty', () => {
 
       const assignment = image.createPropertyAssignment({ value: [] });
 
-      expect(assignment).toEqual({ name: image.name, type: image.type, value: [] });
+      expect(assignment).toEqual({
+        name: image.name,
+        type: image.type,
+        isTranslatable: true,
+        value: [],
+      });
     });
 
     it('should throw if more than one value is provided', () => {
@@ -144,12 +155,17 @@ describe('ImageProperty', () => {
     });
 
     it('should throw when provided value is empty string or whitespace', () => {
-      const image = new ImageProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+      const image = new ImageProperty({
+        id: 'any_id',
+        label: 'A Title',
+        template: 'any',
+        required: true,
+      });
 
-      expect(() => image.createPropertyAssignment({ value: [{ value: '' }] })).toThrow(
-        'Image Property must be a non-empty string.'
+      expect(() => image.createPropertyAssignment({ value: [{ value: '' }] }, true)).toThrow(
+        'Image Property is required'
       );
-      expect(() => image.createPropertyAssignment({ value: [{ value: '   ' }] })).toThrow(
+      expect(() => image.createPropertyAssignment({ value: [{ value: '   ' }] }, true)).toThrow(
         'Image Property must be a non-empty string.'
       );
     });

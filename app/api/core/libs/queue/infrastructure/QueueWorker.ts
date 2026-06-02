@@ -1,11 +1,11 @@
 /* eslint-disable no-await-in-loop */
-import { Logger } from 'api/core/libs/logger/contracts/Logger';
 import { performance } from 'perf_hooks';
 import { inspect } from 'util';
-import { Dispatchable } from '../application/contracts/Dispatchable';
-import { DispatchableClass } from '../application/contracts/JobsDispatcher';
-import { NonRetryableJobError, UnregisteredJobError } from './errors';
-import { Job, QueueAdapter } from './QueueAdapter';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { Dispatchable } from '../application/contracts/Dispatchable.js';
+import { DispatchableClass } from '../application/contracts/JobsDispatcher.js';
+import { NonRetryableJobError, UnregisteredJobError } from './errors.js';
+import { Job, QueueAdapter } from './QueueAdapter.js';
 
 interface WorkerOptions {
   waitTime?: number;
@@ -22,7 +22,7 @@ const defaultPerformance = {
 };
 
 interface Registry {
-  [name: string]: (namespace: string) => Promise<Dispatchable>;
+  [name: string]: (namespace: string, job: Job) => Promise<Dispatchable>;
 }
 
 export type QueueWorkerErrorHandler = (error: Error, context?: { job: Job }) => void;
@@ -52,7 +52,7 @@ export class QueueWorker {
     queueName: string,
     adapter: QueueAdapter,
     logger: Logger,
-    // eslint-disable-next-line no-empty-function
+
     onError?: QueueWorkerErrorHandler
   ) {
     this.queueName = queueName;
@@ -115,7 +115,7 @@ export class QueueWorker {
       throw new UnregisteredJobError(job.name);
     }
 
-    return this.registry[job.name](job.namespace);
+    return this.registry[job.name](job.namespace, job);
   }
 
   private async completeJob(job: Job) {
@@ -128,14 +128,18 @@ export class QueueWorker {
     const dispatchable = await this.createDispatchable(job);
 
     try {
-      this.logger.info('Processing job', { job });
+      const { params, ...loggableJob } = job;
+      this.logger.info('Processing job', { job: loggableJob });
       const startTime = performance.now();
       await dispatchable.handleDispatch(async () => this.adapter.renewJobLock(job), job.params, {
         namespace: job.namespace,
         retryCount: job.retryCount,
         maxRetries: job.options.maxRetries,
       });
-      this.logger.info('Job processed', { job, processingTime: performance.now() - startTime });
+      this.logger.info('Job processed', {
+        job: loggableJob,
+        processingTime: performance.now() - startTime,
+      });
       await this.completeJob(job);
     } catch (e) {
       await this.catchFailedJob(job, e);
@@ -146,9 +150,10 @@ export class QueueWorker {
 
   private async catchFailedJob(job: Job, e: any) {
     let jobToReport = job;
-    jobToReport = await this.adapter.updateLockWindow(job, job.options.lockWindow * 2);
     if (job.retryCount === job.options.maxRetries || e instanceof NonRetryableJobError) {
       jobToReport = await this.adapter.markJobAsFailed(job);
+    } else {
+      jobToReport = await this.adapter.updateLockWindow(job, job.options.lockWindow * 2);
     }
     this.onError(e, { job: jobToReport });
   }
@@ -179,7 +184,7 @@ export class QueueWorker {
 
   register<T extends Dispatchable>(
     dispatchable: DispatchableClass<T>,
-    factory: (namespace: string) => Promise<T>
+    factory: (namespace: string, job: Job) => Promise<T>
   ) {
     this.registry[dispatchable.name] = factory;
   }

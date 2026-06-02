@@ -1,8 +1,8 @@
 import React from 'react';
-import { Table } from 'V2/Components/UI';
-import { Translate } from 'app/I18N';
-import { columns, NoDataCell } from './TableElements';
-import { PXTable } from '../../types';
+import { Table } from '#V2/Components/UI/index.js';
+import { Translate } from '#app/I18N/index.js';
+import { columns, NoDataCell } from './TableElements/index.js';
+import { PXTable } from '../../types.js';
 
 interface ExtractorsTableProps {
   paragraphExtractorData: PXTable[];
@@ -14,9 +14,7 @@ const ExtractorsTable = ({ paragraphExtractorData, onSelectionChange }: Extracto
     data={paragraphExtractorData}
     columns={columns}
     header={
-      <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
-        Extractors
-      </Translate>
+      <Translate className="text-left text-base font-semibold text-ink">Extractors</Translate>
     }
     enableSelections
     onSelect={({ selectedRows }) => {

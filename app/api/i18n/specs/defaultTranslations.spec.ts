@@ -3,15 +3,15 @@ import { readdir } from 'fs/promises';
 import request from 'supertest';
 import waitForExpect from 'wait-for-expect';
 
-import { validateFormat, ValidateFormatError } from 'api/csv/csv';
-import { DBFixture } from 'api/utils/testing_db';
-import { iosocket, setUpApp } from 'api/utils/testingRoutes';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { UserRole } from 'shared/types/userSchema';
+import { validateFormat, ValidateFormatError } from '#api/csv/csv.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { iosocket, setUpApp } from '#api/utils/testingRoutes.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { UserRole } from '#shared/types/userSchema.js';
 
-import { DefaultTranslations } from '../defaultTranslations';
-import i18nRoutes from '../routes';
-import translations from '../translations';
+import { DefaultTranslations } from '../defaultTranslations.js';
+import i18nRoutes from '../routes.js';
+import translations from '../translations.js';
 
 const TRANSLATION_FILES_DIR = DefaultTranslations.CONTENTS_DIRECTORY;
 
@@ -24,6 +24,10 @@ const EXPECTED_DEFAULT_TRANSLATIONS: defaulTranslationInfo[] = [
   {
     key: 'ar',
     longName: 'Arabic',
+  },
+  {
+    key: 'el',
+    longName: 'Greek',
   },
   {
     key: 'en',
@@ -56,6 +60,10 @@ const EXPECTED_DEFAULT_TRANSLATIONS: defaulTranslationInfo[] = [
   {
     key: 'tr',
     longName: 'Turkish',
+  },
+  {
+    key: 'uk',
+    longName: 'Ukrainian',
   },
 ];
 const expectedFileNames = new Set(EXPECTED_DEFAULT_TRANSLATIONS.map(({ key }) => `${key}.csv`));
@@ -148,6 +156,7 @@ describe(`${TRANSLATION_FILES_DIR}`, () => {
 describe('translation files', () => {
   const app = setUpApp(i18nRoutes, (req, _res, next) => {
     req.user = {
+      _id: 'admin',
       username: 'admin',
       role: UserRole.ADMIN,
       email: 'admin@test.com',

@@ -1,58 +1,26 @@
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { DeleteTemplateUseCase } from 'api/core/application/DeleteTemplate';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
-import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
-import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { TemplatePostProcessEntitiesJob } from '../jobs/TemplatePostProcessEntitiesJob';
+import { DeleteTemplateUseCase } from '#api/core/application/DeleteTemplate.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
+import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
+import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
+import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 
 class DeleteTemplateUseCaseFactory {
-  static async create() {
+  static default(overrides?: Partial<ConstructorParameters<typeof DeleteTemplateUseCase>[0]>) {
+    const { tenant, actor } = ExecutionContext;
+    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
     const eventBus = applicationEventsBus;
-    const transactionManager = TransactionManagerFactory.default();
-    const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+    const templatesDS = TemplatesDataSourceFactory.default();
+    const settingsDS = SettingsDataSourceFactory.default();
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
     const entitiesDS = DefaultEntitiesDataSource(transactionManager);
-    const multiLanguageEntitiesDS = new MongoMultiLanguageEntityDataSource(
-      getConnection(),
-      transactionManager
-    );
-    const filesDS = DefaultFilesDataSource(transactionManager);
-    const relationshipsV1DS = new MongoRelationshipsV1DataSource(
-      getConnection(),
-      transactionManager
-    );
-    let jobsDispatcher: JobsDispatcher = new SyncDispatcherForTests({
-      TemplatePostProcessEntitiesJob: async () =>
-        new TemplatePostProcessEntitiesJob({
-          useCase: new TemplateUpdateDenormalizeEntitiesBatch({
-            entitiesDS: multiLanguageEntitiesDS,
-            relationshipsV1DS,
-            templatesDS,
-            transactionManager,
-            filesDS,
-          }),
-          templatesDS,
-        }),
-    });
+    const multiLanguageEntitiesDS = EntitiesDataSourceFactory.default();
 
-    if (process.env.NODE_ENV !== 'test') {
-      jobsDispatcher = await DefaultDispatcher(tenants.current().name);
-    }
-
-    const useCase = new DeleteTemplateUseCase(
+    return new DeleteTemplateUseCase(
       {
         eventBus,
         transactionManager,
@@ -61,12 +29,11 @@ class DeleteTemplateUseCaseFactory {
         settingsDS,
         translationsDS,
         multiLanguageEntitiesDS,
-        jobsDispatcher,
+        dispatcher: new DispatcherAdapter(ExecutionContext.jobsDispatcher),
+        ...overrides,
       },
-      { actor: permissionsContext.getUserInContext()!, tenant: tenants.current() }
+      { actor, tenant }
     );
-
-    return useCase;
   }
 }
 

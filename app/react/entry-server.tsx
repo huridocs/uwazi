@@ -1,8 +1,10 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
-import { Request as ExpressRequest, Response } from 'express';
+import type { Request as ExpressRequest, Response } from 'express';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import {
   createStaticHandler,
   createStaticRouter,
@@ -15,27 +17,39 @@ import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
 import { Provider } from 'jotai';
-import { omit, sortBy } from 'lodash';
+import omit from 'lodash/omit.js';
+import sortBy from 'lodash/sortBy.js';
 import { Provider as ReduxProvider } from 'react-redux';
-import api from 'app/utils/api';
-import { RequestParams } from 'app/utils/RequestParams';
-import { FetchResponseError } from 'shared/JSONRequest';
-import { ClientSettings } from 'app/apiResponseTypes';
-import translationsApi, { IndexedTranslations } from '../api/i18n/translations';
-import settingsApi from '../api/settings/settings';
-import { tenants } from '../api/tenants';
-import CustomProvider from './App/Provider';
-import Root from './App/Root';
-import RouteHandler from './App/RouteHandler';
-import { ErrorBoundary } from './V2/Components/ErrorHandling';
-import { ClientFeatureFlags } from './V2/shared/types';
-import { atomStore, hydrateAtomStore } from './V2/atoms';
-import { I18NUtils } from './I18N';
-import { IStore } from './istore';
-import { getRoutes } from './Routes';
-import createReduxStore from './store';
-import { ProtectedRoute } from './ProtectedRoute';
-import { isMobileDevice } from '../shared/detectDevice';
+import { getStore } from '#shared/atomStore/index.js';
+import { api } from '#app/utils/api.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
+import { ClientSettings } from '#app/apiResponseTypes.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import templatesApi from '#api/core/v1_layer/templates/templates.js';
+import thesauriApi from '../api/thesauri/thesauri.js';
+import relationtypes from '../api/relationtypes/relationtypes.js';
+import translationsApi, { IndexedTranslations } from '../api/i18n/translations.js';
+import settingsApi from '../api/settings/settings.js';
+import { tenants } from '../api/tenants/index.js';
+import { CustomProvider } from './App/Provider.js';
+import { Root } from './App/Root.js';
+import { RouteHandler } from './App/RouteHandler.js';
+import { ErrorBoundary } from './V2/Components/ErrorHandling/index.js';
+import { hydrateAtomStore } from './V2/atoms/index.js';
+import { I18NUtils } from './I18N/index.js';
+import { IStore } from './istore.js';
+import type { IndexComponents } from './Routes.js';
+import { getRoutes } from './Routes.js';
+import { create as createReduxStore } from './store.js';
+import { ProtectedRoute } from './ProtectedRoute.js';
+import { isMobileDevice } from '../shared/detectDevice.js';
+import { loadIcons } from '#UI/Icon/library.js';
+import { ClientFeatureFlags } from './V2/shared/types.js';
+
+loadIcons();
+
+const convertObjectIdsToStrings = (data: any) => JSON.parse(JSON.stringify(data));
 
 api.APIURL(`http://localhost:${process.env.PORT || 3000}/api/`);
 
@@ -50,14 +64,11 @@ class ServerRenderingFetchError extends Error {
   }
 }
 
-const onlySystemTranslations = (translations: IndexedTranslations[]) => {
-  const rows = translations.map(translation => {
+const onlySystemTranslations = (translations: IndexedTranslations[]) =>
+  translations.map(translation => {
     const systemTranslation = translation?.contexts?.find(c => c.id === 'System');
     return { ...translation, contexts: [systemTranslation] };
   });
-
-  return { json: { rows } };
-};
 
 const createFetchHeaders = (requestHeaders: ExpressRequest['headers']): Headers => {
   const headers = new Headers();
@@ -73,6 +84,19 @@ const createFetchHeaders = (requestHeaders: ExpressRequest['headers']): Headers 
   });
 
   return headers;
+};
+
+const logSSRAborted = (req: ExpressRequest, step: string, ssrStart: bigint, routeName?: string) => {
+  const now = process.hrtime.bigint();
+  const elapsedMs = Math.round(Number(now - ssrStart) / 1_000_000);
+
+  LoggerFactory.default().debug('SSR Aborted', {
+    aborted: req.aborted,
+    url: req.url,
+    step,
+    elapsedMs,
+    routeName,
+  });
 };
 
 const createFetchRequest = (
@@ -112,6 +136,8 @@ const getAssets = async () => {
   }
 
   return new Promise((resolve, reject) => {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
     fs.readFile(`${__dirname}/../../dist/webpack-assets.json`, (err, data) => {
       if (err) {
         reject(
@@ -131,72 +157,65 @@ const getAssets = async () => {
 const prepareStores = async (req: ExpressRequest, settings: ClientSettings, language?: string) => {
   const locale = I18NUtils.getLocale(language, settings.languages, req.cookies);
   api.locale(locale);
-  const headers = {
-    'Content-Language': locale,
-    Cookie: `connect.sid=${req.cookies['connect.sid']}`,
-    tenant: req.get('tenant'),
-  };
-
   const userAgent = req.get('user-agent') || '';
-
-  const requestParams = new RequestParams({}, headers);
 
   const translations = await translationsApi.get();
 
   const [
-    userApiResponse = { json: {} },
+    userApiResponse = {},
     settingsApiResponse = {
-      json: {
-        languages: settings.languages,
-        private: settings.private,
-        site_name: settings.site_name,
-      },
+      languages: settings.languages,
+      private: settings.private,
+      site_name: settings.site_name,
     },
-    templatesApiResponse = { json: { rows: [] } },
-    thesaurisApiResponse = { json: { rows: [] } },
-    relationTypesApiResponse = { json: { rows: [] } },
+    templatesApiResponse = [],
+    thesaurisApiResponse = [],
+    relationTypesApiResponse = [],
     translationsApiResponse = onlySystemTranslations(translations),
   ] =
     !settings.private || req.user
       ? await Promise.all([
-          api.get('user', requestParams),
-          api.get('settings', requestParams),
-          api.get('templates', requestParams),
-          api.get('dictionaries', requestParams),
-          api.get('relationTypes', requestParams),
-          Promise.resolve({ json: { rows: translations } }),
+          Promise.resolve(req.user || {}),
+          Promise.resolve(settings),
+          templatesApi.get(),
+          thesauriApi.dictionaries(),
+          relationtypes.get(),
+          Promise.resolve(translations),
         ])
       : [];
 
-  const reduxData = {
-    user: userApiResponse.json,
-    templates: sortBy(templatesApiResponse.json.rows, 'name'),
-    thesauris: thesaurisApiResponse.json.rows,
-    relationTypes: sortBy(relationTypesApiResponse.json.rows, 'name'),
-    translations: translationsApiResponse.json.rows,
-    settings: {
-      collection: { ...settingsApiResponse.json, links: settingsApiResponse.json.links || [] },
+  const themeCustomization = tenants.current().featureFlags?.themeCustomization ?? false;
+  const settingsWithFlag = { ...settingsApiResponse, themeCustomization };
+
+  const storeData = convertObjectIdsToStrings({
+    reduxData: {
+      user: userApiResponse,
+      templates: sortBy(templatesApiResponse, 'name'),
+      thesauris: thesaurisApiResponse,
+      relationTypes: sortBy(relationTypesApiResponse, 'name'),
+      translations: translationsApiResponse,
+      settings: {
+        collection: { ...settingsWithFlag, links: settingsWithFlag.links || [] },
+      },
     },
-  };
-
-  const reduxStore = createReduxStore({
-    ...reduxData,
-    locale,
-  });
-
-  return {
-    reduxStore,
     atomStoreData: {
       locale,
-      settings: settingsApiResponse.json,
-      thesauri: thesaurisApiResponse.json.rows,
-      templates: templatesApiResponse.json.rows,
-      user: userApiResponse.json,
-      translations: translationsApiResponse.json.rows,
-      relationTypes: sortBy(relationTypesApiResponse.json.rows, 'name'),
+      settings: settingsWithFlag,
+      thesauri: thesaurisApiResponse,
+      templates: templatesApiResponse,
+      user: userApiResponse,
+      translations: translationsApiResponse,
+      relationTypes: sortBy(relationTypesApiResponse, 'name'),
       isMobile: isMobileDevice(userAgent),
     },
-  };
+  });
+
+  const reduxStore = createReduxStore({
+    ...storeData.reduxData,
+    locale,
+  } as unknown as IStore);
+
+  return { reduxStore, atomStoreData: storeData.atomStoreData };
 };
 
 const setReduxState = async (
@@ -261,22 +280,31 @@ const setReduxState = async (
   return { initialStore, initialState: initialStore.getState(), loadingError };
 };
 
-const getSSRProperties = async (
+const prepareStoreData = async (
   req: ExpressRequest,
-  routes: RouteObject[],
   settings: ClientSettings,
   language?: string
 ) => {
   const { reduxStore, atomStoreData } = await prepareStores(req, settings, language);
-  const { fetchRequest, ssrError } = createFetchRequest(req);
-  const { query } = createStaticHandler(routes);
-  const staticHandleContext = await query(fetchRequest);
-  const router = createStaticRouter(routes, staticHandleContext as StaticHandlerContext);
+
+  const atomStore = getStore();
+  hydrateAtomStore(atomStoreData as any, atomStore);
   const reduxState = reduxStore.getState();
 
   return {
     reduxState,
+    atomStore,
     atomStoreData,
+  };
+};
+
+const prepareRouteData = async (req: ExpressRequest, routes: RouteObject[]) => {
+  const { fetchRequest, ssrError } = createFetchRequest(req);
+  const { query } = createStaticHandler(routes);
+  const staticHandleContext = await query(fetchRequest);
+  const router = createStaticRouter(routes, staticHandleContext as StaticHandlerContext);
+
+  return {
     staticHandleContext,
     router,
     ssrError,
@@ -284,15 +312,31 @@ const getSSRProperties = async (
 };
 
 const EntryServer = async (req: ExpressRequest, res: Response) => {
+  const ssrStart = process.hrtime.bigint();
   RouteHandler.renderedFromServer = true;
   const [settings, assets] = await Promise.all([
     settingsApi.get() as Promise<ClientSettings>,
     getAssets(),
   ]);
-  //https://github.com/trpc/trpc/issues/1811#issuecomment-1242222057
-  //for Node18 we have to remove the connection header
   const { connection, ...headers } = req.headers;
-  const routes = getRoutes(settings, req.user && req.user._id, headers);
+
+  const [lib, cards, table, map, login] = await Promise.all([
+    import('./Library/Library.js'),
+    import('./Library/LibraryCards.js'),
+    import('./Library/LibraryTable.js'),
+    import('./Library/LibraryMap.js'),
+    import('./Users/Login.js'),
+  ]);
+
+  const indexComponents: IndexComponents | undefined = {
+    LibraryRoot: (lib as { LibraryRoot: IndexComponents['LibraryRoot'] }).LibraryRoot,
+    LibraryCards: (cards as { LibraryCards: IndexComponents['LibraryCards'] }).LibraryCards,
+    LibraryTable: (table as { LibraryTable: IndexComponents['LibraryTable'] }).LibraryTable,
+    LibraryMap: (map as { LibraryMap: IndexComponents['LibraryMap'] }).LibraryMap,
+    Login: (login as { Login: IndexComponents['Login'] }).Login,
+  };
+
+  const routes = getRoutes(settings, req.user && req.user._id, headers, indexComponents);
   const matched = matchRoutes(routes, req.path);
 
   if (matched === null) {
@@ -300,9 +344,15 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     return;
   }
 
+  if (req.aborted) {
+    logSSRAborted(req, 'Matching routes', ssrStart);
+    return;
+  }
+
   const lastRouteMatched = matched ? matched[matched.length - 1] : null;
-  const lastRouteElement = lastRouteMatched?.route.element as React.ReactElement;
-  const isProtectedRoute = lastRouteElement.type === ProtectedRoute;
+  const lastRouteElement = lastRouteMatched?.route.element as React.ReactElement | undefined;
+  const isProtectedRoute = lastRouteElement?.type === ProtectedRoute;
+  const routeName = lastRouteMatched?.route?.path || 'library';
 
   if (isProtectedRoute) {
     const userId = req.user?._id;
@@ -322,21 +372,55 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     : req.language;
 
   const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
-
-  const { reduxState, atomStoreData, staticHandleContext, router, ssrError } =
-    await getSSRProperties(req, routes, settings, language);
-
   const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();
   const clientFeatureFlags: ClientFeatureFlags = {
     paragraphExtraction: featureFlags?.paragraphExtraction,
+    v2CSVImport: featureFlags?.v2CSVImport,
+    newHeader: featureFlags?.newHeader,
+    themeCustomization: featureFlags?.themeCustomization,
+    v2GetEntity: featureFlags?.v2GetEntity,
   };
+  const settingsWithFeatureFlags = {
+    ...settings,
+    features: {
+      ...(settings.features || {}),
+      ...clientFeatureFlags,
+    },
+  };
+
+  if (req.aborted) {
+    logSSRAborted(req, 'Store data', ssrStart, routeName);
+    return;
+  }
+
+  const { reduxState, atomStore, atomStoreData } = await prepareStoreData(
+    req,
+    settingsWithFeatureFlags,
+    language
+  );
+
+  if (req.aborted) {
+    logSSRAborted(req, 'Route data', ssrStart, routeName);
+    return;
+  }
+
+  const { staticHandleContext, router, ssrError } = await prepareRouteData(req, routes);
+
+  if (req.aborted) {
+    logSSRAborted(req, 'Before requestStates', ssrStart, routeName);
+    return;
+  }
   const { initialStore, initialState, loadingError } = await setReduxState(
     req,
     reduxState,
     matched
   );
 
-  hydrateAtomStore(atomStoreData);
+  if (req.aborted) {
+    logSSRAborted(req, 'Component HTML', ssrStart, routeName);
+    return;
+  }
+
   const componentHtml = ReactDOMServer.renderToString(
     <ReduxProvider store={initialStore as any}>
       <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
@@ -355,6 +439,10 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     </ReduxProvider>
   );
 
+  if (req.aborted) {
+    logSSRAborted(req, 'Root HTML', ssrStart, routeName);
+    return;
+  }
   const html = ReactDOMServer.renderToString(
     <Root
       language={atomStoreData.locale}
@@ -369,6 +457,10 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     />
   );
 
+  if (req.aborted) {
+    logSSRAborted(req, 'Aborted before response', ssrStart, routeName);
+    return;
+  }
   const responseCode = loadingError?.status || (ssrError ? 500 : 200);
   const resStatus = isCatchAll ? 404 : responseCode;
   res.status(resStatus).send(`<!DOCTYPE html>${html}`);

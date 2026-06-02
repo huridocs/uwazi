@@ -1,1 +1,0 @@
-export { MetadataDisplay } from './MetadataDisplay';

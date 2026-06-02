@@ -1,9 +1,9 @@
-import testingDB from 'api/utils/testing_db';
-import { migrator } from 'api/migrations/migrator';
+import testingDB from '#api/utils/testing_db.js';
+import { migrator } from '#api/migrations/migrator.js';
 import path from 'path';
-import { runMigration } from 'api/migrations/migrate';
+import { runMigration } from '#api/migrations/migrate.js';
 import { Connection } from 'mongoose';
-import { DB } from 'api/odm';
+import { DB } from '#api/odm/index.js';
 
 describe('migrate', () => {
   let connection: Connection;
@@ -23,6 +23,13 @@ describe('migrate', () => {
     beforeEach(async () => {
       await testingDB.clear();
       migrator.migrationsDir = path.join(__dirname, 'testMigrations');
+      migrator.loader = async (p: string) =>
+        Promise.resolve(
+          (function (r: NodeRequire) {
+            const m = r(p);
+            return m.default ?? m;
+          })(require)
+        );
     });
 
     it('should call migrator migrate', async () => {
@@ -33,7 +40,7 @@ describe('migrate', () => {
       expect(migrateSpy).toBeCalledWith(connection.db);
     });
 
-    it('prints result when migrations do not need reindex', async () => {
+    it('returns migration status when migrations do not need reindex', async () => {
       jest.spyOn(migrator, 'migrate').mockResolvedValue([
         {
           _id: '61e6b524f5de4b24d561391b',
@@ -61,10 +68,10 @@ describe('migrate', () => {
 
       const result = await runMigration();
 
-      expect(result).toEqual({ reindex: false });
+      expect(result).toEqual({ migrated: true, reindex: false });
     });
 
-    it('prints result when migrations need reindex', async () => {
+    it('returns migration status when migrations need reindex', async () => {
       jest.spyOn(migrator, 'migrate').mockResolvedValue([
         {
           _id: testingDB.id(),
@@ -92,7 +99,15 @@ describe('migrate', () => {
       ]);
 
       const result = await runMigration();
-      expect(result).toEqual({ reindex: true });
+      expect(result).toEqual({ migrated: true, reindex: true });
+    });
+
+    it('returns migrated false when there are no pending migrations', async () => {
+      jest.spyOn(migrator, 'migrate').mockResolvedValue([]);
+
+      const result = await runMigration();
+
+      expect(result).toEqual({ migrated: false, reindex: false });
     });
   });
 });

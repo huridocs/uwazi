@@ -1,13 +1,14 @@
-import { files, storage } from 'api/files';
-import { prettifyError } from 'api/utils/handleError';
-import { legacyLogger } from 'api/log';
-import request from 'shared/JSONRequest';
-import entities from 'api/entities';
-import { TocSchema } from 'shared/types/commonTypes';
-import { FileType } from 'shared/types/fileType';
-import { tenants } from 'api/tenants';
-import settings from 'api/settings';
-import { permissionsContext } from 'api/permissions/permissionsContext';
+import { files, storage } from '#api/files/index.js';
+import { prettifyError } from '#api/utils/handleError.js';
+import { legacyLogger } from '#api/log/index.js';
+import request from '#shared/JSONRequest.js';
+import entities from '#api/entities/index.js';
+import { TocSchema } from '#shared/types/commonTypes.js';
+import { FileType } from '#shared/types/fileType.js';
+import { tenants } from '#api/tenants/index.js';
+import settings from '#api/settings/index.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
 
 const fakeTocEntry = (label: string): TocSchema => ({
   selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
@@ -53,13 +54,13 @@ const tocService = {
   async processAllTenants() {
     return Object.keys(tenants.tenants).reduce(async (previous, tenantName) => {
       await previous;
-      return tenants.run(async () => {
+      return runInJobContext(tenantName, async () => {
         permissionsContext.setCommandContext();
         const { features } = await settings.get({}, 'features.tocGeneration');
         if (features?.tocGeneration) {
           await this.processNext(features.tocGeneration.url);
         }
-      }, tenantName);
+      });
     }, Promise.resolve());
   },
 

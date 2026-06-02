@@ -1,10 +1,10 @@
 import 'isomorphic-fetch';
 import request from 'supertest';
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { UserRole } from 'shared/types/userSchema';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import { UserRole } from '#shared/types/userSchema.js';
 import { entitiesRoutes } from '..';
 
 describe('entities countByTemplate V2 routes', () => {
@@ -14,6 +14,7 @@ describe('entities countByTemplate V2 routes', () => {
 
   const app = setUpApp(entitiesRoutes, (req, _res, next) => {
     req.user = {
+      _id: 'admin',
       username: 'admin',
       role: UserRole.ADMIN,
       email: 'admin@test.com',

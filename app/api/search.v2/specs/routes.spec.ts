@@ -1,10 +1,10 @@
 import request from 'supertest';
-import { Application } from 'express';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { elastic } from 'api/search';
+import type { Application } from 'express';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import { elastic } from '#api/search/index.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { searchRoutes } from '../routes';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { searchRoutes } from '../routes.js';
 
 import {
   fixturesTitleSearch,
@@ -18,7 +18,8 @@ import {
   entity3es,
   entity4es,
   entity5es,
-} from './fixturesTitleSearch';
+} from './fixturesTitleSearch.js';
+import { DomainError } from '#api/core/domain/error/DomainError.js';
 
 describe('entities get searchString', () => {
   const app: Application = setUpApp(searchRoutes);
@@ -187,12 +188,14 @@ describe('entities get searchString', () => {
 
     describe('Error handling', () => {
       it('should handle errors on POST', async () => {
+        class ErrorSample extends DomainError {}
+
         jest.spyOn(elastic, 'search').mockImplementation(() => {
-          throw new Error('Error for test');
+          throw new ErrorSample('Error for test', 'error_code');
         });
         const { body, status } = await request(app).get('/api/v2/search');
 
-        expect(status).toBe(500);
+        expect(status).toBe(400);
         expect(body.error).toContain('Error for test');
       });
     });

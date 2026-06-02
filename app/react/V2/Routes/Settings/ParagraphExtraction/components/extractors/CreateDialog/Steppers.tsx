@@ -4,7 +4,7 @@ const Steppers = ({
   step,
   steps,
   isDisabled,
-  activeColor = 'bg-indigo-700',
+  activeColor = 'bg-primary-700',
   inactiveColor = 'bg-gray-200',
 }: {
   step: number;

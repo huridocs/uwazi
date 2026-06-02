@@ -1,8 +1,12 @@
-import { PropertyTypeMismatchError } from 'api/core/domain/template/errors';
-import { PropertyName } from 'api/core/domain/template/PropertyName';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { PropertyType } from './PropertyType';
-import { PropertyValue, PropertyAssignment } from './PropertyValue';
+import {
+  PropertyTypeMismatchError,
+  PropertyComparisonError,
+  PropertyTypeChangeError,
+} from '#api/core/domain/template/errors.js';
+import { PropertyName } from '#api/core/domain/template/PropertyName.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { PropertyType } from './PropertyType.js';
+import { PropertyValue, PropertyAssignment } from './PropertyValue.js';
 
 type PropertyUpdateInfo = {
   id: string;
@@ -71,6 +75,10 @@ class Property {
     return this._name.value;
   }
 
+  get isTranslatable(): boolean {
+    return false;
+  }
+
   isSame(other: Property) {
     return this.id === other.id;
   }
@@ -94,8 +102,8 @@ class Property {
   }
 
   updatedAttributes(other: Property): PropertyUpdateInfo {
-    if (!this.isSame(other)) throw new Error('Trying to compare different properties.');
-    if (this.type !== other.type) throw new Error("Can't change property types.");
+    if (!this.isSame(other)) throw new PropertyComparisonError();
+    if (this.type !== other.type) throw new PropertyTypeChangeError();
 
     const updateInfo: PropertyUpdateInfo = {
       id: this.id,
@@ -112,14 +120,14 @@ class Property {
   }
 
   createDefaultValue(): PropertyAssignment {
-    return { name: this.name, value: [], type: this.type };
+    return { name: this.name, value: [], type: this.type, isTranslatable: this.isTranslatable };
   }
 
   createPropertyAssignment(
     { value }: CreatePropertyAssignmentInput,
     _shouldValidateForRequired: boolean
   ): PropertyAssignment {
-    return { name: this.name, value, type: this.type };
+    return { name: this.name, value, type: this.type, isTranslatable: this.isTranslatable };
   }
 
   validatePropertyAssignment(

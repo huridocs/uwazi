@@ -22,15 +22,9 @@ app/api/migrations/**/uploads/*
 !app/api/migrations/**/uploads/index.html
 !app/api/files/specs/uploads/listFilesUsingDisk
 !app/api/files/specs/customUploads/downloadRoutes
-!app/api/files/specs/uploads/downloadRoutes
 !app/api/files/specs/uploads/ocrRoutes
-!app/api/files/specs/uploads/pdfPostProcessJob
-app/api/files/specs/uploads/downloadRoutes/*
-app/api/files/specs/uploads/pdfPostProcessJob/*
 app/api/files/specs/uploads/ocrRoutes/*
-!app/api/files/specs/uploads/downloadRoutes/index.html
 !app/api/files/specs/uploads/ocrRoutes/index.html
-!app/api/files/specs/uploads/pdfPostProcessJob/index.html
 app/api/files/specs/customUploads/*
 !app/api/files/specs/customUploads/index.html
 !app/api/files/specs/customUploads/listFilesUsingDisk
@@ -67,13 +61,24 @@ tenants/*
 .cursor/*
 .browsers/*
 
+# Yarn Berry
+.yarn/install-state.gz
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+
 # Webpack cache
 .webpack-cache/
 .webpack/
 .babel-cache/
 
 # CSV v2 test temp dirs
-app/api/csv.v2/services/specs/uploads/
-app/api/csv.v2/services/specs/uploads_intermediate/
-app/api/csv.v2/services/specs/tmp/
-app/api/csv.v2/jobs/specs/tmp/
+app/api/csv.v2/application/jobs/specs/uploads/
+app/api/csv.v2/application/jobs/specs/uploads_intermediate/
+app/api/csv.v2/application/jobs/specs/tmp/
+app/api/csv.v2/specs/uploads/
+app/api/csv.v2/specs/uploads_intermediate/
+
+# Playwright outputs
+test-results/
+playwright-report/

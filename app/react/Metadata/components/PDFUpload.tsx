@@ -2,11 +2,11 @@ import React, { useRef } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { actions } from 'react-redux-form';
 import { connect, ConnectedProps } from 'react-redux';
-import { get } from 'lodash';
-import { Icon } from 'UI';
-import { Translate } from 'app/I18N';
-import { IStore } from 'app/istore';
-import { MetadataFormFiles } from './MetadataFormFiles';
+import get from 'lodash/get.js';
+import { Icon } from '#app/UI/index.js';
+import { Translate } from '#app/I18N/index.js';
+import { IStore } from '#app/istore.js';
+import { MetadataFormFiles } from './MetadataFormFiles.js';
 
 type PDFUploadProps = {
   model: string;
@@ -18,7 +18,12 @@ const handlePDFUpload =
     if (files && files.length > 0) {
       Array.from(files).forEach(file => {
         const data = { data: URL.createObjectURL(file), originalFile: file };
-        dispatch(actions.push(`${model}.documents`, data));
+        dispatch(
+          actions.push(`${model}.documents`, {
+            ...data,
+            originalName: data.originalFile.name,
+          })
+        );
       });
     }
   };

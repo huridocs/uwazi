@@ -1,9 +1,6 @@
 /* eslint-disable max-lines */
-/** @format */
-
-import { fromJS as Immutable } from 'immutable';
-
-import createReducer, * as actions from 'app/BasicReducer/reducer';
+import Immutable from 'immutable';
+import createReducer, * as actions from '#app/BasicReducer/reducer.js';
 
 describe('BasicReducer', () => {
   describe('createReducer', () => {
@@ -104,7 +101,7 @@ describe('BasicReducer', () => {
     let state;
     beforeEach(() => {
       reducer = createReducer('1', { nested: { key: [] } });
-      state = Immutable({
+      state = Immutable.fromJS({
         nested: {
           key: [
             { _id: 1, title: 'test' },
@@ -128,7 +125,7 @@ describe('BasicReducer', () => {
       });
     });
     it('should update passed value in a list in a nested key at the namespace, by a custom index', () => {
-      state = Immutable({
+      state = Immutable.fromJS({
         nested: {
           key: [
             { _id: 1, title: 'test' },
@@ -187,11 +184,11 @@ describe('BasicReducer', () => {
       const reducer2 = createReducer('2');
 
       const newState1 = reducer1(
-        Immutable({ oldProperty: 'old' }),
+        Immutable.fromJS({ oldProperty: 'old' }),
         actions.setIn('1', 'newProperty', 'new')
       );
       const newState2 = reducer2(
-        Immutable({ oldProperty: 'old' }),
+        Immutable.fromJS({ oldProperty: 'old' }),
         actions.setIn('1', 'newProperty', 'new')
       );
 
@@ -199,7 +196,7 @@ describe('BasicReducer', () => {
       expect(newState2.toJS()).toEqual({ oldProperty: 'old' });
 
       const newState3 = reducer1(
-        Immutable({ oldProperty: 'old' }),
+        Immutable.fromJS({ oldProperty: 'old' }),
         actions.setIn('1', 'oldProperty', 'new')
       );
 
@@ -226,11 +223,11 @@ describe('BasicReducer', () => {
       const reducer2 = createReducer('namespace2', []);
 
       const newState1 = reducer1(
-        Immutable([{ _id: '1' }]),
+        Immutable.fromJS([{ _id: '1' }]),
         actions.push('namespace1', { _id: '2' })
       );
       const newState2 = reducer2(
-        Immutable([{ _id: '1' }]),
+        Immutable.fromJS([{ _id: '1' }]),
         actions.push('namespace1', { _id: '2' })
       );
 
@@ -245,8 +242,8 @@ describe('BasicReducer', () => {
       const reducer1 = createReducer('1', []);
       const reducer2 = createReducer('2', []);
 
-      const newState1 = reducer1(Immutable([1, 2, 3]), actions.concat('1', [4, 5]));
-      const newState2 = reducer2(Immutable([1, 2, 3]), actions.concat('1', [4, 5]));
+      const newState1 = reducer1(Immutable.fromJS([1, 2, 3]), actions.concat('1', [4, 5]));
+      const newState2 = reducer2(Immutable.fromJS([1, 2, 3]), actions.concat('1', [4, 5]));
 
       expect(newState1.toJS()).toEqual([1, 2, 3, 4, 5]);
       expect(newState2.toJS()).toEqual([1, 2, 3]);
@@ -260,11 +257,11 @@ describe('BasicReducer', () => {
 
       const initial = { nested: { key: [1, 2] } };
       const newState1 = reducer1(
-        Immutable(initial),
+        Immutable.fromJS(initial),
         actions.concatIn('1', ['nested', 'key'], [3, 4])
       );
       const newState2 = reducer2(
-        Immutable(initial),
+        Immutable.fromJS(initial),
         actions.concatIn('1', ['nested', 'key'], [3, 4])
       );
 

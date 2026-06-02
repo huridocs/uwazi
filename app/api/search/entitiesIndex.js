@@ -1,34 +1,31 @@
-import { detectLanguage } from 'shared/detectLanguage';
-import entities from 'api/entities';
-import { legacyLogger } from 'api/log';
-import { entityDefaultDocument } from 'shared/entityDefaultDocument';
-import PromisePool from '@supercharge/promise-pool';
-import { ElasticEntityMapper } from 'api/entities.v2/database/ElasticEntityMapper';
-import { MongoTemplatesDataSource } from 'api/core/infrastructure/mongodb/template/MongoTemplatesDataSource';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoSettingsDataSource } from 'api/core/infrastructure/mongodb/MongoSettingsDataSource';
-import { LanguageUtils } from 'shared/language';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { otherLanguageSchema } from 'shared/language/availableLanguages';
-import { getTenantESMapping } from 'api/tenants/tenantESMapping';
-import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
-import { elastic } from './elastic';
+import PromisePoolModule from '@supercharge/promise-pool';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { detectLanguage } from '#shared/detectLanguage.js';
+import entities from '#api/entities/index.js';
+import { legacyLogger } from '#api/log/index.js';
+import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
+import { ElasticEntityMapper } from '#api/entities.v2/database/ElasticEntityMapper.js';
+import { LanguageUtils } from '#shared/language/index.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { otherLanguageSchema } from '#shared/language/availableLanguages.js';
+import { getTenantESMapping } from '#api/tenants/tenantESMapping.js';
+import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory.js';
+import { elastic } from './elastic.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+
+const PromisePool = PromisePoolModule.default ?? PromisePoolModule;
 
 class IndexError extends Error {}
 
 const preprocessEntitiesToIndex = async entitiesToIndex => {
-  const db = getConnection();
   const transactionManager = TransactionManagerFactory.default();
-  const settingsDataSource = new MongoSettingsDataSource(db, transactionManager);
+  const settingsDataSource = SettingsDataSourceFactory.default({ transactionManager });
 
   if (!(await settingsDataSource.readNewRelationshipsAllowed())) {
     return entitiesToIndex;
   }
 
-  const templateDS = new MongoTemplatesDataSource(
-    getConnection(),
-    TransactionManagerFactory.default()
-  );
+  const templateDS = TemplatesDataSourceFactory.default({ transactionManager });
   const transformer = new ElasticEntityMapper(templateDS);
   return Promise.all(entitiesToIndex.map(e => transformer.toElastic(e)));
 };
@@ -69,7 +66,7 @@ function setFullTextSettings(defaultDocument, id, body, doc) {
 
 const bulkIndex = async (docs, _action = 'index') => {
   const body = [];
-  // eslint-disable-next-line max-statements
+
   docs.forEach(doc => {
     let docBody = { documents: [], ...doc };
     docBody.fullText = 'entity';

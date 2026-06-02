@@ -1,32 +1,32 @@
 import {
   CreateTemplateDTOSchema,
   UpdateTemplateDTOSchema,
-} from 'api/core/application/TemplateDTOs';
-import { UpdateTemplateUseCaseContext } from 'api/core/application/UpdateTemplate';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
-import { CreateTemplateUseCaseFactory } from '../factories/CreateTemplateUseCaseFactory';
-import { TemplateDBO } from '../mongodb/template/DBOs/TemplateDBO';
-import { UpdateTemplateUseCaseFactory } from '../factories/UpdateTemplateUseCaseFactory';
-import { MongoTemplateMapper } from '../mongodb/template/MongoTemplateMapper';
+} from '#api/core/application/TemplateDTOs.js';
+import { UpdateTemplateUseCaseContext } from '#api/core/application/UpdateTemplate.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+import { CreateTemplateUseCaseFactory } from '../factories/CreateTemplateUseCaseFactory.js';
+import { TemplateDBO } from '../mongodb/template/DBOs/TemplateDBO.js';
+import { UpdateTemplateUseCaseFactory } from '../factories/UpdateTemplateUseCaseFactory.js';
+import { MongoTemplateMapper } from '../mongodb/template/MongoTemplateMapper.js';
 import {
   DeleteTemplateRequestDto,
   DeleteTemplateSchema,
-} from '../express/template/DeleteTemplateController/DTO';
-import { DeleteTemplateUseCaseFactory } from '../factories/DeleteTemplateUseCaseFactory';
+} from '../express/template/DeleteTemplateController/DTO.js';
+import { DeleteTemplateUseCaseFactory } from '../factories/DeleteTemplateUseCaseFactory.js';
 import {
   SetTemplateAsDefaultRequestDto,
   SetTemplateAsDefaultSchema,
-} from '../express/template/SetTemplateAsDefaultController/DTO';
-import { SetTemplateAsDefaultUseCaseFactory } from '../factories/SetTemplateAsDefaultUseCaseFactory';
-import { ExpressTemplateMapper } from '../express/template/ExpressTemplateMapper';
+} from '../express/template/SetTemplateAsDefaultController/DTO.js';
+import { SetTemplateAsDefaultUseCaseFactory } from '../factories/SetTemplateAsDefaultUseCaseFactory.js';
+import { ExpressTemplateMapper } from '../express/template/ExpressTemplateMapper.js';
 
 type CreateDTO = Omit<TemplateDBO, '_id'>;
 type UpdateDTO = TemplateDBO & { reindex: boolean };
 
 export class TemplateFacade {
   static async create(dto: CreateDTO) {
-    const useCase = CreateTemplateUseCaseFactory.create();
+    const useCase = CreateTemplateUseCaseFactory.default();
 
     // eslint-disable-next-line no-param-reassign
     delete dto.default;
@@ -58,7 +58,7 @@ export class TemplateFacade {
     delete template.processing;
     delete template.__v;
 
-    const useCase = await UpdateTemplateUseCaseFactory.create();
+    const useCase = UpdateTemplateUseCaseFactory.default();
 
     const input = UpdateTemplateDTOSchema.parse({
       ...template,
@@ -85,7 +85,7 @@ export class TemplateFacade {
 
   static async delete(dto: DeleteTemplateRequestDto) {
     const parsed = DeleteTemplateSchema.parse(dto);
-    const useCase = await DeleteTemplateUseCaseFactory.create();
+    const useCase = DeleteTemplateUseCaseFactory.default();
 
     await useCase.execute({ templateId: parsed._id.toString() });
 
@@ -95,7 +95,7 @@ export class TemplateFacade {
   static async setAsDefault(dto: SetTemplateAsDefaultRequestDto) {
     const parsed = SetTemplateAsDefaultSchema.parse(dto);
 
-    const output = await SetTemplateAsDefaultUseCaseFactory.create().execute({
+    const output = await SetTemplateAsDefaultUseCaseFactory.default().execute({
       templateId: parsed._id.toString(),
     });
 

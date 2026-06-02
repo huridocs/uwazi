@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { useSetAtom } from 'jotai';
 import { useRevalidator } from 'react-router';
-import { Translate } from 'app/I18N';
-import { Button, ConfirmationModal } from 'V2/Components/UI';
-import { TablePXEntityRow } from 'V2/shared/ParagraphExtractionTypes';
-import { notificationAtom } from 'V2/atoms';
-import * as entitiesAPI from 'V2/api/paragraphExtractor/entities';
-import { handleUnexpectedError } from 'app/V2/shared/errorUtils';
+import { t, Translate } from '#app/I18N/index.js';
+import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
+import { TablePXEntityRow } from '#V2/shared/ParagraphExtractionTypes.js';
+import * as entitiesAPI from '#V2/api/paragraphExtractor/entities.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const DeleteDialog = ({
   setIsProcessing,
@@ -20,7 +18,7 @@ const DeleteDialog = ({
   disabled: boolean;
 }) => {
   const revalidator = useRevalidator();
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleDelete = async () => {
@@ -30,13 +28,10 @@ const DeleteDialog = ({
       await entitiesAPI.remove(selected);
       await revalidator.revalidate();
       setIsOpen(false);
-      setNotifications({
-        type: 'success',
-        text: <Translate>Paragraphs deleted</Translate>,
-      });
+      notify('success', t('System', 'Paragraphs deleted', null, false));
       onSuccess();
     } catch (error) {
-      handleUnexpectedError(error, 'Error deleting paragraphs');
+      notify('error', t('System', 'An error occurred', null, false));
     }
 
     setIsOpen(false);
@@ -45,7 +40,7 @@ const DeleteDialog = ({
 
   return (
     <>
-      <Button color="error" type="button" onClick={() => setIsOpen(true)} disabled={disabled}>
+      <Button variant="danger" type="button" onClick={() => setIsOpen(true)} disabled={disabled}>
         <Translate>Delete</Translate>
       </Button>
       {isOpen && (

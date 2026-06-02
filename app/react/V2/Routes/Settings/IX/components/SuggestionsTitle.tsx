@@ -1,7 +1,7 @@
 import React from 'react';
-import { Translate, t } from 'app/I18N';
-import { Pill } from 'V2/Components/UI';
-import { ClientTemplateSchema } from 'V2/shared/types';
+import { Translate, t } from '#app/I18N/index.js';
+import { Pill } from '#V2/Components/UI/index.js';
+import { ClientTemplateSchema } from '#V2/shared/types.js';
 import {
   DatePropertyIcon,
   MarkdownPropertyIcon,
@@ -9,7 +9,7 @@ import {
   TextPropertyIcon,
   SelectPropertyIcon,
   RelationshipPropertyIcon,
-} from 'V2/Components/CustomIcons';
+} from '#V2/Components/CustomIcons/index.js';
 
 const SuggestionsTitle = ({
   property,
@@ -50,7 +50,7 @@ const SuggestionsTitle = ({
   return (
     <div className="flex gap-4">
       <div className="flex flex-wrap gap-2 items-center text-gray-900 grow">
-        <span className="flex justify-center items-center w-7 h-7 font-sans text-sm text-center text-gray-700 bg-indigo-200 rounded-full">
+        <span className="flex justify-center items-center w-7 h-7 font-sans text-sm text-center text-gray-700 bg-primary-200 rounded-full">
           {propGraphics}
         </span>
         <span className="text-base font-semibold">

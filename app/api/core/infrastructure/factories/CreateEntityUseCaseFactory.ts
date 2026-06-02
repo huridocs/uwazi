@@ -1,48 +1,67 @@
-import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { CreateEntityUseCase } from 'api/core/application/CreateEntity';
-import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStorageStrategyFactory';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants/tenantContext';
-import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
+import { CreateEntityUseCase } from '#api/core/application/CreateEntity.js';
+import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { FilesServiceFactory } from './FilesServiceFactory.js';
+import { IdGeneratorFactory } from './IdGeneratorFactory.js';
+import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
+import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
+import { EntitiesServiceFactory } from './EntitiesServiceFactory.js';
+import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { User } from '#api/users.v2/model/User.js';
 
 class CreateEntityUseCaseFactory {
-  static default() {
-    const transactionManager = TransactionManagerFactory.default();
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+  static default(
+    overrides: Partial<ConstructorParameters<typeof CreateEntityUseCase>[0]> & {
+      targetLanguage?: LanguageISO6391;
+    } = {}
+  ) {
+    const { targetLanguage = 'en', ...depsOverrides } = overrides;
+
+    const { tenant } = ExecutionContext;
+
+    let actor: User | undefined;
+    try {
+      actor = ExecutionContext.actor;
+    } catch {
+      // still needed for some backwards compat tests
+      actor = User.createFrom(permissionsContext.getUserInContext()!);
+    }
+
+    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
     const idGenerator = IdGeneratorFactory.default();
-    const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-    const filesStorage = FileStorageStrategyFactory.createDefault();
-    const filesDS = DefaultFilesDataSource(transactionManager);
-    const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
+
+    const settingsDS = SettingsDataSourceFactory.default();
+    const thesauriDS = ThesauriDataSourceFactory.default();
+    const entitiesDS = EntitiesDataSourceFactory.default();
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
-    const multiLanguageEntityDS = new MongoMultiLanguageEntityDataSource(
-      getConnection(),
-      transactionManager
-    );
 
-    const useCase = new CreateEntityUseCase(
-      {
-        idGenerator,
-        templatesDS,
-        thesauriDS,
+    const propertyAssignmentCreatorServiceStrategy =
+      PropertyAssignmentCreatorServiceStrategy.createWithRequired({
+        entitiesDS,
         settingsDS,
-        transactionManager,
-        filesDS,
-        filesStorage,
-        multiLanguageEntityDS,
+        thesauriDS,
         translationsDS,
-      },
-      { actor: permissionsContext.getUserInContext()!, tenant: tenants.current() }
-    );
+      });
 
-    return useCase;
+    const entitiesService = EntitiesServiceFactory.default();
+
+    const fileService = FilesServiceFactory.default();
+
+    return new CreateEntityUseCase(
+      {
+        entitiesService,
+        propertyAssignmentCreatorServiceStrategy,
+        fileService,
+        idGenerator,
+        transactionManager,
+        ...depsOverrides,
+      },
+      { actor, tenant, targetLanguage }
+    );
   }
 }
 

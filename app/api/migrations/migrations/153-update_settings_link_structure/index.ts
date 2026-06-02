@@ -6,7 +6,7 @@ import {
   FaultyLinkOrGroup,
   Link,
   Settings,
-} from './types';
+} from './types.js';
 
 type Categories = 'link' | 'group';
 

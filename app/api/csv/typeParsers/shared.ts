@@ -1,15 +1,15 @@
 import moment from 'moment';
-import { RawEntity } from 'api/csv/entityRow';
-import { normalizeThesaurusLabel } from 'api/thesauri/thesauri';
-import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
-import { ensure } from 'shared/tsUtils';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { RawEntity } from '#api/csv/entityRow.js';
+import { normalizeThesaurusLabel } from '#api/thesauri/thesauri.js';
+import { MetadataObjectSchema, PropertySchema } from '#shared/types/commonTypes.js';
+import { ensure } from '#shared/tsUtils.js';
+import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 import {
   sanitizeMetadataValue,
   SanitizationWarning,
   sanitizeStringValue,
-} from '../sanitizationUtils';
-import { csvConstants } from '../csvDefinitions';
+} from '../sanitizationUtils.js';
+import { csvConstants } from '../csvDefinitions.js';
 
 export interface ParserResult {
   data: MetadataObjectSchema[];

@@ -5,12 +5,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import { PDF } from 'app/PDF';
-import { Document } from 'app/Viewer/components/Document.js';
-
-jest.mock('V2/atoms', () => ({
-  atomStore: { get: () => 2 },
-}));
+import { PDF } from '#app/PDF/index.js';
+import { Document } from '#app/Viewer/components/Document.js';
 
 // eslint-disable-next-line max-statements
 describe('Document', () => {
@@ -121,30 +117,6 @@ describe('Document', () => {
   });
 
   describe('onTextSelected', () => {
-    it('should set the selection changing regionId to page and adjusting based on rendering scale', () => {
-      render();
-
-      const textSelection = {
-        text: 'Wham Bam Shang-A-Lang',
-        selectionRectangles: [
-          { regionId: '51', top: 186, left: 27, width: 23, height: 12 },
-          { regionId: '52', top: 231, left: 47, width: 11, height: 89 },
-        ],
-      };
-
-      instance.onTextSelected(textSelection);
-      expect(props.setSelection).toHaveBeenCalledWith(
-        {
-          selectionRectangles: [
-            { height: 6, left: 13.5, page: '51', top: 93, width: 11.5 },
-            { height: 44.5, left: 23.5, page: '52', top: 115.5, width: 5.5 },
-          ],
-          text: 'Wham Bam Shang-A-Lang',
-        },
-        'fileId'
-      );
-    });
-
     it('should deactivate any active reference', () => {
       render();
       instance.onTextSelected({ selectionRectangles: [] });

@@ -1,9 +1,10 @@
 import { IncomingHttpHeaders } from 'http';
 import qs from 'qs';
-import api from 'app/utils/api';
-import { RequestParams } from 'app/utils/RequestParams';
-import { SearchQuery } from 'shared/types/SearchQueryType';
-import { EntityResponse, EntitySearchResponse } from 'app/V2/api/types';
+import { api } from '#app/utils/api.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { SearchQuery } from '#shared/types/SearchQueryType.js';
+import { EntityResponse, EntitySearchResponse, SnippetsSearchResponse } from '../types.js';
+
 const lookup = async (
   {
     entityTitle,
@@ -66,4 +67,35 @@ const search = async (
   }
 };
 
-export { lookup, search };
+const snippets = async (
+  {
+    sharedId,
+    searchString,
+    limit = 10,
+  }: { sharedId: string; searchString: string; limit?: number },
+  headers?: IncomingHttpHeaders
+): Promise<SnippetsSearchResponse> => {
+  try {
+    const searchQuery: SearchQuery = {
+      fields: ['snippets'],
+      filter: {
+        ...(sharedId && { sharedId }),
+        ...(searchString && { searchString }),
+      },
+      page: { limit },
+    };
+
+    const requestParams = new RequestParams(qs.stringify(searchQuery), headers);
+
+    if (headers && headers['Content-Language']) {
+      api.locale(headers['Content-Language']);
+    }
+
+    const response: { json: SnippetsSearchResponse } = await api.get('v2/search', requestParams);
+    return response.json;
+  } catch (e) {
+    return e;
+  }
+};
+
+export { lookup, search, snippets };

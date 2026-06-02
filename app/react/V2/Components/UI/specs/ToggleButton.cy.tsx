@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import 'cypress-axe';
-import { mount } from '@cypress/react18';
-import { ToggleButton } from '../ToggleButton';
+import { mount } from 'cypress/react';
+import { ToggleButton } from '../ToggleButton.js';
 
 describe('ToggleButton', () => {
   let isDisabled = false;

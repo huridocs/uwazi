@@ -1,12 +1,12 @@
-import { fromJS as Immutable } from 'immutable';
+import Immutable from 'immutable';
 import { actions as formActions } from 'react-redux-form';
 
-import { notificationActions } from 'app/Notifications';
-import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
-import referencesAPI from 'app/Viewer/referencesAPI';
-import { RequestParams } from 'app/utils/RequestParams';
+import { notificationActions } from '#app/Notifications/index.js';
+import { prioritySortingCriteria } from '#app/utils/prioritySortingCriteria.js';
+import { ReferencesAPI as referencesAPI } from '#app/Viewer/referencesAPI.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 
-import * as actions from '../actions';
+import * as actions from '../actions.js';
 
 describe('ConnectionsList actions', () => {
   let dispatch;
@@ -17,12 +17,12 @@ describe('ConnectionsList actions', () => {
     dispatch = jasmine.createSpy('dispatch');
     getState = () => ({
       templates: 'templates',
-      entityView: { entity: Immutable({ sharedId: 'sid' }) },
+      entityView: { entity: Immutable.fromJS({ sharedId: 'sid' }) },
       relationships: {
         list: {
           sharedId: 'sid',
           sort: { order: 'order' },
-          filters: Immutable({ filter: 'filter' }),
+          filters: Immutable.fromJS({ filter: 'filter' }),
         },
       },
     });
@@ -84,7 +84,7 @@ describe('ConnectionsList actions', () => {
     it('should fetch the connections with the default state when filters is undefined', async () => {
       getState = () => ({
         templates: 'templates',
-        entityView: { entity: Immutable({ sharedId: 'sid' }) },
+        entityView: { entity: Immutable.fromJS({ sharedId: 'sid' }) },
         relationships: {
           list: { sharedId: 'sid', sort: { order: 'order' } },
         },
@@ -107,7 +107,7 @@ describe('ConnectionsList actions', () => {
           list: {
             sharedId: 'sid',
             sort: {},
-            filters: Immutable({}),
+            filters: Immutable.fromJS({}),
             search: {
               searchTerm: {
                 value: 'term',
@@ -207,8 +207,8 @@ describe('ConnectionsList actions', () => {
           list: {
             sharedId: 'sid',
             sort: { order: 'order' },
-            filters: Immutable({
-              filter: Immutable({ oldProperty: 'old', modifiedProperty: 'original' }),
+            filters: Immutable.fromJS({
+              filter: Immutable.fromJS({ oldProperty: 'old', modifiedProperty: 'original' }),
             }),
           },
         },

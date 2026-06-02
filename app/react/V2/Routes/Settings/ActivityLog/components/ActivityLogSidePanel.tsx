@@ -1,8 +1,8 @@
 import React from 'react';
-import { Sidepanel } from 'app/V2/Components/UI';
-import { Translate } from 'app/I18N';
-import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
-import { ActionPill } from './TableElements';
+import { Sidepanel } from '#V2/Components/UI/index.js';
+import { Translate } from '#app/I18N/index.js';
+import { ActivityLogEntryType } from '#shared/types/activityLogEntryType.js';
+import { ActionPill } from './TableElements.js';
 
 interface ActivityLogSidePanelProps {
   selectedEntry?: ActivityLogEntryType;
@@ -46,7 +46,7 @@ const ActivityLogSidePanel = ({ selectedEntry, isOpen, onClose }: ActivityLogSid
                 </>
               )}
               {selectedEntry.semantic.action === 'RAW' && (
-                <div className="content-start space-x-1">
+                <div className="content-start gap-x-1">
                   <Translate className="font-semibold">{selectedEntry.method}</Translate>&#58;
                   <Translate>{selectedEntry.url}</Translate>
                 </div>
@@ -59,7 +59,7 @@ const ActivityLogSidePanel = ({ selectedEntry, isOpen, onClose }: ActivityLogSid
               <span className="text-primary-700">{selectedEntry.username}</span>
             </div>
           </div>
-          <div className="flex flex-col flex-grow p-3 rounded-lg max-h-svh h-3/4">
+          <div className="flex flex-col grow p-3 rounded-lg max-h-svh h-3/4">
             <Translate className="m-2 font-semibold">Query</Translate>
             <span className="block p-5 mb-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50">
               {selectedEntry.query}

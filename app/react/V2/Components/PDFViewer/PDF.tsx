@@ -1,117 +1,359 @@
-import React, { useEffect, useRef, useState } from 'react';
-import loadable from '@loadable/component';
-import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selection-handler';
-import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
-import { PDFDocumentProxy } from 'pdfjs-dist';
-import { Translate } from 'app/I18N';
-import { PDFJS, CMAP_URL, EventBus } from './pdfjs';
-import { TextHighlight } from './types';
-import { triggerScroll } from './functions/helpers';
+/* eslint-disable max-lines */
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  SelectionRegion,
+  HandleTextSelection,
+  TextSelection,
+} from '@huridocs/react-text-selection-handler';
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { Translate } from '#app/I18N/index.js';
+import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
+import { TextHighlight } from './types.js';
+import { triggerScroll } from './functions/helpers.js';
+import { clearSnippets, tryHighlightAndScroll } from './functions/handleSnippets.js';
+import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
+import { PDFJS, CMAP_URL, EventBus, PDFDocumentProxy } from './pdfjs.js';
+import { useContainerWidth } from './hooks/useContainerWidth.js';
+import { PDFPage } from './PDFPage.js';
+import { BlankState, ProgressBar } from '../UI/index.js';
+import 'pdfjs-dist/web/pdf_viewer.css';
+import { reportErrorToSentry } from '#app/V2/shared/errorUtils.js';
 
-const PDFPage = loadable(async () => import(/* webpackChunkName: "LazyLoadPDFPage" */ './PDFPage'));
+const CHANGE_PAGE_THRESHOLD: number = 0.4;
+const BORDER_WIDTH: number = 1;
+const WIDTH_SAFETY_BUFFER: number = 2;
 
-const eventBus = new EventBus();
+type Snippet = { text: string; page: number; filename?: string };
+
+type PDFControls = {
+  goToPage: (page: number) => void;
+  scrollToHighlight: (page: number, highlightKey: string) => void;
+  activateSnippet: (snippet: Snippet) => void;
+  deactivateSnippet: () => void;
+};
 
 interface PDFProps {
   fileUrl: string;
-  highlights?: { [page: string]: TextHighlight[] };
+  highlights?: { [page: number]: TextHighlight[] };
   onSelect?: (selection: TextSelection) => any;
   onDeselect?: () => any;
-  scrollToPage?: string;
-  size?: { height?: string; width?: string; overflow?: string };
+  onScaleChange?: (scale: number) => void;
+  onPageChange?: (pageNumber: number) => void;
+  onPdfReady?: (controls: PDFControls, maxPages: number) => void;
+  size?: { height?: string; width?: string };
 }
 
-const getPDFFile = async (fileUrl: string) =>
-  PDFJS.getDocument({
-    url: fileUrl,
-    cMapUrl: CMAP_URL,
-    cMapPacked: true,
-    isEvalSupported: false,
-  }).promise;
-
+// eslint-disable-next-line max-statements
 const PDF = ({
   fileUrl,
   highlights,
-  onSelect = () => {},
+  onSelect = () => undefined,
   onDeselect,
-  scrollToPage,
+  onScaleChange,
+  onPageChange,
+  onPdfReady,
   size,
 }: PDFProps) => {
-  const scrollToRef = useRef<HTMLDivElement>(null);
-  const pdfContainerRef = useRef<HTMLDivElement>(null);
+  const pageRefsMap = useRef<{ [key: number]: HTMLDivElement | null }>({});
+  const animationFrameIdRef = useRef<number>(0);
+  const snippetAnimationFrameIdRef = useRef<number>(0);
+  const pdfContainerRef = useRef<HTMLDivElement | null>(null);
+  const isReady = useRef(false);
+  const intersectionObserverRef = useRef<IntersectionObserver | null>();
+  const [currentScale, setCurrentScale] = useState(1);
   const [pdf, setPDF] = useState<PDFDocumentProxy>();
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<React.ReactNode>();
+  const containerWidth = useContainerWidth(pdfContainerRef, {
+    borderWidth: BORDER_WIDTH,
+    safetyBuffer: WIDTH_SAFETY_BUFFER,
+  });
+  const [pdfEventBus] = useState(new EventBus());
+  const [loading, setLoading] = useState<{ progress: number; isLoading: boolean }>({
+    isLoading: true,
+    progress: 0,
+  });
+  const onPageChangeRef = useRef(onPageChange);
 
-  const containerStyles = {
-    height: size?.height || '100%',
-    width: size?.width || '100%',
-    overflow: size?.overflow || 'auto',
-    paddingLeft: '10px',
-    paddingRight: '10px',
-  };
+  const setPdfContainer = useCallback((element: HTMLDivElement | null) => {
+    pdfContainerRef.current = element;
+  }, []);
+
+  const handleScaleChange = useCallback(
+    (scale: number) => {
+      setCurrentScale(scale);
+      onScaleChange?.(scale);
+    },
+    [onScaleChange]
+  );
+
+  const handleSelect = useCallback(
+    (selection: TextSelection) => {
+      const normalized = adjustSelectionsToScale(selection, currentScale, true);
+      onSelect(normalized);
+    },
+    [onSelect, currentScale]
+  );
+
+  const goToPage = useCallback(
+    (page: number) => {
+      const pageRef = { current: pageRefsMap.current[page] };
+      animationFrameIdRef.current = triggerScroll(pageRef, animationFrameIdRef.current);
+    },
+    [pageRefsMap]
+  );
+
+  const scrollToHighlight = useCallback((page: number, highlightKey: string) => {
+    const highlightWrapper = pdfContainerRef.current?.querySelector(
+      `[data-highlight-key="${page}-${highlightKey}"]`
+    );
+    const highlightRectangle = highlightWrapper?.querySelector('.highlight-rectangle');
+    const elementToScroll = highlightRectangle || highlightWrapper;
+    scrollIntoView(elementToScroll, { block: 'center' });
+  }, []);
+
+  const activateSnippet = useCallback((snippet: Snippet) => {
+    const pageContainer = pageRefsMap.current[snippet.page];
+
+    if (!pageContainer) {
+      return;
+    }
+
+    let observerTimeoutId: string | number | NodeJS.Timeout | undefined;
+
+    if (tryHighlightAndScroll(pageContainer, snippet)) {
+      return;
+    }
+
+    scrollIntoView(pageContainer, { block: 'start' });
+
+    const observer = new MutationObserver(() => {
+      if (tryHighlightAndScroll(pageContainer, snippet)) {
+        observer.disconnect();
+        clearTimeout(observerTimeoutId);
+      }
+    });
+
+    observerTimeoutId = setTimeout(() => {
+      observer.disconnect();
+    }, 5000);
+
+    observer.observe(pageContainer, { childList: true, subtree: true });
+  }, []);
+
+  const deactivateSnippet = useCallback(() => {
+    Object.values(pageRefsMap.current).forEach(container => {
+      if (container) clearSnippets(container);
+    });
+  }, []);
+
+  const pdfReadyCallback = useCallback(() => {
+    if (isReady.current) {
+      return;
+    }
+
+    if (onPdfReady) {
+      onPdfReady(
+        {
+          goToPage,
+          scrollToHighlight,
+          activateSnippet,
+          deactivateSnippet,
+        },
+        pdf?.numPages || 0
+      );
+    }
+
+    isReady.current = true;
+  }, [onPdfReady, goToPage, scrollToHighlight, activateSnippet, deactivateSnippet, pdf]);
 
   useEffect(() => {
-    getPDFFile(fileUrl)
-      .then(pdfFile => {
-        setPDF(pdfFile);
+    const handleLoading = (taskData: { loaded: number; total: number; percent: number }) => {
+      if (taskData.percent < 100) {
+        setLoading({ isLoading: true, progress: taskData.percent });
+      } else {
+        setLoading({ isLoading: false, progress: 0 });
+      }
+    };
+
+    const loadingTask = PDFJS.getDocument({
+      url: fileUrl,
+      cMapUrl: CMAP_URL,
+      cMapPacked: true,
+      isEvalSupported: false,
+    });
+
+    loadingTask.onProgress = handleLoading;
+
+    loadingTask.promise
+      .then(file => {
+        setPDF(file);
       })
-      .catch((e: Error) => {
-        setError(e.message);
+      .catch(e => {
+        if (e.status === 404) {
+          setError(
+            <Translate>
+              This file is currently unavailable. Please contact your administrator if the issue
+              persists.
+            </Translate>
+          );
+        } else if (e.name === 'InvalidPDFException') {
+          setError(
+            <Translate>
+              This file could not be opened. It may be corrupted or not a valid PDF.
+            </Translate>
+          );
+        } else {
+          setError(
+            <Translate>This file could not be displayed. Try refreshing the page.</Translate>
+          );
+          reportErrorToSentry(e, 'pdf-error');
+        }
       });
+
+    isReady.current = false;
+
+    return () => {
+      isReady.current = false;
+    };
   }, [fileUrl]);
 
   useEffect(() => {
-    let animationFrameId = 0;
+    const observerHandler: IntersectionObserverCallback = entries => {
+      entries.forEach(entry => {
+        const pageNumber = Number.parseInt(entry.target.getAttribute('data-pagenumber') || '0', 10);
 
-    if (pdf && scrollToPage) {
-      animationFrameId = triggerScroll(scrollToRef, animationFrameId);
-    }
+        if (isReady.current && entry.intersectionRatio >= CHANGE_PAGE_THRESHOLD) {
+          onPageChangeRef.current?.(pageNumber);
+        }
+
+        if (entry.isIntersecting) {
+          pdfEventBus.dispatch('renderpage', { pageNumber });
+        } else {
+          pdfEventBus.dispatch('unmountpage', { pageNumber });
+        }
+      });
+    };
+
+    intersectionObserverRef.current = new IntersectionObserver(observerHandler, {
+      root: null,
+      rootMargin: '500px 0px 500px 0px',
+      threshold: [0.1, CHANGE_PAGE_THRESHOLD],
+    });
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      intersectionObserverRef.current?.disconnect();
     };
-  }, [scrollToPage, pdf]);
+  }, [pdfEventBus]);
+
+  useEffect(() => {
+    const readyHandler = ({ pageNumber }: { pageNumber: number }) => {
+      if (pageNumber === 1) {
+        pdfEventBus.dispatch('renderpage', { pageNumber });
+      }
+    };
+
+    const renderedHandler = ({ pageNumber }: { pageNumber: number }) => {
+      if (Number(pageNumber) === 1) {
+        pdfReadyCallback();
+        pdfEventBus.off('pagerendered', renderedHandler);
+      }
+    };
+
+    pdfEventBus.on('pageready', readyHandler);
+    pdfEventBus.on('pagerendered', renderedHandler);
+
+    return () => {
+      pdfEventBus.off('pageready', readyHandler);
+      pdfEventBus.off('pagerendered', renderedHandler);
+    };
+  }, [pdfReadyCallback, pdfEventBus]);
+
+  useEffect(() => {
+    onPageChangeRef.current = onPageChange;
+  }, [onPageChange]);
+
+  useEffect(
+    () => () => {
+      cancelAnimationFrame(animationFrameIdRef.current);
+      cancelAnimationFrame(snippetAnimationFrameIdRef.current);
+    },
+    []
+  );
+
+  const viewerStyle = {
+    height: size?.height || '100%',
+    width: size?.width || '100%',
+    '--page-border': 'none',
+    '--page-margin': '0',
+  } as React.CSSProperties;
 
   if (error) {
-    return <div>{error}</div>;
+    return (
+      <div data-testid="errorInfo" className="h-full">
+        <BlankState
+          icon={
+            <ExclamationTriangleIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />
+          }
+          title={error}
+          description=""
+        />
+      </div>
+    );
   }
 
   return (
-    <HandleTextSelection onSelect={onSelect} onDeselect={onDeselect}>
-      <div id="pdf-container" ref={pdfContainerRef} style={containerStyles}>
-        {pdf ? (
-          Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
-            const regionId = number.toString();
-            const pageHighlights = highlights ? highlights[regionId] : undefined;
-            const shouldScrollToPage = scrollToPage === regionId;
-            const containerWidth =
-              pdfContainerRef.current?.offsetWidth && pdfContainerRef.current.offsetWidth - 20;
-
-            return (
-              <div
-                key={`page-${regionId}`}
-                id={`page-${regionId}-container`}
-                ref={shouldScrollToPage ? scrollToRef : undefined}
-              >
-                <SelectionRegion regionId={regionId}>
-                  <PDFPage
-                    pdf={pdf}
-                    page={number}
-                    eventBus={eventBus}
-                    highlights={pageHighlights}
-                    containerWidth={containerWidth}
-                  />
-                </SelectionRegion>
+    <HandleTextSelection onSelect={handleSelect} onDeselect={onDeselect}>
+      <div className="w-full flex flex-col gap-2 h-full">
+        {loading.isLoading || !pdf ? (
+          <div className="w-full flex flex-col gap-2">
+            <div className="flex justify-between mb-1">
+              <div className="font-medium text-ink-muted">
+                <Translate>Loading</Translate> ...
               </div>
-            );
-          })
-        ) : (
-          <Translate>Loading</Translate>
-        )}
+              <span className="text-sm font-medium text-ink-muted">{loading.progress}%</span>
+            </div>
+            <ProgressBar progress={loading.progress} color="gray" />
+          </div>
+        ) : null}
+        <div id="pdf-container" className="pdfViewer" ref={setPdfContainer} style={viewerStyle}>
+          {pdf
+            ? Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
+                const regionId = number;
+                const pageHighlights = highlights ? highlights[regionId] : undefined;
+
+                return (
+                  <div
+                    key={`page-${regionId}`}
+                    id={`page-${regionId}-container`}
+                    ref={el => {
+                      pageRefsMap.current[regionId] = el;
+                    }}
+                    className={[
+                      'relative mb-4 border-solid',
+                      `[border-width:${BORDER_WIDTH}px]`,
+                      'border-[color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)]',
+                    ].join(' ')}
+                  >
+                    <SelectionRegion regionId={regionId.toString()}>
+                      <PDFPage
+                        pdf={pdf}
+                        page={number}
+                        eventBus={pdfEventBus}
+                        intersectionObserver={intersectionObserverRef.current}
+                        highlights={pageHighlights}
+                        containerWidth={containerWidth}
+                        onScaleChange={handleScaleChange}
+                      />
+                    </SelectionRegion>
+                  </div>
+                );
+              })
+            : null}
+        </div>
       </div>
     </HandleTextSelection>
   );
 };
 
-export type { PDFProps };
-export default PDF;
+export type { PDFProps, Snippet, PDFControls };
+export { PDF };

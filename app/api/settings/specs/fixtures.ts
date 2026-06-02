@@ -1,7 +1,7 @@
-import { templateUtils } from 'api/core/v1_layer/templates';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import db, { DBFixture } from 'api/utils/testing_db';
-import { propertyTypes } from 'shared/propertyTypes';
+import { templateUtils } from '#api/core/v1_layer/templates/index.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import db, { DBFixture } from '#api/utils/testing_db.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
 
 const factory = getFixturesFactory();
 
@@ -24,6 +24,12 @@ const fixtures: DBFixture = {
           url: 'http://otherurl',
         },
       },
+      mailerConfig: 'smtp://user:password@smtp.example.com',
+      contactEmail: 'admin@uwazi.com',
+      senderEmail: 'noreply@uwazi.com',
+      publicFormDestination: 'http://example.com/submit',
+      mapApiKey: 'testMapApiKey123',
+      site_logo: 'http://localhost:3000/assets/test-logo.png',
     },
   ],
   templates: [

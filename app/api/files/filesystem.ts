@@ -1,14 +1,20 @@
-import { tenants } from 'api/tenants/tenantContext';
-import { testingTenants } from 'api/utils/testingTenants';
+// eslint-disable-next-line node/no-restricted-import
+import { testingTenants } from '#api/utils/testingTenants.js';
 import mimetypes from 'mime-types';
-import path from 'path';
-import ID from 'shared/uniqueID';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { tenants } from '#api/tenants/tenantContext.js';
+import ID from '#shared/uniqueID.js';
 import { Readable } from 'stream';
 // eslint-disable-next-line node/no-restricted-import
 import fs, { access } from 'fs/promises';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
-import { FileType } from '../../shared/types/fileType';
+
+import { FileType } from '../../shared/types/fileType.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 type FilePath = string;
 type pathFunction = (fileName?: string) => FilePath;
@@ -43,7 +49,7 @@ async function deleteFiles(files: FilePath[]) {
 
 const createDirIfNotExists = async (dirPath: string) => {
   try {
-    await fs.mkdir(dirPath);
+    await fs.mkdir(dirPath, { recursive: true });
   } catch (e) {
     if (!e.message.match(/file already exists/)) {
       throw e;
@@ -111,7 +117,9 @@ const generateFileName = ({ mimetype = '', originalname = '' }: FileType) => {
   const fileName = `${Date.now()}${ID()}`;
 
   const extensionFromOriginalName = getExtension(getMimetypeFromOriginalName(originalname) || '');
-  if (extensionFromOriginalName) return `${fileName}.${extensionFromOriginalName}`;
+  if (extensionFromOriginalName) {
+    return `${fileName}.${extensionFromOriginalName}`;
+  }
 
   const extensionFromMime = getExtension(mimetype);
   if (extensionFromMime) return `${fileName}.${extensionFromMime}`;
@@ -124,7 +132,6 @@ const generateFileName = ({ mimetype = '', originalname = '' }: FileType) => {
  * @param destination by default this will be uploadsPaths,
  * if you want another one you can pass filesystem destinatations
  * e.g. attachmentsPath()
- *
  */
 const fileFromReadStream = async (
   fileName: FilePath,

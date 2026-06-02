@@ -4,7 +4,7 @@ exports[`Settings Thesauri ThesauriList Thesaurus deletion should ask for confir
 HTMLCollection [
   <tbody>
     <tr
-      class="text-gray-900 border-b transition-colors hover:bg-gray-50  "
+      class="border-b transition-colors hover:bg-(--color-theme-surface-warm)  "
     >
       <td
         class="relative px-4 py-2  "
@@ -16,7 +16,7 @@ HTMLCollection [
             Select
           </span>
           <input
-            class="bg-gray-50 rounded border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+            class="cursor-pointer rounded-sm disabled:cursor-not-allowed disabled:opacity-50"
             id="thesaurus3"
             type="checkbox"
           />
@@ -29,12 +29,12 @@ HTMLCollection [
           class="flex items-center"
         >
           <span
-            class="text-indigo-700"
+            class="text-ink"
           >
             Animals
           </span>
           <div
-            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
+            class="has-[span:not(.active)]:hidden ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 border-(--color-theme-border-default)"
           >
             <span
               class="translation "
@@ -55,8 +55,7 @@ HTMLCollection [
         class="relative px-4 py-2  "
       >
         <button
-          class="leading-4 bg-white text-gray-700 disabled:text-gray-300 border-gray-200 enabled:hover:text-primary-700 enabled:hover:bg-primary-50 enabled:hover:border-primary-800 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+          class="leading-4 px-3 py-1.5 text-xs border rounded-md font-medium transition-colors disabled:cursor-not-allowed focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)] enabled:hover:bg-(--color-theme-button-ghost-hover-bg) enabled:hover:border-(--color-theme-button-ghost-hover-border) enabled:hover:text-(--color-theme-button-ghost-hover-fg)"
           type="button"
         >
           <span
@@ -68,7 +67,7 @@ HTMLCollection [
       </td>
     </tr>
     <tr
-      class="text-gray-900 border-b transition-colors hover:bg-gray-50  "
+      class="border-b transition-colors hover:bg-(--color-theme-surface-warm)  "
     >
       <td
         class="relative px-4 py-2  "
@@ -80,7 +79,7 @@ HTMLCollection [
             Select
           </span>
           <input
-            class="bg-gray-50 rounded border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+            class="cursor-pointer rounded-sm disabled:cursor-not-allowed disabled:opacity-50"
             id="thesaurus1"
             type="checkbox"
           />
@@ -93,12 +92,12 @@ HTMLCollection [
           class="flex items-center"
         >
           <span
-            class="text-indigo-700"
+            class="text-ink"
           >
             Colors
           </span>
           <div
-            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
+            class="has-[span:not(.active)]:hidden ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 border-(--color-theme-border-default)"
           >
             <span
               class="translation "
@@ -119,8 +118,7 @@ HTMLCollection [
         class="relative px-4 py-2  "
       >
         <button
-          class="leading-4 bg-white text-gray-700 disabled:text-gray-300 border-gray-200 enabled:hover:text-primary-700 enabled:hover:bg-primary-50 enabled:hover:border-primary-800 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+          class="leading-4 px-3 py-1.5 text-xs border rounded-md font-medium transition-colors disabled:cursor-not-allowed focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)] enabled:hover:bg-(--color-theme-button-ghost-hover-bg) enabled:hover:border-(--color-theme-button-ghost-hover-border) enabled:hover:text-(--color-theme-button-ghost-hover-fg)"
           type="button"
         >
           <span
@@ -132,7 +130,7 @@ HTMLCollection [
       </td>
     </tr>
     <tr
-      class="text-gray-900 border-b transition-colors hover:bg-gray-50  "
+      class="border-b transition-colors hover:bg-(--color-theme-surface-warm)  "
     >
       <td
         class="relative px-4 py-2  "
@@ -144,7 +142,7 @@ HTMLCollection [
             Select
           </span>
           <input
-            class="bg-gray-50 rounded border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+            class="cursor-pointer rounded-sm disabled:cursor-not-allowed disabled:opacity-50"
             disabled=""
             id="thesaurus2"
             type="checkbox"
@@ -158,12 +156,12 @@ HTMLCollection [
           class="flex items-center"
         >
           <span
-            class="text-indigo-700"
+            class="text-ink"
           >
             Names
           </span>
           <div
-            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
+            class="has-[span:not(.active)]:hidden ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 border-(--color-theme-border-default)"
           >
             <span
               class="translation "
@@ -181,7 +179,7 @@ HTMLCollection [
         >
           <div>
             <span
-              class="whitespace-nowrap bg-gray-100 px-2.5 py-1 rounded-md text-xs "
+              class="whitespace-nowrap bg-(--color-theme-surface-warm) text-ink-secondary px-2.5 py-1 rounded-md text-xs"
               data-testid="pill-comp"
             >
               <span
@@ -197,8 +195,7 @@ HTMLCollection [
         class="relative px-4 py-2  "
       >
         <button
-          class="leading-4 bg-white text-gray-700 disabled:text-gray-300 border-gray-200 enabled:hover:text-primary-700 enabled:hover:bg-primary-50 enabled:hover:border-primary-800 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+          class="leading-4 px-3 py-1.5 text-xs border rounded-md font-medium transition-colors disabled:cursor-not-allowed focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)] enabled:hover:bg-(--color-theme-button-ghost-hover-bg) enabled:hover:border-(--color-theme-button-ghost-hover-border) enabled:hover:text-(--color-theme-button-ghost-hover-fg)"
           type="button"
         >
           <span
@@ -215,15 +212,14 @@ HTMLCollection [
 
 exports[`Settings Thesauri ThesauriList Thesaurus deletion should show the selected thesaurus 1`] = `
 <div
-  class="bottom-0 left-0 w-full px-4 py-3 border-t border-gray-200 sticky z-1 bg-indigo-50 bg-indigo-50"
+  class="sticky bottom-0 left-0 z-1 w-full border-t px-4 py-3 border-t-[color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)] bg-(--color-theme-feedback-info-tint)"
   data-testid="settings-content-footer"
 >
   <div
     class="flex items-center gap-2"
   >
     <button
-      class=" text-white bg-error-600 border-error-700  disabled:bg-error-400 disabled:border-error-400 enabled:hover:bg-error-700 enabled:hover:border-error-700 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+      class="px-3 py-1.5 text-xs border rounded-md font-medium transition-colors disabled:cursor-not-allowed focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)] enabled:hover:opacity-90"
       data-testid="thesaurus-delete-link"
       type="button"
     >

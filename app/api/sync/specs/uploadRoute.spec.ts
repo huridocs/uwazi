@@ -1,20 +1,20 @@
-import express, { Request, Response, NextFunction, Express } from 'express';
+import express, { Express, NextFunction, Request, Response } from 'express';
 
 import requestAPI from 'supertest';
 import path from 'path';
 
 import {
-  setupTestUploadedPaths,
-  uploadsPath,
   customUploadsPath,
   deleteFile,
+  setupTestUploadedPaths,
   storage,
-} from 'api/files';
-import { testingTenants } from 'api/utils/testingTenants';
-import { multitenantMiddleware } from 'api/utils/multitenantMiddleware';
-import { appContextMiddleware } from 'api/utils/appContextMiddleware';
+  uploadsPath,
+} from '#api/files/index.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { multitenantMiddleware } from '#api/utils/multitenantMiddleware.js';
+import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
 
-import syncRoutes from '../routes';
+import syncRoutes from '../routes.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

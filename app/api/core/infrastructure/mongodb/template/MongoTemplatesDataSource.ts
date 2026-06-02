@@ -1,28 +1,36 @@
 /* eslint-disable max-lines */
+import { Db, ObjectId } from 'mongodb';
 import {
   MongoDataSource,
   MongoDSOptions,
-} from 'api/core/infrastructure/mongodb/common/MongoDataSource';
-import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
-import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
+} from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
+import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import {
   DefaultTemplateNotFoundError,
   TemplateDoesNotExistError,
-} from 'api/core/domain/template/errors';
-import { GenerateIdProperty } from 'api/core/domain/template/GenerateIdProperty';
-import { Result, ResultType } from 'api/core/libs/Result';
-import { resetIndex, updateMapping } from 'api/search/entitiesIndex';
-import { Db, ObjectId } from 'mongodb';
-import { objectIndex } from 'shared/data_utils/objectIndex';
-import { Property } from '../../../domain/template/Property';
-import { RelationshipProperty } from '../../../domain/template/RelationshipProperty';
-import { Template } from '../../../domain/template/Template';
-import { TemplatesDataSource } from '../../../application/contracts/TemplatesDataSource';
-import { V1RelationshipProperty } from '../../../domain/template/V1RelationshipProperty';
-import { TemplateDBO } from './DBOs/TemplateDBO';
-import { MongoTemplateMapper, MongoTemplatePropertyMapper } from './MongoTemplateMapper';
-import { mapPropertyQuery } from './QueryMapper';
+} from '#api/core/domain/template/errors.js';
+import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty.js';
+import { Result, ResultType } from '#api/core/libs/Result.js';
+import { resetIndex, updateMapping } from '#api/search/entitiesIndex.js';
+import { objectIndex } from '#shared/data_utils/objectIndex.js';
+import { Property } from '../../../domain/template/Property.js';
+import { RelationshipProperty } from '../../../domain/template/RelationshipProperty.js';
+import { Template } from '../../../domain/template/Template.js';
+import { TemplatesDataSource } from '../../../application/contracts/TemplatesDataSource.js';
+import { V1RelationshipProperty } from '../../../domain/template/V1RelationshipProperty.js';
+import { TemplateDBO } from './DBOs/TemplateDBO.js';
+import { MongoTemplateMapper, MongoTemplatePropertyMapper } from './MongoTemplateMapper.js';
+import { mapPropertyQuery } from './QueryMapper.js';
+import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
+
+type Deps = {
+  db: Db;
+  transactionManager: MongoTransactionManager;
+  slotsReconciler: SlotsReconciler;
+  options?: MongoDSOptions;
+};
 
 export class MongoTemplatesDataSource
   extends MongoDataSource<TemplateDBO>
@@ -34,13 +42,18 @@ export class MongoTemplatesDataSource
 
   private templatesMutated = new Map<ObjectId, TemplateDBO>();
 
-  constructor(db: Db, transactionManager: MongoTransactionManager, options?: MongoDSOptions) {
-    super(db, transactionManager, options);
+  private slotsReconciler: SlotsReconciler;
+
+  constructor(deps: Deps) {
+    super(deps.db, deps.transactionManager, deps.options);
+    this.slotsReconciler = deps.slotsReconciler;
 
     this.transactionManager.onCommitted(async () => {
       const templates = [...this.templatesMutated.values()];
       this.templatesMutated.clear();
-      await updateMapping(templates);
+      if (templates.length > 0) {
+        await updateMapping(templates);
+      }
     });
   }
 
@@ -313,12 +326,14 @@ export class MongoTemplatesDataSource
     const schema = MongoTemplateMapper.toSchema(template);
     await this.getCollection().updateOne({ _id: new ObjectId(template.id) }, { $set: schema });
     this.templatesMutated.set(schema._id, schema);
+    await this.slotsReconciler.execute();
   }
 
   async create(template: Template): Promise<void> {
     const schema = MongoTemplateMapper.toSchema(template);
     await this.getCollection().insertOne(schema);
     this.templatesMutated.set(schema._id, schema);
+    await this.slotsReconciler.execute();
   }
 
   async isPropertyUnique(property: Property): Promise<boolean> {
@@ -366,6 +381,7 @@ export class MongoTemplatesDataSource
 
   async getDefaultTemplate(): Promise<ResultType<Template, DefaultTemplateNotFoundError>> {
     const schema = await this.getCollection().findOne({ default: true });
+
     if (!schema) {
       return Result.fail(new DefaultTemplateNotFoundError());
     }
@@ -385,6 +401,7 @@ export class MongoTemplatesDataSource
 
   async delete(templateId: string): Promise<void> {
     await this.getCollection().deleteOne({ _id: new ObjectId(templateId) });
+    await this.slotsReconciler.execute();
   }
 
   async bulkUpdate(template: Template[]): Promise<void> {
@@ -400,5 +417,8 @@ export class MongoTemplatesDataSource
     );
 
     schemas.forEach(schema => this.templatesMutated.set(schema._id, schema));
+    await this.slotsReconciler.execute();
   }
 }
+
+export type { Deps as MongoTemplatesDataSourceDeps };

@@ -3,8 +3,8 @@ import { existsSync, mkdirSync, writeFileSync } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
 import { readFile, unlink } from 'fs/promises';
 
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { FileContents } from 'api/files.v2/model/FileContents';
+import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
+import { FileContents } from '#api/core/domain/files/FileContents.js';
 import { tmpdir } from 'os';
 import path from 'path';
 
@@ -30,7 +30,7 @@ describe('FileContentsIO', () => {
   describe('toDisk', () => {
     it('should return a new DiskFile object stored on disk', async () => {
       async function* streamCallback() {
-        yield Buffer.from('callback content');
+        yield new Uint8Array(Buffer.from('callback content'));
       }
       const fileContents = new FileContents(streamCallback);
 
@@ -45,14 +45,14 @@ describe('FileContentsIO', () => {
     it('should return a file contents asyncIterable', async () => {
       const callbackContent = 'multiple reads content';
       async function* streamCallback() {
-        yield Buffer.from(callbackContent);
+        yield new Uint8Array(Buffer.from(callbackContent));
       }
 
       const fileContents = new FileContents(streamCallback);
 
       let result = '';
       for await (const chunk of fileContents.read()) {
-        result += chunk;
+        result += Buffer.from(chunk).toString();
       }
 
       expect(result).toBe(callbackContent);
@@ -64,7 +64,7 @@ describe('FileContentsIO', () => {
       const callbackContent = 'async callback buffer content';
 
       async function* streamCallback() {
-        yield Buffer.from(callbackContent);
+        yield new Uint8Array(Buffer.from(callbackContent));
       }
       const fileContents = new FileContents(streamCallback);
 
@@ -79,7 +79,7 @@ describe('FileContentsIO', () => {
     it('should return string content from callback', async () => {
       const callbackContent = 'callback string content';
       async function* streamCallback() {
-        yield Buffer.from(callbackContent);
+        yield new Uint8Array(Buffer.from(callbackContent));
       }
       const fileContents = new FileContents(streamCallback);
 

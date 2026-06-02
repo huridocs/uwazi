@@ -1,18 +1,19 @@
 /* eslint-disable max-classes-per-file */
 import { ObjectId } from 'mongodb';
 
-import { Suggestions } from 'api/suggestions/suggestions';
-import templates from 'api/core/v1_layer/templates';
-import { objectIndex } from 'shared/data_utils/objectIndex';
-import { IXExtractorType } from 'shared/types/extractorType';
+import { Suggestions } from '#api/suggestions/suggestions.js';
+import templates from '#api/core/v1_layer/templates/index.js';
+import { objectIndex } from '#shared/data_utils/objectIndex.js';
+import { IXExtractorType } from '#shared/types/extractorType.js';
 import {
   createBlankSuggestionsForExtractor,
   createBlankSuggestionsForPartialExtractor,
-} from 'api/suggestions/blankSuggestions';
-import { Subset } from 'shared/tsUtils';
-import { PropertyTypeSchema } from 'shared/types/commonTypes';
-import { IXExtractorModel as model } from './IXExtractorModel';
-import { IXErrorCode, IXValidationError } from './IXValidationError';
+} from '#api/suggestions/blankSuggestions.js';
+import { Subset } from '#shared/tsUtils.js';
+import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
+import { DomainError } from '#api/core/domain/error/DomainError.js';
+import { IXExtractorModel as model } from './IXExtractorModel.js';
+import { IXErrorCode, IXValidationError } from './IXValidationError.js';
 
 type AllowedPropertyTypes =
   | Subset<
@@ -111,6 +112,12 @@ const handleTemplateUpdate = async (
   }
 };
 
+class MissingExtractorError extends DomainError {
+  constructor() {
+    super('Missing extractor.', 'MissingExtractorError');
+  }
+}
+
 const Extractors = {
   get: model.get.bind(model),
   getById: model.getById.bind(model),
@@ -118,7 +125,7 @@ const Extractors = {
   delete: async (_ids: string[]) => {
     const ids = _ids.map(id => new ObjectId(id));
     const extractors = await model.get({ _id: { $in: ids } });
-    if (extractors.length !== ids.length) throw new Error('Missing extractor.');
+    if (extractors.length !== ids.length) throw new MissingExtractorError();
     await model.delete({ _id: { $in: ids } });
     await Suggestions.delete({ extractorId: { $in: ids } });
   },
@@ -137,7 +144,7 @@ const Extractors = {
   update: async (extractor: ExtractorType) => {
     const { _id, name, source, property, templates: templateIds } = extractor;
     const [curentExtractor] = await model.get({ _id });
-    if (!curentExtractor) throw Error('Missing extractor.');
+    if (!curentExtractor) throw new MissingExtractorError();
     await templatePropertyExistenceCheck(property, templateIds);
 
     const updated = await model.save({

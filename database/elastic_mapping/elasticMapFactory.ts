@@ -1,21 +1,19 @@
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoSettingsDataSource } from 'api/core/infrastructure/mongodb/MongoSettingsDataSource';
-import { RelationshipPropertyMappingFactory } from 'api/core/infrastructure/mongodb/template/mappings/RelationshipPropertyMappingFactory';
-import { MongoTemplatesDataSource } from 'api/core/infrastructure/mongodb/template/MongoTemplatesDataSource';
-import { TemplateSchema } from 'shared/types/templateType';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { propertyMappings } from './mappings';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { RelationshipPropertyMappingFactory } from '#api/core/infrastructure/mongodb/template/mappings/RelationshipPropertyMappingFactory.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
+import { propertyMappings } from './mappings.js';
 
 const createNewRelationshipMappingFactory = async () => {
-  const db = getConnection();
   const transactionManager = TransactionManagerFactory.default();
-  const settingsDataSource = new MongoSettingsDataSource(db, transactionManager);
+  const settingsDataSource = SettingsDataSourceFactory.default({ transactionManager });
 
   if (!(await settingsDataSource.readNewRelationshipsAllowed())) {
     return null;
   }
 
-  const templateDataSource = new MongoTemplatesDataSource(db, transactionManager);
+  const templateDataSource = TemplatesDataSourceFactory.default({ transactionManager });
 
   return new RelationshipPropertyMappingFactory(templateDataSource, propertyMappings);
 };

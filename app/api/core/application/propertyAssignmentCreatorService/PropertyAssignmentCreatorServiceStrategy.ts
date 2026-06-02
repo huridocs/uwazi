@@ -1,21 +1,21 @@
-import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource';
-import { Template } from 'api/core/domain/template/Template';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { PropertyType } from 'api/core/domain/template/PropertyType';
-import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { InputFile } from 'api/files.v2/model/InputFile';
-import { SettingsDataSource } from '../contracts/SettingsDataSource';
-import { SelectPropertyAssignmentCreatorService } from './SelectPropertyAssignmentCreatorService';
-import { ThesauriDataSource } from '../propertyCreatorService/SelectPropertyCreatorService';
-import { RelationshipPropertyAssignmentCreatorService } from './RelationshipPropertyAssignmentCreatorService';
+import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
+import { Template } from '#api/core/domain/template/Template.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { PropertyType } from '#api/core/domain/template/PropertyType.js';
+import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { SettingsDataSource } from '../contracts/SettingsDataSource.js';
+import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
+import { DefaultPropertyAssignmentCreatorService } from './DefaultPropertyAssignmentCreatorService.js';
+import { SelectPropertyAssignmentCreatorService } from './SelectPropertyAssignmentCreatorService.js';
+import { ImagePropertyAssignmentCreatorService } from './ImagePropertyAssignmentCreatorService.js';
+import { RelationshipPropertyAssignmentCreatorService } from './RelationshipPropertyAssignmentCreatorService.js';
 import {
   PropertyAssignmentCreatorService,
   PropertyAssignmentInput,
-} from './PropertyAssignmentCreatorService';
-import { DefaultPropertyAssignmentCreatorService } from './DefaultPropertyAssignmentCreatorService';
-import { ImagePropertyAssignmentCreatorService } from './ImagePropertyAssignmentCreatorService';
-import { MediaPropertyAssignmentCreatorService } from './MediaPropertyAssignmentCreatorService';
+} from './PropertyAssignmentCreatorService.js';
+import { MediaPropertyAssignmentCreatorService } from './MediaPropertyAssignmentCreatorService.js';
 
 type Props = {
   default: DefaultPropertyAssignmentCreatorService;
@@ -29,7 +29,7 @@ type CreateProps = {
   settingsDS: SettingsDataSource;
   translationsDS: TranslationsDataSource;
   thesauriDS: ThesauriDataSource;
-  multiLanguageEntityDS: MultiLanguageEntityDataSource;
+  entitiesDS: MultiLanguageEntityDataSource;
 };
 
 class PropertyAssignmentCreatorServiceStrategy {
@@ -46,7 +46,6 @@ class PropertyAssignmentCreatorServiceStrategy {
         return this.props.image;
       case 'media':
         return this.props.media;
-
       default:
         return this.props.default;
     }
@@ -55,7 +54,7 @@ class PropertyAssignmentCreatorServiceStrategy {
   async bulkCreate(
     propertyAssignments: PropertyAssignmentInput[],
     template: Template,
-    attachments: InputFile[]
+    attachments: InputFile[] = []
   ): Promise<PropertyAssignment[]> {
     const created = await ArrayUtils.sequentialFor(
       propertyAssignments,
@@ -70,7 +69,7 @@ class PropertyAssignmentCreatorServiceStrategy {
     return created.flat();
   }
 
-  static create({ settingsDS, thesauriDS, translationsDS, multiLanguageEntityDS }: CreateProps) {
+  static create({ settingsDS, thesauriDS, translationsDS, entitiesDS }: CreateProps) {
     return new PropertyAssignmentCreatorServiceStrategy({
       select: new SelectPropertyAssignmentCreatorService({
         settingsDS,
@@ -79,11 +78,29 @@ class PropertyAssignmentCreatorServiceStrategy {
       }),
       relationship: new RelationshipPropertyAssignmentCreatorService({
         settingsDS,
-        multiLanguageEntityDS,
+        entitiesDS,
       }),
       image: new ImagePropertyAssignmentCreatorService(),
       media: new MediaPropertyAssignmentCreatorService(),
       default: new DefaultPropertyAssignmentCreatorService(),
+    });
+  }
+
+  static createWithRequired({ settingsDS, thesauriDS, translationsDS, entitiesDS }: CreateProps) {
+    const context = { validateRequired: true };
+
+    return new PropertyAssignmentCreatorServiceStrategy({
+      select: new SelectPropertyAssignmentCreatorService(
+        { settingsDS, thesauriDS, translationsDS },
+        context
+      ),
+      relationship: new RelationshipPropertyAssignmentCreatorService(
+        { settingsDS, entitiesDS },
+        context
+      ),
+      image: new ImagePropertyAssignmentCreatorService(context),
+      media: new MediaPropertyAssignmentCreatorService(context),
+      default: new DefaultPropertyAssignmentCreatorService(context),
     });
   }
 }

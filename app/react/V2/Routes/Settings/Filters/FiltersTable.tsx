@@ -1,17 +1,19 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react-router';
-import { useSetAtom } from 'jotai';
 import { IncomingHttpHeaders } from 'http';
+import { useSetAtom } from 'jotai';
 import { RowSelectionState } from '@tanstack/react-table';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import { FetchResponseError } from 'shared/JSONRequest';
-import { Translate } from 'app/I18N';
-import { notificationAtom, settingsAtom } from 'V2/atoms';
-import * as settingsAPI from 'V2/api/settings';
-import * as templatesAPI from 'V2/api/templates';
-import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Button, Table, ConfirmNavigationModal } from 'V2/Components/UI';
+import { FetchResponseError } from '#shared/JSONRequest.js';
+import { t, Translate } from '#app/I18N/index.js';
+import { mergeClientSettings } from '#V2/atoms/mergeClientSettings.js';
+import { settingsAtom } from '#V2/atoms/index.js';
+import * as settingsAPI from '#V2/api/settings/index.js';
+import * as templatesAPI from '#V2/api/templates/index.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
+import { Button, Table, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import {
   createColumns,
   AddTemplatesModal,
@@ -25,12 +27,13 @@ import {
   sanitizeFilters,
   formatFilters,
   Filter,
-} from './components';
+} from './components/index.js';
 
 const filtersLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<LoaderData> =>
   async () => {
-    const { filters } = await settingsAPI.get(headers);
+    const [settings] = await settingsAPI.get(headers);
+    const { filters } = settings || { filters: [] };
     const templates = await templatesAPI.get(headers);
     const tableFilters: LoaderData['filters'] = formatFilters(filters || []);
     return { filters: tableFilters, templates };
@@ -48,7 +51,7 @@ const FiltersTable = () => {
   const [selectedFilters, setSelectedFilters] = useState<RowSelectionState>({});
   const blocker = useBlocker(hasChanges);
   const setAtom = useSetAtom(sidepanelAtom);
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const setSettings = useSetAtom(settingsAtom);
   const revalidator = useRevalidator();
 
@@ -102,19 +105,21 @@ const FiltersTable = () => {
   const handleSave = async () => {
     setDisabled(true);
     const filtersToSave = sanitizeFilters(currentFilters.current);
-    const response = await settingsAPI.save({ filters: filtersToSave });
-    if (response instanceof FetchResponseError) {
-      return setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        ...(response.message && { details: response.message }),
-      });
+    const [response, error] = await settingsAPI.save({ filters: filtersToSave });
+    if (error) {
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        (error as FetchResponseError | undefined)?.message || undefined
+      );
+      return;
     }
-    setSettings(response);
+    setSettings(prev => mergeClientSettings(prev, response));
     setDisabled(false);
     setHasChanges(false);
     await revalidator.revalidate();
-    return setNotifications({ type: 'success', text: <Translate>Filters saved</Translate> });
+    notify('success', t('System', 'Filters saved', null, false));
   };
 
   const handleSelect = ({
@@ -138,7 +143,14 @@ const FiltersTable = () => {
       <SettingsContent>
         <SettingsContent.Header title="Filters" />
         <SettingsContent.Body>
-          <div className="p-4 mb-4 rounded-md border border-gray-50 shadow-sm bg-primary-100 text-primary-700">
+          <div
+            className="mb-4 rounded-md border p-4 shadow-md"
+            style={{
+              backgroundColor: 'var(--color-theme-info-banner-bg)',
+              borderColor: 'var(--color-theme-info-banner-border)',
+              color: 'var(--color-theme-info-banner-fg)',
+            }}
+          >
             <div className="flex gap-2 items-center w-full text-base font-semibold">
               <div className="w-5 h-5">
                 <CheckCircleIcon />
@@ -176,26 +188,23 @@ const FiltersTable = () => {
             columns={createColumns(setShowSidepanel)}
             data={filters}
             header={
-              <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
-                Filters
-              </Translate>
+              <Translate className="text-left text-base font-semibold text-ink">Filters</Translate>
             }
           />
         </SettingsContent.Body>
         <SettingsContent.Footer className="flex flex-wrap gap-2 w-full md:justify-between md:gap-0">
           {Object.keys(selectedFilters).length ? (
-            <Button styling="solid" color="error" onClick={() => handleDelete()}>
+            <Button variant="danger" onClick={() => handleDelete()}>
               <Translate>Delete</Translate>
             </Button>
           ) : (
             <>
               <div className="flex gap-2 md:flex-wrap">
-                <Button styling="solid" color="primary" onClick={() => setShowModal(true)}>
+                <Button variant="primary" onClick={() => setShowModal(true)}>
                   <Translate className="text-nowrap">Add entity type</Translate>
                 </Button>
                 <Button
-                  styling="solid"
-                  color="primary"
+                  variant="primary"
                   onClick={() => {
                     setShowSidepanel(true);
                     setAtom(undefined);
@@ -206,16 +215,14 @@ const FiltersTable = () => {
               </div>
               <div className="flex gap-2 md:flex-wrap">
                 <Button
-                  styling="outline"
-                  color="primary"
+                  variant="secondary"
                   onClick={() => cancel()}
                   disabled={!hasChanges || disabled}
                 >
                   <Translate>Cancel</Translate>
                 </Button>
                 <Button
-                  styling="solid"
-                  color="success"
+                  variant="success"
                   onClick={async () => handleSave()}
                   disabled={!hasChanges || disabled}
                 >

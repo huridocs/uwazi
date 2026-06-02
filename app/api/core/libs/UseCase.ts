@@ -1,48 +1,80 @@
-import { ValidationError as AJVValidationError } from 'ajv';
-import { ValidationError } from 'api/core/domain/error/ValidationError';
-import { EventsBus } from 'api/core/libs/eventsbus';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { UserSchema } from 'shared/types/userType';
-import { Tenant } from 'api/tenants/tenantContext';
-import { TransactionManager } from '../application/contracts/TransactionManager';
-import { IdGenerator } from '../application/contracts/IdGenerator';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { Tenant } from '#api/tenants/tenantContext.js';
+import { User } from '#api/users.v2/model/User.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { TransactionManager } from '../application/contracts/TransactionManager.js';
+import { IdGenerator } from '../application/contracts/IdGenerator.js';
+import { Dispatcher } from '../application/contracts/Dispatcher.js';
+import { Logger } from './logger/contracts/Logger.js';
+import { EventEmitter } from './eventEmitter/EventEmitter.js';
 
-interface UseCase<Input, Output> {
-  execute(input: Input, ...args: any): Promise<Output>;
+interface UseCase<Input, Output, Args extends any[] = []> {
+  execute(input: Input, ...args: Args): Promise<Output>;
 }
 
 type Deps<ExtendedDeps> = {
   transactionManager?: TransactionManager;
   eventBus?: EventsBus;
-  jobsDispatcher?: JobsDispatcher;
+  dispatcher?: Dispatcher;
   idGenerator?: IdGenerator;
+  logger?: Logger;
+  eventEmitter?: EventEmitter;
 } & ExtendedDeps;
 
 type Context = {
-  actor: UserSchema; // Using legacy User for now.
+  actor?: User; // Optional to support unauthenticated requests
   tenant: Tenant; // Using legacy Tenant for now
+  targetLanguage?: LanguageISO6391;
 };
 
-abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}> implements UseCase<Input, Output> {
+abstract class AbstractUseCase<
+  Input,
+  Output,
+  ExtendedDeps = {},
+  Args extends any[] = [],
+> implements UseCase<Input, Output, Args> {
   constructor(
     protected deps: Deps<ExtendedDeps>,
     private context?: Context
   ) {}
 
-  get actor() {
-    const id = this.context?.actor?._id?.toString();
+  protected get logger(): Logger {
+    if (!this.deps.logger) {
+      throw new Error('Logger dependency not provided');
+    }
+
+    return this.deps.logger;
+  }
+
+  protected get actor() {
+    const id = this.context?.actor?._id;
     return id ? { id } : undefined;
   }
 
-  get actorId() {
-    if (!this.context?.actor?._id) {
+  protected getActor(): User {
+    return this.context?.actor ?? User.createFrom(null);
+  }
+
+  protected get targetLanguage() {
+    if (!this.context?.targetLanguage) {
+      throw new Error(`Target language was not found. ${JSON.stringify(this.context)}`);
+    }
+
+    return this.context.targetLanguage;
+  }
+
+  protected get actorId() {
+    if (!this.context?.actor) {
       throw new Error(`Actor was not found. ${JSON.stringify(this.context)}`);
+    }
+    if (this.context.actor.isAnonymous()) {
+      throw new Error(`Actor is anonymous (not logged in). ${JSON.stringify(this.context)}`);
     }
 
     return this.context.actor._id.toString();
   }
 
-  get tenant() {
+  protected get tenant() {
     if (!this.context?.tenant) {
       throw new Error(`Tenant was not found. ${JSON.stringify(this.context)}`);
     }
@@ -50,7 +82,7 @@ abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}> implements UseC
     return this.context.tenant;
   }
 
-  get idGenerator(): IdGenerator {
+  protected get idGenerator(): IdGenerator {
     if (!this.deps.idGenerator) {
       throw new Error('Id Generator dependency not provided');
     }
@@ -58,7 +90,7 @@ abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}> implements UseC
     return this.deps.idGenerator;
   }
 
-  get transactionManager(): TransactionManager {
+  protected get transactionManager(): TransactionManager {
     if (!this.deps.transactionManager) {
       throw new Error('TransactionManager dependency not provided');
     }
@@ -66,7 +98,7 @@ abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}> implements UseC
     return this.deps.transactionManager;
   }
 
-  get eventBus(): EventsBus {
+  protected get eventBus(): EventsBus {
     if (!this.deps.eventBus) {
       throw new Error('EventsBus dependency not provided');
     }
@@ -74,29 +106,23 @@ abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}> implements UseC
     return this.deps.eventBus;
   }
 
-  get jobsDispatcher(): JobsDispatcher {
-    if (!this.deps.jobsDispatcher) {
-      throw new Error('JobsDispatcher dependency not provided');
+  protected get eventEmitter(): EventEmitter {
+    if (!this.deps.eventEmitter) {
+      throw new Error('EventEmitter dependency not provided');
     }
 
-    return this.deps.jobsDispatcher;
+    return this.deps.eventEmitter;
   }
 
-  async execute(input: Input, ...args: any): Promise<Output> {
-    try {
-      const output = await this.executeAsync(input, ...args);
-
-      return output;
-    } catch (e) {
-      if (e instanceof ValidationError) {
-        throw new AJVValidationError([e.asAJV()]);
-      }
-
-      throw e;
+  protected get dispatcher(): Dispatcher {
+    if (!this.deps.dispatcher) {
+      throw new Error('Dispatcher dependency not provided');
     }
+
+    return this.deps.dispatcher;
   }
 
-  protected abstract executeAsync(input: Input, ...args: any): Promise<Output>;
+  abstract execute(input: Input, ...args: Args): Promise<Output>;
 }
 
 export { AbstractUseCase };

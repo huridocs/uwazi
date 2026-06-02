@@ -1,128 +1,98 @@
 /*eslint-disable max-lines*/
-import entities from 'api/entities';
-import { search } from 'api/search';
-import { settingsModel } from 'api/settings/settingsModel';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
 import express from 'express';
 import request from 'supertest';
-
-import mailer from 'api/utils/mailer';
-// eslint-disable-next-line node/no-restricted-import
-import fs from 'fs/promises';
-import { ObjectId } from 'mongodb';
-import { legacyLogger } from '../../log';
-import instrumentRoutes from '../../utils/instrumentRoutes';
-import { createDirIfNotExists, deleteFiles } from '../filesystem';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { PUBLIC_USER_ID } from '#api/users/publicUser.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import { appContext } from '#api/utils/AppContext.js';
+import mailer from '#api/utils/mailer.js';
+import entities from '#api/entities/index.js';
+import { search } from '#api/search/index.js';
+import { settingsModel } from '#api/settings/settingsModel.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import uploadRoutes from '../jsRoutes.js';
-import { allowedPublicTemplate, fixtures, templateId } from './fixtures';
+import { allowedPublicTemplate, fixtures, templateId, writerUser } from './fixtures.js';
+import { legacyLogger } from '../../log.js';
 
 const mockExport = jest.fn();
 jest.mock('api/csv/csvExporter', () =>
   jest.fn().mockImplementation(() => ({ export: mockExport }))
 );
 
+jest.mock('../../auth/captchaMiddleware.ts', () => () => (_req, _res, next) => {
+  next();
+});
+
 // eslint-disable-next-line max-statements
 describe('upload routes', () => {
-  let routes;
-  let req;
-  let file;
-  const directory = `${__dirname}/uploads/upload_routes`;
-
-  const deleteAllFiles = async cb => {
-    const dontDeleteFiles = [
-      'import.zip',
-      'eng.pdf',
-      'invalid_document.txt',
-      'spn.pdf',
-      'importcsv.csv',
-      'english_testing_file.pdf',
-    ];
-    const filesToDelete = (await fs.readdir(directory)).filter(filename =>
-      dontDeleteFiles.includes(filename)
-    );
-    await deleteFiles(filesToDelete);
-    await cb();
-  };
+  let app;
+  let baseReq;
+  let user = writerUser;
 
   beforeEach(async () => {
-    await createDirIfNotExists(directory);
-    await deleteAllFiles(async () => {
-      jest.spyOn(search, 'delete').mockImplementation(async () => Promise.resolve());
-      jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
-      routes = instrumentRoutes(uploadRoutes);
-      file = {
-        fieldname: 'file',
-        originalname: 'gadgets-01.pdf',
-        encoding: '7bit',
-        mimetype: 'application/octet-stream',
-        destination: `${__dirname}/uploads/`,
-        filename: 'english_testing_file.pdf',
-        path: `${__dirname}/uploads/english_testing_file.pdf`,
-        size: 171411271,
-      };
-      req = {
-        language: 'es',
-        user: 'admin',
-        headers: {},
-        body: { document: 'sharedId1' },
-        files: [file],
-      };
+    jest.spyOn(search, 'delete').mockImplementation(async () => Promise.resolve());
+    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
+
+    user = writerUser;
+    app = setUpApp(uploadRoutes, (req, _res, next) => {
+      req.user = user;
+      next();
     });
+
+    baseReq = {
+      language: 'es',
+      user: 'admin',
+      headers: {},
+      body: { document: 'sharedId1' },
+    };
     await testingEnvironment.setUp(fixtures);
     jest.spyOn(legacyLogger, 'error'); //just to avoid annoying console outpu.mockImplementation(() => {});
   });
 
   describe('api/public', () => {
     beforeEach(async () => {
-      await deleteAllFiles(async () => {
-        jest.spyOn(Date, 'now').mockReturnValue(1000);
-        jest.spyOn(mailer, 'send').mockImplementation(() => {});
-        const buffer = await fs.readFile(`${__dirname}/12345.test.pdf`);
-        file = {
-          fieldname: 'file',
-          originalname: 'gadgets-01.pdf',
-          encoding: '7bit',
-          mimetype: 'application/octet-stream',
-          buffer,
-        };
+      // Restore appContext.set so production code can set the Public user in context
+      if (jest.isMockFunction(appContext.set)) {
+        appContext.set.mockRestore();
+      }
 
-        const attachment = {
-          fieldname: 'attachment0',
-          originalname: 'attachment-01.pdf',
-          encoding: '7bit',
-          mimetype: 'application/octet-stream',
-          buffer,
-        };
-        req = {
-          language: 'es',
-          headers: {},
-          body: {
-            entity: { title: 'public submit', template: templateId.toString() },
-          },
-          files: [file, attachment],
-          io: {},
-        };
-      });
+      jest.spyOn(Date, 'now').mockReturnValue(1000);
+      jest.spyOn(mailer, 'send').mockImplementation(() => {});
+
+      baseReq = {
+        language: 'es',
+        headers: {},
+        body: {
+          entity: { title: 'public submit', template: templateId.toString() },
+        },
+        io: {},
+      };
     });
 
     it('should create an Entity and return the created Entity on body response', async () => {
-      const response = await routes.post('/api/public', { ...req, files: [] });
+      testingEnvironment.resetPermissions();
+      user = undefined; // To test that the Public user is used when no user is authenticated
 
-      expect(response).toEqual({
-        _id: expect.any(ObjectId),
-        title: req.body.entity.title,
-        language: req.language,
-        template: new ObjectId(req.body.entity.template),
+      const response = await request(app)
+        .post('/api/public')
+        .field('entity', JSON.stringify(baseReq.body.entity));
+
+      expect(response.body).toEqual({
+        _id: expect.any(String),
+        title: baseReq.body.entity.title,
+        language: baseReq.language,
+        template: templateId.toString(),
         sharedId: expect.any(String),
+        user: PUBLIC_USER_ID.toString(),
         published: false,
         creationDate: 1000,
         editDate: 1000,
         metadata: {},
         permissions: [{ refId: expect.any(String), type: 'user', level: 'write' }],
         obsoleteMetadata: [],
-        __v: 0,
         documents: [],
         attachments: [],
+        icon: { _id: null, type: 'Empty' },
       });
     });
 
@@ -130,57 +100,71 @@ describe('upload routes', () => {
       const [settingsObject] = await settingsModel.get();
       delete settingsObject.allowedPublicTemplates;
       await settingsModel.db.replaceOne({}, settingsObject);
-      try {
-        await routes.post('/api/public', req);
-        fail('should return error');
-      } catch (e) {
-        expect(e.message).toMatch(/unauthorized public template/i);
-        expect(e.code).toBe(403);
-      }
+
+      const response = await request(app)
+        .post('/api/public')
+        .field('entity', JSON.stringify(baseReq.body.entity));
+
+      expect(response.status).toBe(403);
+      expect(response.body.error).toMatch(/unauthorized public template/i);
+
       const res = await entities.get({ title: 'public submit' });
       expect(res.length).toBe(0);
     });
 
     it('should not create entity if template is not whitelisted in allowedPublicTemplates setting', async () => {
-      req.body.entity = {
-        title: 'public submit',
-        template: 'unauthorized_template_id',
-      };
-      try {
-        await routes.post('/api/public', req);
-        fail('should return error');
-      } catch (e) {
-        expect(e.message).toMatch(/unauthorized public template/i);
-        expect(e.code).toBe(403);
-      }
+      const response = await request(app)
+        .post('/api/public')
+        .field(
+          'entity',
+          JSON.stringify({
+            title: 'public submit',
+            template: 'unauthorized_template_id',
+          })
+        );
+
+      expect(response.status).toBe(403);
+      expect(response.body.error).toMatch(/unauthorized public template/i);
+
       const res = await entities.get({ title: 'public submit' });
       expect(res.length).toBe(0);
     });
 
     it('should not allow entity updates (sending entities with _id)', async () => {
-      req.body.entity = {
-        _id: 'an id',
-        title: 'public submit',
-        template: allowedPublicTemplate.toString(),
-      };
-      try {
-        await routes.post('/api/public', req);
-        fail('should return error');
-      } catch (e) {
-        expect(e.message).toMatch(/unauthorized _id property/i);
-        expect(e.code).toBe(403);
-      }
+      const response = await request(app)
+        .post('/api/public')
+        .field(
+          'entity',
+          JSON.stringify({
+            _id: 'an id',
+            title: 'public submit',
+            template: allowedPublicTemplate.toString(),
+          })
+        );
+
+      expect(response.status).toBe(403);
+      expect(response.body.error).toMatch(/unauthorized _id property/i);
+    });
+
+    it('should use authenticated user instead of Public user when user is logged in', async () => {
+      const mongodb = getConnection();
+      const writerUserFromDb = await mongodb.collection('users').findOne({ username: 'writer' });
+
+      testingEnvironment.setPermissions(writerUserFromDb);
+
+      const response = await request(app)
+        .post('/api/public')
+        .field('entity', JSON.stringify(baseReq.body.entity));
+
+      expect(response).toHaveStatus(200);
+      expect(response.body.user).toEqual(writerUserFromDb._id.toString());
+      expect(response.body.user).not.toEqual(PUBLIC_USER_ID.toString());
     });
   });
 
   describe('/remotepublic', () => {
-    let app;
     let remoteApp;
     let remoteServer;
-    beforeEach(() => {
-      app = express();
-      uploadRoutes(app);
-    });
 
     afterEach(async () => {
       await remoteServer.close();
@@ -211,7 +195,6 @@ describe('upload routes', () => {
   });
 
   afterAll(async () => {
-    await deleteAllFiles(() => {});
     await testingEnvironment.tearDown();
   });
 });

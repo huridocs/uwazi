@@ -1,24 +1,28 @@
-import { tenants } from 'api/tenants';
-import users from 'api/users/users';
-import { permissionsContext } from 'api/permissions/permissionsContext';
+import { tenants } from '#api/tenants/index.js';
+import users from '#api/users/users.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
-import { Dispatchable, HeartbeatCallback, JobInfo } from './Dispatchable';
+import { Dispatchable, HeartbeatCallback, JobInfo } from './Dispatchable.js';
 
 export type UserAwareDispatchableParams = { tenantName: string; userId: string };
 
-export abstract class UserAwareDispatchable<CustomParams extends UserAwareDispatchableParams>
-  implements Dispatchable
-{
-  protected params!: CustomParams;
+export type Params<ExtendedParams> = ExtendedParams & { tenantName: string; userId: string };
+
+export abstract class UserAwareDispatchable<ExtendedParams> implements Dispatchable {
+  protected params!: Params<ExtendedParams>;
+
+  protected jobInfo!: JobInfo;
 
   protected abstract handle(heartBeatCallBack: HeartbeatCallback, jobInfo?: JobInfo): Promise<void>;
 
   protected get tenantName() {
-    if (!this.params.tenantName) {
+    const tenantName = this.params.tenantName || this.jobInfo?.namespace;
+
+    if (!tenantName) {
       throw new Error('There is no Tenant, you should provide a tenantName on Job params');
     }
 
-    return this.params.tenantName;
+    return tenantName;
   }
 
   protected get userId() {
@@ -36,10 +40,11 @@ export abstract class UserAwareDispatchable<CustomParams extends UserAwareDispat
 
   async handleDispatch(
     heartBeatCallBack: HeartbeatCallback,
-    params: CustomParams,
+    params: Params<ExtendedParams>,
     jobInfo?: JobInfo
   ): Promise<void> {
     this.params = params;
+    this.jobInfo = jobInfo!;
 
     await tenants.run(async () => {
       await this.setCurrentUser();

@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { MongoIdHandler } from '../MongoIdGenerator';
+import { MongoIdHandler } from '../MongoIdGenerator.js';
 
 const testIdString = '65098dea0bbc8851518bd53c';
 

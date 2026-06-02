@@ -1,12 +1,14 @@
 import request from 'supertest';
-import { Application, NextFunction, Request, Response } from 'express';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { permissionRoutes } from 'api/permissions/routes';
-import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
-import { collaborators } from 'api/permissions/collaborators';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { PUBLIC_PERMISSION } from '../publicPermission';
-import { MemberWithPermission } from 'shared/types/entityPermisions';
+import { ObjectId } from 'mongodb';
+import type { Application, NextFunction, Request, Response } from 'express';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import { permissionRoutes } from '#api/permissions/routes.js';
+import { entitiesPermissions } from '#api/permissions/entitiesPermissions.js';
+import { collaborators } from '#api/permissions/collaborators.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { DomainError } from '#api/core/domain/error/DomainError.js';
+import { PUBLIC_PERMISSION } from '../publicPermission.js';
+import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -16,7 +18,7 @@ jest.mock(
 );
 
 describe('permissions routes', () => {
-  let user: { username: string; role: string } | undefined;
+  let user: { _id: string; username: string; role: string } | undefined;
 
   function getUser() {
     return user;
@@ -45,7 +47,7 @@ describe('permissions routes', () => {
         jest.spyOn(entitiesPermissions, 'set').mockImplementation(async () => Promise.resolve());
       });
       it('should save the permissions ', async () => {
-        user = { username: 'user 1', role: 'admin' };
+        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
         const permissionsData = {
           ids: ['shared1'],
           permissions: [
@@ -60,7 +62,7 @@ describe('permissions routes', () => {
       });
 
       it('should invalidate if body does not fit the expected schema', async () => {
-        user = { username: 'user 1', role: 'admin' };
+        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
         const permissionsData = { entities: [], permissions: [{}] };
         const response = await request(app).post('/api/entities/permissions').send(permissionsData);
         expect(response.status).toBe(400);
@@ -77,7 +79,7 @@ describe('permissions routes', () => {
       });
 
       it.each(['admin', 'editor', 'collaborator'])('should authorized the role %s', async role => {
-        user = { username: 'user 1', role };
+        user = { _id: new ObjectId().toString(), username: 'user 1', role };
         const permissionsData = {
           ids: ['shared1'],
           permissions: [{ refId: 'user1', type: 'user', level: 'read' }],
@@ -88,46 +90,48 @@ describe('permissions routes', () => {
     });
 
     describe('Error Handling', () => {
+      class ErrorSample extends DomainError {}
+
       it('should handle errors on POST', async () => {
         jest.spyOn(entitiesPermissions, 'set').mockImplementation(() => {
-          throw new Error('error on save');
+          throw new ErrorSample('error on save', 'error_code');
         });
-        user = { username: 'user 1', role: 'admin' };
+        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
         const permissionsData = {
           ids: ['shared1'],
           permissions: [{ refId: 'user1', type: 'user', level: 'read' }],
         };
         const response = await request(app).post('/api/entities/permissions').send(permissionsData);
-        expect(response.status).toBe(500);
+        expect(response.status).toBe(400);
         expect(response.body.error).toContain('error on save');
       });
       it('should handle errors on PUT', async () => {
         jest.spyOn(entitiesPermissions, 'get').mockImplementation(() => {
-          throw new Error('error on get');
+          throw new ErrorSample('error on get', 'error_code');
         });
-        user = { username: 'user 1', role: 'admin' };
+        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
         const response = await request(app)
           .put('/api/entities/permissions')
           .send({ sharedIds: ['sharedId1', 'sharedId2'] });
-        expect(response.status).toBe(500);
+        expect(response.status).toBe(400);
         expect(response.body.error).toContain('error on get');
       });
       it('should handle errors on collaborators search', async () => {
         jest.spyOn(collaborators, 'search').mockImplementation(() => {
-          throw new Error('error on get');
+          throw new ErrorSample('error on get', 'error_code');
         });
-        user = { username: 'user 1', role: 'admin' };
+        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
         const response = await request(app)
           .get('/api/collaborators')
           .query({ filterTerm: 'username' });
-        expect(response.status).toBe(500);
+        expect(response.status).toBe(400);
         expect(response.body.error).toContain('error on get');
       });
     });
 
     describe('PUT', () => {
       it('should get the permissions by an array of entities ids', async () => {
-        user = { username: 'user 1', role: 'admin' };
+        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
         jest.spyOn(entitiesPermissions, 'get').mockReturnValue(
           Promise.resolve([
             {
@@ -144,7 +148,7 @@ describe('permissions routes', () => {
       });
 
       it('should invalidate if data is not valid', async () => {
-        user = { username: 'user 1', role: 'admin' };
+        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
         jest.spyOn(entitiesPermissions, 'get').mockReturnValue(
           Promise.resolve([
             {

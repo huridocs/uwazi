@@ -1,13 +1,13 @@
 import React from 'react';
-import { Translate } from 'app/I18N';
+import { Translate } from '#app/I18N/index.js';
 
 const TabLabel = ({ text, icon }: { text: string; icon: React.ReactElement }) => (
-  <div className="px-2 flex items-center gap-2">
-    <Translate className="sr-only sm:not-sr-only">{text}</Translate>
-    <div className="sm:hidden" aria-hidden="true">
+  <span className="inline-flex max-w-full items-center justify-center gap-1 md:justify-start">
+    <Translate className="sr-only md:not-sr-only">{text}</Translate>
+    <span className="inline-flex shrink-0 md:hidden" aria-hidden="true">
       {icon}
-    </div>
-  </div>
+    </span>
+  </span>
 );
 
 export { TabLabel };

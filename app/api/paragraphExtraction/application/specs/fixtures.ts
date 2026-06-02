@@ -1,7 +1,7 @@
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
-import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
-import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
+import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
+import { MongoPXExtractorDBO } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { ObjectId } from 'mongodb';
 
 const factory = getFixturesFactory();
@@ -64,19 +64,26 @@ export const file = factory.document('file', {
   language: 'en',
   entity: entity1.sharedId,
   status: 'ready',
+  mimetype: 'application/pdf',
 });
 
 export const file2 = factory.document('file2', {
   language: 'es',
   entity: entity1.sharedId,
   status: 'ready',
+  mimetype: 'application/pdf',
 });
 
-export const file3 = factory.document('file3', { language: 'es', entity: entity2.sharedId });
+export const file3 = factory.document('file3', {
+  language: 'es',
+  entity: entity2.sharedId,
+  mimetype: 'application/pdf',
+});
 export const fileWithLanguageNotInstalled = factory.document('fileWithLanguageNotInstalled', {
   language: 'pt',
   entity: entity1.sharedId,
   status: 'ready',
+  mimetype: 'application/pdf',
 });
 
 export const segmentation = factory.MongoSegmentationBuilder.create().withFileId(file._id).build();

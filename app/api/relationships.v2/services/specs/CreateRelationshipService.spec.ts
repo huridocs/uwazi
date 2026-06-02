@@ -1,23 +1,26 @@
-import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
-import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
-import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
-import { MissingEntityError } from 'api/entities.v2/errors/entityErrors';
-import { MongoFilesDataSource } from 'api/files.v2/database/MongoFilesDataSource';
-import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
-import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource';
-import { MissingRelationshipTypeError } from 'api/relationshiptypes.v2/errors/relationshipTypeErrors';
-import { MongoSettingsDataSource } from 'api/core/infrastructure/mongodb/MongoSettingsDataSource';
-import { MongoTemplatesDataSource } from 'api/core/infrastructure/mongodb/template/MongoTemplatesDataSource';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { CreateRelationshipService } from '../CreateRelationshipService';
-import { DenormalizationService } from '../DenormalizationService';
-import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStorageStrategyFactory';
+import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
+import { partialImplementation } from '#api/common.v2/testing/partialImplementation.js';
+import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntitiesDataSource.js';
+import { MissingEntityError } from '#api/entities.v2/errors/entityErrors.js';
+import { MongoFilesDataSource } from '#api/core/infrastructure/mongodb/files/MongoFilesDataSource.js';
+import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
+import { MongoRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource.js';
+import { MissingRelationshipTypeError } from '#api/relationshiptypes.v2/errors/relationshipTypeErrors.js';
+import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { CreateRelationshipService } from '../CreateRelationshipService.js';
+import { DenormalizationService } from '../DenormalizationService.js';
+import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
+import { FullTextIndexerService } from '#api/core/infrastructure/elasticSearch/entities/FullTextIndexerService.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 
 const factory = getFixturesFactory();
 
@@ -41,7 +44,9 @@ const denormalizationServiceMock = partialImplementation<DenormalizationService>
 const createService = () => {
   const connection = getConnection();
   const transactionManager = TransactionManagerFactory.default();
-  const SettingsDataSource = new MongoSettingsDataSource(connection, transactionManager);
+  const settingsDS = testingEnvironment.runWithContext(() => SettingsDataSourceFactory.default(), {
+    factories: { transactionManager: () => transactionManager },
+  });
 
   validateAccessMock.mockReset();
   denormalizeAfterCreatingRelationshipsMock.mockReset();
@@ -51,15 +56,20 @@ const createService = () => {
     new MongoRelationshipTypesDataSource(connection, transactionManager),
     new MongoEntitiesDataSource(
       connection,
-      new MongoTemplatesDataSource(connection, transactionManager),
-      SettingsDataSource,
+      new MongoTemplatesDataSource({
+        db: connection,
+        transactionManager,
+        slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+      }),
+      settingsDS,
       transactionManager
     ),
-    new MongoFilesDataSource(
-      connection,
-      transactionManager,
-      FileStorageStrategyFactory.createDefault()
-    ),
+    new MongoFilesDataSource(connection, transactionManager, FileStorageFactory.default(), {
+      fullTextIndexer: TestUtils.mockClass<FullTextIndexerService>({
+        index: jest.fn().mockResolvedValue(undefined),
+        remove: jest.fn().mockResolvedValue(undefined),
+      }),
+    }),
     transactionManager,
     MongoIdHandler,
     authServiceMock,
@@ -222,7 +232,12 @@ describe('create()', () => {
     it('should persist new connections', async () => {
       await execute();
 
-      const relationshipsInDb = await collectionInDb().find({}).sort({ from: 1 }).toArray();
+      const relationshipsInDb = await collectionInDb()
+        .find({})
+        .sort({
+          from: 1,
+        })
+        .toArray();
 
       expect(relationshipsInDb).toEqual([
         {

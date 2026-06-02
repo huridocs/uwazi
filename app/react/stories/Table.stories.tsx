@@ -1,10 +1,10 @@
 /* eslint-disable max-lines */
 import React, { useRef, useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
+import { action } from 'storybook/actions';
 import { Cell, createColumnHelper, SortingState } from '@tanstack/react-table';
-import { Button, Table } from 'V2/Components/UI';
-import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fixtures';
+import { Button, Table } from '#V2/Components/UI/index.js';
+import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fixtures.js';
 
 type StoryProps = {
   columnType: string;
@@ -17,7 +17,7 @@ type StoryProps = {
 };
 
 const CustomDateCell = ({ cell }: { cell: Cell<BasicData, number> }) => (
-  <div className="text-white bg-orange-500">{cell.renderValue()}</div>
+  <div className="text-white bg-alert-500">{cell.renderValue()}</div>
 );
 
 const ActionHeader = () => <span className="sr-only">Actions</span>;
@@ -28,7 +28,7 @@ const ActionCell = ({ cell }: { cell: Cell<BasicData, any> }) => {
     : () => {};
 
   return (
-    <Button type="button" styling="light" onClick={() => actionFn(cell.row.id)}>
+    <Button type="button" variant="ghost" onClick={() => actionFn(cell.row.id)}>
       Action
     </Button>
   );
@@ -105,7 +105,7 @@ const StoryComponent = ({
   const actions = (
     <div className="flex gap-2">
       <Button
-        styling="outline"
+        variant="secondary"
         onClick={() => {
           setDataState([
             ...currentDataState.current,
@@ -122,7 +122,7 @@ const StoryComponent = ({
         Add new item
       </Button>
       <Button
-        styling="outline"
+        variant="secondary"
         onClick={() => {
           setDataState(currentDataState.current.slice(0, dataState.length - 1));
         }}
@@ -130,7 +130,7 @@ const StoryComponent = ({
         Remove last item
       </Button>
       <Button
-        styling="outline"
+        variant="secondary"
         onClick={() => {
           setDataState(tableData);
         }}
@@ -138,7 +138,7 @@ const StoryComponent = ({
         Reset data
       </Button>
       <Button
-        styling="solid"
+        variant="primary"
         onClick={() => {
           setDataState(currentDataState.current);
           setSelected(currentSelections.current);
@@ -243,6 +243,8 @@ const meta: Meta<StoryProps> = {
   component: StoryComponent,
 };
 
+export default meta;
+
 type Story = StoryObj<StoryProps>;
 
 const Primary: Story = {
@@ -327,4 +329,3 @@ const Custom = {
 };
 
 export { Basic, BasicWithDisabledDnD, Nested, NestedWithDisabledDnD, Custom };
-export default meta;

@@ -5,25 +5,25 @@ import Ajv from 'ajv';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 
-import entitiesModel from 'api/entities/entitiesModel';
-import relationships from 'api/relationships';
-import { storage, uploadsPath } from 'api/files';
-import { search } from 'api/search';
-import date from 'api/utils/date.js';
-import db from 'api/utils/testing_db';
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
-import { UserRole } from 'shared/types/userSchema';
+import entitiesModel from '#api/entities/entitiesModel.js';
+import relationships from '#api/relationships/index.js';
+import { storage, uploadsPath } from '#api/files/index.js';
+import { search } from '#api/search/index.js';
+import date from '#api/utils/date.js';
+import db from '#api/utils/testing_db.js';
+import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
+import { UserRole } from '#shared/types/userSchema.js';
 
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { spyOnEmit } from 'api/core/libs/eventsbus/eventTesting';
-import { testingTenants } from 'api/utils/testingTenants';
-import { elasticTesting } from 'api/utils/elastic_testing';
-import { permissionsContext } from 'api/permissions/permissionsContext';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { spyOnEmit } from '#api/core/libs/eventsbus/eventTesting.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import entities from '../entities.js';
-import { EntityCreatedEvent } from '../events/EntityCreatedEvent';
-import { EntityDeletedEvent } from '../events/EntityDeletedEvent';
-import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent';
+import { EntityCreatedEvent } from '../events/EntityCreatedEvent.js';
+import { EntityDeletedEvent } from '../events/EntityDeletedEvent.js';
+import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent.js';
 import fixtures, {
   adminId,
   batmanFinishesId,
@@ -58,24 +58,15 @@ describe('entities', () => {
     await testingEnvironment.setUp(fixtures);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each([
-    { title: 'Create V1', featureFlags: { v2CreateEntity: false } },
-    { title: 'Create V2', featureFlags: { v2CreateEntity: true } },
-  ])('$title', ({ featureFlags }) => {
-    beforeEach(async () => {
-      testingTenants.changeCurrentTenant({
-        featureFlags,
-      });
-    });
-
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-
+  describe('save', () => {
     it('should create a new entity for each language in settings with a language property, a shared id, and default template', async () => {
       const universalTime = 1;
       jest.spyOn(date, 'currentUTC').mockImplementation(() => universalTime);
@@ -138,7 +129,7 @@ describe('entities', () => {
       await testingEnvironment.setUp(fixtures, true);
 
       testingTenants.changeCurrentTenant({
-        featureFlags,
+        featureFlags: {},
       });
 
       const doc = { title: 'the dark knight', template: templateId };
@@ -165,9 +156,7 @@ describe('entities', () => {
         userFactory.mockEditorUser();
       });
     });
-  });
 
-  describe('save', () => {
     it('should uniq the values on multiselect and relationship fields', async () => {
       const entity = {
         title: 'Batman begins',

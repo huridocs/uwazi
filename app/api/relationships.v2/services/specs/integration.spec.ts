@@ -1,7 +1,7 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import testingDB, { DBFixture } from 'api/utils/testing_db';
-import { CreateRelationshipService, DeleteRelationshipService } from '../service_factories';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+import { CreateRelationshipService, DeleteRelationshipService } from '../service_factories.js';
 
 const factory = getFixturesFactory();
 
@@ -146,7 +146,9 @@ afterAll(async () => {
 
 describe('create relationships', () => {
   it('should transactionally create relationships and denormalize the related entities', async () => {
-    const createRelationshipService = await CreateRelationshipService();
+    const createRelationshipService = await testingEnvironment.runWithContext(async () =>
+      CreateRelationshipService()
+    );
     await createRelationshipService.create([
       {
         from: {

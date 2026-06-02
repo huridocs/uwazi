@@ -1,14 +1,14 @@
-import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
-import { IdGenerator } from 'api/core/application/contracts/IdGenerator';
-import relationshipTypeDS from 'api/relationtypes';
-import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
-import { UseCase } from 'api/core/libs/UseCase';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { CreateParagraphExtractionEntityStatusesJob } from '../jobs/CreateParagraphExtractionEntityStatusesJob';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
+import relationshipTypeDS from '#api/relationtypes/index.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { UseCase } from '#api/core/libs/UseCase.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { CreateParagraphExtractionEntityStatusesJob } from '../jobs/CreateParagraphExtractionEntityStatusesJob.js';
 
-import { PXExtractor } from '../domain/PXExtractor';
-import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
-import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';
+import { PXExtractor } from '../domain/PXExtractor.js';
+import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource.js';
+import { PXErrorCode, PXValidationError } from '../domain/PXValidationError.js';
 
 type Input = {
   targetTemplateId: string;
@@ -112,11 +112,11 @@ class PXCreateExtractor implements UseCase<Input, Output> {
 
     await this.dependencies.transactionManager.run(async () => {
       await this.dependencies.extractorDS.create(extractor);
-    });
 
-    await this.dependencies.dispatcher.dispatch(CreateParagraphExtractionEntityStatusesJob, {
-      extractorId: extractor.id,
-      sourceTemplateId: extractor.sourceTemplate.id,
+      await this.dependencies.dispatcher.dispatch(CreateParagraphExtractionEntityStatusesJob, {
+        extractorId: extractor.id,
+        sourceTemplateId: extractor.sourceTemplate.id,
+      });
     });
 
     return extractor;

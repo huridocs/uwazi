@@ -376,6 +376,31 @@ $item-padding: 15px;
   }
 }
 
+.processing-placeholder {
+  gap: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(234, 234, 234, 0.2);
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #666666;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-direction: column;
+  min-height: 200px;
+  svg {
+    width: 24px;
+    height: 24px;
+    color: #666666;
+  }
+}
+
+
 .item-metadata {
   font-size: typography.$f-size-sm;
 

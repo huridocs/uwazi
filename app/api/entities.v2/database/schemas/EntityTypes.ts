@@ -1,6 +1,12 @@
-import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
 import { ObjectId } from 'mongodb';
-import { PermissionSchema } from 'shared/types/permissionType';
+import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
+import { PermissionSchema } from '#shared/types/permissionType.js';
+
+type IconDBO = {
+  _id: string | null;
+  label?: string;
+  type: string;
+};
 
 export interface EntityDBO {
   _id: ObjectId;
@@ -8,7 +14,7 @@ export interface EntityDBO {
   language: string; // Todo: should be LanguageISO6391
   template: ObjectId;
   title: string;
-  icon?: { _id: string; label: string; type: string };
+  icon?: IconDBO;
   metadata: Record<string, { value: string | number; label?: string }[]>;
   obsoleteMetadata: string[];
   user?: ObjectId;
@@ -19,7 +25,8 @@ export interface EntityDBO {
   mongoLanguage?: string; // Todo: needs to be mapped and implemented
   generatedToc?: boolean; // Todo: needs to be mapped and implemented
   permissions?: PermissionSchema[];
-  // [k: string]: unknown | undefined;
+  preview?: string;
+  __v?: number;
 }
 
 export interface EntityJoinTemplate extends EntityDBO {

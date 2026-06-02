@@ -1,5 +1,5 @@
-import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
-import { PropertyInheritedTypeMismatchError, PropertyTypeMismatchError } from '../errors';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { PropertyInheritedTypeMismatchError, PropertyTypeMismatchError } from '../errors.js';
 
 describe('V1RelationshipProperty', () => {
   it('should set defaults values if not provided', () => {
@@ -164,6 +164,7 @@ describe('V1RelationshipProperty', () => {
         language: 'en',
         name: relationship.name,
         type: relationship.type,
+        isTranslatable: false,
         value: [
           {
             value: 'A',
@@ -199,6 +200,7 @@ describe('V1RelationshipProperty', () => {
         language: 'en',
         name: relationship.name,
         type: relationship.type,
+        isTranslatable: false,
         value: [],
       });
     });

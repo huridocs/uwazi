@@ -1,13 +1,11 @@
-import Ajv, { ErrorObject } from 'ajv';
-import templatesModel from 'api/core/v1_layer/templates/templatesModel';
-import { wrapValidator } from 'shared/tsUtils';
-import { EntitySchema } from 'shared/types/entityType';
-import { PropertySchema } from 'shared/types/commonTypes';
-import { TemplateSchema } from 'shared/types/templateType';
-import ValidationError from 'ajv/dist/runtime/validation_error';
-
-import { validateMetadataField } from './validateMetadataField';
-import { customErrorMessages, validators } from './metadataValidators';
+import Ajv, { ErrorObject, ValidationError } from 'ajv';
+import templatesModel from '#api/core/v1_layer/templates/templatesModel.js';
+import { wrapValidator } from '#shared/tsUtils.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
+import { validateMetadataField } from './validateMetadataField.js';
+import { customErrorMessages, validators } from './metadataValidators.js';
 
 const ajv = new Ajv({ allErrors: true });
 ajv.addVocabulary(['tsType']);
@@ -70,7 +68,7 @@ ajv.addKeyword({
     ];
 
     if (errors.length) {
-      throw new Ajv.ValidationError(errors);
+      throw new ValidationError(errors);
     }
 
     return true;
@@ -89,7 +87,7 @@ ajv.addKeyword({
 
     const [template] = await templatesModel.get({ _id: entity.template });
     if (!template) {
-      throw new Ajv.ValidationError([
+      throw new ValidationError([
         {
           keyword: 'metadataMatchesTemplateProperties',
           schemaPath: '',

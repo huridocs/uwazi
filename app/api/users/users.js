@@ -1,33 +1,40 @@
 /* eslint-disable max-statements */
-import SHA256 from 'crypto-js/sha256';
+import SHA256 from 'crypto-js/sha256.js';
 
-import { createError } from 'api/utils';
-import random from 'shared/uniqueID';
-import { encryptPassword, comparePasswords } from 'api/auth/encryptPassword';
-import * as usersUtils from 'api/auth2fa/usersUtils';
-
+import { createError } from '#api/utils/index.js';
+import random from '#shared/uniqueID.js';
+import { encryptPassword, comparePasswords } from '#api/auth/encryptPassword.js';
+import * as usersUtils from '#api/auth2fa/usersUtils.js';
 import {
   getByMemberIdList,
   updateUserMemberships,
   removeUsersFromAllGroups,
-} from 'api/usergroups/userGroupsMembers';
-import mailer from '../utils/mailer';
-import model from './usersModel';
-import passwordRecoveriesModel from './passwordRecoveriesModel';
-import settings from '../settings/settings';
-import { generateUnlockCode } from './generateUnlockCode';
+} from '#api/usergroups/userGroupsMembers.js';
+import mailer from '../utils/mailer.js';
+import model from './usersModel.js';
+import passwordRecoveriesModel from './passwordRecoveriesModel.js';
+import settings from '../settings/settings.js';
+import { generateUnlockCode } from './generateUnlockCode.js';
+import { PUBLIC_USER_ID } from './publicUser.js';
 
 const MAX_FAILED_LOGIN_ATTEMPTS = 6;
+
+function validateURL(input) {
+  return new URL(input);
+}
 
 function conformRecoverText(options, _settings, domain, key, user) {
   const response = {};
   if (!options.newUser) {
-    response.subject = 'Password set';
-    response.text = `To set your password click on the following link:\n${domain}/setpassword/${key}\nThis link will be valid for 24 hours.`;
+    response.subject = 'Password recovery';
+    response.text =
+      `Your username is: ${user.username}\n` +
+      `To set your password click on the following link:\n${domain}/setpassword/${key}\nThis link will be valid for 24 hours.`;
   }
 
   if (options.newUser) {
     const siteName = _settings.site_name || 'Uwazi';
+    response.subject = `Welcome to ${siteName}`;
     const text =
       'Hello!\n\n' +
       `The administrators of ${siteName} have created an account for you under the user name:\n` +
@@ -39,7 +46,6 @@ function conformRecoverText(options, _settings, domain, key, user) {
 
     const htmlLink = `<a href="${domain}/setpassword/${key}?createAccount=true">${domain}/setpassword/${key}?createAccount=true</a>`;
 
-    response.subject = `Welcome to ${siteName}`;
     response.text = text;
     response.html = `<p>${response.text
       .replace(new RegExp(user.username, 'g'), `<b>${user.username}</b>`)
@@ -48,11 +54,13 @@ function conformRecoverText(options, _settings, domain, key, user) {
       .replace(/\n{2,}/g, '</p><p>')
       .replace(/\n/g, '<br />')}</p>`;
   }
+
   return response;
 }
 
 const sendAccountLockedEmail = async (user, domain) => {
-  const url = `${domain}/unlockaccount/${user.username}/${user.accountUnlockCode}`;
+  const url = new URL(domain);
+  url.pathname += `unlockaccount/${user.username}/${user.accountUnlockCode}`;
   const htmlLink = `<a href="${url}">${url}</a>`;
   const text =
     'Hello,\n\n' +
@@ -159,6 +167,10 @@ function unauthorizedAction(user, userInTheDatabase, currentUser) {
 
 export default {
   async save(user, currentUser) {
+    if (user._id && user._id.toString() === PUBLIC_USER_ID.toString()) {
+      return Promise.reject(createError('Cannot modify system users', 403));
+    }
+
     const [userInTheDatabase] = await model.get({ _id: user._id }, '+password');
 
     if (unauthorizedAction(user, userInTheDatabase, currentUser)) {
@@ -234,11 +246,16 @@ export default {
 
   async delete(_ids, currentUser) {
     const ids = _ids.map(id => id.toString());
+
+    if (ids.includes(PUBLIC_USER_ID.toString())) {
+      return Promise.reject(createError('Cannot delete system users', 403));
+    }
+
     if (_ids.find(id => id.toString() === currentUser._id.toString())) {
       return Promise.reject(createError('Can not delete yourself', 403));
     }
 
-    const count = await model.count();
+    const count = await model.count({ _id: { $ne: PUBLIC_USER_ID } });
     if (count > _ids.length) {
       await removeUsersFromAllGroups(ids);
       return model.delete({ _id: { $in: _ids } });
@@ -251,6 +268,7 @@ export default {
       { username },
       '+password +accountLocked +failedLogins +accountUnlockCode'
     );
+    validateURL(domain);
     const dummy = { password: await encryptPassword('Avoid user enum on login req ms diff') };
     const user = dbuser || dummy;
 

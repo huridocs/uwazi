@@ -1,11 +1,12 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react';
-import { Truncate } from 'V2/Components/UI';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
+import { Truncate } from '#V2/Components/UI/index.js';
 
 const meta: Meta<typeof Truncate> = {
   title: 'Components/Truncate',
   component: Truncate,
 };
+export default meta;
 
 type Story = StoryObj<typeof Truncate>;
 
@@ -28,11 +29,11 @@ const Primary: Story = {
         </Truncate>
 
         <Truncate maxLength={args.maxLength} ellipsisPosition="center">
-          <div className="px-1 bg-orange-400 text-white">{args.children}</div>
+          <div className="px-1 bg-alert-400 text-white">{args.children}</div>
         </Truncate>
 
         <Truncate maxLength={args.maxLength}>
-          <div className="px-1 bg-orange-400 text-white">
+          <div className="px-1 bg-alert-400 text-white">
             The following text is a nested tag -&gt; {args.children}
           </div>
         </Truncate>
@@ -76,5 +77,3 @@ const Basic = {
 };
 
 export { Basic };
-
-export default meta;

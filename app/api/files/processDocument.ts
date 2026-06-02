@@ -1,10 +1,14 @@
 /* eslint-disable max-statements */
-import { convertToPDFService } from 'api/services/convertToPDF/convertToPdfService';
-import settings from 'api/settings';
-import { FileType } from 'shared/types/fileType';
+import { convertToPDFService } from '#api/services/convertToPDF/convertToPdfService.js';
+import settings from '#api/settings/index.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { FileType } from '#shared/types/fileType.js';
 import { ObjectId } from 'mongodb';
-import { files } from './files';
-import { PDF } from './PDF';
+import { files } from './files.js';
+import { PDF } from './PDF.js';
 
 export const createProcessingFile = async (
   entitySharedId: string,
@@ -50,6 +54,18 @@ export const convertPDF = async (
       mimetype: 'image/jpeg',
       size,
     });
+
+    const tm = TransactionManagerFactory.default();
+    const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager: tm });
+    const filesDS = FilesDataSourceFactory.default({ transactionManager: tm });
+    const settingsDS = SettingsDataSourceFactory.default({ transactionManager: tm });
+
+    const entity = (await entitiesDS.getById(entitySharedId)).getDataOrThrow();
+    entity.setPreview(
+      await filesDS.getThumbnails([entitySharedId]).all(),
+      await settingsDS.getDefaultLanguageKey()
+    );
+    await entitiesDS.update(entity);
 
     onProcessingSuccess(processedFile);
     return processedFile;

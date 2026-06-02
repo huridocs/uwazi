@@ -1,4 +1,4 @@
-import db from 'api/utils/testing_db';
+import db from '#api/utils/testing_db.js';
 
 const [file1, file2, file3] = [db.id(), db.id(), db.id()];
 

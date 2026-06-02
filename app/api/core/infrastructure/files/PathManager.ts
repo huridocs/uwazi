@@ -1,0 +1,59 @@
+import { Tenant } from '#api/tenants/tenantContext.js';
+import path from 'path';
+import { BaseFile } from '../../domain/files/BaseFile.js';
+import { FileType } from '../../domain/files/FileType.js';
+
+type PathManagerProps = {
+  tenant: Tenant;
+};
+
+type CreatePathInput = {
+  filename: string;
+  type: FileType | 'customPath';
+  destination?: string;
+};
+
+export class PathManager {
+  private directory: Record<FileType, string>;
+
+  constructor(private props: PathManagerProps) {
+    this.directory = {
+      activitylog: this.props.tenant.activityLogs,
+      attachment: this.props.tenant.attachments,
+      custom: this.props.tenant.customUploads,
+      document: this.props.tenant.uploadedDocuments,
+      segmentation: `${this.props.tenant.uploadedDocuments}/segmentation`,
+      thumbnail: this.props.tenant.uploadedDocuments,
+    };
+  }
+
+  createPath(input: BaseFile | CreatePathInput) {
+    if (input instanceof BaseFile) {
+      const directory = this.directory[input.type];
+      if (!directory) throw new Error(`The following File Type is not supported -> ${input.type}`);
+
+      return path.join(directory, input.filename);
+    }
+
+    if (input.type === 'customPath' && input.destination) {
+      const basePath = this.directory.document;
+      return path.join(basePath, input.destination, input.filename);
+    }
+
+    if (input.type === 'customPath') {
+      throw new Error('customPath type requires a destination');
+    }
+
+    const directory = this.directory[input.type];
+    if (!directory) throw new Error(`The following File Type is not supported ${input.type}`);
+
+    return path.join(directory, input.filename);
+  }
+
+  get directories() {
+    return Object.entries(this.directory).map(([name, value]) => ({
+      name: name as FileType,
+      value,
+    }));
+  }
+}

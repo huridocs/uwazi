@@ -2,7 +2,7 @@
 import React, { PropsWithChildren } from 'react';
 import { Breadcrumb } from 'flowbite-react';
 import { ChevronLeftIcon } from '@heroicons/react/20/solid';
-import { Translate, I18NLinkV2 as I18NLink } from 'app/I18N';
+import { Translate, I18NLinkV2 as I18NLink } from '#app/I18N/index.js';
 
 interface SettingsContentProps extends PropsWithChildren {
   className?: string;
@@ -21,7 +21,7 @@ interface SettingsHeaderProps extends PropsWithChildren {
 
 const SettingsContent = ({ children, className }: SettingsContentProps) => (
   <div
-    className={`${className || ''} flex flex-col h-full pb-14 lg:pb-0`}
+    className={`${className || ''} flex flex-col h-full pb-14 lg:pb-0 bg-parchment`}
     data-testid="settings-content"
   >
     {children}
@@ -47,17 +47,20 @@ const SettingsHeaderTitle = ({
 };
 
 const SettingsHeader = ({ contextId, title, children, path, className }: SettingsHeaderProps) => (
-  <div className={`${className || ''} flex pt-5 pb-4 px-4 `} data-testid="settings-content-header">
+  <div
+    className={`${className || ''} flex pt-5 pb-4 px-4 bg-parchment`}
+    data-testid="settings-content-header"
+  >
     <I18NLink to="/settings" className="block lg:hidden">
       <ChevronLeftIcon className="w-8 stroke-1 lg:hidden" />
       <span className="sr-only">
         <Translate>Navigate back</Translate>
       </span>
     </I18NLink>
-    <Breadcrumb className="!relative p-1 flex right-0 !bg-transparent m-0 !w-full flex-wrap align-middle">
+    <Breadcrumb className="relative! p-1 flex right-0 bg-transparent! m-0 w-full! flex-wrap align-middle">
       {Array.from(path?.entries() || []).map(([key, value]) => (
         <Breadcrumb.Item key={key} className="max-w-xs">
-          <I18NLink to={value} activeClassname="font-medium text-gray-700 hover:text-gray-900">
+          <I18NLink to={value} activeClassname="font-medium text-ink-secondary hover:text-ink">
             <Translate className="max-w-xs truncate hover:underline">{key}</Translate>
           </I18NLink>
         </Breadcrumb.Item>
@@ -74,7 +77,7 @@ const SettingsHeader = ({ contextId, title, children, path, className }: Setting
 
 SettingsContent.Header = SettingsHeader;
 SettingsContent.Body = ({ children, className }: SettingsContentProps) => (
-  <div className={`${className || ''} flex-grow px-4`} data-testid="settings-content-body">
+  <div className={`${className || ''} grow px-4 bg-parchment`} data-testid="settings-content-body">
     {children}
   </div>
 );
@@ -85,9 +88,14 @@ SettingsContent.Footer = ({
   highlighted = false,
 }: SettingsContentFooterProps) => (
   <div
-    className={`bottom-0 left-0 w-full px-4 py-3 border-t border-gray-200 sticky z-1 ${className} ${
-      highlighted ? 'bg-indigo-50' : 'bg-white'
-    }`}
+    className={[
+      'sticky bottom-0 left-0 z-1 w-full border-t px-4 py-3',
+      'border-t-[color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]',
+      highlighted ? 'bg-(--color-theme-feedback-info-tint)' : 'bg-parchment',
+      className,
+    ]
+      .filter(Boolean)
+      .join(' ')}
     data-testid="settings-content-footer"
   >
     {children}

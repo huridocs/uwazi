@@ -1,7 +1,7 @@
 import React from 'react';
 import { CellContext } from '@tanstack/react-table';
-import { Pill } from 'app/V2/Components/UI';
-import { TablePXEntityParagraphRow } from 'app/V2/shared/ParagraphExtractionTypes';
+import { Pill } from '#app/V2/Components/UI/index.js';
+import { TablePXEntityParagraphRow } from '#app/V2/shared/ParagraphExtractionTypes.js';
 
 const LanguagesCell = ({
   cell,

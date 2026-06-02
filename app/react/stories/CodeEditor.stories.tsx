@@ -1,6 +1,13 @@
+/* eslint-disable import/exports-last */
+/* eslint-disable import/no-default-export */
 import React, { useRef, useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { CodeEditor, CodeEditorProps, CodeEditorInstance } from 'V2/Components/CodeEditor';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import {
+  CodeEditor,
+  CodeEditorProps,
+  CodeEditorInstance,
+} from '#V2/Components/CodeEditor/index.js';
+import { CodeEditorComponent } from '#V2/Components/CodeEditor/CodeEditorComponent.js';
 
 const sampleJS = `const myButton = document.getElementById('myButton');
 myButton.addEventListener('click', function () {
@@ -76,6 +83,8 @@ const meta: Meta<typeof CodeEditor> = {
   component: CodeEditor,
 };
 
+export default meta;
+
 type Story = StoryObj<typeof CodeEditor>;
 
 const Component = ({ language, intialValue, fallbackElement }: CodeEditorProps) => {
@@ -84,12 +93,15 @@ const Component = ({ language, intialValue, fallbackElement }: CodeEditorProps) 
 
   return (
     <div className="tw-content">
-      <div className="overflow-y-auto w-full h-96">
-        <CodeEditor
+      <div className="overflow-y-auto w-full h-96 min-h-[24rem]">
+        <CodeEditorComponent
           language={language}
           intialValue={intialValue}
           onMount={editor => {
             editorInstance.current = editor;
+            if (typeof window !== 'undefined') {
+              (window as { __codeEditor?: typeof editor }).__codeEditor = editor;
+            }
           }}
           fallbackElement={fallbackElement}
         />
@@ -98,7 +110,7 @@ const Component = ({ language, intialValue, fallbackElement }: CodeEditorProps) 
         <button
           type="button"
           onClick={() => setUpdatedCode(editorInstance.current?.getValue())}
-          className="p-2 text-white rounded border bg-primary-700"
+          className="p-2 text-white rounded-sm border bg-primary-700"
         >
           Save
         </button>
@@ -135,4 +147,3 @@ const HTMLEditor: Story = {
 };
 
 export { JSEditor, HTMLEditor };
-export default meta;

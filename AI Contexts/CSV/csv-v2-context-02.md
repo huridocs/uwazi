@@ -12,7 +12,10 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 - Architecture: V2 hexagonal; background jobs process after quick upload response.
 - Collection: `csv_imports` stores each import and its status.
 - Storage: Use files.v2 `FileStorage` with `customPath` under `csv-imports/{importId}`.
-- Routing: `POST /api/import`, admin-only, feature-flagged via `v2CSVImport`.
+- Routing (current baseline, Apr 2026):
+  - `POST /api/import` is admin-only V1 route.
+  - `POST /api/csvImportEntities` is admin-only V2 route.
+  - `v2CSVImport` is not used for backend route switching.
 - MVP Statuses: start at `queued`; Job 1 sets `extracting files`, then proceeds.
 
 ### Storage layout (MVP, reaffirmed)
@@ -32,15 +35,15 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
   - `tenantName`: string
   - `userId`: string (uploader)
   - `importId`: string
-  - `sessionId` (recommended): string — so we can emit only to the uploading session
 
 - V2 patterns to follow (critical):
 
-  - Jobs are thin orchestrators; they delegate business logic to Use Cases.
-  - Use cases own transactions (via `transactionManager`). No transactions in jobs.
+  - **JobHandlers** (queue wrappers under `infrastructure/jobHandlers/*`) are thin orchestrators; they build the application-layer job and wire sockets/heartbeats.
+  - **Jobs** (application-layer classes under `application/jobs/*`) orchestrate stage boundaries and own `transactionManager.run`, delegating heavy lifting to dedicated services (`CsvImportFileNormalizer`, `CsvImportRowsStager`, etc.).
+  - Services invoked by a job accept callbacks (e.g., `deleteRows`, `insertBatch`) instead of opening their own transactions, so retry semantics stay centralized.
   - Dependencies are injected via factories; DSs must be transaction-aware (extend `MongoDataSource`).
-  - Emits should use a sockets wrapper and be passed as callbacks to the use case when appropriate (mirrors templates.v2 patterns).
-  - Jobs pass params and context only (tenantName, userId, sessionId).
+  - Emits should use a sockets wrapper and be passed as callbacks to the use case when appropriate (mirrors templates.v2 patterns). All CSV V2 jobs emit only to tenant admins (no per-session events).
+  - Jobs pass params and context only (tenantName, userId, importId). Session IDs are no longer required for CSV V2 flows.
   - Domain-first mutations: All state changes must be done via Domain methods; DS updates persist the resulting Domain object. Never shape partial updates ad hoc.
 
 #### Domain and mapping rules (enforced)
@@ -57,27 +60,28 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 
   - File storage OUTSIDE the transaction.
   - DB writes INSIDE `transactionManager.run(...)`.
-  - Use `transactionManager.onCommitted(...)` only for enqueuing next jobs or side-effects that must happen after commit.
+- Dispatch downstream jobs (or any queue side-effects) as the final action inside the same `transactionManager.run(...)` that performed the DB mutation. Reserve `transactionManager.onCommitted(...)` only for non-queue side-effects that absolutely require post-commit ordering (e.g., async cleanup outside this module).
 
 - Job dependencies:
 
-  - `useCase`: `CsvExtractUploadedZipUseCase`
-  - `sockets`: `V1WebSocketsWrapper` exposing `emitToSession` (and `emitToTenant` if ever needed)
+  - `fileNormalizer`: `CsvImportFileNormalizer`
+  - `rowsStager`: `CsvImportRowsStager`
+  - `sockets`: `V1WebSocketsWrapper` exposing `emitToTenantAdmins`
 
 - Behavior:
 
   1. Load import by `importId`. If missing → hard fail.
   2. Immediately set status to `extracting files` via `CsvImportDomain.withStatus(...)` and persist using `csvImportsDS.update(...)` inside a transaction.
-  3. Determine input kind by `storage.path`/extension or `file.mimeType`:
-     - ZIP case:
-       - Open the uploaded ZIP (flat structure expected).
-       - Extract ALL entries to `csv-imports/{importId}/extracted/`.
-       - Require that `import.csv` exists at the root. Fail if not present.
-     - CSV case (non-ZIP):
-       - Copy the original uploaded file to `csv-imports/{importId}/extracted/import.csv`.
-       - This enforces the same downstream invariant as the ZIP path: a canonical `import.csv` in `extracted/`.
-  4. Idempotency: overwrite-on-retry is acceptable for MVP (safe to re-run job).
-  5. On success, set status to `files extracted` only via domain mutation + DS update. Do not advance to `processing`. On failure:
+  3. Normalize input files through `CsvImportFileNormalizer`:
+     - ZIP: stream each root-level entry into `csv-imports/{importId}/extracted/`, track `processedFiles`, and push `{ type: 'files', importId, processedFiles }` progress events (dispatcher renews the heartbeat on each progress event).
+     - CSV: copy the original upload to `csv-imports/{importId}/extracted/import.csv` so downstream stages always read from the same path.
+  4. Stage rows via `CsvImportRowsStager`:
+     - Read the canonical `import.csv` once, preserving empty rows so row indexes match the user's file.
+     - Insert normalized rows into `csv_import_rows` in batches (default 500 rows) using job-provided `deleteRows` / `insertBatch` callbacks so transactions remain in the job layer.
+     - Emit `{ type: 'rows', importId, stagedRows }` progress events for sockets/heartbeats.
+     - Integration tests can inject a smaller `batchSize` to assert multiple batch flushes without relying on 500+ row fixtures.
+  5. Idempotency: the job rewrites extracted files and staged rows on each retry. Overwrite-on-retry is acceptable.
+  6. On success, clear failures and set status to `files extracted`. On failure:
      - If non-retriable → mark `failed`.
      - If retriable → set `retrying` and let the queue reschedule.
 
@@ -88,10 +92,14 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 ### Dispatch and transaction hook
 
 - Extend `RegisterCsvImportUseCase` factory to inject `jobsDispatcher`.
-- After persisting the import (and after file storage succeeds), use `transactionManager.onCommitted` to dispatch the extraction/prep job:
-  - Params must include `{ tenantName, userId, importId, sessionId }`.
-  - `sessionId` should be captured at controller level from the request cookie and forwarded into the use case input → on to the job params.
-- After Job 1 completes and sets status to `files extracted`, the component performing the status update must again use `transactionManager.onCommitted` to trigger the next job (processing/validation), which is responsible for subsequent stages.
+- `CsvImportEntities` calls
+  `jobsDispatcher.dispatch(CsvExtractUploadedZipJobDispatcher, { tenantName, userId, importId })`
+  **inside** `transactionManager.run(async () => { ... })` immediately after inserting the import.
+  This is the preferred pattern: dispatch is part of the same transaction scope, so it only
+  executes if the write succeeded, and we do not defer to `onCommitted`.
+- Every downstream stage should follow the same rule: once a job updates `csv_imports` inside a
+  `transactionManager.run`, it dispatches the next job from inside that same block (typically as the
+  final statement before returning/emitting).
 
 ### Emits and notifications
 
@@ -99,17 +107,24 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 
   - `emitToTenant(tenantName, event, payload...)` (broadcast to all in tenant).
   - `req.emitToSessionSocket(event, payload...)` (per-session; available only in request scope).
+  - **New (implemented)**: `emitToTenantAdmins(tenantName, event, payload...)` via the
+    `V1WebSocketsWrapper`, which emits to the `${tenantName}:admins` room in socket.io.
 
 - Requirement:
 
   - Do NOT broadcast job progress to all tenant users.
-  - MUST notify at least the uploading user (ideally only their current session). MAY also notify other admins later.
+  - For CSV Import V2, notify **tenant admins only** via the tenant-admins room; the uploader’s
+    session id is no longer required.
 
-- Proposal (MVP-friendly):
-  - Capture `sessionId` in the controller from `connect.sid` and include it in job params.
-  - Use `V1WebSocketsWrapper.emitToSession(sessionId, ...)` from job/use-case callbacks to notify only the uploader session.
-  - Events (prefix suggestion): `csvImport:extract:start|progress|success|error` with `{ importId, details }`.
-  - Future: consider a `tenant:admins` room to optionally notify admins only; keep MVP scoped to the uploader’s session to avoid noise.
+- Implementation (Nov 2025):
+  - `CsvExtractUploadedZipJobDispatcher` uses `V1WebSocketsWrapper.emitToTenantAdmins` to emit
+    `csvImport:extract:start|progress|success|error` with `{ importId, ... }` to the
+    `${tenantName}:admins` room.
+  - A new socket room `${tenantName}:admins` is created and maintained in `setupSockets.ts`:
+    on connection, sockets whose `connect.sid` resolves to an admin user for that tenant are
+    joined to this room.
+  - `socketClusterMode.spec.ts` now includes a `tenant admins room` suite that verifies
+    `emitToTenantAdmins` only reaches admins for the target tenant.
 
 ### Status transitions (MVP)
 
@@ -120,9 +135,9 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 
 - Files v2:
 
-  - `FileStorage.storeFile({ file, type: 'customPath', destination })`
-  - `FileStorage.getFile({ type: 'customPath', destination, filename })` → stream into `storeFile` for copies
-  - `PathManager({ tenant }).createPath(...)` for consistent tenant paths
+  - Writes (current): use path-based `storeContent(content, subpath)` where `subpath` is tenant-relative (e.g., `csv-imports/{id}/{name}` or `csv-imports/{id}/extracted/import.csv`).
+  - Reads: `FileStorage.getFile({ type: 'customPath', destination, filename })` remains.
+  - `PathManager({ tenant }).createPath(...)` remains the source of tenant-scoped paths.
 
 - Domain:
 
@@ -215,7 +230,7 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
     - Avoid real FS/S3; use in-memory streams and deterministic buffers.
     - Use transaction manager factory test doubles as in entities.v2/templates.v2.
 
-### Testing implementation and strategies (Nov 2025)
+### Testing implementation and strategies (Nov–Dec 2025)
 
 - Integration-first tests completed for:
   - `RegisterCsvImportUseCase`
@@ -248,7 +263,7 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
       - Read the resulting zip from `path.join(tempDir, 'zipData', zipFilename)`.
     - Fixture sources are under `app/api/csv/specs/zipData`.
   - Input files for uploads:
-    - Introduced `createUploadedInputFile` in `api/files.v2/testing/InputFileTestFactory.ts` to generate `InputFile` instances from a path/string, reducing boilerplate.
+    - Introduced `createUploadedInputFile` in `api/files.v2/testing/InputFileTestFactory.ts` to generate `InputFile` instances from a path/string, reducing boilerplate. `InputFile` now defaults to a neutral `'raw'` type; explicit `'document'|'attachment'` is only needed where semantically required.
   - ObjectId correctness:
     - Use `getFixturesFactory().idString('key')` for `importId` and `userId` to produce valid 24-hex strings, avoiding BSON cast errors in DS operations and user lookups in `UserAwareDispatchable`.
   - Transactions and queue:
@@ -259,11 +274,12 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
     - `onProgress` triggers `heartbeat()`; test asserts the heartbeat spy is called.
   - Use case behavior validated:
     - `RegisterCsvImportUseCase`:
-      - Stores the original upload to `csv-imports/{id}/{filename}`.
+      - Stores the original upload via `storeContent` to `csv-imports/{id}/{filename}`.
       - Persists import with `status: queued` and `storage.path`.
-      - Enqueues extraction via `onCommitted` with `{ tenantName, userId, importId, sessionId }`.
+      - Enqueues extraction inside the same `transactionManager.run` block using `jobsDispatcher.dispatch(...)` with `{ tenantName, userId, importId }` (no `onCommitted` step).
     - `CsvExtractUploadedZipUseCase`:
       - `queued` → `extracting files` → `files extracted` success path.
+      - Persists a concise `failure` object on errors `{ message, retryable, at, stage }`; clears it on success.
       - Non-retriable errors:
         - Missing import → throws `NonRetryableJobError`.
         - Missing storage path → throws `NonRetryableJobError`.
@@ -273,12 +289,10 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
   - Lint/ES rules:
     - Avoid `global-require` in tests; import `FileContentsIO` at top-level and use `new FileContentsIO()`.
 
-- Route testing note (temporary):
-  - To exercise `/api/import` after route moved to csv.v2, tests can register both route sets on the same Express app:
-    - `import csvV2Routes from 'api/csv.v2/routes/routes';`
-    - After building the app with `uploadRoutes`, call `csvV2Routes(app);` or wrap both in a combined route initializer.
-  - Enable the v2 flag in tests to use the new path:
-    - `testingTenants.changeCurrentTenant({ featureFlags: { v2CSVImport: true } });`
+- Route testing note (current baseline):
+  - Use `/api/import` to test legacy V1 behavior.
+  - Use `/api/csvImportEntities` to test CSV V2 register/import behavior.
+  - No backend route-selection flag setup is required for choosing V1 vs V2 path.
 
 ### Agent handoff: operational guidelines and preferences
 
@@ -291,6 +305,7 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
     - Original upload: `csv-imports/{importId}/{uploadedFilename}`
     - Canonical extracted CSV: `csv-imports/{importId}/extracted/import.csv`
   - Status transitions (MVP): `queued` → `extracting files` → `files extracted` → next job decides onward.
+  - Failure persistence: on error, set `{ message, retryable, at, stage }`; clear on success.
 
 - Testing philosophy
 
@@ -300,7 +315,7 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
     - WebSockets: use `TestUtils.mockClass<V1WebSocketsWrapper>` only to assert `emitToSession` calls.
   - Do not mock data sources, transaction managers, or storage in these tests.
   - Use `getFixturesFactory().idString('key')` for any ids expected to be `ObjectId`-like (e.g., `importId`, `userId`).
-  - Ensure fresh transaction managers for nested job executions (e.g., register → onCommitted → extraction) to avoid "Transaction already finished".
+  - Ensure fresh transaction managers for nested job executions (e.g., registration dispatch inside `transactionManager.run` → extraction job) to avoid "Transaction already finished".
 
 - Filesystem and zips in tests
 
@@ -314,6 +329,7 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
     - Explicitly remove `uploadedDocuments/csv-imports/{importId}` created during the test in `afterEach`.
     - Remove per-test local temp dirs in `afterEach`.
     - Avoid recursive deletes of shared dirs to prevent races in parallel runs.
+  - Success checks tolerate null/undefined for optional fields in DB (e.g., `failure ?? undefined`).
 
 - Events and session notifications
 
@@ -325,7 +341,7 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 - Queue and jobs
 
   - Jobs extend `UserAwareDispatchable` and receive `{ tenantName, userId, importId, sessionId? }`.
-  - Use `TransactionManager.onCommitted` to dispatch the extraction job from `RegisterCsvImportUseCase`.
+- Dispatch the extraction job from `RegisterCsvImportUseCase` as the last statement inside the `transactionManager.run` block that inserted the import.
   - Error classification in extraction use case:
     - Throw `NonRetryableJobError` for policy violations (missing import, missing storage path, ZIP missing `import.csv`, detectably corrupt formats).
     - Propagate operational errors (IO/DB) to allow queue retry policy to mark as `retrying`.
@@ -333,9 +349,10 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 
 - Feature flags and routes
 
-  - Feature flag: `v2CSVImport` toggles v1/v2 behavior on `/api/import`.
-  - For tests that need v2 behavior: `testingTenants.changeCurrentTenant({ featureFlags: { v2CSVImport: true } });`
-  - For route tests that were previously bound to v1: register both `uploadRoutes` and `csv.v2` routes on the same Express app (temporarily) if needed.
+  - `v2CSVImport` is now client-facing only (menu visibility), not a backend route selector.
+  - Route split is explicit:
+    - `/api/import` -> V1
+    - `/api/csvImportEntities` -> V2
 
 - Lint/style guardrails
 
@@ -354,7 +371,7 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
     1. Create a use case (domain-first, TM-aware DS usage, file ops outside TM).
     2. Add a job that orchestrates the use case, wiring sockets and heartbeats.
     3. Register the job in `queueRegistry`, injecting real factories (TM, DS, storage, IO).
-    4. Dispatch the job via `onCommitted` at the correct stage boundary.
+    4. Dispatch the downstream job from within the same `transactionManager.run` that just persisted the stage’s output (no `onCommitted` hop).
     5. Write integration tests with real DS/FS/IO, unique temp dirs, and deterministic cleanup.
 
 ### References

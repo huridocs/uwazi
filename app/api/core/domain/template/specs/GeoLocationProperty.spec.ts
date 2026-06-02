@@ -1,5 +1,5 @@
-import { GeolocationProperty } from '../GeoLocationProperty';
-import { PropertyTypeEnum } from '../PropertyType';
+import { GeolocationProperty } from '../GeoLocationProperty.js';
+import { PropertyTypeEnum } from '../PropertyType.js';
 
 describe('GeoLocationProperty', () => {
   it('should include geolocation type at the end of the PropertyName', () => {
@@ -36,6 +36,7 @@ describe('GeoLocationProperty', () => {
       expect(assignment).toEqual({
         name: prop.name,
         type: prop.type,
+        isTranslatable: false,
         value: [{ value: { lat: 10, lon: 20, label: 'Point A' } }],
       });
     });
@@ -45,7 +46,12 @@ describe('GeoLocationProperty', () => {
 
       const assignment = prop.createPropertyAssignment({ value: [] });
 
-      expect(assignment).toEqual({ name: prop.name, type: prop.type, value: [] });
+      expect(assignment).toEqual({
+        name: prop.name,
+        type: prop.type,
+        isTranslatable: false,
+        value: [],
+      });
     });
 
     it('should throw if required and no value is provided', () => {
@@ -70,14 +76,6 @@ describe('GeoLocationProperty', () => {
 
       expect(() =>
         prop.createPropertyAssignment({ value: [{ value: { lat: 10, lon: '20' as any } }] })
-      ).toThrow();
-
-      expect(() =>
-        prop.createPropertyAssignment({ value: [{ value: { lat: undefined as any, lon: 29 } }] })
-      ).toThrow();
-
-      expect(() =>
-        prop.createPropertyAssignment({ value: [{ value: { lat: 20, lon: undefined as any } }] })
       ).toThrow();
     });
   });

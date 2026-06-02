@@ -1,6 +1,6 @@
 # Uwazi CI runner image: Node + poppler-utils + mongosh
 # Base on Debian Bookworm and install official MongoDB mongosh
-FROM node:20-bookworm AS ci
+FROM node:20.19.6-bookworm AS ci
 
 # Install essential utilities (poppler-utils for PDF processing)
 RUN apt-get update -qq \
@@ -35,9 +35,8 @@ RUN npm i -g dotenv@16.4.7 \
     && echo "Global node_modules: $(npm root -g)"
 ENV NODE_PATH=/usr/local/lib/node_modules
 
-# Install Yarn classic for running installs inside the container
-RUN npm i -g yarn@1.22.22 --force \
-    && yarn --version
+# Enable Corepack for Yarn 4 (version from packageManager in package.json)
+RUN corepack enable
 
 # Create startup script for MongoDB with replica set (available for manual use)
 RUN echo '#!/bin/bash\n\

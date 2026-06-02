@@ -1,19 +1,20 @@
 /* eslint-disable max-lines */
-import entitiesModel from 'api/entities/entitiesModel';
-import { filesModel } from 'api/files/filesModel';
-import { DataType, models, WithId } from 'api/odm';
-import { settingsModel } from 'api/settings/settingsModel';
-import templatesModel from 'api/core/v1_layer/templates/templatesModel';
-import { UpdateLog } from 'api/updatelogs';
-import { ensure } from 'shared/tsUtils';
-import { EntitySchema } from 'shared/types/entityType';
-import { FileType } from 'shared/types/fileType';
+import entitiesModel from '#api/entities/entitiesModel.js';
+import { filesModel } from '#api/files/filesModel.js';
+import { DataType, models, WithId } from '#api/odm/index.js';
+import { settingsModel } from '#api/settings/settingsModel.js';
+import templatesModel from '#api/core/v1_layer/templates/templatesModel.js';
+import { UpdateLog } from '#api/updatelogs/index.js';
+import { SyncHandlerRegistry } from './SyncHandlerRegistry.js';
+import { ensure } from '#shared/tsUtils.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { FileType } from '#shared/types/fileType.js';
 import {
   Settings,
   SettingsSyncRelationtypesSchema,
   SettingsSyncTemplateSchema,
-} from 'shared/types/settingsType';
-import { TemplateSchema } from 'shared/types/templateType';
+} from '#shared/types/settingsType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 import sift from 'sift';
 
 const noDataFound = 'NO_DATA_FOUND';
@@ -106,7 +107,12 @@ class ProcessNamespaces {
 
   private async fetchData() {
     const { namespace, mongoId } = this.change;
-    const data = await models[namespace]().getById(mongoId.toString());
+    const odmModel = models[namespace]?.();
+    const handler = odmModel ?? SyncHandlerRegistry.get(namespace);
+    if (!odmModel && !handler) {
+      throw new Error(`No sync handler registered for namespace: ${namespace}`);
+    }
+    const data = await handler!.getById(mongoId.toString());
     if (data) {
       return data;
     }

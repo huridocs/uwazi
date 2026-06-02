@@ -1,16 +1,17 @@
-import { Translate } from 'app/I18N';
-import { wrapDispatch } from 'app/Multireducer';
-import { Icon } from 'app/UI';
 import React, { Dispatch, useEffect, useState } from 'react';
 import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import {
   newEntity as newEntityAction,
   showImportPanel as showImportPanelAction,
-} from 'app/Uploads/actions/uploadsActions';
-import { connect } from 'react-redux';
-import { NeedAuthorization } from 'app/Auth';
-import Export from './ExportButton';
-import { PDFUploadButton } from './PDFUploadButton';
+} from '#app/Uploads/actions/uploadsActions.js';
+import { wrapDispatch } from '#app/Multireducer/index.js';
+import { Icon } from '#app/UI/index.js';
+import { I18NLinkV2, Translate } from '#app/I18N/index.js';
+import { NeedAuthorization } from '#app/Auth/index.js';
+import { isClient } from '#app/utils/index.js';
+import { ExportButton } from './ExportButton.js';
+import { PDFUploadButton } from './PDFUploadButton.js';
 
 interface LibraryFooterOwnProps {
   storeKey: string;
@@ -66,15 +67,33 @@ const LibraryFooterComponent = ({
           <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
             <PDFUploadButton />
           </NeedAuthorization>
-          <NeedAuthorization roles={['admin', 'editor']}>
-            <button className="btn btn-default sm-order-1" type="button" onClick={showImportPanel}>
-              <Icon icon="import-csv" transform="up-0.2" />
-              <span className="btn-label">
-                <Translate>Import CSV</Translate>
-              </span>
-            </button>
-          </NeedAuthorization>
-          <Export className="sm-order-1" storeKey={storeKey} />
+          {isClient && window.__featureFlags__?.v2CSVImport ? (
+            <NeedAuthorization roles={['admin']}>
+              <I18NLinkV2 to="/settings/csv">
+                <button type="button" className="btn btn-default sm-order-1">
+                  <Icon icon="import-csv" transform="up-0.2" />
+                  <span className="btn-label">
+                    <Translate>Import CSV</Translate>
+                  </span>
+                </button>
+              </I18NLinkV2>
+            </NeedAuthorization>
+          ) : (
+            <NeedAuthorization roles={['admin', 'editor']}>
+              <button
+                className="btn btn-default sm-order-1"
+                type="button"
+                onClick={showImportPanel}
+              >
+                <Icon icon="import-csv" transform="up-0.2" />
+                <span className="btn-label">
+                  <Translate>Import CSV</Translate>
+                </span>
+              </button>
+            </NeedAuthorization>
+          )}
+
+          <ExportButton className="sm-order-1" storeKey={storeKey} />
         </div>
       </div>
       <div className={`open-actions-button ${footerVisible ? 'closed' : ''}`}>

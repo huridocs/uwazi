@@ -1,4 +1,4 @@
-import { ixStatus } from './types';
+import { ixStatus } from './types.js';
 
 type IXModelStatusData = {
   processed: number;

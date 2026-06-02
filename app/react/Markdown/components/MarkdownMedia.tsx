@@ -3,10 +3,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useRef, useEffect } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
-import ReactPlayer from 'react-player';
-import { Icon } from 'UI';
-import { Translate } from 'app/I18N';
-import { validMediaFile } from 'app/Metadata/helpers/validator';
+import ReactPlayerModule from 'react-player';
+import { resolveDefaultExport } from '#shared/resolveDefaultExport.js';
+
+const ReactPlayer = resolveDefaultExport(ReactPlayerModule);
+import { Icon } from '#app/UI/index.js';
+import { t, Translate } from '#app/I18N/index.js';
+import { validMediaFile } from '#app/Metadata/helpers/validator.js';
 
 interface MarkdownMediaProps {
   compact?: boolean;
@@ -58,7 +61,7 @@ const formatTimeLinks = (timelinks: any): TimeLink[] =>
 const MarkdownMedia = (props: MarkdownMediaProps) => {
   //Given the testing conditions, ref should be declared in this specific order.
   const containerRef = useRef<HTMLDivElement>(null);
-  const playerRef = useRef<ReactPlayer>(null);
+  const playerRef = useRef<React.ComponentRef<typeof ReactPlayer>>(null);
 
   const [newTimeline, setNewTimeline] = useState<TimeLink>({
     timeHours: '',
@@ -202,7 +205,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           setNewTimeline({ ...newTimeline, label: event.target.value });
         }}
         className="timestamp-label"
-        placeholder="Enter title"
+        placeholder={t('System', 'Title', null, false)}
         value={newTimeline.label}
       />
       <button
@@ -298,7 +301,8 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     if (config.url.startsWith('/api/files/')) {
       fetch(config.url)
         .then(async res => {
-          if (validMediaFile(res)) {
+          const isValidMediaResponse = validMediaFile(res);
+          if (isValidMediaResponse) {
             return res.blob();
           }
           setErrorFlag(true);
@@ -441,4 +445,4 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 };
 
 export type { TimeLink, MarkdownMediaProps };
-export default MarkdownMedia;
+export { MarkdownMedia };

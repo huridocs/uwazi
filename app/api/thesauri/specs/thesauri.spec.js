@@ -1,13 +1,13 @@
 /* eslint-disable max-lines */
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
-import translations from 'api/i18n/translations';
-import templates from 'api/core/v1_layer/templates/templates';
-import entities from 'api/entities/entities';
-import { search } from 'api/search';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingDB } from 'api/utils/testing_db';
+import translations from '#api/i18n/translations.js';
+import templates from '#api/core/v1_layer/templates/templates.js';
+import entities from '#api/entities/entities.js';
+import { search } from '#api/search/index.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import { thesauri } from '../thesauri.js';
 import {
   fixtures,
@@ -15,7 +15,7 @@ import {
   dictionaryIdToTranslate,
   dictionaryValueId,
   dictionaryWithValueGroups,
-} from './fixtures';
+} from './fixtures.js';
 
 const factory = getFixturesFactory();
 
@@ -185,11 +185,10 @@ describe('thesauri', () => {
     });
 
     it('should create a thesauri', async () => {
-      const _id = testingDB.id();
-      const data = { name: 'Batman wish list', values: [{ _id, id: '1', label: 'Joker BFF' }] };
+      const data = { name: 'Batman wish list', values: [{ id: '1', label: 'Joker BFF' }] };
 
       const response = await thesauri.save(data);
-      expect(response.values).toEqual([{ _id, id: '1', label: 'Joker BFF' }]);
+      expect(response.values).toEqual([{ id: '1', label: 'Joker BFF' }]);
     });
 
     it('should create a translation context', async () => {

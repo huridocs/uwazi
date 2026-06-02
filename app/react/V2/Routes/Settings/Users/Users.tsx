@@ -2,19 +2,19 @@
 import React, { useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react-router';
-import { Translate } from 'app/I18N';
-import { Button, ConfirmationModal, Table, Tabs } from 'V2/Components/UI';
-import * as usersAPI from 'V2/api/users';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
+import { Translate } from '#app/I18N/index.js';
+import { Button, ConfirmationModal, Table, Tabs } from '#V2/Components/UI/index.js';
+import * as usersAPI from '#V2/api/users/index.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import {
   UserFormSidepanel,
   GroupFormSidepanel,
   getUsersColumns,
   getGroupsColumns,
   ListOfItems,
-} from './components';
-import { useHandleNotifications } from './useHandleNotifications';
-import { FormIntent, User, Group } from './types';
+} from './components/index.js';
+import { useHandleNotifications } from './useHandleNotifications.js';
+import { FormIntent, User, Group } from './types.js';
 
 type ActiveTab = 'Groups' | 'Users';
 
@@ -75,6 +75,7 @@ const Users = () => {
         <SettingsContent.Body>
           <Tabs
             tabListClassName="md:w-2/3 w-full"
+            initialTabId={activeTab}
             onTabSelected={tab => {
               setActiveTab(tab as ActiveTab);
               setSelectedUsers([]);
@@ -87,7 +88,7 @@ const Users = () => {
                 data={users}
                 columns={usersTableColumns}
                 header={
-                  <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+                  <Translate className="text-left text-base font-semibold text-ink">
                     Users
                   </Translate>
                 }
@@ -104,7 +105,7 @@ const Users = () => {
                 data={groups}
                 columns={groupsTableColumns}
                 header={
-                  <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+                  <Translate className="text-left text-base font-semibold text-ink">
                     Groups
                   </Translate>
                 }
@@ -123,7 +124,7 @@ const Users = () => {
             {selectedUsers.length ? (
               <>
                 <Button
-                  styling="light"
+                  variant="ghost"
                   onClick={() => {
                     setConfirmationModalProps({
                       header: 'Reset passwords',
@@ -137,7 +138,7 @@ const Users = () => {
                 </Button>
 
                 <Button
-                  styling="light"
+                  variant="ghost"
                   onClick={() => {
                     setConfirmationModalProps({
                       header: 'Reset 2FA',
@@ -154,7 +155,7 @@ const Users = () => {
 
             {selectedUsers.length || selectedGroups.length ? (
               <Button
-                color="error"
+                variant="danger"
                 onClick={() => {
                   setConfirmationModalProps({
                     header: 'Delete',

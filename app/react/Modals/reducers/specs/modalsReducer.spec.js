@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
-import * as types from 'app/Modals/actions/actionTypes';
+import * as types from '#app/Modals/actions/actionTypes.js';
 
-import modalsReducer from 'app/Modals/reducers/modalsReducer';
+import { modalsReducer } from '#app/Modals/reducers/modalsReducer.js';
 
 describe('modalsReducer', () => {
   const initialState = Immutable.fromJS({});

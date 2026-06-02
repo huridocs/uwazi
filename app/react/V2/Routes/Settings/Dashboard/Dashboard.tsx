@@ -3,28 +3,24 @@
 import React from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData } from 'react-router';
-
-import { Translate } from 'app/I18N';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Card } from 'app/V2/Components/UI';
-import { getStats } from 'app/V2/api/settings';
-import { formatBytes } from 'app/V2/shared/formatHelpers';
-
-interface InstanceStats {
-  users: { total: number; admin: number; editor: number; collaborator: number };
-  entities: { total: number };
-  files: { total: number };
-  storage: { total: number };
-}
+import { Translate } from '#app/I18N/index.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
+import { Card } from '#V2/Components/UI/index.js';
+import { getStats } from '#V2/api/settings/index.js';
+import { formatBytes } from '#V2/shared/formatHelpers.js';
+import { CollectionStats } from '#V2/api/settings/types.js';
 
 const dashboardLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () =>
-    getStats(headers);
+  async () => {
+    const [stats] = await getStats(headers);
+
+    return stats;
+  };
 
 const Dashboard = () => {
-  const stats = useLoaderData() as InstanceStats;
-  const storage = formatBytes(stats.storage.total);
+  const stats = useLoaderData() as CollectionStats | undefined;
+  const storage = formatBytes(stats?.storage.total || 0);
   const [storageValue, storageUnits] = storage.split(' ');
 
   return (
@@ -36,17 +32,17 @@ const Dashboard = () => {
             <Card title={<Translate>Users</Translate>}>
               <div className="flex flex-col gap-2">
                 <div>
-                  <span className="text-5xl font-black text-gray-900">{stats.users.total}</span>{' '}
+                  <span className="text-5xl font-black text-gray-900">{stats?.users.total}</span>{' '}
                   <Translate className="text-lg font-medium text-gray-500">total users</Translate>
                 </div>
                 <div>
-                  <span className="text-gray-700">{stats.users.admin}</span>{' '}
+                  <span className="text-gray-700">{stats?.users.admin}</span>{' '}
                   <Translate className="mr-4 text-gray-500">Admins</Translate>
                   <span className="mr-4 text-gray-200">|</span>
-                  <span className="text-gray-700">{stats.users.editor}</span>{' '}
+                  <span className="text-gray-700">{stats?.users.editor}</span>{' '}
                   <Translate className="mr-4 text-gray-500">Editors</Translate>
                   <span className="mr-4 text-gray-200">|</span>
-                  <span className="text-gray-700">{stats.users.collaborator}</span>{' '}
+                  <span className="text-gray-700">{stats?.users.collaborator}</span>{' '}
                   <Translate className="text-gray-500">Collaborators</Translate>
                 </div>
               </div>
@@ -65,7 +61,7 @@ const Dashboard = () => {
             <Card title={<Translate>Entities</Translate>}>
               <div className="flex flex-col gap-2">
                 <div>
-                  <span className="text-5xl font-black text-gray-900">{stats.entities.total}</span>{' '}
+                  <span className="text-5xl font-black text-gray-900">{stats?.entities.total}</span>{' '}
                   <Translate className="text-lg font-medium text-gray-500">
                     total entities
                   </Translate>
@@ -76,7 +72,7 @@ const Dashboard = () => {
             <Card title={<Translate>Files</Translate>}>
               <div className="flex flex-col gap-2">
                 <div>
-                  <span className="text-5xl font-black text-gray-900">{stats.files.total}</span>{' '}
+                  <span className="text-5xl font-black text-gray-900">{stats?.files.total}</span>{' '}
                   <Translate className="text-lg font-medium text-gray-500">total files</Translate>
                 </div>
                 <Translate className="text-gray-500">
@@ -86,7 +82,6 @@ const Dashboard = () => {
             </Card>
           </div>
         </SettingsContent.Body>
-        <SettingsContent.Footer></SettingsContent.Footer>
       </SettingsContent>
     </div>
   );

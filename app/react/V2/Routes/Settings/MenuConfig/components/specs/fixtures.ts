@@ -1,4 +1,4 @@
-import { Link } from '../../MenuConfig';
+import { Link } from '../../MenuConfig.js';
 
 const links: Link[] = [
   {

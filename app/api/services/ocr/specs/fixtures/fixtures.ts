@@ -1,12 +1,26 @@
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { OcrStatus } from '../../ocrModel';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { OcrStatus } from '../../ocrModel.js';
 
 const fixturesFactory = getFixturesFactory();
 
 const fixtures = {
+  users: [
+    {
+      _id: fixturesFactory.id('user1'),
+      username: 'user1',
+      email: 'user1@test.com',
+      role: 'admin' as const,
+      password: 'password',
+    },
+  ],
   entities: [
-    fixturesFactory.entity('parentEntity'),
-    fixturesFactory.entity('parentForExistingRecord'),
+    fixturesFactory.entity('parentEntity', undefined, {}, { user: fixturesFactory.id('user1') }),
+    fixturesFactory.entity(
+      'parentForExistingRecord',
+      undefined,
+      {},
+      { user: fixturesFactory.id('user1') }
+    ),
   ],
   files: [
     fixturesFactory.fileDeprecated(

@@ -3,14 +3,20 @@
 import React, { Component } from 'react';
 
 import { shallow } from 'enzyme';
+import { getStore } from '#shared/atomStore/index.js';
+import { userAtom } from '#app/V2/atoms.js';
+import { store } from '#app/store.js';
+import { CustomHookComponents } from '../CustomHooks/index.js';
+import { MarkdownViewer } from '../MarkdownViewer.js';
+import { errorCollector } from '../utils.js';
 
-import { atomStore, userAtom } from 'app/V2/atoms';
-import { store } from 'app/store';
-import CustomHookComponents from '../CustomHooks';
-import MarkdownViewer from '../MarkdownViewer';
-import { errorCollector } from '../utils';
+jest.mock('#app/Notifications/actions/notificationsActions.js', () => ({
+  ...jest.requireActual('#app/Notifications/actions/notificationsActions.js'),
+  notify: jest.fn(() => () => {}),
+}));
 
 describe('MarkdownViewer', () => {
+  const atomStore = getStore();
   let component;
   let props;
 
@@ -22,7 +28,12 @@ describe('MarkdownViewer', () => {
     jest.clearAllMocks();
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   const render = () => {
+    // eslint-disable-next-line react/jsx-props-no-spreading
     component = shallow(<MarkdownViewer {...props} />);
   };
 
@@ -41,10 +52,14 @@ describe('MarkdownViewer', () => {
       });
 
       it('should not render when its not a string', () => {
+        /* eslint-disable no-console */
+        const origError = console.error;
+        console.error = jest.fn();
         props.markdown = [];
         render();
-
         expect(component.isEmptyRender()).toBe(true);
+        console.error = origError;
+        /* eslint-enable no-console */
       });
     });
 

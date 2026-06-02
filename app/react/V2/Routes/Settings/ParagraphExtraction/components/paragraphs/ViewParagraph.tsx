@@ -1,14 +1,14 @@
 import React from 'react';
 import { useLoaderData } from 'react-router';
 import { useAtomValue } from 'jotai';
-import { Translate } from 'app/I18N';
-import { availableLanguages } from 'shared/language';
-import { templatesAtom } from 'V2/atoms';
+import { Translate } from '#app/I18N/index.js';
+import { availableLanguages } from '#shared/language/index.js';
+import { templatesAtom } from '#V2/atoms/index.js';
 import {
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
-} from 'V2/shared/ParagraphExtractionTypes';
-import { DisplayPill } from '../DisplayPills';
+} from '#V2/shared/ParagraphExtractionTypes.js';
+import { DisplayPill } from '../DisplayPills.js';
 
 const ViewParagraph = ({ paragraphData }: { paragraphData: TablePXEntityParagraphRow }) => {
   const { sourceEntity } = useLoaderData() as PXParagraphLoaderResponse;
@@ -39,7 +39,7 @@ const ViewParagraph = ({ paragraphData }: { paragraphData: TablePXEntityParagrap
       <div className="rounded-md leading-tight text-sm font-bold border border-gray-100 p-3">
         <Translate>Paragraph</Translate>: {paragraphData.paragraphNumber}
       </div>
-      <div className="flex-grow rounded-md border border-gray-100 flex flex-col gap-2 p-3">
+      <div className="grow rounded-md border border-gray-100 flex flex-col gap-2 p-3">
         <div className="leading-tight text-sm font-bold">
           <Translate>Text</Translate>
         </div>

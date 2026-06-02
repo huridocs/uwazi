@@ -4,10 +4,10 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
-import { ClientPropertySchema } from 'app/istore';
-import { TestRouterContext } from 'V2/testing/TestRouterContext';
-import { TestAtomStoreProvider as AtomProvider } from 'V2/testing';
-import { thesauriAtom } from 'V2/atoms';
+import { ClientPropertySchema } from '#app/istore.js';
+import { TestRouterContext } from '#V2/testing/TestRouterContext.js';
+import { TestAtomStoreProvider as AtomProvider } from '#V2/testing/index.js';
+import { thesauriAtom } from '#V2/atoms/index.js';
 import {
   loaderData,
   suggestion1,
@@ -19,10 +19,10 @@ import {
   template1,
   entity1,
   thesauri,
-} from './SidepanelsFixtures';
-import { PDFSidepanel } from '../PDFSidepanel';
-import { PropertySidepanel } from '../PropertySidepanel';
-import * as sidepanelFunctions from '../../../helpers/sidepanelFunctions';
+} from './SidepanelsFixtures.js';
+import { PDFSidepanel } from '../PDFSidepanel.js';
+import { PropertySidepanel } from '../PropertySidepanel.js';
+import * as sidepanelFunctions from '../../../helpers/sidepanelFunctions.js';
 
 const renderPDFSidepanel = (
   suggestion: any,
@@ -83,11 +83,11 @@ const clickToFillAndWait = async (expectedValue: any) => {
 };
 
 const mockCoerceValue = (result: { success: boolean; value?: any }) => {
-  const { coerceValue: coerceValueMock } = jest.requireMock('V2/api/entities');
+  const { coerceValue: coerceValueMock } = jest.requireMock('#V2/api/entities');
   coerceValueMock.mockResolvedValue(result);
 };
 
-jest.mock('V2/api/entities', () => ({
+jest.mock('#V2/api/entities', () => ({
   getById: jest.fn().mockResolvedValue([
     {
       _id: 'entity1',
@@ -121,10 +121,10 @@ jest.mock('V2/api/entities', () => ({
     update: jest.fn().mockImplementation((entity, data) => ({ ...entity, ...data })),
   },
   coerceValue: jest.fn().mockResolvedValue({ success: true, value: 'test' }),
-  save: jest.fn().mockResolvedValue({ success: true }),
+  update: jest.fn().mockResolvedValue([{}]),
 }));
 
-jest.mock('V2/api/search', () => ({
+jest.mock('#V2/api/search', () => ({
   search: jest.fn().mockImplementation(async query => {
     if (query.filters.searchString.includes('template:template2')) {
       return Promise.resolve({
@@ -149,7 +149,7 @@ jest.mock('V2/api/search', () => ({
   }),
 }));
 
-jest.mock('V2/api/files', () => ({
+jest.mock('#V2/api/files', () => ({
   getById: jest.fn().mockResolvedValue([
     {
       _id: 'file1',
@@ -159,7 +159,7 @@ jest.mock('V2/api/files', () => ({
   update: jest.fn().mockResolvedValue({}),
 }));
 
-jest.mock('V2/Components/PDFViewer', () => ({
+jest.mock('#V2/Components/PDFViewer', () => ({
   PDF: ({ onSelect }: any) => {
     const handleTextSelection = () => {
       const mockSelection = {
@@ -217,7 +217,7 @@ describe('Basic rendering', () => {
 describe('Sidepanel forms', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    const { coerceValue } = jest.requireMock('V2/api/entities');
+    const { coerceValue } = jest.requireMock('#V2/api/entities');
     coerceValue.mockResolvedValue({ success: true, value: 'test' });
   });
 
@@ -345,7 +345,7 @@ describe('Sidepanel forms', () => {
       expect(await screen.findByText('Test Entity Title')).toBeInTheDocument();
       await waitFor(() => {
         const suggestionElement = screen.getByText('Suggested Option');
-        expect(suggestionElement).toHaveClass('bg-orange-50', 'text-orange-800');
+        expect(suggestionElement).toHaveClass('bg-alert-50', 'text-alert-800');
       });
     });
 
@@ -376,7 +376,7 @@ describe('Sidepanel forms', () => {
       expect(await screen.findByText('Test Entity Title')).toBeInTheDocument();
       await waitFor(() => {
         const suggestionElement = screen.getByText('suggested_entity');
-        expect(suggestionElement).toHaveClass('bg-orange-50', 'text-orange-800');
+        expect(suggestionElement).toHaveClass('bg-alert-50', 'text-alert-800');
       });
     });
 
@@ -583,7 +583,7 @@ describe('Sidepanel forms', () => {
     });
 
     it('should do the initial search, select text, then search and populate the field when the toggle is on', async () => {
-      const { search } = jest.requireMock('V2/api/search');
+      const { search } = jest.requireMock('#V2/api/search');
 
       const suggestionWithProperty = createSuggestionWithProperty('relationship_property');
       renderPDFSidepanel(suggestionWithProperty, relationshipProperty);
@@ -624,7 +624,7 @@ describe('Sidepanel forms', () => {
     });
 
     it('should do the initial search, and not populate the field or do more searches when the toggle is off', async () => {
-      const { search } = jest.requireMock('V2/api/search');
+      const { search } = jest.requireMock('#V2/api/search');
 
       const suggestionWithProperty = createSuggestionWithProperty('relationship_property');
       renderPDFSidepanel(suggestionWithProperty, relationshipProperty);
@@ -670,8 +670,8 @@ describe('Sidepanel forms', () => {
 
   describe('data loading', () => {
     it('should not fetch if its not open', async () => {
-      const { getById: entities } = jest.requireMock('V2/api/entities');
-      const { getById: files } = jest.requireMock('V2/api/files');
+      const { getById: entities } = jest.requireMock('#V2/api/entities');
+      const { getById: files } = jest.requireMock('#V2/api/files');
 
       await act(async () => {
         render(
@@ -724,7 +724,7 @@ describe('Sidepanel forms', () => {
     });
 
     const expectSearchCall = (fields: string[], searchStringPattern: string) => {
-      const { search } = jest.requireMock('V2/api/search');
+      const { search } = jest.requireMock('#V2/api/search');
       return expect(search).toHaveBeenCalledWith(
         {
           filters: { searchString: expect.stringContaining(searchStringPattern) },
@@ -811,7 +811,7 @@ describe('Sidepanel forms', () => {
     });
 
     it('should display inherited property value in search results when available', async () => {
-      const { search } = jest.requireMock('V2/api/search');
+      const { search } = jest.requireMock('#V2/api/search');
       const extractorWithInheritedProperty = createExtractorWithInheritedProperty();
 
       search.mockImplementation(async (query: any) => {

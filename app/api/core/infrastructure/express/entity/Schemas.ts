@@ -6,23 +6,24 @@ const LinkSchema = z.object({
 });
 
 const DateRangeSchema = z.object({
-  from: z.number().optional(),
-  to: z.number().optional(),
+  from: z.number().nullable(),
+  to: z.number().nullable(),
 });
 
 const GeolocationSchema = z.object({
-  label: z.string().optional(),
+  label: z.string(),
   lat: z.number(),
   lon: z.number(),
 });
 
 const PropertyValueSchema = z.union([
-  z.string(),
-  z.number(),
-  z.boolean(),
-  LinkSchema,
   DateRangeSchema,
   GeolocationSchema,
+  LinkSchema,
+  z.string(),
+  z.null(),
+  z.number(),
+  z.boolean(),
 ]);
 
 const SelectParentSchema = z.object({
@@ -51,12 +52,12 @@ const MetadataValueSchema = z.object({
 const MetadataObjectSchema = z.record(z.array(MetadataValueSchema));
 
 const EntityIconSchema = z.object({
-  _id: z.string().optional(),
+  _id: z.string().nullable().optional(),
   label: z.string().optional(),
   type: z.string().optional(),
 });
 
-const CreateEntitySchema = z.object({
+const MutateEntitySchema = z.object({
   title: z.string().min(1),
   template: z.string().optional(),
   icon: EntityIconSchema.optional(),
@@ -64,6 +65,41 @@ const CreateEntitySchema = z.object({
   metadata: MetadataObjectSchema.default({}).optional(),
 });
 
-export { CreateEntitySchema };
+const CreateEntitySchema = MutateEntitySchema.extend({
+  attachments: z
+    .array(
+      z.object({
+        originalname: z.string(),
+        url: z.string().url().optional(),
+      })
+    )
+    .optional(),
+});
+
+const UpdateEntitySchema = MutateEntitySchema.extend({
+  _id: z.string(),
+  sharedId: z.string(),
+  language: z.string().min(2).max(2),
+  documents: z
+    .array(
+      z.object({
+        _id: z.string().min(1),
+        originalname: z.string().min(1),
+      })
+    )
+    .optional(),
+  attachments: z
+    .array(
+      z.object({
+        _id: z.string().min(1).optional(),
+        originalname: z.string(),
+        url: z.string().url().optional(),
+      })
+    )
+    .optional(),
+});
+
+export { CreateEntitySchema, UpdateEntitySchema };
 
 export type CreateEntityDTO = z.infer<typeof CreateEntitySchema>;
+export type UpdateEntityRequest = z.infer<typeof UpdateEntitySchema>;

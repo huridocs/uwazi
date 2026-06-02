@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
-import { Translate, I18NLinkV2 as I18NLink, t } from 'app/I18N';
-import { useSetAtom } from 'jotai';
-import { notificationAtom } from 'V2/atoms';
-import { Table } from 'V2/Components/UI/Table/Table';
-import { Button } from 'V2/Components/UI/Button';
-import * as templatesApi from 'V2/api/templates';
-import { RequestParams } from 'app/utils/RequestParams';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
+import { Translate, I18NLinkV2 as I18NLink, t } from '#app/I18N/index.js';
+import { Table } from '#V2/Components/UI/Table/Table.js';
+import { Button } from '#V2/Components/UI/Button.js';
+import * as templatesApi from '#V2/api/templates/index.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { ColumnDef } from '@tanstack/react-table';
-import { Template } from 'app/apiResponseTypes';
-import { handleUnexpectedError } from 'app/V2/shared/errorUtils';
-import { columns } from './components/TemplatesTableComponents';
-import { DeleteTemplatesConfirmationModal } from './components/DeleteTemplatesConfirmationModal';
-import { TemplateRow } from './types';
+import { Template } from '#app/apiResponseTypes.js';
+import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
+import { columns } from './components/TemplatesTableComponents.js';
+import { DeleteTemplatesConfirmationModal } from './components/DeleteTemplatesConfirmationModal.js';
+import { TemplateRow } from './types.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const templatesLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<TemplateRow[]> =>
@@ -58,17 +57,14 @@ const Templates = () => {
   const [selected, setSelected] = useState<string[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const revalidator = useRevalidator();
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
 
   const hasSyncedTemplates = templates.some(template => template.synced);
 
   const handleSetDefault = async (row: TemplateRow) => {
     try {
       await templatesApi.setDefault(new RequestParams({ _id: row._id }));
-      setNotifications({
-        type: 'success',
-        text: <Translate>Default template set successfully.</Translate>,
-      });
+      notify('success', t('System', 'Default template set successfully.', null, false));
       await revalidator.revalidate();
     } catch (e) {
       handleUnexpectedError(e, 'Error setting default template');
@@ -88,10 +84,7 @@ const Templates = () => {
         )
       );
       setSelected([]);
-      setNotifications({
-        type: 'success',
-        text: <Translate>Template(s) deleted successfully.</Translate>,
-      });
+      notify('success', t('System', 'Template(s) deleted successfully.', null, false));
       await revalidator.revalidate();
     } catch (e) {
       handleUnexpectedError(e, 'Error deleting template(s)');
@@ -109,24 +102,24 @@ const Templates = () => {
             enableSelections
             onSelect={({ selectedRows }) => setSelected(Object.keys(selectedRows))}
             defaultSorting={[{ id: 'name', desc: false }]}
-            className="bg-white"
+            className="bg-paper"
           />
         </SettingsContent.Body>
         <SettingsContent.Footer>
           <div className="flex justify-between w-full">
             {selected.length === 0 && (
               <I18NLink to="/settings/templates/new">
-                <Button color="primary">
+                <Button variant="primary">
                   <Translate>Add template</Translate>
                 </Button>
               </I18NLink>
             )}
             {selected.length > 0 && (
               <div className="flex items-center gap-2">
-                <Button color="error" onClick={handleDeleteClick}>
+                <Button variant="danger" onClick={handleDeleteClick}>
                   <Translate>Delete</Translate>
                 </Button>
-                <span className="text-gray-700">
+                <span className="text-ink-secondary">
                   <Translate>Selected</Translate> {selected.length} <Translate>of</Translate>{' '}
                   {templates.length}
                 </span>

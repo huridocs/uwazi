@@ -1,9 +1,12 @@
-import { parseQuery, validation } from 'api/utils';
-import { userSchema } from 'shared/types/userSchema';
-import { needsAuthorization, validatePasswordMiddleWare } from '../auth';
-import users from './users';
+import { parseQuery, validation } from '#api/utils/index.js';
+import { userSchema } from '#shared/types/userSchema.js';
+import { needsAuthorization, validatePasswordMiddleWare } from '../auth/index.js';
+import users from './users.js';
+import { PUBLIC_USER_ID } from './publicUser.js';
+import { tenants } from '#api/tenants/index.js';
 
-const getDomain = req => `${req.protocol}://${req.get('host')}`;
+const getDomain = req => `${req.protocol}://${tenants.current().domain}`;
+
 export default app => {
   app.post(
     '/api/users',
@@ -144,7 +147,12 @@ export default app => {
   app.get('/api/users', needsAuthorization(), (_req, res, next) => {
     users
       .get({}, '+groups +failedLogins +accountLocked')
-      .then(response => res.json(response))
+      .then(response => {
+        const filteredUsers = response.filter(
+          user => user._id.toString() !== PUBLIC_USER_ID.toString()
+        );
+        res.json(filteredUsers);
+      })
       .catch(next);
   });
 

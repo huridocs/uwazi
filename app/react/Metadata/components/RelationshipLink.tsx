@@ -1,10 +1,10 @@
 import React from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { I18NLink } from 'app/I18N';
-import { IStore } from 'app/istore';
-import { Icon } from 'app/Layout';
-import * as actions from '../../Relationships/actions/actions';
+import { I18NLink } from '#app/I18N/index.js';
+import { IStore } from '#app/istore.js';
+import { Icon } from '#app/Layout/index.js';
+import * as actions from '../../Relationships/actions/actions.js';
 
 interface RelationshipLinkProps {
   propValue: any;
@@ -28,6 +28,15 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector> & RelationshipLinkProps;
 
 const RelationshipLink = ({ propValue: propVal, selectConnection }: mappedProps) => {
+  if (propVal.authorized === false) {
+    return (
+      <>
+        {propVal.icon && <Icon className="item-icon" data={propVal.icon} />}
+        {propVal.value}
+      </>
+    );
+  }
+
   if (propVal.relatedEntity) {
     return (
       <button

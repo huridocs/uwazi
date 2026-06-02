@@ -1,8 +1,7 @@
-import { Tenant } from 'api/tenants/tenantContext';
-import { IXExtractorType } from 'shared/types/extractorType';
-import { SettingsLinkSchema } from 'shared/types/settingsType';
-import { Property, Template } from 'app/apiResponseTypes';
-import { ClientPropertySchema } from 'app/istore';
+import { IXExtractorType } from '#shared/types/extractorType.js';
+import { SettingsLinkSchema } from '#shared/types/settingsType.js';
+import { Property, Template } from '#app/apiResponseTypes.js';
+import { ClientPropertySchema } from '#app/istore.js';
 
 interface ClientIXExtractorType extends Omit<IXExtractorType, '_id'> {
   _id?: string;
@@ -59,9 +58,13 @@ enum ItemTypes {
   ROW = 'row',
 }
 
-type FeatureFlags = Tenant['featureFlags'] & {};
-
-type ClientFeatureFlags = Pick<FeatureFlags, 'paragraphExtraction'>;
+type ClientFeatureFlags = {
+  paragraphExtraction?: boolean;
+  themeCustomization?: boolean;
+  v2CSVImport?: boolean;
+  newHeader?: boolean;
+  v2GetEntity?: boolean;
+};
 
 type ClientProperty = Property & {
   _id?: string;
@@ -82,7 +85,7 @@ export type {
   DraggableValue,
   Page,
   TranslationValue,
-  ClientFeatureFlags,
   ClientTemplateSchema,
   ClientProperty,
+  ClientFeatureFlags,
 };

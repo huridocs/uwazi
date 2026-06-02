@@ -2,15 +2,15 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Location, useBlocker, useLoaderData, useNavigate } from 'react-router';
 import { useForm } from 'react-hook-form';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { Row } from '@tanstack/react-table';
-import { isEmpty } from 'lodash';
-import { Translate } from 'app/I18N';
-import { ClientThesaurus } from 'app/apiResponseTypes';
-import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Button, ConfirmNavigationModal } from 'V2/Components/UI';
-import { notificationAtom, templatesAtom } from 'app/V2/atoms';
-import { PropertySchema } from 'shared/types/commonTypes';
+import isEmpty from 'lodash/isEmpty.js';
+import { t, Translate } from '#app/I18N/index.js';
+import { ClientThesaurus } from '#app/apiResponseTypes.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
+import { Button, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
+import { templatesAtom } from '#app/V2/atoms/index.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
 import {
   addGroupSubmit,
   addItemSubmit,
@@ -20,12 +20,18 @@ import {
   sanitizeThesaurusValues,
   sortValues,
   thesaurusAsRow,
-} from './helpers';
-import type { ConfirmationCallback } from './helpers';
-import { DeletionModal, GroupForm, ThesaurusValueForm, ThesaurusActions } from './components';
-import type { ThesaurusRow } from './components';
-import { ThesaurusForm } from './ThesaurusForm';
-import { ImportButton } from './components/ImportButton';
+} from './helpers.js';
+import type { ConfirmationCallback } from './helpers.js';
+import {
+  DeletionModal,
+  GroupForm,
+  ThesaurusValueForm,
+  ThesaurusActions,
+} from './components/index.js';
+import type { ThesaurusRow } from './components/index.js';
+import { ThesaurusForm } from './ThesaurusForm.js';
+import { ImportButton } from './components/ImportButton.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const EditThesaurus = () => {
   const navigate = useNavigate();
@@ -41,13 +47,13 @@ const EditThesaurus = () => {
   const [warnAboutUse, setWarnAboutUse] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [confirmCallback, setConfirmCallback] = useState<ConfirmationCallback>();
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
 
   useMemo(() => {
     const currentThesaurus = thesaurus || { values: [] };
     setWarnAboutUse(
-      templates.find(t =>
-        (t.properties || []).some(
+      templates.find(templateItem =>
+        (templateItem.properties || []).some(
           (property: PropertySchema) => property.content === currentThesaurus._id
         )
       ) !== undefined
@@ -129,13 +135,13 @@ const EditThesaurus = () => {
             setSelectedThesaurusValue={setSelectedThesaurusValue}
           />
         </SettingsContent.Body>
-        <SettingsContent.Footer className="bottom-0 bg-indigo-50">
+        <SettingsContent.Footer className="bottom-0" highlighted={!isEmpty(selectedThesaurusValue)}>
           {!isEmpty(selectedThesaurusValue) && (
             <div className="flex items-center gap-2">
               <Button
                 type="button"
                 onClick={deleteSelected}
-                color="error"
+                variant="danger"
                 data-testid="thesauri-remove-button"
               >
                 <Translate>Remove</Translate>
@@ -150,10 +156,10 @@ const EditThesaurus = () => {
                 <Button onClick={addItem}>
                   <Translate>Add item</Translate>
                 </Button>
-                <Button styling="light" onClick={addGroup}>
+                <Button variant="ghost" onClick={addGroup}>
                   <Translate>Add group</Translate>
                 </Button>
-                <Button styling="light" onClick={sortValues(thesaurusValues, setThesaurusValues)}>
+                <Button variant="ghost" onClick={sortValues(thesaurusValues, setThesaurusValues)}>
                   <Translate>Sort</Translate>
                 </Button>
                 <ImportButton
@@ -164,19 +170,13 @@ const EditThesaurus = () => {
                   getThesaurus={getCurrentStatus}
                   onSuccess={async (savedThesaurus: ClientThesaurus) => {
                     setValue('_id', savedThesaurus._id);
-                    setNotifications({
-                      type: 'success',
-                      text: <Translate>Thesauri updated.</Translate>,
-                    });
+                    notify('success', t('System', 'Thesauri updated.', null, false));
                     await navigate(`../edit/${savedThesaurus._id}`, { replace: true });
                     setIsImporting(false);
                   }}
                   onFailure={() => {
                     setIsImporting(false);
-                    setNotifications({
-                      type: 'error',
-                      text: <Translate>Error adding thesauri.</Translate>,
-                    });
+                    notify('error', t('System', 'Error adding thesauri.', null, false));
                   }}
                 />
               </div>

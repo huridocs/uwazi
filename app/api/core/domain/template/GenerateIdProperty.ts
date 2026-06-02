@@ -1,10 +1,10 @@
-import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
-import { generateID } from 'shared/IDGenerator';
+import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
+import { generateID } from '#shared/IDGenerator.js';
 import { z } from 'zod';
-import { PropertyTypeInvalidTypeError } from './errors';
-import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
-import { PropertyTypeEnum } from './PropertyType';
-import { GeneratedIdEntry, PropertyAssignment } from './PropertyValue';
+import { PropertyTypeInvalidTypeError } from './errors.js';
+import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty.js';
+import { PropertyTypeEnum } from './PropertyType.js';
+import { GeneratedIdEntry, PropertyAssignment } from './PropertyValue.js';
 
 type Props = {
   type?: PropertyTypeEnum.GeneratedId;
@@ -33,6 +33,10 @@ class GenerateIdProperty extends FilterableProperty {
     }
   }
 
+  get isTranslatable(): boolean {
+    return false;
+  }
+
   createPropertyAssignment(
     { value }: CreatePropertyAssignmentInput<GeneratedIdEntry>,
     shouldValidateForRequired = false
@@ -45,6 +49,7 @@ class GenerateIdProperty extends FilterableProperty {
       name: this.name,
       type: this.type,
       value: parsedValue,
+      isTranslatable: this.isTranslatable,
     };
   }
 

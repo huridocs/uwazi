@@ -3,20 +3,19 @@
  */
 import React from 'react';
 import { shallow } from 'enzyme';
-import { PDFPage } from 'app/PDF';
-import PDFJS from '../../PDFJS';
-import PDF from '../PDF';
+import { PDFPage } from '#app/PDF/index.js';
+import { PDFJS } from '#V2/Components/PDFViewer/pdfjs.js';
+import { PDF } from '../PDF.js';
 
 const legacyCharacterMapUrl = '/legacy_character_maps/';
 
-jest.mock('../../PDFJS', () => ({
-  default: {
-    getDocument: () => {},
-  },
-  getDocument: () => {},
+jest.mock('#V2/Components/PDFViewer/pdfjs.js', () => ({
+  PDFJS: { getDocument: jest.fn() },
   EventBus: function () {},
+  CMAP_URL: '/legacy_character_maps/',
 }));
 
+// eslint-disable-next-line max-statements
 describe('PDF', () => {
   let component;
   let instance;
@@ -24,20 +23,25 @@ describe('PDF', () => {
 
   let props;
 
-  beforeEach(async () => {
-    spyOn(PDFJS, 'getDocument').and.returnValue({ promise: Promise.resolve(pdfObject) });
+  beforeEach(() => {
+    PDFJS.getDocument.mockReturnValue({ promise: Promise.resolve(pdfObject) });
     props = {
       file: 'file_url',
       filename: 'original.pdf',
-      onLoad: jasmine.createSpy('onLoad'),
+      onLoad: jest.fn(),
       parentRef: { current: { clientWidth: 500 } },
     };
+  });
+
+  afterEach(() => {
+    PDFJS.getDocument.mockReset();
   });
 
   const render = async () => {
     component = shallow(<PDF {...props} />);
     instance = component.instance();
-    spyOn(instance, 'setState').and.callThrough();
+    const originalSetState = instance.setState.bind(instance);
+    jest.spyOn(instance, 'setState').mockImplementation(state => originalSetState(state));
   };
 
   describe('on instance', () => {
@@ -55,13 +59,13 @@ describe('PDF', () => {
 
   describe('onPDFReady', () => {
     it('should be called on the first render of the PDF pages (only once)', () => {
-      props.onPDFReady = jasmine.createSpy('onPDFReady');
+      props.onPDFReady = jest.fn();
       render();
 
       component.setState({ pdf: { numPages: 5 } });
       expect(props.onPDFReady).toHaveBeenCalled();
 
-      props.onPDFReady.calls.reset();
+      props.onPDFReady.mockClear();
       component.setState({ pdf: { numPages: 5 } });
       expect(props.onPDFReady).not.toHaveBeenCalled();
     });
@@ -71,17 +75,27 @@ describe('PDF', () => {
     it('should not attempt to get the PDF if filname remains unchanged', () => {
       render();
       component.setProps({ filename: 'original.pdf' });
-      expect(PDFJS.getDocument.calls.count()).toBe(1);
+      expect(PDFJS.getDocument).toHaveBeenCalledTimes(1);
     });
 
     it('should get the new PDF if filename changed', done => {
       render();
       component.setProps({ filename: 'newfile.pdf' });
       expect(Object.keys(instance.pagesLoaded).length).toBe(0);
-      expect(instance.state).toEqual({ pdf: { numPages: 0 }, filename: 'newfile.pdf' });
-      expect(PDFJS.getDocument.calls.count()).toBe(2);
+      expect(instance.state).toEqual({
+        error: null,
+        pdf: { numPages: 0 },
+        filename: 'newfile.pdf',
+        scale: 1,
+      });
+      expect(PDFJS.getDocument).toHaveBeenCalledTimes(2);
       setTimeout(() => {
-        expect(instance.state).toEqual({ pdf: pdfObject, filename: 'newfile.pdf' });
+        expect(instance.state).toEqual({
+          error: null,
+          pdf: pdfObject,
+          filename: 'newfile.pdf',
+          scale: 1,
+        });
         done();
       });
     });
@@ -89,7 +103,7 @@ describe('PDF', () => {
 
   describe('pageVisibility', () => {
     it('should save page and visibility and execute onPageChange', () => {
-      props.onPageChange = jasmine.createSpy('onPageChange');
+      props.onPageChange = jest.fn();
 
       render();
       const page = 2;
@@ -98,8 +112,9 @@ describe('PDF', () => {
       expect(props.onPageChange).toHaveBeenCalledWith(2);
     });
 
+    // eslint-disable-next-line max-statements
     it('should call pageChange when visibility is the highest and the page is diferent from before', () => {
-      props.onPageChange = jasmine.createSpy('onPageChange');
+      props.onPageChange = jest.fn();
 
       render();
       instance.pages = { 2: null };
@@ -109,13 +124,13 @@ describe('PDF', () => {
       instance.onPageVisible(page, visibility);
       expect(props.onPageChange).toHaveBeenCalledWith(3);
 
-      props.onPageChange.calls.reset();
+      props.onPageChange.mockClear();
       page = 4;
       visibility = 550;
       instance.onPageVisible(page, visibility);
       expect(props.onPageChange).not.toHaveBeenCalled();
 
-      props.onPageChange.calls.reset();
+      props.onPageChange.mockClear();
       page = 4;
       visibility = 560;
       instance.onPageVisible(page, visibility);
@@ -123,8 +138,9 @@ describe('PDF', () => {
     });
 
     describe('in case of equal visibility', () => {
+      // eslint-disable-next-line max-statements
       it('should use the smallest one', () => {
-        props.onPageChange = jasmine.createSpy('onPageChange');
+        props.onPageChange = jest.fn();
         render();
 
         let page = 30;
@@ -132,7 +148,7 @@ describe('PDF', () => {
         instance.onPageVisible(page, visibility);
         expect(props.onPageChange).toHaveBeenCalledWith(30);
 
-        props.onPageChange.calls.reset();
+        props.onPageChange.mockClear();
         page = 29;
         visibility = 10;
         instance.onPageVisible(page, visibility);
@@ -165,10 +181,10 @@ describe('PDF', () => {
       render();
       instance.pageLoaded(1);
       expect(props.onLoad).toHaveBeenCalled();
-      props.onLoad.calls.reset();
+      props.onLoad.mockClear();
       instance.pageLoaded(2);
       expect(props.onLoad).toHaveBeenCalled();
-      props.onLoad.calls.reset();
+      props.onLoad.mockClear();
       instance.pageLoaded(5);
       expect(props.onLoad).not.toHaveBeenCalled();
     });
@@ -179,7 +195,7 @@ describe('PDF', () => {
       render();
       instance.setState({ pdf: { numPages: 5 } });
       instance.pageLoaded(1);
-      props.onLoad.calls.reset();
+      props.onLoad.mockClear();
       instance.pageLoading(2);
       instance.pageLoaded(3);
       expect(props.onLoad).not.toHaveBeenCalled();
@@ -194,7 +210,7 @@ describe('PDF', () => {
       instance.pageLoaded(1);
       instance.pageLoaded(2);
       instance.pageLoaded(3);
-      props.onLoad.calls.reset();
+      props.onLoad.mockClear();
       instance.pageUnloaded(3);
 
       expect(props.onLoad).toHaveBeenCalledWith({ pages: [1, 2] });

@@ -1,7 +1,7 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-import { ObjectIdSchema, TocSchema, ExtractedMetadataSchema } from 'shared/types/commonTypes';
+import { ObjectIdSchema, TocSchema, ExtractedMetadataSchema } from '#shared/types/commonTypes.js';
 
 export interface FileType {
   _id?: ObjectIdSchema;
@@ -12,6 +12,7 @@ export interface FileType {
   size?: number;
   creationDate?: number;
   language?: string;
+  iso639_3?: string;
   type?: 'custom' | 'document' | 'thumbnail' | 'attachment';
   url?: string;
   status?: 'processing' | 'failed' | 'ready';

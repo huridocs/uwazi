@@ -1,15 +1,19 @@
-export { atomStore, hydrateAtomStore } from './store';
-export { notificationAtom } from './notificationAtom';
-export { settingsAtom } from './settingsAtom';
-export { templatesAtom } from './templatesAtom';
-export { translationsAtom, inlineEditAtom, localeAtom } from './translationsAtoms';
-export { thesauriAtom } from './thesauriAtom';
-export { globalMatomoAtom } from './globalMatomoAtom';
-export { ciMatomoActiveAtom } from './ciMatomoActiveAtom';
-export { userAtom } from './userAtom';
-export { relationshipTypesAtom } from './relationshipTypes';
-export { pdfScaleAtom } from './pdfScaleAtom';
-export { deletedEntityAtom } from './deletedEntityAtom';
-export { serverIsMobileAtom } from './isMobileAtom';
-export type { AtomStoreData } from './store';
-export type { notificationAtomType } from './notificationAtom';
+export { hydrateAtomStore } from './store.js';
+export { settingsAtom } from './settingsAtom.js';
+export { templatesAtom } from './templatesAtom.js';
+export { translationsAtom, inlineEditAtom, localeAtom } from './translationsAtoms.js';
+export { thesauriAtom } from './thesauriAtom.js';
+export { globalMatomoAtom } from './globalMatomoAtom.js';
+export { ciMatomoActiveAtom } from './ciMatomoActiveAtom.js';
+export { userAtom } from './userAtom.js';
+export { relationshipTypesAtom } from './relationshipTypes.js';
+export { deletedEntityAtom } from './deletedEntityAtom.js';
+export { serverIsMobileAtom } from './isMobileAtom.js';
+export { themeModeAtom } from './themeModeAtom.js';
+export {
+  effectiveThemeModeAtom,
+  getEffectiveThemeMode,
+  themeControlledModeAtom,
+} from './effectiveThemeModeAtom.js';
+export type { AtomStoreData } from './store.js';
+export type { ThemeMode } from './themeModeAtom.js';

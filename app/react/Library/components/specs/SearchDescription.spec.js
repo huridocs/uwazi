@@ -2,10 +2,10 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import libraryHelpers from 'app/Library/helpers/libraryFilters';
+import { libraryHelpers } from '#app/Library/helpers/libraryFilters.js';
 
-import { SearchDescription } from 'app/Library/components/SearchDescription';
-import { mapStateToProps } from '../SearchDescription';
+import { SearchDescriptionView } from '#app/Library/components/SearchDescription.js';
+import { mapStateToProps } from '../SearchDescription.js';
 
 describe('SearchDescription', () => {
   let searchTerm;
@@ -57,7 +57,9 @@ describe('SearchDescription', () => {
   });
 
   const render = () =>
-    shallow(<SearchDescription searchTerm={searchTerm} query={query} properties={properties} />);
+    shallow(
+      <SearchDescriptionView searchTerm={searchTerm} query={query} properties={properties} />
+    );
 
   it('should generate description based on property filters', () => {
     const component = render();

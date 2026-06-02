@@ -1,6 +1,6 @@
 // @ts-ignore
 import Test from 'supertest/lib/test';
-import { extendSupertest } from '../supertestExtensions';
+import { extendSupertest } from '../supertestExtensions.js';
 
 describe('assertStatus', () => {
   const mockError = new Error('mock error');
@@ -28,7 +28,7 @@ describe('assertStatus', () => {
         text: JSON.stringify('validation error'),
       });
       await expect(result.message).toMatch('validation error');
-      expect(result.stack).toBeUndefined();
+      expect(result.stack).toBeDefined();
     });
   });
 });

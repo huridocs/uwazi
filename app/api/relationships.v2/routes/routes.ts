@@ -1,16 +1,16 @@
 import { performance } from 'perf_hooks';
 
-import { Application, NextFunction, Request, Response } from 'express';
+import type { Application, NextFunction, Request, Response } from 'express';
 
-import { needsAuthorization } from 'api/auth';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { parseQuery } from 'api/utils';
-import { GetMigrationHubRecordsResponse } from 'shared/types/api.v2/migrationHubRecords.get';
-import { MigrationResponse } from 'shared/types/api.v2/relationships.migrate';
-import { TestOneHubResponse } from 'shared/types/api.v2/relationships.testOneHub';
-import { CreateRelationshipMigRationFieldResponse } from 'shared/types/api.v2/relationshipMigrationField.create';
-import { GetRelationshipMigrationFieldsResponse } from 'shared/types/api.v2/relationshipMigrationField.get';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { needsAuthorization } from '#api/auth/index.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { parseQuery } from '#api/utils/index.js';
+import { GetMigrationHubRecordsResponse } from '#shared/types/api.v2/migrationHubRecords.get.js';
+import { MigrationResponse } from '#shared/types/api.v2/relationships.migrate.js';
+import { TestOneHubResponse } from '#shared/types/api.v2/relationships.testOneHub.js';
+import { CreateRelationshipMigRationFieldResponse } from '#shared/types/api.v2/relationshipMigrationField.create.js';
+import { GetRelationshipMigrationFieldsResponse } from '#shared/types/api.v2/relationshipMigrationField.get.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import {
   CreateRelationshipMigrationFieldService,
   CreateRelationshipService,
@@ -21,21 +21,21 @@ import {
   GetRelationshipService,
   MigrationService,
   UpsertRelationshipMigrationFieldService,
-} from '../services/service_factories';
-import { validateCreateRelationship } from './validators/createRelationship';
-import { validateDeleteRelationships } from './validators/deleteRelationships';
-import { validateGetRelationships } from './validators/getRelationship';
-import { validateMigration, validateTestOneHub } from './validators/migration';
-import { validateDeleteRelationshipMigrationField } from './validators/deleteRelationshipMigrationFields';
-import { validateUpsertRelationshipMigrationField } from './validators/upsertRelationshipMigrationFields';
+} from '../services/service_factories.js';
+import { validateCreateRelationship } from './validators/createRelationship.js';
+import { validateDeleteRelationships } from './validators/deleteRelationships.js';
+import { validateGetRelationships } from './validators/getRelationship.js';
+import { validateMigration, validateTestOneHub } from './validators/migration.js';
+import { validateDeleteRelationshipMigrationField } from './validators/deleteRelationshipMigrationFields.js';
+import { validateUpsertRelationshipMigrationField } from './validators/upsertRelationshipMigrationFields.js';
 
-import { validateGetMigrationHubRecordsRequest } from './validators/getMigrationHubRecords';
+import { validateGetMigrationHubRecordsRequest } from './validators/getMigrationHubRecords.js';
 
 const featureRequired = async (_req: Request, res: Response, next: NextFunction) => {
   if (
-    !(await SettingsDataSourceFactory.default(
-      TransactionManagerFactory.default()
-    ).readNewRelationshipsAllowed())
+    !(await SettingsDataSourceFactory.default({
+      transactionManager: TransactionManagerFactory.default(),
+    }).readNewRelationshipsAllowed())
   ) {
     return res.sendStatus(404);
   }

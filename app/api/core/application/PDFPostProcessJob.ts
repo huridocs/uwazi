@@ -1,0 +1,82 @@
+import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { ProcessingFileFailed } from '#api/core/domain/files/errors.js';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
+import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { FileIsNotAPDF } from '../infrastructure/services/PDFService.js';
+import { EventsBus } from '../libs/eventsbus/index.js';
+import { AbstractUseCase } from '../libs/UseCase.js';
+import { PDFService } from './contracts/PDFService.js';
+import { FilesService } from './FilesService.js';
+import { SettingsDataSource } from './contracts/SettingsDataSource.js';
+
+type Input = {
+  documentId: string;
+};
+
+type Output = PDFDocument;
+
+type Deps = {
+  eventBus: EventsBus;
+  filesDS: FilesDataSource;
+  fileStorage: FileStorage;
+  pdfService: PDFService;
+  filesService: FilesService;
+  entitiesDS: MultiLanguageEntityDataSource;
+  settingsDS: SettingsDataSource;
+};
+
+export class PDFPostProcessJob extends AbstractUseCase<Input, Output, Deps, [boolean]> {
+  async execute({ documentId }: Input, retriesLeft: boolean): Promise<Output> {
+    const processingPDF = (await this.deps.filesDS.getProcessingById(documentId)).getDataOrThrow();
+    try {
+      const pdfInfo = (
+        await this.deps.pdfService.extractText(processingPDF.content)
+      ).getDataOrThrow();
+
+      const processedPDF = processingPDF.processed({
+        language: pdfInfo.language.key,
+        totalPages: pdfInfo.totalPages,
+        fullText: pdfInfo.pages,
+      });
+
+      const thumbnail = (
+        await this.deps.filesService.createThumbnail(processedPDF, pdfInfo.language.key)
+      ).getDataOrThrow();
+
+      await this.transactionManager.run(async () => {
+        await this.deps.filesDS.update(processedPDF);
+
+        await this.deps.filesDS.create(thumbnail);
+        await this.deps.fileStorage.storeFile(thumbnail);
+
+        const entity = (await this.deps.entitiesDS.getById(processingPDF.entity)).getDataOrThrow();
+
+        entity.setPreview(
+          await this.deps.filesDS.getThumbnails([entity.sharedId]).all(),
+          await this.deps.settingsDS.getDefaultLanguageKey()
+        );
+
+        await this.deps.entitiesDS.update(entity);
+      });
+
+      await this.eventBus.emit(
+        new FileUpdatedEvent({
+          before: processingPDF.toDTO(),
+          after: processedPDF.toDTO(),
+        })
+      );
+
+      return processedPDF;
+    } catch (e) {
+      const failedPDF = processingPDF.failed();
+      if (!retriesLeft || e instanceof FileIsNotAPDF) {
+        await this.transactionManager.run(async () => {
+          await this.deps.filesDS.update(failedPDF);
+        });
+      }
+      throw new ProcessingFileFailed(failedPDF, e);
+    }
+  }
+}

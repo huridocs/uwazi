@@ -1,7 +1,7 @@
-import { DateProperty } from '../DateProperty';
-import { PropertyTypeInvalidTypeError } from '../errors';
-import { MultiDateProperty } from '../MultiDateProperty';
-import { PropertyTypeEnum } from '../PropertyType';
+import { DateProperty } from '../DateProperty.js';
+import { PropertyTypeInvalidTypeError } from '../errors.js';
+import { MultiDateProperty } from '../MultiDateProperty.js';
+import { PropertyTypeEnum } from '../PropertyType.js';
 
 describe('MultiDateProperty', () => {
   it('should set defaults values if not provided', () => {
@@ -53,6 +53,7 @@ describe('MultiDateProperty', () => {
       });
 
       expect(assignment).toEqual({
+        isTranslatable: false,
         name: multiDate.name,
         type: multiDate.type,
         value: [{ value: 1700000000 }, { value: 1800000000 }],
@@ -64,7 +65,12 @@ describe('MultiDateProperty', () => {
 
       const assignment = multiDate.createPropertyAssignment({ value: [] });
 
-      expect(assignment).toEqual({ name: multiDate.name, type: multiDate.type, value: [] });
+      expect(assignment).toEqual({
+        isTranslatable: false,
+        name: multiDate.name,
+        type: multiDate.type,
+        value: [],
+      });
     });
 
     it('should throw if required and no value is provided', () => {

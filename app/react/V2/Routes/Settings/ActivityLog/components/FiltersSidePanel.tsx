@@ -1,12 +1,12 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Sidepanel, Button } from 'app/V2/Components/UI';
-import { Translate, t } from 'app/I18N';
-import { InputField, DateRangePicker, MultiSelect } from 'app/V2/Components/Forms';
+import { Sidepanel, Button } from '#V2/Components/UI/index.js';
+import { Translate, t } from '#app/I18N/index.js';
+import { InputField, DateRangePicker, MultiSelect } from '#V2/Components/Forms/index.js';
 import { useAtomValue } from 'jotai';
-import { localeAtom } from 'app/V2/atoms';
-import type { ActivityLogSearch } from '../ActivityLogLoader';
+import { localeAtom } from '#V2/atoms/index.js';
+import type { ActivityLogSearch } from '../ActivityLogLoader.js';
 
 interface FiltersSidePanelProps {
   isOpen: boolean;
@@ -82,7 +82,6 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                   setValue('username', '');
                 }}
                 onChange={handleInputSubmit('username')}
-                onBlur={() => {}}
               />
               <InputField
                 id="search"
@@ -95,7 +94,6 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                 }}
                 onChange={handleInputSubmit('search')}
                 hasErrors={!!errors.search}
-                onBlur={() => {}}
               />
               <Controller
                 control={control}
@@ -146,9 +144,9 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
         <Sidepanel.Footer className="px-4 py-3">
           <div className="flex gap-2">
             <Button
-              className="flex-grow"
+              className="grow"
               type="button"
-              styling="outline"
+              variant="secondary"
               onClick={() => {
                 setCurrentFilters({
                   ...currentFilters,
@@ -165,7 +163,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
             >
               <Translate>Clear all</Translate>
             </Button>
-            <Button className="flex-grow" type="submit">
+            <Button className="grow" type="submit">
               <Translate>Apply</Translate>
             </Button>
           </div>

@@ -1,29 +1,32 @@
 /* eslint-disable max-lines */
 import _ from 'lodash';
 
-import date from 'api/utils/date';
-import propertiesHelper from 'shared/commonProperties';
-import dictionariesModel from 'api/thesauri/dictionariesModel';
-import { createError } from 'api/utils';
-import { filterOptions } from 'shared/optionsUtils';
-import { preloadOptionsLimit, preloadOptionsSearch } from 'shared/config';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { checkWritePermissions } from 'shared/permissionsUtils';
-import usersModel from 'api/users/users';
-import userGroups from 'api/usergroups/userGroups';
-import { sequentialPromises } from 'shared/asyncUtils';
-import { objectIndex } from 'shared/data_utils/objectIndex';
-import { propertyTypes } from 'shared/propertyTypes';
-import { UserRole } from 'shared/types/userSchema';
-import { OperationalError } from 'api/common.v2/errors/OperationalError';
-import { inspect } from 'util';
-import documentQueryBuilder from './documentQueryBuilder';
-import { elastic } from './elastic';
-import entitiesModel from '../entities/entitiesModel';
-import templatesModel from '../core/v1_layer/templates';
-import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
-import thesauri from '../thesauri';
-import * as v2 from './v2_support';
+import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
+import translations from '#api/i18n/translations.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import dictionariesModel from '#api/thesauri/dictionariesModel.js';
+import userGroups from '#api/usergroups/userGroups.js';
+import usersModel from '#api/users/users.js';
+import { createError } from '#api/utils/index.js';
+import date from '#api/utils/date.js';
+import { sequentialPromises } from '#shared/asyncUtils.js';
+import propertiesHelper from '#shared/commonProperties.js';
+import { preloadOptionsLimit, preloadOptionsSearch } from '#shared/config.js';
+import { objectIndex } from '#shared/data_utils/objectIndex.js';
+import { filterOptions } from '#shared/optionsUtils.js';
+import { checkWritePermissions } from '#shared/permissionsUtils.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import templatesModel from '../core/v1_layer/templates/index.js';
+import entitiesModel from '../entities/entitiesModel.js';
+import thesauri from '../thesauri/index.js';
+import documentQueryBuilder from './documentQueryBuilder.js';
+import { elastic } from './elastic.js';
+import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex.js';
+import * as v2 from './v2_support.js';
+import { EntitiesQueryServiceFactory } from '#api/core/infrastructure/factories/EntitiesQueryServiceFactory.js';
+import { User } from '#api/users.v2/model/User.js';
+import { tenants } from '#api/tenants/index.js';
 
 function processParentThesauri(property, values, dictionaries, properties) {
   if (!values) {
@@ -255,9 +258,10 @@ const _sanitizeAgregationNames = aggregations =>
     return Object.assign(allAggregations, { [sanitizedKey]: aggregations[key] });
   }, {});
 
-const indexedDictionaryValues = dictionary =>
+const indexedDictionaryValues = (dictionary, dictionaryTranslations) =>
   dictionary.values
     .reduce((values, v) => {
+      v.label = dictionaryTranslations?.[v.label] || v.label;
       if (v.values) {
         return values.concat(v.values, [v]);
       }
@@ -265,6 +269,7 @@ const indexedDictionaryValues = dictionary =>
       return values;
     }, [])
     .reduce((v, value) => {
+      value.label = dictionaryTranslations?.[value.label] || value.label;
       // eslint-disable-next-line no-param-reassign
       v[value.id] = value;
       return v;
@@ -299,7 +304,17 @@ const _getAggregationDictionary = async (
   const propContent = property.content.toString();
   if (!dictionaryCache[propContent]) {
     const dictionary = dictionariesById[propContent];
-    const dictionaryValues = indexedDictionaryValues(dictionary);
+    const dictionaryTranslations =
+      (
+        await translations.get({
+          locale: language,
+          context: dictionary._id.toString(),
+        })
+      )
+        .find(translation => translation.locale === language)
+        ?.contexts?.find(context => context.id === dictionary._id.toString())?.values || {};
+
+    const dictionaryValues = indexedDictionaryValues(dictionary, dictionaryTranslations);
     dictionaryCache[propContent] = [dictionary, dictionaryValues];
   }
   return dictionaryCache[propContent];
@@ -630,8 +645,15 @@ const processResponse = async (response, templates, dictionaries, language, filt
     result.obsoleteMetadata = v2processors.obsoleteMetadata(hit);
     return result;
   });
+
+  if (tenants.current()?.featureFlags?.v2GetEntity) {
+    const entitiesQueryService = EntitiesQueryServiceFactory.default(User.createFrom(user));
+    await entitiesQueryService.applyRelationshipPermissions(rows, User.createFrom(user));
+  }
+
+  const aggregationsAll = response.body.aggregations?.all || {};
   const sanitizedAggregations = await _sanitizeAggregations(
-    response.body.aggregations.all,
+    aggregationsAll,
     templates,
     dictionaries,
     language
@@ -769,10 +791,11 @@ const buildQuery = async (query, language, user, resources) => {
   queryBuilder.filterMetadata(filters);
   queryBuilder.customFilters(query.customFilters);
   // this is where the query aggregations are built
-  query.performAggregations = query.performAggregations || true;
-  if (query.performAggregations) {
+  if (query.performAggregations !== false) {
     const aggregations = await aggregationProperties(properties, allProps);
     queryBuilder.aggregations(aggregations);
+  } else {
+    queryBuilder.resetAggregations();
   }
 
   return queryBuilder;
@@ -804,8 +827,10 @@ const search = {
       queryBuilder.publishingStatusAggregations();
     }
 
+    const esQuery = queryBuilder.query();
+
     return elastic
-      .search({ body: queryBuilder.query() })
+      .search({ body: esQuery })
       .then(async response => {
         const processed = await processResponse(
           response,
@@ -875,7 +900,6 @@ const search = {
   },
 
   async bulkIndex(docs, action = 'index') {
-    inspect(new Error('who calls ?'));
     return bulkIndex(docs, action);
   },
 
@@ -884,6 +908,19 @@ const search = {
       delete: { _id: doc._id },
     }));
     return elastic.bulk({ body });
+  },
+
+  async bulkDeleteBySharedId(sharedIds) {
+    await elastic.deleteByQuery({
+      body: {
+        query: {
+          terms: { 'sharedId.raw': sharedIds },
+        },
+      },
+      conflicts: 'proceed',
+      wait_for_completion: true,
+      refresh: true,
+    });
   },
 
   delete(entity) {

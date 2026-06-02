@@ -1,19 +1,14 @@
-import { ArrayUtils } from 'api/common.v2/utils/Array'; // Todo
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { TemplateUpdatedEventContext } from '../domain/template/events/TemplateUpdatedEvent';
-import { TemplateDiff } from '../domain/template/TemplateDiff';
-import { TemplatesDataSource } from './contracts/TemplatesDataSource';
-import { TemplatePostProcessEntitiesJob } from '../infrastructure/jobs/TemplatePostProcessEntitiesJob';
-import { Dispatchable } from '../libs/queue/application/contracts/Dispatchable';
-import {
-  JobsDispatcher,
-  DispatchableClass,
-} from '../libs/queue/application/contracts/JobsDispatcher';
-import { Template } from '../domain/template/Template';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js'; // Todo
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { TemplateUpdatedEventContext } from '../domain/template/events/TemplateUpdatedEvent.js';
+import { TemplateDiff } from '../domain/template/TemplateDiff.js';
+import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
+import { Dispatcher, TemplatePostProcessParams } from './contracts/Dispatcher.js';
+import { Template } from '../domain/template/Template.js';
 
 type Deps = {
-  jobsDispatcher: JobsDispatcher;
+  dispatcher: Dispatcher;
   templatesDS: TemplatesDataSource;
   entitiesDS: MultiLanguageEntityDataSource;
 };
@@ -24,12 +19,13 @@ type Input = {
   context: TemplateUpdatedEventContext;
 };
 
-type DispatchPostProcessJobProps = {
+type CollectPostProcessJobProps = {
   diff: TemplateDiff;
   tenantName: string;
   userId: string;
   language: LanguageISO6391;
   fullReindex: boolean;
+  resaveForFilterChange: boolean;
 };
 
 class TemplatePostProcessService {
@@ -38,14 +34,27 @@ class TemplatePostProcessService {
   async createJobsForEntities({ before, after, context }: Input) {
     const diff = new TemplateDiff(before, after);
 
-    await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
+    await this.deps.dispatcher.postProcessTemplateEntities(async dispatch => {
       if (diff.hasAnyPostProcessChanges()) {
-        await this.dispatchPostProcessJob(
+        await this.collectPostProcessJobParams(
           {
             tenantName: context!.tenantName,
             userId: context!.userId,
             language: context!.language,
             fullReindex: false,
+            resaveForFilterChange: false,
+            diff,
+          },
+          dispatch
+        );
+      } else if (diff.hasFilterablePropertyChanges()) {
+        await this.collectPostProcessJobParams(
+          {
+            tenantName: context!.tenantName,
+            userId: context!.userId,
+            language: context!.language,
+            fullReindex: false,
+            resaveForFilterChange: true,
             diff,
           },
           dispatch
@@ -53,15 +62,17 @@ class TemplatePostProcessService {
       }
 
       if (context?.fullReindex) {
-        const templates = (await this.deps.templatesDS.getAll().all()).filter(
-          t => t.id !== after.id
-        );
+        let templates = await this.deps.templatesDS.getAll().all();
+        if (diff.hasAnyPostProcessChanges()) {
+          templates = templates.filter(t => t.id !== after.id);
+        }
 
         await ArrayUtils.sequentialFor(templates, async template =>
-          this.dispatchPostProcessJob(
+          this.collectPostProcessJobParams(
             {
               language: context.language,
               fullReindex: true,
+              resaveForFilterChange: false,
               userId: context.userId,
               tenantName: context.tenantName,
               diff: new TemplateDiff(template, template),
@@ -73,12 +84,16 @@ class TemplatePostProcessService {
     });
   }
 
-  private async dispatchPostProcessJob(
-    { diff, language, fullReindex, userId, tenantName }: DispatchPostProcessJobProps,
-    dispatch: <T extends Dispatchable>(
-      dispatchable: DispatchableClass<T>,
-      params: Parameters<T['handleDispatch']>[1]
-    ) => void
+  private async collectPostProcessJobParams(
+    {
+      diff,
+      language,
+      fullReindex,
+      resaveForFilterChange,
+      userId,
+      tenantName,
+    }: CollectPostProcessJobProps,
+    dispatch: (params: TemplatePostProcessParams) => void
   ) {
     const limit = 50;
     const resultSet = await this.deps.entitiesDS.getSharedIdsByTemplateId(diff.templateId);
@@ -91,8 +106,7 @@ class TemplatePostProcessService {
 
     // eslint-disable-next-line no-await-in-loop
     while (await resultSet.hasNext()) {
-      // eslint-disable-next-line no-await-in-loop
-      dispatch(TemplatePostProcessEntitiesJob, {
+      dispatch({
         // eslint-disable-next-line no-await-in-loop
         entitiesIds: await resultSet.nextBatch(limit),
         templateId: diff.templateId,
@@ -102,6 +116,7 @@ class TemplatePostProcessService {
         deletedProperties: diff.deletedPropertyNames,
         renamedProperties: diff.renamedProperties,
         fullReindex,
+        resaveForFilterChange,
         tenantName,
         userId,
       });

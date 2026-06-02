@@ -1,17 +1,17 @@
 import { ObjectId } from 'mongodb';
 
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
-import { FileType } from 'api/files.v2/model/FileType';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { FileType as LegacyFileType } from 'shared/types/fileType';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
+import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
+import { FileType } from '#api/core/domain/files/FileType.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { FileType as LegacyFileType } from '#shared/types/fileType.js';
 
-import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
-import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
-import { EntityStatus } from '../domain/PXEntityStatusModel';
-import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
-import { PXValidationError } from '../domain/PXValidationError';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
+import { EntityStatus } from '../domain/PXEntityStatusModel.js';
+import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource.js';
+import { PXValidationError } from '../domain/PXValidationError.js';
 
 type Dependencies = {
   entitiesStatusDS: PXEntitiesStatusDataSource;
@@ -86,7 +86,8 @@ export class PXEntityStatusManager {
 
     if (!extractor) {
       throw new PXValidationError(
-        PXValidationError.codes.CANNOT_MANAGE_ENTITY_STATUS_FOR_SOURCE_TEMPLATE_NOT_MATCHING_CRITERIA,
+        PXValidationError.codes
+          .CANNOT_MANAGE_ENTITY_STATUS_FOR_SOURCE_TEMPLATE_NOT_MATCHING_CRITERIA,
         'Cannot manage EntityStatus for a source Entity that does not match Extractor'
       );
     }
@@ -116,7 +117,7 @@ export class PXEntityStatusManager {
             [file.language!]: existingDocumentDate < newDocumentDate ? existingDocument : file,
           };
         },
-        {} as Record<string, ProcessedDocument>
+        {} as Record<string, PDFDocument>
       );
 
       const isDocumentUsedForExtraction = Object.values(documentsInInstalledLanguages).some(

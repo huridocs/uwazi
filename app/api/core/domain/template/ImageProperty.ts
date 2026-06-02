@@ -1,9 +1,9 @@
-import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
+import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { z } from 'zod';
-import { PropertyTypeInvalidTypeError } from './errors';
-import { AbstractImageProperty, AbstractImagePropertyProps } from './AbstractImageProperty';
-import { PropertyTypeEnum } from './PropertyType';
-import { PropertyAssignment, ImageEntry } from './PropertyValue';
+import { PropertyTypeInvalidTypeError } from './errors.js';
+import { AbstractImageProperty, AbstractImagePropertyProps } from './AbstractImageProperty.js';
+import { PropertyTypeEnum } from './PropertyType.js';
+import { PropertyAssignment, ImageEntry } from './PropertyValue.js';
 
 type Props = {
   type?: PropertyTypeEnum.Image;
@@ -39,6 +39,10 @@ class ImageProperty extends AbstractImageProperty {
     }
   }
 
+  get isTranslatable(): boolean {
+    return true;
+  }
+
   private isFromURL(value: ImageEntry[]) {
     return !!value?.[0]?.value && value[0].value.startsWith('http');
   }
@@ -54,7 +58,7 @@ class ImageProperty extends AbstractImageProperty {
     const isFromURL = this.isFromURL(value);
     const isFromFilePath = this.isFromFilePath(value);
     const parsed = createSchema(shouldValidateForRequired ? this.required : false, isFromURL).parse(
-      value
+      value.filter(v => v?.value?.length)
     );
     let postProcessed = parsed;
 
@@ -66,6 +70,7 @@ class ImageProperty extends AbstractImageProperty {
       name: this.name,
       value: postProcessed,
       type: this.type,
+      isTranslatable: this.isTranslatable,
     };
   }
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import * as Sentry from '@sentry/react';
+
 import {
   RouterProvider,
   createBrowserRouter,
@@ -11,12 +12,16 @@ import {
 } from 'react-router';
 import { Provider } from 'jotai';
 import { Provider as ReduxProvider } from 'react-redux';
-import { ErrorBoundary } from './V2/Components/ErrorHandling';
-import './App/sockets';
-import CustomProvider from './App/Provider';
-import { atomStore } from './V2/atoms';
-import { store } from './store';
-import { routes } from './appRoutes';
+import { getStore } from '#shared/atomStore/index.js';
+import { ErrorBoundary } from './V2/Components/ErrorHandling/index.js';
+import './App/sockets.js';
+import { CustomProvider } from './App/Provider.js';
+import { store } from './store.js';
+import { getAppRoutes } from './appRoutes.js';
+import { resetChunkErrorFlag } from '#V2/shared/errorUtils.js';
+import { loadIcons } from '#UI/Icon/library.js';
+
+loadIcons();
 
 if (window.SENTRY_APP_DSN) {
   Sentry.init({
@@ -38,19 +43,24 @@ if (window.SENTRY_APP_DSN) {
   });
 }
 
-const router = createBrowserRouter(routes);
+const router = createBrowserRouter(getAppRoutes());
 
-const App = () => (
-  <ReduxProvider store={store as any}>
-    <CustomProvider>
-      <Provider store={atomStore}>
-        <ErrorBoundary>
-          <RouterProvider router={router} />
-        </ErrorBoundary>
-      </Provider>
-    </CustomProvider>
-  </ReduxProvider>
-);
+const App = () => {
+  const atomStore = getStore();
+  React.useEffect(() => resetChunkErrorFlag(), []);
+
+  return (
+    <ReduxProvider store={store as any}>
+      <CustomProvider>
+        <Provider store={atomStore}>
+          <ErrorBoundary>
+            <RouterProvider router={router} />
+          </ErrorBoundary>
+        </Provider>
+      </CustomProvider>
+    </ReduxProvider>
+  );
+};
 
 const container = document.getElementById('root');
 const root = window.__loadingError__ === undefined ? hydrateRoot(container!, <App />) : container;
@@ -70,7 +80,21 @@ window.console.error = (...args) => {
   if (isSilentWarning(args[0])) {
     return;
   }
-  origConsoleError.apply(window.console, args);
+  try {
+    origConsoleError.apply(window.console, args);
+  } catch (consoleError) {
+    const original =
+      args.find(arg => arg instanceof Error) ??
+      (typeof args[0] === 'string' ? new Error(args[0]) : undefined);
+    let errorToThrow = original ?? consoleError;
+
+    try {
+      origConsoleError('console.error wrapper failed:', consoleError);
+    } catch (loggingError) {
+      errorToThrow = original ?? loggingError;
+    }
+    throw errorToThrow;
+  }
 };
 
 export { root };

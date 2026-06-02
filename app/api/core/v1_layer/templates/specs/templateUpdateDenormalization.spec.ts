@@ -1,19 +1,30 @@
 /* eslint-disable max-statements */
-import { ValidationError } from 'api/common.v2/validation/ValidationError';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import entities from 'api/entities/entities.js';
-import { EntityUpdatedData, EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
-import { TemplateSchema } from 'api/migrations/migrations/143-parse-numeric-fields/types';
-import * as setupSockets from 'api/socketio/setupSockets';
-import { elasticTesting } from 'api/utils/elastic_testing';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import testingDB, { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { testingTenants } from 'api/utils/testingTenants';
-import * as idGenerator from 'shared/IDGenerator';
-import { propertyTypes } from 'shared/propertyTypes';
-import { EntitySchema } from 'shared/types/entityType';
-import templates from '../templates';
+import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
+import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
+import entities from '#api/entities/entities.js';
+import { EntityUpdatedData, EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
+import { TemplateSchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
+import * as setupSockets from '#api/socketio/setupSockets.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import * as idGenerator from '#shared/IDGenerator.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import templates from '../templates.js';
+import { MongoSlotsBootstrapper } from '#api/core/infrastructure/elasticSearch/entities/MongoSlotsBootstrapper.js';
+import { MongoSlotsDAOFactory } from '#api/core/infrastructure/factories/MongoSlotsDAOFactory.js';
 
 const f = getFixturesFactory();
 
@@ -57,7 +68,32 @@ afterAll(async () => {
 
 async function updateTemplate(template: TemplateSchema, fullReindex = false) {
   jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
-  return templates.save(template, 'en', true, fullReindex);
+
+  const transactionManager = TransactionManagerFactory.default();
+  const jobsDispatcher = new SyncDispatcherForTests({
+    TemplatePostProcessEntitiesJob: async () =>
+      new TemplatePostProcessEntitiesJob({
+        useCase: new TemplateUpdateDenormalizeEntitiesBatch({
+          entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
+          relationshipsV1DS: new MongoRelationshipsV1DataSource(
+            getConnection(),
+            transactionManager
+          ),
+          templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
+          transactionManager,
+          filesDS: FilesDataSourceFactory.default(),
+        }),
+        templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
+      }),
+  });
+  return testingEnvironment.runWithContext(
+    async () => templates.save(template, 'en', true, fullReindex),
+    {
+      factories: {
+        jobsDispatcher: () => jobsDispatcher,
+      },
+    }
+  );
 }
 
 const elasticIndex = 'templates_denorm_flow';
@@ -74,6 +110,13 @@ describe('Templates Update', () => {
       dbName: testingDB.dbName,
       indexName: elasticIndex,
     });
+
+    if (testingTenants.current().featureFlags?.v2ElasticSearch) {
+      await new MongoSlotsBootstrapper({
+        database: getConnection(),
+        slotsDAO: MongoSlotsDAOFactory.default(),
+      }).reset();
+    }
   }
   const fixtures: DBFixture = {
     settings: [
@@ -82,6 +125,19 @@ describe('Templates Update', () => {
           { key: 'en', label: 'English', default: true },
           { key: 'es', label: 'Español' },
         ],
+      },
+    ],
+    translationsV2: [
+      {
+        _id: f.id('translation_text_property_b'),
+        language: 'en',
+        key: 'text_property_b',
+        value: 'text_property_b',
+        context: {
+          type: 'Entity',
+          label: 'text_property_b',
+          id: f.idString('templateB'),
+        },
       },
     ],
     relationtypes: [f.relationType('rel1'), f.relationType('rel2'), f.relationType('rel')],
@@ -150,13 +206,21 @@ describe('Templates Update', () => {
         'entityA3',
         'templateA',
         {},
-        { title: 'entityA3 english', icon: { label: 'icon' }, language: 'en' }
+        {
+          title: 'entityA3 english',
+          icon: { _id: 'id', type: 'type', label: 'icon' },
+          language: 'en',
+        }
       ),
       f.entity(
         'entityA3',
         'templateA',
         {},
-        { title: 'entityA3 spanish', icon: { label: 'icon' }, language: 'es' }
+        {
+          title: 'entityA3 spanish',
+          icon: { _id: 'id', type: 'type', label: 'icon' },
+          language: 'es',
+        }
       ),
     ],
     connections: [...createConnection('entityB1', 'entityA3', 'rel', 'hub1')],
@@ -183,12 +247,39 @@ describe('Templates Update', () => {
       const templateWithDeletedInheritedProp = f.template('templateA', []);
 
       await expect(async () => updateTemplate(templateWithDeletedInheritedProp)).rejects.toThrow(
-        'validation failed'
+        'Properties can not be deleted because are being inherited: [properties=text_property]'
       );
     });
   });
 
   describe('templates denormalization scenarios', () => {
+    describe('when toggling filter on a property (no other changes)', () => {
+      it('should update editDate on all entities of that template', async () => {
+        await setUpFixtures(fixtures);
+
+        const entitiesBefore = (await testingEnvironment.db.getAllFrom('entities')).filter(
+          e => e.template?.toString() === f.idString('templateA') && e.language === 'en'
+        );
+        const editDateBefore = entitiesBefore[0].editDate as number;
+
+        await new Promise(r => {
+          setTimeout(r, 10);
+        });
+
+        await updateTemplate(
+          f.template('templateA', [f.property('text_property', 'text', { filter: true })])
+        );
+
+        const entitiesAfter = (await testingEnvironment.db.getAllFrom('entities')).filter(
+          e => e.template?.toString() === f.idString('templateA') && e.language === 'en'
+        );
+
+        entitiesAfter.forEach(entity => {
+          expect(entity.editDate as number).toBeGreaterThan(editDateBefore);
+        });
+      });
+    });
+
     describe('when changing a property name and template contains relationship properties', () => {
       it('should change the name on all entities and reindex', async () => {
         const propertyWithNameChanged = f.property('text_property_b', 'text', {
@@ -679,7 +770,9 @@ describe('Templates Update', () => {
       propertyWithNameChanged,
     ]);
 
-    await expect(async () => templates.save(template, 'en')).rejects.toEqual(
+    await expect(async () =>
+      testingEnvironment.runWithContext(async () => templates.save(template, 'en'))
+    ).rejects.toEqual(
       new ValidationError([
         { path: 'processing', message: 'template is being processed you can not update it yet' },
       ])
@@ -691,6 +784,19 @@ describe('Templates Update', () => {
       ...fixtures,
       templates: [...fixtures.templates, f.template('templateD', [f.property('text_property_b')])],
       entities: [],
+      translationsV2: [
+        {
+          _id: f.id('translation_text_property_b'),
+          language: 'en',
+          key: 'text_property_b',
+          value: 'text_property_b',
+          context: {
+            type: 'Entity',
+            label: 'text_property_b',
+            id: f.idString('templateD'),
+          },
+        },
+      ],
     });
 
     const propertyWithNameChanged = f.property('text_property_b', 'text', {
@@ -798,6 +904,152 @@ describe('Templates Update', () => {
         'generated_id',
         'generated_id',
         'generated_id',
+      ]);
+    });
+  });
+
+  describe('fullReindex: true - ensuring entities are reindexed when adding non-relationship properties', () => {
+    it('should reindex current template entities when adding text properties with fullReindex=true', async () => {
+      await setUpFixtures({
+        ...fixtures,
+        templates: [...fixtures.templates, f.template('templateFullReindexText', [])],
+        entities: [
+          ...(fixtures.entities || []),
+          f.entity(
+            'entityFullReindexText1',
+            'templateFullReindexText',
+            {},
+            { title: 'Text Entity 1', language: 'en' }
+          ),
+          f.entity(
+            'entityFullReindexText2',
+            'templateFullReindexText',
+            {},
+            { title: 'Text Entity 2', language: 'en' }
+          ),
+        ],
+      });
+
+      const template = f.template('templateFullReindexText', [
+        f.property('new_text_field', 'text', { label: 'New Text Field' }),
+      ]);
+
+      await updateTemplate(template, true);
+
+      const entitiesInElastic = await getEntitiesByTemplate('templateFullReindexText', 'elastic');
+      expect(entitiesInElastic.length).toBe(2);
+      expect(entitiesInElastic).toMatchObject([
+        { sharedId: 'entityFullReindexText1', title: 'Text Entity 1' },
+        { sharedId: 'entityFullReindexText2', title: 'Text Entity 2' },
+      ]);
+    });
+
+    it('should reindex current template entities when adding numeric properties with fullReindex=true', async () => {
+      await setUpFixtures({
+        ...fixtures,
+        templates: [...fixtures.templates, f.template('templateFullReindexNumeric', [])],
+        entities: [
+          ...(fixtures.entities || []),
+          f.entity(
+            'entityFullReindexNumeric1',
+            'templateFullReindexNumeric',
+            {},
+            { title: 'Numeric Entity 1', language: 'en' }
+          ),
+        ],
+      });
+
+      const template = f.template('templateFullReindexNumeric', [
+        f.property('new_numeric_field', 'numeric', { label: 'New Numeric Field' }),
+      ]);
+
+      await updateTemplate(template, true);
+
+      const entitiesInElastic = await getEntitiesByTemplate(
+        'templateFullReindexNumeric',
+        'elastic'
+      );
+      expect(entitiesInElastic.length).toBe(1);
+      expect(entitiesInElastic[0]).toMatchObject({
+        sharedId: 'entityFullReindexNumeric1',
+        title: 'Numeric Entity 1',
+      });
+    });
+
+    it('should reindex current template entities when adding date properties with fullReindex=true', async () => {
+      await setUpFixtures({
+        ...fixtures,
+        templates: [...fixtures.templates, f.template('templateFullReindexDate', [])],
+        entities: [
+          ...(fixtures.entities || []),
+          f.entity(
+            'entityFullReindexDate1',
+            'templateFullReindexDate',
+            {},
+            { title: 'Date Entity 1', language: 'en' }
+          ),
+        ],
+      });
+
+      const template = f.template('templateFullReindexDate', [
+        f.property('new_date_field', 'date', { label: 'New Date Field' }),
+      ]);
+
+      await updateTemplate(template, true);
+
+      const entitiesInElastic = await getEntitiesByTemplate('templateFullReindexDate', 'elastic');
+      expect(entitiesInElastic.length).toBe(1);
+      expect(entitiesInElastic[0]).toMatchObject({
+        sharedId: 'entityFullReindexDate1',
+        title: 'Date Entity 1',
+      });
+    });
+
+    it('should reindex current template with multiple entities when adding multiple properties with fullReindex=true', async () => {
+      await setUpFixtures({
+        ...fixtures,
+        templates: [...fixtures.templates, f.template('templateFullReindexMultiple', [])],
+        entities: [
+          ...(fixtures.entities || []),
+          f.entity(
+            'entityFullReindexMultiple1',
+            'templateFullReindexMultiple',
+            {},
+            { title: 'Multiple Entity 1', language: 'en' }
+          ),
+          f.entity(
+            'entityFullReindexMultiple2',
+            'templateFullReindexMultiple',
+            {},
+            { title: 'Multiple Entity 2', language: 'en' }
+          ),
+          f.entity(
+            'entityFullReindexMultiple3',
+            'templateFullReindexMultiple',
+            {},
+            { title: 'Multiple Entity 3', language: 'en' }
+          ),
+        ],
+      });
+
+      const template = f.template('templateFullReindexMultiple', [
+        f.property('new_text', 'text', { label: 'New Text' }),
+        f.property('new_numeric', 'numeric', { label: 'New Numeric' }),
+        f.property('new_date', 'date', { label: 'New Date' }),
+        f.property('new_markdown', 'markdown', { label: 'New Markdown' }),
+      ]);
+
+      await updateTemplate(template, true);
+
+      const entitiesInElastic = await getEntitiesByTemplate(
+        'templateFullReindexMultiple',
+        'elastic'
+      );
+      expect(entitiesInElastic.length).toBe(3);
+      expect(entitiesInElastic).toMatchObject([
+        { sharedId: 'entityFullReindexMultiple1', title: 'Multiple Entity 1' },
+        { sharedId: 'entityFullReindexMultiple2', title: 'Multiple Entity 2' },
+        { sharedId: 'entityFullReindexMultiple3', title: 'Multiple Entity 3' },
       ]);
     });
   });

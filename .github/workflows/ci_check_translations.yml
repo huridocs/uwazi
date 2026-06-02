@@ -60,7 +60,7 @@ jobs:
           fi
 
       - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.8.0
+        uses: supercharge/mongodb-github-action@1.12.1
         with:
           mongodb-version: 7.0
           mongodb-replica-set: test-rs
@@ -73,7 +73,18 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ./node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('patches/**') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Cache Yarn
+        uses: actions/cache@v4
+        with:
+          path: ~/.yarn/berry
+          key: ${{ runner.os }}-yarn-cache-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-cache-
+      - name: Enable Corepack
+        run: corepack enable
       - name: install dependencies
         run: yarn install
       - run: yarn blank-state
@@ -120,7 +131,7 @@ jobs:
           echo "Timed out waiting for artifact."
           exit 1
         timeout-minutes: 6
-      - run: cd prod; yarn update-translations-db
+      - run: cd prod && npm run update-translations-db
         env:
           NODE_ENV: production
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}

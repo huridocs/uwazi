@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-len */
-import db from 'api/utils/testing_db';
+import db from '#api/utils/testing_db.js';
 
 const userId = db.id();
 const collaboratorId = db.id();
@@ -29,6 +29,7 @@ export const fixtures = {
     {
       entity: metadataSnippets,
       type: 'document',
+      mimetype: 'application/pdf',
       language: 'eng',
       fullText: {
         1: 'Once upon a time[[1]]',
@@ -37,12 +38,14 @@ export const fixtures = {
     },
     {
       type: 'document',
+      mimetype: 'application/pdf',
       entity: 'unpublishedSharedId',
       language: 'eng',
       fullText: { 1: 'unpublished document' },
     },
     {
       type: 'document',
+      mimetype: 'application/pdf',
       entity: batmanFinishes,
       language: 'eng',
       title: 'Batman finishes en',
@@ -50,6 +53,7 @@ export const fixtures = {
     },
     {
       type: 'document',
+      mimetype: 'application/pdf',
       entity: batmanFinishes,
       language: 'spa',
       title: 'Batman finishes es',
@@ -57,6 +61,7 @@ export const fixtures = {
     },
     {
       type: 'document',
+      mimetype: 'application/pdf',
       entity: batmanBegins,
       language: 'eng',
       title: 'Batman begins en',
@@ -67,6 +72,7 @@ export const fixtures = {
     },
     {
       type: 'document',
+      mimetype: 'application/pdf',
       entity: batmanBegins,
       language: 'spa',
       title: 'Batman begins es',
@@ -328,6 +334,11 @@ export const fixtures = {
         city_geolocation: [{ value: { lat: 1, lon: 2 } }],
         daterange: [{ value: { from: 1547997735, to: null } }],
         date: [{ value: 10000 }],
+        groupedDictionary: [
+          { value: 'GermanyID', parent: { value: 'EuropeID' } },
+          { value: 'ItalyID', parent: { value: 'EuropeID' } },
+          { value: 'PortugalID', parent: { value: 'EuropeID' } },
+        ],
       },
     },
     {
@@ -722,6 +733,68 @@ export const fixtures = {
     },
   ],
   settings: [{ languages: [{ key: 'en', default: true }, { key: 'es' }] }],
+  translationsV2: [
+    {
+      _id: db.id(),
+      language: 'en',
+      key: 'Germany',
+      value: 'Germany',
+      context: {
+        type: 'Thesaurus',
+        id: countriesDictionaryID.toString(),
+      },
+    },
+    {
+      _id: db.id(),
+      language: 'es',
+      key: 'Germany',
+      value: 'Alemania',
+      context: {
+        type: 'Thesaurus',
+        id: countriesDictionaryID.toString(),
+      },
+    },
+    {
+      _id: db.id(),
+      language: 'en',
+      key: 'Italy',
+      value: 'Italy',
+      context: {
+        type: 'Thesaurus',
+        id: countriesDictionaryID.toString(),
+      },
+    },
+    {
+      _id: db.id(),
+      language: 'es',
+      key: 'Italy',
+      value: 'Italia',
+      context: {
+        type: 'Thesaurus',
+        id: countriesDictionaryID.toString(),
+      },
+    },
+    {
+      _id: db.id(),
+      language: 'en',
+      key: 'Europe',
+      value: 'Europe',
+      context: {
+        type: 'Thesaurus',
+        id: countriesDictionaryID.toString(),
+      },
+    },
+    {
+      _id: db.id(),
+      language: 'es',
+      key: 'Europe',
+      value: 'Europa',
+      context: {
+        type: 'Thesaurus',
+        id: countriesDictionaryID.toString(),
+      },
+    },
+  ],
 };
 
 export const ids = {

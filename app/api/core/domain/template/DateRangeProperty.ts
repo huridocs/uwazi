@@ -1,9 +1,9 @@
-import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
+import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { z } from 'zod';
-import { PropertyTypeInvalidTypeError } from './errors';
-import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
-import { PropertyTypeEnum } from './PropertyType';
-import { DateRangeEntry, PropertyAssignment } from './PropertyValue';
+import { PropertyTypeInvalidTypeError } from './errors.js';
+import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty.js';
+import { PropertyTypeEnum } from './PropertyType.js';
+import { DateRangeEntry, PropertyAssignment } from './PropertyValue.js';
 
 type Props = {
   type?: PropertyTypeEnum.DateRange;
@@ -11,11 +11,19 @@ type Props = {
 
 const RangeSchema = z
   .object({
-    from: z.number({ required_error: 'Date Range Property "from" value must be provided.' }),
-    to: z.number({ required_error: 'Date Range Property "to" value must be provided.' }),
+    from: z
+      .number({ required_error: 'Date Range Property "from" value must be provided.' })
+      .nullable(),
+    to: z.number({ required_error: 'Date Range Property "to" value must be provided.' }).nullable(),
   })
   .superRefine((range, ctx) => {
-    if (range.to < range.from) {
+    if (range.from === null && range.to === null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Date Range Property requires at least one of "from" or "to".',
+      });
+    }
+    if (range.from !== null && range.to !== null && range.to < range.from) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: 'Date Range Property "to" cannot be before "from".',
@@ -48,18 +56,23 @@ class DateRangeProperty extends FilterableProperty {
     }
   }
 
+  get isTranslatable(): boolean {
+    return false;
+  }
+
   createPropertyAssignment(
     { value }: CreatePropertyAssignmentInput<DateRangeEntry>,
     shouldValidateForRequired = false
   ): PropertyAssignment<DateRangeEntry> {
     const parsedValue = createSchema(shouldValidateForRequired ? this.required : false).parse(
-      value
+      value.filter(v => v?.value?.from != null || v?.value?.to != null)
     );
 
     return {
       name: this.name,
       value: parsedValue,
       type: this.type,
+      isTranslatable: this.isTranslatable,
     };
   }
 

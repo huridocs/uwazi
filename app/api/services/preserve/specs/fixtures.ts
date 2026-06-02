@@ -1,7 +1,9 @@
-import { templateUtils } from 'api/core/v1_layer/templates';
-import db, { DBFixture } from 'api/utils/testing_db';
-import { propertyTypes } from 'shared/propertyTypes';
-import { UserSchema } from 'shared/types/userType';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import db, { DBFixture } from '#api/utils/testing_db.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
+import { UserSchema } from '#shared/types/userType.js';
+
+const f = getFixturesFactory();
 
 export const templateId = db.id();
 export const anotherTemplateId = db.id();
@@ -32,55 +34,27 @@ export const fixtures: DBFixture = {
     },
   ],
   templates: [
-    {
-      _id: templateId,
-      title: 'Template 1',
-      properties: [
-        {
-          _id: db.id(),
-          name: templateUtils.safeName('URL'),
-          type: 'link',
-          label: 'URL',
-        },
-        {
-          _id: db.id(),
-          type: propertyTypes.select,
-          label: 'Source',
-          name: templateUtils.safeName('Source'),
-          content: thesauri1Id,
-        },
-        {
-          _id: db.id(),
-          type: propertyTypes.date,
-          label: 'Preservation date',
-          name: templateUtils.safeName('Preservation date'),
-        },
-      ],
-    },
-    {
-      _id: anotherTemplateId,
-      title: 'Template 2',
-      properties: [
-        {
-          _id: db.id(),
-          name: 'url',
-          type: propertyTypes.text,
-          label: 'URL',
-        },
-        {
-          _id: db.id(),
+    f.template(
+      'Template 1',
+      [
+        f.property('URL', 'link', { name: 'url' }),
+        f.property('Source', propertyTypes.select, {
+          content: thesauri1Id.toString(),
           name: 'source',
-          type: propertyTypes.text,
-          label: 'Source',
-        },
-        {
-          _id: db.id(),
-          type: propertyTypes.text,
-          label: 'Preservation date',
-          name: templateUtils.safeName('Preservation date'),
-        },
+        }),
+        f.property('Preservation date', 'date', { name: 'preservation_date' }),
       ],
-    },
+      { _id: templateId }
+    ),
+    f.template(
+      'Template 2',
+      [
+        f.property('URL', propertyTypes.text, { name: 'url' }),
+        f.property('Source', propertyTypes.text, { name: 'source' }),
+        f.property('Preservation date', propertyTypes.text, { name: 'preservation_date' }),
+      ],
+      { _id: anotherTemplateId }
+    ),
   ],
   dictionaries: [{ _id: thesauri1Id, name: 'thesauri1', values: [] }],
 };

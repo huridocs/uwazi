@@ -1,20 +1,22 @@
-/* eslint-disable max-statements */
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { propertyTypes } from 'shared/propertyTypes';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
 
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { FieldIsRequiredError } from 'api/core/domain/template/errors';
-import { TemplateFacade } from 'api/core/infrastructure/facades/TemplateFacade';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { TemplateSchema } from 'api/migrations/migrations/143-parse-numeric-fields/types';
-import templates from '../templates';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import {
+  FieldIsRequiredError,
+  TemplateWithDuplicatedPropertyError,
+} from '#api/core/domain/template/errors.js';
+import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
+import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TemplateSchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
+import templates from '../templates.js';
 import fixtures, {
   factory,
   propertyToBeInherited,
   relatedTo,
   templateToBeInherited,
   thesauriId1,
-} from './fixtures/fixtures';
+} from './fixtures/fixtures.js';
 
 describe('templates', () => {
   beforeAll(async () => {
@@ -35,7 +37,10 @@ describe('templates', () => {
         factory.property('Generated_ID_new', 'generatedid'),
       ]);
 
-      const template = await templates.save(newTemplate, 'en');
+      const template = await testingEnvironment.runWithContext(async () =>
+        templates.save(newTemplate, 'en')
+      );
+
       expect(template._id).toBeDefined();
       expect(template.name).toBe('created_template');
       expect(template.properties[0].label).toEqual('fieldLabel');
@@ -47,9 +52,9 @@ describe('templates', () => {
         factory.property('field_label'),
       ]);
 
-      await expect(templates.save(newTemplate, 'en')).rejects.toHaveProperty('errors', [
-        expect.objectContaining({ keyword: 'uniquePropertyFields' }),
-      ]);
+      await expect(templates.save(newTemplate, 'en')).rejects.toBeInstanceOf(
+        TemplateWithDuplicatedPropertyError
+      );
     });
 
     it('should add it to translations with Entity type', async () => {
@@ -212,7 +217,10 @@ describe('templates', () => {
 
     it('should remove denormalized type when removing inheritance', async () => {
       savedTemplate.properties![0]!.inherit!.property = '';
-      const resavedTemplate = await templates.save(savedTemplate, 'en', false);
+
+      const resavedTemplate = await testingEnvironment.runWithContext(async () =>
+        templates.save(savedTemplate, 'en')
+      );
       //@ts-ignore
       expect(resavedTemplate.properties?.[0].inherit).not.toBeDefined();
     });

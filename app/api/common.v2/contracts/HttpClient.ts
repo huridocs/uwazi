@@ -1,5 +1,5 @@
-import { FileContents } from 'api/files.v2/model/FileContents';
-import { HttpField } from './HttpField';
+import { FileContents } from '#api/core/domain/files/FileContents.js';
+import { HttpField } from './HttpField.js';
 
 type PostFormDataInput = {
   url: string;

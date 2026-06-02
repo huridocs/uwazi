@@ -4,11 +4,11 @@ import React, { CSSProperties, useEffect, useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { flexRender, Row } from '@tanstack/react-table';
-import { Translate } from 'app/I18N';
-import { TableRow } from './Table';
+import { Translate } from '#app/I18N/index.js';
+import { TableRow } from './Table.js';
 
-const dndHoverClass = 'shadow-[inset_0_-4px_#3949AB]';
-const childIndicatorClass = 'shadow-[inset_5px_0px_0px_-1px_#3949AB]';
+const dndHoverClass = 'dnd-hover-shadow';
+const childIndicatorClass = 'dnd-child-shadow';
 
 const inactiveGradientStyle: CSSProperties = {
   position: 'absolute',
@@ -27,7 +27,7 @@ const activeGradientStyle: CSSProperties = {
 
 const getSytles = (expanded: boolean, isOver: boolean, isDndDisable: boolean) => {
   const expandedGroupStyles = expanded
-    ? 'bg-indigo-100 border-indigo-100 hover:bg-indigo-200 hover:border-indigo-200'
+    ? 'bg-primary-100 border-indigo-100 hover:bg-primary-200 hover:border-indigo-200'
     : '';
   const dndHoverStyles = isOver && !isDndDisable ? dndHoverClass : '';
   return `${expandedGroupStyles} ${dndHoverStyles}`;
@@ -115,7 +115,7 @@ const DraggableRow = <T extends TableRow<T>>({
     position: 'relative',
     opacity: 0.9,
     outline: 'rgb(81 69 205) solid 4px',
-    backgroundColor: 'white',
+    backgroundColor: 'var(--color-theme-surface-raised)',
   };
 
   const rowStyles = getSytles(expanded, isOver, disableRowDnD);
@@ -123,9 +123,13 @@ const DraggableRow = <T extends TableRow<T>>({
   return (
     <>
       <tr
-        style={isDragging ? draggingStyles : undefined}
         ref={setNodeRef}
-        className={`text-gray-900 border-b transition-colors hover:bg-gray-50 ${rowStyles}`}
+        className={`border-b transition-colors hover:bg-(--color-theme-surface-warm) ${rowStyles}`}
+        style={{
+          ...(isDragging ? draggingStyles : undefined),
+          color: 'var(--color-theme-text-primary)',
+          borderColor: 'color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)',
+        }}
       >
         {row.getVisibleCells().map((cell, index) => (
           <td
@@ -140,9 +144,13 @@ const DraggableRow = <T extends TableRow<T>>({
       {isEmpty && expanded && (
         <tr
           ref={dropNoderef}
-          className={`border-b text-gray-900 transition-colors ${isOverDropzone ? dndHoverClass : ''}`}
+          className={`border-b transition-colors ${isOverDropzone ? dndHoverClass : ''}`}
+          style={{
+            color: 'var(--color-theme-text-primary)',
+            borderColor: 'color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)',
+          }}
         >
-          <td className="px-4 py-3 text-sm italic text-gray-600" colSpan={colSpan}>
+          <td className="px-4 py-3 text-sm italic text-ink-secondary" colSpan={colSpan}>
             {dndEnabled ? (
               <Translate>Empty group. Drop here to add</Translate>
             ) : (

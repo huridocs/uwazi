@@ -1,9 +1,9 @@
 import { ObjectId } from 'mongodb';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB from 'api/utils/testing_db';
-import { TestingRoundRobinQueueAdapter } from 'api/core/libs/queue/configuration/factories';
-import { createTestJob, pickJobs, pushJobsForNamespaces } from './fixtures';
-import { RoundRobinMongoQueueAdapter } from '../RoundRobinQueueAdapter';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import testingDB from '#api/utils/testing_db.js';
+import { TestingRoundRobinQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
+import { createTestJob, pickJobs, pushJobsForNamespaces } from './fixtures.js';
+import { RoundRobinMongoQueueAdapter } from '../RoundRobinQueueAdapter.js';
 
 describe('RoundRobinQueueAdapter', () => {
   let adapter: RoundRobinMongoQueueAdapter;
@@ -91,6 +91,7 @@ describe('RoundRobinQueueAdapter', () => {
     });
 
     it('should automatically mark jobs that exceed maxRetries as failed when picking jobs', async () => {
+      await testingEnvironment.setUp({ jobs: [] });
       adapter = TestingRoundRobinQueueAdapter();
       const now = Date.now();
 
@@ -120,11 +121,11 @@ describe('RoundRobinQueueAdapter', () => {
 
       const pickedJobs: string[] = await pickJobs(adapter);
 
-      const failedJobs = await testingDB.mongodb?.collection('jobs_failed').find({}).toArray();
+      const failedJobs = (await testingEnvironment.db.getAllFrom('jobs')).filter(f => f.failed);
 
       expect(pickedJobs).toEqual(['testTenant2', 'testTenant3', 'testTenant2']);
 
-      expect(failedJobs!).toHaveLength(1);
+      expect(failedJobs).toHaveLength(1);
       expect(failedJobs![0]).toMatchObject({
         namespace: 'testTenant1',
         retryCount: 5,

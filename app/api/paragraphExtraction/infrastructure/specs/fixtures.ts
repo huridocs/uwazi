@@ -1,13 +1,13 @@
-import { Property } from 'api/core/domain/template/Property';
-import { Segmentation } from 'api/files.v2/model/Segmentation';
-import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
-import { PXExtractor } from 'api/paragraphExtraction/domain/PXExtractor';
+import { Property } from '#api/core/domain/template/Property.js';
+import { Segmentation } from '#api/segmentation.v2/domain/Segmentation.js';
+import { PXExtractionKey } from '#api/paragraphExtraction/domain/PXExtractionKey.js';
+import { PXExtractor } from '#api/paragraphExtraction/domain/PXExtractor.js';
 import { ObjectId } from 'mongodb';
 
-import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';
-import { DiskFile } from 'api/files.v2/model/DiskFile';
-import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
-import { GetParagraphsResultDTO } from '../ExternalExtractionService/types';
+import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder.js';
+import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
+import { GetParagraphsResultDTO } from '../ExternalExtractionService/types.js';
 
 const mockGetParagraphsResult: GetParagraphsResultDTO = {
   key: PXExtractionKey.create({
@@ -61,11 +61,13 @@ const mockGetParagraphsResult: GetParagraphsResultDTO = {
   ],
 };
 
-const document = new ProcessedDocument({
+const document = new PDFDocument({
   id: 'any_id',
   entity: 'any_entity',
+  status: 'ready',
   language: 'pt',
   mimetype: 'application/pdf',
+  generatedToc: false,
   totalPages: 1,
   creationDate: 1,
   size: 1,
@@ -75,11 +77,13 @@ const document = new ProcessedDocument({
   content: new DiskFile('fake/path').toContent(),
 });
 
-const document2 = new ProcessedDocument({
+const document2 = new PDFDocument({
   id: 'any_id2',
   entity: 'any_entity2',
+  status: 'ready',
   language: 'es',
   mimetype: 'application/pdf',
+  generatedToc: false,
   totalPages: 1,
   creationDate: 1,
   size: 1,
@@ -117,6 +121,7 @@ const targetTemplate = TemplateBuilder.aTemplate({
 const segmentation: Segmentation = {
   id: 'any_id',
   fileId: document.id,
+  documentId: document.id,
   filename: document.filename,
   xmlname: document.filename,
   paragraphs: [
@@ -140,6 +145,7 @@ const targetRelationshipType = {
 const segmentation2: Segmentation = {
   id: 'any_id2',
   fileId: document2.id,
+  documentId: document2.id,
   filename: document2.filename,
   xmlname: document2.filename,
   paragraphs: [

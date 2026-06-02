@@ -1,8 +1,8 @@
-import { elastic } from 'api/search';
-import { SearchQuery } from 'shared/types/SearchQueryType';
-import templatesModel from 'api/core/v1_layer/templates/templates';
-import propertiesHelper from 'shared/commonProperties';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { elastic } from '#api/search/index.js';
+import { SearchQuery } from '#shared/types/SearchQueryType.js';
+import templatesModel from '#api/core/v1_layer/templates/templates.js';
+import propertiesHelper from '#shared/commonProperties.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
 
 export const cleanUp = (value: any) => value;
 
@@ -78,7 +78,7 @@ function snippetsHighlight(query: SearchQuery, fields: { [key: string]: {} }[] |
           post_tags: ['</b>'],
           encoder: 'html',
           number_of_fragments: 9999,
-          ...(fields?.[0].hasOwnProperty('fullText_*') ? { type: 'fvh' } : {}),
+          ...(fields?.[0] && Object.hasOwn(fields[0], 'fullText_*') ? { type: 'fvh' } : {}),
           fragment_size: 300,
           fragmenter: 'span',
           fields,

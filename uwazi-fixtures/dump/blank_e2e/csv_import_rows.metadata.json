@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"importId":{"$numberInt":"1"},"rowIndex":{"$numberInt":"1"}},"name":"importId_rowIndex_unique","background":true,"unique":true}],"uuid":"a3805ded86de465c9d317aab0c8ba2c7","collectionName":"csv_import_rows","type":"collection"}

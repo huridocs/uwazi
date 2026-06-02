@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 
+import './initSentryEarly.js';
 import compression from 'compression';
 import express from 'express';
 import promBundle from 'express-prom-bundle';
@@ -7,36 +8,41 @@ import promBundle from 'express-prom-bundle';
 import helmet from 'helmet';
 import { Server } from 'http';
 import mongoose from 'mongoose';
-import path from 'path';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-import * as Sentry from '@sentry/node';
+import { close } from '@sentry/node-core/light';
 
-import { registerEventListeners } from 'api/eventListeners';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { appContextMiddleware } from 'api/utils/appContextMiddleware';
-import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
-import { Redis } from 'api/infrastructure/Redis';
-import { maskMongoPassword } from 'api/utils/maskMongoPassword';
-import { elasticClient } from 'api/search/elastic';
-import uwaziMessage from '../message';
-import apiRoutes from './api/api';
-import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
-import authRoutes from './api/auth/routes';
-import { config } from './api/config';
+import { registerEventListeners } from '#api/eventListeners.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
+import { requestIdMiddleware } from '#api/utils/requestIdMiddleware.js';
+import { Redis } from '#api/infrastructure/Redis.js';
+import { maskMongoPassword } from '#api/utils/maskMongoPassword.js';
+import { elasticClient } from '#api/search/elastic.js';
+import uwaziMessage from '../message.js';
+import apiRoutes from './api/api.js';
+import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware.js';
+import authRoutes from './api/auth/routes.js';
+import { config } from './api/config.js';
 
-import { versionRoutes } from './api/version/routes';
-import { migrator } from './api/migrations/migrator';
-import { DB } from './api/odm';
-import { permissionsContext } from './api/permissions/permissionsContext';
-import { closeSockets } from './api/socketio/setupSockets';
-import { tenants } from './api/tenants/tenantContext';
-import errorHandlingMiddleware from './api/utils/error_handling_middleware';
+import { versionRoutes } from './api/version/routes.js';
+import { migrator } from './api/migrations/migrator.js';
+import { DB } from './api/odm/index.js';
+import { permissionsContext } from './api/permissions/permissionsContext.js';
+import { closeSockets } from './api/socketio/setupSockets.js';
+import { tenants } from './api/tenants/tenantContext.js';
+import errorHandlingMiddleware from './api/utils/error_handling_middleware.js';
 import { handleError } from './api/utils/handleError.js';
-import { multitenantMiddleware } from './api/utils/multitenantMiddleware';
-import { routesErrorHandler } from './api/utils/routesErrorHandler';
-import { serverSideRender } from './react/server';
-import { initSentry } from './initSentry';
-import { setupQueueWorker } from './setupQueueWorker';
+import { multitenantMiddleware } from './api/utils/multitenantMiddleware.js';
+import { routesErrorHandler } from './api/utils/routesErrorHandler.js';
+import { serverSideRender } from './react/server.js';
+import { setupQueueWorker } from './setupQueueWorker.js';
+import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
+import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 mongoose.Promise = Promise;
 
@@ -54,7 +60,6 @@ const metricsMiddleware = promBundle({
 });
 
 app.use(metricsMiddleware);
-initSentry();
 routesErrorHandler(app);
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 
@@ -89,6 +94,7 @@ const gracefullShutdown = () => {
       (async () => {
         try {
           await elasticClient.close();
+          await ElasticSearchClientFactory.getInstance().close();
           process.stdout.write('Disconnected from Elasticsearch\r\n');
         } catch (e) {
           // ignore
@@ -105,7 +111,7 @@ const gracefullShutdown = () => {
 
 const uncaughtError = error => {
   handleError(error, { uncaught: true });
-  Sentry.close(2000).then(() => {
+  close(2000).then(() => {
     gracefullShutdown();
   });
 };
@@ -137,24 +143,25 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
   await Redis.connect();
   await tenants.setupTenants();
   authRoutes(app);
+  app.use(dependenciesContextMiddleware);
   versionRoutes(app);
   app.use(privateInstanceMiddleware);
   app.use('/flag-images', express.static(path.resolve(__dirname, '../dist/flags')));
 
-  apiRoutes(app, http);
+  await apiRoutes(app, http);
   serverSideRender(app);
 
   app.use(errorHandlingMiddleware);
   registerEventListeners(applicationEventsBus);
 
   if (config.externalServices) {
-    // eslint-disable-next-line global-require
-    require('./worker');
+    await import('./worker.js');
   }
 
   if (!config.multiTenant && !config.clusterMode) {
     await tenants.run(async () => {
-      const shouldMigrate = await migrator.shouldMigrate();
+      const skipMigrationCheck = process.env.SKIP_MIGRATION_CHECK === 'true';
+      const shouldMigrate = skipMigrationCheck ? false : await migrator.shouldMigrate();
       if (shouldMigrate) {
         console.error(
           '\x1b[33m%s\x1b[0m',
@@ -163,7 +170,7 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
         process.exit(1);
       }
     });
-    // eslint-disable-next-line global-require
+
     setupQueueWorker({ standAloneProcess: false });
   }
 

@@ -1,13 +1,16 @@
-import { ValidationError } from 'api/common.v2/validation/ValidationError';
-import { elastic } from 'api/search';
-import { search } from 'api/search/search';
-import date from 'api/utils/date';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
-import * as searchLimitsConfig from 'shared/config';
-import { UserRole } from 'shared/types/userSchema';
-import elasticResult from './elasticResult';
-import { fixtures as elasticFixtures, fixturesTimeOut, ids } from './fixtures_elastic';
+import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
+import { EntitiesQueryServiceFactory } from '#api/core/infrastructure/factories/EntitiesQueryServiceFactory.js';
+import { elastic } from '#api/search/index.js';
+import { search } from '#api/search/search.js';
+import date from '#api/utils/date.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
+import { User } from '#api/users.v2/model/User.js';
+import * as searchLimitsConfig from '#shared/config.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import elasticResult from './elasticResult.js';
+import { fixtures as elasticFixtures, fixturesTimeOut, ids } from './fixtures_elastic.js';
 
 const editorUser = { _id: 'userId', role: 'editor' };
 
@@ -292,6 +295,22 @@ describe('search', () => {
     );
     expect(response.aggregations.all.groupedDictionary.buckets[1].values.map(b => b.label)).toEqual(
       ['China', 'Japan']
+    );
+  });
+
+  it('should return the label with the aggregations (es)', async () => {
+    userFactory.mock(undefined);
+    const response = await search.search(
+      { types: [ids.templateMetadata1, ids.templateMetadata2], allAggregations: true },
+      'es'
+    );
+
+    expect(response.aggregations.all.groupedDictionary.buckets.map(b => b.label)).toEqual([
+      'Europa',
+      'Any',
+    ]);
+    expect(response.aggregations.all.groupedDictionary.buckets[0].values.map(b => b.label)).toEqual(
+      ['Alemania', 'Italia', 'Portugal']
     );
   });
 
@@ -1273,5 +1292,264 @@ describe('search', () => {
       'en'
     );
     expect(resultsFound.rows.length).toBe(1);
+  });
+
+  describe('performAggregations flag', () => {
+    it('should not include property aggregations when performAggregations is false', async () => {
+      userFactory.mock(undefined);
+
+      mocks.elasticSearch = jest.spyOn(elastic, 'search');
+
+      await search.search(
+        {
+          searchTerm: 'Batman',
+          performAggregations: false,
+        },
+        'en'
+      );
+
+      const esQuery = mocks.elasticSearch.mock.calls[0][0].body;
+
+      if (esQuery.aggregations && esQuery.aggregations.all) {
+        const aggregationKeys = Object.keys(esQuery.aggregations.all.aggregations || {});
+        const propertyAggregations = aggregationKeys.filter(key => key !== '_types');
+        expect(propertyAggregations).toEqual([]);
+      } else {
+        expect(esQuery.aggregations).toEqual({});
+      }
+    });
+
+    it('should include aggregations by default when performAggregations is not specified', async () => {
+      userFactory.mock(undefined);
+
+      mocks.elasticSearch = jest.spyOn(elastic, 'search');
+
+      await search.search(
+        {
+          searchTerm: 'Batman',
+          types: [ids.template1],
+        },
+        'en'
+      );
+
+      const esQuery = mocks.elasticSearch.mock.calls[0][0].body;
+
+      expect(esQuery.aggregations).toBeDefined();
+      expect(esQuery.aggregations.all).toBeDefined();
+      expect(Object.keys(esQuery.aggregations.all.aggregations).length).toBeGreaterThan(0);
+    });
+
+    it('should include aggregations when performAggregations is true', async () => {
+      userFactory.mock(undefined);
+
+      mocks.elasticSearch = jest.spyOn(elastic, 'search');
+
+      await search.search(
+        {
+          searchTerm: 'Batman',
+          types: [ids.template1],
+          performAggregations: true,
+        },
+        'en'
+      );
+
+      // Get the ES query that was sent
+      const esQuery = mocks.elasticSearch.mock.calls[0][0].body;
+
+      expect(esQuery.aggregations).toBeDefined();
+      expect(esQuery.aggregations.all).toBeDefined();
+      expect(Object.keys(esQuery.aggregations.all.aggregations).length).toBeGreaterThan(0);
+    });
+
+    it('should include publishing status aggregation when performAggregations is false but aggregatePublishingStatus is true', async () => {
+      userFactory.mockEditorUser();
+
+      mocks.elasticSearch = jest.spyOn(elastic, 'search');
+
+      await search.search(
+        {
+          searchTerm: 'Batman',
+          performAggregations: false,
+          aggregatePublishingStatus: true,
+        },
+        'en'
+      );
+
+      const esQuery = mocks.elasticSearch.mock.calls[0][0].body;
+
+      expect(esQuery.aggregations).toBeDefined();
+      expect(esQuery.aggregations.all).toBeDefined();
+      expect(esQuery.aggregations.all.aggregations._published).toBeDefined();
+    });
+
+    it('should include permissions level aggregation when performAggregations is false but aggregatePermissionsByLevel is true', async () => {
+      userFactory.mockEditorUser();
+
+      mocks.elasticSearch = jest.spyOn(elastic, 'search');
+
+      await search.search(
+        {
+          searchTerm: 'Batman',
+          performAggregations: false,
+          aggregatePermissionsByLevel: true,
+        },
+        'en'
+      );
+
+      const esQuery = mocks.elasticSearch.mock.calls[0][0].body;
+
+      expect(esQuery.aggregations).toBeDefined();
+      expect(esQuery.aggregations.all).toBeDefined();
+      expect(esQuery.aggregations.all.aggregations['_permissions.self']).toBeDefined();
+    });
+
+    it('should include permissions users aggregations when performAggregations is false but aggregatePermissionsByUsers is true', async () => {
+      userFactory.mockEditorUser();
+
+      mocks.elasticSearch = jest.spyOn(elastic, 'search');
+
+      await search.search(
+        {
+          searchTerm: 'Batman',
+          performAggregations: false,
+          aggregatePermissionsByUsers: true,
+        },
+        'en'
+      );
+
+      const esQuery = mocks.elasticSearch.mock.calls[0][0].body;
+
+      expect(esQuery.aggregations).toBeDefined();
+      expect(esQuery.aggregations.all).toBeDefined();
+      expect(esQuery.aggregations.all.aggregations['_permissions.read']).toBeDefined();
+      expect(esQuery.aggregations.all.aggregations['_permissions.write']).toBeDefined();
+    });
+
+    it('should include generated TOC aggregation when performAggregations is false but aggregateGeneratedToc is true', async () => {
+      userFactory.mockEditorUser();
+
+      mocks.elasticSearch = jest.spyOn(elastic, 'search');
+
+      await search.search(
+        {
+          searchTerm: 'Batman',
+          performAggregations: false,
+          aggregateGeneratedToc: true,
+        },
+        'en'
+      );
+
+      const esQuery = mocks.elasticSearch.mock.calls[0][0].body;
+
+      expect(esQuery.aggregations).toBeDefined();
+      expect(esQuery.aggregations.all).toBeDefined();
+      expect(esQuery.aggregations.all.aggregations.generatedToc).toBeDefined();
+    });
+
+    it('should include multiple specific aggregations when performAggregations is false but multiple aggregate flags are true', async () => {
+      userFactory.mockEditorUser();
+
+      mocks.elasticSearch = jest.spyOn(elastic, 'search');
+
+      await search.search(
+        {
+          searchTerm: 'Batman',
+          performAggregations: false,
+          aggregatePublishingStatus: true,
+          aggregatePermissionsByLevel: true,
+          aggregateGeneratedToc: true,
+        },
+        'en'
+      );
+
+      const esQuery = mocks.elasticSearch.mock.calls[0][0].body;
+
+      expect(esQuery.aggregations).toBeDefined();
+      expect(esQuery.aggregations.all).toBeDefined();
+      expect(esQuery.aggregations.all.aggregations._published).toBeDefined();
+      expect(esQuery.aggregations.all.aggregations['_permissions.self']).toBeDefined();
+      expect(esQuery.aggregations.all.aggregations.generatedToc).toBeDefined();
+
+      const aggregationKeys = Object.keys(esQuery.aggregations.all.aggregations);
+      expect(aggregationKeys).not.toContain('relationship');
+      expect(aggregationKeys).not.toContain('date');
+      expect(aggregationKeys).not.toContain('text');
+    });
+  });
+
+  describe('relationship permissions (v2GetEntity feature flag)', () => {
+    it('should not call applyRelationshipPermissions when the flag is disabled', async () => {
+      const mockService = { applyRelationshipPermissions: jest.fn() };
+      jest.spyOn(EntitiesQueryServiceFactory, 'default').mockReturnValue(mockService);
+
+      await search.search({ ids: [ids.batmanFinishes] }, 'en');
+
+      expect(mockService.applyRelationshipPermissions).not.toHaveBeenCalled();
+    });
+
+    it('should call applyRelationshipPermissions when the v2GetEntity flag is enabled', async () => {
+      const user = userFactory.mockEditorUser();
+
+      testingTenants.mockCurrentTenant({ featureFlags: { v2GetEntity: true } });
+
+      try {
+        const mockService = {
+          applyRelationshipPermissions: jest.fn().mockResolvedValue(undefined),
+        };
+        jest.spyOn(EntitiesQueryServiceFactory, 'default').mockReturnValue(mockService);
+
+        const { rows } = await search.search({ ids: [ids.batmanFinishes] }, 'en');
+
+        expect(mockService.applyRelationshipPermissions).toHaveBeenCalledWith(
+          rows,
+          User.createFrom(user)
+        );
+      } finally {
+        testingTenants.restoreCurrentFn();
+      }
+    });
+  });
+
+  describe('bulkDeleteBySharedId()', () => {
+    const getBySharedIds = sharedIds =>
+      elastic.search({
+        body: {
+          query: {
+            terms: { 'sharedId.raw': sharedIds },
+          },
+        },
+      });
+
+    beforeAll(async () => {
+      await testingEnvironment.setUp(elasticFixtures, true);
+    });
+
+    it('should delete all entities with the given sharedIds', async () => {
+      const sharedIds = [ids.batmanFinishes, ids.batmanBegins, 'unpublished'];
+
+      const before = await getBySharedIds(sharedIds);
+
+      expect(before.body.hits.total.value).toBe(6);
+
+      await search.bulkDeleteBySharedId([ids.batmanFinishes, ids.batmanBegins]);
+
+      const after = await getBySharedIds(sharedIds);
+      expect(after.body.hits.total.value).toBe(2);
+      expect(after.body.hits.hits.every(hit => hit._source.sharedId === 'unpublished')).toBe(true);
+    });
+
+    it('should not throw when sending empty array', async () => {
+      await search.bulkDeleteBySharedId([]);
+    });
+
+    it('should not throw when sending non-existent sharedIds', async () => {
+      const searchBefore = await elastic.search({});
+      const initialCount = searchBefore.body.hits.total.value;
+
+      await search.bulkDeleteBySharedId(['nonexistent1', 'nonexistent2']);
+
+      const searchAfter = await elastic.search({});
+      expect(searchAfter.body.hits.total.value).toBe(initialCount);
+    });
   });
 });

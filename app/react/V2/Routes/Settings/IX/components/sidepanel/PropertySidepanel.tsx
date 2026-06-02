@@ -1,31 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom } from 'jotai';
 import { useLoaderData } from 'react-router';
 import loadable from '@loadable/component';
-import { FetchResponseError } from 'shared/JSONRequest';
-import { PropertyValueSchema } from 'shared/types/commonTypes';
-import { Translate } from 'app/I18N';
-import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
-import { Button, Sidepanel, ToggleButton, VerticalDrawer, Truncate } from 'V2/Components/UI';
-import { notificationAtom } from 'V2/atoms';
-import { Checkbox } from 'V2/Components/Forms';
+import { PropertyValueSchema } from '#shared/types/commonTypes.js';
+import { t, Translate } from '#app/I18N/index.js';
+import { ClientTemplateSchema } from '#app/istore.js';
+import {
+  Button,
+  Sidepanel,
+  ToggleButton,
+  VerticalDrawer,
+  Truncate,
+} from '#V2/Components/UI/index.js';
+import { Checkbox } from '#V2/Components/Forms/index.js';
+import { Entity } from '#V2/api/entities/types.js';
 import {
   coerceValue,
   getFormValue,
   handleEntitySave,
   loadSidepanelData,
   SELECT_TYPES,
-} from '../../helpers';
-import { SidepanelForms } from './SidepanelForms';
-import { highlightsAtom, selectionErrorAtom, textSelectionAtom } from '../atoms';
-import { selectAndSearchAtom } from '../atoms/selectAndSearchAtom';
-import { SidepanelProps } from './types';
+} from '../../helpers/index.js';
+import { SidepanelForms } from './SidepanelForms.js';
+import { highlightsAtom, selectionErrorAtom, textSelectionAtom } from '../atoms/index.js';
+import { selectAndSearchAtom } from '../atoms/selectAndSearchAtom.js';
+import { SidepanelProps } from './types.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 //This is imported via loadable due to https://github.com/huridocs/uwazi/issues/7808
 const TextProperty = loadable(async () => (await import('../TextProperty')).TextProperty);
 
-// eslint-disable-next-line max-statements
 const PropertySidepanel = ({
   showSidepanel,
   setShowSidepanel,
@@ -35,15 +40,15 @@ const PropertySidepanel = ({
   extractor,
 }: SidepanelProps) => {
   const { templates } = useLoaderData() as { templates: ClientTemplateSchema[] };
-  const [entity, setEntity] = useState<ClientEntitySchema>();
+  const [entity, setEntity] = useState<Entity>();
   const [highlights, setHighlights] = useAtom(highlightsAtom);
   const [selectionError, setSelectionError] = useAtom(selectionErrorAtom);
   const [selectedText, setSelectedText] = useAtom(textSelectionAtom);
   const [selectAndSearch, setSelectAndSearch] = useAtom(selectAndSearchAtom);
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
 
   const templateId = suggestion?.entityTemplateId;
-  const template = templates.find(t => t._id.toString() === templateId);
+  const template = templates.find(templateItem => templateItem._id.toString() === templateId);
 
   const handleClose = () => {
     setEntity(undefined);
@@ -70,7 +75,8 @@ const PropertySidepanel = ({
   useEffect(() => {
     if (showSidepanel && suggestion) {
       loadSidepanelData(suggestion)
-        .then(({ entity: suggestionEntity }) => {
+        .then(({ entityResponse }) => {
+          const [suggestionEntity] = entityResponse;
           setEntity(suggestionEntity);
         })
         .catch(e => {
@@ -85,28 +91,28 @@ const PropertySidepanel = ({
     }
   }, [dirtyFields.field, setValue]);
 
-  // eslint-disable-next-line max-statements
   const onSubmit = async (value: {
     field: PropertyValueSchema | PropertyValueSchema[] | undefined;
   }) => {
-    if (dirtyFields.field) {
-      const savedEntity = await handleEntitySave(entity, property, value.field, template);
+    const fieldDirty = dirtyFields.field;
+    const trainingSetDirty = dirtyFields.inTrainingSet;
+    const inTrainingSet = formContext.getValues().inTrainingSet || false;
 
-      if (savedEntity instanceof FetchResponseError) {
-        const details = (savedEntity as FetchResponseError)?.json.prettyMessage;
+    if (fieldDirty) {
+      const [savedEntity, error] = await handleEntitySave(entity, property, value.field, template);
 
-        setNotifications({ type: 'error', text: 'An error occurred', details });
+      if (error) {
+        const details = error.json.prettyMessage;
+
+        notify('error', t('System', 'An error occurred', null, false), undefined, details);
       } else if (savedEntity) {
-        if (savedEntity) {
-          setEntity(savedEntity);
-        }
-
-        setNotifications({ type: 'success', text: 'Saved successfully.' });
+        setEntity(savedEntity);
+        notify('success', t('System', 'Saved successfully.', null, false));
       }
     }
 
-    if (suggestion?._id && dirtyFields.inTrainingSet) {
-      onEntitySave([suggestion?._id], formContext.getValues().inTrainingSet || false);
+    if (suggestion?._id && (trainingSetDirty || fieldDirty)) {
+      onEntitySave([suggestion?._id], inTrainingSet);
     }
 
     handleClose();
@@ -151,7 +157,7 @@ const PropertySidepanel = ({
           }}
         />
       </Sidepanel.Body>
-      <Sidepanel.Footer className="sticky bg-white border-t border-gray-200 shadow-[0_-6px_12px_-3px_rgba(0,0,0,0.15)]">
+      <Sidepanel.Footer className="sticky border-t shadow-[0_-6px_12px_-3px_rgba(0,0,0,0.15)] border-t-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] !bg-(--color-theme-surface-raised)">
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         <FormProvider {...formContext}>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -160,7 +166,7 @@ const PropertySidepanel = ({
               title={
                 <div className="flex gap-4 items-center">
                   <Translate
-                    className={`font-semibold uppercase ${selectionError ? 'text-pink-600' : 'text-gray-500'}`}
+                    className={`font-semibold uppercase ${selectionError ? 'text-(--color-theme-feedback-danger)' : 'text-ink-muted'}`}
                     context={templateId}
                   >
                     {property?.label}
@@ -170,12 +176,14 @@ const PropertySidepanel = ({
                       size="small"
                       onToggle={() => setSelectAndSearch(!selectAndSearch)}
                     >
-                      <Translate className="font-medium text-xs text-gray-900">
+                      <Translate className="text-xs font-medium text-ink">
                         Select & Search
                       </Translate>
                     </ToggleButton>
                   )}
-                  {selectionError && <span className="text-pink-600">{selectionError}</span>}
+                  {selectionError && (
+                    <span className="text-(--color-theme-feedback-danger)">{selectionError}</span>
+                  )}
                 </div>
               }
             >
@@ -188,7 +196,7 @@ const PropertySidepanel = ({
                   <div className="sm:text-right" data-testid="ix-clear-button-container">
                     <Button
                       type="button"
-                      styling="outline"
+                      variant="secondary"
                       disabled={Boolean(!highlights) || isSubmitting}
                       onClick={() => {
                         setHighlights(undefined);
@@ -200,8 +208,13 @@ const PropertySidepanel = ({
                 }
               />
             </VerticalDrawer>
-            <div className="flex justify-between gap-2 px-4 py-2 border-t border-gray-200">
-              <Button type="button" styling="outline" disabled={isSubmitting} onClick={handleClose}>
+            <div className="flex justify-between gap-2 border-t px-4 py-2 border-t-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)]">
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={isSubmitting}
+                onClick={handleClose}
+              >
                 <Translate>Cancel</Translate>
               </Button>
               <div className="flex flex-row gap-2 items-center">
@@ -219,7 +232,7 @@ const PropertySidepanel = ({
                     />
                   )}
                 />
-                <Button type="submit" disabled={isSubmitting} color="success">
+                <Button type="submit" disabled={isSubmitting} variant="success">
                   <Translate>Accept</Translate>
                 </Button>
               </div>

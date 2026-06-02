@@ -1,19 +1,19 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import entities from 'api/entities';
-import { TranslationSyO } from 'api/i18n.v2/schemas/TranslationSyO';
-import pages from 'api/pages';
-import settings from 'api/settings';
-import thesauri from 'api/thesauri/thesauri.js';
-import { ContextType } from 'shared/translationSchema';
+import entities from '#api/entities/index.js';
+import { TranslationSyO } from '#api/i18n.v2/schemas/TranslationSyO.js';
+import pages from '#api/pages/index.js';
+import settings from '#api/settings/index.js';
+import thesauri from '#api/thesauri/thesauri.js';
+import { ContextType } from '#shared/translationSchema.js';
 // eslint-disable-next-line node/no-restricted-import
 import * as fs from 'fs';
-import { UITranslationNotAvailable } from '../defaultTranslations';
-import { addLanguage } from '../routes';
-import translations from '../translations';
-import { getTranslationsV2ByContext } from '../v2_support';
-import fixtures, { dictionaryId } from './fixtures';
-import { sortByLocale } from './sortByLocale';
+import { UITranslationNotAvailable } from '../defaultTranslations.js';
+import { addLanguage } from '../routes.js';
+import translations from '../translations.js';
+import { getTranslationsV2ByContext } from '../v2_support.js';
+import fixtures, { dictionaryId } from './fixtures.js';
+import { sortByLocale } from './sortByLocale.js';
 
 describe('translations', () => {
   beforeEach(async () => {
@@ -121,9 +121,10 @@ describe('translations', () => {
 
     describe('when saving a dictionary context', () => {
       it('should propagate translation changes to entities denormalized label', async () => {
-        jest
+        const renameSpy = jest
           .spyOn(thesauri, 'renameThesaurusInMetadata')
           .mockImplementation(async () => Promise.resolve());
+        renameSpy.mockClear();
 
         await translations.save({
           locale: 'en',
@@ -148,6 +149,121 @@ describe('translations', () => {
           dictionaryId.toString(),
           'en'
         );
+      });
+
+      it('should propagate child thesaurus translation changes to entities denormalized label', async () => {
+        await testingEnvironment.db.getCollection('dictionaries')?.updateOne(
+          { _id: dictionaryId },
+          {
+            $set: {
+              values: [
+                {
+                  id: 'parent_id',
+                  label: 'Parent',
+                  values: [{ id: 'child_id', label: 'Age' }],
+                },
+              ],
+            },
+          }
+        );
+
+        const renameSpy = jest
+          .spyOn(thesauri, 'renameThesaurusInMetadata')
+          .mockImplementation(async () => Promise.resolve());
+        renameSpy.mockClear();
+
+        await translations.save({
+          locale: 'en',
+          contexts: [
+            {
+              id: dictionaryId.toString(),
+              type: 'Thesaurus',
+              values: {
+                Age: 'Age changed in child',
+              },
+            },
+          ],
+        });
+
+        expect(thesauri.renameThesaurusInMetadata).toHaveBeenCalledWith(
+          'child_id',
+          'Age changed in child',
+          dictionaryId.toString(),
+          'en'
+        );
+      });
+
+      it('should propagate duplicated child labels across different parents', async () => {
+        await testingEnvironment.db.getCollection('dictionaries')?.updateOne(
+          { _id: dictionaryId },
+          {
+            $set: {
+              values: [
+                {
+                  id: 'in_court',
+                  label: 'in court',
+                  values: [
+                    { id: 'yes_in_court', label: 'Age' },
+                    { id: 'no_in_court', label: 'Email' },
+                  ],
+                },
+                {
+                  id: 'in_government',
+                  label: 'in government',
+                  values: [
+                    { id: 'yes_in_government', label: 'Age' },
+                    { id: 'no_in_government', label: 'Email' },
+                  ],
+                },
+              ],
+            },
+          }
+        );
+
+        const renameSpy = jest
+          .spyOn(thesauri, 'renameThesaurusInMetadata')
+          .mockImplementation(async () => Promise.resolve());
+        renameSpy.mockClear();
+
+        await translations.save({
+          locale: 'en',
+          contexts: [
+            {
+              id: dictionaryId.toString(),
+              type: 'Thesaurus',
+              values: {
+                Age: 'Yes changed',
+                Email: 'No changed',
+              },
+            },
+          ],
+        });
+
+        expect(renameSpy).toHaveBeenCalledWith(
+          'yes_in_court',
+          'Yes changed',
+          dictionaryId.toString(),
+          'en'
+        );
+        expect(renameSpy).toHaveBeenCalledWith(
+          'yes_in_government',
+          'Yes changed',
+          dictionaryId.toString(),
+          'en'
+        );
+        expect(renameSpy).toHaveBeenCalledWith(
+          'no_in_court',
+          'No changed',
+          dictionaryId.toString(),
+          'en'
+        );
+        expect(renameSpy).toHaveBeenCalledWith(
+          'no_in_government',
+          'No changed',
+          dictionaryId.toString(),
+          'en'
+        );
+        expect(renameSpy).toHaveBeenCalledTimes(4);
       });
     });
   });
@@ -387,7 +503,9 @@ describe('translations', () => {
 
   describe('addLanguage', () => {
     it('should clone translations of default language and change language to the one added', async () => {
-      await addLanguage({ key: 'fr', label: 'french' });
+      await testingEnvironment.runWithContext(async () => {
+        await addLanguage({ key: 'fr', label: 'french' });
+      });
       const allTranslations = await translations.get();
 
       const frTranslation = allTranslations.find(t => t.locale === 'fr');
@@ -398,12 +516,16 @@ describe('translations', () => {
 
     describe('when the language already exists', () => {
       it('should not clone it again', async () => {
-        await addLanguage({ key: 'fr', label: 'french' });
+        await testingEnvironment.runWithContext(async () => {
+          await addLanguage({ key: 'fr', label: 'french' });
+        });
 
         const firstEntitiesCount = (await entities.get({ language: 'fr' })).length;
         const firstPagesCount = (await pages.get({ language: 'fr' })).length;
 
-        await addLanguage({ key: 'fr', label: 'french' });
+        await testingEnvironment.runWithContext(async () => {
+          await addLanguage({ key: 'fr', label: 'french' });
+        });
 
         const settingsLanguages = (await settings.get()).languages?.map(l => l.key);
         expect(settingsLanguages).toEqual(['es', 'en', 'zh', 'fr']);

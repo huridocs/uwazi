@@ -1,7 +1,7 @@
-import { PropertyTypeInvalidTypeError } from '../errors';
-import { MarkdownProperty } from '../MarkdownProperty';
-import { PropertyTypeEnum } from '../PropertyType';
-import { TextProperty } from '../TextProperty';
+import { PropertyTypeInvalidTypeError } from '../errors.js';
+import { MarkdownProperty } from '../MarkdownProperty.js';
+import { PropertyTypeEnum } from '../PropertyType.js';
+import { TextProperty } from '../TextProperty.js';
 
 describe('TextProperty', () => {
   it('should set defaults values if not provided', () => {
@@ -54,7 +54,53 @@ describe('TextProperty', () => {
       expect(assignment).toEqual({
         name: text.name,
         type: text.type,
+        isTranslatable: true,
         value: [{ value: 'Hello' }],
+      });
+    });
+
+    it('should filter out empty and whitespace-only values', () => {
+      const text = new TextProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = text.createPropertyAssignment({
+        value: [{ value: '' }, { value: '   ' }, { value: 'Hello' }],
+      });
+
+      expect(assignment).toEqual({
+        name: text.name,
+        type: text.type,
+        isTranslatable: true,
+        value: [{ value: 'Hello' }],
+      });
+    });
+
+    it('should handle null and undefined values', () => {
+      const text = new TextProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = text.createPropertyAssignment({
+        value: [{ value: null as any }, { value: undefined as any }, { value: 'Valid' }],
+      });
+
+      expect(assignment).toEqual({
+        name: text.name,
+        type: text.type,
+        isTranslatable: true,
+        value: [{ value: 'Valid' }],
+      });
+    });
+
+    it('should return empty array when all values are empty/whitespace', () => {
+      const text = new TextProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = text.createPropertyAssignment({
+        value: [{ value: '' }, { value: '   ' }, { value: '\t\n' }],
+      });
+
+      expect(assignment).toEqual({
+        name: text.name,
+        type: text.type,
+        isTranslatable: true,
+        value: [],
       });
     });
 
@@ -66,6 +112,7 @@ describe('TextProperty', () => {
       expect(assignment).toEqual({
         name: text.name,
         type: text.type,
+        isTranslatable: true,
         value: [],
       });
     });
@@ -76,17 +123,6 @@ describe('TextProperty', () => {
       expect(() =>
         text.createPropertyAssignment({ value: [{ value: 'A' }, { value: 'B' }] })
       ).toThrow('Text Property only accepts a single value.');
-    });
-
-    it('should throw when provided value is empty string even if not required', () => {
-      const text = new TextProperty({ id: 'any_id', label: 'A Title', template: 'any' });
-
-      expect(() => text.createPropertyAssignment({ value: [{ value: '' }] })).toThrow(
-        'Text Property must be a non-empty string.'
-      );
-      expect(() => text.createPropertyAssignment({ value: [{ value: '   ' }] })).toThrow(
-        'Text Property must be a non-empty string.'
-      );
     });
 
     it('should throw if required and no value is provided', () => {
@@ -100,6 +136,36 @@ describe('TextProperty', () => {
       expect(() => text.createPropertyAssignment({ value: [] }, true)).toThrow(
         'Text Property is required'
       );
+
+      expect(() => text.createPropertyAssignment({ value: [{ value: '' }] }, true)).toThrow(
+        'Text Property is required'
+      );
+
+      expect(() => text.createPropertyAssignment({ value: [{ value: '   ' }] }, true)).toThrow(
+        'Text Property is required'
+      );
+
+      expect(() =>
+        text.createPropertyAssignment({ value: [{ value: null as any }] }, true)
+      ).toThrow('Text Property is required');
+    });
+
+    it('should throw if required and all provided values are empty/whitespace', () => {
+      const text = new TextProperty({
+        id: 'any_id',
+        label: 'A Title',
+        template: 'any',
+        required: true,
+      });
+
+      expect(() =>
+        text.createPropertyAssignment(
+          {
+            value: [{ value: '' }, { value: '   ' }, { value: '\t\n' }],
+          },
+          true
+        )
+      ).toThrow('Text Property is required');
     });
   });
 });

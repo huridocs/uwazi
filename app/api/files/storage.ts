@@ -1,5 +1,4 @@
-import { NoSuchKey, NotFound, S3Client } from '@aws-sdk/client-s3';
-import { NodeHttpHandler, NodeHttpHandlerOptions } from '@smithy/node-http-handler';
+import { NoSuchKey, NotFound } from '@aws-sdk/client-s3';
 import { inspect } from 'util';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream, createWriteStream } from 'fs';
@@ -7,15 +6,15 @@ import { createReadStream, createWriteStream } from 'fs';
 import { access, readdir } from 'fs/promises';
 import path from 'path';
 
-import { config } from 'api/config';
-import { legacyLogger } from 'api/log';
-import { tenants } from 'api/tenants';
-import { FileType } from 'shared/types/fileType';
+import { config } from '#api/config.js';
+import { legacyLogger } from '#api/log/index.js';
+import { tenants } from '#api/tenants/index.js';
+import { FileType } from '#shared/types/fileType.js';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 
-import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
-import { FileNotFound } from './FileNotFound';
+import { buildS3Client } from '#api/infrastructure/S3Client.js';
+import { FileNotFound } from './FileNotFound.js';
 import {
   activityLogPath,
   attachmentsPath,
@@ -23,84 +22,14 @@ import {
   customUploadsPath,
   deleteFile,
   uploadsPath,
-} from './filesystem';
-import { S3Error, S3Storage } from './S3Storage';
+} from './filesystem.js';
+import { S3Error, S3Storage } from './S3Storage.js';
 
 let s3Instance: S3Storage;
 
-const buildS3Client = (params: {}) => {
-  const client = new S3Client({
-    maxAttempts: 5,
-    requestHandler: new NodeHttpHandler(params),
-    apiVersion: 'latest',
-    region: 'placeholder-region',
-    endpoint: config.s3.endpoint,
-    credentials: config.s3.credentials,
-    forcePathStyle: true,
-  });
-
-  // eslint-disable-next-line max-statements
-  client.middlewareStack.add((next, context) => async args => {
-    const startTime = Date.now();
-
-    const input = args.input as { Body?: Buffer; Key?: string };
-
-    try {
-      const result = await next(args);
-      const duration = Date.now() - startTime;
-
-      if (process.env.NODE_ENV !== 'test') {
-        LoggerFactory.default().info('S3 operation completed', {
-          operation: context.commandName,
-          duration,
-          key: input.Key,
-          fileSizeKB: Buffer.isBuffer(input.Body) ? input.Body.length / 1024 : NaN,
-          success: true,
-          timestamp: new Date().toISOString(),
-        });
-      }
-
-      return result;
-    } catch (error) {
-      if (process.env.NODE_ENV !== 'test') {
-        LoggerFactory.default().info('S3 operation failed', {
-          operation: context.commandName,
-          duration: Date.now() - startTime,
-          key: input.Key,
-          fileSizeKB: Buffer.isBuffer(input.Body) ? input.Body.length / 1024 : NaN,
-          success: false,
-          error: error.message,
-          errorCode: error.$metadata?.httpStatusCode,
-          timestamp: new Date().toISOString(),
-        });
-      }
-      throw error;
-    }
-  });
-  return client;
-};
 const s3 = () => {
-  const params: NodeHttpHandlerOptions = {
-    socketTimeout: 30000,
-    connectionTimeout: 3000,
-    httpAgent: {
-      maxSockets: 500,
-      timeout: 60000,
-      maxFreeSockets: 100,
-      keepAlive: true,
-      keepAliveMsecs: 5000,
-    },
-    httpsAgent: {
-      maxSockets: 500,
-      timeout: 60000,
-      maxFreeSockets: 100,
-      keepAlive: true,
-      keepAliveMsecs: 5000,
-    },
-  };
-
   if (config.s3.endpoint && !s3Instance) {
-    s3Instance = new S3Storage(buildS3Client(params));
+    s3Instance = new S3Storage(buildS3Client());
   }
 
   return s3Instance;
@@ -121,7 +50,7 @@ const streamToBuffer = async (stream: Readable): Promise<Buffer> =>
   new Promise((resolve, reject) => {
     const _buf: Buffer[] = [];
     stream.on('data', (chunk: any) => _buf.push(chunk));
-    stream.on('end', () => resolve(Buffer.concat(_buf)));
+    stream.on('end', () => resolve(Buffer.concat(_buf as unknown as Uint8Array[])));
     stream.on('error', (err: unknown) => reject(err));
   });
 

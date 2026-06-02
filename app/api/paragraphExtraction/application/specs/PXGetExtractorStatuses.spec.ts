@@ -1,39 +1,40 @@
 /* eslint-disable max-statements */
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
-import { PXExtractorsQueryServiceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory';
-import { GetExtractorStatusesInput } from 'api/paragraphExtraction/domain/PXExtractorsQueryService';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { PXExtractorsQueryServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory.js';
+import { GetExtractorStatusesInput } from '#api/paragraphExtraction/domain/PXExtractorsQueryService.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
-import { extractorsQueryFixtures, extractor1 } from './shared/extractorsQueryFixtures';
-import { PXGetExtractorStatuses } from '../PXGetExtractorStatuses';
+import { extractorsQueryFixtures, extractor1 } from './shared/extractorsQueryFixtures.js';
+import { PXGetExtractorStatuses } from '../PXGetExtractorStatuses.js';
 
 const createFixtures = (): DBFixture => extractorsQueryFixtures;
 
-const setupUseCase = () => {
-  const mongoTransactionManager = TransactionManagerFactory.default();
-  const connection = getConnection();
+const setupUseCase = () =>
+  testingEnvironment.runWithContext(() => {
+    const mongoTransactionManager = TransactionManagerFactory.default();
+    const connection = getConnection();
 
-  const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
-  const filesDS = DefaultFilesDataSource(mongoTransactionManager);
+    const settingsDS = SettingsDataSourceFactory.default({
+      transactionManager: mongoTransactionManager,
+    });
+    const filesDS = FilesDataSourceFactory.default();
 
-  const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
-    connection,
-    transactionManager: mongoTransactionManager,
+    const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
+      connection,
+      transactionManager: mongoTransactionManager,
+    });
+
+    return new PXGetExtractorStatuses({
+      extractorsQueryService,
+      settingsDS,
+      filesDS,
+    });
   });
-
-  const getExtractorStatuses = new PXGetExtractorStatuses({
-    extractorsQueryService,
-    settingsDS,
-    filesDS,
-  });
-
-  return getExtractorStatuses;
-};
 
 describe('PXGetExtractorStatuses', () => {
   beforeEach(async () => {

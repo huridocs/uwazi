@@ -1,11 +1,12 @@
+/* eslint-disable max-lines */
 // eslint-disable-next-line max-classes-per-file
-import { Property } from 'api/core/domain/template/Property';
-import { Template } from 'api/core/domain/template/Template';
-import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
-import { DomainError } from '../error/DomainError';
-import { AJVObject, ValidationError } from '../error/ValidationError';
-import { AbstractSelectProperty } from './select/AbstractSelectProperty';
-import { NestedPropertyProps } from './NestedProperty';
+import { Property } from '#api/core/domain/template/Property.js';
+import { Template } from '#api/core/domain/template/Template.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { DomainError } from '../error/DomainError.js';
+import { AJVObject, ValidationError } from '../error/ValidationError.js';
+import { AbstractSelectProperty } from './select/AbstractSelectProperty.js';
+import { NestedPropertyProps } from './NestedProperty.js';
 
 export class PropertyTypeInvalidTypeError extends DomainError {
   constructor(type: string, propertyName: string) {
@@ -268,5 +269,44 @@ export class TemplateInUseError extends DomainError {
       'Cannot delete a template that has existing entities. Please remove the related entities first.';
     const code = 'template.in_use';
     super(message, code);
+  }
+}
+
+export class PropertyComparisonError extends DomainError {
+  constructor() {
+    super('Trying to compare different properties.', 'template.property.property_comparison_error');
+  }
+}
+
+export class PropertyTypeChangeError extends DomainError {
+  constructor() {
+    super("Can't change property types.", 'template.property.property_type_change_error');
+  }
+}
+
+export class UnhandledPropertyTypeError extends DomainError {
+  constructor(type: string) {
+    super(
+      `The following type was not handled. Type = ${type}`,
+      'template.template.unhandled_property_type_error'
+    );
+  }
+}
+
+export class PropertyNotFoundInTemplateError extends DomainError {
+  constructor(propertyName: string, templateInfo: string) {
+    super(
+      `Property with name ${propertyName} not found in template ${templateInfo}`,
+      'template.template.property_not_found_in_template_error'
+    );
+  }
+}
+
+export class InvalidPropertyComparisonTypeError extends DomainError {
+  constructor(expectedType: string) {
+    super(
+      `Can only compare with another ${expectedType}`,
+      'template.property.invalid_property_comparison_type_error'
+    );
   }
 }

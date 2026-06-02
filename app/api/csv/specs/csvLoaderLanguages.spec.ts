@@ -1,17 +1,16 @@
-import entities from 'api/entities';
-import { files } from 'api/files/files';
-import * as filesystem from 'api/files/filesystem';
-import { uploadsPath } from 'api/files/filesystem';
-import { search } from 'api/search';
-import settings from 'api/settings';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import entities from '#api/entities/index.js';
+import { files } from '#api/files/files.js';
+import * as filesystem from '#api/files/filesystem.js';
+import { uploadsPath } from '#api/files/filesystem.js';
+import { search } from '#api/search/index.js';
+import settings from '#api/settings/index.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import path from 'path';
-import { EntitySchema } from 'shared/types/entityType';
-
-import translations from 'api/i18n';
-import { CSVLoader } from '../csvLoader';
-import { fixtures, template1Id } from './fixtures';
-import { createTestingZip } from './helpers';
+import { EntitySchema } from '#shared/types/entityType.js';
+import translations from '#api/i18n/index.js';
+import { CSVLoader } from '../csvLoader.js';
+import { fixtures, template1Id } from './fixtures.js';
+import { createTestingZip } from './helpers.js';
 
 const removeTestingZip = async () =>
   filesystem.deleteFile(path.join(__dirname, 'zipData/testLanguages.zip'));
@@ -45,7 +44,10 @@ describe('csvLoader languages', () => {
     jest
       .spyOn(filesystem, 'generateFileName')
       .mockImplementation(file => `generatedLang${file.originalname}`);
-    await loader.load(csv, template1Id, { language: 'en', user: {} });
+
+    await testingEnvironment.runWithContext(async () => {
+      await loader.load(csv, template1Id, { language: 'en', user: {} });
+    });
 
     imported = await entities.get();
   });

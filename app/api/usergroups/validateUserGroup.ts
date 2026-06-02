@@ -1,10 +1,10 @@
 import Ajv from 'ajv';
 import ajvKeywords from 'ajv-keywords';
-import { wrapValidator } from 'shared/tsUtils';
+import { wrapValidator } from '#shared/tsUtils.js';
 
-import { UserGroupSchema } from 'shared/types/userGroupType';
-import { userGroupSchema } from 'shared/types/userGroupSchema';
-import model from './userGroupsModel';
+import { UserGroupSchema } from '#shared/types/userGroupType.js';
+import { userGroupSchema } from '#shared/types/userGroupSchema.js';
+import model from './userGroupsModel.js';
 
 const ajv = ajvKeywords(new Ajv({ allErrors: true }), ['uniqueItemProperties']);
 ajv.addVocabulary(['tsType']);

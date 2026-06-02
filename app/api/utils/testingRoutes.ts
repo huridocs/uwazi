@@ -1,12 +1,13 @@
-import express, { Application, Request, Response, NextFunction } from 'express';
+import express, { Application, NextFunction, Request, Response } from 'express';
 import { Response as SuperTestResponse } from 'supertest';
 
-import errorHandlingMiddleware from 'api/utils/error_handling_middleware';
-import languageMiddleware from 'api/utils/languageMiddleware';
-import { routesErrorHandler } from 'api/utils/routesErrorHandler';
-import { extendSupertest } from './supertestExtensions';
-import { appContext } from './AppContext';
-import * as setupSockets from 'api/socketio/setupSockets';
+import * as setupSockets from '#api/socketio/setupSockets.js';
+import errorHandlingMiddleware from '#api/utils/error_handling_middleware.js';
+import languageMiddleware from '#api/utils/languageMiddleware.js';
+import { routesErrorHandler } from '#api/utils/routesErrorHandler.js';
+import { appContext } from './AppContext.js';
+import { extendSupertest } from './supertestExtensions.js';
+import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
 
 extendSupertest();
 
@@ -49,6 +50,7 @@ const setUpApp = (
   });
   app.use(languageMiddleware);
   customMiddleware.forEach(middlewareElement => app.use(middlewareElement));
+  app.use(dependenciesContextMiddleware);
 
   route(app);
   app.use(errorHandlingMiddleware);
@@ -77,4 +79,4 @@ const socketEmit = async (eventName: string, performRequest: requestCb) => {
   return res;
 };
 
-export { setUpApp, socketEmit, iosocket, TestEmitSources };
+export { iosocket, setUpApp, socketEmit, TestEmitSources };

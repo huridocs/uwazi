@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react';
-import { Select, SelectProps } from 'V2/Components/Forms';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
+import { Select, SelectProps } from '#V2/Components/Forms/index.js';
 
 const meta: Meta<typeof Select> = {
   title: 'Forms/Select',
   component: Select,
 };
+export default meta;
 
 type Story = StoryObj<typeof Select>;
 
@@ -56,5 +57,3 @@ const Basic = {
 };
 
 export { Basic };
-
-export default meta;

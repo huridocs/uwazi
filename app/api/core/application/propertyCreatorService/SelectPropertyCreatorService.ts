@@ -1,12 +1,16 @@
-import { ThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
-import { Context, Property } from '../../domain/template/Property';
-import { SelectPropertyWithInvalidThesaurusError } from '../../domain/template/errors';
+import { ThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
+import { Context, Property } from '../../domain/template/Property.js';
+import { SelectPropertyWithInvalidThesaurusError } from '../../domain/template/errors.js';
+import { IncorrectPropertyTypeError } from '../errors.js';
 import {
   MultiSelectPropertyProps,
   MultiSelectProperty,
-} from '../../domain/template/select/MultiSelectProperty';
-import { SelectPropertyProps, SelectProperty } from '../../domain/template/select/SelectProperty';
-import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
+} from '../../domain/template/select/MultiSelectProperty.js';
+import {
+  SelectPropertyProps,
+  SelectProperty,
+} from '../../domain/template/select/SelectProperty.js';
+import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService.js';
 
 type Deps = {
   thesauriDS: ThesauriDataSource;
@@ -37,9 +41,7 @@ class SelectPropertyCreatorService extends AbstractPropertyCreatorService<Deps> 
 
     if (props.type === 'multiselect') return new MultiSelectProperty(props, context);
 
-    throw new Error(
-      `The following type is incorrect for SelectPropertyCreatorService. Type = ${props.type}`
-    );
+    throw new IncorrectPropertyTypeError(props.type || 'undefined', 'SelectPropertyCreatorService');
   }
 }
 

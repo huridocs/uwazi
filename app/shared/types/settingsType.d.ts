@@ -1,7 +1,11 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-import { ObjectIdSchema, LanguagesListSchema, GeolocationSchema } from 'shared/types/commonTypes';
+import {
+  ObjectIdSchema,
+  LanguagesListSchema,
+  GeolocationSchema,
+} from '#shared/types/commonTypes.js';
 
 export interface AutomaticTranslationConfig {
   active: boolean;
@@ -52,6 +56,21 @@ export interface Settings {
   project?: string;
   site_name?: string;
   favicon?: string;
+  site_logo?: string;
+  themeAssets?: {
+    preset?: 'default' | 'legacy';
+    siteLogo?: {
+      light?: string;
+      dark?: string;
+    };
+    favicon?: {
+      light?: string;
+      dark?: string;
+    };
+  };
+  themeVars?: {
+    [k: string]: string | undefined;
+  };
   contactEmail?: string;
   senderEmail?: string;
   home_page?: string;
@@ -80,6 +99,7 @@ export interface Settings {
   mapLayers?: [string, ...string[]];
   newNameGeneration?: true;
   ocrServiceEnabled?: boolean;
+  filterUnauthorizedRelated?: boolean;
   sync?: SettingsSyncSchema[];
   languages?: LanguagesListSchema;
   filters?: SettingsFilterSchema[];

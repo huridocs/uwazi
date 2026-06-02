@@ -7,22 +7,20 @@ import superagent from 'superagent';
 import Immutable from 'immutable';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { APIURL } from 'app/config.js';
-import * as notifications from 'app/Notifications/actions/notificationsActions';
-import * as actions from '../exportActions';
+import { APIURL } from '#app/config.js';
+import * as notifications from '#app/Notifications/actions/notificationsActions.js';
+import * as actions from '../exportActions.js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 const mockUpload = superagent.post(`${APIURL}export`);
 
 const mockSuperAgent = (response?: any, err?: any) => {
-  // eslint-disable-next-line @typescript-eslint/promise-function-async
   jest.spyOn(mockUpload, 'catch').mockImplementation(cb => {
     if (!cb) throw new Error('mock upload catch cb is not a function');
     if (err) cb(err);
     return mockUpload;
   });
-  // eslint-disable-next-line @typescript-eslint/promise-function-async
   jest.spyOn(mockUpload, 'then').mockImplementation(cb => {
     if (!cb) throw new Error('mock upload then cb is not a function');
     cb(response);
@@ -202,6 +200,73 @@ describe('exportActions', () => {
           throw e;
         });
     });
+
+    it.each([
+      {
+        description: 'utf-8 filename* when both filename and filename* are present',
+        contentDisposition:
+          'attachment; filename="Uwazi ????-2026-05-14T13:32:35.777Z.csv"; filename*=UTF-8\'\'Uwazi%20%D0%9E%D0%A0%D0%9F%D0%9A-2026-05-14T13%3A32%3A35.777Z.csv',
+        expectedFileName: 'Uwazi ОРПК-2026-05-14T13:32:35.777Z.csv',
+      },
+      {
+        description: 'filename when filename* is absent',
+        contentDisposition: 'attachment; filename="Uwazi-2026-05-14T13:32:53.411Z.csv"',
+        expectedFileName: 'Uwazi-2026-05-14T13:32:53.411Z.csv',
+      },
+      {
+        description: 'export.csv when neither filename nor filename* exists',
+        contentDisposition: 'attachment',
+        expectedFileName: 'export.csv',
+      },
+      {
+        description: 'export.csv when content-disposition is empty',
+        contentDisposition: '',
+        expectedFileName: 'export.csv',
+      },
+      {
+        description: 'export.csv when filename* decoding fails',
+        contentDisposition:
+          'attachment; filename="fallback.csv"; filename*=UTF-8\'\'Uwazi%ZZ-2026-05-14T13%3A32%3A35.777Z.csv',
+        expectedFileName: 'export.csv',
+      },
+      {
+        description: 'export.csv when filename* exists but has empty value',
+        contentDisposition: "attachment; filename*=UTF-8''",
+        expectedFileName: 'export.csv',
+      },
+      {
+        description: 'export.csv when filename is empty and filename* is absent',
+        contentDisposition: 'attachment; filename=""',
+        expectedFileName: 'export.csv',
+      },
+    ])(
+      'should parse filename from content-disposition: $description',
+      ({ contentDisposition, expectedFileName }, done) => {
+        const customApiResponse = {
+          text: 'csv',
+          header: {
+            'content-disposition': contentDisposition,
+          },
+        };
+
+        mockSuperAgent(customApiResponse);
+        const dispatch = jest.fn();
+        const getState = jest.fn(() => state);
+
+        actions
+          .exportDocuments('library')(dispatch, getState)
+          .then(() => {
+            expect(dispatch).toHaveBeenCalledWith({
+              type: 'exportSearchResultsFileName/SET',
+              value: expectedFileName,
+            });
+            done();
+          })
+          .catch(e => {
+            throw e;
+          });
+      }
+    );
 
     it('should clean the state and dispatch a notification if the an error occurs', done => {
       const dispatch = jest.fn();

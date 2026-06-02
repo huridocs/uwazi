@@ -3,10 +3,10 @@
 import Immutable from 'immutable';
 import { Settings } from 'luxon';
 
-import { metadataSelectors } from '../../selectors';
+import { metadataSelectors } from '../../selectors.js';
 
-import formater from '../formater';
-import { doc, templates, thesauris, relationships } from './fixtures';
+import { formater } from '../formater.js';
+import { doc, templates, thesauris, relationships } from './fixtures.js';
 
 describe('metadata formater', () => {
   function assessBasicProperties(element, [label, name, translateContext, value]) {
@@ -85,6 +85,7 @@ describe('metadata formater', () => {
       icon: undefined,
       url: `/entity/${value.toLowerCase().replace(/ /g, '')}`,
       value,
+      ...(originalValue.authorized && { authorized: originalValue.authorized }),
       ...(originalValue ? { originalValue } : {}),
     });
 
@@ -200,7 +201,7 @@ describe('metadata formater', () => {
       assessMultiValues(relationship2, [
         formatValue('Value 1', 'value1'),
         formatValue('Value 2', 'value2'),
-        formatValue('Value 4', 'value4'),
+        { ...formatValue('Value 4', 'value4'), authorized: false },
       ]);
     });
 
@@ -342,6 +343,7 @@ describe('metadata formater', () => {
       expect(preview.style).toBe('contain');
       expect(preview.noLabel).toBe(false);
       expect(preview.showInCard).toBe(true);
+      expect(preview.status).toBe('processing');
 
       expect(media.value).toBe('mediaURL');
       expect(media.noLabel).toBe(false);
@@ -420,7 +422,7 @@ describe('metadata formater', () => {
     });
 
     it('should return empty value preview if no PDF associated to the entity', () => {
-      const adaptedEntity = { ...doc, defaultDoc: undefined, documents: [] };
+      const adaptedEntity = { ...doc, preview: undefined, defaultDoc: undefined, documents: [] };
       const formatted = formater.prepareMetadata(
         adaptedEntity,
         templates,

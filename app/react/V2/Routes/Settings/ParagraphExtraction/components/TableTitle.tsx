@@ -1,7 +1,7 @@
 import React from 'react';
 import { DocumentTextIcon } from '@heroicons/react/24/outline';
-import { Translate } from 'app/I18N';
-import { DisplayPill } from './DisplayPills';
+import { Translate } from '#app/I18N/index.js';
+import { DisplayPill } from './DisplayPills.js';
 
 const TableTitle = ({
   items = [],
@@ -10,7 +10,7 @@ const TableTitle = ({
 }) => (
   <div className="flex items-center justify-between gap-2">
     <div className="flex items-center gap-2">
-      <div className="bg-indigo-200 size-[28px] justify-center items-center rounded-full flex">
+      <div className="bg-primary-200 size-[28px] justify-center items-center rounded-full flex">
         <DocumentTextIcon className="w-5" />
       </div>
       <div>

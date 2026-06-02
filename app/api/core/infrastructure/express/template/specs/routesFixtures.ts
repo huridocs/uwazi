@@ -1,5 +1,5 @@
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
 
 const templateCommonProperties = [
   {
@@ -46,7 +46,6 @@ const fixtures: DBFixture = {
       _id: fixtureFactory.id('123456789'),
       values: [
         {
-          _id: 'abc',
           id: 'A',
           label: 'A',
         },

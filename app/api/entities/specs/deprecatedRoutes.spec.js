@@ -1,13 +1,13 @@
-import { search } from 'api/search';
-import 'api/utils/jasmineHelpers';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import templates from '../../core/v1_layer/templates/templates';
-import thesauri from '../../thesauri';
-import instrumentRoutes from '../../utils/instrumentRoutes';
-import entities from '../entities';
-import * as entitiesSavingManager from '../entitySavingManager';
+import { search } from '#api/search/index.js';
+import '#api/utils/jasmineHelpers.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import templates from '../../core/v1_layer/templates/templates.js';
+import thesauri from '../../thesauri.js';
+import instrumentRoutes from '../../utils/instrumentRoutes.js';
+import entities from '../entities.js';
+import * as entitiesSavingManager from '../entitySavingManager.js';
 import documentRoutes from '../routes.js';
-import fixtures, { batmanFinishesId, templateId, unpublishedDocId } from './fixtures.js';
+import fixtures, { templateId } from './fixtures.js';
 
 describe('entities', () => {
   let routes;
@@ -31,6 +31,7 @@ describe('entities', () => {
         body: {
           title: 'Batman begins',
           template: templateId,
+          sharedId: 'existing123',
         },
         user: { username: 'admin' },
         language: 'lang',
@@ -47,7 +48,7 @@ describe('entities', () => {
       expect(routes._post('/api/entity_denormalize', req)).toNeedAuthorization();
     });
 
-    it('should create a new document with current user', done => {
+    it('should update an entity with current user (V1 path)', done => {
       jest
         .spyOn(entitiesSavingManager, 'saveEntity')
         .mockReturnValue(Promise.resolve({ entity: 'entity', errors: [] }));
@@ -81,7 +82,7 @@ describe('entities', () => {
       });
     });
 
-    it('should emit thesauriChange socket event with the modified thesaurus based on the entity template', async () => {
+    it('should emit thesauriChange socket event when updating entity (V1 path)', async () => {
       const user = {
         _id: 'c08ef2532f0bd008ac5174b45e033c93',
         username: 'admin',
@@ -90,6 +91,7 @@ describe('entities', () => {
         body: {
           title: 'Batman begins',
           template: 'template',
+          sharedId: 'existing456',
         },
         user,
         language: 'lang',
@@ -158,166 +160,6 @@ describe('entities', () => {
     });
   });
 
-  describe('GET', () => {
-    it('should return matching document', async () => {
-      const expectedEntity = [
-        {
-          sharedId: 'sharedId',
-          published: true,
-        },
-      ];
-      jest
-        .spyOn(entities, 'getWithRelationships')
-        .mockImplementation(async () => Promise.resolve(expectedEntity));
-      const req = {
-        query: { sharedId: 'sharedId' },
-        language: 'lang',
-      };
-
-      const response = await routes.get('/api/entities', req);
-      expect(entities.getWithRelationships).toHaveBeenCalledWith(
-        {
-          sharedId: 'sharedId',
-          language: 'lang',
-          published: true,
-        },
-        '',
-        { limit: 1 }
-      );
-      expect(response).toEqual({ rows: expectedEntity });
-    });
-
-    it('should return document by id', async () => {
-      const expectedEntity = fixtures.entities[0];
-      delete expectedEntity.fullText;
-
-      const response = await routes.get('/api/entities', {
-        query: { _id: batmanFinishesId, omitRelationships: true },
-      });
-
-      expect(response.rows.length).toEqual(1);
-      expect(response.rows[0]).toEqual(expect.objectContaining(expectedEntity));
-    });
-
-    it('should not return unpublished documents when user not logged in', async () => {
-      const response = await routes.get('/api/entities', {
-        query: { _id: unpublishedDocId, omitRelationships: true },
-      });
-
-      expect(response.status).toEqual(404);
-      expect(response.rows).toEqual([]);
-    });
-
-    it('should allow not fetching the relationships', async () => {
-      const expectedEntity = {
-        sharedId: 'sharedId',
-        published: true,
-      };
-
-      entities.getWithRelationships.mockClear();
-      jest.spyOn(entities, 'getWithRelationships').mockImplementation(() => {});
-      jest.spyOn(entities, 'get').mockImplementation(async () => Promise.resolve([expectedEntity]));
-
-      const req = {
-        query: {
-          sharedId: 'sharedId',
-          omitRelationships: true,
-        },
-        language: 'lang',
-      };
-
-      const {
-        rows: [result],
-      } = await routes.get('/api/entities', req);
-      expect(result).toBe(expectedEntity);
-      expect(entities.getWithRelationships).not.toHaveBeenCalled();
-      expect(entities.get).toHaveBeenCalledWith(
-        {
-          sharedId: 'sharedId',
-          language: 'lang',
-          published: true,
-        },
-        '',
-        { limit: 1 }
-      );
-    });
-
-    describe('when the document does not exist', () => {
-      it('should retunr a 404', async () => {
-        jest
-          .spyOn(entities, 'getWithRelationships')
-          .mockImplementation(async () => Promise.resolve([]));
-        const req = {
-          query: { sharedId: 'idontexist' },
-          language: 'en',
-        };
-
-        const response = await routes.get('/api/entities', req);
-        expect(response.status).toBe(404);
-      });
-    });
-
-    describe('when the document has unpublished relationships and the user is unauthenticated', () => {
-      it('should remove private relationships from response', async () => {
-        jest.spyOn(entities, 'getWithRelationships').mockReturnValue(
-          Promise.resolve([
-            {
-              sharedId: 'e1',
-              published: true,
-              relationships: [
-                {
-                  entityData: {
-                    sharedId: 'e1',
-                    published: true,
-                  },
-                },
-                {
-                  entityData: {
-                    sharedId: 'e2',
-                    published: false,
-                  },
-                },
-                {
-                  entityData: {
-                    sharedId: 'e3',
-                    published: true,
-                  },
-                },
-              ],
-            },
-          ])
-        );
-
-        const req = {
-          query: { sharedId: 'sharedId' },
-          language: 'lang',
-        };
-
-        const {
-          rows: [result],
-        } = await routes.get('/api/entities', req);
-        expect(result).toEqual({
-          sharedId: 'e1',
-          published: true,
-          relationships: [
-            {
-              entityData: {
-                sharedId: 'e1',
-                published: true,
-              },
-            },
-            {
-              entityData: {
-                sharedId: 'e3',
-                published: true,
-              },
-            },
-          ],
-        });
-      });
-    });
-  });
-
   it('should return formattedPlainTextPages page requested', async () => {
     jest.spyOn(entities, 'countByTemplate').mockImplementation(async () => Promise.resolve(2));
     const req = { query: { templateId: 'templateId' } };
@@ -349,37 +191,15 @@ describe('entities', () => {
         .mockImplementation(async () => Promise.resolve({ json: 'ok' }));
     });
 
-    it('should have a validation schema', () => {
-      expect(routes.delete.validation('/api/entities')).toMatchSnapshot();
-    });
-
     it('should use entities to delete it', async () => {
       const req = {
         query: {
-          sharedId: 123,
+          sharedId: '123',
           _rev: 456,
         },
       };
       await routes.delete('/api/entities', req);
-      expect(entities.delete).toHaveBeenCalledWith(req.query.sharedId);
-    });
-  });
-
-  describe('POST /api/entities/bulkdelete', () => {
-    beforeEach(() => {
-      jest
-        .spyOn(entities, 'deleteMultiple')
-        .mockImplementation(async () => Promise.resolve({ json: 'ok' }));
-    });
-
-    it('should have a validation schema', () => {
-      expect(routes.post.validation('/api/entities/bulkdelete')).toMatchSnapshot();
-    });
-
-    it('should use entities to delete it', async () => {
-      const req = { body: { sharedIds: [123, 456] } };
-      await routes.post('/api/entities/bulkdelete', req);
-      expect(entities.deleteMultiple).toHaveBeenCalledWith([123, 456]);
+      expect(entities.delete).toHaveBeenCalledWith('123');
     });
   });
 });

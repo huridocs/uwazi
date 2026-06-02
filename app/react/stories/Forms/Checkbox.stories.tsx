@@ -1,29 +1,50 @@
-import React from 'react';
-import { Meta, StoryObj } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
-import { fn } from '@storybook/test';
-import { Checkbox } from 'app/V2/Components/Forms';
+import React, { useState } from 'react';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
+import { action } from 'storybook/actions';
+import { Checkbox } from '#V2/Components/Forms/index.js';
 
 const meta: Meta<typeof Checkbox> = {
   title: 'Forms/Checkbox',
   component: Checkbox,
-  args: {
-    onChange: fn(),
-  },
 };
+export default meta;
 
 type Story = StoryObj<typeof Checkbox>;
 
+const InteractiveWrapper = ({
+  initialChecked = false,
+  disabled = false,
+  label = 'Click me',
+}: {
+  initialChecked?: boolean;
+  disabled?: boolean;
+  label?: string | React.ReactNode;
+}) => {
+  const [checked, setChecked] = useState(initialChecked);
+
+  return (
+    <Checkbox
+      name="interactive-checkbox"
+      label={label}
+      checked={checked}
+      disabled={disabled}
+      onChange={() => {
+        setChecked(!checked);
+        action('changed')(!checked);
+      }}
+    />
+  );
+};
+
 const Primary: Story = {
   render: args => (
-    <Checkbox
-      label={args.label}
-      checked={args.checked}
-      name={args.name}
-      onChange={args.onChange}
-      className={args.className}
-      disabled={args.disabled}
-    />
+    <div className="tw-content">
+      <InteractiveWrapper
+        initialChecked={args.checked}
+        disabled={args.disabled}
+        label={args.label}
+      />
+    </div>
   ),
 };
 
@@ -31,14 +52,36 @@ const Basic: Story = {
   ...Primary,
   args: {
     label: 'Uwazi is awesome',
-    name: 'awesomeness',
     disabled: false,
     checked: false,
-    className: '',
-    onChange: action('changed'),
   },
 };
 
-export { Basic };
+const Checked: Story = {
+  ...Primary,
+  args: {
+    label: 'Already checked',
+    disabled: false,
+    checked: true,
+  },
+};
 
-export default meta;
+const Disabled: Story = {
+  ...Primary,
+  args: {
+    label: 'Disabled checkbox',
+    disabled: true,
+    checked: false,
+  },
+};
+
+const DisabledChecked: Story = {
+  ...Primary,
+  args: {
+    label: 'Disabled and checked',
+    disabled: true,
+    checked: true,
+  },
+};
+
+export { Basic, Checked, Disabled, DisabledChecked };

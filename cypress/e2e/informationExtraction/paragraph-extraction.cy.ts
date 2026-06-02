@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import 'cypress-axe';
-import { clearCookiesAndLogin } from '../helpers';
+import { clearCookiesAndLogin } from '../helpers/index.js';
 
 describe('Paragraph Extraction', () => {
   before(() => {
@@ -23,9 +23,11 @@ describe('Paragraph Extraction', () => {
 
   describe('Extractor Dashboard', () => {
     it('should verify PX dummy service is reachable', () => {
-      const pxUrl = Cypress.env('PARAGRAPH_EXTRACTION_URL') || 'http://127.0.0.1:5051';
-      cy.log(`Checking PX service at ${pxUrl}`);
-      cy.request({ url: pxUrl, failOnStatusCode: false }).its('status').should('be.gte', 100);
+      cy.env(['PARAGRAPH_EXTRACTION_URL']).then(({ PARAGRAPH_EXTRACTION_URL: pxUrl }) => {
+        const url = pxUrl || 'http://127.0.0.1:5051';
+        cy.log(`Checking PX service at ${url}`);
+        cy.request({ url, failOnStatusCode: false }).its('status').should('be.gte', 100);
+      });
     });
 
     it('should navigate to the PX dashboard', () => {
@@ -71,7 +73,6 @@ describe('Paragraph Extraction', () => {
 
     it('should show a success notification', () => {
       cy.contains('Paragraph Extractor added');
-      cy.contains('Dismiss').click();
     });
 
     it('should contain the extractor created', () => {
@@ -129,7 +130,6 @@ describe('Paragraph Extraction', () => {
       cy.contains('The process of extracting the paragraphs has successfully started').as(
         'successMessage'
       );
-      cy.contains('Dismiss').click();
       cy.contains('button', 'Extract new paragraphs').should('be.disabled');
     });
 
@@ -219,7 +219,6 @@ describe('Paragraph Extraction', () => {
       cy.contains('h1', 'Are you sure?');
       cy.contains('button', 'Continue').click();
       cy.contains('The process of extracting the paragraphs has successfully started');
-      cy.contains('Dismiss').click();
       cy.contains('button', 'Filters').click();
       cy.contains('label', 'Obsolete').find('input[type="checkbox"]').should('be.checked');
       cy.contains('label', 'Processed').find('input[type="checkbox"]').should('be.checked');
@@ -269,7 +268,7 @@ describe('Paragraph Extraction', () => {
         .within(() => {
           cy.contains(firstEntityProcessed);
         });
-      cy.get('#pdf-container .pdf-page').should('have.length.at.least', 2);
+      cy.get('[data-testid="pdf-page"]').should('have.length.at.least', 2);
       cy.contains('aside button', 'Close').click();
     });
 

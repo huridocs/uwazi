@@ -1,19 +1,21 @@
-import { PXExtractor } from './PXExtractor';
+import { PXExtractor } from './PXExtractor.js';
 
-export type ExistsInput = {
+type ExistsInput = {
   sourceTemplateId: string;
 };
 
-export type DeleteParagraphsInput = {
+type GetParagraphsIdsInput = {
   entitySharedId: string;
   extractorId: string;
 };
 
-export interface PXExtractorsDataSource {
+interface PXExtractorsDataSource {
   create(extractor: PXExtractor): Promise<void>;
   getById(extractorId: string): Promise<PXExtractor | undefined>;
   getBySourceTemplate(sourceTemplateId: string): Promise<PXExtractor | undefined>;
   exists(input: ExistsInput): Promise<boolean>;
   delete(extractorId: string): Promise<void>;
-  deleteParagraphs(input: DeleteParagraphsInput): Promise<void>;
+  getParagraphsIds(input: GetParagraphsIdsInput): Promise<string[]>;
 }
+
+export type { PXExtractorsDataSource, GetParagraphsIdsInput, ExistsInput };

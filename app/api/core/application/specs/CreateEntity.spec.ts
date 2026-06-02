@@ -1,26 +1,18 @@
-/* eslint-disable max-statements */
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-
-import { UseCaseContext } from 'api/core/libs/UseCase';
 import { ObjectId } from 'mongodb';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
-import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { InputFile } from 'api/files.v2/model/InputFile';
-import { tenants } from 'api/tenants';
-import { PermissionType } from 'api/core/domain/entity/PermissionType';
-import { AccessLevel } from 'api/core/domain/entity/AccessLevel';
-import { CreateEntityUseCase } from '../CreateEntity';
+
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { CreateEntityUseCaseFactory } from '#api/core/infrastructure/factories/CreateEntityUseCaseFactory.js';
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { User } from '#api/users.v2/model/User.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
+import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
 
 const factory = getFixturesFactory();
 
@@ -158,6 +150,10 @@ const fixtures: DBFixture = {
       factory.property('attached_media_1', 'media'),
       factory.property('attached_media_2', 'media'),
     ]),
+
+    factory.template('Document With Required', [
+      factory.property('required_text', 'text', { required: true }),
+    ]),
   ],
 
   entities: [
@@ -186,43 +182,40 @@ const fixtures: DBFixture = {
 };
 
 type CreateSutProps = {
-  context?: UseCaseContext;
+  actor?: User;
+  targetLanguage?: LanguageISO6391;
 };
 
 const createSut = (props: CreateSutProps = {}) => {
-  const { context } = props;
-  const transactionManager = TransactionManagerFactory.default();
-  const idGenerator = IdGeneratorFactory.default();
-  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-  const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
-  const translationsDS = DefaultTranslationsDataSource(transactionManager);
+  const actor =
+    props.actor ??
+    User.createFrom({
+      _id: new ObjectId(),
+      role: 'admin',
+      groups: [],
+      email: '',
+      username: '',
+    });
 
-  const multiLanguageEntityDS = new MongoMultiLanguageEntityDataSource(
-    getConnection(),
-    transactionManager
-  );
+  const { sut, fileService } = testingEnvironment.runWithContext(
+    () => {
+      const fileStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
+      const _fileService = FilesServiceFactory.default({ fileStorage });
+      jest.spyOn(_fileService, 'storeFiles').mockResolvedValue();
+      jest.spyOn(_fileService, 'insert').mockResolvedValue();
 
-  const filesDS = DefaultFilesDataSource(transactionManager);
-
-  const filesStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
-
-  const sut = new CreateEntityUseCase(
-    {
-      transactionManager,
-      idGenerator,
-      settingsDS,
-      multiLanguageEntityDS,
-      templatesDS,
-      thesauriDS,
-      translationsDS,
-      filesDS,
-      filesStorage,
+      return {
+        sut: CreateEntityUseCaseFactory.default({
+          targetLanguage: props.targetLanguage ?? 'en',
+          fileService: _fileService,
+        }),
+        fileService: _fileService,
+      };
     },
-    context
+    { actor }
   );
 
-  return { sut, filesStorage };
+  return { sut, fileService };
 };
 
 describe('CreateEntityUseCase', () => {
@@ -237,11 +230,18 @@ describe('CreateEntityUseCase', () => {
   });
 
   it('should create an Entity', async () => {
-    const { sut, filesStorage } = createSut();
+    const actor = User.createFrom({
+      _id: factory.id('user1').toString(),
+      username: 'username',
+      email: 'email@email.com',
+      role: 'collaborator',
+    });
+
+    const { sut, fileService } = createSut({ actor, targetLanguage: 'en' });
 
     const entity = await sut.execute({
       templateId: factory.id('Document').toHexString(),
-      attachments: [
+      inputFiles: [
         new InputFile(
           {
             fieldname: 'attachments[0]',
@@ -254,6 +254,19 @@ describe('CreateEntityUseCase', () => {
             size: 78636,
           },
           'attachment'
+        ),
+        new InputFile(
+          {
+            fieldname: 'documents[0]',
+            encoding: '7bit',
+            mimetype: 'image/png',
+            destination: '/tmp',
+            originalname: 'primary.pdf',
+            filename: '1162280821775nhs3epb55g7.png',
+            path: '/tmp/1162280821775nhs3epb55g7.png',
+            size: 78636,
+          },
+          'document'
         ),
         new InputFile(
           {
@@ -294,6 +307,11 @@ describe('CreateEntityUseCase', () => {
           },
           'attachment'
         ),
+
+        InputFile.createUrlAttachment({
+          originalname: 'URL_attachment.png',
+          url: 'https://example.com/image.svg',
+        }),
       ],
       propertyAssignments: [
         { name: 'title', value: [{ value: 'My entity title' }] },
@@ -354,11 +372,6 @@ describe('CreateEntityUseCase', () => {
       ?.find({ sharedId: entity.sharedId })
       .toArray();
 
-    const attachments = await testingEnvironment.db
-      .getCollection('files')
-      ?.find({ type: 'attachment' })
-      .toArray();
-
     const commonFields = {
       template: factory.id('Document'),
       sharedId: expect.any(String),
@@ -366,10 +379,16 @@ describe('CreateEntityUseCase', () => {
       creationDate: expect.any(Number),
       editDate: expect.any(Number),
       published: false,
-      user: null,
       icon: { _id: 'iconId', label: 'iconLabel', type: 'iconType' },
       obsoleteMetadata: [],
-      permissions: [],
+      permissions: [
+        {
+          refId: factory.id('user1').toHexString(),
+          type: GrantType.User,
+          level: AccessLevel.Write,
+        },
+      ],
+      user: factory.id('user1'),
       metadata: {
         text: [{ value: 'Some text' }],
         numeric: [{ value: 42 }],
@@ -427,7 +446,6 @@ describe('CreateEntityUseCase', () => {
             {
               value: 'B1',
               label: 'B1 EN',
-              icon: null,
               type: 'entity',
               inheritedType: 'text',
               inheritedValue: [{ value: 'B1 Text EN' }],
@@ -450,7 +468,6 @@ describe('CreateEntityUseCase', () => {
             {
               value: 'B1',
               label: 'B1 ES',
-              icon: null,
               type: 'entity',
               inheritedType: 'text',
               inheritedValue: [{ value: 'B1 Text ES' }],
@@ -462,97 +479,63 @@ describe('CreateEntityUseCase', () => {
 
     expect(entities![0]._id.toHexString()).not.toEqual(entities![1]._id.toHexString());
 
-    expect(attachments).toHaveLength(4);
-    expect(attachments).toEqual([
-      {
-        _id: expect.any(ObjectId),
-        creationDate: expect.any(Number),
-        entity: expect.any(String),
-        originalname: 'Attachment 1.png',
-        filename: '1762280821775nhs3epb55g7.png',
-        mimetype: 'image/png',
-        size: 78636,
-        url: '',
-        type: 'attachment',
-      },
-      {
-        _id: expect.any(ObjectId),
-        creationDate: expect.any(Number),
-        entity: expect.any(String),
-        originalname: 'Attachment 2.png',
-        filename: '1162280821775nhs3epb55g7.png',
-        mimetype: 'image/png',
-        size: 78636,
-        url: '',
-        type: 'attachment',
-      },
-      {
-        _id: expect.any(ObjectId),
-        creationDate: expect.any(Number),
-        entity: expect.any(String),
-        originalname: 'Attachment 3.mp4',
-        filename: 'attachment_3.mp4',
-        mimetype: 'video/mp4',
-        size: 78636,
-        url: '',
-        type: 'attachment',
-      },
-      {
-        _id: expect.any(ObjectId),
-        creationDate: expect.any(Number),
-        entity: expect.any(String),
-        originalname: 'Attachment 4.mp4',
-        filename: 'attachment_4.mp4',
-        mimetype: 'video/mp4',
-        size: 78636,
-        url: '',
-        type: 'attachment',
-      },
+    expect(fileService.storeFiles).toHaveBeenCalledWith([
+      expect.objectContaining({ originalname: 'Attachment 1.png' }),
+      expect.objectContaining({ originalname: 'primary.pdf' }),
+      expect.objectContaining({ originalname: 'Attachment 2.png' }),
+      expect.objectContaining({ originalname: 'Attachment 3.mp4' }),
+      expect.objectContaining({ originalname: 'Attachment 4.mp4' }),
+      expect.objectContaining({ originalname: 'URL_attachment.png' }),
     ]);
 
-    expect(filesStorage.storeFile).toHaveBeenCalledTimes(4);
+    expect(fileService.insert).toHaveBeenCalledWith([
+      expect.objectContaining({ originalname: 'Attachment 1.png' }),
+      expect.objectContaining({ originalname: 'primary.pdf' }),
+      expect.objectContaining({ originalname: 'Attachment 2.png' }),
+      expect.objectContaining({ originalname: 'Attachment 3.mp4' }),
+      expect.objectContaining({ originalname: 'Attachment 4.mp4' }),
+      expect.objectContaining({ originalname: 'URL_attachment.png' }),
+    ]);
   });
 
-  it('should add grant access when actor is present', async () => {
-    const { sut } = createSut({
-      context: {
-        actor: {
-          _id: factory.id('user1'),
-          username: 'username',
-          email: 'email@email.com',
-          role: 'collaborator',
-        },
-        tenant: tenants.current(),
-      },
+  it('should emit EntityCreatedEvent with request target language', async () => {
+    const actor = User.createFrom({
+      _id: factory.id('user1'),
+      username: 'username',
+      email: 'email@email.com',
+      role: 'collaborator',
     });
 
-    const entity = await sut.execute({
+    const emitSpy = jest.spyOn(applicationEventsBus, 'emit');
+
+    const { sut } = createSut({ actor, targetLanguage: 'es' });
+
+    await sut.execute({
       templateId: factory.id('Document').toHexString(),
       propertyAssignments: [{ name: 'title', value: [{ value: 'My entity title' }] }],
-      attachments: [],
     });
 
-    const entities = await testingEnvironment.db
-      .getCollection('entities')
-      ?.find({ sharedId: entity.sharedId })
-      .toArray();
+    expect(emitSpy).toHaveBeenCalled();
 
-    expect(entities?.map(e => e.user)).toEqual([factory.id('user1'), factory.id('user1')]);
-    expect(entities?.map(e => e.permissions)).toEqual([
-      [
-        {
-          refId: factory.id('user1').toHexString(),
-          type: PermissionType.User,
-          level: AccessLevel.Write,
-        },
-      ],
-      [
-        {
-          refId: factory.id('user1').toHexString(),
-          type: PermissionType.User,
-          level: AccessLevel.Write,
-        },
-      ],
-    ]);
+    const emittedArg = (emitSpy as jest.SpyInstance).mock.calls.find(
+      c => c && c[0] && typeof c[0].getData === 'function'
+    )?.[0];
+
+    const targetLanguage = emittedArg.getData().targetLanguageKey;
+    expect(targetLanguage).toBe('es');
+  });
+
+  it('should throw when a required property has no value', async () => {
+    const { sut } = createSut();
+
+    await expect(
+      sut.execute({
+        templateId: factory.id('Document With Required').toHexString(),
+        propertyAssignments: [
+          { name: 'title', value: [{ value: 'My entity title' }] },
+          { name: 'required_text', value: [] },
+        ],
+      })
+    ).rejects.toThrow('Text Property is required');
   });
 });

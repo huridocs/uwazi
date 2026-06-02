@@ -1,11 +1,12 @@
 /* eslint-disable max-statements */
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
-import { PropertyNotFoundError } from 'api/core/domain/template/errors';
-import { InputFile } from 'api/files.v2/model/InputFile';
-import { MediaPropertyAssignmentCreatorService } from '../propertyAssignmentCreatorService/MediaPropertyAssignmentCreatorService';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
+import { PropertyNotFoundError } from '#api/core/domain/template/errors.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { AttachmentNotFoundError } from '#api/core/domain/entity/errors.js';
+import { MediaPropertyAssignmentCreatorService } from '../propertyAssignmentCreatorService/MediaPropertyAssignmentCreatorService.js';
 
 const factory = getFixturesFactory();
 
@@ -65,6 +66,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
 
       expect(result).toEqual([
         {
+          isTranslatable: true,
           name: 'url_media',
           type: 'media',
           value: [{ value: 'https://www.youtube.com/watch?v=kvX9Hbg7q88' }],
@@ -95,6 +97,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
 
       expect(result).toEqual([
         {
+          isTranslatable: true,
           name: 'url_media',
           type: 'media',
           value: [
@@ -133,6 +136,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
 
       expect(result).toEqual([
         {
+          isTranslatable: true,
           name: 'attached_media_1',
           type: 'media',
           value: [{ value: '/api/files/video.mp4' }],
@@ -140,7 +144,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
       ]);
     });
 
-    it('should map an attachment with the correct index', async () => {
+    it('should throw error when attachment index is missing', async () => {
       const { sut } = createSut();
       const templateDBO = await testingEnvironment.db
         .getCollection('templates')!
@@ -164,6 +168,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
 
       expect(result).toEqual([
         {
+          isTranslatable: true,
           name: 'attached_media_2',
           type: 'media',
           value: [{ value: '/api/files/audio.mp3' }],
@@ -192,6 +197,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
 
       expect(result).toEqual([
         {
+          isTranslatable: true,
           name: 'attached_media_1',
           type: 'media',
           value: [{ value: '(/api/files/video.mp4, {"timelinks":{"00:00:00":"titleeeeee"}})' }],
@@ -220,6 +226,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
 
       expect(result).toEqual([
         {
+          isTranslatable: true,
           name: 'attached_media_1',
           type: 'media',
           value: [{ value: '/api/files/video.mp4' }],
@@ -244,7 +251,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
             value: [{ attachment: 5 }],
           },
         })
-      ).rejects.toThrow('Attachment with index 5 not found.');
+      ).rejects.toThrow(AttachmentNotFoundError);
     });
 
     it('should throw error when attachments array is undefined', async () => {
@@ -263,7 +270,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
             value: [{ attachment: 0 }],
           },
         })
-      ).rejects.toThrow('Attachment with index 0 not found.');
+      ).rejects.toThrow(AttachmentNotFoundError);
     });
   });
 
@@ -300,7 +307,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
           template,
           propertyAssignment: {
             name: 'url_media',
-            value: [{ value: '' }],
+            value: [{ value: ' ' }],
           },
         })
       ).rejects.toThrow('Media Property value must be a non-empty string.');
@@ -326,7 +333,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
     });
 
     it('should throw when required property has no value', async () => {
-      const { sut } = createSut();
+      const sut = new MediaPropertyAssignmentCreatorService({ validateRequired: true });
       const templateDBO = await testingEnvironment.db
         .getCollection('templates')!
         .findOne({ _id: factory.id('Document') });
@@ -386,7 +393,34 @@ describe('MediaPropertyAssignmentCreatorService', () => {
 
       expect(result).toEqual([
         {
+          isTranslatable: true,
           name: 'url_media',
+          type: 'media',
+          value: [],
+        },
+      ]);
+    });
+
+    it('should not throw when validateRequired is false (default) and a required media property has no value', async () => {
+      const { sut } = createSut();
+      const templateDBO = await testingEnvironment.db
+        .getCollection('templates')!
+        .findOne({ _id: factory.id('Document') });
+
+      const template = MongoTemplateMapper.toDomain(templateDBO as any);
+
+      await expect(
+        sut.create({
+          template,
+          propertyAssignment: {
+            name: 'required_media',
+            value: [],
+          },
+        })
+      ).resolves.toEqual([
+        {
+          isTranslatable: true,
+          name: 'required_media',
           type: 'media',
           value: [],
         },

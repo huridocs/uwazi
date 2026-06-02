@@ -1,9 +1,9 @@
 import React from 'react';
 import { Controller } from 'react-hook-form';
-import { Checkbox } from 'V2/Components/Forms';
-import { t, Translate } from 'app/I18N';
-import { Tooltip } from 'flowbite-react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
+import { Checkbox } from '#V2/Components/Forms/index.js';
+import { t, Translate } from '#app/I18N/index.js';
+import { Tooltip } from '#V2/Components/UI/Tooltip.js';
 
 export const PrioritySortingField = ({ control }: { control: any }) => (
   <Controller
@@ -18,8 +18,6 @@ export const PrioritySortingField = ({ control }: { control: any }) => (
           <span className="flex items-center gap-1">
             <Translate>Priority sorting</Translate>{' '}
             <Tooltip
-              // eslint-disable-next-line react/style-prop-object
-              style="light"
               content={t(
                 'System',
                 'Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.',
@@ -29,7 +27,7 @@ export const PrioritySortingField = ({ control }: { control: any }) => (
               placement="right"
               className="max-w-xs"
             >
-              <QuestionMarkCircleIcon className="w-5 h-5 text-gray-500" />
+              <QuestionMarkCircleIcon className="h-5 w-5 text-ink-muted" />
             </Tooltip>
           </span>
         }

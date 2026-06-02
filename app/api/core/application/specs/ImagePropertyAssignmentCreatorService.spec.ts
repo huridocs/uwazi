@@ -1,11 +1,12 @@
 /* eslint-disable max-statements */
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
-import { PropertyNotFoundError } from 'api/core/domain/template/errors';
-import { InputFile } from 'api/files.v2/model/InputFile';
-import { ImagePropertyAssignmentCreatorService } from '../propertyAssignmentCreatorService/ImagePropertyAssignmentCreatorService';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
+import { PropertyNotFoundError } from '#api/core/domain/template/errors.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { AttachmentNotFoundError } from '#api/core/domain/entity/errors.js';
+import { ImagePropertyAssignmentCreatorService } from '../propertyAssignmentCreatorService/ImagePropertyAssignmentCreatorService.js';
 
 const factory = getFixturesFactory();
 
@@ -64,6 +65,7 @@ describe('ImagePropertyAssignmentCreatorService', () => {
 
     expect(result).toEqual([
       {
+        isTranslatable: true,
         name: 'url_image',
         type: 'image',
         value: [{ value: 'https://example.com/image.jpg' }],
@@ -95,6 +97,7 @@ describe('ImagePropertyAssignmentCreatorService', () => {
 
     expect(result).toEqual([
       {
+        isTranslatable: true,
         name: 'attached_image_1',
         type: 'image',
         value: [{ value: '/api/files/def456.png' }],
@@ -119,7 +122,7 @@ describe('ImagePropertyAssignmentCreatorService', () => {
           value: [{ attachment: 5 }],
         },
       })
-    ).rejects.toThrow('Attachment with index 5 not found.');
+    ).rejects.toThrow(AttachmentNotFoundError);
   });
 
   it('throws if the property name does not exist in the template', async () => {
@@ -136,5 +139,21 @@ describe('ImagePropertyAssignmentCreatorService', () => {
         propertyAssignment: { name: 'non_existent_property', value: [{ value: 'x.jpg' }] },
       })
     ).rejects.toThrow(PropertyNotFoundError);
+  });
+
+  it('should throw when validateRequired is true and a required property has no value', async () => {
+    const sut = new ImagePropertyAssignmentCreatorService({ validateRequired: true });
+    const templateDBO = await testingEnvironment.db
+      .getCollection('templates')!
+      .findOne({ _id: factory.id('Document') });
+
+    const template = MongoTemplateMapper.toDomain(templateDBO as any);
+
+    await expect(
+      sut.create({
+        template,
+        propertyAssignment: { name: 'required_image', value: [] },
+      })
+    ).rejects.toThrow('Image Property is required');
   });
 });

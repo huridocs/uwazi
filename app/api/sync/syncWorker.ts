@@ -1,13 +1,14 @@
-import 'api/entities';
+import '#api/entities/index.js';
 import urljoin from 'url-join';
-import request from 'shared/JSONRequest';
-import { SettingsSyncSchema } from 'shared/types/settingsType';
-import { tenants } from 'api/tenants';
-import settings from 'api/settings';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { synchronizer } from './synchronizer';
-import { createSyncConfig } from './syncConfig';
-import syncsModel from './syncsModel';
+import request from '#shared/JSONRequest.js';
+import { SettingsSyncSchema } from '#shared/types/settingsType.js';
+import { tenants } from '#api/tenants/index.js';
+import settings from '#api/settings/index.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
+import { synchronizer } from './synchronizer.js';
+import { createSyncConfig } from './syncConfig.js';
+import syncsModel from './syncsModel.js';
 
 const updateSyncs = async (name: string, collection: string, lastSync: number) =>
   syncsModel._updateMany({ name }, { $set: { [`lastSyncs.${collection}`]: lastSync } }, {});
@@ -56,13 +57,13 @@ export const syncWorker = {
   async runAllTenants() {
     return tenants.getTenantsForFeatureFlag('sync').reduce(async (previous, tenant) => {
       await previous;
-      return tenants.run(async () => {
+      return runInJobContext(tenant.name, async () => {
         permissionsContext.setCommandContext();
         const { sync } = await settings.get({}, 'sync');
         if (sync) {
           await this.syncronize(sync);
         }
-      }, tenant.name);
+      });
     }, Promise.resolve());
   },
 

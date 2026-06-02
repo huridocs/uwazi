@@ -1,7 +1,9 @@
 import React, { useRef, useState } from 'react';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/20/solid';
-import { t } from 'app/I18N';
-import { PaneLayoutProps } from './types';
+import { t } from '#app/I18N/index.js';
+import { PaneLayoutProps } from './types.js';
+
+const LEGACY_MENU_HEIGHT = '50px';
 
 const PaneLayoutMobile = ({ children, className = '' }: PaneLayoutProps) => {
   const [currentPane, setCurrentPane] = useState(0);
@@ -50,7 +52,12 @@ const PaneLayoutMobile = ({ children, className = '' }: PaneLayoutProps) => {
   };
 
   return (
-    <section className={`overflow-hidden relative h-full min-h-0 flex flex-col ${className}`}>
+    <section
+      style={{
+        maxHeight: `calc(min(100dvh, 100vh) - ${LEGACY_MENU_HEIGHT} - env(safe-area-inset-bottom, 0px))`,
+      }}
+      className={`overflow-hidden relative min-h-0 h-full flex flex-col ${className}`}
+    >
       <div
         className={`flex grow h-full min-h-0 transition-transform duration-300 ease-in-out ${
           isDragging ? 'transition-none' : ''
@@ -62,7 +69,7 @@ const PaneLayoutMobile = ({ children, className = '' }: PaneLayoutProps) => {
         {children.map((child, index) => (
           <div
             key={child.key ?? index}
-            className="flex-shrink-0 w-full h-full overflow-auto min-h-0"
+            className="shrink-0 w-full h-full overflow-auto min-h-0"
             style={{ background: child.props.background || 'white' }}
           >
             {child}

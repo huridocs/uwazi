@@ -1,9 +1,9 @@
-import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
-import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
-import { Translation } from '../model/Translation';
-import { CreateTranslationsData } from './CreateTranslationsService';
-import { ValidateTranslationsService } from './ValidateTranslationsService';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { TranslationsDataSource } from '../contracts/TranslationsDataSource.js';
+import { Translation } from '../model/Translation.js';
+import { CreateTranslationsData } from './CreateTranslationsService.js';
+import { ValidateTranslationsService } from './ValidateTranslationsService.js';
 
 export class UpsertTranslationsService {
   private translationsDS: TranslationsDataSource;
@@ -45,79 +45,53 @@ export class UpsertTranslationsService {
     );
   }
 
+  /**
+   * Updates translation keys for a context, handling renames, value updates, and deletions.
+   *
+   * @param context - The translation context (template, thesaurus, etc.)
+   * @param keyChanges - Keys to rename: { oldKey: newKey }. Old keys are automatically deleted after rename.
+   * @param valueChanges - Current values for all keys in the context (the source of truth for what should exist)
+   * @param keysToDelete - Keys to explicitly delete (for properties removed from context).
+   *                       Note: You don't need to include renamed keys here - they're
+   *                       automatically deleted based on keyChanges.
+   *
+   * @example
+   * // Rename property and delete another
+   * await updateContext(
+   *   context,
+   *   { 'Old Name': 'New Name' },     // Old Name will be automatically deleted after rename
+   *   { 'New Name': 'New Name', 'Other': 'Other' },
+   *   ['Deleted Property']             // Only explicitly deleted properties
+   * );
+   *
+   * @remarks
+   * - Keys that exist in valueChanges (the final context) are ALWAYS protected from deletion
+   * - Context protection applies to both automatic deletions (from renames) and explicit deletions
+   * - This allows shared keys (e.g., template name and property with same label) to coexist
+   * - If a key appears in keysToDelete but also in valueChanges, it will NOT be deleted (context wins)
+   * - If renaming creates a duplicate key, the rename is skipped
+   * - Keys renamed to themselves (no-op) are allowed
+   * - The keysToDelete parameter can include renamed keys for backward compatibility (duplicates are handled)
+   * - Deduplication only affects keys within the same context
+   * - For multiple-to-one renames, first rename wins, subsequent ones are skipped
+   */
   async updateContext(
     context: CreateTranslationsData['context'],
     keyChanges: { [oldKey: string]: string },
     valueChanges: { [key: string]: string },
     keysToDelete: string[]
   ) {
-    return this.transactionManager.run(async () => {
-      const keysChangedReversed = Object.entries(keyChanges).reduce<{ [newKey: string]: string }>(
-        (keys, [oldKey, newKey]) => {
-          // eslint-disable-next-line no-param-reassign
-          keys[newKey] = oldKey;
-          return keys;
-        },
-        {}
-      );
+    const languages = await this.settingsDS.getLanguageKeys();
+    const defaultLanguage = await this.settingsDS.getDefaultLanguageKey();
 
-      await this.createNewKeys(keysChangedReversed, valueChanges, context);
-
-      await this.translationsDS.updateContextLabel(context.id, context.label);
-
-      await this.translationsDS.updateKeysByContext(context.id, keyChanges);
-
-      await this.updateKeyValueOnDefaultLanguage(Object.values(keyChanges), context);
-
-      await this.translationsDS.deleteKeysByContext(context.id, keysToDelete);
-    });
-  }
-
-  private async updateKeyValueOnDefaultLanguage(
-    newKeys: string[],
-    context: CreateTranslationsData['context']
-  ) {
-    const defaultLanguageKey = await this.settingsDS.getDefaultLanguageKey();
-
-    await this.translationsDS.upsert(
-      newKeys.reduce<Translation[]>((memo, newKey) => {
-        memo.push(new Translation(newKey, newKey, defaultLanguageKey, context));
-        return memo;
-      }, [])
-    );
-  }
-
-  private async createNewKeys(
-    keysChangedReversed: { [x: string]: string },
-    valueChanges: { [key: string]: string },
-    context: CreateTranslationsData['context']
-  ) {
-    const originalKeysGoingToChange = Object.keys(valueChanges).reduce<string[]>((keys, key) => {
-      if (keysChangedReversed[key]) {
-        keys.push(keysChangedReversed[key]);
-      } else {
-        keys.push(key);
-      }
-      return keys;
-    }, []);
-
-    const missingKeysInDB = await this.translationsDS.calculateNonexistentKeys(
-      context.id,
-      originalKeysGoingToChange
+    const translationContext = await this.translationsDS.getContext(
+      context,
+      languages,
+      defaultLanguage
     );
 
-    if (missingKeysInDB.length) {
-      await this.translationsDS.insert(
-        (await this.settingsDS.getLanguageKeys()).reduce<Translation[]>(
-          (memo, languageKey) =>
-            memo.concat(
-              missingKeysInDB.map(
-                key => new Translation(key, valueChanges[key], languageKey, context)
-              )
-            ),
-          []
-        )
-      );
-    }
+    translationContext.applyChanges(keyChanges, valueChanges, keysToDelete);
+
+    await this.translationsDS.updateContext(translationContext);
   }
 }

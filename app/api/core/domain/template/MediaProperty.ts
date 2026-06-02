@@ -1,9 +1,9 @@
-import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
+import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { z } from 'zod';
-import { PropertyTypeInvalidTypeError } from './errors';
-import { AbstractImageProperty, AbstractImagePropertyProps } from './AbstractImageProperty';
-import { PropertyTypeEnum } from './PropertyType';
-import { MediaEntry, PropertyAssignment } from './PropertyValue';
+import { PropertyTypeInvalidTypeError } from './errors.js';
+import { AbstractImageProperty, AbstractImagePropertyProps } from './AbstractImageProperty.js';
+import { PropertyTypeEnum } from './PropertyType.js';
+import { MediaEntry, PropertyAssignment } from './PropertyValue.js';
 
 type Props = {
   type?: PropertyTypeEnum.Media;
@@ -34,16 +34,23 @@ class MediaProperty extends AbstractImageProperty {
     }
   }
 
+  get isTranslatable(): boolean {
+    return true;
+  }
+
   createPropertyAssignment(
     { value }: CreatePropertyAssignmentInput<MediaEntry>,
     shouldValidateForRequired = false
   ): PropertyAssignment<MediaEntry> {
-    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(value);
+    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(
+      value.filter(v => v?.value?.length)
+    );
 
     return {
       name: this.name,
       value: parsed,
       type: this.type,
+      isTranslatable: this.isTranslatable,
     };
   }
 

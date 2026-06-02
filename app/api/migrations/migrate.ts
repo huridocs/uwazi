@@ -1,7 +1,7 @@
-import { DB } from 'api/odm';
-import { tenants } from 'api/tenants/tenantContext';
-import { config } from 'api/config';
-import { migrator } from './migrator';
+import { DB } from '#api/odm/index.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { config } from '#api/config.js';
+import { migrator } from './migrator.js';
 
 export const runMigration = async () => {
   await DB.connect(config.DBHOST, config.DBAUTH);
@@ -12,6 +12,7 @@ export const runMigration = async () => {
   });
   await DB.disconnect();
 
+  const migrated = migrations.length > 0;
   const reindexNeeded = migrations.some(migration => migration.reindex === true);
-  return { reindex: reindexNeeded };
+  return { migrated, reindex: reindexNeeded };
 };

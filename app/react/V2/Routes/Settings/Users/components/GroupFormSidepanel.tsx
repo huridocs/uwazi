@@ -2,11 +2,11 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useFetcher } from 'react-router';
-import { Translate } from 'app/I18N';
-import { Button, Card, Sidepanel } from 'V2/Components/UI';
-import { InputField, MultiSelect } from 'V2/Components/Forms';
-import { UserGroupSchema } from 'shared/types/userGroupType';
-import { User, Group } from '../types';
+import { t, Translate } from '#app/I18N/index.js';
+import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
+import { InputField, MultiSelect } from '#V2/Components/Forms/index.js';
+import { UserGroupSchema } from '#shared/types/userGroupType.js';
+import { User, Group } from '../types.js';
 
 interface GroupFormSidepanelProps {
   showSidepanel: boolean;
@@ -93,7 +93,7 @@ const GroupFormSidepanel = ({
     >
       <form onSubmit={handleSubmit(formSubmit)} className="flex flex-col h-full">
         <Sidepanel.Body>
-          <div className="flex flex-col flex-grow gap-4">
+          <div data-testid="group-sidepanel-snapshot" className="flex flex-col gap-4">
             <Card title={<Translate>Group Options</Translate>}>
               <div>
                 <InputField
@@ -112,12 +112,10 @@ const GroupFormSidepanel = ({
               </div>
             </Card>
 
-            <div className="mb-5 rounded-md border border-gray-50 shadow-sm">
+            <div className="mb-5 rounded-md border shadow-md border-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] bg-(--color-theme-surface-raised)">
               <MultiSelect
                 label={
-                  <Translate className="block w-full text-base font-semibold bg-gray-50 text-primary-700">
-                    Members
-                  </Translate>
+                  <Translate className="block w-full text-base font-semibold">Members</Translate>
                 }
                 onChange={selected =>
                   setValue(
@@ -130,17 +128,17 @@ const GroupFormSidepanel = ({
                   users?.map(user => ({ label: user.username, value: user._id as string })) || []
                 }
                 value={selectedGroup?.members?.map(member => member.refId) || []}
-                placeholder="Nothing selected"
+                placeholder={t('System', 'Nothing selected', null, false)}
               />
             </div>
           </div>
         </Sidepanel.Body>
         <Sidepanel.Footer className="px-4 py-3">
           <div className="flex gap-2">
-            <Button className="flex-grow" type="button" styling="outline" onClick={closeSidepanel}>
+            <Button className="grow" type="button" variant="secondary" onClick={closeSidepanel}>
               <Translate>Cancel</Translate>
             </Button>
-            <Button className="flex-grow" type="submit">
+            <Button className="grow" type="submit">
               <Translate>Save</Translate>
             </Button>
           </div>

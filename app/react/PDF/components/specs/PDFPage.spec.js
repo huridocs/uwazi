@@ -5,17 +5,18 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import PDFJS from '../../PDFJS';
-import PDFPage from '../PDFPage';
+import { PDFJS, PDFJSViewer } from '#V2/Components/PDFViewer/pdfjs.js';
+import { PDFPage } from '../PDFPage.js';
 
 const pdfObject = { numPages: 2 };
 
-jest.mock('../../PDFJS', () => ({
-  default: {
+jest.mock('#V2/Components/PDFViewer/pdfjs.js', () => ({
+  PDFJS: {
     getDocument: jest.fn().mockReturnValue(Promise.resolve(pdfObject)),
+    PixelsPerInch: { PDF_TO_CSS_UNITS: 0.5 },
   },
-  PixelsPerInch: { PDF_TO_CSS_UNITS: 0.5 },
-  EventBus: function () {},
+  PDFJSViewer: { PDFPageView() {}, EventBus() {} },
+  EventBus: jest.fn().mockImplementation(() => ({})),
 }));
 
 describe('PDFPage', () => {
@@ -112,15 +113,16 @@ describe('PDFPage', () => {
       const pdfPageViewPrototype = {
         setPdfPage: jest.fn(),
         draw: jest.fn().mockReturnValue(Promise.resolve()),
+        eventBus: jest.fn(),
       };
 
       it('should create pdfPageView object and render the page', done => {
         render();
         instance.state.rendered = false;
 
-        PDFJS.PDFPageView = function pdfPageView() {};
+        PDFJSViewer.PDFPageView = function pdfPageView() {};
         PDFJS.DefaultTextLayerFactory = function pdfPageView() {};
-        PDFJS.PDFPageView.prototype = pdfPageViewPrototype;
+        PDFJSViewer.PDFPageView.prototype = pdfPageViewPrototype;
 
         instance.renderPage();
 
@@ -137,12 +139,12 @@ describe('PDFPage', () => {
         render();
         instance.state.rendered = false;
 
-        PDFJS.PDFPageView = jest.fn().mockImplementation(() => pdfPageViewPrototype);
+        PDFJSViewer.PDFPageView = jest.fn().mockImplementation(() => pdfPageViewPrototype);
 
         instance.renderPage();
 
         setTimeout(() => {
-          expect(PDFJS.PDFPageView).toHaveBeenCalledWith(
+          expect(PDFJSViewer.PDFPageView).toHaveBeenCalledWith(
             expect.objectContaining({
               defaultViewport: {
                 width: 100,

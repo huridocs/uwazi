@@ -1,10 +1,10 @@
-import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
+import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { z } from 'zod';
-import { PropertyName } from './PropertyName';
-import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
-import { PropertyTypeInvalidTypeError } from './errors';
-import { PropertyTypeEnum } from './PropertyType';
-import { NestedEntry, PropertyAssignment } from './PropertyValue';
+import { PropertyName } from './PropertyName.js';
+import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty.js';
+import { PropertyTypeInvalidTypeError } from './errors.js';
+import { PropertyTypeEnum } from './PropertyType.js';
+import { NestedEntry, PropertyAssignment } from './PropertyValue.js';
 
 type Props = {
   type?: PropertyTypeEnum.Nested;
@@ -42,6 +42,10 @@ class NestedProperty extends FilterableProperty {
     }
   }
 
+  get isTranslatable(): boolean {
+    return false;
+  }
+
   createPropertyAssignment(
     { value }: CreatePropertyAssignmentInput<NestedEntry>,
     shouldValidateForRequired = false
@@ -52,6 +56,7 @@ class NestedProperty extends FilterableProperty {
       name: this.name,
       value: parsed as NestedEntry[], // Todo: fix type issue
       type: this.type,
+      isTranslatable: this.isTranslatable,
     };
   }
 

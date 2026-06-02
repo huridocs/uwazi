@@ -1,10 +1,19 @@
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
-import { MongoTranslationsDataSource } from './MongoTranslationsDataSource';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { MongoTranslationsDataSource } from './MongoTranslationsDataSource.js';
+import { CachedMongoTranslationsDataSource } from './CachedMongoTranslationsDataSource.js';
+import { TranslationsDataSource } from '../contracts/TranslationsDataSource.js';
 
 const DefaultTranslationsDataSource = (transactionManager: MongoTransactionManager) => {
   const db = getConnection();
   return new MongoTranslationsDataSource(db, transactionManager);
 };
 
-export { DefaultTranslationsDataSource };
+const CachedTranslationsDataSource = (
+  transactionManager: MongoTransactionManager
+): TranslationsDataSource => {
+  const db = getConnection();
+  return new CachedMongoTranslationsDataSource(db, transactionManager);
+};
+
+export { DefaultTranslationsDataSource, CachedTranslationsDataSource };

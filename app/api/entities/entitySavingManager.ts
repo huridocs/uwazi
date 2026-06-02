@@ -1,9 +1,13 @@
-import { set } from 'lodash';
-import entities from 'api/entities/entities';
-import { EntityWithFilesSchema } from 'shared/types/entityType';
-import { UserSchema } from 'shared/types/userType';
-import { isValidUrl, sanitizeUrl } from 'shared/urlValidationUtils';
-import { handleAttachmentInMetadataProperties, processFiles, saveFiles } from './managerFunctions';
+import set from 'lodash/set.js';
+import entities from '#api/entities/entities.js';
+import { EntityWithFilesSchema } from '#shared/types/entityType.js';
+import { UserSchema } from '#shared/types/userType.js';
+import { isValidUrl, sanitizeUrl } from '#shared/urlValidationUtils.js';
+import {
+  handleAttachmentInMetadataProperties,
+  processFiles,
+  saveFiles,
+} from './managerFunctions.js';
 
 const validateAndSanitizeUrls = (entity: EntityWithFilesSchema): EntityWithFilesSchema => {
   if (!entity.metadata) return entity;
@@ -53,7 +57,7 @@ const saveEntity = async (
 
   const updatedEntity = await entities.save(
     entity,
-    { user, language, attachments: attachments as never[] },
+    { user, language },
     { includeDocuments: false }
   );
 

@@ -1,22 +1,24 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
 
 const meta: Meta<typeof PaneLayout> = {
   title: 'Layouts/PaneLayout',
   component: PaneLayout,
 };
 
+export default meta;
+
 type Story = StoryObj<typeof PaneLayout>;
 
 const Component = ({
   localStorageKey,
-  defaultWidthsPercents,
+  defaultRatios,
 }: {
   localStorageKey?: string;
-  defaultWidthsPercents?: number[];
+  defaultRatios?: number[];
 }) => (
-  <PaneLayout localStorageKey={localStorageKey} defaultWidthsPercents={defaultWidthsPercents}>
+  <PaneLayout localStorageKey={localStorageKey} defaultRatios={defaultRatios}>
     <PaneLayout.Pane key="pane-1">
       <div>
         <p>
@@ -106,10 +108,7 @@ const Primary: Story = {
         </div>
 
         <div className="w-full flex-1 min-h-0">
-          <Component
-            localStorageKey={args.localStorageKey}
-            defaultWidthsPercents={args.defaultWidthsPercents}
-          />
+          <Component localStorageKey={args.localStorageKey} defaultRatios={args.defaultRatios} />
         </div>
 
         <footer className="w-full border-t-2">General app footer</footer>
@@ -122,10 +121,8 @@ const Basic: Story = {
   ...Primary,
   args: {
     localStorageKey: undefined,
-    defaultWidthsPercents: undefined,
+    defaultRatios: undefined,
   },
 };
 
 export { Basic };
-
-export default meta;

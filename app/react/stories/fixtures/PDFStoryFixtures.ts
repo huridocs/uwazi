@@ -1,3 +1,5 @@
+import { Snippet } from '#app/V2/Components/PDFViewer/index.js';
+
 const highlights = {
   1: [
     {
@@ -96,4 +98,10 @@ const highlights = {
   ],
 };
 
-export { highlights };
+const searchResults: Snippet[] = [
+  { text: 'En razón de su competencia', page: 3 },
+  { text: 'ha permitido superar los problemas', page: 5 },
+  { text: 'Además, informaron que en junio', page: 9 },
+];
+
+export { highlights, searchResults };

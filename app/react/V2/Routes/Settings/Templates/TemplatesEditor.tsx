@@ -1,9 +1,14 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Table, ConfirmNavigationModal, ConfirmationModal, ProgressBar } from 'V2/Components/UI';
-import { Translate } from 'app/I18N/Translate';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import {
+  Table,
+  ConfirmNavigationModal,
+  ConfirmationModal,
+  ProgressBar,
+} from '#V2/Components/UI/index.js';
+import { Translate } from '#app/I18N/Translate.js';
 import { IncomingHttpHeaders } from 'http';
 import {
   LoaderFunction,
@@ -12,28 +17,31 @@ import {
   useBlocker,
   useRevalidator,
 } from 'react-router';
-import * as templatesAPI from 'V2/api/templates';
-import * as pagesAPI from 'V2/api/pages';
-import { PropertySchema } from 'shared/types/commonTypes';
-import { Page, ClientTemplateSchema } from 'V2/shared/types';
-import { isEqual } from 'lodash';
-import { useSetAtom, useAtomValue } from 'jotai';
-import { notificationAtom, templatesAtom } from 'V2/atoms';
-import uniqueID from 'shared/uniqueID';
-import { socket } from 'app/socket';
+import * as templatesAPI from '#V2/api/templates/index.js';
+import * as pagesAPI from '#V2/api/pages/index.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
+import { Page, ClientTemplateSchema } from '#V2/shared/types.js';
+import isEqual from 'lodash/isEqual.js';
+import { useAtomValue } from 'jotai';
+import { templatesAtom } from '#V2/atoms/index.js';
+import uniqueID from '#shared/uniqueID.js';
+import { socket } from '#app/socket.js';
 import {
   cleanProperty,
   emptyTemplate,
   processDefaultProperties,
   processProperties,
   confirmationMessages,
-} from './helpers';
-import { propertyColumns, PropertyRow } from './components/TemplateEditorTableComponents';
-import { TemplateMetadata } from './components/TemplateMetadata';
-import { AddRelationshipTypeModal } from './components/AddRelationshipTypeModal';
-import { AddThesaurusModal } from './components/AddThesaurusModal';
-import { TemplatesEditorFooter } from './components/TemplatesEditorFooter';
-import { ConfigPropertyPanel } from './components/ConfigPropertyPanel';
+} from './helpers.js';
+import { propertyColumns, PropertyRow } from './components/TemplateEditorTableComponents.js';
+import { TemplateMetadata } from './components/TemplateMetadata.js';
+import { AddRelationshipTypeModal } from './components/AddRelationshipTypeModal.js';
+import { AddThesaurusModal } from './components/AddThesaurusModal.js';
+import { TemplatesEditorFooter } from './components/TemplatesEditorFooter.js';
+import { ConfigPropertyPanel } from './components/ConfigPropertyPanel.js';
+import { getRandomColor } from './components/defaultTemplateColors.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { t } from '#app/I18N/index.js';
 
 const templatesEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -44,7 +52,7 @@ const templatesEditorLoader =
       value: page.sharedId,
       label: page.title,
     }));
-    let loadedTemplate = emptyTemplate;
+    let loadedTemplate: ClientTemplateSchema = { ...emptyTemplate, color: getRandomColor() };
     const templates = await templatesAPI.get(headers);
 
     let entityCount = 0;
@@ -75,7 +83,7 @@ const TemplatesEditor = () => {
   const [properties, setProperties] = useState<PropertyRow[]>([]);
   const [commonProperties, setCommonProperties] = useState<PropertyRow[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const templates = useAtomValue(templatesAtom);
   const [nameError, setNameError] = useState(false);
   const [colorError, setColorError] = useState(false);
@@ -90,20 +98,16 @@ const TemplatesEditor = () => {
   const ENTITY_COUNT_THRESHOLD = 3000;
 
   const notifyTemplateProcessing = useCallback(() => {
-    setNotifications({
-      type: 'warning',
-      text: <Translate>Template changes are being applied to all related entities.</Translate>,
-      ...(entityCount && {
-        details: (
-          <>
-            <Translate>Processing</Translate>
-            <span> {entityCount} </span>
-            <Translate>entities</Translate>
-          </>
-        ),
-      }),
-    });
-  }, [entityCount]);
+    const details = entityCount
+      ? `${t('System', 'Processing', null, false)} ${entityCount} ${t('System', 'entities', null, false)}`
+      : undefined;
+    notify(
+      'warning',
+      t('System', 'Template changes are being applied to all related entities.', null, false),
+      undefined,
+      details
+    );
+  }, [entityCount, notify]);
 
   useEffect(() => {
     const handleTemplateProcessed = async (data: { templateId: string }) => {
@@ -113,10 +117,7 @@ const TemplatesEditor = () => {
 
       await revalidator.revalidate();
 
-      setNotifications({
-        type: 'success',
-        text: <Translate>Template processing completed.</Translate>,
-      });
+      notify('success', t('System', 'Template processing completed.', null, false));
     };
 
     const handleTemplateProcessing = async (data: {
@@ -219,10 +220,7 @@ const TemplatesEditor = () => {
     if (savedTemplate.processing?.active) {
       notifyTemplateProcessing();
     } else {
-      setNotifications({
-        type: 'success',
-        text: <Translate>Template saved successfully.</Translate>,
-      });
+      notify('success', t('System', 'Template saved successfully.', null, false));
     }
 
     if (templateToSave._id) {
@@ -252,7 +250,9 @@ const TemplatesEditor = () => {
 
   const handleSave = async (ignoreEntityCount = false) => {
     const isDuplicateName = templates.some(
-      t => t.name.toLowerCase() === template.name.toLowerCase() && t._id !== template._id
+      templateItem =>
+        templateItem.name.toLowerCase() === template.name.toLowerCase() &&
+        templateItem._id !== template._id
     );
     setNameError(!template.name || isDuplicateName);
     if (!template.name || isDuplicateName) {
@@ -273,7 +273,7 @@ const TemplatesEditor = () => {
       if (e.status === 409) {
         setShowReindexModal(true);
       } else {
-        setNotifications({ type: 'error', text: <Translate>Error saving template.</Translate> });
+        notify('error', t('System', 'Error saving template.', null, false));
       }
     } finally {
       setIsSaving(false);
@@ -337,7 +337,7 @@ const TemplatesEditor = () => {
               <TemplateMetadata
                 value={{
                   name: template.name,
-                  color: template.color || '#C03B22',
+                  color: template.color!,
                   entityViewPage: template.entityViewPage || '',
                 }}
                 onChange={values => {
@@ -420,10 +420,7 @@ const TemplatesEditor = () => {
                 setShowReindexModal(true);
                 return;
               }
-              setNotifications({
-                type: 'error',
-                text: <Translate>Error saving template.</Translate>,
-              });
+              notify('error', t('System', 'Error saving template.', null, false));
             } finally {
               setIsSaving(false);
             }

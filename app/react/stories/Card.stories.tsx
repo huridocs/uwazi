@@ -1,18 +1,21 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Card } from 'V2/Components/UI';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import { Card } from '#V2/Components/UI/index.js';
 
 const meta: Meta<typeof Card> = {
   title: 'Components/Cards',
   component: Card,
 };
+export default meta;
 
 type Story = StoryObj<typeof Card>;
 
 const Primary: Story = {
   render: args => (
     <div className="tw-content">
-      <Card title={args.title}>{args.children}</Card>
+      <Card title={args.title} color={args.color} className={args.className}>
+        {args.children}
+      </Card>
     </div>
   ),
 };
@@ -26,5 +29,3 @@ const Basic: Story = {
 };
 
 export { Basic };
-
-export default meta;

@@ -1,5 +1,5 @@
-import { propertyTypes } from 'shared/propertyTypes';
-import { provenanceTypes } from 'shared/provenanceTypes';
+import { propertyTypes } from '#shared/propertyTypes.js';
+import { provenanceTypes } from '#shared/provenanceTypes.js';
 
 export const emitSchemaTypes = true;
 
@@ -255,6 +255,7 @@ export const languageSchema = {
     ISO639_1: LanguageISO6391Schema,
     localized_label: { type: 'string' },
     translationAvailable: { type: 'boolean' },
+    installing: { type: 'boolean' },
   },
 };
 

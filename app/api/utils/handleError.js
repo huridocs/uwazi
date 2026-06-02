@@ -1,18 +1,22 @@
-import * as Sentry from '@sentry/node';
+/* eslint-disable max-statements */
+import { captureException } from '@sentry/node-core/light';
 import Ajv from 'ajv';
-import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError';
-import { OperationalError } from 'api/common.v2/errors/OperationalError';
-import { ValidationError } from 'api/common.v2/validation/ValidationError';
-import { config } from 'api/config';
-import { DomainError } from 'api/core/domain/error/DomainError';
-import { FileNotFound } from 'api/files/FileNotFound';
-import { S3Error } from 'api/files/S3Storage';
-import { legacyLogger } from 'api/log';
-import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
-import { IXValidationError } from 'api/services/informationextraction/IXValidationError';
-import { appContext } from 'api/utils/AppContext';
-import { createError } from 'api/utils/index';
-import util from 'node:util';
+import { ZodError } from 'zod';
+import util, { inspect } from 'node:util';
+import { UnauthorizedError } from '#api/authorization.v2/errors/UnauthorizedError.js';
+import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
+import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
+import { config } from '#api/config.js';
+import { DomainError } from '#api/core/domain/error/DomainError.js';
+import { FileNotFound } from '#api/files/FileNotFound.js';
+import { S3Error } from '#api/files/S3Storage.js';
+import { legacyLogger } from '#api/log/index.js';
+import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
+import { IXValidationError } from '#api/services/informationextraction/IXValidationError.js';
+import { appContext } from '#api/utils/AppContext.js';
+import { createError } from '#api/utils/index.js';
+import { FileNotFound as FileNotFoundV2 } from '../core/domain/files/errors.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 
 const ajvPrettifier = error => {
   const errorMessage = [error.message];
@@ -82,7 +86,11 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     result = { code: 400, message: util.inspect(error), logLevel: 'debug' };
   }
 
-  if (error instanceof PXValidationError || error instanceof IXValidationError) {
+  if (
+    error instanceof PXValidationError ||
+    error instanceof IXValidationError ||
+    error instanceof NonRetryableJobError
+  ) {
     result = { code: 422, message: util.inspect(error), logLevel: 'debug' };
   }
 
@@ -92,6 +100,15 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
 
   if (error instanceof Ajv.ValidationError) {
     result = { code: 422, message: error.message, validations: error.errors, logLevel: 'debug' };
+  }
+
+  if (error instanceof ZodError) {
+    result = {
+      code: 422,
+      message: util.inspect(error),
+      validations: error.issues || error.errors,
+      logLevel: 'debug',
+    };
   }
 
   if (error.name === 'ValidationError') {
@@ -115,7 +132,7 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     result = { code: 401, message: error.message, logLevel: 'debug' };
   }
 
-  if (error instanceof FileNotFound) {
+  if (error instanceof FileNotFound || error instanceof FileNotFoundV2) {
     result = { code: 404, message: error.message, logLevel: 'debug' };
   }
 
@@ -218,7 +235,15 @@ const handleError = (_error, { req = {}, uncaught = false, useContext = true } =
   result = simplifyError(result, error);
 
   if (config.sentry.dsn && result.logLevel === 'error') {
-    Sentry.captureException(error);
+    captureException(error);
+  }
+
+  if (result.code >= 500) {
+    result.prettyMessage = 'A server side error has occurred';
+    result.error = 'A server side error has occurred';
+    if (config.ENVIRONMENT !== 'production') {
+      result.originalError = inspect(error);
+    }
   }
 
   return result;

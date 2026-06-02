@@ -1,9 +1,9 @@
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB from 'api/utils/testing_db';
-import { elastic } from '../elastic';
-import { search } from '../search';
-import { fixturesTimeOut } from './fixtures_elastic';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import testingDB from '#api/utils/testing_db.js';
+import { elastic } from '../elastic.js';
+import { search } from '../search.js';
+import { fixturesTimeOut } from './fixtures_elastic.js';
 
 const fixturesFactory = getFixturesFactory();
 const elasticIndex = 'relationship_v2_testing_index';
@@ -43,6 +43,19 @@ beforeEach(async () => {
         ]),
       ],
       dictionaries: [fixturesFactory.thesauri('thesauri1', ['value1', 'value2'])],
+      translationsV2: [
+        {
+          _id: fixturesFactory.id('translation1'),
+          language: 'en',
+          key: 'value1',
+          value: 'value1',
+          context: {
+            type: 'Thesaurus',
+            label: 'thesauri1',
+            id: fixturesFactory.id('thesauri1').toString(),
+          },
+        },
+      ],
       entities: [
         fixturesFactory.entity(
           'entity1',

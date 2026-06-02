@@ -1,11 +1,11 @@
-import util from 'util';
-import { ValidationError } from 'ajv';
+import { ValidationError as AJVValidationError } from 'ajv';
 import { ZodError } from 'zod';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { tenants } from 'api/tenants';
-import { User } from 'api/users/usersModel';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { tenants } from '#api/tenants/index.js';
+import { ValidationError } from '#api/core/domain/error/ValidationError.js';
+import { User } from '#api/users.v2/model/User.js';
 
 export type Dependencies<RequestBody = any> = {
   response: Response;
@@ -22,16 +22,20 @@ export abstract class AbstractController<RequestBody = any> {
       await this.handle();
     } catch (e) {
       if (e instanceof ZodError) {
-        const error = new ValidationError(
+        const error = new AJVValidationError(
           e.errors.map(issue => ({
             instancePath: issue.path.join('.'),
             message: issue.message,
           }))
         );
 
-        error.message = util.inspect(error, false, null);
+        error.message = e.message;
 
         throw error;
+      }
+
+      if (e instanceof ValidationError) {
+        throw new AJVValidationError([e.asAJV()]);
       }
 
       throw e;
@@ -44,10 +48,12 @@ export abstract class AbstractController<RequestBody = any> {
    * class that is calling this method (e.g., TemplateMutationController).
    */
   static createHandler() {
-    // 'this' is the ControllerClass constructor
-    return async (request: Request, response: Response) =>
-      // @ts-ignore - 'this' is a constructor, so 'new' is valid
-      new this({ request, response }).handleAsync();
+    return async (request: Request, response: Response) => {
+      /* @ts-ignore - 'this' is a constructor, so 'new' is valid*/
+      const instance = new this({ request, response }) as AbstractController;
+
+      return instance.handleAsync();
+    };
   }
 
   protected get request() {
@@ -55,7 +61,7 @@ export abstract class AbstractController<RequestBody = any> {
   }
 
   protected get user(): User {
-    return this.dependencies.request?.user;
+    return User.createFrom(this.dependencies.request.user);
   }
 
   protected get response() {
@@ -72,7 +78,7 @@ export abstract class AbstractController<RequestBody = any> {
   }
 
   protected ensureUser() {
-    if (!this.user) {
+    if (this.user.isAnonymous()) {
       throw new Error('User not found');
     }
   }

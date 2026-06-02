@@ -2,19 +2,21 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import { FormatMetadata } from '../FormatMetadata';
-import { metadataSelectors } from '../../selectors';
+import { FormatMetadataView } from '../FormatMetadata.js';
+import { metadataSelectors } from '../../selectors.js';
 
 describe('FormatMetadata', () => {
+  afterEach(() => jest.restoreAllMocks());
+
   it('should render Metadata component passing the formatted metadata', () => {
-    spyOn(metadataSelectors, 'formatMetadata').and.returnValue([{ formated: 'metadata' }]);
+    jest.spyOn(metadataSelectors, 'formatMetadata').mockReturnValue([{ formated: 'metadata' }]);
     const props = {
       templates: [],
       thesauris: [],
       entity: {},
       sortedProperty: 'sortedProperty',
     };
-    const component = shallow(<FormatMetadata.WrappedComponent {...props} />);
+    const component = shallow(<FormatMetadataView {...props} />);
     expect(component).toMatchSnapshot();
   });
 
@@ -30,12 +32,13 @@ describe('FormatMetadata', () => {
       settings: Immutable.fromJS({ languages: [{ key: 'es', default: true }] }),
       entity: {
         template: 'template',
+        preview: 'docId.jpg',
         documents: [{ _id: 'docId' }],
       },
       additionalMetadata: [{ more: 'data' }, { and: 'more' }],
     };
 
-    const component = shallow(<FormatMetadata.WrappedComponent {...props} />);
+    const component = shallow(<FormatMetadataView {...props} />);
     expect(component).toMatchSnapshot();
   });
 });

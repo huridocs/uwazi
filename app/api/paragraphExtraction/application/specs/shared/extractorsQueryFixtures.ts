@@ -1,14 +1,14 @@
 /* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
-import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
-import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
+import { MongoPXExtractorDBO } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
+import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
-import { mongoPXEntitiesStatusCollection } from '../../../infrastructure/MongoPXEntitiesStatusDataSource';
-import { MongoPXEntityStatusDBO } from '../../../infrastructure/MongoPXEntityStatusDBO';
+import { mongoPXEntitiesStatusCollection } from '../../../infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { MongoPXEntityStatusDBO } from '../../../infrastructure/MongoPXEntityStatusDBO.js';
 
 const f = getFixturesFactory();
 
@@ -89,26 +89,32 @@ const [entityWithoutExtractorEn] = f.entityInMultipleLanguages(
 const fileEntity1En = f.processedDocument('fileEntity1En', {
   language: 'en',
   entity: entity1En.sharedId,
+  mimetype: 'application/pdf',
 });
 const secondFileEntity1En = f.processedDocument('secondFileEntity1En', {
   language: 'en',
   entity: entity1En.sharedId,
+  mimetype: 'application/pdf',
 });
 const fileEntity1Pt = f.processedDocument('fileEntity1Pt', {
   language: 'pt',
   entity: entity1En.sharedId,
+  mimetype: 'application/pdf',
 });
 const fileEntity1It = f.processedDocument('fileEntity1It', {
   language: 'it',
   entity: entity1En.sharedId,
+  mimetype: 'application/pdf',
 });
 const fileEntity2It = f.processedDocument('fileEntity2En', {
   language: 'it',
   entity: entity2En.sharedId,
+  mimetype: 'application/pdf',
 });
 const fileEntity4En = f.processedDocument('fileEntity4En', {
   language: 'en',
   entity: entity5En.sharedId,
+  mimetype: 'application/pdf',
 });
 
 const [paragraph1Entity1En, paragraph1Entity1Pt] = f.entityInMultipleLanguages(
@@ -366,12 +372,12 @@ const fixtures = {
   templates: [sourceTemplate1, sourceTemplate2, targetTemplate1],
   entities: Object.values(entityFixtures).map(value => value),
   files: [
-    fileEntity1En,
-    secondFileEntity1En,
-    fileEntity1Pt,
-    fileEntity1It,
-    fileEntity2It,
-    fileEntity4En,
+    ...fileEntity1En,
+    ...secondFileEntity1En,
+    ...fileEntity1Pt,
+    ...fileEntity1It,
+    ...fileEntity2It,
+    ...fileEntity4En,
   ],
   connections: Object.values(relationshipFixtures).map(value => value),
   settings: [

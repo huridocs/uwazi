@@ -1,5 +1,5 @@
-import db, { DBFixture } from 'api/utils/testing_db';
-import { UserRole } from 'shared/types/userSchema';
+import db, { DBFixture } from '#api/utils/testing_db.js';
+import { UserRole } from '#shared/types/userSchema.js';
 
 const userId1 = db.id();
 const userId2 = db.id();

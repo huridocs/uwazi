@@ -1,13 +1,13 @@
 import mongoose from 'mongoose';
 
-import { instanceModel } from 'api/odm';
+import { instanceModel } from '#api/odm/index.js';
 
 export interface User {
   _id?: any;
   username?: string;
   password?: string;
   email?: string;
-  role?: string;
+  role?: 'admin' | 'editor' | 'collaborator';
   failedLogins?: number;
   accountLocked?: boolean;
   accountUnlockCode?: string;

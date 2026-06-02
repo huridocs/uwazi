@@ -1,8 +1,8 @@
 /* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { UserRole } from 'shared/types/userSchema';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { UserRole } from '#shared/types/userSchema.js';
 
 const f = getFixturesFactory();
 
@@ -54,16 +54,19 @@ const fileEntity1En = f.document('fileEntity1En', {
   language: 'en',
   entity: entity1En.sharedId,
   status: 'ready',
+  mimetype: 'application/pdf',
 });
 const fileEntity1Pt = f.document('fileEntity1Pt', {
   language: 'pt',
   entity: entity1En.sharedId,
   status: 'ready',
+  mimetype: 'application/pdf',
 });
 const fileEntity2En = f.document('fileEntity2En', {
   language: 'en',
   entity: entity2En.sharedId,
   status: 'ready',
+  mimetype: 'application/pdf',
 });
 
 const relationshipE1Hub1 = {

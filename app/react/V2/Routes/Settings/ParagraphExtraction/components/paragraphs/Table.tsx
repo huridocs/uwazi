@@ -1,17 +1,17 @@
 import React from 'react';
 import { useAtomValue } from 'jotai';
 import { useLoaderData } from 'react-router';
-import { availableLanguages } from 'shared/language';
-import { Table, Button } from 'V2/Components/UI';
+import { availableLanguages } from '#shared/language/index.js';
+import { Table, Button } from '#V2/Components/UI/index.js';
 import {
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
-} from 'V2/shared/ParagraphExtractionTypes';
-import { Translate } from 'app/I18N';
-import { templatesAtom } from 'V2/atoms';
-import { TableTitle } from '../TableTitle';
-import { PXTableFooter } from '../PXTableFooter';
-import { tableBuilder } from './TableElements';
+} from '#V2/shared/ParagraphExtractionTypes.js';
+import { Translate } from '#app/I18N/index.js';
+import { templatesAtom } from '#V2/atoms/index.js';
+import { TableTitle } from '../TableTitle.js';
+import { PXTableFooter } from '../PXTableFooter.js';
+import { tableBuilder } from './TableElements/index.js';
 
 interface ParagraphsTableProps {
   pxParagraphData: TablePXEntityParagraphRow[];
@@ -55,8 +55,8 @@ const ParagraphsTable = ({
       actions={
         <Button
           onClick={() => openPDFSidepanel(true)}
-          styling="light"
-          className="flex items-center gap-2 leading-4 text-gray-800"
+          variant="ghost"
+          className="flex items-center gap-2 leading-4 text-ink-secondary"
         >
           <Translate>Open PDF</Translate>
         </Button>

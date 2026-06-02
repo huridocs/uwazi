@@ -1,24 +1,21 @@
-import * as actions from 'app/Notifications/actions/actionTypes';
-import ID from 'shared/uniqueID';
-
-const NOTIFICATION_DELAY = process.env.NOTIFICATION_DELAY || 6000;
+import uniqueID from '#shared/uniqueID.js';
+import { notify as bridgeNotify } from '#V2/utils/notifyBridge.js';
+import * as types from './actionTypes.js';
 
 export function removeNotification(id) {
-  return {
-    type: actions.REMOVE_NOTIFICATION,
-    id,
-  };
+  return { type: types.REMOVE_NOTIFICATION, id };
 }
 
-export function notify(message, type, delay = NOTIFICATION_DELAY) {
+export function notify(message, type, delay = 1500) {
   return dispatch => {
-    const id = ID();
-    dispatch({ type: actions.NOTIFY, notification: { message, type, id } });
-    if (delay) {
-      setTimeout(() => {
-        dispatch(removeNotification(id));
-      }, delay);
+    const id = uniqueID();
+    dispatch({ type: types.NOTIFY, notification: { message, type, id } });
+    bridgeNotify(message, type);
+
+    if (delay !== false) {
+      setTimeout(() => dispatch(removeNotification(id)), delay);
     }
+
     return id;
   };
 }

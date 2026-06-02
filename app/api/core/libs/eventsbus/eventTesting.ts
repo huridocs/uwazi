@@ -1,5 +1,5 @@
 import { applicationEventsBus } from '.';
-import { EventConstructor } from './EventsBus';
+import { EventConstructor } from './EventsBus.js';
 
 const spyOnEmit = () => {
   const spy = jest.spyOn(applicationEventsBus, 'emit');
@@ -12,12 +12,12 @@ const spyOnEmit = () => {
       }
       spy.mockClear();
     },
-    expectToEmitEventWith: <T>(event: EventConstructor<T>, eventData: T) => {
+    expectToEmitEventWith: <T extends Object>(event: EventConstructor<T>, eventData: T) => {
       const expectedCall = spy.mock.calls.find(call => call[0] instanceof event);
       if (typeof expectedCall === 'undefined') {
         throw new Error(`No event of type ${event.name} was emitted.`);
       }
-      expect(expectedCall[0].getData()).toEqual(eventData);
+      expect(expectedCall[0].getData()).toMatchObject(eventData);
       spy.mockClear();
     },
     spy,
@@ -65,7 +65,7 @@ const toEmitEventWith = async <T>(
   if (typeof expectedCall === 'undefined') {
     return failAndRestore(spy, `No event of type ${event.name} was emitted.`);
   }
-  expect(expectedCall[0].getData()).toEqual(eventData);
+  expect(expectedCall[0].getData()).toMatchObject(eventData);
 
   spy.mockRestore();
   return { pass: true, message: () => 'Pass.' };

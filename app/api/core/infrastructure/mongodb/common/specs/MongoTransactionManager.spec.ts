@@ -1,11 +1,12 @@
 /* eslint-disable max-classes-per-file */
-import { getIdMapper } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB from 'api/utils/testing_db';
 import { MongoClient, MongoError } from 'mongodb';
-import { StandardLogger } from 'api/core/libs/logger/infrastructure/StandardLogger';
-import { getClient, getTenant } from '../getConnectionForCurrentTenant';
-import { MongoTransactionManager } from '../MongoTransactionManager';
+import { getIdMapper } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import testingDB from '#api/utils/testing_db.js';
+import { StandardLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
+import { getClient, getTenant } from '../getConnectionForCurrentTenant.js';
+import { MongoTransactionManager } from '../MongoTransactionManager.js';
+import { OptimisticLockError } from '../OptimisticLockError.js';
 
 const ids = getIdMapper();
 
@@ -310,6 +311,32 @@ describe('when registering onCommitted event handlers within the run() callback'
 
     expect(checkpoints).toEqual([1, 2, 3]);
   });
+
+  it('should not leak onCommitted handlers to subsequent runs', async () => {
+    const transactionManager = createTransactionManager();
+    const runHandler = jest.fn().mockResolvedValue(undefined);
+
+    await transactionManager.run(async () => {
+      transactionManager.onCommitted(runHandler);
+    });
+
+    await transactionManager.run(async () => {});
+
+    expect(runHandler).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('when registering onCommitted handlers outside a transaction', () => {
+  it('should execute persistent handlers on every run', async () => {
+    const transactionManager = createTransactionManager();
+    const persistentHandler = jest.fn().mockResolvedValue(undefined);
+    transactionManager.onCommitted(persistentHandler);
+
+    await transactionManager.run(async () => {});
+    await transactionManager.run(async () => {});
+
+    expect(persistentHandler).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe('when registering onCommitted event handlers with the runHandlingOnCommited() call', () => {
@@ -412,5 +439,179 @@ describe('when the commit operation throws a UnknownTransactionCommitResult', ()
 
     expect(checkpoints).toEqual([1, 2]);
     expect(commitTransactionMock).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('when registering onRetry event handlers', () => {
+  it('should call the handler when a TransientTransactionError causes a retry', async () => {
+    const transactionManager = createTransactionManager();
+    const retryHandler = jest.fn().mockResolvedValue(undefined);
+    transactionManager.onRetry(retryHandler);
+
+    let throwed = false;
+    await transactionManager.run(async () => {
+      if (!throwed) {
+        const error = new MongoError('TransientTransactionError');
+        error.addErrorLabel('TransientTransactionError');
+        throwed = true;
+        throw error;
+      }
+    });
+
+    expect(retryHandler).toHaveBeenCalledTimes(1);
+  });
+
+  it('should call the handler when an OptimisticLockError causes a retry', async () => {
+    const transactionManager = createTransactionManager();
+    const retryHandler = jest.fn().mockResolvedValue(undefined);
+    transactionManager.onRetry(retryHandler);
+
+    let throwed = false;
+    await transactionManager.run(async () => {
+      if (!throwed) {
+        throwed = true;
+        throw new OptimisticLockError({
+          resourceName: 'Test',
+          expectedVersion: 1,
+          resourceId: 'id',
+        });
+      }
+    });
+
+    expect(retryHandler).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not call the handler when the transaction succeeds without retry', async () => {
+    const transactionManager = createTransactionManager();
+    const retryHandler = jest.fn().mockResolvedValue(undefined);
+    transactionManager.onRetry(retryHandler);
+
+    await transactionManager.run(async () => {});
+
+    expect(retryHandler).not.toHaveBeenCalled();
+  });
+
+  it('should call the handler multiple times when multiple retries occur', async () => {
+    const transactionManager = createTransactionManager();
+    const retryHandler = jest.fn().mockResolvedValue(undefined);
+    transactionManager.onRetry(retryHandler);
+
+    let throwCount = 0;
+    await transactionManager.run(async () => {
+      if (throwCount < 2) {
+        // eslint-disable-next-line no-plusplus
+        throwCount++;
+        throw new OptimisticLockError({
+          resourceName: 'Test',
+          expectedVersion: 1,
+          resourceId: 'id',
+        });
+      }
+    });
+
+    expect(retryHandler).toHaveBeenCalledTimes(2);
+  });
+
+  it('should manually trigger onRetry handlers via executeOnRetryHandlers()', async () => {
+    const transactionManager = createTransactionManager();
+    const checkpoints = [1];
+
+    transactionManager.onRetry(async () => {
+      checkpoints.push(2);
+    });
+
+    await transactionManager.executeOnRetryHandlers();
+
+    expect(checkpoints).toEqual([1, 2]);
+  });
+
+  it('should not leak run-scoped retry handlers to subsequent runs', async () => {
+    const transactionManager = createTransactionManager();
+    const retryHandler = jest.fn().mockResolvedValue(undefined);
+
+    let firstRunThrowed = false;
+    await transactionManager.run(async () => {
+      transactionManager.onRetry(retryHandler);
+      if (!firstRunThrowed) {
+        firstRunThrowed = true;
+        const error = new MongoError('TransientTransactionError');
+        error.addErrorLabel('TransientTransactionError');
+        throw error;
+      }
+    });
+
+    let secondRunThrowed = false;
+    await transactionManager.run(async () => {
+      if (!secondRunThrowed) {
+        secondRunThrowed = true;
+        const error = new MongoError('TransientTransactionError');
+        error.addErrorLabel('TransientTransactionError');
+        throw error;
+      }
+    });
+
+    expect(retryHandler).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('when the operation throws a OptimisticLockError', () => {
+  const makeWriteConflictError = () => {
+    const error = new OptimisticLockError({
+      resourceName: 'Test',
+      expectedVersion: 1,
+      resourceId: 'testId',
+    });
+
+    return error;
+  };
+
+  it('retries on OptimisticLockError and succeeds on the second attempt', async () => {
+    const transactionManager = createTransactionManager();
+
+    let throwed = false;
+    const checkpoints: number[] = [];
+    await transactionManager.run(async () => {
+      checkpoints.push(1);
+      if (!throwed) {
+        throwed = true;
+        throw makeWriteConflictError();
+      }
+    });
+
+    expect(checkpoints).toEqual([1, 1]);
+  });
+
+  it('re-throws after MAX_RETRIES consecutive WriteConflicts', async () => {
+    const transactionManager = createTransactionManager();
+    const errors: Error[] = [];
+
+    try {
+      await transactionManager.run(async () => {
+        const error = makeWriteConflictError();
+        errors.push(error);
+        throw error;
+      });
+    } catch (e) {
+      expect(e).toBe(errors[errors.length - 1]);
+      expect(errors.length).toBe(4); // 1 initial + 3 retries
+    }
+  });
+
+  it('does not retry on MongoErrors with other codes', async () => {
+    const transactionManager = createTransactionManager();
+    let callCount = 0;
+    const otherError = new MongoError('SomeOtherError');
+    (otherError as any).code = 999;
+
+    try {
+      await transactionManager.run(async () => {
+        // eslint-disable-next-line no-plusplus
+        callCount++;
+        throw otherError;
+      });
+    } catch (e) {
+      expect(e).toBe(otherError);
+      expect(callCount).toBe(1);
+    }
   });
 });

@@ -1,18 +1,22 @@
-import { files, storage, testingUploadPaths } from 'api/files';
-import { Redis } from 'api/infrastructure/Redis';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import * as setupSockets from 'api/socketio/setupSockets';
-import { tenants } from 'api/tenants';
-import * as handleError from 'api/utils/handleError.js';
-import testingDB from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { files, storage, testingUploadPaths } from '#api/files/index.js';
+import { Redis } from '#api/infrastructure/Redis.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import * as setupSockets from '#api/socketio/setupSockets.js';
+import { tenants } from '#api/tenants/index.js';
+import * as handleError from '#api/utils/handleError.js';
+import testingDB from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 import { ObjectId } from 'mongodb';
 import RedisSMQ from 'rsmq';
 import waitForExpect from 'wait-for-expect';
-import { convertToPDFService } from '../convertToPdfService';
-import { ConvertToPdfWorker } from '../ConvertToPdfWorker';
+import { convertToPDFService } from '../convertToPdfService.js';
+import { ConvertToPdfWorker } from '../ConvertToPdfWorker.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { search } from '#api/search/search.js';
+
+const f = getFixturesFactory();
 
 describe('convertToPdfWorker', () => {
   let worker: ConvertToPdfWorker;
@@ -35,11 +39,12 @@ describe('convertToPdfWorker', () => {
     redisSMQ = new RedisSMQ({ client: redisClient });
     await testingDB.connect({ defaultTenant: false });
     jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
+    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     await testingEnvironment.setUp({
       settings: [
         {
           features: { convertToPdf: { active: true, url: 'http://localhost:5060' } },
-          languages: [{ label: 'English', key: 'en' }],
+          languages: [{ label: 'English', key: 'en', default: true }],
         },
       ],
       files: [
@@ -51,6 +56,8 @@ describe('convertToPdfWorker', () => {
           originalname: 'attachment.docx',
         },
       ],
+      entities: [f.entity('entity', 'template')],
+      templates: [f.template('template')],
     });
 
     tenants.add({
@@ -73,6 +80,7 @@ describe('convertToPdfWorker', () => {
   });
 
   afterAll(async () => {
+    jest.resetAllMocks();
     await Redis.disconnect();
     await testingEnvironment.tearDown();
     await worker.stop();

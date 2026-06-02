@@ -1,18 +1,20 @@
-import { actions } from 'app/BasicReducer';
-import api from 'app/Entities/EntitiesAPI';
-import { t } from 'app/I18N';
+import { getStore } from '#shared/atomStore/index.js';
+import { actions } from '#app/BasicReducer/index.js';
+import { EntitiesAPI as api } from '#app/Entities/EntitiesAPI.js';
+import { t } from '#app/I18N/index.js';
+
 import {
   removeDocument,
   removeDocuments,
   unselectAllDocuments,
   unselectDocument,
-} from 'app/Library/actions/libraryActions';
-import { saveEntityWithFiles } from 'app/Library/actions/saveEntityWithFiles';
-import { notificationActions } from 'app/Notifications';
-import { actions as relationshipActions } from 'app/Relationships';
-import { RequestParams } from 'app/utils/RequestParams';
+} from '#app/Library/actions/libraryActions.js';
+import { saveEntityWithFiles } from '#app/Library/actions/saveEntityWithFiles.js';
+import { notificationActions } from '#app/Notifications/index.js';
+import { actions as relationshipActions } from '#app/Relationships/index.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 import { actions as formActions } from 'react-redux-form';
-import { atomStore, deletedEntityAtom } from 'V2/atoms';
+import { deletedEntityAtom } from '#V2/atoms/index.js';
 
 export function saveEntity(entity) {
   return async dispatch => {
@@ -42,7 +44,7 @@ export function deleteEntity(entity) {
     await api.delete(new RequestParams({ sharedId: entity.sharedId }));
     dispatch(notificationActions.notify(t('System', 'Entity deleted', null, false), 'success'));
     dispatch(removeDocument(entity));
-    atomStore.set(deletedEntityAtom, entity.sharedId);
+    getStore().set(deletedEntityAtom, entity.sharedId);
     await dispatch(unselectDocument(entity._id));
   };
 }

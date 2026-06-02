@@ -1,8 +1,6 @@
-import React from 'react';
 import { captureException } from '@sentry/react';
-import { isClient } from 'app/utils';
-import { Translate } from 'app/I18N';
-import { notificationAtom, atomStore } from 'app/V2/atoms';
+import { isClient } from '#app/utils/index.js';
+import { notify as notifyBridge } from '#V2/utils/notifyBridge.js';
 
 const handledErrors: { [k: string]: RequestError } = {
   400: {
@@ -40,15 +38,41 @@ const reportErrorToSentry = (error: Error, key: string) => {
   }
 };
 
-const handleUnexpectedError = (error: Error | RequestError, key: string) => {
-  reportErrorToSentry(error, key);
-  atomStore.set(notificationAtom, () => ({
-    type: 'error',
-    text: <Translate>An error occurred</Translate>,
-    details:
-      'json' in error ? error.json?.prettyMessage || error.json?.error : error.message || undefined,
-  }));
+const CHUNK_ERROR_KEY = 'chunk-error-refreshed';
+
+const isChunkLoadError = (error: Error | null | undefined): boolean =>
+  Boolean(
+    error && (error.name === 'ChunkLoadError' || /Loading chunk \d+ failed/.test(error.message))
+  );
+
+const tryChunkErrorReload = (): boolean => {
+  const refreshed = sessionStorage.getItem(CHUNK_ERROR_KEY);
+  if (!refreshed) {
+    sessionStorage.setItem(CHUNK_ERROR_KEY, 'true');
+    window.location.reload();
+    return true;
+  }
+  return false;
 };
 
-export { handledErrors, handleUnexpectedError, reportErrorToSentry };
+const resetChunkErrorFlag = (): void => {
+  sessionStorage.removeItem(CHUNK_ERROR_KEY);
+};
+
+const handleUnexpectedError = (error: Error | RequestError, key: string) => {
+  reportErrorToSentry(error, key);
+  const details =
+    'json' in error ? error.json?.prettyMessage || error.json?.error : error.message || undefined;
+  notifyBridge('An error occurred', 'error', undefined, details);
+};
+
+export {
+  handledErrors,
+  handleUnexpectedError,
+  reportErrorToSentry,
+  isChunkLoadError,
+  tryChunkErrorReload,
+  resetChunkErrorFlag,
+  CHUNK_ERROR_KEY,
+};
 export type { RequestError };

@@ -1,16 +1,18 @@
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
-import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
-import { MongoSettingsDataSource } from 'api/core/infrastructure/mongodb/MongoSettingsDataSource';
-import { MongoTemplatesDataSource } from 'api/core/infrastructure/mongodb/template/MongoTemplatesDataSource';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { Db } from 'mongodb';
-import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { DenormalizationService } from '../DenormalizationService';
-import { RelationshipPropertyUpdateStrategy } from '../propertyUpdateStrategies/RelationshipPropertyUpdateStrategy';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntitiesDataSource.js';
+import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
+import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+import { partialImplementation } from '#api/common.v2/testing/partialImplementation.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { DenormalizationService } from '../DenormalizationService.js';
+import { RelationshipPropertyUpdateStrategy } from '../propertyUpdateStrategies/RelationshipPropertyUpdateStrategy.js';
+import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 
 const factory = getFixturesFactory();
 
@@ -340,18 +342,22 @@ beforeEach(async () => {
   const transactionManager = TransactionManagerFactory.default();
   triggerCommit = async () => transactionManager.executeOnCommitHandlers(undefined);
   const relationshipsDataSource = new MongoRelationshipsDataSource(db, transactionManager);
-  const templatesDataSource = new MongoTemplatesDataSource(db, transactionManager);
+  const templatesDataSource = new MongoTemplatesDataSource({
+    db,
+    transactionManager,
+    slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+  });
   const entitiesDataSource = new MongoEntitiesDataSource(
     db,
     templatesDataSource,
-    new MongoSettingsDataSource(db, transactionManager),
+    SettingsDataSourceFactory.default({ transactionManager }),
     transactionManager
   );
   service = new DenormalizationService(
     relationshipsDataSource,
     entitiesDataSource,
     templatesDataSource,
-    new MongoSettingsDataSource(db, transactionManager),
+    SettingsDataSourceFactory.default({ transactionManager }),
     transactionManager,
     indexMock,
     partialImplementation<RelationshipPropertyUpdateStrategy>({

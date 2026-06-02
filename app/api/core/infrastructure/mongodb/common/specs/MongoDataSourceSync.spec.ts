@@ -1,12 +1,12 @@
 /* eslint-disable max-statements */
-import { StandardLogger } from 'api/core/libs/logger/infrastructure/StandardLogger';
-import { getIdMapper } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB from 'api/utils/testing_db';
+import { StandardLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
+import { getIdMapper } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import testingDB from '#api/utils/testing_db.js';
 import { MongoClient, ObjectId } from 'mongodb';
-import { MongoDataSource } from '../MongoDataSource';
-import { MongoTransactionManager } from '../MongoTransactionManager';
-import { getClient, getConnection, getTenant } from '../getConnectionForCurrentTenant';
+import { MongoDataSource } from '../MongoDataSource.js';
+import { MongoTransactionManager } from '../MongoTransactionManager.js';
+import { getClient, getConnection, getTenant } from '../getConnectionForCurrentTenant.js';
 
 const id = getIdMapper();
 
@@ -646,8 +646,8 @@ describe('collection with automatic log to updatelogs', () => {
         expectedDBState: [
           updateLog({ mongoId: id('data 1'), timestamp: updatedTimestamp }),
           updateLog({ mongoId: id('data 2'), timestamp: updatedTimestamp }),
-          updateLog({ mongoId: id('upserted'), timestamp: updatedTimestamp }),
           { ...updateLogsBlankState[0], timestamp: updatedTimestamp, _id: expect.any(ObjectId) },
+          updateLog({ mongoId: id('upserted'), timestamp: updatedTimestamp }),
         ],
         expectedResult: {
           matchedCount: 3,

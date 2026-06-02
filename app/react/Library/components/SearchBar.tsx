@@ -3,20 +3,17 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import { connect, ConnectedProps } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router';
-
-import { Icon } from 'UI';
+import { Icon } from '#UI/index.js';
 import {
   searchDocuments as searchDocumentsAction,
   processFilters,
-} from 'app/Library/actions/libraryActions';
-import { t, Translate } from 'app/I18N';
-import { wrapDispatch } from 'app/Multireducer';
-import ModalTips from 'app/App/ModalTips';
-import { SearchTipsContent } from 'app/App/SearchTipsContent';
-import { submitNewSearch } from 'app/SemanticSearch/actions/actions';
-import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
-import { IStore } from 'app/istore';
-import { Form } from 'app/Forms/Form';
+} from '#app/Library/actions/libraryActions.js';
+import { t } from '#app/I18N/index.js';
+import { wrapDispatch } from '#app/Multireducer/index.js';
+import { ModalTips } from '#app/App/ModalTips.js';
+import { SearchTipsContent } from '#app/App/SearchTipsContent.js';
+import { IStore } from '#app/istore.js';
+import { Form } from '#app/Forms/Form.js';
 
 interface SearchBarOwnProps {}
 const mapStateToProps = (state: IStore) => {
@@ -32,7 +29,6 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
     {
       searchDocuments: searchDocumentsAction,
       change: formActions.change,
-      semanticSearch: submitNewSearch,
     },
     wrapDispatch(dispatch, 'library')
   );
@@ -47,7 +43,6 @@ const SearchBarComponent = ({
 
   searchDocuments,
   change,
-  semanticSearch,
 }: mappedProps) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -69,10 +64,6 @@ const SearchBarComponent = ({
     }, 350);
     return () => clearTimeout(debouncedSearch);
   }, [searchTerm, change]);
-
-  const submitSemanticSearch = () => {
-    semanticSearch(search);
-  };
 
   const doSearch = (newSearch: any) => {
     change('library.search.searchTerm', searchTerm);
@@ -98,16 +89,6 @@ const SearchBarComponent = ({
             <Icon icon="search" aria-label="Search button" />
           </button>
         </div>
-        <FeatureToggleSemanticSearch>
-          <button
-            disabled={!search.searchTerm}
-            type="button"
-            onClick={submitSemanticSearch}
-            className="btn btn-success semantic-search-button"
-          >
-            <Icon icon="flask" /> <Translate>Semantic Search</Translate>
-          </button>
-        </FeatureToggleSemanticSearch>
       </Form>
       <ModalTips
         label={t('System', 'Search Tips', null, false)}

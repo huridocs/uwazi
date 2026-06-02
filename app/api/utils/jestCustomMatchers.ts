@@ -11,14 +11,14 @@ declare global {
 
 function toHaveStatus(received: Response, expectedStatus: number) {
   const actualStatus = received.status;
-
   const pass = actualStatus === expectedStatus;
 
   const message = pass
     ? () => `Expected response *not* to have status ${expectedStatus}, but got ${actualStatus}.`
     : () =>
         `Expected response to have status ${expectedStatus}, but got ${actualStatus}.\n` +
-        `Response body:\n${inspect(received.body)}`;
+        `Response body:\n${inspect(received.body)}\n` +
+        `Response text:\n${inspect(received.text)}`;
 
   return { pass, message };
 }
