@@ -92,7 +92,7 @@ const MetadataDisplayComponent = ({
 };
 
 const meta: Meta<typeof MetadataDisplayComponent> = {
-  title: 'Metadata/MedataDisplay',
+  title: 'EntityViewer/MedataDisplay',
   component: MetadataDisplayComponent,
 };
 

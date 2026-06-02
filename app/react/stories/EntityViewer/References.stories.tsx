@@ -4,17 +4,24 @@ import { BrowserRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { localeAtom, templatesAtom, translationsAtom } from '#V2/atoms/index.js';
-import { apiEntity, translations, templates } from '../fixtures/referencesFixtures.js';
-import { PDF, PDFControls } from '#V2/Components/PDFViewer/index.js';
+import { PDF, PDFControls, referenceToHighlight } from '#V2/Components/PDFViewer/index.js';
 import { ReferencesDisplay } from '#V2/Components/References/index.js';
+import { apiEntity, translations, templates } from '../fixtures/referencesFixtures.js';
 
-const ReferencesDisplayComponent = ({ locale }: { locale: 'en' | 'es' }) => {
+const ReferencesDisplayComponent = ({
+  locale,
+  fileUrl = '/sample.pdf',
+}: {
+  locale: 'en' | 'es';
+  fileUrl?: string;
+}) => {
   const store = createStore();
   store.set(templatesAtom, templates);
   store.set(localeAtom, locale);
   store.set(translationsAtom, translations);
   const documentControls = useRef<PDFControls>();
   const [currentPage, setCurrentPage] = useState(1);
+  const [currentClusterPage, setCurrentClusterPage] = useState<number | null>(null);
 
   return (
     <div className="h-screen max-h-200 bg-(--color-theme-surface-raised)">
@@ -30,7 +37,7 @@ const ReferencesDisplayComponent = ({ locale }: { locale: 'en' | 'es' }) => {
             <div className="flex flex-row gap-4 flex-1 overflow-hidden min-h-0">
               <div className="w-5/6 overflow-y-auto">
                 <PDF
-                  fileUrl="/sample.pdf"
+                  fileUrl={fileUrl}
                   onPdfReady={controls => {
                     documentControls.current = controls;
                   }}
@@ -45,14 +52,23 @@ const ReferencesDisplayComponent = ({ locale }: { locale: 'en' | 'es' }) => {
                   document={apiEntity.documents![0]}
                   currentPage={currentPage}
                   onPointClick={reference => {
-                    documentControls.current?.goToPage(
-                      Number(reference.reference.selectionRectangles?.[0].page || '0')
-                    );
+                    const highligh = referenceToHighlight(reference);
+                    if (highligh) {
+                      documentControls.current?.toggleHighlights([highligh]);
+                    }
                   }}
                   onClusterClick={references => {
-                    documentControls.current?.goToPage(
-                      Number(references?.[0].reference.selectionRectangles?.[0].page || '0')
+                    const page = Number(
+                      references?.[0].reference.selectionRectangles?.[0].page || '0'
                     );
+                    if (page !== currentClusterPage) {
+                      setCurrentClusterPage(page);
+                      documentControls.current?.goToPage(
+                        Number(references?.[0].reference.selectionRectangles?.[0].page || '0')
+                      );
+                    } else {
+                      documentControls.current?.toggleHighlights([]);
+                    }
                   }}
                 />
               </div>
@@ -65,20 +81,21 @@ const ReferencesDisplayComponent = ({ locale }: { locale: 'en' | 'es' }) => {
 };
 
 const meta: Meta<typeof ReferencesDisplayComponent> = {
-  title: 'Metadata/ReferencesDisplay',
+  title: 'EntityViewer/ReferencesDisplay',
   component: ReferencesDisplayComponent,
 };
 
 type Story = StoryObj<typeof ReferencesDisplayComponent>;
 
 const Primary: Story = {
-  render: args => <ReferencesDisplayComponent locale={args.locale} />,
+  render: args => <ReferencesDisplayComponent locale={args.locale} fileUrl={args.fileUrl} />,
 };
 
 const Basic: Story = {
   ...Primary,
   args: {
     locale: 'en',
+    fileUrl: undefined,
   },
 };
 
