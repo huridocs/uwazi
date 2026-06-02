@@ -56,17 +56,20 @@ recreate_database() {
     fi
   fi
 
-  if [ -n "$POSTGRES_HOST" ]; then
-    PG_HOST="${POSTGRES_HOST:-127.0.0.1}"
-    PG_PORT="${POSTGRES_PORT:-5432}"
-    PG_USER="${POSTGRES_USER:-uwazi}"
-    PG_DB="${POSTGRES_DB:-uwazi_development}"
+  PG_HOST="${POSTGRES_HOST:-127.0.0.1}"
+  PG_PORT="${POSTGRES_PORT:-5432}"
+  PG_USER="${POSTGRES_USER:-uwazi}"
+  PG_DB="${POSTGRES_DB:-uwazi_development}"
+
+  if command -v pg_isready &>/dev/null && pg_isready -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -q 2>/dev/null; then
     echo "Applying PostgreSQL schema..."
     PGPASSWORD="${POSTGRES_PASSWORD:-uwazi}" psql \
       -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d "$PG_DB" \
       -f "$repo_root/app/api/core/infrastructure/postgresql/schema/thesaurus.sql" \
       && echo "PostgreSQL schema applied." \
       || echo "WARNING: PostgreSQL schema failed, skipping."
+  else
+    echo "PostgreSQL not available on $PG_HOST:$PG_PORT, skipping schema."
   fi
 
   exit 0

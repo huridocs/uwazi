@@ -26,7 +26,7 @@ const makeThesaurus = (overrides: Partial<{ id: string; name: string; values: an
   });
 
 beforeAll(async () => {
-  await testingEnvironment.setUpPostgres();
+  await testingEnvironment.setUp({}, { postgres: true });
 });
 
 beforeEach(async () => {

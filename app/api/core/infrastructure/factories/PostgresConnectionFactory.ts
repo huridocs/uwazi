@@ -35,4 +35,21 @@ export class PostgresConnectionFactory {
       pool = undefined;
     }
   }
+
+  /**
+   * Override the default pool with an externally managed one.
+   * Intended for use in tests only — testingPG calls this after creating
+   * the per-test database so that all datasources transparently use it.
+   */
+  static usePool(override: pg.Pool): void {
+    pool = override;
+  }
+
+  /**
+   * Clear the pool reference without ending it.
+   * Used by testingPG after it has already ended the pool itself.
+   */
+  static clearPool(): void {
+    pool = undefined;
+  }
 }

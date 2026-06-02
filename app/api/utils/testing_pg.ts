@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import pg from 'pg';
 import { config } from '#api/config.js';
 import uniqueID from '#shared/uniqueID.js';
+import { PostgresConnectionFactory } from '#api/core/infrastructure/factories/PostgresConnectionFactory.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,6 +26,8 @@ const adminClient = () =>
   });
 
 let pool: pg.Pool | null = null;
+
+export type PGFixture = Record<string, Record<string, unknown>[]>;
 
 const testingPG = {
   pool: null as pg.Pool | null,
@@ -58,6 +61,9 @@ const testingPG = {
 
     this.pool = pool;
 
+    // Register the test pool with the factory so all datasources transparently use it.
+    PostgresConnectionFactory.usePool(pool);
+
     await pool.query(THESAURUS_SQL);
 
     return pool;
@@ -67,7 +73,28 @@ const testingPG = {
     if (!pool) throw new Error('testingPG not connected');
     for (const table of tables) {
       // eslint-disable-next-line no-await-in-loop
-      await pool.query(`DELETE FROM ${table}`);
+      await pool.query(`DELETE FROM "${table}"`);
+    }
+  },
+
+  async setFixtures(fixtures: PGFixture): Promise<void> {
+    if (!pool) throw new Error('testingPG not connected');
+    for (const [table, rows] of Object.entries(fixtures)) {
+      // eslint-disable-next-line no-await-in-loop
+      await pool.query(`DELETE FROM "${table}"`);
+      for (const row of rows) {
+        const cols = Object.keys(row)
+          .map(c => `"${c}"`)
+          .join(', ');
+        const placeholders = Object.keys(row)
+          .map((_, i) => `$${i + 1}`)
+          .join(', ');
+        const values = Object.values(row).map(v =>
+          v !== null && typeof v === 'object' ? JSON.stringify(v) : v
+        );
+        // eslint-disable-next-line no-await-in-loop
+        await pool.query(`INSERT INTO "${table}" (${cols}) VALUES (${placeholders})`, values);
+      }
     }
   },
 
@@ -87,6 +114,8 @@ const testingPG = {
       await pool.end();
       pool = null;
       this.pool = null;
+      // Clear the factory's reference so it doesn't hold a dead pool.
+      PostgresConnectionFactory.clearPool();
     }
 
     if (this.dbName) {
