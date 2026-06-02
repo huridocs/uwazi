@@ -137,7 +137,8 @@ class MarkdownViewer extends Component {
     const ReactFromMarkdown = markdownToReact(
       sanitizedMarkdown,
       this.customComponent.bind(this),
-      this.props.html
+      this.props.html,
+      this.props.parseMarkdown
     );
 
     if (!ReactFromMarkdown) {
@@ -159,6 +160,7 @@ MarkdownViewer.defaultProps = {
   html: false,
   compact: false,
   sanitized: true,
+  parseMarkdown: true,
 };
 
 MarkdownViewer.propTypes = {
@@ -167,6 +169,7 @@ MarkdownViewer.propTypes = {
   html: PropTypes.bool,
   compact: PropTypes.bool,
   sanitized: PropTypes.bool,
+  parseMarkdown: PropTypes.bool,
 };
 
 export { MarkdownViewer };

@@ -3,7 +3,7 @@ import instrumentRoutes from '../../utils/instrumentRoutes.js';
 import pages from '../pages.js';
 import pagesRoutes from '../routes.js';
 
-describe('Pages Routes (to be updated)', () => {
+describe('Pages legacy routes', () => {
   let routes;
 
   beforeEach(() => {
@@ -54,7 +54,7 @@ describe('Pages Routes (to be updated)', () => {
       };
       jest.spyOn(pages, 'getById').mockImplementation(async () => Promise.resolve('page'));
       const response = await routes.get('/api/page', req);
-      expect(pages.getById).toHaveBeenCalledWith('123', 'es');
+      expect(pages.getById).toHaveBeenCalledWith({ sharedId: '123' }, 'es', undefined);
       expect(response).toBe('page');
     });
   });

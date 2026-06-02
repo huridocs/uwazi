@@ -1,18 +1,25 @@
 import Ajv from 'ajv';
 import { PageService } from '#api/core/domain/template/PageService.js';
-import pages from '#api/pages/index.js';
 import { Template } from '#api/core/domain/template/Template.js';
+import { PagesDataSource } from '#api/pages.v2/application/contracts/PagesDataSource.js';
+import { PagesDataSourceFactory } from '../infrastructure/factories/PagesDataSourceFactory.js';
 
 class LegacyPageService implements PageService {
-  // eslint-disable-next-line class-methods-use-this
+  private readonly pagesDS?: PagesDataSource;
+
+  constructor(pagesDS?: PagesDataSource) {
+    this.pagesDS = pagesDS;
+  }
+
   async ensurePageIsValid(template: Template): Promise<void> {
     if (!template?.entityViewPage?.length) {
       return;
     }
 
-    const page = await pages.get({ sharedId: template.entityViewPage });
+    const pagesDS = this.pagesDS ?? PagesDataSourceFactory.default();
+    const result = await pagesDS.getBySharedId(template.entityViewPage);
 
-    if (page.length === 0) {
+    if (result.isError()) {
       throw new Ajv.ValidationError([
         {
           keyword: 'entityViewPageExists',
@@ -24,7 +31,9 @@ class LegacyPageService implements PageService {
       ]);
     }
 
-    if (!page[0].entityView) {
+    const page = result.getDataOrThrow();
+
+    if (!page.entityView) {
       throw new Ajv.ValidationError([
         {
           keyword: 'entityViewPageIsEnabled',

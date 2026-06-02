@@ -44,5 +44,11 @@ describe('pageSchema', () => {
         expect(e.errors[0].message).toContain('This page is in use');
       }
     });
+
+    it('should accept markdownSupport', async () => {
+      page.markdownSupport = true;
+      const validated = await validatePage(page);
+      expect(validated.markdownSupport).toBe(true);
+    });
   });
 });

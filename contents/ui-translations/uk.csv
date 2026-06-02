@@ -172,6 +172,7 @@ Collection Name,Назва колекції
 Common sources,Загальні джерела
 Completed,Completed
 Completed with errors,Completed with errors
+Config,Config
 Configuration,Конфігурація
 Configure filters,Налаштувати фільтри
 Configure templates,Налаштування шаблонів
@@ -232,6 +233,7 @@ Created user group,Створена група користувачів
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
+CSS,CSS
 csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV Import,CSV Import
 CSV import cancelled,CSV import cancelled
@@ -314,6 +316,7 @@ Done scanning,Done scanning
 Download,Завантажити
 Download a third-party authenticator app from your mobile store.,Завантажте сторонній додаток-автентифікатор з вашого мобільного магазину.
 Download failed rows,Download failed rows
+Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,"Перетягніть й опустіть файл у вікно, щоб завантажити"
 Drag row,Перетягування рядка
 Drop your files here to upload or,"Опустіть свої файли сюди, щоб завантажити або"
@@ -449,6 +452,7 @@ Hide actions,Приховати дії
 Hide label,Приховати мітку
 Hide restricted relationships from public,Hide restricted relationships from public
 Hide toolbar,Приховати панель інструментів
+HTML,HTML
 https://yourdomain,https://вашдомен
 hubs,хаби
 Hybrid,Гібридний
@@ -569,6 +573,9 @@ Maps,Карти
 Mark as Reviewed,Позначити як Переглянуто
 Mark as reviewed,Позначити як переглянуто
 Markdown,Markdown
+"Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
+          when its content no longer relies on Markdown syntax.","Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
+          when its content no longer relies on Markdown syntax."
 marked and labeled,марковані та етикетовані
 marked for training,позначені для навчання
 Marked for training + all labeled entries,Позначено для навчання + всі позначені записи
@@ -643,6 +650,7 @@ No References description,"Посилання - це частини цього �
 No relationship types available,No relationship types available
 No Relationships,Немає взаємозв'язків
 No Relationships description,Відносини - це зв'язки між суб'єктами.
+No releases yet,No releases yet
 No results found,No results found
 No table of contents,Немає змісту
 No Table of contents,No Table of contents
@@ -698,6 +706,7 @@ Other users will be affected by this action!,Ця дія вплине на ін�
 Others,Інші
 Page,Сторінка
 Page not found,Сторінку не знайдено
+Page published successfully.,Page published successfully.
 Pages,Сторінки
 Paragrap number extraction property (numeric),Властивість вилучення номера абзацу (числова)
 Paragraph,Абзац
@@ -779,6 +788,7 @@ Public form URL description,"Якщо ви налаштували публічн
 Public form whitelist description,"Якщо ви хочете включити публічні форми на свої сторінки, ви повинні додати ідентифікатори шаблонів, для яких очікуються публічні форми, до білого списку."
 Public instance,Public instance
 Publish,Опублікувати
+Publish release,Publish release
 Published,У відкритому доступі
 QR Code,QR-код
 Query,Запит
@@ -804,6 +814,7 @@ relationships,Взаємозв'язки
 Relationships,Взаємозв'язки
 Relationships saved,Відносини збережені
 RelationType saved,Тип взаємозв'язку збережено
+Release message,Release message
 remaining files,решта файлів
 Remote Server Unreachable,Віддалений сервер недоступний
 Remove,Видалити
@@ -825,6 +836,8 @@ Reset default translation,Скинути переклад за замовчув�
 Reset language,Скинути мову
 Reset Password,Скинути пароль
 Reset passwords,Скидання паролів
+Restore,Restore
+Restore previous version,Restore previous version
 Restricted,Для обмеженого кола осіб
 Retryable,Retryable
 Retrying,Retrying
@@ -955,7 +968,6 @@ Supporting files,Супровідні файли
 Synced template,Синхронізований шаблон
 Synced Template,Синхронізований шаблон
 Synced templates cannot be deleted.,Синхронізовані шаблони не можна видалити.
-syntax to create page content,синтаксис для створення вмісту сторінки
 System translations,Системні переклади
 Table,Таблиця
 Table of Contents,Зміст
@@ -1034,6 +1046,10 @@ This group is empty,Ця група порожня
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,Ця мітка вже існує в цьому шаблоні
 This option will show a notification about the use of cookies in your instance.,Ця опція покаже повідомлення про використання файлів cookie у вашій базі даних.
+This page does not need Markdown,This page does not need Markdown
+"This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
+          lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
+          lists, and other components."
 This property can not be deleted,Цю властивість не можна видалити
 This property will appear in the library cards as part of the basic info.,Цей об'єкт з'явиться в картках бібліотеки у складі основної інформації.
 This property will be shown using all the width available.,Ця властивість буде відображатися за допомогою всієї доступної ширини.
@@ -1171,9 +1187,9 @@ x more,більше
 Year,Рік
 Yes,Так.
 You can add one or many items in this form.,Ви можете додати один або декілька елементів у цій формі.
-"You can also embed advanced components like maps, charts and entity lists in your page.","Ви також можете додати на свою сторінку такі корисні компоненти, як карти, графіки та списки об'єктів."
 You can also enter this secret key into your Authenticator app.,Ви також можете ввести цей секретний ключ у вашому додатку Authenticator.
 You can create metadata templates in,Ви можете створювати шаблони метаданих у
+"You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
 "You can start by selecting text in the document and clicking the ""Add to ToC""
                   button.","You can start by selecting text in the document and clicking the ""Add to ToC""
                   button."
