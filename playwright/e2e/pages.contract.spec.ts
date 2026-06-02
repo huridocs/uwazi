@@ -17,6 +17,8 @@ async function gotoWithRetry(url: string, page: Page) {
 }
 
 const PAGE_TITLE = `E2E Custom Page ${Date.now()}`;
+const HTML_MARKER_TEXT = `E2E marker ${Date.now()}`;
+const HTML_MARKER_CONTENT = `<h1>${HTML_MARKER_TEXT}</h1>`;
 
 test('pages contract creates a custom page that renders at its URL', async ({ page }) => {
   test.setTimeout(3 * 60 * 1000);
@@ -39,17 +41,28 @@ test('pages contract creates a custom page that renders at its URL', async ({ pa
     await expect(page.getByTestId('settings-pages')).toBeVisible();
   });
 
-  await test.step('Open the new page editor and set the title', async () => {
+  await test.step('Open the new page editor and set title + HTML draft content', async () => {
     await page.getByRole('link', { name: 'Add page' }).click();
     await expect(page).toHaveURL(/\/settings\/pages\/new/);
     // The title input id is locale-prefixed, e.g. #title-en
     const titleInput = page.locator('[id^="title-"]').first();
     await expect(titleInput).toBeVisible();
     await titleInput.fill(PAGE_TITLE);
+
+    await page.getByRole('tab', { name: 'HTML' }).click();
+    await page.locator('.monaco-editor').first().click();
+    await page.keyboard.type(HTML_MARKER_CONTENT);
   });
 
   let pageUrl = '';
+  let postedDraftContent = '';
   await test.step('Save the page and read the published URL from the configuration tab', async () => {
+    const saveRequestPromise = page.waitForRequest(
+      request =>
+        request.url().includes('/api/pages') &&
+        request.method() === 'POST' &&
+        !!request.postDataJSON()?.locales
+    );
     const saveResponsePromise = page.waitForResponse(
       response =>
         response.url().includes('/api/pages') &&
@@ -57,7 +70,16 @@ test('pages contract creates a custom page that renders at its URL', async ({ pa
         response.status() === 200
     );
     await page.getByRole('button', { name: /^Save$/ }).click();
+    const saveRequest = await saveRequestPromise;
     await saveResponsePromise;
+
+    const payload = saveRequest.postDataJSON() as {
+      locales?: Record<string, { draft?: { content?: string } }>;
+    };
+    const firstLocale = Object.values(payload.locales ?? {})[0];
+    postedDraftContent = firstLocale?.draft?.content ?? '';
+    expect(postedDraftContent).toContain(HTML_MARKER_TEXT);
+
     await expect(page.getByText('Saved successfully').first()).toBeVisible();
     await expect(page).toHaveURL(/\/settings\/pages\/edit\/[a-z0-9]+/i);
 
@@ -70,10 +92,10 @@ test('pages contract creates a custom page that renders at its URL', async ({ pa
     expect(pageUrl).toMatch(/\/page\/[a-z0-9]+\/.+/i);
   });
 
-  await test.step('Navigate to the draft URL and verify it loads', async () => {
+  await test.step('Navigate to the draft URL and verify HTML draft marker renders', async () => {
     const draftPageUrl = pageUrl.replace('/page/', '/page-draft/');
     await gotoWithRetry(draftPageUrl, page);
     await expect(page).toHaveURL(new RegExp(`${draftPageUrl}$`));
-    await expect(page.getByRole('link', { name: 'Uwazi' }).first()).toBeVisible();
+    await expect(page.getByRole('heading', { name: HTML_MARKER_TEXT })).toBeVisible();
   });
 });

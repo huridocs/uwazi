@@ -1,11 +1,8 @@
 import React, { type ReactNode } from 'react';
 import type { UseFormRegister, UseFormSetValue } from 'react-hook-form';
-import _ from 'lodash';
 import { CodeEditor } from '#V2/Components/CodeEditor/index.js';
 import { Page } from '#V2/shared/types.js';
 import { HTMLNotification, JSNotification } from './PageEditorComponents.js';
-
-type DebouncedBinder = (handler: () => void) => ReturnType<typeof _.debounce>;
 
 type DraftField =
   | `locales.${string}.draft.content`
@@ -21,25 +18,20 @@ export interface PageEditorCodePanelProps {
   };
   register: UseFormRegister<Page>;
   setValue: UseFormSetValue<Page>;
-  debouncedChangeHandler: DebouncedBinder;
+  onDraftChange: (
+    language: string,
+    draft: { content?: string; script?: string; css?: string }
+  ) => void;
   useLegacyMarkdown: boolean;
   editorLayoutKey: number;
 }
 
 const bindEditorDraftField = (
-  editor: {
-    getModel: () => { onDidChangeContent: (cb: () => void) => void } | null;
-    getValue: () => string;
-  },
-  debouncedChangeHandler: DebouncedBinder,
   setValue: UseFormSetValue<Page>,
-  field: DraftField
+  field: DraftField,
+  value: string
 ) => {
-  editor.getModel()?.onDidChangeContent(
-    debouncedChangeHandler(() => {
-      setValue(field, editor.getValue(), { shouldDirty: true });
-    })
-  );
+  setValue(field, value, { shouldDirty: true });
 };
 
 const PageEditorCodePanelLayout = ({
@@ -60,7 +52,7 @@ const PageEditorHtmlPanel = ({
   localeDraft,
   register,
   setValue,
-  debouncedChangeHandler,
+  onDraftChange,
   useLegacyMarkdown,
   editorLayoutKey,
 }: PageEditorCodePanelProps) => {
@@ -70,12 +62,14 @@ const PageEditorHtmlPanel = ({
     <PageEditorCodePanelLayout
       notification={<HTMLNotification useLegacyMarkdown={useLegacyMarkdown} />}
     >
+      <input type="hidden" {...register(contentField)} />
       <CodeEditor
         key={`html-${activeLocale}-${editorLayoutKey}`}
         language="html"
         intialValue={localeDraft.content ?? ''}
-        onMount={(editor: any) => {
-          bindEditorDraftField(editor, debouncedChangeHandler, setValue, contentField);
+        onChange={(value: string) => {
+          bindEditorDraftField(setValue, contentField, value);
+          onDraftChange(activeLocale, { content: value });
         }}
         fallbackElement={<textarea {...register(contentField)} className="w-full h-full" />}
       />
@@ -88,19 +82,21 @@ const PageEditorJavascriptPanel = ({
   localeDraft,
   register,
   setValue,
-  debouncedChangeHandler,
+  onDraftChange,
   editorLayoutKey,
 }: Omit<PageEditorCodePanelProps, 'useLegacyMarkdown'>) => {
   const scriptField = `locales.${activeLocale}.draft.script` as DraftField;
 
   return (
     <PageEditorCodePanelLayout notification={<JSNotification />}>
+      <input type="hidden" {...register(scriptField)} />
       <CodeEditor
         key={`js-${activeLocale}-${editorLayoutKey}`}
         language="javascript"
         intialValue={localeDraft.script ?? ''}
-        onMount={(editor: any) => {
-          bindEditorDraftField(editor, debouncedChangeHandler, setValue, scriptField);
+        onChange={(value: string) => {
+          bindEditorDraftField(setValue, scriptField, value);
+          onDraftChange(activeLocale, { script: value });
         }}
         fallbackElement={<textarea {...register(scriptField)} className="w-full h-full" />}
       />
@@ -113,19 +109,21 @@ const PageEditorCssPanel = ({
   localeDraft,
   register,
   setValue,
-  debouncedChangeHandler,
+  onDraftChange,
   editorLayoutKey,
 }: Omit<PageEditorCodePanelProps, 'useLegacyMarkdown'>) => {
   const cssField = `locales.${activeLocale}.draft.css` as DraftField;
 
   return (
     <PageEditorCodePanelLayout>
+      <input type="hidden" {...register(cssField)} />
       <CodeEditor
         key={`css-${activeLocale}-${editorLayoutKey}`}
         language="css"
         intialValue={localeDraft.css ?? ''}
-        onMount={(editor: any) => {
-          bindEditorDraftField(editor, debouncedChangeHandler, setValue, cssField);
+        onChange={(value: string) => {
+          bindEditorDraftField(setValue, cssField, value);
+          onDraftChange(activeLocale, { css: value });
         }}
         fallbackElement={<textarea {...register(cssField)} className="w-full h-full" />}
       />

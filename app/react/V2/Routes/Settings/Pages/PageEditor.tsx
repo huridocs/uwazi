@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import {
   Link,
@@ -14,7 +14,6 @@ import {
 import { useForm } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
-import _ from 'lodash';
 import { Translate, t } from '#app/I18N/index.js';
 import * as pagesAPI from '#V2/api/pages/index.js';
 import { Page } from '#V2/shared/types.js';
@@ -73,6 +72,9 @@ const PageEditor = () => {
   const [releaseMessage, setReleaseMessage] = useState('');
   const [restoreSelected, setRestoreSelected] = useState<string[]>([]);
   const [editorLayoutKey, setEditorLayoutKey] = useState(0);
+  const editorDraftValuesRef = useRef<
+    Record<string, { content?: string; script?: string; css?: string }>
+  >({});
   const isNewPage = !page.sharedId;
   const { notify } = useRequestStatus();
 
@@ -120,11 +122,6 @@ const PageEditor = () => {
   useEffect(() => {
     setEditorLayoutKey(k => k + 1);
   }, [page.sharedId]);
-
-  const debouncedChangeHandler = useMemo(
-    () => (handler: () => void) => _.debounce(handler, 500),
-    []
-  );
 
   const {
     register,
@@ -195,8 +192,28 @@ const PageEditor = () => {
     await revalidator.revalidate();
   };
 
+  const mergeEditorDraftValues = (data: Page): Page => {
+    const payload = buildEditorSavePayload(data);
+    const locales = payload.locales ?? {};
+
+    Object.entries(editorDraftValuesRef.current).forEach(([lang, draftValues]) => {
+      if (!locales[lang]) {
+        return;
+      }
+      const currentDraft = locales[lang].draft ?? { content: '', script: '', css: '' };
+      locales[lang].draft = {
+        content: draftValues.content ?? currentDraft.content ?? '',
+        script: draftValues.script ?? currentDraft.script ?? '',
+        css: draftValues.css ?? currentDraft.css ?? '',
+      };
+    });
+
+    payload.locales = locales;
+    return payload;
+  };
+
   const save = async (data: Page) => {
-    const response = await pagesAPI.save(buildEditorSavePayload(data));
+    const response = await pagesAPI.save(mergeEditorDraftValues(data));
     return response;
   };
 
@@ -383,7 +400,12 @@ const PageEditor = () => {
                 localeDraft={localeDraft}
                 register={register}
                 setValue={setValue}
-                debouncedChangeHandler={debouncedChangeHandler}
+                onDraftChange={(language, draft) => {
+                  editorDraftValuesRef.current[language] = {
+                    ...editorDraftValuesRef.current[language],
+                    ...draft,
+                  };
+                }}
                 useLegacyMarkdown={markdownSupport}
                 editorLayoutKey={editorLayoutKey}
               />
@@ -395,7 +417,12 @@ const PageEditor = () => {
                 localeDraft={localeDraft}
                 register={register}
                 setValue={setValue}
-                debouncedChangeHandler={debouncedChangeHandler}
+                onDraftChange={(language, draft) => {
+                  editorDraftValuesRef.current[language] = {
+                    ...editorDraftValuesRef.current[language],
+                    ...draft,
+                  };
+                }}
                 editorLayoutKey={editorLayoutKey}
               />
             </Tabs.Tab>
@@ -406,7 +433,12 @@ const PageEditor = () => {
                 localeDraft={localeDraft}
                 register={register}
                 setValue={setValue}
-                debouncedChangeHandler={debouncedChangeHandler}
+                onDraftChange={(language, draft) => {
+                  editorDraftValuesRef.current[language] = {
+                    ...editorDraftValuesRef.current[language],
+                    ...draft,
+                  };
+                }}
                 editorLayoutKey={editorLayoutKey}
               />
             </Tabs.Tab>
