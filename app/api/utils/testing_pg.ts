@@ -62,6 +62,7 @@ const testingPG = {
     this.pool = pool;
 
     // Register the test pool with the factory so all datasources transparently use it.
+    // eslint-disable-next-line
     PostgresConnectionFactory.usePool(pool);
 
     await pool.query(THESAURUS_SQL);

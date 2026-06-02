@@ -66,7 +66,7 @@ const testConfigs: TestConfig[] = [
     name: 'Mongo',
     postgresThesauri: false,
     pgFixtures: undefined,
-    getThesauri: () => testingEnvironment.db.getAllFrom('dictionaries'),
+    getThesauri: async () => testingEnvironment.db.getAllFrom('dictionaries'),
     thesaurusIdMatcher: expect.any(ObjectId),
   },
   {
@@ -75,7 +75,7 @@ const testConfigs: TestConfig[] = [
     pgFixtures: {
       thesauri: [{ _id: fruitsId, name: 'Fruits', values: fruitsValues }],
     },
-    getThesauri: () => testingEnvironment.pg.getAllFrom('thesauri'),
+    getThesauri: async () => testingEnvironment.pg.getAllFrom('thesauri'),
     thesaurusIdMatcher: expect.any(String),
   },
 ];

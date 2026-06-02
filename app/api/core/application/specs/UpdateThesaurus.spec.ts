@@ -13,7 +13,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoThesauriDataSourceV2 } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDataSourceV2.js';
+import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDataSource.js';
 import { MongoThesaurusMapper } from '#api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper.js';
 import { ThesaurusDBO } from '#api/core/infrastructure/mongodb/thesauri/ThesaurusDBO.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
@@ -43,7 +43,7 @@ const createSut = (props?: CreateSutProps) =>
         props?.dispatcher ?? new DispatcherAdapter(ExecutionContext.jobsDispatcher);
 
       const thesauriDS =
-        props?.thesauriDS ?? new MongoThesauriDataSourceV2(getConnection(), transactionManager);
+        props?.thesauriDS ?? new MongoThesauriDataSource(getConnection(), transactionManager);
       const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
       const translationsDS = DefaultTranslationsDataSource(transactionManager);
       const thesaurusTranslationService =
@@ -419,7 +419,7 @@ describe('UpdateThesaurusUseCase', () => {
   });
 
   it('should revert when thesaurus update fails', async () => {
-    const thesaurus = await new MongoThesauriDataSourceV2(
+    const thesaurus = await new MongoThesauriDataSource(
       getConnection(),
       TransactionManagerFactory.default()
     )
