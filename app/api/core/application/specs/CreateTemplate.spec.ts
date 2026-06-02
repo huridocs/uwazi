@@ -9,7 +9,7 @@ import { LegacyTranslationService } from '#api/core/infrastructure/mongodb/templ
 import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
-import { LegacyPageService } from '#api/core/infrastructure/mongodb/page/LegacyPageService.js';
+import { LegacyPageServiceFactory } from '#api/pages.v2/infrastructure/factories/LegacyPageServiceFactory.js';
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
@@ -24,7 +24,7 @@ const createSut = () =>
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const translationService = new LegacyTranslationService();
     const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
-    const pageService = new LegacyPageService();
+    const pageService = LegacyPageServiceFactory.default({ transactionManager });
 
     const sut = new CreateTemplateUseCase({
       templatesDS,
@@ -82,7 +82,20 @@ const fixtures: DBFixture = {
 
   templates: [factory.template('targetedTemplate', [factory.property('date1', 'date')])],
 
-  pages: [{ sharedId: 'existing_not_enabled', title: 'Page', entityView: false }],
+  pages: [
+    {
+      _id: factory.id('entityViewPageDisabled'),
+      sharedId: 'existing_not_enabled',
+      entityView: false,
+      creationDate: 1,
+      locales: {
+        en: {
+          title: 'Page',
+          draft: { content: '', script: '', css: '' },
+        },
+      },
+    },
+  ],
 };
 
 describe('CreateTemplateUseCase', () => {

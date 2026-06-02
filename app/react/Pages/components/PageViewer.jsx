@@ -11,6 +11,7 @@ import { Icon } from '#UI/Icon/Icon.js';
 import { Translate } from '#app/I18N/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { ErrorBoundary, ErrorFallback } from '#V2/Components/ErrorHandling/index.js';
+import { PageStyleConnected } from './PageStyle.js';
 import { ScriptConnected } from './Script.js';
 
 class PageViewer extends Component {
@@ -83,8 +84,10 @@ class PageViewer extends Component {
       };
     }
     const lists = itemLists.toJS();
+    const parseMarkdown = page.get('markdownSupport') === true;
     const originalText = page.getIn(['metadata', 'content']) || '';
     const scriptRendered = page.getIn(['scriptRendered']);
+    const pageCss = page.getIn(['metadata', 'css']) || '';
     let scriptCode = page.getIn(['metadata', 'script']) || '';
     scriptCode = `var datasets = window.store.getState().page.datasets.toJS();
     ${scriptCode}`;
@@ -107,6 +110,7 @@ class PageViewer extends Component {
               )}
               <main className="page-viewer document-viewer">
                 <div className="main-wrapper">
+                  <PageStyleConnected>{pageCss}</PageStyleConnected>
                   {this.state.customPageError && this.renderErrorWarning()}
                   <Context.Provider value={datasets}>
                     <ErrorBoundary>
@@ -115,6 +119,7 @@ class PageViewer extends Component {
                         markdown={originalText}
                         lists={lists}
                         sanitized={false}
+                        parseMarkdown={parseMarkdown}
                       />
                     </ErrorBoundary>
                   </Context.Provider>

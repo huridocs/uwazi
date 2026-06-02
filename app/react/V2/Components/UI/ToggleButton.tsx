@@ -4,6 +4,7 @@ interface ToggleButtonProps {
   children: string | React.ReactNode;
   onToggle?: () => any;
   disabled?: boolean;
+  checked?: boolean;
   value?: any;
   className?: string;
   size?: 'regular' | 'small';
@@ -12,6 +13,7 @@ interface ToggleButtonProps {
 const ToggleButton = ({
   children,
   onToggle,
+  checked,
   value,
   disabled,
   className = '',
@@ -53,6 +55,7 @@ const ToggleButton = ({
         value={value}
         className="sr-only peer"
         disabled={disabled}
+        checked={checked}
         onChange={onToggle}
         data-testid="toggle"
       />
