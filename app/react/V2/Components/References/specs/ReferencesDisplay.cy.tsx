@@ -8,19 +8,6 @@ import { setupMediaIntercepts } from '../../UI/Files/specs/testHelpers.js';
 describe('References Display', () => {
   const { Basic } = composeStories(stories);
 
-  const pointButtonFilter = (_: number, element: HTMLElement) => {
-    const text = (element.textContent || '').trim();
-    return (
-      Boolean(element.querySelector('.sr-only')) &&
-      Boolean(element.querySelector('span.rounded-full')) &&
-      text !== 'Toggle timeline mode' &&
-      !/^\d+$/.test(text)
-    );
-  };
-
-  const clusterButtonFilter = (_: number, element: HTMLElement) =>
-    /^\d+$/.test((element.textContent || '').trim());
-
   before(() => {
     Cypress.on('uncaught:exception', error => {
       if (error.message.includes('ResizeObserver loop completed with undelivered notifications.')) {
@@ -51,53 +38,40 @@ describe('References Display', () => {
     cy.contains('button', 'Toggle timeline mode').should('be.visible');
   });
 
-  it('shows clusters in full mode', () => {
-    cy.get('button').filter(clusterButtonFilter).should('have.length.greaterThan', 0);
-  });
+  describe('full document mode', () => {
+    it('clicks on a cluster and changes current page', () => {
+      cy.contains('p', 'Current page: 1');
+      cy.contains('button', '25').click();
+      cy.contains('p', 'Current page: 8');
+    });
 
-  it('toggles to page mode and displays the current page label', () => {
-    cy.contains('button', 'Toggle timeline mode').click();
-    cy.contains('span', 'p. 1').should('be.visible');
-  });
-
-  it('clicks on a single point and displays its highlight', () => {
-    cy.get('button').filter(pointButtonFilter).first().click({ force: true });
-
-    cy.get('[data-highlight-key]').should('have.length.greaterThan', 0);
-    cy.contains(/Current page:\s*\d+/).should('be.visible');
-  });
-
-  it('clicks on a cluster and changes current page', () => {
-    let initialPageLabel = '';
-
-    cy.contains('p', /Current page:/)
-      .invoke('text')
-      .then(text => {
-        initialPageLabel = text.trim();
+    it('clicks on a point inside a cluster and shows the reference', () => {
+      cy.contains('button', '25').click();
+      cy.contains('div', '25').within(() => {
+        cy.contains('button', 'Person 1').click();
       });
+      cy.get('div[data-highlight-key="8-8"]').should('exist');
+    });
 
-    cy.get('button').filter(clusterButtonFilter).last().click({ force: true });
-
-    cy.contains('p', /Current page:/).should($page => {
-      expect($page.text().trim()).not.to.equal(initialPageLabel);
+    it('should click on a point and display the reference', () => {
+      cy.get('span').filter(':contains("Person 2")').last().parent().click();
+      cy.contains('p', 'Current page: 20');
+      cy.get('div[data-highlight-key="20-20"]').should('exist');
     });
   });
 
-  it('clicks on a point in an opened cluster and scrolls to highlighted reference', () => {
-    cy.get('button').filter(clusterButtonFilter).first().click({ force: true });
+  describe('page mode', () => {
+    it('toggles to page mode and displays the current page label', () => {
+      cy.contains('button', 'Toggle timeline mode').click();
+      cy.contains('span', 'p. 1').should('be.visible');
+    });
 
-    cy.get('button')
-      .filter((_, element) => {
-        const text = (element.textContent || '').trim();
-        return /^\d+$/.test(text) && element.className.includes('bg-(--bg-muted)');
-      })
-      .first()
-      .parent()
-      .within(() => {
-        cy.get('button').filter(pointButtonFilter).first().click({ force: true });
-      });
-
-    cy.get('[data-highlight-key]').should('have.length.greaterThan', 0);
-    cy.get('.highlight-rectangle').should('exist');
+    it('update as the pages scroll', () => {
+      cy.contains('button', 'Toggle timeline mode').click();
+      cy.contains('span', 'p. 1').should('be.visible');
+      cy.get('div[id="page-8-container"]').scrollIntoView();
+      cy.contains('span', 'p. 8').should('be.visible');
+      cy.contains('button', '17');
+    });
   });
 });
