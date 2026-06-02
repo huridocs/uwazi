@@ -171,6 +171,31 @@ export function uploadDocument(docId, file) {
   return async dispatch => upload(docId, file)(dispatch);
 }
 
+export function uploadV2(file, onProgress) {
+  return async dispatch =>
+    new Promise(resolve => {
+      superagent
+        .post(`${APIURL}entities/create-from-pdf`)
+        .set('Accept', 'application/json')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .field('originalname', file.name)
+        .attach('file', file)
+        .on('progress', data => {
+          onProgress?.(Math.floor(data.percent), file.name);
+        })
+        .on('response', response => {
+          // dispatch({ type: types.UPLOAD_COMPLETE, doc: response._id, file: response.body });
+          dispatch({ type: types.UPLOAD_COMPLETE, doc: response._id, file: response.body });
+          resolve(JSON.parse(response.text));
+        })
+        .end();
+    });
+}
+
+export function uploadDocumentV2(file, onProgress) {
+  return async dispatch => uploadV2(file, onProgress)(dispatch);
+}
+
 export function documentProcessed(sharedId, __reducerKey) {
   return dispatch => {
     EntitiesApi.get(new RequestParams({ sharedId })).then(([doc]) => {

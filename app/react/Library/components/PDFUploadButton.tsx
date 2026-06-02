@@ -1,32 +1,17 @@
-import React, { ChangeEvent, Dispatch } from 'react';
+import React, { ChangeEvent, Dispatch, useState } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { Icon } from '#app/UI/index.js';
-import { EntitySchema } from '#shared/types/entityType.js';
-import { generateID } from '#shared/IDGenerator.js';
 import {
-  uploadDocument as uploadDocumentAction,
   createDocument as createDocumentAction,
+  uploadDocumentV2 as uploadDocumentAction,
 } from '#app/Uploads/actions/uploadsActions.js';
 import { unselectAllDocuments as unselectAllDocumentsAction } from '#app/Library/actions/libraryActions.js';
-import { ClientEntitySchema } from '#app/istore.js';
-import { templatesAtom } from '#V2/atoms/index.js';
-import { ClientTemplateSchema } from '#V2/shared/types.js';
-
-const extractTitle = (file: File) => {
-  const title = file.name
-    .replace(/\.[^/.]+$/, '')
-    .replace(/_/g, ' ')
-    .replace(/-/g, ' ')
-    .replace(/ {2}/g, ' ');
-  return title.charAt(0).toUpperCase() + title.slice(1);
-};
+import { Truncate } from '#V2/Components/UI/Truncate.js';
 
 interface PDFUploadActions {
-  createDocument: (e: EntitySchema) => any;
-  uploadDocument: (s: string, f: File) => void;
+  uploadDocument: (f: File, onProgress: (percent: number, filename: string) => void) => void;
   unselectAllDocuments: () => void;
 }
 
@@ -34,50 +19,69 @@ type PDFUploadButtonProps = PDFUploadActions;
 
 const onChangePDFs =
   ({
-    createDocument,
     uploadDocument,
     unselectAllDocuments,
-    templates,
-  }: PDFUploadActions & { templates: ClientTemplateSchema[] }) =>
+    onProgress,
+    onDone,
+  }: PDFUploadActions & {
+    onProgress: (percent: number, filename: string) => void;
+    onDone: () => void;
+  }) =>
   async (event: ChangeEvent<HTMLInputElement>) => {
     const input = event.target as HTMLInputElement;
     const { files } = input;
 
-    const hasGeneratedId = !!templates.some(
-      template =>
-        template.default &&
-        template.commonProperties?.some(
-          property => property.name === 'title' && property.generatedId
-        )
-    );
-
-    Array.from({ length: files?.length ?? 0 }).forEach(async (_, index) => {
-      const file = files?.[index];
-      if (file) {
-        try {
-          const newEntity = { title: hasGeneratedId ? generateID(3, 4, 4) : extractTitle(file) };
-          const entity = (await createDocument(newEntity)) as ClientEntitySchema;
-
-          if (entity.sharedId) {
-            uploadDocument(entity.sharedId, file);
-          }
-        } catch (_e) {}
-      }
-    });
-    //clear input
     input.value = '';
     input.files = null;
     unselectAllDocuments();
+
+    const uploadSequentially = async (pendingFiles: File[], index = 0): Promise<void> => {
+      const file = pendingFiles[index];
+      if (!file) {
+        return;
+      }
+
+      try {
+        await uploadDocument(file, onProgress);
+      } catch (_e) {}
+
+      await uploadSequentially(pendingFiles, index + 1);
+    };
+
+    if (files) {
+      await uploadSequentially(Array.from(files));
+    }
+
+    onDone();
   };
 
 const PDFUploadButtonComponent = ({
-  createDocument,
   uploadDocument,
   unselectAllDocuments,
 }: PDFUploadButtonProps) => {
-  const templates = useAtomValue(templatesAtom);
+  const [progress, setProgress] = useState(0);
+  const [fileName, setFilename] = useState('');
+  const [uploading, setUploading] = useState(false);
 
-  return (
+  const onProgress = (percent: number, filename: string) => {
+    setProgress(percent);
+    setFilename(filename);
+    setUploading(true);
+  };
+
+  const onDone = () => {
+    setProgress(0);
+    setFilename('');
+    setUploading(false);
+  };
+
+  return uploading ? (
+    <label className="btn btn-default tw-content">
+      <span className="btn-label">
+        <Translate>Uploading</Translate>: <Truncate maxLength={20}>{fileName}</Truncate> {progress}%
+      </span>
+    </label>
+  ) : (
     <label htmlFor="pdf-upload-button" className="btn btn-default">
       <Icon icon="cloud-upload-alt" />
       <span className="btn-label">
@@ -90,10 +94,10 @@ const PDFUploadButtonComponent = ({
         accept="application/pdf"
         multiple
         onChange={onChangePDFs({
-          createDocument,
           uploadDocument,
           unselectAllDocuments,
-          templates,
+          onProgress,
+          onDone,
         })}
       />
     </label>
