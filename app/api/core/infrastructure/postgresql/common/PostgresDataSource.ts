@@ -14,6 +14,8 @@ import { Db, ObjectId } from 'mongodb';
  *     introduced and proper transactional boundaries restored.
  */
 export abstract class PostgresDataSource {
+  protected abstract tableName: string;
+
   protected pool: pg.Pool;
 
   private mongoDb: Db;

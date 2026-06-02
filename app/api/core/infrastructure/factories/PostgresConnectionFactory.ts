@@ -1,55 +1,53 @@
 import pg from 'pg';
 import { config } from '#api/config.js';
+import { tenants } from '#api/tenants/tenantContext.js';
 
-let pool: pg.Pool | undefined;
+const pools = new Map<string, pg.Pool>();
+
+let poolOverride: pg.Pool | undefined;
 
 export class PostgresConnectionFactory {
   static default(): pg.Pool {
-    if (!pool) {
-      pool = new pg.Pool({
-        host: config.postgres.host,
-        port: config.postgres.port,
-        database: config.postgres.database,
-        user: config.postgres.user,
-        password: config.postgres.password,
-      });
+    if (poolOverride) return poolOverride;
+
+    let database = config.postgres.database;
+    try {
+      database = tenants.current().dbName;
+    } catch {
+      // no async context — use config default
     }
-    return pool;
+
+    return this.forDatabase(database);
   }
 
-  /** For tests: create a pool pointing at a specific database. */
   static forDatabase(database: string): pg.Pool {
-    return new pg.Pool({
-      host: config.postgres.host,
-      port: config.postgres.port,
-      database,
-      user: config.postgres.user,
-      password: config.postgres.password,
-    });
-  }
-
-  /** Close the default pool — call in teardown. */
-  static async close(): Promise<void> {
-    if (pool) {
-      await pool.end();
-      pool = undefined;
+    if (!pools.has(database)) {
+      pools.set(
+        database,
+        new pg.Pool({
+          host: config.postgres.host,
+          port: config.postgres.port,
+          database,
+          user: config.postgres.user,
+          password: config.postgres.password,
+        })
+      );
     }
+    return pools.get(database)!;
   }
 
-  /**
-   * Override the default pool with an externally managed one.
-   * Intended for use in tests only — testingPG calls this after creating
-   * the per-test database so that all datasources transparently use it.
-   */
+  static async close(): Promise<void> {
+    for (const pool of pools.values()) {
+      await pool.end();
+    }
+    pools.clear();
+  }
+
   static usePool(override: pg.Pool): void {
-    pool = override;
+    poolOverride = override;
   }
 
-  /**
-   * Clear the pool reference without ending it.
-   * Used by testingPG after it has already ended the pool itself.
-   */
   static clearPool(): void {
-    pool = undefined;
+    poolOverride = undefined;
   }
 }
