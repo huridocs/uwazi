@@ -12,6 +12,8 @@ import { formatReferences } from '#V2/formatters/index.js';
 import { EntityReference } from '#V2/formatters/relationships/types.js';
 import { deleteReference, saveTextReference } from '#V2/api/relationships/index.js';
 import { ConfirmationModal, BlankState } from '#V2/Components/UI/index.js';
+import { referenceToHighlight } from '#V2/Components/PDFViewer/index.js';
+import type { ReferenceWithTemplate } from '#V2/Components/References/types.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { CreateReference } from './CreateReference.js';
 import { Reference } from './Reference.js';
@@ -34,7 +36,7 @@ const ReferencesPanel = ({ entity, mainDocument }: ReferencesPanelProps) => {
   const revalidator = useRevalidator();
   const mainPdfController = useAtomValue(pdfController);
   const templates = useAtomValue(templatesAtom);
-  const references = useMemo<EntityReference[]>(() => {
+  const references = useMemo<ReferenceWithTemplate[]>(() => {
     if (!entity) return [];
     return formatReferences(entity).map(ref => {
       const template = templates.find(t => t._id === ref.targetEntity.templateId);
@@ -63,19 +65,20 @@ const ReferencesPanel = ({ entity, mainDocument }: ReferencesPanelProps) => {
   );
 
   const handleReferenceClick = useCallback(
-    (reference: EntityReference) => {
-      setSelectedReferenceId(reference._id);
+    (reference: ReferenceWithTemplate) => {
+      if (reference._id === selectedReferenceId) {
+        setSelectedReferenceId(null);
+        mainPdfController?.toggleHighlights([]);
+      } else {
+        setSelectedReferenceId(reference._id);
 
-      const selectionRectangles = reference.reference?.selectionRectangles;
-      if (selectionRectangles && selectionRectangles.length > 0) {
-        const rect = selectionRectangles.find(r => r.page);
-        if (rect?.page) {
-          const pageNumber = Number.parseInt(rect.page, 10);
-          mainPdfController?.goToPage(pageNumber);
+        const highlight = referenceToHighlight(reference);
+        if (highlight) {
+          mainPdfController?.toggleHighlights([highlight]);
         }
       }
     },
-    [mainPdfController]
+    [mainPdfController, selectedReferenceId]
   );
 
   const handleView = useCallback((_reference: EntityReference) => {

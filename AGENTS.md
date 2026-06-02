@@ -18,6 +18,7 @@ Backend is in `app/api`
 - **Install:** `yarn install`
 - **Test:** `yarn test app/api`
 - **Run:** `yarn hot`
+- **Translations CSV update:** never edit translation keys manually in CSV files; run `yarn update-translations-csv` instead.
 
 ### Architecture Status
 

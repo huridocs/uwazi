@@ -88,10 +88,10 @@ const Cluster = ({
         <div
           className="absolute bg-(--color-theme-border-default)"
           style={{
-            top: `${BUTTON_SIZE / 2 - CONNECTOR_HEIGHT / 2}px`,
-            left: `${-BUTTON_SIZE / 2}px`,
-            width: `${CONNECTOR_WIDTH}px`,
-            height: `${CONNECTOR_HEIGHT}px`,
+            top: BUTTON_SIZE / 2 - CONNECTOR_HEIGHT / 2,
+            left: -BUTTON_SIZE / 2,
+            width: CONNECTOR_WIDTH,
+            height: CONNECTOR_HEIGHT,
           }}
         />
       )}
@@ -99,46 +99,62 @@ const Cluster = ({
       {clusterIsOpen && (
         <div ref={setPopperElement} className="absolute" style={styles.popper}>
           <div
+            className="absolute w-0.5 bg-(--color-theme-border-default)"
+            style={{
+              top: POINT_SIZE / 2,
+              left: '-2px',
+              height: pointsHeight - 10,
+            }}
+          />
+          <div
             className="relative"
             style={{
-              width: `${POINT_SIZE}px`,
-              height: `${pointsHeight}px`,
-              left: '-8px',
+              width: POINT_SIZE,
+              height: pointsHeight,
+              left: '-20px',
             }}
           >
-            <div
-              className="absolute w-0.5 bg-(--color-theme-border-default)"
-              style={{
-                top: 0,
-                left: `${POINT_SIZE / 2 - 1}px`,
-                height: `${pointsHeight}px`,
-              }}
-            />
             <div
               className="absolute"
               style={{
                 left: 0,
                 top: 0,
-                height: `${pointsHeight}px`,
-                width: `${POINT_SIZE}px`,
+                height: pointsHeight,
+                width: POINT_SIZE,
               }}
             >
               {points?.map((reference, index) => (
-                <Point
-                  key={reference._id || `cluster-point-${index}`}
-                  position={index * POINT_SPACING}
-                  reference={reference}
-                  onClick={onPointClick}
-                  isActive={activePointId === reference._id}
-                />
+                <React.Fragment key={reference._id || `cluster-point-${index}`}>
+                  <div
+                    className="absolute w-full h-0.5 bg-(--color-theme-border-default)"
+                    style={{
+                      left: '10px',
+                      top: index * POINT_SPACING + POINT_SIZE / 2 - 1,
+                    }}
+                  />
+                  <Point
+                    position={index * POINT_SPACING}
+                    reference={reference}
+                    onClick={onPointClick}
+                    isActive={activePointId === reference._id}
+                  />
+                </React.Fragment>
               ))}
               {extraPoints?.length ? (
-                <ShowMoreButton
-                  key="show-more-button"
-                  position={points.length * POINT_SPACING}
-                  references={extraPoints}
-                  onClick={onMoreClick}
-                />
+                <React.Fragment key="show-more-button">
+                  <div
+                    className="absolute w-full h-0.5 bg-(--color-theme-border-default)"
+                    style={{
+                      left: '10px',
+                      top: points.length * POINT_SPACING + POINT_SIZE / 2,
+                    }}
+                  />
+                  <ShowMoreButton
+                    position={points.length * POINT_SPACING}
+                    references={extraPoints}
+                    onClick={onMoreClick}
+                  />
+                </React.Fragment>
               ) : undefined}
             </div>
           </div>

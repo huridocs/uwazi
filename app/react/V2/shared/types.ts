@@ -1,3 +1,4 @@
+import type { PageDraft, PageRelease } from '#shared/types/pageType.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { SettingsLinkSchema } from '#shared/types/settingsType.js';
 import { Property, Template } from '#app/apiResponseTypes.js';
@@ -38,9 +39,14 @@ type ILink = Omit<SettingsLinkSchema, 'sublinks'> & {
   sublinks: [ISublink];
 };
 
+type PageLocaleForm = {
+  title: string;
+  draft?: PageDraft;
+};
+
 type Page = {
   _id?: string;
-  title: string;
+  title?: string;
   language?: string;
   sharedId?: string;
   creationDate?: number;
@@ -48,9 +54,14 @@ type Page = {
     _id?: string;
     content?: string;
     script?: string;
+    css?: string;
   };
-  user?: string;
+  locales?: Record<string, PageLocaleForm>;
+  draft?: PageDraft;
+  releases?: PageRelease[];
+  releasesByLocale?: Record<string, PageRelease[]>;
   entityView?: boolean;
+  markdownSupport?: boolean;
 };
 
 enum ItemTypes {
@@ -84,6 +95,7 @@ export type {
   IDraggable,
   DraggableValue,
   Page,
+  PageLocaleForm,
   TranslationValue,
   ClientTemplateSchema,
   ClientProperty,

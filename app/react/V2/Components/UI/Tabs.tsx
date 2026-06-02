@@ -95,7 +95,6 @@ const Tabs = ({
                       'tabs-segmented-trigger transition-colors',
                       'focus-visible:outline-none focus-visible:ring-2',
                       'focus-visible:ring-(--color-theme-control-border-focus) focus-visible:ring-inset',
-
                       shapeClass,
                       dividerClass,
                       selected ? activeClass : inactiveClass,

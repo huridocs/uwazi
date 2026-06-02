@@ -172,6 +172,7 @@ Collection Name,Collection Name
 Common sources,Common sources
 Completed,Completed
 Completed with errors,Completed with errors
+Config,Config
 Configuration,Configuration
 Configure filters,Configure filters
 Configure templates,Configure templates
@@ -232,6 +233,7 @@ Created user group,Created user group
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
+CSS,CSS
 csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV Import,CSV Import
 CSV import cancelled,CSV import cancelled
@@ -314,6 +316,7 @@ Done scanning,Done scanning
 Download,Download
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Download failed rows,Download failed rows
+Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,Drag and drop file in this window to upload
 Drag row,Drag row
 Drop your files here to upload or,Drop your files here to upload or
@@ -449,6 +452,7 @@ Hide actions,Hide actions
 Hide label,Hide label
 Hide restricted relationships from public,Hide restricted relationships from public
 Hide toolbar,Hide toolbar
+HTML,HTML
 https://yourdomain,https://yourdomain
 hubs,hubs
 Hybrid,Hybrid
@@ -569,6 +573,9 @@ Maps,Maps
 Mark as Reviewed,Mark as Reviewed
 Mark as reviewed,Mark as reviewed
 Markdown,Markdown
+"Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
+          when its content no longer relies on Markdown syntax.","Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
+          when its content no longer relies on Markdown syntax."
 marked and labeled,marked and labeled
 marked for training,marked for training
 Marked for training + all labeled entries,Marked for training + all labeled entries
@@ -643,6 +650,7 @@ No References description,References are parts of this document related with oth
 No relationship types available,No relationship types available
 No Relationships,No Relationships
 No Relationships description,Relationships are bonds between entities.
+No releases yet,No releases yet
 No results found,No results found
 No table of contents,No table of contents
 No Table of contents,No Table of contents
@@ -698,6 +706,7 @@ Other users will be affected by this action!,Other users will be affected by thi
 Others,Others
 Page,Page
 Page not found,Page not found
+Page published successfully.,Page published successfully.
 Pages,Pages
 Paragrap number extraction property (numeric),Paragrap number extraction property (numeric)
 Paragraph,Paragraph
@@ -779,6 +788,7 @@ Public form URL description,"If you have configured a public form and would like
 Public form whitelist description,"If you wish to include Public Forms on your pages, you must white-list the template IDs for which Public Forms are expected."
 Public instance,Public instance
 Publish,Publish
+Publish release,Publish release
 Published,Published
 QR Code,QR Code
 Query,Query
@@ -804,6 +814,7 @@ relationships,relationships
 Relationships,Relationships
 Relationships saved,Relationships saved
 RelationType saved,RelationType saved
+Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Remove
@@ -825,6 +836,8 @@ Reset default translation,Reset default translation
 Reset language,Reset language
 Reset Password,Reset Password
 Reset passwords,Reset passwords
+Restore,Restore
+Restore previous version,Restore previous version
 Restricted,Restricted
 Retryable,Retryable
 Retrying,Retrying
@@ -955,7 +968,6 @@ Supporting files,Supporting files
 Synced template,Synced template
 Synced Template,Synced Template
 Synced templates cannot be deleted.,Synced templates cannot be deleted.
-syntax to create page content,syntax to create page content
 System translations,System translations
 Table,Table
 Table of Contents,Table of Contents
@@ -1034,6 +1046,10 @@ This group is empty,This group is empty
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,This label already exists in this template
 This option will show a notification about the use of cookies in your instance.,This option will show a notification about the use of cookies in your instance.
+This page does not need Markdown,This page does not need Markdown
+"This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
+          lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
+          lists, and other components."
 This property can not be deleted,This property can not be deleted
 This property will appear in the library cards as part of the basic info.,This property will appear in the library cards as part of the basic info.
 This property will be shown using all the width available.,This property will be shown using all the width available.
@@ -1171,9 +1187,9 @@ x more,more
 Year,Year
 Yes,Yes
 You can add one or many items in this form.,You can add one or many items in this form.
-"You can also embed advanced components like maps, charts and entity lists in your page.","You can also embed advanced components like maps, charts and entity lists in your page."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,You can create metadata templates in
+"You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
 "You can start by selecting text in the document and clicking the ""Add to ToC""
                   button.","You can start by selecting text in the document and clicking the ""Add to ToC""
                   button."
