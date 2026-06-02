@@ -1,13 +1,11 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
-import { useEntityFiles } from './EntityFilesContext.js';
-import { FilesTableSection } from './FilesTableSection.js';
-import { FilesToolbar } from './FilesToolbar.js';
-import { EntityFileRow } from './types.js';
+import { useEntityFiles } from '../../Components/Files/EntityFilesContext.js';
+import { FilesTableSection } from '../../Components/Files/FilesTableSection.js';
+import type { EntityFileRow } from '../../Components/Files/types.js';
 
-const FilesMainPanel = () => {
+const FilesTab = () => {
   const {
-    entity,
     primaryRows,
     supportingRows,
     focusedRow,
@@ -27,9 +25,9 @@ const FilesMainPanel = () => {
   };
 
   return (
-    <div className="flex gap-4 h-full min-h-0 flex-col">
+    <div className="flex h-full flex-1 flex-col gap-4 bg-warm p-3" role="tabpanel">
       <FilesTableSection
-        title="Primary document"
+        title="Primary documents"
         rows={primaryRows}
         selectedRowIds={selectedRowIds}
         focusedRowId={focusedRow?.rowId}
@@ -59,16 +57,8 @@ const FilesMainPanel = () => {
           <Translate>No files available</Translate>
         </div>
       ) : null}
-
-      <FilesToolbar
-        totalCount={allRows.length}
-        selectedCount={selectedRowIds.length}
-        onAddFile={() => navigateToFilesSideTab('translations')}
-        onSelectAll={() => setSelectedRowIds(allRows.map(row => row.rowId))}
-        onDeselectAll={() => setSelectedRowIds([])}
-      />
     </div>
   );
 };
 
-export { FilesMainPanel };
+export { FilesTab };

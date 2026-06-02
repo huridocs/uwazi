@@ -1,30 +1,51 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { CheckIcon } from '@heroicons/react/24/outline';
+import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
-import { InputField } from '#V2/Components/Forms/InputField.js';
-import { Select } from '#V2/Components/Forms/Select.js';
 import { Button } from '#V2/Components/UI/index.js';
 import { settingsAtom } from '#V2/atoms/index.js';
-import { useAtomValue } from 'jotai';
 import { EntityFileRow } from './types.js';
 
 const FileDetailsEditor = ({
   row,
   onSave,
-  onCancel,
 }: {
   row: EntityFileRow;
   onSave: (payload: { _id: string; originalname: string; language?: string }) => Promise<void>;
-  onCancel: () => void;
 }) => {
   const settings = useAtomValue(settingsAtom);
   const [originalname, setOriginalname] = useState(row.raw.originalname || row.displayName);
-  const [language, setLanguage] = useState(row.raw.language || '');
 
   const languages = useMemo(
-    () => settings?.languages?.map(item => item.key).filter(Boolean) || [],
+    () => settings?.languages?.map(item => item.key?.toLowerCase()).filter(Boolean) || [],
     [settings?.languages]
   );
+
+  const resolvedLanguage = useMemo(() => {
+    const candidates = [row.raw.language, row.languageKey]
+      .map(value => value?.toLowerCase().trim())
+      .filter(Boolean) as string[];
+
+    for (const candidate of candidates) {
+      const exact = languages.find(key => key === candidate);
+      if (exact) return exact;
+
+      const byPrefix = languages.find(
+        key => key.startsWith(candidate) || candidate.startsWith(key)
+      );
+      if (byPrefix) return byPrefix;
+    }
+
+    return '';
+  }, [languages, row.languageKey, row.raw.language]);
+
+  const [language, setLanguage] = useState(resolvedLanguage);
+
+  useEffect(() => {
+    if (!language && resolvedLanguage) {
+      setLanguage(resolvedLanguage);
+    }
+  }, [language, resolvedLanguage]);
 
   return (
     <div className="rounded-md border border-border-soft bg-warm p-4">
@@ -35,7 +56,7 @@ const FileDetailsEditor = ({
         <Button
           variant="primary"
           size="small"
-          onClick={() =>
+          onClick={async () =>
             row.raw._id
               ? onSave({
                   _id: row.raw._id,
@@ -50,29 +71,61 @@ const FileDetailsEditor = ({
           <Translate>Done</Translate>
         </Button>
       </div>
-      <div className="space-y-3">
-        <InputField
-          id={`file-name-${row.raw._id}`}
-          label="NAME"
-          hideLabel={false}
-          value={originalname}
-          onChange={event => setOriginalname(event.target.value)}
-        />
-        <Select
-          id={`file-language-${row.raw._id}`}
-          label="LANGUAGE"
-          value={language}
-          onChange={event => setLanguage(event.target.value)}
-          options={[
-            { value: '', label: '—' },
-            ...languages.map(key => ({ value: key, label: key.toUpperCase() })),
-          ]}
-        />
-      </div>
-      <div className="mt-3">
-        <Button variant="ghost" onClick={onCancel}>
-          <Translate>Cancel</Translate>
-        </Button>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="col-span-2">
+          <label
+            htmlFor={`file-name-${row.raw._id}`}
+            className="mb-1 block text-xs font-semibold uppercase tracking-wide text-ink-tertiary"
+          >
+            <Translate>Name</Translate>
+          </label>
+          <input
+            id={`file-name-${row.raw._id}`}
+            type="text"
+            value={originalname}
+            onChange={event => setOriginalname(event.target.value)}
+            className="w-full rounded-md border border-border-soft bg-paper px-3 py-2 text-sm text-ink focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]"
+          />
+        </div>
+        <div>
+          <label
+            htmlFor={`file-language-${row.raw._id}`}
+            className="mb-1 block text-xs font-semibold uppercase tracking-wide text-ink-tertiary"
+          >
+            <Translate>Language</Translate>
+          </label>
+          <select
+            id={`file-language-${row.raw._id}`}
+            value={language}
+            onChange={event => setLanguage(event.target.value)}
+            className="rounded-md border border-border-soft bg-paper px-2 py-1 text-sm text-ink focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]"
+          >
+            <option value="">-</option>
+            {languages.map(key => (
+              <option key={key} value={key}>
+                {key.toUpperCase()}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
+            <Translate>Type</Translate>
+          </div>
+          <div className="text-sm text-ink">{row.typeLabel}</div>
+        </div>
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
+            <Translate>Size</Translate>
+          </div>
+          <div className="text-sm text-ink">{row.sizeLabel}</div>
+        </div>
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
+            <Translate>Modified</Translate>
+          </div>
+          <div className="text-sm text-ink">{row.modifiedLabel}</div>
+        </div>
       </div>
     </div>
   );

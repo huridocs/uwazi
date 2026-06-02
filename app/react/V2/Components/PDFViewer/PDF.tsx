@@ -303,7 +303,7 @@ const PDF = ({
 
   return (
     <HandleTextSelection onSelect={handleSelect} onDeselect={onDeselect}>
-      <div className="w-full flex flex-col gap-2 h-full">
+      <div className="w-full flex flex-col gap-2 h-full items-center justify-center bg-warm p-3">
         {loading.isLoading || !pdf ? (
           <div className="w-full flex flex-col gap-2">
             <div className="flex justify-between mb-1">

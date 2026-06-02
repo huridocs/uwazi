@@ -79,7 +79,7 @@ const Table = <T extends TableRow<T>>({
   initialSelection = [],
   manualSorting,
   focusedRowId,
-  focusedRowClassName = 'bg-(--color-theme-surface-muted) hover:bg-(--color-theme-surface-muted)',
+  focusedRowClassName = 'bg-parchment',
   getRowClassName,
 }: TableProps<T>) => {
   const [dataState, setDataState] = useState(data);
@@ -239,29 +239,31 @@ const Table = <T extends TableRow<T>>({
           boxShadow: 'var(--color-theme-card-shadow)',
         }}
       >
-        <div
-          data-testid="table-header"
-          className="flex items-center justify-between gap-4 p-4"
-          style={{
-            backgroundColor: 'var(--color-theme-surface-raised)',
-            color: 'var(--color-theme-text-primary)',
-          }}
-        >
-          {header && <div className="grow">{header}</div>}
-          <div className="flex gap-2">
-            {hasGroups && (
-              <>
-                <Button disabled={!canCollapse} variant="ghost" onClick={collapseAll}>
-                  <Translate>Collapse all</Translate>
-                </Button>
-                <Button disabled={!canExpand} variant="ghost" onClick={expandAll}>
-                  <Translate>Expand all</Translate>
-                </Button>
-              </>
-            )}
-            {actions}
+        {(header || actions || hasGroups) && (
+          <div
+            data-testid="table-header"
+            className="flex items-center justify-between gap-4 p-4"
+            style={{
+              backgroundColor: 'var(--color-theme-surface-raised)',
+              color: 'var(--color-theme-text-primary)',
+            }}
+          >
+            {header && <div className="grow">{header}</div>}
+            <div className="flex gap-2">
+              {hasGroups && (
+                <>
+                  <Button disabled={!canCollapse} variant="ghost" onClick={collapseAll}>
+                    <Translate>Collapse all</Translate>
+                  </Button>
+                  <Button disabled={!canExpand} variant="ghost" onClick={expandAll}>
+                    <Translate>Expand all</Translate>
+                  </Button>
+                </>
+              )}
+              {actions}
+            </div>
           </div>
-        </div>
+        )}
         <table className={`w-full ${className || ''}`}>
           <thead className="bg-(--color-theme-section-header-bg)">
             {table.getHeaderGroups().map(headerGroup => (
@@ -274,9 +276,8 @@ const Table = <T extends TableRow<T>>({
                       key={hdr.id}
                       colSpan={hdr.colSpan}
                       scope="col"
-                      className={`border-b p-4 text-sm uppercase ${customClassName || ''}`}
+                      className={`border-b p-4 text-sm uppercase text-section-header ${customClassName || ''}`}
                       style={{
-                        color: 'var(--color-theme-section-header-fg)',
                         borderColor:
                           'color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)',
                       }}

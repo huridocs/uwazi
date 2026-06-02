@@ -5,28 +5,22 @@ import { FileDetailsView } from './FileDetailsView.js';
 import { FileDetailsEditor } from './FileDetailsEditor.js';
 
 const FileSideTabContent = () => {
-  const { focusedRow, isEditing, setIsEditing, requestDeleteRow, saveRow } = useEntityFiles();
+  const { focusedRow, isEditing, setIsEditing, saveRow } = useEntityFiles();
+
+  if (!focusedRow) {
+    return (
+      <div className="flex h-full items-center justify-center text-ink-muted">
+        <Translate>Select a file</Translate>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full overflow-auto">
-      {focusedRow ? (
-        isEditing ? (
-          <FileDetailsEditor
-            row={focusedRow}
-            onSave={saveRow}
-            onCancel={() => setIsEditing(false)}
-          />
-        ) : (
-          <FileDetailsView
-            row={focusedRow}
-            onEdit={() => setIsEditing(true)}
-            onDelete={() => requestDeleteRow(focusedRow)}
-          />
-        )
+      {isEditing ? (
+        <FileDetailsEditor row={focusedRow} onSave={saveRow} />
       ) : (
-        <div className="flex h-full items-center justify-center text-ink-muted">
-          <Translate>Select a file</Translate>
-        </div>
+        <FileDetailsView row={focusedRow} onEdit={() => setIsEditing(true)} />
       )}
     </div>
   );

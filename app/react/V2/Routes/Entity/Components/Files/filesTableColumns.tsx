@@ -44,6 +44,8 @@ const getRowIcon = (row: EntityFileRow) => {
   return <DocumentIcon className="h-5 w-5 shrink-0" />;
 };
 
+const cellClassName = 'text-xs text-ink-tertiary';
+
 const filesTableColumns = ({
   onFocus,
   onEdit,
@@ -64,29 +66,43 @@ const filesTableColumns = ({
           onClick={() => onFocus(current)}
         >
           {getRowIcon(current)}
-          <span className="truncate text-ink">{current.displayName}</span>
+          <span className={`truncate ${cellClassName}`}>{current.displayName}</span>
           {current.isActiveMain ? <Pill color="gray">Active</Pill> : null}
         </button>
       );
     },
-    meta: { headerClassName: 'w-2/5 !p-2 !text-xs' },
+    meta: {
+      headerClassName: 'w-2/5 !p-2 text-[11px] text-ink-tertiary font-semibold',
+      contentClassName: cellClassName,
+    },
   }),
   columnHelper.accessor('typeLabel', {
     header: 'TYPE',
-    meta: { headerClassName: 'w-0 !p-2 !text-xs' },
+    meta: {
+      headerClassName: 'w-0 !p-2 text-[11px] text-ink-tertiary font-semibold',
+      contentClassName: cellClassName,
+    },
   }),
   columnHelper.accessor('sizeLabel', {
     header: 'SIZE',
-    meta: { headerClassName: 'w-0 !p-2 !text-xs' },
+    meta: {
+      headerClassName: 'w-0 !p-2 text-[11px] text-ink-tertiary font-semibold',
+      contentClassName: cellClassName,
+    },
   }),
   columnHelper.accessor('languageKey', {
     header: 'LANG',
-    cell: ({ getValue }) => <Pill color="gray">{getValue()}</Pill>,
-    meta: { headerClassName: 'w-0 !p-2 !text-xs' },
+    meta: {
+      headerClassName: 'w-0 !p-2 text-[11px] text-ink-tertiary font-semibold',
+      contentClassName: cellClassName,
+    },
   }),
   columnHelper.accessor('modifiedLabel', {
     header: 'MODIFIED',
-    meta: { headerClassName: 'w-0 !p-2 !text-xs' },
+    meta: {
+      headerClassName: 'w-0 !p-2 text-[11px] text-ink-tertiary font-semibold',
+      contentClassName: cellClassName,
+    },
   }),
   columnHelper.display({
     id: 'actions',
@@ -103,7 +119,10 @@ const filesTableColumns = ({
       </div>
     ),
     enableSorting: false,
-    meta: { headerClassName: 'w-0 !p-2 !text-xs', contentClassName: 'text-right' },
+    meta: {
+      headerClassName: 'w-0 !p-2 !text-xs',
+      contentClassName: `text-right ${cellClassName}`,
+    },
   }),
 ];
 

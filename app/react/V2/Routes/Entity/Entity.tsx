@@ -3,50 +3,30 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useLoaderData, useSearchParams } from 'react-router';
 import { Translate } from '#app/I18N/index.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
-import { TabButtons, TabPanels, splitTabConfig } from '#V2/Components/UI/index.js';
 import { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import {
   SearchHintsModal,
   MAIN_TAB_PARAM,
   SIDE_TAB_PARAM,
-  buildMainTabs,
-  buildSecondaryTabsByMain,
   EntityFilesProvider,
   EntityMainPaneHeader,
   FilesDeleteConfirmationModal,
   useEntityFiles,
 } from './Components/index.js';
+import {
+  TabsMainButtons,
+  MainTabsContent,
+  MainTabsFooters,
+  SideTabsPanel,
+  MAIN_TAB,
+  SIDE_TAB,
+  isValidMainTab,
+  isValidSideTab,
+  type MainTabId,
+  type SideTabId,
+} from './Tabs/index.js';
+import { getSideTabButtons } from './Tabs/sideTabSets.js';
 import { LoaderResponse } from './types.js';
-
-const MAIN_TABS = {
-  DOCUMENT: 'document',
-  METADATA: 'metadata',
-  RELATIONSHIPS: 'relationships',
-  FILES: 'files',
-};
-
-const SIDE_TABS = {
-  DOCUMENT: 'document',
-  METADATA: 'metadata',
-  TOC: 'toc',
-  REFERENCES: 'references',
-  RELATIONSHIPS: 'relationships',
-  SEARCH: 'search',
-  FILE: 'file',
-  TRANSLATIONS: 'translations',
-};
-
-type MainTabId = (typeof MAIN_TABS)[keyof typeof MAIN_TABS];
-type SideTabId = (typeof SIDE_TABS)[keyof typeof SIDE_TABS];
-
-const MAIN_TAB_VALUES = new Set(Object.values(MAIN_TABS));
-const SIDE_TAB_VALUES = new Set(Object.values(SIDE_TABS));
-
-const isValidMainTab = (value: string | null): value is MainTabId =>
-  typeof value === 'string' && MAIN_TAB_VALUES.has(value);
-
-const isValidSideTab = (value: string | null): value is SideTabId =>
-  typeof value === 'string' && SIDE_TAB_VALUES.has(value);
 
 type EntityViewProps = {
   entity: EntityType;
@@ -60,35 +40,22 @@ const EntityView = ({ entity, mainDocument, pagePlaintext, searchResults }: Enti
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearchResults = useRef(searchResults);
 
-  const mainTabConfigs = useMemo(
-    () => buildMainTabs({ entity, mainDocument, pagePlaintext, mainTabs: MAIN_TABS }),
-    [entity, mainDocument, pagePlaintext]
-  );
+  const hasMainDocument = Boolean(mainDocument?.filename);
+  const filesCount = (entity.documents?.length || 0) + (entity.attachments?.length || 0);
 
-  const { buttons: mainTabButtons, panels: mainTabPanels } = useMemo(
-    () => splitTabConfig(mainTabConfigs),
-    [mainTabConfigs]
-  );
+  const mainTabIds = useMemo(() => {
+    const ids = new Set<MainTabId>([MAIN_TAB.METADATA, MAIN_TAB.RELATIONSHIPS]);
+    if (hasMainDocument) ids.add(MAIN_TAB.DOCUMENT);
+    if (filesCount > 0) ids.add(MAIN_TAB.FILES);
+    return ids;
+  }, [hasMainDocument, filesCount]);
 
-  const mainTabIds = useMemo(
-    () => new Set(mainTabConfigs.map(tab => tab.id as MainTabId)),
-    [mainTabConfigs]
-  );
-
-  const sideTabsByMain = useMemo(
-    () =>
-      buildSecondaryTabsByMain({
-        entity,
-        mainDocument,
-        pagePlaintext,
-        mainTabs: MAIN_TABS,
-        sideTabs: SIDE_TABS,
-        filesSideTabs: {
-          showTranslationsTab: focusedRow?.category === 'primary',
-          translationsCount: primaryRows.length,
-        },
-      }),
-    [entity, focusedRow?.category, mainDocument, pagePlaintext, primaryRows.length]
+  const filesSideTabs = useMemo(
+    () => ({
+      showTranslationsTab: focusedRow?.category === 'primary',
+      translationsCount: primaryRows.length,
+    }),
+    [focusedRow?.category, primaryRows.length]
   );
 
   const activeMainTab = useMemo<MainTabId>(() => {
@@ -96,46 +63,46 @@ const EntityView = ({ entity, mainDocument, pagePlaintext, searchResults }: Enti
     if (isValidMainTab(mainTab) && mainTabIds.has(mainTab)) {
       return mainTab;
     }
-    if (mainDocument?.filename) {
-      return MAIN_TABS.DOCUMENT;
+    if (hasMainDocument) {
+      return MAIN_TAB.DOCUMENT;
     }
-    return MAIN_TABS.METADATA;
-  }, [searchParams, mainDocument, mainTabIds]);
+    return MAIN_TAB.METADATA;
+  }, [searchParams, hasMainDocument, mainTabIds]);
 
-  const currentSideTabConfigs = useMemo(
-    () => sideTabsByMain[activeMainTab] ?? [],
-    [sideTabsByMain, activeMainTab]
-  );
-
-  const { buttons: sideTabButtons, panels: sideTabPanels } = useMemo(
-    () => splitTabConfig(currentSideTabConfigs),
-    [currentSideTabConfigs]
+  const sideTabButtons = useMemo(
+    () =>
+      getSideTabButtons({
+        activeMainTab,
+        entity,
+        hasMainDocument,
+        filesSideTabs,
+      }),
+    [activeMainTab, entity, hasMainDocument, filesSideTabs]
   );
 
   const activeSideTab = useMemo<SideTabId | undefined>(() => {
-    const availableTabs = currentSideTabConfigs;
     const sideTab = searchParams.get(SIDE_TAB_PARAM);
 
-    if (isValidSideTab(sideTab) && availableTabs.some(tab => tab.id === sideTab)) {
+    if (isValidSideTab(sideTab) && sideTabButtons.some(button => button.id === sideTab)) {
       return sideTab;
     }
 
     if (initialSearchResults.current) {
-      return SIDE_TABS.SEARCH;
+      return SIDE_TAB.SEARCH;
     }
 
-    return availableTabs[0]?.id;
-  }, [searchParams, currentSideTabConfigs]);
+    const firstId = sideTabButtons[0]?.id;
+    return isValidSideTab(firstId ?? null) ? firstId : undefined;
+  }, [searchParams, sideTabButtons]);
 
   useEffect(() => {
     const raw = searchParams.get(SIDE_TAB_PARAM);
     if (!raw || !isValidSideTab(raw)) return;
-    const available = sideTabsByMain[activeMainTab] ?? [];
-    if (available.some(tab => tab.id === raw)) return;
+    if (sideTabButtons.some(button => button.id === raw)) return;
     const next = new URLSearchParams(searchParams.toString());
     next.delete(SIDE_TAB_PARAM);
     setSearchParams(next, { replace: true, preventScrollReset: true });
-  }, [searchParams, activeMainTab, sideTabsByMain, setSearchParams]);
+  }, [searchParams, activeMainTab, sideTabButtons, setSearchParams]);
 
   useEffect(() => {
     const raw = searchParams.get(MAIN_TAB_PARAM);
@@ -152,10 +119,17 @@ const EntityView = ({ entity, mainDocument, pagePlaintext, searchResults }: Enti
 
       const next = new URLSearchParams(searchParams.toString());
       if (selectedMainTab !== activeMainTab) {
-        const nextAvailable = sideTabsByMain[selectedMainTab] ?? [];
+        const nextSideButtons = getSideTabButtons({
+          activeMainTab: selectedMainTab,
+          entity,
+          hasMainDocument,
+          filesSideTabs,
+        });
         const rawS = next.get(SIDE_TAB_PARAM);
         const sStillValid =
-          Boolean(rawS) && isValidSideTab(rawS) && nextAvailable.some(t => t.id === rawS);
+          Boolean(rawS) &&
+          isValidSideTab(rawS) &&
+          nextSideButtons.some(button => button.id === rawS);
         if (!sStillValid) {
           next.delete(SIDE_TAB_PARAM);
         }
@@ -164,7 +138,7 @@ const EntityView = ({ entity, mainDocument, pagePlaintext, searchResults }: Enti
 
       setSearchParams(next, { replace: true, preventScrollReset: true });
     },
-    [activeMainTab, searchParams, setSearchParams, sideTabsByMain]
+    [activeMainTab, searchParams, setSearchParams, entity, hasMainDocument, filesSideTabs]
   );
 
   const onSideTabChange = useCallback(
@@ -186,48 +160,44 @@ const EntityView = ({ entity, mainDocument, pagePlaintext, searchResults }: Enti
       <FilesDeleteConfirmationModal />
       <PaneLayout defaultRatios={[0.62, 0.38]} className="bg-parchment text-ink">
         <PaneLayout.Pane>
-          <div className="flex min-h-0 min-w-0 w-full flex-col h-full">
-            <div className="flex flex-col gap-3 px-3 py-2.5 border-b border-border-soft">
-              <TabButtons
-                groupId="entity-main"
-                buttons={mainTabButtons}
-                activeTabId={activeMainTab}
-                onTabChange={onMainTabChange}
-                tabListAriaLabel="Entity primary"
-              />
-              <EntityMainPaneHeader
-                entity={entity}
-                showDocumentViewMode={
-                  activeMainTab === MAIN_TABS.DOCUMENT && Boolean(mainDocument?.filename)
-                }
-              />
+          <div className="flex h-full min-h-0 w-full min-w-0 flex-col">
+            <div className="shrink-0 border-b border-border-soft px-3 py-2.5">
+              <div className="flex flex-col gap-3">
+                <TabsMainButtons
+                  entity={entity}
+                  mainDocument={mainDocument}
+                  activeTabId={activeMainTab}
+                  onTabChange={onMainTabChange}
+                />
+                <EntityMainPaneHeader
+                  entity={entity}
+                  showDocumentViewMode={activeMainTab === MAIN_TAB.DOCUMENT && hasMainDocument}
+                />
+              </div>
             </div>
-            <div className="min-h-0 flex-1 overflow-y-auto px-3 py-2 grow">
-              <TabPanels
-                groupId="entity-main"
-                panels={mainTabPanels}
-                unmountInactive={false}
-                className=" overflow-y-auto"
-              />
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+              <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+                <MainTabsContent
+                  activeTabId={activeMainTab}
+                  entity={entity}
+                  mainDocument={mainDocument}
+                  pagePlaintext={pagePlaintext}
+                />
+              </div>
+              <MainTabsFooters activeTabId={activeMainTab} mainDocument={mainDocument} />
             </div>
           </div>
         </PaneLayout.Pane>
         <PaneLayout.Pane key={activeMainTab}>
-          <div className="flex px-3 py-2.5 gap-3 min-h-0 min-w-0 w-full flex-col h-full border-l border-border-soft">
-            <TabButtons
-              groupId="entity-side"
-              buttons={sideTabButtons}
-              activeTabId={activeSideTab}
-              onTabChange={onSideTabChange}
-              tabListAriaLabel="Side panel tabs"
-            />
-            <TabPanels
-              groupId="entity-side"
-              panels={sideTabPanels}
-              unmountInactive={false}
-              className="grow overflow-y-auto"
-            />
-          </div>
+          <SideTabsPanel
+            activeMainTab={activeMainTab}
+            activeSideTab={activeSideTab}
+            onSideTabChange={onSideTabChange}
+            entity={entity}
+            mainDocument={mainDocument}
+            pagePlaintext={pagePlaintext}
+            filesSideTabs={filesSideTabs}
+          />
         </PaneLayout.Pane>
       </PaneLayout>
     </>

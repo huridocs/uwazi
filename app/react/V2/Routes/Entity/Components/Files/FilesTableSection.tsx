@@ -25,12 +25,12 @@ const FilesTableSection = ({
   onEditRow,
   onDeleteRow,
 }: FilesTableSectionProps) => (
-  <section className="space-y-2">
+  <section className="flex flex-col gap-2">
     <h3 className="px-1 text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
       <Translate>{title}</Translate>
     </h3>
     <Table
-      className="text-xs"
+      className="text-xs text-ink-tertiary"
       columns={filesTableColumns({
         onFocus: onFocusRow,
         onEdit: onEditRow,
