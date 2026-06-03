@@ -5,6 +5,7 @@ import { uploadMiddleware } from '#api/files/index.js';
 import { CreateThesaurusController } from '#api/core/infrastructure/express/thesaurus/CreateThesaurusController.js';
 import { UpdateThesaurusController } from '#api/core/infrastructure/express/thesaurus/UpdateThesaurusController.js';
 import { GetThesauriController } from '#api/core/infrastructure/express/thesaurus/GetThesauriController.js';
+import { DeleteThesaurusController } from '#api/core/infrastructure/express/thesaurus/DeleteThesaurusController.js';
 import { tenants } from '#api/tenants/index.js';
 import { CSVLoader } from '#api/csv/index.js';
 import { validation } from '../utils/index.js';
@@ -76,56 +77,9 @@ const routes = (app: Application) => {
     }
   );
 
-  app.get(
-    '/api/dictionaries',
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        query: {
-          type: 'object',
-          properties: {
-            _id: {
-              type: 'string',
-            },
-          },
-        },
-      },
-      required: ['query'],
-    }),
-    GetThesauriController.createHandler()
-  );
+  app.get('/api/dictionaries', GetThesauriController.createHandler());
 
-  app.delete(
-    '/api/thesauris',
-    needsAuthorization(),
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        query: {
-          type: 'object',
-          properties: {
-            _id: {
-              type: 'string',
-            },
-            _rev: {
-              type: 'string',
-            },
-          },
-          required: ['_id'],
-        },
-      },
-      required: ['query'],
-    }),
-    (req: Request<{}, {}, {}, { _id: string }>, res: Response, next: NextFunction) => {
-      thesauri
-        .delete(req.query._id)
-        .then(response => {
-          res.json(response);
-          req.sockets.emitToCurrentTenant('thesauriDelete', response);
-        })
-        .catch(next);
-    }
-  );
+  app.delete('/api/thesauris', needsAuthorization(), DeleteThesaurusController.createHandler());
 };
 
 export default routes;

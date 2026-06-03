@@ -57,6 +57,10 @@ export class PostgresThesauriDataSource extends PostgresDataSource implements Th
     ]);
   }
 
+  async delete(id: string): Promise<void> {
+    await this.execute(`DELETE FROM ${this.tableName} WHERE "_id" = $1`, [id]);
+  }
+
   async exists(thesaurus: Thesaurus): Promise<ResultType<false, Error>> {
     const result = await this.query<{ count: string }>(
       `SELECT COUNT(*)::text AS count FROM ${this.tableName} WHERE "name" = $1 AND "_id" != $2`,

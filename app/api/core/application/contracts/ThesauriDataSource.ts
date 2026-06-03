@@ -8,4 +8,5 @@ export interface ThesauriDataSource {
   existsById(id: string): Promise<boolean>;
   create(thesaurus: Thesaurus): Promise<void>;
   update(thesaurus: Thesaurus): Promise<void>;
+  delete(id: string): Promise<void>;
 }

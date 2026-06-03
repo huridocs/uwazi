@@ -53,6 +53,10 @@ class MongoThesauriDataSource extends MongoDataSource<ThesaurusDBO> implements T
     return count > 0;
   }
 
+  async delete(id: string): Promise<void> {
+    await this.getCollection().deleteOne({ _id: ObjectId.createFromHexString(id) });
+  }
+
   async exists(thesaurus: Thesaurus): Promise<ResultType<false, Error>> {
     const count = await this.getCollection().countDocuments(
       { name: thesaurus.name, _id: { $ne: new ObjectId(thesaurus.id) } },

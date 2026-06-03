@@ -11,6 +11,7 @@ import { routes } from '../routes.js';
 import thesauri from '../thesauri.js';
 import { fixtures, dictionaryId } from './fixtures.js';
 import { UserRole } from '#shared/types/userSchema.js';
+import { DeleteThesaurusUseCaseFactory } from '#api/core/infrastructure/factories/DeleteThesaurusUseCaseFactory.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -18,6 +19,12 @@ jest.mock(
     next();
   }
 );
+
+jest.mock('../../core/infrastructure/factories/DeleteThesaurusUseCaseFactory.ts', () => ({
+  DeleteThesaurusUseCaseFactory: {
+    default: jest.fn(),
+  },
+}));
 
 describe('thesauri routes', () => {
   const user = {
@@ -78,9 +85,14 @@ describe('thesauri routes', () => {
 
   describe('DELETE', () => {
     it('should delete a thesauri', async () => {
-      jest.spyOn(thesauri, 'delete').mockResolvedValue(undefined as any);
-      await request(app).delete('/api/thesauris').query({ _id: 'abc', _rev: '123' }).expect(200);
-      expect(thesauri.delete).toHaveBeenCalledWith('abc');
+      const mockDeleteExecute = jest.fn().mockResolvedValue(undefined);
+      (DeleteThesaurusUseCaseFactory.default as jest.Mock).mockReturnValue({
+        execute: mockDeleteExecute,
+      });
+
+      await request(app).delete('/api/thesauris').query({ _id: 'abc' }).expect(200);
+
+      expect(mockDeleteExecute).toHaveBeenCalledWith({ thesaurusId: 'abc' });
     });
   });
 
