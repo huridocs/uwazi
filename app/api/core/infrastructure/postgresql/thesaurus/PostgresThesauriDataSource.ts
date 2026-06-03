@@ -40,11 +40,11 @@ export class PostgresThesauriDataSource extends PostgresDataSource implements Th
   }
 
   async existsById(id: string): Promise<boolean> {
-    const result = await this.query<{ exists: string }>(
+    const result = await this.query<{ exists: boolean }>(
       `SELECT EXISTS(SELECT 1 FROM ${this.tableName} WHERE "_id" = $1) AS exists`,
       [id]
     );
-    return result.rows[0].exists === 'true';
+    return result.rows[0].exists;
   }
 
   async update(thesaurus: Thesaurus): Promise<void> {

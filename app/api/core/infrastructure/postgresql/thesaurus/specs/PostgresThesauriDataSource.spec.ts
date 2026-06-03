@@ -133,6 +133,24 @@ describe('PostgresThesauriDataSource', () => {
     });
   });
 
+  describe('existsById()', () => {
+    it('should return true for an existing thesaurus', async () => {
+      const ds = makeDS();
+      const thesaurus = makeThesaurus({ name: 'Colors' });
+      await ds.create(thesaurus);
+
+      const result = await ds.existsById(thesaurus.id);
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false for a non-existent id', async () => {
+      const ds = makeDS();
+      const result = await ds.existsById(new ObjectId().toHexString());
+      expect(result).toBe(false);
+    });
+  });
+
   describe('exists()', () => {
     it('should return ThesaurusNameAlreadyExistsError when name is taken by another record', async () => {
       const ds = makeDS();

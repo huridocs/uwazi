@@ -27,6 +27,9 @@ const adminClient = () =>
 
 let pool: pg.Pool | null = null;
 
+/** Unique token so PG pool overrides are scoped to this test suite. */
+const testToken = Symbol('testing-pg');
+
 export type PGFixture = Record<string, Record<string, unknown>[]>;
 
 const testingPG = {
@@ -62,8 +65,7 @@ const testingPG = {
     this.pool = pool;
 
     // Register the test pool with the factory so all datasources transparently use it.
-    // eslint-disable-next-line
-    PostgresConnectionFactory.usePool(pool);
+    PostgresConnectionFactory.registerPool(testToken, pool);
 
     await pool.query(THESAURUS_SQL);
 
@@ -116,7 +118,7 @@ const testingPG = {
       pool = null;
       this.pool = null;
       // Clear the factory's reference so it doesn't hold a dead pool.
-      PostgresConnectionFactory.clearPool();
+      PostgresConnectionFactory.unregisterPool(testToken);
     }
 
     if (this.dbName) {
