@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+import type { Application, NextFunction, Request, Response } from 'express';
 import { uploadMiddleware } from '#api/files/index.js';
 
 import { CreateThesaurusController } from '#api/core/infrastructure/express/thesaurus/CreateThesaurusController.js';
@@ -9,14 +10,14 @@ import { validation } from '../utils/index.js';
 import needsAuthorization from '../auth/authMiddleware.js';
 import thesauri from './thesauri.js';
 
-const routes = app => {
+const routes = (app: Application) => {
   app.post(
     '/api/thesauris',
     needsAuthorization(),
 
     uploadMiddleware(),
 
-    async (req, res, next) => {
+    async (req: Request, res: Response, next: NextFunction) => {
       const dto = req.file ? JSON.parse(req.body?.thesauri) : req.body;
 
       if (!dto?._id) {
@@ -62,7 +63,7 @@ const routes = app => {
       },
       required: ['query'],
     }),
-    (req, res, next) => {
+    (req: Request<{}, {}, {}, { _id: string }>, res: Response, next: NextFunction) => {
       let id;
       if (req.query) {
         id = req.query._id;
@@ -73,15 +74,6 @@ const routes = app => {
         .catch(next);
     }
   );
-
-  app.get('/api/thesauri', (req, res, next) => {
-    const input = req?.query?._id ? { _id: req.query._id } : undefined;
-
-    thesauri
-      .find(input)
-      .then(output => res.json(output))
-      .catch(next);
-  });
 
   app.get(
     '/api/dictionaries',
@@ -99,7 +91,7 @@ const routes = app => {
       },
       required: ['query'],
     }),
-    (req, res, next) => {
+    (req: Request<{}, {}, {}, { _id: string }>, res: Response, next: NextFunction) => {
       let id;
       if (req.query && req.query._id) {
         id = { _id: req.query._id };
@@ -132,9 +124,9 @@ const routes = app => {
       },
       required: ['query'],
     }),
-    (req, res, next) => {
+    (req: Request<{}, {}, {}, { _id: string }>, res: Response, next: NextFunction) => {
       thesauri
-        .delete(req.query._id, req.query._rev)
+        .delete(req.query._id)
         .then(response => {
           res.json(response);
           req.sockets.emitToCurrentTenant('thesauriDelete', response);
