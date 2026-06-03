@@ -22,9 +22,9 @@ describe('PDFUploadButton', () => {
     );
 
   beforeEach(() => {
-    spyOn(uploadActions, 'uploadAndCreate').and.callFake((file: File, onProgress: any) => {
-      if (onProgress) {
-        onProgress(10, file.name);
+    spyOn(uploadActions, 'uploadAndCreate').and.callFake((batch: File[], onProgress: any) => {
+      if (onProgress && batch[0]) {
+        onProgress(10, batch[0].name);
       }
       return async () => Promise.resolve({ sharedId: 'abc1' });
     });
@@ -40,14 +40,17 @@ describe('PDFUploadButton', () => {
       });
     });
 
-    expect(uploadActions.uploadAndCreate).toHaveBeenCalledTimes(2);
+    expect(uploadActions.uploadAndCreate).toHaveBeenCalledTimes(1);
 
-    expect(uploadActions.uploadAndCreate).toHaveBeenCalledWith(files[0], expect.any(Function));
-    expect(uploadActions.uploadAndCreate).toHaveBeenCalledWith(files[1], expect.any(Function));
+    expect(uploadActions.uploadAndCreate).toHaveBeenCalledWith(
+      files,
+      expect.any(Function),
+      expect.any(Function)
+    );
 
     const { calls } = (uploadActions.uploadAndCreate as jest.Mock).mock;
-    expect(calls[0][0].name).toBe(files[0].name);
-    expect(calls[1][0].name).toBe(files[1].name);
+    expect(calls[0][0][0].name).toBe(files[0].name);
+    expect(calls[0][0][1].name).toBe(files[1].name);
 
     const inputEl = fileInput as HTMLInputElement;
     expect(inputEl.value).toBe('');
