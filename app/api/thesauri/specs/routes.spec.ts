@@ -9,7 +9,7 @@ import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { routes } from '../routes.js';
 import thesauri from '../thesauri.js';
-import { fixtures } from './fixtures.js';
+import { fixtures, dictionaryId } from './fixtures.js';
 import { UserRole } from '#shared/types/userSchema.js';
 
 jest.mock(
@@ -59,18 +59,18 @@ describe('thesauri routes', () => {
 
     describe('/api/dictionaries', () => {
       it('should return all dictionaries by default', async () => {
-        jest.spyOn(thesauri, 'dictionaries').mockResolvedValue('response' as any);
         const res = await request(app).get('/api/dictionaries');
-        expect(thesauri.dictionaries).toHaveBeenCalled();
-        expect(res.body).toEqual({ rows: 'response' });
+        expect(res.body.rows).toHaveLength(4);
+        expect(res.body.rows.map((r: any) => r.name)).toEqual(
+          expect.arrayContaining(['dictionary', 'dictionary 2', 'Top 2 scify books', 'Top movies'])
+        );
       });
 
       describe('when passing id', () => {
         it('should get matching id', async () => {
-          jest.spyOn(thesauri, 'dictionaries').mockResolvedValue('response' as any);
-          const res = await request(app).get('/api/dictionaries').query({ _id: 'id' });
-          expect(thesauri.dictionaries).toHaveBeenCalledWith({ _id: 'id' });
-          expect(res.body).toEqual({ rows: 'response' });
+          const res = await request(app).get('/api/dictionaries').query({ _id: dictionaryId });
+          expect(res.body.rows).toHaveLength(1);
+          expect(res.body.rows[0].name).toBe('dictionary 2');
         });
       });
     });
