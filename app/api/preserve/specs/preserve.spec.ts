@@ -28,7 +28,7 @@ describe('Preserve', () => {
   describe('setup()', () => {
     describe('pass', () => {
       it('should create a thesauri, template and a config when no config is found.', async () => {
-        await Preserve.setup('en', user);
+        await testingEnvironment.runWithContext(async () => Preserve.setup('en', user));
         const savedSettings: any = await settings.get({});
         const configs: PreserveConfig['config'] = savedSettings.features.preserve.config;
         const config = configs.find(conf => conf.user!.toString() === user._id.toString());
@@ -54,7 +54,7 @@ describe('Preserve', () => {
 
       it('should not create template if another configs exists in the DB', async () => {
         const savedTemplates = await templates.get({});
-        await Preserve.setup('en', { _id: userId2 });
+        await testingEnvironment.runWithContext(async () => Preserve.setup('en', { _id: userId2 }));
         const templatesAfterSetup = await templates.get({});
         expect(savedTemplates.length).toEqual(templatesAfterSetup.length);
         const savedSettings: any = await settings.get({});

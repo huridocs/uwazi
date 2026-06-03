@@ -183,7 +183,9 @@ describe('validateEntity', () => {
               },
             ],
           };
-          const templateWithRequiredProps = await templates.save(template, 'en');
+          const templateWithRequiredProps = await testingEnvironment.runWithContext(async () =>
+            templates.save(template, 'en')
+          );
 
           let entity = createEntity({ template: templateWithRequiredProps._id });
           await expectError(entity, customErrorMessages.required, ".metadata['name']");

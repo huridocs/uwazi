@@ -38,6 +38,7 @@ export class PostgresConnectionFactory {
 
   static async close(): Promise<void> {
     for (const pool of pools.values()) {
+      //eslint-disable-next-line no-await-in-loop
       await pool.end();
     }
     pools.clear();

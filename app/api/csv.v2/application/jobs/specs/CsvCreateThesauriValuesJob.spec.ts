@@ -68,9 +68,12 @@ describe('CsvCreateThesauriValuesJob (integration)', () => {
       dispatchMany: jest.fn().mockResolvedValue(undefined),
       deleteByParams: jest.fn().mockResolvedValue(undefined),
     }) as jest.Mocked<JobsDispatcher>;
-    const { useCase, csvImportsDS, thesauriValuesDS } = CsvCreateThesauriValuesJobFactory.build({
-      jobsDispatcher,
-    });
+    const { useCase, csvImportsDS, thesauriValuesDS } = await testingEnvironment.runWithContext(
+      () =>
+        CsvCreateThesauriValuesJobFactory.build({
+          jobsDispatcher,
+        })
+    );
     const importId = fixturesFactory.idString('create-thesauri-import');
     createdImportIds.push(importId);
     const userId = fixturesFactory.idString('create-thesauri-user');
@@ -174,9 +177,12 @@ describe('CsvCreateThesauriValuesJob (integration)', () => {
       dispatchMany: jest.fn().mockResolvedValue(undefined),
       deleteByParams: jest.fn().mockResolvedValue(undefined),
     }) as jest.Mocked<JobsDispatcher>;
-    const { useCase, csvImportsDS, thesauriValuesDS } = CsvCreateThesauriValuesJobFactory.build({
-      jobsDispatcher,
-    });
+    const { useCase, csvImportsDS, thesauriValuesDS } = await testingEnvironment.runWithContext(
+      () =>
+        CsvCreateThesauriValuesJobFactory.build({
+          jobsDispatcher,
+        })
+    );
     const importId = fixturesFactory.idString('create-thesauri-default-only-import');
     createdImportIds.push(importId);
     const userId = fixturesFactory.idString('create-thesauri-default-only-user');
