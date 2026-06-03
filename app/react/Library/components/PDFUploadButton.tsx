@@ -28,21 +28,12 @@ const onChangePDFs =
     input.value = '';
     input.files = null;
 
-    const uploadSequentially = async (pendingFiles: File[], index = 0): Promise<void> => {
-      const file = pendingFiles[index];
-      if (!file) {
-        return;
-      }
-
-      try {
-        await uploadDocument(file, onProgress);
-      } catch (_e) {}
-
-      await uploadSequentially(pendingFiles, index + 1);
-    };
-
     if (files) {
-      await uploadSequentially(Array.from(files));
+      for (const file of Array.from(files)) {
+        try {
+          uploadDocument(file, onProgress);
+        } catch (_e) {}
+      }
     }
 
     onDone();

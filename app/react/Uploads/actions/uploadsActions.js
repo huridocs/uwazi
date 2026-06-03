@@ -173,7 +173,7 @@ export function uploadDocument(docId, file) {
 
 export function createFromPDF(file, onProgress) {
   return async dispatch =>
-    new Promise(resolve => {
+    new Promise((resolve, reject) => {
       superagent
         .post(`${APIURL}entities/create-from-pdf`)
         .set('Accept', 'application/json')
@@ -183,10 +183,18 @@ export function createFromPDF(file, onProgress) {
         .on('progress', data => {
           onProgress?.(Math.floor(data.percent), file.name);
         })
-        .on('response', response => {
+        .end((err, response) => {
+          if (err || !response) {
+            reject(err);
+            return;
+          }
+          if (response.status !== 201) {
+            reject(response);
+            return;
+          }
           dispatch({
             type: libraryTypes.ELEMENT_CREATED,
-            doc: response.body.data,
+            doc: response.body?.data,
             __reducerKey: 'library',
           });
           resolve(response.status);
