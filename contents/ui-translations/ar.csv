@@ -169,6 +169,7 @@ Collection Name,Collection Name
 Common sources,Common sources
 Completed,Completed
 Completed with errors,Completed with errors
+Config,Config
 Configuration,Configuration
 Configure filters,ضبط قوائم تصفيه البيانات
 Configure templates,Configure templates
@@ -229,6 +230,7 @@ Created user group,Created user group
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
+CSS,CSS
 csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV Import,CSV Import
 CSV import cancelled,CSV import cancelled
@@ -311,6 +313,7 @@ Done scanning,Done scanning
 Download,تحميل
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Download failed rows,Download failed rows
+Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,اسحب الملف وأفلته في هذه النافذة للتحميل
 Drag row,Drag row
 Drop your files here to upload or,اسحب ملفاتك هنا للتحميل أو
@@ -446,6 +449,7 @@ Hide actions,Hide actions
 Hide label,إخفاء التسمية
 Hide restricted relationships from public,Hide restricted relationships from public
 Hide toolbar,Hide toolbar
+HTML,HTML
 https://yourdomain,https://yourdomain
 hubs,محاور
 Hybrid,هجين
@@ -566,6 +570,9 @@ Maps,خرائط
 Mark as Reviewed,ضع علامة للإشارة إلى خضوعه للمراجعة
 Mark as reviewed,Mark as reviewed
 Markdown,ماركداون
+"Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
+          when its content no longer relies on Markdown syntax.","Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
+          when its content no longer relies on Markdown syntax."
 marked and labeled,marked and labeled
 marked for training,marked for training
 Marked for training + all labeled entries,Marked for training + all labeled entries
@@ -640,6 +647,7 @@ No References description,المراجع هي اجزاء من الوثيقة ا�
 No relationship types available,No relationship types available
 No Relationships,لا توجد علاقات
 No Relationships description,العلاقات هي الروابط بين الكيانات
+No releases yet,No releases yet
 No results found,No results found
 No table of contents,لا يوجد جدول المحتويات
 No Table of contents,No Table of contents
@@ -695,6 +703,7 @@ Other users will be affected by this action!,Other users will be affected by thi
 Others,Others
 Page,صفحة
 Page not found,لم يتم العثور على الصفحة
+Page published successfully.,Page published successfully.
 Pages,الصفحات
 Paragrap number extraction property (numeric),Paragrap number extraction property (numeric)
 Paragraph,Paragraph
@@ -776,6 +785,7 @@ Public form URL description,"If you have configured a public form and would like
 Public form whitelist description,"If you wish to include Public Forms on your pages, you must white-list the template IDs for which Public Forms are expected."
 Public instance,Public instance
 Publish,انشر
+Publish release,Publish release
 Published,منشور
 QR Code,QR Code
 Query,استعلام
@@ -801,6 +811,7 @@ relationships,العلاقات
 Relationships,العلاقات
 Relationships saved,Relationships saved
 RelationType saved,تم حفظ نوع العلاقة
+Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,إزالة
@@ -822,6 +833,8 @@ Reset default translation,Reset default translation
 Reset language,Reset language
 Reset Password,إعادة تعيين كلمة المرور
 Reset passwords,Reset passwords
+Restore,Restore
+Restore previous version,Restore previous version
 Restricted,مُقَيَّد
 Retryable,Retryable
 Retrying,Retrying
@@ -952,7 +965,6 @@ Supporting files,ملفات الدعم
 Synced template,Synced template
 Synced Template,Synced Template
 Synced templates cannot be deleted.,Synced templates cannot be deleted.
-syntax to create page content,الصياغة لإنشاء محتوى الصفحة
 System translations,System translations
 Table,جدول
 Table of Contents,جدول المحتويات
@@ -1031,6 +1043,10 @@ This group is empty,This group is empty
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,This label already exists in this template
 This option will show a notification about the use of cookies in your instance.,سيظهر هذا الخيار إشعاراً حول استخدام ملفات تعريف الارتباط في قاعدة بياناتك
+This page does not need Markdown,This page does not need Markdown
+"This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
+          lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
+          lists, and other components."
 This property can not be deleted,This property can not be deleted
 This property will appear in the library cards as part of the basic info.,ستظهر هذه الخاصية في بطاقات المكتبة كجزء من المعلومات الأساسية.
 This property will be shown using all the width available.,ستظهر هذه الخاصية باستخدام كل العرض المتاح
@@ -1168,9 +1184,9 @@ x more,X أكثر
 Year,سنة
 Yes,Yes
 You can add one or many items in this form.,You can add one or many items in this form.
-"You can also embed advanced components like maps, charts and entity lists in your page.",يمكنك ادخال خاصيات كالخرائط، الرسوم البيانية، أو قوائم للكيانات في صفحتك
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,يمكنك إنشاء قوالب البيانات الوصفية في
+"You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
 "You can start by selecting text in the document and clicking the ""Add to ToC""
                   button.","You can start by selecting text in the document and clicking the ""Add to ToC""
                   button."

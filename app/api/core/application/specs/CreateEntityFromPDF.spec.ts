@@ -11,7 +11,7 @@ import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { CreateEntityFromPDFUseCaseInput } from '../CreateEntityFromPDF.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
-import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { CannotCreateEntityFromNonPDFError } from '#api/core/domain/entity/errors.js';
 
 const factory = getFixturesFactory();
@@ -159,7 +159,7 @@ describe('CreateEntityFromPDFUseCase', () => {
       ?.find({ entity: entity.sharedId })
       .toArray();
 
-    expect(fileStorage.storeFile).toHaveBeenCalledWith(expect.any(ProcessingPDF));
+    expect(fileStorage.storeFile).toHaveBeenCalledWith(expect.any(PDFDocument));
 
     expect(files).toEqual([
       {

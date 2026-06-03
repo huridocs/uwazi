@@ -1,6 +1,6 @@
 import { Entity } from '#api/core/domain/entity/Entity.js';
 import { CannotCreateEntityFromNonPDFError } from '../domain/entity/errors.js';
-import { ProcessingPDF } from '../domain/files/ProcessingPDF.js';
+import { PDFDocument } from '../domain/files/PDFDocument.js';
 import { InputFile } from '../infrastructure/files/InputFile.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { EntitiesService } from './EntitiesService.js';
@@ -28,7 +28,7 @@ class CreateEntityFromPDFUseCase extends AbstractUseCase<Input, Output, Deps> {
     });
 
     const document = input.inputFile.toEntityFile(entity.sharedId, this.idGenerator.generate());
-    if (!(document instanceof ProcessingPDF)) {
+    if (!(document instanceof PDFDocument)) {
       throw new CannotCreateEntityFromNonPDFError();
     }
 

@@ -11,6 +11,7 @@ type CodeEditorProps = {
   language: 'html' | 'javascript' | 'css';
   intialValue?: string;
   onMount?: (editor: CodeEditorInstance) => void;
+  onChange?: (value: string) => void;
   fallbackElement?: React.ReactElement;
 };
 
@@ -88,13 +89,19 @@ const CodeEditorComponent = ({
   language,
   intialValue,
   onMount,
+  onChange,
   fallbackElement,
 }: CodeEditorProps) => {
   const container = useRef<HTMLDivElement>(null);
   const editor = useRef<CodeEditorInstance>();
+  const onChangeRef = useRef<CodeEditorProps['onChange']>();
   const [hasError, setHasError] = useState(false);
   const [fontsReady, setFontsReady] = useState(false);
   const [editorReady, setEditorReady] = useState(false);
+
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
   useEffect(() => {
     if (isClient) {
@@ -118,6 +125,12 @@ const CodeEditorComponent = ({
     if (!editor.current && !hasError && fontsReady && container.current) {
       try {
         editor.current = createMonacoEditor(container.current, language, intialValue);
+        if (onChangeRef.current) {
+          onChangeRef.current(editor.current.getValue());
+          editor.current.getModel()?.onDidChangeContent(() => {
+            onChangeRef.current?.(editor.current?.getValue() ?? '');
+          });
+        }
         setEditorReady(true);
       } catch (e) {
         setHasError(true);

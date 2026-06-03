@@ -28,6 +28,20 @@ describe('CustomUpload', () => {
     });
   });
 
+  describe('content', () => {
+    it('exposes content as non-optional', () => {
+      const content = FileBuilder.content('custom upload bytes');
+      const file = new CustomUpload({
+        id: 'id',
+        filename: 'asset.png',
+        originalname: 'asset.png',
+        mimetype: 'image/png',
+        content,
+      });
+      expect(file.content).toBe(content);
+    });
+  });
+
   describe('update', () => {
     it('should rename and preserve all properties', () => {
       const content = FileBuilder.content('custom upload bytes');

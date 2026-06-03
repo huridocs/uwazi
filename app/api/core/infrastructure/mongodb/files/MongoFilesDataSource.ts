@@ -2,11 +2,11 @@ import { Db, ObjectId } from 'mongodb';
 
 import { LanguageUtils } from '#shared/language/index.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { SegmentationType } from '#shared/types/segmentationType.js';
 
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
 import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import {
   MongoDataSource,
   MongoDSOptions,
@@ -20,12 +20,8 @@ import {
   FilesDataSource,
   GetDocumentsForEntityOptions,
 } from '../../../application/contracts/FilesDataSource.js';
-import { ProcessingPDF } from '../../../domain/files/ProcessingPDF.js';
-import { ProcessedPDF } from '../../../domain/files/ProcessedPDF.js';
-import { Segmentation } from '../../../domain/files/Segmentation.js';
 import { FileNotFound, ProcessingFileNotFound } from '../../../domain/files/errors.js';
 import { FileMappers } from './FilesMappers.js';
-import { SegmentationMapper } from './SegmentationMapper.js';
 import { fileDBO } from './schemas/filesTypes.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
@@ -34,11 +30,6 @@ type GetDocumentsForEntityQuery = {
   type: 'document';
   language?: { $in: string[] };
   status: 'ready';
-};
-
-export type SegmentationDBO = SegmentationType & {
-  _id: ObjectId;
-  fileID: ObjectId;
 };
 
 export type MongoFilesDataSourceOptions = MongoDSOptions & {
@@ -71,11 +62,11 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
 
       await search.indexEntities(
         { sharedId: { $in: files.filter(f => f.isEntityFile()).map(f => f.entity) } },
-        files.some(f => f instanceof ProcessedPDF) ? '+fullText' : undefined
+        files.some(f => f instanceof PDFDocument && f.isReady()) ? '+fullText' : undefined
       );
 
       const processedPDFs = files
-        .filter(f => f instanceof ProcessedPDF && f.languageHasChanged)
+        .filter((f): f is PDFDocument => f instanceof PDFDocument && f.languageHasChanged)
         .map(f => FileMappers.toDBO(f));
 
       await this.fullTextIndexer.sync(processedPDFs.map(f => f._id));
@@ -86,11 +77,11 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     transactionManager.onCommitted(async () => {
       const files = Array.from(this.fileToDelete.values());
 
-      const processedPDFFilenames = files
-        .filter(f => f instanceof ProcessedPDF)
+      const pdfFilenames = files
+        .filter((f): f is PDFDocument => f instanceof PDFDocument)
         .map(f => f.filename);
 
-      await this.fullTextIndexer.remove(processedPDFFilenames);
+      await this.fullTextIndexer.remove(pdfFilenames);
 
       this.fileToDelete.clear();
     });
@@ -130,7 +121,6 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     return new MongoResultSet<fileDBO, BaseFile>(
       this.getCollection().find({
         type: { $ne: 'thumbnail' },
-
         entity: { $in: entitySharedIds },
       }),
       dbo => this.toModel(dbo)
@@ -174,7 +164,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       status: 'processing',
     });
     if (processing) {
-      return Result.ok(this.toModel(processing) as ProcessingPDF);
+      return Result.ok(this.toModel(processing) as PDFDocument);
     }
     return Result.fail(new ProcessingFileNotFound(fileId));
   }
@@ -257,20 +247,10 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     );
   }
 
-  getSegmentations(filesId: string[]): ResultSet<Segmentation> {
-    const cursor = this.getCollection<SegmentationDBO>('segmentations').find({
-      fileID: { $in: filesId.map(id => new ObjectId(id)) },
-      status: 'ready',
-      segmentation: { $exists: true },
-    });
-
-    return new MongoResultSet(cursor, SegmentationMapper.toDomain);
-  }
-
   getProcessedDocsForEntity(
     entitySharedId: string,
     options?: GetDocumentsForEntityOptions
-  ): ResultSet<ProcessedPDF> {
+  ): ResultSet<PDFDocument> {
     const query: GetDocumentsForEntityQuery = {
       entity: entitySharedId,
       type: 'document',
@@ -291,9 +271,9 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       }
     }
 
-    return new MongoResultSet<fileDBO, ProcessedPDF>(
+    return new MongoResultSet<fileDBO, PDFDocument>(
       this.getCollection().find(query, { projection: { fullText: 0 } }),
-      dbo => this.toModel(dbo) as ProcessedPDF
+      dbo => this.toModel(dbo) as PDFDocument
     );
   }
 

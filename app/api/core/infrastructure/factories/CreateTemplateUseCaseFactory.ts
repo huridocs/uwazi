@@ -1,11 +1,11 @@
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
 import { CreateTemplateUseCase } from '#api/core/application/CreateTemplate.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { LegacyPageServiceFactory } from '#api/pages.v2/infrastructure/factories/LegacyPageServiceFactory.js';
+import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
 import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService.js';
-import { LegacyPageService } from '../mongodb/page/LegacyPageService.js';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
 
 class CreateTemplateUseCaseFactory {
@@ -16,7 +16,7 @@ class CreateTemplateUseCaseFactory {
     const translationService = new LegacyTranslationService();
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const idGenerator = IdGeneratorFactory.default();
-    const pageService = new LegacyPageService();
+    const pageService = LegacyPageServiceFactory.default({ transactionManager });
     const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
 
     return new CreateTemplateUseCase({

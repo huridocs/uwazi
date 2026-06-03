@@ -80,6 +80,7 @@ import {
 import type { IndexDescriptor } from './getIndexElement.js';
 import { getIndexDescriptor } from './getIndexElement.js';
 import { PageView } from './Pages/PageView.js';
+import { PageDraftView } from './Pages/PageDraftView.js';
 import { ResetPassword } from './Users/ResetPassword.js';
 import { UnlockAccount } from './Users/UnlockAccount.js';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard.js';
@@ -213,6 +214,8 @@ const getRoutesLayout = (
     <Route path="404" element={<GeneralError />} />
     <Route path="page/:sharedId" element={<PageView />} />
     <Route path="page/:sharedId/:slug" element={<PageView />} />
+    <Route path="page-draft/:sharedId" element={<PageDraftView />} />
+    <Route path="page-draft/:sharedId/:slug" element={<PageDraftView />} />
     <Route path="setpassword/:key" element={<ResetPassword />} />
     <Route path="unlockaccount/:username/:code" element={<UnlockAccount />} />
     <Route path="settings" element={loggedInUsersRoute(<Settings />)}>

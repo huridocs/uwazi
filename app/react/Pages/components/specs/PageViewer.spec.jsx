@@ -30,6 +30,7 @@ describe('PageViewer', () => {
       pageView: Immutable.fromJS({
         _id: 1,
         title: 'Page 1',
+        markdownSupport: true,
         metadata: {
           content: '# Test Page\n\nThis is test content with **bold text**.',
           script: 'JSScript',
@@ -357,6 +358,57 @@ describe('PageViewer', () => {
         'var datasets = window.store.getState().page.datasets.toJS();'
       );
       expect(decodedScript).toContain('JSScript');
+    });
+  });
+
+  describe('markdownSupport and Markdown', () => {
+    it('does not parse Markdown when markdownSupport is not true', async () => {
+      const customState = {
+        page: {
+          pageView: Immutable.fromJS({
+            title: 'HTML page',
+            markdownSupport: false,
+            metadata: { content: '**notbold**' },
+            scriptRendered: false,
+          }),
+          datasets: Immutable.fromJS({}),
+          itemLists: Immutable.fromJS([]),
+          error: Immutable.fromJS({}),
+        },
+      };
+
+      const { container } = renderComponent(customState);
+
+      await waitFor(() => {
+        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+      });
+
+      expect(container.textContent).toMatch(/\*\*notbold\*\*/);
+      expect(container.querySelector('.markdown-viewer strong')).not.toBeInTheDocument();
+    });
+
+    it('parses Markdown when markdownSupport is true', async () => {
+      const customState = {
+        page: {
+          pageView: Immutable.fromJS({
+            title: 'Legacy page',
+            markdownSupport: true,
+            metadata: { content: '**shouldbold**' },
+            scriptRendered: false,
+          }),
+          datasets: Immutable.fromJS({}),
+          itemLists: Immutable.fromJS([]),
+          error: Immutable.fromJS({}),
+        },
+      };
+
+      const { container } = renderComponent(customState);
+
+      await waitFor(() => {
+        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+      });
+
+      expect(container.querySelector('.markdown-viewer strong')).toBeInTheDocument();
     });
   });
 

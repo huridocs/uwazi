@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import throttle from 'lodash/throttle.js';
 import { Cluster } from './Cluster.js';
 import { Point } from './Point.js';
 import { EntityReference } from '#V2/formatters/relationships/types.js';
@@ -80,10 +81,10 @@ const PageMode = ({
       return undefined;
     }
 
-    const updatePageHeight = () => {
+    const updatePageHeight = throttle(() => {
       const { height } = pageElement.getBoundingClientRect();
       setPageHeight(height > 0 ? height : null);
-    };
+    }, 1000);
 
     updatePageHeight();
 

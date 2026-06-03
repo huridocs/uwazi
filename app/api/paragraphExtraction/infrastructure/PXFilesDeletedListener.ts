@@ -2,7 +2,7 @@ import { featureFlaggedHandler } from '#api/common.v2/utils/featureFlaggedHandle
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -57,10 +57,12 @@ export class PXFilesDeletedListener {
       .getProcessedDocsForEntity(sharedId)
       .all();
 
-    return documentsInInstalledLanguages.filter(d => installedLanguages.includes(d.language));
+    return documentsInInstalledLanguages.filter(
+      d => d.language !== undefined && installedLanguages.includes(d.language)
+    );
   }
 
-  private async getInitialData(deletedDocuments: ProcessedPDF[]) {
+  private async getInitialData(deletedDocuments: PDFDocument[]) {
     const entityStatus = await this.dependencies.entitiesStatusDS.getExisting({
       entitySharedId: deletedDocuments[0].entity,
     });
@@ -82,7 +84,7 @@ export class PXFilesDeletedListener {
   }
 
   // eslint-disable-next-line max-statements
-  private async onDocumentsDeleted(deletedDocuments: ProcessedPDF[]) {
+  private async onDocumentsDeleted(deletedDocuments: PDFDocument[]) {
     const { entityStatus, documentsInInstalledLanguages, installedLanguages } =
       await this.getInitialData(deletedDocuments);
 
@@ -90,8 +92,8 @@ export class PXFilesDeletedListener {
       return;
     }
 
-    const deletedDocumentsInInstalledLanguage = deletedDocuments.filter(d =>
-      installedLanguages.includes(d.language)
+    const deletedDocumentsInInstalledLanguage = deletedDocuments.filter(
+      d => d.language !== undefined && installedLanguages.includes(d.language)
     );
 
     if (!deletedDocumentsInInstalledLanguage.length) {
@@ -147,7 +149,7 @@ export class PXFilesDeletedListener {
     }
 
     await this.onDocumentsDeleted(
-      deletedDocuments.filter((d): d is ProcessedPDF => d instanceof ProcessedPDF)
+      deletedDocuments.filter((d): d is PDFDocument => d instanceof PDFDocument)
     );
   }
 
