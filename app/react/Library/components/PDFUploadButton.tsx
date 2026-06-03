@@ -3,16 +3,11 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Translate } from '#app/I18N/index.js';
 import { Icon } from '#app/UI/index.js';
-import {
-  createDocument as createDocumentAction,
-  uploadDocumentV2 as uploadDocumentAction,
-} from '#app/Uploads/actions/uploadsActions.js';
-import { unselectAllDocuments as unselectAllDocumentsAction } from '#app/Library/actions/libraryActions.js';
+import { uploadAndCreate as uploadDocumentAction } from '#app/Uploads/actions/uploadsActions.js';
 import { Truncate } from '#V2/Components/UI/Truncate.js';
 
 interface PDFUploadActions {
   uploadDocument: (f: File, onProgress: (percent: number, filename: string) => void) => void;
-  unselectAllDocuments: () => void;
 }
 
 type PDFUploadButtonProps = PDFUploadActions;
@@ -20,7 +15,6 @@ type PDFUploadButtonProps = PDFUploadActions;
 const onChangePDFs =
   ({
     uploadDocument,
-    unselectAllDocuments,
     onProgress,
     onDone,
   }: PDFUploadActions & {
@@ -33,7 +27,6 @@ const onChangePDFs =
 
     input.value = '';
     input.files = null;
-    unselectAllDocuments();
 
     const uploadSequentially = async (pendingFiles: File[], index = 0): Promise<void> => {
       const file = pendingFiles[index];
@@ -55,10 +48,7 @@ const onChangePDFs =
     onDone();
   };
 
-const PDFUploadButtonComponent = ({
-  uploadDocument,
-  unselectAllDocuments,
-}: PDFUploadButtonProps) => {
+const PDFUploadButtonComponent = ({ uploadDocument }: PDFUploadButtonProps) => {
   const [progress, setProgress] = useState(0);
   const [fileName, setFilename] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -76,11 +66,11 @@ const PDFUploadButtonComponent = ({
   };
 
   return uploading ? (
-    <label className="btn btn-default tw-content">
-      <span className="btn-label">
+    <div className="tw-content">
+      <div className="bg-[#eceff1] border-[#cfd8dc] border py-1 px-2 rounded text-sm mr-3">
         <Translate>Uploading</Translate>: <Truncate maxLength={20}>{fileName}</Truncate> {progress}%
-      </span>
-    </label>
+      </div>
+    </div>
   ) : (
     <label htmlFor="pdf-upload-button" className="btn btn-default">
       <Icon icon="cloud-upload-alt" />
@@ -95,7 +85,6 @@ const PDFUploadButtonComponent = ({
         multiple
         onChange={onChangePDFs({
           uploadDocument,
-          unselectAllDocuments,
           onProgress,
           onDone,
         })}
@@ -108,8 +97,6 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) =>
   bindActionCreators(
     {
       uploadDocument: uploadDocumentAction,
-      unselectAllDocuments: unselectAllDocumentsAction,
-      createDocument: createDocumentAction,
     },
     dispatch
   );

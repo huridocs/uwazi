@@ -171,7 +171,7 @@ export function uploadDocument(docId, file) {
   return async dispatch => upload(docId, file)(dispatch);
 }
 
-export function uploadV2(file, onProgress) {
+export function createFromPDF(file, onProgress) {
   return async dispatch =>
     new Promise(resolve => {
       superagent
@@ -184,16 +184,19 @@ export function uploadV2(file, onProgress) {
           onProgress?.(Math.floor(data.percent), file.name);
         })
         .on('response', response => {
-          // dispatch({ type: types.UPLOAD_COMPLETE, doc: response._id, file: response.body });
-          dispatch({ type: types.UPLOAD_COMPLETE, doc: response._id, file: response.body });
-          resolve(JSON.parse(response.text));
+          dispatch({
+            type: libraryTypes.ELEMENT_CREATED,
+            doc: response.body.data,
+            __reducerKey: 'library',
+          });
+          resolve(response.status);
         })
         .end();
     });
 }
 
-export function uploadDocumentV2(file, onProgress) {
-  return async dispatch => uploadV2(file, onProgress)(dispatch);
+export function uploadAndCreate(file, onProgress) {
+  return async dispatch => createFromPDF(file, onProgress)(dispatch);
 }
 
 export function documentProcessed(sharedId, __reducerKey) {
