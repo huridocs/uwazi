@@ -75,17 +75,10 @@ const PageEditor = () => {
   const editorDraftValuesRef = useRef<
     Record<string, { content?: string; script?: string; css?: string }>
   >({});
+  const lastAppliedLoaderSignatureRef = useRef<string | null>(null);
   const isNewPage = !page.sharedId;
+  const languagesReady = languages.length > 0;
   const { notify } = useRequestStatus();
-
-  const languagesSignature = useMemo(
-    () =>
-      languages
-        .map(l => l.key)
-        .sort()
-        .join(','),
-    [languages]
-  );
 
   const pageLoaderSignature = useMemo(
     () =>
@@ -102,7 +95,7 @@ const PageEditor = () => {
 
   const serverFormSeed = useMemo(
     () => buildPageEditorFormValues(page, languages),
-    [pageLoaderSignature, languagesSignature, page, languages]
+    [pageLoaderSignature, languages, page]
   );
 
   useEffect(() => {
@@ -137,18 +130,26 @@ const PageEditor = () => {
 
   const formSharedId = watch('sharedId');
 
-  // Re-sync form when loader data changes (after revalidate or navigation), not from save response.
+  // Re-sync form only when loader data changes (after revalidate or navigation).
   useEffect(() => {
-    if (languages.length === 0) {
+    if (!languagesReady) {
       return;
     }
     // After first save, navigate is pending — loader still has {}; skip until loader catches up.
     if (!page.sharedId && formSharedId) {
       return;
     }
+    // Do not overwrite in-progress edits on a new page before the first save.
+    if (!page.sharedId && Object.keys(dirtyFields).length > 0) {
+      return;
+    }
+    if (lastAppliedLoaderSignatureRef.current === pageLoaderSignature) {
+      return;
+    }
+    lastAppliedLoaderSignatureRef.current = pageLoaderSignature;
     reset(buildPageEditorFormValues(page, languages));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageLoaderSignature, languagesSignature, formSharedId, reset]);
+  }, [pageLoaderSignature, languagesReady, formSharedId, page, languages, dirtyFields]);
 
   const markdownSupport = watch('markdownSupport') === true;
   const showMarkdownDeprecation = !!watch('sharedId') && markdownSupport;
@@ -312,59 +313,63 @@ const PageEditor = () => {
             />
           </div>
 
-          <Tabs unmountTabs={false} tabListClassName="md:w-2/3 w-full" className="min-h-0 flex-1">
-            <Tabs.Tab id="Configuration" label={<Translate>Configuration</Translate>}>
-              <form className="pb-6">
-                <input className="hidden" {...register('sharedId')} />
-                <div className="flex flex-col max-w-2xl gap-4 pt-2">
-                  {showMarkdownDeprecation && (
-                    <MarkdownDeprecationBanner
-                      onUpgrade={() => setValue('markdownSupport', false, { shouldDirty: true })}
-                    />
-                  )}
-                  <ToggleButton
-                    checked={entityView}
-                    onToggle={() => setValue('entityView', !entityView, { shouldDirty: true })}
-                  >
-                    <Translate className="text-sm font-semibold text-ink">
-                      Enable this page to be used as an entity view page:
-                    </Translate>
-                  </ToggleButton>
-
-                  <InputField
-                    id={`title-${activeLocale}`}
-                    label={<Translate>Title</Translate>}
-                    {...register(`locales.${activeLocale}.title`, { required: true })}
-                    hasErrors={localeErrors?.title !== undefined}
-                    errorMessage={
-                      localeErrors?.title && <Translate>This field is required</Translate>
-                    }
-                  />
-
-                  {showPageUrlPreviews && (
-                    <CopyValueInput
-                      value={`/${activeLocale}/${getPageUrl(pageSharedId!, urlTitle ?? '')}`}
-                      label={<Translate>URL</Translate>}
-                      className="w-full"
-                      id={`page-url-${activeLocale}`}
-                    />
-                  )}
-
-                  {pageSharedId && showPageUrlPreviews && (
-                    <Link
-                      target="_blank"
-                      to={`/${activeLocale}/${getPageUrl(pageSharedId!, urlTitle ?? '')}`}
+          {!languagesReady ? (
+            <p className="pt-4 text-sm text-ink-secondary">
+              <Translate>Loading</Translate>
+            </p>
+          ) : (
+            <Tabs unmountTabs={false} tabListClassName="md:w-2/3 w-full" className="min-h-0 flex-1">
+              <Tabs.Tab id="Configuration" label={<Translate>Configuration</Translate>}>
+                <form className="pb-6">
+                  <input className="hidden" {...register('sharedId')} />
+                  <div className="flex flex-col max-w-2xl gap-4 pt-2">
+                    {showMarkdownDeprecation && (
+                      <MarkdownDeprecationBanner
+                        onUpgrade={() => setValue('markdownSupport', false, { shouldDirty: true })}
+                      />
+                    )}
+                    <ToggleButton
+                      checked={entityView}
+                      onToggle={() => setValue('entityView', !entityView, { shouldDirty: true })}
                     >
-                      <div className="flex gap-2 hover:font-bold hover:cursor-pointer">
-                        <ArrowTopRightOnSquareIcon className="w-4" />
-                        <Translate className="underline hover:text-primary-700">
-                          View page
-                        </Translate>
-                      </div>
-                    </Link>
-                  )}
+                      <Translate className="text-sm font-semibold text-ink">
+                        Enable this page to be used as an entity view page:
+                      </Translate>
+                    </ToggleButton>
 
-                  {!entityView && (
+                    <InputField
+                      id={`title-${activeLocale}`}
+                      label={<Translate>Title</Translate>}
+                      {...register(`locales.${activeLocale}.title`, { required: true })}
+                      hasErrors={localeErrors?.title !== undefined}
+                      errorMessage={
+                        localeErrors?.title && <Translate>This field is required</Translate>
+                      }
+                    />
+
+                    {showPageUrlPreviews && (
+                      <CopyValueInput
+                        value={`/${activeLocale}/${getPageUrl(pageSharedId!, urlTitle ?? '')}`}
+                        label={<Translate>URL</Translate>}
+                        className="w-full"
+                        id={`page-url-${activeLocale}`}
+                      />
+                    )}
+
+                    {pageSharedId && showPageUrlPreviews && (
+                      <Link
+                        target="_blank"
+                        to={`/${activeLocale}/${getPageUrl(pageSharedId!, urlTitle ?? '')}`}
+                      >
+                        <div className="flex gap-2 hover:font-bold hover:cursor-pointer">
+                          <ArrowTopRightOnSquareIcon className="w-4" />
+                          <Translate className="underline hover:text-primary-700">
+                            View page
+                          </Translate>
+                        </div>
+                      </Link>
+                    )}
+
                     <div className="flex flex-wrap gap-2 pt-2">
                       <Button
                         variant="secondary"
@@ -389,60 +394,60 @@ const PageEditor = () => {
                         <Translate>Publish</Translate>
                       </Button>
                     </div>
-                  )}
-                </div>
-              </form>
-            </Tabs.Tab>
+                  </div>
+                </form>
+              </Tabs.Tab>
 
-            <Tabs.Tab id="HTML" label={<Translate>HTML</Translate>}>
-              <PageEditorHtmlPanel
-                activeLocale={activeLocale}
-                localeDraft={localeDraft}
-                register={register}
-                setValue={setValue}
-                onDraftChange={(language, draft) => {
-                  editorDraftValuesRef.current[language] = {
-                    ...editorDraftValuesRef.current[language],
-                    ...draft,
-                  };
-                }}
-                useLegacyMarkdown={markdownSupport}
-                editorLayoutKey={editorLayoutKey}
-              />
-            </Tabs.Tab>
+              <Tabs.Tab id="HTML" label={<Translate>HTML</Translate>}>
+                <PageEditorHtmlPanel
+                  activeLocale={activeLocale}
+                  localeDraft={localeDraft}
+                  register={register}
+                  setValue={setValue}
+                  onDraftChange={(language, draft) => {
+                    editorDraftValuesRef.current[language] = {
+                      ...editorDraftValuesRef.current[language],
+                      ...draft,
+                    };
+                  }}
+                  useLegacyMarkdown={markdownSupport}
+                  editorLayoutKey={editorLayoutKey}
+                />
+              </Tabs.Tab>
 
-            <Tabs.Tab id="Javascript" label={<Translate>Javascript</Translate>}>
-              <PageEditorJavascriptPanel
-                activeLocale={activeLocale}
-                localeDraft={localeDraft}
-                register={register}
-                setValue={setValue}
-                onDraftChange={(language, draft) => {
-                  editorDraftValuesRef.current[language] = {
-                    ...editorDraftValuesRef.current[language],
-                    ...draft,
-                  };
-                }}
-                editorLayoutKey={editorLayoutKey}
-              />
-            </Tabs.Tab>
+              <Tabs.Tab id="Javascript" label={<Translate>Javascript</Translate>}>
+                <PageEditorJavascriptPanel
+                  activeLocale={activeLocale}
+                  localeDraft={localeDraft}
+                  register={register}
+                  setValue={setValue}
+                  onDraftChange={(language, draft) => {
+                    editorDraftValuesRef.current[language] = {
+                      ...editorDraftValuesRef.current[language],
+                      ...draft,
+                    };
+                  }}
+                  editorLayoutKey={editorLayoutKey}
+                />
+              </Tabs.Tab>
 
-            <Tabs.Tab id="CSS" label={<Translate>CSS</Translate>}>
-              <PageEditorCssPanel
-                activeLocale={activeLocale}
-                localeDraft={localeDraft}
-                register={register}
-                setValue={setValue}
-                onDraftChange={(language, draft) => {
-                  editorDraftValuesRef.current[language] = {
-                    ...editorDraftValuesRef.current[language],
-                    ...draft,
-                  };
-                }}
-                editorLayoutKey={editorLayoutKey}
-              />
-            </Tabs.Tab>
-          </Tabs>
+              <Tabs.Tab id="CSS" label={<Translate>CSS</Translate>}>
+                <PageEditorCssPanel
+                  activeLocale={activeLocale}
+                  localeDraft={localeDraft}
+                  register={register}
+                  setValue={setValue}
+                  onDraftChange={(language, draft) => {
+                    editorDraftValuesRef.current[language] = {
+                      ...editorDraftValuesRef.current[language],
+                      ...draft,
+                    };
+                  }}
+                  editorLayoutKey={editorLayoutKey}
+                />
+              </Tabs.Tab>
+            </Tabs>
+          )}
         </SettingsContent.Body>
 
         <SettingsContent.Footer>
@@ -456,12 +461,16 @@ const PageEditor = () => {
             <Button
               variant="primary"
               onClick={handleSubmit(handleSaveAndPreview)}
-              disabled={getValues('entityView') || isSubmitting}
+              disabled={!languagesReady || getValues('entityView') || isSubmitting}
             >
               <Translate>Save & Preview</Translate>
             </Button>
 
-            <Button variant="success" onClick={handleSubmit(handleSave)} disabled={isSubmitting}>
+            <Button
+              variant="success"
+              onClick={handleSubmit(handleSave)}
+              disabled={!languagesReady || isSubmitting}
+            >
               <Translate>Save</Translate>
             </Button>
           </div>
