@@ -16,18 +16,18 @@ import {
   PageView,
   ViewerRoute,
 } from './indexRouteComponents.js';
-import { adminsOnlyRoute } from './ProtectedRoute.js';
 import {
-  lazyAdminsOnly,
-  lazyComponent,
-  lazyLoggedIn,
-  lazyPrivate,
-  lazyProtectedRoles,
-  lazyWithLoader,
-  lazyWithLoaderAndAction,
-  type RouteContext,
-} from './lazyRoute.js';
+  adminsOnlyRoute,
+  loggedInUsersRoute,
+  privateRoute,
+  ProtectedRoute,
+} from './ProtectedRoute.js';
 import { RoutePending } from './RoutePending.js';
+
+type RouteContext = {
+  headers?: IncomingHttpHeaders;
+  settings?: ClientSettings;
+};
 
 const deconstructSearchQuery = (query?: string) => {
   if (!query) return '';
@@ -128,301 +128,432 @@ const getRoutesLayout = (
     />
     <Route
       path="login"
-      lazy={lazyComponent(async () => import('./Users/Login.js'), 'Login')}
+      lazy={async () => {
+        const mod = await import('./Users/Login.js');
+        return { Component: mod.Login };
+      }}
       hydrateFallbackElement={<RoutePending />}
     />
     <Route
       path="library/*"
-      lazy={lazyPrivate(async () => import('./Library/Library.js'), 'LibraryRoot', ctx)}
+      lazy={async () => {
+        const mod = await import('./Library/Library.js');
+        const Component = mod.LibraryRoot;
+        const Wrapped = () => privateRoute(<Component />, ctx.settings);
+        return { Component: Wrapped };
+      }}
       hydrateFallbackElement={<RoutePending />}
     >
       <Route
         index
-        lazy={lazyPrivate(async () => import('./Library/LibraryCards.js'), 'LibraryCards', ctx)}
+        lazy={async () => {
+          const mod = await import('./Library/LibraryCards.js');
+          const Component = mod.LibraryCards;
+          const Wrapped = () => privateRoute(<Component />, ctx.settings);
+          return { Component: Wrapped };
+        }}
         handle={{ library: true }}
         hydrateFallbackElement={<RoutePending />}
       />
       <Route
         path="map"
-        lazy={lazyPrivate(async () => import('./Library/LibraryMap.js'), 'LibraryMap', ctx)}
+        lazy={async () => {
+          const mod = await import('./Library/LibraryMap.js');
+          const Component = mod.LibraryMap;
+          const Wrapped = () => privateRoute(<Component />, ctx.settings);
+          return { Component: Wrapped };
+        }}
         handle={{ library: true }}
         hydrateFallbackElement={<RoutePending />}
       />
       <Route
         path="table"
-        lazy={lazyPrivate(async () => import('./Library/LibraryTable.js'), 'LibraryTable', ctx)}
+        lazy={async () => {
+          const mod = await import('./Library/LibraryTable.js');
+          const Component = mod.LibraryTable;
+          const Wrapped = () => privateRoute(<Component />, ctx.settings);
+          return { Component: Wrapped };
+        }}
         handle={{ library: true }}
         hydrateFallbackElement={<RoutePending />}
       />
     </Route>
     <Route
       path="document/:sharedId"
-      lazy={lazyPrivate(async () => import('./Viewer/ViewerRoute.js'), 'ViewerRoute', ctx)}
+      lazy={async () => {
+        const mod = await import('./Viewer/ViewerRoute.js');
+        const Component = mod.ViewerRoute;
+        const Wrapped = () => privateRoute(<Component />, ctx.settings);
+        return { Component: Wrapped };
+      }}
       hydrateFallbackElement={<RoutePending />}
     >
       <Route
         path="*"
-        lazy={lazyPrivate(async () => import('./Viewer/ViewerRoute.js'), 'ViewerRoute', ctx)}
+        lazy={async () => {
+          const mod = await import('./Viewer/ViewerRoute.js');
+          const Component = mod.ViewerRoute;
+          const Wrapped = () => privateRoute(<Component />, ctx.settings);
+          return { Component: Wrapped };
+        }}
         hydrateFallbackElement={<RoutePending />}
       />
     </Route>
     <Route
       path="entity/:sharedId"
-      lazy={lazyPrivate(async () => import('./Viewer/ViewerRoute.js'), 'ViewerRoute', ctx)}
+      lazy={async () => {
+        const mod = await import('./Viewer/ViewerRoute.js');
+        const Component = mod.ViewerRoute;
+        const Wrapped = () => privateRoute(<Component />, ctx.settings);
+        return { Component: Wrapped };
+      }}
       hydrateFallbackElement={<RoutePending />}
     >
       <Route
         path="*"
-        lazy={lazyPrivate(async () => import('./Viewer/ViewerRoute.js'), 'ViewerRoute', ctx)}
+        lazy={async () => {
+          const mod = await import('./Viewer/ViewerRoute.js');
+          const Component = mod.ViewerRoute;
+          const Wrapped = () => privateRoute(<Component />, ctx.settings);
+          return { Component: Wrapped };
+        }}
         hydrateFallbackElement={<RoutePending />}
       />
     </Route>
     <Route
       path="entity/:sharedId/:tabView"
-      lazy={lazyPrivate(async () => import('./Viewer/ViewerRoute.js'), 'ViewerRoute', ctx)}
+      lazy={async () => {
+        const mod = await import('./Viewer/ViewerRoute.js');
+        const Component = mod.ViewerRoute;
+        const Wrapped = () => privateRoute(<Component />, ctx.settings);
+        return { Component: Wrapped };
+      }}
       hydrateFallbackElement={<RoutePending />}
     />
     <Route
       path="entityv2/:sharedId"
-      lazy={lazyWithLoader(
-        async () => import('#V2/Routes/Entity/Entity.js'),
-        'Entity',
-        async () => import('#V2/Routes/Entity/loader.js'),
-        'entityLoader',
-        ctx
-      )}
+      lazy={async () => {
+        const [entityMod, loaderMod] = await Promise.all([
+          import('#V2/Routes/Entity/Entity.js'),
+          import('#V2/Routes/Entity/loader.js'),
+        ]);
+        return {
+          Component: entityMod.Entity,
+          loader: loaderMod.entityLoader(ctx.headers),
+        };
+      }}
       hydrateFallbackElement={<RoutePending />}
     />
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
     <Route
       path="page/:sharedId"
-      lazy={lazyComponent(async () => import('./Pages/PageView.js'), 'PageView')}
+      lazy={async () => {
+        const mod = await import('./Pages/PageView.js');
+        return { Component: mod.PageView };
+      }}
       hydrateFallbackElement={<RoutePending />}
     />
     <Route
       path="page/:sharedId/:slug"
-      lazy={lazyComponent(async () => import('./Pages/PageView.js'), 'PageView')}
+      lazy={async () => {
+        const mod = await import('./Pages/PageView.js');
+        return { Component: mod.PageView };
+      }}
       hydrateFallbackElement={<RoutePending />}
     />
     <Route
       path="setpassword/:key"
-      lazy={lazyComponent(async () => import('./Users/ResetPassword.js'), 'ResetPassword')}
+      lazy={async () => {
+        const mod = await import('./Users/ResetPassword.js');
+        return { Component: mod.ResetPassword };
+      }}
       hydrateFallbackElement={<RoutePending />}
     />
     <Route
       path="unlockaccount/:username/:code"
-      lazy={lazyComponent(async () => import('./Users/UnlockAccount.js'), 'UnlockAccount')}
+      lazy={async () => {
+        const mod = await import('./Users/UnlockAccount.js');
+        return { Component: mod.UnlockAccount };
+      }}
       hydrateFallbackElement={<RoutePending />}
     />
     <Route
       path="settings"
-      lazy={lazyLoggedIn(async () => import('#V2/Routes/Settings/Settings.js'), 'Settings')}
+      lazy={async () => {
+        const mod = await import('#V2/Routes/Settings/Settings.js');
+        const Component = mod.Settings;
+        const Wrapped = () => loggedInUsersRoute(<Component />);
+        return { Component: Wrapped };
+      }}
       hydrateFallbackElement={<RoutePending />}
     >
       <Route
         path="account"
-        lazy={lazyWithLoader(
-          async () => import('#V2/Routes/Settings/Account/Account.js'),
-          'Account',
-          async () => import('#V2/Routes/Settings/Account/Account.js'),
-          'accountLoader',
-          ctx
-        )}
+        lazy={async () => {
+          const mod = await import('#V2/Routes/Settings/Account/Account.js');
+          return {
+            Component: mod.Account,
+            loader: mod.accountLoader(ctx.headers),
+          };
+        }}
         hydrateFallbackElement={<RoutePending />}
       />
       <Route
         path="dashboard"
-        lazy={lazyAdminsOnly(
-          async () => import('#V2/Routes/Settings/Dashboard/Dashboard.js'),
-          'Dashboard',
-          ctx,
-          'dashboardLoader'
-        )}
+        lazy={async () => {
+          const mod = await import('#V2/Routes/Settings/Dashboard/Dashboard.js');
+          const Component = mod.Dashboard;
+          const Wrapped = () => adminsOnlyRoute(<Component />);
+          return {
+            Component: Wrapped,
+            loader: mod.dashboardLoader(ctx.headers),
+          };
+        }}
         hydrateFallbackElement={<RoutePending />}
       />
       <Route
         path="navlinks"
-        lazy={lazyAdminsOnly(
-          async () => import('#V2/Routes/Settings/MenuConfig/MenuConfig.js'),
-          'MenuConfig',
-          ctx,
-          'menuConfigloader'
-        )}
+        lazy={async () => {
+          const mod = await import('#V2/Routes/Settings/MenuConfig/MenuConfig.js');
+          const Component = mod.MenuConfig;
+          const Wrapped = () => adminsOnlyRoute(<Component />);
+          return {
+            Component: Wrapped,
+            loader: mod.menuConfigloader(ctx.headers),
+          };
+        }}
         hydrateFallbackElement={<RoutePending />}
       />
       <Route
         path="collection"
-        lazy={lazyAdminsOnly(
-          async () => import('#V2/Routes/Settings/Collection/Collection.js'),
-          'Collection',
-          ctx,
-          'collectionLoader'
-        )}
+        lazy={async () => {
+          const mod = await import('#V2/Routes/Settings/Collection/Collection.js');
+          const Component = mod.Collection;
+          const Wrapped = () => adminsOnlyRoute(<Component />);
+          return {
+            Component: Wrapped,
+            loader: mod.collectionLoader(ctx.headers),
+          };
+        }}
         hydrateFallbackElement={<RoutePending />}
       />
       <Route
         path="users"
-        lazy={lazyWithLoaderAndAction(
-          async () => import('#V2/Routes/Settings/Users/Users.js'),
-          'Users',
-          async () => import('#V2/Routes/Settings/Users/Users.js'),
-          'usersLoader',
-          'userAction',
-          ctx,
-          Component => {
-            const Wrapped = () => adminsOnlyRoute(<Component />);
-            return Wrapped;
-          }
-        )}
+        lazy={async () => {
+          const mod = await import('#V2/Routes/Settings/Users/Users.js');
+          const Component = mod.Users;
+          const Wrapped = () => adminsOnlyRoute(<Component />);
+          return {
+            Component: Wrapped,
+            loader: mod.usersLoader(ctx.headers),
+            action: mod.userAction(),
+          };
+        }}
         hydrateFallbackElement={<RoutePending />}
       />
       <Route
         path="preserve"
-        lazy={lazyAdminsOnly(
-          async () => import('#V2/Routes/Settings/Preserve/Preserve.js'),
-          'Preserve',
-          ctx
-        )}
+        lazy={async () => {
+          const mod = await import('#V2/Routes/Settings/Preserve/Preserve.js');
+          const Component = mod.Preserve;
+          const Wrapped = () => adminsOnlyRoute(<Component />);
+          return { Component: Wrapped };
+        }}
         hydrateFallbackElement={<RoutePending />}
       />
       <Route path="pages">
         <Route
           index
-          lazy={lazyAdminsOnly(
-            async () => import('#V2/Routes/Settings/Pages/index.js'),
-            'PagesList',
-            ctx,
-            'pagesListLoader'
-          )}
+          lazy={async () => {
+            const mod = await import('#V2/Routes/Settings/Pages/index.js');
+            const Component = mod.PagesList;
+            const Wrapped = () => adminsOnlyRoute(<Component />);
+            return {
+              Component: Wrapped,
+              loader: mod.pagesListLoader(ctx.headers),
+            };
+          }}
           hydrateFallbackElement={<RoutePending />}
         />
         <Route
           path="new"
-          lazy={lazyAdminsOnly(
-            async () => import('#V2/Routes/Settings/Pages/index.js'),
-            'PageEditor',
-            ctx,
-            'pageEditorLoader'
-          )}
+          lazy={async () => {
+            const mod = await import('#V2/Routes/Settings/Pages/index.js');
+            const Component = mod.PageEditor;
+            const Wrapped = () => adminsOnlyRoute(<Component />);
+            return {
+              Component: Wrapped,
+              loader: mod.pageEditorLoader(ctx.headers),
+            };
+          }}
           hydrateFallbackElement={<RoutePending />}
         />
         <Route
           path="edit/:sharedId?"
-          lazy={lazyAdminsOnly(
-            async () => import('#V2/Routes/Settings/Pages/index.js'),
-            'PageEditor',
-            ctx,
-            'pageEditorLoader'
-          )}
+          lazy={async () => {
+            const mod = await import('#V2/Routes/Settings/Pages/index.js');
+            const Component = mod.PageEditor;
+            const Wrapped = () => adminsOnlyRoute(<Component />);
+            return {
+              Component: Wrapped,
+              loader: mod.pageEditorLoader(ctx.headers),
+            };
+          }}
           hydrateFallbackElement={<RoutePending />}
         />
       </Route>
       <Route path="templates">
         <Route
           index
-          lazy={lazyAdminsOnly(
-            async () => import('#V2/Routes/Settings/Templates/index.js'),
-            'Templates',
-            ctx,
-            'templatesLoader'
-          )}
+          lazy={async () => {
+            const mod = await import('#V2/Routes/Settings/Templates/index.js');
+            const Component = mod.Templates;
+            const Wrapped = () => adminsOnlyRoute(<Component />);
+            return {
+              Component: Wrapped,
+              loader: mod.templatesLoader(ctx.headers),
+            };
+          }}
           hydrateFallbackElement={<RoutePending />}
         />
         <Route
           path="new"
-          lazy={lazyAdminsOnly(
-            async () => import('#V2/Routes/Settings/Templates/index.js'),
-            'TemplatesEditor',
-            ctx,
-            'templatesEditorLoader'
-          )}
+          lazy={async () => {
+            const mod = await import('#V2/Routes/Settings/Templates/index.js');
+            const Component = mod.TemplatesEditor;
+            const Wrapped = () => adminsOnlyRoute(<Component />);
+            return {
+              Component: Wrapped,
+              loader: mod.templatesEditorLoader(ctx.headers),
+            };
+          }}
           hydrateFallbackElement={<RoutePending />}
         />
         <Route
           path="edit/:templateId"
-          lazy={lazyAdminsOnly(
-            async () => import('#V2/Routes/Settings/Templates/index.js'),
-            'TemplatesEditor',
-            ctx,
-            'templatesEditorLoader'
-          )}
+          lazy={async () => {
+            const mod = await import('#V2/Routes/Settings/Templates/index.js');
+            const Component = mod.TemplatesEditor;
+            const Wrapped = () => adminsOnlyRoute(<Component />);
+            return {
+              Component: Wrapped,
+              loader: mod.templatesEditorLoader(ctx.headers),
+            };
+          }}
           hydrateFallbackElement={<RoutePending />}
         />
       </Route>
       <Route path="metadata_extraction">
         <Route
           index
-          lazy={lazyProtectedRoles(
-            async () => import('#V2/Routes/Settings/IX/IXDashboard.js'),
-            'IXDashboard',
-            ['admin', 'editor'],
-            ctx,
-            async () => import('#V2/Routes/Settings/IX/IXDashboard.js'),
-            'IXdashboardLoader'
-          )}
+          lazy={async () => {
+            const mod = await import('#V2/Routes/Settings/IX/IXDashboard.js');
+            const Component = mod.IXDashboard;
+            const Wrapped = () => (
+              <ProtectedRoute allowedRoles={['admin', 'editor']}>
+                <Component />
+              </ProtectedRoute>
+            );
+            return {
+              Component: Wrapped,
+              loader: mod.IXdashboardLoader(ctx.headers),
+            };
+          }}
           hydrateFallbackElement={<RoutePending />}
         />
         <Route
           path="suggestions/:extractorId"
-          lazy={lazyProtectedRoles(
-            async () => import('#V2/Routes/Settings/IX/IXSuggestions.js'),
-            'IXSuggestions',
-            ['admin', 'editor'],
-            ctx,
-            async () => import('#V2/Routes/Settings/IX/IXSuggestions.js'),
-            'IXSuggestionsLoader'
-          )}
+          lazy={async () => {
+            const mod = await import('#V2/Routes/Settings/IX/IXSuggestions.js');
+            const Component = mod.IXSuggestions;
+            const Wrapped = () => (
+              <ProtectedRoute allowedRoles={['admin', 'editor']}>
+                <Component />
+              </ProtectedRoute>
+            );
+            return {
+              Component: Wrapped,
+              loader: mod.IXSuggestionsLoader(ctx.headers),
+            };
+          }}
           hydrateFallbackElement={<RoutePending />}
         />
       </Route>
       <Route path="paragraph-extraction">
         <Route
           index
-          lazy={lazyProtectedRoles(
-            async () => import('#V2/Routes/Settings/ParagraphExtraction/ParagraphExtraction.js'),
-            'ParagraphExtractorDashboard',
-            ['admin', 'editor'],
-            ctx,
-            async () => import('#V2/Routes/Settings/ParagraphExtraction/Loaders.js'),
-            'ParagraphExtractorLoader'
-          )}
+          lazy={async () => {
+            const [componentMod, loaderMod] = await Promise.all([
+              import('#V2/Routes/Settings/ParagraphExtraction/ParagraphExtraction.js'),
+              import('#V2/Routes/Settings/ParagraphExtraction/Loaders.js'),
+            ]);
+            const Component = componentMod.ParagraphExtractorDashboard;
+            const Wrapped = () => (
+              <ProtectedRoute allowedRoles={['admin', 'editor']}>
+                <Component />
+              </ProtectedRoute>
+            );
+            return {
+              Component: Wrapped,
+              loader: loaderMod.ParagraphExtractorLoader(ctx.headers),
+            };
+          }}
           hydrateFallbackElement={<RoutePending />}
         />
         <Route
           path=":extractorId/entities"
-          lazy={lazyProtectedRoles(
-            async () => import('#V2/Routes/Settings/ParagraphExtraction/PXEntities.js'),
-            'PXEntityDashboard',
-            ['admin', 'editor'],
-            ctx,
-            async () => import('#V2/Routes/Settings/ParagraphExtraction/Loaders.js'),
-            'PXEntityLoader'
-          )}
+          lazy={async () => {
+            const [componentMod, loaderMod] = await Promise.all([
+              import('#V2/Routes/Settings/ParagraphExtraction/PXEntities.js'),
+              import('#V2/Routes/Settings/ParagraphExtraction/Loaders.js'),
+            ]);
+            const Component = componentMod.PXEntityDashboard;
+            const Wrapped = () => (
+              <ProtectedRoute allowedRoles={['admin', 'editor']}>
+                <Component />
+              </ProtectedRoute>
+            );
+            return {
+              Component: Wrapped,
+              loader: loaderMod.PXEntityLoader(ctx.headers),
+            };
+          }}
           hydrateFallbackElement={<RoutePending />}
         />
         <Route
           path=":extractorId/entities/:sharedId/paragraphs"
-          lazy={lazyProtectedRoles(
-            async () => import('#V2/Routes/Settings/ParagraphExtraction/PXParagraphs.js'),
-            'PXParagraphDashboard',
-            ['admin', 'editor'],
-            ctx,
-            async () => import('#V2/Routes/Settings/ParagraphExtraction/Loaders.js'),
-            'PXParagraphLoader'
-          )}
+          lazy={async () => {
+            const [componentMod, loaderMod] = await Promise.all([
+              import('#V2/Routes/Settings/ParagraphExtraction/PXParagraphs.js'),
+              import('#V2/Routes/Settings/ParagraphExtraction/Loaders.js'),
+            ]);
+            const Component = componentMod.PXParagraphDashboard;
+            const Wrapped = () => (
+              <ProtectedRoute allowedRoles={['admin', 'editor']}>
+                <Component />
+              </ProtectedRoute>
+            );
+            return {
+              Component: Wrapped,
+              loader: loaderMod.PXParagraphLoader(ctx.headers),
+            };
+          }}
           hydrateFallbackElement={<RoutePending />}
         />
       </Route>
       <Route path="relationship-types">
         <Route
           index
-          lazy={lazyAdminsOnly(
-            async () => import('#V2/Routes/Settings/RelationshipTypes/RelationshipTypes.js'),
-            'RelationshipTypes',
-            ctx,
-            'relationshipTypesLoader'
-          )}
+          lazy={async () => {
+            const mod = await import('#V2/Routes/Settings/RelationshipTypes/RelationshipTypes.js');
+            const Component = mod.RelationshipTypes;
+            const Wrapped = () => adminsOnlyRoute(<Component />);
+            return {
+              Component: Wrapped,
+              loader: mod.relationshipTypesLoader(ctx.headers),
+            };
+          }}
           hydrateFallbackElement={<RoutePending />}
         />
       </Route>
@@ -430,90 +561,107 @@ const getRoutesLayout = (
       <Route path="thesauri">
         <Route
           index
-          lazy={lazyAdminsOnly(
-            async () => import('#app/V2/Routes/Settings/Thesauri/index.js'),
-            'ThesauriList',
-            ctx,
-            'thesauriLoader'
-          )}
+          lazy={async () => {
+            const mod = await import('#app/V2/Routes/Settings/Thesauri/index.js');
+            const Component = mod.ThesauriList;
+            const Wrapped = () => adminsOnlyRoute(<Component />);
+            return {
+              Component: Wrapped,
+              loader: mod.thesauriLoader(ctx.headers),
+            };
+          }}
           hydrateFallbackElement={<RoutePending />}
         />
         <Route
           path="new"
-          lazy={lazyAdminsOnly(
-            async () => import('#app/V2/Routes/Settings/Thesauri/index.js'),
-            'EditThesaurus',
-            ctx
-          )}
+          lazy={async () => {
+            const mod = await import('#app/V2/Routes/Settings/Thesauri/index.js');
+            const Component = mod.EditThesaurus;
+            const Wrapped = () => adminsOnlyRoute(<Component />);
+            return { Component: Wrapped };
+          }}
           hydrateFallbackElement={<RoutePending />}
         />
         <Route
           path="edit/:_id"
-          lazy={lazyAdminsOnly(
-            async () => import('#app/V2/Routes/Settings/Thesauri/index.js'),
-            'EditThesaurus',
-            ctx,
-            'editThesaurusLoader'
-          )}
+          lazy={async () => {
+            const mod = await import('#app/V2/Routes/Settings/Thesauri/index.js');
+            const Component = mod.EditThesaurus;
+            const Wrapped = () => adminsOnlyRoute(<Component />);
+            return {
+              Component: Wrapped,
+              loader: mod.editThesaurusLoader(ctx.headers),
+            };
+          }}
           hydrateFallbackElement={<RoutePending />}
         />
       </Route>
       <Route
         path="languages"
-        lazy={lazyAdminsOnly(
-          async () => import('#V2/Routes/Settings/Languages/LanguagesList.js'),
-          'LanguagesList',
-          ctx,
-          'languagesListLoader'
-        )}
+        lazy={async () => {
+          const mod = await import('#V2/Routes/Settings/Languages/LanguagesList.js');
+          const Component = mod.LanguagesList;
+          const Wrapped = () => adminsOnlyRoute(<Component />);
+          return {
+            Component: Wrapped,
+            loader: mod.languagesListLoader(ctx.headers),
+          };
+        }}
         hydrateFallbackElement={<RoutePending />}
       />
       <Route path="translations">
         <Route
           index
-          lazy={lazyAdminsOnly(
-            async () => import('#V2/Routes/Settings/Translations/TranslationsList.js'),
-            'TranslationsList',
-            ctx,
-            'translationsListLoader'
-          )}
+          lazy={async () => {
+            const mod = await import('#V2/Routes/Settings/Translations/TranslationsList.js');
+            const Component = mod.TranslationsList;
+            const Wrapped = () => adminsOnlyRoute(<Component />);
+            return {
+              Component: Wrapped,
+              loader: mod.translationsListLoader(ctx.headers),
+            };
+          }}
           hydrateFallbackElement={<RoutePending />}
         />
         <Route
           path="edit/:context"
-          lazy={lazyWithLoaderAndAction(
-            async () => import('#V2/Routes/Settings/Translations/EditTranslations.js'),
-            'EditTranslations',
-            async () => import('#V2/Routes/Settings/Translations/EditTranslations.js'),
-            'editTranslationsLoader',
-            'editTranslationsAction',
-            ctx,
-            Component => {
-              const Wrapped = () => adminsOnlyRoute(<Component />);
-              return Wrapped;
-            }
-          )}
+          lazy={async () => {
+            const mod = await import('#V2/Routes/Settings/Translations/EditTranslations.js');
+            const Component = mod.EditTranslations;
+            const Wrapped = () => adminsOnlyRoute(<Component />);
+            return {
+              Component: Wrapped,
+              loader: mod.editTranslationsLoader(ctx.headers),
+              action: mod.editTranslationsAction(),
+            };
+          }}
           hydrateFallbackElement={<RoutePending />}
         />
       </Route>
       <Route
         path="filters"
-        lazy={lazyAdminsOnly(
-          async () => import('#V2/Routes/Settings/Filters/index.js'),
-          'FiltersTable',
-          ctx,
-          'filtersLoader'
-        )}
+        lazy={async () => {
+          const mod = await import('#V2/Routes/Settings/Filters/index.js');
+          const Component = mod.FiltersTable;
+          const Wrapped = () => adminsOnlyRoute(<Component />);
+          return {
+            Component: Wrapped,
+            loader: mod.filtersLoader(ctx.headers),
+          };
+        }}
         hydrateFallbackElement={<RoutePending />}
       />
       <Route
         path="customisation"
-        lazy={lazyAdminsOnly(
-          async () => import('#V2/Routes/Settings/Customization/Customization.js'),
-          'Customisation',
-          ctx,
-          'customisationLoader'
-        )}
+        lazy={async () => {
+          const mod = await import('#V2/Routes/Settings/Customization/Customization.js');
+          const Component = mod.Customisation;
+          const Wrapped = () => adminsOnlyRoute(<Component />);
+          return {
+            Component: Wrapped,
+            loader: mod.customisationLoader(ctx.headers),
+          };
+        }}
         hydrateFallbackElement={<RoutePending />}
       />
       <Route
@@ -531,12 +679,15 @@ const getRoutesLayout = (
       />
       <Route
         path="custom-uploads"
-        lazy={lazyAdminsOnly(
-          async () => import('#V2/Routes/Settings/CustomUploads/CustomUploads.js'),
-          'CustomUploads',
-          ctx,
-          'customUploadsLoader'
-        )}
+        lazy={async () => {
+          const mod = await import('#V2/Routes/Settings/CustomUploads/CustomUploads.js');
+          const Component = mod.CustomUploads;
+          const Wrapped = () => adminsOnlyRoute(<Component />);
+          return {
+            Component: Wrapped,
+            loader: mod.customUploadsLoader(ctx.headers),
+          };
+        }}
         hydrateFallbackElement={<RoutePending />}
       />
       <Route
@@ -553,22 +704,28 @@ const getRoutesLayout = (
       <Route path="csv">
         <Route
           index
-          lazy={lazyAdminsOnly(
-            async () => import('./V2/Routes/Settings/CSVUpload/index.js'),
-            'CSVList',
-            ctx,
-            'csvListLoader'
-          )}
+          lazy={async () => {
+            const mod = await import('./V2/Routes/Settings/CSVUpload/index.js');
+            const Component = mod.CSVList;
+            const Wrapped = () => adminsOnlyRoute(<Component />);
+            return {
+              Component: Wrapped,
+              loader: mod.csvListLoader(ctx.headers),
+            };
+          }}
           hydrateFallbackElement={<RoutePending />}
         />
         <Route
           path=":entry"
-          lazy={lazyAdminsOnly(
-            async () => import('./V2/Routes/Settings/CSVUpload/index.js'),
-            'UploadStatus',
-            ctx,
-            'uploadStatusLoader'
-          )}
+          lazy={async () => {
+            const mod = await import('./V2/Routes/Settings/CSVUpload/index.js');
+            const Component = mod.UploadStatus;
+            const Wrapped = () => adminsOnlyRoute(<Component />);
+            return {
+              Component: Wrapped,
+              loader: mod.uploadStatusLoader(ctx.headers),
+            };
+          }}
           hydrateFallbackElement={<RoutePending />}
         />
       </Route>

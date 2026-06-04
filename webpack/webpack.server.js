@@ -42,11 +42,9 @@ const webpackPort = Number(process.env.WEBPACK_PORT || 8080);
     publicPath: webpackConfig.default.output.publicPath,
     headers: { 'Access-Control-Allow-Origin': '*' },
     stats: 'errors-warnings',
-    writeToDisk: (filePath) => {
+    writeToDisk: filePath => {
       const normalizedPath = filePath.replace(/\\/g, '/');
-      return normalizedPath.endsWith('.css') ||
-        normalizedPath.includes('webpack-assets.json') ||
-        normalizedPath.includes('/CSS/');
+      return normalizedPath.includes('webpack-assets.json');
     },
   });
 

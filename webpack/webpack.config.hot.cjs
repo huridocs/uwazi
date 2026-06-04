@@ -11,9 +11,52 @@ const RtlCssPlugin = require('rtlcss-webpack-plugin');
 const webpackPort = process.env.WEBPACK_PORT || 8080;
 const webpackHost = `http://localhost:${webpackPort}`;
 
+const patchCssRulesForHot = rules => {
+  rules.forEach(rule => {
+    if (!rule.use) {
+      return;
+    }
+
+    rule.use = rule.use.map(loader => {
+      if (loader === MiniCssExtractPlugin.loader) {
+        return {
+          loader: MiniCssExtractPlugin.loader,
+          options: { esModule: true },
+        };
+      }
+
+      if (typeof loader === 'object' && loader.loader === 'css-loader') {
+        return { ...loader, options: { ...loader.options, sourceMap: false } };
+      }
+
+      if (typeof loader === 'object' && loader.loader === 'sass-loader') {
+        return { ...loader, options: { ...loader.options, sourceMap: false } };
+      }
+
+      if (typeof loader === 'object' && loader.loader === 'postcss-loader') {
+        return {
+          ...loader,
+          options: {
+            ...loader.options,
+            sourceMap: false,
+            postcssOptions: {
+              ...loader.options.postcssOptions,
+              cache: true,
+            },
+          },
+        };
+      }
+
+      return loader;
+    });
+  });
+};
+
 config['infrastructureLogging'] = {
   level: 'error',
 };
+
+config.devtool = 'eval-cheap-module-source-map';
 
 config.plugins = config.plugins.filter(
   plugin => !(plugin instanceof RtlCssPlugin) && !(plugin instanceof MiniCssExtractPlugin)
@@ -28,7 +71,6 @@ config.plugins.push(
 config.plugins = config.plugins.concat([
   new webpack.HotModuleReplacementPlugin(),
   new ReactRefreshWebpackPlugin({ overlay: false }),
-  // enable HMR globally
   new webpack.DefinePlugin({ 'process.env': { HOT: true } }),
 ]);
 
@@ -42,9 +84,11 @@ config.output = {
 };
 
 config.entry.main = [
-  `webpack-hot-middleware/client?path=//localhost:${webpackPort}/__webpack_hmr&reload=true`,
+  `webpack-hot-middleware/client?path=//localhost:${webpackPort}/__webpack_hmr`,
   path.join(rootPath, 'app/react/entry-client.tsx'),
 ];
+
+patchCssRulesForHot(config.module.rules);
 
 config.watchOptions = {
   ignored: [

@@ -79,6 +79,8 @@ const renderClient = () => {
 
 if (typeof module !== 'undefined' && module.hot && clientRoot) {
   let pendingHotRender = false;
+  let hotRenderTimer: ReturnType<typeof setTimeout> | undefined;
+
   const scheduleRenderClient = () => {
     if (pendingHotRender) {
       return;
@@ -90,12 +92,17 @@ if (typeof module !== 'undefined' && module.hot && clientRoot) {
     });
   };
 
+  const scheduleRenderClientDebounced = () => {
+    clearTimeout(hotRenderTimer);
+    hotRenderTimer = setTimeout(scheduleRenderClient, 150);
+  };
+
   module.hot.accept('./Routes.tsx', scheduleRenderClient);
   module.hot.accept('./appRoutes.js', scheduleRenderClient);
 
   module.hot.addStatusHandler(status => {
     if (status === 'idle') {
-      scheduleRenderClient();
+      scheduleRenderClientDebounced();
     }
   });
 }

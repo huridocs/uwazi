@@ -66,6 +66,21 @@
       "plugins": [["react-refresh/babel", { "skipEnvCheck": true }]],
       "sourceMaps": "inline",
       "retainLines": true
+    },
+    "hot": {
+      "presets": [
+        [
+          "@babel/preset-env",
+          {
+            "targets": {
+              "node": "current"
+            }
+          }
+        ],
+        "@babel/preset-react",
+        "@babel/preset-typescript"
+      ],
+      "plugins": [["react-refresh/babel", { "skipEnvCheck": true }]]
     }
   },
   "plugins": [

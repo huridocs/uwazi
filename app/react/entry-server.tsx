@@ -41,6 +41,7 @@ import { I18NUtils } from './I18N/index.js';
 import { IStore } from './istore.js';
 import type { IndexComponents } from './Routes.js';
 import { getRoutes } from './Routes.js';
+import { resolveLazyForMatchChain } from './resolveLazyRoutesForSsr.js';
 import { create as createReduxStore } from './store.js';
 import { ProtectedRoute } from './ProtectedRoute.js';
 import { isMobileDevice } from '../shared/detectDevice.js';
@@ -300,6 +301,9 @@ const prepareStoreData = async (
 
 const prepareRouteData = async (req: ExpressRequest, routes: RouteObject[]) => {
   const { fetchRequest, ssrError } = createFetchRequest(req);
+  const url = new URL(fetchRequest.url);
+  const matched = matchRoutes(routes, url.pathname);
+  await resolveLazyForMatchChain(matched);
   const { query } = createStaticHandler(routes);
   const staticHandleContext = await query(fetchRequest);
   const router = createStaticRouter(routes, staticHandleContext as StaticHandlerContext);
