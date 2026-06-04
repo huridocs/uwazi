@@ -45,6 +45,21 @@ describe('FileAttachment', () => {
     });
   });
 
+  describe('content', () => {
+    it('exposes content as non-optional', () => {
+      const content = FileBuilder.content('attachment bytes');
+      const file = new FileAttachment({
+        id: 'id',
+        entity: 'sharedId1',
+        filename: 'file.txt',
+        originalname: 'file.txt',
+        mimetype: 'text/plain',
+        content,
+      });
+      expect(file.content).toBe(content);
+    });
+  });
+
   describe('update', () => {
     it('should rename and preserve all properties', () => {
       const content = FileBuilder.content('attachment bytes');

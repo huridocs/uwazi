@@ -1,11 +1,15 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Square3Stack3DIcon, DocumentIcon } from '@heroicons/react/24/outline';
+import { useAtomValue } from 'jotai';
+import throttle from 'lodash/throttle.js';
 import { Translate } from '#app/I18N/index.js';
 import { Entity, FileType } from '#V2/api/entities/types.js';
 import { formatReferences } from '#V2/formatters/index.js';
 import { EntityReference } from '#V2/formatters/relationships/types.js';
+import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { groupReferences, groupDocumentReferences } from './groupReferences.js';
 import { FullMode, PageMode } from './Components/index.js';
+import type { ReferenceWithTemplate } from './types.js';
 
 type ReferencesDisplayProps = {
   entity: Entity;
@@ -22,9 +26,35 @@ const ReferencesDisplay = ({
   onPointClick,
   onClusterClick,
 }: ReferencesDisplayProps) => {
+  const templates = useAtomValue(templatesAtom);
   const [fullMode, setFullMode] = useState(true);
   const markerLayerRef = useRef<HTMLDivElement>(null);
   const [markerLayerHeight, setMarkerLayerHeight] = useState(0);
+
+  const references = useMemo<ReferenceWithTemplate[]>(() => {
+    if (!entity) return [];
+    return formatReferences(entity).map(ref => {
+      const template = templates.find(t => t._id === ref.targetEntity.templateId);
+      return {
+        ...ref,
+        targetEntity: {
+          ...ref.targetEntity,
+          template: {
+            _id: ref.targetEntity.templateId,
+            name: template?.name || '',
+            color: template?.color || '#A4CAFE',
+          },
+        },
+      };
+    });
+  }, [entity, templates]);
+
+  const referencesGroups = useMemo(() => groupReferences(references), [references]);
+
+  const documentClusters = useMemo(
+    () => groupDocumentReferences(referencesGroups, document.totalPages ?? 1),
+    [document.totalPages, referencesGroups]
+  );
 
   useEffect(() => {
     const markerLayerElement = markerLayerRef.current;
@@ -33,9 +63,9 @@ const ReferencesDisplay = ({
       return undefined;
     }
 
-    const updateHeight = () => {
+    const updateHeight = throttle(() => {
       setMarkerLayerHeight(markerLayerElement.clientHeight);
-    };
+    }, 1000);
 
     updateHeight();
 
@@ -46,13 +76,6 @@ const ReferencesDisplay = ({
       observer.disconnect();
     };
   }, []);
-
-  const referencesGroups = useMemo(() => groupReferences(formatReferences(entity)), [entity]);
-
-  const documentClusters = useMemo(
-    () => groupDocumentReferences(referencesGroups, document.totalPages ?? 1),
-    [document.totalPages, referencesGroups]
-  );
 
   return (
     <div className="w-full h-full flex flex-col gap-2 items-center px-4 text-ink-tertiary">

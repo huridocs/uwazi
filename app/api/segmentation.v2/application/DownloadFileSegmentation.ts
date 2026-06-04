@@ -2,11 +2,13 @@ import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { FileNotFound } from '#api/core/domain/files/errors.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { Segmentation } from '#api/core/domain/files/Segmentation.js';
+import { SegmentationDataSource } from '../application/contracts/SegmentationDataSource.js';
+import { Segmentation } from '../domain/Segmentation.js';
 
 type Deps = {
   filesDS: FilesDataSource;
   settingsDS: SettingsDataSource;
+  segmentationDS: SegmentationDataSource;
 };
 
 type Input = {
@@ -42,7 +44,7 @@ class DownloadFileSegmentation extends AbstractUseCase<Input, Output, Deps> {
   }
 
   private async getSegmentationOrThrow(fileId: string) {
-    const segmentations = await this.deps.filesDS.getSegmentations([fileId]).all();
+    const segmentations = await this.deps.segmentationDS.getSegmentations([fileId]).all();
     const segmentation = segmentations[0];
     if (!segmentation) {
       throw new FileNotFound('file not found');

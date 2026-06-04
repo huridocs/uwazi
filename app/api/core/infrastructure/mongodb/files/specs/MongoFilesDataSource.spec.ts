@@ -1,9 +1,8 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
-import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { FileNotFound } from '#api/core/domain/files/errors.js';
-import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
 import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
 import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
 import { URLAttachment } from '#api/core/domain/files/URLAttachment.js';
@@ -161,7 +160,7 @@ describe('MongoFilesDataSource', () => {
       const processed = (
         await ds.getProcessingById(f.idString('processingDocument'))
       ).getDataOrThrow();
-      expect(processed).toBeInstanceOf(ProcessingPDF);
+      expect(processed).toBeInstanceOf(PDFDocument);
     });
   });
 
@@ -178,7 +177,7 @@ describe('MongoFilesDataSource', () => {
       const processed = (
         await ds.getProcessingById(f.idString('processingDocument'))
       ).getDataOrThrow();
-      expect(processed).toBeInstanceOf(ProcessingPDF);
+      expect(processed).toBeInstanceOf(PDFDocument);
     });
   });
 
@@ -218,7 +217,7 @@ describe('MongoFilesDataSource', () => {
       ).getDataOrThrow();
       await transactionManager.run(async () => {
         await ds.update(
-          processingDoc.asProcessed({
+          processingDoc.processed({
             language: 'en',
             totalPages: 10,
             fullText: { 1: 'processed document' },
@@ -238,13 +237,14 @@ describe('MongoFilesDataSource', () => {
       const { ds, transactionManager } = createDs();
       await transactionManager.run(async () => {
         await ds.create(
-          new ProcessedPDF({
+          new PDFDocument({
             id: f.idString('new document'),
             entity: 'entity_to_reindex',
             originalname: 'file.pdf',
             mimetype: 'application/pdf',
             size: 1,
             filename: 'file.pdf',
+            status: 'ready',
             language: 'en',
             totalPages: 1,
             generatedToc: false,
@@ -266,7 +266,7 @@ describe('MongoFilesDataSource', () => {
       const { ds, transactionManager } = createDs();
       await transactionManager.run(async () => {
         await ds.create(
-          new ProcessingPDF({
+          new PDFDocument({
             status: 'failed',
             id: f.idString('new document'),
             entity: 'entity_to_reindex',
@@ -480,7 +480,7 @@ describe('MongoFilesDataSource', () => {
     it('should return file matching filename', async () => {
       const { ds } = createDs();
       const doc = (await ds.getByFilename('file2')).getData();
-      expect(doc).toBeInstanceOf(ProcessingPDF);
+      expect(doc).toBeInstanceOf(PDFDocument);
     });
 
     it('should return FileNotFound when restricting filetype', async () => {
@@ -492,7 +492,7 @@ describe('MongoFilesDataSource', () => {
     it('should return file when file type restriction match', async () => {
       const { ds } = createDs();
       const doc = (await ds.getByFilename('file3', ['document', 'attachment'])).getData();
-      expect(doc).toBeInstanceOf(ProcessingPDF);
+      expect(doc).toBeInstanceOf(PDFDocument);
     });
     it('should return URLAttachment properly (with nullFileContents)', async () => {
       const { ds } = createDs();
@@ -512,7 +512,7 @@ describe('MongoFilesDataSource', () => {
     it('should return file matching id', async () => {
       const { ds } = createDs();
       const doc = (await ds.getById(f.idString('processed1'))).getData();
-      expect(doc).toBeInstanceOf(ProcessedPDF);
+      expect(doc).toBeInstanceOf(PDFDocument);
     });
 
     it('should not load fullText by default', async () => {
@@ -533,8 +533,8 @@ describe('MongoFilesDataSource', () => {
     it('should return thumbnails for ProcessedDocuments', async () => {
       const { ds } = createDs();
       const processed = [
-        (await ds.getById(f.idString('processed1'))).getDataOrThrow() as ProcessedPDF,
-        (await ds.getById(f.idString('processed2'))).getDataOrThrow() as ProcessedPDF,
+        (await ds.getById(f.idString('processed1'))).getDataOrThrow() as PDFDocument,
+        (await ds.getById(f.idString('processed2'))).getDataOrThrow() as PDFDocument,
       ];
       const thumbnails = await ds.getThumbnails(processed.map(p => p.entity)).all();
       expect(thumbnails[0]).toBeInstanceOf(Thumbnail);
