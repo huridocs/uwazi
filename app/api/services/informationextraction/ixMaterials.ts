@@ -1,7 +1,8 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 /* eslint-disable max-classes-per-file */
-/* eslint-disable camelcase */
+
+import { ObjectId } from 'mongodb';
 import {
   PropertySelectionSchema,
   LanguageISO6391,
@@ -23,7 +24,6 @@ import { IXModelType } from '#shared/types/IXModelType.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { PipelineBuilder } from '#api/suggestions/queryBuilder.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
-import { ObjectId } from 'mongodb';
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import { Extractors } from './ixextractors.js';
 import { IXServices } from './IXServices.js';
