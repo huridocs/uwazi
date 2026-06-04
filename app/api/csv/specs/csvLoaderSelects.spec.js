@@ -12,6 +12,7 @@ import { CSVLoader } from '../csvLoader.js';
 import { ArrangeThesauriError } from '../arrangeThesauri.js';
 
 const load = (instance, ...args) => testingEnvironment.runWithContext(() => instance.load(...args));
+const getThesaurusById = id => testingEnvironment.runWithContext(() => thesauri.getById(id));
 
 const loader = new CSVLoader();
 
@@ -34,7 +35,7 @@ const getMetadataValues = (propertyName, entityList) =>
   getMetadataProperties(propertyName, entityList, 'value');
 
 const readThesaurusLabels = async thesaurisId => {
-  const thesaurus = await thesauri.getById(thesaurisId.toString());
+  const thesaurus = await getThesaurusById(thesaurisId.toString());
   return thesaurus.values.map(tv => [tv.label, (tv.values || []).map(v => v.label)]);
 };
 

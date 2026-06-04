@@ -48,7 +48,9 @@ describe('Preserve', () => {
           },
         ]);
         const thesauriId = template?.properties?.find(prop => prop.type === 'select')?.content;
-        const thesaurus = await thesauri.getById(thesauriId);
+        const thesaurus = await testingEnvironment.runWithContext(async () =>
+          thesauri.getById(thesauriId)
+        );
         expect(thesaurus?.name).toBe('Preserve');
       });
 

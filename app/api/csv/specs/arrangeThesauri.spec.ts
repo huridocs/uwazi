@@ -131,10 +131,14 @@ describe('arrangeThesauri', () => {
   let selectThesaurusId: string;
   let multiselectThesaurusId: string;
 
-  const arrange = (csvData: string, property = 'select_property') =>
+  const arrange = async (
+    csvData: string,
+    property = 'select_property',
+    thesaurusId = selectThesaurusId
+  ) =>
     testingEnvironment.runWithContext(async () => {
       const file = createMockImportFile(csvData);
-      return arrangeThesauri(
+      const mapping = await arrangeThesauri(
         file as any,
         template,
         false,
@@ -142,6 +146,8 @@ describe('arrangeThesauri', () => {
         { [property]: new Set(['en', 'es']) },
         'en'
       );
+      const updatedThesaurus = await thesauri.getById(thesaurusId);
+      return { mapping, updatedThesaurus };
     });
 
   beforeAll(async () => {
@@ -162,21 +168,17 @@ describe('arrangeThesauri', () => {
 
   describe('basic functionality', () => {
     it('should add new simple values to select thesaurus', async () => {
-      await arrange(
+      const { updatedThesaurus } = await arrange(
         'title,select_property__en,select_property__es\nentity1,New Value,New Value ES'
       );
-
-      const updatedThesaurus = await thesauri.getById(selectThesaurusId);
       expect(updatedThesaurus!.values).toHaveLength(5); // Original 4 + 1 new
       expect(updatedThesaurus!.values!.map(v => v.label)).toContain('New Value');
     });
 
     it('should add new parent-child values', async () => {
-      await arrange(
+      const { updatedThesaurus } = await arrange(
         'title,select_property__en,select_property__es\nentity1,New Parent::New Child,New Parent ES::New Child ES'
       );
-
-      const updatedThesaurus = await thesauri.getById(selectThesaurusId);
       const newParent = updatedThesaurus!.values!.find(v => v.label === 'New Parent');
       expect(newParent).toBeDefined();
       expect(newParent!.values).toHaveLength(1);
@@ -184,11 +186,9 @@ describe('arrangeThesauri', () => {
     });
 
     it('should not add duplicate values', async () => {
-      await arrange(
+      const { updatedThesaurus } = await arrange(
         'title,select_property__en,select_property__es\nentity1,Existing Value,Existing Value ES\nentity2,Existing Value,Existing Value ES'
       );
-
-      const updatedThesaurus = await thesauri.getById(selectThesaurusId);
       const existingValueCount = updatedThesaurus!.values!.filter(
         v => v.label === 'Existing Value'
       ).length;
@@ -198,11 +198,9 @@ describe('arrangeThesauri', () => {
 
   describe('sanitization scenarios', () => {
     it('should sanitize new values with leading/trailing spaces', async () => {
-      await arrange(
+      const { updatedThesaurus } = await arrange(
         'title,select_property__en,select_property__es\nentity1,  New Value With Spaces  ,  New Value ES  '
       );
-
-      const updatedThesaurus = await thesauri.getById(selectThesaurusId);
       // Should find the sanitized version (trimmed)
       const sanitizedValue = updatedThesaurus!.values!.find(
         v => v.label === 'New Value With Spaces'
@@ -216,11 +214,9 @@ describe('arrangeThesauri', () => {
     });
 
     it('should sanitize new nested values with spaces', async () => {
-      await arrange(
+      const { updatedThesaurus } = await arrange(
         'title,select_property__en,select_property__es\nentity1,  Unique Parent With Spaces  ::  Unique Child With Spaces  ,  Unique Parent ES  ::  Unique Child ES  '
       );
-
-      const updatedThesaurus = await thesauri.getById(selectThesaurusId);
 
       const newParent = updatedThesaurus!.values!.find(
         v => v.label === 'Unique Parent With Spaces'
@@ -237,11 +233,9 @@ describe('arrangeThesauri', () => {
     });
 
     it('should preserve existing unsanitized values', async () => {
-      await arrange(
+      const { updatedThesaurus } = await arrange(
         'title,select_property__en,select_property__es\nentity1,  Unsanitized Value  ,  Unsanitized Value ES  '
       );
-
-      const updatedThesaurus = await thesauri.getById(selectThesaurusId);
       // Should preserve the existing unsanitized value
       const existingUnsanitized = updatedThesaurus!.values!.find(
         v => v.label === '  Unsanitized Value  '
@@ -253,11 +247,9 @@ describe('arrangeThesauri', () => {
     });
 
     it('should preserve existing unsanitized nested values', async () => {
-      await arrange(
+      const { updatedThesaurus } = await arrange(
         'title,select_property__en,select_property__es\nentity1,  Parent With Spaces  ::  Child With Spaces  ,  Parent ES  ::  Child ES  '
       );
-
-      const updatedThesaurus = await thesauri.getById(selectThesaurusId);
       // Should preserve the existing unsanitized parent
       const existingUnsanitizedParent = updatedThesaurus!.values!.find(
         v => v.label === '  Parent With Spaces  '
@@ -268,11 +260,9 @@ describe('arrangeThesauri', () => {
     });
 
     it('should handle case-insensitive matching for existing values', async () => {
-      await arrange(
+      const { updatedThesaurus } = await arrange(
         'title,select_property__en,select_property__es\nentity1,EXISTING VALUE,EXISTING VALUE ES'
       );
-
-      const updatedThesaurus = await thesauri.getById(selectThesaurusId);
       // Should not create a new value since it matches existing (case-insensitive)
       const existingValueCount = updatedThesaurus!.values!.filter(
         v => v.label === 'Existing Value'
@@ -284,12 +274,11 @@ describe('arrangeThesauri', () => {
     });
 
     it('should sanitize multiselect values with spaces', async () => {
-      await arrange(
+      const { updatedThesaurus } = await arrange(
         'title,multi_select_property__en,multi_select_property__es\nentity1,  Value1  |  Value2  ,  Value1 ES  |  Value2 ES  ',
-        'multi_select_property'
+        'multi_select_property',
+        multiselectThesaurusId
       );
-
-      const updatedThesaurus = await thesauri.getById(multiselectThesaurusId);
       expect(updatedThesaurus!.values!.map(v => v.label)).toContain('Value1');
       expect(updatedThesaurus!.values!.map(v => v.label)).toContain('Value2');
 
@@ -301,12 +290,11 @@ describe('arrangeThesauri', () => {
     });
 
     it('should preserve existing unsanitized multiselect values', async () => {
-      await arrange(
+      const { updatedThesaurus } = await arrange(
         'title,multi_select_property__en,multi_select_property__es\nentity1,  Unsanitized Multi Value  ,  Unsanitized Multi Value ES  ',
-        'multi_select_property'
+        'multi_select_property',
+        multiselectThesaurusId
       );
-
-      const updatedThesaurus = await thesauri.getById(multiselectThesaurusId);
       // Should preserve the existing unsanitized value
       const existingUnsanitized = updatedThesaurus!.values!.find(
         v => v.label === '  Unsanitized Multi Value  '
@@ -320,11 +308,9 @@ describe('arrangeThesauri', () => {
     });
 
     it('should handle mixed sanitized and unsanitized values in same CSV', async () => {
-      await arrange(
+      const { updatedThesaurus } = await arrange(
         'title,select_property__en,select_property__es\nentity1,  New Sanitized Value  ,  New Sanitized Value ES  \nentity2,  Unsanitized Value  ,  Unsanitized Value ES  '
       );
-
-      const updatedThesaurus = await thesauri.getById(selectThesaurusId);
 
       // Should add new sanitized value
       const newSanitized = updatedThesaurus!.values!.find(v => v.label === 'New Sanitized Value');
@@ -456,12 +442,11 @@ describe('arrangeThesauri', () => {
 
   describe('multiselect handling', () => {
     it('should handle multiple values in single cell', async () => {
-      await arrange(
+      const { updatedThesaurus } = await arrange(
         'title,multi_select_property__en,multi_select_property__es\nentity1,Value1|Value2,Value1 ES|Value2 ES',
-        'multi_select_property'
+        'multi_select_property',
+        multiselectThesaurusId
       );
-
-      const updatedThesaurus = await thesauri.getById(multiselectThesaurusId);
       expect(updatedThesaurus!.values!.map(v => v.label)).toContain('Value1');
       expect(updatedThesaurus!.values!.map(v => v.label)).toContain('Value2');
     });
@@ -469,14 +454,14 @@ describe('arrangeThesauri', () => {
 
   describe('return value', () => {
     it('should return mapping of property names to thesaurus IDs', async () => {
-      const result = await arrange(
+      const { mapping } = await arrange(
         'title,select_property__en,select_property__es\nentity1,New Value,New Value ES'
       );
 
-      expect(result).toHaveProperty('select_property');
-      expect(result).toHaveProperty('multi_select_property');
-      expect(result.select_property).toBe(selectThesaurusId);
-      expect(result.multi_select_property).toBe(multiselectThesaurusId);
+      expect(mapping).toHaveProperty('select_property');
+      expect(mapping).toHaveProperty('multi_select_property');
+      expect(mapping.select_property).toBe(selectThesaurusId);
+      expect(mapping.multi_select_property).toBe(multiselectThesaurusId);
     });
   });
 });

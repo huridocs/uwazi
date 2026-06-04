@@ -16,6 +16,9 @@ import fixtures, { template1Id } from './csvLoaderFixtures.js';
 import { mockCsvFileReadStream } from './helpers.js';
 
 const load = (instance, ...args) => testingEnvironment.runWithContext(() => instance.load(...args));
+const loadTranslations = (instance, ...args) =>
+  testingEnvironment.runWithContext(() => instance.loadTranslations(...args));
+const getThesaurusById = id => testingEnvironment.runWithContext(() => thesauri.getById(id));
 
 describe('csvLoader', () => {
   const csvFile = path.join(__dirname, '/test.csv');
@@ -63,7 +66,7 @@ describe('csvLoader', () => {
 
     it('should set all translations from csv', async () => {
       readStreamMock = mockCsvFileReadStream(csv);
-      await loader.loadTranslations('mockedFileFromString', 'System');
+      await loadTranslations(loader, 'mockedFileFromString', 'System');
       const [english, spanish, french] = await translations.get();
       expect(english.contexts.find(c => c.id === 'System').values).toEqual({
         'original 1': 'value 1',
@@ -86,7 +89,7 @@ describe('csvLoader', () => {
       readStreamMock = mockCsvFileReadStream(csv);
       await settings.addLanguage({ key: 'aa', label: 'Afar' });
       await translations.addLanguage('aa');
-      await loader.loadTranslations('mockedFileFromString', 'System');
+      await loadTranslations(loader, 'mockedFileFromString', 'System');
       const [afar] = await translations.get({ locale: 'aa' });
       expect(afar.contexts.find(c => c.id === 'System').values).toEqual({
         'original 1': 'original 1',
@@ -99,7 +102,7 @@ describe('csvLoader', () => {
       const localCsv = `Key, English,
                         original 1, value 1`;
       readStreamMock = mockCsvFileReadStream(localCsv);
-      await loader.loadTranslations('mockedFileFromString', 'System');
+      await loadTranslations(loader, 'mockedFileFromString', 'System');
 
       const [english] = await translations.get();
       expect(english.contexts.find(c => c.id === 'System').values).toEqual({
@@ -112,7 +115,7 @@ describe('csvLoader', () => {
       const localCsv = `Key, English, Spanish
                         original 1,, sp value 1`;
       readStreamMock = mockCsvFileReadStream(localCsv);
-      await loader.loadTranslations('mockedFileFromString', 'System');
+      await loadTranslations(loader, 'mockedFileFromString', 'System');
 
       const [english, spanish] = await translations.get();
       expect(english.contexts.find(c => c.id === 'System').values).toEqual({
@@ -202,12 +205,12 @@ describe('csvLoader', () => {
       expect(newEntity.metadata.select_label[0].label).toBe('new_select_value');
       expect(newEntity.metadata.multi_select_label).toBeDefined();
 
-      const selectThesaurus = await thesauri.getById(
+      const selectThesaurus = await getThesaurusById(
         fixtures.dictionaries.find(d => d.name === 'thesauri1')._id
       );
       const selectLabels = selectThesaurus.values.map(v => v.label.trim());
       expect(selectLabels).toContain('new_select_value');
-      const multiselectThesaurus = await thesauri.getById(
+      const multiselectThesaurus = await getThesaurusById(
         fixtures.dictionaries.find(d => d.name === 'multi_select_thesaurus')._id
       );
       const multiLabels = multiselectThesaurus.values.map(v => v.label.trim());
@@ -402,9 +405,8 @@ describe('csvLoader', () => {
     });
 
     it('should update the entity', async () => {
-      const entity = await entities.save(
-        { title: 'entity4444', template: template1Id },
-        { user: {}, language: 'en' }
+      const entity = await testingEnvironment.runWithContext(() =>
+        entities.save({ title: 'entity4444', template: template1Id }, { user: {}, language: 'en' })
       );
       const csv = `id                , title    ,
                    ${entity.sharedId}, new title,

@@ -472,7 +472,7 @@ describe('UpdateThesaurusUseCase', () => {
 
     it('should revert when thesaurus update fails', async () => {
       const thesaurus = await testingEnvironment.runWithContext(
-        () => {
+        async () => {
           const tm = ExecutionContext.transactionManager as MongoTransactionManager;
           return ThesauriDataSourceFactory.default({ transactionManager: tm })
             .getById(factory.id('countries').toString())

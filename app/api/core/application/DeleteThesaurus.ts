@@ -1,4 +1,4 @@
-import { ThesaurusNotFoundError, ThesaurusInUseError } from '../domain/thesaurus/errors.js';
+import { ThesaurusInUseError } from '../domain/thesaurus/errors.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { ThesauriDataSource } from './contracts/ThesauriDataSource.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';

@@ -249,8 +249,9 @@ const thesauri = {
       optionsCount: countPerTemplate[template._id.toString()],
     });
   },
-  getById(id) {
-    return model.getById(id);
+  async getById(id) {
+    const [dictionary] = await ThesauriDAOFactory.default().get([id]);
+    return dictionary;
   },
 
   async get(thesauriId, language, user) {
@@ -289,6 +290,10 @@ const thesauri = {
     return {
       rows: dictionaries,
     };
+  },
+
+  dictionaries() {
+    return ThesauriDAOFactory.default().get();
   },
 
   delete(id) {

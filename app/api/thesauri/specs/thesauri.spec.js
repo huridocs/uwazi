@@ -161,6 +161,8 @@ describe('thesauri', () => {
     });
   });
 
+  const getById = id => testingEnvironment.runWithContext(() => thesauri.getById(id));
+
   describe('save', () => {
     beforeEach(() => {
       jest.spyOn(translations, 'updateContext').mockImplementation(async () => Promise.resolve());
@@ -227,7 +229,7 @@ describe('thesauri', () => {
         const data = { _id: dictionaryId, name: 'changed name' };
         await thesauri.save(data);
 
-        const edited = await thesauri.getById(dictionaryId);
+        const edited = await getById(dictionaryId);
         expect(edited.name).toBe('changed name');
         translations.addContext.mockRestore();
       });
@@ -266,7 +268,7 @@ describe('thesauri', () => {
 
       it('should properly delete values when thesauri have subgroups', async () => {
         jest.spyOn(entities, 'deleteThesaurusFromMetadata').mockImplementation(() => {});
-        const thesaurus = await thesauri.getById(dictionaryWithValueGroups);
+        const thesaurus = await getById(dictionaryWithValueGroups);
         thesaurus.values = thesaurus.values.filter(value => value.id !== '3');
 
         await thesauri.save(thesaurus);
