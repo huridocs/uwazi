@@ -20,6 +20,17 @@ const PAGE_TITLE = `E2E Custom Page ${Date.now()}`;
 const HTML_MARKER_TEXT = `E2E marker ${Date.now()}`;
 const HTML_MARKER_CONTENT = `<h1>${HTML_MARKER_TEXT}</h1>`;
 
+/** ToggleButton hides the input; click via accessible name (label text), not data-testid. */
+const entityViewCheckbox = (page: Page) =>
+  page.getByRole('checkbox', { name: /entity view page/i });
+
+async function setEntityView(page: Page, enabled: boolean) {
+  const checkbox = entityViewCheckbox(page);
+  if ((await checkbox.isChecked()) !== enabled) {
+    await checkbox.click({ force: true });
+  }
+}
+
 test('pages contract creates a custom page that renders at its URL', async ({ page }) => {
   test.setTimeout(3 * 60 * 1000);
 
@@ -48,6 +59,15 @@ test('pages contract creates a custom page that renders at its URL', async ({ pa
     const titleInput = page.locator('[id^="title-"]').first();
     await expect(titleInput).toBeVisible();
     await titleInput.fill(PAGE_TITLE);
+    await page.waitForTimeout(500);
+    await expect(titleInput).toHaveValue(PAGE_TITLE);
+
+    await setEntityView(page, true);
+    await page.waitForTimeout(500);
+    await expect(entityViewCheckbox(page)).toBeChecked();
+    await setEntityView(page, false);
+    await page.waitForTimeout(500);
+    await expect(entityViewCheckbox(page)).not.toBeChecked();
 
     await page.getByRole('tab', { name: 'HTML' }).click();
     await page.locator('.monaco-editor').first().click();
@@ -97,5 +117,51 @@ test('pages contract creates a custom page that renders at its URL', async ({ pa
     await gotoWithRetry(draftPageUrl, page);
     await expect(page).toHaveURL(new RegExp(`${draftPageUrl}$`));
     await expect(page.getByRole('heading', { name: HTML_MARKER_TEXT })).toBeVisible();
+  });
+});
+
+const ENTITY_VIEW_PAGE_TITLE = `E2E Entity View Page ${Date.now()}`;
+
+test('pages contract entity view page shows publish and restore after save', async ({ page }) => {
+  test.setTimeout(3 * 60 * 1000);
+
+  await test.step('Login and navigate to Pages settings', async () => {
+    await loginAsAdmin(page);
+    await gotoWithRetry('/settings/pages', page);
+    await expect(page.getByTestId('settings-pages')).toBeVisible();
+  });
+
+  await test.step('Create entity view page and save', async () => {
+    await page.getByRole('link', { name: 'Add page' }).click();
+    await expect(page).toHaveURL(/\/settings\/pages\/new/);
+
+    const titleInput = page.locator('[id^="title-"]').first();
+    await expect(titleInput).toBeVisible();
+    await titleInput.fill(ENTITY_VIEW_PAGE_TITLE);
+    await page.waitForTimeout(500);
+    await expect(titleInput).toHaveValue(ENTITY_VIEW_PAGE_TITLE);
+
+    await setEntityView(page, true);
+    await page.waitForTimeout(500);
+    await expect(entityViewCheckbox(page)).toBeChecked();
+
+    const saveResponsePromise = page.waitForResponse(
+      response =>
+        response.url().includes('/api/pages') &&
+        response.request().method() === 'POST' &&
+        response.status() === 200
+    );
+    await page.getByRole('button', { name: /^Save$/ }).click();
+    await saveResponsePromise;
+
+    await expect(page.getByText('Saved successfully').first()).toBeVisible();
+    await expect(page).toHaveURL(/\/settings\/pages\/edit\/[a-z0-9]+/i);
+  });
+
+  await test.step('Configuration shows Publish and Restore for entity view page', async () => {
+    await page.getByRole('tab', { name: 'Configuration' }).click();
+    await expect(page.getByRole('button', { name: 'Publish' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Restore' })).toBeVisible();
+    await expect(page.locator('[id^="page-url-"]')).toHaveCount(0);
   });
 });
