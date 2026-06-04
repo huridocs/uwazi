@@ -1,33 +1,29 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router';
+import React, { useState } from 'react';
+import { useLoaderData, useLocation } from 'react-router';
 import { Translate } from '#app/I18N/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.js';
-import { Entity } from '#V2/api/entities/types.js';
 import { Button } from '#V2/Components/UI/index.js';
+import type { LoaderResponse } from '../types.js';
+import { EditEntity } from '../EntityEditor/EditEntity.js';
 
-const MetadataPanel = ({
-  entity,
-  headerLayout,
-}: {
-  entity: Entity;
-  headerLayout?: 'inline' | 'stacked';
-}) => {
+const MetadataPanel = ({ headerLayout }: { headerLayout?: 'inline' | 'stacked' }) => {
   const { search } = useLocation();
+  const { entity } = (useLoaderData() as LoaderResponse) || {};
+  const [editMode, setEditMode] = useState(false);
 
   return (
     <Panel>
       <Panel.Body>
-        <MetadataDisplay entity={entity} headerLayout={headerLayout} />
+        {entity && !editMode && <MetadataDisplay entity={entity} headerLayout={headerLayout} />}
+        {editMode && <EditEntity entity={entity} />}
       </Panel.Body>
       <Panel.Footer>
         <div className="flex flex-row items-center justify-between w-full gap-(--spacing-theme-3)">
           <div className="flex gap-(--spacing-theme-2)">
-            <Link to={{ pathname: 'edit', search }}>
-              <Button variant="secondary">
-                <Translate>Edit</Translate>
-              </Button>
-            </Link>
+            <Button variant="secondary" onClick={() => setEditMode(true)}>
+              <Translate>Edit</Translate>
+            </Button>
             <Button variant="secondary">
               <Translate>Share</Translate>
             </Button>

@@ -1,14 +1,6 @@
-import { useLoaderData } from 'react-router';
-import type { LoaderResponse } from './types.js';
+import { Entity } from '#V2/api/entities/types.js';
 
-const EditEntity = () => {
-  const { entity, error } = (useLoaderData() as LoaderResponse) || {};
-  console.log(entity);
-
-  if (error) {
-    return 'error loading';
-  }
-
+const EditEntity = ({ entity }: { entity?: Entity }) => {
   return entity?._id;
 };
 
