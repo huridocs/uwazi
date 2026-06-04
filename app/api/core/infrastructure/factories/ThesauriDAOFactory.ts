@@ -1,8 +1,8 @@
 import { tenants } from '#api/tenants/tenantContext.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoThesauriDAO } from '../mongodb/thesauri/MongoThesauriDAO.js';
+import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { PostgresThesauriDAO } from '../postgresql/thesaurus/PostgresThesauriDAO.js';
 import { PostgresConnectionFactory } from './PostgresConnectionFactory.js';
 

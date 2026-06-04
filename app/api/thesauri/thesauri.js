@@ -19,6 +19,7 @@ import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
 import model from './dictionariesModel.js';
 import { validateThesauri } from './validateThesauri.js';
+import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
 
 const autoincrementValuesId = thesauri => {
   thesauri.values = generateIds(thesauri.values);
@@ -253,12 +254,17 @@ const thesauri = {
   },
 
   async get(thesauriId, language, user) {
+    let ids;
     let query;
-    if (thesauriId) {
+    if (Array.isArray(thesauriId)) {
+      ids = thesauriId.length ? thesauriId : undefined;
+      query = thesauriId.length ? { _id: { $in: thesauriId } } : undefined;
+    } else if (thesauriId) {
+      ids = [thesauriId];
       query = { _id: thesauriId };
     }
 
-    const dictionaries = await model.get(query);
+    const dictionaries = await ThesauriDAOFactory.default().get(ids);
     const allTemplates = await templates.get(query);
 
     if (allTemplates.length && language) {
@@ -283,10 +289,6 @@ const thesauri = {
     return {
       rows: dictionaries,
     };
-  },
-
-  dictionaries(query) {
-    return model.get(query);
   },
 
   delete(id) {

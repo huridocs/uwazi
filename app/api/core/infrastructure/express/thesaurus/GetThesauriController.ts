@@ -12,12 +12,7 @@ class GetThesauriController extends AbstractController {
 
     const { _id } = RequestSchema.parse(this.request.query);
 
-    const filter: { _id?: string } = {};
-    if (_id) {
-      filter._id = _id;
-    }
-
-    const dictionaries = await dao.get(filter);
+    const dictionaries = await dao.get(_id ? [_id] : undefined);
 
     this.response.json({ rows: dictionaries });
   }

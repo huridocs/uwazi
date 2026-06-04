@@ -10,11 +10,11 @@ class PostgresThesauriDAO extends PostgresDataSource {
     super({ pool: deps.pool, mongoDb: deps.mongoDb, syncNamespace: 'dictionaries' });
   }
 
-  async get(query?: { _id?: string }): Promise<ThesaurusRow[]> {
-    if (query?._id) {
+  async get(ids?: string[]): Promise<ThesaurusRow[]> {
+    if (ids && ids.length) {
       const result = await this.query<ThesaurusRow>(
-        `SELECT * FROM ${this.tableName} WHERE "_id" = $1`,
-        [query._id]
+        `SELECT * FROM ${this.tableName} WHERE "_id" = ANY($1)`,
+        [ids]
       );
       return result.rows;
     }

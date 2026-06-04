@@ -67,9 +67,9 @@ const setupProperties = async (
     Object.keys(_languagesPerHeader).filter(h => propNames.has(h))
   );
 
-  const allRelatedThesauri = await thesauri.get({
-    $in: Object.values(propNameToThesauriId),
-  });
+  const allRelatedThesauri = (await thesauri.get(
+    Object.values(propNameToThesauriId)
+  )) as WithId<ThesaurusSchema>[];
 
   return {
     propNameToThesauriId,

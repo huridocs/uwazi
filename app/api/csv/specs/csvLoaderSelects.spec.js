@@ -11,6 +11,8 @@ import { fixtures } from './csvLoaderSelectsFixtures.js';
 import { CSVLoader } from '../csvLoader.js';
 import { ArrangeThesauriError } from '../arrangeThesauri.js';
 
+const load = (instance, ...args) => testingEnvironment.runWithContext(() => instance.load(...args));
+
 const loader = new CSVLoader();
 
 const getMetadataProperties = (propertyName, entityList, prop) =>
@@ -63,7 +65,8 @@ describe('loader', () => {
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, 'csv_loader_selects.index');
-    await loader.load(
+    await load(
+      loader,
       path.join(__dirname, '/arrangeThesauriTest.csv'),
       fixtureFactory.id('template')
     );
@@ -357,7 +360,8 @@ describe('loader', () => {
 
   it('should not allow importing existing group labels alone', async () => {
     try {
-      await loader.load(
+      await load(
+        loader,
         path.join(__dirname, '/arrangeThesauriGroupErrorCase.csv'),
         fixtureFactory.id('template')
       );

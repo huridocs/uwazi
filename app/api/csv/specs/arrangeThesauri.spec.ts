@@ -131,6 +131,19 @@ describe('arrangeThesauri', () => {
   let selectThesaurusId: string;
   let multiselectThesaurusId: string;
 
+  const arrange = (csvData: string, property = 'select_property') =>
+    testingEnvironment.runWithContext(async () => {
+      const file = createMockImportFile(csvData);
+      return arrangeThesauri(
+        file as any,
+        template,
+        false,
+        [],
+        { [property]: new Set(['en', 'es']) },
+        'en'
+      );
+    });
+
   beforeAll(async () => {
     const fixtures = createTestFixtures();
     selectThesaurusId = fixtures.dictionaries[0]._id.toString();
@@ -149,22 +162,8 @@ describe('arrangeThesauri', () => {
 
   describe('basic functionality', () => {
     it('should add new simple values to select thesaurus', async () => {
-      const csvData =
-        'title,select_property__en,select_property__es\nentity1,New Value,New Value ES';
-      const file = createMockImportFile(csvData);
-
-      const headersWithoutLanguage: string[] = [];
-      const languagesPerHeader = {
-        select_property: new Set(['en', 'es']),
-      };
-
-      await arrangeThesauri(
-        file as any,
-        template,
-        false,
-        headersWithoutLanguage,
-        languagesPerHeader,
-        'en'
+      await arrange(
+        'title,select_property__en,select_property__es\nentity1,New Value,New Value ES'
       );
 
       const updatedThesaurus = await thesauri.getById(selectThesaurusId);
@@ -173,22 +172,8 @@ describe('arrangeThesauri', () => {
     });
 
     it('should add new parent-child values', async () => {
-      const csvData =
-        'title,select_property__en,select_property__es\nentity1,New Parent::New Child,New Parent ES::New Child ES';
-      const file = createMockImportFile(csvData);
-
-      const headersWithoutLanguage: string[] = [];
-      const languagesPerHeader = {
-        select_property: new Set(['en', 'es']),
-      };
-
-      await arrangeThesauri(
-        file as any,
-        template,
-        false,
-        headersWithoutLanguage,
-        languagesPerHeader,
-        'en'
+      await arrange(
+        'title,select_property__en,select_property__es\nentity1,New Parent::New Child,New Parent ES::New Child ES'
       );
 
       const updatedThesaurus = await thesauri.getById(selectThesaurusId);
@@ -199,22 +184,8 @@ describe('arrangeThesauri', () => {
     });
 
     it('should not add duplicate values', async () => {
-      const csvData =
-        'title,select_property__en,select_property__es\nentity1,Existing Value,Existing Value ES\nentity2,Existing Value,Existing Value ES';
-      const file = createMockImportFile(csvData);
-
-      const headersWithoutLanguage: string[] = [];
-      const languagesPerHeader = {
-        select_property: new Set(['en', 'es']),
-      };
-
-      await arrangeThesauri(
-        file as any,
-        template,
-        false,
-        headersWithoutLanguage,
-        languagesPerHeader,
-        'en'
+      await arrange(
+        'title,select_property__en,select_property__es\nentity1,Existing Value,Existing Value ES\nentity2,Existing Value,Existing Value ES'
       );
 
       const updatedThesaurus = await thesauri.getById(selectThesaurusId);
@@ -227,22 +198,8 @@ describe('arrangeThesauri', () => {
 
   describe('sanitization scenarios', () => {
     it('should sanitize new values with leading/trailing spaces', async () => {
-      const csvData =
-        'title,select_property__en,select_property__es\nentity1,  New Value With Spaces  ,  New Value ES  ';
-      const file = createMockImportFile(csvData);
-
-      const headersWithoutLanguage: string[] = [];
-      const languagesPerHeader = {
-        select_property: new Set(['en', 'es']),
-      };
-
-      await arrangeThesauri(
-        file as any,
-        template,
-        false,
-        headersWithoutLanguage,
-        languagesPerHeader,
-        'en'
+      await arrange(
+        'title,select_property__en,select_property__es\nentity1,  New Value With Spaces  ,  New Value ES  '
       );
 
       const updatedThesaurus = await thesauri.getById(selectThesaurusId);
@@ -259,22 +216,8 @@ describe('arrangeThesauri', () => {
     });
 
     it('should sanitize new nested values with spaces', async () => {
-      const csvData =
-        'title,select_property__en,select_property__es\nentity1,  Unique Parent With Spaces  ::  Unique Child With Spaces  ,  Unique Parent ES  ::  Unique Child ES  ';
-      const file = createMockImportFile(csvData);
-
-      const headersWithoutLanguage: string[] = [];
-      const languagesPerHeader = {
-        select_property: new Set(['en', 'es']),
-      };
-
-      await arrangeThesauri(
-        file as any,
-        template,
-        false,
-        headersWithoutLanguage,
-        languagesPerHeader,
-        'en'
+      await arrange(
+        'title,select_property__en,select_property__es\nentity1,  Unique Parent With Spaces  ::  Unique Child With Spaces  ,  Unique Parent ES  ::  Unique Child ES  '
       );
 
       const updatedThesaurus = await thesauri.getById(selectThesaurusId);
@@ -294,22 +237,8 @@ describe('arrangeThesauri', () => {
     });
 
     it('should preserve existing unsanitized values', async () => {
-      const csvData =
-        'title,select_property__en,select_property__es\nentity1,  Unsanitized Value  ,  Unsanitized Value ES  ';
-      const file = createMockImportFile(csvData);
-
-      const headersWithoutLanguage: string[] = [];
-      const languagesPerHeader = {
-        select_property: new Set(['en', 'es']),
-      };
-
-      await arrangeThesauri(
-        file as any,
-        template,
-        false,
-        headersWithoutLanguage,
-        languagesPerHeader,
-        'en'
+      await arrange(
+        'title,select_property__en,select_property__es\nentity1,  Unsanitized Value  ,  Unsanitized Value ES  '
       );
 
       const updatedThesaurus = await thesauri.getById(selectThesaurusId);
@@ -324,22 +253,8 @@ describe('arrangeThesauri', () => {
     });
 
     it('should preserve existing unsanitized nested values', async () => {
-      const csvData =
-        'title,select_property__en,select_property__es\nentity1,  Parent With Spaces  ::  Child With Spaces  ,  Parent ES  ::  Child ES  ';
-      const file = createMockImportFile(csvData);
-
-      const headersWithoutLanguage: string[] = [];
-      const languagesPerHeader = {
-        select_property: new Set(['en', 'es']),
-      };
-
-      await arrangeThesauri(
-        file as any,
-        template,
-        false,
-        headersWithoutLanguage,
-        languagesPerHeader,
-        'en'
+      await arrange(
+        'title,select_property__en,select_property__es\nentity1,  Parent With Spaces  ::  Child With Spaces  ,  Parent ES  ::  Child ES  '
       );
 
       const updatedThesaurus = await thesauri.getById(selectThesaurusId);
@@ -353,22 +268,8 @@ describe('arrangeThesauri', () => {
     });
 
     it('should handle case-insensitive matching for existing values', async () => {
-      const csvData =
-        'title,select_property__en,select_property__es\nentity1,EXISTING VALUE,EXISTING VALUE ES';
-      const file = createMockImportFile(csvData);
-
-      const headersWithoutLanguage: string[] = [];
-      const languagesPerHeader = {
-        select_property: new Set(['en', 'es']),
-      };
-
-      await arrangeThesauri(
-        file as any,
-        template,
-        false,
-        headersWithoutLanguage,
-        languagesPerHeader,
-        'en'
+      await arrange(
+        'title,select_property__en,select_property__es\nentity1,EXISTING VALUE,EXISTING VALUE ES'
       );
 
       const updatedThesaurus = await thesauri.getById(selectThesaurusId);
@@ -383,22 +284,9 @@ describe('arrangeThesauri', () => {
     });
 
     it('should sanitize multiselect values with spaces', async () => {
-      const csvData =
-        'title,multi_select_property__en,multi_select_property__es\nentity1,  Value1  |  Value2  ,  Value1 ES  |  Value2 ES  ';
-      const file = createMockImportFile(csvData);
-
-      const headersWithoutLanguage: string[] = [];
-      const languagesPerHeader = {
-        multi_select_property: new Set(['en', 'es']),
-      };
-
-      await arrangeThesauri(
-        file as any,
-        template,
-        false,
-        headersWithoutLanguage,
-        languagesPerHeader,
-        'en'
+      await arrange(
+        'title,multi_select_property__en,multi_select_property__es\nentity1,  Value1  |  Value2  ,  Value1 ES  |  Value2 ES  ',
+        'multi_select_property'
       );
 
       const updatedThesaurus = await thesauri.getById(multiselectThesaurusId);
@@ -413,22 +301,9 @@ describe('arrangeThesauri', () => {
     });
 
     it('should preserve existing unsanitized multiselect values', async () => {
-      const csvData =
-        'title,multi_select_property__en,multi_select_property__es\nentity1,  Unsanitized Multi Value  ,  Unsanitized Multi Value ES  ';
-      const file = createMockImportFile(csvData);
-
-      const headersWithoutLanguage: string[] = [];
-      const languagesPerHeader = {
-        multi_select_property: new Set(['en', 'es']),
-      };
-
-      await arrangeThesauri(
-        file as any,
-        template,
-        false,
-        headersWithoutLanguage,
-        languagesPerHeader,
-        'en'
+      await arrange(
+        'title,multi_select_property__en,multi_select_property__es\nentity1,  Unsanitized Multi Value  ,  Unsanitized Multi Value ES  ',
+        'multi_select_property'
       );
 
       const updatedThesaurus = await thesauri.getById(multiselectThesaurusId);
@@ -445,22 +320,8 @@ describe('arrangeThesauri', () => {
     });
 
     it('should handle mixed sanitized and unsanitized values in same CSV', async () => {
-      const csvData =
-        'title,select_property__en,select_property__es\nentity1,  New Sanitized Value  ,  New Sanitized Value ES  \nentity2,  Unsanitized Value  ,  Unsanitized Value ES  ';
-      const file = createMockImportFile(csvData);
-
-      const headersWithoutLanguage: string[] = [];
-      const languagesPerHeader = {
-        select_property: new Set(['en', 'es']),
-      };
-
-      await arrangeThesauri(
-        file as any,
-        template,
-        false,
-        headersWithoutLanguage,
-        languagesPerHeader,
-        'en'
+      await arrange(
+        'title,select_property__en,select_property__es\nentity1,  New Sanitized Value  ,  New Sanitized Value ES  \nentity2,  Unsanitized Value  ,  Unsanitized Value ES  '
       );
 
       const updatedThesaurus = await thesauri.getById(selectThesaurusId);
@@ -483,23 +344,9 @@ describe('arrangeThesauri', () => {
 
   describe('error handling', () => {
     it('should throw ArrangeThesauriError when trying to add standalone group label', async () => {
-      const csvData =
-        'title,select_property__en,select_property__es\nentity1,Parent Group,Parent Group ES';
-      const file = createMockImportFile(csvData);
-
-      const headersWithoutLanguage: string[] = [];
-      const languagesPerHeader = {
-        select_property: new Set(['en', 'es']),
-      };
-
       await expect(
-        arrangeThesauri(
-          file as any,
-          template,
-          false,
-          headersWithoutLanguage,
-          languagesPerHeader,
-          'en'
+        arrange(
+          'title,select_property__en,select_property__es\nentity1,Parent Group,Parent Group ES'
         )
       ).rejects.toThrow(ArrangeThesauriError);
     });
@@ -555,7 +402,6 @@ describe('arrangeThesauri', () => {
           getById: jest.fn(),
         },
       }));
-
       const {
         arrangeThesauri: arrangeThesauriImported,
         ArrangeThesauriError: ArrangeThesauriErrorImported,
@@ -575,22 +421,8 @@ describe('arrangeThesauri', () => {
 
   describe('translations', () => {
     it('should save translations for new values', async () => {
-      const csvData =
-        'title,select_property__en,select_property__es\nentity1,New Value,New Value ES';
-      const file = createMockImportFile(csvData);
-
-      const headersWithoutLanguage: string[] = [];
-      const languagesPerHeader = {
-        select_property: new Set(['en', 'es']),
-      };
-
-      await arrangeThesauri(
-        file as any,
-        template,
-        false,
-        headersWithoutLanguage,
-        languagesPerHeader,
-        'en'
+      await arrange(
+        'title,select_property__en,select_property__es\nentity1,New Value,New Value ES'
       );
 
       const allTranslations = await translations.get();
@@ -605,22 +437,8 @@ describe('arrangeThesauri', () => {
     });
 
     it('should save translations for sanitized values', async () => {
-      const csvData =
-        'title,select_property__en,select_property__es\nentity1,  Sanitized Value  ,  Sanitized Value ES  ';
-      const file = createMockImportFile(csvData);
-
-      const headersWithoutLanguage: string[] = [];
-      const languagesPerHeader = {
-        select_property: new Set(['en', 'es']),
-      };
-
-      await arrangeThesauri(
-        file as any,
-        template,
-        false,
-        headersWithoutLanguage,
-        languagesPerHeader,
-        'en'
+      await arrange(
+        'title,select_property__en,select_property__es\nentity1,  Sanitized Value  ,  Sanitized Value ES  '
       );
 
       const allTranslations = await translations.get();
@@ -638,22 +456,9 @@ describe('arrangeThesauri', () => {
 
   describe('multiselect handling', () => {
     it('should handle multiple values in single cell', async () => {
-      const csvData =
-        'title,multi_select_property__en,multi_select_property__es\nentity1,Value1|Value2,Value1 ES|Value2 ES';
-      const file = createMockImportFile(csvData);
-
-      const headersWithoutLanguage: string[] = [];
-      const languagesPerHeader = {
-        multi_select_property: new Set(['en', 'es']),
-      };
-
-      await arrangeThesauri(
-        file as any,
-        template,
-        false,
-        headersWithoutLanguage,
-        languagesPerHeader,
-        'en'
+      await arrange(
+        'title,multi_select_property__en,multi_select_property__es\nentity1,Value1|Value2,Value1 ES|Value2 ES',
+        'multi_select_property'
       );
 
       const updatedThesaurus = await thesauri.getById(multiselectThesaurusId);
@@ -664,22 +469,8 @@ describe('arrangeThesauri', () => {
 
   describe('return value', () => {
     it('should return mapping of property names to thesaurus IDs', async () => {
-      const csvData =
-        'title,select_property__en,select_property__es\nentity1,New Value,New Value ES';
-      const file = createMockImportFile(csvData);
-
-      const headersWithoutLanguage: string[] = [];
-      const languagesPerHeader = {
-        select_property: new Set(['en', 'es']),
-      };
-
-      const result = await arrangeThesauri(
-        file as any,
-        template,
-        false,
-        headersWithoutLanguage,
-        languagesPerHeader,
-        'en'
+      const result = await arrange(
+        'title,select_property__en,select_property__es\nentity1,New Value,New Value ES'
       );
 
       expect(result).toHaveProperty('select_property');

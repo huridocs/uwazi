@@ -1,11 +1,11 @@
-import { Db, Filter, ObjectId } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { MongoDataSource } from '../common/MongoDataSource.js';
-import { MongoTransactionManager } from '../common/MongoTransactionManager.js';
 import { ThesaurusDBO } from './ThesaurusDBO.js';
 
 type Deps = {
   db: Db;
-  transactionManager: MongoTransactionManager;
+  transactionManager: TransactionManager;
 };
 
 class MongoThesauriDAO extends MongoDataSource<ThesaurusDBO> {
@@ -15,12 +15,14 @@ class MongoThesauriDAO extends MongoDataSource<ThesaurusDBO> {
     super(deps.db, deps.transactionManager);
   }
 
-  async get(query?: { _id?: string }): Promise<ThesaurusDBO[]> {
-    const filter: Filter<ThesaurusDBO> = {};
-    if (query?._id) {
-      filter._id = new ObjectId(query._id);
+  async get(ids?: string[]): Promise<ThesaurusDBO[]> {
+    if (ids && ids.length) {
+      const objectIds = ids.map(id => new ObjectId(id));
+      return this.getCollection()
+        .find({ _id: { $in: objectIds } })
+        .toArray();
     }
-    return this.getCollection().find(filter).toArray();
+    return this.getCollection().find({}).toArray();
   }
 }
 

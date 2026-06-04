@@ -15,6 +15,8 @@ import typeParsers from '../typeParsers.js';
 import fixtures, { template1Id } from './csvLoaderFixtures.js';
 import { mockCsvFileReadStream } from './helpers.js';
 
+const load = (instance, ...args) => testingEnvironment.runWithContext(() => instance.load(...args));
+
 describe('csvLoader', () => {
   const csvFile = path.join(__dirname, '/test.csv');
   const loader = new CSVLoader();
@@ -22,7 +24,7 @@ describe('csvLoader', () => {
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
-    await loader.load(csvFile, template1Id, { language: 'en' });
+    await load(loader, csvFile, template1Id, { language: 'en' });
     imported = await entities.get({ language: 'en' });
   });
 
@@ -36,7 +38,7 @@ describe('csvLoader', () => {
 
   describe('user', () => {
     it('should use the passed user', async () => {
-      await loader.load(csvFile, template1Id, { user: { username: 'user' }, language: 'en' });
+      await load(loader, csvFile, template1Id, { user: { username: 'user' }, language: 'en' });
       expect(entities.save.mock.calls[0][1].user).toEqual({ username: 'user' });
     });
   });
@@ -137,7 +139,7 @@ describe('csvLoader', () => {
         events.push(entity.title);
       });
       try {
-        await loader.load(csvFile, template1Id, { language: 'en' });
+        await load(loader, csvFile, template1Id, { language: 'en' });
       } catch (e) {
         throw loader.errors()[Object.keys(loader.errors())[0]];
       }
@@ -304,7 +306,7 @@ describe('csvLoader', () => {
       });
 
       try {
-        await testingLoader.load(csvFile, template1Id);
+        await load(testingLoader, csvFile, template1Id);
         throw new Error('should fail');
       } catch (e) {
         expect(e).toEqual(new Error('error-title1'));
@@ -320,7 +322,7 @@ describe('csvLoader', () => {
         .mockImplementationOnce(({ title }) => Promise.reject(new Error(`error-${title}`)));
 
       try {
-        await testingLoader.load(csvFile, template1Id);
+        await load(testingLoader, csvFile, template1Id);
         throw new Error('should fail');
       } catch (e) {
         expect(e).toEqual(new Error('error-title2'));
@@ -348,7 +350,7 @@ describe('csvLoader', () => {
       });
 
       try {
-        await testingLoader.load(csvFile, template1Id);
+        await load(testingLoader, csvFile, template1Id);
       } catch (e) {
         expect(eventErrors).toEqual({
           title1: new Error('error-title1'),
@@ -361,7 +363,7 @@ describe('csvLoader', () => {
       const testingLoader = new CSVLoader({ stopOnError: false });
 
       try {
-        await testingLoader.load(csvFile, template1Id);
+        await load(testingLoader, csvFile, template1Id);
         throw new Error('should fail');
       } catch (e) {
         expect(e.message).toMatch(/multiple errors/i);
@@ -383,7 +385,7 @@ describe('csvLoader', () => {
       const testingLoader = new CSVLoader({ stopOnError: false });
 
       try {
-        await testingLoader.load(csvFile, template1Id);
+        await load(testingLoader, csvFile, template1Id);
         throw new Error('should fail');
       } catch (e) {
         expect(testingLoader.errors()).toEqual({
@@ -409,7 +411,7 @@ describe('csvLoader', () => {
                                      , title2   ,`;
       const readStreamMock = mockCsvFileReadStream(csv);
       const testingLoader = new CSVLoader();
-      await testingLoader.load('mockedFileFromString', template1Id, { language: 'en' });
+      await load(testingLoader, 'mockedFileFromString', template1Id, { language: 'en' });
 
       const [expected] = await entities.get({
         sharedId: entity.sharedId,
@@ -435,7 +437,7 @@ describe('csvLoader', () => {
         const testingLoader = new CSVLoader();
 
         try {
-          await testingLoader.load('mockedFileFromString', template1Id, { language: 'en' });
+          await load(testingLoader, 'mockedFileFromString', template1Id, { language: 'en' });
         } catch (e) {
           expect(e.message).toEqual('validation failed');
           expect(e.errors[0].instancePath).toEqual('/title');
@@ -451,7 +453,7 @@ describe('csvLoader', () => {
         mockCsvFileReadStream(csv);
         const testingLoader = new CSVLoader();
 
-        await testingLoader.load('mockedFileFromString', templateWithGeneratedTitle, {
+        await load(testingLoader, 'mockedFileFromString', templateWithGeneratedTitle, {
           language: 'en',
         });
         const result = await entities.get({
@@ -468,7 +470,7 @@ describe('csvLoader', () => {
                      22`;
         mockCsvFileReadStream(csv);
         const testingLoader = new CSVLoader();
-        await testingLoader.load('mockedFileFromString', templateWithGeneratedTitle, {
+        await load(testingLoader, 'mockedFileFromString', templateWithGeneratedTitle, {
           language: 'en',
         });
         const result = await entities.get({
@@ -511,7 +513,7 @@ describe('csvLoader', () => {
       const selectedLanguageOnUserInterface = 'es';
       const expectedDate = moment.utc(dateOnCSV, [dateFormat.toUpperCase()]).unix();
 
-      await loader.load(csv, simpleTemplateId, { language: selectedLanguageOnUserInterface });
+      await load(loader, csv, simpleTemplateId, { language: selectedLanguageOnUserInterface });
 
       const [englishEntity] = await entities.get({ language: 'en' });
       const [spanishEntity] = await entities.get({ language: 'es' });
@@ -529,7 +531,7 @@ describe('csvLoader', () => {
       const selectedLanguageOnUserInterface = 'es';
       const expectedDate = moment.utc(dateOnCSV, [dateFormat.toUpperCase()]).unix();
 
-      await loader.load(csv, simpleTemplateId, { language: selectedLanguageOnUserInterface });
+      await load(loader, csv, simpleTemplateId, { language: selectedLanguageOnUserInterface });
 
       const [englishEntity] = await entities.get({ language: 'en' });
       const [spanishEntity] = await entities.get({ language: 'es' });
@@ -552,7 +554,7 @@ describe('csvLoader', () => {
 
       const readStreamMock = mockCsvFileReadStream(csv);
       const testingLoader = new CSVLoader();
-      await testingLoader.load('mockedFileFromString', template1Id, { language: 'en' });
+      await load(testingLoader, 'mockedFileFromString', template1Id, { language: 'en' });
 
       // Verify that the entities were imported successfully
       const sanitizedEntities = await entities.get({ language: 'en' });

@@ -32,45 +32,51 @@ describe('thesauri', () => {
 
   describe('get()', () => {
     it('should return all thesauri including entity templates as options', async () => {
-      search.indexEntities.mockRestore();
-      const elasticIndex = 'thesauri.spec.elastic.index';
-      await testingDB.setupFixturesAndContext(fixtures, elasticIndex);
-      const thesaurus = await thesauri.get(null, 'es');
-      expect(thesaurus[0]).toMatchObject({ name: 'dictionary' });
-      expect(thesaurus[1]).toMatchObject({ name: 'dictionary 2' });
+      await testingEnvironment.runWithContext(async () => {
+        search.indexEntities.mockRestore();
+        const elasticIndex = 'thesauri.spec.elastic.index';
+        await testingDB.setupFixturesAndContext(fixtures, elasticIndex);
+        const thesaurus = await thesauri.get(null, 'es');
+        expect(thesaurus[0]).toMatchObject({ name: 'dictionary' });
+        expect(thesaurus[1]).toMatchObject({ name: 'dictionary 2' });
 
-      expect(thesaurus[4]).toMatchObject({
-        name: 'entityTemplate',
-        values: [{ label: 'spanish entity' }],
-        optionsCount: 3,
-      });
+        expect(thesaurus[4]).toMatchObject({
+          name: 'entityTemplate',
+          values: [{ label: 'spanish entity' }],
+          optionsCount: 3,
+        });
 
-      expect(thesaurus[5]).toMatchObject({
-        name: 'documentTemplate',
-        values: [{ label: 'document' }, { label: 'document 2' }],
-        optionsCount: 2,
+        expect(thesaurus[5]).toMatchObject({
+          name: 'documentTemplate',
+          values: [{ label: 'document' }, { label: 'document 2' }],
+          optionsCount: 2,
+        });
       });
     });
 
     it('should return all thesauri including unpublished documents if user', async () => {
-      const elasticIndex = 'thesauri.spec.elastic.index';
-      await testingDB.setupFixturesAndContext(fixtures, elasticIndex);
-      const dictionaries = await thesauri.get(null, 'es', 'user');
-      expect(dictionaries.length).toBe(6);
-      expect(dictionaries[4].values.sort((a, b) => a.id.localeCompare(b.id))).toEqual([
-        { id: 'other', label: 'unpublished entity' },
-        { id: 'sharedId', label: 'spanish entity', icon: { type: 'Icon' } },
-        { id: 'sharedId2' },
-      ]);
+      await testingEnvironment.runWithContext(async () => {
+        const elasticIndex = 'thesauri.spec.elastic.index';
+        await testingDB.setupFixturesAndContext(fixtures, elasticIndex);
+        const dictionaries = await thesauri.get(null, 'es', 'user');
+        expect(dictionaries.length).toBe(6);
+        expect(dictionaries[4].values.sort((a, b) => a.id.localeCompare(b.id))).toEqual([
+          { id: 'other', label: 'unpublished entity' },
+          { id: 'sharedId', label: 'spanish entity', icon: { type: 'Icon' } },
+          { id: 'sharedId2' },
+        ]);
+      });
     });
 
     describe('when passing id', () => {
       it('should return matching thesauri', async () => {
-        const response = await thesauri.get(dictionaryId);
-        expect(response[0].name).toBe('dictionary 2');
-        expect(response[0].values[0].label).toBe('value 1');
-        expect(response[0].values[1].label).toBe('Parent');
-        expect(response[0].values[1].values[0].label).toBe('value 2');
+        await testingEnvironment.runWithContext(async () => {
+          const response = await thesauri.get(dictionaryId);
+          expect(response[0].name).toBe('dictionary 2');
+          expect(response[0].values[0].label).toBe('value 1');
+          expect(response[0].values[1].label).toBe('Parent');
+          expect(response[0].values[1].values[0].label).toBe('value 2');
+        });
       });
     });
   });
@@ -111,28 +117,6 @@ describe('thesauri', () => {
     });
   });
 
-  describe('dictionaries()', () => {
-    it('should return all dictionaries', async () => {
-      const dictionaries = await thesauri.dictionaries();
-      expect(dictionaries.length).toBe(4);
-      expect(dictionaries[0].name).toBe('dictionary');
-      expect(dictionaries[1].name).toBe('dictionary 2');
-      expect(dictionaries[2].name).toBe('Top 2 scify books');
-      expect(dictionaries[3].name).toBe('Top movies');
-    });
-
-    describe('when passing a query', () => {
-      it('should return matching thesauri', async () => {
-        const response = await thesauri.dictionaries({ _id: dictionaryId });
-        expect(response.length).toBe(1);
-        expect(response[0].name).toBe('dictionary 2');
-        expect(response[0].values[0].label).toBe('value 1');
-        expect(response[0].values[1].label).toBe('Parent');
-        expect(response[0].values[1].values[0].label).toBe('value 2');
-      });
-    });
-  });
-
   describe('delete()', () => {
     let templatesCountSpy;
     beforeEach(() => {
@@ -148,12 +132,14 @@ describe('thesauri', () => {
     });
 
     it('should delete a thesauri', async () => {
-      const response = await thesauri.delete(dictionaryId);
-      expect(response.ok).toBe(true);
-      expect(response._id).toBe(dictionaryId);
+      await testingEnvironment.runWithContext(async () => {
+        const response = await thesauri.delete(dictionaryId);
+        expect(response.ok).toBe(true);
+        expect(response._id).toBe(dictionaryId);
 
-      const dictionaries = await thesauri.get({ _id: dictionaryId });
-      expect(dictionaries.length).toBe(0);
+        const dictionaries = await thesauri.get(dictionaryId);
+        expect(dictionaries.length).toBe(0);
+      });
     });
 
     it('should delete the translation', async () => {
@@ -223,14 +209,16 @@ describe('thesauri', () => {
     });
 
     it('should set a default value of [] to values property if its missing', async () => {
-      const data = { name: 'Scarecrow nightmares' };
+      await testingEnvironment.runWithContext(async () => {
+        const data = { name: 'Scarecrow nightmares' };
 
-      await thesauri.save(data);
-      const response = await thesauri.get();
-      const newThesauri = response.find(thesaurus => thesaurus.name === 'Scarecrow nightmares');
+        await thesauri.save(data);
+        const response = await thesauri.get();
+        const newThesauri = response.find(thesaurus => thesaurus.name === 'Scarecrow nightmares');
 
-      expect(newThesauri.name).toBe('Scarecrow nightmares');
-      expect(newThesauri.values).toEqual([]);
+        expect(newThesauri.name).toBe('Scarecrow nightmares');
+        expect(newThesauri.values).toEqual([]);
+      });
     });
 
     describe('when passing _id', () => {
