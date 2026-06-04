@@ -150,12 +150,12 @@ describe('arrangeThesauri', () => {
       return { mapping, updatedThesaurus };
     });
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const fixtures = createTestFixtures();
     selectThesaurusId = fixtures.dictionaries[0]._id.toString();
     multiselectThesaurusId = fixtures.dictionaries[1]._id.toString();
 
-    await testingEnvironment.setUp(fixtures as any, 'arrange_thesauri_test.index');
+    await testingEnvironment.setUp(fixtures, true);
 
     await translations.addLanguage('es');
 

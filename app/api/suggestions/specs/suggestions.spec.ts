@@ -126,13 +126,15 @@ const prepareAndAcceptSelectSuggestion = async (
     removedValues?: string[];
   } = {}
 ) =>
-  prepareAndAcceptSuggestion(
-    selectSuggestionBase(propertyName, extractorName, language),
-    suggestedValue,
-    language,
-    propertyName,
-    extractorName,
-    acceptanceParameters
+  testingEnvironment.runWithContext(async () =>
+    prepareAndAcceptSuggestion(
+      selectSuggestionBase(propertyName, extractorName, language),
+      suggestedValue,
+      language,
+      propertyName,
+      extractorName,
+      acceptanceParameters
+    )
   );
 
 const relationshipSuggestionBase = (

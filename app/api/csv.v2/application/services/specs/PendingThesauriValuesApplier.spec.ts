@@ -110,7 +110,7 @@ describe('PendingThesauriValuesApplier', () => {
     });
 
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures, 'pending-thesauri-values-applier');
+    await testingEnvironment.setUp(fixtures, true);
   });
 
   afterEach(async () => {
@@ -139,7 +139,7 @@ describe('PendingThesauriValuesApplier', () => {
       },
     ]);
 
-    const applier = await buildApplier();
+    const applier = buildApplier();
 
     const pendingDoc = buildPendingDoc({
       importId: 'imp-1',
@@ -148,10 +148,12 @@ describe('PendingThesauriValuesApplier', () => {
       childLabel: 'Child',
     });
 
-    const { diff, appliedValues } = await applier.apply(pendingDoc, {
-      tenantName: tenants.current().name,
-      userId: fixturesFactory.idString('pending-thesauri-user'),
-    });
+    const { diff, appliedValues } = await testingEnvironment.runWithContext(async () =>
+      applier.apply(pendingDoc, {
+        tenantName: tenants.current().name,
+        userId: fixturesFactory.idString('pending-thesauri-user'),
+      })
+    );
 
     expect(diff.valuesToAppend).toHaveLength(0);
     expect(appliedValues).toEqual(
@@ -168,7 +170,7 @@ describe('PendingThesauriValuesApplier', () => {
 
   it('should capture newly appended IDs in appliedValues', async () => {
     await replaceThesaurusValues([]);
-    const applier = await buildApplier();
+    const applier = buildApplier();
 
     const pendingDoc = buildPendingDoc({
       importId: 'imp-2',
@@ -177,10 +179,12 @@ describe('PendingThesauriValuesApplier', () => {
       childLabel: 'New Child',
     });
 
-    const { diff, appliedValues } = await applier.apply(pendingDoc, {
-      tenantName: tenants.current().name,
-      userId: fixturesFactory.idString('pending-thesauri-user'),
-    });
+    const { diff, appliedValues } = await testingEnvironment.runWithContext(async () =>
+      applier.apply(pendingDoc, {
+        tenantName: tenants.current().name,
+        userId: fixturesFactory.idString('pending-thesauri-user'),
+      })
+    );
 
     expect(diff.valuesToAppend.length).toBeGreaterThan(0);
     expect(appliedValues).toHaveLength(2);
@@ -219,7 +223,7 @@ describe('PendingThesauriValuesApplier', () => {
       },
     ]);
 
-    const applier = await buildApplier();
+    const applier = buildApplier();
 
     const entry = new CsvThesauriPendingEntry({
       propertyId: 'prop-id',
@@ -267,10 +271,12 @@ describe('PendingThesauriValuesApplier', () => {
       entries: [entry],
     });
 
-    const { diff, appliedValues } = await applier.apply(pendingDoc, {
-      tenantName: tenants.current().name,
-      userId: fixturesFactory.idString('pending-thesauri-user'),
-    });
+    const { diff, appliedValues } = await testingEnvironment.runWithContext(async () =>
+      applier.apply(pendingDoc, {
+        tenantName: tenants.current().name,
+        userId: fixturesFactory.idString('pending-thesauri-user'),
+      })
+    );
 
     expect(diff.valuesToAppend.length).toBeGreaterThan(0);
     expect(diff.valuesToAppend).toEqual(

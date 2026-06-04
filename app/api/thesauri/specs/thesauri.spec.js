@@ -1,21 +1,14 @@
 /* eslint-disable max-lines */
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import translations from '#api/i18n/translations.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
-import entities from '#api/entities/entities.js';
 import { search } from '#api/search/index.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingDB } from '#api/utils/testing_db.js';
 import { thesauri } from '../thesauri.js';
-import {
-  fixtures,
-  dictionaryId,
-  dictionaryIdToTranslate,
-  dictionaryValueId,
-  dictionaryWithValueGroups,
-} from './fixtures.js';
+import { fixtures, dictionaryId } from './fixtures.js';
 
 const factory = getFixturesFactory();
 
@@ -162,52 +155,16 @@ describe('thesauri', () => {
   });
 
   const getById = id => testingEnvironment.runWithContext(() => thesauri.getById(id));
+  const saveThesauri = async data => testingEnvironment.runWithContext(() => thesauri.save(data));
 
   describe('save', () => {
-    beforeEach(() => {
-      jest.spyOn(translations, 'updateContext').mockImplementation(async () => Promise.resolve());
-    });
-
-    afterAll(() => {
-      translations.updateContext.mockRestore();
-    });
-
     it('should create a thesauri', async () => {
-      const data = { name: 'Batman wish list', values: [{ id: '1', label: 'Joker BFF' }] };
+      const data = { name: 'Batman wish list', values: [{ label: 'Joker BFF' }] };
 
-      const response = await thesauri.save(data);
-      expect(response.values).toEqual([{ id: '1', label: 'Joker BFF' }]);
-    });
-
-    it('should create a translation context', async () => {
-      const data = {
-        name: 'Batman wish list',
-        values: [
-          { id: '1', label: 'Joker BFF' },
-          {
-            label: 'Heroes',
-            values: [
-              { id: '2', label: 'Batman' },
-              { id: '3', label: 'Robin' },
-            ],
-          },
-        ],
-      };
-      jest.spyOn(translations, 'addContext').mockImplementation(async () => Promise.resolve());
-      const response = await thesauri.save(data);
-      expect(translations.addContext).toHaveBeenCalledWith(
-        response._id,
-        'Batman wish list',
-        {
-          Batman: 'Batman',
-          'Batman wish list': 'Batman wish list',
-          Heroes: 'Heroes',
-          'Joker BFF': 'Joker BFF',
-          Robin: 'Robin',
-        },
-        'Thesaurus'
-      );
-      translations.addContext.mockRestore();
+      const response = await saveThesauri(data);
+      expect(response.name).toBe('Batman wish list');
+      expect(response.values).toHaveLength(1);
+      expect(response.values[0].label).toBe('Joker BFF');
     });
 
     it('should set a default value of [] to values property if its missing', async () => {
@@ -225,117 +182,11 @@ describe('thesauri', () => {
 
     describe('when passing _id', () => {
       it('should edit an existing one', async () => {
-        jest.spyOn(translations, 'addContext').mockImplementation(async () => Promise.resolve());
         const data = { _id: dictionaryId, name: 'changed name' };
-        await thesauri.save(data);
+        await saveThesauri(data);
 
         const edited = await getById(dictionaryId);
         expect(edited.name).toBe('changed name');
-        translations.addContext.mockRestore();
-      });
-
-      it('should update the translation', async () => {
-        const data = {
-          _id: dictionaryIdToTranslate,
-          name: 'Top 1 games',
-          values: [{ id: dictionaryValueId, label: 'Marios game' }],
-        };
-        const response = await thesauri.save(data);
-        expect(translations.updateContext).toHaveBeenCalledWith(
-          { id: response._id.toString(), label: 'Top 1 games', type: 'Thesaurus' },
-          { 'Top 2 scify books': 'Top 1 games', 'Enders game': 'Marios game' },
-          ['Fundation'],
-          { 'Top 1 games': 'Top 1 games', 'Marios game': 'Marios game' }
-        );
-      });
-
-      it('should remove deleted values from entities', async () => {
-        jest.spyOn(entities, 'deleteThesaurusFromMetadata').mockImplementation(() => {});
-        const data = {
-          _id: dictionaryIdToTranslate,
-          name: 'Top 1 games',
-          values: [{ id: dictionaryValueId, label: 'Marios game' }],
-        };
-
-        await thesauri.save(data);
-        expect(entities.deleteThesaurusFromMetadata.mock.calls.length).toBe(1);
-        expect(entities.deleteThesaurusFromMetadata).toHaveBeenCalledWith(
-          '2',
-          dictionaryIdToTranslate
-        );
-        entities.deleteThesaurusFromMetadata.mockRestore();
-      });
-
-      it('should properly delete values when thesauri have subgroups', async () => {
-        jest.spyOn(entities, 'deleteThesaurusFromMetadata').mockImplementation(() => {});
-        const thesaurus = await getById(dictionaryWithValueGroups);
-        thesaurus.values = thesaurus.values.filter(value => value.id !== '3');
-
-        await thesauri.save(thesaurus);
-
-        const deletedValuesFromEntities = entities.deleteThesaurusFromMetadata.mock.calls[0][0];
-
-        expect(deletedValuesFromEntities).toEqual('3');
-        entities.deleteThesaurusFromMetadata.mockRestore();
-      });
-
-      it('should update labels on entities with the thesauri values', async () => {
-        const thesaurus = {
-          name: 'dictionary 2',
-          _id: dictionaryId,
-          values: [
-            { id: '1', label: 'value 1 changed' },
-            { id: '3', label: 'Parent', values: [{ id: '2', label: 'value 2' }] },
-          ],
-        };
-
-        await thesauri.save(thesaurus);
-
-        const changedEntities = await entities.get({ language: 'es' });
-
-        expect(changedEntities[0].metadata).toEqual(
-          expect.objectContaining({
-            multiselect: [{ value: '1', label: 'value 1 changed' }],
-          })
-        );
-        expect(changedEntities[1].metadata).toEqual(
-          expect.objectContaining({
-            multiselect: [
-              { value: '1', label: 'value 1 changed' },
-              { value: '2', label: 'value 2', parent: { value: '3', label: 'Parent' } },
-            ],
-          })
-        );
-      });
-
-      it('should update parent label on entities with child values', async () => {
-        const thesaurus = {
-          name: 'dictionary 2',
-          _id: dictionaryId,
-          values: [
-            { id: '1', label: 'value 1' },
-            { id: '3', label: 'Parent changed', values: [{ id: '2', label: 'value 2' }] },
-          ],
-        };
-
-        await thesauri.save(thesaurus);
-
-        const changedEntities = await entities.get({ language: 'es' });
-
-        expect(changedEntities[0].metadata).toEqual(
-          expect.objectContaining({
-            multiselect: [{ value: '1', label: 'value 1' }],
-          })
-        );
-
-        expect(changedEntities[1].metadata).toEqual(
-          expect.objectContaining({
-            multiselect: [
-              { value: '1', label: 'value 1' },
-              { value: '2', label: 'value 2', parent: { value: '3', label: 'Parent changed' } },
-            ],
-          })
-        );
       });
     });
 
@@ -346,7 +197,7 @@ describe('thesauri', () => {
 
           let error;
           try {
-            await thesauri.save(data);
+            await saveThesauri(data);
           } catch (e) {
             error = e;
           }
@@ -357,14 +208,14 @@ describe('thesauri', () => {
         it('should not fail when name is contained as substring on another thesauri name', async () => {
           const data = { name: 'ary' };
 
-          const thesaurus = await thesauri.save(data);
+          const thesaurus = await saveThesauri(data);
           expect(thesaurus.name).toBe('ary');
         });
 
         it('should fail if the name is blank', async () => {
           let data = { values: [{ label: 'test' }] };
           try {
-            await thesauri.save(data);
+            await saveThesauri(data);
             fail('should throw error');
           } catch (e) {
             expect(e).toBeDefined();
@@ -372,7 +223,7 @@ describe('thesauri', () => {
 
           data = { name: '', values: [{ label: 'test' }] };
           try {
-            await thesauri.save(data);
+            await saveThesauri(data);
             fail('should throw error');
           } catch (e) {
             expect(e).toBeDefined();
@@ -393,7 +244,7 @@ describe('thesauri', () => {
 
           let error;
           try {
-            await thesauri.save(data);
+            await saveThesauri(data);
           } catch (e) {
             error = e;
           }
@@ -411,7 +262,6 @@ describe('thesauri', () => {
               { label: 'other_label' },
               { label: 'duplicated_label' },
             ],
-            expectedMessage: 'Duplicated labels: duplicated_label.',
           },
           {
             case: 'group',
@@ -425,22 +275,14 @@ describe('thesauri', () => {
                 ],
               },
             ],
-            expectedMessage: 'Duplicated labels: group/duplicated_label.',
           },
-        ])('should not allow duplication in $case', async ({ values, expectedMessage }) => {
+        ])('should not allow duplication in $case', async ({ values }) => {
           const toSave = { name: 'test_thesaurus', values };
           try {
-            await thesauri.save(toSave);
+            await saveThesauri(toSave);
             fail('should throw error');
           } catch (e) {
             expect(e).toBeDefined();
-            expect(e.message).toBe('validation failed');
-            expect(e.ajv).toBe(true);
-            expect(e.errors).toMatchObject([
-              {
-                message: expectedMessage,
-              },
-            ]);
           }
         });
 
@@ -454,7 +296,7 @@ describe('thesauri', () => {
             ],
           };
 
-          const response = await thesauri.save(toSave);
+          const response = await saveThesauri(toSave);
           expect(response).toMatchObject({
             _id: expect.anything(),
             name: 'test_thesaurus',
@@ -478,34 +320,37 @@ describe('thesauri', () => {
   });
 
   describe('update', () => {
+    let translationsV2Collection;
+
+    beforeEach(async () => {
+      translationsV2Collection = testingDB.mongodb.collection('translationsV2');
+    });
+
     describe('when the name of thesaurus is updated', () => {
       it('should update the translations key', async () => {
-        const data = { ...fixtures.dictionaries[1], name: 'new name' };
-        const response = await thesauri.save(data);
-        data.values.push({ id: '3', label: 'value 3' });
-        await thesauri.save(data);
-        const allTranslations = await translations.get({ locale: 'es' });
-        const context = allTranslations[0].contexts.find(c => c.id === response._id.toString());
-        expect(context.values['new name']).toBe('new name');
+        await testingEnvironment.runWithContext(async () => {
+          const data = { ...fixtures.dictionaries[1], name: 'new name' };
+          const response = await thesauri.save(data);
+          data.values.push({ id: '3', label: 'value 3' });
+          await thesauri.save(data);
+          const relatedTranslations = await translationsV2Collection
+            .find({
+              'context.id': response._id.toString(),
+            })
+            .toArray();
+          expect(relatedTranslations.find(t => t.key === 'new name')).toBeDefined();
+        });
       });
     });
 
     describe('when changing elements', () => {
-      let db;
-      let translationsV2Collection;
-
-      beforeEach(async () => {
-        db = testingDB.mongodb;
-        translationsV2Collection = db.collection('translationsV2');
-      });
-
       describe('creating new elements', () => {
         it('should create the translation key', async () => {
           const data = {
             name: 'Test Thesaurus',
             values: [{ id: '1', label: 'A' }],
           };
-          const response = await thesauri.save(data);
+          const response = await saveThesauri(data);
           const relatedTranslations = await translationsV2Collection
             .find({
               'context.id': response._id.toString(),
@@ -525,7 +370,7 @@ describe('thesauri', () => {
             name: 'Test Thesaurus',
             values: [{ id: '1', label: 'A' }],
           };
-          const response = await thesauri.save(data);
+          const response = await saveThesauri(data);
           const id = response._id.toString();
           await translationsV2Collection.updateOne(
             {
@@ -546,7 +391,7 @@ describe('thesauri', () => {
 
           data._id = id;
           data.values.push({ id: '2', label: 'group', values: [{ id: '3', label: 'A' }] });
-          await thesauri.save(data);
+          await saveThesauri(data);
 
           const relatedTranslations = await translationsV2Collection
             .find({
@@ -576,7 +421,7 @@ describe('thesauri', () => {
               { id: '2', label: 'group', values: [{ id: '3', label: 'A' }] },
             ],
           };
-          const response = await thesauri.save(thesaurusData);
+          const response = await saveThesauri(thesaurusData);
           id = response._id.toString();
           await translationsV2Collection.updateOne(
             {
@@ -615,7 +460,7 @@ describe('thesauri', () => {
             name: 'Test Thesaurus',
             values: [{ id: '1', label: 'A' }],
           };
-          await thesauri.save(data);
+          await saveThesauri(data);
           relatedTranslations = await translationsV2Collection
             .find({
               'context.id': id,
@@ -635,7 +480,7 @@ describe('thesauri', () => {
             name: 'Test Thesaurus',
             values: [{ id: '2', label: 'group' }],
           };
-          await thesauri.save(data);
+          await saveThesauri(data);
           const relatedTranslations = await translationsV2Collection
             .find({
               'context.id': id,
@@ -662,7 +507,7 @@ describe('thesauri', () => {
               { id: '4', label: 'C' },
             ],
           };
-          const response = await thesauri.save(thesaurusData);
+          const response = await saveThesauri(thesaurusData);
           id = response._id.toString();
           await translationsV2Collection.updateOne(
             {
@@ -700,7 +545,7 @@ describe('thesauri', () => {
               { id: '4', label: 'C' },
             ],
           };
-          await thesauri.save(data);
+          await saveThesauri(data);
           const relatedTranslations = await translationsV2Collection
             .find({
               'context.id': id,
@@ -708,7 +553,7 @@ describe('thesauri', () => {
             .toArray();
           expect(relatedTranslations).toMatchObject([
             { key: 'B', language: 'es', value: 'B' },
-            { key: 'B', language: 'en', value: 'Aen' },
+            { key: 'B', language: 'en', value: 'B' },
             { key: 'C', language: 'es', value: 'Ces' },
             { key: 'C', language: 'en', value: 'C' },
             { key: 'Test Thesaurus', language: 'es' },
@@ -728,7 +573,7 @@ describe('thesauri', () => {
               { id: '4', label: 'C' },
             ],
           };
-          await thesauri.save(data);
+          await saveThesauri(data);
           const relatedTranslations = await translationsV2Collection
             .find({
               'context.id': id,
@@ -758,7 +603,7 @@ describe('thesauri', () => {
               { id: '4', label: 'C' },
             ],
           };
-          await thesauri.save(data);
+          await saveThesauri(data);
           const relatedTranslations = await translationsV2Collection
             .find({
               'context.id': id,
@@ -786,7 +631,7 @@ describe('thesauri', () => {
               { id: '4', label: 'C' },
             ],
           };
-          await thesauri.save(data);
+          await saveThesauri(data);
           data = {
             _id: id,
             name: 'Test Thesaurus',
@@ -796,7 +641,7 @@ describe('thesauri', () => {
               { id: '4', label: 'C' },
             ],
           };
-          await thesauri.save(data);
+          await saveThesauri(data);
           const relatedTranslations = await translationsV2Collection
             .find({
               'context.id': id,

@@ -2,161 +2,25 @@
 import cloneDeep from 'lodash/cloneDeep.js';
 import partition from 'lodash/partition.js';
 import flatMapDeep from 'lodash/flatMapDeep.js';
-import {
-  generateIds,
-  getUpdatedIds,
-  getUpdatedNames,
-  getDeletedProperties,
-} from '#api/utils/templateUtils.js';
 import entities from '#api/entities/entities.js';
 import { preloadOptionsLimit } from '#shared/config.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
-import settings from '#api/settings/settings.js';
 import translations from '#api/i18n/translations.js';
 import { denormalizeThesauriLabelInMetadata } from '#api/entities/denormalize.js';
 import { search } from '#api/search/index.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
 import model from './dictionariesModel.js';
-import { validateThesauri } from './validateThesauri.js';
 import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
-
-const autoincrementValuesId = thesauri => {
-  thesauri.values = generateIds(thesauri.values);
-
-  thesauri.values = thesauri.values.map(value => {
-    if (value.values) {
-      value.values = generateIds(value.values);
-    }
-
-    return value;
-  });
-  return thesauri;
-};
+import { ThesauriServiceFactory } from '#api/core/infrastructure/factories/ThesauriServiceFactory.js';
+import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
 
 function normalizeThesaurusLabel(label) {
   const trimmed = label.trim().toLowerCase();
   return trimmed.length > 0 ? trimmed : null;
 }
-
-function thesauriToTranslationContext(thesauri) {
-  return thesauri.values.reduce((ctx, prop) => {
-    ctx[prop.label] = prop.label;
-    if (prop.values) {
-      const propctx = prop.values.reduce((_ctx, val) => {
-        _ctx[val.label] = val.label;
-        return _ctx;
-      }, {});
-      ctx = Object.assign(ctx, propctx);
-    }
-    return ctx;
-  }, {});
-}
-
-const create = async thesauri => {
-  const context = thesauriToTranslationContext(thesauri);
-  context[thesauri.name] = thesauri.name;
-
-  const created = await model.save(thesauri);
-  await translations.addContext(created._id, thesauri.name, context, 'Thesaurus');
-  return created;
-};
-
-const updateTranslation = (current, thesauri) => {
-  const currentProperties = current.values;
-  const newProperties = thesauri.values;
-
-  const { update: updatedLabels, delete: removedThroughUpdate } = getUpdatedNames(
-    {
-      prop: 'label',
-      outKey: 'label',
-      filterBy: 'id',
-    },
-    currentProperties,
-    newProperties
-  );
-  if (current.name !== thesauri.name) {
-    updatedLabels[current.name] = thesauri.name;
-  }
-  const deletedPropertiesByLabel = getDeletedProperties(
-    currentProperties,
-    newProperties,
-    'id',
-    'label'
-  );
-  const allRemoved = Array.from(new Set(deletedPropertiesByLabel.concat(removedThroughUpdate)));
-
-  const context = thesauriToTranslationContext(thesauri);
-
-  context[thesauri.name] = thesauri.name;
-  return translations.updateContext(
-    { id: current._id.toString(), label: thesauri.name, type: 'Thesaurus' },
-    updatedLabels,
-    allRemoved,
-    context
-  );
-};
-
-async function updateOptionsInEntities(current, thesauri) {
-  const currentProperties = current.values;
-  const newProperties = thesauri.values;
-  const deletedPropertiesById = getDeletedProperties(currentProperties, newProperties, 'id', 'id');
-  await Promise.all(
-    deletedPropertiesById.map(deletedId =>
-      entities.deleteThesaurusFromMetadata(deletedId, thesauri._id)
-    )
-  );
-
-  const updatedIds = getUpdatedIds(
-    {
-      prop: 'label',
-      filterBy: 'id',
-    },
-    currentProperties,
-    newProperties
-  );
-  const toUpdate = [];
-
-  Object.keys(updatedIds).forEach(id => {
-    const option = newProperties
-      .reduce((flattendedOptions, o) => flattendedOptions.concat([o, ...(o.values || [])]), [])
-      .find(o => o.id === id);
-
-    if (option.values?.length) {
-      option.values.forEach(o => {
-        toUpdate.push({ id: o.id, label: o.label, parent: { id, label: updatedIds[id] } });
-      });
-      return;
-    }
-
-    toUpdate.push({ id, label: updatedIds[id] });
-  });
-
-  const defaultLanguage = (await settings.get()).languages.find(lang => lang.default).key;
-  await Promise.all(
-    toUpdate.map(option =>
-      denormalizeThesauriLabelInMetadata(
-        option.id,
-        option.label,
-        thesauri._id,
-        defaultLanguage,
-        option.parent
-      )
-    )
-  );
-}
-
-const update = async thesauri => {
-  const currentThesauri = await model.getById(thesauri._id);
-  const valuesHaveChanged =
-    JSON.stringify(thesauri.values) !== JSON.stringify(currentThesauri.values);
-  const nameHasChanged = thesauri.name !== currentThesauri.name;
-  if (valuesHaveChanged || nameHasChanged) {
-    await updateTranslation(currentThesauri, thesauri);
-    await updateOptionsInEntities(currentThesauri, thesauri);
-  }
-  return model.save(thesauri);
-};
 
 function calcNewLabels(originals, news) {
   const originalLabels = originals.map(v => v.label);
@@ -207,16 +71,26 @@ function calcNewValues(originalValues, newValues) {
 
 const thesauri = {
   async save(t) {
-    const toSave = { values: [], type: 'thesauri', ...t };
+    const { _id: rawId, name, values = [] } = t;
+    const _id = rawId ? rawId.toString() : undefined;
 
-    autoincrementValuesId(toSave);
+    const dataSource = ThesauriDataSourceFactory.default();
+    const service = ThesauriServiceFactory.default();
 
-    await validateThesauri(toSave);
-
-    if (toSave._id) {
-      return update(toSave);
+    if (!_id) {
+      const created = Thesaurus.create({ name, values });
+      await service.insert(created);
+      return { _id: created.id, name: created.name, values: created.values };
     }
-    return create(toSave);
+
+    const existing = (await dataSource.getById(_id)).getDataOrThrow();
+    const updated = existing.update({ name, values });
+    await service.update(updated, {
+      tenantName: ExecutionContext.tenant.name,
+      actorId: ExecutionContext.actorId,
+    });
+
+    return { _id: updated.id, name: updated.name, values: updated.values };
   },
 
   appendValues(thesaurus, newValues) {
@@ -296,7 +170,7 @@ const thesauri = {
     return ThesauriDAOFactory.default().get();
   },
 
-  delete(id) {
+  async delete(id) {
     return templates
       .countByThesauri(id)
       .then(count => {

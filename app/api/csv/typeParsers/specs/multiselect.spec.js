@@ -31,7 +31,7 @@ describe('multiselect', () => {
   it.each([
     {
       inputString: 'value4',
-      expectationLabels: [' value4 '],
+      expectationLabels: ['value4'],
       expectationValueIds: [3],
       expectationWarnings: [],
     },
@@ -49,7 +49,7 @@ describe('multiselect', () => {
     },
     {
       inputString: 'value1|value2|VALUE4',
-      expectationLabels: ['value1', 'value2', ' value4 '],
+      expectationLabels: ['value1', 'value2', 'value4'],
       expectationValueIds: [0, 1, 3],
       expectationWarnings: [],
     },

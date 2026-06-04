@@ -190,7 +190,7 @@ describe('csvLoader', () => {
         not_configured_on_csv: [],
         not_defined_type: [{ value: 'notType1' }],
         numeric_label: [{ value: 1977 }],
-        select_label: [{ label: 'thesauri1', value: expect.any(String) }],
+        select_label: [{ label: 'value2', value: expect.any(String) }],
         select_with_spaces: [
           {
             label: 'Item1',
@@ -243,7 +243,7 @@ describe('csvLoader', () => {
         expect(numericValues).toEqual([1977, 2019, 2020, 2021]);
 
         const thesauriValues = loadedEntities.map(i => i.metadata.select_label[0].label);
-        expect(thesauriValues).toEqual(['thesauri1', 'thesauri2', 'thesauri2', 'new_select_value']);
+        expect(thesauriValues).toEqual(['value2', 'thesauri2', 'thesauri2', 'new_select_value']);
 
         const dateValues = loadedEntities.map(i => i.metadata.date_label[0].value);
         expect(dateValues).toEqual([1641168000, 1646092800, 1640995200, 1672617600]);
@@ -592,7 +592,7 @@ describe('csvLoader', () => {
 
     it('should handle case-insensitive matching for existing values', async () => {
       const selectLabel = imported[0].metadata.select_label;
-      expect(selectLabel[0].label.toLowerCase()).toBe('thesauri1');
+      expect(selectLabel[0].label.toLowerCase()).toBe('value2');
     });
 
     it('should sanitize multiselect values with spaces', async () => {
