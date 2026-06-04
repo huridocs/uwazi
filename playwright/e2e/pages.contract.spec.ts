@@ -20,6 +20,17 @@ const PAGE_TITLE = `E2E Custom Page ${Date.now()}`;
 const HTML_MARKER_TEXT = `E2E marker ${Date.now()}`;
 const HTML_MARKER_CONTENT = `<h1>${HTML_MARKER_TEXT}</h1>`;
 
+/** ToggleButton hides the input; click via accessible name (label text), not data-testid. */
+const entityViewCheckbox = (page: Page) =>
+  page.getByRole('checkbox', { name: /entity view page/i });
+
+async function setEntityView(page: Page, enabled: boolean) {
+  const checkbox = entityViewCheckbox(page);
+  if ((await checkbox.isChecked()) !== enabled) {
+    await checkbox.click({ force: true });
+  }
+}
+
 test('pages contract creates a custom page that renders at its URL', async ({ page }) => {
   test.setTimeout(3 * 60 * 1000);
 
@@ -51,13 +62,12 @@ test('pages contract creates a custom page that renders at its URL', async ({ pa
     await page.waitForTimeout(500);
     await expect(titleInput).toHaveValue(PAGE_TITLE);
 
-    const entityViewToggle = page.getByTestId('toggle').first();
-    await entityViewToggle.click();
+    await setEntityView(page, true);
     await page.waitForTimeout(500);
-    await expect(entityViewToggle).toBeChecked();
-    await entityViewToggle.click();
+    await expect(entityViewCheckbox(page)).toBeChecked();
+    await setEntityView(page, false);
     await page.waitForTimeout(500);
-    await expect(entityViewToggle).not.toBeChecked();
+    await expect(entityViewCheckbox(page)).not.toBeChecked();
 
     await page.getByRole('tab', { name: 'HTML' }).click();
     await page.locator('.monaco-editor').first().click();
@@ -131,10 +141,9 @@ test('pages contract entity view page shows publish and restore after save', asy
     await page.waitForTimeout(500);
     await expect(titleInput).toHaveValue(ENTITY_VIEW_PAGE_TITLE);
 
-    const entityViewToggle = page.getByTestId('toggle').first();
-    await entityViewToggle.click();
+    await setEntityView(page, true);
     await page.waitForTimeout(500);
-    await expect(entityViewToggle).toBeChecked();
+    await expect(entityViewCheckbox(page)).toBeChecked();
 
     const saveResponsePromise = page.waitForResponse(
       response =>
