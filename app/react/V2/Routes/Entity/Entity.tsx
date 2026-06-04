@@ -11,7 +11,6 @@ import {
 } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
-import { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.js';
 import { RelationshipPropertyIcon } from '#V2/Components/CustomIcons/index.js';
 import { Tabs } from '#V2/Components/UI/index.js';
 import {
@@ -24,6 +23,7 @@ import {
   SearchResults,
   ToCPanel,
   FileList,
+  MetadataPanel,
 } from './Components/index.js';
 import { LoaderResponse } from './types.js';
 
@@ -89,7 +89,7 @@ const Entity = () => {
           key={MAIN_TABS.METADATA}
           label={<TabLabel text="Metadata" icon={<Bars3CenterLeftIcon className="w-5 h-5" />} />}
         >
-          <MetadataDisplay entity={entity} />
+          <MetadataPanel entity={entity} />
         </Tabs.Tab>
       );
     }
@@ -135,7 +135,7 @@ const Entity = () => {
           id: SIDE_TABS.METADATA,
           label: <TabLabel text="Metadata" icon={<Bars3CenterLeftIcon className="w-5 h-5" />} />,
           content: entity ? (
-            <MetadataDisplay entity={entity} headerLayout="stacked" />
+            <MetadataPanel entity={entity} headerLayout="stacked" />
           ) : (
             <Translate>Loading</Translate>
           ),
@@ -212,7 +212,7 @@ const Entity = () => {
           id: SIDE_TABS.METADATA,
           label: <TabLabel text="Metadata" icon={<Bars3CenterLeftIcon className="w-5 h-5" />} />,
           content: entity ? (
-            <MetadataDisplay entity={entity} headerLayout="stacked" />
+            <MetadataPanel entity={entity} headerLayout="stacked" />
           ) : (
             <Translate>Loading</Translate>
           ),

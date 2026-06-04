@@ -1,8 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
-import { Panel } from '#V2/Components/Layouts/Panel.js';
-import { Button } from '#V2/Components/UI/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { Entity } from '#V2/api/entities/types.js';
 import {
@@ -180,56 +178,36 @@ const MetadataDisplay = ({ entity, headerLayout = 'inline' }: MetadataDisplayPro
   }
 
   return (
-    <Panel>
-      <Panel.Body>
-        <>
-          <MetadataHeaderStrip entity={entity} headerLayout={headerLayout} />
+    <>
+      <MetadataHeaderStrip entity={entity} headerLayout={headerLayout} />
+      <dl className="flex min-w-0 flex-wrap gap-(--spacing-theme-3)">
+        {typeof entity.creationDate === 'number' && (
+          <Date
+            values={[
+              {
+                value: entity.creationDate,
+              },
+            ]}
+            label="Creation Date"
+            translationContext="System"
+          />
+        )}
 
-          <dl className="flex min-w-0 flex-wrap gap-(--spacing-theme-3)">
-            {typeof entity.creationDate === 'number' && (
-              <Date
-                values={[
-                  {
-                    value: entity.creationDate,
-                  },
-                ]}
-                label="Creation Date"
-                translationContext="System"
-              />
-            )}
+        {typeof entity.editDate === 'number' && (
+          <Date
+            values={[
+              {
+                value: entity.editDate,
+              },
+            ]}
+            label="Edit Date"
+            translationContext="System"
+          />
+        )}
 
-            {typeof entity.editDate === 'number' && (
-              <Date
-                values={[
-                  {
-                    value: entity.editDate,
-                  },
-                ]}
-                label="Edit Date"
-                translationContext="System"
-              />
-            )}
-
-            {renderMetadataFields(metadata)}
-          </dl>
-        </>
-      </Panel.Body>
-      <Panel.Footer>
-        <div className="flex flex-row items-center justify-between w-full gap-(--spacing-theme-3)">
-          <div className="flex gap-(--spacing-theme-2)">
-            <Button variant="secondary">
-              <Translate>Edit</Translate>
-            </Button>
-            <Button variant="secondary">
-              <Translate>Share</Translate>
-            </Button>
-          </div>
-          <Button variant="danger">
-            <Translate>Delete</Translate>
-          </Button>
-        </div>
-      </Panel.Footer>
-    </Panel>
+        {renderMetadataFields(metadata)}
+      </dl>
+    </>
   );
 };
 

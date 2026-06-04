@@ -90,6 +90,7 @@ import {
   UploadStatus,
   uploadStatusLoader,
 } from './V2/Routes/Settings/CSVUpload/index.js';
+import { EditEntity, editEntityLoader } from './V2/Routes/Entity/EntityEditor/index.js';
 
 const deconstructSearchQuery = (query?: string) => {
   if (!query) return '';
@@ -209,7 +210,9 @@ const getRoutesLayout = (
       <Route path="*" element={privateRoute(<ViewerRoute />, settings)} />
     </Route>
     <Route path="entity/:sharedId/:tabView" element={privateRoute(<ViewerRoute />, settings)} />
-    <Route path="entityv2/:sharedId" element={<Entity />} loader={entityLoader(headers)} />
+    <Route path="entityv2/:sharedId" element={<Entity />} loader={entityLoader(headers)}>
+      <Route path="edit" loader={editEntityLoader(headers)} />
+    </Route>
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
     <Route path="page/:sharedId" element={<PageView />} />

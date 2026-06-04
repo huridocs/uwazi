@@ -6,3 +6,4 @@ export { SearchResults } from './SearchResults.js';
 export { SearchHintsModal } from './SearchHintsModal.js';
 export { FileList } from './FileList.js';
 export { ToCPanel } from './ToC/ToCPanel.js';
+export { MetadataPanel } from './MetadataPanel.js';
