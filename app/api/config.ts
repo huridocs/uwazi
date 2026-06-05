@@ -141,7 +141,6 @@ export const config = {
       testing: DEV_FLAG_TESTING === 'true' || false,
       v2UpdateEntity: false,
       v2CSVImport: FEATURE_FLAG_V2_CSV_IMPORT === 'true' || false,
-      v2UpdateThesaurus: false,
       v2GetEntity: false,
       v2MultipleUpdateEntity: false,
       v2ElasticSearch: false,

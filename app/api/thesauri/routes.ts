@@ -6,8 +6,6 @@ import { CreateThesaurusController } from '#api/core/infrastructure/express/thes
 import { UpdateThesaurusController } from '#api/core/infrastructure/express/thesaurus/UpdateThesaurusController.js';
 import { GetThesauriController } from '#api/core/infrastructure/express/thesaurus/GetThesauriController.js';
 import { DeleteThesaurusController } from '#api/core/infrastructure/express/thesaurus/DeleteThesaurusController.js';
-import { tenants } from '#api/tenants/index.js';
-import { CSVLoader } from '#api/csv/index.js';
 import { validation } from '../utils/index.js';
 import needsAuthorization from '../auth/authMiddleware.js';
 import thesauri from './thesauri.js';
@@ -19,7 +17,7 @@ const routes = (app: Application) => {
 
     uploadMiddleware(),
 
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response) => {
       const dto = req.file ? JSON.parse(req.body?.thesauri) : req.body;
 
       if (!dto?._id) {
@@ -27,25 +25,7 @@ const routes = (app: Application) => {
         return;
       }
 
-      if (tenants.current()?.featureFlags?.v2UpdateThesaurus && dto?._id) {
-        await UpdateThesaurusController.createHandler()(req, res);
-        return;
-      }
-
-      try {
-        const data = req.file ? JSON.parse(req.body.thesauri) : req.body;
-        let response = await thesauri.save(data);
-        if (req.file) {
-          const loader = new CSVLoader();
-          response = await loader.loadThesauri(req.file.path, response._id, {
-            language: req.language,
-          });
-        }
-        res.json(response);
-        req.sockets.emitToCurrentTenant('thesauriChange', response);
-      } catch (e) {
-        next(e);
-      }
+      await UpdateThesaurusController.createHandler()(req, res);
     }
   );
 
