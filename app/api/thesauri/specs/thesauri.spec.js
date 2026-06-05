@@ -74,42 +74,6 @@ describe('thesauri', () => {
     });
   });
 
-  describe('find()', () => {
-    it('should return all thesauri', async () => {
-      const { rows } = await thesauri.find();
-
-      expect(rows[0]).toMatchObject({ _id: expect.any(ObjectId), name: 'dictionary' });
-
-      expect(rows[1]).toMatchObject({
-        _id: expect.any(ObjectId),
-        name: 'dictionary 2',
-        values: [
-          { id: '1', label: 'value 1' },
-          { id: '3', label: 'Parent', values: [{ id: '2', label: 'value 2' }] },
-        ],
-      });
-    });
-
-    it('should find by id', async () => {
-      const query = {
-        _id: testingDB.id(dictionaryId),
-      };
-
-      const { rows } = await thesauri.find(query);
-
-      expect(rows.length).toBe(1);
-
-      expect(rows[0]).toMatchObject({
-        _id: query._id,
-        name: 'dictionary 2',
-        values: [
-          { id: '1', label: 'value 1' },
-          { id: '3', label: 'Parent', values: [{ id: '2', label: 'value 2' }] },
-        ],
-      });
-    });
-  });
-
   const getById = id => testingEnvironment.runWithContext(() => thesauri.getById(id));
   const saveThesauri = async data => testingEnvironment.runWithContext(() => thesauri.save(data));
 

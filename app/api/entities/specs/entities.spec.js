@@ -686,7 +686,9 @@ describe('entities', () => {
 
   describe('updateMetdataFromRelationships', () => {
     it('should update the metdata based on the entity relationships', async () => {
-      await entities.updateMetdataFromRelationships(['shared', 'missingEntity'], 'en');
+      await testingEnvironment.runWithContext(async () =>
+        entities.updateMetdataFromRelationships(['shared', 'missingEntity'], 'en')
+      );
       const updatedEntity = await entities.getById('shared', 'en');
       expect(updatedEntity.metadata.friends).toEqual([
         { icon: null, type: 'entity', label: 'shared2title', value: 'shared2' },
@@ -698,7 +700,10 @@ describe('entities', () => {
       const user = { _id: db.id() };
       const newEntity = await saveEntity(doc, { user, language: 'es' });
 
-      await entities.updateMetdataFromRelationships([newEntity.sharedId], 'es');
+      await testingEnvironment.runWithContext(async () =>
+        entities.updateMetdataFromRelationships([newEntity.sharedId], 'en')
+      );
+
       const updatedEntity = await entities.getById(newEntity.sharedId, 'en');
       expect(updatedEntity.metadata).toEqual({
         date: [],
@@ -720,7 +725,10 @@ describe('entities', () => {
 
     it('should sanitize the entities', async () => {
       const sanitizationSpy = jest.spyOn(entities, 'sanitize');
-      await entities.updateMetdataFromRelationships(['shared'], 'en');
+
+      await testingEnvironment.runWithContext(async () =>
+        entities.updateMetdataFromRelationships(['shared'], 'en')
+      );
 
       expect(sanitizationSpy.mock.calls).toMatchObject([
         [
@@ -746,7 +754,9 @@ describe('entities', () => {
           email: 'col@test.com',
         });
 
-        await entities.updateMetdataFromRelationships(['shared'], 'en');
+        await testingEnvironment.runWithContext(async () =>
+          entities.updateMetdataFromRelationships(['shared'], 'en')
+        );
         const updatedEntity = await entities.getById('shared', 'en');
         expect(updatedEntity.metadata.friends).toEqual([
           { icon: null, type: 'entity', label: 'shared2title', value: 'shared2' },

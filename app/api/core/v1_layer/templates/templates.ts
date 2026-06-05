@@ -1,24 +1,23 @@
-/* eslint-disable max-lines */
-/* eslint-disable max-statements */
 import { ClientSession, ObjectId } from 'mongodb';
 
 import entities from '#api/entities/index.js';
-import dictionariesModel from '#api/thesauri/dictionariesModel.js';
 import createError from '#api/utils/Error.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { LanguageISO6391, PropertySchema } from '#shared/types/commonTypes.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
 import model from './templatesModel.js';
+import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
 
-const getRelatedThesauri = async (template: TemplateSchema, session?: ClientSession) => {
-  const thesauriIds = (template.properties || []).map(p => p.content).filter(p => p);
-  const thesauri = await dictionariesModel.get({ _id: { $in: thesauriIds } }, undefined, {
-    session,
-  });
+const getRelatedThesauri = async (template: TemplateSchema) => {
+  const thesauriIds = (template.properties || [])
+    .map(p => p.content)
+    .filter((p): p is string => !!p);
+  const thesauri = await ThesauriDAOFactory.default().get(thesauriIds);
+
   const thesauriByKey: Record<any, TemplateSchema> = {};
   thesauri.forEach(t => {
-    thesauriByKey[t._id.toString()] = t;
+    thesauriByKey[t._id.toString()] = t as TemplateSchema;
   });
   return thesauriByKey;
 };

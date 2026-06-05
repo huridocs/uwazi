@@ -158,14 +158,6 @@ const thesauri = {
     return dictionaries;
   },
 
-  async find(input) {
-    const dictionaries = await model.db.find(input);
-
-    return {
-      rows: dictionaries,
-    };
-  },
-
   dictionaries() {
     return ThesauriDAOFactory.default().get();
   },

@@ -4,7 +4,6 @@ import _ from 'lodash';
 import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 import translations from '#api/i18n/translations.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import dictionariesModel from '#api/thesauri/dictionariesModel.js';
 import userGroups from '#api/usergroups/userGroups.js';
 import usersModel from '#api/users/users.js';
 import { createError } from '#api/utils/index.js';
@@ -804,7 +803,7 @@ const buildQuery = async (query, language, user, resources) => {
 const search = {
   // eslint-disable-next-line max-statements
   async search(query, language, user) {
-    const resources = await Promise.all([templatesModel.get(), dictionariesModel.get()]);
+    const resources = await Promise.all([templatesModel.get(), thesauri.dictionaries()]);
     const [templates, dictionaries] = resources;
     const queryBuilder = await buildQuery(query, language, user, resources);
     if (query.geolocation) {
@@ -949,7 +948,7 @@ const search = {
   async autocompleteAggregations(query, language, propertyName, _searchTerm, user) {
     const [templates, dictionaries] = await Promise.all([
       templatesModel.get(),
-      dictionariesModel.get(),
+      thesauri.dictionaries(),
     ]);
 
     const searchTerm = _searchTerm || '';
