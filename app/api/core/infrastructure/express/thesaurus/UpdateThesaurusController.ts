@@ -79,7 +79,7 @@ class UpdateThesaurusController extends AbstractController<RequestDto> {
 
         const loader = new CSVLoader();
 
-        const loaded = await loader.loadThesauri(this.request.file.path, new ObjectId(output.id), {
+        const loaded = await loader.loadThesauri(this.request.file.path, output.id, {
           language: this.language,
         });
         response = { ...loaded, _id: new ObjectId(loaded._id) };

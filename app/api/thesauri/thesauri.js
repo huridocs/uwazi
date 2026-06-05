@@ -170,19 +170,6 @@ const thesauri = {
     return ThesauriDAOFactory.default().get();
   },
 
-  async delete(id) {
-    return templates
-      .countByThesauri(id)
-      .then(count => {
-        if (count) {
-          return Promise.reject({ key: 'templates_using_dictionary', value: count });
-        }
-        return translations.deleteContext(id);
-      })
-      .then(() => model.delete(id))
-      .then(() => ({ ok: true, _id: id }));
-  },
-
   async renameThesaurusInMetadata(valueId, newLabel, thesaurusId, language) {
     return denormalizeThesauriLabelInMetadata(valueId, newLabel, thesaurusId, language);
   },

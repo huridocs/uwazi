@@ -110,50 +110,6 @@ describe('thesauri', () => {
     });
   });
 
-  describe('delete()', () => {
-    let templatesCountSpy;
-    beforeEach(() => {
-      templatesCountSpy = jest.spyOn(templates, 'countByThesauri').mockImplementation(async () => {
-        Promise.resolve(0);
-      });
-      jest.spyOn(translations, 'deleteContext').mockImplementation(async () => Promise.resolve());
-    });
-
-    afterAll(() => {
-      templatesCountSpy.mockRestore();
-      translations.deleteContext.mockRestore();
-    });
-
-    it('should delete a thesauri', async () => {
-      await testingEnvironment.runWithContext(async () => {
-        const response = await thesauri.delete(dictionaryId);
-        expect(response.ok).toBe(true);
-        expect(response._id).toBe(dictionaryId);
-
-        const dictionaries = await thesauri.get(dictionaryId);
-        expect(dictionaries.length).toBe(0);
-      });
-    });
-
-    it('should delete the translation', async () => {
-      const response = await thesauri.delete(dictionaryId);
-      expect(response.ok).toBe(true);
-      expect(translations.deleteContext).toHaveBeenCalledWith(dictionaryId);
-    });
-
-    describe('when the dictionary is in use', () => {
-      it('should return an error in the response', async () => {
-        try {
-          templatesCountSpy.mockImplementation(async () => Promise.resolve(1));
-          await thesauri.delete(dictionaryId);
-          throw new Error('should return an error in the response');
-        } catch (response) {
-          expect(response.key).toBe('templates_using_dictionary');
-        }
-      });
-    });
-  });
-
   const getById = id => testingEnvironment.runWithContext(() => thesauri.getById(id));
   const saveThesauri = async data => testingEnvironment.runWithContext(() => thesauri.save(data));
 
