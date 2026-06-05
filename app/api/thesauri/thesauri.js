@@ -10,7 +10,6 @@ import { denormalizeThesauriLabelInMetadata } from '#api/entities/denormalize.js
 import { search } from '#api/search/index.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
-import model from './dictionariesModel.js';
 import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
 import { ThesauriServiceFactory } from '#api/core/infrastructure/factories/ThesauriServiceFactory.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
