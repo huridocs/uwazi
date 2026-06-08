@@ -71,6 +71,7 @@ export class PostgresDictionariesSyncHandler
     if (documents.length === 0) return [];
 
     for (const doc of documents) {
+      //eslint-disable-next-line no-await-in-loop
       await this.save(doc);
     }
 

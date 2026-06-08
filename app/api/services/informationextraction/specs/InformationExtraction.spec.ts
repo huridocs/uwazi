@@ -191,9 +191,6 @@ describe('InformationExtraction', () => {
     await testingEnvironment.tearDown();
   });
 
-  const trainModel = async (extractorId: string) =>
-    testingEnvironment.runWithContext(async () => informationExtraction.trainModel(extractorId));
-
   const saveSuggestionProcess = async (
     id: string,
     entity: string,

@@ -1,6 +1,5 @@
 import { tenants } from '#api/tenants/tenantContext.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { PostgresConnectionFactory } from '#api/core/infrastructure/factories/PostgresConnectionFactory.js';
 import { MongoDictionariesSyncHandler } from './MongoDictionariesSyncHandler.js';
 import { PostgresDictionariesSyncHandler } from './PostgresDictionariesSyncHandler.js';

@@ -1,9 +1,6 @@
 /* eslint-disable max-lines */
 import _ from 'lodash';
-import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import translations from '#api/i18n/translations.js';
-import templates from '#api/core/v1_layer/templates/templates.js';
 import { search } from '#api/search/index.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingDB } from '#api/utils/testing_db.js';

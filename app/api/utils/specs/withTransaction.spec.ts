@@ -26,13 +26,17 @@ afterAll(async () => {
 });
 
 const saveEntity = async (entity: EntitySchema) =>
-  entities.save(entity, { user: {}, language: 'es' }, { updateRelationships: false });
+  testingEnvironment.runWithContext(async () =>
+    entities.save(entity, { user: {}, language: 'es' }, { updateRelationships: false })
+  );
 
 const createEntity = async (entity: EntitySchema) =>
-  entities.save(
-    { ...entity, _id: undefined, sharedId: undefined },
-    { user: {}, language: 'es' },
-    { updateRelationships: false }
+  testingEnvironment.runWithContext(async () =>
+    entities.save(
+      { ...entity, _id: undefined, sharedId: undefined },
+      { user: {}, language: 'es' },
+      { updateRelationships: false }
+    )
   );
 
 describe('withTransaction utility', () => {
@@ -276,15 +280,19 @@ describe('withTransaction utility', () => {
     it('should handle delayed reindexing after a successful transaction', async () => {
       await appContext.run(async () => {
         await withTransaction(async () => {
-          await entities.save(
-            { ...factory.entity('test1', 'template1'), _id: undefined, sharedId: undefined },
-            { user: {}, language: 'es' },
-            { updateRelationships: false }
+          await testingEnvironment.runWithContext(async () =>
+            entities.save(
+              { ...factory.entity('test1', 'template1'), _id: undefined, sharedId: undefined },
+              { user: {}, language: 'es' },
+              { updateRelationships: false }
+            )
           );
-          await entities.save(
-            { ...factory.entity('test2', 'template1'), _id: undefined, sharedId: undefined },
-            { user: {}, language: 'es' },
-            { updateRelationships: false }
+          await testingEnvironment.runWithContext(async () =>
+            entities.save(
+              { ...factory.entity('test2', 'template1'), _id: undefined, sharedId: undefined },
+              { user: {}, language: 'es' },
+              { updateRelationships: false }
+            )
           );
         });
 

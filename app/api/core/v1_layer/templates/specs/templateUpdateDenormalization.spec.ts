@@ -101,9 +101,11 @@ const elasticIndex = 'templates_denorm_flow';
 describe('Templates Update', () => {
   async function setUpFixtures(_fixtures: DBFixture) {
     await testingEnvironment.setUp(_fixtures, elasticIndex);
-    await Promise.all(
-      (_fixtures.entities || []).map(async e => entities.save(e, { language: 'en', user: {} }))
-    );
+    await testingEnvironment.runWithContext(async () => {
+      await Promise.all(
+        (_fixtures.entities || []).map(async e => entities.save(e, { language: 'en', user: {} }))
+      );
+    });
 
     testingTenants.mockCurrentTenant({
       name: testingDB.dbName,

@@ -5,7 +5,6 @@ import flatMapDeep from 'lodash/flatMapDeep.js';
 import entities from '#api/entities/entities.js';
 import { preloadOptionsLimit } from '#shared/config.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
-import translations from '#api/i18n/translations.js';
 import { denormalizeThesauriLabelInMetadata } from '#api/entities/denormalize.js';
 import { search } from '#api/search/index.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
