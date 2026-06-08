@@ -3,10 +3,10 @@ import { connect, ConnectedProps } from 'react-redux';
 import uniqBy from 'lodash/uniqBy';
 import { Highlight } from '@huridocs/react-text-selection-handler';
 import { IStore } from '#app/istore.js';
-import { ExtractedMetadataSchema, SelectionRectangleSchema } from '#shared/types/commonTypes.js';
+import { PropertySelectionSchema, SelectionRectangleSchema } from '#shared/types/commonTypes.js';
 import { selectionHandlers } from '#app/V2/Components/PDFViewer/index.js';
 
-interface Selection extends ExtractedMetadataSchema {
+interface Selection extends PropertySelectionSchema {
   isCurrent?: boolean;
 }
 
@@ -45,8 +45,8 @@ const PageSelectionsComponent = ({
 
   const newSelections: Selection[] = userSelections.toJS();
 
-  const currentSelections: Selection[] = entityDocument.get('extractedMetadata')?.size
-    ? entityDocument.toJS().extractedMetadata!.map((currentSelection: Selection) => ({
+  const currentSelections: Selection[] = entityDocument.get('propertySelections')?.size
+    ? entityDocument.toJS().propertySelections!.map((currentSelection: Selection) => ({
         ...currentSelection,
         isCurrent: true,
       }))

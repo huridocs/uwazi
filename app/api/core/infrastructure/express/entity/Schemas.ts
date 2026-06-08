@@ -51,6 +51,29 @@ const MetadataValueSchema = z.object({
 
 const MetadataObjectSchema = z.record(z.array(MetadataValueSchema));
 
+const PropertySelectionSchema = z.object({
+  propertyID: z.string().optional(),
+  name: z.string().optional(),
+  timestamp: z.string().optional(),
+  deleteSelection: z.boolean().optional(),
+  selection: z
+    .object({
+      text: z.string().optional(),
+      selectionRectangles: z
+        .array(
+          z.object({
+            top: z.number(),
+            left: z.number(),
+            width: z.number(),
+            height: z.number(),
+            page: z.string().optional(),
+          })
+        )
+        .optional(),
+    })
+    .optional(),
+});
+
 const EntityIconSchema = z.object({
   _id: z.string().nullable().optional(),
   label: z.string().optional(),
@@ -96,6 +119,12 @@ const UpdateEntitySchema = MutateEntitySchema.extend({
         url: z.string().url().optional(),
       })
     )
+    .optional(),
+  propertySelections: z
+    .object({
+      fileID: z.string().min(1),
+      selections: z.array(PropertySelectionSchema),
+    })
     .optional(),
 });
 

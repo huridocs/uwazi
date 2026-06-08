@@ -534,25 +534,25 @@ const fixtures: DBFixture = {
     factory.document('extractor_source_pdf_target_text_entity_1_pdf_1', {
       language: 'en',
       entity: 'extractor_source_pdf_target_text_entity_1',
-      extractedMetadata: [],
+      propertySelections: [],
     }),
 
     factory.document('extractor_source_pdf_target_text_entity_1_pdf_2', {
       language: 'es',
       entity: 'extractor_source_pdf_target_text_entity_1',
-      extractedMetadata: [{ name: 'target_text', selection: { text: 'labeled_value' } }],
+      propertySelections: [{ name: 'target_text', selection: { text: 'labeled_value' } }],
     }),
 
     factory.document('extractor_source_pdf_target_text_entity_2_pdf_1', {
       language: 'en',
       entity: 'extractor_source_pdf_target_text_entity_2',
-      extractedMetadata: [],
+      propertySelections: [],
     }),
 
     factory.document('extractor_source_pdf_target_multiselect_entity_1_pdf_1', {
       language: 'en',
       entity: 'extractor_source_pdf_target_multiselect_entity_1',
-      extractedMetadata: [],
+      propertySelections: [],
     }),
   ],
 };
