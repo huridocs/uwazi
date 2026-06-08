@@ -76,10 +76,14 @@ describe('relationship', () => {
     await testingEnvironment.setUp(fixtures);
 
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
-    await prepareExtraFixtures();
-    await runScenarios();
+    await testingEnvironment.runWithContext(async () => {
+      await prepareExtraFixtures();
+      await runScenarios();
+    });
 
-    entitiesRelated = await entities.get({ template: templateToRelateId, language: 'en' });
+    entitiesRelated = await testingEnvironment.runWithContext(() =>
+      entities.get({ template: templateToRelateId, language: 'en' })
+    );
   });
 
   afterAll(async () => testingEnvironment.tearDown());

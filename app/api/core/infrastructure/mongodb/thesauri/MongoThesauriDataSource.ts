@@ -11,10 +11,7 @@ import { MongoThesaurusMapper } from './MongoThesaurusMapper.js';
 import { ThesaurusDBO } from './ThesaurusDBO.js';
 import { MongoTransactionManager } from '../common/MongoTransactionManager.js';
 
-class MongoThesauriDataSourceV2
-  extends MongoDataSource<ThesaurusDBO>
-  implements ThesauriDataSource
-{
+class MongoThesauriDataSource extends MongoDataSource<ThesaurusDBO> implements ThesauriDataSource {
   protected collectionName = 'dictionaries';
 
   constructor(db: Db, transactionManager: MongoTransactionManager) {
@@ -48,6 +45,18 @@ class MongoThesauriDataSourceV2
     await this.getCollection().insertOne(dbo, { ignoreUndefined: true });
   }
 
+  async existsById(id: string): Promise<boolean> {
+    const count = await this.getCollection().countDocuments(
+      { _id: ObjectId.createFromHexString(id) },
+      { limit: 1 }
+    );
+    return count > 0;
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.getCollection().deleteOne({ _id: ObjectId.createFromHexString(id) });
+  }
+
   async exists(thesaurus: Thesaurus): Promise<ResultType<false, Error>> {
     const count = await this.getCollection().countDocuments(
       { name: thesaurus.name, _id: { $ne: new ObjectId(thesaurus.id) } },
@@ -62,4 +71,4 @@ class MongoThesauriDataSourceV2
   }
 }
 
-export { MongoThesauriDataSourceV2 };
+export { MongoThesauriDataSource };

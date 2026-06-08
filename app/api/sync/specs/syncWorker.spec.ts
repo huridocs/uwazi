@@ -154,6 +154,7 @@ describe('syncWorker', () => {
       name: 'target1',
       dbName: 'target1',
       indexName: 'target1',
+      featureFlags: { postgresThesauri: false },
       ...(await testingUploadPaths('syncWorker_target1_files')),
     });
 
@@ -353,12 +354,14 @@ describe('syncWorker', () => {
   it('should sync dictionaries that match template properties whitelist', async () => {
     await runAllTenants();
     await tenants.run(async () => {
-      expect(await thesauri.get()).toMatchObject([
-        {
-          name: 'thesauri1',
-          values: [{ label: 'th1value1' }, { label: 'th1value2' }],
-        },
-      ]);
+      await testingEnvironment.runWithContext(async () => {
+        expect(await thesauri.get()).toMatchObject([
+          {
+            name: 'thesauri1',
+            values: [{ label: 'th1value1' }, { label: 'th1value2' }],
+          },
+        ]);
+      });
     }, 'target1');
   });
 

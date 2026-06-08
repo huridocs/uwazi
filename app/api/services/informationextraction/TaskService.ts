@@ -3,7 +3,7 @@ import { PropertySchema } from '#shared/types/commonTypes.js';
 import settings from '#api/settings/index.js';
 import { ObjectId } from 'mongodb';
 import entities from '#api/entities/index.js';
-import dictionatiesModel from '#api/thesauri/dictionariesModel.js';
+import thesauri from '#api/thesauri/index.js';
 import _ from 'lodash';
 import { EnforcedWithId } from '#api/odm/index.js';
 import { IXTaskManager, TaskParameters } from './InformationExtraction.js';
@@ -37,8 +37,8 @@ export class IXTaskService {
     };
 
     if (propertyTypeIsSelectOrMultiSelect(targetProperty.type)) {
-      const thesauri = await dictionatiesModel.getById(targetProperty.content);
-      const [groups, rootValues] = _.partition(thesauri?.values || [], r => r.values);
+      const currentThesauri = await thesauri.getById(targetProperty.content);
+      const [groups, rootValues] = _.partition(currentThesauri?.values || [], r => r.values);
       const groupedValues = groups.map(group => group.values || []).flat();
       const allValues = rootValues.concat(groupedValues);
 

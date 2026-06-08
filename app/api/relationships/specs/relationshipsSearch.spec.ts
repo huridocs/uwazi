@@ -74,6 +74,11 @@ const fixtures: DBFixture = {
   ],
 };
 
+const searchWithContext = async (sharedId: string, query: any, language: string, user: any) =>
+  testingEnvironment.runWithContext(async () =>
+    relationships.search(sharedId, query, language, user)
+  );
+
 describe('relationships search', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures, 'relationships_search');
@@ -84,7 +89,7 @@ describe('relationships search', () => {
   });
 
   it('should return empty results when entity does not exists (should be 404, this is for backwards compat)', async () => {
-    const results = await relationships.search('entity5', {}, 'en', {});
+    const results = await searchWithContext('entity5', {}, 'en', {});
 
     expect(results).toMatchObject({
       totalHubs: 0,
@@ -96,7 +101,7 @@ describe('relationships search', () => {
   });
 
   it('should return all hubs for a specific entity', async () => {
-    const results = await relationships.search('entity1', { sort: '_id' }, 'en', {});
+    const results = await searchWithContext('entity1', { sort: '_id' }, 'en', {});
 
     expect(results).toMatchObject({
       totalHubs: 4,
@@ -137,7 +142,7 @@ describe('relationships search', () => {
   });
 
   it('should return x number of hubs (limit) ', async () => {
-    const results = await relationships.search('entity1', { sort: '_id', limit: 2 }, 'en', {});
+    const results = await searchWithContext('entity1', { sort: '_id', limit: 2 }, 'en', {});
 
     expect(results).toMatchObject({
       totalHubs: 4,
@@ -174,7 +179,7 @@ describe('relationships search', () => {
   });
 
   it('should filter hubs by relation type and entity template', async () => {
-    const results = await relationships.search(
+    const results = await searchWithContext(
       'entity1',
       {
         sort: '_id',
@@ -207,7 +212,7 @@ describe('relationships search', () => {
   });
 
   it('should filter hubs by relation type and entity template (templates that belong to different relationTypes)', async () => {
-    const results = await relationships.search(
+    const results = await searchWithContext(
       'entity1',
       {
         sort: '_id',
@@ -273,7 +278,7 @@ describe('relationships search', () => {
 
     await testingEnvironment.setUp(customFixtures, 'relationships_search');
 
-    const results = await relationships.search(
+    const results = await searchWithContext(
       'entity1',
       {
         sort: '_id',
@@ -368,7 +373,7 @@ describe('relationships search', () => {
       'relationships_search'
     );
 
-    const results = await relationships.search('entity1', {}, 'en', {});
+    const results = await searchWithContext('entity1', {}, 'en', {});
 
     expect(results).toMatchObject({
       totalHubs: 2,
