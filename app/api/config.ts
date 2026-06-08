@@ -24,6 +24,7 @@ const {
   FEATURE_FLAG_PARAGRAPH_EXTRACTION,
   FEATURE_FLAG_THEME_CUSTOMIZATION,
   FEATURE_FLAG_V2_CSV_IMPORT,
+  FEATURE_FLAG_AI_ASSISTANT,
   DEV_FLAG_TESTING,
   FILES_ROOT_PATH,
   JSON_LOGS,
@@ -150,11 +151,13 @@ export const config = {
       v2EntityPermission: false,
       postgresThesauri: false,
       newHeader: NEW_HEADER === 'true' || false,
+      aiAssistant: FEATURE_FLAG_AI_ASSISTANT === 'true' || false,
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',
   externalServicesUrls: {
     paragraphExtraction: process.env.PARAGRAPH_EXTRACTION_URL || 'http://localhost:5056',
+    aiAssistant: process.env.AI_ASSISTANT_SERVICE_URL || 'http://localhost:5054',
   },
 
   redis: {

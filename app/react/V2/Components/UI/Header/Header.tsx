@@ -19,6 +19,9 @@ import { SiteName } from '#app/App/SiteName.js';
 import { useIsMobile } from '#app/V2/CustomHooks/useIsMobile.js';
 import { buildLibraryUrl } from './buildLibraryUrl.js';
 import { settingsAtom, themeModeAtom, userAtom } from '../../../atoms/index.js';
+import { AskBertButton } from '#V2/Components/AIAssistant/AskBertButton.js';
+import { BertHost } from '#V2/Components/AIAssistant/BertHost.js';
+import { FeatureToggle } from '#V2/Components/UI/FeatureToggle.js';
 import { RequestStatus } from '../Notifications/RequestStatus.js';
 import { LanguageDropdown } from './LanguageDropdown.js';
 import { MenuLinks } from './MenuLinks.js';
@@ -102,6 +105,9 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
             className="header-bar-separator hidden h-8 w-px shrink-0 sm:block"
             aria-hidden="true"
           />
+          <FeatureToggle feature="aiAssistant">
+            <AskBertButton />
+          </FeatureToggle>
           {shouldShowLibrary && (
             <I18NLink
               to={libraryUrl}
@@ -151,6 +157,9 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
           ) : null}
         </div>
       </div>
+      <FeatureToggle feature="aiAssistant">
+        <BertHost />
+      </FeatureToggle>
     </header>
   );
 };

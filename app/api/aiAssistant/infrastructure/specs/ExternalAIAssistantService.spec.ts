@@ -1,0 +1,109 @@
+import express from 'express';
+import { Server } from 'http';
+import superagent from 'superagent';
+import type { HttpClient } from '#api/common.v2/contracts/HttpClient.js';
+import { ExternalAIAssistantService } from '../ExternalAIAssistantService.js';
+
+const app = express();
+let server: Server;
+const jobs = new Map<string, { message: string; pollCount: number }>();
+
+app.use(express.json());
+
+app.post('/api/v1/jobs', (req, res) => {
+  const jobId = `job-${jobs.size + 1}`;
+  jobs.set(jobId, {
+    message: req.body.message,
+    pollCount: 0,
+  });
+  res.status(200).json({ job_id: jobId, message: req.body.message, status: 'pending' });
+});
+
+app.get('/api/v1/jobs/:jobId', (req, res) => {
+  const jobData = jobs.get(req.params.jobId);
+  if (!jobData) {
+    res.status(200).json({ job_id: req.params.jobId, status: 'failed', result: null });
+    return;
+  }
+
+  jobData.pollCount += 1;
+
+  if (jobData.pollCount === 1) {
+    res.status(200).json({ job_id: req.params.jobId, status: 'running', result: null });
+    return;
+  }
+
+  res.status(200).json({
+    job_id: req.params.jobId,
+    status: 'completed',
+    result: `Reply to: ${jobData.message}`,
+  });
+});
+
+describe('ExternalAIAssistantService', () => {
+  const httpClient: HttpClient = {
+    async get<Response>(input) {
+      const response = await superagent.get(input.url);
+      return response.body as Response;
+    },
+    postFormData: jest.fn(),
+  };
+
+  beforeAll(async () => {
+    await new Promise<void>(resolve => {
+      server = app.listen(5054, resolve);
+    });
+  });
+
+  afterAll(async () => {
+    await new Promise<void>((resolve, reject) => {
+      server.close(error => {
+        if (error) {
+          reject(error);
+          return;
+        }
+        resolve();
+      });
+    });
+  });
+
+  it('should submit a message and poll its status', async () => {
+    const service = new ExternalAIAssistantService({
+      url: 'http://localhost:5054',
+      httpClient,
+    });
+
+    const { jobId } = await service.submitMessage({
+      message: 'Hello',
+      credentials: {
+        url: 'http://localhost:3000',
+        username: 'admin',
+        password: 'secret',
+      },
+    });
+
+    const pending = await service.getJobStatus(jobId);
+    expect(pending).toEqual({ status: 'pending' });
+
+    const result = await service.getJobStatus(jobId);
+
+    expect(result).toEqual({
+      status: 'completed',
+      message: 'Reply to: Hello',
+    });
+  });
+
+  it('should map failed jobs to error results', async () => {
+    const service = new ExternalAIAssistantService({
+      url: 'http://localhost:5054',
+      httpClient,
+    });
+
+    const result = await service.getJobStatus('unknown-job');
+
+    expect(result).toEqual({
+      status: 'error',
+      error: 'AI Assistant request failed',
+    });
+  });
+});
