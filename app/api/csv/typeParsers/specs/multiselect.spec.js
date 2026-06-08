@@ -6,6 +6,10 @@ import thesauri from '#api/thesauri/index.js';
 import { fixtures, thesauri1Id } from '../../specs/fixtures.js';
 import typeParsers from '../../typeParsers.js';
 
+const getThesaurusById = id => testingEnvironment.runWithContext(() => thesauri.getById(id));
+const parseMultiselect = (...args) =>
+  testingEnvironment.runWithContext(() => typeParsers.multiselect(...args));
+
 const rawEntityWithMultiselectValue = val => ({
   propertiesFromColumns: {
     multiselect_prop: val,
@@ -21,13 +25,13 @@ describe('multiselect', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
 
-    thesauri1 = await thesauri.getById(thesauri1Id);
+    thesauri1 = await getThesaurusById(thesauri1Id);
   });
 
   it.each([
     {
       inputString: 'value4',
-      expectationLabels: [' value4 '],
+      expectationLabels: ['value4'],
       expectationValueIds: [3],
       expectationWarnings: [],
     },
@@ -45,7 +49,7 @@ describe('multiselect', () => {
     },
     {
       inputString: 'value1|value2|VALUE4',
-      expectationLabels: ['value1', 'value2', ' value4 '],
+      expectationLabels: ['value1', 'value2', 'value4'],
       expectationValueIds: [0, 1, 3],
       expectationWarnings: [],
     },
@@ -64,7 +68,7 @@ describe('multiselect', () => {
   ])(
     'should find values in thesauri and return data with warnings',
     async ({ inputString, expectationLabels, expectationValueIds, expectationWarnings }) => {
-      const result = await typeParsers.multiselect(
+      const result = await parseMultiselect(
         rawEntityWithMultiselectValue(inputString),
         templateProp
       );
@@ -81,7 +85,7 @@ describe('multiselect', () => {
   );
 
   it('should return warnings for non-existent values', async () => {
-    const result = await typeParsers.multiselect(
+    const result = await parseMultiselect(
       rawEntityWithMultiselectValue('non_existent_value'),
       templateProp
     );
@@ -97,7 +101,7 @@ describe('multiselect', () => {
   });
 
   it('should return warnings for mixed valid and invalid values', async () => {
-    const result = await typeParsers.multiselect(
+    const result = await parseMultiselect(
       rawEntityWithMultiselectValue('value1|non_existent_value|value2'),
       templateProp
     );
@@ -115,10 +119,7 @@ describe('multiselect', () => {
   });
 
   it('should handle invalid parent-child format gracefully', async () => {
-    const result = await typeParsers.multiselect(
-      rawEntityWithMultiselectValue('a::b::c'),
-      templateProp
-    );
+    const result = await parseMultiselect(rawEntityWithMultiselectValue('a::b::c'), templateProp);
 
     expect(result.data).toEqual([]);
     expect(result.warnings).toEqual([

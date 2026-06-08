@@ -10,6 +10,7 @@ import { SearchQuery } from '#shared/types/SearchQueryType.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { searchRoutes } from '../routes.js';
 import { setupTestingEnviroment } from './setupTestingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 describe('Sorting', () => {
   const factory = getFixturesFactory();
@@ -74,14 +75,15 @@ describe('Sorting', () => {
           }),
         ],
       },
-      'search.v2.sorting'
+      true
     );
 
-    await entities.save(entityA, { language: 'en', user: {} }, true);
-    await entities.save(entityC, { language: 'en', user: {} }, true);
-    await entities.save(entityZ, { language: 'en', user: {} }, true);
-    await entities.save(entityJ, { language: 'en', user: {} }, true);
-
+    await testingEnvironment.runWithContext(async () => {
+      await entities.save(entityA, { language: 'en', user: {} }, true);
+      await entities.save(entityC, { language: 'en', user: {} }, true);
+      await entities.save(entityZ, { language: 'en', user: {} }, true);
+      await entities.save(entityJ, { language: 'en', user: {} }, true);
+    });
     await elasticTesting.refresh();
   });
 

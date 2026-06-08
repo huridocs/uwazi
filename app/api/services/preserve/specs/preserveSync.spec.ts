@@ -7,7 +7,6 @@ import fs from 'fs/promises';
 import { ApiResponse } from '@elastic/elasticsearch';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
-import { config } from '#api/config.js';
 import { generateFileName, testingUploadPaths } from '#api/files/filesystem.js';
 import { storage } from '#api/files/storage.js';
 import { legacyLogger } from '#api/log/index.js';
@@ -89,7 +88,7 @@ describe('preserveSync', () => {
       dbName: db.dbName,
       indexName: 'preserveSync_index',
       ...(await testingUploadPaths()),
-      featureFlags: config.defaultTenant.featureFlags,
+      featureFlags: { postgresThesauri: false },
       domain: 'test-tenant',
     };
 
@@ -336,7 +335,9 @@ describe('preserveSync', () => {
     it('should save url and source properties based on the evidence url', async () => {
       await tenants.run(async () => {
         permissionsContext.setCommandContext();
-        const importedThesauri = await thesauri.getById(thesauri1Id);
+        const importedThesauri = await testingEnvironment.runWithContext(async () =>
+          thesauri.getById(thesauri1Id)
+        );
         expect(importedThesauri).toMatchObject({
           values: [
             { label: 'www.url1test.org' },
