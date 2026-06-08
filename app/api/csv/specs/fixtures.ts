@@ -22,7 +22,7 @@ const translationsV2: TranslationDBO[] = [
     type: 'Thesaurus',
     label: 'thesauri 1',
   }),
-  createTranslationDBO('value3', 'value3', 'en', {
+  createTranslationDBO('Value3', 'Value3', 'en', {
     id: thesauri1Id.toString(),
     type: 'Thesaurus',
     label: 'thesauri 1',
@@ -104,7 +104,7 @@ const fixtures: DBFixture = {
           id: db.id().toString(),
         },
         {
-          label: ' value4 ',
+          label: 'value4',
           id: db.id().toString(),
         },
       ],

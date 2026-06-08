@@ -24,6 +24,8 @@ import { elasticTesting } from '#api/utils/elastic_testing.js';
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
+import { testingPG } from '#api/utils/testing_pg.js';
+import type { PGFixture } from '#api/utils/testing_pg.js';
 import { User } from '#api/users.v2/model/User.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { ObjectId } from 'mongodb';
@@ -34,20 +36,39 @@ const __dirname = dirname(__filename);
 let appContextGetMock: jest.SpyInstance<unknown, [key: string], any>;
 let appContextSetMock: jest.SpyInstance<unknown, [key: string, value: unknown], any>;
 
+type SetUpOptions = {
+  elasticIndex?: string | boolean;
+  postgres?: boolean;
+};
+
 const testingEnvironment = {
   elasticIndex: '',
   uploadSubPath: '',
+  pgEnabled: false,
   userInContextMockFactory: new UserInContextMockFactory(),
 
-  async setUp(fixtures?: DBFixture, elasticIndex?: string | boolean) {
+  async setUp(
+    fixtures?: DBFixture,
+    options?: string | boolean | SetUpOptions,
+    pgFixtures?: PGFixture
+  ) {
+    const { elasticIndex, postgres } =
+      options === undefined || typeof options === 'string' || typeof options === 'boolean'
+        ? { elasticIndex: options, postgres: false }
+        : options;
+
     if (!elasticIndex) {
       this.elasticIndex = '';
     }
     await this.setTenant();
     this.setPermissions();
     this.setFakeContext();
-    await this.setFixtures(fixtures);
+    await this.setFixtures(fixtures, pgFixtures);
     await this.setElastic(elasticIndex);
+    if (postgres && !this.pgEnabled) {
+      await testingPG.connect();
+      this.pgEnabled = true;
+    }
   },
 
   testingFilesPath(fileName: string) {
@@ -130,9 +151,12 @@ const testingEnvironment = {
     }
   },
 
-  async setFixtures(fixtures?: DBFixture) {
+  async setFixtures(fixtures?: DBFixture, pgFixtures?: PGFixture) {
     if (fixtures) {
       await testingDB.setupFixturesAndContext(fixtures);
+    }
+    if (pgFixtures && this.pgEnabled) {
+      await testingPG.setFixtures(pgFixtures);
     }
   },
 
@@ -238,6 +262,10 @@ const testingEnvironment = {
         console.warn(`Failed to cleanup Elasticsearch index ${this.elasticIndex}:`, error.message);
       }
     }
+    if (this.pgEnabled) {
+      await testingPG.disconnect();
+      this.pgEnabled = false;
+    }
     await testingDB.disconnect();
   },
 
@@ -251,6 +279,18 @@ const testingEnvironment = {
 
     getCollection(collectionName: string) {
       return testingDB.mongodb?.collection(collectionName);
+    },
+  },
+
+  pg: {
+    async getAllFrom<T extends Record<string, unknown> = Record<string, unknown>>(
+      table: string
+    ): Promise<T[]> {
+      return testingPG.getAllFrom<T>(table);
+    },
+
+    get pool() {
+      return testingPG.pool;
     },
   },
 };

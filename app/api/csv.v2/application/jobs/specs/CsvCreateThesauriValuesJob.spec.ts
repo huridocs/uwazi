@@ -41,7 +41,7 @@ describe('CsvCreateThesauriValuesJob (integration)', () => {
   const createdImportIds: string[] = [];
 
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures, 'csv-create-thesauri-values-job');
+    await testingEnvironment.setUp(fixtures, true);
   });
 
   afterEach(async () => {
@@ -68,9 +68,12 @@ describe('CsvCreateThesauriValuesJob (integration)', () => {
       dispatchMany: jest.fn().mockResolvedValue(undefined),
       deleteByParams: jest.fn().mockResolvedValue(undefined),
     }) as jest.Mocked<JobsDispatcher>;
-    const { useCase, csvImportsDS, thesauriValuesDS } = CsvCreateThesauriValuesJobFactory.build({
-      jobsDispatcher,
-    });
+    const { useCase, csvImportsDS, thesauriValuesDS } = await testingEnvironment.runWithContext(
+      () =>
+        CsvCreateThesauriValuesJobFactory.build({
+          jobsDispatcher,
+        })
+    );
     const importId = fixturesFactory.idString('create-thesauri-import');
     createdImportIds.push(importId);
     const userId = fixturesFactory.idString('create-thesauri-user');
@@ -85,6 +88,7 @@ describe('CsvCreateThesauriValuesJob (integration)', () => {
       }),
       `csv-imports/${importId}/original.csv`
     );
+
     await csvImportsDS.insert(csvImport);
 
     const entry = new CsvThesauriPendingEntry({
@@ -114,12 +118,14 @@ describe('CsvCreateThesauriValuesJob (integration)', () => {
     ]);
 
     const callbacks = createCallbacks();
-    await useCase.execute({
-      importId,
-      tenantName,
-      userId,
-      callbacks,
-    });
+    await testingEnvironment.runWithContext(async () =>
+      useCase.execute({
+        importId,
+        tenantName,
+        userId,
+        callbacks,
+      })
+    );
 
     const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
     expect(updatedImport.status).toBe(CsvImportStatus.PreflightThesauriCreateDone);
@@ -174,9 +180,12 @@ describe('CsvCreateThesauriValuesJob (integration)', () => {
       dispatchMany: jest.fn().mockResolvedValue(undefined),
       deleteByParams: jest.fn().mockResolvedValue(undefined),
     }) as jest.Mocked<JobsDispatcher>;
-    const { useCase, csvImportsDS, thesauriValuesDS } = CsvCreateThesauriValuesJobFactory.build({
-      jobsDispatcher,
-    });
+    const { useCase, csvImportsDS, thesauriValuesDS } = await testingEnvironment.runWithContext(
+      () =>
+        CsvCreateThesauriValuesJobFactory.build({
+          jobsDispatcher,
+        })
+    );
     const importId = fixturesFactory.idString('create-thesauri-default-only-import');
     createdImportIds.push(importId);
     const userId = fixturesFactory.idString('create-thesauri-default-only-user');
@@ -214,12 +223,14 @@ describe('CsvCreateThesauriValuesJob (integration)', () => {
       }),
     ]);
 
-    await useCase.execute({
-      importId,
-      tenantName,
-      userId,
-      callbacks: createCallbacks(),
-    });
+    await testingEnvironment.runWithContext(async () =>
+      useCase.execute({
+        importId,
+        tenantName,
+        userId,
+        callbacks: createCallbacks(),
+      })
+    );
 
     const translations = await testingEnvironment.db
       .getCollection('translationsV2')!

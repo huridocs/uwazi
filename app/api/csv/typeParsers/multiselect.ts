@@ -22,7 +22,7 @@ const multiselect = async (
   entityToImport: RawEntity,
   property: PropertySchema
 ): Promise<ParserResult> => {
-  const currentThesaurus = (await thesauri.getById(property.content)) || ({} as ThesaurusSchema);
+  const currentThesaurus = ((await thesauri.getById(property.content)) || {}) as ThesaurusSchema;
   const propValue = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
   const warnings: Array<{ property: string; value: string; reason: string }> = [];
 
