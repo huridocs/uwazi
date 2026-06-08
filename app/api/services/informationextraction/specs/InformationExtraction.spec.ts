@@ -257,7 +257,9 @@ describe('InformationExtraction', () => {
     });
 
     it('should send xmls (multiselect)', async () => {
-      await informationExtraction.trainModel(factory.id('extractorWithMultiselect'));
+      await testingEnvironment.runWithContext(async () =>
+        informationExtraction.trainModel(factory.id('extractorWithMultiselect'))
+      );
 
       const xmlG = await readDocument('G');
       const xmlH = await readDocument('H');
@@ -357,7 +359,9 @@ describe('InformationExtraction', () => {
     });
 
     it('should send labeled data (multiselect)', async () => {
-      await informationExtraction.trainModel(factory.id('extractorWithMultiselect'));
+      await testingEnvironment.runWithContext(async () =>
+        informationExtraction.trainModel(factory.id('extractorWithMultiselect'))
+      );
 
       expect(IXExternalService.materials.length).toBe(2);
       expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentG.xml')).toEqual({
@@ -525,7 +529,9 @@ describe('InformationExtraction', () => {
     });
 
     it('should start the task to train the model (multiselect)', async () => {
-      await informationExtraction.trainModel(factory.id('extractorWithMultiselect'));
+      await testingEnvironment.runWithContext(async () =>
+        informationExtraction.trainModel(factory.id('extractorWithMultiselect'))
+      );
 
       expect(informationExtractionForJob.taskManager?.startTask).toHaveBeenCalledWith({
         params: {

@@ -1,8 +1,6 @@
 import { z } from 'zod';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { BulkDeleteEntityUseCaseFactory } from '../../factories/BulkDeleteEntityUseCaseFactory.js';
-import { tenants } from '#api/tenants/index.js';
-import entities from '#api/entities/entities.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 const RequestSchema = z.object({
@@ -17,42 +15,33 @@ class DeleteEntityController extends AbstractController<RequestDto> {
     try {
       const { sharedId } = RequestSchema.parse(this.request.query);
 
-      if (tenants.current().featureFlags?.v2DeleteEntity) {
-        const useCase = BulkDeleteEntityUseCaseFactory.default();
+      const useCase = BulkDeleteEntityUseCaseFactory.default();
 
-        await useCase.execute({ sharedIds: [sharedId] });
+      await useCase.execute({ sharedIds: [sharedId] });
 
-        ExecutionContext.logger.info('Entity Deleted executed successfully', {
-          namespace: 'Entity_Delete',
-          success: true,
-          durationMs: Date.now() - startTime,
+      ExecutionContext.logger.info('Entity Deleted executed successfully', {
+        namespace: 'Entity_Delete',
+        success: true,
+        durationMs: Date.now() - startTime,
 
-          sharedId,
-        });
+        sharedId,
+      });
 
-        this.response.json([]);
-      } else {
-        const output = await entities.delete(sharedId);
-
-        this.response.json(output);
-      }
+      this.response.json([]);
     } catch (error: unknown) {
-      if (tenants.current().featureFlags?.v2DeleteEntity) {
-        const duration = Date.now() - startTime;
+      const duration = Date.now() - startTime;
 
-        ExecutionContext.logger.info(
-          `Entity Delete failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-          {
-            namespace: 'Entity_Delete',
-            durationMs: duration,
-            success: false,
-            notify: true,
+      ExecutionContext.logger.info(
+        `Entity Delete failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        {
+          namespace: 'Entity_Delete',
+          durationMs: duration,
+          success: false,
 
-            error: JSON.stringify(error),
-            dto: JSON.stringify(this.request.query),
-          }
-        );
-      }
+          error: JSON.stringify(error),
+          dto: JSON.stringify(this.request.query),
+        }
+      );
 
       throw error;
     }

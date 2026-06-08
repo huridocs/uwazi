@@ -56,6 +56,32 @@ recreate_database() {
     fi
   fi
 
+  PG_HOST="${POSTGRES_HOST:-127.0.0.1}"
+  PG_PORT="${POSTGRES_PORT:-5432}"
+  PG_USER="${POSTGRES_USER:-uwazi}"
+  PG_DB="${POSTGRES_DB:-uwazi_development}"
+
+  if command -v pg_isready &>/dev/null && pg_isready -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -q 2>/dev/null; then
+    echo "Cleaning existing PostgreSQL data..."
+    PGPASSWORD="${POSTGRES_PASSWORD:-uwazi}" psql \
+      -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d "$PG_DB" \
+      -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;" \
+      && echo "Existing data cleaned." \
+      || echo "WARNING: PostgreSQL cleanup failed, skipping."
+
+    echo "Applying PostgreSQL schema..."
+    for schema_file in "$repo_root/app/api/core/infrastructure/postgresql/schema/"*.sql; do
+      [ -f "$schema_file" ] || continue
+      PGPASSWORD="${POSTGRES_PASSWORD:-uwazi}" psql \
+        -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d "$PG_DB" \
+        -f "$schema_file" \
+        && echo "Applied: $(basename "$schema_file")" \
+        || echo "WARNING: Failed to apply $(basename "$schema_file"), skipping."
+    done
+  else
+    echo "PostgreSQL not available on $PG_HOST:$PG_PORT, skipping schema."
+  fi
+
   exit 0
 }
 

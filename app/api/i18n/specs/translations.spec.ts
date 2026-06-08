@@ -1,3 +1,6 @@
+// eslint-disable-next-line node/no-restricted-import
+import * as fs from 'fs';
+
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import entities from '#api/entities/index.js';
@@ -6,14 +9,27 @@ import pages from '#api/pages/index.js';
 import settings from '#api/settings/index.js';
 import thesauri from '#api/thesauri/thesauri.js';
 import { ContextType } from '#shared/translationSchema.js';
-// eslint-disable-next-line node/no-restricted-import
-import * as fs from 'fs';
 import { UITranslationNotAvailable } from '../defaultTranslations.js';
 import { addLanguage } from '../routes.js';
-import translations from '../translations.js';
+import translationsFn from '../translations.js';
+
 import { getTranslationsV2ByContext } from '../v2_support.js';
 import fixtures, { dictionaryId } from './fixtures.js';
 import { sortByLocale } from './sortByLocale.js';
+
+const translations = Object.assign(
+  async (...args: any[]) =>
+    testingEnvironment.runWithContext(async () => translationsFn.save(args[0])),
+  {
+    ...translationsFn,
+    save: async (...args: any[]) =>
+      testingEnvironment.runWithContext(async () => translationsFn.save(args[0])),
+    v2StructureSave: async (...args: any[]) =>
+      testingEnvironment.runWithContext(async () => translationsFn.v2StructureSave(args[0])),
+    importPredefined: async (...args: any[]) =>
+      testingEnvironment.runWithContext(async () => translationsFn.importPredefined(args[0])),
+  }
+);
 
 describe('translations', () => {
   beforeEach(async () => {

@@ -72,43 +72,45 @@ const buildPendingDoc = ({
 describe('PendingThesauriValuesApplier', () => {
   const thesaurusId = fixtures.dictionaries[0]._id.toString();
 
-  const buildApplier = () => {
-    const transactionManager = TransactionManagerFactory.default();
-    const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
-    const translationsDS = DefaultTranslationsDataSource(transactionManager);
-    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
-    const thesauriService = new ThesauriService({
-      dispatcher: new DispatcherAdapter(
-        DefaultDispatcher(tenants.current().name, transactionManager)
-      ),
-      thesauriDS,
-      thesaurusTranslationService: new ThesaurusTranslationService({
-        settingsDS,
-        translationsDS,
-      }),
+  const buildApplier = () =>
+    testingEnvironment.runWithContext(() => {
+      const transactionManager = TransactionManagerFactory.default();
+      const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
+      const translationsDS = DefaultTranslationsDataSource(transactionManager);
+      const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+      const thesauriService = new ThesauriService({
+        dispatcher: new DispatcherAdapter(
+          DefaultDispatcher(tenants.current().name, transactionManager)
+        ),
+        thesauriDS,
+        thesaurusTranslationService: new ThesaurusTranslationService({
+          settingsDS,
+          translationsDS,
+        }),
+      });
+      return new PendingThesauriValuesApplier({
+        thesauriDS,
+        thesauriService,
+      });
     });
-    return new PendingThesauriValuesApplier({
-      thesauriDS,
-      thesauriService,
-    });
-  };
 
   const replaceThesaurusValues = async (
     values: Array<{ id: string; label: string; values?: Array<{ id: string; label: string }> }>
-  ) => {
-    const transactionManager = TransactionManagerFactory.default();
-    const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
-    const current = (await thesauriDS.getById(thesaurusId)).getDataOrThrow();
-    const updated = new Thesaurus({
-      id: current.id,
-      name: current.name,
-      values,
+  ) =>
+    testingEnvironment.runWithContext(async () => {
+      const transactionManager = TransactionManagerFactory.default();
+      const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
+      const current = (await thesauriDS.getById(thesaurusId)).getDataOrThrow();
+      const updated = new Thesaurus({
+        id: current.id,
+        name: current.name,
+        values,
+      });
+      await thesauriDS.update(updated);
     });
-    await thesauriDS.update(updated);
-  };
 
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures, 'pending-thesauri-values-applier');
+    await testingEnvironment.setUp(fixtures, true);
   });
 
   afterEach(async () => {
@@ -146,10 +148,12 @@ describe('PendingThesauriValuesApplier', () => {
       childLabel: 'Child',
     });
 
-    const { diff, appliedValues } = await applier.apply(pendingDoc, {
-      tenantName: tenants.current().name,
-      userId: fixturesFactory.idString('pending-thesauri-user'),
-    });
+    const { diff, appliedValues } = await testingEnvironment.runWithContext(async () =>
+      applier.apply(pendingDoc, {
+        tenantName: tenants.current().name,
+        userId: fixturesFactory.idString('pending-thesauri-user'),
+      })
+    );
 
     expect(diff.valuesToAppend).toHaveLength(0);
     expect(appliedValues).toEqual(
@@ -175,10 +179,12 @@ describe('PendingThesauriValuesApplier', () => {
       childLabel: 'New Child',
     });
 
-    const { diff, appliedValues } = await applier.apply(pendingDoc, {
-      tenantName: tenants.current().name,
-      userId: fixturesFactory.idString('pending-thesauri-user'),
-    });
+    const { diff, appliedValues } = await testingEnvironment.runWithContext(async () =>
+      applier.apply(pendingDoc, {
+        tenantName: tenants.current().name,
+        userId: fixturesFactory.idString('pending-thesauri-user'),
+      })
+    );
 
     expect(diff.valuesToAppend.length).toBeGreaterThan(0);
     expect(appliedValues).toHaveLength(2);
@@ -265,10 +271,12 @@ describe('PendingThesauriValuesApplier', () => {
       entries: [entry],
     });
 
-    const { diff, appliedValues } = await applier.apply(pendingDoc, {
-      tenantName: tenants.current().name,
-      userId: fixturesFactory.idString('pending-thesauri-user'),
-    });
+    const { diff, appliedValues } = await testingEnvironment.runWithContext(async () =>
+      applier.apply(pendingDoc, {
+        tenantName: tenants.current().name,
+        userId: fixturesFactory.idString('pending-thesauri-user'),
+      })
+    );
 
     expect(diff.valuesToAppend.length).toBeGreaterThan(0);
     expect(diff.valuesToAppend).toEqual(

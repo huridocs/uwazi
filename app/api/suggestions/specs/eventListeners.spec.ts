@@ -274,16 +274,18 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
       expectedSuggestions: [],
     },
   ])('$case', async ({ sharedId, newTemplate, expectedSuggestions }) => {
-    const current = await entities.getById(sharedId, 'en');
-    const toSave = { ...current, template: newTemplate };
-    await entities.save(toSave, { user: adminUser, language: 'en' });
-    const allSuggestions =
-      (await db.mongodb
-        ?.collection('ixsuggestions')
-        .find({}, { sort: { propertyName: 1 } })
-        .toArray()) || [];
-    expect(allSuggestions).toHaveLength(expectedSuggestions.length);
-    expect(allSuggestions).toMatchObject(expectedSuggestions);
+    await testingEnvironment.runWithContext(async () => {
+      const current = await entities.getById(sharedId, 'en');
+      const toSave = { ...current, template: newTemplate };
+      await entities.save(toSave, { user: adminUser, language: 'en' });
+      const allSuggestions =
+        (await db.mongodb
+          ?.collection('ixsuggestions')
+          .find({}, { sort: { propertyName: 1 } })
+          .toArray()) || [];
+      expect(allSuggestions).toHaveLength(expectedSuggestions.length);
+      expect(allSuggestions).toMatchObject(expectedSuggestions);
+    });
   });
 });
 

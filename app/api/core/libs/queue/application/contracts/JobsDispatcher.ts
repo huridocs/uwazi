@@ -1,5 +1,9 @@
 import { Dispatchable } from './Dispatchable.js';
 
+export type DispatchOptions = {
+  lockedUntil?: number;
+};
+
 export interface DispatchableClass<T extends Dispatchable> {
   new (...args: any[]): T;
 }
@@ -12,13 +16,15 @@ export interface JobsDispatcher {
 
   dispatch<T extends Dispatchable>(
     dispatchable: DispatchableClass<T>,
-    params: Parameters<T['handleDispatch']>[1]
+    params: Parameters<T['handleDispatch']>[1],
+    options?: DispatchOptions
   ): Promise<void>;
   dispatchMany(
     callback: (
       dispatch: <T extends Dispatchable>(
         dispatchable: DispatchableClass<T>,
-        params: Parameters<T['handleDispatch']>[1]
+        params: Parameters<T['handleDispatch']>[1],
+        options?: DispatchOptions
       ) => void
     ) => void | Promise<void>
   ): Promise<void>;

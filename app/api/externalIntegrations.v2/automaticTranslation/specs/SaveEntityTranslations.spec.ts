@@ -23,6 +23,9 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
+const executeWithContext = async (instance: SaveEntityTranslations, input: any) =>
+  testingEnvironment.runWithContext(async () => instance.execute(input));
+
 describe('SaveEntityTranslations', () => {
   let saveEntityTranslations: SaveEntityTranslations;
   let mockLogger: Logger;
@@ -40,7 +43,7 @@ describe('SaveEntityTranslations', () => {
 
   it('should validate input has proper shape at runtime', async () => {
     const invalidConfig = { invalid_prop: true };
-    await expect(saveEntityTranslations.execute(invalidConfig)).rejects.toEqual(
+    await expect(executeWithContext(saveEntityTranslations, invalidConfig)).rejects.toEqual(
       new ValidationError('must NOT have additional properties')
     );
   });
@@ -57,7 +60,7 @@ describe('SaveEntityTranslations', () => {
       ],
     };
 
-    await saveEntityTranslations.execute(translationResult);
+    await executeWithContext(saveEntityTranslations, translationResult);
 
     const entities =
       (await testingDB.mongodb?.collection('entities').find({ sharedId: 'entity' }).toArray()) ||
@@ -92,7 +95,7 @@ describe('SaveEntityTranslations', () => {
       ],
     };
 
-    await saveEntityTranslations.execute(translationResult);
+    await executeWithContext(saveEntityTranslations, translationResult);
 
     const entities =
       (await testingDB.mongodb?.collection('entities').find({ sharedId: 'entity' }).toArray()) ||
@@ -140,7 +143,7 @@ describe('SaveEntityTranslations', () => {
       translations: [{ text: 'original text', language: 'en', success: true, error_message: '' }],
     };
 
-    await saveEntityTranslations.execute(translationResult);
+    await executeWithContext(saveEntityTranslations, translationResult);
 
     const entities = (await testingDB.mongodb?.collection('entities').find().toArray()) || [];
 
@@ -181,7 +184,7 @@ describe('SaveEntityTranslations', () => {
       ],
     };
 
-    await saveEntityTranslations.execute(translationResult);
+    await executeWithContext(saveEntityTranslations, translationResult);
 
     expect(mockLogger.info).toHaveBeenCalledTimes(2);
   });
@@ -198,7 +201,7 @@ describe('SaveEntityTranslations', () => {
       ],
     };
 
-    await saveEntityTranslations.execute(translationResult);
+    await executeWithContext(saveEntityTranslations, translationResult);
 
     const entities =
       (await testingDB.mongodb?.collection('entities').find({ sharedId: 'entity' }).toArray()) ||

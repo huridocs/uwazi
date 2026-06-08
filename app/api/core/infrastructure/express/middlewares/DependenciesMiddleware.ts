@@ -14,10 +14,6 @@ const dependenciesContextMiddleware = (
   _response: Response,
   next: NextFunction
 ) => {
-  if (!/^\/(api|files|assets)(\/|$)/i.test(request.path)) {
-    return next();
-  }
-
   const tenant = tenants.current();
   const actor = User.createFrom(request.user);
 
