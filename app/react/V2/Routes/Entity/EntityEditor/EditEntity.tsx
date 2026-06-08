@@ -1,6 +1,11 @@
 import { Entity } from '#V2/api/entities/types.js';
 
-const EditEntity = ({ entity }: { entity?: Entity }) => {
+type EditEntityProps = {
+  entity?: Entity;
+  onChange?: (editedEntity?: Entity) => void;
+};
+
+const EditEntity = ({ entity, onChange }: EditEntityProps) => {
   return entity?._id;
 };
 
