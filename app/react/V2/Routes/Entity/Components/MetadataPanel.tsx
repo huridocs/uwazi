@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useLoaderData } from 'react-router';
 import { Translate } from '#app/I18N/index.js';
+import { Entity } from '#V2/api/entities/types.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.js';
 import { Button } from '#V2/Components/UI/index.js';
-import { Entity } from '#V2/api/entities/types.js';
+import { EditEntity } from '#V2/Components/Metadata/EntityEditor/EditEntity.js';
 import type { LoaderResponse } from '../types.js';
-import { EditEntity } from '../EntityEditor/EditEntity.js';
 
 const MetadataPanel = ({ headerLayout }: { headerLayout?: 'inline' | 'stacked' }) => {
   const { entity } = (useLoaderData() as LoaderResponse) || {};

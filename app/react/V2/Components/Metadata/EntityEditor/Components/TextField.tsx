@@ -8,6 +8,7 @@ type TextFieldProps<TFormValues extends FieldValues = FieldValues> = {
   label: string;
   field: Path<TFormValues>;
   registerOptions?: RegisterOptions<TFormValues, Path<TFormValues>>;
+  disabled?: boolean;
 };
 
 const TextField = <TFormValues extends FieldValues = FieldValues>({
@@ -15,16 +16,24 @@ const TextField = <TFormValues extends FieldValues = FieldValues>({
   label,
   field,
   registerOptions,
+  disabled,
 }: TextFieldProps<TFormValues>) => {
-  const {
-    register,
-    formState: { isSubmitting },
-  } = useFormContext<TFormValues>();
+  const { register } = useFormContext<TFormValues>();
 
   return (
-    <label>
-      <Translate context={context}>{label}</Translate>
-      <input type="text" {...register(field, registerOptions)} disabled={isSubmitting} />
+    <label className="flex flex-col gap-2 text-ink bg-(--bg-surface)">
+      <div className="font-semibold">
+        <Translate className="" context={context}>
+          {label}
+        </Translate>
+        {registerOptions?.required && '*'}
+      </div>
+      <input
+        className="w-full border rounded p-1 border-(--border-soft)"
+        type="text"
+        {...register(field, registerOptions)}
+        disabled={disabled}
+      />
     </label>
   );
 };
