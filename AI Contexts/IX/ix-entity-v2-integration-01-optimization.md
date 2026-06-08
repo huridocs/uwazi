@@ -4,6 +4,20 @@ This document captures current findings and potential solutions discussed for IX
 
 Everything below is **to be reviewed**. Nothing here is finalized or approved.
 
+## Status update (implemented)
+
+- Migration `193-ix_v2_indexes` was added to formalize deterministic IX indexes.
+- Implemented index set:
+  - `segmentations`: `{ fileID: 1, status: 1 }`
+  - `segmentations`: `{ filename: 1, status: 1 }`
+  - `segmentations`: `{ xmlname: 1 }`
+  - `ixsuggestions`: `{ extractorId: 1, entityId: 1, language: 1 }`
+  - `ixsuggestions`: `{ extractorId: 1, entityId: 1, fileId: 1 }`
+  - `ixsuggestions`: `{ extractorId: 1, fileId: 1 }`
+  - `ixsuggestions`: `{ extractorId: 1 }` (added for extractor-scoped cleanup/delete paths)
+  - `entities`: `{ sharedId: 1, language: 1 }`
+- Added validation spec: `app/api/migrations/migrations/193-ix_v2_indexes/specs/193-ix_v2_indexes.spec.ts`.
+
 ## Scope
 
 - Context file for optimization ideas around IX flows:

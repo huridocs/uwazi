@@ -5,6 +5,20 @@ import migration from '../index.js';
 
 let db: Db | null;
 
+const isNamespaceMissingError = (error: unknown) =>
+  (error as { codeName?: string })?.codeName === 'NamespaceNotFound' ||
+  (error as Error)?.message?.includes('ns does not exist');
+
+const dropCollectionIfExists = async (collectionName: string) => {
+  try {
+    await db?.collection(collectionName).drop();
+  } catch (error) {
+    if (!isNamespaceMissingError(error)) {
+      throw error;
+    }
+  }
+};
+
 const getIndex = async (collectionName: string, indexName: string) => {
   const indexes = await db?.collection(collectionName).listIndexes().toArray();
   return indexes?.find(index => index.name === indexName);
@@ -72,5 +86,35 @@ describe('192-csv_v2_indexes migration', () => {
     expect(index).toBeDefined();
     expect(index?.key).toEqual({ importId: 1, templateId: 1 });
     expect(index?.unique).toBe(true);
+  });
+
+  it('creates all indexes even when collections do not exist', async () => {
+    const collectionsToDrop = [
+      'csv_imports',
+      'csv_import_rows',
+      'csv_import_row_errors',
+      'csv_import_thesauri_values',
+      'csv_import_relationships_pending_values',
+      'csv_import_relationships_values',
+    ];
+    for (const collectionName of collectionsToDrop) {
+      // eslint-disable-next-line no-await-in-loop
+      await dropCollectionIfExists(collectionName);
+    }
+
+    await migration.up(db!);
+
+    const expectedIndexes: Array<[string, string]> = [
+      ['csv_imports', 'createdAt_desc'],
+      ['csv_import_rows', 'importId_rowIndex_unique'],
+      ['csv_import_row_errors', 'importId_rowIndex'],
+      ['csv_import_thesauri_values', 'importId_thesaurusId_unique'],
+      ['csv_import_relationships_pending_values', 'importId_templateId_unique'],
+      ['csv_import_relationships_values', 'importId_templateId_unique'],
+    ];
+    for (const [collectionName, indexName] of expectedIndexes) {
+      // eslint-disable-next-line no-await-in-loop
+      expect(await getIndex(collectionName, indexName)).toBeDefined();
+    }
   });
 });
