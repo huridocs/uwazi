@@ -1,7 +1,7 @@
 import { Db, ObjectId } from 'mongodb';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { Job, QueueAdapter } from './QueueAdapter.js';
+import { Job, PushJobInput, QueueAdapter } from './QueueAdapter.js';
 import { Params } from '../application/contracts/Dispatchable.js';
 
 export interface JobDBO {
@@ -153,31 +153,27 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
     };
   }
 
-  async pushJob(
-    job: Omit<Job, 'id' | 'lockedUntil' | 'createdAt' | 'retryCount'>
-  ): Promise<string> {
+  async pushJob(job: PushJobInput): Promise<string> {
     const result = await this.getCollection().insertOne({
       _id: new ObjectId(),
-      lockedUntil: 0,
       createdAt: Date.now(),
       retryCount: 0,
       failed: false,
       ...job,
+      lockedUntil: job.lockedUntil ?? 0,
     });
 
     return result.insertedId.toHexString();
   }
 
-  async pushJobs(
-    jobs: Omit<Job, 'id' | 'lockedUntil' | 'createdAt' | 'retryCount'>[]
-  ): Promise<string[]> {
+  async pushJobs(jobs: PushJobInput[]): Promise<string[]> {
     const jobsToInsert = jobs.map(job => ({
       _id: new ObjectId(),
-      lockedUntil: 0,
       createdAt: Date.now(),
       retryCount: 0,
       failed: false,
       ...job,
+      lockedUntil: job.lockedUntil ?? 0,
     }));
 
     const result = await this.getCollection().insertMany(jobsToInsert);
