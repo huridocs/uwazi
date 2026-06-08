@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useLoaderData } from 'react-router';
 import { Translate } from '#app/I18N/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
@@ -11,25 +11,19 @@ import { EditEntity } from '../EntityEditor/EditEntity.js';
 const MetadataPanel = ({ headerLayout }: { headerLayout?: 'inline' | 'stacked' }) => {
   const { entity } = (useLoaderData() as LoaderResponse) || {};
   const [editMode, setEditMode] = useState(false);
-  const updatedEntity = useRef<Entity | undefined>();
 
-  const onSave = () => {
-    console.log(updatedEntity);
+  const onSave = (editedEntity?: Entity) => {
+    console.log(editedEntity);
     setEditMode(false);
   };
+
+  const formId = 'edit-entity-form';
 
   return (
     <Panel>
       <Panel.Body>
         {entity && !editMode && <MetadataDisplay entity={entity} headerLayout={headerLayout} />}
-        {editMode && (
-          <EditEntity
-            entity={entity}
-            onChange={editedEntity => {
-              updatedEntity.current = editedEntity;
-            }}
-          />
-        )}
+        {editMode && <EditEntity formId={formId} entity={entity} onSave={onSave} />}
       </Panel.Body>
       <Panel.Footer>
         <div className="flex flex-row items-center justify-between w-full gap-(--spacing-theme-3)">
@@ -38,12 +32,7 @@ const MetadataPanel = ({ headerLayout }: { headerLayout?: 'inline' | 'stacked' }
               <Button variant="secondary" onClick={() => setEditMode(false)}>
                 <Translate>Cancel</Translate>
               </Button>
-              <Button
-                variant="primary"
-                onClick={() => {
-                  onSave();
-                }}
-              >
+              <Button variant="primary" type="submit" form={formId}>
                 <Translate>Save</Translate>
               </Button>
             </>
