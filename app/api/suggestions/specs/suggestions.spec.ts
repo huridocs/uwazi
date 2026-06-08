@@ -91,7 +91,9 @@ const prepareAndAcceptSuggestion = async (
     .suggestions[0];
   const { _id, sharedId, entityId } = savedSuggestion;
 
-  await Suggestions.accept([{ _id, sharedId, entityId, ...acceptanceParameters }]);
+  await testingEnvironment.runWithContext(async () =>
+    Suggestions.accept([{ _id, sharedId, entityId, ...acceptanceParameters }])
+  );
   const acceptedSuggestion = (await getSuggestions({ extractorId: factory.id(extractorName) }))
     .suggestions[0];
   const entities = await db.mongodb?.collection('entities').find({ sharedId }).toArray();
@@ -126,13 +128,15 @@ const prepareAndAcceptSelectSuggestion = async (
     removedValues?: string[];
   } = {}
 ) =>
-  prepareAndAcceptSuggestion(
-    selectSuggestionBase(propertyName, extractorName, language),
-    suggestedValue,
-    language,
-    propertyName,
-    extractorName,
-    acceptanceParameters
+  testingEnvironment.runWithContext(async () =>
+    prepareAndAcceptSuggestion(
+      selectSuggestionBase(propertyName, extractorName, language),
+      suggestedValue,
+      language,
+      propertyName,
+      extractorName,
+      acceptanceParameters
+    )
   );
 
 const relationshipSuggestionBase = (
@@ -195,12 +199,14 @@ describe('suggestions', () => {
 
         const ids = new Set(labelMismatchedSuggestions.map((sug: any) => sug._id.toString()));
 
-        await Suggestions.accept(
-          labelMismatchedSuggestions.map((sug: any) => ({
-            _id: sug._id,
-            sharedId: sug.sharedId,
-            entityId: sug.entityId,
-          }))
+        await testingEnvironment.runWithContext(async () =>
+          Suggestions.accept(
+            labelMismatchedSuggestions.map((sug: any) => ({
+              _id: sug._id,
+              sharedId: sug.sharedId,
+              entityId: sug.entityId,
+            }))
+          )
         );
 
         const acceptedSuggestions = await _getSuggestions({
@@ -236,18 +242,20 @@ describe('suggestions', () => {
           })
         ).suggestions;
         await expect(
-          Suggestions.accept([
-            {
-              _id: ageSuggestion._id!,
-              sharedId: ageSuggestion.sharedId,
-              entityId: ageSuggestion.entityId,
-            },
-            {
-              _id: superPowersSuggestion._id!,
-              sharedId: superPowersSuggestion.sharedId,
-              entityId: superPowersSuggestion.entityId,
-            },
-          ])
+          testingEnvironment.runWithContext(async () =>
+            Suggestions.accept([
+              {
+                _id: ageSuggestion._id!,
+                sharedId: ageSuggestion.sharedId,
+                entityId: ageSuggestion.entityId,
+              },
+              {
+                _id: superPowersSuggestion._id!,
+                sharedId: superPowersSuggestion.sharedId,
+                entityId: superPowersSuggestion.entityId,
+              },
+            ])
+          )
         ).rejects.toThrow('All suggestions must come from the same extractor');
       });
 
@@ -261,13 +269,15 @@ describe('suggestions', () => {
         );
 
         try {
-          await Suggestions.accept([
-            {
-              _id: errorSuggestion!._id!,
-              sharedId: errorSuggestion!.sharedId,
-              entityId: errorSuggestion!.entityId,
-            },
-          ]);
+          await testingEnvironment.runWithContext(async () =>
+            Suggestions.accept([
+              {
+                _id: errorSuggestion!._id!,
+                sharedId: errorSuggestion!.sharedId,
+                entityId: errorSuggestion!.entityId,
+              },
+            ])
+          );
         } catch (e: any) {
           expect(e?.message).toBe('Some Suggestions have an error.');
         }
@@ -286,18 +296,20 @@ describe('suggestions', () => {
         const suggestionsToAccept = suggestions.filter(
           sug => sug.sharedId === 'shared2' || sug.sharedId === 'shared1'
         );
-        await Suggestions.accept([
-          {
-            _id: suggestionsToAccept[0]._id!,
-            sharedId: suggestionsToAccept[0].sharedId,
-            entityId: suggestionsToAccept[0].entityId,
-          },
-          {
-            _id: suggestionsToAccept[1]._id!,
-            sharedId: suggestionsToAccept[1].sharedId,
-            entityId: suggestionsToAccept[1].entityId,
-          },
-        ]);
+        await testingEnvironment.runWithContext(async () =>
+          Suggestions.accept([
+            {
+              _id: suggestionsToAccept[0]._id!,
+              sharedId: suggestionsToAccept[0].sharedId,
+              entityId: suggestionsToAccept[0].entityId,
+            },
+            {
+              _id: suggestionsToAccept[1]._id!,
+              sharedId: suggestionsToAccept[1].sharedId,
+              entityId: suggestionsToAccept[1].entityId,
+            },
+          ])
+        );
 
         const entities1 = await db.mongodb
           ?.collection('entities')

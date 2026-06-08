@@ -43,7 +43,9 @@ describe('entitiesIndex', () => {
       await search.indexEntities({ title: 'Entity with index Problems 1' }, '', 1);
       expect(legacyLogger.error).not.toHaveBeenCalled();
       await elasticTesting.refresh();
-      const indexedEntities = await search.search({}, 'en');
+      const indexedEntities = await testingEnvironment.runWithContext(async () =>
+        search.search({}, 'en')
+      );
       expect(indexedEntities.rows.length).toBe(1);
     });
   });

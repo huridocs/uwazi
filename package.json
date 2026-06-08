@@ -1,7 +1,7 @@
 {
   "packageManager": "yarn@4.13.0",
   "name": "uwazi",
-  "version": "1.229.0-rc344",
+  "version": "1.229.0-rc345",
   "type": "module",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
@@ -149,6 +149,7 @@
     "@tanstack/react-table": "8.21.3",
     "@types/franc": "^5.0.1",
     "@types/mime-types": "^2.1.1",
+    "@types/pg": "^8.20.0",
     "@types/redis": "^2.8.31",
     "@types/redlock": "^4.0.2",
     "@types/url-join": "^4.0.1",
@@ -216,6 +217,7 @@
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "pdfjs-dist": "5.4.624",
+    "pg": "^8.21.0",
     "postcss-loader": "^8.2.1",
     "postcss-prefix-selector": "^2.1.1",
     "prom-client": "^15.1.3",
