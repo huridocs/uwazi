@@ -41,7 +41,7 @@ const deleteSelection =
   (dispatch: Dispatch<{}>) => {
     const document = entityDocument?.toJS();
 
-    const updatedSelections = document?.extractedMetadata?.filter(
+    const updatedSelections = document?.propertySelections?.filter(
       selection =>
         (propertyName === 'title' && selection.name !== 'title') ||
         selection.propertyID !== propertyID
@@ -58,7 +58,7 @@ const deleteSelection =
       dispatch(
         actions.setIn('viewer/doc', 'defaultDoc', {
           ...document,
-          extractedMetadata: updatedSelections,
+          propertySelections: updatedSelections,
         })
       ),
       dispatch(

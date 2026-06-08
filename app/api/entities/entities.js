@@ -18,7 +18,7 @@ import model from './entitiesModel.js';
 import { EntityCreatedEvent } from './events/EntityCreatedEvent.js';
 import { EntityDeletedEvent } from './events/EntityDeletedEvent.js';
 import { EntityUpdatedEvent } from './events/EntityUpdatedEvent.js';
-import { saveSelections } from './metadataExtraction/saveSelections.js';
+import { savePropertySelections } from './metadataExtraction/saveSelections.js';
 import {
   deleteRelatedNewRelationships,
   denormalizeAfterEntityCreation,
@@ -332,7 +332,7 @@ export default {
     const { updateRelationships = true, index = true, includeDocuments = true } = options;
 
     await validateEntity(_doc);
-    await saveSelections(_doc);
+    await savePropertySelections(_doc);
     const doc = _doc;
 
     if (!doc.sharedId) {

@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
+import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import db, { DBFixture } from '#api/utils/testing_db.js';
-import { ObjectId } from 'mongodb';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { LanguagesListSchema, MetadataSchema } from '#shared/types/commonTypes.js';
 
@@ -25,7 +25,7 @@ const propertyToBeInherited = db.id();
 const propertyToBeInherited2 = db.id();
 const thesauriId1 = db.id();
 const thesauriId2 = db.id();
-const templateWithExtractedMetadata = db.id();
+const templateWithPropertySelections = db.id();
 const propertyA = db.id();
 const propertyB = db.id();
 const propertyC = db.id();
@@ -95,7 +95,7 @@ const fixtures: DBFixture = {
       context: {
         type: 'Entity',
         label: 'Property C',
-        id: templateWithExtractedMetadata.toString(),
+        id: templateWithPropertySelections.toString(),
       },
     },
     {
@@ -106,7 +106,7 @@ const fixtures: DBFixture = {
       context: {
         type: 'Entity',
         label: 'Property C',
-        id: templateWithExtractedMetadata.toString(),
+        id: templateWithPropertySelections.toString(),
       },
     },
     {
@@ -117,7 +117,7 @@ const fixtures: DBFixture = {
       context: {
         type: 'Entity',
         label: 'Property C',
-        id: templateWithExtractedMetadata.toString(),
+        id: templateWithPropertySelections.toString(),
       },
     },
     {
@@ -584,8 +584,8 @@ const fixtures: DBFixture = {
       ],
     },
     {
-      _id: templateWithExtractedMetadata,
-      name: 'template_with_extracted_metadata',
+      _id: templateWithPropertySelections,
+      name: 'template_with_property_selections',
       commonProperties: [
         {
           _id: db.id(),
@@ -656,7 +656,7 @@ const fixtures: DBFixture = {
     {
       entity: 'templateDeletingProperties-sharedId',
       filename: 'file1.pdf',
-      extractedMetadata: [
+      propertySelections: [
         {
           propertyID: propertyA.toString(),
           name: 'property_a',
@@ -677,7 +677,7 @@ const fixtures: DBFixture = {
     {
       entity: 'templateDeletingProperties-sharedId',
       filename: 'file2.pdf',
-      extractedMetadata: [
+      propertySelections: [
         {
           propertyID: propertyA.toString(),
           name: 'property_a',
@@ -687,7 +687,7 @@ const fixtures: DBFixture = {
     },
     {
       filename: 'file3.pdf',
-      extractedMetadata: [],
+      propertySelections: [],
     },
   ],
   pages: [
@@ -725,7 +725,7 @@ const fixtures: DBFixture = {
       property2: [{ value: 'value2' }],
       property3: [{ value: 'value3' }],
     }),
-    ...createEntitiesInAllLanguages('templateDeletingProperties', templateWithExtractedMetadata, {
+    ...createEntitiesInAllLanguages('templateDeletingProperties', templateWithPropertySelections, {
       property1: [{ value: 'value1' }],
       property2: [{ value: 'value2' }],
       property3: [{ value: 'value3' }],
@@ -733,9 +733,8 @@ const fixtures: DBFixture = {
   ],
 };
 
-export default fixtures;
-
 export {
+  fixtures,
   templateChangingNames,
   templateNotChangingNames,
   templateToBeEditedId,
@@ -753,7 +752,7 @@ export {
   relatedToAnother,
   thesauriId1,
   thesauriId2,
-  templateWithExtractedMetadata,
+  templateWithPropertySelections,
   propertyA,
   propertyB,
   propertyC,
