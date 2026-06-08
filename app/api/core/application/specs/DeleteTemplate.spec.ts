@@ -2,7 +2,8 @@
 import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DeleteTemplateUseCaseFactory } from '#api/core/infrastructure/factories/DeleteTemplateUseCaseFactory.js';
-import fixtures, {
+import {
+  fixtures,
   createEntitiesInAllLanguages,
   templateToBeDeleted,
   templateToBeEditedId,
