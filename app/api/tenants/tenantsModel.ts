@@ -42,7 +42,6 @@ const mongoSchema = new mongoose.Schema({
     v2GetEntity: Boolean,
     v2MultipleUpdateEntity: Boolean,
     v2ElasticSearch: Boolean,
-    v2DeleteEntity: Boolean,
     v2Languages: Boolean,
     v2UpdateFile: Boolean,
     newHeader: Boolean,
