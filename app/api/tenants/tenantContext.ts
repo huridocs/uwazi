@@ -27,7 +27,6 @@ type Tenant = {
     v2GetEntity?: boolean;
     v2ElasticSearch?: boolean;
     v2MultipleUpdateEntity?: boolean;
-    v2DeleteEntity?: boolean;
     v2UpdateFile?: boolean;
     v2EntityPermission?: boolean;
     newHeader?: boolean;
