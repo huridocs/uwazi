@@ -142,7 +142,6 @@ export const config = {
       v2UpdateEntity: false,
       v2CSVImport: FEATURE_FLAG_V2_CSV_IMPORT === 'true' || false,
       v2GetEntity: false,
-      v2MultipleUpdateEntity: false,
       v2ElasticSearch: false,
       v2UpdateFile: false,
       v2Languages: false,
