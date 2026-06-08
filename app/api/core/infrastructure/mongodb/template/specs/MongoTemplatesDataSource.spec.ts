@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TraversalQueryNode } from '#api/relationships.v2/model/TraversalQueryNode.js';
 import { Property } from '#api/core/domain/template/Property.js';
@@ -271,5 +272,52 @@ describe('slotsReconciler', () => {
     const templates = fixtures.templates.slice(0, 2).map(MongoTemplateMapper.toDomain as any);
     await sut.bulkUpdate(templates as any);
     expect(slotsReconciler.execute).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('countByThesauri()', () => {
+  const thesaurusId = factory.id('thesaurus_1').toHexString();
+  const otherThesaurusId = factory.id('thesaurus_2').toHexString();
+
+  beforeAll(async () => {
+    const db = getConnection();
+    await db.collection('templates').insertMany([
+      {
+        _id: factory.id('template_with_thesauri'),
+        name: 'template_with_thesauri',
+        properties: [
+          {
+            type: 'select',
+            content: thesaurusId,
+            name: 'country',
+            label: 'Country',
+          },
+        ],
+      },
+      {
+        _id: factory.id('template_with_other_thesauri'),
+        name: 'template_with_other_thesauri',
+        properties: [
+          {
+            type: 'select',
+            content: otherThesaurusId,
+            name: 'country',
+            label: 'Country',
+          },
+        ],
+      },
+    ]);
+  });
+
+  it('should return templates count referencing the thesaurus', async () => {
+    const { sut } = createSut();
+    const count = await sut.countByThesauri(thesaurusId);
+    expect(count).toBe(1);
+  });
+
+  it('should return 0 when no templates reference the thesaurus', async () => {
+    const { sut } = createSut();
+    const count = await sut.countByThesauri(new ObjectId().toHexString());
+    expect(count).toBe(0);
   });
 });

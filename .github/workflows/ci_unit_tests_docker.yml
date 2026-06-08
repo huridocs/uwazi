@@ -102,7 +102,6 @@ jobs:
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache,mode=max
 
-
   api_unit_tests_shards:
     needs: [precheck, build_ci_image]
     if: needs.precheck.outputs.should_run == 'true'
@@ -143,6 +142,19 @@ jobs:
           --health-retries 5
         ports:
           - 6379:6379
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: uwazi
+          POSTGRES_PASSWORD: uwazi
+          POSTGRES_DB: uwazi_testing
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v4
 
@@ -186,7 +198,6 @@ jobs:
           nohup minio server /tmp/minio-data --address :9000 --console-address :9001 > minio.log 2>&1 &
           for i in {1..30}; do if curl -sf http://localhost:9000/minio/health/live >/dev/null; then echo "MinIO is up"; break; fi; sleep 2; done
 
-
       - name: Forward localhost:6379 to redis:6379
         run: |
           nohup socat TCP-LISTEN:6379,fork,reuseaddr TCP:redis:6379 &
@@ -197,6 +208,10 @@ jobs:
           DBHOST: localhost:27017
           REDIS_HOST: redis
           REDIS_PORT: 6379
+          POSTGRES_HOST: postgres
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: uwazi
+          POSTGRES_PASSWORD: uwazi
         run: node --expose-gc --no-compilation-cache ./node_modules/.bin/jest app/api app/shared --logHeapUsage --forceExit --maxWorkers=3 --shard=${{ matrix.shard }}/4
 
   api_unit_tests_aggregate:
@@ -247,5 +262,3 @@ jobs:
         run: corepack enable && yarn install
       - name: Run tests
         run: node --max-http-header-size 20000 ./node_modules/.bin/jest app/react --forceExit --maxWorkers=3
-
-  

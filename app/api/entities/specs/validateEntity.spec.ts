@@ -13,7 +13,10 @@ import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 import fixtures, { templateId, simpleTemplateId, nonExistentId } from './validatorFixtures.js';
 
 import { customErrorMessages } from '../validation/metadataValidators.js';
-import { validateEntity } from '../validateEntity.js';
+import { validateEntity as validateEntityFn } from '../validateEntity.js';
+
+const validateEntity = async (entity: any) =>
+  testingEnvironment.runWithContext(async () => validateEntityFn(entity));
 
 describe('validateEntity', () => {
   beforeEach(async () => {
@@ -183,7 +186,9 @@ describe('validateEntity', () => {
               },
             ],
           };
-          const templateWithRequiredProps = await templates.save(template, 'en');
+          const templateWithRequiredProps = await testingEnvironment.runWithContext(async () =>
+            templates.save(template, 'en')
+          );
 
           let entity = createEntity({ template: templateWithRequiredProps._id });
           await expectError(entity, customErrorMessages.required, ".metadata['name']");

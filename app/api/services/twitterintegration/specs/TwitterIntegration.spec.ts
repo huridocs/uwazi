@@ -87,11 +87,13 @@ describe('TwitterIntegration', () => {
   it('should create templates if they do not exist', async () => {
     await testingDB.setupFixturesAndContext(fixturesOneTenant, tenantName);
 
-    await twitterIntegration.processResults({
-      tenant: tenantName,
-      task: 'get-hashtag',
-      params: ONE_TWEET_PARAMS,
-    });
+    await testingEnvironment.runWithContext(async () =>
+      twitterIntegration.processResults({
+        tenant: tenantName,
+        task: 'get-hashtag',
+        params: ONE_TWEET_PARAMS,
+      })
+    );
 
     const [hashtagTemplate] = await templates.get({ name: 'Hashtags' });
     const [tweetsTemplate] = await templates.get({ name: 'Tweets' });
@@ -102,11 +104,13 @@ describe('TwitterIntegration', () => {
   it('should create other templates if they do not exist', async () => {
     await testingDB.setupFixturesAndContext(fixturesOtherTenant, tenantName);
 
-    await twitterIntegration.processResults({
-      tenant: tenantName,
-      task: 'get-hashtag',
-      params: ONE_TWEET_PARAMS,
-    });
+    await testingEnvironment.runWithContext(async () =>
+      twitterIntegration.processResults({
+        tenant: tenantName,
+        task: 'get-hashtag',
+        params: ONE_TWEET_PARAMS,
+      })
+    );
 
     const [hashtagTemplate] = await templates.get({ name: 'OtherHashtags' });
     const [tweetsTemplate] = await templates.get({ name: 'OtherTweets' });
@@ -117,11 +121,13 @@ describe('TwitterIntegration', () => {
   it('should store one tweet', async () => {
     await testingDB.setupFixturesAndContext(fixturesOneTenant, tenantName);
 
-    await twitterIntegration.processResults({
-      tenant: tenantName,
-      task: 'get-hashtag',
-      params: ONE_TWEET_PARAMS,
-    });
+    await testingEnvironment.runWithContext(async () =>
+      twitterIntegration.processResults({
+        tenant: tenantName,
+        task: 'get-hashtag',
+        params: ONE_TWEET_PARAMS,
+      })
+    );
 
     const tweetsEntities = await EntitiesModel.getUnrestricted({ title: 'tweet title' });
 
@@ -141,17 +147,21 @@ describe('TwitterIntegration', () => {
   it('should store the hashtags', async () => {
     await testingDB.setupFixturesAndContext(fixturesOneTenant, tenantName);
 
-    await twitterIntegration.processResults({
-      tenant: tenantName,
-      task: 'get-hashtag',
-      params: ONE_TWEET_PARAMS,
-    });
+    await testingEnvironment.runWithContext(async () =>
+      twitterIntegration.processResults({
+        tenant: tenantName,
+        task: 'get-hashtag',
+        params: ONE_TWEET_PARAMS,
+      })
+    );
 
-    await twitterIntegration.processResults({
-      tenant: tenantName,
-      task: 'get-hashtag',
-      params: ONE_TWEET_PARAMS,
-    });
+    await testingEnvironment.runWithContext(async () =>
+      twitterIntegration.processResults({
+        tenant: tenantName,
+        task: 'get-hashtag',
+        params: ONE_TWEET_PARAMS,
+      })
+    );
 
     const hashtagsEntities = await EntitiesModel.getUnrestricted({
       $or: [{ title: '#other_hashtag_example' }, { title: '#hashtag_example' }],
@@ -191,11 +201,13 @@ describe('TwitterIntegration', () => {
       images_urls: ['https://image.is'],
     };
 
-    await twitterIntegration.processResults({
-      tenant: tenantName,
-      task: 'get-hashtag',
-      params: imageParams,
-    });
+    await testingEnvironment.runWithContext(async () =>
+      twitterIntegration.processResults({
+        tenant: tenantName,
+        task: 'get-hashtag',
+        params: imageParams,
+      })
+    );
 
     const fileDocuments = await files.get();
     const tweetsEntities = await EntitiesModel.getUnrestricted({ title: ONE_TWEET_PARAMS.title });

@@ -214,11 +214,14 @@ class Thesaurus {
   }
 
   private clone(props: Partial<Props>): Thesaurus {
-    const after = new Thesaurus({
-      id: this.id,
-      name: props.name ?? this.name,
-      values: props.values ?? structuredClone(this.values),
-    });
+    const after = new Thesaurus(
+      {
+        id: this.id,
+        name: props.name ?? this.name,
+        values: props.values ?? structuredClone(this.values),
+      },
+      false
+    );
 
     after.before = this;
 

@@ -28,6 +28,15 @@ export class ThesaurusNameAlreadyExistsError extends ValidationError {
   }
 }
 
+export class ThesaurusInUseError extends DomainError {
+  constructor(templateCount: number) {
+    super(
+      `Cannot delete thesaurus with ${templateCount} associated templates. Please remove the related templates first.`,
+      'thesaurus.in_use'
+    );
+  }
+}
+
 export class InvalidThesaurusValueIdsError extends ValidationError {
   readonly invalidIds: string[];
 

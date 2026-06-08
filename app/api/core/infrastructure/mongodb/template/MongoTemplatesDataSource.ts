@@ -389,6 +389,10 @@ export class MongoTemplatesDataSource
     return Result.ok(MongoTemplateMapper.toDomain(schema));
   }
 
+  async countByThesauri(thesaurusId: string): Promise<number> {
+    return this.getCollection().countDocuments({ 'properties.content': thesaurusId }, { limit: 1 });
+  }
+
   async findTemplatesReferencing(templateId: string): Promise<Template[]> {
     const schemas = await this.getCollection()
       .find({

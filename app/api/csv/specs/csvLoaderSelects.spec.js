@@ -11,6 +11,9 @@ import { fixtures } from './csvLoaderSelectsFixtures.js';
 import { CSVLoader } from '../csvLoader.js';
 import { ArrangeThesauriError } from '../arrangeThesauri.js';
 
+const load = (instance, ...args) => testingEnvironment.runWithContext(() => instance.load(...args));
+const getThesaurusById = id => testingEnvironment.runWithContext(() => thesauri.getById(id));
+
 const loader = new CSVLoader();
 
 const getMetadataProperties = (propertyName, entityList, prop) =>
@@ -32,7 +35,7 @@ const getMetadataValues = (propertyName, entityList) =>
   getMetadataProperties(propertyName, entityList, 'value');
 
 const readThesaurusLabels = async thesaurisId => {
-  const thesaurus = await thesauri.getById(thesaurisId.toString());
+  const thesaurus = await getThesaurusById(thesaurisId.toString());
   return thesaurus.values.map(tv => [tv.label, (tv.values || []).map(v => v.label)]);
 };
 
@@ -63,7 +66,8 @@ describe('loader', () => {
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, 'csv_loader_selects.index');
-    await loader.load(
+    await load(
+      loader,
       path.join(__dirname, '/arrangeThesauriTest.csv'),
       fixtureFactory.id('template')
     );
@@ -357,7 +361,8 @@ describe('loader', () => {
 
   it('should not allow importing existing group labels alone', async () => {
     try {
-      await loader.load(
+      await load(
+        loader,
         path.join(__dirname, '/arrangeThesauriGroupErrorCase.csv'),
         fixtureFactory.id('template')
       );

@@ -167,20 +167,23 @@ describe('indexing', () => {
   });
 });
 
+const searchWithContext = async (query: any, language: string) =>
+  testingEnvironment.runWithContext(async () => search.search(query, language));
+
 describe('searching', () => {
   it('should filter the relationship metadata as the type of the denormalized values', async () => {
-    let results = await search.search({ filters: { relProp2: { from: 1676688700080 } } }, 'en');
+    let results = await searchWithContext({ filters: { relProp2: { from: 1676688700080 } } }, 'en');
     expect(results.rows).toEqual([expect.objectContaining({ sharedId: 'entity1' })]);
 
-    results = await search.search({ filters: { relProp1: 'text_content' } }, 'en');
+    results = await searchWithContext({ filters: { relProp1: 'text_content' } }, 'en');
     expect(results.rows).toEqual([expect.objectContaining({ sharedId: 'entity1' })]);
 
-    results = await search.search({ filters: { relProp3: { values: ['entity3'] } } }, 'en');
+    results = await searchWithContext({ filters: { relProp3: { values: ['entity3'] } } }, 'en');
     expect(results.rows).toEqual([expect.objectContaining({ sharedId: 'entity1' })]);
   });
 
   it('should transform the relationship properties back to the shape of the database for compatibility', async () => {
-    const results = await search.search({ ids: 'entity1' }, 'en');
+    const results = await searchWithContext({ ids: 'entity1' }, 'en');
     expect(results.rows).toMatchObject([
       {
         sharedId: 'entity1',
@@ -198,7 +201,7 @@ describe('searching', () => {
   });
 
   it('should not transform fields that are not new relationships', async () => {
-    const results = await search.search({}, 'en');
+    const results = await searchWithContext({}, 'en');
     expect(results.rows).toMatchObject([
       { sharedId: 'entity1' },
       {
@@ -238,7 +241,7 @@ describe('searching', () => {
         { $set: { obsoleteMetadata: ['someOtherProp'] } }
       );
 
-    const results = await search.search({}, 'en');
+    const results = await searchWithContext({}, 'en');
 
     expect(results.rows).toMatchObject([
       {
@@ -265,7 +268,10 @@ describe('search aggreagations', () => {
   let results: any;
 
   beforeEach(async () => {
-    results = await search.search({ types: [fixturesFactory.id('template1').toHexString()] }, 'en');
+    results = await searchWithContext(
+      { types: [fixturesFactory.id('template1').toHexString()] },
+      'en'
+    );
   });
 
   it('should return aggregations for relationship properties denormalizing the title', async () => {
@@ -276,7 +282,10 @@ describe('search aggreagations', () => {
   });
 
   it('should return aggregations for relationship properties denormalizing a select property', async () => {
-    results = await search.search({ types: [fixturesFactory.id('template1').toHexString()] }, 'en');
+    results = await searchWithContext(
+      { types: [fixturesFactory.id('template1').toHexString()] },
+      'en'
+    );
     expect(results.aggregations.all.relProp4.buckets).toMatchObject([
       { label: 'value1', filtered: { doc_count: 1 } },
       { label: 'Any', filtered: { doc_count: 1 } },
