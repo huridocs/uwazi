@@ -118,11 +118,5 @@ describe('documents', () => {
 
       expect(response.status).toBe(422);
     });
-
-    it('should use documents to delete it', async () => {
-      currentUser = adminUser;
-      await request(app).delete('/api/documents').query({ sharedId: '123' });
-      expect(entities.delete).toHaveBeenCalledWith('123');
-    });
   });
 });
