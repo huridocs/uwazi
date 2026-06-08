@@ -144,7 +144,6 @@ export const config = {
       v2GetEntity: false,
       v2MultipleUpdateEntity: false,
       v2ElasticSearch: false,
-      v2DeleteEntity: false,
       v2UpdateFile: false,
       v2Languages: false,
       v2EntityPermission: false,

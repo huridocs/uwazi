@@ -34,6 +34,10 @@ const documents = {
     return entities.countByTemplate(templateId);
   },
 
+  /**
+   * @deprecated
+   * This method is deprecated and should not be used anymore.
+   */
   delete(id) {
     return entities.delete(id);
   },

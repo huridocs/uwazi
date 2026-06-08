@@ -631,6 +631,10 @@ export default {
     );
   },
 
+  /**
+   * @deprecated
+   * This method is deprecated and should not be used anymore.
+   */
   async delete(sharedId, deleteIndex = true) {
     const docs = await this.get({ sharedId });
     if (!docs.length) {
