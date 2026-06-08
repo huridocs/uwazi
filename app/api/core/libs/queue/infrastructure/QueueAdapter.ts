@@ -15,9 +15,13 @@ export interface Job {
   };
 }
 
+export type PushJobInput = Omit<Job, 'id' | 'createdAt' | 'retryCount' | 'lockedUntil'> & {
+  lockedUntil?: number;
+};
+
 export interface QueueAdapter {
-  pushJob(job: Omit<Job, 'id' | 'lockedUntil' | 'createdAt' | 'retryCount'>): Promise<string>;
-  pushJobs(jobs: Omit<Job, 'id' | 'lockedUntil' | 'createdAt' | 'retryCount'>[]): Promise<string[]>;
+  pushJob(job: PushJobInput): Promise<string>;
+  pushJobs(jobs: PushJobInput[]): Promise<string[]>;
   pickJob(queueName: string): Promise<Job | null>;
   renewJobLock(job: Job): Promise<void>;
   markJobAsFailed(job: Job): Promise<Job>;
