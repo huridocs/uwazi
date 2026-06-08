@@ -62,6 +62,37 @@ it('should create a job in the given queue with the given message', async () => 
   ]);
 });
 
+it('should not pick a job pushed with a future lockedUntil until it expires', async () => {
+  const adapter = DefaultTestingQueueAdapter();
+  let NOW_VALUE = 1000;
+  jest.spyOn(Date, 'now').mockImplementation(() => NOW_VALUE);
+
+  await adapter.pushJob({
+    queue: 'queue name',
+    name: 'delayed job',
+    params: {},
+    namespace: 'namespace',
+    lockedUntil: NOW_VALUE + 5000,
+    options: {
+      maxRetries: 3,
+      lockWindow: 500,
+    },
+  });
+
+  let result = await adapter.pickJob('queue name');
+  expect(result).toBe(null);
+
+  NOW_VALUE = 6001;
+  result = await adapter.pickJob('queue name');
+
+  expect(result).toMatchObject({
+    name: 'delayed job',
+    namespace: 'namespace',
+    lockedUntil: NOW_VALUE + 500,
+    retryCount: 1,
+  });
+});
+
 it('should return null if no jobs in the queue', async () => {
   const adapter = DefaultTestingQueueAdapter();
 
