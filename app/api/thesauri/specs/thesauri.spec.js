@@ -105,6 +105,30 @@ describe('thesauri', () => {
         const edited = await getById(dictionaryId);
         expect(edited.name).toBe('changed name');
       });
+
+      it('should dispatch a denormalization job with the actor userId', async () => {
+        const data = {
+          _id: dictionaryId,
+          name: 'Updated dict',
+          values: [{ label: 'new value' }],
+        };
+
+        const jobsBefore = await testingEnvironment.db.getAllFrom('jobs');
+
+        await testingEnvironment.runWithContext(async () => {
+          await thesauri.save(data);
+        });
+
+        const jobsAfter = await testingEnvironment.db.getAllFrom('jobs');
+        const newJobs = jobsAfter.filter(
+          j =>
+            j.name === 'DenormalizeThesaurusEntitiesHandler' &&
+            !jobsBefore.find(b => String(b._id) === String(j._id))
+        );
+
+        expect(newJobs).toHaveLength(1);
+        expect(newJobs[0].params.userId).toEqual(expect.any(String));
+      });
     });
 
     describe('validation', () => {

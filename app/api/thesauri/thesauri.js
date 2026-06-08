@@ -85,7 +85,7 @@ const thesauri = {
     const updated = existing.update({ name, values });
     await service.update(updated, {
       tenantName: ExecutionContext.tenant.name,
-      actorId: ExecutionContext.actorId,
+      actorId: ExecutionContext.actor?._id,
     });
 
     return { _id: updated.id, name: updated.name, values: updated.values };
