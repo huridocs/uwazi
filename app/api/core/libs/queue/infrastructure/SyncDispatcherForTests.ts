@@ -1,6 +1,10 @@
 import { tenants } from '#api/tenants/index.js';
 import { Dispatchable } from '../application/contracts/Dispatchable.js';
-import { DispatchableClass, DispatchOptions, JobsDispatcher } from '../application/contracts/JobsDispatcher.js';
+import {
+  DispatchableClass,
+  DispatchOptions,
+  JobsDispatcher,
+} from '../application/contracts/JobsDispatcher.js';
 import { PushJobInput } from './QueueAdapter.js';
 
 interface QueueOptions {

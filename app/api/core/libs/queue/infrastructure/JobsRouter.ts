@@ -1,5 +1,9 @@
 import { config } from '#api/config.js';
-import { DispatchableClass, DispatchOptions, JobsDispatcher } from '../application/contracts/JobsDispatcher.js';
+import {
+  DispatchableClass,
+  DispatchOptions,
+  JobsDispatcher,
+} from '../application/contracts/JobsDispatcher.js';
 import { Dispatchable } from '../application/contracts/Dispatchable.js';
 import { NamespacedDispatcher } from './NamespacedDispatcher.js';
 
