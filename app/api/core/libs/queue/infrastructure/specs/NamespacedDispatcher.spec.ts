@@ -45,6 +45,40 @@ describe('dispatch', () => {
       namespace: 'namespace',
     });
   });
+
+  it('should enqueue a job with future lockedUntil that is not pickable immediately', async () => {
+    const dispatcher = new NamespacedDispatcher('namespace', 'queue name', adapter);
+    let NOW_VALUE = 1000;
+    jest.spyOn(Date, 'now').mockImplementation(() => NOW_VALUE);
+
+    const params = { data: { pieceOfData: ['a'] }, aNumber: 1 };
+    await dispatcher.dispatch(TestJob, params, { lockedUntil: NOW_VALUE + 10_000 });
+
+    const notYetPickable = await adapter.pickJob('queue name');
+    expect(notYetPickable).toBe(null);
+
+    NOW_VALUE = 11_001;
+    const job = await adapter.pickJob('queue name');
+    expect(job).toMatchObject({
+      name: TestJob.name,
+      params,
+      namespace: 'namespace',
+    });
+  });
+
+  it('should enqueue a job pickable immediately when no dispatch options are passed', async () => {
+    const dispatcher = new NamespacedDispatcher('namespace', 'queue name', adapter);
+
+    const params = { data: { pieceOfData: ['a'] }, aNumber: 1 };
+    await dispatcher.dispatch(TestJob, params);
+
+    const job = await adapter.pickJob('queue name');
+    expect(job).toMatchObject({
+      name: TestJob.name,
+      params,
+      namespace: 'namespace',
+    });
+  });
 });
 
 describe('dispatchMany', () => {

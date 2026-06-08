@@ -1,5 +1,5 @@
 import { config } from '#api/config.js';
-import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher.js';
+import { DispatchableClass, DispatchOptions, JobsDispatcher } from '../application/contracts/JobsDispatcher.js';
 import { Dispatchable } from '../application/contracts/Dispatchable.js';
 import { NamespacedDispatcher } from './NamespacedDispatcher.js';
 
@@ -30,17 +30,19 @@ export class JobsRouter implements JobsDispatcher {
 
   async dispatch<T extends Dispatchable>(
     dispatchable: DispatchableClass<T>,
-    params: Parameters<T['handleDispatch']>[1]
+    params: Parameters<T['handleDispatch']>[1],
+    options?: DispatchOptions
   ): Promise<void> {
     const dispatcher = this.routeJob();
-    return dispatcher.dispatch(dispatchable, params);
+    return dispatcher.dispatch(dispatchable, params, options);
   }
 
   async dispatchMany(
     callback: (
       dispatch: <T extends Dispatchable>(
         dispatchable: DispatchableClass<T>,
-        params: Parameters<T['handleDispatch']>[1]
+        params: Parameters<T['handleDispatch']>[1],
+        options?: DispatchOptions
       ) => void
     ) => Promise<void>
   ): Promise<void> {
