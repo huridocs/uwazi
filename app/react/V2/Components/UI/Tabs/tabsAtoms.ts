@@ -51,10 +51,7 @@ const mergeTabGroup = (
   };
 };
 
-const resolveActiveTabId = (
-  group: TabGroupState,
-  activeTabId: string | undefined
-): string => {
+const resolveActiveTabId = (group: TabGroupState, activeTabId: string | undefined): string => {
   if (activeTabId !== undefined) {
     return activeTabId;
   }

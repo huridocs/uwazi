@@ -115,7 +115,11 @@ const EntityFilesProvider = ({
       return;
     }
     const deletedRowIds = new Set(pendingDeleteRows.map(row => row.rowId));
-    await Promise.all(ids.map(id => remove(id)));
+    await Promise.all(
+      ids.map(id => {
+        return remove(id);
+      })
+    );
     setPendingDeleteRows([]);
     setSelectedRowIds(prev => prev.filter(id => !deletedRowIds.has(id)));
     setFocusedRowId(prev => (prev && deletedRowIds.has(prev) ? undefined : prev));

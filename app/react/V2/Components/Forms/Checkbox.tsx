@@ -23,15 +23,7 @@ const checkboxInputClassName = [
 
 const Checkbox = React.forwardRef(
   (
-    {
-      name,
-      onChange,
-      className,
-      disabled,
-      checked,
-      indeterminate = false,
-      label,
-    }: CheckboxProps,
+    { name, onChange, className, disabled, checked, indeterminate = false, label }: CheckboxProps,
     ref: Ref<HTMLInputElement>
   ) => {
     const inputRef = useRef<HTMLInputElement>(null);

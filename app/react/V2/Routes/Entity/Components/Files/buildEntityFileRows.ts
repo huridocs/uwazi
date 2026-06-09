@@ -48,8 +48,7 @@ const buildEntityFileRows = (
       _id: file._id ? String(file._id) : undefined,
       fileType: file.fileType,
     };
-    const rowId =
-      entityFile._id || entityFile.filename || entityFile.url || `entity-file-${index}`;
+    const rowId = entityFile._id || entityFile.filename || entityFile.url || `entity-file-${index}`;
     const modifiedTimestamp = entityFile.creationDate;
     const category =
       entityFile.fileType === 'mainDocument' || entityFile.fileType === 'document'

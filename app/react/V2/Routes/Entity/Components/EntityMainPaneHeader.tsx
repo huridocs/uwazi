@@ -1,8 +1,7 @@
 import React from 'react';
-import { TemplateLabel, Title } from '#V2/Components/Metadata/Components/index.js';
+import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { DocumentViewModeSelect } from './DocumentViewModeSelect.js';
-import { CountryFlag } from '#app/V2/Components/CustomIcons/index.js';
 
 type EntityMainPaneHeaderProps = {
   entity: Entity;

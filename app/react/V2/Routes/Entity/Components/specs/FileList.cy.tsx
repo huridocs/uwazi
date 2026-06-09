@@ -17,12 +17,18 @@ describe('Files tab', () => {
     metadata: {},
   };
 
-  const sampleTemplate = [{ _id: 'template1', name: 'Template 1', properties: [], commonProperties: [] }];
+  const sampleTemplate = [
+    { _id: 'template1', name: 'Template 1', properties: [], commonProperties: [] },
+  ];
 
   const mountEntity = () =>
     mount(
       <TestRouterContext
-        loaderData={{ entity: sampleEntity, mainDocument: sampleEntity.documents[0], pagePlaintext: '' }}
+        loaderData={{
+          entity: sampleEntity,
+          mainDocument: sampleEntity.documents[0],
+          pagePlaintext: '',
+        }}
       >
         <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
           <Entity />

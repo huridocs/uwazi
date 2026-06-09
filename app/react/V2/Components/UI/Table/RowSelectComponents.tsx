@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useRef } from 'react';
-import { Row, Table } from '@tanstack/react-table';
+import { Row, Table, HeaderContext } from '@tanstack/react-table';
 import { Translate } from '#app/I18N/index.js';
 import { checkboxInputClassName } from '#V2/Components/Forms/Checkbox.js';
 import { Tooltip } from '#V2/Components/UI/Tooltip.js';
@@ -78,4 +78,12 @@ const IndeterminateCheckboxHeader = <T,>({
   );
 };
 
-export { IndeterminateCheckboxRow, IndeterminateCheckboxHeader };
+const IndeterminateCheckboxHeaderCell = <T, >({ table, column }: HeaderContext<T, unknown>) => {
+  const checkboxId =
+    (column.columnDef.meta as { selectAllCheckboxId?: string } | undefined)?.selectAllCheckboxId ??
+    'checkbox-header';
+
+  return <IndeterminateCheckboxHeader table={table} checkboxId={checkboxId} />;
+};
+
+export { IndeterminateCheckboxRow, IndeterminateCheckboxHeader, IndeterminateCheckboxHeaderCell };

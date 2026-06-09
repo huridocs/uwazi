@@ -110,7 +110,12 @@ const DisabledChecked: Story = {
 
 const DisabledIndeterminate: Story = {
   render: () => (
-    <Checkbox name="disabled-indeterminate-only" label="Disabled partial selection" disabled indeterminate />
+    <Checkbox
+      name="disabled-indeterminate-only"
+      label="Disabled partial selection"
+      disabled
+      indeterminate
+    />
   ),
 };
 

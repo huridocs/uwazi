@@ -22,7 +22,7 @@ const FilesDeleteConfirmationModal = () => {
       acceptButton="Delete"
       onCancelClick={closeDeleteModal}
       onAcceptClick={() => {
-        void deleteRows();
+        deleteRows().catch(() => undefined);
       }}
       dangerStyle
     />

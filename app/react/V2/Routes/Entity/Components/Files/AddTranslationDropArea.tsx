@@ -14,7 +14,7 @@ const AddTranslationDropArea = ({ onUpload }: AddTranslationDropAreaProps) => (
     accept={{ 'application/pdf': ['.pdf'] }}
     onDrop={acceptedFiles => {
       if (acceptedFiles.length) {
-        void onUpload(acceptedFiles);
+        onUpload(acceptedFiles).catch(() => undefined);
       }
     }}
   >
@@ -31,7 +31,11 @@ const AddTranslationDropArea = ({ onUpload }: AddTranslationDropAreaProps) => (
         <input {...getInputProps()} />
         <PlusIcon className="h-3.5 w-3.5 text-ink-muted" aria-hidden />
         <span className="text-xs text-ink-muted">
-          {isDragActive ? <Translate>Drop to add</Translate> : <Translate>Add translation</Translate>}
+          {isDragActive ? (
+            <Translate>Drop to add</Translate>
+          ) : (
+            <Translate>Add translation</Translate>
+          )}
         </span>
       </div>
     )}

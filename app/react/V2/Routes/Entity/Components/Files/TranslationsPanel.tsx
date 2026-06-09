@@ -8,7 +8,7 @@ import { EntityFileRow } from './types.js';
 const TranslationsPanel = ({
   focusedRow,
   primaryRows,
-  onFocusRow,
+  onFocusRow: _onFocusRow,
   onDeleteRow,
   onUpload,
 }: {

@@ -18,11 +18,13 @@ const isTabElement = (child: React.ReactNode): child is React.ReactElement<TabPr
   child.props.label !== undefined;
 
 const parseTabChildren = (children: React.ReactNode): TabGroupEntry[] =>
-  React.Children.toArray(children).filter(isTabElement).map(child => ({
-    id: child.props.id,
-    label: child.props.label,
-    content: child.props.children,
-  }));
+  React.Children.toArray(children)
+    .filter(isTabElement)
+    .map(child => ({
+      id: child.props.id,
+      label: child.props.label,
+      content: child.props.children,
+    }));
 
 export type { TabProps, TabGroupEntry };
 export { isTabElement, parseTabChildren };

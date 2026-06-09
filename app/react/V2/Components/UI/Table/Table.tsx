@@ -24,7 +24,10 @@ import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Translate } from '#app/I18N/index.js';
 import { DraggableRow, RowDragHandleCell, DnDHeader } from './DnDComponents.js';
-import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSelectComponents.js';
+import {
+  IndeterminateCheckboxHeaderCell,
+  IndeterminateCheckboxRow,
+} from './RowSelectComponents.js';
 import { dndSortHandler, getRowIds } from './helpers.js';
 import { SortingChevrons } from './SortingChevrons.js';
 import { GroupCell, GroupHeader } from './GroupComponents.js';
@@ -146,11 +149,9 @@ const Table = <T extends TableRow<T>>({
       calculatedIndex += 1;
       tableColumns.unshift({
         id: 'select',
-        header: ({ table: headerTable }) => (
-          <IndeterminateCheckboxHeader table={headerTable} checkboxId={selectAllCheckboxId} />
-        ),
+        header: IndeterminateCheckboxHeaderCell,
         cell: IndeterminateCheckboxRow,
-        meta: { headerClassName: 'w-0' },
+        meta: { headerClassName: 'w-0', selectAllCheckboxId },
       });
     }
     if (dnd?.enable) {

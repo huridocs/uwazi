@@ -260,7 +260,7 @@ const Primary: Story = {
       defaultSorting={args.defaultSorting}
       actionFn={args.actionFn}
       controlledSorting={args.controlledSorting}
-    focusedRowId={args.focusedRowId}
+      focusedRowId={args.focusedRowId}
     />
   ),
 };

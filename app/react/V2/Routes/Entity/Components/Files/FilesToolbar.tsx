@@ -28,7 +28,11 @@ const FilesToolbar = ({
         <PlusIcon className="h-4 w-4" />
         <Translate>Add file</Translate>
       </Button>
-      <button type="button" className="text-xs text-ink-secondary hover:text-ink" onClick={onSelectAll}>
+      <button
+        type="button"
+        className="text-xs text-ink-secondary hover:text-ink"
+        onClick={onSelectAll}
+      >
         <Translate>Select all</Translate>
       </button>
       <button

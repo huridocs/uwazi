@@ -26,10 +26,7 @@ const FileDetailsEditor = ({
   onSave: (payload: { _id: string; originalname: string; language?: string }) => Promise<void>;
 }) => {
   const [originalname, setOriginalname] = useState(row.raw.originalname || row.displayName);
-  const resolvedLanguage = useMemo(
-    () => resolveFileLanguage(row.raw.language),
-    [row.raw.language]
-  );
+  const resolvedLanguage = useMemo(() => resolveFileLanguage(row.raw.language), [row.raw.language]);
   const [language, setLanguage] = useState(resolvedLanguage);
 
   useEffect(() => {
