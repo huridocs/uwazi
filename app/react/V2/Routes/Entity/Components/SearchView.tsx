@@ -155,9 +155,7 @@ const SearchView = () => {
                             }}
                             className={snippetClass}
                           >
-                            <p className="mb-4 px-2">
-                              {parseSnippetToNodes(pageText.text)}
-                            </p>
+                            <p className="mb-4 px-2">{parseSnippetToNodes(pageText.text)}</p>
                             <p className="float-right font-bold">
                               {t('System', 'Page', null, false)} {pageText.page}
                             </p>
