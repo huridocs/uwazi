@@ -95,17 +95,17 @@ const Button = ({
 
   const variantClasses: Record<ButtonVariant, string> = {
     primary:
-      'border-ink bg-ink text-parchment enabled:hover:opacity-90 disabled:opacity-60 disabled:border-border-soft disabled:bg-vellum disabled:text-ink-muted',
+      'border-ink bg-ink text-parchment enabled:hover:opacity-90 disabled:border-[color-mix(in_srgb,var(--color-theme-action-primary)_45%,transparent)]! disabled:bg-[color-mix(in_srgb,var(--color-theme-action-primary)_45%,var(--color-theme-bg-surface))]! disabled:text-ink!',
     secondary:
-      'border-border bg-transparent text-ink-secondary enabled:hover:bg-warm disabled:border-border-soft disabled:text-ink-muted',
+      'border-border bg-paper text-ink enabled:hover:bg-warm disabled:border-border-soft disabled:bg-paper disabled:text-ink-muted',
     danger:
       'border-emphasis bg-emphasis text-(--color-theme-feedback-danger-fg) enabled:hover:opacity-90 disabled:opacity-60',
     ghost:
-      'border-0 bg-warm text-ink-secondary enabled:hover:bg-parchment enabled:hover:text-ink disabled:bg-warm disabled:text-ink-muted disabled:opacity-60',
+      'border-border bg-paper text-ink enabled:hover:bg-warm disabled:border-border-soft disabled:bg-paper disabled:text-ink-muted disabled:opacity-60',
     compact:
       'border-border-soft bg-warm text-ink-secondary enabled:hover:bg-vellum enabled:hover:border-border disabled:border-border-soft disabled:text-ink-muted',
     success:
-      'border-success bg-success text-(--color-theme-feedback-success-fg) enabled:hover:bg-[color-mix(in_srgb,var(--color-theme-success)_92%,black)] enabled:hover:border-[color-mix(in_srgb,var(--color-theme-success)_92%,black)] disabled:opacity-60',
+      'border-success bg-success text-(--color-theme-feedback-success-fg) enabled:hover:bg-[color-mix(in_srgb,var(--color-theme-success)_92%,black)]! enabled:hover:border-[color-mix(in_srgb,var(--color-theme-success)_92%,black)]! disabled:opacity-60',
     dangerSecondary:
       'border-emphasis bg-transparent text-emphasis enabled:hover:bg-emphasis-tint disabled:border-border-soft disabled:text-ink-muted',
     successSecondary:

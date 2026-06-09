@@ -54,15 +54,15 @@ const DefaultButton =
     <Button
       variant={cell.row.original.default ? 'primary' : 'secondary'}
       onClick={() => handleSetDefault(cell.row.original)}
-      className="leading-4 m-auto"
+      className="m-auto leading-4 border-[0.75px]! border-(--color-theme-action-primary)! text-(--color-theme-action-primary)! disabled:border-(--color-theme-action-primary)! disabled:bg-(--color-theme-action-primary)! disabled:text-(--color-theme-action-primary-fg)!"
       disabled={cell.row.original.default || cell.row.original.synced}
     >
       <Translate className="sr-only">Set as default</Translate>
       <StarIcon
         className={
           cell.row.original.default
-            ? 'w-4 text-white'
-            : 'w-4 text-(--color-theme-bg-surface) stroke-(--color-theme-border-default) stroke-2'
+            ? 'w-4 text-(--color-theme-action-primary-fg)'
+            : 'w-4 text-(--color-theme-action-primary)'
         }
       />
     </Button>
