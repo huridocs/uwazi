@@ -130,7 +130,7 @@ const InputField = React.forwardRef(
               onClick={clearFieldAction}
               disabled={disabled}
               data-testid="clear-field-button"
-              className="absolute right-0 top-px rounded-r-lg p-2.5 text-sm font-medium focus:outline-hidden enabled:hover:text-(--color-theme-control-clear-hover-fg) disabled:text-(--color-theme-control-text-muted)"
+              className="absolute right-0 top-px rounded-r-lg p-2.5 text-sm font-medium focus:outline-hidden enabled:hover:text-(--color-theme-control-clear-hover-fg) disabled:text-(--color-theme-control-text-muted) w-fit hover:cursor-pointer"
               style={{
                 color: showError
                   ? 'var(--color-theme-control-text-error)'
