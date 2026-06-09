@@ -59,17 +59,6 @@ import {
 } from './fixtures.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-jest.mock('#api/core/infrastructure/factories/EntityIndexerServiceFactory.js', () => ({
-  EntityIndexerServiceFactory: {
-    default: () => ({
-      sync: jest.fn().mockResolvedValue(undefined),
-      index: jest.fn().mockResolvedValue(undefined),
-      remove: jest.fn().mockResolvedValue(undefined),
-      removeByTemplateIds: jest.fn().mockResolvedValue(undefined),
-    }),
-  },
-}));
-
 async function runAllTenants() {
   try {
     await syncWorker.runAllTenants();

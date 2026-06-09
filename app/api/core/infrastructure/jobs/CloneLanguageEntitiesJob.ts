@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable max-statements */
 import { Collection } from 'mongodb';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
@@ -45,15 +46,13 @@ class CloneLanguageEntitiesJob extends V1CompatTenantDispatchable<Params> {
     const isLastAttempt = jobInfo !== undefined && jobInfo.retryCount === jobInfo.maxRetries;
 
     try {
-      for (const { to } of params.pairs) {
-        // eslint-disable-next-line no-await-in-loop
+      for (const { from, to } of params.pairs) {
+        await this.deps.entityDAO.cloneForLanguage(from, to);
         await heartbeat();
-        // eslint-disable-next-line no-await-in-loop
         await search.indexEntities({ language: to });
 
         const ISO639_3 = LanguageUtils.fromISO639_1(to)?.ISO639_3;
         if (ISO639_3) {
-          // eslint-disable-next-line no-await-in-loop
           const sharedIds: string[] = await this.deps.filesCollection.distinct('entity', {
             type: 'document',
             status: 'ready',
@@ -62,7 +61,7 @@ class CloneLanguageEntitiesJob extends V1CompatTenantDispatchable<Params> {
 
           if (sharedIds.length > 0) {
             const chunks = ArrayUtils.splitInChunks(sharedIds, 100);
-            // eslint-disable-next-line no-await-in-loop
+
             await this.deps.jobsDispatcher.dispatchMany(dispatch => {
               chunks.forEach(chunk =>
                 dispatch(EntityPreviewBatchHandler, { languageKey: to, sharedIds: chunk })
@@ -70,14 +69,11 @@ class CloneLanguageEntitiesJob extends V1CompatTenantDispatchable<Params> {
             });
           }
         }
-
-        // eslint-disable-next-line no-await-in-loop
         await this.deps.settingsDS.setLanguageInstalling(to, false);
       }
     } catch (e) {
       if (isLastAttempt) {
         for (const { to } of params.pairs) {
-          // eslint-disable-next-line no-await-in-loop
           await this.deps.settingsDS.setLanguageInstalling(to, false);
         }
       }
