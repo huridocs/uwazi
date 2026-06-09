@@ -37,9 +37,9 @@ const FilesTableSection = ({
 
   return (
     <section className="flex flex-col gap-2">
-      <h3 className="px-1 text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
+      <p className="px-1 text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
         <Translate>{title}</Translate>
-      </h3>
+      </p>
       <Table
         className="text-xs text-ink-tertiary"
         columns={columns}

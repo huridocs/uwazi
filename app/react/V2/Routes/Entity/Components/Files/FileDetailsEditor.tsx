@@ -36,9 +36,9 @@ const FileDetailsEditor = ({
   return (
     <div className="rounded-md border border-border-soft bg-warm p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
+        <p className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
           <Translate>File details</Translate>
-        </h3>
+        </p>
         <Button
           variant="primary"
           size="small"

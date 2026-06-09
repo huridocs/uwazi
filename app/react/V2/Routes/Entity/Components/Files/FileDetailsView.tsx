@@ -7,45 +7,45 @@ const FileDetailsView = ({ row, onEdit }: { row: EntityFileRow; onEdit: () => vo
   <div className="flex h-full flex-col">
     <div className="rounded-md border border-border-soft bg-warm p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
+        <p className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
           <Translate>File details</Translate>
-        </h3>
+        </p>
         <Button variant="compact" onClick={onEdit}>
           <Translate>Edit</Translate>
         </Button>
       </div>
-      <dl className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3">
         <div className="col-span-2">
-          <dt className="text-xs text-ink-tertiary">
+          <div className="text-xs text-ink-tertiary">
             <Translate>Name</Translate>
-          </dt>
-          <dd className="text-sm text-ink">{row.displayName}</dd>
+          </div>
+          <div className="text-sm text-ink">{row.displayName}</div>
         </div>
         <div>
-          <dt className="text-xs text-ink-tertiary">
+          <div className="text-xs text-ink-tertiary">
             <Translate>Language</Translate>
-          </dt>
-          <dd className="text-sm text-ink">{row.languageKey}</dd>
+          </div>
+          <div className="text-sm text-ink">{row.languageKey}</div>
         </div>
         <div>
-          <dt className="text-xs text-ink-tertiary">
+          <div className="text-xs text-ink-tertiary">
             <Translate>Type</Translate>
-          </dt>
-          <dd className="text-sm text-ink">{row.typeLabel}</dd>
+          </div>
+          <div className="text-sm text-ink">{row.typeLabel}</div>
         </div>
         <div>
-          <dt className="text-xs text-ink-tertiary">
+          <div className="text-xs text-ink-tertiary">
             <Translate>Size</Translate>
-          </dt>
-          <dd className="text-sm text-ink">{row.sizeLabel}</dd>
+          </div>
+          <div className="text-sm text-ink">{row.sizeLabel}</div>
         </div>
         <div>
-          <dt className="text-xs text-ink-tertiary">
+          <div className="text-xs text-ink-tertiary">
             <Translate>Modified</Translate>
-          </dt>
-          <dd className="text-sm text-ink">{row.modifiedLabel}</dd>
+          </div>
+          <div className="text-sm text-ink">{row.modifiedLabel}</div>
         </div>
-      </dl>
+      </div>
     </div>
   </div>
 );
