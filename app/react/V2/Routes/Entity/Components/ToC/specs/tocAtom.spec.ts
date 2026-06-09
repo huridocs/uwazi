@@ -52,6 +52,9 @@ describe('tocAtom', () => {
         toc: undefined,
         isEditMode: false,
         expanded: {},
+        isAllCollapsed: true,
+        isAllExpanded: false,
+        isSaving: false,
       });
     });
   });

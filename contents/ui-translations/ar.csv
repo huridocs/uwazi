@@ -28,6 +28,7 @@ Activity Log,سجل النشاطات
 Add,ضف
 Add / remove favorite,إضافة/ إزالة المفضلة
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
+Add as,Add as
 Add date,إضافة تاريخ
 Add entities / documents,إضافة كيانات (أو إدخالات)/ مستندات
 Add entity type,Add entity type
@@ -55,6 +56,7 @@ Add to all languages,إضافة إلى جميع اللغات
 Add to table of contents,أضف إلى جدول المحتويات
 Add to ToC,Add to ToC
 Add to training set,Add to training set
+Add translation,Add translation
 Add user,إضافة مستخدم
 add value,add value
 Add/delete users and assign roles,إضافة / حذف المستخدمين وتعيين الأدوار
@@ -114,6 +116,7 @@ Automatically generated,منشأ تلقائياً
 Available default translation,Available default translation
 Back,عودة
 Back to,العودة إلى
+Back to details,Back to details
 Back to search,العودة إلى البحث
 Bad Request,Bad Request
 Basic,Basic
@@ -285,6 +288,7 @@ Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,وصف
+Deselect all,Deselect all
 Disable,Disable
 Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
@@ -387,8 +391,10 @@ Favicon no images hint,Favicon no images hint
 FEATURED,FEATURED
 File,ملف
 File deleted,File deleted
+File details,File details
 File extraction completed successfully.,File extraction completed successfully.
 File name,File name
+File preview unavailable,File preview unavailable
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -594,6 +600,7 @@ mismatched passwords,Passwords don't match
 mismatching,mismatching
 Mixed access,وصول مختلط
 ML TOC,ML TOC
+Modified,Modified
 Month,شهر
 Months,Months
 more options.,مزيد من الخيارات
@@ -691,6 +698,7 @@ OK,موافق
 "Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Open,Open
 Open group,Open group
+Open link,Open link
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,افتح تطبيق المصادقة الثنائية في جهازك
 Options,Options
@@ -741,6 +749,7 @@ Press enter to add,اضغط على مفتاح الإدخال لإضافة
 Preview,معاينة
 Previous,سابق
 Primary button,Primary button
+Primary document,Primary document
 Primary Documents,المستندات الأولية
 Priority sorting,تصنيف حسب الأولوية
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
@@ -875,6 +884,7 @@ Secret keys,Secret keys
 Security,Security
 Select,Select
 Select & Search,Select & Search
+Select a file,Select a file
 Select all,اختار الكل
 Select an existing image,Select an existing image
 Select favicon image,Select favicon image
@@ -961,6 +971,7 @@ Suggestions,اقتراحات
 suggestions,suggestions
 Suggestions sent,Suggestions sent
 Suggestions updated,Suggestions updated
+Supporting file,Supporting file
 Supporting files,ملفات الدعم
 Synced template,Synced template
 Synced Template,Synced Template
@@ -1108,6 +1119,7 @@ Uninstalling language,Uninstalling language
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,لغة الOCR غير مدعومة
+Untitled,Untitled
 Untranslated Terms,Untranslated Terms
 Update,تحديث
 UPDATE,تحديث

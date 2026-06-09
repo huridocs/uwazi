@@ -28,6 +28,7 @@ Activity Log,Журнал активності
 Add,Додати
 Add / remove favorite,Додати/видалити обране
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,"Додайте обліковий запис до додатку, відсканувавши наданий QR-код своїм мобільним пристроєм або вставивши наданий ключ."
+Add as,Add as
 Add date,Додати дату
 Add entities / documents,Додати об'єкти/документи
 Add entity type,Додати тип сутності
@@ -55,6 +56,7 @@ Add to all languages,Додати до всіх мов
 Add to table of contents,Додати в зміст
 Add to ToC,Add to ToC
 Add to training set,Додати до тренувального набору
+Add translation,Add translation
 Add user,Додати користувача
 add value,додавати цінність
 Add/delete users and assign roles,Додати/видалити користувачів та призначити ролі
@@ -114,6 +116,7 @@ Automatically generated,Генерується автоматично
 Available default translation,Доступний переклад за замовчуванням
 Back,Назад
 Back to,Назад до
+Back to details,Back to details
 Back to search,Назад до пошуку
 Bad Request,Поганий запит
 Basic,Базовий
@@ -288,6 +291,7 @@ Deleted user,Видалений користувач
 Deleted user group,Видалена група користувачів
 Deletion success,Успішність видалення
 Description,Опис
+Deselect all,Deselect all
 Disable,Вимкнути
 Disable highlights,Вимкнути підсвічування
 Disabled 2FA,Відключений 2FA
@@ -390,8 +394,10 @@ Favicon no images hint,Favicon no images hint
 FEATURED,ОБРАНІ
 File,Файл
 File deleted,Файл видалено
+File details,File details
 File extraction completed successfully.,File extraction completed successfully.
 File name,Ім'я файлу
+File preview unavailable,File preview unavailable
 File updated,Файл оновлено
 Files,Файли
 Files and database usage,Використання файлів і баз даних
@@ -597,6 +603,7 @@ mismatched passwords,Паролі не збігаються
 mismatching,невідповідність
 Mixed access,Доступ змішаного типу
 ML TOC,Зміст для машинного навчання
+Modified,Modified
 Month,Місяць
 Months,Місяці
 more options.,більше опцій.
@@ -694,6 +701,7 @@ OK,ГАРАЗД.
 "Only the extractor will be deleted, all created entities will remain on the library.","Буде видалено лише розпакувальник, всі створені сутності залишаться у бібліотеці."
 Open,Відкрито
 Open group,Відкрита група
+Open link,Open link
 Open PDF,Відкрити PDF
 Open the two-factor Authenticator app on your device,Відкрийте застосунок Authenticator для двохетапної автентифікації на вашому пристрої
 Options,Параметри
@@ -744,6 +752,7 @@ Press enter to add,"Натисніть Enter, щоб додати"
 Preview,Попередній перегляд
 Previous,Попередній
 Primary button,Primary button
+Primary document,Primary document
 Primary Documents,Основні документи
 Priority sorting,Пріоритетне сортування
 Priority sorting description,"Властивості, позначені як пріоритетні, будуть використані як критерії сортування за замовчуванням. Якщо більше однієї властивості позначено як пріоритетне сортування, система спробує підібрати найкращий варіант. При перерахуванні змішаних типів шаблонів система підбере найкращий комбінований варіант сортування за пріоритетами."
@@ -878,6 +887,7 @@ Secret keys,Секретні ключі
 Security,Безпека
 Select,Виберіть
 Select & Search,Вибір та пошук
+Select a file,Select a file
 Select all,Вибрати все
 Select an existing image,Select an existing image
 Select favicon image,Вибрати зображення фавікону
@@ -964,6 +974,7 @@ Suggestions,Запропоновані варіанти
 suggestions,пропозиції
 Suggestions sent,Пропозиції надіслані
 Suggestions updated,Suggestions updated
+Supporting file,Supporting file
 Supporting files,Супровідні файли
 Synced template,Синхронізований шаблон
 Synced Template,Синхронізований шаблон
@@ -1111,6 +1122,7 @@ Uninstalling language,Uninstalling language
 Unlink,Роз'єднати зв'язок.
 Unlock account,Розблокувати обліковий запис
 Unsupported OCR language,Непідтримувана мова оптичного розпізнавання символів
+Untitled,Untitled
 Untranslated Terms,Неперекладені терміни
 Update,Оновити
 UPDATE,Оновити

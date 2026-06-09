@@ -161,6 +161,20 @@ describe('Entity view', () => {
       );
       expect(mainTabs.getByRole('tab', { name: 'Metadata' })).toBeInTheDocument();
       expect(mainTabs.getByRole('tab', { name: 'Relationships' })).toBeInTheDocument();
+      expect(mainTabs.getByRole('tab', { name: /Files/ })).toBeInTheDocument();
+    });
+
+    it('should render files side panel tabs when Files is selected', async () => {
+      const tablists = screen.getAllByTestId('tabs-comp');
+      const mainTabs = within(tablists[0]);
+      fireEvent.click(mainTabs.getByRole('tab', { name: /Files/ }));
+
+      await waitFor(() => {
+        const refreshedTablists = screen.getAllByTestId('tabs-comp');
+        const sideTabs = within(refreshedTablists[1]);
+        expect(sideTabs.getByRole('tab', { name: 'File' })).toBeInTheDocument();
+        expect(sideTabs.getByRole('tab', { name: 'Translations 1' })).toBeInTheDocument();
+      });
     });
 
     it('should render the expected side tabs', () => {
