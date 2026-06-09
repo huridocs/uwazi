@@ -17,15 +17,13 @@ import {
 import type { MetadataProperty } from '#V2/formatters/types.js';
 import { useFormatMetadata } from './hooks/useFormatMetadata.js';
 import { buildTemplatePropertyById } from './buildTemplatePropertyById.js';
-import { MetadataHeaderStrip } from './MetadataHeaderStrip.js';
 import { metadataGridClassForProperty } from './metadataPropertyLayout.js';
 
 type MetadataDisplayProps = {
   entity: Entity;
-  headerLayout?: 'inline' | 'stacked';
 };
 
-const MetadataDisplay = ({ entity, headerLayout = 'inline' }: MetadataDisplayProps) => {
+const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
   const templates = useAtomValue(templatesAtom);
 
   const { entityTemplate, metadata } = useFormatMetadata(entity, templates, {
@@ -178,36 +176,33 @@ const MetadataDisplay = ({ entity, headerLayout = 'inline' }: MetadataDisplayPro
   }
 
   return (
-    <>
-      <MetadataHeaderStrip entity={entity} headerLayout={headerLayout} />
-      <dl className="flex min-w-0 flex-wrap gap-(--spacing-theme-3)">
-        {typeof entity.creationDate === 'number' && (
-          <Date
-            values={[
-              {
-                value: entity.creationDate,
-              },
-            ]}
-            label="Creation Date"
-            translationContext="System"
-          />
-        )}
+    <dl className="flex min-w-0 flex-wrap gap-3">
+      {typeof entity.creationDate === 'number' && (
+        <Date
+          values={[
+            {
+              value: entity.creationDate,
+            },
+          ]}
+          label="Creation Date"
+          translationContext="System"
+        />
+      )}
 
-        {typeof entity.editDate === 'number' && (
-          <Date
-            values={[
-              {
-                value: entity.editDate,
-              },
-            ]}
-            label="Edit Date"
-            translationContext="System"
-          />
-        )}
+      {typeof entity.editDate === 'number' && (
+        <Date
+          values={[
+            {
+              value: entity.editDate,
+            },
+          ]}
+          label="Edit Date"
+          translationContext="System"
+        />
+      )}
 
-        {renderMetadataFields(metadata)}
-      </dl>
-    </>
+      {renderMetadataFields(metadata)}
+    </dl>
   );
 };
 

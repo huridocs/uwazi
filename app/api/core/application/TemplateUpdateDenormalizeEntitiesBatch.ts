@@ -62,11 +62,11 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
         await this.dependencies.entitiesDS.touchEntitiesBySharedIds(entitiesIds);
       }
       if (Object.keys(renamedProperties).length) {
-        await this.dependencies.filesDS.renameExtractedMetadata(renamedProperties, entitiesIds);
+        await this.dependencies.filesDS.renamePropertySelections(renamedProperties, entitiesIds);
         await this.dependencies.entitiesDS.renameMetadataProperties(renamedProperties, entitiesIds);
       }
       if (deletedProperties.length) {
-        await this.dependencies.filesDS.deleteExtractedMetadata(deletedProperties, entitiesIds);
+        await this.dependencies.filesDS.deletePropertySelections(deletedProperties, entitiesIds);
         await this.dependencies.entitiesDS.deleteMetadataProperties(deletedProperties, entitiesIds);
       }
 

@@ -207,7 +207,7 @@ describe('InformationExtraction', () => {
         entity,
         language,
         segmentation: {},
-        extractedMetadata: [],
+        propertySelections: [],
         propertyType: propertyType || 'text',
       },
       extractor
@@ -323,7 +323,7 @@ describe('InformationExtraction', () => {
       });
     });
 
-    it('should send labeled (target Property has value and none extractedMetadata)', async () => {
+    it('should send labeled (target Property has value and no property selections)', async () => {
       await informationExtraction.trainModel(factory.id('extractor_source_pdf_target_text'));
 
       expect(IXExternalService.materials.length).toBe(2);
@@ -1098,7 +1098,7 @@ describe('InformationExtraction', () => {
         type: 'document',
         language: 'en',
         entity: 'entity1',
-        extractedMetadata: [],
+        propertySelections: [],
       });
 
       await filesModel.save({
@@ -1107,7 +1107,7 @@ describe('InformationExtraction', () => {
         type: 'document',
         language: 'en',
         entity: 'entity2',
-        extractedMetadata: [],
+        propertySelections: [],
       });
 
       await IXSuggestionsModel.save({
@@ -1265,7 +1265,7 @@ describe('InformationExtraction', () => {
         type: 'document',
         language: 'en',
         entity: 'entity1',
-        extractedMetadata: [],
+        propertySelections: [],
       });
 
       await filesModel.save({
@@ -1274,7 +1274,7 @@ describe('InformationExtraction', () => {
         type: 'document',
         language: 'en',
         entity: 'entity3',
-        extractedMetadata: [],
+        propertySelections: [],
       });
 
       await IXSuggestionsModel.save({
@@ -1353,7 +1353,7 @@ describe('InformationExtraction', () => {
         type: 'document',
         language: 'en',
         entity: 'entity1',
-        extractedMetadata: [],
+        propertySelections: [],
       });
 
       await filesModel.save({
@@ -1362,7 +1362,7 @@ describe('InformationExtraction', () => {
         type: 'document',
         language: 'en',
         entity: 'entity2',
-        extractedMetadata: [],
+        propertySelections: [],
       });
 
       // F1: only non-ready segmentation
@@ -1477,7 +1477,7 @@ describe('InformationExtraction', () => {
         type: 'document',
         language: 'en',
         entity: 'entity1',
-        extractedMetadata: [],
+        propertySelections: [],
       });
 
       await filesModel.save({
@@ -1486,7 +1486,7 @@ describe('InformationExtraction', () => {
         type: 'document',
         language: 'en',
         entity: 'entity2',
-        extractedMetadata: [],
+        propertySelections: [],
       });
 
       await SegmentationModel.save({

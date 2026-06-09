@@ -8,7 +8,7 @@ import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { syncedPromiseLoop } from '#shared/data_utils/promiseUtils.js';
 import {
-  ExtractedMetadataSchema,
+  PropertySelectionSchema,
   ObjectIdSchema,
   PropertySchema,
 } from '#shared/types/commonTypes.js';
@@ -17,7 +17,7 @@ import { IXSuggestionAggregation, IXSuggestionType } from '#shared/types/suggest
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import {
   getSegmentedFilesIds,
-  propertyTypeIsWithoutExtractedMetadata,
+  propertyTypeIsWithoutPropertySelections,
 } from '#api/services/informationextraction/ixMaterials.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
@@ -29,11 +29,11 @@ import {
   updateEntitiesWithSuggestion,
 } from './updateEntities.js';
 
-const updateExtractedMetadata = async (
+const updatePropertySelections = async (
   suggestions: IXSuggestionType[],
   property: PropertySchema
 ) => {
-  if (propertyTypeIsWithoutExtractedMetadata(property.type)) return;
+  if (propertyTypeIsWithoutPropertySelections(property.type)) return;
 
   const fetchedFiles = await files.get({ _id: { $in: suggestions.map(s => s.fileId) } });
   const suggestionsByFileId = objectIndex(
@@ -44,14 +44,14 @@ const updateExtractedMetadata = async (
 
   await syncedPromiseLoop(fetchedFiles, async (file: EnforcedWithId<FileType>) => {
     const suggestion = suggestionsByFileId[file._id.toString()];
-    file.extractedMetadata = file.extractedMetadata ? file.extractedMetadata : [];
+    file.propertySelections = file.propertySelections ? file.propertySelections : [];
 
-    const extractedMetadata = file.extractedMetadata.find(
+    const propertySelection = file.propertySelections.find(
       (em: any) => em.name === suggestion.propertyName
-    ) as ExtractedMetadataSchema;
+    ) as PropertySelectionSchema;
 
-    if (!extractedMetadata) {
-      file.extractedMetadata.push({
+    if (!propertySelection) {
+      file.propertySelections.push({
         name: suggestion.propertyName,
         timestamp: Date(),
         selection: {
@@ -60,8 +60,8 @@ const updateExtractedMetadata = async (
         },
       });
     } else {
-      extractedMetadata.timestamp = Date();
-      extractedMetadata.selection = {
+      propertySelection.timestamp = Date();
+      propertySelection.selection = {
         text: suggestion.suggestedText || suggestion.suggestedValue?.toString(),
         selectionRectangles: suggestion.selectionRectangles,
       };
@@ -451,7 +451,7 @@ const Suggestions = {
     const allLanguage = needsAllLanguages(property.type);
 
     await updateEntitiesWithSuggestion(allLanguage, acceptedSuggestions, suggestions, property);
-    await updateExtractedMetadata(suggestions, property);
+    await updatePropertySelections(suggestions, property);
   },
 
   deleteByEntityId: async (sharedId: string) => {

@@ -40,65 +40,66 @@ const Button = ({
     Record<NonNullable<ButtonProps['size']> | 'default', string>
   > = {
     primary: {
-      small: 'px-3 py-1.5 text-xs',
+      small: 'px-2 py-1.5 text-xs',
       medium: 'px-4 py-2 text-sm',
       default: 'px-3 py-1.5 text-xs',
     },
     secondary: {
-      small: 'px-3 py-1.5 text-xs',
+      small: 'px-2 py-1.5 text-xs',
       medium: 'px-4 py-2 text-sm',
       default: 'px-3 py-1.5 text-xs',
     },
     danger: {
-      small: 'px-3 py-1.5 text-xs',
+      small: 'px-2 py-1.5 text-xs',
       medium: 'px-4 py-2 text-sm',
       default: 'px-3 py-1.5 text-xs',
     },
     ghost: {
-      small: 'px-3 py-1.5 text-xs',
+      small: 'px-2 py-1.5 text-xs',
       medium: 'px-3 py-1.5 text-xs',
       default: 'px-3 py-1.5 text-xs',
     },
     compact: {
-      small: 'px-2.5 py-1 text-xs',
+      small: 'px-2 py-1 text-xs',
       medium: 'px-3 py-1 text-[0.8125rem]',
       default: 'px-3 py-1 text-[0.8125rem]',
     },
     success: {
-      small: 'px-3 py-1.5 text-xs',
+      small: 'px-2 py-1.5 text-xs',
       medium: 'px-4 py-2 text-sm',
       default: 'px-3 py-1.5 text-xs',
     },
     dangerSecondary: {
-      small: 'px-3 py-1.5 text-xs',
+      small: 'px-2 py-1.5 text-xs',
       medium: 'px-4 py-2 text-sm',
       default: 'px-3 py-1.5 text-xs',
     },
     successSecondary: {
-      small: 'px-3 py-1.5 text-xs',
+      small: 'px-2 py-1.5 text-xs',
       medium: 'px-4 py-2 text-sm',
       default: 'px-3 py-1.5 text-xs',
     },
     dangerSubtle: {
-      small: 'px-3 py-1.5 text-xs',
+      small: 'px-2 py-1.5 text-xs',
       medium: 'px-3 py-1.5 text-xs',
       default: 'px-3 py-1.5 text-xs',
     },
     successSubtle: {
-      small: 'px-3 py-1.5 text-xs',
+      small: 'px-2 py-1.5 text-xs',
       medium: 'px-3 py-1.5 text-xs',
       default: 'px-3 py-1.5 text-xs',
     },
   };
 
   const textStyles = size ? sizeClasses[variant][size] : sizeClasses[variant].default;
+
   const hoverClassByVariant: Record<ButtonVariant, string> = {
     primary: 'enabled:hover:opacity-90',
     secondary:
       'enabled:hover:bg-(--color-theme-button-secondary-hover-bg) enabled:hover:border-(--color-theme-button-secondary-border)',
     danger: 'enabled:hover:opacity-90',
     ghost:
-      'enabled:hover:bg-(--color-theme-button-ghost-hover-bg) enabled:hover:border-(--color-theme-button-ghost-hover-border) enabled:hover:text-(--color-theme-button-ghost-hover-fg)',
+      'border-0 text-ink-secondary bg-warm enabled:hover:bg-parchment enabled:hover:text-ink disabled:text-ink-muted disabled:bg-warm disabled:opacity-60',
     compact:
       'enabled:hover:bg-(--color-theme-bg-muted) enabled:hover:border-(--color-theme-button-compact-border)',
     success:
@@ -134,11 +135,7 @@ const Button = ({
       backgroundColor: 'var(--color-theme-button-danger-bg)',
       color: 'var(--color-theme-button-danger-fg)',
     },
-    ghost: {
-      borderColor: 'var(--color-theme-button-ghost-border)',
-      backgroundColor: 'var(--color-theme-button-ghost-bg)',
-      color: disabled ? 'var(--color-theme-text-muted)' : 'var(--color-theme-button-ghost-fg)',
-    },
+    ghost: {},
     compact: {
       borderColor: disabled
         ? 'color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)'

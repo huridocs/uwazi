@@ -1,5 +1,6 @@
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
+import { EntityUpdatedEvent as LegacyEntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { User } from '#api/users.v2/model/User.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
@@ -14,6 +15,7 @@ import {
   Specification,
 } from '../domain/entityAccessPolicy/EntityPermissionChecker.js';
 import { EntityUpdatedEvent } from '../domain/entity/EntityUpdatedEvent.js';
+import { MongoEntityMapper } from '../infrastructure/mongodb/entity/MongoEntityMapper.js';
 import { EventEmitter } from '../libs/eventEmitter/EventEmitter.js';
 import { EntityAccessPolicy } from '../domain/entityAccessPolicy/EntityAccessPolicy.js';
 import { EntityAccessPolicyDataSource } from './contracts/EntityAccessPolicyDataSource.js';
@@ -140,6 +142,14 @@ class EntitiesService {
         userId: context.actorId,
       })
     );
+
+    await this.deps.eventBus.emit(
+      new LegacyEntityUpdatedEvent({
+        before: MongoEntityMapper.toDBO(entity.previousVersion) as any,
+        after: MongoEntityMapper.toDBO(entity) as any,
+        targetLanguageKey: context.targetLanguage,
+      })
+    );
   }
 
   async updateMultiple(entities: Entity[], context: UpsertContext) {
@@ -157,6 +167,18 @@ class EntitiesService {
             entity,
             targetLanguage: context.targetLanguage,
             userId: context.actorId,
+          })
+        )
+      )
+    );
+
+    await Promise.all(
+      changedEntities.map(async entity =>
+        this.deps.eventBus.emit(
+          new LegacyEntityUpdatedEvent({
+            before: MongoEntityMapper.toDBO(entity.previousVersion) as any,
+            after: MongoEntityMapper.toDBO(entity) as any,
+            targetLanguageKey: context.targetLanguage,
           })
         )
       )
