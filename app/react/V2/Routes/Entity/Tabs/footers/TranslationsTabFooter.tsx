@@ -1,8 +1,6 @@
 import React from 'react';
 import { EntityTabFooter } from '../EntityTabFooter.js';
 
-const TranslationsTabFooter = () => (
-  <EntityTabFooter> - Translations tab footer - </EntityTabFooter>
-);
+const TranslationsTabFooter = () => <EntityTabFooter />;
 
 export { TranslationsTabFooter };

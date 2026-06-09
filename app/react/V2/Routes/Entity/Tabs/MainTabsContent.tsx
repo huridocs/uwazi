@@ -51,7 +51,7 @@ const MainTabsContent = ({
       role="tabpanel"
       id={`entity-main-panel-${activeTabId}`}
       aria-labelledby={`entity-main-tab-${activeTabId}`}
-      className="flex h-full min-h-0 w-full flex-col"
+      className="flex h-full min-h-0 w-full flex-col bg-warm"
     >
       {content}
     </div>

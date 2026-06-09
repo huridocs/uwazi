@@ -4,19 +4,27 @@ import { FilesToolbar } from '../../Components/Files/FilesToolbar.js';
 import { EntityTabFooter } from '../EntityTabFooter.js';
 
 const FilesTabFooter = () => {
-  const { primaryRows, supportingRows, selectedRowIds, setSelectedRowIds, navigateToFilesSideTab } =
-    useEntityFiles();
+  const {
+    primaryRows,
+    supportingRows,
+    selectedRowIds,
+    setSelectedRowIds,
+    navigateToFilesSideTab,
+    requestDeleteSelected,
+  } = useEntityFiles();
 
   const allRows = [...primaryRows, ...supportingRows];
+  const hasSelection = selectedRowIds.length > 0;
 
   return (
-    <EntityTabFooter>
+    <EntityTabFooter highlighted={hasSelection}>
       <FilesToolbar
         totalCount={allRows.length}
         selectedCount={selectedRowIds.length}
         onAddFile={() => navigateToFilesSideTab('translations')}
         onSelectAll={() => setSelectedRowIds(allRows.map(row => row.rowId))}
         onDeselectAll={() => setSelectedRowIds([])}
+        onDeleteSelected={requestDeleteSelected}
       />
     </EntityTabFooter>
   );

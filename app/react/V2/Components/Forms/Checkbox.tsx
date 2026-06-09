@@ -1,5 +1,5 @@
 /* eslint-disable react/require-default-props */
-import React, { ReactEventHandler, Ref } from 'react';
+import React, { ReactEventHandler, Ref, useEffect, useImperativeHandle, useRef } from 'react';
 import isString from 'lodash/isString.js';
 import { Translate } from '#app/I18N/index.js';
 
@@ -7,18 +7,55 @@ interface CheckboxProps {
   name: string;
   onChange?: ReactEventHandler<HTMLInputElement>;
   checked?: boolean;
+  indeterminate?: boolean;
   label: string | React.ReactNode;
   className?: string;
   disabled?: boolean;
 }
 
+const checkboxInputClassName = [
+  'h-4 w-4 shrink-0 cursor-pointer rounded-sm',
+  'border border-(--color-theme-control-border) bg-(--color-theme-control-bg)',
+  '[accent-color:var(--color-theme-accent-primary)]',
+  'disabled:cursor-not-allowed disabled:opacity-50',
+  'focus-visible:outline-hidden focus-visible:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]',
+].join(' ');
+
 const Checkbox = React.forwardRef(
   (
-    { name, onChange, className, disabled, checked, label }: CheckboxProps,
+    {
+      name,
+      onChange,
+      className,
+      disabled,
+      checked,
+      indeterminate = false,
+      label,
+    }: CheckboxProps,
     ref: Ref<HTMLInputElement>
-  ) => (
-    <fieldset className={`flex items-center gap-2 border-0 p-0 m-0 ${className}`}>
-      <div className="relative inline-flex items-center">
+  ) => {
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
+
+    useEffect(() => {
+      if (inputRef.current) {
+        inputRef.current.indeterminate = indeterminate;
+      }
+    }, [indeterminate, checked]);
+
+    const labelClassName = [
+      'text-sm',
+      disabled
+        ? 'cursor-not-allowed text-(--color-theme-control-text-muted)'
+        : 'cursor-pointer text-ink-secondary',
+      checked || indeterminate ? 'text-(--color-theme-control-text)' : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+
+    return (
+      <fieldset className={`flex items-center gap-2 border-0 p-0 m-0 ${className ?? ''}`}>
         <input
           type="checkbox"
           checked={checked}
@@ -26,22 +63,15 @@ const Checkbox = React.forwardRef(
           name={name}
           disabled={disabled || false}
           onChange={onChange}
-          ref={ref}
-          className="peer absolute inset-0 h-4 w-4 opacity-0 cursor-pointer z-10"
+          ref={inputRef}
+          className={checkboxInputClassName}
         />
-        <span
-          aria-hidden="true"
-          className="relative flex h-4 w-4 shrink-0 items-center justify-center rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) transition peer-checked:border-(--color-theme-accent-primary) peer-checked:bg-(--color-theme-accent-primary) peer-disabled:cursor-not-allowed peer-disabled:opacity-50 peer-focus-visible:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)] after:absolute after:h-2 after:w-1 after:rotate-45 after:border-b-2 after:border-r-2 after:border-white after:opacity-0 after:content-[''] peer-checked:after:opacity-100"
-        />
-      </div>
-      <label
-        htmlFor={name}
-        className={`cursor-pointer text-sm text-ink-secondary peer-checked:text-(--color-theme-control-text) peer-disabled:text-(--color-theme-control-text-muted) ${disabled ? 'cursor-not-allowed' : ''}`}
-      >
-        {isString(label) ? <Translate>{label}</Translate> : label}
-      </label>
-    </fieldset>
-  )
+        <label htmlFor={name} className={labelClassName}>
+          {isString(label) ? <Translate>{label}</Translate> : label}
+        </label>
+      </fieldset>
+    );
+  }
 );
 
-export { Checkbox };
+export { Checkbox, checkboxInputClassName };

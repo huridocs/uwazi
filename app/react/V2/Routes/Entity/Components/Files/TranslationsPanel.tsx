@@ -2,7 +2,7 @@ import React from 'react';
 import { EyeIcon, TrashIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { Button, Pill } from '#V2/Components/UI/index.js';
-import { FileDropzone } from '#V2/Components/Forms/FileDropzone.js';
+import { AddTranslationDropArea } from './AddTranslationDropArea.js';
 import { EntityFileRow } from './types.js';
 
 const TranslationsPanel = ({
@@ -65,10 +65,7 @@ const TranslationsPanel = ({
             </Button>
           </div>
         ))}
-      </div>
-
-      <div className="mt-3 border-t border-border-soft pt-3">
-        <FileDropzone multiple={false} onChange={files => onUpload(files)} />
+        <AddTranslationDropArea onUpload={onUpload} />
       </div>
     </div>
   );

@@ -627,6 +627,10 @@
   color: var(--color-theme-text-primary, #1a1a1a);
 }
 
+.tw-content input[type='checkbox'] {
+  accent-color: var(--color-theme-accent-primary);
+}
+
 .tw-content.dark input[type='checkbox'] {
-  accent-color: var(--color-theme-text-tertiary);
+  accent-color: var(--color-theme-accent-primary);
 }

@@ -7,7 +7,7 @@ type MetadataTabProps = {
 };
 
 const MetadataTab = ({ entity }: MetadataTabProps) => (
-  <div className="h-full min-h-0 flex-1 overflow-y-auto">
+  <div className="h-full min-h-0 flex-1 overflow-y-auto p-3">
     <MetadataDisplay entity={entity} />
   </div>
 );

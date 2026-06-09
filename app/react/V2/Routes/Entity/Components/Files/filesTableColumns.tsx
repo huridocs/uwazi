@@ -8,9 +8,7 @@ import {
   PhotoIcon,
   LinkIcon,
 } from '@heroicons/react/24/outline';
-import { Pill } from '#V2/Components/UI/index.js';
 import { EntityFileRow } from './types.js';
-import { FilesRowActionsMenu } from './FilesRowActionsMenu.js';
 
 const columnHelper = createColumnHelper<EntityFileRow>();
 
@@ -46,15 +44,7 @@ const getRowIcon = (row: EntityFileRow) => {
 
 const cellClassName = 'text-xs text-ink-tertiary';
 
-const filesTableColumns = ({
-  onFocus,
-  onEdit,
-  onDelete,
-}: {
-  onFocus: (row: EntityFileRow) => void;
-  onEdit: (row: EntityFileRow) => void;
-  onDelete: (row: EntityFileRow) => void;
-}) => [
+const filesTableColumns = ({ onFocus }: { onFocus: (row: EntityFileRow) => void }) => [
   columnHelper.accessor('displayName', {
     header: 'FILE NAME',
     cell: ({ row }) => {
@@ -67,7 +57,6 @@ const filesTableColumns = ({
         >
           {getRowIcon(current)}
           <span className={`truncate ${cellClassName}`}>{current.displayName}</span>
-          {current.isActiveMain ? <Pill color="gray">Active</Pill> : null}
         </button>
       );
     },
@@ -102,26 +91,6 @@ const filesTableColumns = ({
     meta: {
       headerClassName: 'w-0 !p-2 text-[11px] text-ink-tertiary font-semibold',
       contentClassName: cellClassName,
-    },
-  }),
-  columnHelper.display({
-    id: 'actions',
-    header: '',
-    cell: ({ row }) => (
-      <div className="flex justify-end">
-        <FilesRowActionsMenu
-          row={row.original}
-          onView={onFocus}
-          onEdit={onEdit}
-          onDelete={onDelete}
-          onAddTranslation={onFocus}
-        />
-      </div>
-    ),
-    enableSorting: false,
-    meta: {
-      headerClassName: 'w-0 !p-2 !text-xs',
-      contentClassName: `text-right ${cellClassName}`,
     },
   }),
 ];

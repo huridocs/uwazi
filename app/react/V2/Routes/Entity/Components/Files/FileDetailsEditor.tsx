@@ -1,10 +1,22 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { CheckIcon } from '@heroicons/react/24/outline';
-import { useAtomValue } from 'jotai';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
+import { availableLanguages, LanguageUtils } from '#shared/language/index.js';
 import { Button } from '#V2/Components/UI/index.js';
-import { settingsAtom } from '#V2/atoms/index.js';
 import { EntityFileRow } from './types.js';
+
+const resolveFileLanguage = (rawLanguage?: string) => {
+  if (!rawLanguage) {
+    return 'other';
+  }
+
+  if (rawLanguage === 'other') {
+    return 'other';
+  }
+
+  const known = LanguageUtils.fromISO639_3(rawLanguage, false);
+  return known?.ISO639_3 ?? 'other';
+};
 
 const FileDetailsEditor = ({
   row,
@@ -13,39 +25,16 @@ const FileDetailsEditor = ({
   row: EntityFileRow;
   onSave: (payload: { _id: string; originalname: string; language?: string }) => Promise<void>;
 }) => {
-  const settings = useAtomValue(settingsAtom);
   const [originalname, setOriginalname] = useState(row.raw.originalname || row.displayName);
-
-  const languages = useMemo(
-    () => settings?.languages?.map(item => item.key?.toLowerCase()).filter(Boolean) || [],
-    [settings?.languages]
+  const resolvedLanguage = useMemo(
+    () => resolveFileLanguage(row.raw.language),
+    [row.raw.language]
   );
-
-  const resolvedLanguage = useMemo(() => {
-    const candidates = [row.raw.language, row.languageKey]
-      .map(value => value?.toLowerCase().trim())
-      .filter(Boolean) as string[];
-
-    for (const candidate of candidates) {
-      const exact = languages.find(key => key === candidate);
-      if (exact) return exact;
-
-      const byPrefix = languages.find(
-        key => key.startsWith(candidate) || candidate.startsWith(key)
-      );
-      if (byPrefix) return byPrefix;
-    }
-
-    return '';
-  }, [languages, row.languageKey, row.raw.language]);
-
   const [language, setLanguage] = useState(resolvedLanguage);
 
   useEffect(() => {
-    if (!language && resolvedLanguage) {
-      setLanguage(resolvedLanguage);
-    }
-  }, [language, resolvedLanguage]);
+    setLanguage(resolvedLanguage);
+  }, [resolvedLanguage]);
 
   return (
     <div className="rounded-md border border-border-soft bg-warm p-4">
@@ -98,14 +87,14 @@ const FileDetailsEditor = ({
             id={`file-language-${row.raw._id}`}
             value={language}
             onChange={event => setLanguage(event.target.value)}
-            className="rounded-md border border-border-soft bg-paper px-2 py-1 text-sm text-ink focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]"
+            className="w-full rounded-md border border-border-soft bg-paper px-2 py-1 text-sm text-ink focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]"
           >
-            <option value="">-</option>
-            {languages.map(key => (
-              <option key={key} value={key}>
-                {key.toUpperCase()}
+            {availableLanguages.map(item => (
+              <option key={item.ISO639_3} value={item.ISO639_3}>
+                {item.localized_label} ({item.label})
               </option>
             ))}
+            <option value="other">{t('System', 'other', 'other', false)}</option>
           </select>
         </div>
         <div>

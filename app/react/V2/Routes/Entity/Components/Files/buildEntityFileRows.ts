@@ -55,7 +55,6 @@ const buildEntityFileRows = (
       languageKey: file.language?.toUpperCase() || '—',
       modifiedLabel: formatFileDate(modifiedTimestamp, locale),
       modifiedTimestamp,
-      isActiveMain: Boolean(mainDocument?._id) && mainDocument?._id === file._id,
       category,
       fileType: file.fileType,
       raw: file,

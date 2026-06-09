@@ -7,10 +7,12 @@ import { Entity } from '#V2/api/entities/types.js';
 import { remove, update, UploadService } from '#V2/api/files/index.js';
 import { settingsAtom, templatesAtom } from '#V2/atoms/index.js';
 import { localeAtom } from '#V2/atoms/translationsAtoms.js';
+import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { buildEntityFileRows } from './buildEntityFileRows.js';
 import { EntityFileRow } from './types.js';
 
 type FilesSideTabId = 'file' | 'translations';
+type FilePanelMode = 'details' | 'preview';
 
 type EntityFilesContextValue = {
   entity: Entity;
@@ -19,21 +21,31 @@ type EntityFilesContextValue = {
   focusedRow?: EntityFileRow;
   selectedRowIds: string[];
   isEditing: boolean;
-  pendingDeleteRow?: EntityFileRow;
+  filePanelMode: FilePanelMode;
+  pendingDeleteRows: EntityFileRow[];
   navigateToFilesSideTab: (tab: FilesSideTabId) => void;
   setIsEditing: (editing: boolean) => void;
   setFocusedRowId: (rowId: string) => void;
   setSelectedRowIds: (ids: string[]) => void;
-  requestDeleteRow: (row?: EntityFileRow) => void;
+  openFilePreview: () => void;
+  closeFilePreview: () => void;
+  requestDeleteRow: (row: EntityFileRow) => void;
+  requestDeleteSelected: () => void;
   closeDeleteModal: () => void;
-  deleteRow: () => Promise<void>;
+  deleteRows: () => Promise<void>;
   saveRow: (payload: { _id: string; originalname: string; language?: string }) => Promise<void>;
   uploadTranslation: (files: File[]) => Promise<void>;
 };
 
 const EntityFilesContext = createContext<EntityFilesContextValue | null>(null);
 
-const EntityFilesProvider = ({ entity, children }: { entity: Entity; children: React.ReactNode }) => {
+const EntityFilesProvider = ({
+  entity,
+  children,
+}: {
+  entity: Entity;
+  children: React.ReactNode;
+}) => {
   const templates = useAtomValue(templatesAtom);
   const locale = useAtomValue(localeAtom);
   const settings = useAtomValue(settingsAtom);
@@ -43,7 +55,8 @@ const EntityFilesProvider = ({ entity, children }: { entity: Entity; children: R
   const [selectedRowIds, setSelectedRowIds] = useState<string[]>([]);
   const [focusedRowId, setFocusedRowId] = useState<string>();
   const [isEditing, setIsEditing] = useState(false);
-  const [pendingDeleteRow, setPendingDeleteRow] = useState<EntityFileRow>();
+  const [filePanelMode, setFilePanelMode] = useState<FilePanelMode>('details');
+  const [pendingDeleteRows, setPendingDeleteRows] = useState<EntityFileRow[]>([]);
 
   const { primaryRows, supportingRows, mainDocumentId } = useMemo(
     () => buildEntityFileRows(entity, templates, locale, defaultLanguage),
@@ -55,30 +68,60 @@ const EntityFilesProvider = ({ entity, children }: { entity: Entity; children: R
   const resolvedFocusedRowId = focusedRowId || mainDocumentId || allRows[0]?.rowId;
   const focusedRow = allRows.find(row => row.rowId === resolvedFocusedRowId);
 
+  const setFocusedRow = useCallback((rowId: string) => {
+    setFocusedRowId(rowId);
+    setIsEditing(false);
+    setFilePanelMode('details');
+  }, []);
+
+  const openFilePreview = useCallback(() => {
+    setIsEditing(false);
+    setFilePanelMode('preview');
+  }, []);
+
+  const closeFilePreview = useCallback(() => {
+    setFilePanelMode('details');
+  }, []);
+
+  const refreshEntity = useCallback(async () => {
+    entityLoaderCache.invalidateEntity(entity.sharedId);
+    await revalidate();
+  }, [entity.sharedId, revalidate]);
+
   const saveRow = useCallback(
     async (payload: { _id: string; originalname: string; language?: string }) => {
       await update(payload as FileType);
-      await revalidate();
+      await refreshEntity();
       setIsEditing(false);
     },
-    [revalidate]
+    [refreshEntity]
   );
 
-  const requestDeleteRow = useCallback((row?: EntityFileRow) => {
-    setPendingDeleteRow(row);
+  const requestDeleteRow = useCallback((row: EntityFileRow) => {
+    setPendingDeleteRows([row]);
   }, []);
 
-  const closeDeleteModal = useCallback(() => setPendingDeleteRow(undefined), []);
+  const requestDeleteSelected = useCallback(() => {
+    const rows = allRows.filter(row => selectedRowIds.includes(row.rowId));
+    setPendingDeleteRows(rows);
+  }, [allRows, selectedRowIds]);
 
-  const deleteRow = useCallback(async () => {
-    if (!pendingDeleteRow?.raw?._id) {
-      setPendingDeleteRow(undefined);
+  const closeDeleteModal = useCallback(() => setPendingDeleteRows([]), []);
+
+  const deleteRows = useCallback(async () => {
+    const ids = pendingDeleteRows.map(row => row.raw._id).filter(Boolean) as string[];
+    if (!ids.length) {
+      setPendingDeleteRows([]);
       return;
     }
-    await remove(pendingDeleteRow.raw._id);
-    setPendingDeleteRow(undefined);
-    await revalidate();
-  }, [pendingDeleteRow, revalidate]);
+    const deletedRowIds = new Set(pendingDeleteRows.map(row => row.rowId));
+    await Promise.all(ids.map(id => remove(id)));
+    setPendingDeleteRows([]);
+    setSelectedRowIds(prev => prev.filter(id => !deletedRowIds.has(id)));
+    setFocusedRowId(prev => (prev && deletedRowIds.has(prev) ? undefined : prev));
+    ids.forEach(id => entityLoaderCache.invalidatePlaintext(id));
+    await refreshEntity();
+  }, [pendingDeleteRows, refreshEntity]);
 
   const navigateToFilesSideTab = useCallback(
     (tab: FilesSideTabId) => {
@@ -95,10 +138,10 @@ const EntityFilesProvider = ({ entity, children }: { entity: Entity; children: R
       if (!files.length) return;
       const service = new UploadService('document', { entity: entity.sharedId });
       await service.upload(files);
-      await revalidate();
+      await refreshEntity();
       navigateToFilesSideTab('translations');
     },
-    [entity.sharedId, navigateToFilesSideTab, revalidate]
+    [entity.sharedId, navigateToFilesSideTab, refreshEntity]
   );
 
   const value = useMemo(
@@ -109,14 +152,18 @@ const EntityFilesProvider = ({ entity, children }: { entity: Entity; children: R
       focusedRow,
       selectedRowIds,
       isEditing,
-      pendingDeleteRow,
+      filePanelMode,
+      pendingDeleteRows,
       navigateToFilesSideTab,
       setIsEditing,
-      setFocusedRowId,
+      setFocusedRowId: setFocusedRow,
       setSelectedRowIds,
+      openFilePreview,
+      closeFilePreview,
       requestDeleteRow,
+      requestDeleteSelected,
       closeDeleteModal,
-      deleteRow,
+      deleteRows,
       saveRow,
       uploadTranslation,
     }),
@@ -127,11 +174,16 @@ const EntityFilesProvider = ({ entity, children }: { entity: Entity; children: R
       focusedRow,
       selectedRowIds,
       isEditing,
-      pendingDeleteRow,
+      filePanelMode,
+      pendingDeleteRows,
       navigateToFilesSideTab,
+      setFocusedRow,
       requestDeleteRow,
+      requestDeleteSelected,
+      openFilePreview,
+      closeFilePreview,
       closeDeleteModal,
-      deleteRow,
+      deleteRows,
       saveRow,
       uploadTranslation,
     ]

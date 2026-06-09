@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { useEntityFiles } from '../../Components/Files/EntityFilesContext.js';
 import { FilesTableSection } from '../../Components/Files/FilesTableSection.js';
@@ -13,44 +13,37 @@ const FilesTab = () => {
     setFocusedRowId,
     setSelectedRowIds,
     navigateToFilesSideTab,
-    setIsEditing,
-    requestDeleteRow,
   } = useEntityFiles();
 
   const allRows = [...primaryRows, ...supportingRows];
 
-  const onFocus = (row: EntityFileRow) => {
-    setFocusedRowId(row.rowId);
-    navigateToFilesSideTab('file');
-  };
+  const onFocus = useCallback(
+    (row: EntityFileRow) => {
+      setFocusedRowId(row.rowId);
+      navigateToFilesSideTab('file');
+    },
+    [setFocusedRowId, navigateToFilesSideTab]
+  );
 
   return (
     <div className="flex h-full flex-1 flex-col gap-4 bg-warm p-3" role="tabpanel">
       <FilesTableSection
+        sectionId="primary"
         title="Primary documents"
         rows={primaryRows}
         selectedRowIds={selectedRowIds}
         focusedRowId={focusedRow?.rowId}
         onSelectRows={setSelectedRowIds}
         onFocusRow={onFocus}
-        onEditRow={row => {
-          onFocus(row);
-          setIsEditing(true);
-        }}
-        onDeleteRow={requestDeleteRow}
       />
       <FilesTableSection
+        sectionId="supporting"
         title="Supporting files"
         rows={supportingRows}
         selectedRowIds={selectedRowIds}
         focusedRowId={focusedRow?.rowId}
         onSelectRows={setSelectedRowIds}
         onFocusRow={onFocus}
-        onEditRow={row => {
-          onFocus(row);
-          setIsEditing(true);
-        }}
-        onDeleteRow={requestDeleteRow}
       />
       {allRows.length === 0 ? (
         <div className="flex h-full items-center justify-center text-ink-muted">

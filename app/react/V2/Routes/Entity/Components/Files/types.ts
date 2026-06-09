@@ -23,7 +23,6 @@ type EntityFileRow = {
   languageKey: string;
   modifiedLabel: string;
   modifiedTimestamp?: number;
-  isActiveMain: boolean;
   category: FileCategory;
   fileType: FileSourceType;
   raw: EntityFileForView;

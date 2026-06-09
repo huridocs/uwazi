@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -59,6 +59,7 @@ type TableProps<T extends TableRow<T>> = {
   focusedRowId?: string;
   focusedRowClassName?: string;
   getRowClassName?: (row: T) => string;
+  selectAllCheckboxId?: string;
 };
 
 const Table = <T extends TableRow<T>>({
@@ -81,14 +82,46 @@ const Table = <T extends TableRow<T>>({
   focusedRowId,
   focusedRowClassName = 'bg-parchment',
   getRowClassName,
+  selectAllCheckboxId = 'checkbox-header',
 }: TableProps<T>) => {
+  const isProgrammaticSelectionUpdate = useRef(false);
   const [dataState, setDataState] = useState(data);
+  const externalSelectionKey = useMemo(
+    () =>
+      initialSelection
+        .map(item => item.rowId)
+        .sort()
+        .join(','),
+    [initialSelection]
+  );
   const initialRowSelection = useMemo(
     () => initialSelection.reduce((acc, item) => ({ ...acc, [item.rowId]: true }), {}),
-    [initialSelection]
+    [externalSelectionKey, initialSelection]
   );
   const [rowSelection, setRowSelection] = useState<RowSelectionState>(initialRowSelection);
   const [sorting, setSorting] = useState<SortingState>(defaultSorting || []);
+
+  const selectionStateKey = useCallback(
+    (state: RowSelectionState) =>
+      Object.keys(state)
+        .filter(id => state[id])
+        .sort()
+        .join(','),
+    []
+  );
+
+  const applyRowSelection = useCallback(
+    (next: RowSelectionState) => {
+      setRowSelection(prev => {
+        if (selectionStateKey(prev) === selectionStateKey(next)) {
+          return prev;
+        }
+        isProgrammaticSelectionUpdate.current = true;
+        return next;
+      });
+    },
+    [selectionStateKey]
+  );
 
   const rowIds = useMemo(() => getRowIds(dataState), [dataState]);
   const { memoizedColumns, groupColumnIndex } = useMemo<{
@@ -113,7 +146,9 @@ const Table = <T extends TableRow<T>>({
       calculatedIndex += 1;
       tableColumns.unshift({
         id: 'select',
-        header: IndeterminateCheckboxHeader,
+        header: ({ table: headerTable }) => (
+          <IndeterminateCheckboxHeader table={headerTable} checkboxId={selectAllCheckboxId} />
+        ),
         cell: IndeterminateCheckboxRow,
         meta: { headerClassName: 'w-0' },
       });
@@ -128,7 +163,7 @@ const Table = <T extends TableRow<T>>({
       });
     }
     return { memoizedColumns: tableColumns, groupColumnIndex: calculatedIndex };
-  }, [columns, data, enableSelections, dnd]);
+  }, [columns, data, enableSelections, dnd, selectAllCheckboxId]);
 
   const table = useReactTable({
     data: dataState,
@@ -152,10 +187,18 @@ const Table = <T extends TableRow<T>>({
 
   useEffect(() => {
     setDataState(data);
-    setRowSelection(initialRowSelection);
-  }, [data]);
+    applyRowSelection(initialRowSelection);
+  }, [data, applyRowSelection, initialRowSelection]);
 
   useEffect(() => {
+    applyRowSelection(initialRowSelection);
+  }, [applyRowSelection, externalSelectionKey, initialRowSelection]);
+
+  useEffect(() => {
+    if (isProgrammaticSelectionUpdate.current) {
+      isProgrammaticSelectionUpdate.current = false;
+      return;
+    }
     if (onSelect) {
       const rows = table.getSortedRowModel().rows.map(row => row.original);
       onSelect({ rows, selectedRows: rowSelection });

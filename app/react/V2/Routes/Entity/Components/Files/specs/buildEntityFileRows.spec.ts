@@ -50,6 +50,5 @@ describe('buildEntityFileRows', () => {
     expect(result.primaryRows).toHaveLength(2);
     expect(result.supportingRows).toHaveLength(1);
     expect(result.mainDocumentId).toBe('doc-en');
-    expect(result.primaryRows.find(row => row.rowId === 'doc-en')?.isActiveMain).toBe(true);
   });
 });

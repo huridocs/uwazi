@@ -19,7 +19,6 @@ const useDocumentPdfView = ({ mainDocument }: UseDocumentPdfViewParams) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
   const user = useAtomValue(userAtom);
-  const [hydrated, setHydrated] = useState(false);
   const [userIsAdminOrEditor, setUserIsAdminOrEditor] = useState(false);
   const mainPdfController = useAtomValue(pdfController);
   const setPDFControlsAtom = useSetAtom(pdfController);
@@ -31,10 +30,6 @@ const useDocumentPdfView = ({ mainDocument }: UseDocumentPdfViewParams) => {
     setUserIsAdminOrEditor((user?._id && ['admin', 'editor'].includes(user.role)) || false);
   }, [user]);
 
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
-
   useEffect(
     () => () => {
       setSelectedText(undefined);
@@ -45,7 +40,7 @@ const useDocumentPdfView = ({ mainDocument }: UseDocumentPdfViewParams) => {
   const page = searchParams.get(PAGE_PARAM) || '1';
   const pageNumber = Number.parseInt(page || '1', 10);
   const initialPage = useRef<number>(pageNumber);
-  const isRaw = !isClient || !hydrated || searchParams.get(VIEW_MODE_PARAM) === 'true';
+  const isRaw = !isClient || searchParams.get(VIEW_MODE_PARAM) === 'true';
 
   const getPageSearchParams = useCallback(
     (pageParam: number | string) => {

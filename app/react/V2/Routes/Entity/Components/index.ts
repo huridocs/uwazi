@@ -1,5 +1,4 @@
 export * from '../urlParams.js';
-export { PDFView } from './PDFView.js';
 export { EntityMainPaneHeader } from './EntityMainPaneHeader.js';
 export { DocumentViewModeSelect } from './DocumentViewModeSelect.js';
 export { TabLabel } from './TabLabel.js';

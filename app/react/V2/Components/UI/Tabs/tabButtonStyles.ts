@@ -8,7 +8,7 @@ const tabListClass =
   'inline-flex items-stretch w-max max-w-none shrink-0 rounded-md border border-border shadow-sm overflow-hidden';
 
 const tabTriggerBaseClass =
-  'flex items-center justify-center gap-1 px-2.5 py-2 text-center text-xs font-medium leading-tight transition-colors md:px-3 md:py-2.5 focus-visible:outline-hidden focus-visible:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]';
+  'flex items-center justify-center gap-1 px-2.5 py-1 text-center text-xs font-medium leading-tight transition-colors md:px-3 md:py-2.5 focus-visible:outline-hidden focus-visible:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]';
 
 const getTabShapeClass = (index: number, totalTabs: number) => {
   if (totalTabs === 1) {
@@ -23,7 +23,8 @@ const getTabShapeClass = (index: number, totalTabs: number) => {
   return 'rounded-none';
 };
 
-const getTabDividerClass = (index: number) => (index === 0 ? '' : 'shrink-0 border-l border-border');
+const getTabDividerClass = (index: number) =>
+  index === 0 ? '' : 'shrink-0 border-l border-border';
 
 export {
   activeClass,
