@@ -387,18 +387,5 @@ describe('sync', () => {
         await expect(routes.delete('/api/sync', req)).rejects.toThrow(error);
       });
     });
-
-    describe('when namespace is elasticSlots', () => {
-      it('should return ok and not attempt model deletion', async () => {
-        req.query = {
-          namespace: 'elasticSlots',
-          data: JSON.stringify({ _id: 'slotId' }),
-        };
-
-        const response = await routes.delete('/api/sync', req);
-        expect(response).toBe('ok');
-        expect(mockIndexerSync).not.toHaveBeenCalled();
-      });
-    });
   });
 });

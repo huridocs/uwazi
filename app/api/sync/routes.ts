@@ -51,12 +51,6 @@ const deleteEntityFromIndex = async (entityId: string) => {
   }
 };
 
-const deleteFromIndex = async (req: Request<{}, {}, {}, { data: string; namespace: string }>) => {
-  if (req.query.namespace === 'entities') {
-    await deleteEntityFromIndex(JSON.parse(req.query.data)._id);
-  }
-};
-
 const deleteFile = async (fileId: string) => {
   const file: WithId<FileType> | undefined = await models.files().getById(fileId);
   if (file) {
@@ -185,21 +179,13 @@ export default (app: Application) => {
           return;
         }
 
-        let entitySharedId: string | undefined;
-        if (req.query.namespace === 'entities') {
-          const entityDoc = await models.entities().getById(JSON.parse(req.query.data)._id);
-          entitySharedId = entityDoc?.sharedId;
-        }
-
         await models[req.query.namespace]().delete(JSON.parse(req.query.data));
 
         if (req.query.namespace === 'files') {
           await deleteFile(JSON.parse(req.query.data)._id);
         }
 
-        if (req.query.namespace === 'entities' && entitySharedId) {
-          await deleteFromIndex(req);
-        } else if (req.query.namespace === 'entities') {
+        if (req.query.namespace === 'entities') {
           await deleteEntityFromIndex(JSON.parse(req.query.data)._id);
         }
 
