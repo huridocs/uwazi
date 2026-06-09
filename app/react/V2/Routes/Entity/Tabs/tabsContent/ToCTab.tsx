@@ -11,7 +11,7 @@ const ToCTab = ({ mainDocument }: ToCTabProps) => {
   const panel = useToCPanel({ toc: mainDocument?.toc, file: mainDocument });
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto" role="tabpanel">
+    <div className="min-h-0 flex-1 overflow-y-auto">
       <ToCView generatedToc={mainDocument?.generatedToc} panel={panel} />
     </div>
   );

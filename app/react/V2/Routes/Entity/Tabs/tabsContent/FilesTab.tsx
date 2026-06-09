@@ -26,7 +26,7 @@ const FilesTab = () => {
   );
 
   return (
-    <div className="flex h-full flex-1 flex-col gap-4 bg-warm p-3" role="tabpanel">
+    <div className="flex h-full flex-1 flex-col gap-4 bg-warm p-3">
       <FilesTableSection
         sectionId="primary"
         title="Primary documents"

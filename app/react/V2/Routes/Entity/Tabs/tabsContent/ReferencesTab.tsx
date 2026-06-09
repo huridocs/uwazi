@@ -8,7 +8,7 @@ type ReferencesTabProps = {
 };
 
 const ReferencesTab = ({ entity, mainDocument }: ReferencesTabProps) => (
-  <div className="min-h-0 flex-1 overflow-y-auto [&_.panel]:border-0" role="tabpanel">
+  <div className="min-h-0 flex-1 overflow-y-auto [&_.panel]:border-0">
     <ReferencesPanel entity={entity} mainDocument={mainDocument} />
   </div>
 );
