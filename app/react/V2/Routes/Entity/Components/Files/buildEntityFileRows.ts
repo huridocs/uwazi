@@ -43,26 +43,39 @@ const buildEntityFileRows = (
   );
 
   const rows = files.map((file, index): EntityFileRow => {
-    const rowId = file._id || file.filename || file.url || `entity-file-${index}`;
-    const modifiedTimestamp = file.creationDate || file.timestamp || file.editDate;
-    const category = file.fileType === 'mainDocument' || file.fileType === 'document' ? 'primary' : 'supporting';
+    const entityFile: EntityFileForView = {
+      ...file,
+      _id: file._id ? String(file._id) : undefined,
+      fileType: file.fileType,
+    };
+    const rowId =
+      entityFile._id || entityFile.filename || entityFile.url || `entity-file-${index}`;
+    const modifiedTimestamp = entityFile.creationDate;
+    const category =
+      entityFile.fileType === 'mainDocument' || entityFile.fileType === 'document'
+        ? 'primary'
+        : 'supporting';
 
     return {
       rowId,
-      displayName: file.originalname || file.url || file.filename || t('System', 'Untitled', null, false),
-      typeLabel: getTypeLabel(file),
-      sizeLabel: file.size ? formatBytes(file.size) : '—',
-      languageKey: file.language?.toUpperCase() || '—',
+      displayName:
+        entityFile.originalname ||
+        entityFile.url ||
+        entityFile.filename ||
+        t('System', 'Untitled', null, false),
+      typeLabel: getTypeLabel(entityFile),
+      sizeLabel: entityFile.size ? formatBytes(entityFile.size) : '—',
+      languageKey: entityFile.language?.toUpperCase() || '—',
       modifiedLabel: formatFileDate(modifiedTimestamp, locale),
       modifiedTimestamp,
       category,
-      fileType: file.fileType,
-      raw: file,
+      fileType: entityFile.fileType,
+      raw: entityFile,
     };
   });
 
   return {
-    mainDocumentId: mainDocument?._id,
+    mainDocumentId: mainDocument?._id ? String(mainDocument._id) : undefined,
     primaryRows: rows.filter(row => row.category === 'primary'),
     supportingRows: rows.filter(row => row.category === 'supporting'),
   };

@@ -4,6 +4,7 @@ import { useLoaderData, useSearchParams } from 'react-router';
 import { Translate } from '#app/I18N/index.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
 import { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
+import { SnippetsSearchResponse } from '#V2/api/types.js';
 import {
   SearchHintsModal,
   MAIN_TAB_PARAM,
@@ -32,7 +33,7 @@ type EntityViewProps = {
   entity: EntityType;
   mainDocument?: FileType;
   pagePlaintext?: string;
-  searchResults?: LoaderResponse['searchResults'];
+  searchResults?: SnippetsSearchResponse;
 };
 
 const EntityView = ({ entity, mainDocument, pagePlaintext, searchResults }: EntityViewProps) => {
@@ -92,7 +93,10 @@ const EntityView = ({ entity, mainDocument, pagePlaintext, searchResults }: Enti
     }
 
     const firstId = sideTabButtons[0]?.id;
-    return isValidSideTab(firstId ?? null) ? firstId : undefined;
+    if (firstId && isValidSideTab(firstId)) {
+      return firstId;
+    }
+    return undefined;
   }, [searchParams, sideTabButtons]);
 
   useEffect(() => {
