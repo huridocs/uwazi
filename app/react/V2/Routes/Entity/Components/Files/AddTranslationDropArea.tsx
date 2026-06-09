@@ -14,7 +14,10 @@ const AddTranslationDropArea = ({ onUpload }: AddTranslationDropAreaProps) => (
     accept={{ 'application/pdf': ['.pdf'] }}
     onDrop={acceptedFiles => {
       if (acceptedFiles.length) {
-        onUpload(acceptedFiles).catch(() => undefined);
+        const result = onUpload(acceptedFiles);
+        if (result instanceof Promise) {
+          result.catch(() => undefined);
+        }
       }
     }}
   >
