@@ -1,26 +1,14 @@
-import { WithId } from 'mongodb';
-
-import { model as entityModel } from '#api/entities/index.js';
 import entities from '#api/entities/entities.js';
 
-import { search } from '#api/search/index.js';
 import users from '#api/users/users.js';
 import userGroups from '#api/usergroups/userGroups.js';
 import { unique } from '#api/utils/filters.js';
-import { EntitySchema, EntityWithFilesSchema } from '#shared/types/entityType.js';
-import {
-  AccessLevels,
-  PermissionType,
-  MixedAccess,
-  validateUniquePermissions,
-} from '#shared/types/permissionSchema.js';
-import { PermissionSchema, PermissionsDataSchema } from '#shared/types/permissionType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { AccessLevels, PermissionType, MixedAccess } from '#shared/types/permissionSchema.js';
+import { PermissionSchema } from '#shared/types/permissionType.js';
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
-import { permissionsContext } from './permissionsContext.js';
 import { PUBLIC_PERMISSION } from './publicPermission.js';
-
-type PermissionUpdate = WithId<Pick<EntitySchema, '_id' | 'permissions' | 'published'>>;
 
 const setAdditionalData = (
   referencedList: { _id: ObjectIdSchema }[],
@@ -76,71 +64,7 @@ async function setAccessLevelAndPermissionData(
   return permissionsData.filter(p => p.refId !== undefined);
 }
 
-const publishingChanged = (newPublishedValue: boolean, currentEntities: EntitySchema[]) =>
-  currentEntities.reduce(
-    (changed, entity) => changed || !!entity.published !== newPublishedValue,
-    false
-  );
-
-const replaceMixedAccess = (
-  entity: EntitySchema,
-  newPermissions: PermissionSchema[]
-): PermissionSchema[] =>
-  newPermissions
-    .map(newPermission => {
-      if (newPermission.level !== MixedAccess.MIXED) return newPermission;
-
-      return entity.permissions?.find(p => p.refId.toString() === newPermission.refId.toString());
-    })
-    .filter(p => p) as PermissionSchema[];
-
-const getPublishingQuery = (newPublicPermission?: PermissionSchema) => {
-  if (newPublicPermission && newPublicPermission.level === MixedAccess.MIXED) return {};
-
-  return { published: !!newPublicPermission };
-};
-
-async function saveEntities(updates: PermissionUpdate[]) {
-  const response = await entityModel.saveMultiple(updates);
-  await search.indexEntities({ _id: { $in: response.map(d => d._id) } }, '+fullText');
-  return response;
-}
-
 export const entitiesPermissions = {
-  set: async (permissionsData: PermissionsDataSchema) => {
-    await validateUniquePermissions(permissionsData);
-
-    const user = permissionsContext.getUserInContext();
-
-    const currentEntities: EntityWithFilesSchema[] = await entities.get(
-      { sharedId: { $in: permissionsData.ids } },
-      { published: 1, permissions: 1 }
-    );
-
-    const nonPublicPermissions = permissionsData.permissions.filter(
-      p => p.type !== PermissionType.PUBLIC
-    );
-    const publicPermission = permissionsData.permissions.find(
-      p => p.type === PermissionType.PUBLIC
-    );
-
-    if (
-      !['admin', 'editor'].includes(user!.role) &&
-      publicPermission?.level !== MixedAccess.MIXED &&
-      publishingChanged(!!publicPermission, currentEntities)
-    ) {
-      throw new Error('Insuficient permissions to share/unshare publicly');
-    }
-
-    const toSave: PermissionUpdate[] = currentEntities.map(entity => ({
-      _id: entity._id!,
-      permissions: replaceMixedAccess(entity, nonPublicPermissions),
-      ...getPublishingQuery(publicPermission),
-    }));
-
-    await saveEntities(toSave);
-  },
-
   get: async (sharedIds: string[]) => {
     const entitiesPermissionsData: { permissions: PermissionSchema[]; published: boolean }[] = (
       await entities.get(

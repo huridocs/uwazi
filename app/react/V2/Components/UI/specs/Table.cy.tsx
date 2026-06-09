@@ -51,7 +51,7 @@ describe('Table', () => {
       cy.contains('th', 'Description').should(
         'have.attr',
         'class',
-        'border-b p-4 text-sm uppercase bg-blue-700 text-white'
+        'border-b p-4 text-sm uppercase text-section-header bg-blue-700 text-white'
       );
       cy.contains('td', 'Entity 2').should(
         'have.attr',
@@ -66,6 +66,12 @@ describe('Table', () => {
       cy.get('div[class="text-white bg-alert-500"]').should('have.length', 5);
       cy.get('button').should('have.length', 5);
     });
+  });
+
+  it('should highlight the focused row using table focusedRowId prop', () => {
+    Basic.args.focusedRowId = 'A1';
+    mount(<Basic />);
+    cy.contains('tr', 'Entity 1').should('have.class', 'bg-(--color-theme-surface-muted)');
   });
 
   it('should trigger the custom action for the buttons', () => {
