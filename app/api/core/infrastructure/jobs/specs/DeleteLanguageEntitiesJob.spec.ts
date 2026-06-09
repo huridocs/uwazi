@@ -31,7 +31,6 @@ const createSUT = (mockWebSockets: jest.Mocked<WebSockets>) =>
   testingEnvironment.runWithContext(() =>
     DeleteLanguageEntitiesJobFactory.default({
       webSockets: mockWebSockets,
-      entityIndexer: mockEntityIndexer as any,
     })
   );
 

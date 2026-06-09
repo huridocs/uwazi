@@ -1,7 +1,5 @@
 import { MongoPermissionsDataSource } from '#api/authorization.v2/database/MongoPermissionsDataSource.js';
 import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
@@ -57,7 +55,6 @@ const createService = (_user?: User) => {
   const templatesDS = new MongoTemplatesDataSource({
     db: connection,
     transactionManager,
-    slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
   });
   const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
   const authService = new AuthorizationService(

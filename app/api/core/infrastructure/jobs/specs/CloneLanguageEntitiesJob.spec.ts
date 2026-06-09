@@ -51,7 +51,6 @@ const createSUT = (
     CloneLanguageEntitiesJobFactory.default({
       jobsDispatcher: innerDispatcher,
       webSockets: mockWebSockets,
-      entityIndexer: mockEntityIndexer as any,
       ...(mockSettingsDS ? { settingsDS: mockSettingsDS as any } : {}),
     })
   );

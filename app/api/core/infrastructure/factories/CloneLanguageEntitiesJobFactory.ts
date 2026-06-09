@@ -7,9 +7,6 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { V1WebSocketsWrapper } from '../services/V1WebSocketsWrapper.js';
 import { CloneLanguageEntitiesJob } from '../jobs/CloneLanguageEntitiesJob.js';
-import { EntityESWriterFactory } from './EntityESWriterFactory.js';
-import { MongoSlotsDAOFactory } from './MongoSlotsDAOFactory.js';
-import { EntityIndexerService } from '../elasticSearch/entities/EntityIndexerService.js';
 
 class CloneLanguageEntitiesJobFactory {
   static default(
@@ -19,18 +16,14 @@ class CloneLanguageEntitiesJobFactory {
     const db = getConnection();
     const entityDAO = new MongoEntitiesDAO(db, transactionManager, User.createFrom(null));
     const filesCollection = db.collection('files');
-    const jobsDispatcher = ExecutionContext.jobsDispatcher;
+    const { jobsDispatcher } = ExecutionContext;
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
-    const writer = EntityESWriterFactory.default();
-    const slotsDAO = MongoSlotsDAOFactory.default({ transactionManager });
-    const entityIndexer = new EntityIndexerService({ writer, slotsDAO, entityDAO });
     return new CloneLanguageEntitiesJob({
       entityDAO,
       filesCollection,
       jobsDispatcher,
       webSockets: new V1WebSocketsWrapper(),
       settingsDS,
-      entityIndexer,
       ...overrides,
     });
   }

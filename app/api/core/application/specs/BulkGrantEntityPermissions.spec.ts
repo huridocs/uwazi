@@ -4,7 +4,6 @@ import { BulkGrantEntityPermissionsUseCaseFactory } from '#api/core/infrastructu
 import { EntityAccessPolicyDataSourceFactory } from '#api/core/infrastructure/factories/EntityAccessPolicyDataSourceFactory.js';
 import { User } from '#api/users.v2/model/User.js';
 import { InsufficientPermissionsToPublishError } from '#api/core/application/errors.js';
-import { EntityIndexerServiceFactory } from '#api/core/infrastructure/factories/EntityIndexerServiceFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
 import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
@@ -82,9 +81,7 @@ const createSut = (actor: User) =>
   testingEnvironment.runWithContext(
     () => ({
       sut: BulkGrantEntityPermissionsUseCaseFactory.default({
-        entityAccessPolicyDS: EntityAccessPolicyDataSourceFactory.default({
-          entityIndexerService: EntityIndexerServiceFactory.forTests(),
-        }),
+        entityAccessPolicyDS: EntityAccessPolicyDataSourceFactory.default({}),
       }),
     }),
     { actor }

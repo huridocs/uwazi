@@ -44,7 +44,6 @@ describe('MongoSettingsDataSource', () => {
           new MongoSettingsDataSource({
             db: getConnection(),
             transactionManager: TransactionManagerFactory.fake(),
-            slotsReconciler: () => ({ execute }) as any,
           })
       );
 
@@ -94,24 +93,6 @@ describe('MongoSettingsDataSource', () => {
       const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
       const enLanguage = settings?.languages?.find((l: any) => l.key === 'en');
       expect(enLanguage?.installing).toBeUndefined();
-    });
-  });
-
-  describe('deleteLanguage()', () => {
-    it('should call the slots reconciler', async () => {
-      const execute = jest.fn().mockResolvedValue(undefined);
-      const sut = testingEnvironment.runWithContext(
-        () =>
-          new MongoSettingsDataSource({
-            db: getConnection(),
-            transactionManager: TransactionManagerFactory.fake(),
-            slotsReconciler: () => ({ execute }) as any,
-          })
-      );
-
-      await sut.deleteLanguage('es');
-
-      expect(execute).toHaveBeenCalledTimes(1);
     });
   });
 });

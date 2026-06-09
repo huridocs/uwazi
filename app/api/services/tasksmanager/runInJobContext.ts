@@ -18,14 +18,6 @@ const runInJobContext = async (tenantName: string, fn: () => Promise<void>): Pro
           eventEmitter: () => EventEmitterFactory.default(),
           idGenerator: IdGeneratorFactory.default,
           logger: LoggerFactory.default,
-          elasticClient: () => {
-            throw new Error('ExecutionContext: elasticClient not available in job context');
-          },
-          authorizedEntityESClient: () => {
-            throw new Error(
-              'ExecutionContext: authorizedEntityESClient not available in job context'
-            );
-          },
         },
       },
       fn

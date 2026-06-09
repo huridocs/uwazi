@@ -1,8 +1,9 @@
+/* eslint-disable max-statements */
+import { Collection } from 'mongodb';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { search } from '#api/search/index.js';
-import { Collection } from 'mongodb';
 import {
   HeartbeatCallback,
   JobInfo,
@@ -11,7 +12,6 @@ import { V1CompatTenantDispatchable } from '#api/core/libs/queue/application/con
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { WebSockets } from '#api/core/application/contracts/WebSockets.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { EntityIndexerService } from '../elasticSearch/entities/EntityIndexerService.js';
 import { MongoEntitiesDAO } from '../mongodb/entity/MongoEntitiesDAO.js';
 import { EntityPreviewBatchHandler } from './EntityPreviewBatchHandler.js';
 
@@ -30,7 +30,6 @@ type JobDependencies = {
   jobsDispatcher: JobsDispatcher;
   webSockets: WebSockets;
   settingsDS: SettingsDataSource;
-  entityIndexer: EntityIndexerService;
 };
 
 class CloneLanguageEntitiesJob extends V1CompatTenantDispatchable<Params> {
@@ -46,11 +45,7 @@ class CloneLanguageEntitiesJob extends V1CompatTenantDispatchable<Params> {
     const isLastAttempt = jobInfo !== undefined && jobInfo.retryCount === jobInfo.maxRetries;
 
     try {
-      for (const { from, to } of params.pairs) {
-        // eslint-disable-next-line no-await-in-loop
-        await this.deps.entityDAO.cloneForLanguage(from, to, async batch =>
-          this.deps.entityIndexer.sync(batch.map(e => e.sharedId))
-        );
+      for (const { to } of params.pairs) {
         // eslint-disable-next-line no-await-in-loop
         await heartbeat();
         // eslint-disable-next-line no-await-in-loop

@@ -5,7 +5,6 @@ import { EntityAccessPolicyDataSourceFactory } from '#api/core/infrastructure/fa
 import { User } from '#api/users.v2/model/User.js';
 import { EntityAccessPolicyNotFoundError } from '#api/core/domain/entityAccessPolicy/errors.js';
 import { InsufficientPermissionsToPublishError } from '#api/core/application/errors.js';
-import { EntityIndexerServiceFactory } from '#api/core/infrastructure/factories/EntityIndexerServiceFactory.js';
 import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
 import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
 
@@ -36,17 +35,12 @@ const collaborator = new User('collab-id', 'collaborator', []);
 const createSut = (actor: User) => {
   const deps = testingEnvironment.runWithContext(
     () => {
-      const entityIndexerService = EntityIndexerServiceFactory.forTests();
-
-      const entityAccessPolicyDS = EntityAccessPolicyDataSourceFactory.default({
-        entityIndexerService,
-      });
+      const entityAccessPolicyDS = EntityAccessPolicyDataSourceFactory.default({});
 
       return {
         sut: GrantEntityPermissionsUseCaseFactory.default({
           entityAccessPolicyDS,
         }),
-        entityIndexerService,
       };
     },
     { actor }
