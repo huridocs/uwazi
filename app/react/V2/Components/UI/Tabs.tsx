@@ -50,7 +50,7 @@ const Tabs = ({
   const tabListChromeClass = 'tabs-segmented-list';
 
   const tabScrollWrapClass = [
-    'tabs-segmented-scroll mx-[var(--spacing-theme-3)] my-[var(--spacing-theme-2)] md:my-[var(--spacing-theme-2-5)]',
+    'tabs-segmented-scroll mx-3 my-2 md:my-2.5',
   ].join(' ');
 
   const handleChange = (index: number) => {

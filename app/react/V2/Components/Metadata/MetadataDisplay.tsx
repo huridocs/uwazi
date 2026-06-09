@@ -185,7 +185,7 @@ const MetadataDisplay = ({ entity, headerLayout = 'inline' }: MetadataDisplayPro
         <>
           <MetadataHeaderStrip entity={entity} headerLayout={headerLayout} />
 
-          <dl className="flex min-w-0 flex-wrap gap-(--spacing-theme-3)">
+          <dl className="flex min-w-0 flex-wrap gap-3">
             {typeof entity.creationDate === 'number' && (
               <Date
                 values={[
@@ -215,8 +215,8 @@ const MetadataDisplay = ({ entity, headerLayout = 'inline' }: MetadataDisplayPro
         </>
       </Panel.Body>
       <Panel.Footer>
-        <div className="flex flex-row items-center justify-between w-full gap-(--spacing-theme-3)">
-          <div className="flex gap-(--spacing-theme-2)">
+        <div className="flex w-full flex-row items-center justify-between gap-3">
+          <div className="flex gap-2">
             <Button variant="secondary">
               <Translate>Edit</Translate>
             </Button>

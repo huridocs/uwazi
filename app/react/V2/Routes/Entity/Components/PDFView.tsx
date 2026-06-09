@@ -186,7 +186,7 @@ const PDFView = ({
       </label>
       <select
         id={renderModeSelectId}
-        className={`appearance-none rounded-md border border-[color-mix(in_srgb,var(--color-theme-action-primary)_42%,transparent)] bg-warm py-(--spacing-theme-1) pl-(--spacing-theme-2) text-xs font-medium text-ink transition-colors hover:bg-parchment focus:border-(--color-theme-control-border-focus) focus:outline-hidden ${isRaw ? 'pr-6 min-w-[6.25rem]' : 'pr-6 w-[4.25rem]'}`}
+        className={`appearance-none rounded-md border border-[color-mix(in_srgb,var(--color-theme-action-primary)_42%,transparent)] bg-warm py-1 pl-2 text-xs font-medium text-ink transition-colors hover:bg-parchment focus:border-(--color-theme-control-border-focus) focus:outline-hidden ${isRaw ? 'pr-6 min-w-[6.25rem]' : 'pr-6 w-[4.25rem]'}`}
         value={isRaw ? 'raw' : 'normal'}
         onChange={onDisplayModeChange}
       >
@@ -203,7 +203,7 @@ const PDFView = ({
   return (
     <Panel>
       <Panel.Body>
-        <div className="flex flex-col gap-(--spacing-theme-3)">
+        <div className="flex flex-col gap-3">
           {showEntityHeader ? (
             <div className={metadataHeaderStripShellClass(true)}>
               <MetadataEntityHeader
@@ -215,7 +215,7 @@ const PDFView = ({
               />
             </div>
           ) : (
-            <div className="mb-(--spacing-theme-1) flex justify-end">{renderModeControl}</div>
+            <div className="mb-1 flex justify-end">{renderModeControl}</div>
           )}
           <div
             className={`flex-1 min-h-0 rounded-md bg-(--color-theme-surface-warm) ${isRaw ? 'hidden' : 'block'}`}
@@ -265,7 +265,7 @@ const PDFView = ({
             </div>
           </NeedAuthorization>
         ) : (
-          <div className="flex flex-row items-center w-full gap-(--spacing-theme-3)">
+          <div className="flex flex-row items-center w-full gap-3">
             <div className="justify-self-start grow">
               {ocrServiceEnabled && mainDocument && (
                 <NeedAuthorization roles={['admin', 'editor']}>
@@ -273,7 +273,7 @@ const PDFView = ({
                 </NeedAuthorization>
               )}
             </div>
-            <div className="justify-self-end flex items-center gap-(--spacing-theme-2) text-xs font-medium">
+            <div className="justify-self-end flex items-center gap-2 text-xs font-medium">
               <button
                 type="button"
                 onClick={() => handlePageNavigation('prev')}
@@ -282,7 +282,7 @@ const PDFView = ({
               >
                 <Translate>Previous</Translate>
               </button>
-              <div className="rounded bg-(--color-theme-surface-warm) px-(--spacing-theme-2) py-(--spacing-theme-1) text-ink">
+              <div className="rounded bg-(--color-theme-surface-warm) px-2 py-1 text-ink">
                 {pageNumber} / {totalPages}
               </div>
               <button

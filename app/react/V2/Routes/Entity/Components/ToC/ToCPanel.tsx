@@ -154,7 +154,7 @@ const ToCPanel = ({
   return (
     <Panel>
       <Panel.Body className="px-1">
-        <div className="flex flex-col gap-(--spacing-theme-3) h-full">
+        <div className="flex h-full flex-col gap-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 py-2">
               <p className="text-sm font-bold text-ink">
@@ -167,7 +167,7 @@ const ToCPanel = ({
                   arrow={false}
                   content="This table of contents was automatically created by the system."
                 >
-                  <span className="text-xs font-semibold text-ink px-(--spacing-theme-2) py-(--spacing-theme-0-5) rounded-full tracking-wide flex items-center gap-(--spacing-theme-1) bg-(--color-theme-surface-warm)">
+                  <span className="flex items-center gap-1 rounded-full bg-(--color-theme-surface-warm) px-2 py-0.5 text-xs font-semibold tracking-wide text-ink">
                     <Translate className="sr-only">auto created</Translate>
                     <SparklesIcon className="w-5 h-5 text-ink" />
                   </span>
