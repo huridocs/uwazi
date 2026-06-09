@@ -6,14 +6,16 @@ import { useSearchParams } from 'react-router';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
 import { t, Translate } from '#app/I18N/index.js';
-import { PDF, PDFControls } from '#V2/Components/PDFViewer/index.js';
+import { PDF, PDFControls, referenceToHighlight } from '#V2/Components/PDFViewer/index.js';
+import { ReferencesDisplay } from '#V2/Components/References/index.js';
+import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { MetadataEntityHeader } from '#V2/Components/Metadata/MetadataEntityHeader.js';
 import { metadataHeaderStripShellClass } from '#V2/Components/Metadata/MetadataHeaderStrip.js';
 import { NeedAuthorization, Button } from '#V2/Components/UI/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { isClient } from '#app/utils/index.js';
 import { settingsAtom, userAtom } from '#V2/atoms/index.js';
-import { FileType } from '#V2/api/entities/types.js';
+import { Entity, FileType } from '#V2/api/entities/types.js';
 import { PlainText } from './PlainText.js';
 import { OCRButton } from './OCRButton.js';
 import { PAGE_PARAM, SIDE_TAB_PARAM, VIEW_MODE_PARAM } from '../urlParams.js';
@@ -22,20 +24,16 @@ import { useReferencesActions } from './ReferencesPanel/referencesAtom.js';
 import { pdfController } from './atoms.js';
 
 type PDFViewProps = {
+  entity: Entity;
   mainDocument: FileType;
-  templateId: string;
   pagePlaintext?: string;
-  entityTitle: string;
-  entityIconId?: string;
   showEntityHeader?: boolean;
 };
 
 const PDFView = ({
+  entity,
   mainDocument,
-  templateId,
   pagePlaintext,
-  entityTitle,
-  entityIconId,
   showEntityHeader = true,
 }: PDFViewProps) => {
   const renderModeSelectId = useId();
@@ -43,16 +41,19 @@ const PDFView = ({
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
   const user = useAtomValue(userAtom);
   const [hydrated, setHydrated] = useState(false);
-  const [userIsAdminOrEditor, setUserIsAdminOrEditor] = useState(false);
   const pdfControls = useRef<PDFControls | null>(null);
   const setPDFControlsAtom = useSetAtom(pdfController);
-
-  useEffect(() => {
-    setUserIsAdminOrEditor((user?._id && ['admin', 'editor'].includes(user.role)) || false);
-  }, [user]);
+  const isMobile = useIsMobile();
+  const [pageHeight, setPageHeight] = useState<number | undefined>();
+  const [pdfScrollRoot, setPdfScrollRoot] = useState<HTMLDivElement | null>(null);
+  const [currentClusterPage, setCurrentClusterPage] = useState<number | null>(null);
+  const entityTitle = entity.title;
+  const entityIconId = entity.icon?._id;
+  const templateId = entity.template;
+  const userIsAdminOrEditor = Boolean(user?._id && ['admin', 'editor'].includes(user.role));
 
   const page = searchParams.get(PAGE_PARAM) || '1';
-  const pageNumber = Number.parseInt(page || '1', 10);
+  const pageNumber = Number.parseInt(page, 10);
   const initialPage = useRef<number>(pageNumber);
   const isRaw = !isClient || !hydrated || searchParams.get(VIEW_MODE_PARAM) === 'true';
   const [selectedText, setSelectedText] = useState<TextSelection | undefined>(undefined);
@@ -148,14 +149,14 @@ const PDFView = ({
       const targetPage =
         direction === 'prev'
           ? Math.max(1, pageNumber - 1)
-          : Math.min(pageNumber + 1, mainDocument?.totalPages || 0);
+          : Math.min(pageNumber + 1, mainDocument.totalPages || 0);
       if (isRaw) {
         updatePageParam(targetPage);
       } else {
         pdfControls.current?.goToPage(targetPage);
       }
     },
-    [mainDocument?.totalPages, isRaw, pageNumber, updatePageParam]
+    [mainDocument.totalPages, isRaw, pageNumber, updatePageParam]
   );
 
   const handlePageChange = useCallback(
@@ -172,10 +173,36 @@ const PDFView = ({
     setHydrated(true);
   }, []);
 
-  const { filename, totalPages } = mainDocument || {
-    filename: '',
-    totalPages: 0,
-  };
+  useEffect(() => {
+    if (isRaw) {
+      setPageHeight(undefined);
+      return undefined;
+    }
+
+    const pageElement = document.querySelector<HTMLDivElement>(
+      `.page[data-page-number="${pageNumber}"]`
+    );
+
+    if (!pageElement) {
+      setPageHeight(undefined);
+      return undefined;
+    }
+
+    const updateHeight = () => {
+      const { height } = pageElement.getBoundingClientRect();
+      setPageHeight(height > 0 ? height : undefined);
+    };
+
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(pageElement);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isRaw, pageNumber]);
+
+  const { filename, totalPages } = mainDocument;
   const prevPage = Math.max(1, pageNumber - 1);
   const nextPage = Math.min(pageNumber + 1, totalPages || 0);
 
@@ -203,7 +230,7 @@ const PDFView = ({
   return (
     <Panel>
       <Panel.Body>
-        <div className="flex flex-col gap-(--spacing-theme-3)">
+        <div className="flex h-full min-h-0 flex-col gap-(--spacing-theme-3)">
           {showEntityHeader ? (
             <div className={metadataHeaderStripShellClass(true)}>
               <MetadataEntityHeader
@@ -218,23 +245,55 @@ const PDFView = ({
             <div className="mb-(--spacing-theme-1) flex justify-end">{renderModeControl}</div>
           )}
           <div
-            className={`flex-1 min-h-0 rounded-md bg-(--color-theme-surface-warm) ${isRaw ? 'hidden' : 'block'}`}
+            className={`relative min-h-0 flex-1 rounded-md bg-(--color-theme-surface-warm) ${isRaw ? 'hidden' : 'block'}`}
           >
-            <PDF
-              fileUrl={`/api/files/${filename}`}
-              size={{ height: '100%', width: '90%' }}
-              onSelect={handleTextSelect}
-              onDeselect={handleTextDeselect}
-              onPageChange={handlePageChange}
-              onPdfReady={controls => {
-                const targetPage = initialPage.current || 1;
-                pdfControls.current = controls;
-                setPDFControlsAtom(controls);
-                if (targetPage !== 1) {
-                  controls.goToPage(targetPage);
-                }
-              }}
-            />
+            <div
+              ref={setPdfScrollRoot}
+              data-testid="pdf-scroll-container"
+              className="absolute inset-0 overflow-y-auto"
+            >
+              <PDF
+                fileUrl={`/api/files/${filename}`}
+                size={{ height: '100%', width: '90%' }}
+                scrollRoot={pdfScrollRoot}
+                onSelect={handleTextSelect}
+                onDeselect={handleTextDeselect}
+                onPageChange={handlePageChange}
+                onPdfReady={controls => {
+                  const targetPage = initialPage.current || 1;
+                  pdfControls.current = controls;
+                  setPDFControlsAtom(controls);
+                  if (targetPage !== 1) {
+                    controls.goToPage(targetPage);
+                  }
+                }}
+              />
+            </div>
+            {!isMobile && (
+              <ReferencesDisplay
+                entity={entity}
+                document={mainDocument}
+                currentPage={pageNumber}
+                pageHeight={pageHeight}
+                onPointClick={reference => {
+                  const highlight = referenceToHighlight(reference);
+                  if (highlight) {
+                    pdfControls.current?.toggleHighlights([highlight]);
+                  }
+                }}
+                onClusterClick={references => {
+                  const clusterPage = Number(
+                    references?.[0].reference.selectionRectangles?.[0].page || '0'
+                  );
+                  if (clusterPage !== currentClusterPage) {
+                    setCurrentClusterPage(clusterPage);
+                    pdfControls.current?.goToPage(clusterPage);
+                  } else {
+                    pdfControls.current?.toggleHighlights([]);
+                  }
+                }}
+              />
+            )}
           </div>
           <div
             className={`flex-1 min-h-0 overflow-auto rounded-md bg-(--color-theme-surface-warm) ${isRaw ? 'block' : 'hidden'}`}
@@ -267,7 +326,7 @@ const PDFView = ({
         ) : (
           <div className="flex flex-row items-center w-full gap-(--spacing-theme-3)">
             <div className="justify-self-start grow">
-              {ocrServiceEnabled && mainDocument && (
+              {ocrServiceEnabled && (
                 <NeedAuthorization roles={['admin', 'editor']}>
                   <OCRButton file={mainDocument} />
                 </NeedAuthorization>

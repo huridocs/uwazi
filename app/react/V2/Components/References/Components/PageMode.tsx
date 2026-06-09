@@ -1,35 +1,40 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import throttle from 'lodash/throttle.js';
+import React, { useMemo, useState } from 'react';
 import { Cluster } from './Cluster.js';
 import { Point } from './Point.js';
 import { EntityReference } from '#V2/formatters/relationships/types.js';
 import type { ReferenceGroup } from '../groupReferences.js';
 import { PageCount } from './PageCount.js';
 import { PageLabel } from './PageLabel.js';
+import { computeMarkerY } from '../computeMarkerY.js';
+import type { ReferenceWithTemplate } from '../types.js';
 
 type PageModeProps = {
   markerLayerHeight: number;
   onPointClick?: (reference: EntityReference) => void;
   referencesGroups?: ReferenceGroup[];
+  references?: ReferenceWithTemplate[];
   onMoreClick?: (references: EntityReference[]) => void;
   currentPage?: number;
+  pageHeight?: number;
 };
 
 const CLUSTER_MARKER_SIZE = 24;
 const POINT_MARKER_SIZE = 10;
-const TOP_RAIL_PADDING = 56;
-const BOTTOM_RAIL_PADDING = 24;
+
+const getGroupReferences = (group: ReferenceGroup): EntityReference[] =>
+  group.type === 'cluster' ? group.references : [group.reference];
 
 const PageMode = ({
   markerLayerHeight,
   onPointClick,
   referencesGroups,
+  references,
   onMoreClick,
   currentPage,
+  pageHeight,
 }: PageModeProps) => {
   const [openClusterKey, setOpenClusterKey] = useState<string | null>(null);
   const [activePointId, setActivePointId] = useState<string | null>(null);
-  const [pageHeight, setPageHeight] = useState<number | null>(null);
   const hasCurrentPage = currentPage !== undefined;
 
   const pageClusters = useMemo(
@@ -40,104 +45,91 @@ const PageMode = ({
     [currentPage, referencesGroups]
   );
 
-  const { previousPageCount, nextPageCount } = useMemo(() => {
+  const { previousPageCount, nextPageCount, previousColors, nextColors } = useMemo(() => {
     if (currentPage === undefined || !referencesGroups?.length) {
-      return { previousPageCount: 0, nextPageCount: 0 };
+      return { previousPageCount: 0, nextPageCount: 0, previousColors: [], nextColors: [] };
     }
 
-    return referencesGroups.reduce(
-      (acc, reference) => {
-        const page = Number(reference.page);
+    const beforeColors: string[] = [];
+    const afterColors: string[] = [];
 
-        if (page < currentPage) {
-          acc.previousPageCount += 1;
-        } else if (page > currentPage) {
-          acc.nextPageCount += 1;
-        }
+    const counts = referencesGroups.reduce(
+      (acc, group) => {
+        const page = Number(group.page);
+        const groupRefs = getGroupReferences(group);
+
+        groupRefs.forEach(ref => {
+          const color =
+            references?.find(r => r._id === ref._id)?.targetEntity.template.color ?? '#A4CAFE';
+
+          if (page < currentPage) {
+            acc.previousPageCount += 1;
+            if (beforeColors.length < 4 && !beforeColors.includes(color)) {
+              beforeColors.push(color);
+            }
+          } else if (page > currentPage) {
+            acc.nextPageCount += 1;
+            if (afterColors.length < 4 && !afterColors.includes(color)) {
+              afterColors.push(color);
+            }
+          }
+        });
 
         return acc;
       },
       { previousPageCount: 0, nextPageCount: 0 }
     );
-  }, [currentPage, referencesGroups]);
 
-  useEffect(() => {
-    const pageNumber = currentPage?.toString();
-
-    if (!pageNumber) {
-      setPageHeight(null);
-      return undefined;
-    }
-
-    const pageElement = document.querySelector<HTMLDivElement>(
-      `.page[data-page-number="${pageNumber}"]`
-    );
-
-    if (!pageElement) {
-      // Warn users in case the way pages are represented changes since it will interfere with calculation for marker positions in page view.
-      // eslint-disable-next-line no-console
-      console.warn('Page element could not be found');
-      setPageHeight(null);
-      return undefined;
-    }
-
-    const updatePageHeight = throttle(() => {
-      const { height } = pageElement.getBoundingClientRect();
-      setPageHeight(height > 0 ? height : null);
-    }, 1000);
-
-    updatePageHeight();
-
-    const observer = new ResizeObserver(updatePageHeight);
-    observer.observe(pageElement);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [currentPage]);
+    return { ...counts, previousColors: beforeColors, nextColors: afterColors };
+  }, [currentPage, referencesGroups, references]);
 
   const hasPreviousCount = hasCurrentPage && previousPageCount > 0;
   const hasNextCount = hasCurrentPage && nextPageCount > 0;
-  const clusters = pageClusters ?? [];
+  const getMarkerPosition = (top: number, markerSize: number) =>
+    computeMarkerY({
+      mode: 'page',
+      layerHeight: markerLayerHeight,
+      page: currentPage ?? 1,
+      top,
+      totalPages: 1,
+      markerSize,
+      pageHeight,
+    });
 
-  const getMarkerPosition = (top: number, index: number, markerSize: number) => {
-    let ratio = 0.5;
+  const markers = useMemo(() => {
+    const items = (pageClusters ?? []).map((element, index) => {
+      const key = `page-${element.page}-${element.top}-${index}`;
+      const markerSize = element.type === 'cluster' ? CLUSTER_MARKER_SIZE : POINT_MARKER_SIZE;
+      const position = getMarkerPosition(element.top, markerSize);
+      const trackRatio =
+        markerLayerHeight > 0 ? (position + markerSize / 2) / markerLayerHeight : 0.5;
 
-    if (pageHeight) {
-      ratio = top / pageHeight;
-    } else if (clusters.length > 1) {
-      ratio = index / (clusters.length - 1);
-    }
+      return { key, element, position, trackRatio };
+    });
 
-    const railUsableHeight = markerLayerHeight - TOP_RAIL_PADDING - BOTTOM_RAIL_PADDING;
-
-    return TOP_RAIL_PADDING + ratio * railUsableHeight - markerSize / 2;
-  };
+    return items
+      .sort((a, b) => a.position - b.position)
+      .map((item, index) => ({ ...item, stackOrder: index + 1 }));
+  }, [pageClusters, markerLayerHeight, currentPage, pageHeight]);
 
   return (
     <>
       {hasPreviousCount && (
         <div className="absolute top-0.5">
-          <PageCount placement="top" count={previousPageCount} />
+          <PageCount placement="top" count={previousPageCount} colors={previousColors} />
         </div>
       )}
 
-      {hasCurrentPage && currentPage !== undefined && (
-        <div className="absolute top-9">
-          <PageLabel page={currentPage} />
-        </div>
-      )}
+      {hasCurrentPage && <PageLabel page={currentPage} markerLayerHeight={markerLayerHeight} />}
 
-      {clusters.map((element, index) => {
-        const key = `page-${element.page}-${element.top}-${index}`;
-        const markerSize = element.type === 'cluster' ? CLUSTER_MARKER_SIZE : POINT_MARKER_SIZE;
-        const position = getMarkerPosition(element.top, index, markerSize);
-
+      {markers.map(({ key, element, position, trackRatio, stackOrder }) => {
         if (element.type === 'cluster') {
           return (
             <Cluster
               key={key}
               position={position}
+              stackOrder={stackOrder}
+              trackRatio={trackRatio}
               references={element.references}
               activePointId={activePointId}
               isOpen={openClusterKey === key}
@@ -149,9 +141,7 @@ const PageMode = ({
                 setActivePointId(reference._id);
                 onPointClick?.(reference);
               }}
-              onMoreClick={references => {
-                onMoreClick?.(references);
-              }}
+              onMoreClick={refs => onMoreClick?.(refs)}
             />
           );
         }
@@ -160,6 +150,7 @@ const PageMode = ({
           <Point
             key={key}
             position={position}
+            stackOrder={stackOrder}
             reference={element.reference}
             isActive={activePointId === element.reference._id}
             onClick={reference => {
@@ -173,7 +164,7 @@ const PageMode = ({
 
       {hasNextCount && (
         <div className="absolute bottom-0.5">
-          <PageCount placement="bottom" count={nextPageCount} />
+          <PageCount placement="bottom" count={nextPageCount} colors={nextColors} />
         </div>
       )}
     </>

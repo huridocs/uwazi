@@ -1,12 +1,15 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { usePopper } from 'react-popper';
 import { EntityReference } from '#V2/formatters/relationships/types.js';
 import { useAnimateToPosition } from '../hooks/useAnimateToPosition.js';
+import { computeClusterOuterSize } from '../computeMarkerY.js';
 import { Point } from './Point.js';
 import { ShowMoreButton } from './ShowMoreButton.js';
 
 type ClusterProps = {
   position: number;
+  stackOrder?: number;
+  trackRatio?: number;
   references: EntityReference[];
   onPointClick: (reference: EntityReference) => void;
   onMoreClick: (references: EntityReference[]) => void;
@@ -18,12 +21,39 @@ type ClusterProps = {
 
 const POINT_SPACING = 24;
 const POINT_SIZE = 10;
-const BUTTON_SIZE = 24;
-const CONNECTOR_HEIGHT = 2;
-const CONNECTOR_WIDTH = 13;
+const PAD = 2;
+const BRANCH_LEN = 16;
+const STEM_LEN = 12;
+const TRUNK_X = POINT_SIZE + PAD + BRANCH_LEN;
+const SVG_WIDTH = TRUNK_X + STEM_LEN;
+const CLUSTER_STACK_BOOST = 500;
+const LINE_STROKE = 'var(--color-theme-text-secondary)';
+const LINE_OPACITY = 0.4;
+
+const getTreeTopOffset = (trackRatio: number, outerSize: number, pointsHeight: number): number => {
+  if (trackRatio < 0.25) {
+    return outerSize / 2 - POINT_SIZE / 2;
+  }
+  if (trackRatio > 0.75) {
+    return -(pointsHeight - POINT_SIZE) - (outerSize / 2 - POINT_SIZE / 2);
+  }
+  return -(pointsHeight / 2) + outerSize / 2;
+};
+
+const getStemMidY = (trackRatio: number, pointsHeight: number): number => {
+  if (trackRatio < 0.25) {
+    return POINT_SIZE / 2;
+  }
+  if (trackRatio > 0.75) {
+    return pointsHeight - POINT_SIZE / 2;
+  }
+  return pointsHeight / 2;
+};
 
 const Cluster = ({
   position,
+  stackOrder = 1,
+  trackRatio = 0.5,
   references,
   onPointClick,
   onMoreClick,
@@ -49,25 +79,27 @@ const Cluster = ({
     ],
   });
 
-  const { points, extraPoints } = useMemo(
-    () => ({
-      points: references.slice(0, 10),
-      extraPoints: references.slice(10, references.length),
-    }),
-    [references]
-  );
+  const points = references.slice(0, 10);
+  const extraPoints = references.slice(10);
 
   const clusterIsOpen = isOpen ?? internalIsOpen;
-  const pointsHeight =
-    (points.length - (extraPoints.length > 0 ? 0 : 1)) * POINT_SPACING + POINT_SIZE;
+  const outerSize = computeClusterOuterSize(references.length);
+  const hasActiveRef = references.some(ref => ref._id === activePointId);
+  const rowCount = points.length + (extraPoints.length > 0 ? 1 : 0);
+  const pointsHeight = (rowCount - 1) * POINT_SPACING + POINT_SIZE;
+  const treeTopOffset = getTreeTopOffset(trackRatio, outerSize, pointsHeight);
+  const stemMidY = getStemMidY(trackRatio, pointsHeight);
+  const zIndex = clusterIsOpen ? stackOrder + 1500 : stackOrder + CLUSTER_STACK_BOOST;
 
   return (
     <div
-      className="absolute [transition-property:top] duration-500 ease-out"
-      style={{ top: `${animatedPosition}px` }}
+      data-testid="rail-marker-cluster"
+      className="pointer-events-auto absolute [transition-property:top] duration-500 ease-out"
+      style={{ top: `${animatedPosition}px`, zIndex }}
     >
       <button
         ref={setReferenceElement}
+        data-testid="rail-marker"
         type="button"
         onClick={() => {
           onClusterClick?.(references);
@@ -77,86 +109,88 @@ const Cluster = ({
             return;
           }
 
-          setInternalIsOpen(currentValue => !currentValue);
+        ?.setInternalIsOpen(currentValue => !currentValue);
         }}
-        className={`relative flex h-6 w-6 items-center justify-center rounded-full text-[10px] cursor-pointer border ${clusterIsOpen ? 'border-(--border-primary) bg-(--bg-muted)' : 'border-(--border-soft) bg-(--color-theme-surface-raised)'}`}
+        className={`relative isolate z-10 flex items-center justify-center rounded-full text-[9px] font-bold cursor-pointer border-[1.5px]
+          pointer-events-auto ${
+            clusterIsOpen || hasActiveRef
+              ? 'border-(--border-primary) bg-(--bg-muted) text-ink'
+              : 'border-(--border-soft) bg-(--color-theme-surface-raised) text-ink-tertiary'
+          }`}
+        style={{ width: outerSize, height: outerSize }}
       >
         {references.length}
       </button>
 
       {clusterIsOpen && (
         <div
-          className="absolute bg-(--color-theme-border-default)"
-          style={{
-            top: BUTTON_SIZE / 2 - CONNECTOR_HEIGHT / 2,
-            left: -BUTTON_SIZE / 2,
-            width: CONNECTOR_WIDTH,
-            height: CONNECTOR_HEIGHT,
-          }}
-        />
-      )}
-
-      {clusterIsOpen && (
-        <div ref={setPopperElement} className="absolute" style={styles.popper}>
-          <div
-            className="absolute w-0.5 bg-(--color-theme-border-default)"
-            style={{
-              top: POINT_SIZE / 2,
-              left: '-2px',
-              height: pointsHeight - 10,
-            }}
-          />
-          <div
-            className="relative"
-            style={{
-              width: POINT_SIZE,
-              height: pointsHeight,
-              left: '-20px',
-            }}
+          ref={setPopperElement}
+          data-testid="cluster-subtree"
+          className="absolute pointer-events-none"
+          style={{ ...styles.popper, top: treeTopOffset, width: SVG_WIDTH, height: pointsHeight }}
+        >
+          <svg
+            data-testid="cluster-subtree-svg"
+            width={SVG_WIDTH}
+            height={pointsHeight}
+            className="absolute inset-0 overflow-visible"
+            aria-hidden
           >
-            <div
-              className="absolute"
-              style={{
-                left: 0,
-                top: 0,
-                height: pointsHeight,
-                width: POINT_SIZE,
-              }}
-            >
-              {points?.map((reference, index) => (
-                <React.Fragment key={reference._id || `cluster-point-${index}`}>
-                  <div
-                    className="absolute w-full h-0.5 bg-(--color-theme-border-default)"
-                    style={{
-                      left: '10px',
-                      top: index * POINT_SPACING + POINT_SIZE / 2 - 1,
-                    }}
-                  />
-                  <Point
-                    position={index * POINT_SPACING}
-                    reference={reference}
-                    onClick={onPointClick}
-                    isActive={activePointId === reference._id}
-                  />
-                </React.Fragment>
-              ))}
-              {extraPoints?.length ? (
-                <React.Fragment key="show-more-button">
-                  <div
-                    className="absolute w-full h-0.5 bg-(--color-theme-border-default)"
-                    style={{
-                      left: '10px',
-                      top: points.length * POINT_SPACING + POINT_SIZE / 2,
-                    }}
-                  />
-                  <ShowMoreButton
-                    position={points.length * POINT_SPACING}
-                    references={extraPoints}
-                    onClick={onMoreClick}
-                  />
-                </React.Fragment>
-              ) : undefined}
-            </div>
+            <line
+              x1={TRUNK_X}
+              y1={stemMidY}
+              x2={SVG_WIDTH}
+              y2={stemMidY}
+              stroke={LINE_STROKE}
+              strokeOpacity={LinE_OPACITY}
+              strokeWidth={1}
+            />
+            <line
+              x1={TRUNK_X}
+              y1={POINT_SIZE / 2}
+              x2={TRUNK_X}
+              y2={pointsHeight - POINT_SIZE / 2}
+              stroke={LINE_STROKE}
+              strokeOpacity={LINE_OPACITY}
+              strokeWidth={1}
+            />
+            {Array.from({ length: rowCount }, (_, index) => {
+              const cy = index * POINT_SPACING + POINT_SIZE / 2;
+              return (
+                <line
+                  key={`branch-${index}`}
+                  x1={POINT_SIZE + PAD}
+                  y1={cy}
+                  x2={TRUNK_X}
+                  y2={cy}
+                  stroke={LINE_STROKE}
+                  strokeOpacity={LINE_OPACITY}
+                  strokeWidth={1}
+                />
+              );
+            })}
+          </svg>
+
+          <div
+            className="absolute inset-0 pointer-events-auto"
+            style={{ width: POINT_SIZE + PAD, left: 0 }}
+          >
+            {points.map((reference, index) => (
+              <Point
+                key={reference._id || `cluster-point-${index}`}
+                position={index * POINT_SPACING}
+                reference={reference}
+                onClick={onPointClick}
+                isActive={activePointId === reference._id}
+              />
+            ))}
+            {extraPoints.length > 0 && (
+              <ShowMoreButton
+                position={points.length * POINT_SPACING}
+                references={extraPoints}
+                onClick={onMoreClick}
+              />
+            )}
           </div>
         </div>
       )}

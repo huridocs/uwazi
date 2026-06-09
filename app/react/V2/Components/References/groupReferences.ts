@@ -1,4 +1,5 @@
 import { EntityReference } from '#V2/formatters/relationships/types.js';
+import { computePageClusterProximity } from './computeClusterProximity.js';
 
 type ReferenceGroup =
   | {
@@ -148,7 +149,19 @@ const shouldAllowMultiPageClustering = (groups: ReferenceGroups, safePages: numb
   );
 };
 
-const groupReferences = (references: EntityReference[]): ReferenceGroups => {
+type GroupReferencesOptions = {
+  trackHeight?: number;
+  pageHeight?: number;
+};
+
+const groupReferences = (
+  references: EntityReference[],
+  options?: GroupReferencesOptions
+): ReferenceGroups => {
+  const proximity =
+    options?.trackHeight && options?.pageHeight
+      ? computePageClusterProximity(options.trackHeight, options.pageHeight)
+      : PAGE_CLUSTER_PROXIMITY;
   const positionedReferences = references
     .map(getPositionedReference)
     .filter((item): item is PositionedReference => item !== null)
@@ -165,7 +178,7 @@ const groupReferences = (references: EntityReference[]): ReferenceGroups => {
     (state, current) => {
       if (
         current.page === state.cluster[0].page &&
-        current.top <= state.clusterBottom + PAGE_CLUSTER_PROXIMITY
+        current.top <= state.clusterBottom + proximity
       ) {
         return {
           grouped: state.grouped,

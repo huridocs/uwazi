@@ -7,24 +7,28 @@ import { Tooltip } from '#V2/Components/UI/index.js';
 
 type PointProps = {
   position: number;
+  stackOrder?: number;
   reference: EntityReference;
   onClick: (reference: EntityReference) => void;
   isActive?: boolean;
 };
 
-const Point = ({ position, reference, onClick, isActive = false }: PointProps) => {
+const Point = ({ position, stackOrder = 1, reference, onClick, isActive = false }: PointProps) => {
   const animatedPosition = useAnimateToPosition(position);
   const templates = useAtomValue(templatesAtom);
   const targetTemplate = useMemo(
     () => templates.find(template => template._id === reference.targetEntity.templateId),
     [reference, templates]
   );
+  const color = targetTemplate?.color || '#000000';
+  const size = isActive ? 14 : 10;
 
   return (
     <button
       type="button"
-      className="absolute cursor-pointer [transition-property:top] duration-500 ease-out"
-      style={{ top: `${animatedPosition}px` }}
+      data-testid="rail-marker"
+      className="pointer-events-auto absolute cursor-pointer [transition-property:top] duration-500 ease-out"
+      style={{ top: `${animatedPosition}px`, zIndex: isActive ? stackOrder + 50 : stackOrder }}
       onClick={() => {
         onClick(reference);
       }}
@@ -34,11 +38,13 @@ const Point = ({ position, reference, onClick, isActive = false }: PointProps) =
       </span>
       <Tooltip content={reference.targetEntity.title} placement="left">
         <span
-          className={`block h-2.5 w-2.5 rounded-full transition-transform duration-150 ease-out ${
-            isActive ? 'scale-150' : 'hover:scale-125'
-          }`}
+          className="block rounded-full transition-all duration-150 ease-out hover:scale-125"
           style={{
-            backgroundColor: targetTemplate?.color || '#000000',
+            width: size,
+            height: size,
+            backgroundColor: color,
+            opacity: isActive ? 1 : 0.7,
+            boxShadow: isActive ? `0 0 0 2px ${color}44` : 'none',
           }}
         />
       </Tooltip>

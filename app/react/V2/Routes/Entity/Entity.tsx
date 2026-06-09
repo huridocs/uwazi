@@ -71,13 +71,7 @@ const Entity = () => {
           key={MAIN_TABS.DOCUMENT}
           label={<TabLabel text="Document" icon={<DocumentTextIcon className="w-5 h-5" />} />}
         >
-          <PDFView
-            mainDocument={mainDocument}
-            templateId={entity.template}
-            pagePlaintext={pagePlaintext}
-            entityTitle={entity.title}
-            entityIconId={entity.icon?._id}
-          />
+          <PDFView entity={entity} mainDocument={mainDocument} pagePlaintext={pagePlaintext} />
         </Tabs.Tab>
       );
     }
@@ -180,11 +174,9 @@ const Entity = () => {
                 label: <TabLabel text="Document" icon={<DocumentTextIcon className="w-5 h-5" />} />,
                 content: (
                   <PDFView
+                    entity={entity}
                     mainDocument={mainDocument}
-                    templateId={entity.template}
                     pagePlaintext={pagePlaintext}
-                    entityTitle={entity.title}
-                    entityIconId={entity.icon?._id}
                     showEntityHeader={false}
                   />
                 ),

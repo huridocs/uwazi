@@ -11,10 +11,20 @@ import { groupReferences, groupDocumentReferences } from './groupReferences.js';
 import { FullMode, PageMode } from './Components/index.js';
 import type { ReferenceWithTemplate } from './types.js';
 
+const RAIL_LAYOUT = {
+  insetTop: 8,
+  insetBottom: 8,
+  insetRight: 16,
+  width: 32,
+  trackTopBelowToggle: 28,
+} as const;
+
 type ReferencesDisplayProps = {
   entity: Entity;
   document: FileType;
   currentPage?: number;
+  pageHeight?: number;
+  showRail?: boolean;
   onPointClick?: (reference: EntityReference) => void;
   onClusterClick?: (references: EntityReference[]) => void;
 };
@@ -23,6 +33,8 @@ const ReferencesDisplay = ({
   entity,
   document,
   currentPage,
+  pageHeight,
+  showRail = true,
   onPointClick,
   onClusterClick,
 }: ReferencesDisplayProps) => {
@@ -31,25 +43,29 @@ const ReferencesDisplay = ({
   const markerLayerRef = useRef<HTMLDivElement>(null);
   const [markerLayerHeight, setMarkerLayerHeight] = useState(0);
 
-  const references = useMemo<ReferenceWithTemplate[]>(() => {
-    if (!entity) return [];
-    return formatReferences(entity).map(ref => {
-      const template = templates.find(t => t._id === ref.targetEntity.templateId);
-      return {
-        ...ref,
-        targetEntity: {
-          ...ref.targetEntity,
-          template: {
-            _id: ref.targetEntity.templateId,
-            name: template?.name || '',
-            color: template?.color || '#A4CAFE',
+  const references = useMemo<ReferenceWithTemplate[]>(
+    () =>
+      formatReferences(entity).map(ref => {
+        const template = templates.find(t => t._id === ref.targetEntity.templateId);
+        return {
+          ...ref,
+          targetEntity: {
+            ...ref.targetEntity,
+            template: {
+              _id: ref.targetEntity.templateId,
+              name: template?.name || '',
+              color: template?.color || '#A4CAFE',
+            },
           },
-        },
-      };
-    });
-  }, [entity, templates]);
+        };
+      }),
+    [entity, templates]
+  );
 
-  const referencesGroups = useMemo(() => groupReferences(references), [references]);
+  const referencesGroups = useMemo(
+    () => groupReferences(references, { trackHeight: markerLayerHeight, pageHeight }),
+    [references, markerLayerHeight, pageHeight]
+  );
 
   const documentClusters = useMemo(
     () => groupDocumentReferences(referencesGroups, document.totalPages ?? 1),
@@ -65,7 +81,7 @@ const ReferencesDisplay = ({
 
     const updateHeight = throttle(() => {
       setMarkerLayerHeight(markerLayerElement.clientHeight);
-    }, 1000);
+    }, 100);
 
     updateHeight();
 
@@ -74,17 +90,36 @@ const ReferencesDisplay = ({
 
     return () => {
       observer.disconnect();
+      updateHeight.cancel();
     };
-  }, []);
+  }, [showRail, fullMode]);
+
+  if (!showRail) {
+    return null;
+  }
+
+  const rootClass =
+    'pointer-events-none flex h-full min-h-0 flex-col items-center text-ink-tertiary';
+  const rootStyle = {
+    position: 'absolute' as const,
+    top: RAIL_LAYOUT.insetTop,
+    bottom: RAIL_LAYOUT.insetBottom,
+    right: RAIL_LAYOUT.insetRight,
+    width: RAIL_LAYOUT.width,
+    zIndex: 5,
+  };
 
   return (
-    <div className="w-full h-full flex flex-col gap-2 items-center px-4 text-ink-tertiary">
+    <div data-testid="references-rail" className={rootClass} style={rootStyle}>
       <button
         type="button"
+        onMouseDown={event => {
+          event.preventDefault();
+        }}
         onClick={() => {
           setFullMode(!fullMode);
         }}
-        className="cursor-pointer"
+        className="pointer-events-auto cursor-pointer"
       >
         <Translate className="sr-only">Toggle timeline mode</Translate>
         {fullMode ? (
@@ -93,14 +128,20 @@ const ReferencesDisplay = ({
           <DocumentIcon className="w-4 h-4" />
         )}
       </button>
-      <div className="h-full w-4 flex flex-col items-center relative">
-        <div className="h-full w-0.5 bg-(--color-theme-border-default)" />
-        <div ref={markerLayerRef} className="absolute inset-0 flex flex-col items-center">
+      <div
+        className="pointer-events-none relative flex min-h-0 w-4 flex-1 flex-col items-center"
+        style={{
+          marginTop: RAIL_LAYOUT.trackTopBelowToggle - RAIL_LAYOUT.insetTop,
+        }}
+      >
+        <div className="h-full w-0.5 opacity-50 bg-(--color-theme-border-default)" />
+        <div ref={markerLayerR f} className="absolu e inset-0 flex flex-col items-center">
           {fullMode ? (
             <FullMode
               document={document}
               markerLayerHeight={markerLayerHeight}
               documentClusters={documentClusters}
+              pageHeight={pageHeight}
               onPointClick={onPointClick}
               onClusterClick={onClusterClick}
             />
@@ -108,7 +149,9 @@ const ReferencesDisplay = ({
             <PageMode
               markerLayerHeight={markerLayerHeight}
               referencesGroups={referencesGroups}
+              references={references}
               currentPage={currentPage}
+              pageHeight={pageHeight}
               onPointClick={onPointClick}
             />
           )}
@@ -119,3 +162,4 @@ const ReferencesDisplay = ({
 };
 
 export { ReferencesDisplay };
+export type { ReferencesDisplayProps };
