@@ -583,6 +583,12 @@ describe('syncWorker', () => {
     await runAndCheck('templates', 'files', [{ _id: orderedHostIds.templates }], 40);
     await runAndCheck('files', 'connections', [{ _id: orderedHostIds.files }], 30);
     await runAndCheck(
+      'connections',
+      'entities',
+      [{ _id: orderedHostIds.connection1 }, { _id: orderedHostIds.connection2 }],
+      20
+    );
+    await runAndCheck(
       'entities',
       undefined,
       [{ _id: orderedHostIds.entity1 }, { _id: orderedHostIds.entity2 }],
