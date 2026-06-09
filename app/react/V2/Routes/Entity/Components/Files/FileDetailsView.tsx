@@ -1,9 +1,16 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { Button } from '#V2/Components/UI/index.js';
+import { fileSupportsLanguage } from './fileUploadHelpers.js';
 import { EntityFileRow } from './types.js';
 
-const FileDetailsView = ({ row, onEdit }: { row: EntityFileRow; onEdit: () => void }) => (
+const FileDetailsView = ({ row, onEdit }: { row: EntityFileRow; onEdit: () => void }) => {
+  const showLanguage = fileSupportsLanguage({
+    type: row.raw.mimetype || '',
+    name: row.raw.originalname || row.displayName,
+  });
+
+  return (
   <div className="flex h-full flex-col">
     <div className="rounded-md border border-border-soft bg-warm p-4">
       <div className="mb-3 flex items-center justify-between">
@@ -21,12 +28,14 @@ const FileDetailsView = ({ row, onEdit }: { row: EntityFileRow; onEdit: () => vo
           </div>
           <div className="text-sm text-ink">{row.displayName}</div>
         </div>
-        <div>
-          <div className="text-xs text-ink-tertiary">
-            <Translate>Language</Translate>
+        {showLanguage ? (
+          <div>
+            <div className="text-xs text-ink-tertiary">
+              <Translate>Language</Translate>
+            </div>
+            <div className="text-sm text-ink">{row.languageKey}</div>
           </div>
-          <div className="text-sm text-ink">{row.languageKey}</div>
-        </div>
+        ) : null}
         <div>
           <div className="text-xs text-ink-tertiary">
             <Translate>Type</Translate>
@@ -48,6 +57,7 @@ const FileDetailsView = ({ row, onEdit }: { row: EntityFileRow; onEdit: () => vo
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export { FileDetailsView };

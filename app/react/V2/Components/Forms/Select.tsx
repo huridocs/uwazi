@@ -2,7 +2,12 @@ import React, { ChangeEventHandler, CSSProperties } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { Label } from './Label.js';
 
-type OptionSchema = { key?: string; value: string; label?: string | React.ReactNode };
+type OptionSchema = {
+  key?: string;
+  value: string;
+  label?: string | React.ReactNode;
+  disabled?: boolean;
+};
 interface SelectProps {
   id: string;
   label: string | React.ReactNode;
@@ -75,8 +80,8 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             value={value}
             style={fieldStyle}
           >
-            {options.map(({ key, value: optionValue, label: optionLabel }) => (
-              <option key={key || optionValue} value={optionValue}>
+            {options.map(({ key, value: optionValue, label: optionLabel, disabled: optionDisabled }) => (
+              <option key={key || optionValue} value={optionValue} disabled={optionDisabled}>
                 {optionLabel || optionValue}
               </option>
             ))}

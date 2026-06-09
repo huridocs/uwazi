@@ -9,7 +9,7 @@ const FilesTabFooter = () => {
     supportingRows,
     selectedRowIds,
     setSelectedRowIds,
-    navigateToFilesSideTab,
+    requestAddFile,
     requestDeleteSelected,
   } = useEntityFiles();
 
@@ -21,7 +21,7 @@ const FilesTabFooter = () => {
       <FilesToolbar
         totalCount={allRows.length}
         selectedCount={selectedRowIds.length}
-        onAddFile={() => navigateToFilesSideTab('translations')}
+        onAddFile={() => requestAddFile('main')}
         onSelectAll={() => setSelectedRowIds(allRows.map(row => row.rowId))}
         onDeselectAll={() => setSelectedRowIds([])}
         onDeleteSelected={requestDeleteSelected}

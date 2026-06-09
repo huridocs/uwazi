@@ -28,6 +28,7 @@ Activity Log,Журнал активності
 Add,Додати
 Add / remove favorite,Додати/видалити обране
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,"Додайте обліковий запис до додатку, відсканувавши наданий QR-код своїм мобільним пристроєм або вставивши наданий ключ."
+Add as,Add as
 Add date,Додати дату
 Add entities / documents,Додати об'єкти/документи
 Add entity type,Додати тип сутності
@@ -322,7 +323,6 @@ Download failed rows,Download failed rows
 Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,"Перетягніть й опустіть файл у вікно, щоб завантажити"
 Drag row,Перетягування рядка
-Drop to add,Drop to add
 Drop your files here to upload or,"Опустіть свої файли сюди, щоб завантажити або"
 Duplicate values not allowed.,Повторювані значення не допускаються.
 Duplicated email,Продубльована адреса електронної пошти
@@ -752,6 +752,7 @@ Press enter to add,"Натисніть Enter, щоб додати"
 Preview,Попередній перегляд
 Previous,Попередній
 Primary button,Primary button
+Primary document,Primary document
 Primary Documents,Основні документи
 Priority sorting,Пріоритетне сортування
 Priority sorting description,"Властивості, позначені як пріоритетні, будуть використані як критерії сортування за замовчуванням. Якщо більше однієї властивості позначено як пріоритетне сортування, система спробує підібрати найкращий варіант. При перерахуванні змішаних типів шаблонів система підбере найкращий комбінований варіант сортування за пріоритетами."
@@ -973,6 +974,7 @@ Suggestions,Запропоновані варіанти
 suggestions,пропозиції
 Suggestions sent,Пропозиції надіслані
 Suggestions updated,Suggestions updated
+Supporting file,Supporting file
 Supporting files,Супровідні файли
 Synced template,Синхронізований шаблон
 Synced Template,Синхронізований шаблон

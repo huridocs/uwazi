@@ -28,6 +28,7 @@ Activity Log,활동 로그
 Add,추가
 Add / remove favorite,즐겨찾기 추가/제거
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
+Add as,Add as
 Add date,날짜 추가
 Add entities / documents,엔티티/문서 추가
 Add entity type,Add entity type
@@ -320,7 +321,6 @@ Download failed rows,Download failed rows
 Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,이 창에 파일을 드래그 앤 드롭해 업로드합니다.
 Drag row,Drag row
-Drop to add,Drop to add
 Drop your files here to upload or,여기에 파일을 드롭해 업로드합니다.
 Duplicate values not allowed.,Duplicate values not allowed.
 Duplicated email,이메일 중복
@@ -750,6 +750,7 @@ Press enter to add,Enter 키를 눌러 추가
 Preview,미리보기
 Previous,이전
 Primary button,Primary button
+Primary document,Primary document
 Primary Documents,기본 문서
 Priority sorting,우선순위 정렬
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
@@ -971,6 +972,7 @@ Suggestions,자동 제안
 suggestions,suggestions
 Suggestions sent,Suggestions sent
 Suggestions updated,Suggestions updated
+Supporting file,Supporting file
 Supporting files,추가 파일
 Synced template,Synced template
 Synced Template,Synced Template

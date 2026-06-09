@@ -1,8 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { CheckIcon } from '@heroicons/react/24/outline';
-import { t, Translate } from '#app/I18N/index.js';
-import { availableLanguages, LanguageUtils } from '#shared/language/index.js';
+import { Translate } from '#app/I18N/index.js';
+import { LanguageUtils } from '#shared/language/index.js';
+import { InputField, Select } from '#V2/Components/Forms/index.js';
 import { Button } from '#V2/Components/UI/index.js';
+import { fileLanguageSelectOptions } from './fileLanguageOptions.js';
+import { fileSupportsLanguage } from './fileUploadHelpers.js';
 import { EntityFileRow } from './types.js';
 
 const resolveFileLanguage = (rawLanguage?: string) => {
@@ -18,6 +21,8 @@ const resolveFileLanguage = (rawLanguage?: string) => {
   return known?.ISO639_3 ?? 'other';
 };
 
+const readOnlyFieldClass = 'text-xs font-semibold uppercase tracking-wide text-ink-tertiary';
+
 const FileDetailsEditor = ({
   row,
   onSave,
@@ -29,6 +34,12 @@ const FileDetailsEditor = ({
   const resolvedLanguage = useMemo(() => resolveFileLanguage(row.raw.language), [row.raw.language]);
   const [language, setLanguage] = useState(resolvedLanguage);
 
+  const languageOptions = useMemo(() => fileLanguageSelectOptions(), []);
+  const showLanguage = fileSupportsLanguage({
+    type: row.raw.mimetype || '',
+    name: row.raw.originalname || row.displayName,
+  });
+
   useEffect(() => {
     setLanguage(resolvedLanguage);
   }, [resolvedLanguage]);
@@ -36,7 +47,7 @@ const FileDetailsEditor = ({
   return (
     <div className="rounded-md border border-border-soft bg-warm p-4">
       <div className="mb-3 flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
+        <p className={readOnlyFieldClass}>
           <Translate>File details</Translate>
         </p>
         <Button
@@ -47,7 +58,7 @@ const FileDetailsEditor = ({
               ? onSave({
                   _id: row.raw._id,
                   originalname,
-                  language: language || undefined,
+                  language: showLanguage ? language || undefined : undefined,
                 })
               : Promise.resolve()
           }
@@ -59,55 +70,36 @@ const FileDetailsEditor = ({
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2">
-          <label
-            htmlFor={`file-name-${row.raw._id}`}
-            className="mb-1 block text-xs font-semibold uppercase tracking-wide text-ink-tertiary"
-          >
-            <Translate>Name</Translate>
-          </label>
-          <input
+          <InputField
             id={`file-name-${row.raw._id}`}
-            type="text"
+            label={<Translate>Name</Translate>}
             value={originalname}
             onChange={event => setOriginalname(event.target.value)}
-            className="w-full rounded-md border border-border-soft bg-paper px-3 py-2 text-sm text-ink focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]"
           />
         </div>
-        <div>
-          <label
-            htmlFor={`file-language-${row.raw._id}`}
-            className="mb-1 block text-xs font-semibold uppercase tracking-wide text-ink-tertiary"
-          >
-            <Translate>Language</Translate>
-          </label>
-          <select
+        {showLanguage ? (
+          <Select
             id={`file-language-${row.raw._id}`}
+            label={<Translate>Language</Translate>}
+            options={languageOptions}
             value={language}
             onChange={event => setLanguage(event.target.value)}
-            className="w-full rounded-md border border-border-soft bg-paper px-2 py-1 text-sm text-ink focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]"
-          >
-            {availableLanguages.map(item => (
-              <option key={item.ISO639_3} value={item.ISO639_3}>
-                {item.localized_label} ({item.label})
-              </option>
-            ))}
-            <option value="other">{t('System', 'other', 'other', false)}</option>
-          </select>
-        </div>
+          />
+        ) : null}
         <div>
-          <div className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
+          <div className={readOnlyFieldClass}>
             <Translate>Type</Translate>
           </div>
           <div className="text-sm text-ink">{row.typeLabel}</div>
         </div>
         <div>
-          <div className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
+          <div className={readOnlyFieldClass}>
             <Translate>Size</Translate>
           </div>
           <div className="text-sm text-ink">{row.sizeLabel}</div>
         </div>
         <div>
-          <div className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
+          <div className={readOnlyFieldClass}>
             <Translate>Modified</Translate>
           </div>
           <div className="text-sm text-ink">{row.modifiedLabel}</div>

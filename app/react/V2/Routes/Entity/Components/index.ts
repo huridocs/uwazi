@@ -9,6 +9,7 @@ export { FileList } from './FileList.js';
 export {
   EntityFilesProvider,
   FilesDeleteConfirmationModal,
+  AddFileModal,
   useEntityFiles,
 } from './Files/index.js';
 export { ToCPanel } from './ToC/ToCPanel.js';

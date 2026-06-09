@@ -40,19 +40,20 @@ class UploadService {
     if (files.length === 0) return;
 
     const file = files.shift()!;
+    const { originalname: customOriginalName, ...restFields } = this.extraFields;
 
     const request = superagent
       .post(this.route)
       .set('Accept', 'application/json')
       .set('X-Requested-With', 'XMLHttpRequest')
-      .field('originalname', file.name)
+      .field('originalname', customOriginalName ?? file.name)
       .attach('file', file as unknown as MultipartValueSingle)
       .on('progress', event => {
         if (this.onProgressCallback && event.percent) {
           this.onProgressCallback(file.name, Math.floor(event.percent), event.total);
         }
       });
-    Object.entries(this.extraFields).forEach(([key, value]) => {
+    Object.entries(restFields).forEach(([key, value]) => {
       request.field(key, value);
     });
 

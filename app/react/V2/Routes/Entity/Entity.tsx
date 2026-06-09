@@ -12,6 +12,7 @@ import {
   EntityFilesProvider,
   EntityMainPaneHeader,
   FilesDeleteConfirmationModal,
+  AddFileModal,
   useEntityFiles,
 } from './Components/index.js';
 import {
@@ -162,6 +163,7 @@ const EntityView = ({ entity, mainDocument, pagePlaintext, searchResults }: Enti
   return (
     <>
       <FilesDeleteConfirmationModal />
+      <AddFileModal />
       <PaneLayout defaultRatios={[0.62, 0.38]} className="bg-parchment text-ink">
         <PaneLayout.Pane>
           <div className="flex h-full min-h-0 w-full min-w-0 flex-col">

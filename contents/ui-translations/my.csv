@@ -28,6 +28,7 @@ Activity Log,လုပ်ဆောင်မှု မှတ်တမ်း
 Add,ထည့်ရန်
 Add / remove favorite,အကြိုက်ဆုံးကို ထည့်ရန် / ဖယ်ရှားရန်
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
+Add as,Add as
 Add date,ရက်စွဲ ထည့်ရန်
 Add entities / documents,ဖြည့်သွင်းချက်များ / စာရွက်စာတမ်းများ ထည့်ရန်
 Add entity type,Add entity type
@@ -320,7 +321,6 @@ Download failed rows,Download failed rows
 Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,အပ်လုဒ်လုပ်ရန် ဖိုင်ကို ဤဝင်းဒိုးထဲသို့ ဆွဲချပါ
 Drag row,Drag row
-Drop to add,Drop to add
 Drop your files here to upload or,သင့်ဖိုင်များကို အပ်လုဒ်လုပ်ရန် ဒီနေရာတွင် ချပါ သို့မဟုတ်
 Duplicate values not allowed.,Duplicate values not allowed.
 Duplicated email,ပွားထားသော အီးမေးလ်
@@ -750,6 +750,7 @@ Press enter to add,ထည့်ရန် enter ကို နှိပ်ပါ
 Preview,ကြိုကြည့်ရန်
 Previous,ယခင်
 Primary button,Primary button
+Primary document,Primary document
 Primary Documents,အဓိက စာရွက်စာတမ်းများ
 Priority sorting,ဦးစားပေးမှု ခွဲခြားခြင်း
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
@@ -971,6 +972,7 @@ Suggestions,အကြံပြုချက်များ
 suggestions,suggestions
 Suggestions sent,Suggestions sent
 Suggestions updated,Suggestions updated
+Supporting file,Supporting file
 Supporting files,အထောက်အကူပြုဖိုင်များ
 Synced template,Synced template
 Synced Template,Synced Template

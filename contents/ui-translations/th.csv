@@ -28,6 +28,7 @@ Activity Log,บันทึกกิจกรรม
 Add,เพิ่ม
 Add / remove favorite,เพิ่ม / ลบรายการโปรด
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
+Add as,Add as
 Add date,เพิ่มวันที่
 Add entities / documents,เพิ่มรายการ / เอกสาร
 Add entity type,Add entity type
@@ -320,7 +321,6 @@ Download failed rows,Download failed rows
 Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,นำไฟล์มาวางในหน้าต่างนี้เพื่ออัปโหลด
 Drag row,Drag row
-Drop to add,Drop to add
 Drop your files here to upload or,นำไฟล์มาวางที่นี่เพื่ออัปโหลด หรือ
 Duplicate values not allowed.,Duplicate values not allowed.
 Duplicated email,อีเมลที่ซ้ำกัน
@@ -750,6 +750,7 @@ Press enter to add,กด Enter เพื่อเพิ่ม
 Preview,ดูตัวอย่าง
 Previous,ก่อนหน้า
 Primary button,Primary button
+Primary document,Primary document
 Primary Documents,เอกสารหลัก
 Priority sorting,เรียงลำดับตามลำดับความสำคัญ
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
@@ -971,6 +972,7 @@ Suggestions,คำแนะนำ
 suggestions,suggestions
 Suggestions sent,Suggestions sent
 Suggestions updated,Suggestions updated
+Supporting file,Supporting file
 Supporting files,รองรับไฟล์
 Synced template,Synced template
 Synced Template,Synced Template

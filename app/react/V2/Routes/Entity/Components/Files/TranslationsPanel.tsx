@@ -1,8 +1,7 @@
 import React from 'react';
-import { EyeIcon, TrashIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, PlusIcon, TrashIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { Button, Pill } from '#V2/Components/UI/index.js';
-import { AddTranslationDropArea } from './AddTranslationDropArea.js';
 import { EntityFileRow } from './types.js';
 
 const TranslationsPanel = ({
@@ -10,13 +9,13 @@ const TranslationsPanel = ({
   primaryRows,
   onFocusRow: _onFocusRow,
   onDeleteRow,
-  onUpload,
+  onAddTranslation,
 }: {
   focusedRow?: EntityFileRow;
   primaryRows: EntityFileRow[];
   onFocusRow: (row: EntityFileRow) => void;
   onDeleteRow: (row: EntityFileRow) => void;
-  onUpload: (files: File[]) => Promise<void>;
+  onAddTranslation: () => void;
 }) => {
   if (!focusedRow) {
     return (
@@ -65,7 +64,14 @@ const TranslationsPanel = ({
             </Button>
           </div>
         ))}
-        <AddTranslationDropArea onUpload={onUpload} />
+        <Button
+          variant="ghost"
+          onClick={onAddTranslation}
+          className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-dashed border-border-soft py-3 text-xs text-ink-muted hover:border-ink/20 hover:bg-paper hover:text-ink"
+        >
+          <PlusIcon className="h-3.5 w-3.5" aria-hidden />
+          <Translate>Add translation</Translate>
+        </Button>
       </div>
     </div>
   );

@@ -28,6 +28,7 @@ Activity Log,Registro de Actividad
 Add,Añadir
 Add / remove favorite,Añadir / eliminar favorito
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
+Add as,Add as
 Add date,Añadir fecha
 Add entities / documents,Añadir entidades / documentos
 Add entity type,Add entity type
@@ -318,7 +319,6 @@ Download failed rows,Download failed rows
 Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,Arrastrar y soltar el archivo en esta ventana para subir.
 Drag row,Drag row
-Drop to add,Drop to add
 Drop your files here to upload or,Suelta los archivos aquí para cargar o
 Duplicate values not allowed.,No se permiten valores duplicados.
 Duplicated email,Correo electrónico duplicado
@@ -748,6 +748,7 @@ Press enter to add,Pulsa ENTER para añadir
 Preview,Previsualizar
 Previous,Anterior
 Primary button,Primary button
+Primary document,Primary document
 Primary Documents,Documentos primarios
 Priority sorting,Ordenamiento prioritario
 Priority sorting description,"Las propiedades marcadas como ordenamiento prioritaria se utilizarán como criterios de ordenamiento predeterminados. Si se marca más de una propiedad como ordenación prioritaria, el sistema intentará elegir la que mejor se ajuste. Al enumerar tipos de plantillas mixtas, el sistema seleccionará el mejor ordenamiento combinado."
@@ -969,6 +970,7 @@ Suggestions,Sugerencias
 suggestions,suggestions
 Suggestions sent,Suggestions sent
 Suggestions updated,Suggestions updated
+Supporting file,Supporting file
 Supporting files,Archivos de soporte
 Synced template,Plantilla sincronizada
 Synced Template,Synced Template

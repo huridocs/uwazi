@@ -8,7 +8,7 @@ import { ToCTab } from './tabsContent/ToCTab.js';
 import { ReferencesTab } from './tabsContent/ReferencesTab.js';
 import { RelationshipsSideTab } from './tabsContent/RelationshipsSideTab.js';
 import { SearchTab } from './tabsContent/SearchTab.js';
-import { FileTab } from './tabsContent/FileTab.js';
+import { FilesSideTab } from './tabsContent/FilesSideTab.js';
 import { TranslationsTab } from './tabsContent/TranslationsTab.js';
 
 type SideTabsContentProps = {
@@ -59,7 +59,7 @@ const SideTabsContent = ({
       content = <SearchTab />;
       break;
     case SIDE_TAB.FILE:
-      content = <FileTab />;
+      content = <FilesSideTab />;
       break;
     case SIDE_TAB.TRANSLATIONS:
       content = <TranslationsTab />;

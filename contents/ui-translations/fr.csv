@@ -28,6 +28,7 @@ Activity Log,Journal d'activité
 Add,Ajouter
 Add / remove favorite,Ajouter / supprimer un favori
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
+Add as,Add as
 Add date,Ajouter une date
 Add entities / documents,Ajouter des entités / documents
 Add entity type,Add entity type
@@ -319,7 +320,6 @@ Download failed rows,Download failed rows
 Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,Faites glisser et déposez le fichier dans cette fenêtre pour le télécharger
 Drag row,Drag row
-Drop to add,Drop to add
 Drop your files here to upload or,Déposez vos fichiers ici pour les télécharger ou
 Duplicate values not allowed.,Duplicate values not allowed.
 Duplicated email,Courriel en double
@@ -749,6 +749,7 @@ Press enter to add,Appuyez sur la touche Entrée pour ajouter
 Preview,Aperçu
 Previous,Précédent
 Primary button,Primary button
+Primary document,Primary document
 Primary Documents,Documents principaux
 Priority sorting,Tri prioritaire
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
@@ -970,6 +971,7 @@ Suggestions,Suggestions
 suggestions,suggestions
 Suggestions sent,Suggestions sent
 Suggestions updated,Suggestions updated
+Supporting file,Supporting file
 Supporting files,Fichiers de support
 Synced template,Synced template
 Synced Template,Synced Template

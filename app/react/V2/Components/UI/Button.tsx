@@ -92,13 +92,14 @@ const Button = ({
   };
 
   const textStyles = size ? sizeClasses[variant][size] : sizeClasses[variant].default;
+
   const hoverClassByVariant: Record<ButtonVariant, string> = {
     primary: 'enabled:hover:opacity-90',
     secondary:
       'enabled:hover:bg-(--color-theme-button-secondary-hover-bg) enabled:hover:border-(--color-theme-button-secondary-border)',
     danger: 'enabled:hover:opacity-90',
     ghost:
-      'enabled:hover:bg-(--color-theme-button-ghost-hover-bg) enabled:hover:border-(--color-theme-button-ghost-hover-border) enabled:hover:text-(--color-theme-button-ghost-hover-fg)',
+      'border-0 text-ink-secondary bg-warm enabled:hover:bg-parchment enabled:hover:text-ink disabled:text-ink-muted disabled:bg-warm disabled:opacity-60',
     compact:
       'enabled:hover:bg-(--color-theme-bg-muted) enabled:hover:border-(--color-theme-button-compact-border)',
     success:
@@ -134,11 +135,7 @@ const Button = ({
       backgroundColor: 'var(--color-theme-button-danger-bg)',
       color: 'var(--color-theme-button-danger-fg)',
     },
-    ghost: {
-      borderColor: 'var(--color-theme-button-ghost-border)',
-      backgroundColor: 'var(--color-theme-button-ghost-bg)',
-      color: disabled ? 'var(--color-theme-text-muted)' : 'var(--color-theme-button-ghost-fg)',
-    },
+    ghost: {},
     compact: {
       borderColor: disabled
         ? 'color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)'
