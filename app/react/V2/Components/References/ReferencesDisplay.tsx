@@ -135,7 +135,7 @@ const ReferencesDisplay = ({
         }}
       >
         <div className="h-full w-0.5 opacity-50 bg-(--color-theme-border-default)" />
-        <div ref={markerLayerR f} className="absolu e inset-0 flex flex-col items-center">
+        <div ref={markerLayerRef} className="absolute inset-0 flex flex-col items-center">
           {fullMode ? (
             <FullMode
               document={document}

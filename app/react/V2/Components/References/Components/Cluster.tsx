@@ -109,7 +109,7 @@ const Cluster = ({
             return;
           }
 
-        ?.setInternalIsOpen(currentValue => !currentValue);
+          setInternalIsOpen(currentValue => !currentValue);
         }}
         className={`relative isolate z-10 flex items-center justify-center rounded-full text-[9px] font-bold cursor-pointer border-[1.5px]
           pointer-events-auto ${
