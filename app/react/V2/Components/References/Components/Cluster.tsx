@@ -142,7 +142,7 @@ const Cluster = ({
               x2={SVG_WIDTH}
               y2={stemMidY}
               stroke={LINE_STROKE}
-              strokeOpacity={LinE_OPACITY}
+              strokeOpacity={LINE_OPACITY}
               strokeWidth={1}
             />
             <line
