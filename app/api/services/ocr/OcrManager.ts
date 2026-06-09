@@ -1,4 +1,4 @@
-import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -114,10 +114,16 @@ const saveResultFile = async (message: ResultsMessage, originalFile: FileType) =
   });
 
   const fileId = IdGeneratorFactory.default().generate();
-  const processingPDF = inputFile.toEntityFile(originalFile.entity!, fileId) as ProcessingPDF;
+  const processingPDF = inputFile.toEntityFile(originalFile.entity!, fileId) as PDFDocument;
 
   const transactionManager = TransactionManagerFactory.default();
-  const filesService = FilesServiceFactory.default();
+  const filesService = FilesServiceFactory.default(
+    {},
+    {
+      userId: permissionsContext.getUserInContext()?._id?.toString(),
+      tenantName: tenants.current().name,
+    }
+  );
 
   await filesService.storeFiles([processingPDF]);
 

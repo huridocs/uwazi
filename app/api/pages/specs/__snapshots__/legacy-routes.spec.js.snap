@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Pages legacy routes DELETE should have a validation schema 1`] = `
+Object {
+  "properties": Object {
+    "query": Object {
+      "properties": Object {
+        "sharedId": Object {
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+  },
+  "required": Array [
+    "query",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`Pages legacy routes GET /api/pages should have a validation schema 1`] = `
+Object {
+  "properties": Object {
+    "query": Object {
+      "properties": Object {
+        "sharedId": Object {
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+  },
+  "required": Array [
+    "query",
+  ],
+  "type": "object",
+}
+`;

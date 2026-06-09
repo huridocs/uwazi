@@ -4,7 +4,7 @@ import { FindCursor } from 'mongodb';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { Semaphore } from '#api/common.v2/utils/Semaphore.js';
 import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
-import { MongoEntityDAO } from '../../mongodb/entity/MongoEntityDAO.js';
+import { MongoEntitiesDAO } from '../../mongodb/entity/MongoEntitiesDAO.js';
 import { EntityESWriter } from './EntityESWriter.js';
 import { EntityElasticDocumentMapper } from './EntityElasticDocumentMapper.js';
 import type { MappedDocument } from './EntityElasticDocumentMapper.js';
@@ -13,7 +13,7 @@ import type { SlotMap } from './MongoSlotsDAO.js';
 
 type EntityIndexerServiceDeps = {
   writer: EntityESWriter;
-  entityDAO: MongoEntityDAO;
+  entityDAO: MongoEntitiesDAO;
   slotsDAO: MongoSlotsDAO;
   batchSize?: number;
   maxConcurrentWrites?: number;

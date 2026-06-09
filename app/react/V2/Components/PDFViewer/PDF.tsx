@@ -6,17 +6,18 @@ import {
   TextSelection,
 } from '@huridocs/react-text-selection-handler';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import 'pdfjs-dist/web/pdf_viewer.css';
 import { Translate } from '#app/I18N/index.js';
 import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
 import { TextHighlight } from './types.js';
 import { triggerScroll } from './functions/helpers.js';
 import { clearSnippets, tryHighlightAndScroll } from './functions/handleSnippets.js';
 import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
+import { waitForElement } from './functions/waitForElement.js';
 import { PDFJS, CMAP_URL, EventBus, PDFDocumentProxy } from './pdfjs.js';
 import { useContainerWidth } from './hooks/useContainerWidth.js';
 import { PDFPage } from './PDFPage.js';
 import { BlankState, ProgressBar } from '../UI/index.js';
-import 'pdfjs-dist/web/pdf_viewer.css';
 import { reportErrorToSentry } from '#app/V2/shared/errorUtils.js';
 
 const CHANGE_PAGE_THRESHOLD: number = 0.4;
@@ -30,6 +31,7 @@ type PDFControls = {
   scrollToHighlight: (page: number, highlightKey: string) => void;
   activateSnippet: (snippet: Snippet) => void;
   deactivateSnippet: () => void;
+  toggleHighlights: (highlights?: { [page: number]: TextHighlight[] }[]) => void;
 };
 
 interface PDFProps {
@@ -75,6 +77,9 @@ const PDF = ({
     progress: 0,
   });
   const onPageChangeRef = useRef(onPageChange);
+  const [internalHighlights, setInternalHighlights] = useState<
+    { [page: number]: TextHighlight[] }[]
+  >([]);
 
   const setPdfContainer = useCallback((element: HTMLDivElement | null) => {
     pdfContainerRef.current = element;
@@ -120,32 +125,53 @@ const PDF = ({
       return;
     }
 
-    let observerTimeoutId: string | number | NodeJS.Timeout | undefined;
-
     if (tryHighlightAndScroll(pageContainer, snippet)) {
       return;
     }
 
     scrollIntoView(pageContainer, { block: 'start' });
 
-    const observer = new MutationObserver(() => {
-      if (tryHighlightAndScroll(pageContainer, snippet)) {
-        observer.disconnect();
-        clearTimeout(observerTimeoutId);
-      }
-    });
-
-    observerTimeoutId = setTimeout(() => {
-      observer.disconnect();
-    }, 5000);
-
-    observer.observe(pageContainer, { childList: true, subtree: true });
+    waitForElement(`#page-${snippet.page}-container .textLayer`, 5000)
+      .then(() => {
+        tryHighlightAndScroll(pageContainer, snippet);
+      })
+      .catch(() => {
+        // ignore timeout
+      });
   }, []);
 
   const deactivateSnippet = useCallback(() => {
     Object.values(pageRefsMap.current).forEach(container => {
       if (container) clearSnippets(container);
     });
+  }, []);
+
+  const toggleHighlights = useCallback((newHighlights?: { [page: number]: TextHighlight[] }[]) => {
+    if (newHighlights?.length) {
+      setInternalHighlights(newHighlights);
+      const [firstHighlight] = Object.entries(newHighlights[0] || {});
+      if (firstHighlight) {
+        const [page, highlight] = firstHighlight;
+
+        const pageContainer = pageRefsMap.current[Number(page)];
+        if (pageContainer) {
+          const selector = `#page-${page}-container [data-highlight-key="${page}-${highlight[0].key}"]`;
+          waitForElement(selector, 5000)
+            .then(found => {
+              const highlightRectangle = found.querySelector('.highlight-rectangle');
+              scrollIntoView(highlightRectangle || found, {
+                block: 'center',
+                behavior: 'smooth',
+              });
+            })
+            .catch(() => {
+              // ignore timeout
+            });
+        }
+      }
+    } else {
+      setInternalHighlights([]);
+    }
   }, []);
 
   const pdfReadyCallback = useCallback(() => {
@@ -160,13 +186,22 @@ const PDF = ({
           scrollToHighlight,
           activateSnippet,
           deactivateSnippet,
+          toggleHighlights,
         },
         pdf?.numPages || 0
       );
     }
 
     isReady.current = true;
-  }, [onPdfReady, goToPage, scrollToHighlight, activateSnippet, deactivateSnippet, pdf]);
+  }, [
+    onPdfReady,
+    goToPage,
+    scrollToHighlight,
+    activateSnippet,
+    deactivateSnippet,
+    toggleHighlights,
+    pdf,
+  ]);
 
   useEffect(() => {
     const handleLoading = (taskData: { loaded: number; total: number; percent: number }) => {
@@ -323,7 +358,15 @@ const PDF = ({
           {pdf
             ? Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
                 const regionId = number;
-                const pageHighlights = highlights ? highlights[regionId] : undefined;
+                let pageHighlights;
+                const allHighlights = [highlights, ...internalHighlights];
+
+                if (allHighlights.length) {
+                  const highlightsForPage = allHighlights.find(
+                    highligh => highligh && highligh[regionId]
+                  );
+                  pageHighlights = highlightsForPage?.[regionId];
+                }
 
                 return (
                   <div

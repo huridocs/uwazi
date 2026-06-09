@@ -1,12 +1,25 @@
-import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { FileAttachmentDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { FileAttachment } from '../FileAttachment.js';
 import { FileBuilder } from './FileBuilder.js';
 
 const f = getFixturesFactory();
 
 describe('FileAttachment', () => {
+  describe('validation', () => {
+    it('throws when entity is empty', () => {
+      expect(
+        () =>
+          new FileAttachment({
+            id: 'id',
+            entity: '  ',
+            filename: 'file.txt',
+            originalname: 'file.txt',
+            mimetype: 'text/plain',
+            content: FileBuilder.content('bytes'),
+          })
+      ).toThrow();
+    });
+  });
   describe('toDTO', () => {
     it('should include all base and specialized properties', () => {
       const id = f.idString('att');
@@ -32,34 +45,18 @@ describe('FileAttachment', () => {
     });
   });
 
-  describe('fromDBO', () => {
-    it('should map all fields including the content loader', () => {
-      const _id = new ObjectId();
-      const dbo: FileAttachmentDBO = {
-        _id,
-        originalname: 'document.txt',
-        filename: 'abc123.txt',
-        mimetype: 'text/plain',
-        size: 1024,
-        creationDate: 1000000000,
-        type: 'attachment',
-        entity: 'sharedId1',
-      };
+  describe('content', () => {
+    it('exposes content as non-optional', () => {
       const content = FileBuilder.content('attachment bytes');
-      const contentLoader = jest.fn().mockReturnValue(content);
-
-      const file = FileAttachment.fromDBO(dbo, contentLoader);
-
-      expect(file).toBeInstanceOf(FileAttachment);
-      expect(file.id).toBe(_id.toString());
-      expect(file.originalname).toBe('document.txt');
-      expect(file.filename).toBe('abc123.txt');
-      expect(file.mimetype).toBe('text/plain');
-      expect(file.size).toBe(1024);
-      expect(file.creationDate).toBe(1000000000);
-      expect(file.entity).toBe('sharedId1');
+      const file = new FileAttachment({
+        id: 'id',
+        entity: 'sharedId1',
+        filename: 'file.txt',
+        originalname: 'file.txt',
+        mimetype: 'text/plain',
+        content,
+      });
       expect(file.content).toBe(content);
-      expect(contentLoader).toHaveBeenCalledWith({ type: 'attachment', filename: 'abc123.txt' });
     });
   });
 

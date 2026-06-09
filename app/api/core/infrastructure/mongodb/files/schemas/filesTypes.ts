@@ -1,16 +1,14 @@
 import { ObjectId } from 'mongodb';
 import { LanguageISO6393 } from '#shared/language/languageISO639_3.js';
-import type { TableOfContent } from '#api/core/domain/files/ProcessedPDF.js';
+import type { TableOfContent } from '#api/core/domain/files/domainTypes.js';
 
-/**
- * Transforms DBO types (with ObjectId _id) to DTO types (with string _id).
- * Uses distributive conditional type to preserve union structure.
- *
- * @example
- * type DocumentDTO = ToDTO<DocumentDBO>
- * // Result: { _id: string, ...rest of DocumentDBO fields }
- */
-type ToDTO<T> = T extends any ? Omit<T, '_id'> & { _id: string } : never;
+export type {
+  PDFDocumentDTO,
+  FileAttachmentDTO,
+  URLAttachmentDTO,
+  ThumbnailDTO,
+  CustomDTO,
+} from '#api/core/domain/files/domainTypes.js';
 
 type BaseFileDBO = {
   _id: ObjectId;
@@ -38,6 +36,8 @@ export type ProcessedPDFDBO = BaseDocument & {
   generatedToc: boolean;
   toc?: TableOfContent[];
 };
+
+export type PDFDocumentDBO = ProcessingPDFDBO | ProcessedPDFDBO;
 
 export type FileAttachmentDBO = BaseFileDBO & {
   type: 'attachment';
@@ -68,18 +68,3 @@ export type fileDBO =
   | CustomDBO
   | ThumbnailDBO
   | URLAttachmentDBO;
-
-export type ProcessingPDFDTO = ToDTO<ProcessingPDFDBO>;
-export type ProcessedPDFDTO = ToDTO<ProcessedPDFDBO>;
-export type FileAttachmentDTO = ToDTO<FileAttachmentDBO>;
-export type URLAttachmentDTO = ToDTO<URLAttachmentDBO>;
-export type CustomDTO = ToDTO<CustomDBO>;
-export type ThumbnailDTO = ToDTO<ThumbnailDBO>;
-
-export type fileDTO =
-  | ProcessingPDFDTO
-  | ProcessedPDFDTO
-  | FileAttachmentDTO
-  | URLAttachmentDTO
-  | CustomDTO
-  | ThumbnailDTO;

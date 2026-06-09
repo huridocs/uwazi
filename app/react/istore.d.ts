@@ -3,7 +3,7 @@ import { IXModelType } from '#shared/types/IXModelType.js';
 import { LabelCountSchema } from '#app/Thesauri/types/labelCountType.js';
 import { IImmutable } from '#shared/types/Immutable.js';
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
-import { ExtractedMetadataSchema, PropertySchema } from '#shared/types/commonTypes.js';
+import { PropertySelectionSchema, PropertySchema } from '#shared/types/commonTypes.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { ConnectionSchema } from '#shared/types/connectionType.js';
@@ -174,7 +174,7 @@ export interface IStore {
       enableClickAction?: boolean;
     }>;
     metadataExtraction: IImmutable<{
-      selections: ExtractedMetadataSchema[];
+      selections: PropertySelectionSchema[];
     }>;
     sidepanel: {
       metadata: ClientEntitySchema;
@@ -192,12 +192,15 @@ export interface IStore {
   users: IImmutable<ClientUserSchema[]>;
   userGroups: IImmutable<ClientUserGroupSchema[]>;
   page: {
+    pageView: IImmutable<PageType & { scriptRendered?: boolean }>;
+    itemLists: IImmutable<unknown[]>;
+    error: IImmutable<Record<string, unknown>>;
+    datasets: IImmutable<{
+      [name: string]: { rows: any[]; totalRows: number; aggregations: any };
+    }>;
     data: PageType;
     uiState: IImmutable<{ savingPage: boolean }>;
     formState: any;
-    datasets?: IImmutable<{
-      [name: string]: { rows: any[]; totalRows: number; aggregations: any };
-    }>;
   };
   pages: IImmutable<PageType>;
   relationTypes: IImmutable<RelationshipTypesType[]>;

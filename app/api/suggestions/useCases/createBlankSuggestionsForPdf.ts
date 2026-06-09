@@ -17,7 +17,7 @@ export class CreateBlankSuggestionsForPdf implements UseCase<Input, void> {
         language: { $in: entities.map(e => LanguageUtils.fromISO639_1(e.language)?.ISO639_3) },
         type: 'document',
       },
-      { _id: 1, entity: 1, language: 1, extractedMetadata: 1 }
+      { _id: 1, entity: 1, language: 1, propertySelections: 1 }
     );
 
     const suggestions: IXSuggestionType[] = [];

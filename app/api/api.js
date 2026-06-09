@@ -4,17 +4,14 @@ export default async (app, server) => {
     { default: activitylogMiddleware },
     { default: CSRFMiddleware },
     { default: languageMiddleware },
-    { ssrQueryCleanupMiddleware },
   ] = await Promise.all([
     import('./activitylog/activitylogMiddleware.js'),
     import('./auth/CSRFMiddleware.js'),
     import('./utils/languageMiddleware.js'),
-    import('./utils/ssrQueryCleanupMiddleware.js'),
   ]);
 
   //common middlewares
   app.use(CSRFMiddleware);
-  app.use(ssrQueryCleanupMiddleware);
   app.use(languageMiddleware);
   app.use(activitylogMiddleware);
 
@@ -37,6 +34,7 @@ export default async (app, server) => {
   (await import('./entities/routes.js')).default(app);
   (await import('./entities.v2/routes/index.js')).entitiesRoutes(app);
   (await import('./pages/routes.js')).default(app);
+  (await import('./pages.v2/infrastructure/http/routes.js')).pagesV2Routes(app);
   (await import('./files/jsRoutes.js')).default(app);
   (await import('./files/routes.js')).default(app);
   (await import('./segmentation.v2/infrastructure/http/routes.js')).segmentationV2Routes(app);

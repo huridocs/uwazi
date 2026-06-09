@@ -2,7 +2,7 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
 import { composeStories } from '@storybook/react';
-import * as stories from '#app/stories/CreateReference.stories.js';
+import * as stories from '#app/stories/EntityViewer/CreateReference.stories.js';
 import { CreateReference } from '../CreateReference.js';
 import { logA11yViolations } from '../../../../../../../../cypress/support/helpers/a11y.js';
 

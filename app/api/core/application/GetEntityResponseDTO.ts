@@ -1,5 +1,5 @@
 import { EntityDBO } from '../../entities.v2/database/schemas/EntityTypes.js';
-import { fileDTO } from '../infrastructure/mongodb/files/schemas/filesTypes.js';
+import { FileDTO } from '../domain/files/domainTypes.js';
 
 export type RelationDTO = {
   hub: { toString(): string };
@@ -14,6 +14,6 @@ export type RelationDTO = {
 
 export type GetEntityResponseDTO = EntityDBO & {
   relations?: RelationDTO[];
-  documents: fileDTO[];
-  attachments: fileDTO[];
+  documents: FileDTO[];
+  attachments: FileDTO[];
 };

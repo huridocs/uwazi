@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import stringify from 'fast-json-stable-stringify';
-import { fileDBO, fileDTO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
-import type { FileTypes } from '#api/files/storage.js';
 import type { FileContents } from './FileContents.js';
 import { ObjectUtils } from '#api/common.v2/utils/Object.js';
+import { FileType } from './FileType.js';
+import { FileDTO, FileUpdateInput } from './domainTypes.js';
 
 type BaseFileProps = {
   id: string;
@@ -13,9 +13,10 @@ type BaseFileProps = {
   size?: number;
   creationDate?: number;
   uploaded?: boolean;
+  content?: FileContents;
 };
 
-type FileContentLoader = (options: { type: fileDBO['type']; filename: string }) => FileContents;
+type FileContentLoader = (options: { type: FileType; filename: string }) => FileContents;
 
 const sanitizeFilename = (filename: string) => {
   let sanitized = filename;
@@ -66,15 +67,6 @@ const Schema = z.object({
   uploaded: z.boolean().optional(),
 });
 
-const IMMUTABLE_BASE_FILE_KEYS = [
-  'id',
-  'creationDate',
-  'mimetype',
-  'size',
-  'filename',
-  'uploaded',
-] as const satisfies ReadonlyArray<keyof BaseFileProps>;
-
 export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
   readonly id: string;
 
@@ -90,7 +82,11 @@ export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
 
   readonly uploaded?: boolean;
 
-  protected abstract _type: FileTypes;
+  get content(): FileContents | undefined {
+    return this.props.content;
+  }
+
+  protected abstract _type: FileType;
 
   protected props: TProps;
 
@@ -140,10 +136,8 @@ export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
     return stringify(this.props) !== stringify(this.previousProps);
   }
 
-  update<ExtendedProps>(_props: Partial<TProps> & ExtendedProps): this {
-    const sanitized = ObjectUtils.sanitize(_props, IMMUTABLE_BASE_FILE_KEYS);
-
-    return this.clone(sanitized);
+  update(input: FileUpdateInput): this {
+    return this.clone({ originalname: input.originalname } as Partial<TProps>);
   }
 
   isEntityFile(): this is this & { entity: string } {
@@ -151,7 +145,7 @@ export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
   }
 
   hasContent(): this is this & { content: FileContents } {
-    return 'content' in this.props && Boolean(this.props.content);
+    return this.content !== undefined;
   }
 
   protected dtoBaseFields() {
@@ -165,20 +159,7 @@ export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
     };
   }
 
-  abstract toDTO(): fileDTO;
-
-  static dboCommonFields(dbo: fileDBO) {
-    return {
-      id: dbo._id.toString(),
-      originalname: dbo.originalname,
-      filename: dbo.filename,
-      mimetype: dbo.mimetype,
-      size: dbo.size,
-      creationDate: dbo.creationDate,
-    };
-  }
-
-  static fromDBO?(dbo: fileDBO, contentLoader: FileContentLoader): BaseFile<BaseFileProps>;
+  abstract toDTO(): FileDTO;
 }
 
 export type { BaseFileProps, FileContentLoader };

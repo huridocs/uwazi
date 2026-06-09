@@ -1,5 +1,5 @@
 import { Entity, EntityIcon } from '#api/core/domain/entity/Entity.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { LanguageISO6391, PropertySelectionSchema } from '#shared/types/commonTypes.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
@@ -11,7 +11,7 @@ import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
 import { FilesDataSource } from './contracts/FilesDataSource.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 import { BaseFile } from '../domain/files/BaseFile.js';
-import { ProcessedPDF } from '../domain/files/ProcessedPDF.js';
+import { PDFDocument } from '../domain/files/PDFDocument.js';
 import { EntitiesService } from './EntitiesService.js';
 
 type Input = {
@@ -23,6 +23,10 @@ type Input = {
   templateId?: string;
   uploadedFiles?: InputFile[];
   files?: { id: string; originalname: string }[];
+  propertySelections?: {
+    fileId: string;
+    selections: PropertySelectionSchema[];
+  };
 };
 
 type Output = Entity;
@@ -82,7 +86,7 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     }
 
     const removedPDFIds = removedFiles
-      .filter((f): f is ProcessedPDF => f instanceof ProcessedPDF)
+      .filter((f): f is PDFDocument => f instanceof PDFDocument && f.isReady())
       .map(f => f.id);
 
     const allEntityThumbnails = await this.deps.filesDS.getThumbnails([entity.sharedId]).all();
@@ -103,6 +107,19 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
       await this.deps.fileService.insert(filesCreated);
       await this.deps.fileService.delete(removedFiles);
       await this.deps.fileService.bulkUpsert(updatedFiles);
+
+      if (input.propertySelections) {
+        const fileBelongsToEntity = await this.deps.filesDS.filesExistForEntities([
+          { entity: entity.sharedId, _id: input.propertySelections.fileId },
+        ]);
+
+        if (fileBelongsToEntity) {
+          await this.deps.filesDS.savePropertySelections(
+            input.propertySelections.fileId,
+            input.propertySelections.selections
+          );
+        }
+      }
     });
 
     return entity;

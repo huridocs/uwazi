@@ -1,9 +1,8 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
-import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { FileNotFound } from '#api/core/domain/files/errors.js';
-import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
 import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
 import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
 import { URLAttachment } from '#api/core/domain/files/URLAttachment.js';
@@ -29,7 +28,7 @@ const fixtures = {
       size: 1000,
       creationDate: 1000,
       fullText: { 1: 'fullText' },
-      extractedMetadata: [{ name: 'to_be_deleted' }, { name: 'property1' }],
+      propertySelections: [{ name: 'to_be_deleted' }, { name: 'property1' }],
     }),
     ...f.processedDocument('processed2', {
       entity: 'entity1',
@@ -42,7 +41,7 @@ const fixtures = {
       mimetype: 'application/pdf',
       size: 1000,
       creationDate: 1000,
-      extractedMetadata: [
+      propertySelections: [
         { name: 'to_be_deleted' },
         { name: 'to_be_deleted_2' },
         { name: 'property2' },
@@ -95,7 +94,8 @@ const fixtures = {
       creationDate: 1000,
     }),
     f.attachment('url_attachment', {
-      url: 'my_url',
+      url: 'https://example.com/my-url',
+      entity: 'entity1',
       mimetype: 'text/html',
       size: 100,
       creationDate: 1000,
@@ -160,7 +160,7 @@ describe('MongoFilesDataSource', () => {
       const processed = (
         await ds.getProcessingById(f.idString('processingDocument'))
       ).getDataOrThrow();
-      expect(processed).toBeInstanceOf(ProcessingPDF);
+      expect(processed).toBeInstanceOf(PDFDocument);
     });
   });
 
@@ -177,7 +177,7 @@ describe('MongoFilesDataSource', () => {
       const processed = (
         await ds.getProcessingById(f.idString('processingDocument'))
       ).getDataOrThrow();
-      expect(processed).toBeInstanceOf(ProcessingPDF);
+      expect(processed).toBeInstanceOf(PDFDocument);
     });
   });
 
@@ -217,7 +217,7 @@ describe('MongoFilesDataSource', () => {
       ).getDataOrThrow();
       await transactionManager.run(async () => {
         await ds.update(
-          processingDoc.asProcessed({
+          processingDoc.processed({
             language: 'en',
             totalPages: 10,
             fullText: { 1: 'processed document' },
@@ -237,13 +237,14 @@ describe('MongoFilesDataSource', () => {
       const { ds, transactionManager } = createDs();
       await transactionManager.run(async () => {
         await ds.create(
-          new ProcessedPDF({
+          new PDFDocument({
             id: f.idString('new document'),
             entity: 'entity_to_reindex',
             originalname: 'file.pdf',
             mimetype: 'application/pdf',
             size: 1,
             filename: 'file.pdf',
+            status: 'ready',
             language: 'en',
             totalPages: 1,
             generatedToc: false,
@@ -265,7 +266,7 @@ describe('MongoFilesDataSource', () => {
       const { ds, transactionManager } = createDs();
       await transactionManager.run(async () => {
         await ds.create(
-          new ProcessingPDF({
+          new PDFDocument({
             status: 'failed',
             id: f.idString('new document'),
             entity: 'entity_to_reindex',
@@ -286,21 +287,74 @@ describe('MongoFilesDataSource', () => {
     });
   });
 
-  describe('deleteExtractedMetadata', () => {
-    it('should delete extractedMetadata by name for files belonging to specified entities', async () => {
-      const extractedMetadataToDelete = ['to_be_deleted', 'to_be_deleted_2'];
+  describe('savePropertySelections', () => {
+    it('should merge, deduplicate and persist property selections', async () => {
       const { ds } = createDs();
-      await ds.deleteExtractedMetadata(extractedMetadataToDelete, ['entity1']);
+
+      await ds.savePropertySelections(f.idString('processed1'), [
+        {
+          name: 'property1',
+          selection: {
+            text: 'updated text',
+            selectionRectangles: [{ top: 1, left: 2, width: 3, height: 4, page: '1' }],
+          },
+        },
+        {
+          name: 'new_property',
+          selection: {
+            text: 'new text',
+            selectionRectangles: [{ top: 5, left: 6, width: 7, height: 8, page: '2' }],
+          },
+        },
+        { name: 'to_be_deleted', deleteSelection: true },
+      ]);
+
+      const file = await testingEnvironment.db
+        .getCollection('files')!
+        .findOne({ _id: f.id('processed1') });
+
+      expect(file?.propertySelections).toEqual([
+        {
+          name: 'property1',
+          selection: {
+            text: 'updated text',
+            selectionRectangles: [{ top: 1, left: 2, width: 3, height: 4, page: '1' }],
+          },
+        },
+        {
+          name: 'new_property',
+          selection: {
+            text: 'new text',
+            selectionRectangles: [{ top: 5, left: 6, width: 7, height: 8, page: '2' }],
+          },
+        },
+      ]);
+    });
+
+    it('should do nothing if file does not exist', async () => {
+      const { ds } = createDs();
+
+      await expect(
+        ds.savePropertySelections(new ObjectId().toHexString(), [{ name: 'title' }])
+      ).resolves.toBeUndefined();
+    });
+  });
+
+  describe('deletePropertySelections', () => {
+    it('should delete propertySelections by name for files belonging to specified entities', async () => {
+      const propertySelectionsToDelete = ['to_be_deleted', 'to_be_deleted_2'];
+      const { ds } = createDs();
+      await ds.deletePropertySelections(propertySelectionsToDelete, ['entity1']);
 
       let dbFiles = (await testingEnvironment.db.getAllFrom('files'))?.filter(
-        file => file.extractedMetadata?.length
+        file => file.propertySelections?.length
       );
 
       expect(dbFiles).toMatchObject([
-        { entity: 'entity1', extractedMetadata: [{ name: 'property1' }] },
+        { entity: 'entity1', propertySelections: [{ name: 'property1' }] },
         {
           entity: 'entity2',
-          extractedMetadata: [
+          propertySelections: [
             { name: 'to_be_deleted' },
             { name: 'to_be_deleted_2' },
             { name: 'property2' },
@@ -308,40 +362,40 @@ describe('MongoFilesDataSource', () => {
         },
       ]);
 
-      await ds.deleteExtractedMetadata(extractedMetadataToDelete, ['entity2']);
+      await ds.deletePropertySelections(propertySelectionsToDelete, ['entity2']);
 
       dbFiles = (await testingEnvironment.db.getAllFrom('files'))?.filter(
-        file => file.extractedMetadata?.length
+        file => file.propertySelections?.length
       );
 
       expect(dbFiles).toMatchObject([
-        { entity: 'entity1', extractedMetadata: [{ name: 'property1' }] },
-        { entity: 'entity2', extractedMetadata: [{ name: 'property2' }] },
+        { entity: 'entity1', propertySelections: [{ name: 'property1' }] },
+        { entity: 'entity2', propertySelections: [{ name: 'property2' }] },
       ]);
     });
   });
 
-  describe('renameExtractedMetadata', () => {
-    it('should rename extractedMetadata names based on a oldName:newName map for specified entities', async () => {
+  describe('renamePropertySelections', () => {
+    it('should rename propertySelections names based on a oldName:newName map for specified entities', async () => {
       const toRenameProperties = {
         property1: 'renamed1',
         property2: 'renamed2',
       };
       const { ds } = createDs();
-      await ds.renameExtractedMetadata(toRenameProperties, ['entity1']);
+      await ds.renamePropertySelections(toRenameProperties, ['entity1']);
 
       let dbFiles = (await testingEnvironment.db.getAllFrom('files'))?.filter(
-        file => file.extractedMetadata?.length
+        file => file.propertySelections?.length
       );
 
       expect(dbFiles).toMatchObject([
         {
           entity: 'entity1',
-          extractedMetadata: [{ name: 'to_be_deleted' }, { name: 'renamed1' }],
+          propertySelections: [{ name: 'to_be_deleted' }, { name: 'renamed1' }],
         },
         {
           entity: 'entity2',
-          extractedMetadata: [
+          propertySelections: [
             { name: 'to_be_deleted' },
             { name: 'to_be_deleted_2' },
             { name: 'property2' },
@@ -349,20 +403,20 @@ describe('MongoFilesDataSource', () => {
         },
       ]);
 
-      await ds.renameExtractedMetadata(toRenameProperties, ['entity2']);
+      await ds.renamePropertySelections(toRenameProperties, ['entity2']);
 
       dbFiles = (await testingEnvironment.db.getAllFrom('files'))?.filter(
-        file => file.extractedMetadata?.length
+        file => file.propertySelections?.length
       );
 
       expect(dbFiles).toMatchObject([
         {
           entity: 'entity1',
-          extractedMetadata: [{ name: 'to_be_deleted' }, { name: 'renamed1' }],
+          propertySelections: [{ name: 'to_be_deleted' }, { name: 'renamed1' }],
         },
         {
           entity: 'entity2',
-          extractedMetadata: [
+          propertySelections: [
             { name: 'to_be_deleted' },
             { name: 'to_be_deleted_2' },
             { name: 'renamed2' },
@@ -426,7 +480,7 @@ describe('MongoFilesDataSource', () => {
     it('should return file matching filename', async () => {
       const { ds } = createDs();
       const doc = (await ds.getByFilename('file2')).getData();
-      expect(doc).toBeInstanceOf(ProcessingPDF);
+      expect(doc).toBeInstanceOf(PDFDocument);
     });
 
     it('should return FileNotFound when restricting filetype', async () => {
@@ -438,7 +492,7 @@ describe('MongoFilesDataSource', () => {
     it('should return file when file type restriction match', async () => {
       const { ds } = createDs();
       const doc = (await ds.getByFilename('file3', ['document', 'attachment'])).getData();
-      expect(doc).toBeInstanceOf(ProcessingPDF);
+      expect(doc).toBeInstanceOf(PDFDocument);
     });
     it('should return URLAttachment properly (with nullFileContents)', async () => {
       const { ds } = createDs();
@@ -458,7 +512,7 @@ describe('MongoFilesDataSource', () => {
     it('should return file matching id', async () => {
       const { ds } = createDs();
       const doc = (await ds.getById(f.idString('processed1'))).getData();
-      expect(doc).toBeInstanceOf(ProcessedPDF);
+      expect(doc).toBeInstanceOf(PDFDocument);
     });
 
     it('should not load fullText by default', async () => {
@@ -479,8 +533,8 @@ describe('MongoFilesDataSource', () => {
     it('should return thumbnails for ProcessedDocuments', async () => {
       const { ds } = createDs();
       const processed = [
-        (await ds.getById(f.idString('processed1'))).getDataOrThrow() as ProcessedPDF,
-        (await ds.getById(f.idString('processed2'))).getDataOrThrow() as ProcessedPDF,
+        (await ds.getById(f.idString('processed1'))).getDataOrThrow() as PDFDocument,
+        (await ds.getById(f.idString('processed2'))).getDataOrThrow() as PDFDocument,
       ];
       const thumbnails = await ds.getThumbnails(processed.map(p => p.entity)).all();
       expect(thumbnails[0]).toBeInstanceOf(Thumbnail);

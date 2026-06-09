@@ -4,7 +4,7 @@ import { UpdateEntityRequest, UpdateEntitySchema } from './Schemas.js';
 import { UpdateEntityUseCaseFactory } from '../../factories/UpdateEntityUseCaseFactory.js';
 import { ExpressEntityMapper } from './ExpressEntityMapper.js';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoEntityDAO } from '../../mongodb/entity/MongoEntityDAO.js';
+import { MongoEntitiesDAO } from '../../mongodb/entity/MongoEntitiesDAO.js';
 import { MongoTransactionManager } from '../../mongodb/common/MongoTransactionManager.js';
 
 type Request = UpdateEntityRequest | { entity: string };
@@ -14,7 +14,7 @@ class UpdateEntityController extends AbstractController<Request> {
     const startTime = Date.now();
     try {
       const useCase = UpdateEntityUseCaseFactory.default();
-      const entityDAO = new MongoEntityDAO(
+      const entityDAO = new MongoEntitiesDAO(
         getConnection(),
         ExecutionContext.transactionManager as MongoTransactionManager,
         this.user

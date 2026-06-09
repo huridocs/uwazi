@@ -5,7 +5,7 @@ import { FilesDataSource } from './contracts/FilesDataSource.js';
 import { FilesService } from './FilesService.js';
 import { BaseFile } from '../domain/files/BaseFile.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { TableOfContent } from '../domain/files/ProcessedPDF.js';
+import { TableOfContent } from '../domain/files/domainTypes.js';
 
 type Input = {
   fileId: string;
@@ -33,11 +33,7 @@ class UpdateFile extends AbstractUseCase<Input, Output, Deps> {
       throw createError('file not found', 404);
     }
 
-    const updatedFile = file.update({
-      originalname: input.originalname,
-      language: input.language,
-      toc: input.toc,
-    });
+    const updatedFile = file.update(input);
 
     await this.transactionManager.run(async () => this.deps.filesService.bulkUpsert([updatedFile]));
 

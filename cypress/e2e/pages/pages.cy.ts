@@ -42,7 +42,7 @@ describe('Pages', () => {
       cy.contains('a', 'Pages').click();
       cy.contains('Add page').click();
       cy.clearAndType('input[name="title"]', 'Custom home page', { delay: 0 });
-      cy.contains('Markdown').click();
+      cy.contains('[role="tab"]', 'HTML').click();
       typeInEditor(
         'html',
         '<h1>Custom HomePage header</h1><div class="myDiv">contents</div>',
@@ -50,7 +50,7 @@ describe('Pages', () => {
         'myDiv',
         true
       );
-      cy.contains('[role="tab"]', 'Basic').click();
+      cy.contains('[role="tab"]', 'Config').click();
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(600);
       cy.get('[data-testid="settings-content-footer"]')
@@ -121,12 +121,12 @@ describe('Pages', () => {
         .within(() => {
           cy.contains('button', 'Edit').click();
         });
-      cy.contains('Markdown').click();
-      cy.get('#panel-Code .monaco-editor').should('exist');
+      cy.contains('[role="tab"]', 'HTML').click();
+      cy.get('#panel-HTML .monaco-editor').should('exist');
       cy.contains('<EntityData');
-      cy.contains('Javascript').click();
+      cy.contains('[role="tab"]', 'Javascript').click();
       cy.contains('toISOString');
-      cy.get('#panel-Advanced .monaco-editor').should('exist');
+      cy.get('#panel-Javascript .monaco-editor').should('exist');
     });
 
     it('should allow to edit and get a preview of the page', () => {
@@ -169,9 +169,9 @@ describe('Pages', () => {
       cy.get('[data-testid="settings-pages"]').contains('Add page').click();
       cy.clearAndType('input[name="title"]', 'My entity view page', { delay: 0 });
       cy.contains('Activate').click();
-      cy.contains('Markdown').click();
+      cy.contains('[role="tab"]', 'HTML').click();
       typeInEditor('html', contents, false, 'Detalle', true);
-      cy.contains('Javascript').click();
+      cy.contains('[role="tab"]', 'Javascript').click();
       typeInEditor('javascript', script, false, 'currentEntitySharedId', true);
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(1000);

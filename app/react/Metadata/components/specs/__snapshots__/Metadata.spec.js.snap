@@ -78,6 +78,7 @@ exports[`Metadata should render a Markdown when the metadata is type mardown 1`]
       html={true}
       lists={Array []}
       markdown="some markdown text"
+      parseMarkdown={true}
       sanitized={true}
     />
   </dd>
@@ -134,6 +135,7 @@ exports[`Metadata should render a media field 1`] = `
       html={false}
       lists={Array []}
       markdown="{media}(http://youtube.com/videoid)"
+      parseMarkdown={true}
       sanitized={true}
     />
   </dd>

@@ -201,6 +201,7 @@ const fixtures: DBFixture = {
       type: 'attachment',
       url: 'http://example.com/image.jpg',
       mimetype: 'image/jpeg',
+      entity: 'sharedId1',
     },
   ],
   connections: [

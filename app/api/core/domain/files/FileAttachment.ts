@@ -1,28 +1,27 @@
-import {
-  FileAttachmentDBO,
-  FileAttachmentDTO,
-} from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
-import { BaseFile, BaseFileProps, FileContentLoader } from './BaseFile.js';
+import { z } from 'zod';
+import { BaseFile, BaseFileProps } from './BaseFile.js';
+import { FileAttachmentDTO } from './domainTypes.js';
 import { FileContents } from './FileContents.js';
-import { FileWithContents } from './FileWithContents.js';
 
 type Props = BaseFileProps & { entity: string; content: FileContents };
-export class FileAttachment extends FileWithContents<Props> {
+
+const Schema = z.object({
+  entity: z.string().trim().min(1, 'Entity is required'),
+});
+
+export class FileAttachment extends BaseFile<Props> {
   readonly entity: string;
+
+  override get content(): FileContents {
+    return this.props.content;
+  }
 
   protected _type = 'attachment' as const;
 
   constructor(props: Props) {
-    super(props);
-    this.entity = props.entity;
-  }
-
-  static fromDBO(dbo: FileAttachmentDBO, contentLoader: FileContentLoader) {
-    return new FileAttachment({
-      ...BaseFile.dboCommonFields(dbo),
-      content: contentLoader({ type: dbo.type, filename: dbo.filename }),
-      entity: dbo.entity,
-    });
+    const validated = Schema.parse(props);
+    super({ ...props, entity: validated.entity });
+    this.entity = this.props.entity;
   }
 
   toDTO(): FileAttachmentDTO {

@@ -46,7 +46,11 @@ class PXGetExtractorStatuses implements UseCase<
         .getProcessedDocsForEntity(row.entity.sharedId, { languages: installedLanguages })
         .all();
 
-      row.availableFileLanguages = [...new Set(entityValidFiles.map(f => f.language))];
+      row.availableFileLanguages = [
+        ...new Set(
+          entityValidFiles.map(f => f.language).filter((l): l is LanguageISO6391 => l !== undefined)
+        ),
+      ];
 
       const entityParagraphRelationships = await extractorsQueryService
         .getEntityParagraphRelationships({ id: row.entity.sharedId, extractorId: input.id })

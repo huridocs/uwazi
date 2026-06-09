@@ -36,5 +36,6 @@ export interface TemplatesDataSource {
   isTemplateUnique(template: Template): Promise<boolean>;
   getDefaultTemplate(): Promise<ResultType<Template, DefaultTemplateNotFoundError>>;
   findTemplatesReferencing(templateId: string): Promise<Template[]>;
+  countByThesauri(thesaurusId: string): Promise<number>;
   delete(templateId: string): Promise<void>;
 }

@@ -3,7 +3,7 @@ import { APIURL } from '#app/config.js';
 import { FileType } from '#shared/types/fileType.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
-type Endpoint = 'attachment' | 'custom' | 'document';
+type Endpoint = 'attachment' | 'custom' | 'document' | 'createFromPDF';
 
 class UploadService {
   private requests: SuperAgentRequest[] = [];
@@ -22,7 +22,11 @@ class UploadService {
   private extraFields: Record<string, string>;
 
   constructor(endpoint: Endpoint, extraFields: Record<string, string> = {}) {
-    this.route = `${APIURL}files/upload/${endpoint}`;
+    if (endpoint === 'createFromPDF') {
+      this.route = `${APIURL}entities/create-from-pdf`;
+    } else {
+      this.route = `${APIURL}files/upload/${endpoint}`;
+    }
     this.extraFields = extraFields;
   }
 
