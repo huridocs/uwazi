@@ -62,7 +62,7 @@ const DefaultButton =
         className={
           cell.row.original.default
             ? 'w-4 text-white'
-            : 'w-4 text-(--color-theme-button-secondary-bg) stroke-(--color-theme-border-default) stroke-2'
+            : 'w-4 text-(--color-theme-bg-surface) stroke-(--color-theme-border-default) stroke-2'
         }
       />
     </Button>
