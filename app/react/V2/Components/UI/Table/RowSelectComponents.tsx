@@ -78,7 +78,10 @@ const IndeterminateCheckboxHeader = <T,>({
   );
 };
 
-const IndeterminateCheckboxHeaderCell = <T, >({ table, column }: HeaderContext<T, unknown>) => {
+const IndeterminateCheckboxHeaderCell = <T extends unknown>({
+  table,
+  column,
+}: HeaderContext<T, unknown>) => {
   const checkboxId =
     (column.columnDef.meta as { selectAllCheckboxId?: string } | undefined)?.selectAllCheckboxId ??
     'checkbox-header';

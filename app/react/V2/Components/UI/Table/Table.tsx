@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -87,19 +87,14 @@ const Table = <T extends TableRow<T>>({
   getRowClassName,
   selectAllCheckboxId = 'checkbox-header',
 }: TableProps<T>) => {
-  const isProgrammaticSelectionUpdate = useRef(false);
   const [dataState, setDataState] = useState(data);
-  const externalSelectionKey = useMemo(
-    () =>
-      initialSelection
-        .map(item => item.rowId)
-        .sort()
-        .join(','),
-    [initialSelection]
-  );
+  const externalSelectionKey = initialSelection
+    .map(item => item.rowId)
+    .sort()
+    .join(',');
   const initialRowSelection = useMemo(
     () => initialSelection.reduce((acc, item) => ({ ...acc, [item.rowId]: true }), {}),
-    [externalSelectionKey, initialSelection]
+    [externalSelectionKey]
   );
   const [rowSelection, setRowSelection] = useState<RowSelectionState>(initialRowSelection);
   const [sorting, setSorting] = useState<SortingState>(defaultSorting || []);
@@ -111,19 +106,6 @@ const Table = <T extends TableRow<T>>({
         .sort()
         .join(','),
     []
-  );
-
-  const applyRowSelection = useCallback(
-    (next: RowSelectionState) => {
-      setRowSelection(prev => {
-        if (selectionStateKey(prev) === selectionStateKey(next)) {
-          return prev;
-        }
-        isProgrammaticSelectionUpdate.current = true;
-        return next;
-      });
-    },
-    [selectionStateKey]
   );
 
   const rowIds = useMemo(() => getRowIds(dataState), [dataState]);
@@ -188,18 +170,15 @@ const Table = <T extends TableRow<T>>({
 
   useEffect(() => {
     setDataState(data);
-    applyRowSelection(initialRowSelection);
-  }, [data, applyRowSelection, initialRowSelection]);
+    setRowSelection(prev => {
+      if (selectionStateKey(prev) === selectionStateKey(initialRowSelection)) {
+        return prev;
+      }
+      return initialRowSelection;
+    });
+  }, [data, externalSelectionKey, initialRowSelection, selectionStateKey]);
 
   useEffect(() => {
-    applyRowSelection(initialRowSelection);
-  }, [applyRowSelection, externalSelectionKey, initialRowSelection]);
-
-  useEffect(() => {
-    if (isProgrammaticSelectionUpdate.current) {
-      isProgrammaticSelectionUpdate.current = false;
-      return;
-    }
     if (onSelect) {
       const rows = table.getSortedRowModel().rows.map(row => row.original);
       onSelect({ rows, selectedRows: rowSelection });

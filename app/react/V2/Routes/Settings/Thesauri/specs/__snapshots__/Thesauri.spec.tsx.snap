@@ -4,7 +4,7 @@ exports[`Settings Thesauri ThesauriList Thesaurus deletion should ask for confir
 HTMLCollection [
   <tbody>
     <tr
-      class="border-b transition-colors hover:bg-(--color-theme-surface-warm)  "
+      class="border-b transition-colors hover:bg-(--color-theme-surface-warm)   "
     >
       <td
         class="relative px-4 py-2  "
@@ -16,7 +16,7 @@ HTMLCollection [
             Select
           </span>
           <input
-            class="cursor-pointer rounded-sm disabled:cursor-not-allowed disabled:opacity-50"
+            class="h-4 w-4 shrink-0 cursor-pointer rounded-sm border border-(--color-theme-control-border) bg-(--color-theme-control-bg) [accent-color:var(--color-theme-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-hidden focus-visible:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]"
             id="thesaurus3"
             type="checkbox"
           />
@@ -67,7 +67,7 @@ HTMLCollection [
       </td>
     </tr>
     <tr
-      class="border-b transition-colors hover:bg-(--color-theme-surface-warm)  "
+      class="border-b transition-colors hover:bg-(--color-theme-surface-warm)   "
     >
       <td
         class="relative px-4 py-2  "
@@ -79,7 +79,7 @@ HTMLCollection [
             Select
           </span>
           <input
-            class="cursor-pointer rounded-sm disabled:cursor-not-allowed disabled:opacity-50"
+            class="h-4 w-4 shrink-0 cursor-pointer rounded-sm border border-(--color-theme-control-border) bg-(--color-theme-control-bg) [accent-color:var(--color-theme-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-hidden focus-visible:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]"
             id="thesaurus1"
             type="checkbox"
           />
@@ -130,7 +130,7 @@ HTMLCollection [
       </td>
     </tr>
     <tr
-      class="border-b transition-colors hover:bg-(--color-theme-surface-warm)  "
+      class="border-b transition-colors hover:bg-(--color-theme-surface-warm)   "
     >
       <td
         class="relative px-4 py-2  "
@@ -142,7 +142,7 @@ HTMLCollection [
             Select
           </span>
           <input
-            class="cursor-pointer rounded-sm disabled:cursor-not-allowed disabled:opacity-50"
+            class="h-4 w-4 shrink-0 cursor-pointer rounded-sm border border-(--color-theme-control-border) bg-(--color-theme-control-bg) [accent-color:var(--color-theme-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-hidden focus-visible:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]"
             disabled=""
             id="thesaurus2"
             type="checkbox"
@@ -179,7 +179,7 @@ HTMLCollection [
         >
           <div>
             <span
-              class="whitespace-nowrap bg-(--color-theme-surface-warm) text-ink-secondary px-2.5 py-1 rounded-md text-xs"
+              class="whitespace-nowrap bg-(--color-theme-surface-warm) text-ink-secondary px-1.5 py-1 rounded-md text-xs font-semibold"
               data-testid="pill-comp"
             >
               <span
