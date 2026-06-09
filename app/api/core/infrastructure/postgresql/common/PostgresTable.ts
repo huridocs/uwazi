@@ -77,6 +77,13 @@ export class PostgresTable {
     return qb as Promise<TRow[]>;
   }
 
+  async findIds<TRow>(where: WhereCondition<TRow>): Promise<string[]> {
+    let qb = this.knex(this.tableName).select('_id').where('tenant_id', this.tenantId);
+    qb = this.applyWhere(qb, where as Record<string, unknown>);
+    const rows = await qb;
+    return rows.map((r: { _id: string }) => r._id);
+  }
+
   async count<TRow>(where?: WhereCondition<TRow>): Promise<number> {
     let qb = this.knex(this.tableName)
       .where('tenant_id', this.tenantId)

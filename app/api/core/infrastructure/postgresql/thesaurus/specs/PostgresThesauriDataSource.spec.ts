@@ -35,7 +35,6 @@ beforeAll(async () => {
 beforeEach(async () => {
   await testingEnvironment.setUp({});
   await testingPG.clear(['thesauri']);
-  await getConnection().collection('updatelogs').deleteMany({});
 });
 
 afterAll(async () => {

@@ -1,4 +1,4 @@
-import { Db, ObjectId } from 'mongodb';
+import { Db } from 'mongodb';
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
@@ -13,13 +13,12 @@ import { PostgresThesaurusMapper, ThesaurusRow } from './PostgresThesaurusMapper
 export class PostgresThesauriDataSource extends PostgresDataSource implements ThesauriDataSource {
   protected tableName = 'thesauri';
 
-  private mongoDb: Db;
-
-  private syncNamespace = 'dictionaries';
-
   constructor(deps: { connection: PostgresConnectionConfig; tenantId: string; mongoDb: Db }) {
-    super({ connection: deps.connection, tenantId: deps.tenantId });
-    this.mongoDb = deps.mongoDb;
+    super({
+      connection: deps.connection,
+      tenantId: deps.tenantId,
+      sync: { syncDb: deps.mongoDb, syncNamespace: 'dictionaries' },
+    });
   }
 
   async getById(id: string): Promise<ResultType<Thesaurus, ThesaurusNotFoundError>> {
@@ -39,7 +38,6 @@ export class PostgresThesauriDataSource extends PostgresDataSource implements Th
       name: dbo.name,
       values: JSON.stringify(dbo.values),
     });
-    await this.writeSyncLog();
   }
 
   async existsById(id: string): Promise<boolean> {
@@ -53,12 +51,10 @@ export class PostgresThesauriDataSource extends PostgresDataSource implements Th
       { _id: dbo._id },
       { name: dbo.name, values: JSON.stringify(dbo.values) }
     );
-    await this.writeSyncLog();
   }
 
   async delete(id: string): Promise<void> {
     await this.table.delete({ _id: id });
-    await this.writeSyncLog();
   }
 
   async exists(thesaurus: Thesaurus): Promise<ResultType<false, Error>> {
@@ -72,15 +68,5 @@ export class PostgresThesauriDataSource extends PostgresDataSource implements Th
     }
 
     return Result.ok(false);
-  }
-
-  private async writeSyncLog(): Promise<void> {
-    await this.mongoDb.collection('updatelogs').insertOne({
-      _id: new ObjectId(),
-      timestamp: Date.now(),
-      namespace: this.syncNamespace,
-      mongoId: new ObjectId(),
-      deleted: false,
-    });
   }
 }

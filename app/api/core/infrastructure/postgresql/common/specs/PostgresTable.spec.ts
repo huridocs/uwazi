@@ -159,6 +159,34 @@ describe('PostgresTable', () => {
     });
   });
 
+  describe('findIds', () => {
+    it('should return _ids matching a where condition', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'fid-1', name: 'alpha', values: jsonVal([]) });
+      await table.insert({ _id: 'fid-2', name: 'beta', values: jsonVal([]) });
+
+      const ids = await table.findIds<TestRow>({ name: 'alpha' });
+
+      expect(ids).toEqual(['fid-1']);
+    });
+
+    it('should return empty array when nothing matches', async () => {
+      const table = createTable();
+      const ids = await table.findIds<TestRow>({ _id: 'nonexistent' });
+      expect(ids).toEqual([]);
+    });
+
+    it('should enforce tenant_id — cannot find ids from other tenants', async () => {
+      const tableA = createTable('tenant-a');
+      const tableB = createTable('tenant-b');
+
+      await tableA.insert({ _id: 'shared-id', name: 'A data', values: jsonVal([]) });
+
+      const ids = await tableB.findIds<TestRow>({ _id: 'shared-id' });
+      expect(ids).toEqual([]);
+    });
+  });
+
   describe('count', () => {
     it('should count all rows for the tenant', async () => {
       const table = createTable();
