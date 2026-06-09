@@ -295,7 +295,7 @@ const MultiselectList = ({
 
   return (
     <div className={`flex flex-col h-full ${className}`}>
-      <div className="w-full mb-2 bg-white">
+      <div className="w-full bg-(--bg-surface)">
         <Label htmlFor="search-multiselect" hideLabel={!label} hasErrors={Boolean(hasErrors)}>
           {label}
         </Label>
@@ -312,6 +312,7 @@ const MultiselectList = ({
             setSearchTerm(e.currentTarget.value);
             setIsDirty(true);
           }}
+          className="text-(--text-primary)"
         />
         {!hideFilters && (
           <div className="flex mx-1 my-4 flex-nowrap" data-testid="multiselectlist-filters">
