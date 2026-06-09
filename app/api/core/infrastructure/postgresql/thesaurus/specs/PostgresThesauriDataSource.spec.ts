@@ -9,9 +9,12 @@ import {
 } from '#api/core/domain/thesaurus/errors.js';
 import { PostgresThesauriDataSource } from '../PostgresThesauriDataSource.js';
 
+const TENANT_ID = 'test-tenant';
+
 const makeDS = () =>
   new PostgresThesauriDataSource({
-    pool: testingPG.pool!,
+    connection: testingPG.config,
+    tenantId: TENANT_ID,
     mongoDb: getConnection(),
   });
 

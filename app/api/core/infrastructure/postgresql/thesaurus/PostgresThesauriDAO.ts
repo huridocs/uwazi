@@ -1,26 +1,20 @@
-import pg from 'pg';
-import { Db } from 'mongodb';
 import { PostgresDataSource } from '../common/PostgresDataSource.js';
+import { PostgresConnectionConfig } from '../common/PostgresTable.js';
 import { ThesaurusRow } from './PostgresThesaurusMapper.js';
 
 class PostgresThesauriDAO extends PostgresDataSource {
   protected tableName = 'thesauri';
 
-  constructor(deps: { pool: pg.Pool; mongoDb: Db }) {
-    super({ pool: deps.pool, mongoDb: deps.mongoDb, syncNamespace: 'dictionaries' });
+  constructor(deps: { connection: PostgresConnectionConfig; tenantId: string }) {
+    super({ connection: deps.connection, tenantId: deps.tenantId });
   }
 
   async get(ids?: string[]): Promise<ThesaurusRow[]> {
     if (ids && ids.length) {
-      const result = await this.query<ThesaurusRow>(
-        `SELECT * FROM ${this.tableName} WHERE "_id" = ANY($1)`,
-        [ids]
-      );
-      return result.rows;
+      return this.table.findAll<ThesaurusRow>({ _id: { $in: ids } });
     }
 
-    const result = await this.query<ThesaurusRow>(`SELECT * FROM ${this.tableName}`);
-    return result.rows;
+    return this.table.findAll<ThesaurusRow>();
   }
 }
 

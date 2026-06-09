@@ -6,6 +6,8 @@ import pg from 'pg';
 import { config } from '#api/config.js';
 import uniqueID from '#shared/uniqueID.js';
 import { PostgresConnectionFactory } from '#api/core/infrastructure/factories/PostgresConnectionFactory.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { destroyKnexConnections } from '#api/core/infrastructure/postgresql/common/PostgresTable.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,8 +29,9 @@ const adminClient = () =>
 
 let pool: pg.Pool | null = null;
 
-/** Unique token so PG pool overrides are scoped to this test suite. */
-const testToken = Symbol('testing-pg');
+/** Unique token so PG overrides are scoped to this test suite. */
+const testPoolToken = Symbol('testing-pg-pool');
+const testConfigToken = Symbol('testing-pg-config');
 
 export type PGFixture = Record<string, Record<string, unknown>[]>;
 
@@ -38,13 +41,37 @@ const testingPG = {
   /** The name of the per-test database created by connect(). */
   dbName: '',
 
+  get config(): {
+    host: string;
+    port: number;
+    database: string;
+    user: string;
+    password: string;
+  } {
+    if (!this.dbName) throw new Error('testingPG not connected');
+    return {
+      host: config.postgres.host,
+      port: config.postgres.port,
+      database: this.dbName,
+      user: config.postgres.user,
+      password: config.postgres.password,
+    };
+  },
+
+  /** Resolved tenant ID for the current test context. */
+  currentTenantId(): string {
+    try {
+      return tenants.current().name;
+    } catch {
+      return 'default-tenant';
+    }
+  },
+
   async connect(): Promise<pg.Pool> {
     if (pool) return pool;
 
-    // Generate a unique DB name (PG identifiers are limited to 63 chars).
     this.dbName = `uwazi_test_${process.pid}_${uniqueID()}`.substring(0, 63);
 
-    // Create the database via an admin connection to the maintenance DB.
     const admin = adminClient();
     await admin.connect();
     try {
@@ -53,7 +80,6 @@ const testingPG = {
       await admin.end();
     }
 
-    // Connect to the freshly created database and apply DDL.
     pool = new pg.Pool({
       host: config.postgres.host,
       port: config.postgres.port,
@@ -64,8 +90,8 @@ const testingPG = {
 
     this.pool = pool;
 
-    // Register the test pool with the factory so all datasources transparently use it.
-    PostgresConnectionFactory.registerPool(testToken, pool);
+    PostgresConnectionFactory.registerPool(testPoolToken, pool);
+    PostgresConnectionFactory.registerConfig(testConfigToken, this.config);
 
     await pool.query(THESAURUS_SQL);
 
@@ -75,27 +101,26 @@ const testingPG = {
   async clear(tables: string[] = ['thesauri']): Promise<void> {
     if (!pool) throw new Error('testingPG not connected');
     for (const table of tables) {
-      // eslint-disable-next-line no-await-in-loop
       await pool.query(`DELETE FROM "${table}"`);
     }
   },
 
   async setFixtures(fixtures: PGFixture): Promise<void> {
     if (!pool) throw new Error('testingPG not connected');
+    const tenantId = tenants.current().name;
     for (const [table, rows] of Object.entries(fixtures)) {
-      // eslint-disable-next-line no-await-in-loop
       await pool.query(`DELETE FROM "${table}"`);
       for (const row of rows) {
-        const cols = Object.keys(row)
+        const finalRow = 'tenant_id' in row ? row : { ...row, tenant_id: tenantId };
+        const cols = Object.keys(finalRow)
           .map(c => `"${c}"`)
           .join(', ');
-        const placeholders = Object.keys(row)
+        const placeholders = Object.keys(finalRow)
           .map((_, i) => `$${i + 1}`)
           .join(', ');
-        const values = Object.values(row).map(v =>
+        const values = Object.values(finalRow).map(v =>
           v !== null && typeof v === 'object' ? JSON.stringify(v) : v
         );
-        // eslint-disable-next-line no-await-in-loop
         await pool.query(`INSERT INTO "${table}" (${cols}) VALUES (${placeholders})`, values);
       }
     }
@@ -110,19 +135,18 @@ const testingPG = {
   },
 
   async disconnect(): Promise<void> {
+    await destroyKnexConnections();
+
     if (pool) {
-      // Suppress idle-client errors that pg-pool emits when the database is
-      // dropped while connections are still in the pool.
       pool.on('error', () => {});
       await pool.end();
       pool = null;
       this.pool = null;
-      // Clear the factory's reference so it doesn't hold a dead pool.
-      PostgresConnectionFactory.unregisterPool(testToken);
+      PostgresConnectionFactory.unregisterPool(testPoolToken);
+      PostgresConnectionFactory.unregisterConfig(testConfigToken);
     }
 
     if (this.dbName) {
-      // Drop the per-test database; WITH (FORCE) terminates any lingering connections.
       const admin = adminClient();
       await admin.connect();
       try {

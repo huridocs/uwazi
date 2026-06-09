@@ -135,7 +135,10 @@ const testConfigs: TestConfig[] = [
         },
       ],
     },
-    getThesauri: async () => testingEnvironment.pg.getAllFrom('thesauri'),
+    getThesauri: async () =>
+      testingEnvironment.pg
+        .getAllFrom('thesauri')
+        .then(rows => rows.map(({ tenant_id: _, ...rest }) => rest)),
   },
 ];
 

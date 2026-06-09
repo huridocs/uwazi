@@ -75,7 +75,10 @@ const testConfigs: TestConfig[] = [
     pgFixtures: {
       thesauri: [{ _id: fruitsId, name: 'Fruits', values: fruitsValues }],
     },
-    getThesauri: async () => testingEnvironment.pg.getAllFrom('thesauri'),
+    getThesauri: async () =>
+      testingEnvironment.pg
+        .getAllFrom('thesauri')
+        .then(rows => rows.map(({ tenant_id: _, ...rest }) => rest)),
     thesaurusIdMatcher: expect.any(String),
   },
 ];

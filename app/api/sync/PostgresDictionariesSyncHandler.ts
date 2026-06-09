@@ -1,5 +1,4 @@
-import pg from 'pg';
-import { Db } from 'mongodb';
+import { PostgresConnectionConfig } from '#api/core/infrastructure/postgresql/common/PostgresTable.js';
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { SyncHandler } from './SyncHandler.js';
 
@@ -9,47 +8,19 @@ type ThesaurusRow = {
   values: { id: string; label: string; values?: { id: string; label: string }[] }[];
 };
 
-const buildUpsert = (
-  tableName: string,
-  id: string,
-  data: Record<string, unknown>
-): { sql: string; params: unknown[] } => {
-  const keys = Object.keys(data);
-  const columns = keys.map(k => `"${k}"`);
-  const placeholders = keys.map((_, i) => `$${i + 2}`);
-  const setClauses = keys.map((_, i) => `"${keys[i]}" = $${i + 2}`);
-
-  const params: unknown[] = [id];
-  for (const key of keys) {
-    const val = data[key];
-    params.push(
-      Array.isArray(val) || (typeof val === 'object' && val !== null) ? JSON.stringify(val) : val
-    );
-  }
-
-  return {
-    sql: `INSERT INTO ${tableName} ("_id", ${columns.join(', ')}) VALUES ($1, ${placeholders.join(', ')})
-          ON CONFLICT ("_id") DO UPDATE SET ${setClauses.join(', ')}`,
-    params,
-  };
-};
-
 export class PostgresDictionariesSyncHandler
   extends PostgresDataSource
   implements SyncHandler<ThesaurusRow>
 {
   protected tableName = 'thesauri';
 
-  constructor(pool: pg.Pool, mongoDb: Db) {
-    super({ pool, mongoDb, syncNamespace: 'dictionaries' });
+  constructor(deps: { connection: PostgresConnectionConfig; tenantId: string }) {
+    super({ connection: deps.connection, tenantId: deps.tenantId });
   }
 
   async getById(id: string): Promise<ThesaurusRow | null> {
-    const result = await this.query<ThesaurusRow>(
-      `SELECT * FROM ${this.tableName} WHERE "_id" = $1`,
-      [id]
-    );
-    return result.rows[0] || null;
+    const row = await this.table.findOne<ThesaurusRow>({ _id: id });
+    return row || null;
   }
 
   async save(document: Partial<ThesaurusRow>): Promise<ThesaurusRow> {
@@ -57,14 +28,10 @@ export class PostgresDictionariesSyncHandler
     if (!rawId) throw new Error('PostgresDictionariesSyncHandler: document._id is required');
     const id = rawId.toString();
 
-    const { sql, params } = buildUpsert(this.tableName, id, rest as Record<string, unknown>);
-    await this.query(sql, params);
+    await this.table.upsert({ _id: id, ...rest } as Record<string, unknown>, ['_id', 'tenant_id']);
 
-    const result = await this.query<ThesaurusRow>(
-      `SELECT * FROM ${this.tableName} WHERE "_id" = $1`,
-      [id]
-    );
-    return result.rows[0];
+    const row = await this.table.findOne<ThesaurusRow>({ _id: id });
+    return row!;
   }
 
   async saveMultiple(documents: Partial<ThesaurusRow>[]): Promise<ThesaurusRow[]> {
@@ -81,14 +48,10 @@ export class PostgresDictionariesSyncHandler
       return rawId.toString();
     });
 
-    const result = await this.query<ThesaurusRow>(
-      `SELECT * FROM ${this.tableName} WHERE "_id" = ANY($1)`,
-      [ids]
-    );
-    return result.rows;
+    return this.table.findAll<ThesaurusRow>({ _id: { $in: ids } });
   }
 
   async delete(id: string): Promise<void> {
-    await this.query(`DELETE FROM ${this.tableName} WHERE "_id" = $1`, [id]);
+    await this.table.delete<ThesaurusRow>({ _id: id });
   }
 }

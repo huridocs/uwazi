@@ -1,34 +1,44 @@
 import pg from 'pg';
 import { config } from '#api/config.js';
-import { tenants } from '#api/tenants/tenantContext.js';
+import { PostgresConnectionConfig } from '../postgresql/common/PostgresTable.js';
 
 const pools = new Map<string, pg.Pool>();
 
-/**
- * Scoped pool overrides keyed by unique symbols.
- * Each test suite creates its own symbol to isolate pool overrides.
- * In production this map remains empty.
- */
 const poolOverrides = new Map<symbol, pg.Pool>();
+
+const configOverrides = new Map<symbol, PostgresConnectionConfig>();
 
 const defaultToken = Symbol('default-pool-override');
 
 export class PostgresConnectionFactory {
-  static default(): pg.Pool {
-    // Return the most recently registered override (for testing).
-    // In practice, at most one test pool is active at a time.
+  static default(database?: string): pg.Pool {
     if (poolOverrides.size > 0) {
       return Array.from(poolOverrides.values()).pop()!;
     }
 
-    let database = config.postgres.database;
-    try {
-      database = tenants.current().dbName;
-    } catch {
-      // no async context — use config default
+    return this.forDatabase(database ?? config.postgres.database);
+  }
+
+  static connectionConfig(database?: string): PostgresConnectionConfig {
+    if (configOverrides.size > 0) {
+      return Array.from(configOverrides.values()).pop()!;
     }
 
-    return this.forDatabase(database);
+    return {
+      host: config.postgres.host,
+      port: config.postgres.port,
+      database: database ?? config.postgres.database,
+      user: config.postgres.user,
+      password: config.postgres.password,
+    };
+  }
+
+  static registerConfig(token: symbol, cfg: PostgresConnectionConfig): void {
+    configOverrides.set(token, cfg);
+  }
+
+  static unregisterConfig(token: symbol): void {
+    configOverrides.delete(token);
   }
 
   static forDatabase(database: string): pg.Pool {
@@ -55,15 +65,6 @@ export class PostgresConnectionFactory {
     pools.clear();
   }
 
-  /**
-   * Register a scoped pool override identified by a unique symbol.
-   * Each test suite should create its own symbol for isolation:
-   *
-   *   const token = Symbol('my-suite');
-   *   PostgresConnectionFactory.registerPool(token, myPool);
-   *
-   * Call unregisterPool(token) in afterEach/afterAll to clean up.
-   */
   static registerPool(token: symbol, pool: pg.Pool): void {
     poolOverrides.set(token, pool);
   }
@@ -72,10 +73,6 @@ export class PostgresConnectionFactory {
     poolOverrides.delete(token);
   }
 
-  /**
-   * Register a pool override under the default token.
-   * Prefer registerPool/unregisterPool with a unique symbol for better isolation.
-   */
   static usePool(pool: pg.Pool): void {
     poolOverrides.set(defaultToken, pool);
   }
