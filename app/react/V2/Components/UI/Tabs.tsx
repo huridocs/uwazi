@@ -49,9 +49,7 @@ const Tabs = ({
   const inactiveClass = 'text-ink-tertiary bg-paper hover:text-ink-secondary';
   const tabListChromeClass = 'tabs-segmented-list';
 
-  const tabScrollWrapClass = [
-    'tabs-segmented-scroll mx-3 my-2 md:my-2.5',
-  ].join(' ');
+  const tabScrollWrapClass = 'tabs-segmented-scroll mx-3 my-2 md:my-2.5';
 
   const handleChange = (index: number) => {
     onTabSelected?.(tabChildren[index].props.id);

@@ -214,9 +214,7 @@ const SearchResults = () => {
                                 }}
                                 className={snippetClass}
                               >
-                                <p className="mb-4 px-2">
-                                  {parseSnippetToNodes(pageText.text)}
-                                </p>
+                                <p className="mb-4 px-2">{parseSnippetToNodes(pageText.text)}</p>
                                 <p className="font-bold float-right">
                                   {t('System', 'Page', null, false)} {pageText.page}
                                 </p>
