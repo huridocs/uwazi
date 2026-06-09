@@ -60,7 +60,7 @@ const modalHeaderShell =
 Modal.Header = ({ children, className }: ModalChildrenProps) => (
   <div
     className={`${className} ${modalHeaderShell} ${
-      children ? 'border-b p-5' : 'p-2'
+      children ? 'border-b px-5 py-3' : 'p-2'
     } ${modalBorderClass}`}
   >
     {children}
@@ -69,7 +69,7 @@ Modal.Header = ({ children, className }: ModalChildrenProps) => (
 
 Modal.Body = ({ children, className }: ModalChildrenProps) => (
   <div
-    className={`h-full overflow-y-auto p-6 md:max-h-[70vh] ${modalSurfaceClass} ${className}`}
+    className={`h-full overflow-y-auto px-5 py-3 md:max-h-[70vh] ${modalSurfaceClass} ${className}`}
     data-testid="modal-body"
   >
     {children}
@@ -80,8 +80,8 @@ Modal.Footer = ({ children, className }: ModalChildrenProps) => (
   <div
     className={
       className
-        ? `rounded-b border-t p-6 ${modalBorderClass} ${modalSurfaceClass} ${className}`
-        : `flex justify-end gap-x-2 rounded-b border-t p-6 ${modalBorderClass} ${modalSurfaceClass}`
+        ? `rounded-b border-t px-5 py-3 ${modalBorderClass} ${modalSurfaceClass} ${className}`
+        : `flex justify-end gap-x-2 rounded-b border-t px-5 py-3 ${modalBorderClass} ${modalSurfaceClass}`
     }
   >
     {children}
