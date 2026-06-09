@@ -16,23 +16,33 @@ const FileDetailsView = ({ row, onEdit }: { row: EntityFileRow; onEdit: () => vo
       </div>
       <dl className="grid grid-cols-2 gap-3">
         <div className="col-span-2">
-          <dt className="text-xs text-ink-tertiary">NAME</dt>
+          <dt className="text-xs text-ink-tertiary">
+            <Translate>Name</Translate>
+          </dt>
           <dd className="text-sm text-ink">{row.displayName}</dd>
         </div>
         <div>
-          <dt className="text-xs text-ink-tertiary">LANGUAGE</dt>
+          <dt className="text-xs text-ink-tertiary">
+            <Translate>Language</Translate>
+          </dt>
           <dd className="text-sm text-ink">{row.languageKey}</dd>
         </div>
         <div>
-          <dt className="text-xs text-ink-tertiary">TYPE</dt>
+          <dt className="text-xs text-ink-tertiary">
+            <Translate>Type</Translate>
+          </dt>
           <dd className="text-sm text-ink">{row.typeLabel}</dd>
         </div>
         <div>
-          <dt className="text-xs text-ink-tertiary">SIZE</dt>
+          <dt className="text-xs text-ink-tertiary">
+            <Translate>Size</Translate>
+          </dt>
           <dd className="text-sm text-ink">{row.sizeLabel}</dd>
         </div>
         <div>
-          <dt className="text-xs text-ink-tertiary">MODIFIED</dt>
+          <dt className="text-xs text-ink-tertiary">
+            <Translate>Modified</Translate>
+          </dt>
           <dd className="text-sm text-ink">{row.modifiedLabel}</dd>
         </div>
       </dl>

@@ -55,6 +55,7 @@ Add to all languages,เพิ่มเข้าไปในทุกภาษ�
 Add to table of contents,เพิ่มลงในสารบัญ
 Add to ToC,Add to ToC
 Add to training set,Add to training set
+Add translation,Add translation
 Add user,เพิ่มผู้ใช้
 add value,add value
 Add/delete users and assign roles,เพิ่ม / ลบผู้ใช้และกำหนดบทบาทผู้ใช้
@@ -114,6 +115,7 @@ Automatically generated,สร้างขึ้นโดยอัตโนม�
 Available default translation,Available default translation
 Back,ย้อนกลับ
 Back to,กลับไปยัง
+Back to details,Back to details
 Back to search,กลับไปที่การค้นหา
 Bad Request,Bad Request
 Basic,Basic
@@ -286,6 +288,7 @@ Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,คำอธิบาย
+Deselect all,Deselect all
 Disable,Disable
 Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
@@ -317,6 +320,7 @@ Download failed rows,Download failed rows
 Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,นำไฟล์มาวางในหน้าต่างนี้เพื่ออัปโหลด
 Drag row,Drag row
+Drop to add,Drop to add
 Drop your files here to upload or,นำไฟล์มาวางที่นี่เพื่ออัปโหลด หรือ
 Duplicate values not allowed.,Duplicate values not allowed.
 Duplicated email,อีเมลที่ซ้ำกัน
@@ -388,8 +392,10 @@ Favicon no images hint,Favicon no images hint
 FEATURED,FEATURED
 File,ไฟล์
 File deleted,File deleted
+File details,File details
 File extraction completed successfully.,File extraction completed successfully.
 File name,File name
+File preview unavailable,File preview unavailable
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -595,6 +601,7 @@ mismatched passwords,Passwords don't match
 mismatching,mismatching
 Mixed access,การเข้าถึงแบบผสม
 ML TOC,ML TOC
+Modified,Modified
 Month,เดือน
 Months,Months
 more options.,ตัวเลือกเพิ่มเติม
@@ -692,6 +699,7 @@ OK,ตกลง
 "Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Open,Open
 Open group,Open group
+Open link,Open link
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,กรุณาเปิดแอป Authenticator สำหรับยืนยันรหัสสองทาง บนอุปกรณ์ของคุณ
 Options,Options
@@ -876,6 +884,7 @@ Secret keys,Secret keys
 Security,Security
 Select,Select
 Select & Search,Select & Search
+Select a file,Select a file
 Select all,เลือกทั้งหมด
 Select an existing image,Select an existing image
 Select favicon image,Select favicon image
@@ -1109,6 +1118,7 @@ Uninstalling language,Uninstalling language
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,Unsupported OCR language
+Untitled,Untitled
 Untranslated Terms,Untranslated Terms
 Update,แก้ไขเมื่อ
 UPDATE,แก้ไขเมื่อ

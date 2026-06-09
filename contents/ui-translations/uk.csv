@@ -55,6 +55,7 @@ Add to all languages,Додати до всіх мов
 Add to table of contents,Додати в зміст
 Add to ToC,Add to ToC
 Add to training set,Додати до тренувального набору
+Add translation,Add translation
 Add user,Додати користувача
 add value,додавати цінність
 Add/delete users and assign roles,Додати/видалити користувачів та призначити ролі
@@ -114,6 +115,7 @@ Automatically generated,Генерується автоматично
 Available default translation,Доступний переклад за замовчуванням
 Back,Назад
 Back to,Назад до
+Back to details,Back to details
 Back to search,Назад до пошуку
 Bad Request,Поганий запит
 Basic,Базовий
@@ -288,6 +290,7 @@ Deleted user,Видалений користувач
 Deleted user group,Видалена група користувачів
 Deletion success,Успішність видалення
 Description,Опис
+Deselect all,Deselect all
 Disable,Вимкнути
 Disable highlights,Вимкнути підсвічування
 Disabled 2FA,Відключений 2FA
@@ -319,6 +322,7 @@ Download failed rows,Download failed rows
 Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,"Перетягніть й опустіть файл у вікно, щоб завантажити"
 Drag row,Перетягування рядка
+Drop to add,Drop to add
 Drop your files here to upload or,"Опустіть свої файли сюди, щоб завантажити або"
 Duplicate values not allowed.,Повторювані значення не допускаються.
 Duplicated email,Продубльована адреса електронної пошти
@@ -390,8 +394,10 @@ Favicon no images hint,Favicon no images hint
 FEATURED,ОБРАНІ
 File,Файл
 File deleted,Файл видалено
+File details,File details
 File extraction completed successfully.,File extraction completed successfully.
 File name,Ім'я файлу
+File preview unavailable,File preview unavailable
 File updated,Файл оновлено
 Files,Файли
 Files and database usage,Використання файлів і баз даних
@@ -597,6 +603,7 @@ mismatched passwords,Паролі не збігаються
 mismatching,невідповідність
 Mixed access,Доступ змішаного типу
 ML TOC,Зміст для машинного навчання
+Modified,Modified
 Month,Місяць
 Months,Місяці
 more options.,більше опцій.
@@ -694,6 +701,7 @@ OK,ГАРАЗД.
 "Only the extractor will be deleted, all created entities will remain on the library.","Буде видалено лише розпакувальник, всі створені сутності залишаться у бібліотеці."
 Open,Відкрито
 Open group,Відкрита група
+Open link,Open link
 Open PDF,Відкрити PDF
 Open the two-factor Authenticator app on your device,Відкрийте застосунок Authenticator для двохетапної автентифікації на вашому пристрої
 Options,Параметри
@@ -878,6 +886,7 @@ Secret keys,Секретні ключі
 Security,Безпека
 Select,Виберіть
 Select & Search,Вибір та пошук
+Select a file,Select a file
 Select all,Вибрати все
 Select an existing image,Select an existing image
 Select favicon image,Вибрати зображення фавікону
@@ -1111,6 +1120,7 @@ Uninstalling language,Uninstalling language
 Unlink,Роз'єднати зв'язок.
 Unlock account,Розблокувати обліковий запис
 Unsupported OCR language,Непідтримувана мова оптичного розпізнавання символів
+Untitled,Untitled
 Untranslated Terms,Неперекладені терміни
 Update,Оновити
 UPDATE,Оновити

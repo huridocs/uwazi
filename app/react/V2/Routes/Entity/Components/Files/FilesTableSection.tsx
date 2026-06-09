@@ -58,6 +58,7 @@ const FilesTableSection = ({
         noDataMessage={<Translate>No files available</Translate>}
         containerClassName="rounded-md border border-border-soft"
         focusedRowId={focusedRowId}
+        focusedRowClassName="bg-parchment"
       />
     </section>
   );

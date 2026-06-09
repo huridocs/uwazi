@@ -55,6 +55,7 @@ Add to all languages,ဘာသာစကားအားလုံး သို့ 
 Add to table of contents,မာတိကာသို့ ထည့်ရန်
 Add to ToC,Add to ToC
 Add to training set,Add to training set
+Add translation,Add translation
 Add user,အသုံးပြုသူထည့်ရန်
 add value,add value
 Add/delete users and assign roles,အသုံးပြုသူများကို ထည့်/ဖျက်ပြီး တာဝန်များ သတ်မှတ်ရန်
@@ -114,6 +115,7 @@ Automatically generated,အလိုအလျောက် ထုတ်လုပ�
 Available default translation,Available default translation
 Back,နောက်သို့
 Back to,ပြန်သွားရန်
+Back to details,Back to details
 Back to search,ရှာဖွေမှုသို့ ပြန်သွားရန်
 Bad Request,Bad Request
 Basic,Basic
@@ -286,6 +288,7 @@ Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,ဖော်ပြချက်
+Deselect all,Deselect all
 Disable,Disable
 Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
@@ -317,6 +320,7 @@ Download failed rows,Download failed rows
 Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,အပ်လုဒ်လုပ်ရန် ဖိုင်ကို ဤဝင်းဒိုးထဲသို့ ဆွဲချပါ
 Drag row,Drag row
+Drop to add,Drop to add
 Drop your files here to upload or,သင့်ဖိုင်များကို အပ်လုဒ်လုပ်ရန် ဒီနေရာတွင် ချပါ သို့မဟုတ်
 Duplicate values not allowed.,Duplicate values not allowed.
 Duplicated email,ပွားထားသော အီးမေးလ်
@@ -388,8 +392,10 @@ Favicon no images hint,Favicon no images hint
 FEATURED,FEATURED
 File,ဖိုင်
 File deleted,File deleted
+File details,File details
 File extraction completed successfully.,File extraction completed successfully.
 File name,File name
+File preview unavailable,File preview unavailable
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -595,6 +601,7 @@ mismatched passwords,Passwords don't match
 mismatching,mismatching
 Mixed access,ရောထားသော ဝင်ရောက်သုံးစွဲမှု
 ML TOC,ML TOC
+Modified,Modified
 Month,လ
 Months,Months
 more options.,နောက်ထပ် ရွေးချယ်စရာများ။
@@ -692,6 +699,7 @@ OK,အိုကေ
 "Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Open,Open
 Open group,Open group
+Open link,Open link
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,သင့်စက်ပေါ်ရှိ နှစ်ဆင့်ခံ Authenticator အက်ပ်ကို ဖွင့်ပါ
 Options,Options
@@ -876,6 +884,7 @@ Secret keys,Secret keys
 Security,Security
 Select,Select
 Select & Search,Select & Search
+Select a file,Select a file
 Select all,အားလုံးကို ရွေးရန်
 Select an existing image,Select an existing image
 Select favicon image,Select favicon image
@@ -1109,6 +1118,7 @@ Uninstalling language,Uninstalling language
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,Unsupported OCR language
+Untitled,Untitled
 Untranslated Terms,Untranslated Terms
 Update,အပ်ဒိတ်လုပ်ရန်
 UPDATE,အပ်ဒိတ်လုပ်ရန်

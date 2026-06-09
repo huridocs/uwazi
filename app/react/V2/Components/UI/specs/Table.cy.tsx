@@ -51,7 +51,7 @@ describe('Table', () => {
       cy.contains('th', 'Description').should(
         'have.attr',
         'class',
-        'border-b p-4 text-sm uppercase bg-blue-700 text-white'
+        'border-b p-4 text-sm uppercase text-section-header bg-blue-700 text-white'
       );
       cy.contains('td', 'Entity 2').should(
         'have.attr',

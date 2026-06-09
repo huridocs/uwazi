@@ -83,7 +83,7 @@ const Table = <T extends TableRow<T>>({
   initialSelection = [],
   manualSorting,
   focusedRowId,
-  focusedRowClassName = 'bg-parchment',
+  focusedRowClassName = 'bg-(--color-theme-surface-muted)',
   getRowClassName,
   selectAllCheckboxId = 'checkbox-header',
 }: TableProps<T>) => {

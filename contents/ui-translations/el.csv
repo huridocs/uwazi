@@ -55,6 +55,7 @@ Add to all languages,Προσθήκη σε όλες τις γλώσσες
 Add to table of contents,Προσθήκη στον πίνακα περιεχομένων
 Add to ToC,Add to ToC
 Add to training set,Προσθήκη στο σύνολο εκπαίδευσης
+Add translation,Add translation
 Add user,Προσθήκη χρήστη
 add value,προσθήκη τιμής
 Add/delete users and assign roles,Προσθήκη/διαγραφή χρηστών και ανάθεση ρόλων
@@ -114,6 +115,7 @@ Automatically generated,Δημιουργήθηκε αυτόματα
 Available default translation,Διαθέσιμη προεπιλεγμένη μετάφραση
 Back,Επιστροφή
 Back to,Επιστροφή σε
+Back to details,Back to details
 Back to search,Επιστροφή στην αναζήτηση
 Bad Request,Κακό αίτημα
 Basic,Βασικό
@@ -287,6 +289,7 @@ Deleted user,Διαγράφηκε χρήστης
 Deleted user group,Διαγράφηκε ομάδα χρηστών
 Deletion success,Επιτυχία διαγραφής
 Description,Περιγραφή
+Deselect all,Deselect all
 Disable,Απενεργοποίηση
 Disable highlights,Απενεργοποίηση επισημάνσεων
 Disabled 2FA,Απενεργοποιημένο 2FA
@@ -318,6 +321,7 @@ Download failed rows,Download failed rows
 Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,Σύρετε και αποθέστε αρχείο σε αυτό το παράθυρο για μεταφόρτωση
 Drag row,Σύρετε γραμμή
+Drop to add,Drop to add
 Drop your files here to upload or,Αποθέστε τα αρχεία σας εδώ για μεταφόρτωση ή
 Duplicate values not allowed.,Δεν επιτρέπονται διπλότυπες τιμές.
 Duplicated email,Διπλότυπο email
@@ -389,8 +393,10 @@ Favicon no images hint,Favicon no images hint
 FEATURED,ΕΠΙΛΕΓΜΕΝΑ
 File,Αρχείο
 File deleted,Το αρχείο διαγράφηκε
+File details,File details
 File extraction completed successfully.,File extraction completed successfully.
 File name,Όνομα αρχείου
+File preview unavailable,File preview unavailable
 File updated,Το αρχείο ενημερώθηκε
 Files,Αρχεία
 Files and database usage,Χρήση αρχείων και βάσης δεδομένων
@@ -596,6 +602,7 @@ mismatched passwords,Οι κωδικοί δεν ταιριάζουν
 mismatching,αναντιστοίχιση
 Mixed access,Μικτή πρόσβαση
 ML TOC,ML TOC
+Modified,Modified
 Month,Μήνας
 Months,Μήνες
 more options.,περισσότερες επιλογές.
@@ -693,6 +700,7 @@ OK,Εντάξει
 "Only the extractor will be deleted, all created entities will remain on the library.","Μόνο ο εξαγωγέας θα διαγραφεί, όλες οι δημιουργημένες οντότητες θα παραμείνουν στη βιβλιοθήκη."
 Open,Άνοιγμα
 Open group,Άνοιγμα ομάδας
+Open link,Open link
 Open PDF,Άνοιγμα PDF
 Open the two-factor Authenticator app on your device,Ανοίξτε την εφαρμογή πιστοποίησης δύο παραγόντων στη συσκευή σας
 Options,Επιλογές
@@ -877,6 +885,7 @@ Secret keys,Μυστικά κλειδιά
 Security,Ασφάλεια
 Select,Επιλογή
 Select & Search,Επιλογή & Αναζήτηση
+Select a file,Select a file
 Select all,Επιλογή όλων
 Select an existing image,Select an existing image
 Select favicon image,Επιλογή εικόνας favicon
@@ -1110,6 +1119,7 @@ Uninstalling language,Uninstalling language
 Unlink,Αποσύνδεση
 Unlock account,Ξεκλείδωμα λογαριασμού
 Unsupported OCR language,Μη υποστηριζόμενη γλώσσα OCR
+Untitled,Untitled
 Untranslated Terms,Αμετάφραστοι όροι
 Update,Ενημέρωση
 UPDATE,ΕΝΗΜΕΡΩΣΗ

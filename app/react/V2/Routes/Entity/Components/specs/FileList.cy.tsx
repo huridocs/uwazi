@@ -46,8 +46,8 @@ describe('Files tab', () => {
   it('should render table sections and side panel tabs', () => {
     mountEntity();
     cy.contains('Files').click();
-    cy.contains('PRIMARY DOCUMENTS').should('exist');
-    cy.contains('SUPPORTING FILES').should('exist');
+    cy.contains('Primary documents').should('exist');
+    cy.contains('Supporting files').should('exist');
     cy.contains('File').should('exist');
     cy.contains('Translations').should('exist');
   });

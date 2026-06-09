@@ -59,9 +59,10 @@ const IndeterminateCheckboxHeader = <T,>({
   const onChange = table.getToggleAllRowsSelectedHandler();
 
   useEffect(() => {
-    ref.current.checked = Boolean(checked);
-    ref.current.indeterminate = Boolean(indeterminate && !checked);
-  }, [ref, indeterminate, checked]);
+    if (ref.current) {
+      ref.current.indeterminate = Boolean(indeterminate && !checked);
+    }
+  }, [indeterminate, checked]);
 
   return (
     <label>
@@ -70,6 +71,7 @@ const IndeterminateCheckboxHeader = <T,>({
         type="checkbox"
         ref={ref}
         className={checkboxInputClassName}
+        checked={checked}
         onChange={onChange}
         key={checkboxId}
         id={checkboxId}
