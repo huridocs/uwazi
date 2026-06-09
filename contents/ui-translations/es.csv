@@ -28,6 +28,7 @@ Activity Log,Registro de Actividad
 Add,Añadir
 Add / remove favorite,Añadir / eliminar favorito
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
+Add as,Add as
 Add date,Añadir fecha
 Add entities / documents,Añadir entidades / documentos
 Add entity type,Add entity type
@@ -55,6 +56,7 @@ Add to all languages,Añadir a todos los idiomas
 Add to table of contents,Añadir a la tabla de contenidos
 Add to ToC,Add to ToC
 Add to training set,Add to training set
+Add translation,Add translation
 Add user,Añadir usuario
 add value,añadir valor
 Add/delete users and assign roles,Añadir / Eliminar usuarios y asignar roles
@@ -114,6 +116,7 @@ Automatically generated,Se genera automáticamente
 Available default translation,Traducción predeterminada disponible
 Back,Volver
 Back to,Volver a
+Back to details,Back to details
 Back to search,Volver a la búsqueda
 Bad Request,Petición incorrecta
 Basic,Básico
@@ -284,6 +287,7 @@ Deleted user,Usuario eliminado
 Deleted user group,Grupo de usuarios eliminado
 Deletion success,Eliminación exitosa
 Description,Descripción
+Deselect all,Deselect all
 Disable,Disable
 Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
@@ -386,8 +390,10 @@ Favicon no images hint,Favicon no images hint
 FEATURED,DESTACADO
 File,Archivo
 File deleted,Archivo eliminado
+File details,File details
 File extraction completed successfully.,File extraction completed successfully.
 File name,File name
+File preview unavailable,File preview unavailable
 File updated,Archivo actualizado
 Files,Archivos
 Files and database usage,Uso de archivos y base de datos
@@ -593,6 +599,7 @@ mismatched passwords,Las contraseñas no coinciden
 mismatching,mismatching
 Mixed access,Acceso mixto
 ML TOC,ML TdC
+Modified,Modified
 Month,Mes
 Months,Months
 more options.,más opciones.
@@ -690,6 +697,7 @@ OK,OK
 "Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Open,Open
 Open group,Open group
+Open link,Open link
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,Abre la app Authenticator de tu dispositivo móvil
 Options,Options
@@ -740,6 +748,7 @@ Press enter to add,Pulsa ENTER para añadir
 Preview,Previsualizar
 Previous,Anterior
 Primary button,Primary button
+Primary document,Primary document
 Primary Documents,Documentos primarios
 Priority sorting,Ordenamiento prioritario
 Priority sorting description,"Las propiedades marcadas como ordenamiento prioritaria se utilizarán como criterios de ordenamiento predeterminados. Si se marca más de una propiedad como ordenación prioritaria, el sistema intentará elegir la que mejor se ajuste. Al enumerar tipos de plantillas mixtas, el sistema seleccionará el mejor ordenamiento combinado."
@@ -874,6 +883,7 @@ Secret keys,Secret keys
 Security,Security
 Select,Seleccionar
 Select & Search,Select & Search
+Select a file,Select a file
 Select all,Seleccionar todo
 Select an existing image,Select an existing image
 Select favicon image,Seleccionar imagen del favicon
@@ -960,6 +970,7 @@ Suggestions,Sugerencias
 suggestions,suggestions
 Suggestions sent,Suggestions sent
 Suggestions updated,Suggestions updated
+Supporting file,Supporting file
 Supporting files,Archivos de soporte
 Synced template,Plantilla sincronizada
 Synced Template,Synced Template
@@ -1106,6 +1117,7 @@ Uninstalling language,Uninstalling language
 Unlink,Desenlazar
 Unlock account,Unlock account
 Unsupported OCR language,Idioma no soportado para ROC
+Untitled,Untitled
 Untranslated Terms,Términos sin traducir
 Update,Actualizar
 UPDATE,Actualizar

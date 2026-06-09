@@ -28,6 +28,7 @@ Activity Log,Журнал активности
 Add,Добавить
 Add / remove favorite,Добавить/удалить избранное
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
+Add as,Add as
 Add date,Добавить дату
 Add entities / documents,Добавить объекты/документы
 Add entity type,Add entity type
@@ -55,6 +56,7 @@ Add to all languages,Добавить ко всем языкам
 Add to table of contents,Добавить в оглавление
 Add to ToC,Add to ToC
 Add to training set,Add to training set
+Add translation,Add translation
 Add user,Добавить пользователя
 add value,add value
 Add/delete users and assign roles,Добавить/удалить пользователей и назначить роли
@@ -114,6 +116,7 @@ Automatically generated,Генерируется автоматически
 Available default translation,Available default translation
 Back,Назад
 Back to,Назад к
+Back to details,Back to details
 Back to search,Назад к поиску
 Bad Request,Bad Request
 Basic,Basic
@@ -283,6 +286,7 @@ Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,Описание
+Deselect all,Deselect all
 Disable,Disable
 Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
@@ -385,8 +389,10 @@ Favicon no images hint,Favicon no images hint
 FEATURED,FEATURED
 File,Файл
 File deleted,File deleted
+File details,File details
 File extraction completed successfully.,File extraction completed successfully.
 File name,File name
+File preview unavailable,File preview unavailable
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -592,6 +598,7 @@ mismatched passwords,Passwords don't match
 mismatching,mismatching
 Mixed access,Доступ смешанного типа
 ML TOC,Оглавление для машинного обучения
+Modified,Modified
 Month,Месяц
 Months,Months
 more options.,больше опций.
@@ -689,6 +696,7 @@ OK,Окей
 "Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Open,Open
 Open group,Open group
+Open link,Open link
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,Откройте приложение для двухфакторной аутентификации на вашем устройстве
 Options,Options
@@ -739,6 +747,7 @@ Press enter to add,"Нажмите Enter, чтобы добавить"
 Preview,Предварительный просмотр
 Previous,Предыдущий
 Primary button,Primary button
+Primary document,Primary document
 Primary Documents,ОСНОВНЫЕ ДОКУМЕНТЫ
 Priority sorting,Приоритетная сортировка
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
@@ -873,6 +882,7 @@ Secret keys,Secret keys
 Security,Security
 Select,Select
 Select & Search,Select & Search
+Select a file,Select a file
 Select all,Выбрать все
 Select an existing image,Select an existing image
 Select favicon image,Select favicon image
@@ -959,6 +969,7 @@ Suggestions,Предлагаемые варианты
 suggestions,suggestions
 Suggestions sent,Suggestions sent
 Suggestions updated,Suggestions updated
+Supporting file,Supporting file
 Supporting files,Сопроводительные файлы
 Synced template,Synced template
 Synced Template,Synced Template
@@ -1106,6 +1117,7 @@ Uninstalling language,Uninstalling language
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,Неподдерживаемый язык оптического распознавания символов
+Untitled,Untitled
 Untranslated Terms,Untranslated Terms
 Update,Обновить
 UPDATE,Обновить
