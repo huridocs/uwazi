@@ -1,7 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { BulkGrantEntityPermissionsUseCaseFactory } from '#api/core/infrastructure/factories/BulkGrantEntityPermissionsUseCaseFactory.js';
-import { EntityAccessPolicyDataSourceFactory } from '#api/core/infrastructure/factories/EntityAccessPolicyDataSourceFactory.js';
 import { User } from '#api/users.v2/model/User.js';
 import { InsufficientPermissionsToPublishError } from '#api/core/application/errors.js';
 import { DBFixture } from '#api/utils/testing_db.js';
@@ -80,9 +79,7 @@ const collaborator = new User('collab-id', 'collaborator', []);
 const createSut = (actor: User) =>
   testingEnvironment.runWithContext(
     () => ({
-      sut: BulkGrantEntityPermissionsUseCaseFactory.default({
-        entityAccessPolicyDS: EntityAccessPolicyDataSourceFactory.default({}),
-      }),
+      sut: BulkGrantEntityPermissionsUseCaseFactory.default(),
     }),
     { actor }
   );
