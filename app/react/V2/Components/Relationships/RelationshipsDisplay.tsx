@@ -26,6 +26,7 @@ type RelationshipsDisplayProps = {
   currentPage?: number;
   pageHeight?: number;
   showRail?: boolean;
+  activeRelationshipId?: string | null;
   onPointClick?: (marker: RelationshipMarker) => void;
   onClusterClick?: (markers: RelationshipMarker[]) => void;
 };
@@ -36,6 +37,7 @@ const RelationshipsDisplay = ({
   currentPage,
   pageHeight,
   showRail = true,
+  activeRelationshipId = null,
   onPointClick,
   onClusterClick,
 }: RelationshipsDisplayProps) => {
@@ -130,6 +132,7 @@ const RelationshipsDisplay = ({
               markerLayerHeight={markerLayerHeight}
               documentClusters={documentClusters}
               pageHeight={pageHeight}
+              activeRelationshipId={activeRelationshipId}
               onPointClick={onPointClick}
               onClusterClick={onClusterClick}
             />
@@ -139,6 +142,7 @@ const RelationshipsDisplay = ({
               relationshipGroups={relationshipGroups}
               currentPage={currentPage}
               pageHeight={pageHeight}
+              activeRelationshipId={activeRelationshipId}
               onPointClick={onPointClick}
             />
           )}

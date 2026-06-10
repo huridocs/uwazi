@@ -64,4 +64,20 @@ describe('relationshipToHighlight', () => {
       ],
     });
   });
+
+  it('uses relationshipId as the highlight key when provided', () => {
+    const anchor: TextReferencePointer = {
+      type: 'textReference',
+      entity: 'e1',
+      entityTitle: 'test',
+      entityTemplateId: 'tpl',
+      file: 'file1',
+      text: 'Selected text',
+      selections: [{ page: 2, top: 10, left: 20, width: 30, height: 40 }],
+    };
+
+    const highlight = relationshipToHighlight(anchor, '#00FF00', 'rel-42');
+
+    expect(highlight?.[2]?.[0]?.key).toBe('rel-42');
+  });
 });

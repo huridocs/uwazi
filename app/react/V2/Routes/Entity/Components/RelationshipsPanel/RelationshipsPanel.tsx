@@ -6,18 +6,17 @@ import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { Entity, FileType } from '#V2/api/entities/types.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
-import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
+import { relationshipTypesAtom } from '#V2/atoms/index.js';
 import { searchByTitle } from '#V2/api/entities/index.js';
 import { formatRelationships } from '#V2/formatters/index.js';
 import { deleteReference, saveTextReference } from '#V2/api/relationships/index.js';
 import { ConfirmationModal, BlankState } from '#V2/Components/UI/index.js';
-import { relationshipToHighlight } from '#V2/Components/PDFViewer/index.js';
 import { RelationshipMarker, toMarker } from '#V2/Components/Relationships/types.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { CreateReference } from './CreateReference.js';
 import { RelationshipRow } from './RelationshipRow.js';
 import { useRelationships, useRelationshipsActions } from './relationshipsAtom.js';
-import { pdfController } from '../atoms.js';
+import { useRelationshipSelection } from '../useRelationshipSelection.js';
 
 type RelationshipsPanelProps = {
   entity?: Entity;
@@ -26,24 +25,17 @@ type RelationshipsPanelProps = {
 
 // eslint-disable-next-line max-statements
 const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) => {
-  const [selectedRelationshipId, setSelectedRelationshipId] = useState<string | null>(null);
   const [relationshipToDelete, setRelationshipToDelete] = useState<RelationshipMarker | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const { createReferenceSelection, createReferenceMode } = useRelationships();
   const { setCreateReferenceSelection } = useRelationshipsActions();
   const revalidator = useRevalidator();
-  const mainPdfController = useAtomValue(pdfController);
-  const templates = useAtomValue(templatesAtom);
+  const { activeRelationshipId, selectRelationship, clearRelationshipSelection } =
+    useRelationshipSelection();
   const relationships = useMemo<RelationshipMarker[]>(
     () => (entity ? formatRelationships(entity).map(view => toMarker(view, entity.sharedId)) : []),
     [entity]
-  );
-
-  const colorOf = useCallback(
-    (marker: RelationshipMarker) =>
-      templates.find(t => t._id === marker.target.templateId)?.color || '#A4CAFE',
-    [templates]
   );
 
   const lookup = useCallback(
@@ -58,18 +50,9 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
 
   const handleRelationshipClick = useCallback(
     (marker: RelationshipMarker) => {
-      if (marker._id === selectedRelationshipId) {
-        setSelectedRelationshipId(null);
-        mainPdfController?.toggleHighlights([]);
-      } else {
-        setSelectedRelationshipId(marker._id);
-        const highlight = relationshipToHighlight(marker.anchor, colorOf(marker));
-        if (highlight) {
-          mainPdfController?.toggleHighlights([highlight]);
-        }
-      }
+      selectRelationship(marker);
     },
-    [mainPdfController, selectedRelationshipId, colorOf]
+    [selectRelationship]
   );
 
   const handleDeleteClick = useCallback((marker: RelationshipMarker) => {
@@ -82,8 +65,8 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
     try {
       await deleteReference(String(relationshipToDelete._id));
       setRelationshipToDelete(null);
-      if (selectedRelationshipId === relationshipToDelete._id) {
-        setSelectedRelationshipId(null);
+      if (activeRelationshipId === relationshipToDelete._id) {
+        clearRelationshipSelection();
       }
       entityLoaderCache.invalidateEntity(entity.sharedId);
       await revalidator.revalidate();
@@ -92,7 +75,13 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
     } finally {
       setIsDeleting(false);
     }
-  }, [relationshipToDelete, entity?.sharedId, selectedRelationshipId, revalidator]);
+  }, [
+    relationshipToDelete,
+    entity?.sharedId,
+    activeRelationshipId,
+    clearRelationshipSelection,
+    revalidator,
+  ]);
 
   const handleCancelDelete = useCallback(() => {
     if (!isDeleting) setRelationshipToDelete(null);
@@ -170,7 +159,7 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
                 <RelationshipRow
                   key={marker._id || `relationship-${index}`}
                   marker={marker}
-                  isSelected={selectedRelationshipId === marker._id}
+                  isSelected={activeRelationshipId === marker._id}
                   onClick={() => handleRelationshipClick(marker)}
                   onDelete={() => handleDeleteClick(marker)}
                 />

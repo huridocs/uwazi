@@ -10,6 +10,7 @@ type FullModeProps = {
   document: FileType;
   markerLayerHeight: number;
   pageHeight?: number;
+  activeRelationshipId?: string | null;
   onPointClick?: (marker: RelationshipMarker) => void;
   onMoreClick?: (markers: RelationshipMarker[]) => void;
   onClusterClick?: (markers: RelationshipMarker[]) => void;
@@ -28,13 +29,13 @@ const FullMode = ({
   document,
   markerLayerHeight,
   pageHeight,
+  activeRelationshipId = null,
   onPointClick,
   onMoreClick,
   onClusterClick,
   documentClusters,
 }: FullModeProps) => {
   const [openClusterKey, setOpenClusterKey] = useState<string | null>(null);
-  const [activePointId, setActivePointId] = useState<string | null>(null);
   const documentPages = document.totalPages ?? 1;
 
   const markers = useMemo(() => {
@@ -72,19 +73,16 @@ const FullMode = ({
           stackOrder={stackOrder}
           trackRatio={trackRatio}
           references={element.references}
-          activePointId={activePointId}
+          activePointId={activeRelationshipId}
           isOpen={openClusterKey === key}
           onToggle={() => {
-            setActivePointId(null);
             setOpenClusterKey(currentValue => (currentValue === key ? null : key));
           }}
           onPointClick={reference => {
-            setActivePointId(reference._id);
             onPointClick?.(reference);
           }}
           onMoreClick={references => onMoreClick?.(references)}
           onClusterClick={references => {
-            setActivePointId(null);
             onClusterClick?.(references);
           }}
         />
@@ -97,9 +95,8 @@ const FullMode = ({
         position={position}
         stackOrder={stackOrder}
         marker={element.references[0]}
-        isActive={activePointId === element.references[0]._id}
+        isActive={activeRelationshipId === element.references[0]._id}
         onClick={marker => {
-          setActivePointId(marker._id);
           setOpenClusterKey(null);
           onPointClick?.(marker);
         }}

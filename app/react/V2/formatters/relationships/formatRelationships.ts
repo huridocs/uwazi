@@ -42,9 +42,7 @@ const formatRelationships = (entity: Entity): RelationshipView[] => {
     (entity as Record<string, unknown>).relations || []
   ) as ConnectionSchema[];
 
-  const targets = relations.filter(
-    r => r.entity !== entity.sharedId && r.entityData?.template
-  );
+  const targets = relations.filter(r => r.entity !== entity.sharedId && r.entityData?.template);
 
   return targets.reduce<RelationshipView[]>((acc, target) => {
     const targetTemplateId = target.entityData?.template;
@@ -52,9 +50,7 @@ const formatRelationships = (entity: Entity): RelationshipView[] => {
       return acc;
     }
 
-    const source = relations.find(
-      rel => rel.hub === target.hub && rel.entity === entity.sharedId
-    );
+    const source = relations.find(rel => rel.hub === target.hub && rel.entity === entity.sharedId);
 
     if (!source?._id || !source.hub) {
       return acc;

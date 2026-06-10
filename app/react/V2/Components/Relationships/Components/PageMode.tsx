@@ -13,6 +13,7 @@ type PageModeProps = {
   markerLayerHeight: number;
   onPointClick?: (marker: RelationshipMarker) => void;
   relationshipGroups?: RelationshipGroup[];
+  activeRelationshipId?: string | null;
   onMoreClick?: (markers: RelationshipMarker[]) => void;
   currentPage?: number;
   pageHeight?: number;
@@ -29,12 +30,12 @@ const PageMode = ({
   markerLayerHeight,
   onPointClick,
   relationshipGroups,
+  activeRelationshipId = null,
   onMoreClick,
   currentPage,
   pageHeight,
 }: PageModeProps) => {
   const [openClusterKey, setOpenClusterKey] = useState<string | null>(null);
-  const [activePointId, setActivePointId] = useState<string | null>(null);
   const templates = useAtomValue(templatesAtom);
   const hasCurrentPage = currentPage !== undefined;
 
@@ -127,14 +128,12 @@ const PageMode = ({
               stackOrder={stackOrder}
               trackRatio={trackRatio}
               references={element.references}
-              activePointId={activePointId}
+              activePointId={activeRelationshipId}
               isOpen={openClusterKey === key}
               onToggle={() => {
-                setActivePointId(null);
                 setOpenClusterKey(currentValue => (currentValue === key ? null : key));
               }}
               onPointClick={marker => {
-                setActivePointId(marker._id);
                 onPointClick?.(marker);
               }}
               onMoreClick={markersToShow => onMoreClick?.(markersToShow)}
@@ -148,9 +147,8 @@ const PageMode = ({
             position={position}
             stackOrder={stackOrder}
             marker={element.reference}
-            isActive={activePointId === element.reference._id}
+            isActive={activeRelationshipId === element.reference._id}
             onClick={marker => {
-              setActivePointId(marker._id);
               setOpenClusterKey(null);
               onPointClick?.(marker);
             }}

@@ -5,7 +5,8 @@ type Highlight = { [page: number]: TextHighlight[] };
 
 const relationshipToHighlight = (
   anchor: TextReferencePointer | undefined,
-  color?: string
+  color?: string,
+  relationshipId?: string
 ): Highlight | undefined => {
   if (!anchor?.selections.length) {
     return undefined;
@@ -22,7 +23,7 @@ const relationshipToHighlight = (
     const page = Number(pageKey);
     highlight[page] = [
       {
-        key: pageKey,
+        key: relationshipId ?? pageKey,
         textSelection: {
           text: anchor.text,
           selectionRectangles: groups[page].map(selection => ({

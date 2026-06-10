@@ -6,22 +6,24 @@ import { useSearchParams } from 'react-router';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
 import { t, Translate } from '#app/I18N/index.js';
-import { PDF, PDFControls, relationshipToHighlight } from '#V2/Components/PDFViewer/index.js';
+import { PDF, PDFControls } from '#V2/Components/PDFViewer/index.js';
 import { RelationshipsDisplay } from '#V2/Components/Relationships/index.js';
+import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { MetadataEntityHeader } from '#V2/Components/Metadata/MetadataEntityHeader.js';
 import { metadataHeaderStripShellClass } from '#V2/Components/Metadata/MetadataHeaderStrip.js';
 import { NeedAuthorization, Button } from '#V2/Components/UI/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { isClient } from '#app/utils/index.js';
-import { settingsAtom, templatesAtom, userAtom } from '#V2/atoms/index.js';
+import { settingsAtom, userAtom } from '#V2/atoms/index.js';
 import { Entity, FileType } from '#V2/api/entities/types.js';
 import { PlainText } from './PlainText.js';
 import { OCRButton } from './OCRButton.js';
 import { PAGE_PARAM, SIDE_TAB_PARAM, VIEW_MODE_PARAM } from '../urlParams.js';
 import { useTocActions, convertTextSelectionToTocEntry } from './ToC/tocAtom.js';
 import { useRelationshipsActions } from './RelationshipsPanel/relationshipsAtom.js';
-import { pdfController } from './atoms.js';
+import { pdfController, scrollToRelationshipPanelAtom } from './atoms.js';
+import { useRelationshipSelection } from './useRelationshipSelection.js';
 
 type PDFViewProps = {
   entity: Entity;
@@ -40,7 +42,8 @@ const PDFView = ({
   const [searchParams, setSearchParams] = useSearchParams();
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
   const user = useAtomValue(userAtom);
-  const templates = useAtomValue(templatesAtom);
+  const setScrollToRelationshipPanel = useSetAtom(scrollToRelationshipPanelAtom);
+  const { activeRelationshipId, selectRelationship } = useRelationshipSelection();
   const [hydrated, setHydrated] = useState(false);
   const pdfControls = useRef<PDFControls | null>(null);
   const setPDFControlsAtom = useSetAtom(pdfController);
@@ -144,6 +147,28 @@ const PDFView = ({
   const handleRemove = useCallback((_selection: TextSelection) => {
     // TODO: Implement remove functionality
   }, []);
+
+  const openRelationshipsSideTab = useCallback(() => {
+    const next = new URLSearchParams(searchParams.toString());
+    next.set(SIDE_TAB_PARAM, 'relationships');
+    setSearchParams(next, { replace: true, preventScrollReset: true });
+  }, [searchParams, setSearchParams]);
+
+  const handleRailPointClick = useCallback(
+    (marker: RelationshipMarker) => {
+      openRelationshipsSideTab();
+      selectRelationship(marker, { scrollPanel: true });
+    },
+    [openRelationshipsSideTab, selectRelationship]
+  );
+
+  const handleHighlightClick = useCallback(
+    (relationshipId: string) => {
+      openRelationshipsSideTab();
+      setScrollToRelationshipPanel(relationshipId);
+    },
+    [openRelationshipsSideTab, setScrollToRelationshipPanel]
+  );
 
   const handlePageNavigation = useCallback(
     (direction: 'prev' | 'next') => {
@@ -260,6 +285,7 @@ const PDFView = ({
                 onSelect={handleTextSelect}
                 onDeselect={handleTextDeselect}
                 onPageChange={handlePageChange}
+                onHighlightClick={handleHighlightClick}
                 onPdfReady={controls => {
                   const targetPage = initialPage.current || 1;
                   pdfControls.current = controls;
@@ -276,26 +302,16 @@ const PDFView = ({
                 document={mainDocument}
                 currentPage={pageNumber}
                 pageHeight={pageHeight}
-                onPointClick={marker => {
-                  const color = templates.find(
-                    template => template._id === marker.target.templateId
-                  )?.color;
-                  const highlight = relationshipToHighlight(marker.anchor, color);
-                  if (highlight) {
-                    pdfControls.current?.toggleHighlights([highlight]);
-                  }
-                }}
+                activeRelationshipId={activeRelationshipId}
+                onPointClick={handleRailPointClick}
                 onClusterClick={markers => {
                   const clusterPage = markers?.[0]?.anchor?.selections?.[0]?.page;
                   if (!clusterPage) {
-                    pdfControls.current?.toggleHighlights([]);
                     return;
                   }
                   if (clusterPage !== currentClusterPage) {
                     setCurrentClusterPage(clusterPage);
                     pdfControls.current?.goToPage(clusterPage);
-                  } else {
-                    pdfControls.current?.toggleHighlights([]);
                   }
                 }}
               />

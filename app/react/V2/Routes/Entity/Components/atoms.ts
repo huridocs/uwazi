@@ -5,4 +5,13 @@ const searchHintsModalAtom = atom(false);
 
 const pdfController = atom<PDFControls | null>(null);
 
-export { searchHintsModalAtom, pdfController };
+const activeRelationshipIdAtom = atom<string | null>(null);
+
+const scrollToRelationshipPanelAtom = atom<string | null>(null);
+
+export {
+  searchHintsModalAtom,
+  pdfController,
+  activeRelationshipIdAtom,
+  scrollToRelationshipPanelAtom,
+};

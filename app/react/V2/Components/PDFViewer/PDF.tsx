@@ -42,6 +42,7 @@ interface PDFProps {
   onScaleChange?: (scale: number) => void;
   onPageChange?: (pageNumber: number) => void;
   onPdfReady?: (controls: PDFControls, maxPages: number) => void;
+  onHighlightClick?: (relationshipId: string) => void;
   size?: { height?: string; width?: string };
   scrollRoot?: Element | null;
 }
@@ -55,6 +56,7 @@ const PDF = ({
   onScaleChange,
   onPageChange,
   onPdfReady,
+  onHighlightClick,
   size,
   scrollRoot,
 }: PDFProps) => {
@@ -391,6 +393,7 @@ const PDF = ({
                         eventBus={pdfEventBus}
                         intersectionObserver={intersectionObserver}
                         highlights={pageHighlights}
+                        onHighlightClick={onHighlightClick}
                         containerWidth={containerWidth}
                         onScaleChange={handleScaleChange}
                       />
