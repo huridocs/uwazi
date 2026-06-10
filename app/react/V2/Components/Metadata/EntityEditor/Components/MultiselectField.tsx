@@ -5,7 +5,7 @@ import type { MetadataValue } from '#V2/formatters/types.js';
 import { BaseSelectField } from './BaseSelectField.js';
 import { getMetadataSelectedValues, getOptionInfo } from './metadataSelectUtils.js';
 
-type SelectFieldProps<TFormValues extends FieldValues = FieldValues> = {
+type MultiselectFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
   label: string;
   field: Path<TFormValues>;
@@ -15,7 +15,7 @@ type SelectFieldProps<TFormValues extends FieldValues = FieldValues> = {
   hideFilters?: boolean;
 };
 
-const SelectField = <TFormValues extends FieldValues = FieldValues>({
+const MultiselectField = <TFormValues extends FieldValues = FieldValues>({
   context,
   label,
   field,
@@ -23,7 +23,7 @@ const SelectField = <TFormValues extends FieldValues = FieldValues>({
   registerOptions,
   disabled,
   hideFilters,
-}: SelectFieldProps<TFormValues>) => (
+}: MultiselectFieldProps<TFormValues>) => (
   <BaseSelectField<TFormValues>
     context={context}
     label={label}
@@ -32,26 +32,19 @@ const SelectField = <TFormValues extends FieldValues = FieldValues>({
     registerOptions={registerOptions}
     disabled={disabled}
     hideFilters={hideFilters}
-    singleSelect
     getSelectedValues={getMetadataSelectedValues}
-    onSelectedValuesChange={selectedValues => {
-      const selectedValue = selectedValues[0];
+    onSelectedValuesChange={selectedValues =>
+      selectedValues.map(value => {
+        const option = getOptionInfo(value, options);
 
-      if (!selectedValue) {
-        return [];
-      }
-
-      const option = getOptionInfo(selectedValue, options);
-
-      return [
-        {
-          value: selectedValue,
+        return {
+          value,
           label: option.label,
           parent: option.parent,
-        } satisfies MetadataValue,
-      ];
-    }}
+        } satisfies MetadataValue;
+      })
+    }
   />
 );
 
-export { SelectField };
+export { MultiselectField };

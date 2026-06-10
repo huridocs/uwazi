@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { BrowserRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
@@ -9,13 +9,17 @@ import {
   thesauriAtom,
   translationsAtom,
 } from '#V2/atoms/index.js';
-import { apiEntity, templates, thesauri } from '../fixtures/EditEntityFixtures.js';
 import { Translate } from '#app/I18N/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { EditEntity } from '#V2/Components/Metadata/EntityEditor/index.js';
 import { Button } from '#V2/Components/UI/index.js';
+import { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.js';
+import { MetadataEntityHeader } from '#V2/Components/Metadata/MetadataEntityHeader.js';
+import { apiEntity, templates, thesauri } from '../fixtures/EditEntityFixtures.js';
 
 const EditEntityComponent = ({ entity, locale = 'en' }: { entity: Entity; locale?: string }) => {
+  const [savedEntity, setSavedEntity] = useState(entity);
+
   const store = createStore();
   store.set(settingsAtom, { mapLayers: ['Streets', 'Hybrid', 'Satellite'] });
   store.set(templatesAtom, templates);
@@ -48,24 +52,38 @@ const EditEntityComponent = ({ entity, locale = 'en' }: { entity: Entity; locale
 
   const formId = 'edit-entity-form';
 
-  const handleSave = (savedEntity?: Entity) => {
-    console.log('savedEntity:', savedEntity);
+  const handleSave = (updatedEntity?: Entity) => {
+    if (updatedEntity) {
+      setSavedEntity(updatedEntity);
+    }
   };
 
   return (
     <div className="tw-content">
       <BrowserRouter>
         <Provider store={store}>
-          <div className="mb-4">
-            <EditEntity entity={entity} formId={formId} onSave={handleSave} />
-          </div>
-          <div className="flex flex-row items-center gap-2">
-            <Button variant="secondary">
-              <Translate>Cancel</Translate>
-            </Button>
-            <Button variant="primary" type="submit" form={formId}>
-              <Translate>Save</Translate>
-            </Button>
+          <div className="flex gap-4">
+            <div className="w-1/2">
+              <div className="mb-4">
+                <EditEntity entity={entity} formId={formId} onSave={handleSave} />
+              </div>
+              <div className="flex flex-row items-center gap-2">
+                <Button variant="secondary">
+                  <Translate>Cancel</Translate>
+                </Button>
+                <Button variant="primary" type="submit" form={formId}>
+                  <Translate>Save</Translate>
+                </Button>
+              </div>
+            </div>
+            <div className="w-1/2">
+              <MetadataEntityHeader
+                templateId={savedEntity.template}
+                title={savedEntity.title}
+                layout="inline"
+              />
+              <MetadataDisplay entity={savedEntity} />
+            </div>
           </div>
         </Provider>
       </BrowserRouter>

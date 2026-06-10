@@ -3,12 +3,14 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import { t } from '#app/I18N/index.js';
+import { ClientThesaurus } from '#app/apiResponseTypes.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
+import { thesauriAtom } from '#V2/atoms/thesauriAtom.js';
 import { ClientTemplateSchema } from '#V2/shared/types.js';
 import { resolvePropertyMetadataValues, toMetadataObjectSchema } from '#V2/formatters/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
-import { TextField, SelectField } from './Components/index.js';
+import { TextField, SelectField, TemplateField, MultiselectField } from './Components/index.js';
 import { MultiselectListOption } from '../../Forms/index.js';
 
 type EditEntityFormValues = {
@@ -30,6 +32,7 @@ type Properties = {
   name: string;
   label: string;
   required?: boolean;
+  content?: string;
 };
 
 const formatMetadataForForm = (
@@ -50,8 +53,26 @@ const formatMetadataForEntity = (
     return acc;
   }, {});
 
+const thesaurusToOptions = (
+  thesauri: ClientThesaurus[],
+  property: Properties
+): MultiselectListOption[] =>
+  thesauri
+    .find(thesaurus => thesaurus._id === property.content)
+    ?.values.map(value => ({
+      label: value.label,
+      searchLabel: value.label,
+      value: value.id || value.label,
+      items: value.values?.map(child => ({
+        label: child.label,
+        searchLabel: child.label,
+        value: child.id || value.label,
+      })),
+    })) || [];
+
 const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProps) => {
   const templates = useAtomValue(templatesAtom);
+  const thesauri = useAtomValue(thesauriAtom);
 
   const { availableTemplates, entityTemplate, metadataProperties } = useMemo(
     () =>
@@ -81,6 +102,7 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
                 name: property.name,
                 label: property.label,
                 required: property.required,
+                content: property.content,
               });
             });
           }
@@ -123,7 +145,11 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
     <FormProvider {...formContext}>
-      <form id={formId} onSubmit={submit} className="flex flex-col gap-4 h-full w-full">
+      <form
+        id={formId}
+        onSubmit={submit}
+        className="flex flex-col gap-6 h-full w-full bg(--color-theme-bg-surface)"
+      >
         <TextField<EditEntityFormValues>
           context="System"
           label="Title"
@@ -133,14 +159,14 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
           type="text"
         />
 
-        <SelectField<EditEntityFormValues>
+        <TemplateField<EditEntityFormValues>
           context="System"
           label="Template"
           field="template"
           registerOptions={{ required: true }}
           disabled={disabled}
-          singleSelect
           options={availableTemplates}
+          hideFilters
         />
 
         {metadataProperties.map(property => {
@@ -156,6 +182,34 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
               />
             );
           }
+
+          if (property.type === 'select') {
+            return (
+              <SelectField<EditEntityFormValues>
+                context={property.content || 'System'}
+                label={property.label}
+                field={`metadata.${property.name}`}
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+                options={thesaurusToOptions(thesauri, property)}
+                hideFilters
+              />
+            );
+          }
+
+          if (property.type === 'multiselect') {
+            return (
+              <MultiselectField<EditEntityFormValues>
+                context={property.content || 'System'}
+                label={property.label}
+                field={`metadata.${property.name}`}
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+                options={thesaurusToOptions(thesauri, property)}
+              />
+            );
+          }
+
           return undefined;
         })}
       </form>

@@ -109,7 +109,7 @@ const templates: Template[] = [
       },
       {
         _id: '1.8',
-        content: 'thes1',
+        content: 'thes2',
         type: 'select',
         label: 'Single select',
         noLabel: false,
@@ -117,7 +117,7 @@ const templates: Template[] = [
       },
       {
         _id: '1.9',
-        content: 'thes2',
+        content: 'thes1',
         type: 'multiselect',
         label: 'Multiple selector',
         noLabel: false,
@@ -322,8 +322,8 @@ const apiEntity: Entity = {
     ],
     status_selection: [
       {
-        value: 'thes1.2',
-        label: 'Again',
+        value: 'thes2.2',
+        label: 'Second event',
       },
     ],
     category_tags: [
@@ -332,22 +332,10 @@ const apiEntity: Entity = {
         label: 'Acknowledging',
       },
       {
-        value: 'thes1.2',
-        label: 'Again',
-      },
-      {
-        label: 'verb2',
-        value: 'thes1.g.2',
-        parent: {
-          value: 'thes1.g',
-          label: 'Grouped verbs',
-        },
-      },
-      {
-        value: 'thes1.g.1',
+        value: 'thes.g.1',
         label: 'verb1',
         parent: {
-          value: 'the1.g',
+          value: 'thes.g',
           label: 'Grouped verbs',
         },
       },
