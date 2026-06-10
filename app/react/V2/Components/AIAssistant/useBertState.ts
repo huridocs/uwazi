@@ -7,6 +7,11 @@ import {
   DEFAULT_CONTEXT_CHIPS,
 } from './mockBertData.js';
 import { useAIAssistantSocket } from './useAIAssistantSocket.js';
+import {
+  getBertSessionPassword,
+  hasBertSessionPassword,
+  setBertSessionPassword,
+} from './bertSessionPassword.js';
 import type {
   ChatMessage,
   ContextAddOptionId,
@@ -39,20 +44,15 @@ const formatTime = () =>
 
 const buildGroundedReply = (prompt: string, chips: ContextChip[]): ChatMessage => {
   const scope = buildContextSummary(chips);
+  const promptSnippet = prompt.trim()
+    ? ` Regarding **"${prompt.trim().slice(0, 80)}${prompt.trim().length > 80 ? '…' : ''}"** — I can walk through the relevant passages next.`
+    : '';
+
   return {
     id: createId(),
     role: 'assistant',
     timestamp: formatTime(),
-    content: [
-      {
-        kind: 'text',
-        text: `Working in context of ${scope}. I'd ground my answer in the documents in scope and cite the passages as I go, then summarise what I find.${
-          prompt.trim()
-            ? ` Regarding "${prompt.trim().slice(0, 80)}${prompt.trim().length > 80 ? '…' : ''}" — I can walk through the relevant passages next.`
-            : ''
-        }`,
-      },
-    ],
+    text: `Working in context of **${scope}**. I'd ground my answer in the documents in scope and cite the passages as I go, then summarise what I find.${promptSnippet}`,
   };
 };
 
@@ -63,10 +63,7 @@ const useBertState = ({
   replyScenario = 'normal',
 }: UseBertStateOptions = {}) => {
   const [messages, setMessages] = useState<ChatMessage[]>(() =>
-    initialMessages.map(message => ({
-      ...message,
-      content: message.content.map(part => ({ ...part })),
-    }))
+    initialMessages.map(message => ({ ...message }))
   );
   const [contextMode, setContextMode] = useState<ContextScopeMode>('auto');
   const [contextChips, setContextChips] = useState<ContextChip[]>(() =>
@@ -76,8 +73,10 @@ const useBertState = ({
   const [isThinking, setIsThinking] = useState(false);
   const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null);
   const [replyError, setReplyError] = useState<string | null>(null);
-  const [isPasswordUnlocked, setIsPasswordUnlocked] = useState(mockReplies);
-  const passwordRef = useRef<string | null>(null);
+  const [isPasswordUnlocked, setIsPasswordUnlocked] = useState(
+    () => mockReplies || hasBertSessionPassword()
+  );
+  const passwordRef = useRef<string | null>(getBertSessionPassword());
   const pendingJobIdRef = useRef<string | null>(null);
 
   const isReplying = isThinking || streamingMessageId !== null;
@@ -87,6 +86,7 @@ const useBertState = ({
 
   const unlockWithPassword = useCallback((password: string) => {
     passwordRef.current = password;
+    setBertSessionPassword(password);
     setIsPasswordUnlocked(true);
   }, []);
 
@@ -99,7 +99,7 @@ const useBertState = ({
       id: createId(),
       role: 'assistant',
       timestamp: formatTime(),
-      content: [{ kind: 'text', text: payload.message }],
+      text: payload.message,
     };
 
     pendingJobIdRef.current = null;
@@ -166,7 +166,7 @@ const useBertState = ({
       id: createId(),
       role: 'user',
       timestamp: formatTime(),
-      content: [{ kind: 'text', text }],
+      text,
     };
 
     setMessages(current => [...current, userMessage]);
@@ -225,6 +225,15 @@ const useBertState = ({
     setStreamingMessageId(null);
   }, []);
 
+  const clearChat = useCallback(() => {
+    pendingJobIdRef.current = null;
+    setMessages([]);
+    setDraftMessage('');
+    setReplyError(null);
+    setIsThinking(false);
+    setStreamingMessageId(null);
+  }, []);
+
   const contextSummary = useMemo(() => buildContextSummary(contextChips), [contextChips]);
 
   return {
@@ -246,6 +255,7 @@ const useBertState = ({
     unlockWithPassword,
     sendMessage,
     finishStreaming,
+    clearChat,
   };
 };
 

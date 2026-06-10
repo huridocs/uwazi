@@ -19,33 +19,15 @@ type ContextAddOptionId =
   | 'entity'
   | 'file';
 
-type CodeBlock = {
-  language: string;
-  code: string;
-};
-
-type AssistantListItem = {
-  text: string;
-  subItems?: string[];
-};
-
-type ChatMessageContent =
-  | { kind: 'text'; text: string }
-  | { kind: 'list'; items: AssistantListItem[] }
-  | { kind: 'code'; block: CodeBlock };
-
 type ChatMessage = {
   id: string;
   role: MessageRole;
   timestamp: string;
-  content: ChatMessageContent[];
+  text: string;
 };
 
 export type {
-  AssistantListItem,
   ChatMessage,
-  ChatMessageContent,
-  CodeBlock,
   ContextAddOptionId,
   ContextChip,
   ContextChipKind,

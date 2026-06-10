@@ -15,13 +15,9 @@ const BertHost = ({ mockReplies = false, replyScenario = 'normal' }: BertHostPro
 
   useBertShortcut();
 
-  if (!open) {
-    return null;
-  }
-
   return (
     <BertModal
-      open
+      open={open}
       onClose={() => setOpen(false)}
       mockReplies={mockReplies}
       replyScenario={replyScenario}

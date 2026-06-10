@@ -21,10 +21,7 @@ export type { BertContextBarProps } from './BertContextBar.js';
 export type { ReplyScenario, UseBertStateOptions } from './useBertState.js';
 export type { AIAssistantPanelProps } from './AIAssistantPanel.js';
 export type {
-  AssistantListItem,
   ChatMessage,
-  ChatMessageContent,
-  CodeBlock,
   ContextAddOptionId,
   ContextChip,
   ContextChipKind,

@@ -10,6 +10,8 @@ import { TranslateModal } from '#app/I18N/index.js';
 import { inlineEditAtom } from '#V2/atoms/index.js';
 import { NotificationsPanel } from '#V2/Components/UI/Notifications/NotificationsPanel.js';
 import { Header } from '#app/V2/Components/UI/Header/Header.js';
+import { BertHost } from '#app/V2/Components/AIAssistant/BertHost.js';
+import { FeatureToggle } from '#app/V2/Components/UI/FeatureToggle.js';
 import { Confirm } from './Confirm.js';
 import { AppMainContext } from './AppMainContext.js';
 import { GoogleAnalytics } from './GoogleAnalytics.js';
@@ -113,6 +115,9 @@ const App = ({ customParams }) => {
         </ThemeProvider>
       )}
       <ThemeProvider>
+        <FeatureToggle feature="aiAssistant">
+          <BertHost />
+        </FeatureToggle>
         <NotificationsPanel />
       </ThemeProvider>
     </div>
