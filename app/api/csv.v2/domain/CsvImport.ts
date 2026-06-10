@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 enum CsvImportStatus {
   Queued = 'queued',
   Validating = 'validating',
@@ -54,6 +55,7 @@ type CsvImportStats = {
   relationshipValuesObserved?: number;
   relationshipValuesCreated?: number;
   entitiesCreated?: number;
+  entitiesUpdated?: number;
   rowsProcessed?: number;
   rowsFailed?: number;
 };
