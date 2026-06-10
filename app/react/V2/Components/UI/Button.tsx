@@ -93,99 +93,27 @@ const Button = ({
 
   const textStyles = size ? sizeClasses[variant][size] : sizeClasses[variant].default;
 
-  const hoverClassByVariant: Record<ButtonVariant, string> = {
-    primary: 'enabled:hover:opacity-90',
+  const variantClasses: Record<ButtonVariant, string> = {
+    primary:
+      'border-ink bg-ink text-parchment enabled:hover:opacity-90 disabled:border-[color-mix(in_srgb,var(--color-theme-action-primary)_45%,transparent)]! disabled:bg-[color-mix(in_srgb,var(--color-theme-action-primary)_45%,var(--color-theme-bg-surface))]! disabled:text-ink!',
     secondary:
-      'enabled:hover:bg-(--color-theme-button-secondary-hover-bg) enabled:hover:border-(--color-theme-button-secondary-border)',
-    danger: 'enabled:hover:opacity-90',
+      'border-border bg-paper text-ink enabled:hover:bg-warm disabled:border-border-soft disabled:bg-paper disabled:text-ink-muted',
+    danger:
+      'border-emphasis bg-emphasis text-(--color-theme-feedback-danger-fg) enabled:hover:opacity-90 disabled:opacity-60',
     ghost:
-      'border-0 text-ink-secondary bg-warm enabled:hover:bg-parchment enabled:hover:text-ink disabled:text-ink-muted disabled:bg-warm disabled:opacity-60',
+      'border-border bg-paper text-ink enabled:hover:bg-warm disabled:border-border-soft disabled:bg-paper disabled:text-ink-muted disabled:opacity-60',
     compact:
-      'enabled:hover:bg-(--color-theme-bg-muted) enabled:hover:border-(--color-theme-button-compact-border)',
+      'border-border-soft bg-warm text-ink-secondary enabled:hover:bg-vellum enabled:hover:border-border disabled:border-border-soft disabled:text-ink-muted',
     success:
-      'enabled:hover:bg-(--color-theme-button-success-hover-bg) enabled:hover:border-(--color-theme-button-success-hover-bg)',
+      'border-success bg-success text-(--color-theme-feedback-success-fg) enabled:hover:bg-[color-mix(in_srgb,var(--color-theme-success)_92%,black)]! enabled:hover:border-[color-mix(in_srgb,var(--color-theme-success)_92%,black)]! disabled:opacity-60',
     dangerSecondary:
-      'enabled:hover:bg-(--color-theme-button-danger-subtle-bg) enabled:hover:border-(--color-theme-button-danger-secondary-border)',
+      'border-emphasis bg-transparent text-emphasis enabled:hover:bg-emphasis-tint disabled:border-border-soft disabled:text-ink-muted',
     successSecondary:
-      'enabled:hover:bg-(--color-theme-button-success-subtle-bg) enabled:hover:border-(--color-theme-button-success-secondary-border)',
-    dangerSubtle: 'enabled:hover:opacity-90',
-    successSubtle: 'enabled:hover:opacity-90',
-  };
-  const styleByVariant: Record<ButtonVariant, React.CSSProperties> = {
-    primary: {
-      borderColor: disabled
-        ? 'var(--color-theme-button-primary-disabled-border)'
-        : 'var(--color-theme-button-primary-border)',
-      backgroundColor: disabled
-        ? 'var(--color-theme-button-primary-disabled-bg)'
-        : 'var(--color-theme-button-primary-bg)',
-      color: disabled
-        ? 'var(--color-theme-button-primary-disabled-fg)'
-        : 'var(--color-theme-button-primary-fg)',
-    },
-    secondary: {
-      borderColor: disabled
-        ? 'color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)'
-        : 'var(--color-theme-button-secondary-border)',
-      backgroundColor: 'var(--color-theme-button-secondary-bg)',
-      color: disabled ? 'var(--color-theme-text-muted)' : 'var(--color-theme-button-secondary-fg)',
-    },
-    danger: {
-      borderColor: 'var(--color-theme-button-danger-border)',
-      backgroundColor: 'var(--color-theme-button-danger-bg)',
-      color: 'var(--color-theme-button-danger-fg)',
-    },
-    ghost: {},
-    compact: {
-      borderColor: disabled
-        ? 'color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)'
-        : 'var(--color-theme-button-compact-border)',
-      backgroundColor: 'var(--color-theme-button-compact-bg)',
-      color: disabled ? 'var(--color-theme-text-muted)' : 'var(--color-theme-button-compact-fg)',
-    },
-    success: {
-      borderColor: disabled
-        ? 'var(--color-theme-button-success-disabled-border)'
-        : 'var(--color-theme-button-success-border)',
-      backgroundColor: disabled
-        ? 'var(--color-theme-button-success-disabled-bg)'
-        : 'var(--color-theme-button-success-bg)',
-      color: disabled
-        ? 'var(--color-theme-button-success-disabled-fg)'
-        : 'var(--color-theme-button-success-fg)',
-    },
-    dangerSecondary: {
-      borderColor: disabled
-        ? 'color-mix(in srgb, var(--color-theme-feedback-danger) 15%, transparent)'
-        : 'var(--color-theme-button-danger-secondary-border)',
-      backgroundColor: 'var(--color-theme-button-danger-secondary-bg)',
-      color: disabled
-        ? 'var(--color-theme-text-muted)'
-        : 'var(--color-theme-button-danger-secondary-fg)',
-    },
-    successSecondary: {
-      borderColor: disabled
-        ? 'color-mix(in srgb, var(--color-theme-feedback-success) 15%, transparent)'
-        : 'var(--color-theme-button-success-secondary-border)',
-      backgroundColor: 'var(--color-theme-button-success-secondary-bg)',
-      color: disabled
-        ? 'var(--color-theme-text-muted)'
-        : 'var(--color-theme-button-success-secondary-fg)',
-    },
-    dangerSubtle: {
-      borderColor: 'var(--color-theme-button-danger-subtle-border)',
-      backgroundColor: 'var(--color-theme-button-danger-subtle-bg)',
-      color: disabled
-        ? 'var(--color-theme-text-muted)'
-        : 'var(--color-theme-button-danger-subtle-fg)',
-    },
-    successSubtle: {
-      borderColor: 'var(--color-theme-button-success-subtle-border)',
-      backgroundColor: 'var(--color-theme-button-success-subtle-bg)',
-      color: disabled
-        ? 'var(--color-theme-text-muted)'
-        : 'var(--color-theme-button-success-subtle-fg)',
-    },
+      'border-success bg-transparent text-success enabled:hover:bg-success-light disabled:border-border-soft disabled:text-ink-muted',
+    dangerSubtle:
+      'border-transparent bg-emphasis-tint text-emphasis enabled:hover:opacity-90 disabled:text-ink-muted',
+    successSubtle:
+      'border-transparent bg-success-light text-success enabled:hover:opacity-90 disabled:text-ink-muted',
   };
 
   return (
@@ -197,11 +125,10 @@ const Button = ({
         className,
         textStyles,
         'border rounded-md font-medium transition-colors disabled:cursor-not-allowed focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]',
-        hoverClassByVariant[variant],
+        variantClasses[variant],
       ]
         .filter(Boolean)
         .join(' ')}
-      style={styleByVariant[variant]}
       form={form}
       data-testid={dataTestid}
     >
