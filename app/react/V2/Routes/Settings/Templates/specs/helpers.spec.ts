@@ -1,8 +1,4 @@
-import {
-  inheritMatches,
-  optionalIdMatches,
-  relationshipConfigMatches,
-} from '../helpers.js';
+import { inheritMatches, optionalIdMatches, relationshipConfigMatches } from '../helpers.js';
 
 describe('template property matching helpers', () => {
   describe('optionalIdMatches', () => {

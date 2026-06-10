@@ -24,11 +24,7 @@ import {
 import { ThesaurusField } from './fields/ThesaurusField.js';
 import { RelationshipFields } from './fields/RelationshipFields.js';
 import { MatchingPropertiesTable } from './MatchingPropertiesTable.js';
-import {
-  optionalIdMatches,
-  relationshipConfigMatches,
-  translationsKeys,
-} from '../helpers.js';
+import { optionalIdMatches, relationshipConfigMatches, translationsKeys } from '../helpers.js';
 import { PropertyRow } from '../types.js';
 import { GeneratedIdField } from './fields/GeneratedIdField.js';
 

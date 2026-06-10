@@ -112,7 +112,7 @@ function relationTypeCellRenderer(
 function inheritTypeCellRenderer(inherit: { property: string; type: string } | undefined) {
   return (cell: CellContext<MatchingPropRow, { type: string } | undefined>) => {
     const value = cell.getValue()?.type as keyof typeof translationsKeys;
-    const matches = inheritMatches(cell.getValue(), inherit);
+    const matches = inheritMatches(cell.row.original.inherit, inherit);
     return (
       <span className={`flex items-center gap-2 ${matches ? '' : 'text-error-600'}`}>
         {propertyIconsSmall[value]}
