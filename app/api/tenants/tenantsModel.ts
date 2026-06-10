@@ -44,7 +44,6 @@ const mongoSchema = new mongoose.Schema({
     v2Languages: Boolean,
     v2UpdateFile: Boolean,
     newHeader: Boolean,
-    v2EntityPermission: Boolean,
     postgresThesauri: Boolean,
   },
   globalMatomo: { id: String, url: String },
