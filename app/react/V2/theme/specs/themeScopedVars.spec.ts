@@ -1,4 +1,4 @@
-import { BUTTON_PRIMARY_BG, EMPHASIS_SOLID_BG, EMPHASIS_SOLID_FG } from '#V2/theme/roleTokens.js';
+import { EMPHASIS_SOLID_BG, EMPHASIS_SOLID_FG } from '#V2/theme/roleTokens.js';
 import { getScopedThemeVars } from '#V2/theme/themeScopedVars.js';
 import { appliedTheme } from '#V2/theme/themes.js';
 import type { ResolvedThemeVars } from '#V2/theme/themes.js';
@@ -16,14 +16,13 @@ describe('getScopedThemeVars merge contract', () => {
     expect(scoped['--color-theme-surface-page']).not.toBe('#ff00ff');
   });
 
-  it('lets the button layer override resolved when both set the same button token', () => {
+  it('does not expose legacy main/status button tokens', () => {
     const resolved = {
       ...baseResolved(),
-      [BUTTON_PRIMARY_BG]: '#ff00ff',
+      '--color-theme-button-primary-bg': '#ff00ff',
     } as ResolvedThemeVars;
     const scoped = getScopedThemeVars('default', resolved);
-    expect(scoped[BUTTON_PRIMARY_BG]).toBe(resolved['--color-theme-accent-primary']);
-    expect(scoped[BUTTON_PRIMARY_BG]).not.toBe('#ff00ff');
+    expect(scoped['--color-theme-button-primary-bg']).toBe('#ff00ff');
   });
 
   it('exposes compatibility aliases that mirror canonical resolved keys', () => {
@@ -33,11 +32,11 @@ describe('getScopedThemeVars merge contract', () => {
     expect(scoped['--bg-primary']).toBe(resolved['--color-theme-bg-primary']);
   });
 
-  it('adds component tokens not present on resolved alone', () => {
+  it('adds embedded button tokens not present on resolved alone', () => {
     const resolved = baseResolved();
-    expect(Object.hasOwn(resolved as object, BUTTON_PRIMARY_BG)).toBe(false);
+    expect(Object.hasOwn(resolved as object, '--color-theme-button-embedded-white-bg')).toBe(false);
     const scoped = getScopedThemeVars('default', resolved);
-    expect(scoped[BUTTON_PRIMARY_BG]).toBe(resolved['--color-theme-accent-primary']);
+    expect(typeof scoped['--color-theme-button-embedded-white-bg']).toBe('string');
   });
 
   it('adds emphasis solid pair derived from feedback danger', () => {
