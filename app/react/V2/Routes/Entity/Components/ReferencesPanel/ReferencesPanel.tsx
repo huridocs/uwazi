@@ -183,7 +183,7 @@ const ReferencesPanel = ({ entity, mainDocument }: ReferencesPanelProps) => {
     <>
       <Panel>
         <Panel.Body className="pr-1">
-          <div className="flex flex-col gap-(--spacing-theme-3) h-full">
+          <div className="flex h-full flex-col gap-3">
             {references.length > 0 ? (
               references.map((reference, index) => (
                 <Reference
