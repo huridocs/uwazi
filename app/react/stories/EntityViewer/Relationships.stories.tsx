@@ -98,7 +98,11 @@ const RelationshipsDisplayComponent = ({
                   }
                 }}
                 onClusterClick={markers => {
-                  const page = markers?.[0]?.anchor?.selections?.[0]?.page ?? 0;
+                  const page = markers?.[0]?.anchor?.selections?.[0]?.page;
+                  if (!page) {
+                    documentControls.current?.toggleHighlights([]);
+                    return;
+                  }
                   if (page !== currentClusterPage) {
                     setCurrentClusterPage(page);
                     documentControls.current?.goToPage(page);

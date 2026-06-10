@@ -80,7 +80,7 @@ describe('References Display', () => {
   });
 
   it('renders references story content', () => {
-    cy.contains('References').should('be.visible');
+    cy.contains('Relationships').should('be.visible');
     cy.contains('Current page: 1').should('be.visible');
     cy.contains('button', 'Toggle timeline mode').should('be.visible');
   });

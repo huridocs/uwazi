@@ -4,7 +4,11 @@ import throttle from 'lodash/throttle.js';
 import { Translate } from '#app/I18N/index.js';
 import { Entity, FileType } from '#V2/api/entities/types.js';
 import { formatRelationships } from '#V2/formatters/index.js';
-import { groupRelationships, groupDocumentRelationships } from './groupRelationships.js';
+import {
+  splitMarkersByAnchor,
+  groupRelationships,
+  groupDocumentRelationships,
+} from './groupRelationships.js';
 import { FullMode, PageMode } from './Components/index.js';
 import { RelationshipMarker, toMarker } from './types.js';
 
@@ -44,9 +48,11 @@ const RelationshipsDisplay = ({
     [entity]
   );
 
+  const anchoredMarkers = useMemo(() => splitMarkersByAnchor(markers).anchored, [markers]);
+
   const relationshipGroups = useMemo(
-    () => groupRelationships(markers, { trackHeight: markerLayerHeight, pageHeight }),
-    [markers, markerLayerHeight, pageHeight]
+    () => groupRelationships(anchoredMarkers, { trackHeight: markerLayerHeight, pageHeight }),
+    [anchoredMarkers, markerLayerHeight, pageHeight]
   );
 
   const documentClusters = useMemo(

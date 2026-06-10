@@ -4,7 +4,6 @@ import { useLoaderData, useSearchParams } from 'react-router';
 import {
   Bars3CenterLeftIcon,
   DocumentTextIcon,
-  LinkIcon,
   ListBulletIcon,
   MagnifyingGlassIcon,
   PaperClipIcon,
@@ -146,11 +145,6 @@ const Entity = () => {
           ),
         },
         {
-          id: SIDE_TABS.REFERENCES,
-          label: <TabLabel text="References" icon={<LinkIcon className="w-5 h-5" />} />,
-          content: <RelationshipsPanel entity={entity} mainDocument={mainDocument} />,
-        },
-        {
           id: SIDE_TABS.RELATIONSHIPS,
           label: (
             <TabLabel
@@ -158,7 +152,7 @@ const Entity = () => {
               icon={<RelationshipPropertyIcon className="w-5 h-5" />}
             />
           ),
-          content: <div no-translate="true">This content is not yet available</div>,
+          content: <RelationshipsPanel entity={entity} mainDocument={mainDocument} />,
         },
         {
           id: SIDE_TABS.SEARCH,
@@ -228,7 +222,8 @@ const Entity = () => {
 
   const activeSideTab = useMemo<SideTabId | undefined>(() => {
     const availableTabs = sideTabsByMain[activeMainTab] || [];
-    const sideTab = searchParams.get(SIDE_TAB_PARAM);
+    const rawSideTab = searchParams.get(SIDE_TAB_PARAM);
+    const sideTab = rawSideTab === SIDE_TABS.REFERENCES ? SIDE_TABS.RELATIONSHIPS : rawSideTab;
 
     if (isValidSideTab(sideTab) && availableTabs.some(tab => tab.id === sideTab)) {
       return sideTab;

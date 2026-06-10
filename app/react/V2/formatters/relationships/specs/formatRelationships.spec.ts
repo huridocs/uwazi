@@ -148,4 +148,87 @@ describe('formatRelationships', () => {
   it('returns empty array when entity has no relations', () => {
     expect(formatRelationships(entityWithNoRelations)).toEqual([]);
   });
+
+  it('pairs each target with the self-side hub connection', () => {
+    const entity = {
+      _id: 'entity-multi',
+      sharedId: 'sharedId-multi',
+      language: 'en',
+      title: 'Source Entity',
+      template: 'template1',
+      creationDate: 1,
+      user: 'user1',
+      relations: [
+        {
+          template: null,
+          _id: 'conn-multi-source',
+          hub: 'hub-multi',
+          entity: 'sharedId-multi',
+        },
+        {
+          template: 'relType1',
+          _id: 'conn-multi-honduras',
+          hub: 'hub-multi',
+          entity: 'hondurasId',
+          entityData: { _id: 'h1', title: 'Honduras', template: 'countryTemplate' },
+        },
+        {
+          template: 'relType1',
+          _id: 'conn-multi-ecuador',
+          hub: 'hub-multi',
+          entity: 'ecuadorId',
+          entityData: { _id: 'e1', title: 'Ecuador', template: 'countryTemplate' },
+        },
+        {
+          template: 'relType1',
+          _id: 'conn-multi-a2',
+          hub: 'hub-multi',
+          entity: 'a2Id',
+          entityData: { _id: 'a2', title: 'A2', template: 'courtCaseTemplate' },
+        },
+      ],
+    } as Entity;
+
+    const result = formatRelationships(entity);
+
+    expect(result).toHaveLength(3);
+    expect(result.map(view => view.to.entityTitle).sort()).toEqual(['A2', 'Ecuador', 'Honduras']);
+    result.forEach(view => {
+      expect(view.from.entity).toBe('sharedId-multi');
+    });
+  });
+
+  it('emits one view per hub target', () => {
+    const entity = {
+      _id: 'entity-dup',
+      sharedId: 'sharedId-dup',
+      language: 'en',
+      title: 'Source Entity',
+      template: 'template1',
+      creationDate: 1,
+      user: 'user1',
+      relations: [
+        {
+          template: 'relationshipType1',
+          _id: 'conn-dup-source',
+          hub: 'hub-dup',
+          file: 'file1',
+          entity: 'sharedId-dup',
+          reference: {
+            text: 'selected text',
+            selectionRectangles: [{ top: 10, left: 20, width: 100, height: 30, page: '1' }],
+          },
+        },
+        {
+          template: null,
+          _id: 'conn-dup-target',
+          hub: 'hub-dup',
+          entity: 'targetSharedId',
+          entityData: { _id: 'targetId', title: 'Target Entity', template: 'targetTemplate1' },
+        },
+      ],
+    } as Entity;
+
+    expect(formatRelationships(entity)).toHaveLength(1);
+  });
 });

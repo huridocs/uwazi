@@ -1,4 +1,4 @@
-import { groupRelationships } from '../groupRelationships.js';
+import { groupRelationships, splitMarkersByAnchor } from '../groupRelationships.js';
 import {
   makeMarker,
   refPage1,
@@ -56,6 +56,13 @@ describe('groupRelationships', () => {
 
   it('should return an empty array for an empty references array', () => {
     expect(groupRelationships([])).toEqual([]);
+  });
+
+  it('should keep entity-level markers out of the rail via splitMarkersByAnchor', () => {
+    const { anchored, entityLevel } = splitMarkersByAnchor([refPage1, refNoRectangles, refPage3]);
+
+    expect(anchored.map(marker => marker._id)).toEqual(['ref1', 'ref5']);
+    expect(entityLevel.map(marker => marker._id)).toEqual(['ref6']);
   });
 
   it('should skip relationships with no text anchor', () => {

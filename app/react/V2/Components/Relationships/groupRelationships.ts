@@ -77,6 +77,21 @@ const getPositionedRelationship = (marker: RelationshipMarker): PositionedRelati
   };
 };
 
+const splitMarkersByAnchor = (
+  markers: RelationshipMarker[]
+): { anchored: RelationshipMarker[]; entityLevel: RelationshipMarker[] } =>
+  markers.reduce<{ anchored: RelationshipMarker[]; entityLevel: RelationshipMarker[] }>(
+    (acc, marker) => {
+      if (getPositionedRelationship(marker)) {
+        acc.anchored.push(marker);
+      } else {
+        acc.entityLevel.push(marker);
+      }
+      return acc;
+    },
+    { anchored: [], entityLevel: [] }
+  );
+
 const appendRelationshipCluster = (
   grouped: RelationshipGroups,
   cluster: PositionedRelationship[]
@@ -254,4 +269,4 @@ const groupDocumentRelationships = (
 };
 
 export type { DocumentRelationshipGroup, RelationshipGroup };
-export { groupRelationships, groupDocumentRelationships };
+export { splitMarkersByAnchor, groupRelationships, groupDocumentRelationships };

@@ -1,7 +1,9 @@
 import React from 'react';
+import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
+import { relationshipTypesAtom } from '#V2/atoms/index.js';
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 
 type RelationshipRowProps = {
@@ -12,8 +14,11 @@ type RelationshipRowProps = {
 };
 
 const RelationshipRow = ({ marker, isSelected, onClick, onDelete }: RelationshipRowProps) => {
+  const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const entityTitle = marker.target.title || '-';
-  const referenceText = marker.anchor?.text || '';
+  const relationshipTypeName = relationshipTypes.find(type => type._id === marker.view.type)?.name;
+  const referenceText = marker.anchor?.text?.trim() || '';
+  const referencePage = marker.anchor?.selections?.[0]?.page;
 
   const surface = 'bg-(--color-theme-surface-raised)';
   const borderIdle =
@@ -42,10 +47,22 @@ const RelationshipRow = ({ marker, isSelected, onClick, onDelete }: Relationship
     >
       <div className="flex flex-col gap-1">
         <h3 className="text-sm font-bold text-ink">{entityTitle}</h3>
+        {relationshipTypeName && (
+          <p className="text-xs font-semibold uppercase tracking-wide text-ink/70">
+            {relationshipTypeName}
+          </p>
+        )}
       </div>
 
       {referenceText && (
-        <p className="text-sm font-medium leading-relaxed text-ink">{referenceText}</p>
+        <div className="flex flex-col gap-1">
+          {referencePage && (
+            <p className="text-xs font-medium text-ink/60">
+              <Translate>Page</Translate> {referencePage}
+            </p>
+          )}
+          <p className="line-clamp-4 text-sm leading-relaxed text-ink/80">{referenceText}</p>
+        </div>
       )}
 
       <TemplateLabel templateId={marker.target.templateId} />

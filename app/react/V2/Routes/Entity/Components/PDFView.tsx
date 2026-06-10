@@ -113,7 +113,7 @@ const PDFView = ({
     (selection: TextSelection) => {
       setCreateReferenceSelection(selection, 'text');
       const next = new URLSearchParams(searchParams.toString());
-      next.set(SIDE_TAB_PARAM, 'references');
+      next.set(SIDE_TAB_PARAM, 'relationships');
       setSearchParams(next, { replace: true });
     },
     [searchParams, setSearchParams, setCreateReferenceSelection]
@@ -123,7 +123,7 @@ const PDFView = ({
     (selection: TextSelection) => {
       setCreateReferenceSelection(selection, 'entity');
       const next = new URLSearchParams(searchParams.toString());
-      next.set(SIDE_TAB_PARAM, 'references');
+      next.set(SIDE_TAB_PARAM, 'relationships');
       setSearchParams(next, { replace: true });
     },
     [searchParams, setSearchParams, setCreateReferenceSelection]
@@ -286,7 +286,11 @@ const PDFView = ({
                   }
                 }}
                 onClusterClick={markers => {
-                  const clusterPage = markers?.[0]?.anchor?.selections?.[0]?.page ?? 0;
+                  const clusterPage = markers?.[0]?.anchor?.selections?.[0]?.page;
+                  if (!clusterPage) {
+                    pdfControls.current?.toggleHighlights([]);
+                    return;
+                  }
                   if (clusterPage !== currentClusterPage) {
                     setCurrentClusterPage(clusterPage);
                     pdfControls.current?.goToPage(clusterPage);

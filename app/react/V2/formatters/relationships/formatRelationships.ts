@@ -1,4 +1,3 @@
-import has from 'lodash/has.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { ConnectionSchema } from '#shared/types/connectionType.js';
 import { Pointer, RelationshipView, Selection } from './types.js';
@@ -43,14 +42,21 @@ const formatRelationships = (entity: Entity): RelationshipView[] => {
     (entity as Record<string, unknown>).relations || []
   ) as ConnectionSchema[];
 
-  const sources = relations.filter(
-    r => has(r, 'reference') || (!has(r, 'reference') && r.entity === entity.sharedId)
+  const targets = relations.filter(
+    r => r.entity !== entity.sharedId && r.entityData?.template
   );
 
-  return sources.reduce<RelationshipView[]>((acc, source) => {
-    const target = relations.find(rel => rel._id !== source._id && rel.hub === source.hub);
+  return targets.reduce<RelationshipView[]>((acc, target) => {
+    const targetTemplateId = target.entityData?.template;
+    if (!targetTemplateId) {
+      return acc;
+    }
 
-    if (!target?._id || !target.hub || !target.entityData?.template) {
+    const source = relations.find(
+      rel => rel.hub === target.hub && rel.entity === entity.sharedId
+    );
+
+    if (!source?._id || !source.hub) {
       return acc;
     }
 
@@ -63,8 +69,8 @@ const formatRelationships = (entity: Entity): RelationshipView[] => {
     const to = buildPointer(
       target,
       target.entity ?? '',
-      target.entityData.title ?? '',
-      String(target.entityData.template)
+      target.entityData?.title ?? '',
+      String(targetTemplateId)
     );
 
     const relationType = source.template ?? target.template;
