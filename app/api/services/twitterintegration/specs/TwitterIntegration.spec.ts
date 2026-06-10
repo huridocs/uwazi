@@ -1,3 +1,4 @@
+import fetchMock from 'fetch-mock';
 import { testingDB } from '#api/utils/testing_db.js';
 import * as filesApi from '#api/files/filesystem.js';
 import { storage, files } from '#api/files/index.js';
@@ -15,7 +16,6 @@ import templates from '#api/core/v1_layer/templates/templates.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { tenants } from '#api/tenants/index.js';
-import fetchMock from 'fetch-mock';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
