@@ -4,10 +4,6 @@ import { UpdateFileInput } from '#api/core/application/UpdateFile.js';
 import { UpdateFileUseCaseFactory } from '../../factories/UpdateFileUseCaseFactory.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { createError } from '#api/utils/index.js';
-import { files } from '#api/files/files.js';
-import { checkEntityPermission } from '#api/files/routes.js';
 
 const TocEntrySchema = z.object({
   label: z.string().optional(),
@@ -34,21 +30,6 @@ const RequestSchema = z.object({
 
 class UpdateFileController extends AbstractController {
   protected async handle(): Promise<void> {
-    if (!ExecutionContext.tenant.featureFlags?.v2UpdateFile || this.request.body?._id == null) {
-      if (
-        !(await checkEntityPermission(
-          this.request.body,
-          permissionsContext.getUserInContext(),
-          'write'
-        ))
-      ) {
-        throw createError('file not found', 404);
-      }
-      const result = await files.save(this.request.body);
-      this.response.json(result);
-      return;
-    }
-
     const start = Date.now();
 
     try {

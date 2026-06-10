@@ -25,7 +25,6 @@ const createSut = (props?: CreateSutProps) => {
 
   ExecutionContext.attachContext(sut, 'handleAsync', {
     factories: { logger: LoggerFactory.forTests } as any,
-    tenant: { featureFlags: { v2UpdateFile: props?.featureFlag ?? true } } as any,
   });
 
   return { sut, request, response };
@@ -110,59 +109,5 @@ describe('UpdateFileController', () => {
 
     await expect(sutEmptyId.sut.handleAsync()).rejects.toThrow();
     await expect(sutBadOptionals.sut.handleAsync()).rejects.toThrow();
-  });
-
-  it('should fall back to v1 when _id is null or undefined even with v2 flag enabled', async () => {
-    const sutNoBody = createSut({ featureFlag: true, request: {} });
-    const sutNoId = createSut({ featureFlag: true, request: { body: {} } });
-    const sutUndefinedId = createSut({
-      featureFlag: true,
-      request: { body: { _id: undefined } },
-    });
-    const sutNullId = createSut({ featureFlag: true, request: { body: { _id: null } } });
-    const sutUrlCreate = createSut({
-      featureFlag: true,
-      request: {
-        body: {
-          originalname: 'doc.pdf',
-          url: 'https://example.com/doc.pdf',
-          entity: 'entity1',
-          type: 'attachment',
-        },
-      },
-    });
-
-    for (const sut of [sutNoBody, sutNoId, sutUndefinedId, sutNullId, sutUrlCreate]) {
-      jest.clearAllMocks();
-      jest.spyOn(files, 'save').mockResolvedValue({ _id: 'file1' } as any);
-      jest.spyOn(filesRoutes, 'checkEntityPermission').mockResolvedValue(true);
-
-      // eslint-disable-next-line no-await-in-loop
-      await sut.sut.handleAsync();
-
-      expect(files.save).toHaveBeenCalled();
-      expect(UpdateFileUseCaseFactory.default).not.toHaveBeenCalled();
-    }
-  });
-
-  it('should execute v1 use case when feature flag is off', async () => {
-    const sut1 = createSut({ featureFlag: false, request: { body: { _id: 'file1' } } });
-    const sut2 = createSut({ request: { body: { _id: 'file2' } } });
-
-    await sut1.sut.handleAsync();
-    expect(files.save).toHaveBeenCalledWith({ _id: 'file1' });
-    expect(sut1.response.json).toHaveBeenCalled();
-
-    expect(UpdateFileUseCaseFactory.default).not.toHaveBeenCalled();
-    expect(sut2.response.json).not.toHaveBeenCalled();
-
-    jest.clearAllMocks();
-
-    await sut2.sut.handleAsync();
-    expect(files.save).not.toHaveBeenCalled();
-    expect(sut1.response.json).not.toHaveBeenCalled();
-
-    expect(UpdateFileUseCaseFactory.default).toHaveBeenCalled();
-    expect(sut2.response.json).toHaveBeenCalled();
   });
 });
