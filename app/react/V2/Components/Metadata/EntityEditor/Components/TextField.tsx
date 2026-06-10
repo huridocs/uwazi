@@ -2,11 +2,13 @@
 import React from 'react';
 import { FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
+import { InputField } from '#V2/Components/Forms/index.js';
 
 type TextFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
   label: string;
   field: Path<TFormValues>;
+  type: 'text' | 'number';
   registerOptions?: RegisterOptions<TFormValues, Path<TFormValues>>;
   disabled?: boolean;
 };
@@ -17,24 +19,27 @@ const TextField = <TFormValues extends FieldValues = FieldValues>({
   field,
   registerOptions,
   disabled,
+  type,
 }: TextFieldProps<TFormValues>) => {
   const { register } = useFormContext<TFormValues>();
 
   return (
-    <label className="flex flex-col gap-2 text-ink bg-(--bg-surface)">
-      <div className="font-semibold">
-        <Translate className="" context={context}>
-          {label}
-        </Translate>
-        {registerOptions?.required && '*'}
-      </div>
-      <input
-        className="w-full border rounded p-1 border-(--border-soft)"
-        type="text"
-        {...register(field, registerOptions)}
+    <div className="text-ink bg-(--bg-surface)">
+      <InputField
+        id={field}
+        label={
+          <div className="font-bold">
+            <Translate className="" context={context}>
+              {label}
+            </Translate>
+            {registerOptions?.required && '*'}
+          </div>
+        }
+        type={type}
         disabled={disabled}
+        {...register(field, registerOptions)}
       />
-    </label>
+    </div>
   );
 };
 

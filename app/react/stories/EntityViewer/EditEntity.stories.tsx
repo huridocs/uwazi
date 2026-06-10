@@ -2,8 +2,14 @@ import React from 'react';
 import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { BrowserRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
-import { localeAtom, settingsAtom, templatesAtom, translationsAtom } from '#V2/atoms/index.js';
-import { apiEntity, templates } from '../fixtures/MetadataDisplayFixtures.js';
+import {
+  localeAtom,
+  settingsAtom,
+  templatesAtom,
+  thesauriAtom,
+  translationsAtom,
+} from '#V2/atoms/index.js';
+import { apiEntity, templates, thesauri } from '../fixtures/EditEntityFixtures.js';
 import { Translate } from '#app/I18N/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { EditEntity } from '#V2/Components/Metadata/EntityEditor/index.js';
@@ -13,6 +19,7 @@ const EditEntityComponent = ({ entity, locale = 'en' }: { entity: Entity; locale
   const store = createStore();
   store.set(settingsAtom, { mapLayers: ['Streets', 'Hybrid', 'Satellite'] });
   store.set(templatesAtom, templates);
+  store.set(thesauriAtom, thesauri);
   store.set(localeAtom, locale);
   store.set(translationsAtom, [
     {
@@ -49,7 +56,7 @@ const EditEntityComponent = ({ entity, locale = 'en' }: { entity: Entity; locale
     <div className="tw-content">
       <BrowserRouter>
         <Provider store={store}>
-          <div>
+          <div className="mb-4">
             <EditEntity entity={entity} formId={formId} onSave={handleSave} />
           </div>
           <div className="flex flex-row items-center gap-2">
