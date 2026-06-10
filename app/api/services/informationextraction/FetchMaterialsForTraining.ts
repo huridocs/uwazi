@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+import { ObjectId } from 'mongodb';
 import { EnforcedWithId, UwaziFilterQuery } from '#api/odm/index.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
@@ -7,7 +8,6 @@ import entitiesModel from '#api/entities/entitiesModel.js';
 import { filesModel } from '#api/files/filesModel.js';
 import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
 import { ensure } from '#shared/tsUtils.js';
-import { ObjectId } from 'mongodb';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import {
@@ -100,7 +100,7 @@ const buildPdfMaterialsForFiles = async (
       filename: { $exists: true },
       language: { $exists: true },
     },
-    'extractedMetadata entity language filename'
+    'propertySelections entity language filename'
   );
 
   const segs = await SegmentationModel.get(
@@ -129,7 +129,7 @@ const buildPdfMaterialsForFiles = async (
         value?: string;
         label?: string;
       }>;
-      const selectionText = f.extractedMetadata?.[0]?.selection?.text;
+      const selectionText = f.propertySelections?.[0]?.selection?.text;
       const entityCurrent = (entityLang?.metadata?.[extractor.property]?.[0]?.value ??
         undefined) as string | number | undefined;
       const propertyValue = deriveTrainingPropertyValue(targetProperty.type, {
@@ -142,7 +142,7 @@ const buildPdfMaterialsForFiles = async (
         _id: f._id,
         entity: ensure<string>(f.entity),
         language: entityLang?.language || ensure<string>(f.language),
-        extractedMetadata: f.extractedMetadata || [],
+        propertySelections: f.propertySelections || [],
         segmentation: seg,
         propertyValue: propertyValue as PropertyValue,
         propertyType: targetProperty.type,

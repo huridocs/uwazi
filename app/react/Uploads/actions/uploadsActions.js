@@ -8,6 +8,7 @@ import * as types from '#app/Uploads/actions/actionTypes.js';
 import * as libraryTypes from '#app/Library/actions/actionTypes.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { t } from '#app/I18N/index.js';
+import { UploadService } from '#V2/api/files/UploadService.js';
 import { APIURL } from '../../config.js';
 import { EntitiesAPI as EntitiesApi } from '../../Entities/EntitiesAPI.js';
 
@@ -169,6 +170,38 @@ export function updateMainDocument(docId, file) {
 
 export function uploadDocument(docId, file) {
   return async dispatch => upload(docId, file)(dispatch);
+}
+
+export function createFromPDF(files, onProgress, onFileComplete) {
+  return async dispatch => {
+    const uploadService = new UploadService('createFromPDF');
+
+    uploadService.onProgress((filename, progress) => {
+      onProgress?.(progress, filename);
+    });
+
+    uploadService.onUploadComplete(() => {
+      onFileComplete?.();
+    });
+
+    const responses = await uploadService.upload(files);
+
+    responses.forEach(response => {
+      if (response?.data) {
+        dispatch({
+          type: libraryTypes.ELEMENT_CREATED,
+          doc: response.data,
+          __reducerKey: 'library',
+        });
+      }
+    });
+
+    return responses.length;
+  };
+}
+
+export function uploadAndCreate(files, onProgress, onFileComplete) {
+  return async dispatch => createFromPDF(files, onProgress, onFileComplete)(dispatch);
 }
 
 export function documentProcessed(sharedId, __reducerKey) {

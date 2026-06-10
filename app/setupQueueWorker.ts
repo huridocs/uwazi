@@ -26,7 +26,6 @@ import { tenants } from '#api/tenants/index.js';
 import { prettifyError } from '#api/utils/handleError.js';
 import { initSentry } from './initSentry.js';
 import { registerJobs } from './queueRegistry.js';
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { ExecutionContext, ExecutionContextDeps } from '#api/core/libs/ExecutionContext.js';
@@ -77,8 +76,6 @@ function register<T extends Dispatchable>(
           eventEmitter: EventEmitterFactory.default,
           idGenerator: IdGeneratorFactory.default,
           logger: LoggerFactory.default,
-          elasticClient: ElasticSearchClientFactory.tenantAware,
-          authorizedEntityESClient: ElasticSearchClientFactory.authorizedEntityClient,
         },
       };
       instance = await ExecutionContext.run(deps, async () => factory(namespace, job));

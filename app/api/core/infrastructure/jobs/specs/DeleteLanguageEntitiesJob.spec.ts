@@ -25,13 +25,11 @@ const fixtures: DBFixture = {
 };
 
 const heartbeat = jest.fn();
-const mockEntityIndexer = { sync: jest.fn().mockResolvedValue(undefined) };
 
 const createSUT = (mockWebSockets: jest.Mocked<WebSockets>) =>
   testingEnvironment.runWithContext(() =>
     DeleteLanguageEntitiesJobFactory.default({
       webSockets: mockWebSockets,
-      entityIndexer: mockEntityIndexer as any,
     })
   );
 
@@ -48,7 +46,6 @@ describe('DeleteLanguageEntitiesJob', () => {
   beforeEach(async () => {
     mockWebSockets = { emitToTenant: jest.fn(), emitToTenantAdmins: jest.fn() };
     heartbeat.mockClear();
-    mockEntityIndexer.sync.mockClear();
     jest.spyOn(search, 'deleteLanguage').mockResolvedValue(undefined as any);
     await testingEnvironment.setUp(fixtures);
   });
@@ -80,14 +77,6 @@ describe('DeleteLanguageEntitiesJob', () => {
         .find({ language: 'en' })
         .toArray();
       expect(enEntities).toHaveLength(2);
-    });
-
-    it('should call the V2 entity indexer sync with deleted sharedIds', async () => {
-      await dispatch(createSUT(mockWebSockets), 'es');
-
-      expect(mockEntityIndexer.sync).toHaveBeenCalled();
-      const allSyncedIds = mockEntityIndexer.sync.mock.calls.flatMap((args: any[]) => args[0]);
-      expect(allSyncedIds).toEqual(expect.arrayContaining(['entity1', 'entity2']));
     });
 
     it('should call the V1 search.deleteLanguage', async () => {

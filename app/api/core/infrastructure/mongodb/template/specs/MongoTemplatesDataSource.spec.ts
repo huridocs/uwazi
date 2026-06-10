@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TraversalQueryNode } from '#api/relationships.v2/model/TraversalQueryNode.js';
 import { Property } from '#api/core/domain/template/Property.js';
@@ -7,9 +8,6 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { MongoTemplatesDataSource } from '../MongoTemplatesDataSource.js';
 import { mapPropertyQuery } from '../QueryMapper.js';
-import { MongoTemplateMapper } from '../MongoTemplateMapper.js';
-import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
 
 const factory = getFixturesFactory();
 
@@ -79,17 +77,12 @@ afterAll(async () => {
 const createSut = () => {
   const db = getConnection();
   const transactionManager = TransactionManagerFactory.default();
-
-  const slotsReconciler = TestUtils.mockClass<SlotsReconciler>({
-    execute: jest.fn().mockResolvedValue(undefined),
-  });
   const sut = new MongoTemplatesDataSource({
     db,
-    slotsReconciler,
     transactionManager,
   });
 
-  return { sut, slotsReconciler, transactionManager };
+  return { sut, transactionManager };
 };
 
 describe('getAllProperties()', () => {
@@ -245,31 +238,49 @@ describe('getById()', () => {
   });
 });
 
-describe('slotsReconciler', () => {
-  it('is called after create()', async () => {
-    const { sut, slotsReconciler } = createSut();
-    const template = factory.template('new_template', [factory.property('a_prop', 'text')]);
-    await sut.create(MongoTemplateMapper.toDomain(template as any));
-    expect(slotsReconciler.execute).toHaveBeenCalledTimes(1);
+describe('countByThesauri()', () => {
+  const thesaurusId = factory.id('thesaurus_1').toHexString();
+  const otherThesaurusId = factory.id('thesaurus_2').toHexString();
+
+  beforeAll(async () => {
+    const db = getConnection();
+    await db.collection('templates').insertMany([
+      {
+        _id: factory.id('template_with_thesauri'),
+        name: 'template_with_thesauri',
+        properties: [
+          {
+            type: 'select',
+            content: thesaurusId,
+            name: 'country',
+            label: 'Country',
+          },
+        ],
+      },
+      {
+        _id: factory.id('template_with_other_thesauri'),
+        name: 'template_with_other_thesauri',
+        properties: [
+          {
+            type: 'select',
+            content: otherThesaurusId,
+            name: 'country',
+            label: 'Country',
+          },
+        ],
+      },
+    ]);
   });
 
-  it('is called after update()', async () => {
-    const { sut, slotsReconciler } = createSut();
-    const existing = fixtures.templates[0];
-    await sut.update(MongoTemplateMapper.toDomain(existing as any));
-    expect(slotsReconciler.execute).toHaveBeenCalledTimes(1);
+  it('should return templates count referencing the thesaurus', async () => {
+    const { sut } = createSut();
+    const count = await sut.countByThesauri(thesaurusId);
+    expect(count).toBe(1);
   });
 
-  it('is called after delete()', async () => {
-    const { sut, slotsReconciler } = createSut();
-    await sut.delete(factory.id('template3').toHexString());
-    expect(slotsReconciler.execute).toHaveBeenCalledTimes(1);
-  });
-
-  it('is called after bulkUpdate()', async () => {
-    const { sut, slotsReconciler } = createSut();
-    const templates = fixtures.templates.slice(0, 2).map(MongoTemplateMapper.toDomain as any);
-    await sut.bulkUpdate(templates as any);
-    expect(slotsReconciler.execute).toHaveBeenCalledTimes(1);
+  it('should return 0 when no templates reference the thesaurus', async () => {
+    const { sut } = createSut();
+    const count = await sut.countByThesauri(new ObjectId().toHexString());
+    expect(count).toBe(0);
   });
 });

@@ -59,17 +59,6 @@ import {
 } from './fixtures.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-jest.mock('#api/core/infrastructure/factories/EntityIndexerServiceFactory.js', () => ({
-  EntityIndexerServiceFactory: {
-    default: () => ({
-      sync: jest.fn().mockResolvedValue(undefined),
-      index: jest.fn().mockResolvedValue(undefined),
-      remove: jest.fn().mockResolvedValue(undefined),
-      removeByTemplateIds: jest.fn().mockResolvedValue(undefined),
-    }),
-  },
-}));
-
 async function runAllTenants() {
   try {
     await syncWorker.runAllTenants();
@@ -154,6 +143,7 @@ describe('syncWorker', () => {
       name: 'target1',
       dbName: 'target1',
       indexName: 'target1',
+      featureFlags: { postgresThesauri: false },
       ...(await testingUploadPaths('syncWorker_target1_files')),
     });
 
@@ -353,12 +343,14 @@ describe('syncWorker', () => {
   it('should sync dictionaries that match template properties whitelist', async () => {
     await runAllTenants();
     await tenants.run(async () => {
-      expect(await thesauri.get()).toMatchObject([
-        {
-          name: 'thesauri1',
-          values: [{ label: 'th1value1' }, { label: 'th1value2' }],
-        },
-      ]);
+      await testingEnvironment.runWithContext(async () => {
+        expect(await thesauri.get()).toMatchObject([
+          {
+            name: 'thesauri1',
+            values: [{ label: 'th1value1' }, { label: 'th1value2' }],
+          },
+        ]);
+      });
     }, 'target1');
   });
 
@@ -592,11 +584,10 @@ describe('syncWorker', () => {
     await runAndCheck('files', 'connections', [{ _id: orderedHostIds.files }], 30);
     await runAndCheck(
       'connections',
-      'elasticSlots',
+      'entities',
       [{ _id: orderedHostIds.connection1 }, { _id: orderedHostIds.connection2 }],
       20
     );
-    await runAndCheck('elasticSlots', 'entities', [{ _id: orderedHostIds.elasticSlots }], 10);
     await runAndCheck(
       'entities',
       undefined,

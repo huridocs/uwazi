@@ -109,6 +109,7 @@ const EditThesaurus = () => {
       });
       return [...prev];
     });
+    setSelectedThesaurusValue([]);
   };
   const deleteSelected = () => {
     if (!warnAboutUse || !selectedThesaurusValue[0].id) {

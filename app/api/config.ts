@@ -35,6 +35,11 @@ const {
   UPLOADS_FOLDER,
   USER_SESSION_SECRET,
   NEW_HEADER,
+  POSTGRES_HOST,
+  POSTGRES_PORT,
+  POSTGRES_DB,
+  POSTGRES_USER,
+  POSTGRES_PASSWORD,
 } = process.env;
 
 const rootPath = ROOT_PATH || `${__dirname}/../../`;
@@ -99,16 +104,6 @@ export const config = {
     },
   },
 
-  elasticSearchMultiTenant: {
-    nodes: process.env.ELASTIC_SEARCH_NODES
-      ? process.env.ELASTIC_SEARCH_NODES.split(',')
-      : ['http://localhost:9200'],
-    requestTimeout: 60000,
-    auth: {
-      apiKey: process.env.ELASTIC_SEARCH_API_KEY || '',
-    },
-  },
-
   SHARED_DB: process.env.NODE_ENV === 'test' ? 'uwazi_shared_db_testing' : 'uwazi_shared_db',
 
   multiTenant: process.env.MULTI_TENANT || false,
@@ -136,14 +131,10 @@ export const config = {
       testing: DEV_FLAG_TESTING === 'true' || false,
       v2UpdateEntity: false,
       v2CSVImport: FEATURE_FLAG_V2_CSV_IMPORT === 'true' || false,
-      v2UpdateThesaurus: false,
       v2GetEntity: false,
-      v2MultipleUpdateEntity: false,
-      v2ElasticSearch: false,
-      v2DeleteEntity: false,
       v2UpdateFile: false,
       v2Languages: false,
-      v2EntityPermission: false,
+      postgresThesauri: false,
       newHeader: NEW_HEADER === 'true' || false,
     },
   },
@@ -173,4 +164,12 @@ export const config = {
   },
   githubToken: process.env.GITHUB_TOKEN || '',
   queueName: QUEUE_NAME || 'uwazi_jobs',
+
+  postgres: {
+    host: POSTGRES_HOST || '127.0.0.1',
+    port: parseInt(POSTGRES_PORT || '', 10) || 5432,
+    database: POSTGRES_DB || 'uwazi_development',
+    user: POSTGRES_USER || 'uwazi',
+    password: POSTGRES_PASSWORD || 'uwazi',
+  },
 };

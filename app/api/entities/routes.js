@@ -171,18 +171,7 @@ export default app => {
   app.post(
     '/api/entities/multipleupdate',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    async (req, res, next) => {
-      if (tenants.current()?.featureFlags?.v2MultipleUpdateEntity) {
-        await MultiUpdateEntityController.createHandler()(req, res, next);
-        return;
-      }
-      entities
-        .multipleUpdate(req.body.ids, req.body.values, { user: req.user, language: req.language })
-        .then(docs => {
-          res.json(docs);
-        })
-        .catch(next);
-    }
+    MultiUpdateEntityController.createHandler()
   );
 
   app.get(

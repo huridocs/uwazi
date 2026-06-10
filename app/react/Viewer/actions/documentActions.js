@@ -1,11 +1,11 @@
 import omit from 'lodash/omit.js';
+import { actions as formActions } from 'react-redux-form';
 import { api } from '#app/utils/api.js';
 import { ReferencesAPI as referencesAPI } from '#app/Viewer/referencesAPI.js';
 import * as types from '#app/Viewer/actions/actionTypes.js';
 import * as connectionsTypes from '#app/Connections/actions/actionTypes.js';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 import { actions } from '#app/BasicReducer/index.js';
-import { actions as formActions } from 'react-redux-form';
 import { getStore } from '#shared/atomStore/index.js';
 import { documentsAPI } from '#app/Documents/index.js';
 import { notificationActions } from '#app/Notifications/index.js';
@@ -60,9 +60,9 @@ export function loadDefaultViewerMenu() {
 export function saveDocument(doc, fileID) {
   const updateDoc = omit(doc, 'fullText', 'defaultDoc');
   return async (dispatch, getState) => {
-    const extractredMetadata = getState().documentViewer.metadataExtraction.toJS();
+    const propertySelections = getState().documentViewer.metadataExtraction.toJS();
     const entityFileId = fileID || getState().documentViewer.doc.toJS().defaultDoc._id;
-    updateDoc.__extractedMetadata = { fileID: entityFileId, ...extractredMetadata };
+    updateDoc.propertySelections = { fileID: entityFileId, ...propertySelections };
     const updatedDoc = await saveEntityWithFiles(updateDoc, dispatch);
 
     dispatchUpdatedDocument(dispatch, doc, updatedDoc, entityFileId);

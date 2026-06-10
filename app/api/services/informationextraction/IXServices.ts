@@ -141,7 +141,7 @@ export class IXServices {
 
   static extractLabeledValueFromFile({ file, targetProperty }: ExtractLabelTextForPDFInput) {
     return (
-      file.extractedMetadata?.find(m => m.name === targetProperty.name)?.selection?.text || null
+      file.propertySelections?.find(m => m.name === targetProperty.name)?.selection?.text || null
     );
   }
 

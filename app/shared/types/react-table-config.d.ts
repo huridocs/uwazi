@@ -37,6 +37,7 @@ declare module '@tanstack/table-core' {
     className?: string;
     headerClassName?: string;
     contentClassName?: string;
+    selectAllCheckboxId?: string;
     data?: any;
   }
 }

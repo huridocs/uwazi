@@ -78,6 +78,12 @@ const groupSameRelationshipFields = fields =>
     })
     .filter(f => f);
 
+const entityThesauriOption = (o, valueKey) => ({
+  [valueKey]: o.value,
+  label: o.label,
+  ...(o.icon ? { icon: o.icon } : {}),
+});
+
 class MetadataFormFields extends Component {
   async onAddThesauriValueSaved(thesauri, newValue, _model, isMultiSelect) {
     const { model, push, change } = this.props;
@@ -178,7 +184,7 @@ class MetadataFormFields extends Component {
             .get(property.name)
             .toJS()
             .forEach(o => {
-              thesauri.push({ value: o.value, label: o.label });
+              thesauri.push(entityThesauriOption(o, 'value'));
             });
         }
 
@@ -205,7 +211,7 @@ class MetadataFormFields extends Component {
             .get(property.name)
             .toJS()
             .forEach(o => {
-              thesauri.push({ id: o.value, label: o.label });
+              thesauri.push(entityThesauriOption(o, 'id'));
             });
         }
 

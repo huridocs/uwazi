@@ -10,8 +10,6 @@ jest.mock('api/core/application/TemplatePostProcessService', () => ({
   TemplatePostProcessService: class {},
 }));
 
-const noop = jest.fn();
-
 const createTransactionManager = () =>
   ({
     run: jest.fn(async (fn: any) => fn()),
@@ -60,8 +58,11 @@ describe('CsvPreflightJob error handling', () => {
         get: jest.fn(),
       } as any,
       thesauriDS: {
-        appendRootLabelsIfMissing: noop,
-        appendNestedLabelsIfMissing: noop,
+        getById: jest.fn(),
+        exists: jest.fn(),
+        existsById: jest.fn(),
+        create: jest.fn(),
+        update: jest.fn(),
       } as any,
       thesauriValuesDS: {
         replacePendingValues: jest.fn(),

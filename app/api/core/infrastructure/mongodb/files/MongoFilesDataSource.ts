@@ -1,7 +1,9 @@
+/* eslint-disable max-lines */
 import { Db, ObjectId } from 'mongodb';
+import uniqBy from 'lodash/uniqBy.js';
 
 import { LanguageUtils } from '#shared/language/index.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { PropertySelectionSchema, LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
@@ -14,7 +16,6 @@ import {
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { Result } from '#api/core/libs/Result.js';
 import { search } from '#api/search/index.js';
-import { FullTextIndexerService } from '#api/core/infrastructure/elasticSearch/entities/FullTextIndexerService.js';
 import { FileStorage } from '../../../application/contracts/FileStorage.js';
 import {
   FilesDataSource,
@@ -32,8 +33,24 @@ type GetDocumentsForEntityQuery = {
   status: 'ready';
 };
 
-export type MongoFilesDataSourceOptions = MongoDSOptions & {
-  fullTextIndexer: FullTextIndexerService;
+type MongoFilesDataSourceOptions = MongoDSOptions;
+
+const mergePropertySelections = (
+  newSelections: PropertySelectionSchema[],
+  storedSelections: PropertySelectionSchema[]
+) => uniqBy(newSelections.concat(storedSelections), 'name').filter(s => !s.deleteSelection);
+
+const propertySelectionsHaveChanged = (
+  storedSelections: PropertySelectionSchema[],
+  mergedSelections: PropertySelectionSchema[]
+) => {
+  if (storedSelections.length !== mergedSelections.length) {
+    return true;
+  }
+
+  return storedSelections.some(
+    (selection, index) => selection.selection?.text !== mergedSelections[index].selection?.text
+  );
 };
 
 export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements FilesDataSource {
@@ -41,21 +58,16 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
 
   protected filesToReindex = new Set<BaseFile>();
 
-  private fileToDelete = new Map<string, BaseFile>();
-
   protected fileStorage: FileStorage;
-
-  private fullTextIndexer: FullTextIndexerService;
 
   constructor(
     db: Db,
     transactionManager: TransactionManager,
     fileStorage: FileStorage,
-    options: MongoFilesDataSourceOptions
+    options: MongoFilesDataSourceOptions = {}
   ) {
     super(db, transactionManager, options);
     this.fileStorage = fileStorage;
-    this.fullTextIndexer = options.fullTextIndexer;
     transactionManager.onCommitted(async () => {
       const files = Array.from(this.filesToReindex);
       if (!files.length) return;
@@ -64,26 +76,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
         { sharedId: { $in: files.filter(f => f.isEntityFile()).map(f => f.entity) } },
         files.some(f => f instanceof PDFDocument && f.isReady()) ? '+fullText' : undefined
       );
-
-      const processedPDFs = files
-        .filter((f): f is PDFDocument => f instanceof PDFDocument && f.languageHasChanged)
-        .map(f => FileMappers.toDBO(f));
-
-      await this.fullTextIndexer.sync(processedPDFs.map(f => f._id));
-
       this.filesToReindex = new Set<BaseFile>();
-    });
-
-    transactionManager.onCommitted(async () => {
-      const files = Array.from(this.fileToDelete.values());
-
-      const pdfFilenames = files
-        .filter((f): f is PDFDocument => f instanceof PDFDocument)
-        .map(f => f.filename);
-
-      await this.fullTextIndexer.remove(pdfFilenames);
-
-      this.fileToDelete.clear();
     });
   }
 
@@ -185,8 +178,6 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
   async delete(files: BaseFile[]) {
     await this.getCollection().deleteMany({ _id: { $in: files.map(f => new ObjectId(f.id)) } });
     this.setFilesToReindex(files);
-
-    files.forEach(file => this.fileToDelete.set(file.id, file));
   }
 
   async bulkCreate(files: [BaseFile, ...BaseFile[]]): Promise<void> {
@@ -194,17 +185,39 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     this.setFilesToReindex(files);
   }
 
-  async deleteExtractedMetadata(entityPropertyNames: string[], entitySharedIds: string[]) {
-    await this.getCollection().updateMany(
-      {
-        entity: { $in: entitySharedIds },
-        extractedMetadata: { $exists: true, $ne: [] },
-      },
-      { $pull: { extractedMetadata: { name: { $in: entityPropertyNames } } } }
+  async savePropertySelections(fileId: string, propertySelections: PropertySelectionSchema[]) {
+    const file = await this.getCollection<{
+      propertySelections?: PropertySelectionSchema[];
+    }>().findOne({ _id: new ObjectId(fileId) }, { projection: { propertySelections: 1 } });
+
+    if (!file) {
+      return;
+    }
+
+    const storedPropertySelections = file.propertySelections || [];
+    const mergedSelections = mergePropertySelections(propertySelections, storedPropertySelections);
+
+    if (!propertySelectionsHaveChanged(storedPropertySelections, mergedSelections)) {
+      return;
+    }
+
+    await this.getCollection().updateOne(
+      { _id: new ObjectId(fileId) },
+      { $set: { propertySelections: mergedSelections } }
     );
   }
 
-  async renameExtractedMetadata(
+  async deletePropertySelections(entityPropertyNames: string[], entitySharedIds: string[]) {
+    await this.getCollection().updateMany(
+      {
+        entity: { $in: entitySharedIds },
+        propertySelections: { $exists: true, $ne: [] },
+      },
+      { $pull: { propertySelections: { name: { $in: entityPropertyNames } } } }
+    );
+  }
+
+  async renamePropertySelections(
     renamedPropertyNames: { [previousName: string]: string },
     entitySharedIds: string[]
   ) {
@@ -216,9 +229,9 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     const pipeline = [
       {
         $set: {
-          extractedMetadata: {
+          propertySelections: {
             $map: {
-              input: '$extractedMetadata',
+              input: '$propertySelections',
               as: 'item',
               in: {
                 $mergeObjects: [
@@ -240,7 +253,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     ];
     await this.getCollection().updateMany(
       {
-        'extractedMetadata.name': { $in: Object.keys(renamedPropertyNames) },
+        'propertySelections.name': { $in: Object.keys(renamedPropertyNames) },
         entity: { $in: entitySharedIds },
       },
       pipeline
@@ -322,3 +335,5 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     return Result.ok(this.toModel(dbo));
   }
 }
+
+export type { MongoFilesDataSourceOptions };

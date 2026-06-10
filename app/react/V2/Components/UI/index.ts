@@ -4,7 +4,15 @@ export { Modal } from './Modal.js';
 export { Pill } from './Pill.js';
 export { Table } from './Table/index.js';
 export { ToggleButton } from './ToggleButton.js';
-export { Tabs } from './Tabs.js';
+export { Tabs, TabButtons, TabPanels, useTabGroup, splitTabConfig } from './Tabs/index.js';
+export type {
+  TabsProps,
+  TabButtonsProps,
+  TabPanelsProps,
+  TabConfig,
+  TabButtonDef,
+  TabPanelDef,
+} from './Tabs/index.js';
 export { Sidepanel } from './Sidepanel.js';
 export { ConfirmationModal } from './ConfirmationModal.js';
 export { Card } from './Card.js';

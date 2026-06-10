@@ -1,6 +1,10 @@
 import { Dispatchable } from '../application/contracts/Dispatchable.js';
-import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher.js';
-import { Job, QueueAdapter } from './QueueAdapter.js';
+import {
+  DispatchableClass,
+  DispatchOptions,
+  JobsDispatcher,
+} from '../application/contracts/JobsDispatcher.js';
+import { PushJobInput, QueueAdapter } from './QueueAdapter.js';
 
 interface QueueOptions {
   lockWindow?: number;
@@ -45,7 +49,8 @@ export class NamespacedDispatcher implements JobsDispatcher {
 
   async dispatch<T extends Dispatchable>(
     dispatchable: DispatchableClass<T>,
-    params: Parameters<T['handleDispatch']>[1]
+    params: Parameters<T['handleDispatch']>[1],
+    options?: DispatchOptions
   ): Promise<void> {
     await this.adapter.pushJob({
       queue: this.queueName,
@@ -56,6 +61,7 @@ export class NamespacedDispatcher implements JobsDispatcher {
         lockWindow: this.options.lockWindow,
         maxRetries: this.options.maxRetries,
       },
+      ...(options?.lockedUntil !== undefined ? { lockedUntil: options.lockedUntil } : {}),
     });
   }
 
@@ -63,15 +69,17 @@ export class NamespacedDispatcher implements JobsDispatcher {
     callback: (
       dispatch: <T extends Dispatchable>(
         dispatchable: DispatchableClass<T>,
-        params: Parameters<T['handleDispatch']>[1]
+        params: Parameters<T['handleDispatch']>[1],
+        options?: DispatchOptions
       ) => void
     ) => Promise<void>
   ): Promise<void> {
-    const jobs: Omit<Job, 'id' | 'lockedUntil' | 'createdAt' | 'retryCount'>[] = [];
+    const jobs: PushJobInput[] = [];
 
     const dispatch = <T extends Dispatchable>(
       dispatchable: DispatchableClass<T>,
-      params: Parameters<T['handleDispatch']>[1]
+      params: Parameters<T['handleDispatch']>[1],
+      options?: DispatchOptions
     ) => {
       jobs.push({
         queue: this.queueName,
@@ -82,6 +90,7 @@ export class NamespacedDispatcher implements JobsDispatcher {
           lockWindow: this.options.lockWindow,
           maxRetries: this.options.maxRetries,
         },
+        ...(options?.lockedUntil !== undefined ? { lockedUntil: options.lockedUntil } : {}),
       });
     };
 
