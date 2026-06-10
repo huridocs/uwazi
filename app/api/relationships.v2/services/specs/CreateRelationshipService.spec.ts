@@ -17,9 +17,6 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { CreateRelationshipService } from '../CreateRelationshipService.js';
 import { DenormalizationService } from '../DenormalizationService.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
-import { FullTextIndexerService } from '#api/core/infrastructure/elasticSearch/entities/FullTextIndexerService.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 
 const factory = getFixturesFactory();
@@ -59,17 +56,11 @@ const createService = () => {
       new MongoTemplatesDataSource({
         db: connection,
         transactionManager,
-        slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
       }),
       settingsDS,
       transactionManager
     ),
-    new MongoFilesDataSource(connection, transactionManager, FileStorageFactory.default(), {
-      fullTextIndexer: TestUtils.mockClass<FullTextIndexerService>({
-        index: jest.fn().mockResolvedValue(undefined),
-        remove: jest.fn().mockResolvedValue(undefined),
-      }),
-    }),
+    new MongoFilesDataSource(connection, transactionManager, FileStorageFactory.default()),
     transactionManager,
     MongoIdHandler,
     authServiceMock,

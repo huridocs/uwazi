@@ -5,7 +5,6 @@ import { SettingsDataSource } from '#api/core/application/contracts/SettingsData
 import { MongoSettingsDataSource } from '../mongodb/MongoSettingsDataSource.js';
 import { CachedMongoSettingsDataSource } from '../mongodb/CachedMongoSettingsDataSource.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { SlotsReconcilerFactory } from './SlotsReconcilerFactory.js';
 
 type Overrides = { transactionManager?: TransactionManager };
 
@@ -17,7 +16,6 @@ export class SettingsDataSourceFactory {
     return new MongoSettingsDataSource({
       db,
       transactionManager: tm,
-      slotsReconciler: () => SlotsReconcilerFactory.default(),
     });
   }
 
@@ -28,7 +26,6 @@ export class SettingsDataSourceFactory {
     return new CachedMongoSettingsDataSource({
       db,
       transactionManager: tm,
-      slotsReconciler: () => SlotsReconcilerFactory.default(),
     });
   }
 }
