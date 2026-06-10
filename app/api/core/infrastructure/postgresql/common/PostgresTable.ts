@@ -57,13 +57,10 @@ export class PostgresTable {
     await this.knex(this.tableName).insert(rows);
   }
 
-  async upsert(
-    doc: Record<string, unknown> | Record<string, unknown>[],
-    conflictKeys: string[]
-  ): Promise<void> {
+  async upsert(doc: Record<string, unknown> | Record<string, unknown>[]): Promise<void> {
     const rows = Array.isArray(doc)
       ? doc.map(row => ({ ...row, tenant_id: this.tenantId }))
       : { ...doc, tenant_id: this.tenantId };
-    await this.knex(this.tableName).insert(rows).onConflict(conflictKeys).merge();
+    await this.knex(this.tableName).insert(rows).onConflict(['_id', 'tenant_id']).merge();
   }
 }

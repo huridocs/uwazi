@@ -10,7 +10,7 @@ interface ThesaurusDocument {
   values: { id: string; label: string; values?: { id: string; label: string }[] }[];
 }
 
-export class MongoDictionariesSyncHandler
+export class MongoThesauriSyncHandler
   extends MongoDataSource<ThesaurusDocument>
   implements SyncHandler<ThesaurusDocument>
 {
@@ -26,7 +26,7 @@ export class MongoDictionariesSyncHandler
 
   async save(document: Partial<ThesaurusDocument>): Promise<ThesaurusDocument> {
     const { _id: rawId, ...rest } = document as ThesaurusDocument;
-    if (!rawId) throw new Error('MongoDictionariesSyncHandler: document._id is required');
+    if (!rawId) throw new Error('MongoThesauriSyncHandler: document._id is required');
     const id = rawId instanceof ObjectId ? rawId : new ObjectId(rawId as unknown as string);
     await this.getCollection().replaceOne({ _id: id }, { _id: id, ...rest } as ThesaurusDocument, {
       upsert: true,
@@ -39,7 +39,7 @@ export class MongoDictionariesSyncHandler
 
     const ids = documents.map(doc => {
       const rawId = (doc as ThesaurusDocument)._id;
-      if (!rawId) throw new Error('MongoDictionariesSyncHandler: document._id is required');
+      if (!rawId) throw new Error('MongoThesauriSyncHandler: document._id is required');
       return rawId instanceof ObjectId ? rawId : new ObjectId(rawId as unknown as string);
     });
 

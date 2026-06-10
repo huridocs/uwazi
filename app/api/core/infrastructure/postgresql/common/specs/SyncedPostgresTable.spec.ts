@@ -69,7 +69,7 @@ describe('SyncedPostgresTable', () => {
       const table = createTable();
       const u1 = id();
 
-      await table.upsert({ _id: u1, name: 'ups', values: jsonVal([]) }, ['_id', 'tenant_id']);
+      await table.upsert({ _id: u1, name: 'ups', values: jsonVal([]) });
 
       const logs = await getLogs();
       expect(logs).toHaveLength(1);
@@ -83,7 +83,7 @@ describe('SyncedPostgresTable', () => {
       await table.insert({ _id: u2, name: 'first', values: jsonVal([]) });
       await getConnection().collection('updatelogs').deleteMany({});
 
-      await table.upsert({ _id: u2, name: 'second', values: jsonVal([]) }, ['_id', 'tenant_id']);
+      await table.upsert({ _id: u2, name: 'second', values: jsonVal([]) });
 
       const logs = await getLogs();
       expect(logs).toHaveLength(1);

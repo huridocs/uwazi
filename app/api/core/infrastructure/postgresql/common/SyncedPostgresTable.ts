@@ -97,11 +97,8 @@ export class SyncedPostgresTable extends PostgresTable {
     await this.upsertSyncLogs(ids, false);
   }
 
-  override async upsert(
-    doc: Record<string, unknown> | Record<string, unknown>[],
-    conflictKeys: string[]
-  ): Promise<void> {
-    await super.upsert(doc, conflictKeys);
+  override async upsert(doc: Record<string, unknown> | Record<string, unknown>[]): Promise<void> {
+    await super.upsert(doc);
     const rows = Array.isArray(doc) ? doc : [doc];
     const ids = rows.map(row => row._id).filter((id): id is string => typeof id === 'string');
     await this.upsertSyncLogs(ids, false);

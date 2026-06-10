@@ -8,7 +8,7 @@ type ThesaurusRow = {
   values: { id: string; label: string; values?: { id: string; label: string }[] }[];
 };
 
-export class PostgresDictionariesSyncHandler
+export class PostgresThesauriSyncHandler
   extends PostgresDataSource
   implements SyncHandler<ThesaurusRow>
 {
@@ -25,10 +25,10 @@ export class PostgresDictionariesSyncHandler
 
   async save(document: Partial<ThesaurusRow>): Promise<ThesaurusRow> {
     const { _id: rawId, ...rest } = document as ThesaurusRow;
-    if (!rawId) throw new Error('PostgresDictionariesSyncHandler: document._id is required');
+    if (!rawId) throw new Error('PostgresThesauriSyncHandler: document._id is required');
     const id = rawId.toString();
 
-    await this.table.upsert({ _id: id, ...rest } as Record<string, unknown>, ['_id', 'tenant_id']);
+    await this.table.upsert({ _id: id, ...rest } as Record<string, unknown>);
 
     const row = await this.table.query<ThesaurusRow>().where({ _id: id }).first();
     return row!;
@@ -44,7 +44,7 @@ export class PostgresDictionariesSyncHandler
 
     const ids = documents.map(doc => {
       const rawId = (doc as ThesaurusRow)._id;
-      if (!rawId) throw new Error('PostgresDictionariesSyncHandler: document._id is required');
+      if (!rawId) throw new Error('PostgresThesauriSyncHandler: document._id is required');
       return rawId.toString();
     });
 

@@ -280,10 +280,7 @@ describe('PostgresTable', () => {
     it('should insert a row when it does not exist', async () => {
       const table = createTable();
 
-      await table.upsert({ _id: 'ups-1', name: 'inserted', values: jsonVal([]) }, [
-        '_id',
-        'tenant_id',
-      ]);
+      await table.upsert({ _id: 'ups-1', name: 'inserted', values: jsonVal([]) });
 
       const row = await table.query<TestRow>().where({ _id: 'ups-1' }).first();
       expect(row).toBeDefined();
@@ -294,10 +291,7 @@ describe('PostgresTable', () => {
       const table = createTable();
       await table.insert({ _id: 'ups-2', name: 'original', values: jsonVal([]) });
 
-      await table.upsert({ _id: 'ups-2', name: 'updated', values: jsonVal([]) }, [
-        '_id',
-        'tenant_id',
-      ]);
+      await table.upsert({ _id: 'ups-2', name: 'updated', values: jsonVal([]) });
 
       const row = await table.query<TestRow>().where({ _id: 'ups-2' }).first();
       expect(row!.name).toBe('updated');
@@ -308,10 +302,7 @@ describe('PostgresTable', () => {
       const tableB = createTable('tenant-b');
 
       await tableA.insert({ _id: 'cross-ups', name: 'A', values: jsonVal([]) });
-      await tableB.upsert({ _id: 'cross-ups', name: 'B', values: jsonVal([]) }, [
-        '_id',
-        'tenant_id',
-      ]);
+      await tableB.upsert({ _id: 'cross-ups', name: 'B', values: jsonVal([]) });
 
       const rowA = await tableA.query<TestRow>().where({ _id: 'cross-ups' }).first();
       const rowB = await tableB.query<TestRow>().where({ _id: 'cross-ups' }).first();
