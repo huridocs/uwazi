@@ -51,7 +51,9 @@ const buildPropertyAssignmentCreator = (params: {
   entitiesDS: ReturnType<typeof EntitiesDataSourceFactory.default>;
 }) => {
   const translationsDS = DefaultTranslationsDataSource(params.transactionManager);
-  const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager: params.transactionManager });
+  const thesauriDS = ThesauriDataSourceFactory.default({
+    transactionManager: params.transactionManager,
+  });
   return PropertyAssignmentCreatorServiceStrategy.create({
     settingsDS: params.settingsDS,
     thesauriDS,
