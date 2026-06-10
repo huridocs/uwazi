@@ -60,11 +60,11 @@ describe('PostgresTable', () => {
     });
   });
 
-  describe('insertMany', () => {
+  describe('insert (array)', () => {
     it('should auto-add tenant_id to all inserted rows', async () => {
       const table = createTable();
 
-      await table.insertMany([
+      await table.insert([
         { _id: 'id-1', name: 'first', values: jsonVal([]) },
         { _id: 'id-2', name: 'second', values: jsonVal([]) },
       ]);
@@ -77,12 +77,12 @@ describe('PostgresTable', () => {
     });
   });
 
-  describe('findOne', () => {
+  describe('query().where().first()', () => {
     it('should return a row matching the where condition', async () => {
       const table = createTable();
       await table.insert({ _id: 'id-1', name: 'test-find', values: jsonVal([]) });
 
-      const row = await table.findOne<TestRow>({ _id: 'id-1' });
+      const row = await table.query<TestRow>().where({ _id: 'id-1' }).first();
 
       expect(row).toBeDefined();
       expect(row!._id).toBe('id-1');
@@ -92,7 +92,7 @@ describe('PostgresTable', () => {
     it('should return undefined when no row matches', async () => {
       const table = createTable();
 
-      const row = await table.findOne<TestRow>({ _id: 'nonexistent' });
+      const row = await table.query<TestRow>().where({ _id: 'nonexistent' }).first();
 
       expect(row).toBeUndefined();
     });
@@ -103,19 +103,19 @@ describe('PostgresTable', () => {
 
       await tableA.insert({ _id: 'shared-id', name: 'tenant A data', values: jsonVal([]) });
 
-      const rowFromB = await tableB.findOne<TestRow>({ _id: 'shared-id' });
+      const rowFromB = await tableB.query<TestRow>().where({ _id: 'shared-id' }).first();
 
       expect(rowFromB).toBeUndefined();
     });
   });
 
-  describe('findAll', () => {
+  describe('query().where().all()', () => {
     it('should return all rows for the tenant when no where condition', async () => {
       const table = createTable();
       await table.insert({ _id: 'find-all-1', name: 'first', values: jsonVal([]) });
       await table.insert({ _id: 'find-all-2', name: 'second', values: jsonVal([]) });
 
-      const rows = await table.findAll<TestRow>();
+      const rows = await table.query<TestRow>().all();
 
       expect(rows).toHaveLength(2);
       expect(rows.every(r => r.tenant_id === DEFAULT_TENANT)).toBe(true);
@@ -126,22 +126,22 @@ describe('PostgresTable', () => {
       await table.insert({ _id: 'filter-1', name: 'alpha', values: jsonVal([]) });
       await table.insert({ _id: 'filter-2', name: 'beta', values: jsonVal([]) });
 
-      const rows = await table.findAll<TestRow>({ name: 'alpha' });
+      const rows = await table.query<TestRow>().where({ name: 'alpha' }).all();
 
       expect(rows).toHaveLength(1);
       expect(rows[0]._id).toBe('filter-1');
     });
 
-    it('should support $in operator', async () => {
+    it('should support whereIn', async () => {
       const table = createTable();
       await table.insert({ _id: 'in-1', name: 'alpha', values: jsonVal([]) });
       await table.insert({ _id: 'in-2', name: 'beta', values: jsonVal([]) });
       await table.insert({ _id: 'in-3', name: 'gamma', values: jsonVal([]) });
 
-      const rows = await table.findAll<TestRow>({ _id: { $in: ['in-1', 'in-3'] } });
+      const rows = await table.query<TestRow>().whereIn('_id', ['in-1', 'in-3']).all();
 
       expect(rows).toHaveLength(2);
-      expect(rows.map(r => r._id).sort()).toEqual(['in-1', 'in-3']);
+      expect(rows.map((r: TestRow) => r._id).sort()).toEqual(['in-1', 'in-3']);
     });
 
     it('should enforce tenant_id — cannot see rows from other tenants', async () => {
@@ -152,28 +152,28 @@ describe('PostgresTable', () => {
       await tableA.insert({ _id: 'iso-2', name: 'A2', values: jsonVal([]) });
       await tableB.insert({ _id: 'iso-3', name: 'B', values: jsonVal([]) });
 
-      const rowsFromA = await tableA.findAll<TestRow>();
+      const rowsFromA = await tableA.query<TestRow>().all();
 
       expect(rowsFromA).toHaveLength(2);
-      expect(rowsFromA.every(r => r.tenant_id === 'tenant-a')).toBe(true);
+      expect(rowsFromA.every((r: TestRow) => r.tenant_id === 'tenant-a')).toBe(true);
     });
   });
 
-  describe('findIds', () => {
+  describe('query().where().select().all() — findIds equivalent', () => {
     it('should return _ids matching a where condition', async () => {
       const table = createTable();
       await table.insert({ _id: 'fid-1', name: 'alpha', values: jsonVal([]) });
       await table.insert({ _id: 'fid-2', name: 'beta', values: jsonVal([]) });
 
-      const ids = await table.findIds<TestRow>({ name: 'alpha' });
+      const rows = await table.query<TestRow>().where({ name: 'alpha' }).select(['_id']).all();
 
-      expect(ids).toEqual(['fid-1']);
+      expect(rows.map(r => r._id)).toEqual(['fid-1']);
     });
 
     it('should return empty array when nothing matches', async () => {
       const table = createTable();
-      const ids = await table.findIds<TestRow>({ _id: 'nonexistent' });
-      expect(ids).toEqual([]);
+      const rows = await table.query<TestRow>().where({ _id: 'nonexistent' }).select(['_id']).all();
+      expect(rows).toEqual([]);
     });
 
     it('should enforce tenant_id — cannot find ids from other tenants', async () => {
@@ -182,18 +182,66 @@ describe('PostgresTable', () => {
 
       await tableA.insert({ _id: 'shared-id', name: 'A data', values: jsonVal([]) });
 
-      const ids = await tableB.findIds<TestRow>({ _id: 'shared-id' });
-      expect(ids).toEqual([]);
+      const rows = await tableB.query<TestRow>().where({ _id: 'shared-id' }).select(['_id']).all();
+      expect(rows).toEqual([]);
+    });
+
+    it('should return empty array when nothing matches', async () => {
+      const table = createTable();
+      const rows = await table
+        .query<{ _id: string }>()
+        .where({ _id: 'nonexistent' })
+        .select(['_id'])
+        .all();
+      expect(rows).toEqual([]);
+    });
+
+    it('should enforce tenant_id — cannot find ids from other tenants', async () => {
+      const tableA = createTable('tenant-a');
+      const tableB = createTable('tenant-b');
+
+      await tableA.insert({ _id: 'shared-id', name: 'A data', values: jsonVal([]) });
+
+      const rows = await tableB
+        .query<{ _id: string }>()
+        .where({ _id: 'shared-id' })
+        .select(['_id'])
+        .all();
+      expect(rows).toEqual([]);
+    });
+
+    it('should return empty array when nothing matches', async () => {
+      const table = createTable();
+      const rows = await table
+        .query<Pick<TestRow, '_id'>>()
+        .where({ _id: 'nonexistent' })
+        .select(['_id'])
+        .all();
+      expect(rows).toEqual([]);
+    });
+
+    it('should enforce tenant_id — cannot find ids from other tenants', async () => {
+      const tableA = createTable('tenant-a');
+      const tableB = createTable('tenant-b');
+
+      await tableA.insert({ _id: 'shared-id', name: 'A data', values: jsonVal([]) });
+
+      const rows = await tableB
+        .query<Pick<TestRow, '_id'>>()
+        .where({ _id: 'shared-id' })
+        .select(['_id'])
+        .all();
+      expect(rows).toEqual([]);
     });
   });
 
-  describe('count', () => {
+  describe('query().where().count()', () => {
     it('should count all rows for the tenant', async () => {
       const table = createTable();
       await table.insert({ _id: 'ct-1', name: 'first-count', values: jsonVal([]) });
       await table.insert({ _id: 'ct-2', name: 'second-count', values: jsonVal([]) });
 
-      const count = await table.count<TestRow>();
+      const count = await table.query<TestRow>().count();
 
       expect(count).toBe(2);
     });
@@ -204,17 +252,17 @@ describe('PostgresTable', () => {
       await table.insert({ _id: 'ctw-2', name: 'alpha-ct-2', values: jsonVal([]) });
       await table.insert({ _id: 'ctw-3', name: 'beta-ct', values: jsonVal([]) });
 
-      const count = await table.count<TestRow>({ name: 'alpha-ct' });
+      const count = await table.query<TestRow>().where({ name: 'alpha-ct' }).count();
 
       expect(count).toBe(1);
     });
 
-    it('should support $ne operator', async () => {
+    it('should support whereNot', async () => {
       const table = createTable();
       await table.insert({ _id: 'ne-1', name: 'alpha-ne', values: jsonVal([]) });
       await table.insert({ _id: 'ne-2', name: 'beta-ne', values: jsonVal([]) });
 
-      const count = await table.count<TestRow>({ _id: { $ne: 'ne-1' } });
+      const count = await table.query<TestRow>().whereNot('_id', 'ne-1').count();
 
       expect(count).toBe(1);
     });
@@ -222,7 +270,7 @@ describe('PostgresTable', () => {
     it('should return 0 when nothing matches', async () => {
       const table = createTable();
 
-      const count = await table.count<TestRow>({ _id: 'nonexistent' });
+      const count = await table.query<TestRow>().where({ _id: 'nonexistent' }).count();
 
       expect(count).toBe(0);
     });
@@ -237,7 +285,7 @@ describe('PostgresTable', () => {
         'tenant_id',
       ]);
 
-      const row = await table.findOne<TestRow>({ _id: 'ups-1' });
+      const row = await table.query<TestRow>().where({ _id: 'ups-1' }).first();
       expect(row).toBeDefined();
       expect(row!.name).toBe('inserted');
     });
@@ -251,7 +299,7 @@ describe('PostgresTable', () => {
         'tenant_id',
       ]);
 
-      const row = await table.findOne<TestRow>({ _id: 'ups-2' });
+      const row = await table.query<TestRow>().where({ _id: 'ups-2' }).first();
       expect(row!.name).toBe('updated');
     });
 
@@ -265,22 +313,22 @@ describe('PostgresTable', () => {
         'tenant_id',
       ]);
 
-      const rowA = await tableA.findOne<TestRow>({ _id: 'cross-ups' });
-      const rowB = await tableB.findOne<TestRow>({ _id: 'cross-ups' });
+      const rowA = await tableA.query<TestRow>().where({ _id: 'cross-ups' }).first();
+      const rowB = await tableB.query<TestRow>().where({ _id: 'cross-ups' }).first();
 
       expect(rowA!.name).toBe('A');
       expect(rowB!.name).toBe('B');
     });
   });
 
-  describe('update', () => {
+  describe('query().where().update()', () => {
     it('should update matching rows for the tenant', async () => {
       const table = createTable();
       await table.insert({ _id: 'up-1', name: 'old', values: jsonVal([]) });
 
-      await table.update({ _id: 'up-1' }, { name: 'new' });
+      await table.query().where({ _id: 'up-1' }).update({ name: 'new' });
 
-      const row = await table.findOne<TestRow>({ _id: 'up-1' });
+      const row = await table.query<TestRow>().where({ _id: 'up-1' }).first();
       expect(row!.name).toBe('new');
     });
 
@@ -290,21 +338,21 @@ describe('PostgresTable', () => {
 
       await tableA.insert({ _id: 'cross-tenant', name: 'original', values: jsonVal([]) });
 
-      await tableB.update({ _id: 'cross-tenant' }, { name: 'hacked' });
+      await tableB.query().where({ _id: 'cross-tenant' }).update({ name: 'hacked' });
 
-      const row = await tableA.findOne<TestRow>({ _id: 'cross-tenant' });
+      const row = await tableA.query<TestRow>().where({ _id: 'cross-tenant' }).first();
       expect(row!.name).toBe('original');
     });
   });
 
-  describe('delete', () => {
+  describe('query().where().delete()', () => {
     it('should delete matching rows for the tenant', async () => {
       const table = createTable();
       await table.insert({ _id: 'del-1', name: 'temp', values: jsonVal([]) });
 
-      await table.delete({ _id: 'del-1' });
+      await table.query().where({ _id: 'del-1' }).delete();
 
-      const count = await table.count<TestRow>();
+      const count = await table.query<TestRow>().count();
       expect(count).toBe(0);
     });
 
@@ -314,10 +362,56 @@ describe('PostgresTable', () => {
 
       await tableA.insert({ _id: 'protected', name: 'keep me', values: jsonVal([]) });
 
-      await tableB.delete({ _id: 'protected' });
+      await tableB.query().where({ _id: 'protected' }).delete();
 
-      const row = await tableA.findOne<TestRow>({ _id: 'protected' });
+      const row = await tableA.query<TestRow>().where({ _id: 'protected' }).first();
       expect(row).toBeDefined();
+    });
+  });
+
+  describe('query builder chaining', () => {
+    it('should support orderBy', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'chain-1', name: 'zeta', values: jsonVal([]) });
+      await table.insert({ _id: 'chain-2', name: 'alpha', values: jsonVal([]) });
+      await table.insert({ _id: 'chain-3', name: 'beta', values: jsonVal([]) });
+
+      const rows = await table.query<TestRow>().orderBy('name', 'asc').all();
+
+      expect(rows.map((r: TestRow) => r.name)).toEqual(['alpha', 'beta', 'zeta']);
+    });
+
+    it('should support limit', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'l-1', name: 'a', values: jsonVal([]) });
+      await table.insert({ _id: 'l-2', name: 'b', values: jsonVal([]) });
+      await table.insert({ _id: 'l-3', name: 'c', values: jsonVal([]) });
+
+      const rows = await table.query<TestRow>().orderBy('name').limit(2).all();
+
+      expect(rows).toHaveLength(2);
+    });
+
+    it('should support offset', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'o-1', name: 'a', values: jsonVal([]) });
+      await table.insert({ _id: 'o-2', name: 'b', values: jsonVal([]) });
+      await table.insert({ _id: 'o-3', name: 'c', values: jsonVal([]) });
+
+      const rows = await table.query<TestRow>().orderBy('name').offset(1).all();
+
+      expect(rows).toHaveLength(2);
+      expect(rows[0].name).toBe('b');
+    });
+
+    it('should support rawWhere', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'raw-1', name: 'special', values: jsonVal([]) });
+
+      const rows = await table.query<TestRow>().rawWhere('"name" ILIKE ?', ['%spec%']).all();
+
+      expect(rows).toHaveLength(1);
+      expect(rows[0]._id).toBe('raw-1');
     });
   });
 });

@@ -1,7 +1,6 @@
 import pg from 'pg';
 import { config } from '#api/config.js';
 import { PostgresConnectionFactory } from '../PostgresConnectionFactory.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 const adminClient = () =>
   new pg.Client({

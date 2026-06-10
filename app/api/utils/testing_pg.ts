@@ -101,6 +101,7 @@ const testingPG = {
   async clear(tables: string[] = ['thesauri']): Promise<void> {
     if (!pool) throw new Error('testingPG not connected');
     for (const table of tables) {
+      //eslint-disable-next-line no-await-in-loop
       await pool.query(`DELETE FROM "${table}"`);
     }
   },
@@ -109,6 +110,7 @@ const testingPG = {
     if (!pool) throw new Error('testingPG not connected');
     const tenantId = tenants.current().name;
     for (const [table, rows] of Object.entries(fixtures)) {
+      //eslint-disable-next-line no-await-in-loop
       await pool.query(`DELETE FROM "${table}"`);
       for (const row of rows) {
         const finalRow = 'tenant_id' in row ? row : { ...row, tenant_id: tenantId };
@@ -121,6 +123,7 @@ const testingPG = {
         const values = Object.values(finalRow).map(v =>
           v !== null && typeof v === 'object' ? JSON.stringify(v) : v
         );
+        //eslint-disable-next-line no-await-in-loop
         await pool.query(`INSERT INTO "${table}" (${cols}) VALUES (${placeholders})`, values);
       }
     }

@@ -16,23 +16,23 @@ class TestDataSource extends PostgresDataSource {
   }
 
   async getById(id: string) {
-    return this.table.findOne<TestRow>({ _id: id });
+    return this.table.query<TestRow>().where({ _id: id }).first();
   }
 
   async getAll() {
-    return this.table.findAll<TestRow>();
+    return this.table.query<TestRow>().all();
   }
 
   async rowCount() {
-    return this.table.count<TestRow>();
+    return this.table.query<TestRow>().count();
   }
 
   async updateRow(id: string, name: string) {
-    await this.table.update({ _id: id }, { name });
+    await this.table.query().where({ _id: id }).update({ name });
   }
 
   async deleteRow(id: string) {
-    await this.table.delete({ _id: id });
+    await this.table.query().where({ _id: id }).delete();
   }
 }
 
@@ -142,7 +142,7 @@ describe('PostgresDataSource', () => {
 
       const aRows = await dsA.getAll();
       expect(aRows).toHaveLength(2);
-      expect(aRows.every(r => r.tenant_id === 'tenant-a')).toBe(true);
+      expect(aRows.every((r: TestRow) => r.tenant_id === 'tenant-a')).toBe(true);
 
       const bRows = await dsB.getAll();
       expect(bRows).toHaveLength(1);

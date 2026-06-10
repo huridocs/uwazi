@@ -22,7 +22,7 @@ export class PostgresThesauriDataSource extends PostgresDataSource implements Th
   }
 
   async getById(id: string): Promise<ResultType<Thesaurus, ThesaurusNotFoundError>> {
-    const row = await this.table.findOne<ThesaurusRow>({ _id: id });
+    const row = await this.table.query<ThesaurusRow>().where({ _id: id }).first();
 
     if (!row) {
       return Result.fail(new ThesaurusNotFoundError(id));
@@ -41,27 +41,28 @@ export class PostgresThesauriDataSource extends PostgresDataSource implements Th
   }
 
   async existsById(id: string): Promise<boolean> {
-    const count = await this.table.count<ThesaurusRow>({ _id: id });
+    const count = await this.table.query<ThesaurusRow>().where({ _id: id }).count();
     return count > 0;
   }
 
   async update(thesaurus: Thesaurus): Promise<void> {
     const dbo = PostgresThesaurusMapper.toDBO(thesaurus);
-    await this.table.update(
-      { _id: dbo._id },
-      { name: dbo.name, values: JSON.stringify(dbo.values) }
-    );
+    await this.table
+      .query()
+      .where({ _id: dbo._id })
+      .update({ name: dbo.name, values: JSON.stringify(dbo.values) });
   }
 
   async delete(id: string): Promise<void> {
-    await this.table.delete({ _id: id });
+    await this.table.query().where({ _id: id }).delete();
   }
 
   async exists(thesaurus: Thesaurus): Promise<ResultType<false, Error>> {
-    const count = await this.table.count<ThesaurusRow>({
-      name: thesaurus.name,
-      _id: { $ne: thesaurus.id },
-    });
+    const count = await this.table
+      .query<ThesaurusRow>()
+      .where({ name: thesaurus.name })
+      .whereNot('_id', thesaurus.id)
+      .count();
 
     if (count > 0) {
       return Result.fail(new ThesaurusNameAlreadyExistsError(thesaurus.name));

@@ -11,10 +11,10 @@ class PostgresThesauriDAO extends PostgresDataSource {
 
   async get(ids?: string[]): Promise<ThesaurusRow[]> {
     if (ids && ids.length) {
-      return this.table.findAll<ThesaurusRow>({ _id: { $in: ids } });
+      return this.table.query<ThesaurusRow>().whereIn('_id', ids).all();
     }
 
-    return this.table.findAll<ThesaurusRow>();
+    return this.table.query<ThesaurusRow>().all();
   }
 }
 

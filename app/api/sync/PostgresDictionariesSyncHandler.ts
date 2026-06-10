@@ -19,7 +19,7 @@ export class PostgresDictionariesSyncHandler
   }
 
   async getById(id: string): Promise<ThesaurusRow | null> {
-    const row = await this.table.findOne<ThesaurusRow>({ _id: id });
+    const row = await this.table.query<ThesaurusRow>().where({ _id: id }).first();
     return row || null;
   }
 
@@ -30,7 +30,7 @@ export class PostgresDictionariesSyncHandler
 
     await this.table.upsert({ _id: id, ...rest } as Record<string, unknown>, ['_id', 'tenant_id']);
 
-    const row = await this.table.findOne<ThesaurusRow>({ _id: id });
+    const row = await this.table.query<ThesaurusRow>().where({ _id: id }).first();
     return row!;
   }
 
@@ -48,10 +48,10 @@ export class PostgresDictionariesSyncHandler
       return rawId.toString();
     });
 
-    return this.table.findAll<ThesaurusRow>({ _id: { $in: ids } });
+    return this.table.query<ThesaurusRow>().whereIn('_id', ids).all();
   }
 
   async delete(id: string): Promise<void> {
-    await this.table.delete<ThesaurusRow>({ _id: id });
+    await this.table.query().where({ _id: id }).delete();
   }
 }

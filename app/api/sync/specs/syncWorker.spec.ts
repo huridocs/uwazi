@@ -58,6 +58,7 @@ import {
   thesauri1Value2,
 } from './fixtures.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
 
 jest.mock('#api/core/infrastructure/factories/EntityIndexerServiceFactory.js', () => ({
   EntityIndexerServiceFactory: {
@@ -182,6 +183,7 @@ describe('syncWorker', () => {
 
     //@ts-ignore
     app.use(multitenantMiddleware);
+    app.use(dependenciesContextMiddleware);
 
     authRoutes(app);
     syncRoutes(app);

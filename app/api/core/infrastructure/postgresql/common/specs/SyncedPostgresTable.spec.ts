@@ -5,13 +5,6 @@ import { testingPG } from '#api/utils/testing_pg.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { SyncedPostgresTable } from '../SyncedPostgresTable.js';
 
-type TestRow = {
-  _id: string;
-  name: string;
-  values: Record<string, unknown>[];
-  tenant_id: string;
-};
-
 const DEFAULT_TENANT = 'tenant-a';
 const NAMESPACE = 'test_thesauri';
 
@@ -20,7 +13,7 @@ const createTable = (tenantId = DEFAULT_TENANT, db: Db = getConnection()) =>
 
 const jsonVal = (v: unknown) => JSON.stringify(v);
 
-const getLogs = () => getConnection().collection('updatelogs').find({}).toArray();
+const getLogs = async () => getConnection().collection('updatelogs').find({}).toArray();
 
 const id = () => new ObjectId().toHexString();
 
@@ -53,13 +46,13 @@ describe('SyncedPostgresTable', () => {
     });
   });
 
-  describe('insertMany', () => {
+  describe('insert (array)', () => {
     it('should write sync logs for every inserted row', async () => {
       const table = createTable();
       const m1 = id();
       const m2 = id();
 
-      await table.insertMany([
+      await table.insert([
         { _id: m1, name: 'a', values: jsonVal([]) },
         { _id: m2, name: 'b', values: jsonVal([]) },
       ]);
@@ -99,7 +92,7 @@ describe('SyncedPostgresTable', () => {
     });
   });
 
-  describe('update', () => {
+  describe('query().where().update()', () => {
     it('should upsert sync logs for every affected row', async () => {
       const table = createTable();
       const i1 = id();
@@ -108,10 +101,10 @@ describe('SyncedPostgresTable', () => {
       await table.insert({ _id: i2, name: 'beta', values: jsonVal([]) });
       await getConnection().collection('updatelogs').deleteMany({});
 
-      await table.update<TestRow>(
-        { _id: { $in: [i1, i2] } },
-        { values: jsonVal([{ id: 'v1', label: 'Updated' }]) }
-      );
+      await table
+        .query()
+        .whereIn('_id', [i1, i2])
+        .update({ values: jsonVal([{ id: 'v1', label: 'Updated' }]) });
 
       const logs = await getLogs();
       expect(logs).toHaveLength(2);
@@ -126,7 +119,7 @@ describe('SyncedPostgresTable', () => {
       await table.insert({ _id: i3, name: 'only', values: jsonVal([]) });
       await getConnection().collection('updatelogs').deleteMany({});
 
-      await table.update<TestRow>({ name: 'nonexistent' }, { name: 'x' });
+      await table.query().where({ name: 'nonexistent' }).update({ name: 'x' });
 
       const logs = await getLogs();
       expect(logs).toHaveLength(0);
@@ -137,7 +130,7 @@ describe('SyncedPostgresTable', () => {
       const i4 = id();
       await table.insert({ _id: i4, name: 'orig', values: jsonVal([]) });
       // insert already wrote a log; update should upsert the same one
-      await table.update<TestRow>({ _id: i4 }, { name: 'new' });
+      await table.query().where({ _id: i4 }).update({ name: 'new' });
 
       const logs = await getLogs();
       expect(logs).toHaveLength(1);
@@ -146,14 +139,14 @@ describe('SyncedPostgresTable', () => {
     });
   });
 
-  describe('delete', () => {
+  describe('query().where().delete()', () => {
     it('should write sync logs with deleted=true for affected rows', async () => {
       const table = createTable();
       const d1 = id();
       await table.insert({ _id: d1, name: 'gone', values: jsonVal([]) });
       await getConnection().collection('updatelogs').deleteMany({});
 
-      await table.delete<TestRow>({ _id: d1 });
+      await table.query().where({ _id: d1 }).delete();
 
       const logs = await getLogs();
       expect(logs).toHaveLength(1);
@@ -167,7 +160,7 @@ describe('SyncedPostgresTable', () => {
       await table.insert({ _id: d2, name: 'stay', values: jsonVal([]) });
       await getConnection().collection('updatelogs').deleteMany({});
 
-      await table.delete<TestRow>({ _id: '000000000000000000000000' });
+      await table.query().where({ _id: '000000000000000000000000' }).delete();
 
       const logs = await getLogs();
       expect(logs).toHaveLength(0);
@@ -177,10 +170,10 @@ describe('SyncedPostgresTable', () => {
       const table = createTable();
       const d3 = id();
       await table.insert({ _id: d3, name: 'temp', values: jsonVal([]) });
-      await table.update<TestRow>({ _id: d3 }, { name: 'changed' });
+      await table.query().where({ _id: d3 }).update({ name: 'changed' });
       await getConnection().collection('updatelogs').deleteMany({});
 
-      await table.delete<TestRow>({ _id: d3 });
+      await table.query().where({ _id: d3 }).delete();
 
       const logs = await getLogs();
       expect(logs).toHaveLength(1);

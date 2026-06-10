@@ -5,7 +5,7 @@ import { PostgresDictionariesSyncHandler } from './PostgresDictionariesSyncHandl
 
 export class DictionariesSyncHandlerFactory {
   static default(): MongoDictionariesSyncHandler | PostgresDictionariesSyncHandler {
-    const tenant = ExecutionContext.tenant;
+    const { tenant } = ExecutionContext;
 
     if (tenant.featureFlags?.postgresThesauri) {
       return new PostgresDictionariesSyncHandler({
