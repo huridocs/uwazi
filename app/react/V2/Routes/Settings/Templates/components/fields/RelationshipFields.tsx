@@ -134,7 +134,7 @@ export const RelationshipFields = ({ control, disabled, templateId }: Relationsh
                 if (option && option.type) {
                   field.onChange({ property: value, type: option.type });
                 } else {
-                  field.onChange('');
+                  field.onChange(undefined);
                 }
               }}
               value={field.value?.property || ''}
