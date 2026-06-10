@@ -394,16 +394,6 @@ describe('PostgresTable', () => {
       expect(rows).toHaveLength(2);
       expect(rows[0].name).toBe('b');
     });
-
-    it('should support rawWhere', async () => {
-      const table = createTable();
-      await table.insert({ _id: 'raw-1', name: 'special', values: jsonVal([]) });
-
-      const rows = await table.query<TestRow>().rawWhere('"name" ILIKE ?', ['%spec%']).all();
-
-      expect(rows).toHaveLength(1);
-      expect(rows[0]._id).toBe('raw-1');
-    });
   });
 
   describe('join with tenant isolation', () => {
@@ -540,22 +530,16 @@ describe('PostgresTable', () => {
   });
 
   describe('groupBy', () => {
-    it('should group rows and allow aggregate rawSelect', async () => {
+    it('should group rows by a column', async () => {
       const table = createTable();
-      await table.insert({ _id: 'g-1', name: 'alpha-1', values: jsonVal([]) });
-      await table.insert({ _id: 'g-2', name: 'alpha-2', values: jsonVal([]) });
-      await table.insert({ _id: 'g-3', name: 'beta-1', values: jsonVal([]) });
+      await table.insert({ _id: 'g-1', name: 'alpha-one', values: jsonVal([]) });
+      await table.insert({ _id: 'g-2', name: 'alpha-two', values: jsonVal([]) });
+      await table.insert({ _id: 'g-3', name: 'beta-one', values: jsonVal([]) });
 
-      // Group by first character of _id using raw SQL
-      const rows = await table
-        .query<{ prefix: string; total: number }>()
-        .rawSelect('LEFT("_id", 1) as prefix')
-        .groupBy(['prefix'])
-        .rawSelect('count(*)::int as total')
-        .all();
+      const rows = await table.query<{ name: string }>().select(['name']).groupBy(['name']).all();
 
-      const gRow = rows.find(r => r.prefix === 'g');
-      expect(gRow!.total).toBe(3);
+      const names = rows.map(r => r.name).sort();
+      expect(names).toEqual(['alpha-one', 'alpha-two', 'beta-one']);
     });
 
     it('should enforce tenant_id — cannot group rows from other tenants', async () => {
@@ -567,31 +551,13 @@ describe('PostgresTable', () => {
       await tableB.insert({ _id: 'gb-1', name: 'group-b-1', values: jsonVal([]) });
 
       const rowsFromA = await tableA
-        .query<{ prefix: string; total: number }>()
-        .rawSelect('LEFT("_id", 2) as prefix')
-        .groupBy(['prefix'])
-        .rawSelect('count(*)::int as total')
+        .query<{ name: string }>()
+        .select(['name'])
+        .groupBy(['name'])
         .all();
 
-      expect(rowsFromA).toHaveLength(1);
-      expect(rowsFromA[0].total).toBe(2);
-    });
-  });
-
-  describe('rawSelect', () => {
-    it('should include raw SQL expressions in the select clause', async () => {
-      const table = createTable();
-      await table.insert({ _id: 'rs-1', name: 'test', values: jsonVal([]) });
-
-      const rows = await table
-        .query<{ _id: string; upper_name: string }>()
-        .where({ _id: 'rs-1' })
-        .select(['_id'])
-        .rawSelect('UPPER("name") as upper_name')
-        .all();
-
-      expect(rows).toHaveLength(1);
-      expect(rows[0].upper_name).toBe('TEST');
+      const names = rowsFromA.map(r => r.name).sort();
+      expect(names).toEqual(['group-a-1', 'group-a-2']);
     });
   });
 });

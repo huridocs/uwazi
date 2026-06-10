@@ -32,11 +32,6 @@ export class PostgresQueryBuilder<TRow> {
     return this;
   }
 
-  rawWhere(sql: string, bindings?: Knex.Value[]): this {
-    this.qb = this.qb.andWhereRaw(sql, bindings);
-    return this;
-  }
-
   orderBy(column: string, direction: 'asc' | 'desc' = 'asc'): this {
     this.qb = this.qb.orderBy(column, direction);
     return this;
@@ -80,11 +75,6 @@ export class PostgresQueryBuilder<TRow> {
 
   distinct(columns: string[]): this {
     this.qb = this.qb.distinct(columns);
-    return this;
-  }
-
-  rawSelect(sql: string, bindings?: unknown[]): this {
-    this.qb = this.qb.select(this.qb.client.raw(sql, bindings as Knex.Value[]));
     return this;
   }
 
