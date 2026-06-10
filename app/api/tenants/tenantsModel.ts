@@ -40,7 +40,6 @@ const mongoSchema = new mongoose.Schema({
     fileCacheHeaders: Boolean,
     themeCustomization: Boolean,
     v2GetEntity: Boolean,
-    v2ElasticSearch: Boolean,
     v2Languages: Boolean,
     v2UpdateFile: Boolean,
     newHeader: Boolean,

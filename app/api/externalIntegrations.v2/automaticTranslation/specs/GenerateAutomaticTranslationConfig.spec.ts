@@ -11,8 +11,6 @@ import { ValidationError, Validator } from '../infrastructure/Validator.js';
 import { AutomaticTranslationFactory } from '../AutomaticTranslationFactory.js';
 import testingDB from '#api/utils/testing_db.js';
 import { Settings } from '#shared/types/settingsType.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
 
 const factory = getFixturesFactory();
 
@@ -89,7 +87,6 @@ describe('GenerateAutomaticTranslationConfig', () => {
       new MongoTemplatesDataSource({
         db: getConnection(),
         transactionManager: TransactionManagerFactory.default(),
-        slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
       }),
       new Validator<SemanticConfig>(semanticConfigSchema)
     );
