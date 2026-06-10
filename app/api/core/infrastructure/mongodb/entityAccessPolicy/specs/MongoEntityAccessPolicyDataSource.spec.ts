@@ -11,7 +11,6 @@ import { EntityAccessPolicyNotFoundError } from '#api/core/domain/entityAccessPo
 import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
 import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
 import { DBFixture } from '#api/utils/testing_db.js';
-import { EntityIndexerServiceFactory } from '#api/core/infrastructure/factories/EntityIndexerServiceFactory.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 
 const sharedId = 'entity-shared-1';
@@ -49,7 +48,6 @@ const createSut = (_deps?: Partial<MongoEntityAccessPolicyDataSourceDeps>) => {
   const deps: MongoEntityAccessPolicyDataSourceDeps = {
     db,
     transactionManager,
-    entityIndexerService: EntityIndexerServiceFactory.forTests(),
     searchV1: TestUtils.mockClass<MongoEntityAccessPolicyDataSourceDeps['searchV1']>({
       indexEntities: jest.fn().mockResolvedValue(undefined),
     }),
@@ -181,21 +179,6 @@ describe('MongoEntityAccessPolicyDataSource', () => {
       expect(doc2!.published).toBe(true);
     });
 
-    it('adds all mutated sharedIds to the indexer on commit', async () => {
-      const { sut, transactionManager, entityIndexerService } = createSut();
-
-      await transactionManager.run(async () => {
-        await sut.bulkUpdate([
-          new EntityAccessPolicy({ sharedId, grants: [], isPublic: false }),
-          new EntityAccessPolicy({ sharedId: 'other-entity', grants: [], isPublic: false }),
-        ]);
-      });
-
-      expect(entityIndexerService.sync).toHaveBeenCalledWith(
-        expect.arrayContaining([sharedId, 'other-entity'])
-      );
-    });
-
     it('is a no-op for an empty list', async () => {
       const { sut } = createSut();
       await expect(sut.bulkUpdate([])).resolves.toBeUndefined();
@@ -230,21 +213,6 @@ describe('MongoEntityAccessPolicyDataSource', () => {
         .collection('entities')
         .findOne({ sharedId: 'other-entity' });
       expect(doc2!.published).toBe(true);
-    });
-
-    it('should not add created sharedIds to the indexer on commit', async () => {
-      const { sut, transactionManager, entityIndexerService } = createSut();
-
-      await transactionManager.run(async () => {
-        await sut.bulkCreate([
-          new EntityAccessPolicy({ sharedId, grants: [], isPublic: false }),
-          new EntityAccessPolicy({ sharedId: 'other-entity', grants: [], isPublic: false }),
-        ]);
-      });
-
-      expect(entityIndexerService.sync).not.toHaveBeenCalledWith(
-        expect.arrayContaining([sharedId, 'other-entity'])
-      );
     });
 
     it('does not affect other entities not in the list', async () => {
@@ -334,33 +302,6 @@ describe('MongoEntityAccessPolicyDataSource', () => {
   });
 
   describe('on-commit indexing', () => {
-    it('calls entityIndexerService.sync with all updated sharedIds after commit', async () => {
-      const { sut, transactionManager, entityIndexerService } = createSut();
-
-      const other = 'other-entity';
-
-      await transactionManager.run(async () => {
-        await sut.update(new EntityAccessPolicy({ sharedId: other, grants: [], isPublic: true }));
-        await sut.bulkUpdate([
-          new EntityAccessPolicy({ sharedId: other, grants: [], isPublic: true }),
-        ]);
-        await sut.bulkCreate([new EntityAccessPolicy({ sharedId, grants: [], isPublic: false })]);
-        await sut.create(new EntityAccessPolicy({ sharedId, grants: [], isPublic: false }));
-      });
-
-      expect(entityIndexerService.sync).toHaveBeenCalledWith([other]);
-    });
-
-    it('does not call entityIndexerService.sync when no mutations occurred', async () => {
-      const { transactionManager, entityIndexerService } = createSut();
-
-      await transactionManager.run(async () => {
-        await Promise.resolve();
-      });
-
-      expect(entityIndexerService.sync).not.toHaveBeenCalled();
-    });
-
     it('calls searchV1.indexEntities with all updated sharedIds after commit', async () => {
       const { sut, transactionManager, searchV1 } = createSut();
 
@@ -385,25 +326,6 @@ describe('MongoEntityAccessPolicyDataSource', () => {
         await Promise.resolve();
       });
 
-      expect(searchV1.indexEntities).not.toHaveBeenCalled();
-    });
-
-    it('clears the mutated set between transactions', async () => {
-      const { sut, transactionManager, entityIndexerService, searchV1 } = createSut();
-
-      await transactionManager.run(async () => {
-        await sut.create(new EntityAccessPolicy({ sharedId, grants: [], isPublic: false }));
-      });
-
-      (entityIndexerService.sync as any).mockClear();
-      (searchV1.indexEntities as any).mockClear();
-
-      // Second transaction with no mutations
-      await transactionManager.run(async () => {
-        await Promise.resolve();
-      });
-
-      expect(entityIndexerService.sync).not.toHaveBeenCalled();
       expect(searchV1.indexEntities).not.toHaveBeenCalled();
     });
   });

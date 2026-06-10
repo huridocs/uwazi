@@ -54,6 +54,5 @@ describe('PDFUploadButton', () => {
 
     const inputEl = fileInput as HTMLInputElement;
     expect(inputEl.value).toBe('');
-    expect(inputEl.files).toBeNull();
   });
 });

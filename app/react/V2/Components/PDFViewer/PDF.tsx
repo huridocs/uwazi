@@ -45,6 +45,7 @@ interface PDFProps {
   onHighlightClick?: (relationshipId: string) => void;
   size?: { height?: string; width?: string };
   scrollRoot?: Element | null;
+  className?: string;
 }
 
 // eslint-disable-next-line max-statements
@@ -59,6 +60,7 @@ const PDF = ({
   onHighlightClick,
   size,
   scrollRoot,
+  className,
 }: PDFProps) => {
   const pageRefsMap = useRef<{ [key: number]: HTMLDivElement | null }>({});
   const animationFrameIdRef = useRef<number>(0);
@@ -347,7 +349,9 @@ const PDF = ({
 
   return (
     <HandleTextSelection onSelect={handleSelect} onDeselect={onDeselect}>
-      <div className="w-full flex flex-col gap-2 h-full">
+      <div
+        className={`w-full flex flex-col gap-2 h-full items-center justify-center p-3 ${className}`}
+      >
         {loading.isLoading || !pdf ? (
           <div className="w-full flex flex-col gap-2">
             <div className="flex justify-between mb-1">

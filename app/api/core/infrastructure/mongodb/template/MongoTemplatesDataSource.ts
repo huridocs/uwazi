@@ -23,12 +23,10 @@ import { V1RelationshipProperty } from '../../../domain/template/V1RelationshipP
 import { TemplateDBO } from './DBOs/TemplateDBO.js';
 import { MongoTemplateMapper, MongoTemplatePropertyMapper } from './MongoTemplateMapper.js';
 import { mapPropertyQuery } from './QueryMapper.js';
-import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
 
 type Deps = {
   db: Db;
   transactionManager: MongoTransactionManager;
-  slotsReconciler: SlotsReconciler;
   options?: MongoDSOptions;
 };
 
@@ -42,11 +40,8 @@ export class MongoTemplatesDataSource
 
   private templatesMutated = new Map<ObjectId, TemplateDBO>();
 
-  private slotsReconciler: SlotsReconciler;
-
   constructor(deps: Deps) {
     super(deps.db, deps.transactionManager, deps.options);
-    this.slotsReconciler = deps.slotsReconciler;
 
     this.transactionManager.onCommitted(async () => {
       const templates = [...this.templatesMutated.values()];
@@ -326,14 +321,12 @@ export class MongoTemplatesDataSource
     const schema = MongoTemplateMapper.toSchema(template);
     await this.getCollection().updateOne({ _id: new ObjectId(template.id) }, { $set: schema });
     this.templatesMutated.set(schema._id, schema);
-    await this.slotsReconciler.execute();
   }
 
   async create(template: Template): Promise<void> {
     const schema = MongoTemplateMapper.toSchema(template);
     await this.getCollection().insertOne(schema);
     this.templatesMutated.set(schema._id, schema);
-    await this.slotsReconciler.execute();
   }
 
   async isPropertyUnique(property: Property): Promise<boolean> {
@@ -405,7 +398,6 @@ export class MongoTemplatesDataSource
 
   async delete(templateId: string): Promise<void> {
     await this.getCollection().deleteOne({ _id: new ObjectId(templateId) });
-    await this.slotsReconciler.execute();
   }
 
   async bulkUpdate(template: Template[]): Promise<void> {
@@ -421,7 +413,6 @@ export class MongoTemplatesDataSource
     );
 
     schemas.forEach(schema => this.templatesMutated.set(schema._id, schema));
-    await this.slotsReconciler.execute();
   }
 }
 

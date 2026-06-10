@@ -9,6 +9,9 @@ type TocState = {
   toc: TocSchema[] | undefined;
   isEditMode: boolean;
   expanded: Record<number, boolean>;
+  isAllExpanded: boolean;
+  isAllCollapsed: boolean;
+  isSaving: boolean;
 };
 
 // Base state atom
@@ -16,6 +19,9 @@ const tocStateAtom = atomWithReset<TocState>({
   toc: undefined,
   isEditMode: false,
   expanded: {},
+  isAllExpanded: false,
+  isAllCollapsed: true,
+  isSaving: false,
 });
 
 // Helper to convert TextSelection to TocSchema

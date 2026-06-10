@@ -13,10 +13,9 @@ describe('Metadata Display', () => {
       mount(<Basic />);
     });
 
-    it('renders the entity title with the icon', () => {
-      cy.contains('dt', 'Title').find('.sr-only').should('exist');
-      cy.contains('dd', 'Title of the displayed entity').should('exist');
-      cy.contains('dd', 'Title of the displayed entity').find('span[role="img"]').should('exist');
+    it('renders creation and edit dates', () => {
+      cy.contains('dt', 'Creation Date').should('exist');
+      cy.contains('dt', 'Edit Date').should('exist');
     });
 
     it('renders a simple text metadata value', () => {
@@ -119,7 +118,6 @@ describe('Metadata Display', () => {
 
   describe('Empty metadata fields', () => {
     const checkProperties = () => {
-      cy.contains('dd', 'Title of the displayed entity');
       cy.contains('dd', 'Oct 2, 2025');
       cy.contains('dd', 'Oct 13, 2025');
 

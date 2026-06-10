@@ -82,6 +82,7 @@ const ThemeProvider = ({
       className={mergedClassName}
       data-theme-custom={useCustomizationPipeline ? true : undefined}
       data-theme-mode={effectiveThemeMode}
+      data-theme-preset={presetId}
       style={{
         colorScheme: effectiveThemeMode,
         fontFamily: 'var(--font-theme-sans)',

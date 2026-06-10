@@ -3,7 +3,6 @@ import { TransactionManager } from '#api/core/application/contracts/TransactionM
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoTemplatesDataSource } from '../mongodb/template/MongoTemplatesDataSource.js';
 import { CachedMongoTemplatesDataSource } from '../mongodb/template/CachedMongoTemplatesDataSource.js';
-import { SlotsReconcilerFactory } from './SlotsReconcilerFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 type Overrides = Partial<
@@ -17,21 +16,11 @@ export class TemplatesDataSourceFactory {
     const db = getConnection();
     const mongoTM = (overrides?.transactionManager ??
       ExecutionContext.transactionManager) as MongoTransactionManager;
-
-    const slotsReconciler =
-      overrides?.slotsReconciler ??
-      SlotsReconcilerFactory.default({ transactionManager: overrides?.transactionManager });
-
-    const {
-      transactionManager: _ignored,
-      slotsReconciler: _ignoredSR,
-      ...restOverrides
-    } = overrides ?? {};
+    const { transactionManager: _ignored, ...restOverrides } = overrides ?? {};
 
     return new MongoTemplatesDataSource({
       db,
       transactionManager: mongoTM,
-      slotsReconciler,
       ...restOverrides,
     });
   }
@@ -40,21 +29,11 @@ export class TemplatesDataSourceFactory {
     const db = getConnection();
     const mongoTM = (overrides?.transactionManager ??
       ExecutionContext.transactionManager) as MongoTransactionManager;
-
-    const slotsReconciler =
-      overrides?.slotsReconciler ??
-      SlotsReconcilerFactory.default({ transactionManager: overrides?.transactionManager });
-
-    const {
-      transactionManager: _ignored,
-      slotsReconciler: _ignoredSR,
-      ...restOverrides
-    } = overrides ?? {};
+    const { transactionManager: _ignored, ...restOverrides } = overrides ?? {};
 
     return new CachedMongoTemplatesDataSource({
       db,
       transactionManager: mongoTM,
-      slotsReconciler,
       ...restOverrides,
     });
   }

@@ -1,9 +1,9 @@
 // eslint-disable-next-line node/no-restricted-import
 import { copyFile } from 'fs/promises';
-import { dirname } from 'path';
-import path from 'path';
+import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
+import { ObjectId } from 'mongodb';
 import {
   cleanupTestUploadedPaths,
   createDirIfNotExists,
@@ -28,7 +28,6 @@ import { testingPG } from '#api/utils/testing_pg.js';
 import type { PGFixture } from '#api/utils/testing_pg.js';
 import { User } from '#api/users.v2/model/User.js';
 import { UserSchema } from '#shared/types/userType.js';
-import { ObjectId } from 'mongodb';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -228,14 +227,6 @@ const testingEnvironment = {
         ),
       idGenerator: IdGeneratorFactory.default,
       logger: LoggerFactory.default,
-      elasticClient: () => {
-        throw new Error('ExecutionContext: elasticClient not implemented in test context');
-      },
-      authorizedEntityESClient: () => {
-        throw new Error(
-          'ExecutionContext: authorizedEntityESClient not implemented in test context'
-        );
-      },
     };
 
     const context: ExecutionContextDeps = {
