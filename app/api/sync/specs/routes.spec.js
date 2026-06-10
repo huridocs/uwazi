@@ -10,23 +10,6 @@ import { LanguageUtils } from '#shared/language/index.js';
 import instrumentRoutes from '../../utils/instrumentRoutes.js';
 import syncRoutes from '../routes.js';
 
-const mockIndexerSync = jest.fn().mockResolvedValue(undefined);
-const mockIndexerRemove = jest.fn().mockResolvedValue(undefined);
-jest.mock('#api/core/infrastructure/factories/EntityIndexerServiceFactory.js', () => ({
-  EntityIndexerServiceFactory: {
-    default: () => ({ sync: mockIndexerSync, remove: mockIndexerRemove }),
-  },
-}));
-
-jest.mock('#api/sync/ElasticSlotsSyncHandler.js', () => ({
-  ElasticSlotsSyncHandler: jest.fn().mockImplementation(() => ({
-    save: jest.fn().mockResolvedValue(undefined),
-    saveMultiple: jest.fn().mockResolvedValue(undefined),
-    getById: jest.fn().mockResolvedValue(null),
-    delete: jest.fn().mockResolvedValue(undefined),
-  })),
-}));
-
 describe('sync', () => {
   let routes;
   let req;
@@ -56,8 +39,6 @@ describe('sync', () => {
     jest.spyOn(search, 'delete').mockImplementation(() => {});
     jest.spyOn(search, 'indexEntities').mockImplementation(() => {});
     jest.spyOn(storage, 'removeFile').mockImplementation(() => {});
-
-    mockIndexerSync.mockClear();
   });
 
   describe('POST', () => {
@@ -166,7 +147,6 @@ describe('sync', () => {
 
         await routes.post('/api/sync', req);
         expect(search.indexEntities).toHaveBeenCalledWith({ _id: 'id' }, '+fullText');
-        expect(mockIndexerSync).toHaveBeenCalledWith(['sharedId']);
       });
     });
 
@@ -182,7 +162,6 @@ describe('sync', () => {
 
         await routes.post('/api/sync', req);
         expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'shared' }, '+fullText');
-        expect(mockIndexerSync).toHaveBeenCalledWith(['shared']);
       });
     });
 
@@ -327,7 +306,6 @@ describe('sync', () => {
       it('should delete it from elastic', async () => {
         await routes.delete('/api/sync', req);
         expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'entityId' });
-        expect(mockIndexerSync).toHaveBeenCalledWith(['entityId']);
       });
 
       it('should delete it from the file system', async () => {
@@ -341,7 +319,6 @@ describe('sync', () => {
         const entities = {
           save: jest.fn(),
           delete: jest.fn(),
-          getById: jest.fn().mockResolvedValue({ _id: 'id', sharedId: 'sharedId1' }),
         };
         models.entities = () => entities;
 
@@ -354,7 +331,6 @@ describe('sync', () => {
       it('should delete it from elastic', async () => {
         await routes.delete('/api/sync', req);
         expect(search.delete).toHaveBeenCalledWith({ _id: 'id' });
-        expect(mockIndexerRemove).toHaveBeenCalledWith(['sharedId1']);
       });
 
       it('should not fail if elastic path has already been deleted (statusCode 404)', async () => {
@@ -364,40 +340,6 @@ describe('sync', () => {
         search.delete.mockReturnValue(Promise.reject(error));
         const response = await routes.delete('/api/sync', req);
         expect(response).toBe('ok');
-      });
-
-      it('should not fail if v2 elastic doc was already deleted (version conflict 409 with missing document)', async () => {
-        const error = new Error(
-          '[tenant__shared-1]: version conflict, required seqNo [0], primary term [1]. but no document was found'
-        );
-        error.statusCode = 409;
-
-        mockIndexerRemove.mockReturnValue(Promise.reject(error));
-        const response = await routes.delete('/api/sync', req);
-        expect(response).toBe('ok');
-      });
-
-      it('should rethrow a 409 that is not a missing document version conflict', async () => {
-        const error = new Error(
-          'version conflict, current version [2] is different than the one provided [1]'
-        );
-        error.statusCode = 409;
-
-        mockIndexerRemove.mockReturnValue(Promise.reject(error));
-        await expect(routes.delete('/api/sync', req)).rejects.toThrow(error);
-      });
-    });
-
-    describe('when namespace is elasticSlots', () => {
-      it('should return ok and not attempt model deletion', async () => {
-        req.query = {
-          namespace: 'elasticSlots',
-          data: JSON.stringify({ _id: 'slotId' }),
-        };
-
-        const response = await routes.delete('/api/sync', req);
-        expect(response).toBe('ok');
-        expect(mockIndexerSync).not.toHaveBeenCalled();
       });
     });
   });
