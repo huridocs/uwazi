@@ -3,8 +3,11 @@ import { Knex } from 'knex';
 export class PostgresQueryBuilder<TRow> {
   protected qb: Knex.QueryBuilder;
 
+  private tableName: string;
+
   constructor(knex: Knex, tableName: string, tenantId: string) {
-    this.qb = knex(tableName).where('tenant_id', tenantId);
+    this.tableName = tableName;
+    this.qb = knex(tableName).where(`${tableName}.tenant_id`, tenantId);
   }
 
   where(condition: Record<string, unknown>): this {
@@ -51,6 +54,37 @@ export class PostgresQueryBuilder<TRow> {
 
   select(columns: string[]): this {
     this.qb = this.qb.select(columns);
+    return this;
+  }
+
+  join(tableName: string, leftColumn: string, rightColumn: string): this {
+    this.qb = this.qb.join(tableName, builder => {
+      builder.on(leftColumn, '=', rightColumn);
+      builder.andOn(`${tableName}.tenant_id`, '=', `${this.tableName}.tenant_id`);
+    });
+    return this;
+  }
+
+  leftJoin(tableName: string, leftColumn: string, rightColumn: string): this {
+    this.qb = this.qb.leftJoin(tableName, builder => {
+      builder.on(leftColumn, '=', rightColumn);
+      builder.andOn(`${tableName}.tenant_id`, '=', `${this.tableName}.tenant_id`);
+    });
+    return this;
+  }
+
+  groupBy(columns: string[]): this {
+    this.qb = this.qb.groupBy(columns);
+    return this;
+  }
+
+  distinct(columns: string[]): this {
+    this.qb = this.qb.distinct(columns);
+    return this;
+  }
+
+  rawSelect(sql: string, bindings?: unknown[]): this {
+    this.qb = this.qb.select(this.qb.client.raw(sql, bindings as Knex.Value[]));
     return this;
   }
 

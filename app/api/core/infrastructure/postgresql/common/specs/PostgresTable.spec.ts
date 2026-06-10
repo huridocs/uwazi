@@ -405,4 +405,193 @@ describe('PostgresTable', () => {
       expect(rows[0]._id).toBe('raw-1');
     });
   });
+
+  describe('join with tenant isolation', () => {
+    beforeAll(async () => {
+      await testingPG.pool!.query(`
+        CREATE TABLE IF NOT EXISTS "thesauri_categories" (
+          "_id" TEXT NOT NULL,
+          "thesaurus_id" TEXT NOT NULL,
+          "label" TEXT NOT NULL,
+          "tenant_id" TEXT NOT NULL,
+          PRIMARY KEY ("_id", "tenant_id")
+        )
+      `);
+    });
+
+    beforeEach(async () => {
+      await testingPG.pool!.query('DELETE FROM "thesauri_categories"');
+    });
+
+    afterAll(async () => {
+      await testingPG.pool!.query('DROP TABLE IF EXISTS "thesauri_categories"');
+    });
+
+    const createCategoryTable = (tenantId = DEFAULT_TENANT) =>
+      new PostgresTable(testingPG.config, 'thesauri_categories', tenantId);
+
+    it('should join thesauri with categories and enforce tenant_id on the base table', async () => {
+      const thesauriTable = createTable();
+      const categoryTable = createCategoryTable();
+
+      await thesauriTable.insert({ _id: 'th-1', name: 'Colors', values: jsonVal([]) });
+      await categoryTable.insert({ _id: 'cat-1', thesaurus_id: 'th-1', label: 'Red' });
+
+      const rows = await thesauriTable
+        .query<TestRow & { label: string }>()
+        .join('thesauri_categories', 'thesauri._id', 'thesauri_categories.thesaurus_id')
+        .where({ 'thesauri._id': 'th-1' })
+        .select(['thesauri._id', 'thesauri.name', 'thesauri_categories.label'])
+        .all();
+
+      expect(rows).toHaveLength(1);
+      expect(rows[0].name).toBe('Colors');
+      expect(rows[0].label).toBe('Red');
+    });
+
+    it('should enforce tenant_id on the base table during join — cannot see rows from other tenants', async () => {
+      const thesauriTableA = createTable('tenant-a');
+      const categoryTableA = createCategoryTable('tenant-a');
+      const thesauriTableB = createTable('tenant-b');
+      const categoryTableB = createCategoryTable('tenant-b');
+
+      await thesauriTableA.insert({ _id: 'shared-th', name: 'A thesaurus', values: jsonVal([]) });
+      await categoryTableA.insert({ _id: 'cat-a', thesaurus_id: 'shared-th', label: 'A category' });
+
+      await thesauriTableB.insert({ _id: 'shared-th', name: 'B thesaurus', values: jsonVal([]) });
+      await categoryTableB.insert({ _id: 'cat-b', thesaurus_id: 'shared-th', label: 'B category' });
+
+      const rowsFromB = await thesauriTableB
+        .query<TestRow & { label: string }>()
+        .join('thesauri_categories', 'thesauri._id', 'thesauri_categories.thesaurus_id')
+        .where({ 'thesauri._id': 'shared-th' })
+        .select(['thesauri._id', 'thesauri.name', 'thesauri_categories.label'])
+        .all();
+
+      expect(rowsFromB).toHaveLength(1);
+      expect(rowsFromB[0].name).toBe('B thesaurus');
+      expect(rowsFromB[0].label).toBe('B category');
+    });
+
+    it('should leftJoin and return base rows even without matching join rows', async () => {
+      const thesauriTable = createTable();
+      const categoryTable = createCategoryTable();
+
+      await thesauriTable.insert({ _id: 'th-empty', name: 'Empty', values: jsonVal([]) });
+      // No categories inserted
+
+      const rows = await thesauriTable
+        .query<TestRow & { label: string | null }>()
+        .leftJoin('thesauri_categories', 'thesauri._id', 'thesauri_categories.thesaurus_id')
+        .where({ 'thesauri._id': 'th-empty' })
+        .select(['thesauri._id', 'thesauri.name', 'thesauri_categories.label'])
+        .all();
+
+      expect(rows).toHaveLength(1);
+      expect(rows[0].name).toBe('Empty');
+      expect(rows[0].label).toBeNull();
+    });
+
+    it('should leftJoin and enforce tenant_id — cannot access rows from other tenants', async () => {
+      const thesauriTableA = createTable('tenant-a');
+      const categoryTableB = createCategoryTable('tenant-b');
+
+      await thesauriTableA.insert({ _id: 'th-iso', name: 'Isolated', values: jsonVal([]) });
+      await categoryTableB.insert({ _id: 'cat-iso', thesaurus_id: 'th-iso', label: 'B data' });
+
+      const rowsFromA = await thesauriTableA
+        .query<TestRow & { label: string | null }>()
+        .leftJoin('thesauri_categories', 'thesauri._id', 'thesauri_categories.thesaurus_id')
+        .where({ 'thesauri._id': 'th-iso' })
+        .select(['thesauri._id', 'thesauri.name', 'thesauri_categories.label'])
+        .all();
+
+      expect(rowsFromA).toHaveLength(1);
+      expect(rowsFromA[0].name).toBe('Isolated');
+      expect(rowsFromA[0].label).toBeNull();
+    });
+  });
+
+  describe('distinct', () => {
+    it('should return distinct values for the current tenant', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'd-1', name: 'alpha', values: jsonVal([]) });
+      await table.insert({ _id: 'd-2', name: 'beta', values: jsonVal([]) });
+      await table.insert({ _id: 'd-3', name: 'gamma', values: jsonVal([]) });
+
+      const rows = await table.query<{ name: string }>().distinct(['name']).all();
+
+      expect(rows.map(r => r.name).sort()).toEqual(['alpha', 'beta', 'gamma']);
+    });
+
+    it('should enforce tenant_id — cannot see distinct values from other tenants', async () => {
+      const tableA = createTable('tenant-a');
+      const tableB = createTable('tenant-b');
+
+      await tableA.insert({ _id: 'da-1', name: 'name-a', values: jsonVal([]) });
+      await tableA.insert({ _id: 'da-2', name: 'name-b', values: jsonVal([]) });
+      await tableB.insert({ _id: 'db-1', name: 'name-c', values: jsonVal([]) });
+      await tableB.insert({ _id: 'db-2', name: 'name-d', values: jsonVal([]) });
+
+      const rowsFromA = await tableA.query<{ name: string }>().distinct(['name']).all();
+
+      expect(rowsFromA.map(r => r.name).sort()).toEqual(['name-a', 'name-b']);
+    });
+  });
+
+  describe('groupBy', () => {
+    it('should group rows and allow aggregate rawSelect', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'g-1', name: 'alpha-1', values: jsonVal([]) });
+      await table.insert({ _id: 'g-2', name: 'alpha-2', values: jsonVal([]) });
+      await table.insert({ _id: 'g-3', name: 'beta-1', values: jsonVal([]) });
+
+      // Group by first character of _id using raw SQL
+      const rows = await table
+        .query<{ prefix: string; total: number }>()
+        .rawSelect('LEFT("_id", 1) as prefix')
+        .groupBy(['prefix'])
+        .rawSelect('count(*)::int as total')
+        .all();
+
+      const gRow = rows.find(r => r.prefix === 'g');
+      expect(gRow!.total).toBe(3);
+    });
+
+    it('should enforce tenant_id — cannot group rows from other tenants', async () => {
+      const tableA = createTable('tenant-a');
+      const tableB = createTable('tenant-b');
+
+      await tableA.insert({ _id: 'ga-1', name: 'group-a-1', values: jsonVal([]) });
+      await tableA.insert({ _id: 'ga-2', name: 'group-a-2', values: jsonVal([]) });
+      await tableB.insert({ _id: 'gb-1', name: 'group-b-1', values: jsonVal([]) });
+
+      const rowsFromA = await tableA
+        .query<{ prefix: string; total: number }>()
+        .rawSelect('LEFT("_id", 2) as prefix')
+        .groupBy(['prefix'])
+        .rawSelect('count(*)::int as total')
+        .all();
+
+      expect(rowsFromA).toHaveLength(1);
+      expect(rowsFromA[0].total).toBe(2);
+    });
+  });
+
+  describe('rawSelect', () => {
+    it('should include raw SQL expressions in the select clause', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'rs-1', name: 'test', values: jsonVal([]) });
+
+      const rows = await table
+        .query<{ _id: string; upper_name: string }>()
+        .where({ _id: 'rs-1' })
+        .select(['_id'])
+        .rawSelect('UPPER("name") as upper_name')
+        .all();
+
+      expect(rows).toHaveLength(1);
+      expect(rows[0].upper_name).toBe('TEST');
+    });
+  });
 });
