@@ -1,8 +1,8 @@
 # CSV Import V2 — Context Doc 08 (Entity Update via `id`)
 
-**Date:** 2026-06-03  
+**Date:** 2026-06-10  
 **Owner:** CSV Import V2 initiative  
-**Scope:** planning only (no implementation yet)
+**Scope:** implemented and validated (`csv.v2` test suite)
 
 ## 1) Purpose
 
@@ -51,24 +51,29 @@ Current decision for update semantics is in section 3.
 
 ---
 
-## 4) Required Changes (planning scope)
+## 4) Implemented Changes
 
-## 4.1 Import flow branch in entities stage
+## 4.1 Import flow branch in entities stage (implemented)
 
-Main touchpoint:
+Main touchpoints:
 - `app/api/csv.v2/application/jobs/CsvImportEntitiesBatchProcessor.ts`
+- `app/api/csv.v2/application/jobs/CsvImportEntitiesRowPreparation.ts`
+- `app/api/csv.v2/application/jobs/CsvImportEntitiesRowPersistence.ts`
+- `app/api/csv.v2/application/jobs/CsvImportEntitiesBatchTypes.ts`
 
-At row processing time:
+Implemented row behavior:
 - if row has `id` value:
-  - resolve entity by `sharedId` inside current template scope
+  - resolve entity inside current template scope via datasource method
+    `existsByIdAndTemplateId(id, templateId)`
   - if found in template -> update path
   - if not found in template -> row error
 - if row has no `id` value:
   - keep current create path
 
-## 4.2 Keep using Services, not direct DS writes
+## 4.2 Keep using Services, not direct DB queries (implemented)
 
-Entity persistence remains through service layer (`EntitiesService` / use-case level orchestration), not direct repository writes from CSV job logic.
+Entity persistence remains through service layer (`EntitiesService` / use-case level orchestration), and lookup happens through datasource contracts.  
+No direct database query was introduced in CSV import job logic.
 
 Important validation item:
 - `app/api/core/application/EntitiesService.ts`
@@ -77,32 +82,35 @@ Important validation item:
 
 CSV import should rely on service behavior; if relationship/indexing side effects are incomplete for update, the fix should live in the service/domain orchestration, not as CSV-specific special handling.
 
-## 4.3 Error taxonomy + tests (simplified)
+## 4.3 Error taxonomy + tests (implemented)
 
-Keep this branch simple:
-- add one row error classification for id-template miss semantics (`id not found in template`)
-- tests mirror that simplicity (no extra split for template mismatch vs missing id record)
+Implemented:
+- one row error classification for id-template miss semantics (`ID_NOT_FOUND_IN_TEMPLATE`)
+- business-facing message: `id not found in template`
+- tests mirror that simplicity (no split between unknown id vs wrong-template id)
 
 Primary test area:
 - `app/api/csv.v2/application/jobs/specs/CsvImportEntitiesJob.spec.ts`
 
-## 4.4 Stats naming and persistence
+## 4.4 Stats naming and persistence (implemented)
 
 Current stats include `entitiesCreated`, `rowsProcessed`, `rowsFailed` in:
 - `app/api/csv.v2/domain/CsvImport.ts`
 
-Add one update metric named `entitiesUpdated`, keeping `rowsProcessed` and `rowsFailed` as global counters across both created and updated rows.
+Added update metric `entitiesUpdated`, keeping `rowsProcessed` and `rowsFailed` as global counters across both created and updated rows.
 
-Likely touchpoints:
+Implemented touchpoints:
 - `app/api/csv.v2/domain/CsvImport.ts`
 - `app/api/csv.v2/application/jobs/CsvImportEntitiesRowsProcessor.ts`
 - `app/api/csv.v2/application/jobs/CsvImportEntitiesJob.ts`
 - `app/api/csv.v2/infrastructure/jobHandlers/CsvImportEntitiesJobHandler.ts`
 - UI consumers under `app/react/V2/Routes/Settings/CSVUpload/*`
+- `app/react/V2/api/csv/events.ts`
+- `app/react/V2/api/csv/index.ts`
 
 ---
 
-## 5) Files on Update: agreed direction + open risk
+## 5) Files on Update: implemented direction + remaining risk
 
 ### Direction
 
@@ -112,19 +120,20 @@ Preferred behavior: when updating by `id`, **insert new files and keep existing 
 
 Append semantics can create duplicates on retries/non-idempotent reprocessing.
 
-### Open implementation detail (must be decided before coding)
+### Implemented strategy
 
-Pick one duplicate-control strategy:
+Implemented option 2: **best-effort dedupe by file `originalname`** during update rows.
 
-1. **Accept duplicates for now** (fastest, least safe),
-2. **Best-effort dedupe during update** (for example by stable file reference/name per entity),
-3. **Stronger idempotency keying for file operations** tied to `(importId, rowIndex, fileRef)`.
+Behavior in update rows:
+- existing files are kept (no delete path),
+- incoming files with matching `originalname` are skipped,
+- incoming files with new `originalname` are inserted.
 
-Given prior retry concerns in imports, option 2 is a pragmatic baseline if low-cost; option 3 is strongest but larger scope.
+Also implemented as **case-insensitive dedupe** (`trim().toLowerCase()`), and dedupe is applied both against existing entity files and within the incoming row batch.
 
 ---
 
-## 6) Impact and Effort (revised)
+## 6) Impact and Effort (actual)
 
 ### Expected impact
 
@@ -134,24 +143,56 @@ Given prior retry concerns in imports, option 2 is a pragmatic baseline if low-c
 - API/UI impact is additive via new update counter(s).
 - Partial CSV update semantics (preserving values for omitted columns on update rows) are out of scope for this iteration; current implementation scope does not include this behavior change.
 
-### Effort estimate (planning)
+### Actual effort notes
 
-- **Medium** for core update branching + simplified errors + stats/UI.
-- **Medium-to-Large** if robust file idempotency is included in same delivery.
-
----
-
-## 7) Suggested implementation order (when execution starts)
-
-1. Wire row-level `id -> sharedId` update branch in entities import batch processor.
-2. Add simplified row error (`id not found in template`) and integration tests.
-3. Add persisted update stats field and propagate to API/UI.
-4. Finalize append-file duplicate strategy and implement accordingly.
-5. Verify service-side update side effects (relationships/indexing) and adjust at service layer if needed.
+- Core update branch + simplified errors + stats/UI completed.
+- Refactor was needed to keep maintainable code shape:
+  - split row preparation and row persistence into dedicated modules,
+  - remove temporary max-lines lint bypass from batch processor.
+- Strong idempotency keying was not implemented in this iteration.
 
 ---
 
-## 8) Notes for next agent
+## 7) Implementation Summary (what shipped)
+
+1. Row-level update branch added in entities import batch processor.
+2. Row error `ID_NOT_FOUND_IN_TEMPLATE` added and covered in tests.
+3. Persisted update stat (`entitiesUpdated`) added and propagated through API/UI.
+4. Append-only file behavior with best-effort dedupe by `originalname` implemented.
+5. Datasource lookup method added as `existsByIdAndTemplateId` (codebase-friendly naming), while current Mongo implementation still maps it to `sharedId` under the hood.
+
+---
+
+## 8) Nuances discovered during implementation
+
+- **Async error handling nuance:** when returning a promise inside `try/catch` in async code, `await` is required if the catch should handle downstream async rejections. This was fixed in batch row processing.
+- **Property replacement nuance:** update rows are implemented with full-replace semantics for mapped properties by resetting to template defaults before applying row assignments.
+- **Naming nuance for transition architecture:** new datasource API uses `id` naming (`existsByIdAndTemplateId`) to align with newer entity interfaces even though current Mongo implementation still resolves via `sharedId`.
+- **UI nuance:** imports table now shows separate columns for `Entities created` and `Entities updated` rather than overloading one field.
+
+---
+
+## 9) Verification status
+
+- Backend/Frontend lint checks for touched files: clean.
+- `csv.v2` suite passes with:
+  - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest csv.v2 -w=4`
+- CSV upload frontend specs updated and passing (including task progress spec updates).
+
+---
+
+## 10) Pending TODOs
+
+- No `TODO`/`FIXME`/`XXX` markers were found under:
+  - `app/api/csv.v2`
+  - `app/react/V2/Routes/Settings/CSVUpload`
+
+- Remaining non-goal/risk (not a code TODO in this delivery):
+  - stronger idempotency keying for file operations (`(importId, rowIndex, fileRef)`) is still out of scope.
+
+---
+
+## 11) Notes for next agent
 
 - Do not expand alias semantics beyond `id` unless explicitly requested.
 - Keep error taxonomy minimal for this feature branch.
