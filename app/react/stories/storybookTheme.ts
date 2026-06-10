@@ -1,5 +1,4 @@
 import type { CSSProperties } from 'react';
-import { getButtonThemeVars } from '#V2/theme/buttonThemeVars.js';
 import { getScopedThemeVars } from '#V2/theme/themeScopedVars.js';
 import { checkContrast } from '#shared/utils/contrast.js';
 import {
@@ -42,9 +41,7 @@ const getStorybookContrastChecks = (
   mode: ThemeMode
 ): StorybookContrastCheck[] => {
   const resolved = appliedTheme(buildStorybookThemeVars(preset), mode, true);
-  const buttons = getButtonThemeVars(preset, resolved);
-  const resolveButtonBackground = (value: string) =>
-    value === 'transparent' ? resolved['--color-theme-bg-surface'] : value;
+  const scoped = getScopedThemeVars(preset, resolved);
 
   return [
     {
@@ -67,73 +64,64 @@ const getStorybookContrastChecks = (
       id: 'primary-solid-button',
       label: 'Primary solid button',
       ...checkContrast(
-        buttons['--color-theme-button-primary-bg'],
-        buttons['--color-theme-button-primary-fg']
+        scoped['--color-theme-action-primary'],
+        scoped['--color-theme-action-primary-fg']
       ),
     },
     {
       id: 'error-solid-button',
       label: 'Error solid button',
       ...checkContrast(
-        buttons['--color-theme-button-danger-bg'],
-        buttons['--color-theme-button-danger-fg']
+        resolved['--color-theme-accent-emphasis'],
+        resolved['--color-theme-feedback-danger-fg']
       ),
     },
     {
       id: 'success-solid-button',
       label: 'Success solid button',
       ...checkContrast(
-        buttons['--color-theme-button-success-bg'],
-        buttons['--color-theme-button-success-fg']
+        resolved['--color-theme-success'],
+        resolved['--color-theme-feedback-success-fg']
       ),
     },
     {
       id: 'secondary-button-text',
       label: 'Secondary button text',
       ...checkContrast(
-        resolveButtonBackground(buttons['--color-theme-button-secondary-bg']),
-        buttons['--color-theme-button-secondary-fg']
+        resolved['--color-theme-bg-surface'],
+        resolved['--color-theme-text-secondary']
       ),
     },
     {
       id: 'compact-button-text',
       label: 'Compact button text',
-      ...checkContrast(
-        buttons['--color-theme-button-compact-bg'],
-        buttons['--color-theme-button-compact-fg']
-      ),
+      ...checkContrast(resolved['--color-theme-bg-warm'], resolved['--color-theme-text-secondary']),
     },
     {
       id: 'danger-secondary-button',
       label: 'Danger secondary button',
       ...checkContrast(
-        resolveButtonBackground(buttons['--color-theme-button-danger-secondary-bg']),
-        buttons['--color-theme-button-danger-secondary-fg']
+        resolved['--color-theme-bg-surface'],
+        resolved['--color-theme-accent-emphasis']
       ),
     },
     {
       id: 'success-secondary-button',
       label: 'Success secondary button',
-      ...checkContrast(
-        resolveButtonBackground(buttons['--color-theme-button-success-secondary-bg']),
-        buttons['--color-theme-button-success-secondary-fg']
-      ),
+      ...checkContrast(resolved['--color-theme-bg-surface'], resolved['--color-theme-success']),
     },
     {
       id: 'danger-subtle-button',
       label: 'Danger subtle button',
       ...checkContrast(
-        buttons['--color-theme-button-danger-subtle-bg'],
-        buttons['--color-theme-button-danger-subtle-fg']
+        resolved['--color-theme-accent-emphasis-tint'],
+        resolved['--color-theme-accent-emphasis']
       ),
     },
     {
       id: 'success-subtle-button',
       label: 'Success subtle button',
-      ...checkContrast(
-        buttons['--color-theme-button-success-subtle-bg'],
-        buttons['--color-theme-button-success-subtle-fg']
-      ),
+      ...checkContrast(resolved['--color-theme-success-light'], resolved['--color-theme-success']),
     },
   ];
 };

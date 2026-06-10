@@ -57,7 +57,7 @@ const SearchView = () => {
   };
 
   return (
-    <div className="flex h-full flex-col gap-(--spacing-theme-3)">
+    <div className="flex h-full flex-col gap-3">
       <form onSubmit={handleSubmit(onSubmit)}>
         <label htmlFor="entity-search" className="sr-only">
           <Translate>Search</Translate>
@@ -73,14 +73,14 @@ const SearchView = () => {
                 placeholder={t('System', 'Search', null, false)}
                 // eslint-disable-next-line react/jsx-props-no-spreading
                 {...field}
-                className="w-full rounded-md border border-[color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] bg-(--color-theme-surface-warm) p-(--spacing-theme-2) text-sm text-ink shadow-(--color-theme-shadow-sm) placeholder:text-ink-muted focus:border-(--color-theme-control-border-focus) focus:outline-hidden"
+                className="w-full rounded-md border border-[color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] bg-(--color-theme-surface-warm) p-2 text-sm text-ink shadow-(--color-theme-shadow-sm) placeholder:text-ink-muted focus:border-(--color-theme-control-border-focus) focus:outline-hidden"
               />
             )}
           />
           <button
             type="submit"
             aria-label="Search"
-            className="absolute right-(--spacing-theme-3) top-1/2 -translate-y-1/2 transform"
+            className="absolute top-1/2 right-3 -translate-y-1/2 transform"
           >
             <MagnifyingGlassIcon className="h-5 w-5 text-ink" aria-hidden="true" />
           </button>
@@ -91,7 +91,7 @@ const SearchView = () => {
         {searchResults?.data && searchResults.data.length < 1 ? (
           <NoResults />
         ) : (
-          <div className="flex flex-col gap-(--spacing-theme-3) pt-1">
+          <div className="flex flex-col gap-3 pt-1">
             {searchResults?.data.map((entry, i) => {
               const { metadata, fullText } = entry.snippets;
 
@@ -107,7 +107,7 @@ const SearchView = () => {
                         {metadata.map((m, j) => (
                           <div
                             key={`metadata-${i}-${j}`}
-                            className="rounded-md border border-[color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)] bg-(--color-theme-surface-raised) p-(--spacing-theme-2) shadow-(--color-theme-shadow-sm)"
+                            className="rounded-md border border-[color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)] bg-(--color-theme-surface-raised) p-2 shadow-(--color-theme-shadow-sm)"
                           >
                             <dt className="text-sm font-semibold text-ink">
                               <Translate context={entity?.template || ''}>
@@ -134,7 +134,7 @@ const SearchView = () => {
                           ? 'border-(--color-theme-action-primary) bg-(--color-theme-surface-selected)'
                           : 'border-[color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)] bg-(--color-theme-surface-raised)';
                         const snippetClass = [
-                          'rounded-md border p-(--spacing-theme-3)',
+                          'rounded-md border p-3',
                           'shadow-(--color-theme-shadow-sm) cursor-pointer',
                           'hover:bg-(--color-theme-surface-warm) transition',
                           activeClass,
@@ -155,9 +155,7 @@ const SearchView = () => {
                             }}
                             className={snippetClass}
                           >
-                            <p className="mb-(--spacing-theme-4) px-(--spacing-theme-2)">
-                              {parseSnippetToNodes(pageText.text)}
-                            </p>
+                            <p className="mb-4 px-2">{parseSnippetToNodes(pageText.text)}</p>
                             <p className="float-right font-bold">
                               {t('System', 'Page', null, false)} {pageText.page}
                             </p>

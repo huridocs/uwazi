@@ -222,7 +222,7 @@ const PDFSidepanel = ({
           />
         )}
       </Sidepanel.Body>
-      <Sidepanel.Footer className="sticky border-t shadow-[0_-6px_12px_-3px_rgba(0,0,0,0.15)] border-t-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] !bg-(--color-theme-surface-raised)">
+      <Sidepanel.Footer className="sticky border-t shadow-[0_-6px_12px_-3px_rgba(0,0,0,0.15)] border-t-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] bg-(--color-theme-surface-raised)!">
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         <FormProvider {...formContext}>
           <form onSubmit={handleSubmit(onSubmit)}>
