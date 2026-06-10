@@ -11,7 +11,7 @@ class ThesauriDAOFactory {
 
     if (tenant.featureFlags?.postgresThesauri) {
       return new PostgresThesauriDAO({
-        connection: PostgresConnectionFactory.connectionConfig(tenant.dbName),
+        connection: PostgresConnectionFactory.connectionConfig(),
         tenantId: tenant.name,
       });
     }

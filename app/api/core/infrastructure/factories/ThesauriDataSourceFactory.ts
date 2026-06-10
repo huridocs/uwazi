@@ -17,7 +17,7 @@ export class ThesauriDataSourceFactory {
 
     if (tenant.featureFlags?.postgresThesauri) {
       return new PostgresThesauriDataSource({
-        connection: PostgresConnectionFactory.connectionConfig(tenant.dbName),
+        connection: PostgresConnectionFactory.connectionConfig(),
         tenantId: tenant.name,
         mongoDb: db,
       });
@@ -34,7 +34,7 @@ export class ThesauriDataSourceFactory {
 
     if (tenant.featureFlags?.postgresThesauri) {
       return new PostgresThesauriDataSource({
-        connection: PostgresConnectionFactory.connectionConfig(tenant.dbName),
+        connection: PostgresConnectionFactory.connectionConfig(),
         tenantId: tenant.name,
         mongoDb: db,
       });

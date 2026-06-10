@@ -9,7 +9,7 @@ export class ThesauriSyncHandlerFactory {
 
     if (tenant.featureFlags?.postgresThesauri) {
       return new PostgresThesauriSyncHandler({
-        connection: PostgresConnectionFactory.connectionConfig(tenant.dbName),
+        connection: PostgresConnectionFactory.connectionConfig(),
         tenantId: tenant.name,
       });
     }

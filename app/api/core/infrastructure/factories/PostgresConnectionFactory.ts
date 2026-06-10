@@ -2,7 +2,7 @@ import pg from 'pg';
 import { config } from '#api/config.js';
 import { PostgresConnectionConfig } from '../postgresql/common/PostgresTable.js';
 
-const pools = new Map<string, pg.Pool>();
+let defaultPool: pg.Pool | null = null;
 
 const poolOverrides = new Map<symbol, pg.Pool>();
 
@@ -11,15 +11,25 @@ const configOverrides = new Map<symbol, PostgresConnectionConfig>();
 const defaultToken = Symbol('default-pool-override');
 
 export class PostgresConnectionFactory {
-  static default(database?: string): pg.Pool {
+  static default(): pg.Pool {
     if (poolOverrides.size > 0) {
       return Array.from(poolOverrides.values()).pop()!;
     }
 
-    return this.forDatabase(database ?? config.postgres.database);
+    if (!defaultPool) {
+      defaultPool = new pg.Pool({
+        host: config.postgres.host,
+        port: config.postgres.port,
+        database: config.postgres.database,
+        user: config.postgres.user,
+        password: config.postgres.password,
+      });
+    }
+
+    return defaultPool;
   }
 
-  static connectionConfig(database?: string): PostgresConnectionConfig {
+  static connectionConfig(): PostgresConnectionConfig {
     if (configOverrides.size > 0) {
       return Array.from(configOverrides.values()).pop()!;
     }
@@ -27,7 +37,7 @@ export class PostgresConnectionFactory {
     return {
       host: config.postgres.host,
       port: config.postgres.port,
-      database: database ?? config.postgres.database,
+      database: config.postgres.database,
       user: config.postgres.user,
       password: config.postgres.password,
     };
@@ -41,28 +51,11 @@ export class PostgresConnectionFactory {
     configOverrides.delete(token);
   }
 
-  static forDatabase(database: string): pg.Pool {
-    if (!pools.has(database)) {
-      pools.set(
-        database,
-        new pg.Pool({
-          host: config.postgres.host,
-          port: config.postgres.port,
-          database,
-          user: config.postgres.user,
-          password: config.postgres.password,
-        })
-      );
-    }
-    return pools.get(database)!;
-  }
-
   static async close(): Promise<void> {
-    for (const pool of pools.values()) {
-      //eslint-disable-next-line no-await-in-loop
-      await pool.end();
+    if (defaultPool) {
+      await defaultPool.end();
+      defaultPool = null;
     }
-    pools.clear();
   }
 
   static registerPool(token: symbol, pool: pg.Pool): void {

@@ -12,8 +12,7 @@ const adminClient = () =>
   });
 
 const TEST_TABLE_SQL = 'CREATE TABLE IF NOT EXISTS pcf_tenant (tenant TEXT)';
-const DB_A = 'pcf_test_a_tenant';
-const DB_B = 'pcf_test_b_tenant';
+const TEST_DB = `pcf_test_${process.pid}`;
 
 const connectPool = (db: string) =>
   new pg.Pool({
@@ -27,114 +26,116 @@ const connectPool = (db: string) =>
 async function createDatabase(dbName: string): Promise<void> {
   const admin = adminClient();
   await admin.connect();
-  await admin.query(`CREATE DATABASE "${dbName}"`);
-  await admin.end();
+  try {
+    await admin.query(`CREATE DATABASE "${dbName}"`);
+  } finally {
+    await admin.end();
+  }
 
   const setup = connectPool(dbName);
   await setup.query(TEST_TABLE_SQL);
+  await setup.query("INSERT INTO pcf_tenant (tenant) VALUES ('test-tenant')");
   await setup.end();
 }
 
 async function dropDatabase(dbName: string): Promise<void> {
   const admin = adminClient();
   await admin.connect();
-  await admin.query(`DROP DATABASE IF EXISTS "${dbName}" WITH (FORCE)`);
-  await admin.end();
+  try {
+    await admin.query(`DROP DATABASE IF EXISTS "${dbName}" WITH (FORCE)`);
+  } finally {
+    await admin.end();
+  }
 }
 
 describe('PostgresConnectionFactory', () => {
+  const testConfigToken = Symbol('test-config');
+  let testPool: pg.Pool;
+
   beforeAll(async () => {
-    await createDatabase(DB_A);
-    await createDatabase(DB_B);
+    await createDatabase(TEST_DB);
 
-    const seederA = connectPool(DB_A);
-    await seederA.query("INSERT INTO pcf_tenant (tenant) VALUES ('tenant_a')");
-    await seederA.end();
+    testPool = connectPool(TEST_DB);
 
-    const seederB = connectPool(DB_B);
-    await seederB.query("INSERT INTO pcf_tenant (tenant) VALUES ('tenant_b')");
-    await seederB.end();
+    PostgresConnectionFactory.registerConfig(testConfigToken, {
+      host: config.postgres.host,
+      port: config.postgres.port,
+      database: TEST_DB,
+      user: config.postgres.user,
+      password: config.postgres.password,
+    });
   });
 
   afterAll(async () => {
+    PostgresConnectionFactory.unregisterConfig(testConfigToken);
     await PostgresConnectionFactory.close();
-    await dropDatabase(DB_A);
-    await dropDatabase(DB_B);
+    await testPool.end();
+    await dropDatabase(TEST_DB);
   });
 
   afterEach(() => {
     PostgresConnectionFactory.clearPool();
   });
 
-  describe('explicit database routing', () => {
-    it('connects to the correct database when given a name', async () => {
-      const pool = PostgresConnectionFactory.default(DB_A);
+  describe('default()', () => {
+    it('returns a pool connected to the configured database', async () => {
+      PostgresConnectionFactory.usePool(testPool);
+      const pool = PostgresConnectionFactory.default();
       const result = await pool.query('SELECT tenant FROM pcf_tenant');
-      expect(result.rows).toEqual([{ tenant: 'tenant_a' }]);
+      expect(result.rows).toEqual([{ tenant: 'test-tenant' }]);
     });
 
-    it('connects to a different database when given a different name', async () => {
-      const pool = PostgresConnectionFactory.default(DB_B);
-      const result = await pool.query('SELECT tenant FROM pcf_tenant');
-      expect(result.rows).toEqual([{ tenant: 'tenant_b' }]);
-    });
-  });
-
-  describe('pool caching', () => {
-    it('reuses the same pool for the same database', async () => {
-      const p1 = PostgresConnectionFactory.default(DB_A);
-      const p2 = PostgresConnectionFactory.default(DB_A);
+    it('reuses the same pool instance on subsequent calls', () => {
+      PostgresConnectionFactory.usePool(testPool);
+      const p1 = PostgresConnectionFactory.default();
+      const p2 = PostgresConnectionFactory.default();
       expect(p1).toBe(p2);
-    });
-
-    it('returns different pools for different databases', async () => {
-      const pA = PostgresConnectionFactory.default(DB_A);
-      const pB = PostgresConnectionFactory.default(DB_B);
-      expect(pA).not.toBe(pB);
     });
   });
 
   describe('usePool / clearPool', () => {
-    it('usePool override bypasses explicit routing', async () => {
-      const override = connectPool(DB_A);
+    it('usePool override bypasses the default pool', async () => {
+      const override = connectPool(TEST_DB);
       PostgresConnectionFactory.usePool(override);
 
-      const pool = PostgresConnectionFactory.default(DB_B);
+      const pool = PostgresConnectionFactory.default();
       expect(pool).toBe(override);
 
       await override.end();
-      PostgresConnectionFactory.clearPool();
     });
 
-    it('clearPool restores explicit routing', async () => {
-      const override = connectPool(DB_A);
+    it('clearPool restores default pool behavior', async () => {
+      const override = connectPool(TEST_DB);
       PostgresConnectionFactory.usePool(override);
       PostgresConnectionFactory.clearPool();
       await override.end();
 
-      const pool = PostgresConnectionFactory.default(DB_A);
-      const result = await pool.query('SELECT tenant FROM pcf_tenant');
-      expect(result.rows).toEqual([{ tenant: 'tenant_a' }]);
+      const pool = PostgresConnectionFactory.default();
+      expect(pool).toBeDefined();
+      expect(pool).not.toBe(override);
     });
   });
 
-  describe('forDatabase', () => {
-    it('creates independent pools per name', () => {
-      const x = PostgresConnectionFactory.forDatabase(DB_A);
-      const y = PostgresConnectionFactory.forDatabase(DB_B);
-      expect(x).not.toBe(y);
-    });
-  });
-
-  describe('connectionConfig', () => {
-    it('returns config with explicit database name', () => {
-      const cfg = PostgresConnectionFactory.connectionConfig(DB_A);
-      expect(cfg.database).toBe(DB_A);
-    });
-
-    it('falls back to config default when no database is provided', () => {
+  describe('connectionConfig()', () => {
+    it('returns the config override when registered', () => {
       const cfg = PostgresConnectionFactory.connectionConfig();
-      expect(cfg.database).toBe(config.postgres.database);
+      expect(cfg.database).toBe(TEST_DB);
+    });
+
+    it('falls back to config default when no override is registered', () => {
+      PostgresConnectionFactory.unregisterConfig(testConfigToken);
+      try {
+        const cfg = PostgresConnectionFactory.connectionConfig();
+        expect(cfg.database).toBe(config.postgres.database);
+      } finally {
+        PostgresConnectionFactory.registerConfig(testConfigToken, {
+          host: config.postgres.host,
+          port: config.postgres.port,
+          database: TEST_DB,
+          user: config.postgres.user,
+          password: config.postgres.password,
+        });
+      }
     });
   });
 });
