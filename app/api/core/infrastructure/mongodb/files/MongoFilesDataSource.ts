@@ -16,7 +16,6 @@ import {
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { Result } from '#api/core/libs/Result.js';
 import { search } from '#api/search/index.js';
-import { FullTextIndexerService } from '#api/core/infrastructure/elasticSearch/entities/FullTextIndexerService.js';
 import { FileStorage } from '../../../application/contracts/FileStorage.js';
 import {
   FilesDataSource,
@@ -34,9 +33,7 @@ type GetDocumentsForEntityQuery = {
   status: 'ready';
 };
 
-type MongoFilesDataSourceOptions = MongoDSOptions & {
-  fullTextIndexer: FullTextIndexerService;
-};
+type MongoFilesDataSourceOptions = MongoDSOptions;
 
 const mergePropertySelections = (
   newSelections: PropertySelectionSchema[],
@@ -61,21 +58,16 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
 
   protected filesToReindex = new Set<BaseFile>();
 
-  private fileToDelete = new Map<string, BaseFile>();
-
   protected fileStorage: FileStorage;
-
-  private fullTextIndexer: FullTextIndexerService;
 
   constructor(
     db: Db,
     transactionManager: TransactionManager,
     fileStorage: FileStorage,
-    options: MongoFilesDataSourceOptions
+    options: MongoFilesDataSourceOptions = {}
   ) {
     super(db, transactionManager, options);
     this.fileStorage = fileStorage;
-    this.fullTextIndexer = options.fullTextIndexer;
     transactionManager.onCommitted(async () => {
       const files = Array.from(this.filesToReindex);
       if (!files.length) return;
@@ -84,26 +76,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
         { sharedId: { $in: files.filter(f => f.isEntityFile()).map(f => f.entity) } },
         files.some(f => f instanceof PDFDocument && f.isReady()) ? '+fullText' : undefined
       );
-
-      const processedPDFs = files
-        .filter((f): f is PDFDocument => f instanceof PDFDocument && f.languageHasChanged)
-        .map(f => FileMappers.toDBO(f));
-
-      await this.fullTextIndexer.sync(processedPDFs.map(f => f._id));
-
       this.filesToReindex = new Set<BaseFile>();
-    });
-
-    transactionManager.onCommitted(async () => {
-      const files = Array.from(this.fileToDelete.values());
-
-      const pdfFilenames = files
-        .filter((f): f is PDFDocument => f instanceof PDFDocument)
-        .map(f => f.filename);
-
-      await this.fullTextIndexer.remove(pdfFilenames);
-
-      this.fileToDelete.clear();
     });
   }
 
@@ -205,8 +178,6 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
   async delete(files: BaseFile[]) {
     await this.getCollection().deleteMany({ _id: { $in: files.map(f => new ObjectId(f.id)) } });
     this.setFilesToReindex(files);
-
-    files.forEach(file => this.fileToDelete.set(file.id, file));
   }
 
   async bulkCreate(files: [BaseFile, ...BaseFile[]]): Promise<void> {
