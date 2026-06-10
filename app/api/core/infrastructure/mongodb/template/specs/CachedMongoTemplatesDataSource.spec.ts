@@ -1,7 +1,5 @@
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
@@ -22,7 +20,6 @@ const createSut = () => {
   const sut = new CachedMongoTemplatesDataSource({
     db: getConnection(),
     transactionManager,
-    slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
   });
 
   return { sut, transactionManager };

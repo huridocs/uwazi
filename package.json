@@ -91,11 +91,7 @@
     "playwright:test": "playwright test",
     "playwright:bootstrap": "playwright test playwright/e2e/bootstrap-state.spec.ts --workers=1",
     "playwright:auth-contract": "playwright test playwright/e2e/auth-gate.contract.spec.ts --workers=1",
-    "playwright:ui": "playwright test --ui",
-    "es:dev:bootstrap": "node scripts/runner.js ./scripts/elasticSearch/RebuildESIndex",
-    "es:create:indexes": "node scripts/runner.js ./scripts/elasticSearch/CreateESIndexes",
-    "es:add:tenant": "node scripts/runner.js ./scripts/elasticSearch/OnboardTenant",
-    "setup:dev": "yarn blank-state --force &&  yarn es:dev:bootstrap"
+    "playwright:ui": "playwright test --ui"
   },
   "jest": {
     "projects": [

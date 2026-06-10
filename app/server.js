@@ -39,7 +39,6 @@ import { routesErrorHandler } from './api/utils/routesErrorHandler.js';
 import { serverSideRender } from './react/server.js';
 import { setupQueueWorker } from './setupQueueWorker.js';
 import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -94,7 +93,6 @@ const gracefullShutdown = () => {
       (async () => {
         try {
           await elasticClient.close();
-          await ElasticSearchClientFactory.getInstance().close();
           process.stdout.write('Disconnected from Elasticsearch\r\n');
         } catch (e) {
           // ignore
