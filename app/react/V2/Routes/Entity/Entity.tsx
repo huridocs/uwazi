@@ -17,7 +17,7 @@ import { Tabs } from '#V2/Components/UI/index.js';
 import {
   TabLabel,
   PDFView,
-  ReferencesPanel,
+  RelationshipsPanel,
   SearchHintsModal,
   MAIN_TAB_PARAM,
   SIDE_TAB_PARAM,
@@ -148,7 +148,7 @@ const Entity = () => {
         {
           id: SIDE_TABS.REFERENCES,
           label: <TabLabel text="References" icon={<LinkIcon className="w-5 h-5" />} />,
-          content: <ReferencesPanel entity={entity} mainDocument={mainDocument} />,
+          content: <RelationshipsPanel entity={entity} mainDocument={mainDocument} />,
         },
         {
           id: SIDE_TABS.RELATIONSHIPS,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount } from 'cypress/react';
 import { composeStories } from '@storybook/react';
-import * as stories from '#app/stories/EntityViewer/References.stories.js';
+import * as stories from '#app/stories/EntityViewer/Relationships.stories.js';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import { setupMediaIntercepts } from '../../UI/Files/specs/testHelpers.js';
 
@@ -87,22 +87,22 @@ describe('References Display', () => {
 
   it('overlay inside document container', () => {
     cy.get('[data-testid="document-container"]').within(() => {
-      cy.get('[data-testid="references-rail"]').should('be.visible');
+      cy.get('[data-testid="relationships-rail"]').should('be.visible');
       cy.get('[data-testid="pdf-scroll-container"]').should('exist');
       cy.get('#pdf-container').invoke('attr', 'style').should('include', 'width: 90%');
     });
   });
 
   it('keeps rail and clusters visible while scrolling', () => {
-    cy.get('[data-testid="references-rail"]').should('be.visible');
+    cy.get('[data-testid="relationships-rail"]').should('be.visible');
     cy.contains('button', '25').should('be.visible');
 
-    cy.get('[data-testid="references-rail"]').then($rail => {
+    cy.get('[data-testid="relationships-rail"]').then($rail => {
       const railTopBefore = $rail[0].getBoundingClientRect().top;
 
       cy.get('[data-testid="pdf-scroll-container"]').scrollTo(0, 4000, { duration: 0 });
 
-      cy.get('[data-testid="references-rail"]').then($railAfter => {
+      cy.get('[data-testid="relationships-rail"]').then($railAfter => {
         expect($railAfter[0].getBoundingClientRect().top).to.be.closeTo(railTopBefore, 2);
       });
       cy.contains('button', '25').should('be.visible');
@@ -111,7 +111,7 @@ describe('References Display', () => {
 
   it('hides rail on mobile viewport', () => {
     cy.viewport(375, 667);
-    cy.get('[data-testid="references-rail"]').should('not.exist');
+    cy.get('[data-testid="relationships-rail"]').should('not.exist');
     cy.viewport(1280, 800);
   });
 
@@ -186,7 +186,7 @@ describe('References Display', () => {
         .first()
         .then($cluster => {
           const clusterZ = getMarkerZIndex($cluster[0]);
-          cy.get('[data-testid="references-rail"]')
+          cy.get('[data-testid="relationships-rail"]')
             .find('[data-testid="rail-marker"]')
             .not(':contains("25")')
             .first()
@@ -208,7 +208,7 @@ describe('References Display', () => {
     });
 
     it('later standalone points stack above earlier standalone points when overlapping', () => {
-      cy.get('[data-testid="references-rail"] [data-testid="rail-marker"]').then($markers => {
+      cy.get('[data-testid="relationships-rail"] [data-testid="rail-marker"]').then($markers => {
         const layers = [...$markers]
           .filter(
             element =>

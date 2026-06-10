@@ -1,4 +1,4 @@
-import { computePageClusterProximity } from '../computeClusterProximity.js';
+import { computePageClusterProximity } from '../clusterProximity.js';
 
 describe('computePageClusterProximity', () => {
   it('maps track ratio to page pixels', () => {

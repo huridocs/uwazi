@@ -2,26 +2,26 @@ import React, { useMemo, useState } from 'react';
 import { Cluster } from './Cluster.js';
 import { Point } from './Point.js';
 import { FileType } from '#V2/api/entities/types.js';
-import { EntityReference } from '#V2/formatters/relationships/types.js';
-import type { DocumentReferenceGroup } from '../groupReferences.js';
+import type { DocumentRelationshipGroup } from '../groupRelationships.js';
 import { computeMarkerY } from '../computeMarkerY.js';
+import { RelationshipMarker } from '../types.js';
 
 type FullModeProps = {
   document: FileType;
   markerLayerHeight: number;
   pageHeight?: number;
-  onPointClick?: (reference: EntityReference) => void;
-  onMoreClick?: (references: EntityReference[]) => void;
-  onClusterClick?: (references: EntityReference[]) => void;
-  documentClusters?: DocumentReferenceGroup[];
+  onPointClick?: (marker: RelationshipMarker) => void;
+  onMoreClick?: (markers: RelationshipMarker[]) => void;
+  onClusterClick?: (markers: RelationshipMarker[]) => void;
+  documentClusters?: DocumentRelationshipGroup[];
 };
 
 const CLUSTER_MARKER_SIZE = 24;
 const POINT_MARKER_SIZE = 10;
 
-const getReferenceTop = (reference: EntityReference): number => {
-  const rect = reference.reference.selectionRectangles?.[0];
-  return typeof rect?.top === 'number' ? rect.top : 0;
+const getMarkerTop = (marker: RelationshipMarker): number => {
+  const selection = marker.anchor?.selections?.[0];
+  return typeof selection?.top === 'number' ? selection.top : 0;
 };
 
 const FullMode = ({
@@ -41,7 +41,7 @@ const FullMode = ({
     const items =
       documentClusters?.map((element, index) => {
         const key = `doc-${element.startPage}-${element.endPage}-${index}`;
-        const top = getReferenceTop(element.references[0]);
+        const top = getMarkerTop(element.references[0]);
         const markerSize = element.type === 'cluster' ? CLUSTER_MARKER_SIZE : POINT_MARKER_SIZE;
         const position = computeMarkerY({
           mode: 'full',
@@ -96,12 +96,12 @@ const FullMode = ({
         key={key}
         position={position}
         stackOrder={stackOrder}
-        reference={element.references[0]}
+        marker={element.references[0]}
         isActive={activePointId === element.references[0]._id}
-        onClick={reference => {
-          setActivePointId(reference._id);
+        onClick={marker => {
+          setActivePointId(marker._id);
           setOpenClusterKey(null);
-          onPointClick?.(reference);
+          onPointClick?.(marker);
         }}
       />
     );

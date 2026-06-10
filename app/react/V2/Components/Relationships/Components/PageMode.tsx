@@ -1,87 +1,83 @@
 import React, { useMemo, useState } from 'react';
+import { useAtomValue } from 'jotai';
 import { Cluster } from './Cluster.js';
 import { Point } from './Point.js';
-import { EntityReference } from '#V2/formatters/relationships/types.js';
-import type { ReferenceGroup } from '../groupReferences.js';
+import { templatesAtom } from '#V2/atoms/templatesAtom.js';
+import type { RelationshipGroup } from '../groupRelationships.js';
 import { PageCount } from './PageCount.js';
 import { PageLabel } from './PageLabel.js';
 import { computeMarkerY } from '../computeMarkerY.js';
-import type { ReferenceWithTemplate } from '../types.js';
+import { RelationshipMarker } from '../types.js';
 
 type PageModeProps = {
   markerLayerHeight: number;
-  onPointClick?: (reference: EntityReference) => void;
-  referencesGroups?: ReferenceGroup[];
-  references?: ReferenceWithTemplate[];
-  onMoreClick?: (references: EntityReference[]) => void;
+  onPointClick?: (marker: RelationshipMarker) => void;
+  relationshipGroups?: RelationshipGroup[];
+  onMoreClick?: (markers: RelationshipMarker[]) => void;
   currentPage?: number;
   pageHeight?: number;
 };
 
 const CLUSTER_MARKER_SIZE = 24;
 const POINT_MARKER_SIZE = 10;
+const DEFAULT_COLOR = '#A4CAFE';
 
-const getGroupReferences = (group: ReferenceGroup): EntityReference[] =>
+const getGroupMarkers = (group: RelationshipGroup): RelationshipMarker[] =>
   group.type === 'cluster' ? group.references : [group.reference];
 
 const PageMode = ({
   markerLayerHeight,
   onPointClick,
-  referencesGroups,
-  references,
+  relationshipGroups,
   onMoreClick,
   currentPage,
   pageHeight,
 }: PageModeProps) => {
   const [openClusterKey, setOpenClusterKey] = useState<string | null>(null);
   const [activePointId, setActivePointId] = useState<string | null>(null);
+  const templates = useAtomValue(templatesAtom);
   const hasCurrentPage = currentPage !== undefined;
+
+  const colorOf = (marker: RelationshipMarker): string =>
+    templates.find(template => template._id === marker.target.templateId)?.color ?? DEFAULT_COLOR;
 
   const pageClusters = useMemo(
     () =>
       currentPage === undefined
-        ? referencesGroups
-        : referencesGroups?.filter(reference => Number(reference.page) === currentPage),
-    [currentPage, referencesGroups]
+        ? relationshipGroups
+        : relationshipGroups?.filter(group => Number(group.page) === currentPage),
+    [currentPage, relationshipGroups]
   );
 
   const { previousPageCount, nextPageCount, previousColors, nextColors } = useMemo(() => {
-    if (currentPage === undefined || !referencesGroups?.length) {
+    if (currentPage === undefined || !relationshipGroups?.length) {
       return { previousPageCount: 0, nextPageCount: 0, previousColors: [], nextColors: [] };
     }
 
     const beforeColors: string[] = [];
     const afterColors: string[] = [];
 
-    const counts = referencesGroups.reduce(
+    const counts = relationshipGroups.reduce(
       (acc, group) => {
         const page = Number(group.page);
-        const groupRefs = getGroupReferences(group);
-
-        groupRefs.forEach(ref => {
-          const color =
-            references?.find(r => r._id === ref._id)?.targetEntity.template.color ?? '#A4CAFE';
-
+        getGroupMarkers(group).forEach(marker => {
+          const color = colorOf(marker);
           if (page < currentPage) {
             acc.previousPageCount += 1;
-            if (beforeColors.length < 4 && !beforeColors.includes(color)) {
-              beforeColors.push(color);
-            }
+            if (beforeColors.length < 4 && !beforeColors.includes(color)) beforeColors.push(color);
           } else if (page > currentPage) {
             acc.nextPageCount += 1;
-            if (afterColors.length < 4 && !afterColors.includes(color)) {
-              afterColors.push(color);
-            }
+            if (afterColors.length < 4 && !afterColors.includes(color)) afterColors.push(color);
           }
         });
-
         return acc;
       },
       { previousPageCount: 0, nextPageCount: 0 }
     );
 
     return { ...counts, previousColors: beforeColors, nextColors: afterColors };
-  }, [currentPage, referencesGroups, references]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, relationshipGroups, templates]);
 
   const hasPreviousCount = hasCurrentPage && previousPageCount > 0;
   const hasNextCount = hasCurrentPage && nextPageCount > 0;
@@ -103,13 +99,13 @@ const PageMode = ({
       const position = getMarkerPosition(element.top, markerSize);
       const trackRatio =
         markerLayerHeight > 0 ? (position + markerSize / 2) / markerLayerHeight : 0.5;
-
       return { key, element, position, trackRatio };
     });
 
     return items
       .sort((a, b) => a.position - b.position)
       .map((item, index) => ({ ...item, stackOrder: index + 1 }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageClusters, markerLayerHeight, currentPage, pageHeight]);
 
   return (
@@ -137,11 +133,11 @@ const PageMode = ({
                 setActivePointId(null);
                 setOpenClusterKey(currentValue => (currentValue === key ? null : key));
               }}
-              onPointClick={reference => {
-                setActivePointId(reference._id);
-                onPointClick?.(reference);
+              onPointClick={marker => {
+                setActivePointId(marker._id);
+                onPointClick?.(marker);
               }}
-              onMoreClick={refs => onMoreClick?.(refs)}
+              onMoreClick={markersToShow => onMoreClick?.(markersToShow)}
             />
           );
         }
@@ -151,12 +147,12 @@ const PageMode = ({
             key={key}
             position={position}
             stackOrder={stackOrder}
-            reference={element.reference}
+            marker={element.reference}
             isActive={activePointId === element.reference._id}
-            onClick={reference => {
-              setActivePointId(reference._id);
+            onClick={marker => {
+              setActivePointId(marker._id);
               setOpenClusterKey(null);
-              onPointClick?.(reference);
+              onPointClick?.(marker);
             }}
           />
         );

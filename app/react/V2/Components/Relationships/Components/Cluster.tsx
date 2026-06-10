@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { usePopper } from 'react-popper';
-import { EntityReference } from '#V2/formatters/relationships/types.js';
 import { useAnimateToPosition } from '../hooks/useAnimateToPosition.js';
 import { computeClusterOuterSize } from '../computeMarkerY.js';
+import { RelationshipMarker } from '../types.js';
 import { Point } from './Point.js';
 import { ShowMoreButton } from './ShowMoreButton.js';
 
@@ -10,11 +10,11 @@ type ClusterProps = {
   position: number;
   stackOrder?: number;
   trackRatio?: number;
-  references: EntityReference[];
-  onPointClick: (reference: EntityReference) => void;
-  onMoreClick: (references: EntityReference[]) => void;
+  references: RelationshipMarker[];
+  onPointClick: (marker: RelationshipMarker) => void;
+  onMoreClick: (markers: RelationshipMarker[]) => void;
   activePointId?: string | null;
-  onClusterClick?: (references: EntityReference[]) => void;
+  onClusterClick?: (markers: RelationshipMarker[]) => void;
   isOpen?: boolean;
   onToggle?: () => void;
 };
@@ -175,13 +175,13 @@ const Cluster = ({
             className="absolute inset-0 pointer-events-auto"
             style={{ width: POINT_SIZE + PAD, left: 0 }}
           >
-            {points.map((reference, index) => (
+            {points.map((marker, index) => (
               <Point
-                key={reference._id || `cluster-point-${index}`}
+                key={marker._id || `cluster-point-${index}`}
                 position={index * POINT_SPACING}
-                reference={reference}
+                marker={marker}
                 onClick={onPointClick}
-                isActive={activePointId === reference._id}
+                isActive={activePointId === marker._id}
               />
             ))}
             {extraPoints.length > 0 && (

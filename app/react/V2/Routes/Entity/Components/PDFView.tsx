@@ -6,21 +6,21 @@ import { useSearchParams } from 'react-router';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
 import { t, Translate } from '#app/I18N/index.js';
-import { PDF, PDFControls, referenceToHighlight } from '#V2/Components/PDFViewer/index.js';
-import { ReferencesDisplay } from '#V2/Components/References/index.js';
+import { PDF, PDFControls, relationshipToHighlight } from '#V2/Components/PDFViewer/index.js';
+import { RelationshipsDisplay } from '#V2/Components/Relationships/index.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { MetadataEntityHeader } from '#V2/Components/Metadata/MetadataEntityHeader.js';
 import { metadataHeaderStripShellClass } from '#V2/Components/Metadata/MetadataHeaderStrip.js';
 import { NeedAuthorization, Button } from '#V2/Components/UI/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { isClient } from '#app/utils/index.js';
-import { settingsAtom, userAtom } from '#V2/atoms/index.js';
+import { settingsAtom, templatesAtom, userAtom } from '#V2/atoms/index.js';
 import { Entity, FileType } from '#V2/api/entities/types.js';
 import { PlainText } from './PlainText.js';
 import { OCRButton } from './OCRButton.js';
 import { PAGE_PARAM, SIDE_TAB_PARAM, VIEW_MODE_PARAM } from '../urlParams.js';
 import { useTocActions, convertTextSelectionToTocEntry } from './ToC/tocAtom.js';
-import { useReferencesActions } from './ReferencesPanel/referencesAtom.js';
+import { useRelationshipsActions } from './RelationshipsPanel/relationshipsAtom.js';
 import { pdfController } from './atoms.js';
 
 type PDFViewProps = {
@@ -40,6 +40,7 @@ const PDFView = ({
   const [searchParams, setSearchParams] = useSearchParams();
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
   const user = useAtomValue(userAtom);
+  const templates = useAtomValue(templatesAtom);
   const [hydrated, setHydrated] = useState(false);
   const pdfControls = useRef<PDFControls | null>(null);
   const setPDFControlsAtom = useSetAtom(pdfController);
@@ -58,7 +59,7 @@ const PDFView = ({
   const isRaw = !isClient || !hydrated || searchParams.get(VIEW_MODE_PARAM) === 'true';
   const [selectedText, setSelectedText] = useState<TextSelection | undefined>(undefined);
   const { addEntry } = useTocActions();
-  const { setCreateReferenceSelection } = useReferencesActions();
+  const { setCreateReferenceSelection } = useRelationshipsActions();
 
   const getPageSearchParams = useCallback(
     (pageParam: number | string) => {
@@ -270,21 +271,22 @@ const PDFView = ({
               />
             </div>
             {!isMobile && (
-              <ReferencesDisplay
+              <RelationshipsDisplay
                 entity={entity}
                 document={mainDocument}
                 currentPage={pageNumber}
                 pageHeight={pageHeight}
-                onPointClick={reference => {
-                  const highlight = referenceToHighlight(reference);
+                onPointClick={marker => {
+                  const color = templates.find(
+                    template => template._id === marker.target.templateId
+                  )?.color;
+                  const highlight = relationshipToHighlight(marker.anchor, color);
                   if (highlight) {
                     pdfControls.current?.toggleHighlights([highlight]);
                   }
                 }}
-                onClusterClick={references => {
-                  const clusterPage = Number(
-                    references?.[0].reference.selectionRectangles?.[0].page || '0'
-                  );
+                onClusterClick={markers => {
+                  const clusterPage = markers?.[0]?.anchor?.selections?.[0]?.page ?? 0;
                   if (clusterPage !== currentClusterPage) {
                     setCurrentClusterPage(clusterPage);
                     pdfControls.current?.goToPage(clusterPage);

@@ -4,12 +4,12 @@ import { BrowserRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { localeAtom, templatesAtom, translationsAtom } from '#V2/atoms/index.js';
-import { PDF, PDFControls, referenceToHighlight } from '#V2/Components/PDFViewer/index.js';
-import { ReferencesDisplay } from '#V2/Components/References/index.js';
+import { PDF, PDFControls, relationshipToHighlight } from '#V2/Components/PDFViewer/index.js';
+import { RelationshipsDisplay } from '#V2/Components/Relationships/index.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { apiEntity, translations, templates } from '../fixtures/referencesFixtures.js';
 
-const ReferencesDisplayComponent = ({
+const RelationshipsDisplayComponent = ({
   locale,
   fileUrl = '/sample.pdf',
 }: {
@@ -58,7 +58,7 @@ const ReferencesDisplayComponent = ({
         <Provider store={store}>
           <div className="flex h-full w-full flex-col gap-(--spacing-theme-3) p-4 text-ink">
             <div>
-              <Translate>References</Translate>
+              <Translate>Relationships</Translate>
               <p>
                 <Translate>Current page</Translate>: {currentPage}
               </p>
@@ -84,27 +84,24 @@ const ReferencesDisplayComponent = ({
                   }}
                 />
               </div>
-              <ReferencesDisplay
+              <RelationshipsDisplay
                 entity={apiEntity}
                 document={apiEntity.documents![0]}
                 currentPage={currentPage}
                 pageHeight={pageHeight}
                 showRail={!isMobile}
-                onPointClick={reference => {
-                  const highlight = referenceToHighlight(reference);
+                onPointClick={marker => {
+                  const color = templates.find(t => t._id === marker.target.templateId)?.color;
+                  const highlight = relationshipToHighlight(marker.anchor, color);
                   if (highlight) {
                     documentControls.current?.toggleHighlights([highlight]);
                   }
                 }}
-                onClusterClick={references => {
-                  const page = Number(
-                    references?.[0].reference.selectionRectangles?.[0].page || '0'
-                  );
+                onClusterClick={markers => {
+                  const page = markers?.[0]?.anchor?.selections?.[0]?.page ?? 0;
                   if (page !== currentClusterPage) {
                     setCurrentClusterPage(page);
-                    documentControls.current?.goToPage(
-                      Number(references?.[0].reference.selectionRectangles?.[0].page || '0')
-                    );
+                    documentControls.current?.goToPage(page);
                   } else {
                     documentControls.current?.toggleHighlights([]);
                   }
@@ -118,15 +115,15 @@ const ReferencesDisplayComponent = ({
   );
 };
 
-const meta: Meta<typeof ReferencesDisplayComponent> = {
-  title: 'EntityViewer/ReferencesDisplay',
-  component: ReferencesDisplayComponent,
+const meta: Meta<typeof RelationshipsDisplayComponent> = {
+  title: 'EntityViewer/RelationshipsDisplay',
+  component: RelationshipsDisplayComponent,
 };
 
-type Story = StoryObj<typeof ReferencesDisplayComponent>;
+type Story = StoryObj<typeof RelationshipsDisplayComponent>;
 
 const Primary: Story = {
-  render: args => <ReferencesDisplayComponent locale={args.locale} fileUrl={args.fileUrl} />,
+  render: args => <RelationshipsDisplayComponent locale={args.locale} fileUrl={args.fileUrl} />,
 };
 
 const Basic: Story = {

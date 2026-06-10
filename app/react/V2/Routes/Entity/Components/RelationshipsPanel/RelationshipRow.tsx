@@ -1,20 +1,19 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
-import { EntityReference } from '#V2/formatters/relationships/types.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
+import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 
-type ReferenceProps = {
-  reference: EntityReference;
+type RelationshipRowProps = {
+  marker: RelationshipMarker;
   isSelected?: boolean;
   onClick?: () => void;
-  onView?: () => void;
   onDelete?: () => void;
 };
 
-const Reference = ({ reference, isSelected, onClick, onView, onDelete }: ReferenceProps) => {
-  const entityTitle = reference.targetEntity.title || '-';
-  const referenceText = reference.reference.text || '';
+const RelationshipRow = ({ marker, isSelected, onClick, onDelete }: RelationshipRowProps) => {
+  const entityTitle = marker.target.title || '-';
+  const referenceText = marker.anchor?.text || '';
 
   const surface = 'bg-(--color-theme-surface-raised)';
   const borderIdle =
@@ -49,19 +48,9 @@ const Reference = ({ reference, isSelected, onClick, onView, onDelete }: Referen
         <p className="text-sm font-medium leading-relaxed text-ink">{referenceText}</p>
       )}
 
-      <TemplateLabel templateId={reference.targetEntity.templateId} />
+      <TemplateLabel templateId={marker.target.templateId} />
 
       <div className="flex justify-end gap-(--spacing-theme-2) mt-(--spacing-theme-2)">
-        <Button
-          variant="secondary"
-          size="small"
-          onClick={e => {
-            e.stopPropagation();
-            onView?.();
-          }}
-        >
-          <Translate>View</Translate>
-        </Button>
         <Button
           variant="secondary"
           size="small"
@@ -77,4 +66,4 @@ const Reference = ({ reference, isSelected, onClick, onView, onDelete }: Referen
   );
 };
 
-export { Reference };
+export { RelationshipRow };

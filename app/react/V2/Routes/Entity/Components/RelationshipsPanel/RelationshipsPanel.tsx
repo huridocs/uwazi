@@ -8,51 +8,43 @@ import { Entity, FileType } from '#V2/api/entities/types.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import { searchByTitle } from '#V2/api/entities/index.js';
-import { formatReferences } from '#V2/formatters/index.js';
-import { EntityReference } from '#V2/formatters/relationships/types.js';
+import { formatRelationships } from '#V2/formatters/index.js';
 import { deleteReference, saveTextReference } from '#V2/api/relationships/index.js';
 import { ConfirmationModal, BlankState } from '#V2/Components/UI/index.js';
-import { referenceToHighlight } from '#V2/Components/PDFViewer/index.js';
-import type { ReferenceWithTemplate } from '#V2/Components/References/types.js';
+import { relationshipToHighlight } from '#V2/Components/PDFViewer/index.js';
+import { RelationshipMarker, toMarker } from '#V2/Components/Relationships/types.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { CreateReference } from './CreateReference.js';
-import { Reference } from './Reference.js';
-import { useReferences, useReferencesActions } from './referencesAtom.js';
+import { RelationshipRow } from './RelationshipRow.js';
+import { useRelationships, useRelationshipsActions } from './relationshipsAtom.js';
 import { pdfController } from '../atoms.js';
 
-type ReferencesPanelProps = {
+type RelationshipsPanelProps = {
   entity?: Entity;
   mainDocument?: FileType;
 };
 
 // eslint-disable-next-line max-statements
-const ReferencesPanel = ({ entity, mainDocument }: ReferencesPanelProps) => {
-  const [selectedReferenceId, setSelectedReferenceId] = useState<string | null>(null);
-  const [referenceToDelete, setReferenceToDelete] = useState<EntityReference | null>(null);
+const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) => {
+  const [selectedRelationshipId, setSelectedRelationshipId] = useState<string | null>(null);
+  const [relationshipToDelete, setRelationshipToDelete] = useState<RelationshipMarker | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
-  const { createReferenceSelection, createReferenceMode } = useReferences();
-  const { setCreateReferenceSelection } = useReferencesActions();
+  const { createReferenceSelection, createReferenceMode } = useRelationships();
+  const { setCreateReferenceSelection } = useRelationshipsActions();
   const revalidator = useRevalidator();
   const mainPdfController = useAtomValue(pdfController);
   const templates = useAtomValue(templatesAtom);
-  const references = useMemo<ReferenceWithTemplate[]>(() => {
-    if (!entity) return [];
-    return formatReferences(entity).map(ref => {
-      const template = templates.find(t => t._id === ref.targetEntity.templateId);
-      return {
-        ...ref,
-        targetEntity: {
-          ...ref.targetEntity,
-          template: {
-            _id: ref.targetEntity.templateId,
-            name: template?.name || '',
-            color: template?.color || '#A4CAFE',
-          },
-        },
-      };
-    });
-  }, [entity, templates]);
+  const relationships = useMemo<RelationshipMarker[]>(
+    () => (entity ? formatRelationships(entity).map(view => toMarker(view, entity.sharedId)) : []),
+    [entity]
+  );
+
+  const colorOf = useCallback(
+    (marker: RelationshipMarker) =>
+      templates.find(t => t._id === marker.target.templateId)?.color || '#A4CAFE',
+    [templates]
+  );
 
   const lookup = useCallback(
     async (searchString: string) =>
@@ -64,51 +56,46 @@ const ReferencesPanel = ({ entity, mainDocument }: ReferencesPanelProps) => {
     []
   );
 
-  const handleReferenceClick = useCallback(
-    (reference: ReferenceWithTemplate) => {
-      if (reference._id === selectedReferenceId) {
-        setSelectedReferenceId(null);
+  const handleRelationshipClick = useCallback(
+    (marker: RelationshipMarker) => {
+      if (marker._id === selectedRelationshipId) {
+        setSelectedRelationshipId(null);
         mainPdfController?.toggleHighlights([]);
       } else {
-        setSelectedReferenceId(reference._id);
-
-        const highlight = referenceToHighlight(reference);
+        setSelectedRelationshipId(marker._id);
+        const highlight = relationshipToHighlight(marker.anchor, colorOf(marker));
         if (highlight) {
           mainPdfController?.toggleHighlights([highlight]);
         }
       }
     },
-    [mainPdfController, selectedReferenceId]
+    [mainPdfController, selectedRelationshipId, colorOf]
   );
 
-  const handleView = useCallback((_reference: EntityReference) => {
-    // TODO: Implement view functionality
-  }, []);
-
-  const handleDeleteClick = useCallback((reference: EntityReference) => {
-    setReferenceToDelete(reference);
+  const handleDeleteClick = useCallback((marker: RelationshipMarker) => {
+    setRelationshipToDelete(marker);
   }, []);
 
   const handleConfirmDelete = useCallback(async () => {
-    if (!referenceToDelete?._id || !entity?.sharedId) return;
+    if (!relationshipToDelete?._id || !entity?.sharedId) return;
     setIsDeleting(true);
     try {
-      await deleteReference(String(referenceToDelete._id));
-      setReferenceToDelete(null);
-      if (selectedReferenceId === referenceToDelete._id) {
-        setSelectedReferenceId(null);
+      await deleteReference(String(relationshipToDelete._id));
+      setRelationshipToDelete(null);
+      if (selectedRelationshipId === relationshipToDelete._id) {
+        setSelectedRelationshipId(null);
       }
       entityLoaderCache.invalidateEntity(entity.sharedId);
       await revalidator.revalidate();
     } catch (error) {
-      console.error('Error deleting reference:', error);
+      console.error('Error deleting relationship:', error);
     } finally {
       setIsDeleting(false);
     }
-  }, [referenceToDelete, entity?.sharedId, selectedReferenceId, revalidator]);
+  }, [relationshipToDelete, entity?.sharedId, selectedRelationshipId, revalidator]);
 
   const handleCancelDelete = useCallback(() => {
-    if (!isDeleting) setReferenceToDelete(null);
+    if (!isDeleting) setRelationshipToDelete(null);
   }, [isDeleting]);
 
   const handleCancelCreate = useCallback(() => {
@@ -128,7 +115,6 @@ const ReferencesPanel = ({ entity, mainDocument }: ReferencesPanelProps) => {
         return;
       }
 
-      // Get source file ID (main document)
       const sourceFile = mainDocument;
       if (!sourceFile?._id) {
         console.error('Cannot save reference: source file is not available');
@@ -151,20 +137,16 @@ const ReferencesPanel = ({ entity, mainDocument }: ReferencesPanelProps) => {
           ...(data.targetSelection && { targetSelection: data.targetSelection }),
         });
 
-        // Clear the create reference selection after successful save
         setCreateReferenceSelection(undefined, undefined);
-        // Invalidate cache and revalidate to refresh the entity data and show the new reference
         entityLoaderCache.invalidateEntity(entity.sharedId);
         await revalidator.revalidate();
       } catch (error) {
         console.error('Error saving reference:', error);
-        // TODO: Show error notification to user
       }
     },
     [entity, mainDocument, setCreateReferenceSelection, revalidator]
   );
 
-  // If there's a createReferenceSelection, show the CreateReference component
   if (createReferenceSelection) {
     return (
       <CreateReference
@@ -178,21 +160,19 @@ const ReferencesPanel = ({ entity, mainDocument }: ReferencesPanelProps) => {
     );
   }
 
-  // Otherwise, show the references list
   return (
     <>
       <Panel>
         <Panel.Body className="pr-1">
           <div className="flex flex-col gap-(--spacing-theme-3) h-full">
-            {references.length > 0 ? (
-              references.map((reference, index) => (
-                <Reference
-                  key={reference._id || `reference-${index}`}
-                  reference={reference}
-                  isSelected={selectedReferenceId === reference._id}
-                  onClick={() => handleReferenceClick(reference)}
-                  onView={() => handleView(reference)}
-                  onDelete={() => handleDeleteClick(reference)}
+            {relationships.length > 0 ? (
+              relationships.map((marker, index) => (
+                <RelationshipRow
+                  key={marker._id || `relationship-${index}`}
+                  marker={marker}
+                  isSelected={selectedRelationshipId === marker._id}
+                  onClick={() => handleRelationshipClick(marker)}
+                  onDelete={() => handleDeleteClick(marker)}
                 />
               ))
             ) : (
@@ -200,7 +180,7 @@ const ReferencesPanel = ({ entity, mainDocument }: ReferencesPanelProps) => {
                 icon={
                   <LinkIcon className="h-7 w-7 text-ink rounded-full bg-[color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] p-1" />
                 }
-                title={<Translate>No References</Translate>}
+                title={<Translate>No Relationships</Translate>}
                 description={
                   <Translate>
                     To add references you can start by selecting text in the document
@@ -216,12 +196,12 @@ const ReferencesPanel = ({ entity, mainDocument }: ReferencesPanelProps) => {
         </Panel.Footer>
       </Panel>
 
-      {referenceToDelete && (
+      {relationshipToDelete && (
         <ConfirmationModal
-          header={<Translate>Delete reference</Translate>}
+          header={<Translate>Delete relationship</Translate>}
           body={
             <Translate>
-              Are you sure you want to delete this reference? This action cannot be undone.
+              Are you sure you want to delete this relationship? This action cannot be undone.
             </Translate>
           }
           acceptButton={<Translate>Delete</Translate>}
@@ -236,4 +216,4 @@ const ReferencesPanel = ({ entity, mainDocument }: ReferencesPanelProps) => {
   );
 };
 
-export { ReferencesPanel };
+export { RelationshipsPanel };

@@ -1,7 +1,7 @@
 export * from '../urlParams.js';
 export { PDFView } from './PDFView.js';
 export { TabLabel } from './TabLabel.js';
-export { ReferencesPanel } from './ReferencesPanel/ReferencesPanel.js';
+export { RelationshipsPanel } from './RelationshipsPanel/RelationshipsPanel.js';
 export { SearchResults } from './SearchResults.js';
 export { SearchHintsModal } from './SearchHintsModal.js';
 export { FileList } from './FileList.js';

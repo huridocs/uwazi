@@ -1,15 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Square3Stack3DIcon, DocumentIcon } from '@heroicons/react/24/outline';
-import { useAtomValue } from 'jotai';
 import throttle from 'lodash/throttle.js';
 import { Translate } from '#app/I18N/index.js';
 import { Entity, FileType } from '#V2/api/entities/types.js';
-import { formatReferences } from '#V2/formatters/index.js';
-import { EntityReference } from '#V2/formatters/relationships/types.js';
-import { templatesAtom } from '#V2/atoms/templatesAtom.js';
-import { groupReferences, groupDocumentReferences } from './groupReferences.js';
+import { formatRelationships } from '#V2/formatters/index.js';
+import { groupRelationships, groupDocumentRelationships } from './groupRelationships.js';
 import { FullMode, PageMode } from './Components/index.js';
-import type { ReferenceWithTemplate } from './types.js';
+import { RelationshipMarker, toMarker } from './types.js';
 
 const RAIL_LAYOUT = {
   insetTop: 8,
@@ -19,17 +16,17 @@ const RAIL_LAYOUT = {
   trackTopBelowToggle: 28,
 } as const;
 
-type ReferencesDisplayProps = {
+type RelationshipsDisplayProps = {
   entity: Entity;
   document: FileType;
   currentPage?: number;
   pageHeight?: number;
   showRail?: boolean;
-  onPointClick?: (reference: EntityReference) => void;
-  onClusterClick?: (references: EntityReference[]) => void;
+  onPointClick?: (marker: RelationshipMarker) => void;
+  onClusterClick?: (markers: RelationshipMarker[]) => void;
 };
 
-const ReferencesDisplay = ({
+const RelationshipsDisplay = ({
   entity,
   document,
   currentPage,
@@ -37,39 +34,24 @@ const ReferencesDisplay = ({
   showRail = true,
   onPointClick,
   onClusterClick,
-}: ReferencesDisplayProps) => {
-  const templates = useAtomValue(templatesAtom);
+}: RelationshipsDisplayProps) => {
   const [fullMode, setFullMode] = useState(true);
   const markerLayerRef = useRef<HTMLDivElement>(null);
   const [markerLayerHeight, setMarkerLayerHeight] = useState(0);
 
-  const references = useMemo<ReferenceWithTemplate[]>(
-    () =>
-      formatReferences(entity).map(ref => {
-        const template = templates.find(t => t._id === ref.targetEntity.templateId);
-        return {
-          ...ref,
-          targetEntity: {
-            ...ref.targetEntity,
-            template: {
-              _id: ref.targetEntity.templateId,
-              name: template?.name || '',
-              color: template?.color || '#A4CAFE',
-            },
-          },
-        };
-      }),
-    [entity, templates]
+  const markers = useMemo<RelationshipMarker[]>(
+    () => formatRelationships(entity).map(view => toMarker(view, entity.sharedId)),
+    [entity]
   );
 
-  const referencesGroups = useMemo(
-    () => groupReferences(references, { trackHeight: markerLayerHeight, pageHeight }),
-    [references, markerLayerHeight, pageHeight]
+  const relationshipGroups = useMemo(
+    () => groupRelationships(markers, { trackHeight: markerLayerHeight, pageHeight }),
+    [markers, markerLayerHeight, pageHeight]
   );
 
   const documentClusters = useMemo(
-    () => groupDocumentReferences(referencesGroups, document.totalPages ?? 1),
-    [document.totalPages, referencesGroups]
+    () => groupDocumentRelationships(relationshipGroups, document.totalPages ?? 1),
+    [document.totalPages, relationshipGroups]
   );
 
   useEffect(() => {
@@ -110,7 +92,7 @@ const ReferencesDisplay = ({
   };
 
   return (
-    <div data-testid="references-rail" className={rootClass} style={rootStyle}>
+    <div data-testid="relationships-rail" className={rootClass} style={rootStyle}>
       <button
         type="button"
         onMouseDown={event => {
@@ -148,8 +130,7 @@ const ReferencesDisplay = ({
           ) : (
             <PageMode
               markerLayerHeight={markerLayerHeight}
-              referencesGroups={referencesGroups}
-              references={references}
+              relationshipGroups={relationshipGroups}
               currentPage={currentPage}
               pageHeight={pageHeight}
               onPointClick={onPointClick}
@@ -161,5 +142,5 @@ const ReferencesDisplay = ({
   );
 };
 
-export { ReferencesDisplay };
-export type { ReferencesDisplayProps };
+export { RelationshipsDisplay };
+export type { RelationshipsDisplayProps };

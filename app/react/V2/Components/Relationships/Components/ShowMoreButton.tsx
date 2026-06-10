@@ -1,14 +1,14 @@
 import React from 'react';
 import { EllipsisHorizontalCircleIcon } from '@heroicons/react/24/outline';
-import { EntityReference } from '#V2/formatters/relationships/types.js';
 import { Translate } from '#app/I18N/index.js';
 import { Tooltip } from '#V2/Components/UI/index.js';
 import { useAnimateToPosition } from '../hooks/useAnimateToPosition.js';
+import { RelationshipMarker } from '../types.js';
 
 type ShowMoreButtonProps = {
   position: number;
-  references: EntityReference[];
-  onClick: (references: EntityReference[]) => void;
+  references: RelationshipMarker[];
+  onClick: (markers: RelationshipMarker[]) => void;
 };
 
 const ShowMoreButton = ({ position, references, onClick }: ShowMoreButtonProps) => {
