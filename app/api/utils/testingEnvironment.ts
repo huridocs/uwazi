@@ -46,11 +46,7 @@ const testingEnvironment = {
   pgEnabled: false,
   userInContextMockFactory: new UserInContextMockFactory(),
 
-  async setUp(
-    fixtures?: DBFixture,
-    options?: string | boolean | SetUpOptions,
-    pgFixtures?: PGFixture
-  ) {
+  async setUp(fixtures?: DBFixture, options?: string | boolean | SetUpOptions) {
     const { elasticIndex, postgres } =
       options === undefined || typeof options === 'string' || typeof options === 'boolean'
         ? { elasticIndex: options, postgres: false }
@@ -62,7 +58,7 @@ const testingEnvironment = {
     await this.setTenant();
     this.setPermissions();
     this.setFakeContext();
-    await this.setFixtures(fixtures, pgFixtures);
+    await this.setFixtures(fixtures);
     await this.setElastic(elasticIndex);
     if (postgres && !this.pgEnabled) {
       await testingPG.connect();
@@ -156,6 +152,14 @@ const testingEnvironment = {
     }
     if (pgFixtures && this.pgEnabled) {
       await testingPG.setFixtures(pgFixtures);
+    }
+    if (this.pgEnabled && fixtures?.dictionaries?.length) {
+      const pgThesauri = fixtures.dictionaries.map((dict: any) => ({
+        _id: dict._id.toString(),
+        name: dict.name,
+        values: dict.values,
+      }));
+      await testingPG.setFixtures({ thesauri: pgThesauri });
     }
   },
 

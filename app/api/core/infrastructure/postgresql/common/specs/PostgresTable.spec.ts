@@ -465,7 +465,6 @@ describe('PostgresTable', () => {
 
     it('should leftJoin and return base rows even without matching join rows', async () => {
       const thesauriTable = createTable();
-      const categoryTable = createCategoryTable();
 
       await thesauriTable.insert({ _id: 'th-empty', name: 'Empty', values: jsonVal([]) });
       // No categories inserted

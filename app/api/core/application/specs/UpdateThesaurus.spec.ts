@@ -1,6 +1,5 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
-import { randomUUID } from 'crypto';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
@@ -23,7 +22,6 @@ import { UpdateThesaurusUseCase } from '../UpdateThesaurus.js';
 import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
 import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService.js';
 import { factory, fixtures } from './UpdateThesaurusFixtures.js';
-import type { PGFixture } from '#api/utils/testing_pg.js';
 
 type CreateSutProps = {
   thesauriDS?: ThesauriDataSource;
@@ -34,51 +32,18 @@ type CreateSutProps = {
 type TestConfig = {
   name: string;
   postgresThesauri: boolean;
-  pgFixtures: PGFixture | undefined;
   getThesauri: () => Promise<Record<string, unknown>[]>;
 };
-
-const countriesIdHex = factory.id('countries').toHexString();
-const fruitsIdHex = factory.id('fruits').toHexString();
 
 const testConfigs: TestConfig[] = [
   {
     name: 'Mongo',
     postgresThesauri: false,
-    pgFixtures: undefined,
     getThesauri: async () => testingEnvironment.db.getAllFrom('dictionaries'),
   },
   {
     name: 'Postgres',
     postgresThesauri: true,
-    pgFixtures: {
-      thesauri: [
-        {
-          _id: countriesIdHex,
-          name: 'Countries',
-          values: [
-            { id: randomUUID(), label: 'USA' },
-            { id: randomUUID(), label: 'Canada' },
-            {
-              id: randomUUID(),
-              label: 'Europe',
-              values: [
-                { id: randomUUID(), label: 'France' },
-                { id: randomUUID(), label: 'Germany' },
-              ],
-            },
-          ],
-        },
-        {
-          _id: fruitsIdHex,
-          name: 'Fruits',
-          values: [
-            { id: randomUUID(), label: 'Apple' },
-            { id: randomUUID(), label: 'Banana' },
-          ],
-        },
-      ],
-    },
     getThesauri: async () =>
       testingEnvironment.pg
         .getAllFrom('thesauri')
@@ -95,7 +60,7 @@ describe('UpdateThesaurusUseCase', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresThesauri, pgFixtures, getThesauri }) => {
+  describe.each(testConfigs)('$name', ({ postgresThesauri, getThesauri }) => {
     const getJobs = async () => testingEnvironment.db.getCollection('jobs')!.find().toArray();
 
     const createSut = (props?: CreateSutProps) =>
@@ -155,7 +120,7 @@ describe('UpdateThesaurusUseCase', () => {
       );
 
     beforeEach(async () => {
-      await testingEnvironment.setFixtures(fixtures, pgFixtures);
+      await testingEnvironment.setFixtures(fixtures);
       await testingEnvironment.db.getCollection('jobs')!.deleteMany({});
     });
 

@@ -29,10 +29,6 @@ const adminClient = () =>
 
 let pool: pg.Pool | null = null;
 
-/** Unique token so PG overrides are scoped to this test suite. */
-const testPoolToken = Symbol('testing-pg-pool');
-const testConfigToken = Symbol('testing-pg-config');
-
 export type PGFixture = Record<string, Record<string, unknown>[]>;
 
 const testingPG = {

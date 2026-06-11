@@ -134,7 +134,7 @@ export const config = {
       v2GetEntity: false,
       v2UpdateFile: false,
       v2Languages: false,
-      postgresThesauri: true,
+      postgresThesauri: false,
       newHeader: NEW_HEADER === 'true' || false,
     },
   },

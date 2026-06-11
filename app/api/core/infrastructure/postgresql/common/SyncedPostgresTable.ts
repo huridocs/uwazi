@@ -1,4 +1,4 @@
-import { Db, ObjectId } from 'mongodb';
+import { Db } from 'mongodb';
 import { PostgresTable, PostgresConnectionConfig } from './PostgresTable.js';
 import { PostgresQueryBuilder } from './PostgresQueryBuilder.js';
 import { SyncLogWriter } from './SyncLogWriter.js';
