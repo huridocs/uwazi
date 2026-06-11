@@ -6,6 +6,7 @@ enum RowErrorCode {
   ThesaurusValueNotFound = 'THESAURUS_VALUE_NOT_FOUND',
   RelationshipNotFound = 'RELATIONSHIP_NOT_FOUND',
   RelationshipAmbiguous = 'RELATIONSHIP_AMBIGUOUS',
+  IdNotFoundInTemplate = 'ID_NOT_FOUND_IN_TEMPLATE',
   FileNotFound = 'FILE_NOT_FOUND',
   FileInvalidReference = 'FILE_INVALID_REFERENCE',
   InternalError = 'INTERNAL_ERROR',

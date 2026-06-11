@@ -8,6 +8,8 @@ import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { FilesService } from '#api/core/application/FilesService.js';
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource.js';
 import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource.js';
@@ -36,6 +38,8 @@ type Deps = {
   templatesDS: TemplatesDataSource;
   settingsDS: SettingsDataSource;
   entitiesService: EntitiesService;
+  entitiesDS: MultiLanguageEntityDataSource;
+  filesDS: FilesDataSource;
   mapper: CsvEntitiesImportMapper;
   transactionManager: TransactionManager;
   fileStorage: FileStorage;
@@ -50,6 +54,7 @@ const DEFAULT_BATCH_SIZE = 10;
 
 type FinalizeSuccessInput = {
   entitiesCreated: number;
+  entitiesUpdated: number;
   processedRows: number;
   failedRows: number;
   importId: string;
@@ -95,12 +100,21 @@ class CsvImportEntitiesJob extends CsvCleanupAwareJob<Input, void, Deps> {
   }
 
   private async finalizeSuccess(input: FinalizeSuccessInput) {
-    const { entitiesCreated, processedRows, failedRows, importId, tenantName, userId } = input;
+    const {
+      entitiesCreated,
+      entitiesUpdated,
+      processedRows,
+      failedRows,
+      importId,
+      tenantName,
+      userId,
+    } = input;
     const csvImport = (await this.deps.csvImportsDS.getById(importId)).getDataOrThrow();
     await this.transactionManager.run(async () => {
       const updatedStats: CsvImportStats = {
         ...(csvImport.stats || {}),
         entitiesCreated: (csvImport.stats?.entitiesCreated || 0) + entitiesCreated,
+        entitiesUpdated: (csvImport.stats?.entitiesUpdated || 0) + entitiesUpdated,
         rowsProcessed: processedRows,
         rowsFailed: failedRows,
       };
@@ -130,7 +144,7 @@ class CsvImportEntitiesJob extends CsvCleanupAwareJob<Input, void, Deps> {
       importId
     );
     const actorId = userId ?? context.csvImport.createdBy;
-    const { entitiesCreated, processedRows, shouldStop, stopReason, cancelled } =
+    const { entitiesCreated, entitiesUpdated, processedRows, shouldStop, stopReason, cancelled } =
       await processImportRows({
         context,
         callbacks,
@@ -139,6 +153,8 @@ class CsvImportEntitiesJob extends CsvCleanupAwareJob<Input, void, Deps> {
           rowErrorsDS: this.deps.rowErrorsDS,
           csvImportsDS: this.deps.csvImportsDS,
           entitiesService: this.deps.entitiesService,
+          entitiesDS: this.deps.entitiesDS,
+          filesDS: this.deps.filesDS,
           transactionManager: this.transactionManager,
           propertyAssignmentCreatorServiceStrategy:
             this.deps.propertyAssignmentCreatorServiceStrategy,
@@ -168,6 +184,7 @@ class CsvImportEntitiesJob extends CsvCleanupAwareJob<Input, void, Deps> {
     }
     await this.finalizeSuccess({
       entitiesCreated,
+      entitiesUpdated,
       processedRows,
       failedRows: report.failedRows,
       importId,
