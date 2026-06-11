@@ -191,6 +191,7 @@
     "jotai": "2.20.0",
     "json-schema-to-typescript": "^15.0.4",
     "jvent": "1.0.2",
+    "knex": "^3.2.10",
     "leaflet": "^1.9.4",
     "leaflet.gridlayer.googlemutant": "^0.16.0",
     "leaflet.markercluster": "^1.5.3",
