@@ -1,3 +1,7 @@
+/* eslint-disable max-statements */
+import { ObjectId } from 'mongodb';
+import { Readable } from 'stream';
+import urljoin from 'url-join';
 import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
@@ -15,12 +19,9 @@ import { tenants } from '#api/tenants/tenantContext.js';
 import users from '#api/users/users.js';
 import createError from '#api/utils/Error.js';
 import { handleError } from '#api/utils/handleError.js';
-import { ObjectId } from 'mongodb';
 import request from '#shared/JSONRequest.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { FileType } from '#shared/types/fileType.js';
-import { Readable } from 'stream';
-import urljoin from 'url-join';
 import { EnforcedWithId } from '../../odm/model.js';
 import { OcrRecord, OcrStatus } from './ocrModel.js';
 import {
@@ -148,7 +149,8 @@ const processFiles = async (
 
     const resultFile = await saveResultFile(message, originalFile);
 
-    await files.save({ _id: originalFile._id, type: 'attachment' });
+    const filesService = FilesServiceFactory.default();
+    await filesService.demoteToAttachment(originalFile._id.toHexString());
 
     await markReady(record, resultFile as EnforcedWithId<FileType>);
     await relationships.swapTextReferencesFile(

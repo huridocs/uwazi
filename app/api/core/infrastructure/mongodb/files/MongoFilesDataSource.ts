@@ -166,6 +166,11 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     this.setFilesToReindex(files);
   }
 
+  async replaceFile(file: BaseFile): Promise<void> {
+    await this.getCollection().replaceOne({ _id: new ObjectId(file.id) }, FileMappers.toDBO(file));
+    this.setFilesToReindex([file]);
+  }
+
   async deletePropertySelections(entityPropertyNames: string[], entitySharedIds: string[]) {
     await this.getCollection().updateMany(
       {

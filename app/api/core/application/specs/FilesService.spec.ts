@@ -12,9 +12,8 @@ import { pipeline } from 'stream/promises';
 /* eslint-disable max-statements */
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
-import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { FileStorage, FileWithContent } from '#api/core/application/contracts/FileStorage.js';
 import { FileContents } from '#api/core/domain/files/FileContents.js';
-import { FileWithContent } from '#api/core/application/contracts/FileStorage.js';
 import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
 import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
@@ -302,6 +301,63 @@ describe('FilesService', () => {
         expect(filenames).not.toContain(`${f.idString('doc1')}.jpg`);
         expect(filenames).toContain(`${f.idString('doc2')}.jpg`);
       });
+    });
+  });
+
+  describe('demoteToAttachment', () => {
+    const fixtures: DBFixture = {
+      settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+      entities: [f.entity('entity1')],
+      files: [
+        f.document('demote_doc', {
+          entity: 'entity1',
+          mimetype: 'application/pdf',
+          status: 'ready',
+          language: 'en',
+          totalPages: 5,
+          fullText: { 1: 'text content' },
+          generatedToc: true,
+          propertySelections: [{ name: 'test', selection: { text: 'highlight' } }],
+        }),
+        f.attachment('demote_attach', {
+          entity: 'entity1',
+          mimetype: 'text/plain',
+        }),
+      ],
+    };
+
+    beforeAll(async () => {
+      await testingEnvironment.setUp(fixtures);
+    });
+
+    it('should demote a document to an attachment and clear document-specific fields', async () => {
+      const docId = f.idString('demote_doc');
+      const { service } = createService();
+      await service.demoteToAttachment(docId);
+
+      const dbFiles = await testingEnvironment.db.getAllFrom('files');
+      const demoted = dbFiles.find(file => file._id.toString() === docId)!;
+
+      expect(demoted).toBeDefined();
+      expect(demoted.type).toBe('attachment');
+      expect(demoted.entity).toBe('entity1');
+      expect(demoted.fullText).toBeUndefined();
+      expect(demoted.totalPages).toBeUndefined();
+      expect(demoted.propertySelections).toBeUndefined();
+      expect(demoted.generatedToc).toBeUndefined();
+      expect(demoted.language).toBeUndefined();
+      expect(demoted.status).toBeUndefined();
+    });
+
+    it('should throw when file is not found', async () => {
+      const { service } = createService();
+      await expect(service.demoteToAttachment('non_existent_id')).rejects.toThrow();
+    });
+
+    it('should throw when file is not a document', async () => {
+      const attachId = f.idString('demote_attach');
+      const { service } = createService();
+      await expect(service.demoteToAttachment(attachId)).rejects.toThrow(/expected 'document'/);
     });
   });
 

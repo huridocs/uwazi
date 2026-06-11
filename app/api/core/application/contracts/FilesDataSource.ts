@@ -16,6 +16,7 @@ interface FilesDataSource {
   bulkCreate(files: [BaseFile, ...BaseFile[]]): Promise<void>;
   update(file: BaseFile): Promise<void>;
   bulkUpdate(files: BaseFile[]): Promise<void>;
+  replaceFile(file: BaseFile): Promise<void>;
   delete(files: BaseFile[]): Promise<void>;
   getProcessingById(documentId: string): Promise<ResultType<PDFDocument, ProcessingFileNotFound>>;
   deletePropertySelections(entityPropertyNames: string[], entitySharedIds: string[]): Promise<void>;
