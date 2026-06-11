@@ -53,6 +53,7 @@ const EditEntityComponent = ({ entity, locale = 'en' }: { entity: Entity; locale
   const formId = 'edit-entity-form';
 
   const handleSave = (updatedEntity?: Entity) => {
+    console.log(updatedEntity);
     if (updatedEntity) {
       setSavedEntity(updatedEntity);
     }
@@ -64,6 +65,7 @@ const EditEntityComponent = ({ entity, locale = 'en' }: { entity: Entity; locale
         <Provider store={store}>
           <div className="flex gap-4">
             <div className="w-1/2">
+              <p>Entity editor</p>
               <div className="mb-4">
                 <EditEntity entity={entity} formId={formId} onSave={handleSave} />
               </div>
@@ -77,6 +79,7 @@ const EditEntityComponent = ({ entity, locale = 'en' }: { entity: Entity; locale
               </div>
             </div>
             <div className="w-1/2">
+              <p>Entity view</p>
               <MetadataEntityHeader
                 templateId={savedEntity.template}
                 title={savedEntity.title}

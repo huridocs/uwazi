@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import React, { useMemo } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
@@ -10,7 +11,14 @@ import { thesauriAtom } from '#V2/atoms/thesauriAtom.js';
 import { ClientTemplateSchema } from '#V2/shared/types.js';
 import { resolvePropertyMetadataValues, toMetadataObjectSchema } from '#V2/formatters/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
-import { TextField, SelectField, TemplateField, MultiselectField } from './Components/index.js';
+import {
+  TextField,
+  SelectField,
+  TemplateField,
+  MultiselectField,
+  DateField,
+  DateRangeField,
+} from './Components/index.js';
 import { MultiselectListOption } from '../../Forms/index.js';
 
 type EditEntityFormValues = {
@@ -170,7 +178,11 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
         />
 
         {metadataProperties.map(property => {
-          if (property.type === 'text' || property.type === 'numeric') {
+          if (
+            property.type === 'text' ||
+            property.type === 'numeric' ||
+            property.type === 'generatedid'
+          ) {
             return (
               <TextField<EditEntityFormValues>
                 context={entityTemplate._id}
@@ -206,6 +218,30 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
                 registerOptions={{ required: property.required }}
                 disabled={disabled}
                 options={thesaurusToOptions(thesauri, property)}
+              />
+            );
+          }
+
+          if (property.type === 'date') {
+            return (
+              <DateField<EditEntityFormValues>
+                context={entityTemplate._id}
+                label={property.label}
+                field={`metadata.${property.name}.0.value`}
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+              />
+            );
+          }
+
+          if (property.type === 'daterange') {
+            return (
+              <DateRangeField<EditEntityFormValues>
+                context={entityTemplate._id}
+                label={property.label}
+                field={`metadata.${property.name}.0.value`}
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
               />
             );
           }
