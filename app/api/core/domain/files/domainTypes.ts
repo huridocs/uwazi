@@ -1,5 +1,5 @@
 import { LanguageISO6393 } from '#shared/language/languageISO639_3.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { LanguageISO6391, PropertySelectionSchema } from '#shared/types/commonTypes.js';
 
 type BaseFileDTO = {
   _id: string;
@@ -29,6 +29,7 @@ export type FileUpdateInput = {
   language?: LanguageISO6391;
   toc?: TableOfContent[];
   generatedToc?: boolean;
+  propertySelections?: PropertySelectionSchema[];
 };
 
 export type PDFDocumentDTO = BaseFileDTO &
@@ -37,6 +38,7 @@ export type PDFDocumentDTO = BaseFileDTO &
         type: 'document';
         status: 'processing' | 'failed';
         entity: string;
+        propertySelections?: PropertySelectionSchema[];
       }
     | {
         type: 'document';
@@ -47,6 +49,7 @@ export type PDFDocumentDTO = BaseFileDTO &
         generatedToc: boolean;
         toc?: TableOfContent[];
         fullText?: FullText;
+        propertySelections?: PropertySelectionSchema[];
       }
   );
 

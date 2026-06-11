@@ -1,9 +1,8 @@
 /* eslint-disable max-lines */
 import { Db, ObjectId } from 'mongodb';
-import uniqBy from 'lodash/uniqBy.js';
 
 import { LanguageUtils } from '#shared/language/index.js';
-import { PropertySelectionSchema, LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
@@ -34,24 +33,6 @@ type GetDocumentsForEntityQuery = {
 };
 
 type MongoFilesDataSourceOptions = MongoDSOptions;
-
-const mergePropertySelections = (
-  newSelections: PropertySelectionSchema[],
-  storedSelections: PropertySelectionSchema[]
-) => uniqBy(newSelections.concat(storedSelections), 'name').filter(s => !s.deleteSelection);
-
-const propertySelectionsHaveChanged = (
-  storedSelections: PropertySelectionSchema[],
-  mergedSelections: PropertySelectionSchema[]
-) => {
-  if (storedSelections.length !== mergedSelections.length) {
-    return true;
-  }
-
-  return storedSelections.some(
-    (selection, index) => selection.selection?.text !== mergedSelections[index].selection?.text
-  );
-};
 
 export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements FilesDataSource {
   protected collectionName = 'files';
@@ -183,28 +164,6 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
   async bulkCreate(files: [BaseFile, ...BaseFile[]]): Promise<void> {
     await this.getCollection().insertMany(files.map(FileMappers.toDBO));
     this.setFilesToReindex(files);
-  }
-
-  async savePropertySelections(fileId: string, propertySelections: PropertySelectionSchema[]) {
-    const file = await this.getCollection<{
-      propertySelections?: PropertySelectionSchema[];
-    }>().findOne({ _id: new ObjectId(fileId) }, { projection: { propertySelections: 1 } });
-
-    if (!file) {
-      return;
-    }
-
-    const storedPropertySelections = file.propertySelections || [];
-    const mergedSelections = mergePropertySelections(propertySelections, storedPropertySelections);
-
-    if (!propertySelectionsHaveChanged(storedPropertySelections, mergedSelections)) {
-      return;
-    }
-
-    await this.getCollection().updateOne(
-      { _id: new ObjectId(fileId) },
-      { $set: { propertySelections: mergedSelections } }
-    );
   }
 
   async deletePropertySelections(entityPropertyNames: string[], entitySharedIds: string[]) {

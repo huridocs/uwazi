@@ -81,7 +81,15 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
         const update = input.files!.find(file => file.id === keptFile.id);
         if (!update) return;
 
-        updatedFiles.push(keptFile.update({ originalname: update.originalname }));
+        const newProps: { originalname: string; propertySelections?: PropertySelectionSchema[] } = {
+          originalname: update.originalname,
+        };
+
+        if (keptFile.id === input.propertySelections?.fileId) {
+          newProps.propertySelections = input.propertySelections.selections;
+        }
+
+        updatedFiles.push(keptFile.update(newProps));
       });
     }
 
@@ -107,19 +115,6 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
       await this.deps.fileService.insert(filesCreated);
       await this.deps.fileService.delete(removedFiles);
       await this.deps.fileService.bulkUpsert(updatedFiles);
-
-      if (input.propertySelections) {
-        const fileBelongsToEntity = await this.deps.filesDS.filesExistForEntities([
-          { entity: entity.sharedId, _id: input.propertySelections.fileId },
-        ]);
-
-        if (fileBelongsToEntity) {
-          await this.deps.filesDS.savePropertySelections(
-            input.propertySelections.fileId,
-            input.propertySelections.selections
-          );
-        }
-      }
     });
 
     return entity;

@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { LanguageISO6393 } from '#shared/language/languageISO639_3.js';
+import type { PropertySelectionSchema } from '#shared/types/commonTypes.js';
 import type { TableOfContent } from '#api/core/domain/files/domainTypes.js';
 
 export type {
@@ -22,6 +23,7 @@ type BaseFileDBO = {
 export type BaseDocument = BaseFileDBO & {
   type: 'document';
   entity: string;
+  propertySelections?: PropertySelectionSchema[];
 };
 
 export type ProcessingPDFDBO = BaseDocument & {
