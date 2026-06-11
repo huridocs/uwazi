@@ -1,14 +1,11 @@
-/* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 import { randomUUID } from 'crypto';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
-import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
@@ -162,9 +159,6 @@ describe('DeleteThesaurusUseCase', () => {
           const templatesDS = new MongoTemplatesDataSource({
             db: getConnection(),
             transactionManager,
-            slotsReconciler: TestUtils.mockClass<SlotsReconciler>({
-              execute: jest.fn().mockResolvedValue(undefined),
-            }),
           });
 
           const sut = new DeleteThesaurusUseCase(

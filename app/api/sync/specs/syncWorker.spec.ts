@@ -60,17 +60,6 @@ import {
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
 
-jest.mock('#api/core/infrastructure/factories/EntityIndexerServiceFactory.js', () => ({
-  EntityIndexerServiceFactory: {
-    default: () => ({
-      sync: jest.fn().mockResolvedValue(undefined),
-      index: jest.fn().mockResolvedValue(undefined),
-      remove: jest.fn().mockResolvedValue(undefined),
-      removeByTemplateIds: jest.fn().mockResolvedValue(undefined),
-    }),
-  },
-}));
-
 async function runAllTenants() {
   try {
     await syncWorker.runAllTenants();
@@ -597,11 +586,10 @@ describe('syncWorker', () => {
     await runAndCheck('files', 'connections', [{ _id: orderedHostIds.files }], 30);
     await runAndCheck(
       'connections',
-      'elasticSlots',
+      'entities',
       [{ _id: orderedHostIds.connection1 }, { _id: orderedHostIds.connection2 }],
       20
     );
-    await runAndCheck('elasticSlots', 'entities', [{ _id: orderedHostIds.elasticSlots }], 10);
     await runAndCheck(
       'entities',
       undefined,

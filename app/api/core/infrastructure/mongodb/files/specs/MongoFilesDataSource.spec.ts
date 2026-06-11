@@ -14,9 +14,6 @@ import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { MongoFilesDataSource } from '../MongoFilesDataSource.js';
-import { FullTextIndexerService } from '#api/core/infrastructure/elasticSearch/entities/FullTextIndexerService.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { FileMappers } from '../FilesMappers.js';
 
 const f = getFixturesFactory();
 
@@ -120,18 +117,14 @@ afterAll(async () => {
 
 const createDs = () => {
   const transactionManager = TransactionManagerFactory.default();
-  const fullTextIndexer = TestUtils.mockClass<FullTextIndexerService>({
-    sync: jest.fn().mockResolvedValue(undefined),
-    remove: jest.fn().mockResolvedValue(undefined),
-  });
+
   const ds = new MongoFilesDataSource(
     getConnection(),
     transactionManager,
-    FileStorageFactory.default(),
-    { fullTextIndexer }
+    FileStorageFactory.default()
   );
 
-  return { ds, transactionManager, fullTextIndexer };
+  return { ds, transactionManager };
 };
 
 describe('MongoFilesDataSource', () => {
@@ -625,42 +618,6 @@ describe('MongoFilesDataSource', () => {
       );
 
       expect(dbFiles).toMatchObject([]);
-    });
-  });
-
-  describe('indexing on transaction commit', () => {
-    it('should index processed Documents marked to full text index on file update', async () => {
-      const { ds, fullTextIndexer, transactionManager } = createDs();
-
-      const processedPdf = FileBuilder.processedDocument(new ObjectId().toString());
-      const attachment = FileBuilder.attachment(new ObjectId().toString());
-
-      await ds.update(processedPdf);
-      await ds.update(attachment);
-
-      await transactionManager.executeOnCommitHandlers(undefined);
-
-      expect(fullTextIndexer.sync).toHaveBeenCalledWith([]);
-
-      processedPdf.languageChanged();
-
-      await ds.update(processedPdf);
-
-      await transactionManager.executeOnCommitHandlers(undefined);
-
-      expect(fullTextIndexer.sync).toHaveBeenCalledWith([FileMappers.toDBO(processedPdf)._id]);
-    });
-
-    it('should only deleted full text documents on file delete', async () => {
-      const { ds, fullTextIndexer, transactionManager } = createDs();
-
-      const processedPdf = FileBuilder.processedDocument(new ObjectId().toString());
-      const attachment = FileBuilder.attachment(new ObjectId().toString());
-
-      await ds.delete([processedPdf, attachment]);
-      await transactionManager.executeOnCommitHandlers(undefined);
-
-      expect(fullTextIndexer.remove).toHaveBeenCalledWith([processedPdf.filename]);
     });
   });
 });

@@ -6,8 +6,6 @@ import { JobsDispatcher } from './queue/application/contracts/JobsDispatcher.js'
 import { IdGenerator } from '../application/contracts/IdGenerator.js';
 import { EventEmitter } from './eventEmitter/EventEmitter.js';
 import { Logger } from './logger/contracts/Logger.js';
-import { TenantAwareESClient } from '../infrastructure/elasticSearch/TenantAwareESClient.js';
-import { AuthorizedEntityESClient } from '../infrastructure/elasticSearch/entities/AuthorizedElasticEntityClient.js';
 
 type DependencyFactories = {
   [K in keyof Dependencies]: () => Dependencies[K];
@@ -19,8 +17,6 @@ type Dependencies = {
   jobsDispatcher: JobsDispatcher;
   idGenerator: IdGenerator;
   logger: Logger;
-  elasticClient: TenantAwareESClient;
-  authorizedEntityESClient: AuthorizedEntityESClient;
 };
 
 type Context = {
@@ -50,14 +46,6 @@ class ExecutionContext extends AsyncLocalStorage<Context> {
 
   get transactionManager(): TransactionManager {
     return this.getOrInitialize('transactionManager');
-  }
-
-  get elasticClient() {
-    return this.getOrInitialize('elasticClient');
-  }
-
-  get authorizedEntityESClient() {
-    return this.getOrInitialize('authorizedEntityESClient');
   }
 
   get logger() {
