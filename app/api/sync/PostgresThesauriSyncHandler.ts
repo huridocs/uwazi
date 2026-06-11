@@ -1,3 +1,4 @@
+import { Db } from 'mongodb';
 import { PostgresConnectionConfig } from '#api/core/infrastructure/postgresql/common/PostgresTable.js';
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { SyncHandler } from './SyncHandler.js';
@@ -14,8 +15,12 @@ export class PostgresThesauriSyncHandler
 {
   protected tableName = 'thesauri';
 
-  constructor(deps: { connection: PostgresConnectionConfig; tenantId: string }) {
-    super({ connection: deps.connection, tenantId: deps.tenantId });
+  constructor(deps: { connection: PostgresConnectionConfig; tenantId: string; mongoDb: Db }) {
+    super({
+      connection: deps.connection,
+      tenantId: deps.tenantId,
+      sync: { syncDb: deps.mongoDb, syncNamespace: 'dictionaries' },
+    });
   }
 
   async getById(id: string): Promise<ThesaurusRow | null> {

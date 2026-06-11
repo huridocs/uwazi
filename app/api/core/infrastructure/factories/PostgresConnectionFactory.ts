@@ -4,6 +4,10 @@ import { PostgresConnectionConfig } from '../postgresql/common/PostgresTable.js'
 
 let defaultPool: pg.Pool | null = null;
 
+/**
+ * Active config override. Process-local only; safe because Jest runs test
+ * suites in separate processes (workers) by default. Reset after each test.
+ */
 let activeConfig: PostgresConnectionConfig | null = null;
 
 export class PostgresConnectionFactory {

@@ -75,6 +75,12 @@ export class SyncedPostgresTable extends PostgresTable {
     this.syncNamespace = syncNamespace;
   }
 
+  /**
+   * Returns a SyncedPostgresQueryBuilder which writes sync logs on update/delete.
+   * Note: via PostgresDataSource.table (typed as PostgresTable) this returns
+   * PostgresQueryBuilder at compile time, but the runtime object is always a
+   * SyncedPostgresQueryBuilder when sync options were provided to the data source.
+   */
   override query<TRow = Record<string, unknown>>(): SyncedPostgresQueryBuilder<TRow> {
     return new SyncedPostgresQueryBuilder<TRow>(
       this.knex,

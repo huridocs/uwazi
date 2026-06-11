@@ -90,6 +90,10 @@ const testingPG = {
 
     this.pool = pool;
 
+    /**
+     * Override PG config for this test process. Safe because Jest workers are
+     * separate processes; the override is local to this process and reset in disconnect().
+     */
     PostgresConnectionFactory.setConfig(this.config);
 
     await pool.query(THESAURUS_SQL);
