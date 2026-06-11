@@ -3,7 +3,7 @@ import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from '
 import { Translate } from '#app/I18N/index.js';
 import { secondsToISODate, parseLocalizedDate } from '#V2/shared/dateHelpers.js';
 
-type DateRangeFieldFieldProps<TFormValues extends FieldValues = FieldValues> = {
+type DateRangeFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
   label: string;
   field: Path<TFormValues>;
@@ -22,7 +22,7 @@ const DateRangeField = <TFormValues extends FieldValues = FieldValues>({
   field,
   registerOptions,
   disabled,
-}: DateRangeFieldFieldProps<TFormValues>) => {
+}: DateRangeFieldProps<TFormValues>) => {
   const { control } = useFormContext<TFormValues>();
   const required = Boolean(registerOptions?.required);
 
@@ -53,7 +53,7 @@ const DateRangeField = <TFormValues extends FieldValues = FieldValues>({
                 {registerOptions?.required && '*'}
               </div>
               <div className="flex md:flex-row md:gap-4 gap-2">
-                <div className="flex flex-row gap-1 items-center">
+                <div className="flex flex-row gap-1 items-center md:w-1/2 w-full">
                   <label htmlFor={idFor} aria-hidden>
                     <Translate>From</Translate>:
                   </label>
@@ -73,7 +73,7 @@ const DateRangeField = <TFormValues extends FieldValues = FieldValues>({
                     }}
                   />
                 </div>
-                <div className="flex flex-row gap-1 items-center">
+                <div className="flex flex-row gap-1 items-center md:w-1/2 w-full">
                   <label htmlFor={idTo} aria-hidden>
                     <Translate>To</Translate>:
                   </label>
@@ -95,7 +95,7 @@ const DateRangeField = <TFormValues extends FieldValues = FieldValues>({
               </div>
               {showRequiredError ? (
                 <div className="mt-2 text-sm text-(--color-theme-control-text-error)">
-                  <Translate>Required</Translate>
+                  <Translate>This field is required</Translate>
                 </div>
               ) : null}
             </div>

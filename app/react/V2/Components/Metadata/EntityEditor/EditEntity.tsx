@@ -18,6 +18,8 @@ import {
   MultiselectField,
   DateField,
   DateRangeField,
+  MultidateField,
+  MultiDateRangeField,
 } from './Components/index.js';
 import { MultiselectListOption } from '../../Forms/index.js';
 
@@ -240,6 +242,30 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
                 context={entityTemplate._id}
                 label={property.label}
                 field={`metadata.${property.name}.0.value`}
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+              />
+            );
+          }
+
+          if (property.type === 'multidate') {
+            return (
+              <MultidateField<EditEntityFormValues>
+                context={entityTemplate._id}
+                label={property.label}
+                field={`metadata.${property.name}`}
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+              />
+            );
+          }
+
+          if (property.type === 'multidaterange') {
+            return (
+              <MultiDateRangeField<EditEntityFormValues>
+                context={entityTemplate._id}
+                label={property.label}
+                field={`metadata.${property.name}`}
                 registerOptions={{ required: property.required }}
                 disabled={disabled}
               />
