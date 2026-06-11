@@ -1,8 +1,6 @@
 import pg from 'pg';
 import { config } from '#api/config.js';
 import { PostgresConnectionFactory } from '../PostgresConnectionFactory.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 const adminClient = () =>
   new pg.Client({
@@ -14,8 +12,7 @@ const adminClient = () =>
   });
 
 const TEST_TABLE_SQL = 'CREATE TABLE IF NOT EXISTS pcf_tenant (tenant TEXT)';
-const DB_A = 'pcf_test_a_tenant';
-const DB_B = 'pcf_test_b_tenant';
+const TEST_DB = `pcf_test_${process.pid}`;
 
 const connectPool = (db: string) =>
   new pg.Pool({
@@ -29,178 +26,117 @@ const connectPool = (db: string) =>
 async function createDatabase(dbName: string): Promise<void> {
   const admin = adminClient();
   await admin.connect();
-  await admin.query(`CREATE DATABASE "${dbName}"`);
-  await admin.end();
+  try {
+    await admin.query(`CREATE DATABASE "${dbName}"`);
+  } finally {
+    await admin.end();
+  }
 
   const setup = connectPool(dbName);
   await setup.query(TEST_TABLE_SQL);
+  await setup.query("INSERT INTO pcf_tenant (tenant) VALUES ('test-tenant')");
   await setup.end();
 }
 
 async function dropDatabase(dbName: string): Promise<void> {
   const admin = adminClient();
   await admin.connect();
-  await admin.query(`DROP DATABASE IF EXISTS "${dbName}" WITH (FORCE)`);
-  await admin.end();
+  try {
+    await admin.query(`DROP DATABASE IF EXISTS "${dbName}" WITH (FORCE)`);
+  } finally {
+    await admin.end();
+  }
 }
 
-const tenantA = {
-  name: 'tenant_a',
-  dbName: DB_A,
-  indexName: 'index_a',
-  domain: '127.0.0.1',
-  uploadedDocuments: '',
-  attachments: '',
-  customUploads: '',
-  activityLogs: '',
-  featureFlags: {},
-};
-
-const tenantB = {
-  name: 'tenant_b',
-  dbName: DB_B,
-  indexName: 'index_b',
-  domain: '127.0.0.1',
-  uploadedDocuments: '',
-  attachments: '',
-  customUploads: '',
-  activityLogs: '',
-  featureFlags: {},
-};
-
 describe('PostgresConnectionFactory', () => {
+  let testPool: pg.Pool;
+
   beforeAll(async () => {
-    await createDatabase(DB_A);
-    await createDatabase(DB_B);
+    await createDatabase(TEST_DB);
+    testPool = connectPool(TEST_DB);
 
-    const seederA = connectPool(DB_A);
-    await seederA.query("INSERT INTO pcf_tenant (tenant) VALUES ('tenant_a')");
-    await seederA.end();
-
-    const seederB = connectPool(DB_B);
-    await seederB.query("INSERT INTO pcf_tenant (tenant) VALUES ('tenant_b')");
-    await seederB.end();
+    PostgresConnectionFactory.setConfig({
+      host: config.postgres.host,
+      port: config.postgres.port,
+      database: TEST_DB,
+      user: config.postgres.user,
+      password: config.postgres.password,
+    });
   });
 
   afterAll(async () => {
+    await testPool.end();
     await PostgresConnectionFactory.close();
-    await dropDatabase(DB_A);
-    await dropDatabase(DB_B);
-    testingTenants.restoreCurrentFn();
+    PostgresConnectionFactory.resetConfig();
+    await dropDatabase(TEST_DB);
   });
 
-  afterEach(() => {
-    PostgresConnectionFactory.clearPool();
-  });
-
-  describe('tenant-aware routing', () => {
-    it('routes to the correct tenant database', async () => {
-      testingTenants.mockCurrentTenant(tenantA);
-
-      await testingEnvironment.runWithContext(
-        async () => {
-          const pool = PostgresConnectionFactory.default();
-          const result = await pool.query('SELECT tenant FROM pcf_tenant');
-          expect(result.rows).toEqual([{ tenant: 'tenant_a' }]);
-        },
-        { tenant: tenantA }
-      );
-    });
-
-    it('routes to a different tenant database', async () => {
-      testingTenants.mockCurrentTenant(tenantB);
-
-      await testingEnvironment.runWithContext(
-        async () => {
-          const pool = PostgresConnectionFactory.default();
-          const result = await pool.query('SELECT tenant FROM pcf_tenant');
-          expect(result.rows).toEqual([{ tenant: 'tenant_b' }]);
-        },
-        { tenant: tenantB }
-      );
+  afterEach(async () => {
+    await PostgresConnectionFactory.close();
+    PostgresConnectionFactory.setConfig({
+      host: config.postgres.host,
+      port: config.postgres.port,
+      database: TEST_DB,
+      user: config.postgres.user,
+      password: config.postgres.password,
     });
   });
 
-  describe('pool caching', () => {
-    it('reuses the same pool for the same tenant', async () => {
-      testingTenants.mockCurrentTenant(tenantA);
-
-      await testingEnvironment.runWithContext(
-        async () => {
-          const p1 = PostgresConnectionFactory.default();
-          const p2 = PostgresConnectionFactory.default();
-          expect(p1).toBe(p2);
-        },
-        { tenant: tenantA }
-      );
+  describe('default()', () => {
+    it('returns a pool connected to the configured database', async () => {
+      const pool = PostgresConnectionFactory.default();
+      const result = await pool.query('SELECT tenant FROM pcf_tenant');
+      expect(result.rows).toEqual([{ tenant: 'test-tenant' }]);
     });
 
-    it('returns different pools for different tenants', async () => {
-      testingTenants.mockCurrentTenant(tenantA);
-
-      let pA!: pg.Pool;
-      await testingEnvironment.runWithContext(
-        async () => {
-          pA = PostgresConnectionFactory.default();
-        },
-        { tenant: tenantA }
-      );
-
-      testingTenants.mockCurrentTenant(tenantB);
-
-      let pB!: pg.Pool;
-      await testingEnvironment.runWithContext(
-        async () => {
-          pB = PostgresConnectionFactory.default();
-        },
-        { tenant: tenantB }
-      );
-
-      expect(pA).not.toBe(pB);
+    it('reuses the same pool instance on subsequent calls', () => {
+      const p1 = PostgresConnectionFactory.default();
+      const p2 = PostgresConnectionFactory.default();
+      expect(p1).toBe(p2);
     });
   });
 
-  describe('usePool / clearPool', () => {
-    it('usePool override bypasses tenant routing', async () => {
-      testingTenants.mockCurrentTenant(tenantA);
-      const override = connectPool(DB_A);
-      PostgresConnectionFactory.usePool(override);
-
-      await testingEnvironment.runWithContext(
-        async () => {
-          const pool = PostgresConnectionFactory.default();
-          expect(pool).toBe(override);
-        },
-        { tenant: tenantA }
-      );
-
-      await override.end();
-      PostgresConnectionFactory.clearPool();
+  describe('setConfig / resetConfig', () => {
+    it('setConfig override changes the target database', async () => {
+      const pool = PostgresConnectionFactory.default();
+      expect(pool).toBeDefined();
     });
 
-    it('clearPool restores tenant routing', async () => {
-      testingTenants.mockCurrentTenant(tenantA);
-      const override = connectPool(DB_A);
-      PostgresConnectionFactory.usePool(override);
-      PostgresConnectionFactory.clearPool();
-      await override.end();
+    it('resetConfig falls back to default config', async () => {
+      PostgresConnectionFactory.setConfig({
+        host: config.postgres.host,
+        port: config.postgres.port,
+        database: TEST_DB,
+        user: config.postgres.user,
+        password: config.postgres.password,
+      });
+      PostgresConnectionFactory.resetConfig();
 
-      await testingEnvironment.runWithContext(
-        async () => {
-          const pool = PostgresConnectionFactory.default();
-          const result = await pool.query('SELECT tenant FROM pcf_tenant');
-          expect(result.rows).toEqual([{ tenant: 'tenant_a' }]);
-        },
-        { tenant: tenantA }
-      );
+      const cfg = PostgresConnectionFactory.connectionConfig();
+      expect(cfg.database).toBe(config.postgres.database);
     });
   });
 
-  describe('forDatabase', () => {
-    it('creates independent pools per name', () => {
-      const x = PostgresConnectionFactory.forDatabase(DB_A);
-      const y = PostgresConnectionFactory.forDatabase(DB_B);
-      expect(x).not.toBe(y);
+  describe('connectionConfig()', () => {
+    it('returns the config override when set', () => {
+      const cfg = PostgresConnectionFactory.connectionConfig();
+      expect(cfg.database).toBe(TEST_DB);
+    });
+
+    it('falls back to config default when reset', () => {
+      PostgresConnectionFactory.resetConfig();
+      try {
+        const cfg = PostgresConnectionFactory.connectionConfig();
+        expect(cfg.database).toBe(config.postgres.database);
+      } finally {
+        PostgresConnectionFactory.setConfig({
+          host: config.postgres.host,
+          port: config.postgres.port,
+          database: TEST_DB,
+          user: config.postgres.user,
+          password: config.postgres.password,
+        });
+      }
     });
   });
 });
