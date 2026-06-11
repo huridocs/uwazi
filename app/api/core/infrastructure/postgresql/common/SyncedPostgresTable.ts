@@ -1,11 +1,10 @@
 import { Db, ObjectId } from 'mongodb';
 import { PostgresTable, PostgresConnectionConfig } from './PostgresTable.js';
 import { PostgresQueryBuilder } from './PostgresQueryBuilder.js';
+import { SyncLogWriter } from './SyncLogWriter.js';
 
 class SyncedPostgresQueryBuilder<TRow> extends PostgresQueryBuilder<TRow> {
-  private syncDb: Db;
-
-  private syncNamespace: string;
+  private syncWriter: SyncLogWriter;
 
   constructor(
     knex: import('knex').Knex,
@@ -15,53 +14,24 @@ class SyncedPostgresQueryBuilder<TRow> extends PostgresQueryBuilder<TRow> {
     syncNamespace: string
   ) {
     super(knex, tableName, tenantId);
-    this.syncDb = syncDb;
-    this.syncNamespace = syncNamespace;
-  }
-
-  private syncLogOp(_id: string, deleted: boolean = false) {
-    return {
-      updateOne: {
-        filter: { mongoId: new ObjectId(_id) },
-        update: {
-          $set: {
-            timestamp: Date.now(),
-            namespace: this.syncNamespace,
-            mongoId: new ObjectId(_id),
-            deleted,
-          },
-        },
-        upsert: true,
-      },
-    };
-  }
-
-  private async upsertSyncLogs(ids: string[], deleted: boolean = false): Promise<void> {
-    if (ids.length === 0) {
-      return;
-    }
-    await this.syncDb
-      .collection('updatelogs')
-      .bulkWrite(ids.map(id => this.syncLogOp(id, deleted)));
+    this.syncWriter = new SyncLogWriter(syncDb, syncNamespace);
   }
 
   override async update(changes: Record<string, unknown>): Promise<void> {
     const result = await this.qb.clone().returning(['_id']).update(changes);
     const ids = (result as unknown as { _id: string }[]).map(r => r._id);
-    await this.upsertSyncLogs(ids, false);
+    await this.syncWriter.upsertSyncLogs(ids, false);
   }
 
   override async delete(): Promise<void> {
     const result = await this.qb.clone().returning(['_id']).del();
     const ids = (result as unknown as { _id: string }[]).map(r => r._id);
-    await this.upsertSyncLogs(ids, true);
+    await this.syncWriter.upsertSyncLogs(ids, true);
   }
 }
 
 export class SyncedPostgresTable extends PostgresTable {
-  private syncDb: Db;
-
-  private syncNamespace: string;
+  private syncWriter: SyncLogWriter;
 
   constructor(
     connection: PostgresConnectionConfig,
@@ -71,8 +41,7 @@ export class SyncedPostgresTable extends PostgresTable {
     syncNamespace: string
   ) {
     super(connection, tableName, tenantId);
-    this.syncDb = syncDb;
-    this.syncNamespace = syncNamespace;
+    this.syncWriter = new SyncLogWriter(syncDb, syncNamespace);
   }
 
   /**
@@ -86,8 +55,8 @@ export class SyncedPostgresTable extends PostgresTable {
       this.knex,
       this.tableName,
       this.tenantId,
-      this.syncDb,
-      this.syncNamespace
+      this.syncWriter.syncDb,
+      this.syncWriter.syncNamespace
     );
   }
 
@@ -95,39 +64,13 @@ export class SyncedPostgresTable extends PostgresTable {
     await super.insert(doc);
     const rows = Array.isArray(doc) ? doc : [doc];
     const ids = rows.map(row => row._id).filter((id): id is string => typeof id === 'string');
-    await this.upsertSyncLogs(ids, false);
+    await this.syncWriter.upsertSyncLogs(ids, false);
   }
 
   override async upsert(doc: Record<string, unknown> | Record<string, unknown>[]): Promise<void> {
     await super.upsert(doc);
     const rows = Array.isArray(doc) ? doc : [doc];
     const ids = rows.map(row => row._id).filter((id): id is string => typeof id === 'string');
-    await this.upsertSyncLogs(ids, false);
-  }
-
-  private syncLogOp(_id: string, deleted: boolean = false) {
-    return {
-      updateOne: {
-        filter: { mongoId: new ObjectId(_id) },
-        update: {
-          $set: {
-            timestamp: Date.now(),
-            namespace: this.syncNamespace,
-            mongoId: new ObjectId(_id),
-            deleted,
-          },
-        },
-        upsert: true,
-      },
-    };
-  }
-
-  private async upsertSyncLogs(ids: string[], deleted: boolean = false): Promise<void> {
-    if (ids.length === 0) {
-      return;
-    }
-    await this.syncDb
-      .collection('updatelogs')
-      .bulkWrite(ids.map(id => this.syncLogOp(id, deleted)));
+    await this.syncWriter.upsertSyncLogs(ids, false);
   }
 }
