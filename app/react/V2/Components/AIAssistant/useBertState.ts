@@ -109,13 +109,6 @@ const useBertState = ({
   const handleAssistantReply = useCallback(
     (payload: { jobId: string; message: string }) => {
       if (!matchesActiveJob(payload.jobId)) {
-        // eslint-disable-next-line no-console
-        console.log('[aiAssistant:client] reply.ignored', {
-          jobId: payload.jobId,
-          pendingJobId: pendingJobIdRef.current,
-          inFlightSend: inFlightSendRef.current,
-          isThinking: isThinkingRef.current,
-        });
         return;
       }
 
@@ -141,11 +134,6 @@ const useBertState = ({
   const handleAssistantProgress = useCallback(
     (payload: { jobId: string; progress: string }) => {
       if (!matchesActiveJob(payload.jobId)) {
-        // eslint-disable-next-line no-console
-        console.log('[aiAssistant:client] progress.ignored', {
-          jobId: payload.jobId,
-          pendingJobId: pendingJobIdRef.current,
-        });
         return;
       }
 
@@ -158,11 +146,6 @@ const useBertState = ({
   const handleAssistantError = useCallback(
     (payload: { jobId: string; error: string }) => {
       if (!matchesActiveJob(payload.jobId)) {
-        // eslint-disable-next-line no-console
-        console.log('[aiAssistant:client] error.ignored', {
-          jobId: payload.jobId,
-          pendingJobId: pendingJobIdRef.current,
-        });
         return;
       }
 
@@ -267,11 +250,6 @@ const useBertState = ({
     inFlightSendRef.current = true;
     pendingJobIdRef.current = null;
 
-    // eslint-disable-next-line no-console
-    console.log('[aiAssistant:client] send.start', {
-      conversationJobId: conversationJobIdRef.current,
-    });
-
     const [response, error] = await sendAIAssistantMessage({
       message: text,
       password,
@@ -285,8 +263,6 @@ const useBertState = ({
     inFlightSendRef.current = false;
 
     if (error || !response?.jobId) {
-      // eslint-disable-next-line no-console
-      console.log('[aiAssistant:client] send.failed', { error, response });
       setReplyError(
         error?.json?.prettyMessage ||
           'Bert could not complete your request. Check your connection and try again.'
@@ -299,9 +275,6 @@ const useBertState = ({
     const jobId = String(response.jobId);
     conversationJobIdRef.current = jobId;
     pendingJobIdRef.current = jobId;
-
-    // eslint-disable-next-line no-console
-    console.log('[aiAssistant:client] send.accepted', { jobId });
   }, [contextChips, contextMode, draftMessage, isReplying, mockReplies, replyScenario]);
 
   const finishStreaming = useCallback(() => {

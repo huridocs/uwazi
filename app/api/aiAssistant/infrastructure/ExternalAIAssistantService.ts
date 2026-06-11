@@ -1,6 +1,5 @@
 import superagent from 'superagent';
 import { HttpClient } from '#api/common.v2/contracts/HttpClient.js';
-import { aiAssistantLog } from './aiAssistantLog.js';
 import type { AIAssistantService } from '../domain/AIAssistantService.js';
 import type {
   PollResult,
@@ -33,94 +32,45 @@ class ExternalAIAssistantService implements AIAssistantService {
       ? `${this.dependencies.url}/api/v1/jobs/${input.jobId}`
       : `${this.dependencies.url}/api/v1/jobs`;
 
-    aiAssistantLog('external.submit.start', {
-      url,
-      baseUrl: this.dependencies.url,
-      continueConversation: Boolean(input.jobId),
-      messageLength: input.message.length,
+    const response = await superagent.post(url).send({
+      message: input.message,
+      credentials: input.credentials,
     });
 
-    try {
-      const response = await superagent.post(url).send({
-        message: input.message,
-        credentials: input.credentials,
-      });
+    const body = response.body as SubmitResponseDTO;
 
-      const body = response.body as SubmitResponseDTO;
-
-      aiAssistantLog('external.submit.response', {
-        url,
-        status: response.status,
-        jobId: body?.job_id,
-        remoteStatus: body?.status,
-      });
-
-      if (!body?.job_id) {
-        throw new Error('AI Assistant service did not return a job_id');
-      }
-
-      return { jobId: body.job_id };
-    } catch (error) {
-      aiAssistantLog('external.submit.error', {
-        url,
-        baseUrl: this.dependencies.url,
-        error: error instanceof Error ? error.message : String(error),
-      });
-      throw error;
+    if (!body?.job_id) {
+      throw new Error('AI Assistant service did not return a job_id');
     }
+
+    return { jobId: body.job_id };
   }
 
   async getJobStatus(jobId: string): Promise<PollResult> {
-    const url = `${this.dependencies.url}/api/v1/jobs/${jobId}`;
+    const dto = await this.dependencies.httpClient.get<JobStatusResponseDTO>({
+      url: `${this.dependencies.url}/api/v1/jobs/${jobId}`,
+    });
 
-    try {
-      const dto = await this.dependencies.httpClient.get<JobStatusResponseDTO>({ url });
-
-      let mapped: PollResult;
-      if (dto.status === 'completed') {
-        mapped = { status: 'completed', message: dto.result ?? '' };
-      } else if (dto.status === 'failed') {
-        mapped = { status: 'error', error: dto.result ?? 'AI Assistant request failed' };
-      } else {
-        const progress = dto.result?.trim();
-        mapped = progress ? { status: 'running', progress } : { status: 'pending' };
-      }
-
-      aiAssistantLog('external.poll.response', {
-        url,
-        jobId,
-        remoteStatus: dto.status,
-        mappedStatus: mapped.status,
-        resultLength: dto.result?.length ?? 0,
-      });
-
-      return mapped;
-    } catch (error) {
-      aiAssistantLog('external.poll.error', {
-        url,
-        jobId,
-        error: error instanceof Error ? error.message : String(error),
-      });
-      throw error;
+    if (dto.status === 'completed') {
+      return { status: 'completed', message: dto.result ?? '' };
     }
+
+    if (dto.status === 'failed') {
+      return { status: 'error', error: dto.result ?? 'AI Assistant request failed' };
+    }
+
+    const progress = dto.result?.trim();
+    if (progress) {
+      return { status: 'running', progress };
+    }
+
+    return { status: 'pending' };
   }
 
   async cancelJob(jobId: string, credentials: SubmitMessageInput['credentials']): Promise<void> {
-    const url = `${this.dependencies.url}/api/v1/jobs/${jobId}`;
-
-    aiAssistantLog('external.cancel.start', { url, jobId });
-
-    try {
-      const response = await superagent.delete(url).send({ credentials });
-      aiAssistantLog('external.cancel.response', { url, jobId, status: response.status });
-    } catch (error) {
-      aiAssistantLog('external.cancel.error', {
-        url,
-        jobId,
-        error: error instanceof Error ? error.message : String(error),
-      });
-      throw error;
-    }
+    await superagent.delete(`${this.dependencies.url}/api/v1/jobs/${jobId}`).send({
+      credentials,
+    });
   }
 }
 

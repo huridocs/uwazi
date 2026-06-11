@@ -5,7 +5,6 @@ import type {
 } from '../domain/AIAssistantTypes.js';
 import { formatAIAssistantMessage } from './formatAIAssistantMessage.js';
 import { AIAssistantJobScheduler } from '../infrastructure/AIAssistantJobScheduler.js';
-import { aiAssistantLog } from '../infrastructure/aiAssistantLog.js';
 
 type Input = {
   tenantName: string;
@@ -29,21 +28,11 @@ class SendAIAssistantMessage {
   constructor(private dependencies: Dependencies) {}
 
   async execute(input: Input): Promise<Output> {
-    aiAssistantLog('send.start', {
-      tenantName: input.tenantName,
-      userId: input.userId,
-      sessionId: input.sessionId,
-      conversationJobId: input.conversationJobId ?? null,
-      messageLength: input.message.length,
-    });
-
     const { jobId } = await this.dependencies.aiAssistantService.submitMessage({
       message: formatAIAssistantMessage(input.message, input.context),
       credentials: input.credentials,
       jobId: input.conversationJobId,
     });
-
-    aiAssistantLog('send.submitted', { jobId, sessionId: input.sessionId });
 
     await AIAssistantJobScheduler.schedulePoll(
       {
@@ -54,8 +43,6 @@ class SendAIAssistantMessage {
       },
       0
     );
-
-    aiAssistantLog('send.poll_scheduled', { jobId, delayMs: 0 });
 
     return { jobId };
   }

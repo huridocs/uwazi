@@ -26,20 +26,14 @@ const useAIAssistantSocket = ({
     }
 
     const handleReply = (payload: AIAssistantReplyPayload) => {
-      // eslint-disable-next-line no-console
-      console.log('[aiAssistant:client] socket.reply', payload);
       onReply(payload);
     };
 
     const handleError = (payload: AIAssistantErrorPayload) => {
-      // eslint-disable-next-line no-console
-      console.log('[aiAssistant:client] socket.error', payload);
       onError(payload);
     };
 
     const handleProgress = (payload: AIAssistantProgressPayload) => {
-      // eslint-disable-next-line no-console
-      console.log('[aiAssistant:client] socket.progress', payload);
       onProgress?.(payload);
     };
 

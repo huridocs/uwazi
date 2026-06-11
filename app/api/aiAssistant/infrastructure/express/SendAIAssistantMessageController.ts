@@ -5,7 +5,6 @@ import {
   AbstractController,
   Dependencies as AbstractControllerDependencies,
 } from '#api/common.v2/infrastructure/AbstractController.js';
-import { aiAssistantLog } from '../aiAssistantLog.js';
 import { SendAIAssistantMessageFactory } from './SendAIAssistantMessageFactory.js';
 
 type Dependencies = AbstractControllerDependencies<Request>;
@@ -60,13 +59,6 @@ class SendAIAssistantMessageController extends AbstractController<Request> {
       return;
     }
 
-    aiAssistantLog('controller.send', {
-      userId: this.user._id,
-      sessionId,
-      conversationJobId: dto.jobId ?? null,
-      messageLength: dto.message.length,
-    });
-
     const useCase = SendAIAssistantMessageFactory.createDefault();
     const result = await useCase.execute({
       tenantName: this.tenantName,
@@ -88,8 +80,6 @@ class SendAIAssistantMessageController extends AbstractController<Request> {
         password: dto.password,
       },
     });
-
-    aiAssistantLog('controller.send.accepted', { jobId: result.jobId, sessionId });
 
     this.response.status(202).json(result);
   }
