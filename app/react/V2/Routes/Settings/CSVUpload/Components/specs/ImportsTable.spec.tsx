@@ -103,10 +103,10 @@ describe('CSV imports list table', () => {
     await renderComponent();
 
     const expectedRows = [
-      ['Failed', 'documents.csv', 'Documents', '17/60', '15', '2', '4/10/2024, 1:20:00 PM'],
-      ['Completed', 'events.csv', 'Events', '86/86', '84', '0', '4/9/2024, 1:20:00 PM'],
-      ['Processing', 'cases.zip', 'Cases', '48/120', '44', '1', '4/8/2024, 1:20:00 PM'],
-      ['Queued', 'people.csv', 'People', '0/0', '0', '0', '4/7/2024, 1:20:00 PM'],
+      ['Failed', 'documents.csv', 'Documents', '17/60', '15', '0', '2', '4/10/2024, 1:20:00 PM'],
+      ['Completed', 'events.csv', 'Events', '86/86', '84', '1', '0', '4/9/2024, 1:20:00 PM'],
+      ['Processing', 'cases.zip', 'Cases', '48/120', '44', '2', '1', '4/8/2024, 1:20:00 PM'],
+      ['Queued', 'people.csv', 'People', '0/0', '0', '0', '0', '4/7/2024, 1:20:00 PM'],
     ];
 
     const rows = screen.getAllByRole('row').slice(1);
@@ -124,8 +124,26 @@ describe('CSV imports list table', () => {
     await renderComponent(csvImportsListWithErrors);
 
     const expectedRows = [
-      ['Completed with errors', 'thesaurus.csv', 'Cases', '3/3', '0', '3', '4/7/2024, 1:20:00 PM'],
-      ['Completed with errors', 'persons.csv', 'Cases', '5/5', '3', '2', '4/7/2024, 1:20:00 PM'],
+      [
+        'Completed with errors',
+        'thesaurus.csv',
+        'Cases',
+        '3/3',
+        '0',
+        '0',
+        '3',
+        '4/7/2024, 1:20:00 PM',
+      ],
+      [
+        'Completed with errors',
+        'persons.csv',
+        'Cases',
+        '5/5',
+        '3',
+        '1',
+        '2',
+        '4/7/2024, 1:20:00 PM',
+      ],
     ];
 
     const rows = screen.getAllByRole('row').slice(1);
@@ -212,6 +230,7 @@ describe('CSV imports list table', () => {
         batchIndex: 4,
         batchCount: 6,
         entitiesCreatedInBatch: 10,
+        entitiesUpdatedInBatch: 0,
       });
     });
 

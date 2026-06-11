@@ -331,6 +331,31 @@ describe('MongoMultiLanguageEntityDataSource', () => {
     });
   });
 
+  describe('existsByIdAndTemplateId', () => {
+    it('should return true only when sharedId belongs to the given template', async () => {
+      const { sut } = createSut();
+
+      const templateId = new ObjectId().toString();
+      const otherTemplateId = new ObjectId().toString();
+      const template = createTemplateWithId(templateId);
+      const otherTemplate = createTemplateWithId(otherTemplateId);
+
+      const targetEntity = createEntity(['en'], template);
+      const otherEntity = createEntity(['en'], otherTemplate);
+      await sut.bulkInsert([targetEntity, otherEntity]);
+
+      await expect(sut.existsByIdAndTemplateId(targetEntity.sharedId, templateId)).resolves.toBe(
+        true
+      );
+      await expect(
+        sut.existsByIdAndTemplateId(targetEntity.sharedId, otherTemplateId)
+      ).resolves.toBe(false);
+      await expect(sut.existsByIdAndTemplateId('missing-shared-id', templateId)).resolves.toBe(
+        false
+      );
+    });
+  });
+
   describe('indexing on transaction commit', () => {
     let searchIndexSpy: jest.SpyInstance;
 

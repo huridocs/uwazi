@@ -50,6 +50,14 @@ export class MongoMultiLanguageEntityDataSource
     return Result.ok(entity);
   }
 
+  async existsByIdAndTemplateId(id: string, templateId: string): Promise<boolean> {
+    const entity = await this.getCollection().findOne(
+      { sharedId: id, template: new ObjectId(templateId) },
+      { projection: { _id: 1 } }
+    );
+    return Boolean(entity);
+  }
+
   async update(entity: Entity): Promise<void> {
     const dbos = MongoEntityMapper.toDBO(entity);
 
