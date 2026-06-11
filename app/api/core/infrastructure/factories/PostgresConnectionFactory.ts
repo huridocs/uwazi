@@ -4,51 +4,38 @@ import { PostgresConnectionConfig } from '../postgresql/common/PostgresTable.js'
 
 let defaultPool: pg.Pool | null = null;
 
-const poolOverrides = new Map<symbol, pg.Pool>();
-
-const configOverrides = new Map<symbol, PostgresConnectionConfig>();
-
-const defaultToken = Symbol('default-pool-override');
+let activeConfig: PostgresConnectionConfig | null = null;
 
 export class PostgresConnectionFactory {
+  static setConfig(cfg: PostgresConnectionConfig): void {
+    activeConfig = cfg;
+    defaultPool = null; // force re-creation with new config
+  }
+
+  static resetConfig(): void {
+    activeConfig = null;
+  }
+
   static default(): pg.Pool {
-    if (poolOverrides.size > 0) {
-      return Array.from(poolOverrides.values()).pop()!;
-    }
+    const cfg = activeConfig ?? config.postgres;
 
     if (!defaultPool) {
-      defaultPool = new pg.Pool({
-        host: config.postgres.host,
-        port: config.postgres.port,
-        database: config.postgres.database,
-        user: config.postgres.user,
-        password: config.postgres.password,
-      });
+      defaultPool = new pg.Pool(cfg);
     }
 
     return defaultPool;
   }
 
   static connectionConfig(): PostgresConnectionConfig {
-    if (configOverrides.size > 0) {
-      return Array.from(configOverrides.values()).pop()!;
-    }
-
-    return {
-      host: config.postgres.host,
-      port: config.postgres.port,
-      database: config.postgres.database,
-      user: config.postgres.user,
-      password: config.postgres.password,
-    };
-  }
-
-  static registerConfig(token: symbol, cfg: PostgresConnectionConfig): void {
-    configOverrides.set(token, cfg);
-  }
-
-  static unregisterConfig(token: symbol): void {
-    configOverrides.delete(token);
+    return (
+      activeConfig ?? {
+        host: config.postgres.host,
+        port: config.postgres.port,
+        database: config.postgres.database,
+        user: config.postgres.user,
+        password: config.postgres.password,
+      }
+    );
   }
 
   static async close(): Promise<void> {
@@ -56,21 +43,5 @@ export class PostgresConnectionFactory {
       await defaultPool.end();
       defaultPool = null;
     }
-  }
-
-  static registerPool(token: symbol, pool: pg.Pool): void {
-    poolOverrides.set(token, pool);
-  }
-
-  static unregisterPool(token: symbol): void {
-    poolOverrides.delete(token);
-  }
-
-  static usePool(pool: pg.Pool): void {
-    poolOverrides.set(defaultToken, pool);
-  }
-
-  static clearPool(): void {
-    poolOverrides.delete(defaultToken);
   }
 }

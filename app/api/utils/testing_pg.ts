@@ -90,8 +90,7 @@ const testingPG = {
 
     this.pool = pool;
 
-    PostgresConnectionFactory.registerPool(testPoolToken, pool);
-    PostgresConnectionFactory.registerConfig(testConfigToken, this.config);
+    PostgresConnectionFactory.setConfig(this.config);
 
     await pool.query(THESAURUS_SQL);
 
@@ -145,8 +144,7 @@ const testingPG = {
       await pool.end();
       pool = null;
       this.pool = null;
-      PostgresConnectionFactory.unregisterPool(testPoolToken);
-      PostgresConnectionFactory.unregisterConfig(testConfigToken);
+      PostgresConnectionFactory.resetConfig();
     }
 
     if (this.dbName) {

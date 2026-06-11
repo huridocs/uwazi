@@ -17,7 +17,7 @@ export class PostgresThesauriDataSource extends PostgresDataSource implements Th
     super({
       connection: deps.connection,
       tenantId: deps.tenantId,
-      sync: { syncDb: deps.mongoDb, syncNamespace: 'dictionaries' },
+      sync: { syncDb: deps.mongoDb, syncNamespace: 'dictionaries' }, // syncNamespace matches MongoDB collection name for updatelogs compatibility
     });
   }
 

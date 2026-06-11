@@ -37,17 +37,17 @@ export class PostgresThesauriSyncHandler
   async saveMultiple(documents: Partial<ThesaurusRow>[]): Promise<ThesaurusRow[]> {
     if (documents.length === 0) return [];
 
-    for (const doc of documents) {
-      //eslint-disable-next-line no-await-in-loop
-      await this.save(doc);
-    }
-
-    const ids = documents.map(doc => {
+    const rows = documents.map(doc => {
       const rawId = (doc as ThesaurusRow)._id;
       if (!rawId) throw new Error('PostgresThesauriSyncHandler: document._id is required');
-      return rawId.toString();
+      const id = rawId.toString();
+      const { _id: _ignored, ...rest } = doc as ThesaurusRow;
+      return { _id: id, ...rest } as Record<string, unknown>;
     });
 
+    await this.table.upsert(rows);
+
+    const ids = rows.map(row => row._id as string);
     return this.table.query<ThesaurusRow>().whereIn('_id', ids).all();
   }
 
