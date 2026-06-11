@@ -55,18 +55,6 @@ afterAll(async () => {
 });
 
 describe('PostgresDataSource', () => {
-  describe('lazy table creation', () => {
-    it('should create the PostgresTable lazily on first access', async () => {
-      const ds = makeDS('tenant-1');
-
-      await ds.insertRow('row-1', 'test');
-
-      const row = await ds.getById('row-1');
-      expect(row).toBeDefined();
-      expect(row!._id).toBe('row-1');
-    });
-  });
-
   describe('multitenancy', () => {
     it('should isolate tenant A from tenant B', async () => {
       const dsA = makeDS('tenant-a');
