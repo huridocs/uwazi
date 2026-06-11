@@ -45,20 +45,15 @@ class SyncedPostgresQueryBuilder<TRow> extends PostgresQueryBuilder<TRow> {
       .bulkWrite(ids.map(id => this.syncLogOp(id, deleted)));
   }
 
-  private async findIds(): Promise<string[]> {
-    const rows = (await this.qb.clone().select('_id')) as { _id: string }[];
-    return rows.map((r: { _id: string }) => r._id);
-  }
-
   override async update(changes: Record<string, unknown>): Promise<void> {
-    const ids = await this.findIds();
-    await super.update(changes);
+    const result = await this.qb.clone().returning(['_id']).update(changes);
+    const ids = (result as unknown as { _id: string }[]).map(r => r._id);
     await this.upsertSyncLogs(ids, false);
   }
 
   override async delete(): Promise<void> {
-    const ids = await this.findIds();
-    await super.delete();
+    const result = await this.qb.clone().returning(['_id']).del();
+    const ids = (result as unknown as { _id: string }[]).map(r => r._id);
     await this.upsertSyncLogs(ids, true);
   }
 }

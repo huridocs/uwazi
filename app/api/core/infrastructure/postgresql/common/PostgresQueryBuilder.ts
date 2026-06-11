@@ -78,6 +78,11 @@ export class PostgresQueryBuilder<TRow> {
     return this;
   }
 
+  returning(columns: string[]): this {
+    this.qb = this.qb.returning(columns);
+    return this;
+  }
+
   async first(): Promise<TRow | undefined> {
     return this.qb.first() as Promise<TRow | undefined>;
   }
