@@ -3,6 +3,7 @@ import { DomainError } from '#api/core/domain/error/DomainError.js';
 import { CsvImportRowError, RowErrorCode } from '../../domain/CsvImportRowError.js';
 import {
   CsvImportFileNotFoundError,
+  CsvImportEntityNotFoundInTemplateError,
   CsvImportPropertyValidationError,
   CsvImportRelationshipResolutionError,
   CsvImportRowEmptyError,
@@ -63,6 +64,25 @@ const mapRelationshipResolutionError = (input: BuildRowErrorInput) => {
     rawValue: selected?.token,
     details: {
       unresolved: toDetails(error.unresolved),
+    },
+  });
+};
+
+const mapEntityNotFoundInTemplateError = (input: BuildRowErrorInput) => {
+  const { importId, rowIndex, error } = input;
+  if (!(error instanceof CsvImportEntityNotFoundInTemplateError)) {
+    return undefined;
+  }
+
+  return CsvImportRowError.create({
+    importId,
+    rowIndex,
+    code: RowErrorCode.IdNotFoundInTemplate,
+    message: 'id not found in template',
+    property: 'id',
+    rawValue: error.sharedId,
+    details: {
+      templateId: error.templateId,
     },
   });
 };
@@ -159,6 +179,7 @@ const mapKnownError = (input: BuildRowErrorInput) => {
   const mappers = [
     mapFileNotFoundError,
     mapRelationshipResolutionError,
+    mapEntityNotFoundInTemplateError,
     mapEmptyRowError,
     mapPropertyValidationError,
     mapZodError,
