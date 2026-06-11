@@ -293,6 +293,19 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
 
     return Result.ok(this.toModel(dbo));
   }
+
+  async getByIds(ids: string[]): Promise<BaseFile[]> {
+    const objectIds = ids.map(id => new ObjectId(id));
+    const dbos = await this.getCollection()
+      .find({ _id: { $in: objectIds } }, { projection: { fullText: 0 } })
+      .toArray();
+    return dbos.map(dbo =>
+      this.toModel({
+        ...dbo,
+        mimetype: dbo.mimetype || 'application/octet-stream',
+      })
+    );
+  }
 }
 
 export type { MongoFilesDataSourceOptions };

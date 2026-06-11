@@ -38,5 +38,6 @@ interface FilesDataSource {
     allowedTypes?: FileType[]
   ): Promise<ResultType<BaseFile, FileNotFound>>;
   getById(id: string): Promise<ResultType<BaseFile, FileNotFound>>;
+  getByIds(ids: string[]): Promise<BaseFile[]>;
 }
 export type { FilesDataSource, GetDocumentsForEntityOptions };
