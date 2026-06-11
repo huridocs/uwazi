@@ -33,6 +33,7 @@ type RowErrorCode =
   | 'THESAURUS_VALUE_NOT_FOUND'
   | 'RELATIONSHIP_NOT_FOUND'
   | 'RELATIONSHIP_AMBIGUOUS'
+  | 'ID_NOT_FOUND_IN_TEMPLATE'
   | 'FILE_NOT_FOUND'
   | 'FILE_INVALID_REFERENCE'
   | 'INTERNAL_ERROR';
@@ -61,6 +62,7 @@ type CsvImportStats = {
   relationshipValuesObserved?: number;
   relationshipValuesCreated?: number;
   entitiesCreated?: number;
+  entitiesUpdated?: number;
   rowsProcessed?: number;
   rowsFailed?: number;
 };

@@ -1,124 +1,21 @@
-import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
-import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
-import { EntitiesService } from '#api/core/application/EntitiesService.js';
-import { FilesService } from '#api/core/application/FilesService.js';
-import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
-import { Entity } from '#api/core/domain/entity/Entity.js';
-import { Template } from '#api/core/domain/template/Template.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { CsvImport, CsvImportDomain } from '../../domain/CsvImport.js';
 import { CsvImportRow } from '../../domain/CsvImportRow.js';
-import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource.js';
-import { CsvImportRowErrorsDataSource } from '../contracts/CsvImportRowErrorsDataSource.js';
-import { AppliedValueIndex, CsvEntitiesImportMapper } from '../services/CsvEntitiesImportMapper.js';
-import { CsvHeaderAnalyzer } from '../services/CsvHeaderAnalyzer.js';
-import { CsvImportRowFilesResolver } from '../services/CsvImportRowFilesResolver.js';
-import { CsvImportRowEmptyError } from '../services/CsvImportRowProcessingError.js';
-import { createPropertyAssignments, isEmptyRow } from './CsvImportEntitiesPropertyAssignments.js';
+import {
+  createEntityForImportRow,
+  updateEntityForImportRow,
+} from './CsvImportEntitiesRowPersistence.js';
+import { getRowValueByHeader, prepareRowImport } from './CsvImportEntitiesRowPreparation.js';
+import { BatchContext, BatchDeps, InsertContext } from './CsvImportEntitiesBatchTypes.js';
 import {
   createRowProcessingState,
   trackFailedRow,
   trackImportedRow,
+  trackUpdatedRow,
 } from './CsvImportEntitiesBatchRowState.js';
 
-type BatchContext = {
-  csvImport: CsvImport;
-  template: Template;
-  languages: LanguageISO6391[];
-  defaultLanguage: LanguageISO6391;
-  dateFormat?: string;
-  thesaurusIndex: AppliedValueIndex;
-  relationshipIndex: Awaited<ReturnType<CsvEntitiesImportMapper['buildRelationshipValuesIndex']>>;
-  sanitizedHeaders: string[];
-  headerAnalysis: ReturnType<typeof CsvHeaderAnalyzer.analyze>;
-};
-
-type BatchDeps = {
-  entitiesService: EntitiesService;
-  csvImportsDS: CsvImportsDataSource;
-  rowErrorsDS: CsvImportRowErrorsDataSource;
-  transactionManager: TransactionManager;
-  propertyAssignmentCreatorServiceStrategy: PropertyAssignmentCreatorServiceStrategy;
-  filesService: FilesService;
-  fileStorage: FileStorage;
-  idGenerator: IdGenerator;
-};
-
-type InsertContext = {
-  tenantName: string;
-  actorId: string;
-  targetLanguage: LanguageISO6391;
-};
-
 type RowState = ReturnType<typeof createRowProcessingState>;
-type RowFiles = Awaited<ReturnType<typeof CsvImportRowFilesResolver.resolve>>;
 
-const buildEntityFromRow = (context: BatchContext) =>
-  Entity.create({
-    languages: context.languages,
-    template: context.template,
-    userId: context.csvImport.createdBy,
-  });
-
-const createAttachmentLookup = (files: RowFiles) => (filename: string) => {
-  const normalized = filename?.trim();
-  if (!normalized || !files.attachmentFilenameByOriginalName.has(normalized)) {
-    return undefined;
-  }
-  const index = files.attachments.findIndex(
-    attachment => attachment.metadata.originalname === normalized
-  );
-  return index >= 0 ? index : undefined;
-};
-
-const prepareRowImport = async (params: {
-  deps: BatchDeps;
-  context: BatchContext;
-  rowValues: string[];
-}) => {
-  if (isEmptyRow(params.rowValues)) {
-    throw new CsvImportRowEmptyError();
-  }
-
-  const files = await CsvImportRowFilesResolver.resolve({
-    importId: params.context.csvImport.id,
-    rowValues: params.rowValues,
-    sanitizedHeaders: params.context.sanitizedHeaders,
-    headerAnalysis: params.context.headerAnalysis,
-    fileStorage: params.deps.fileStorage,
-  });
-
-  const assignments = CsvEntitiesImportMapper.buildPropertyAssignments({
-    template: params.context.template,
-    headerAnalysis: params.context.headerAnalysis,
-    sanitizedHeaders: params.context.sanitizedHeaders,
-    rowValues: params.rowValues,
-    thesaurusIndex: params.context.thesaurusIndex,
-    relationshipIndex: params.context.relationshipIndex,
-    languages: params.context.languages,
-    defaultLanguage: params.context.defaultLanguage,
-    dateFormat: params.context.dateFormat,
-    attachmentLookup: createAttachmentLookup(files),
-  });
-
-  const propertyAssignments = await createPropertyAssignments({
-    propertyAssignmentCreatorServiceStrategy: params.deps.propertyAssignmentCreatorServiceStrategy,
-    template: params.context.template,
-    assignments,
-    sanitizedHeaders: params.context.sanitizedHeaders,
-    rowValues: params.rowValues,
-    attachments: files.attachments,
-  });
-
-  const entity = buildEntityFromRow(params.context);
-  entity.setPropertyAssignmentsInAllLanguages(propertyAssignments, false);
-  const entityFiles = [...files.documents, ...files.attachments].map(inputFile =>
-    inputFile.toEntityFile(entity.sharedId, params.deps.idGenerator.generate())
-  );
-  await params.deps.filesService.storeFiles(entityFiles);
-  return { entity, entityFiles };
-};
+const ID_COLUMN = 'id';
 
 const buildRowProgress = (params: {
   totalRows: number;
@@ -132,6 +29,67 @@ const buildRowProgress = (params: {
   lastProcessedRow: params.offset + params.rowOffset,
   batchSize: params.batchSize,
 });
+
+const processPreparedRow = async (params: {
+  deps: BatchDeps;
+  context: BatchContext;
+  insertContext: InsertContext;
+  state: RowState;
+  updatedImport: CsvImport;
+  rowId?: string;
+  prepared: Awaited<ReturnType<typeof prepareRowImport>>;
+}) => {
+  if (params.rowId) {
+    await updateEntityForImportRow({
+      deps: params.deps,
+      context: params.context,
+      rowId: params.rowId,
+      propertyAssignments: params.prepared.propertyAssignments,
+      files: params.prepared.files,
+      insertContext: {
+        actorId: params.insertContext.actorId,
+        targetLanguage: params.insertContext.targetLanguage,
+      },
+      updatedImport: params.updatedImport,
+    });
+    return { state: trackUpdatedRow(params.state), currentImport: params.updatedImport };
+  }
+
+  await createEntityForImportRow({
+    deps: params.deps,
+    context: params.context,
+    propertyAssignments: params.prepared.propertyAssignments,
+    files: params.prepared.files,
+    insertContext: params.insertContext,
+    updatedImport: params.updatedImport,
+  });
+
+  return { state: trackImportedRow(params.state), currentImport: params.updatedImport };
+};
+
+const processFailedRow = async (params: {
+  deps: BatchDeps;
+  context: BatchContext;
+  row: CsvImportRow;
+  state: RowState;
+  updatedImport: CsvImport;
+  error: unknown;
+}) => {
+  const failedState = trackFailedRow({
+    state: params.state,
+    csvImport: params.context.csvImport,
+    row: params.row,
+    error: params.error,
+  });
+  const rowError = failedState.errors[failedState.errors.length - 1];
+
+  await params.deps.transactionManager.run(async () => {
+    await params.deps.csvImportsDS.update(params.updatedImport);
+    await params.deps.rowErrorsDS.insertMany(rowError ? [rowError] : []);
+  });
+
+  return { state: failedState, currentImport: params.updatedImport };
+};
 
 const processSingleBatchRow = async (params: {
   deps: BatchDeps;
@@ -152,34 +110,45 @@ const processSingleBatchRow = async (params: {
   );
 
   try {
-    const { entity, entityFiles } = await prepareRowImport({
+    const prepared = await prepareRowImport({
+      importId: params.context.csvImport.id,
+      rowValues: params.row.values,
+      sanitizedHeaders: params.context.sanitizedHeaders,
+      headerAnalysis: params.context.headerAnalysis,
+      template: params.context.template,
+      thesaurusIndex: params.context.thesaurusIndex,
+      relationshipIndex: params.context.relationshipIndex,
+      languages: params.context.languages,
+      defaultLanguage: params.context.defaultLanguage,
+      dateFormat: params.context.dateFormat,
+      fileStorage: params.deps.fileStorage,
+      propertyAssignmentCreatorServiceStrategy:
+        params.deps.propertyAssignmentCreatorServiceStrategy,
+    });
+
+    const rowId = getRowValueByHeader(
+      params.row.values,
+      params.context.sanitizedHeaders,
+      ID_COLUMN
+    );
+    return await processPreparedRow({
       deps: params.deps,
       context: params.context,
-      rowValues: params.row.values,
-    });
-
-    await params.deps.transactionManager.run(async () => {
-      await params.deps.entitiesService.insert(entity, params.insertContext);
-      await params.deps.filesService.insert(entityFiles);
-      await params.deps.csvImportsDS.update(updatedImport);
-    });
-
-    return { state: trackImportedRow(params.state), currentImport: updatedImport };
-  } catch (error) {
-    const failedState = trackFailedRow({
+      insertContext: params.insertContext,
       state: params.state,
-      csvImport: params.context.csvImport,
+      updatedImport,
+      rowId,
+      prepared,
+    });
+  } catch (error) {
+    return processFailedRow({
+      deps: params.deps,
+      context: params.context,
       row: params.row,
       error,
+      state: params.state,
+      updatedImport,
     });
-    const rowError = failedState.errors[failedState.errors.length - 1];
-
-    await params.deps.transactionManager.run(async () => {
-      await params.deps.csvImportsDS.update(updatedImport);
-      await params.deps.rowErrorsDS.insertMany(rowError ? [rowError] : []);
-    });
-
-    return { state: failedState, currentImport: updatedImport };
   }
 };
 
@@ -222,6 +191,7 @@ const processImportBatch = async (params: {
   const { state, currentImport } = await processBatchRows(params);
   return {
     entitiesCreated: state.created,
+    entitiesUpdated: state.updated,
     processedRows: params.processedRows + params.rows.length,
     csvImport: currentImport,
     rowErrorsCount: state.errors.length,
