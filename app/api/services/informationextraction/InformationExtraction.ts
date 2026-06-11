@@ -4,6 +4,7 @@
 import urljoin from 'url-join';
 import { ObjectId } from 'mongodb';
 
+import moment from 'moment';
 import { storage } from '#api/files/index.js';
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -18,7 +19,7 @@ import settings from '#api/settings/settings.js';
 import request from '#shared/JSONRequest.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import {
-  ExtractedMetadataSchema,
+  PropertySelectionSchema,
   LanguageISO6391,
   ObjectIdSchema,
   PropertySchema,
@@ -31,14 +32,13 @@ import {
   FileWithAggregation,
   getEntitiesForSuggestions,
   getFilesForSuggestions,
-  propertyTypeIsWithoutExtractedMetadata,
+  propertyTypeIsWithoutPropertySelections,
 } from '#api/services/informationextraction/ixMaterials.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
 import { ParagraphSchema } from '#shared/types/segmentationType.js';
-import moment from 'moment';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { retryWithBackoff, descriptiveError } from '#api/utils/retryWithBackoff.js';
@@ -78,7 +78,6 @@ interface TaskMessage {
 
 type ResultParameters = TaskParameters;
 
-/* eslint-disable camelcase */
 interface ResultMessage<P = ResultParameters> {
   tenant: string;
   task: TaskTypes;
@@ -88,7 +87,6 @@ interface ResultMessage<P = ResultParameters> {
   success?: boolean;
   error_message?: string;
 }
-/* eslint-enable camelcase */
 
 interface InternalResultParameters {
   id: ObjectId;
@@ -273,7 +271,7 @@ class InformationExtraction {
 
   // eslint-disable-next-line max-params
   extendMaterialsWithLabeledData = (
-    propertyLabeledData: ExtractedMetadataSchema | undefined,
+    propertyLabeledData: PropertySelectionSchema | undefined,
     propertyValue: FileWithAggregation['propertyValue'],
     propertyType: FileWithAggregation['propertyType'],
     file: FileWithAggregation,
@@ -284,9 +282,9 @@ class InformationExtraction {
 
     let data: MaterialsData = { ..._data, language_iso: languageIso };
 
-    const noExtractedData = propertyTypeIsWithoutExtractedMetadata(propertyType);
+    const noPropertySelectionsData = propertyTypeIsWithoutPropertySelections(propertyType);
 
-    if (!noExtractedData && propertyLabeledData) {
+    if (!noPropertySelectionsData && propertyLabeledData) {
       data = {
         ...data,
         label_text: propertyValue || propertyLabeledData?.selection?.text,
@@ -297,7 +295,7 @@ class InformationExtraction {
       };
     }
 
-    if (noExtractedData) {
+    if (noPropertySelectionsData) {
       if (!Array.isArray(propertyValue)) {
         throw new Error('Property value should be an array');
       }
@@ -327,12 +325,12 @@ class InformationExtraction {
         const xmlName = file.segmentation.xmlname!;
         const xmlExists = await storage.fileExists(xmlName, 'segmentation');
 
-        const propertyLabeledData = file.extractedMetadata?.find(
+        const propertyLabeledData = file.propertySelections?.find(
           labeledData => labeledData.name === extractor.property
         );
         const { propertyValue, propertyType } = file;
 
-        const missingData = propertyTypeIsWithoutExtractedMetadata(propertyType)
+        const missingData = propertyTypeIsWithoutPropertySelections(propertyType)
           ? !propertyValue
           : type === 'labeled_data' && !propertyLabeledData;
 
@@ -835,7 +833,6 @@ class InformationExtraction {
     await this.sendMaterialsAndTaskSuggestions(extractor, model);
   };
 
-  // eslint-disable-next-line max-params
   trainModel = async (
     extractorId: ObjectIdSchema,
     suggestionsToFind?: number,

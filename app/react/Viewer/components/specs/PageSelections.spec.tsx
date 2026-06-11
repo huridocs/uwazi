@@ -4,7 +4,7 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { RenderResult } from '@testing-library/react';
-import { ExtractedMetadataSchema } from '#shared/types/commonTypes.js';
+import { PropertySelectionSchema } from '#shared/types/commonTypes.js';
 import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 import { ClientEntitySchema, ClientFile } from '#app/istore.js';
 import { PageSelections } from '../PageSelections.js';
@@ -17,7 +17,7 @@ const defaultEntityDocument: ClientFile = {
   entity: 'bc3prdymqj',
   filename: '1660234717101q3vq1v0vo7h.pdf',
   language: 'eng',
-  extractedMetadata: [
+  propertySelections: [
     {
       propertyID: '62f290a54dd69a2472936453',
       name: 'my_property',
@@ -60,7 +60,7 @@ describe('Page selections highlights', () => {
     _id: '62f52bdcc6897a159347cf59',
   };
   let file: any | ClientFile;
-  let selections: ExtractedMetadataSchema[];
+  let selections: PropertySelectionSchema[];
   beforeEach(() => {
     file = defaultEntityDocument;
     selections = [];

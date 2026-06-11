@@ -161,7 +161,7 @@ describe('files routes', () => {
           .post('/api/files')
           .send({
             ...original,
-            extractedMetadata: [
+            propertySelections: [
               {
                 name: 'propertyName',
                 selection: {

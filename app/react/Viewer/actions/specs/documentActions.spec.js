@@ -314,13 +314,13 @@ describe('documentActions', () => {
     describe('saveDocument', () => {
       it('should save the document (omitting fullText) and dispatch a notification on success', done => {
         const defaultDocument = { _id: 'file1', originalName: 'File 1' };
-        const docWithExtractedMetadata = {
+        const docWithPropertySelections = {
           ...defaultDocument,
-          extractedMetadata: { title: 'Title' },
+          propertySelections: { title: 'Title' },
         };
         spyOn(libraryActions, 'saveEntityWithFiles').and.returnValue(
           Promise.resolve({
-            entity: { sharedId: 'responseId', documents: [docWithExtractedMetadata] },
+            entity: { sharedId: 'responseId', documents: [docWithPropertySelections] },
           })
         );
         spyOn(relationshipActions, 'reloadRelationships').and.returnValue({
@@ -352,8 +352,8 @@ describe('documentActions', () => {
             type: 'viewer/doc/UPDATE',
             value: {
               sharedId: 'responseId',
-              defaultDoc: docWithExtractedMetadata,
-              documents: [docWithExtractedMetadata],
+              defaultDoc: docWithPropertySelections,
+              documents: [docWithPropertySelections],
             },
           },
           { type: 'reloadRelationships' },
@@ -370,7 +370,7 @@ describe('documentActions', () => {
           .then(() => {
             expect(libraryActions.saveEntityWithFiles).toHaveBeenCalledWith(
               {
-                __extractedMetadata: { fileID: 'file1' },
+                propertySelections: { fileID: 'file1' },
                 attachments: [{ _id: '1', originalname: 'supportingFile' }],
                 name: 'doc',
               },

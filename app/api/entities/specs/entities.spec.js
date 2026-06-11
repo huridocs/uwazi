@@ -1,5 +1,4 @@
-/* eslint-disable max-lines */
-/* eslint-disable max-nested-callbacks,max-statements */
+/* eslint-disable max-statements */
 
 import Ajv from 'ajv';
 // eslint-disable-next-line node/no-restricted-import
@@ -22,14 +21,6 @@ import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import entities from '../entities.js';
 
-const saveEntity = (doc, options, ...rest) =>
-  testingEnvironment.runWithContext(() => entities.save(doc, options, ...rest));
-
-const denormalizeEntity = (entity, options) =>
-  testingEnvironment.runWithContext(() => entities.denormalize(entity, options));
-
-const multipleUpdate = (sharedIds, changes, options) =>
-  testingEnvironment.runWithContext(() => entities.multipleUpdate(sharedIds, changes, options));
 import { EntityCreatedEvent } from '../events/EntityCreatedEvent.js';
 import { EntityDeletedEvent } from '../events/EntityDeletedEvent.js';
 import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent.js';
@@ -47,6 +38,12 @@ import fixtures, {
   uploadId1,
   uploadId2,
 } from './fixtures.js';
+
+const saveEntity = (doc, options, ...rest) =>
+  testingEnvironment.runWithContext(() => entities.save(doc, options, ...rest));
+
+const denormalizeEntity = (entity, options) =>
+  testingEnvironment.runWithContext(() => entities.denormalize(entity, options));
 
 describe('entities', () => {
   const userFactory = new UserInContextMockFactory();
@@ -1144,249 +1141,6 @@ describe('entities', () => {
       expect(docs[3].title).toBe('Batman finishes');
     });
   });
-
-  describe('multipleUpdate()', () => {
-    it('should save() all the entities with the new metadata', async () => {
-      const metadata = {
-        property1: [{ value: 'new text' }],
-        description: [{ value: 'yeah!' }],
-        friends: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
-      };
-
-      const updatedEntities = await multipleUpdate(
-        ['shared', 'shared1', 'non_existent'],
-        { icon: { label: 'test' }, published: false, metadata },
-        { language: 'en' }
-      );
-
-      expect(updatedEntities.length).toBe(2);
-
-      const sharedEntity = updatedEntities.find(e => e.sharedId === 'shared');
-      expect(sharedEntity).toEqual(
-        expect.objectContaining({
-          sharedId: 'shared',
-          language: 'en',
-          icon: { label: 'test' },
-          published: true,
-          metadata: expect.objectContaining(metadata),
-        })
-      );
-
-      const shared1Entity = updatedEntities.find(e => e.sharedId === 'shared1');
-      expect(shared1Entity).toEqual(
-        expect.objectContaining({
-          sharedId: 'shared1',
-          language: 'en',
-          icon: { label: 'test' },
-          published: true,
-          metadata: expect.objectContaining(metadata),
-        })
-      );
-    });
-
-    it('should save() all the entities with the diffMetadata', async () => {
-      const updatedEntities1 = await multipleUpdate(
-        ['shared', 'other', 'non_existent'],
-        {
-          icon: { label: 'test' },
-          published: false,
-          diffMetadata: {
-            multiselect: {
-              added: [{ value: 'country_one' }],
-              removed: [{ value: 'country_two' }],
-            },
-          },
-        },
-        { language: 'en' }
-      );
-
-      const updatedEntities2 = await multipleUpdate(
-        ['shared'],
-        {
-          diffMetadata: {
-            multiselect: {
-              added: [{ value: 'country_two' }],
-              removed: [{ value: 'country_one' }],
-            },
-          },
-        },
-        { language: 'en' }
-      );
-
-      expect(updatedEntities1.length).toBe(2);
-      expect(updatedEntities2.length).toBe(1);
-
-      const sharedEntity = updatedEntities2.find(e => e.sharedId === 'shared');
-      expect(sharedEntity).toEqual(
-        expect.objectContaining({
-          sharedId: 'shared',
-          language: 'en',
-          icon: { label: 'test' },
-          published: true,
-          metadata: expect.objectContaining({
-            multiselect: [
-              {
-                label: 'Country2',
-                value: 'country_two',
-              },
-            ],
-          }),
-        })
-      );
-
-      const shared1Entity = updatedEntities1.find(e => e.sharedId === 'other');
-      expect(shared1Entity).toEqual(
-        expect.objectContaining({
-          sharedId: 'other',
-          language: 'en',
-          icon: { label: 'test' },
-          published: false,
-          metadata: expect.objectContaining({
-            multiselect: [
-              {
-                label: 'Country1',
-                value: 'country_one',
-              },
-            ],
-          }),
-        })
-      );
-    });
-
-    it('should return error if user does not have write permissions over entities', async () => {
-      userFactory.mock({
-        _id: 'user1',
-        role: 'collaborator',
-        groups: [],
-      });
-      try {
-        await multipleUpdate(
-          ['shared1', 'other'],
-          {
-            published: false,
-          },
-          { language: 'en' }
-        );
-        fail('Should throw error');
-      } catch (e) {
-        expect(e.message).toContain('permissions');
-      }
-    });
-
-    it('should update entities if user has permissions on them', async () => {
-      userFactory.mock({
-        _id: 'user2',
-        role: 'collaborator',
-        groups: [{ _id: 'group1' }],
-      });
-
-      const updated = await multipleUpdate(
-        ['shared1', 'other'],
-        {
-          title: 'test title',
-        },
-        { language: 'en' }
-      );
-
-      expect(updated.find(e => e.title !== 'test title')).toBeUndefined();
-    });
-
-    it('should be able to change template', async () => {
-      const templateA = fixtureFactory.template('templateA', [
-        fixtureFactory.property('textA', 'text'),
-      ]);
-      const templateB = fixtureFactory.template('templateB', [
-        fixtureFactory.property('textB', 'text'),
-        fixtureFactory.property('numericB', 'numeric'),
-      ]);
-
-      const entitiesA = fixtureFactory.entityInMultipleLanguages(
-        ['es', 'pt', 'en'],
-        'entityA',
-        templateA.name,
-        { textA: [{ value: 'any_text_1' }] }
-      );
-
-      const entitiesB = fixtureFactory.entityInMultipleLanguages(
-        ['es', 'pt', 'en'],
-        'entityB',
-        templateA.name,
-        { textA: [{ value: 'any_text_2' }] }
-      );
-
-      await testingEnvironment.setUp({
-        ...fixtures,
-        entities: [...entitiesA, ...entitiesB],
-        templates: [templateA, templateB],
-      });
-
-      const newMetadata = {
-        textB: [{ value: 'any_value_b' }],
-        numericB: [{ value: 2 }],
-      };
-      await multipleUpdate(
-        [entitiesA[0].sharedId, entitiesB[0].sharedId],
-        {
-          template: templateB._id.toString(),
-          metadata: newMetadata,
-        },
-        { language: 'en' }
-      );
-
-      const changedEntities = await testingEnvironment.db.getAllFrom('entities');
-      const newEntitiesA = changedEntities.filter(e => e.sharedId === 'entityA');
-      const newEntitiesB = changedEntities.filter(e => e.sharedId === 'entityB');
-
-      expect(newEntitiesA).toMatchObject([
-        {
-          sharedId: 'entityA',
-          title: 'entityA',
-          template: templateB._id,
-          metadata: newMetadata,
-          language: 'es',
-        },
-        {
-          sharedId: 'entityA',
-          title: 'entityA',
-          template: templateB._id,
-          metadata: newMetadata,
-          language: 'pt',
-        },
-        {
-          sharedId: 'entityA',
-          title: 'entityA',
-          template: templateB._id,
-          metadata: newMetadata,
-          language: 'en',
-        },
-      ]);
-
-      expect(newEntitiesB).toMatchObject([
-        {
-          sharedId: 'entityB',
-          title: 'entityB',
-          template: templateB._id,
-          metadata: newMetadata,
-          language: 'es',
-        },
-        {
-          sharedId: 'entityB',
-          title: 'entityB',
-          template: templateB._id,
-          metadata: newMetadata,
-          language: 'pt',
-        },
-        {
-          sharedId: 'entityB',
-          title: 'entityB',
-          template: templateB._id,
-          metadata: newMetadata,
-          language: 'en',
-        },
-      ]);
-    });
-  });
-
   describe('removeValuesFromEntities', () => {
     it('should remove values of properties passed on all entities having that property', async () => {
       await entities.removeValuesFromEntities(['multiselect'], templateWithEntityAsThesauri);

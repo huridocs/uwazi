@@ -4,14 +4,11 @@
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import * as filesystem from '#api/files/index.js';
 import { PDF, files } from '#api/files/index.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import relationships from '#api/relationships/relationships.js';
 import { search } from '#api/search/index.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
 import date from '#api/utils/date.js';
-import { unique } from '#api/utils/filters.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
-import { AccessLevels } from '#shared/types/permissionSchema.js';
 import ID from '#shared/uniqueID.js';
 
 import { ATSolveVersionConflict } from '#api/externalIntegrations.v2/automaticTranslation/utils/ATSolveVersionConflict.js';
@@ -21,7 +18,7 @@ import model from './entitiesModel.js';
 import { EntityCreatedEvent } from './events/EntityCreatedEvent.js';
 import { EntityDeletedEvent } from './events/EntityDeletedEvent.js';
 import { EntityUpdatedEvent } from './events/EntityUpdatedEvent.js';
-import { saveSelections } from './metadataExtraction/saveSelections.js';
+import { savePropertySelections } from './metadataExtraction/saveSelections.js';
 import {
   deleteRelatedNewRelationships,
   denormalizeAfterEntityCreation,
@@ -30,7 +27,6 @@ import {
   updateNewRelationships,
 } from './v2_support.js';
 import { validateEntity } from './validateEntity.js';
-import { MetadataUtils } from './MetadataUtils.js';
 
 const FIELD_TYPES_TO_SYNC = [
   propertyTypes.select,
@@ -285,50 +281,6 @@ function sanitize(doc, template) {
   return Object.assign(doc, { metadata });
 }
 
-function updateMetadataWithDiff(metadata, diffMetadata) {
-  if (!diffMetadata) {
-    return metadata;
-  }
-  const newMetadata = { ...metadata };
-  Object.keys(diffMetadata).forEach(p => {
-    const dm = diffMetadata[p];
-    const toAdd = dm.added || [];
-    const toRemove = dm.removed || [];
-    if (!dm || toAdd.length + toRemove.length === 0) {
-      return;
-    }
-    if (!newMetadata[p] || !newMetadata[p].length) {
-      newMetadata[p] = toAdd;
-      return;
-    }
-    newMetadata[p] = [
-      ...newMetadata[p].filter(v => !toRemove.map(vr => vr.value).includes(v.value)),
-      ...toAdd.filter(va => !newMetadata[p].map(v => v.value).includes(va.value)),
-    ];
-  });
-  return newMetadata;
-}
-
-const validateWritePermissions = (ids, entitiesToUpdate) => {
-  const user = permissionsContext.getUserInContext();
-  if (!['admin', 'editor'].includes(user.role)) {
-    const userIds = user.groups.map(g => g._id.toString());
-    userIds.push(user._id.toString());
-
-    const allowedEntitiesToUpdate = entitiesToUpdate.filter(e => {
-      const writeGranted = (e.permissions || [])
-        .filter(p => p.level === AccessLevels.WRITE)
-        .map(p => p.refId)
-        .filter(id => userIds.includes(id));
-      return writeGranted.length > 0;
-    });
-    const uniqueIdsLength = allowedEntitiesToUpdate.map(e => e.sharedId).filter(unique).length;
-    if (uniqueIdsLength !== ids.length) {
-      throw Error('Have not permissions granted to update the requested entities');
-    }
-  }
-};
-
 const withDocuments = async (entities, documentsFullText) => {
   const sharedIds = entities.map(entity => entity.sharedId);
   const allFiles = await files.get(
@@ -380,7 +332,7 @@ export default {
     const { updateRelationships = true, index = true, includeDocuments = true } = options;
 
     await validateEntity(_doc);
-    await saveSelections(_doc);
+    await savePropertySelections(_doc);
     const doc = _doc;
 
     if (!doc.sharedId) {
@@ -507,52 +459,6 @@ export default {
     return doc;
   },
 
-  async multipleUpdate(ids, values, params) {
-    const { diffMetadata = {}, ...pureValues } = values;
-    const entitiesToUpdate = await this.getUnrestricted({ sharedId: { $in: ids } }, '+permissions');
-
-    const templateChanged = !!values.template;
-    let newTemplate;
-    if (templateChanged) {
-      newTemplate = await templates.getById(values.template);
-    }
-
-    validateWritePermissions(ids, entitiesToUpdate);
-    await Promise.all(
-      ids.map(async id => {
-        const entity = entitiesToUpdate.find(
-          e => e.sharedId === id && e.language === params.language
-        );
-
-        if (entity) {
-          let metadata = updateMetadataWithDiff(
-            { ...entity.metadata, ...pureValues.metadata },
-            diffMetadata
-          );
-
-          if (templateChanged) {
-            metadata = MetadataUtils.sanitize({ metadata, template: newTemplate });
-          }
-
-          await this.save(
-            {
-              ...entity,
-              ...pureValues,
-              metadata,
-              permissions: entity.permissions || [],
-            },
-            params,
-            true,
-            false
-          );
-        }
-      })
-    );
-
-    await search.indexEntities({ sharedId: { $in: ids } });
-    return this.get({ sharedId: { $in: ids }, language: params.language });
-  },
-
   async getAllLanguages(sharedId, options = {}) {
     const entities = await model.get({ sharedId }, null, options);
     return entities;
@@ -631,6 +537,10 @@ export default {
     );
   },
 
+  /**
+   * @deprecated
+   * This method is deprecated and should not be used anymore.
+   */
   async delete(sharedId, deleteIndex = true) {
     const docs = await this.get({ sharedId });
     if (!docs.length) {

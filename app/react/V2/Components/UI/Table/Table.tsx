@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -24,7 +24,10 @@ import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Translate } from '#app/I18N/index.js';
 import { DraggableRow, RowDragHandleCell, DnDHeader } from './DnDComponents.js';
-import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSelectComponents.js';
+import {
+  IndeterminateCheckboxHeaderCell,
+  IndeterminateCheckboxRow,
+} from './RowSelectComponents.js';
 import { dndSortHandler, getRowIds } from './helpers.js';
 import { SortingChevrons } from './SortingChevrons.js';
 import { GroupCell, GroupHeader } from './GroupComponents.js';
@@ -56,6 +59,10 @@ type TableProps<T extends TableRow<T>> = {
   containerClassName?: string;
   groupColumnPosition?: number;
   manualSorting?: boolean;
+  focusedRowId?: string;
+  focusedRowClassName?: string;
+  getRowClassName?: (row: T) => string;
+  selectAllCheckboxId?: string;
 };
 
 const Table = <T extends TableRow<T>>({
@@ -75,14 +82,31 @@ const Table = <T extends TableRow<T>>({
   groupColumnPosition = 0,
   initialSelection = [],
   manualSorting,
+  focusedRowId,
+  focusedRowClassName = 'bg-(--color-theme-surface-muted)',
+  getRowClassName,
+  selectAllCheckboxId = 'checkbox-header',
 }: TableProps<T>) => {
   const [dataState, setDataState] = useState(data);
+  const externalSelectionKey = initialSelection
+    .map(item => item.rowId)
+    .sort()
+    .join(',');
   const initialRowSelection = useMemo(
     () => initialSelection.reduce((acc, item) => ({ ...acc, [item.rowId]: true }), {}),
-    [initialSelection]
+    [externalSelectionKey]
   );
   const [rowSelection, setRowSelection] = useState<RowSelectionState>(initialRowSelection);
   const [sorting, setSorting] = useState<SortingState>(defaultSorting || []);
+
+  const selectionStateKey = useCallback(
+    (state: RowSelectionState) =>
+      Object.keys(state)
+        .filter(id => state[id])
+        .sort()
+        .join(','),
+    []
+  );
 
   const rowIds = useMemo(() => getRowIds(dataState), [dataState]);
   const { memoizedColumns, groupColumnIndex } = useMemo<{
@@ -107,9 +131,9 @@ const Table = <T extends TableRow<T>>({
       calculatedIndex += 1;
       tableColumns.unshift({
         id: 'select',
-        header: IndeterminateCheckboxHeader,
+        header: IndeterminateCheckboxHeaderCell,
         cell: IndeterminateCheckboxRow,
-        meta: { headerClassName: 'w-0' },
+        meta: { headerClassName: 'w-0', selectAllCheckboxId },
       });
     }
     if (dnd?.enable) {
@@ -122,7 +146,7 @@ const Table = <T extends TableRow<T>>({
       });
     }
     return { memoizedColumns: tableColumns, groupColumnIndex: calculatedIndex };
-  }, [columns, data, enableSelections, dnd]);
+  }, [columns, data, enableSelections, dnd, selectAllCheckboxId]);
 
   const table = useReactTable({
     data: dataState,
@@ -146,8 +170,13 @@ const Table = <T extends TableRow<T>>({
 
   useEffect(() => {
     setDataState(data);
-    setRowSelection(initialRowSelection);
-  }, [data]);
+    setRowSelection(prev => {
+      if (selectionStateKey(prev) === selectionStateKey(initialRowSelection)) {
+        return prev;
+      }
+      return initialRowSelection;
+    });
+  }, [data, externalSelectionKey, initialRowSelection, selectionStateKey]);
 
   useEffect(() => {
     if (onSelect) {
@@ -233,29 +262,31 @@ const Table = <T extends TableRow<T>>({
           boxShadow: 'var(--color-theme-card-shadow)',
         }}
       >
-        <div
-          data-testid="table-header"
-          className="flex items-center justify-between gap-4 p-4"
-          style={{
-            backgroundColor: 'var(--color-theme-surface-raised)',
-            color: 'var(--color-theme-text-primary)',
-          }}
-        >
-          {header && <div className="grow">{header}</div>}
-          <div className="flex gap-2">
-            {hasGroups && (
-              <>
-                <Button disabled={!canCollapse} variant="ghost" onClick={collapseAll}>
-                  <Translate>Collapse all</Translate>
-                </Button>
-                <Button disabled={!canExpand} variant="ghost" onClick={expandAll}>
-                  <Translate>Expand all</Translate>
-                </Button>
-              </>
-            )}
-            {actions}
+        {(header || actions || hasGroups) && (
+          <div
+            data-testid="table-header"
+            className="flex items-center justify-between gap-4 p-4"
+            style={{
+              backgroundColor: 'var(--color-theme-surface-raised)',
+              color: 'var(--color-theme-text-primary)',
+            }}
+          >
+            {header && <div className="grow">{header}</div>}
+            <div className="flex gap-2">
+              {hasGroups && (
+                <>
+                  <Button disabled={!canCollapse} variant="ghost" onClick={collapseAll}>
+                    <Translate>Collapse all</Translate>
+                  </Button>
+                  <Button disabled={!canExpand} variant="ghost" onClick={expandAll}>
+                    <Translate>Expand all</Translate>
+                  </Button>
+                </>
+              )}
+              {actions}
+            </div>
           </div>
-        </div>
+        )}
         <table className={`w-full ${className || ''}`}>
           <thead className="bg-(--color-theme-section-header-bg)">
             {table.getHeaderGroups().map(headerGroup => (
@@ -268,9 +299,8 @@ const Table = <T extends TableRow<T>>({
                       key={hdr.id}
                       colSpan={hdr.colSpan}
                       scope="col"
-                      className={`border-b p-4 text-sm uppercase ${customClassName || ''}`}
+                      className={`border-b p-4 text-sm uppercase text-section-header ${customClassName || ''}`}
                       style={{
-                        color: 'var(--color-theme-section-header-fg)',
                         borderColor:
                           'color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)',
                       }}
@@ -301,6 +331,12 @@ const Table = <T extends TableRow<T>>({
                     colSpan={memoizedColumns.length}
                     groupColumnIndex={groupColumnIndex}
                     dndEnabled={!!dnd?.enable}
+                    rowClassName={[
+                      row.original.rowId === focusedRowId ? focusedRowClassName : '',
+                      getRowClassName?.(row.original) || '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
                   />
                 ))}
               </SortableContext>

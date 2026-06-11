@@ -33,12 +33,9 @@ const onChangePDFs =
   }) =>
   async (event: ChangeEvent<HTMLInputElement>) => {
     const input = event.target as HTMLInputElement;
-    const { files } = input;
+    const filesToUpload = input.files ? Array.from(input.files) : [];
 
     input.value = '';
-    input.files = null;
-
-    const filesToUpload = files ? Array.from(files) : [];
 
     if (!filesToUpload.length) {
       return;

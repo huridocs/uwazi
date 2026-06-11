@@ -1,14 +1,11 @@
-/* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 import { randomUUID } from 'crypto';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
-import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
@@ -16,7 +13,6 @@ import { User } from '#api/users.v2/model/User.js';
 import { DeleteThesaurusUseCase } from '../DeleteThesaurus.js';
 import { ThesaurusNotFoundError, ThesaurusInUseError } from '#api/core/domain/thesaurus/errors.js';
 import { factory } from './UpdateThesaurusFixtures.js';
-import type { PGFixture } from '#api/utils/testing_pg.js';
 import type { DBFixture } from '#api/utils/testing_db.js';
 
 const countriesId = factory.id('countries');
@@ -95,13 +91,9 @@ const fixtures: DBFixture = {
   ],
 };
 
-const countriesIdHex = countriesId.toHexString();
-const fruitsIdHex = fruitsId.toHexString();
-
 type TestConfig = {
   name: string;
   postgresThesauri: boolean;
-  pgFixtures: PGFixture | undefined;
   getThesauri: () => Promise<Record<string, unknown>[]>;
 };
 
@@ -109,33 +101,15 @@ const testConfigs: TestConfig[] = [
   {
     name: 'Mongo',
     postgresThesauri: false,
-    pgFixtures: undefined,
     getThesauri: async () => testingEnvironment.db.getAllFrom('dictionaries'),
   },
   {
     name: 'Postgres',
     postgresThesauri: true,
-    pgFixtures: {
-      thesauri: [
-        {
-          _id: countriesIdHex,
-          name: 'Countries',
-          values: [
-            { id: randomUUID(), label: 'USA' },
-            { id: randomUUID(), label: 'Canada' },
-          ],
-        },
-        {
-          _id: fruitsIdHex,
-          name: 'Fruits',
-          values: [
-            { id: randomUUID(), label: 'Apple' },
-            { id: randomUUID(), label: 'Banana' },
-          ],
-        },
-      ],
-    },
-    getThesauri: async () => testingEnvironment.pg.getAllFrom('thesauri'),
+    getThesauri: async () =>
+      testingEnvironment.pg
+        .getAllFrom('thesauri')
+        .then(rows => rows.map(({ tenant_id: _, ...rest }) => rest)),
   },
 ];
 
@@ -148,7 +122,7 @@ describe('DeleteThesaurusUseCase', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresThesauri, pgFixtures, getThesauri }) => {
+  describe.each(testConfigs)('$name', ({ postgresThesauri, getThesauri }) => {
     const createSut = () =>
       testingEnvironment.runWithContext(
         () => {
@@ -159,9 +133,6 @@ describe('DeleteThesaurusUseCase', () => {
           const templatesDS = new MongoTemplatesDataSource({
             db: getConnection(),
             transactionManager,
-            slotsReconciler: TestUtils.mockClass<SlotsReconciler>({
-              execute: jest.fn().mockResolvedValue(undefined),
-            }),
           });
 
           const sut = new DeleteThesaurusUseCase(
@@ -196,7 +167,7 @@ describe('DeleteThesaurusUseCase', () => {
       );
 
     beforeEach(async () => {
-      await testingEnvironment.setFixtures(fixtures, pgFixtures);
+      await testingEnvironment.setFixtures(fixtures);
     });
 
     it('should delete a thesaurus that is not referenced by any template', async () => {

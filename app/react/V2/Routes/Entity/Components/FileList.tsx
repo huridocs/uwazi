@@ -41,12 +41,8 @@ const FileList = ({ entity }: FileListProps) => {
       role="region"
       aria-label="Files list"
     >
-      <div
-        className="flex-1 overflow-y-auto p-(--spacing-theme-4)"
-        role="list"
-        aria-label="Available files"
-      >
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(150px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] xl:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-(--spacing-theme-4) w-full">
+      <div className="flex-1 overflow-y-auto p-4" role="list" aria-label="Available files">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(150px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] xl:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4 w-full">
           {files.map((file, index) => (
             <FileCard key={`${file._id || file.filename || index}`} file={file} index={index} />
           ))}

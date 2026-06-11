@@ -1,9 +1,9 @@
 // eslint-disable-next-line node/no-restricted-import
 import { copyFile } from 'fs/promises';
-import { dirname } from 'path';
-import path from 'path';
+import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
+import { ObjectId } from 'mongodb';
 import {
   cleanupTestUploadedPaths,
   createDirIfNotExists,
@@ -28,7 +28,6 @@ import { testingPG } from '#api/utils/testing_pg.js';
 import type { PGFixture } from '#api/utils/testing_pg.js';
 import { User } from '#api/users.v2/model/User.js';
 import { UserSchema } from '#shared/types/userType.js';
-import { ObjectId } from 'mongodb';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -47,11 +46,7 @@ const testingEnvironment = {
   pgEnabled: false,
   userInContextMockFactory: new UserInContextMockFactory(),
 
-  async setUp(
-    fixtures?: DBFixture,
-    options?: string | boolean | SetUpOptions,
-    pgFixtures?: PGFixture
-  ) {
+  async setUp(fixtures?: DBFixture, options?: string | boolean | SetUpOptions) {
     const { elasticIndex, postgres } =
       options === undefined || typeof options === 'string' || typeof options === 'boolean'
         ? { elasticIndex: options, postgres: false }
@@ -63,7 +58,7 @@ const testingEnvironment = {
     await this.setTenant();
     this.setPermissions();
     this.setFakeContext();
-    await this.setFixtures(fixtures, pgFixtures);
+    await this.setFixtures(fixtures);
     await this.setElastic(elasticIndex);
     if (postgres && !this.pgEnabled) {
       await testingPG.connect();
@@ -158,6 +153,14 @@ const testingEnvironment = {
     if (pgFixtures && this.pgEnabled) {
       await testingPG.setFixtures(pgFixtures);
     }
+    if (this.pgEnabled && fixtures?.dictionaries?.length) {
+      const pgThesauri = fixtures.dictionaries.map((dict: any) => ({
+        _id: dict._id.toString(),
+        name: dict.name,
+        values: dict.values,
+      }));
+      await testingPG.setFixtures({ thesauri: pgThesauri });
+    }
   },
 
   async setElastic(elasticIndex?: string | boolean) {
@@ -228,14 +231,6 @@ const testingEnvironment = {
         ),
       idGenerator: IdGeneratorFactory.default,
       logger: LoggerFactory.default,
-      elasticClient: () => {
-        throw new Error('ExecutionContext: elasticClient not implemented in test context');
-      },
-      authorizedEntityESClient: () => {
-        throw new Error(
-          'ExecutionContext: authorizedEntityESClient not implemented in test context'
-        );
-      },
     };
 
     const context: ExecutionContextDeps = {

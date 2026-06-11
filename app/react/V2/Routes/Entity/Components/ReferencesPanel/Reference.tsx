@@ -21,8 +21,8 @@ const Reference = ({ reference, isSelected, onClick, onView, onDelete }: Referen
     'border-[color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]';
   const borderClass = isSelected ? 'border-2 border-(--color-theme-action-primary)' : borderIdle;
   const cardClass = [
-    'flex w-full cursor-pointer flex-col gap-(--spacing-theme-3) rounded-md border',
-    'p-(--spacing-theme-3) shadow-(--color-theme-shadow-sm) transition-colors',
+    'flex w-full cursor-pointer flex-col gap-3 rounded-md border',
+    'p-3 shadow-(--color-theme-shadow-sm) transition-colors',
     'hover:bg-(--color-theme-surface-warm)',
     surface,
     borderClass,
@@ -51,7 +51,7 @@ const Reference = ({ reference, isSelected, onClick, onView, onDelete }: Referen
 
       <TemplateLabel templateId={reference.targetEntity.templateId} />
 
-      <div className="flex justify-end gap-(--spacing-theme-2) mt-(--spacing-theme-2)">
+      <div className="mt-2 flex justify-end gap-2">
         <Button
           variant="secondary"
           size="small"
