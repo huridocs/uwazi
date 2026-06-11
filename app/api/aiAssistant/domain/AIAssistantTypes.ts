@@ -20,6 +20,7 @@ type UwaziCredentials = {
 type SubmitMessageInput = {
   message: string;
   credentials: UwaziCredentials;
+  jobId?: string;
 };
 
 type SubmitMessageOutput = {
@@ -28,6 +29,7 @@ type SubmitMessageOutput = {
 
 type PollResult =
   | { status: 'pending' }
+  | { status: 'running'; progress: string }
   | { status: 'completed'; message: string }
   | { status: 'error'; error: string };
 

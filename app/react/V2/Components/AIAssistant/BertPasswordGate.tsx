@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { LockClosedIcon } from '@heroicons/react/24/outline';
+import { Button } from '#V2/Components/UI/Button.js';
 
 type BertPasswordGateProps = {
   onUnlock: (password: string) => void;
@@ -47,12 +48,9 @@ const BertPasswordGate = ({ onUnlock }: BertPasswordGateProps) => {
             {error}
           </p>
         ) : null}
-        <button
-          type="submit"
-          className="mt-4 w-full cursor-pointer rounded-lg bg-ink px-4 py-2 text-sm font-medium text-paper transition-opacity hover:opacity-90"
-        >
+        <Button type="submit" size="medium" className="mt-4 w-full">
           Continue
-        </button>
+        </Button>
       </form>
     </div>
   );

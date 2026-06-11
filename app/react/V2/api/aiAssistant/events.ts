@@ -1,6 +1,7 @@
 const aiAssistantEvents = {
   reply: 'aiAssistant:reply',
   error: 'aiAssistant:error',
+  progress: 'aiAssistant:progress',
 } as const;
 
 type AIAssistantReplyPayload = {
@@ -13,5 +14,14 @@ type AIAssistantErrorPayload = {
   error: string;
 };
 
+type AIAssistantProgressPayload = {
+  jobId: string;
+  progress: string;
+};
+
 export { aiAssistantEvents };
-export type { AIAssistantErrorPayload, AIAssistantReplyPayload };
+export type {
+  AIAssistantErrorPayload,
+  AIAssistantProgressPayload,
+  AIAssistantReplyPayload,
+};

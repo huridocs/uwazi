@@ -2,8 +2,8 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { MarkdownMessageContent } from './MarkdownMessageContent.js';
 import { normalizeMarkdown } from './markdownUtils.js';
 
-const STREAM_CHARS_PER_TICK = 2;
-const STREAM_TICK_MS = 18;
+const STREAM_CHARS_PER_TICK = 4;
+const STREAM_TICK_MS = 9;
 
 type StreamingMessageContentProps = {
   text: string;

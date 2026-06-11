@@ -1,6 +1,8 @@
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { AIAssistantPollRequestJob } from './jobs/AIAssistantPollRequestJob.js';
+import { AIAssistantCancellationRegistry } from './AIAssistantCancellationRegistry.js';
+import { aiAssistantLog } from './aiAssistantLog.js';
 
 const POLL_LOCK_WINDOW_MS = 10_000;
 
@@ -19,11 +21,29 @@ class AIAssistantJobScheduler {
       maxRetries: 60,
     });
 
+    aiAssistantLog('scheduler.dispatch_poll', {
+      tenantName: params.tenantName,
+      jobId: params.jobId,
+      sessionId: params.sessionId,
+      delayMs,
+    });
+
     await dispatcher.dispatch(
       AIAssistantPollRequestJob,
       params,
       delayMs > 0 ? { lockedUntil: Date.now() + delayMs } : undefined
     );
+  }
+
+  static async cancelPolls(tenantName: string, jobId: string) {
+    aiAssistantLog('scheduler.cancel_polls', { tenantName, jobId });
+
+    await AIAssistantCancellationRegistry.markCancelled(tenantName, jobId);
+
+    const transactionManager = TransactionManagerFactory.default();
+    const dispatcher = DefaultDispatcher(tenantName, transactionManager);
+
+    await dispatcher.deleteByParams(AIAssistantPollRequestJob, { jobId });
   }
 }
 

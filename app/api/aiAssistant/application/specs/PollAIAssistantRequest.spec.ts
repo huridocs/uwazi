@@ -9,6 +9,7 @@ describe('PollAIAssistantRequest', () => {
         status: 'completed',
         message: 'Done',
       }),
+      cancelJob: jest.fn(),
     };
 
     const useCase = new PollAIAssistantRequest({ aiAssistantService });

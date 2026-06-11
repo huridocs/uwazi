@@ -7,6 +7,7 @@ import { ApiResponse } from '../ApiResponse.js';
 type SendMessageInput = {
   message: string;
   password: string;
+  jobId?: string;
   context: {
     mode: ContextScopeMode;
     chips: ContextChip[];
@@ -24,6 +25,7 @@ const sendMessage = async (
     const requestParams = new RequestParams({
       message: input.message,
       password: input.password,
+      ...(input.jobId ? { jobId: input.jobId } : {}),
       context: {
         mode: input.context.mode,
         chips: input.context.chips.map(chip => ({

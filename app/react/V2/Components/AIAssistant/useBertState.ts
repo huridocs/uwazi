@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
+import { cancelConversation as cancelAIAssistantConversation } from '#V2/api/aiAssistant/conversation.js';
 import { sendMessage as sendAIAssistantMessage } from '#V2/api/aiAssistant/messages.js';
 import {
   buildContextSummary,
@@ -71,18 +72,33 @@ const useBertState = ({
   );
   const [draftMessage, setDraftMessage] = useState('');
   const [isThinking, setIsThinking] = useState(false);
+  const [jobProgress, setJobProgress] = useState<string | null>(null);
   const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null);
   const [replyError, setReplyError] = useState<string | null>(null);
   const [isPasswordUnlocked, setIsPasswordUnlocked] = useState(
     () => mockReplies || hasBertSessionPassword()
   );
   const passwordRef = useRef<string | null>(getBertSessionPassword());
+  const conversationJobIdRef = useRef<string | null>(null);
   const pendingJobIdRef = useRef<string | null>(null);
+  const inFlightSendRef = useRef(false);
+  const isThinkingRef = useRef(false);
 
   const isReplying = isThinking || streamingMessageId !== null;
   const needsPasswordUnlock = !mockReplies && !isPasswordUnlocked;
 
   const contextModeLabel = contextMode === 'auto' ? 'Auto' : 'This document';
+
+  const matchesActiveJob = useCallback((jobId: string) => {
+    const normalizedJobId = String(jobId);
+    const pendingJobId = pendingJobIdRef.current;
+
+    if (pendingJobId !== null) {
+      return normalizedJobId === String(pendingJobId);
+    }
+
+    return inFlightSendRef.current || isThinkingRef.current;
+  }, []);
 
   const unlockWithPassword = useCallback((password: string) => {
     passwordRef.current = password;
@@ -90,38 +106,81 @@ const useBertState = ({
     setIsPasswordUnlocked(true);
   }, []);
 
-  const handleAssistantReply = useCallback((payload: { jobId: string; message: string }) => {
-    if (payload.jobId !== pendingJobIdRef.current) {
-      return;
-    }
+  const handleAssistantReply = useCallback(
+    (payload: { jobId: string; message: string }) => {
+      if (!matchesActiveJob(payload.jobId)) {
+        // eslint-disable-next-line no-console
+        console.log('[aiAssistant:client] reply.ignored', {
+          jobId: payload.jobId,
+          pendingJobId: pendingJobIdRef.current,
+          inFlightSend: inFlightSendRef.current,
+          isThinking: isThinkingRef.current,
+        });
+        return;
+      }
 
-    const reply: ChatMessage = {
-      id: createId(),
-      role: 'assistant',
-      timestamp: formatTime(),
-      text: payload.message,
-    };
+      const reply: ChatMessage = {
+        id: createId(),
+        role: 'assistant',
+        timestamp: formatTime(),
+        text: payload.message,
+      };
 
-    pendingJobIdRef.current = null;
-    setMessages(current => [...current, reply]);
-    setIsThinking(false);
-    setStreamingMessageId(reply.id);
-  }, []);
+      inFlightSendRef.current = false;
+      conversationJobIdRef.current = String(payload.jobId);
+      pendingJobIdRef.current = null;
+      isThinkingRef.current = false;
+      setMessages(current => [...current, reply]);
+      setIsThinking(false);
+      setJobProgress(null);
+      setStreamingMessageId(reply.id);
+    },
+    [matchesActiveJob]
+  );
 
-  const handleAssistantError = useCallback((payload: { jobId: string; error: string }) => {
-    if (payload.jobId !== pendingJobIdRef.current) {
-      return;
-    }
+  const handleAssistantProgress = useCallback(
+    (payload: { jobId: string; progress: string }) => {
+      if (!matchesActiveJob(payload.jobId)) {
+        // eslint-disable-next-line no-console
+        console.log('[aiAssistant:client] progress.ignored', {
+          jobId: payload.jobId,
+          pendingJobId: pendingJobIdRef.current,
+        });
+        return;
+      }
 
-    pendingJobIdRef.current = null;
-    setReplyError(payload.error || 'Bert could not complete your request. Try again.');
-    setIsThinking(false);
-  }, []);
+      pendingJobIdRef.current = String(payload.jobId);
+      setJobProgress(payload.progress);
+    },
+    [matchesActiveJob]
+  );
+
+  const handleAssistantError = useCallback(
+    (payload: { jobId: string; error: string }) => {
+      if (!matchesActiveJob(payload.jobId)) {
+        // eslint-disable-next-line no-console
+        console.log('[aiAssistant:client] error.ignored', {
+          jobId: payload.jobId,
+          pendingJobId: pendingJobIdRef.current,
+        });
+        return;
+      }
+
+      inFlightSendRef.current = false;
+      pendingJobIdRef.current = null;
+      isThinkingRef.current = false;
+      setReplyError(payload.error || 'Bert could not complete your request. Try again.');
+      setIsThinking(false);
+      setJobProgress(null);
+    },
+    [matchesActiveJob]
+  );
 
   useAIAssistantSocket({
     enabled: !mockReplies && isPasswordUnlocked,
     onReply: handleAssistantReply,
     onError: handleAssistantError,
+    onProgress: handleAssistantProgress,
   });
 
   const removeContextChip = useCallback((chipId: string) => {
@@ -172,7 +231,9 @@ const useBertState = ({
     setMessages(current => [...current, userMessage]);
     setDraftMessage('');
     setReplyError(null);
+    isThinkingRef.current = true;
     setIsThinking(true);
+    setJobProgress(null);
     setStreamingMessageId(null);
 
     if (mockReplies) {
@@ -181,12 +242,14 @@ const useBertState = ({
           setReplyError(
             'Bert could not complete your request. Check your connection and try again.'
           );
+          isThinkingRef.current = false;
           setIsThinking(false);
           return;
         }
 
         const reply = buildGroundedReply(text, contextChips);
         setMessages(current => [...current, reply]);
+        isThinkingRef.current = false;
         setIsThinking(false);
         setStreamingMessageId(reply.id);
       }, REPLY_DELAYS_MS[replyScenario]);
@@ -196,43 +259,74 @@ const useBertState = ({
     const password = passwordRef.current;
     if (!password) {
       setReplyError('Enter your Uwazi password to send messages.');
+      isThinkingRef.current = false;
       setIsThinking(false);
       return;
     }
 
+    inFlightSendRef.current = true;
+    pendingJobIdRef.current = null;
+
+    // eslint-disable-next-line no-console
+    console.log('[aiAssistant:client] send.start', {
+      conversationJobId: conversationJobIdRef.current,
+    });
+
     const [response, error] = await sendAIAssistantMessage({
       message: text,
       password,
+      jobId: conversationJobIdRef.current ?? undefined,
       context: {
         mode: contextMode,
         chips: contextChips,
       },
     });
 
+    inFlightSendRef.current = false;
+
     if (error || !response?.jobId) {
+      // eslint-disable-next-line no-console
+      console.log('[aiAssistant:client] send.failed', { error, response });
       setReplyError(
         error?.json?.prettyMessage ||
           'Bert could not complete your request. Check your connection and try again.'
       );
+      isThinkingRef.current = false;
       setIsThinking(false);
       return;
     }
 
-    pendingJobIdRef.current = response.jobId;
+    const jobId = String(response.jobId);
+    conversationJobIdRef.current = jobId;
+    pendingJobIdRef.current = jobId;
+
+    // eslint-disable-next-line no-console
+    console.log('[aiAssistant:client] send.accepted', { jobId });
   }, [contextChips, contextMode, draftMessage, isReplying, mockReplies, replyScenario]);
 
   const finishStreaming = useCallback(() => {
     setStreamingMessageId(null);
   }, []);
 
-  const clearChat = useCallback(() => {
+  const clearChat = useCallback(async () => {
+    const jobId = conversationJobIdRef.current;
+    const password = passwordRef.current;
+
+    conversationJobIdRef.current = null;
     pendingJobIdRef.current = null;
+    inFlightSendRef.current = false;
+    isThinkingRef.current = false;
     setMessages([]);
     setDraftMessage('');
     setReplyError(null);
     setIsThinking(false);
+    setJobProgress(null);
     setStreamingMessageId(null);
-  }, []);
+
+    if (!mockReplies && jobId && password) {
+      await cancelAIAssistantConversation({ jobId, password });
+    }
+  }, [mockReplies]);
 
   const contextSummary = useMemo(() => buildContextSummary(contextChips), [contextChips]);
 
@@ -245,6 +339,7 @@ const useBertState = ({
     draftMessage,
     isReplying,
     isThinking,
+    jobProgress,
     streamingMessageId,
     replyError,
     needsPasswordUnlock,

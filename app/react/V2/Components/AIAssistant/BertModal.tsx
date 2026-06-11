@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { ClockIcon, PaintBrushIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { ChatBubbleBottomCenterTextIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { Button, Modal } from '#V2/Components/UI/index.js';
 import { BertIconStacked } from './BertIcon.js';
-import { BertContextBar } from './BertContextBar.js';
 import { BertPasswordGate } from './BertPasswordGate.js';
 import { BertWelcome } from './BertWelcome.js';
 import { ChatMessageView } from './ChatMessage.js';
@@ -18,22 +18,19 @@ type BertModalProps = {
   replyScenario?: ReplyScenario;
   initialMessages?: ChatMessage[];
   initialContextChips?: ContextChip[];
-  className?: string;
 };
 
-const modalBackdropClass = [
-  'fixed inset-0 z-[200] flex items-center justify-center',
-  'overflow-y-auto overflow-x-hidden p-4',
-  'bg-[color-mix(in_srgb,var(--color-theme-surface-overlay,var(--color-theme-bg-overlay))_65%,transparent)]',
-].join(' ');
-
-const BertThinking = () => (
-  <div className="flex gap-2 py-2 pl-6">
-    <span className="inline-flex items-center gap-1 rounded-full bg-primary-100 px-2.5 py-2">
-      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary-500" />
-      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary-500 [animation-delay:120ms]" />
-      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary-500 [animation-delay:240ms]" />
-    </span>
+const BertThinking = ({ progress }: { progress?: string | null }) => (
+  <div className="flex gap-2 py-2">
+    <BertIconStacked className="mt-1" />
+    <div className="flex min-w-0 flex-col gap-1.5">
+      <span className="inline-flex w-fit items-center gap-1 rounded-full bg-primary-100 px-2.5 py-2">
+        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary-500" />
+        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary-500 [animation-delay:120ms]" />
+        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary-500 [animation-delay:240ms]" />
+      </span>
+      {progress ? <p className="text-xs leading-relaxed text-ink-muted">{progress}</p> : null}
+    </div>
   </div>
 );
 
@@ -44,23 +41,17 @@ const BertModal = ({
   replyScenario = 'normal',
   initialMessages = DEFAULT_BERT_MESSAGES,
   initialContextChips = DEFAULT_CONTEXT_CHIPS,
-  className = '',
 }: BertModalProps) => {
   const {
     messages,
-    contextMode,
-    contextModeLabel,
-    contextChips,
     draftMessage,
     isReplying,
     isThinking,
+    jobProgress,
     streamingMessageId,
     replyError,
     needsPasswordUnlock,
-    setContextMode,
     setDraftMessage,
-    removeContextChip,
-    addContextOption,
     unlockWithPassword,
     sendMessage,
     finishStreaming,
@@ -79,113 +70,82 @@ const BertModal = ({
   useEffect(() => {
     if (!open || showWelcome) return;
     scrollToBottom();
-  }, [open, messages.length, isThinking, replyError, scrollToBottom, showWelcome]);
+  }, [open, messages.length, isThinking, jobProgress, replyError, scrollToBottom, showWelcome]);
 
   if (!open) {
     return null;
   }
 
   return (
-    <div
-      className={[modalBackdropClass, className].filter(Boolean).join(' ')}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Bert"
-    >
-      <div className="flex h-[min(40rem,88vh)] w-full max-w-3xl min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-paper shadow-lg">
-        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border px-4 py-3">
-          <div className="flex min-w-0 items-center gap-2">
-            <div className="flex items-center gap-1">
-              <BertIconStacked />
-              <h2 className="text-base font-semibold text-ink">Bert</h2>
-            </div>
-            <kbd className="hidden rounded border border-border bg-vellum px-1.5 py-0.5 text-[0.625rem] font-medium text-ink-muted sm:inline">
-              Ctrl K
-            </kbd>
-            <button
-              type="button"
-              onClick={clearChat}
-              disabled={!canClearChat}
-              className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-border bg-vellum px-2 py-1 text-xs font-medium text-ink-secondary transition-colors hover:bg-warm hover:text-ink disabled:cursor-not-allowed disabled:opacity-50"
-              aria-label="Clear chat"
-            >
-              <PaintBrushIcon className="h-3.5 w-3.5 shrink-0" />
-              Clear
-            </button>
+    <Modal size="xxxl" id="bert-modal">
+      <Modal.Header className="!px-4 !py-3 shrink-0 items-center">
+        <div className="flex min-w-0 items-center gap-2">
+          <div className="flex items-center gap-1">
+            <BertIconStacked />
+            <h2 className="text-base font-semibold text-ink">Bert</h2>
           </div>
-          <button
+          <kbd className="rounded border border-border bg-warm px-1.5 py-0.5 text-[0.625rem] font-medium text-ink-muted sm:inline">
+            Ctrl K
+          </kbd>
+          <Button
             type="button"
-            onClick={onClose}
-            className="cursor-pointer rounded-md p-1.5 text-ink-secondary transition-colors hover:bg-warm hover:text-ink"
-            aria-label="Close Bert"
+            variant="secondary"
+            size="small"
+            onClick={clearChat}
+            disabled={!canClearChat}
+            className="inline-flex items-center gap-1"
           >
-            <XMarkIcon className="h-5 w-5" />
-          </button>
+            <ChatBubbleBottomCenterTextIcon className="h-3.5 w-3.5 shrink-0" />
+            New conversation
+          </Button>
         </div>
-
-        {!needsPasswordUnlock ? (
-          <div className="shrink-0 border-b border-border-soft">
-            <BertContextBar
-              contextMode={contextMode}
-              contextModeLabel={contextModeLabel}
-              contextChips={contextChips}
-              onContextModeChange={setContextMode}
-              onRemoveChip={removeContextChip}
-              onAddOption={addContextOption}
-            />
+        <Modal.CloseButton onClick={onClose} />
+      </Modal.Header>
+      <Modal.Body className="min-h-[32rem]">
+        {needsPasswordUnlock ? (
+          <BertPasswordGate onUnlock={unlockWithPassword} />
+        ) : showWelcome ? (
+          <BertWelcome />
+        ) : (
+          <div className="flex flex-col gap-4 px-4 pb-2 pt-4">
+            {messages.map(message => (
+              <ChatMessageView
+                key={message.id}
+                message={message}
+                isStreaming={message.id === streamingMessageId}
+                onStreamComplete={finishStreaming}
+                onStreamProgress={scrollToBottom}
+              />
+            ))}
+            {isThinking ? <BertThinking progress={jobProgress} /> : null}
+            {replyError ? (
+              <div
+                role="alert"
+                className="rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-800"
+              >
+                {replyError}
+              </div>
+            ) : null}
+            <div ref={messagesEndRef} />
           </div>
-        ) : null}
+        )}
+      </Modal.Body>
 
-        <div className="flex min-h-0 flex-1 flex-col bg-paper">
-          {needsPasswordUnlock ? (
-            <BertPasswordGate onUnlock={unlockWithPassword} />
-          ) : (
-            <>
-              <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4">
-                {showWelcome ? (
-                  <BertWelcome />
-                ) : (
-                  <div className="flex flex-col gap-4 pb-2 pt-4">
-                    {messages.map(message => (
-                      <ChatMessageView
-                        key={message.id}
-                        message={message}
-                        isStreaming={message.id === streamingMessageId}
-                        onStreamComplete={finishStreaming}
-                        onStreamProgress={scrollToBottom}
-                      />
-                    ))}
-                    {isThinking ? <BertThinking /> : null}
-                    {replyError ? (
-                      <div
-                        role="alert"
-                        className="rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-800"
-                      >
-                        {replyError}
-                      </div>
-                    ) : null}
-                    <div ref={messagesEndRef} />
-                  </div>
-                )}
-              </div>
-
-              <div className="shrink-0 border-t border-border-soft px-4 pb-4 pt-2">
-                <ChatInput
-                  value={draftMessage}
-                  onChange={setDraftMessage}
-                  onSubmit={sendMessage}
-                  disabled={isReplying}
-                />
-                <p className="mt-2 flex items-center gap-1.5 text-xs text-ink-muted">
-                  <ClockIcon className="h-3.5 w-3.5 shrink-0" />
-                  Some tasks may take a while. Bert will reply when it&apos;s done.
-                </p>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
-    </div>
+      {!needsPasswordUnlock ? (
+        <Modal.Footer className="shrink-0 !border-0 px-4 pb-4 pt-2">
+          <ChatInput
+            value={draftMessage}
+            onChange={setDraftMessage}
+            onSubmit={sendMessage}
+            disabled={isReplying}
+          />
+          <p className="mt-2 flex items-center gap-1.5 text-xs text-ink-muted">
+            <ClockIcon className="h-3.5 w-3.5 shrink-0" />
+            Some tasks may take a while. Bert will reply when it&apos;s done.
+          </p>
+        </Modal.Footer>
+      ) : null}
+    </Modal>
   );
 };
 

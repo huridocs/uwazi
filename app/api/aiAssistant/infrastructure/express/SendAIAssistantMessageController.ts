@@ -5,6 +5,7 @@ import {
   AbstractController,
   Dependencies as AbstractControllerDependencies,
 } from '#api/common.v2/infrastructure/AbstractController.js';
+import { aiAssistantLog } from '../aiAssistantLog.js';
 import { SendAIAssistantMessageFactory } from './SendAIAssistantMessageFactory.js';
 
 type Dependencies = AbstractControllerDependencies<Request>;
@@ -19,6 +20,7 @@ const ContextChipSchema = z.object({
 const RequestSchema = z.object({
   message: z.string().trim().min(1),
   password: z.string().min(1),
+  jobId: z.string().trim().min(1).optional(),
   context: z.object({
     mode: z.enum(['auto', 'this-document']),
     chips: z.array(ContextChipSchema),
@@ -58,12 +60,20 @@ class SendAIAssistantMessageController extends AbstractController<Request> {
       return;
     }
 
+    aiAssistantLog('controller.send', {
+      userId: this.user._id,
+      sessionId,
+      conversationJobId: dto.jobId ?? null,
+      messageLength: dto.message.length,
+    });
+
     const useCase = SendAIAssistantMessageFactory.createDefault();
     const result = await useCase.execute({
       tenantName: this.tenantName,
       userId: this.user._id,
       sessionId,
       message: dto.message,
+      conversationJobId: dto.jobId,
       context: {
         mode: dto.context.mode,
         chips: dto.context.chips.map(chip => ({
@@ -78,6 +88,8 @@ class SendAIAssistantMessageController extends AbstractController<Request> {
         password: dto.password,
       },
     });
+
+    aiAssistantLog('controller.send.accepted', { jobId: result.jobId, sessionId });
 
     this.response.status(202).json(result);
   }
