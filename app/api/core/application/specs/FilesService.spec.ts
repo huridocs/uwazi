@@ -21,6 +21,7 @@ import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesSer
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { FileMappers } from '#api/core/infrastructure/mongodb/files/FilesMappers.js';
 import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { tenants } from '#api/tenants/index.js';
@@ -370,7 +371,7 @@ describe('FilesService', () => {
 
       const { service, transactionManager } = createService({ filesDS, eventBus });
 
-      const file = FileBuilder.document('file1');
+      const file = FileBuilder.document('507f191e810c19729de860ea');
 
       await service.bulkUpsert([file]);
       await transactionManager.executeOnCommitHandlers(null);
@@ -387,8 +388,8 @@ describe('FilesService', () => {
 
       expect(eventBus.emit).toHaveBeenCalledWith(
         new FileUpdatedEvent({
-          after: updateFile.toDTO(),
-          before: updateFile.previousVersion!.toDTO(),
+          after: FileMappers.toDBO(updateFile),
+          before: FileMappers.toDBO(updateFile.previousVersion!),
         })
       );
     });

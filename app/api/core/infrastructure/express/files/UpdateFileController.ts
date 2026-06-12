@@ -21,11 +21,33 @@ const TocEntrySchema = z.object({
     .optional(),
 });
 
+const SelectionRectangleSchema = z.object({
+  top: z.number(),
+  left: z.number(),
+  width: z.number(),
+  height: z.number(),
+  page: z.string().optional(),
+});
+
+const SelectionSchema = z.object({
+  text: z.string().optional(),
+  selectionRectangles: z.array(SelectionRectangleSchema).optional(),
+});
+
+const PropertySelectionSchema = z.object({
+  propertyID: z.string().optional(),
+  name: z.string().optional(),
+  timestamp: z.string().optional(),
+  deleteSelection: z.boolean().optional(),
+  selection: SelectionSchema.optional(),
+});
+
 const RequestSchema = z.object({
   _id: z.string().min(1),
   originalname: z.string().min(1).optional(),
   language: z.string().min(3).optional(),
   toc: z.array(TocEntrySchema).optional(),
+  propertySelections: z.array(PropertySelectionSchema).optional(),
 });
 
 class UpdateFileController extends AbstractController {
@@ -42,6 +64,7 @@ class UpdateFileController extends AbstractController {
           ? LanguageUtils.fromISO639_3(request.language).ISO639_1
           : undefined,
         toc: request.toc,
+        propertySelections: request.propertySelections,
       };
 
       const output = await UpdateFileUseCaseFactory.default().execute(input);

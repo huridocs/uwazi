@@ -13,7 +13,7 @@ import {
   MongoDSOptions,
 } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
-import { Result } from '#api/core/libs/Result.js';
+import { Result, ResultType } from '#api/core/libs/Result.js';
 import { search } from '#api/search/index.js';
 import { FileStorage } from '../../../application/contracts/FileStorage.js';
 import {
@@ -287,7 +287,9 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     return Result.ok(this.toModel(dbo));
   }
 
-  async getById(id: string) {
+  async getById<ReturnedFile extends BaseFile = BaseFile>(
+    id: string
+  ): Promise<ResultType<ReturnedFile, FileNotFound>> {
     const dbo = await this.getCollection().findOne(
       { _id: new ObjectId(id) },
       { projection: { fullText: 0 } }
@@ -296,7 +298,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       return Result.fail(new FileNotFound(`file with id: ${id} not found`));
     }
 
-    return Result.ok(this.toModel(dbo));
+    return Result.ok(this.toModel(dbo) as unknown as ReturnedFile);
   }
 
   async getByIds(ids: string[]): Promise<BaseFile[]> {

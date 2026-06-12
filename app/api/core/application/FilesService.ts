@@ -123,18 +123,9 @@ class FilesService {
     await this.deps.filesDS.bulkUpdate(_files);
 
     this.deps.transactionManager.onCommitted(async () => {
-      await ArrayUtils.sequentialFor(_files, async file => {
-        const after = file.toDTO();
-        const before = file.previousVersion?.toDTO();
-        if (!before) return;
-
-        await this.deps.eventBus.emit(
-          new FileUpdatedEvent({
-            after,
-            before,
-          })
-        );
-      });
+      await ArrayUtils.sequentialFor(_files, async file =>
+        this.deps.eventBus.emit(FileUpdatedEvent.create(file))
+      );
     });
   }
 
@@ -162,9 +153,7 @@ class FilesService {
     await this.deps.relV1DS.deleteByFiles(contentFiles);
 
     this.deps.transactionManager.onCommitted(async () => {
-      await this.deps.eventBus.emit(
-        new FilesDeletedEvent({ files: allFilesToDelete.map(f => FileMappers.toDBO(f)) })
-      );
+      await this.deps.eventBus.emit(FilesDeletedEvent.create(allFilesToDelete));
       await this.deps.jobsDispatcher.deleteFilesFromStorage(
         contentFiles.map(file => this.deps.pathManager.createPath(file))
       );
@@ -195,14 +184,14 @@ class FilesService {
     await this.deps.transactionManager.run(async () => {
       await this.deps.filesDS.replaceFile(attachment);
 
-      this.deps.transactionManager.onCommitted(async () => {
-        await this.deps.eventBus.emit(
+      this.deps.transactionManager.onCommitted(async () =>
+        this.deps.eventBus.emit(
           new FileUpdatedEvent({
-            after: attachment.toDTO(),
-            before: pdfDoc.toDTO(),
+            before: FileMappers.toDBO(pdfDoc),
+            after: FileMappers.toDBO(attachment),
           })
-        );
-      });
+        )
+      );
     });
   }
 

@@ -146,7 +146,7 @@ describe('files routes', () => {
       it('should reindex all entities that are related to the saved file', async () => {
         expect(search.indexEntities).toHaveBeenCalledWith(
           {
-            sharedId: 'sharedId1',
+            sharedId: { $in: ['sharedId1'] },
           },
           '+fullText'
         );
@@ -190,15 +190,20 @@ describe('files routes', () => {
 
       it(`should emit a ${FileCreatedEvent.name} if a new file has been saved`, async () => {
         const fileInfo = {
-          creationDate: 1,
+          url: 'https://example.com/doc.pdf',
           entity: 'sharedId1',
           originalname: 'doc.pdf',
-          type: 'document',
-          language: 'eng',
+          type: 'attachment',
         };
         const caller = async () => request(app).post('/api/files').send(fileInfo).expect(200);
         await expect(caller).toEmitEventWith(FileCreatedEvent, {
-          newFile: { ...fileInfo, _id: expect.anything(), __v: 0 },
+          newFile: expect.objectContaining({
+            url: 'https://example.com/doc.pdf',
+            entity: 'sharedId1',
+            originalname: 'doc.pdf',
+            type: 'attachment',
+            _id: expect.anything(),
+          }),
         });
         await expect(caller).not.toEmitEvent(FileUpdatedEvent);
       });
@@ -208,6 +213,8 @@ describe('files routes', () => {
           await request(app).post('/api/files').send({
             url: 'https://awesomecats.org/ahappycat.png',
             originalname: 'A Happy Cat',
+            type: 'attachment',
+            entity: 'sharedId1',
           });
 
           const [file]: FileType[] = await files.get({
