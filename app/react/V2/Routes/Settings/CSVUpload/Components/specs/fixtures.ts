@@ -35,6 +35,7 @@ const csvImportsList: CsvImportListRow[] = [
     },
     stats: {
       entitiesCreated: 44,
+      entitiesUpdated: 2,
       rowsProcessed: 48,
       rowsFailed: 1,
     },
@@ -86,6 +87,7 @@ const csvImportsList: CsvImportListRow[] = [
       relationshipValuesObserved: 9,
       relationshipValuesCreated: 3,
       entitiesCreated: 84,
+      entitiesUpdated: 1,
       rowsProcessed: 86,
       rowsFailed: 0,
     },
@@ -120,6 +122,7 @@ const csvImportsList: CsvImportListRow[] = [
     },
     stats: {
       entitiesCreated: 15,
+      entitiesUpdated: 0,
       rowsProcessed: 17,
       rowsFailed: 2,
     },
@@ -171,6 +174,7 @@ const csvImportsListWithErrors: CsvImportListRow[] = [
       rowsProcessed: 3,
       rowsFailed: 3,
       entitiesCreated: 0,
+      entitiesUpdated: 0,
     },
     progress: { totalRows: 3, processedRows: 3, lastProcessedRow: 2, batchSize: 10 },
     extraction: {
@@ -216,6 +220,7 @@ const csvImportsListWithErrors: CsvImportListRow[] = [
       rowsProcessed: 5,
       rowsFailed: 2,
       entitiesCreated: 3,
+      entitiesUpdated: 1,
     },
     progress: { totalRows: 5, processedRows: 5, lastProcessedRow: 4, batchSize: 10 },
     extraction: {

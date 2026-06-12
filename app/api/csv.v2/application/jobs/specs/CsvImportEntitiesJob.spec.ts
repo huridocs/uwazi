@@ -255,6 +255,144 @@ describe('CsvImportEntitiesJob (integration)', () => {
     expectEntityContent(entities[0]);
   });
 
+  it('should update an existing entity when id is provided and count entitiesUpdated', async () => {
+    const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } = buildUseCase();
+    const importId = fixturesFactory.idString('import-entities-update-by-id');
+    createdImportIds.push(importId);
+    const userId = fixturesFactory.idString('import-entities-update-by-id-user');
+    const sharedId = fixturesFactory.idString('existing-entity-shared-id');
+
+    await testingEnvironment.db.getCollection('entities')!.insertMany([
+      {
+        _id: fixturesFactory.id('existing-entity-en'),
+        sharedId,
+        title: 'Old title',
+        language: 'en',
+        template: fixtures.templates[0]._id,
+        metadata: { description: [{ value: 'Old description' }] },
+        user: fixturesFactory.id('import-entities-update-by-id-user'),
+        creationDate: Date.now(),
+        editDate: Date.now(),
+        published: false,
+      },
+      {
+        _id: fixturesFactory.id('existing-entity-es'),
+        sharedId,
+        title: 'Titulo viejo',
+        language: 'es',
+        template: fixtures.templates[0]._id,
+        metadata: { description: [{ value: 'Descripcion vieja' }] },
+        user: fixturesFactory.id('import-entities-update-by-id-user'),
+        creationDate: Date.now(),
+        editDate: Date.now(),
+        published: false,
+      },
+    ]);
+
+    await insertImport(csvImportsDS, {
+      importId,
+      templateId,
+      userId,
+    });
+    await stageRows(rowsDS, {
+      importId,
+      csv: `id,title\n${sharedId},Updated title`,
+    });
+
+    const callbacks = createCallbacks();
+    await useCase.execute({ importId, callbacks });
+
+    const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+    const rowErrorsCount = await rowErrorsDS.countByImport(importId);
+    const entities = await fetchEntitiesByTemplate(entitiesDS, templateId);
+
+    expect(updatedImport.status).toBe(CsvImportStatus.ImportEntitiesDone);
+    expect(updatedImport.stats).toEqual(
+      expect.objectContaining({
+        entitiesCreated: 0,
+        entitiesUpdated: 1,
+        rowsProcessed: 1,
+        rowsFailed: 0,
+      })
+    );
+    expect(rowErrorsCount).toBe(0);
+    expect(entities).toHaveLength(1);
+    expect(entities[0].getTranslation('en').title.value[0].value).toBe('Updated title');
+    expect(entities[0].getTranslation('en').getValue('description').value).toEqual([]);
+    expect(callbacks.onProgress).toHaveBeenCalledWith(
+      expect.objectContaining({
+        importId,
+        entitiesCreatedInBatch: 0,
+        entitiesUpdatedInBatch: 1,
+      })
+    );
+  });
+
+  it('should register ID_NOT_FOUND_IN_TEMPLATE when id does not belong to import template', async () => {
+    const { useCase, csvImportsDS, rowsDS, rowErrorsDS } = buildUseCase();
+    const importId = fixturesFactory.idString('import-entities-update-id-template-mismatch');
+    createdImportIds.push(importId);
+    const userId = fixturesFactory.idString('import-entities-update-id-template-mismatch-user');
+    const sharedId = fixturesFactory.idString('existing-other-template-shared-id');
+
+    await testingEnvironment.db.getCollection('entities')!.insertMany([
+      {
+        _id: fixturesFactory.id('existing-other-template-en'),
+        sharedId,
+        title: 'Other template entity',
+        language: 'en',
+        template: fixtures.templates[1]._id,
+        metadata: {},
+        user: fixturesFactory.id('import-entities-update-id-template-mismatch-user'),
+        creationDate: Date.now(),
+        editDate: Date.now(),
+        published: false,
+      },
+      {
+        _id: fixturesFactory.id('existing-other-template-es'),
+        sharedId,
+        title: 'Entidad de otra plantilla',
+        language: 'es',
+        template: fixtures.templates[1]._id,
+        metadata: {},
+        user: fixturesFactory.id('import-entities-update-id-template-mismatch-user'),
+        creationDate: Date.now(),
+        editDate: Date.now(),
+        published: false,
+      },
+    ]);
+
+    await insertImport(csvImportsDS, {
+      importId,
+      templateId,
+      userId,
+    });
+    await stageRows(rowsDS, {
+      importId,
+      csv: `id,title,description\n${sharedId},Updated title,Updated description`,
+    });
+
+    const callbacks = createCallbacks();
+    await useCase.execute({ importId, callbacks });
+
+    const persistedErrors = await rowErrorsDS.getByImport(importId);
+    expect(persistedErrors).toHaveLength(1);
+    expect(persistedErrors[0].code).toBe(RowErrorCode.IdNotFoundInTemplate);
+    expect(persistedErrors[0].message).toBe('id not found in template');
+    expect(persistedErrors[0].property).toBe('id');
+    expect(persistedErrors[0].rawValue).toBe(sharedId);
+
+    const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+    expect(updatedImport.stats).toEqual(
+      expect.objectContaining({
+        entitiesCreated: 0,
+        entitiesUpdated: 0,
+        rowsProcessed: 1,
+        rowsFailed: 1,
+      })
+    );
+  });
+
   it('should import rows with any-template relationship when there is a unique match', async () => {
     const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS, jobsDispatcher } =
       buildUseCase();
