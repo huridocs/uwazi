@@ -73,13 +73,6 @@ const templates: Template[] = [
         name: 'simple_text',
       },
       {
-        _id: '1.2',
-        type: 'markdown',
-        label: 'Markdown field',
-        noLabel: false,
-        name: 'markdown_syntax',
-      },
-      {
         _id: '1.3',
         type: 'date',
         label: 'Single Date',
@@ -167,6 +160,13 @@ const templates: Template[] = [
         label: 'Numeric property',
         noLabel: false,
         name: 'numeric_property',
+      },
+      {
+        _id: '1.15',
+        type: 'markdown',
+        label: 'Markdown field',
+        noLabel: false,
+        name: 'rich_text_field',
       },
     ],
     commonProperties: [
@@ -276,10 +276,9 @@ const apiEntity: Entity = {
         value: 'Emergency incident report from downtown area',
       },
     ],
-    markdown_html: [
+    rich_text_field: [
       {
-        value:
-          '<p>This <b>Markdown</b> field includes <i>simple HTML</i> tags and a <a href="https://example.com" target="_blank">link</a>.</p>',
+        value: '**Bold text**, *italic text*, and a [link](https://example.com)',
       },
     ],
     single_date: [

@@ -23,6 +23,7 @@ import {
   LinkField,
   GeolocationField,
   RelationshipField,
+  MarkdownField,
 } from './Components/index.js';
 import { MultiselectListOption } from '../../Forms/index.js';
 
@@ -330,6 +331,26 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
                 disabled={disabled}
               />
             );
+          }
+
+          if (property.type === 'markdown') {
+            return (
+              <MarkdownField<EditEntityFormValues>
+                context={entityTemplate._id}
+                label={property.label}
+                field={`metadata.${property.name}.0.value`}
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+              />
+            );
+          }
+
+          if (
+            property.type === 'image' ||
+            property.type === 'media' ||
+            property.type === 'preview'
+          ) {
+            <p no-translate="true">Image, media and preview fields not implement yet.</p>;
           }
 
           return undefined;

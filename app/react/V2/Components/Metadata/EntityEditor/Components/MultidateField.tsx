@@ -48,8 +48,6 @@ const MultidateField = <TFormValues extends FieldValues = FieldValues>({
           const entries = toDateEntries(value);
           const showRequiredError = fieldState.error?.type === 'required';
 
-          console.log(entries);
-
           return (
             <div>
               <div className="font-bold mb-2">
