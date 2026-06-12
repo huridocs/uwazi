@@ -19,8 +19,8 @@ jest.mock('#api/aiAssistant/infrastructure/AIAssistantCancellationRegistry.js', 
   },
 }));
 
+import type { AIAssistantService } from '#api/aiAssistant/domain/AIAssistantService.js';
 import type { AIAssistantPollScheduler } from '#api/aiAssistant/application/contracts/AIAssistantPollScheduler.js';
-import { PollAIAssistantRequest } from '#api/aiAssistant/application/PollAIAssistantRequest.js';
 import { AIAssistantPollRequestJob } from '../AIAssistantPollRequestJob.js';
 
 const { emitToSession } = jest.requireMock('#api/socketio/setupSockets.js');
@@ -49,7 +49,7 @@ describe('AIAssistantPollRequestJob', () => {
   const jobInfo = { retryCount: 2, maxRetries: 3, namespace: 'default' };
 
   const createJob = (overrides: {
-    pollUseCase?: PollAIAssistantRequest;
+    aiAssistantService?: AIAssistantService;
     pollScheduler?: AIAssistantPollScheduler;
   } = {}) => {
     const pollScheduler: AIAssistantPollScheduler = overrides.pollScheduler ?? {
@@ -57,17 +57,15 @@ describe('AIAssistantPollRequestJob', () => {
       cancelPolls: jest.fn(),
     };
 
-    const pollUseCase =
-      overrides.pollUseCase ??
-      new PollAIAssistantRequest({
-        aiAssistantService: {
-          submitMessage: jest.fn(),
-          getJobStatus: jest.fn().mockResolvedValue({ status: 'pending' }),
-          cancelJob: jest.fn(),
-        },
-      });
+    const aiAssistantService: AIAssistantService =
+      overrides.aiAssistantService ??
+      ({
+        submitMessage: jest.fn(),
+        getJobStatus: jest.fn().mockResolvedValue({ status: 'pending' }),
+        cancelJob: jest.fn(),
+      } as AIAssistantService);
 
-    return new AIAssistantPollRequestJob({ pollUseCase, pollScheduler });
+    return new AIAssistantPollRequestJob({ aiAssistantService, pollScheduler });
   };
 
   beforeEach(() => {
@@ -76,22 +74,20 @@ describe('AIAssistantPollRequestJob', () => {
   });
 
   it('should emit a reply and stop polling when the job is completed', async () => {
-    const pollUseCase = new PollAIAssistantRequest({
-      aiAssistantService: {
-        submitMessage: jest.fn(),
-        getJobStatus: jest.fn().mockResolvedValue({
-          status: 'completed',
-          message: 'Done',
-        }),
-        cancelJob: jest.fn(),
-      },
-    });
+    const aiAssistantService = {
+      submitMessage: jest.fn(),
+      getJobStatus: jest.fn().mockResolvedValue({
+        status: 'completed',
+        message: 'Done',
+      }),
+      cancelJob: jest.fn(),
+    } as AIAssistantService;
     const pollScheduler: AIAssistantPollScheduler = {
       schedulePoll: jest.fn(),
       cancelPolls: jest.fn(),
     };
 
-    const job = createJob({ pollUseCase, pollScheduler });
+    const job = createJob({ aiAssistantService, pollScheduler });
     await job.handleDispatch(jest.fn(), params, jobInfo);
 
     expect(emitToSession).toHaveBeenCalledWith('session-1', 'aiAssistant:reply', {
@@ -106,18 +102,16 @@ describe('AIAssistantPollRequestJob', () => {
       schedulePoll: jest.fn(),
       cancelPolls: jest.fn(),
     };
-    const pollUseCase = new PollAIAssistantRequest({
-      aiAssistantService: {
-        submitMessage: jest.fn(),
-        getJobStatus: jest.fn().mockResolvedValue({
-          status: 'running',
-          progress: 'Working...',
-        }),
-        cancelJob: jest.fn(),
-      },
-    });
+    const aiAssistantService = {
+      submitMessage: jest.fn(),
+      getJobStatus: jest.fn().mockResolvedValue({
+        status: 'running',
+        progress: 'Working...',
+      }),
+      cancelJob: jest.fn(),
+    } as AIAssistantService;
 
-    const job = createJob({ pollUseCase, pollScheduler });
+    const job = createJob({ aiAssistantService, pollScheduler });
     await job.handleDispatch(jest.fn(), params, jobInfo);
 
     expect(emitToSession).toHaveBeenCalledWith('session-1', 'aiAssistant:progress', {
@@ -128,15 +122,13 @@ describe('AIAssistantPollRequestJob', () => {
   });
 
   it('should emit an error to the client on the last retry when polling fails', async () => {
-    const pollUseCase = new PollAIAssistantRequest({
-      aiAssistantService: {
-        submitMessage: jest.fn(),
-        getJobStatus: jest.fn().mockRejectedValue(new Error('Service unavailable')),
-        cancelJob: jest.fn(),
-      },
-    });
+    const aiAssistantService = {
+      submitMessage: jest.fn(),
+      getJobStatus: jest.fn().mockRejectedValue(new Error('Service unavailable')),
+      cancelJob: jest.fn(),
+    } as AIAssistantService;
 
-    const job = createJob({ pollUseCase });
+    const job = createJob({ aiAssistantService });
 
     await expect(
       job.handleDispatch(jest.fn(), params, { retryCount: 3, maxRetries: 3, namespace: 'default' })
@@ -149,15 +141,13 @@ describe('AIAssistantPollRequestJob', () => {
   });
 
   it('should not emit an error to the client before the last retry', async () => {
-    const pollUseCase = new PollAIAssistantRequest({
-      aiAssistantService: {
-        submitMessage: jest.fn(),
-        getJobStatus: jest.fn().mockRejectedValue(new Error('Service unavailable')),
-        cancelJob: jest.fn(),
-      },
-    });
+    const aiAssistantService = {
+      submitMessage: jest.fn(),
+      getJobStatus: jest.fn().mockRejectedValue(new Error('Service unavailable')),
+      cancelJob: jest.fn(),
+    } as AIAssistantService;
 
-    const job = createJob({ pollUseCase });
+    const job = createJob({ aiAssistantService });
 
     await expect(job.handleDispatch(jest.fn(), params, jobInfo)).rejects.toThrow(
       'Service unavailable'
@@ -168,14 +158,17 @@ describe('AIAssistantPollRequestJob', () => {
 
   it('should skip processing when the conversation was cancelled', async () => {
     AIAssistantCancellationRegistry.isCancelled.mockResolvedValue(true);
-    const pollUseCase = {
-      execute: jest.fn(),
-    } as unknown as PollAIAssistantRequest;
+    const getJobStatus = jest.fn();
+    const aiAssistantService = {
+      submitMessage: jest.fn(),
+      getJobStatus,
+      cancelJob: jest.fn(),
+    } as AIAssistantService;
 
-    const job = createJob({ pollUseCase });
+    const job = createJob({ aiAssistantService });
     await job.handleDispatch(jest.fn(), params, jobInfo);
 
-    expect(pollUseCase.execute).not.toHaveBeenCalled();
+    expect(getJobStatus).not.toHaveBeenCalled();
     expect(emitToSession).not.toHaveBeenCalled();
   });
 });

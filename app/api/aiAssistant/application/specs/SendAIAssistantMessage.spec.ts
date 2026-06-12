@@ -54,6 +54,38 @@ describe('SendAIAssistantMessage', () => {
     );
   });
 
+  it('should submit the user message unchanged when context has no chips', async () => {
+    const aiAssistantService: AIAssistantService = {
+      submitMessage: jest.fn().mockResolvedValue({ jobId: 'job-42' }),
+      getJobStatus: jest.fn(),
+      cancelJob: jest.fn(),
+    };
+
+    const pollScheduler: AIAssistantPollScheduler = {
+      schedulePoll: jest.fn(),
+      cancelPolls: jest.fn(),
+    };
+
+    const useCase = new SendAIAssistantMessage({ aiAssistantService, pollScheduler });
+
+    await useCase.execute({
+      tenantName: 'default',
+      userId: 'user-1',
+      sessionId: 'session-1',
+      message: 'Hello',
+      context: { mode: 'auto', chips: [] },
+      credentials: {
+        url: 'http://localhost',
+        username: 'admin',
+        password: 'secret',
+      },
+    });
+
+    expect(aiAssistantService.submitMessage).toHaveBeenCalledWith(
+      expect.objectContaining({ message: 'Hello' })
+    );
+  });
+
   it('should continue an existing conversation when conversationJobId is provided', async () => {
     const aiAssistantService: AIAssistantService = {
       submitMessage: jest.fn().mockResolvedValue({ jobId: 'job-42' }),

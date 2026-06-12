@@ -1,4 +1,4 @@
-import type { AIAssistantContextPayload } from '../domain/AIAssistantTypes.js';
+import type { AIAssistantContextPayload } from './contracts/AIAssistantContracts.js';
 
 const formatAIAssistantMessage = (
   message: string,
@@ -8,9 +8,12 @@ const formatAIAssistantMessage = (
     .map(chip => chip.label)
     .filter(Boolean)
     .join(', ');
-  const scope = chipLabels || context.mode;
 
-  return `[Context: ${scope}]\n\n${message}`;
+  if (!chipLabels) {
+    return message;
+  }
+
+  return `[Context: ${chipLabels}]\n\n${message}`;
 };
 
 export { formatAIAssistantMessage };

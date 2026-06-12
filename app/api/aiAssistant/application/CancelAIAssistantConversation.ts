@@ -1,6 +1,6 @@
 import type { AIAssistantPollScheduler } from './contracts/AIAssistantPollScheduler.js';
 import type { AIAssistantService } from '../domain/AIAssistantService.js';
-import type { UwaziCredentials } from '../domain/AIAssistantTypes.js';
+import type { UwaziCredentials } from './contracts/AIAssistantContracts.js';
 
 type Input = {
   tenantName: string;

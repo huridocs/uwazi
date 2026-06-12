@@ -8,7 +8,7 @@ import {
   JobInfo,
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import type { AIAssistantPollScheduler } from '../../application/contracts/AIAssistantPollScheduler.js';
-import { PollAIAssistantRequest } from '../../application/PollAIAssistantRequest.js';
+import type { AIAssistantService } from '../../domain/AIAssistantService.js';
 import { AIAssistantCancellationRegistry } from '../AIAssistantCancellationRegistry.js';
 
 type Params = UserAwareDispatchableParams & {
@@ -17,7 +17,7 @@ type Params = UserAwareDispatchableParams & {
 };
 
 type Dependencies = {
-  pollUseCase: PollAIAssistantRequest;
+  aiAssistantService: AIAssistantService;
   pollScheduler: AIAssistantPollScheduler;
 };
 
@@ -36,9 +36,7 @@ class AIAssistantPollRequestJob extends UserAwareDispatchable<Params> {
 
     let result;
     try {
-      result = await this.dependencies.pollUseCase.execute({
-        jobId: this.params.jobId,
-      });
+      result = await this.dependencies.aiAssistantService.getJobStatus(this.params.jobId);
     } catch (error) {
       if (isLastRetry(jobInfo)) {
         emitToSession(this.params.sessionId, 'aiAssistant:error', {
@@ -83,4 +81,4 @@ class AIAssistantPollRequestJob extends UserAwareDispatchable<Params> {
   }
 }
 
-export { AIAssistantPollRequestJob, isLastRetry };
+export { AIAssistantPollRequestJob };

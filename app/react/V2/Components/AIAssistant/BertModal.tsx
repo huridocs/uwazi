@@ -2,22 +2,35 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { ChatBubbleBottomCenterTextIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { Button, Modal } from '#V2/Components/UI/index.js';
 import { BertIconStacked } from './BertIcon.js';
+import { BertContextBar } from './BertContextBar.js';
 import { BertPasswordGate } from './BertPasswordGate.js';
 import { BertWelcome } from './BertWelcome.js';
 import { ChatMessageView } from './ChatMessage.js';
 import { ChatInput } from './ChatInput.js';
-import { useBertState } from './useBertState.js';
-import type { ReplyScenario } from './useBertState.js';
-import type { ChatMessage, ContextChip } from './types.js';
-import { DEFAULT_BERT_MESSAGES, DEFAULT_CONTEXT_CHIPS } from './mockBertData.js';
+import type { ContextAddOptionId, ContextChip, ContextScopeMode, ChatMessage } from './types.js';
 
 type BertModalProps = {
   open?: boolean;
   onClose?: () => void;
-  mockReplies?: boolean;
-  replyScenario?: ReplyScenario;
-  initialMessages?: ChatMessage[];
-  initialContextChips?: ContextChip[];
+  messages: ChatMessage[];
+  contextMode: ContextScopeMode;
+  contextModeLabel: string;
+  contextChips: ContextChip[];
+  draftMessage: string;
+  isReplying: boolean;
+  isThinking: boolean;
+  jobProgress: string | null;
+  streamingMessageId: string | null;
+  replyError: string | null;
+  needsPasswordUnlock: boolean;
+  setContextMode: (mode: ContextScopeMode) => void;
+  setDraftMessage: (value: string) => void;
+  removeContextChip: (chipId: string) => void;
+  addContextOption: (optionId: ContextAddOptionId) => void;
+  unlockWithPassword: (password: string) => void;
+  sendMessage: () => void;
+  finishStreaming: () => void;
+  clearChat: () => void | Promise<void>;
 };
 
 const BertThinking = ({ progress }: { progress?: string | null }) => (
@@ -37,27 +50,26 @@ const BertThinking = ({ progress }: { progress?: string | null }) => (
 const BertModal = ({
   open = true,
   onClose,
-  mockReplies = false,
-  replyScenario = 'normal',
-  initialMessages = DEFAULT_BERT_MESSAGES,
-  initialContextChips = DEFAULT_CONTEXT_CHIPS,
+  messages,
+  contextMode,
+  contextModeLabel,
+  contextChips,
+  draftMessage,
+  isReplying,
+  isThinking,
+  jobProgress,
+  streamingMessageId,
+  replyError,
+  needsPasswordUnlock,
+  setContextMode,
+  setDraftMessage,
+  removeContextChip,
+  addContextOption,
+  unlockWithPassword,
+  sendMessage,
+  finishStreaming,
+  clearChat,
 }: BertModalProps) => {
-  const {
-    messages,
-    draftMessage,
-    isReplying,
-    isThinking,
-    jobProgress,
-    streamingMessageId,
-    replyError,
-    needsPasswordUnlock,
-    setDraftMessage,
-    unlockWithPassword,
-    sendMessage,
-    finishStreaming,
-    clearChat,
-  } = useBertState({ initialMessages, initialContextChips, mockReplies, replyScenario });
-
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = useCallback(() => {
@@ -101,6 +113,16 @@ const BertModal = ({
         </div>
         <Modal.CloseButton onClick={onClose} />
       </Modal.Header>
+      {!needsPasswordUnlock ? (
+        <BertContextBar
+          contextMode={contextMode}
+          contextModeLabel={contextModeLabel}
+          contextChips={contextChips}
+          onContextModeChange={setContextMode}
+          onRemoveChip={removeContextChip}
+          onAddOption={addContextOption}
+        />
+      ) : null}
       <Modal.Body className="min-h-[32rem]">
         {needsPasswordUnlock ? (
           <BertPasswordGate onUnlock={unlockWithPassword} />

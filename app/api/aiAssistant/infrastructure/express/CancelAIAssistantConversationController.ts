@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { tenants } from '#api/tenants/index.js';
 import {
   AbstractController,
   Dependencies as AbstractControllerDependencies,
 } from '#api/common.v2/infrastructure/AbstractController.js';
-import { CancelAIAssistantConversationFactory } from './CancelAIAssistantConversationFactory.js';
+import { AIAssistantFactory } from '../AIAssistantFactory.js';
+import { buildUwaziCredentials } from './buildUwaziCredentials.js';
 
 type Dependencies = AbstractControllerDependencies<Request>;
 
@@ -25,28 +25,17 @@ class CancelAIAssistantConversationController extends AbstractController<Request
 
     this.ensureUser();
 
-    const username = this.request.user?.username;
-    if (!username) {
+    const credentials = buildUwaziCredentials(this.request, dto.password);
+    if (!credentials) {
       this.clientError('User username not found');
       return;
     }
 
-    const tenant = tenants.current();
-    const instanceHost = tenant.domain || this.request.get('host');
-    if (!instanceHost) {
-      this.clientError('Tenant domain not found');
-      return;
-    }
-
-    const useCase = CancelAIAssistantConversationFactory.createDefault();
+    const useCase = AIAssistantFactory.createCancelConversation();
     await useCase.execute({
       tenantName: this.tenantName,
       jobId: dto.jobId,
-      credentials: {
-        url: `${this.request.protocol}://${instanceHost}`,
-        username,
-        password: dto.password,
-      },
+      credentials,
     });
 
     this.response.status(204).send();

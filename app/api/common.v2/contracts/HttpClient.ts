@@ -11,9 +11,21 @@ type GetInput = {
   url: string;
 };
 
+type PostJsonInput = {
+  url: string;
+  body: unknown;
+};
+
+type DeleteJsonInput = {
+  url: string;
+  body?: unknown;
+};
+
 interface HttpClient {
   postFormData<T>(input: PostFormDataInput): Promise<T>;
+  postJson<Response>(input: PostJsonInput): Promise<Response>;
+  delete(input: DeleteJsonInput): Promise<void>;
   get<Response>(input: GetInput): Promise<Response>;
 }
 
-export type { GetInput, HttpClient, PostFormDataInput };
+export type { DeleteJsonInput, GetInput, HttpClient, PostFormDataInput, PostJsonInput };

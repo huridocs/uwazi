@@ -26,10 +26,6 @@ const BertPasswordGate = ({ onUnlock }: BertPasswordGateProps) => {
         <LockClosedIcon className="h-5 w-5" />
       </div>
       <h3 className="mt-4 text-base font-semibold text-ink">Confirm your password</h3>
-      <p className="mt-2 max-w-sm text-center text-sm text-ink-secondary">
-        Bert needs your Uwazi password to access documents on your behalf. It is sent with each
-        message and not stored after you close this window.
-      </p>
       <form onSubmit={handleSubmit} className="mt-6 w-full max-w-sm">
         <label htmlFor="bert-password" className="sr-only">
           Password
@@ -40,15 +36,10 @@ const BertPasswordGate = ({ onUnlock }: BertPasswordGateProps) => {
           autoComplete="current-password"
           value={password}
           onChange={event => setPassword(event.target.value)}
-          placeholder="Uwazi password"
           className="w-full rounded-lg border border-border bg-paper px-3 py-2 text-sm text-ink outline-none focus:border-primary-400"
         />
-        {error ? (
-          <p role="alert" className="mt-2 text-sm text-error-700">
-            {error}
-          </p>
-        ) : null}
-        <Button type="submit" size="medium" className="mt-4 w-full">
+        {error ? <p className="mt-2 text-sm text-error-600">{error}</p> : null}
+        <Button type="submit" className="mt-4 w-full">
           Continue
         </Button>
       </form>

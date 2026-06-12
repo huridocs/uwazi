@@ -1,17 +1,12 @@
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { api } from '#app/utils/api.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
-import type { ContextChip, ContextScopeMode } from '#V2/Components/AIAssistant/types.js';
 import { ApiResponse } from '../ApiResponse.js';
 
 type SendMessageInput = {
   message: string;
   password: string;
   jobId?: string;
-  context: {
-    mode: ContextScopeMode;
-    chips: ContextChip[];
-  };
 };
 
 type SendMessageResponse = {
@@ -26,15 +21,8 @@ const sendMessage = async (
       message: input.message,
       password: input.password,
       ...(input.jobId ? { jobId: input.jobId } : {}),
-      context: {
-        mode: input.context.mode,
-        chips: input.context.chips.map(chip => ({
-          id: chip.id,
-          label: chip.label,
-          kind: chip.kind,
-          removable: chip.removable,
-        })),
-      },
+      // Context bar is UI-only for now; send empty payload until wired end-to-end.
+      context: { mode: 'auto', chips: [] },
     });
     const response = await api.post('aiAssistant/messages', requestParams);
     return [response.json as SendMessageResponse, undefined];

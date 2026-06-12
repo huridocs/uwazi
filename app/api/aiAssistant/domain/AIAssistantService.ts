@@ -3,7 +3,7 @@ import type {
   SubmitMessageInput,
   SubmitMessageOutput,
   UwaziCredentials,
-} from './AIAssistantTypes.js';
+} from '../application/contracts/AIAssistantContracts.js';
 
 interface AIAssistantService {
   submitMessage(input: SubmitMessageInput): Promise<SubmitMessageOutput>;

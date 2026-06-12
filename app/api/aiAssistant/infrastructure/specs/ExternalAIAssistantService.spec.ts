@@ -76,6 +76,17 @@ describe('ExternalAIAssistantService', () => {
       const response = await superagent.get(input.url);
       return response.body as Response;
     },
+    async postJson<Response>(input: { url: string; body: unknown }) {
+      const response = await superagent.post(input.url).send(input.body);
+      return response.body as Response;
+    },
+    async delete(input: { url: string; body?: unknown }) {
+      const request = superagent.delete(input.url);
+      if (input.body !== undefined) {
+        request.send(input.body);
+      }
+      await request;
+    },
     postFormData: jest.fn(),
   };
 

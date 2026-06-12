@@ -1,11 +1,11 @@
 import * as cookie from 'cookie';
 import { z } from 'zod';
-import { tenants } from '#api/tenants/index.js';
 import {
   AbstractController,
   Dependencies as AbstractControllerDependencies,
 } from '#api/common.v2/infrastructure/AbstractController.js';
-import { SendAIAssistantMessageFactory } from './SendAIAssistantMessageFactory.js';
+import { AIAssistantFactory } from '../AIAssistantFactory.js';
+import { buildUwaziCredentials } from './buildUwaziCredentials.js';
 
 type Dependencies = AbstractControllerDependencies<Request>;
 
@@ -46,20 +46,13 @@ class SendAIAssistantMessageController extends AbstractController<Request> {
       return;
     }
 
-    const username = this.request.user?.username;
-    if (!username) {
+    const credentials = buildUwaziCredentials(this.request, dto.password);
+    if (!credentials) {
       this.clientError('User username not found');
       return;
     }
 
-    const tenant = tenants.current();
-    const instanceHost = tenant.domain || this.request.get('host');
-    if (!instanceHost) {
-      this.clientError('Tenant domain not found');
-      return;
-    }
-
-    const useCase = SendAIAssistantMessageFactory.createDefault();
+    const useCase = AIAssistantFactory.createSendMessage();
     const result = await useCase.execute({
       tenantName: this.tenantName,
       userId: this.user._id,
@@ -74,11 +67,7 @@ class SendAIAssistantMessageController extends AbstractController<Request> {
           kind: chip.kind,
         })),
       },
-      credentials: {
-        url: `${this.request.protocol}://${instanceHost}`,
-        username,
-        password: dto.password,
-      },
+      credentials,
     });
 
     this.response.status(202).json(result);

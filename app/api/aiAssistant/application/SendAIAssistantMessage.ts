@@ -3,7 +3,7 @@ import type { AIAssistantService } from '../domain/AIAssistantService.js';
 import type {
   AIAssistantContextPayload,
   UwaziCredentials,
-} from '../domain/AIAssistantTypes.js';
+} from './contracts/AIAssistantContracts.js';
 import { formatAIAssistantMessage } from './formatAIAssistantMessage.js';
 
 type Input = {

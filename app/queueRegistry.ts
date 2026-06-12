@@ -58,7 +58,7 @@ import { PXCreateParagraphsFactory } from '#api/paragraphExtraction/infrastructu
 import { PXCreateParagraphsJob } from '#api/paragraphExtraction/infrastructure/PXCreateParagraphsJob.js';
 import { PXExtractionServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractionServiceFactory.js';
 import { PXExtractorsQueryServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory.js';
-import { AIAssistantPollRequestJobFactory } from '#api/aiAssistant/infrastructure/jobs/AIAssistantPollRequestJobFactory.js';
+import { AIAssistantFactory } from '#api/aiAssistant/infrastructure/AIAssistantFactory.js';
 import { AIAssistantPollRequestJob } from '#api/aiAssistant/infrastructure/jobs/AIAssistantPollRequestJob.js';
 import { PXExtractParagraphsFromEntityJob } from '#api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntityJob.js';
 import { CreateParagraphExtractionEntityStatusesJob } from '#api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
@@ -121,7 +121,7 @@ export function registerJobs(register: Register) {
   register(PXExtractParagraphsFromEntityJob, async () => new PXExtractParagraphsFromEntityJob());
 
   register(AIAssistantPollRequestJob, async () =>
-    AIAssistantPollRequestJobFactory.createDefault()
+    AIAssistantFactory.createPollRequestJob()
   );
 
   register(PXCreateParagraphsJob, async () => {

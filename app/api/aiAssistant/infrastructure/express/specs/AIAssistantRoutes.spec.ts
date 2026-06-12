@@ -4,8 +4,7 @@ import { tenants } from '#api/tenants/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { UserRole } from '#shared/types/userSchema.js';
-import { CancelAIAssistantConversationFactory } from '../CancelAIAssistantConversationFactory.js';
-import { SendAIAssistantMessageFactory } from '../SendAIAssistantMessageFactory.js';
+import { AIAssistantFactory } from '../../AIAssistantFactory.js';
 import { aiAssistantRoutes } from '../AIAssistantRoutes.js';
 
 jest.mock('#api/auth/index.js', () => ({
@@ -38,10 +37,10 @@ describe('AIAssistantRoutes', () => {
 
   beforeEach(() => {
     tenants.current().domain = '127.0.0.1';
-    jest.spyOn(SendAIAssistantMessageFactory, 'createDefault').mockReturnValue({
+    jest.spyOn(AIAssistantFactory, 'createSendMessage').mockReturnValue({
       execute: jest.fn().mockResolvedValue({ jobId: 'job-123' }),
     } as any);
-    jest.spyOn(CancelAIAssistantConversationFactory, 'createDefault').mockReturnValue({
+    jest.spyOn(AIAssistantFactory, 'createCancelConversation').mockReturnValue({
       execute: jest.fn().mockResolvedValue(undefined),
     } as any);
     tenants.current().featureFlags!.aiAssistant = true;
@@ -92,7 +91,7 @@ describe('AIAssistantRoutes', () => {
 
   it('should return 202 with jobId when flag is enabled', async () => {
     const execute = jest.fn().mockResolvedValue({ jobId: 'job-123' });
-    jest.spyOn(SendAIAssistantMessageFactory, 'createDefault').mockReturnValue({ execute } as any);
+    jest.spyOn(AIAssistantFactory, 'createSendMessage').mockReturnValue({ execute } as any);
 
     const response = await request(app)
       .post('/api/aiAssistant/messages')
@@ -125,7 +124,7 @@ describe('AIAssistantRoutes', () => {
 
   it('should return 204 when cancelling a conversation', async () => {
     const execute = jest.fn().mockResolvedValue(undefined);
-    jest.spyOn(CancelAIAssistantConversationFactory, 'createDefault').mockReturnValue({
+    jest.spyOn(AIAssistantFactory, 'createCancelConversation').mockReturnValue({
       execute,
     } as any);
 

@@ -1,11 +1,10 @@
-import superagent from 'superagent';
 import { HttpClient } from '#api/common.v2/contracts/HttpClient.js';
 import type { AIAssistantService } from '../domain/AIAssistantService.js';
 import type {
   PollResult,
   SubmitMessageInput,
   SubmitMessageOutput,
-} from '../domain/AIAssistantTypes.js';
+} from '../application/contracts/AIAssistantContracts.js';
 
 type JobStatusResponseDTO = {
   job_id: string;
@@ -32,12 +31,13 @@ class ExternalAIAssistantService implements AIAssistantService {
       ? `${this.dependencies.url}/api/v1/jobs/${input.jobId}`
       : `${this.dependencies.url}/api/v1/jobs`;
 
-    const response = await superagent.post(url).send({
-      message: input.message,
-      credentials: input.credentials,
+    const body = await this.dependencies.httpClient.postJson<SubmitResponseDTO>({
+      url,
+      body: {
+        message: input.message,
+        credentials: input.credentials,
+      },
     });
-
-    const body = response.body as SubmitResponseDTO;
 
     if (!body?.job_id) {
       throw new Error('AI Assistant service did not return a job_id');
@@ -68,8 +68,9 @@ class ExternalAIAssistantService implements AIAssistantService {
   }
 
   async cancelJob(jobId: string, credentials: SubmitMessageInput['credentials']): Promise<void> {
-    await superagent.delete(`${this.dependencies.url}/api/v1/jobs/${jobId}`).send({
-      credentials,
+    await this.dependencies.httpClient.delete({
+      url: `${this.dependencies.url}/api/v1/jobs/${jobId}`,
+      body: { credentials },
     });
   }
 }

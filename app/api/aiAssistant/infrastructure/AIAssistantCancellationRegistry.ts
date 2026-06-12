@@ -1,5 +1,6 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
+// Marks jobs cancelled while a poll tick may still reschedule; complements queue deleteByParams.
 const COLLECTION = 'ai_assistant_cancelled_jobs';
 
 const getCollection = () => getConnection().collection(COLLECTION);
