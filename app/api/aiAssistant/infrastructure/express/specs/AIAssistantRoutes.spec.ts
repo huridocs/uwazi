@@ -4,6 +4,7 @@ import { tenants } from '#api/tenants/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { UserRole } from '#shared/types/userSchema.js';
+import { CancelAIAssistantConversationFactory } from '../CancelAIAssistantConversationFactory.js';
 import { SendAIAssistantMessageFactory } from '../SendAIAssistantMessageFactory.js';
 import { aiAssistantRoutes } from '../AIAssistantRoutes.js';
 
@@ -39,6 +40,9 @@ describe('AIAssistantRoutes', () => {
     tenants.current().domain = '127.0.0.1';
     jest.spyOn(SendAIAssistantMessageFactory, 'createDefault').mockReturnValue({
       execute: jest.fn().mockResolvedValue({ jobId: 'job-123' }),
+    } as any);
+    jest.spyOn(CancelAIAssistantConversationFactory, 'createDefault').mockReturnValue({
+      execute: jest.fn().mockResolvedValue(undefined),
     } as any);
     tenants.current().featureFlags!.aiAssistant = true;
   });
@@ -110,6 +114,34 @@ describe('AIAssistantRoutes', () => {
         userId: adminUser._id,
         sessionId: 'test-session',
         message: 'Summarise this case',
+        credentials: expect.objectContaining({
+          username: adminUser.username,
+          password: 'secret',
+          url: 'http://127.0.0.1',
+        }),
+      })
+    );
+  });
+
+  it('should return 204 when cancelling a conversation', async () => {
+    const execute = jest.fn().mockResolvedValue(undefined);
+    jest.spyOn(CancelAIAssistantConversationFactory, 'createDefault').mockReturnValue({
+      execute,
+    } as any);
+
+    const response = await request(app)
+      .post('/api/aiAssistant/conversation/cancel')
+      .set('Cookie', 'connect.sid=test-session')
+      .send({
+        jobId: 'job-123',
+        password: 'secret',
+      });
+
+    expect(response.status).toBe(204);
+    expect(execute).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tenantName: expect.any(String),
+        jobId: 'job-123',
         credentials: expect.objectContaining({
           username: adminUser.username,
           password: 'secret',

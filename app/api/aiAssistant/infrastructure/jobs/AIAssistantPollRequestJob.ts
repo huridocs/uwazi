@@ -3,7 +3,11 @@ import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
 } from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
-import { HeartbeatCallback } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import {
+  HeartbeatCallback,
+  JobInfo,
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import type { AIAssistantPollScheduler } from '../../application/contracts/AIAssistantPollScheduler.js';
 import { PollAIAssistantRequest } from '../../application/PollAIAssistantRequest.js';
 import { AIAssistantCancellationRegistry } from '../AIAssistantCancellationRegistry.js';
 
@@ -14,21 +18,39 @@ type Params = UserAwareDispatchableParams & {
 
 type Dependencies = {
   pollUseCase: PollAIAssistantRequest;
+  pollScheduler: AIAssistantPollScheduler;
 };
+
+const isLastRetry = (jobInfo?: JobInfo) =>
+  Boolean(jobInfo && jobInfo.retryCount >= jobInfo.maxRetries);
 
 class AIAssistantPollRequestJob extends UserAwareDispatchable<Params> {
   constructor(private dependencies: Dependencies) {
     super();
   }
 
-  async handle(_heartbeat: HeartbeatCallback) {
+  async handle(_heartbeat: HeartbeatCallback, jobInfo?: JobInfo) {
     if (await AIAssistantCancellationRegistry.isCancelled(this.tenantName, this.params.jobId)) {
       return;
     }
 
-    const result = await this.dependencies.pollUseCase.execute({
-      jobId: this.params.jobId,
-    });
+    let result;
+    try {
+      result = await this.dependencies.pollUseCase.execute({
+        jobId: this.params.jobId,
+      });
+    } catch (error) {
+      if (isLastRetry(jobInfo)) {
+        emitToSession(this.params.sessionId, 'aiAssistant:error', {
+          jobId: this.params.jobId,
+          error:
+            error instanceof Error
+              ? error.message
+              : 'AI Assistant could not complete your request. Try again.',
+        });
+      }
+      throw error;
+    }
 
     if (await AIAssistantCancellationRegistry.isCancelled(this.tenantName, this.params.jobId)) {
       return;
@@ -57,9 +79,8 @@ class AIAssistantPollRequestJob extends UserAwareDispatchable<Params> {
       });
     }
 
-    const { AIAssistantJobScheduler } = await import('../AIAssistantJobScheduler.js');
-    await AIAssistantJobScheduler.schedulePoll(this.params);
+    await this.dependencies.pollScheduler.schedulePoll(this.params);
   }
 }
 
-export { AIAssistantPollRequestJob };
+export { AIAssistantPollRequestJob, isLastRetry };

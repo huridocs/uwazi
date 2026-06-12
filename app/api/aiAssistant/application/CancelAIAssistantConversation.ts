@@ -1,6 +1,6 @@
+import type { AIAssistantPollScheduler } from './contracts/AIAssistantPollScheduler.js';
 import type { AIAssistantService } from '../domain/AIAssistantService.js';
 import type { UwaziCredentials } from '../domain/AIAssistantTypes.js';
-import { AIAssistantJobScheduler } from '../infrastructure/AIAssistantJobScheduler.js';
 
 type Input = {
   tenantName: string;
@@ -10,13 +10,14 @@ type Input = {
 
 type Dependencies = {
   aiAssistantService: AIAssistantService;
+  pollScheduler: AIAssistantPollScheduler;
 };
 
 class CancelAIAssistantConversation {
   constructor(private dependencies: Dependencies) {}
 
   async execute(input: Input): Promise<void> {
-    await AIAssistantJobScheduler.cancelPolls(input.tenantName, input.jobId);
+    await this.dependencies.pollScheduler.cancelPolls(input.tenantName, input.jobId);
 
     try {
       await this.dependencies.aiAssistantService.cancelJob(input.jobId, input.credentials);

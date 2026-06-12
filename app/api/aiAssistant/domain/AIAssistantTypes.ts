@@ -1,5 +1,3 @@
-type AIAssistantRequestStatus = 'pending' | 'completed' | 'error';
-
 type AIAssistantContextChip = {
   id: string;
   label: string;
@@ -36,7 +34,6 @@ type PollResult =
 export type {
   AIAssistantContextChip,
   AIAssistantContextPayload,
-  AIAssistantRequestStatus,
   PollResult,
   SubmitMessageInput,
   SubmitMessageOutput,

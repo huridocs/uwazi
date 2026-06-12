@@ -72,7 +72,7 @@ app.get('/api/v1/jobs/:jobId', (req, res) => {
 
 describe('ExternalAIAssistantService', () => {
   const httpClient: HttpClient = {
-    async get<Response>(input) {
+    async get<Response>(input: { url: string }) {
       const response = await superagent.get(input.url);
       return response.body as Response;
     },

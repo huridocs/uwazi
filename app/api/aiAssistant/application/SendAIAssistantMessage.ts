@@ -1,10 +1,10 @@
+import type { AIAssistantPollScheduler } from './contracts/AIAssistantPollScheduler.js';
 import type { AIAssistantService } from '../domain/AIAssistantService.js';
 import type {
   AIAssistantContextPayload,
   UwaziCredentials,
 } from '../domain/AIAssistantTypes.js';
 import { formatAIAssistantMessage } from './formatAIAssistantMessage.js';
-import { AIAssistantJobScheduler } from '../infrastructure/AIAssistantJobScheduler.js';
 
 type Input = {
   tenantName: string;
@@ -22,6 +22,7 @@ type Output = {
 
 type Dependencies = {
   aiAssistantService: AIAssistantService;
+  pollScheduler: AIAssistantPollScheduler;
 };
 
 class SendAIAssistantMessage {
@@ -34,7 +35,7 @@ class SendAIAssistantMessage {
       jobId: input.conversationJobId,
     });
 
-    await AIAssistantJobScheduler.schedulePoll(
+    await this.dependencies.pollScheduler.schedulePoll(
       {
         tenantName: input.tenantName,
         userId: input.userId,
