@@ -213,7 +213,7 @@ async function getEntityTemplate(doc, language) {
     template = await templates.getById(doc.template);
   } else if (doc.sharedId) {
     const storedDoc = await this.getById(doc.sharedId, language);
-    if (storedDoc) {
+    if (storedDoc?.template) {
       template = await templates.getById(storedDoc.template);
     }
   }
@@ -350,7 +350,7 @@ export default {
     } else {
       const [{ languages }, [defaultTemplate]] = await Promise.all([
         settings.get(),
-        templates.get({ default: true }),
+        templates.getByMongoQuery({ default: true }),
       ]);
 
       if (!doc.template) {
@@ -393,7 +393,7 @@ export default {
     doc.sharedId = doc.sharedId || ID();
     const [template, [defaultTemplate]] = await Promise.all([
       this.getEntityTemplate(doc, language),
-      templates.get({ default: true }),
+      templates.getByMongoQuery({ default: true }),
     ]);
     let docTemplate = template;
     if (!doc.template) {
@@ -587,7 +587,7 @@ export default {
   /** Propagate the deletion metadata.value id to all entity metadata. */
   async deleteFromMetadata(deletedId, propertyContent, propTypes) {
     const includesRelationships = propTypes.includes(propertyTypes.relationship);
-    const allTemplates = await templates.get({
+    const allTemplates = await templates.getByMongoQuery({
       $or: [
         {
           'properties.content': { $in: [propertyContent, ''] },

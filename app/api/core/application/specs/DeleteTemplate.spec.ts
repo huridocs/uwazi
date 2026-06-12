@@ -70,16 +70,16 @@ describe('DeleteTemplateUseCase', () => {
   it('should delete properties of other templates using this template as select/relationship', async () => {
     await createSut().execute({ templateId: templateToBeDeleted.toString() });
 
-    const [template1] = await templates.get({ name: 'thesauri template' });
+    const [template1] = await templates.getByMongoQuery({ name: 'thesauri template' });
 
     expect(template1?.properties?.length).toBe(1);
     expect(template1?.properties?.[0]?.label).toBe('select');
 
-    const [template2] = await templates.get({ name: 'thesauri template 2' });
+    const [template2] = await templates.getByMongoQuery({ name: 'thesauri template 2' });
     expect(template2?.properties?.length).toBe(1);
     expect(template2?.properties?.[0]?.label).toBe('select2');
 
-    const [template3] = await templates.get({ name: 'thesauri template 3' });
+    const [template3] = await templates.getByMongoQuery({ name: 'thesauri template 3' });
     expect(template3?.properties?.length).toBe(2);
     expect(template3?.properties?.[0]?.label).toBe('text');
     expect(template3?.properties?.[1]?.label).toBe('text2');

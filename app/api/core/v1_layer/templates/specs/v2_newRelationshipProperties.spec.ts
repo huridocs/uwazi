@@ -224,7 +224,7 @@ describe.skip('template.save()', () => {
   describe('on template update', () => {
     describe('when the property is new', () => {
       it('should validate the property and correctly map it to the database ignoring the targetTemplates', async () => {
-        const existingTemplates = await templates.get({ name: 'existing_template' });
+        const existingTemplates = await templates.getByMongoQuery({ name: 'existing_template' });
         expect(existingTemplates.length).toBe(1);
         const existingTemplate = existingTemplates[0];
         const updatedTemplate = {
@@ -273,7 +273,7 @@ describe.skip('template.save()', () => {
       });
 
       it('should throw a validation error', async () => {
-        const [existingTemplate] = await templates.get({ name: 'existing_template' });
+        const [existingTemplate] = await templates.getByMongoQuery({ name: 'existing_template' });
         const newTemplate = {
           ...existingTemplate,
           properties: [
@@ -294,7 +294,7 @@ describe.skip('template.save()', () => {
       });
 
       it('should mark the properties as obsolete metadata in entites', async () => {
-        const [existingTemplates] = await templates.get({ name: 'existing_template' });
+        const [existingTemplates] = await templates.getByMongoQuery({ name: 'existing_template' });
         const updatedTemplate = {
           ...existingTemplates,
           properties: [
@@ -321,7 +321,7 @@ describe.skip('template.save()', () => {
 
     describe('when the property is deleted', () => {
       it('uwazi should normally delete the property and metadata', async () => {
-        const [existingTemplate] = await templates.get({
+        const [existingTemplate] = await templates.getByMongoQuery({
           name: 'template_with_existing_relationship',
         });
         const updatedTemplate = {
@@ -342,7 +342,7 @@ describe.skip('template.save()', () => {
 
     describe('when the property is updated', () => {
       it('on property name change, uwazi should normally update the property and metadata', async () => {
-        const [existingTemplate] = await templates.get({
+        const [existingTemplate] = await templates.getByMongoQuery({
           name: 'template_with_existing_relationship',
         });
         const updatedTemplate = {
@@ -382,7 +382,7 @@ describe.skip('template.save()', () => {
       });
 
       it('on query change, uwazi should save the query properly, mark the metadata obsolete and recalculate the target templates', async () => {
-        const [existingTemplate] = await templates.get({
+        const [existingTemplate] = await templates.getByMongoQuery({
           name: 'template_with_existing_relationship',
         });
         const updatedTemplate = {
@@ -425,7 +425,7 @@ describe.skip('template.save()', () => {
       });
 
       it('on denormalizedProperty change should throw an error and not change the metadata', async () => {
-        const [existingTemplate] = await templates.get({
+        const [existingTemplate] = await templates.getByMongoQuery({
           name: 'template_with_existing_relationship',
         });
         const updatedTemplate = {
@@ -462,7 +462,7 @@ describe.skip('template.save()', () => {
 
   describe('on template deletion', () => {
     it('should throw an error, if the template is still used in any query', async () => {
-      const [template] = await templates.get({
+      const [template] = await templates.getByMongoQuery({
         name: 'unrelated_template',
       });
       const [entityUsing] = await entities.get({ template: template._id });
@@ -473,13 +473,13 @@ describe.skip('template.save()', () => {
     });
 
     it('should delete the template, if it is not used in any query', async () => {
-      const [template] = await templates.get({
+      const [template] = await templates.getByMongoQuery({
         name: 'template_with_existing_relationship',
       });
       const [entityUsing] = await entities.get({ template: template._id });
       await entities.delete(entityUsing.sharedId);
       await templates.delete({ _id: template._id });
-      const stillInDb = await templates.get({ _id: template._id });
+      const stillInDb = await templates.getByMongoQuery({ _id: template._id });
       expect(stillInDb).toEqual([]);
     });
   });

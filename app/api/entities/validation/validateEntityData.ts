@@ -60,7 +60,18 @@ ajv.addKeyword({
       return true;
     }
 
-    const [template = {} as TemplateSchema] = await templates.get({ _id: entity.template });
+    const template = await templates.getById(entity.template);
+    if (!template) {
+      throw new ValidationError([
+        {
+          keyword: 'templateExists',
+          instancePath: '.template',
+          message: 'template does not exist',
+          params: {},
+          schemaPath: '',
+        },
+      ]);
+    }
 
     const errors = [
       ...(await validateFields(template, entity)),
@@ -85,7 +96,7 @@ ajv.addKeyword({
       return true;
     }
 
-    const [template] = await templates.get({ _id: entity.template });
+    const template = await templates.getById(entity.template);
     if (!template) {
       throw new ValidationError([
         {

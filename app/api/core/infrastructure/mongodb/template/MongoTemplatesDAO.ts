@@ -1,4 +1,4 @@
-import { Db } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { TemplateDBO } from './DBOs/TemplateDBO.js';
@@ -16,6 +16,16 @@ class MongoTemplatesDAO extends MongoDataSource<TemplateDBO> {
 
   constructor(deps: Deps) {
     super(deps.db, deps.transactionManager);
+  }
+
+  async get(ids?: string[]): Promise<TemplateDBO[]> {
+    if (ids !== undefined) {
+      const objectIds = ids.map(id => new ObjectId(id));
+      return this.getCollection()
+        .find({ _id: { $in: objectIds } })
+        .toArray();
+    }
+    return this.getCollection().find({}).toArray();
   }
 
   async getAllFilterableProperties(): Promise<PropertyDescriptor[]> {

@@ -8,6 +8,7 @@ import { TemplateSchema } from '#shared/types/templateType.js';
 import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
 import model from './templatesModel.js';
 import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
+import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 
 const getRelatedThesauri = async (template: TemplateSchema) => {
   const thesauriIds = (template.properties || [])
@@ -34,8 +35,19 @@ export default {
     );
   },
 
-  async get(query: any = {}, projection?: any) {
+  async get(ids?: string[]) {
+    const dao = TemplatesDAOFactory.default();
+    return dao.get(ids);
+  },
+
+  async getByMongoQuery(query: any = {}, projection?: any) {
     return model.get(query, projection);
+  },
+
+  async getById(templateId: ObjectId | string) {
+    const dao = TemplatesDAOFactory.default();
+    const result = await dao.get([templateId.toString()]);
+    return result[0] || null;
   },
 
   async getPropertyByName(propertyName: string): Promise<PropertySchema> {
@@ -45,7 +57,7 @@ export default {
 
   async getPropertiesByName(propertyNames: string[]): Promise<PropertySchema[]> {
     const nameSet = new Set(propertyNames);
-    const templates = await this.get({
+    const templates = await this.getByMongoQuery({
       $or: [
         { 'properties.name': { $in: propertyNames } },
         { 'commonProperties.name': { $in: propertyNames } },
@@ -66,10 +78,6 @@ export default {
       throw createError(`Properties not found: ${missingProperties.join(', ')}`);
     }
     return Array.from(Object.values(propertiesByName));
-  },
-
-  async getById(templateId: ObjectId | string) {
-    return model.getById(templateId, undefined);
   },
 
   async delete(template: Partial<TemplateSchema>) {

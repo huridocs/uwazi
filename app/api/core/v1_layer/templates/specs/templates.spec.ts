@@ -95,7 +95,7 @@ describe('templates', () => {
       ]);
 
       await testingEnvironment.runWithContext(async () => templates.save(newTemplate, 'en'));
-      const [createdTemplate] = await templates.get({ name: 'new template' });
+      const [createdTemplate] = await templates.getByMongoQuery({ name: 'new template' });
 
       expect(createdTemplate.properties?.[0].name).toEqual('new_label_1');
       expect(createdTemplate.properties?.[1].name).toEqual('new_label_2');
@@ -108,7 +108,9 @@ describe('templates', () => {
       const { _id, ...newTemplate } = factory.template('new template default properties');
       await testingEnvironment.runWithContext(async () => templates.save(newTemplate, 'en'));
 
-      const [newCreatedTemplate] = await templates.get({ name: 'new template default properties' });
+      const [newCreatedTemplate] = await templates.getByMongoQuery({
+        name: 'new template default properties',
+      });
       expect(newCreatedTemplate.properties).toEqual([]);
     });
   });

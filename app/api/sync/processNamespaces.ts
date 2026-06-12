@@ -175,9 +175,7 @@ class ProcessNamespaces {
       .map(h => (h.template || '').toString())
       .filter(id => this.templatesConfigKeys.includes(id));
 
-    const hubOtherTemplates = await templates.get({
-      _id: { $in: hubWhitelistedTemplateIds },
-    });
+    const hubOtherTemplates = await templates.get(hubWhitelistedTemplateIds);
 
     const belongsToWhitelistedType = this.relationtypesConfig.includes(
       data.template ? data.template.toString() : null
@@ -339,9 +337,7 @@ class ProcessNamespaces {
   private async translationsV2() {
     const data = await this.fetchData();
     const { context } = data;
-    const templatesData = await templates.get({
-      _id: { $in: this.templatesConfigKeys },
-    });
+    const templatesData = await templates.get(this.templatesConfigKeys);
 
     if (this.assessTranslationApproved(context)) {
       return { data };

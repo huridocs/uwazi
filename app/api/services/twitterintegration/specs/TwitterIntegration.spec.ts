@@ -95,8 +95,8 @@ describe('TwitterIntegration', () => {
       })
     );
 
-    const [hashtagTemplate] = await templates.get({ name: 'Hashtags' });
-    const [tweetsTemplate] = await templates.get({ name: 'Tweets' });
+    const [hashtagTemplate] = await templates.getByMongoQuery({ name: 'Hashtags' });
+    const [tweetsTemplate] = await templates.getByMongoQuery({ name: 'Tweets' });
     expect(hashtagTemplate.name).toBe('Hashtags');
     expect(tweetsTemplate.name).toBe('Tweets');
   });
@@ -112,8 +112,8 @@ describe('TwitterIntegration', () => {
       })
     );
 
-    const [hashtagTemplate] = await templates.get({ name: 'OtherHashtags' });
-    const [tweetsTemplate] = await templates.get({ name: 'OtherTweets' });
+    const [hashtagTemplate] = await templates.getByMongoQuery({ name: 'OtherHashtags' });
+    const [tweetsTemplate] = await templates.getByMongoQuery({ name: 'OtherTweets' });
     expect(hashtagTemplate.name).toBe('OtherHashtags');
     expect(tweetsTemplate.name).toBe('OtherTweets');
   });

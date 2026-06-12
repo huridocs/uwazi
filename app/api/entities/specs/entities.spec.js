@@ -642,7 +642,7 @@ describe('entities', () => {
         const input = {
           _id: entityEn._id,
           sharedId: entityEn.sharedId,
-          template: templateB,
+          template: templateB._id,
           metadata: {
             [commonProperty1.name]: [{ value: 'changed_text_english' }],
             [commonProperty2.name]: [{ value: 0 }],

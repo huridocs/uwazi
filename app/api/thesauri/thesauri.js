@@ -128,17 +128,14 @@ const thesauri = {
 
   async get(thesauriId, language, user) {
     let ids;
-    let query;
     if (Array.isArray(thesauriId)) {
       ids = thesauriId.length ? thesauriId : undefined;
-      query = thesauriId.length ? { _id: { $in: thesauriId } } : undefined;
     } else if (thesauriId) {
       ids = [thesauriId];
-      query = { _id: thesauriId };
     }
 
     const dictionaries = await ThesauriDAOFactory.default().get(ids);
-    const allTemplates = await templates.get(query);
+    const allTemplates = ids ? await templates.get(ids) : await templates.getByMongoQuery({});
 
     if (allTemplates.length && language) {
       const templateCount = await search.countPerTemplate(language);

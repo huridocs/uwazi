@@ -15,6 +15,7 @@ import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js'
 import { UserRole } from '#shared/types/userSchema.js';
 import entities from '../entities.js';
 import fixtures, { templateId } from './fixtures.js';
+import { ObjectId } from 'mongodb';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -352,7 +353,9 @@ describe('entities routes', () => {
       jest
         .spyOn(entitySavingManager, 'saveEntity')
         .mockImplementation(async () => Promise.resolve({ entity: {}, errors: [] }));
-      jest.spyOn(templates, 'getById').mockImplementation(async () => Promise.resolve(null));
+      jest
+        .spyOn(templates, 'getById')
+        .mockImplementation(async (_templateId: string | ObjectId) => Promise.resolve(null as any));
       jest
         .spyOn(thesauri, 'templateToThesauri')
         .mockImplementation(async () => Promise.resolve({}));
