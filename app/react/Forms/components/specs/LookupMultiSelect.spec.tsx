@@ -277,6 +277,45 @@ describe('LookupMultiSelect (React Testing Library)', () => {
     });
   });
 
+  it('should update displayed aggregation counts when props.options change with the same lookup ref', async () => {
+    const lookup = jest.fn(async () => ({
+      options: [{ label: 'Organization 001', value: 'org-1', results: 999 }],
+      count: 1,
+    }));
+
+    const initialOptions = [
+      { label: 'Organization 001', value: 'org-1', results: 400 },
+      { label: 'Organization 002', value: 'org-2', results: 300 },
+    ];
+
+    const { rerender } = render(
+      <LookupMultiSelect options={initialOptions} lookup={lookup} value={[]} onChange={jest.fn()} />
+    );
+
+    await waitFor(() => expect(lookup).toHaveBeenCalledWith(''));
+    expect(screen.getByText('400')).toBeInTheDocument();
+    expect(screen.getByText('300')).toBeInTheDocument();
+
+    rerender(
+      <LookupMultiSelect
+        options={[
+          { label: 'Organization 001', value: 'org-1', results: 40 },
+          { label: 'Organization 002', value: 'org-2', results: 30 },
+        ]}
+        lookup={lookup}
+        value={[]}
+        onChange={jest.fn()}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('40')).toBeInTheDocument();
+      expect(screen.getByText('30')).toBeInTheDocument();
+    });
+    expect(screen.queryByText('400')).not.toBeInTheDocument();
+    expect(screen.queryByText('300')).not.toBeInTheDocument();
+  });
+
   it('should not render a search bar if lookup returns 5 or fewer options', async () => {
     const initialOptions = Array.from({ length: 5 }, (_, i) => ({
       label: `Option${i + 1}`,

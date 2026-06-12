@@ -20,6 +20,9 @@ function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
   return value !== null && value !== undefined;
 }
 
+const aggregationOptionsSignature = (options: Option[], optionsValue: string) =>
+  options.map(option => `${option[optionsValue]}:${option.results ?? ''}`).join('\0');
+
 export const debounceTime = 200;
 
 export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupMultiSelectState> {
@@ -41,25 +44,50 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
     this.onFilter = debounce(this.onFilter.bind(this), debounceTime) as (
       searchTerm: string
     ) => Promise<void>;
+    this.refreshPreloadedOptions = this.refreshPreloadedOptions.bind(this);
+  }
+
+  async refreshPreloadedOptions() {
+    const { lookup, options, optionsValue } = this.props;
+    if (!lookup) {
+      return;
+    }
+
+    const { options: lookupResult, count } = await lookup('');
+    const combinedOptions = [...options, ...lookupResult].filter(uniqueOptions(optionsValue));
+
+    this.setState({
+      preloadedOptions: combinedOptions,
+      lookupOptions: [],
+      totalPossibleOptions: count,
+    });
   }
 
   async componentDidMount() {
     if (this.props.lookup) {
-      const { options, count } = await this.props.lookup('');
-      const combinedOptions = [...this.props.options, ...options].filter(
-        uniqueOptions(this.props.optionsValue)
-      );
-      this.setState({ preloadedOptions: combinedOptions, totalPossibleOptions: count });
+      await this.refreshPreloadedOptions();
     }
   }
 
   async componentDidUpdate(prevProps: LookupMultiSelectProps) {
-    if (prevProps.lookup !== this.props.lookup) {
-      const { options, count } = await this.props.lookup('');
-      const combinedOptions = [...this.props.options, ...options].filter(
-        uniqueOptions(this.props.optionsValue)
-      );
-      this.setState({ preloadedOptions: combinedOptions, totalPossibleOptions: count });
+    const optionsChanged =
+      aggregationOptionsSignature(prevProps.options, prevProps.optionsValue) !==
+      aggregationOptionsSignature(this.props.options, this.props.optionsValue);
+    const lookupChanged = prevProps.lookup !== this.props.lookup;
+
+    if (!optionsChanged && !lookupChanged) {
+      return;
+    }
+
+    if (optionsChanged) {
+      this.setState({
+        preloadedOptions: this.props.options,
+        lookupOptions: [],
+      });
+    }
+
+    if (this.props.lookup) {
+      await this.refreshPreloadedOptions();
     }
   }
 

@@ -1,64 +1,53 @@
-import pg from 'pg';
-import { Db, ObjectId } from 'mongodb';
+import { Db } from 'mongodb';
+import { PostgresConnectionConfig, PostgresTable } from './PostgresTable.js';
+import { SyncedPostgresTable } from './SyncedPostgresTable.js';
 
-/**
- * Base class for PostgreSQL data sources in the V2 core.
- *
- * Design:
- *   - All reads and writes go directly to the pool (no buffering, no deferred flush).
- *   - After each write, a sync record is inserted into MongoDB `updatelogs` so that
- *     the existing sync infrastructure keeps working during the migration period.
- *   - There is no cross-database atomicity: a PG write is independent of any MongoDB
- *     transaction. This is an intentional temporary trade-off during migration.
- *     Once all datasources are on Postgres, a PostgresTransactionManager will be
- *     introduced and proper transactional boundaries restored.
- */
+type SyncOptions = {
+  syncDb: Db;
+  syncNamespace: string;
+};
+
 export abstract class PostgresDataSource {
   protected abstract tableName: string;
 
-  protected pool: pg.Pool;
+  private _connection: PostgresConnectionConfig;
 
-  private mongoDb: Db;
+  private _tenantId: string;
 
-  private syncNamespace: string;
+  private _syncOptions: SyncOptions | null = null;
 
-  constructor(deps: { pool: pg.Pool; mongoDb: Db; syncNamespace: string }) {
-    this.pool = deps.pool;
-    this.mongoDb = deps.mongoDb;
-    this.syncNamespace = deps.syncNamespace;
+  private _table: PostgresTable | null = null;
+
+  constructor({
+    connection,
+    tenantId,
+    sync,
+  }: {
+    connection: PostgresConnectionConfig;
+    tenantId: string;
+    sync?: SyncOptions;
+  }) {
+    this._connection = connection;
+    this._tenantId = tenantId;
+    if (sync) {
+      this._syncOptions = sync;
+    }
   }
 
-  /**
-   * Execute a query directly against the pool.
-   * Use for both reads and writes.
-   */
-  protected async query<T extends pg.QueryResultRow = pg.QueryResultRow>(
-    sql: string,
-    params: unknown[] = []
-  ): Promise<pg.QueryResult<T>> {
-    return this.pool.query<T>(sql, params);
-  }
-
-  /**
-   * Execute a write query and immediately write a sync record to MongoDB updatelogs.
-   */
-  protected async execute(sql: string, params: unknown[] = []): Promise<pg.QueryResult> {
-    const result = await this.pool.query(sql, params);
-    await this.writeSyncLog();
-    return result;
-  }
-
-  /**
-   * Write a sync record to MongoDB updatelogs.
-   * This keeps the existing sync mechanism working during the migration.
-   */
-  private async writeSyncLog(): Promise<void> {
-    await this.mongoDb.collection('updatelogs').insertOne({
-      _id: new ObjectId(),
-      timestamp: Date.now(),
-      namespace: this.syncNamespace,
-      mongoId: new ObjectId(),
-      deleted: false,
-    });
+  protected get table(): PostgresTable {
+    if (!this._table) {
+      if (this._syncOptions) {
+        this._table = new SyncedPostgresTable(
+          this._connection,
+          this.tableName,
+          this._tenantId,
+          this._syncOptions.syncDb,
+          this._syncOptions.syncNamespace
+        );
+      } else {
+        this._table = new PostgresTable(this._connection, this.tableName, this._tenantId);
+      }
+    }
+    return this._table;
   }
 }

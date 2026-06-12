@@ -4,6 +4,8 @@ import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { FilesService } from '#api/core/application/FilesService.js';
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { CsvImport } from '../../domain/CsvImport.js';
 import { CsvImportRowErrorsDataSource } from '../contracts/CsvImportRowErrorsDataSource.js';
 import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource.js';
@@ -17,6 +19,8 @@ type ProcessRowsDeps = {
   rowErrorsDS: CsvImportRowErrorsDataSource;
   csvImportsDS: CsvImportsDataSource;
   entitiesService: EntitiesService;
+  entitiesDS: MultiLanguageEntityDataSource;
+  filesDS: FilesDataSource;
   transactionManager: TransactionManager;
   propertyAssignmentCreatorServiceStrategy: PropertyAssignmentCreatorServiceStrategy;
   filesService: FilesService;
@@ -41,6 +45,7 @@ const processImportRows = async (params: {
   failurePolicy: FailurePolicy;
 }): Promise<{
   entitiesCreated: number;
+  entitiesUpdated: number;
   processedRows: number;
   csvImport: CsvImport;
   shouldStop: boolean;
@@ -55,6 +60,7 @@ const processImportRows = async (params: {
     Math.max(0, (context.csvImport.progress?.lastProcessedRow ?? -1) + 1)
   );
   let entitiesCreated = 0;
+  let entitiesUpdated = 0;
   let currentImport = context.csvImport;
   const remainingRows = Math.max(0, totalRows - startOffset);
   const batchCount = remainingRows ? Math.ceil(remainingRows / batchSize) : 0;
@@ -67,6 +73,7 @@ const processImportRows = async (params: {
     if (await deps.csvImportsDS.isCancelled(context.csvImport.id)) {
       return {
         entitiesCreated,
+        entitiesUpdated,
         processedRows,
         csvImport: currentImport,
         shouldStop: false,
@@ -83,6 +90,8 @@ const processImportRows = async (params: {
     const batchResult = await processImportBatch({
       deps: {
         entitiesService: deps.entitiesService,
+        entitiesDS: deps.entitiesDS,
+        filesDS: deps.filesDS,
         csvImportsDS: deps.csvImportsDS,
         rowErrorsDS: deps.rowErrorsDS,
         transactionManager: deps.transactionManager,
@@ -106,6 +115,7 @@ const processImportRows = async (params: {
     });
     processedRows = batchResult.processedRows;
     entitiesCreated += batchResult.entitiesCreated;
+    entitiesUpdated += batchResult.entitiesUpdated;
     currentImport = batchResult.csvImport;
     totalFailures += batchResult.rowErrorsCount;
     consecutiveFailures = batchResult.endConsecutiveFailures;
@@ -118,6 +128,7 @@ const processImportRows = async (params: {
         batchIndex,
         batchCount,
         entitiesCreatedInBatch: batchResult.entitiesCreated,
+        entitiesUpdatedInBatch: batchResult.entitiesUpdated,
       })
     );
 
@@ -133,6 +144,7 @@ const processImportRows = async (params: {
     if (stopDecision.shouldStop) {
       return {
         entitiesCreated,
+        entitiesUpdated,
         processedRows,
         csvImport: currentImport,
         shouldStop: true,
@@ -144,6 +156,7 @@ const processImportRows = async (params: {
 
   return {
     entitiesCreated,
+    entitiesUpdated,
     processedRows,
     csvImport: currentImport,
     shouldStop: false,
