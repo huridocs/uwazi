@@ -22,6 +22,7 @@ import {
   MultiDateRangeField,
   LinkField,
   GeolocationField,
+  RelationshipField,
 } from './Components/index.js';
 import { MultiselectListOption } from '../../Forms/index.js';
 
@@ -248,7 +249,7 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
 
           if (property.type === 'relationship') {
             return (
-              <MultiselectField<EditEntityFormValues>
+              <RelationshipField<EditEntityFormValues>
                 context={entityTemplate._id}
                 label={property.label}
                 field={`metadata.${property.name}`}

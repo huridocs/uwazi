@@ -17,6 +17,20 @@ describe('toMetadataObjectSchema', () => {
     });
   });
 
+  it('should return relationship values as sharedId only', () => {
+    expect(
+      toMetadataObjectSchema({
+        value: 'shared-target-1',
+        label: 'Related entity title',
+        type: 'entity',
+        parent: { label: 'Ignored parent', value: 'ignored-parent' },
+        inheritedType: 'relationship',
+      })
+    ).toEqual({
+      value: 'shared-target-1',
+    });
+  });
+
   it('should normalize malformed daterange and link objects', () => {
     expect(
       toMetadataObjectSchema({

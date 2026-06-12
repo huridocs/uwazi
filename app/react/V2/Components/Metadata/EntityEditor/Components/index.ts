@@ -8,3 +8,4 @@ export { MultidateField } from './MultidateField.js';
 export { MultiDateRangeField } from './MultiDateRangeField.js';
 export { LinkField } from './LinkField.js';
 export { GeolocationField } from './GeolocationField.js';
+export { RelationshipField } from './RelationshipField.js';

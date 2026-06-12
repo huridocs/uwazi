@@ -83,6 +83,12 @@ const toInheritedValueSchema = (value: MetadataValue): InheritedValueSchema => {
 };
 
 const toMetadataObjectSchema = (value: MetadataValue): MetadataObjectSchema => {
+  if (value.type === 'entity') {
+    return {
+      value: toPropertyValueSchema(value.value),
+    };
+  }
+
   const metadataValue: MetadataObjectSchema = {
     value: toPropertyValueSchema(value.value),
   };
