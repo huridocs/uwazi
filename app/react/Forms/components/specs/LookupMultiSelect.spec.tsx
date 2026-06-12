@@ -289,12 +289,7 @@ describe('LookupMultiSelect (React Testing Library)', () => {
     ];
 
     const { rerender } = render(
-      <LookupMultiSelect
-        options={initialOptions}
-        lookup={lookup}
-        value={[]}
-        onChange={jest.fn()}
-      />
+      <LookupMultiSelect options={initialOptions} lookup={lookup} value={[]} onChange={jest.fn()} />
     );
 
     await waitFor(() => expect(lookup).toHaveBeenCalledWith(''));
