@@ -3,6 +3,7 @@ import { RowErrorCode } from '../../../domain/CsvImportRowError.js';
 import { CsvRowImportErrorFactory } from '../CsvRowImportErrorFactory.js';
 import {
   CsvImportFileNotFoundError,
+  CsvImportEntityNotFoundInTemplateError,
   CsvImportPropertyValidationError,
   CsvImportRelationshipResolutionError,
   CsvImportRowEmptyError,
@@ -106,6 +107,23 @@ describe('CsvRowImportErrorFactory', () => {
     expect(rowError.code).toBe(RowErrorCode.RowEmptyOrMalformed);
     expect(rowError.message).toBe('Empty line.');
     expect(rowError.details).toEqual({ reason: 'empty_line' });
+  });
+
+  it('maps unknown ids to ID_NOT_FOUND_IN_TEMPLATE', () => {
+    const rowError = CsvRowImportErrorFactory.fromException({
+      importId: 'import-1',
+      rowIndex: 8,
+      error: new CsvImportEntityNotFoundInTemplateError({
+        sharedId: 'entity-shared-id',
+        templateId: 'template-a',
+      }),
+    });
+
+    expect(rowError.code).toBe(RowErrorCode.IdNotFoundInTemplate);
+    expect(rowError.message).toBe('id not found in template');
+    expect(rowError.property).toBe('id');
+    expect(rowError.rawValue).toBe('entity-shared-id');
+    expect(rowError.details).toEqual({ templateId: 'template-a' });
   });
 
   it('maps wrapped validation errors to VALUE_INVALID_FORMAT with context', () => {

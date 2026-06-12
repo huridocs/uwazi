@@ -23,6 +23,7 @@ export interface MultiLanguageEntityDataSource {
   countByTemplateId(templateId: string): Promise<number>;
 
   getById(id: string): Promise<ResultType<Entity, EntityNotFoundError>>;
+  existsByIdAndTemplateId(id: string, templateId: string): Promise<boolean>;
   getEntitiesByTemplateId(templateId: string): Promise<ResultSet<Entity>>;
   getEntitiesBySharedIds(sharedIds: string[]): Promise<ResultSet<Entity>>;
   getSharedIdsByTemplateId(templateId: string): Promise<ResultSet<string>>;

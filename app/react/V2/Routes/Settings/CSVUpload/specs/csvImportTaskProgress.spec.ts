@@ -97,7 +97,7 @@ describe('csvImportTaskProgress', () => {
     );
   });
 
-  it('updates progress on import progress event', () => {
+  it('updates progress on import progress event with created and updated rows in batch', () => {
     const { handlers, ensureTask } = createHandlers();
 
     handleCsvImportSocketEvent(
@@ -109,6 +109,7 @@ describe('csvImportTaskProgress', () => {
         batchIndex: 1,
         batchCount: 2,
         entitiesCreatedInBatch: 10,
+        entitiesUpdatedInBatch: 7,
       },
       handlers
     );
