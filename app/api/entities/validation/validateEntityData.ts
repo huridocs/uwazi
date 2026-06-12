@@ -1,5 +1,5 @@
 import Ajv, { ErrorObject, ValidationError } from 'ajv';
-import templatesModel from '#api/core/v1_layer/templates/templatesModel.js';
+import templates from '#api/core/v1_layer/templates/templates.js';
 import { wrapValidator } from '#shared/tsUtils.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
@@ -60,7 +60,7 @@ ajv.addKeyword({
       return true;
     }
 
-    const [template = {} as TemplateSchema] = await templatesModel.get({ _id: entity.template });
+    const [template = {} as TemplateSchema] = await templates.get({ _id: entity.template });
 
     const errors = [
       ...(await validateFields(template, entity)),
@@ -85,7 +85,7 @@ ajv.addKeyword({
       return true;
     }
 
-    const [template] = await templatesModel.get({ _id: entity.template });
+    const [template] = await templates.get({ _id: entity.template });
     if (!template) {
       throw new ValidationError([
         {

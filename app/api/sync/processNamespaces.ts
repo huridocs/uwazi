@@ -3,7 +3,7 @@ import entitiesModel from '#api/entities/entitiesModel.js';
 import { filesModel } from '#api/files/filesModel.js';
 import { DataType, models, WithId } from '#api/odm/index.js';
 import { settingsModel } from '#api/settings/settingsModel.js';
-import templatesModel from '#api/core/v1_layer/templates/templatesModel.js';
+import templates from '#api/core/v1_layer/templates/templates.js';
 import { UpdateLog } from '#api/updatelogs/index.js';
 import { SyncHandlerRegistry } from './SyncHandlerRegistry.js';
 import { ensure } from '#shared/tsUtils.js';
@@ -51,7 +51,7 @@ interface Options {
 }
 
 const getTemplate = async (template: string) => {
-  const templateData = await templatesModel.getById(template);
+  const templateData = await templates.getById(template);
   if (!templateData?._id) throw new Error('missing id');
   return templateData;
 };
@@ -175,7 +175,7 @@ class ProcessNamespaces {
       .map(h => (h.template || '').toString())
       .filter(id => this.templatesConfigKeys.includes(id));
 
-    const hubOtherTemplates = await templatesModel.get({
+    const hubOtherTemplates = await templates.get({
       _id: { $in: hubWhitelistedTemplateIds },
     });
 
@@ -212,7 +212,7 @@ class ProcessNamespaces {
     }
 
     const { mongoId } = this.change;
-    const data = ensure<WithId<TemplateSchema>>(await templatesModel.getById(mongoId), noDataFound);
+    const data = ensure<WithId<TemplateSchema>>(await templates.getById(mongoId), noDataFound);
 
     if (data.properties) {
       const templateConfigProperties = this.templatesConfig[data._id.toString()].properties;
@@ -265,9 +265,12 @@ class ProcessNamespaces {
   private async connections() {
     const data = await this.fetchData();
     const entityTemplate = await getEntityTemplate(data.entity);
+    if (!entityTemplate) {
+      return { skip: true };
+    }
 
-    const belongsToValidEntity = this.templatesConfigKeys.includes(entityTemplate || '');
-    const templateData = await templatesModel.getById(entityTemplate);
+    const belongsToValidEntity = this.templatesConfigKeys.includes(entityTemplate);
+    const templateData = await templates.getById(entityTemplate);
 
     if (!belongsToValidEntity || !templateData) {
       return { skip: true };
@@ -336,7 +339,7 @@ class ProcessNamespaces {
   private async translationsV2() {
     const data = await this.fetchData();
     const { context } = data;
-    const templatesData = await templatesModel.get({
+    const templatesData = await templates.get({
       _id: { $in: this.templatesConfigKeys },
     });
 

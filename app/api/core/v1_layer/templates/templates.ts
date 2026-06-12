@@ -34,8 +34,8 @@ export default {
     );
   },
 
-  async get(query: any = {}) {
-    return model.get(query);
+  async get(query: any = {}, projection?: any) {
+    return model.get(query, projection);
   },
 
   async getPropertyByName(propertyName: string): Promise<PropertySchema> {
