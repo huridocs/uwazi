@@ -149,7 +149,13 @@ const processFiles = async (
 
     const resultFile = await saveResultFile(message, originalFile);
 
-    const filesService = FilesServiceFactory.default();
+    const filesService = FilesServiceFactory.default(
+      {},
+      {
+        userId: permissionsContext.getUserInContext()?._id?.toString(),
+        tenantName: tenants.current().name,
+      }
+    );
     await filesService.demoteToAttachment(originalFile._id.toHexString());
 
     await markReady(record, resultFile as EnforcedWithId<FileType>);

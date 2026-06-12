@@ -306,12 +306,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     const dbos = await this.getCollection()
       .find({ _id: { $in: objectIds } }, { projection: { fullText: 0 } })
       .toArray();
-    return dbos.map(dbo =>
-      this.toModel({
-        ...dbo,
-        mimetype: dbo.mimetype || 'application/octet-stream',
-      })
-    );
+    return dbos.map(dbo => this.toModel(dbo));
   }
 }
 
