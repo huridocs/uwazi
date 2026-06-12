@@ -352,15 +352,24 @@ describe('References Display', () => {
     });
 
     it('renders the active marker with expanded styling', () => {
-      Basic.args.activeRelationshipId = 'ref-partner-1';
-      mountStory();
+      mount(
+        <ThemeProvider>
+          {Basic({
+            locale: 'en',
+            fileUrl: '/api/files/sample.pdf',
+            activeRelationshipId: 'ref-partner-33',
+          })}
+        </ThemeProvider>
+      );
+      cy.get('.page[data-page-number="1"]', { timeout: 20000 }).should('exist');
+      cy.get('[data-testid="rail-marker-cluster"]', { timeout: 20000 }).should('exist');
 
-      cy.get('[data-testid="relationships-rail"] [data-testid="rail-marker"]')
-        .filter((_index, element) => !element.closest('[data-testid="rail-marker-cluster"]'))
-        .filter(':contains("Person 2")')
-        .first()
-        .find('span.rounded-full')
-        .should('have.css', 'width', '14px');
+      cy.get('[data-marker-id="ref-partner-33"]', { timeout: 20000 })
+        .find('[data-testid="rail-marker-dot"]')
+        .should('have.css', 'width', '14px')
+        .should($dot => {
+          expect($dot.css('box-shadow')).to.not.equal('none');
+        });
     });
   });
 });

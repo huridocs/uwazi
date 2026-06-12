@@ -4,6 +4,7 @@ import { useAnimateToPosition } from '../hooks/useAnimateToPosition.js';
 import { RelationshipMarker } from '../types.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { Tooltip } from '#V2/Components/UI/index.js';
+import { RAIL_MARKER_ACTIVE_SIZE, RAIL_MARKER_SIZE } from '../markerMetrics.js';
 
 type PointProps = {
   position: number;
@@ -13,6 +14,9 @@ type PointProps = {
   isActive?: boolean;
 };
 
+const activeMarkerShadow = (color: string): string =>
+  `0 0 0 2px var(--color-theme-surface-raised), 0 0 0 4.5px ${color}99`;
+
 const Point = ({ position, stackOrder = 1, marker, onClick, isActive = false }: PointProps) => {
   const animatedPosition = useAnimateToPosition(position);
   const templates = useAtomValue(templatesAtom);
@@ -21,12 +25,13 @@ const Point = ({ position, stackOrder = 1, marker, onClick, isActive = false }: 
     [marker, templates]
   );
   const color = targetTemplate?.color || '#000000';
-  const size = isActive ? 14 : 10;
+  const dotSize = isActive ? RAIL_MARKER_ACTIVE_SIZE : RAIL_MARKER_SIZE;
 
   return (
     <button
       type="button"
       data-testid="rail-marker"
+      data-marker-id={marker._id}
       className="pointer-events-auto absolute cursor-pointer [transition-property:top] duration-500 ease-out"
       style={{ top: `${animatedPosition}px`, zIndex: isActive ? stackOrder + 50 : stackOrder }}
       onClick={() => {
@@ -38,15 +43,23 @@ const Point = ({ position, stackOrder = 1, marker, onClick, isActive = false }: 
       </span>
       <Tooltip content={marker.target.title} placement="left">
         <span
-          className="block rounded-full transition-all duration-150 ease-out hover:scale-125"
-          style={{
-            width: size,
-            height: size,
-            backgroundColor: color,
-            opacity: isActive ? 1 : 0.7,
-            boxShadow: isActive ? `0 0 0 2px ${color}44` : 'none',
-          }}
-        />
+          className="flex items-center justify-center"
+          style={{ width: RAIL_MARKER_SIZE, height: RAIL_MARKER_SIZE }}
+        >
+          <span
+            data-testid="rail-marker-dot"
+            className={`block shrink-0 rounded-full transition-[opacity,box-shadow,transform] duration-150 ease-out ${
+              isActive ? '' : 'hover:scale-125'
+            }`}
+            style={{
+              width: dotSize,
+              height: dotSize,
+              backgroundColor: color,
+              opacity: isActive ? 1 : 0.7,
+              boxShadow: isActive ? activeMarkerShadow(color) : 'none',
+            }}
+          />
+        </span>
       </Tooltip>
     </button>
   );

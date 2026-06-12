@@ -3,6 +3,7 @@ import { EllipsisHorizontalCircleIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { Tooltip } from '#V2/Components/UI/index.js';
 import { useAnimateToPosition } from '../hooks/useAnimateToPosition.js';
+import { RAIL_MARKER_SIZE } from '../markerMetrics.js';
 import { RelationshipMarker } from '../types.js';
 
 type ShowMoreButtonProps = {
@@ -16,8 +17,13 @@ const ShowMoreButton = ({ position, references, onClick }: ShowMoreButtonProps) 
 
   return (
     <button
-      className="absolute [transition-property:top] duration-500 ease-out cursor-pointer rounded-full bg-(--color-theme-surface-raised)"
-      style={{ top: `${animatedPosition}px`, left: '-2px' }}
+      className="absolute flex items-center justify-center [transition-property:top] duration-500 ease-out cursor-pointer rounded-full bg-(--color-theme-surface-raised)"
+      style={{
+        top: `${animatedPosition}px`,
+        left: 0,
+        width: RAIL_MARKER_SIZE,
+        height: RAIL_MARKER_SIZE,
+      }}
       type="button"
       onClick={() => onClick(references)}
     >

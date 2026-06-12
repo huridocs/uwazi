@@ -59,15 +59,6 @@ const RelationshipRow = ({ marker, isSelected, onClick, onDelete }: Relationship
         }
       }}
     >
-      <div className="flex flex-col gap-1">
-        <h3 className="text-sm font-bold text-ink">{entityTitle}</h3>
-        {relationshipTypeName && (
-          <p className="text-xs font-semibold uppercase tracking-wide text-ink/70">
-            {relationshipTypeName}
-          </p>
-        )}
-      </div>
-
       {referenceText && (
         <div className="flex flex-col gap-1">
           {referencePage && (
@@ -80,6 +71,15 @@ const RelationshipRow = ({ marker, isSelected, onClick, onDelete }: Relationship
       )}
 
       <TemplateLabel templateId={marker.target.templateId} />
+
+      <div className="flex flex-col gap-1">
+        <h3 className="text-sm font-bold text-ink">{entityTitle}</h3>
+        {relationshipTypeName && (
+          <p className="text-xs font-semibold uppercase tracking-wide text-ink/70">
+            {relationshipTypeName}
+          </p>
+        )}
+      </div>
 
       <div className="flex justify-end gap-(--spacing-theme-2) mt-(--spacing-theme-2)">
         <Button

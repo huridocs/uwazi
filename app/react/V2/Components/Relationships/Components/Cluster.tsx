@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAnimateToPosition } from '../hooks/useAnimateToPosition.js';
 import { computeClusterOuterSize } from '../computeMarkerY.js';
+import { RAIL_MARKER_SIZE, RAIL_MARKER_SPACING } from '../markerMetrics.js';
 import { RelationshipMarker } from '../types.js';
 import { Point } from './Point.js';
 import { ShowMoreButton } from './ShowMoreButton.js';
@@ -17,12 +18,10 @@ type ClusterProps = {
   onToggle?: () => void;
 };
 
-const POINT_SPACING = 24;
-const POINT_SIZE = 10;
 const PAD = 2;
 const BRANCH_LEN = 16;
 const STEM_LEN = 12;
-const TRUNK_X = POINT_SIZE + PAD + BRANCH_LEN;
+const TRUNK_X = RAIL_MARKER_SIZE + PAD + BRANCH_LEN;
 const SVG_WIDTH = TRUNK_X + STEM_LEN;
 const CLUSTER_STACK_BOOST = 500;
 const LINE_STROKE = 'var(--color-theme-text-secondary)';
@@ -49,7 +48,7 @@ const Cluster = ({
   const outerSize = computeClusterOuterSize(references.length);
   const hasActiveRef = references.some(ref => ref._id === activePointId);
   const rowCount = points.length + (extraPoints.length > 0 ? 1 : 0);
-  const pointsHeight = (rowCount - 1) * POINT_SPACING + POINT_SIZE;
+  const pointsHeight = (rowCount - 1) * RAIL_MARKER_SPACING + RAIL_MARKER_SIZE;
   const stemMidY = pointsHeight / 2;
   const treeTopOffset = outerSize / 2 - stemMidY;
   const zIndex = clusterIsOpen ? stackOrder + 1500 : stackOrder + CLUSTER_STACK_BOOST;
@@ -76,7 +75,7 @@ const Cluster = ({
         className={`relative isolate z-10 flex items-center justify-center rounded-full text-[9px] font-bold cursor-pointer border-[1.5px]
           pointer-events-auto ${
             clusterIsOpen || hasActiveRef
-              ? 'border-(--border-primary) bg-(--bg-muted) text-ink'
+              ? 'border-ink bg-(--bg-muted) text-ink shadow-[0_0_0_2px_var(--color-theme-surface-raised)]'
               : 'border-(--border-soft) bg-(--color-theme-surface-raised) text-ink-tertiary'
           }`}
         style={{ width: outerSize, height: outerSize }}
@@ -108,19 +107,19 @@ const Cluster = ({
             />
             <line
               x1={TRUNK_X}
-              y1={POINT_SIZE / 2}
+              y1={RAIL_MARKER_SIZE / 2}
               x2={TRUNK_X}
-              y2={pointsHeight - POINT_SIZE / 2}
+              y2={pointsHeight - RAIL_MARKER_SIZE / 2}
               stroke={LINE_STROKE}
               strokeOpacity={LINE_OPACITY}
               strokeWidth={1}
             />
             {Array.from({ length: rowCount }, (_, index) => {
-              const cy = index * POINT_SPACING + POINT_SIZE / 2;
+              const cy = index * RAIL_MARKER_SPACING + RAIL_MARKER_SIZE / 2;
               return (
                 <line
                   key={`branch-${index}`}
-                  x1={POINT_SIZE + PAD}
+                  x1={RAIL_MARKER_SIZE + PAD}
                   y1={cy}
                   x2={TRUNK_X}
                   y2={cy}
@@ -134,12 +133,12 @@ const Cluster = ({
 
           <div
             className="absolute inset-0 pointer-events-auto"
-            style={{ width: POINT_SIZE + PAD, left: 0 }}
+            style={{ width: RAIL_MARKER_SIZE + PAD, left: 0 }}
           >
             {points.map((marker, index) => (
               <Point
                 key={marker._id || `cluster-point-${index}`}
-                position={index * POINT_SPACING}
+                position={index * RAIL_MARKER_SPACING}
                 marker={marker}
                 onClick={onPointClick}
                 isActive={activePointId === marker._id}
@@ -147,7 +146,7 @@ const Cluster = ({
             ))}
             {extraPoints.length > 0 && (
               <ShowMoreButton
-                position={points.length * POINT_SPACING}
+                position={points.length * RAIL_MARKER_SPACING}
                 references={extraPoints}
                 onClick={onMoreClick}
               />
