@@ -1,4 +1,5 @@
 import { Suggestions } from '#api/suggestions/suggestions.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { toHaveBeenCalledBefore } from 'jest-extended';
@@ -91,6 +92,43 @@ describe('save()', () => {
 
         expect(updatedModel.processRun?.suggestionsRunTimestamp).toBeUndefined();
         expect(updatedModel.processRun?.findSuggestionsSharedIds).toBeUndefined();
+      });
+    });
+
+    describe('initializeFindRunQueue', () => {
+      it('should keep mixed obsolete sharedIds and no-suggestion sharedIds pending', async () => {
+        await IXSuggestionsModel.saveMultiple([
+          fixtureFactory.ixSuggestion({
+            extractorId: fixtureFactory.id('extractor'),
+            entityId: 'shared_mixed',
+            date: 1000,
+            state: { obsolete: false, error: false },
+          }),
+          fixtureFactory.ixSuggestion({
+            extractorId: fixtureFactory.id('extractor'),
+            entityId: 'shared_mixed',
+            date: 999,
+            state: { obsolete: true, error: false },
+          }),
+          fixtureFactory.ixSuggestion({
+            extractorId: fixtureFactory.id('extractor'),
+            entityId: 'shared_healthy',
+            date: 1000,
+            state: { obsolete: false, error: false },
+          }),
+        ]);
+
+        await ixmodels.initializeFindRunQueue(model._id!, [
+          'shared_mixed',
+          'shared_healthy',
+          'shared_without_suggestions',
+        ]);
+
+        const [updatedModel] = await ixmodels.get({ extractorId: fixtureFactory.id('extractor') });
+        expect(updatedModel.processRun?.findSuggestionsSharedIds).toEqual([
+          'shared_mixed',
+          'shared_without_suggestions',
+        ]);
       });
     });
   });

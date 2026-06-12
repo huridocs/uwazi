@@ -143,6 +143,14 @@ const UploadStatus = () => {
                 </Card>
                 <Card className="grow">
                   <div className="flex flex-col gap-4">
+                    <Translate>Entities updated</Translate>
+                    <span className="text-2xl font-bold text-ink">
+                      {entry.stats?.entitiesUpdated || '-'}
+                    </span>
+                  </div>
+                </Card>
+                <Card className="grow">
+                  <div className="flex flex-col gap-4">
                     <Translate>Rows processed</Translate>
                     <span className="text-2xl font-bold text-ink">
                       {entry.stats?.rowsProcessed || '-'}

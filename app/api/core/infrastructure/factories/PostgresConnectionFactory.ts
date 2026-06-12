@@ -1,86 +1,51 @@
 import pg from 'pg';
 import { config } from '#api/config.js';
-import { tenants } from '#api/tenants/tenantContext.js';
+import { PostgresConnectionConfig } from '../postgresql/common/PostgresTable.js';
 
-const pools = new Map<string, pg.Pool>();
+let defaultPool: pg.Pool | null = null;
 
 /**
- * Scoped pool overrides keyed by unique symbols.
- * Each test suite creates its own symbol to isolate pool overrides.
- * In production this map remains empty.
+ * Active config override. Process-local only; safe because Jest runs test
+ * suites in separate processes (workers) by default. Reset after each test.
  */
-const poolOverrides = new Map<symbol, pg.Pool>();
-
-const defaultToken = Symbol('default-pool-override');
+let activeConfig: PostgresConnectionConfig | null = null;
 
 export class PostgresConnectionFactory {
-  static default(): pg.Pool {
-    // Return the most recently registered override (for testing).
-    // In practice, at most one test pool is active at a time.
-    if (poolOverrides.size > 0) {
-      return Array.from(poolOverrides.values()).pop()!;
-    }
-
-    let database = config.postgres.database;
-    try {
-      database = tenants.current().dbName;
-    } catch {
-      // no async context — use config default
-    }
-
-    return this.forDatabase(database);
+  static setConfig(cfg: PostgresConnectionConfig): void {
+    activeConfig = cfg;
+    defaultPool = null; // force re-creation with new config
   }
 
-  static forDatabase(database: string): pg.Pool {
-    if (!pools.has(database)) {
-      pools.set(
-        database,
-        new pg.Pool({
-          host: config.postgres.host,
-          port: config.postgres.port,
-          database,
-          user: config.postgres.user,
-          password: config.postgres.password,
-        })
-      );
+  static resetConfig(): void {
+    activeConfig = null;
+  }
+
+  static default(): pg.Pool {
+    const cfg = activeConfig ?? config.postgres;
+
+    if (!defaultPool) {
+      defaultPool = new pg.Pool(cfg);
     }
-    return pools.get(database)!;
+
+    return defaultPool;
+  }
+
+  static connectionConfig(): PostgresConnectionConfig {
+    return (
+      activeConfig ?? {
+        host: config.postgres.host,
+        port: config.postgres.port,
+        database: config.postgres.database,
+        user: config.postgres.user,
+        password: config.postgres.password,
+      }
+    );
   }
 
   static async close(): Promise<void> {
-    for (const pool of pools.values()) {
-      //eslint-disable-next-line no-await-in-loop
-      await pool.end();
+    if (defaultPool) {
+      await defaultPool.end();
+      defaultPool = null;
     }
-    pools.clear();
-  }
-
-  /**
-   * Register a scoped pool override identified by a unique symbol.
-   * Each test suite should create its own symbol for isolation:
-   *
-   *   const token = Symbol('my-suite');
-   *   PostgresConnectionFactory.registerPool(token, myPool);
-   *
-   * Call unregisterPool(token) in afterEach/afterAll to clean up.
-   */
-  static registerPool(token: symbol, pool: pg.Pool): void {
-    poolOverrides.set(token, pool);
-  }
-
-  static unregisterPool(token: symbol): void {
-    poolOverrides.delete(token);
-  }
-
-  /**
-   * Register a pool override under the default token.
-   * Prefer registerPool/unregisterPool with a unique symbol for better isolation.
-   */
-  static usePool(pool: pg.Pool): void {
-    poolOverrides.set(defaultToken, pool);
-  }
-
-  static clearPool(): void {
-    poolOverrides.delete(defaultToken);
   }
 }

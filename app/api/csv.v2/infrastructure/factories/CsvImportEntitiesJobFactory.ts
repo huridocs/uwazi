@@ -11,6 +11,7 @@ import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/T
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { tenants } from '#api/tenants/tenantContext.js';
@@ -44,6 +45,38 @@ const buildCsvDataSources = (transactionManager: MongoTransactionManager) => {
   };
 };
 
+const buildPropertyAssignmentCreator = (params: {
+  transactionManager: MongoTransactionManager;
+  settingsDS: ReturnType<typeof SettingsDataSourceFactory.default>;
+  entitiesDS: ReturnType<typeof EntitiesDataSourceFactory.default>;
+}) => {
+  const translationsDS = DefaultTranslationsDataSource(params.transactionManager);
+  const thesauriDS = ThesauriDataSourceFactory.default({
+    transactionManager: params.transactionManager,
+  });
+  return PropertyAssignmentCreatorServiceStrategy.create({
+    settingsDS: params.settingsDS,
+    thesauriDS,
+    translationsDS,
+    entitiesDS: params.entitiesDS,
+  });
+};
+
+const buildEntitiesService = (params: {
+  transactionManager: MongoTransactionManager;
+  jobsDispatcher: JobsDispatcher;
+  settingsDS: ReturnType<typeof SettingsDataSourceFactory.default>;
+  templatesDS: ReturnType<typeof TemplatesDataSourceFactory.default>;
+  entitiesDS: ReturnType<typeof EntitiesDataSourceFactory.default>;
+}) =>
+  EntitiesServiceFactory.default({
+    transactionManager: params.transactionManager,
+    settingsDS: params.settingsDS,
+    templatesDS: params.templatesDS,
+    entitiesDS: params.entitiesDS,
+    dispatcher: new DispatcherAdapter(params.jobsDispatcher),
+  });
+
 const buildEntityServices = (
   transactionManager: MongoTransactionManager,
   fileStorage: FileStorage,
@@ -52,22 +85,19 @@ const buildEntityServices = (
   const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
   const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
   const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
-  const filesService = FilesServiceFactory.default({ fileStorage });
-  const idGenerator = IdGeneratorFactory.default();
-  const translationsDS = DefaultTranslationsDataSource(transactionManager);
-  const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
-  const propertyAssignmentCreatorServiceStrategy = PropertyAssignmentCreatorServiceStrategy.create({
+  const filesDS = FilesDataSourceFactory.default({ transactionManager });
+  const filesService = FilesServiceFactory.default({ fileStorage, filesDS });
+  const propertyAssignmentCreatorServiceStrategy = buildPropertyAssignmentCreator({
+    transactionManager,
     settingsDS,
-    thesauriDS,
-    translationsDS,
     entitiesDS,
   });
-  const entitiesService = EntitiesServiceFactory.default({
+  const entitiesService = buildEntitiesService({
     transactionManager,
+    jobsDispatcher,
     settingsDS,
     templatesDS,
     entitiesDS,
-    dispatcher: new DispatcherAdapter(jobsDispatcher),
   });
 
   return {
@@ -76,7 +106,8 @@ const buildEntityServices = (
     entitiesDS,
     entitiesService,
     filesService,
-    idGenerator,
+    filesDS,
+    idGenerator: IdGeneratorFactory.default(),
     propertyAssignmentCreatorServiceStrategy,
   };
 };
@@ -106,6 +137,8 @@ class CsvImportEntitiesJobFactory {
       templatesDS: services.templatesDS,
       settingsDS: services.settingsDS,
       entitiesService: services.entitiesService,
+      entitiesDS: services.entitiesDS,
+      filesDS: services.filesDS,
       mapper,
       transactionManager,
       fileStorage,

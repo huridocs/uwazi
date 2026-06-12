@@ -13,7 +13,6 @@ import { User } from '#api/users.v2/model/User.js';
 import { DeleteThesaurusUseCase } from '../DeleteThesaurus.js';
 import { ThesaurusNotFoundError, ThesaurusInUseError } from '#api/core/domain/thesaurus/errors.js';
 import { factory } from './UpdateThesaurusFixtures.js';
-import type { PGFixture } from '#api/utils/testing_pg.js';
 import type { DBFixture } from '#api/utils/testing_db.js';
 
 const countriesId = factory.id('countries');
@@ -92,13 +91,9 @@ const fixtures: DBFixture = {
   ],
 };
 
-const countriesIdHex = countriesId.toHexString();
-const fruitsIdHex = fruitsId.toHexString();
-
 type TestConfig = {
   name: string;
   postgresThesauri: boolean;
-  pgFixtures: PGFixture | undefined;
   getThesauri: () => Promise<Record<string, unknown>[]>;
 };
 
@@ -106,33 +101,15 @@ const testConfigs: TestConfig[] = [
   {
     name: 'Mongo',
     postgresThesauri: false,
-    pgFixtures: undefined,
     getThesauri: async () => testingEnvironment.db.getAllFrom('dictionaries'),
   },
   {
     name: 'Postgres',
     postgresThesauri: true,
-    pgFixtures: {
-      thesauri: [
-        {
-          _id: countriesIdHex,
-          name: 'Countries',
-          values: [
-            { id: randomUUID(), label: 'USA' },
-            { id: randomUUID(), label: 'Canada' },
-          ],
-        },
-        {
-          _id: fruitsIdHex,
-          name: 'Fruits',
-          values: [
-            { id: randomUUID(), label: 'Apple' },
-            { id: randomUUID(), label: 'Banana' },
-          ],
-        },
-      ],
-    },
-    getThesauri: async () => testingEnvironment.pg.getAllFrom('thesauri'),
+    getThesauri: async () =>
+      testingEnvironment.pg
+        .getAllFrom('thesauri')
+        .then(rows => rows.map(({ tenant_id: _, ...rest }) => rest)),
   },
 ];
 
@@ -145,7 +122,7 @@ describe('DeleteThesaurusUseCase', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresThesauri, pgFixtures, getThesauri }) => {
+  describe.each(testConfigs)('$name', ({ postgresThesauri, getThesauri }) => {
     const createSut = () =>
       testingEnvironment.runWithContext(
         () => {
@@ -190,7 +167,7 @@ describe('DeleteThesaurusUseCase', () => {
       );
 
     beforeEach(async () => {
-      await testingEnvironment.setFixtures(fixtures, pgFixtures);
+      await testingEnvironment.setFixtures(fixtures);
     });
 
     it('should delete a thesaurus that is not referenced by any template', async () => {
