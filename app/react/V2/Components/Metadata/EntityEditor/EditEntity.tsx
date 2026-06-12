@@ -82,6 +82,25 @@ const thesaurusToOptions = (
       })),
     })) || [];
 
+const relationshipToOptions = (
+  property: Properties,
+  metadata?: Entity['metadata']
+): MultiselectListOption[] => {
+  const relationshipValues = resolvePropertyMetadataValues(property, metadata);
+
+  if (!Array.isArray(relationshipValues)) {
+    return [];
+  }
+
+  return relationshipValues
+    .filter(value => value?.value && value.label && value.authorized !== false)
+    .map(value => ({
+      label: value.label as string,
+      searchLabel: value.label as string,
+      value: value.value as string,
+    }));
+};
+
 const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProps) => {
   const templates = useAtomValue(templatesAtom);
   const thesauri = useAtomValue(thesauriAtom);
@@ -181,6 +200,7 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
           hideFilters
         />
 
+        {/* eslint-disable-next-line max-statements */}
         {metadataProperties.map(property => {
           if (
             property.type === 'text' ||
@@ -222,6 +242,19 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
                 registerOptions={{ required: property.required }}
                 disabled={disabled}
                 options={thesaurusToOptions(thesauri, property)}
+              />
+            );
+          }
+
+          if (property.type === 'relationship') {
+            return (
+              <MultiselectField<EditEntityFormValues>
+                context={entityTemplate._id}
+                label={property.label}
+                field={`metadata.${property.name}`}
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+                options={relationshipToOptions(property, entity?.metadata)}
               />
             );
           }

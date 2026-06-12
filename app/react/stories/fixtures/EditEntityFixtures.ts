@@ -127,10 +127,10 @@ const templates: Template[] = [
         _id: '1.9',
         content: 'template2',
         type: 'relationship',
-        label: 'Regular relationship with no inheritance',
+        label: 'Related people',
         noLabel: false,
-        relationType: 'rel2',
-        name: 'nearby_incidents',
+        relationType: 'rel1',
+        name: 'related_people',
       },
       {
         _id: '1.10',
@@ -369,31 +369,6 @@ const apiEntity: Entity = {
         type: 'entity',
         inheritedValue: [],
         inheritedType: 'multiselect',
-      },
-    ],
-    nearby_incidents: [
-      {
-        value: 'entity4',
-        label: 'Traffic Accident - Main Street',
-        icon: {
-          _id: 'ECU',
-          label: 'Ecuador',
-          type: 'Flags',
-        },
-        type: 'entity',
-      },
-      {
-        value: 'entity5',
-        label: 'Fire Incident - Downtown',
-        icon: '',
-        type: 'entity',
-      },
-      {
-        value: 'entity6',
-        label: 'This value should not display',
-        icon: '',
-        authorized: false,
-        type: 'entity',
       },
     ],
     external_link: [
