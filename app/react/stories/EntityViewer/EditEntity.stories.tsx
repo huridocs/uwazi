@@ -13,11 +13,17 @@ import { Translate } from '#app/I18N/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { EditEntity } from '#V2/Components/Metadata/EntityEditor/index.js';
 import { Button } from '#V2/Components/UI/index.js';
-import { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.js';
-import { MetadataEntityHeader } from '#V2/Components/Metadata/MetadataEntityHeader.js';
 import { apiEntity, templates, thesauri } from '../fixtures/EditEntityFixtures.js';
 
-const EditEntityComponent = ({ entity, locale = 'en' }: { entity: Entity; locale?: string }) => {
+const EditEntityComponent = ({
+  entity,
+  onSave,
+  locale = 'en',
+}: {
+  entity: Entity;
+  onSave: (savedEntity: Entity) => void;
+  locale?: string;
+}) => {
   const [savedEntity, setSavedEntity] = useState(entity);
 
   const store = createStore();
@@ -53,9 +59,9 @@ const EditEntityComponent = ({ entity, locale = 'en' }: { entity: Entity; locale
   const formId = 'edit-entity-form';
 
   const handleSave = (updatedEntity?: Entity) => {
-    console.log(updatedEntity);
     if (updatedEntity) {
       setSavedEntity(updatedEntity);
+      onSave?.(updatedEntity);
     }
   };
 
@@ -63,30 +69,23 @@ const EditEntityComponent = ({ entity, locale = 'en' }: { entity: Entity; locale
     <div className="tw-content">
       <BrowserRouter>
         <Provider store={store}>
-          <div className="flex gap-4">
-            <div className="w-1/2">
-              <p>Entity editor</p>
-              <div className="mb-4">
-                <EditEntity entity={entity} formId={formId} onSave={handleSave} />
-              </div>
-              <div className="flex flex-row items-center gap-2">
-                <Button variant="secondary">
-                  <Translate>Cancel</Translate>
-                </Button>
-                <Button variant="primary" type="submit" form={formId}>
-                  <Translate>Save</Translate>
-                </Button>
-              </div>
+          <div className="border rounded p-4 bg-(--bg-surface) text-ink mb-2">
+            <h2 className="text-lg font-bold py-2">Entity editor</h2>
+            <div className="mb-4">
+              <EditEntity entity={entity} formId={formId} onSave={handleSave} />
             </div>
-            <div className="w-1/2">
-              <p>Entity view</p>
-              <MetadataEntityHeader
-                templateId={savedEntity.template}
-                title={savedEntity.title}
-                layout="inline"
-              />
-              <MetadataDisplay entity={savedEntity} />
+            <div className="flex flex-row items-center gap-2">
+              <Button variant="secondary">
+                <Translate>Cancel</Translate>
+              </Button>
+              <Button variant="primary" type="submit" form={formId}>
+                <Translate>Save</Translate>
+              </Button>
             </div>
+          </div>
+          <div className="border rounded p-4 bg-(--bg-surface) text-ink mt-2">
+            <h2 className="text-lg font-bold py-2">Saved entity</h2>
+            <pre data-testid="resulting-entity">{JSON.stringify(savedEntity, null, 2)}</pre>
           </div>
         </Provider>
       </BrowserRouter>
@@ -102,7 +101,9 @@ const meta: Meta<typeof EditEntityComponent> = {
 type Story = StoryObj<typeof EditEntityComponent>;
 
 const Primary: Story = {
-  render: args => <EditEntityComponent entity={args.entity} locale={args.locale} />,
+  render: args => (
+    <EditEntityComponent onSave={args.onSave} entity={args.entity} locale={args.locale} />
+  ),
 };
 
 const Basic: Story = {
@@ -110,6 +111,7 @@ const Basic: Story = {
   args: {
     entity: apiEntity,
     locale: 'en',
+    onSave: undefined,
   },
 };
 

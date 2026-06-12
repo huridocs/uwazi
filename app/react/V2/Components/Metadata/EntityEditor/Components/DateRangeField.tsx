@@ -40,7 +40,7 @@ const DateRangeField = <TFormValues extends FieldValues = FieldValues>({
           const fromISODate = from ? secondsToISODate(from) : undefined;
           const toISODate = to ? secondsToISODate(to) : undefined;
 
-          const idFor = `${field}.for`;
+          const idFor = `${field}.from`;
           const idTo = `${field}.to`;
           const showRequiredError = fieldState.error?.type === 'required';
 

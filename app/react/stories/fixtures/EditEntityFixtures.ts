@@ -53,7 +53,7 @@ const thesauri: ClientThesaurus[] = [
       },
       {
         label: 'Third event',
-        id: 'thes3.3',
+        id: 'thes2.3',
       },
     ],
   },

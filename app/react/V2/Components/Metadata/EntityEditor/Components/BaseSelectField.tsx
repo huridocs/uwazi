@@ -44,6 +44,7 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
       render={({ field: fieldController, fieldState }) => (
         <div className="h-52">
           <MultiselectList
+            id={field}
             checkboxes
             label={
               <div className="font-semibold">
