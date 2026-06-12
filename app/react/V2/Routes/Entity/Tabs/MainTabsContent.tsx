@@ -29,11 +29,7 @@ const MainTabsContent = ({
     case MAIN_TAB.DOCUMENT:
       if (mainDocument?.filename) {
         content = (
-          <DocumentTab
-            entity={entity}
-            mainDocument={mainDocument}
-            pagePlaintext={pagePlaintext}
-          />
+          <DocumentTab entity={entity} mainDocument={mainDocument} pagePlaintext={pagePlaintext} />
         );
       }
       break;

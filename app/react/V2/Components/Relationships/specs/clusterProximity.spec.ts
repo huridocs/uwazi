@@ -5,10 +5,16 @@ describe('computePageClusterProximity', () => {
     expect(computePageClusterProximity(900, 842)).toBe(46);
   });
 
-  it('scales with track height once ratio exceeds floor', () => {
-    const belowFloor = computePageClusterProximity(500, 842);
-    const aboveFloor = computePageClusterProximity(1000, 842);
-    expect(aboveFloor).toBeGreaterThan(belowFloor);
+  it('keeps page proximity constant once track ratio exceeds floor', () => {
+    expect(computePageClusterProximity(900, 842)).toBe(46);
+    expect(computePageClusterProximity(1000, 842)).toBe(46);
+  });
+
+  it('uses floor on short tracks, yielding larger page proximity', () => {
+    expect(computePageClusterProximity(500, 842)).toBe(66);
+    expect(computePageClusterProximity(500, 842)).toBeGreaterThan(
+      computePageClusterProximity(900, 842)
+    );
   });
 
   it('falls back to floor when dimensions are invalid', () => {

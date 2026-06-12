@@ -53,6 +53,9 @@ const DocumentTab = ({
     );
 
     if (!pageElement) {
+      // Warn users in case the way pages are represented changes since it will interfere with calculation for marker positions in page view.
+      // eslint-disable-next-line no-console
+      console.warn('Page element could not be found');
       setPageHeight(undefined);
       return undefined;
     }

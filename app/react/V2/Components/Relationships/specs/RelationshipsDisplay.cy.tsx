@@ -4,6 +4,7 @@ import { composeStories } from '@storybook/react';
 import * as stories from '#app/stories/EntityViewer/Relationships.stories.js';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import { setupMediaIntercepts } from '../../UI/Files/specs/testHelpers.js';
+import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
 
 const openMainCluster = () => {
   cy.get('[data-testid="rail-marker-cluster"]')
@@ -14,6 +15,12 @@ const openMainCluster = () => {
 
 const togglePageMode = () => {
   cy.contains('button', 'Toggle timeline mode').click();
+};
+
+const scrollToPage8 = () => {
+  cy.get('div[id="page-8-container"]').then($el => {
+    scrollIntoView($el[0], { block: 'start' });
+  });
 };
 
 const getOverlappingPairs = (layers: { top: number; zIndex: number }[], distance = 30) =>
@@ -231,28 +238,32 @@ describe('References Display', () => {
   describe('page mode', () => {
     it('toggles to page mode and displays the current page label', () => {
       togglePageMode();
-      cy.get('[data-testid="page-mode-label"]').should('contain', 'p. 1');
+      cy.contains('span', 'p. 1').should('be.visible');
     });
 
     it('update as the pages scroll', () => {
-      cy.get('[data-testid="pdf-scroll-container"]').scrollTo(0, 4000, { duration: 0 });
       togglePageMode();
-      cy.get('[data-testid="page-mode-label"]', { timeout: 20000 })
-        .invoke('text')
-        .should('match', /p\.\s\d+/);
+      cy.contains('span', 'p. 1').should('be.visible');
+      scrollToPage8();
+      cy.contains('Current page: 8', { timeout: 20000 }).should('be.visible');
+      cy.contains('span', 'p. 8').should('be.visible');
+      cy.contains('button', '25').should('be.visible');
+      cy.get('[data-testid="relationships-rail"]').should('contain', '14');
     });
 
     it('page edge color dots', () => {
       togglePageMode();
+      scrollToPage8();
+      cy.contains('span', 'p. 8').should('be.visible');
       cy.get('[data-testid="page-count-dots"]').should('exist');
     });
 
     it('cluster subtree renders in page mode', () => {
       togglePageMode();
-      cy.get('[data-testid="page-mode-label"]')
-        .invoke('text')
-        .should('match', /p\.\s\d+/);
-      cy.get('[data-testid="rail-marker"]').should('have.length.at.least', 1);
+      scrollToPage8();
+      cy.contains('span', 'p. 8').should('be.visible');
+      openMainCluster();
+      cy.get('[data-testid="cluster-subtree"]').should('be.visible');
     });
   });
 });

@@ -113,6 +113,7 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
 
   const handleAddToToC = useCallback(
     (selection: TextSelection) => {
+      // Selection is already in scale=1 (normalized) from PDF onSelect
       const tocEntry = convertTextSelectionToTocEntry(selection);
       addEntry(tocEntry);
       const next = new URLSearchParams(searchParams.toString());

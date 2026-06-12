@@ -28,6 +28,43 @@ const entityWithReferences = {
       entity: 'targetSharedId',
       entityData: { _id: 'targetId', title: 'Target Entity', template: 'targetTemplate1' },
     },
+    {
+      template: 'relationshipType2',
+      _id: 'conn3',
+      hub: 'hub2',
+      file: 'file2',
+      entity: 'sharedId1',
+      reference: {
+        text: 'another selection',
+        selectionRectangles: [{ top: 5, left: 15, width: 80, height: 20, page: '2' }],
+      },
+    },
+    {
+      template: null,
+      _id: 'conn4',
+      hub: 'hub2',
+      entity: 'anotherSharedId',
+      entityData: { _id: 'anotherId', title: 'Another Target', template: 'targetTemplate2' },
+    },
+  ],
+} as Entity;
+
+const entityWithNoReferences = {
+  _id: 'entity2',
+  sharedId: 'sharedId2',
+  language: 'en',
+  title: 'Entity with no refs',
+  template: 'template1',
+  creationDate: 1,
+  user: 'user1',
+  relations: [
+    {
+      template: null,
+      _id: 'conn5',
+      hub: 'hub3',
+      entity: 'someSharedId',
+      entityData: { _id: 'someId', title: 'Some Entity', template: 'someTemplate' },
+    },
   ],
 } as Entity;
 
@@ -83,6 +120,25 @@ describe('formatRelationships', () => {
           entity: 'targetSharedId',
           entityTitle: 'Target Entity',
           entityTemplateId: 'targetTemplate1',
+        },
+      },
+      {
+        _id: 'conn4',
+        type: 'relationshipType2',
+        from: {
+          type: 'textReference',
+          entity: 'sharedId1',
+          entityTitle: 'Source Entity',
+          entityTemplateId: 'template1',
+          file: 'file2',
+          text: 'another selection',
+          selections: [{ page: 2, top: 5, left: 15, width: 80, height: 20 }],
+        },
+        to: {
+          type: 'entity',
+          entity: 'anotherSharedId',
+          entityTitle: 'Another Target',
+          entityTemplateId: 'targetTemplate2',
         },
       },
     ]);
@@ -147,6 +203,58 @@ describe('formatRelationships', () => {
 
   it('returns empty array when entity has no relations', () => {
     expect(formatRelationships(entityWithNoRelations)).toEqual([]);
+  });
+
+  it('returns empty array when no relation has a reference on the self side', () => {
+    expect(formatRelationships(entityWithNoReferences)).toEqual([]);
+  });
+
+  it('excludes self-references where both hub ends belong to the same entity', () => {
+    const entity = {
+      _id: 'entity6',
+      sharedId: 'sharedId6',
+      language: 'en',
+      title: 'Self-Referencing Entity',
+      template: 'entityTemplate1',
+      creationDate: 1,
+      user: 'user1',
+      relations: [
+        {
+          template: 'relationshipType1',
+          _id: 'conn10',
+          hub: 'hub6',
+          file: 'file4',
+          entity: 'sharedId6',
+          entityData: {
+            _id: 'entity6',
+            title: 'Self-Referencing Entity',
+            template: 'entityTemplate1',
+          },
+          reference: {
+            text: 'first selection',
+            selectionRectangles: [{ top: 10, left: 20, width: 100, height: 30, page: '3' }],
+          },
+        },
+        {
+          template: null,
+          _id: 'conn11',
+          hub: 'hub6',
+          file: 'file4',
+          entity: 'sharedId6',
+          entityData: {
+            _id: 'entity6',
+            title: 'Self-Referencing Entity',
+            template: 'entityTemplate1',
+          },
+          reference: {
+            text: 'second selection',
+            selectionRectangles: [{ top: 50, left: 20, width: 200, height: 30, page: '1' }],
+          },
+        },
+      ],
+    } as unknown as Entity;
+
+    expect(formatRelationships(entity)).toEqual([]);
   });
 
   it('pairs each target with the self-side hub connection', () => {

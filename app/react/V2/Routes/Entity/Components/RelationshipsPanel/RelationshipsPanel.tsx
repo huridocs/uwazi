@@ -48,6 +48,7 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
     []
   );
 
+  // TODO: Implement view functionality
   const handleRelationshipClick = useCallback(
     (marker: RelationshipMarker) => {
       selectRelationship(marker);
@@ -104,6 +105,7 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
         return;
       }
 
+      // Get source file ID (main document)
       const sourceFile = mainDocument;
       if (!sourceFile?._id) {
         console.error('Cannot save reference: source file is not available');
@@ -126,16 +128,20 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
           ...(data.targetSelection && { targetSelection: data.targetSelection }),
         });
 
+        // Clear the create reference selection after successful save
         setCreateReferenceSelection(undefined, undefined);
+        // Invalidate cache and revalidate to refresh the entity data and show the new reference
         entityLoaderCache.invalidateEntity(entity.sharedId);
         await revalidator.revalidate();
       } catch (error) {
         console.error('Error saving reference:', error);
+        // TODO: Show error notification to user
       }
     },
     [entity, mainDocument, setCreateReferenceSelection, revalidator]
   );
 
+  // If there's a createReferenceSelection, show the CreateReference component
   if (createReferenceSelection) {
     return (
       <CreateReference
@@ -149,6 +155,7 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
     );
   }
 
+  // Otherwise, show the references list
   return (
     <>
       <Panel>

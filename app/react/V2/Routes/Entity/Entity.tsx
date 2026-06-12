@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useLoaderData, useSearchParams } from 'react-router';
 import { Translate } from '#app/I18N/index.js';
@@ -83,13 +82,9 @@ const EntityView = ({ entity, mainDocument, pagePlaintext, searchResults }: Enti
   );
 
   const activeSideTab = useMemo<SideTabId | undefined>(() => {
-    const rawSideTab = searchParams.get(SIDE_TAB_PARAM);
-    const sideTab =
-      rawSideTab === SIDE_TAB.REFERENCES || rawSideTab === 'references'
-        ? SIDE_TAB.RELATIONSHIPS
-        : rawSideTab;
+    const sideTab = searchParams.get(SIDE_TAB_PARAM);
 
-    if (isValidSideTab(sideTab) && sideTabButtons.some(button => button.id === sideTab)) {
+    if (isValidSideTab(sideTab)) {
       return sideTab;
     }
 
@@ -106,13 +101,8 @@ const EntityView = ({ entity, mainDocument, pagePlaintext, searchResults }: Enti
 
   useEffect(() => {
     const raw = searchParams.get(SIDE_TAB_PARAM);
-    if (!raw) return;
-    const normalized =
-      raw === SIDE_TAB.REFERENCES || raw === 'references' ? SIDE_TAB.RELATIONSHIPS : raw;
-    if (isValidSideTab(normalized) && sideTabButtons.some(button => button.id === normalized)) {
-      return;
-    }
-    if (isValidSideTab(raw) && sideTabButtons.some(button => button.id === raw)) return;
+    if (!raw || !isValidSideTab(raw)) return;
+    if (sideTabButtons.some(button => button.id === raw)) return;
     const next = new URLSearchParams(searchParams.toString());
     next.delete(SIDE_TAB_PARAM);
     setSearchParams(next, { replace: true, preventScrollReset: true });
@@ -140,12 +130,10 @@ const EntityView = ({ entity, mainDocument, pagePlaintext, searchResults }: Enti
           filesSideTabs,
         });
         const rawS = next.get(SIDE_TAB_PARAM);
-        const normalizedS =
-          rawS === SIDE_TAB.REFERENCES || rawS === 'references' ? SIDE_TAB.RELATIONSHIPS : rawS;
         const sStillValid =
-          Boolean(normalizedS) &&
-          isValidSideTab(normalizedS) &&
-          nextSideButtons.some(button => button.id === normalizedS);
+          Boolean(rawS) &&
+          isValidSideTab(rawS) &&
+          nextSideButtons.some(button => button.id === rawS);
         if (!sStillValid) {
           next.delete(SIDE_TAB_PARAM);
         }
