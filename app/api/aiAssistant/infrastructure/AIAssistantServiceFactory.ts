@@ -1,12 +1,18 @@
-import { config } from '#api/config.js';
+import { tenants } from '#api/tenants/index.js';
 import { HttpClientFactory } from '#api/common.v2/infrastructure/HttpClientFactory.js';
 import type { AIAssistantService } from '../domain/AIAssistantService.js';
 import { ExternalAIAssistantService } from './ExternalAIAssistantService.js';
 
 class AIAssistantServiceFactory {
   static createDefault(): AIAssistantService {
+    const url = tenants.current().featureFlags?.aiAssistantServiceUrl;
+
+    if (!url) {
+      throw new Error('AI Assistant service URL is not configured for this tenant');
+    }
+
     return new ExternalAIAssistantService({
-      url: config.externalServicesUrls.aiAssistant,
+      url,
       httpClient: HttpClientFactory.createDefault(),
     });
   }

@@ -143,7 +143,6 @@ export const config = {
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',
   externalServicesUrls: {
     paragraphExtraction: process.env.PARAGRAPH_EXTRACTION_URL || 'http://localhost:5056',
-    aiAssistant: process.env.AI_ASSISTANT_SERVICE_URL || 'http://localhost:5054',
   },
 
   redis: {

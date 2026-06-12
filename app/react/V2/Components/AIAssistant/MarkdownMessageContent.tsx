@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import instanceMarkdownIt from 'markdown-it';
 import sanitizeHtml from 'sanitize-html';
-import { normalizeMarkdown } from './markdownUtils.js';
+import { MARKDOWN_CONTENT_CLASSNAME, normalizeMarkdown } from './markdownUtils.js';
 
 const markdownParser = new instanceMarkdownIt({
   html: false,
@@ -53,7 +53,7 @@ const MarkdownMessageContent = ({ text }: MarkdownMessageContentProps) => {
 
   return (
     // eslint-disable-next-line react/no-danger
-    <div className="bert-markdown no-tailwind" dangerouslySetInnerHTML={{ __html: safeHtml }} />
+    <div className={MARKDOWN_CONTENT_CLASSNAME} dangerouslySetInnerHTML={{ __html: safeHtml }} />
   );
 };
 
