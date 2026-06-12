@@ -6,16 +6,16 @@ import {
 import { AIAssistantFactory } from '../AIAssistantFactory.js';
 import { buildUwaziCredentials } from './buildUwaziCredentials.js';
 
-type Dependencies = AbstractControllerDependencies<Request>;
+type Dependencies = AbstractControllerDependencies<CancelConversationRequestBody>;
 
 const RequestSchema = z.object({
   jobId: z.string().trim().min(1),
   password: z.string().min(1),
 });
 
-type Request = z.infer<typeof RequestSchema>;
+type CancelConversationRequestBody = z.infer<typeof RequestSchema>;
 
-class CancelAIAssistantConversationController extends AbstractController<Request> {
+class CancelAIAssistantConversationController extends AbstractController<CancelConversationRequestBody> {
   constructor(dependencies: Dependencies) {
     super(dependencies);
   }

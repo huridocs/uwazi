@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
-import instanceMarkdownIt from 'markdown-it';
+import MarkdownIt from 'markdown-it';
 import sanitizeHtml from 'sanitize-html';
 import { MARKDOWN_CONTENT_CLASSNAME, normalizeMarkdown } from './markdownUtils.js';
 
-const markdownParser = new instanceMarkdownIt({
+const markdownParser = new MarkdownIt({
   html: false,
   linkify: true,
   breaks: true,

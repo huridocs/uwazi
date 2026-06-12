@@ -56,5 +56,7 @@ export default async (app, server) => {
   (await import('./paragraphExtraction/adapters/PXRoutes.js')).paragraphExtractionRoutes(app);
   (await import('./csv.v2/infrastructure/http/routes.js')).csvImportRoutes(app);
   (await import('./customUploads/infrastructure/http/routes.js')).customUploadsRoutes(app);
-  (await import('./aiAssistant/infrastructure/express/AIAssistantRoutes.js')).aiAssistantRoutes(app);
+  (await import('./aiAssistant/infrastructure/express/AIAssistantRoutes.js')).aiAssistantRoutes(
+    app
+  );
 };

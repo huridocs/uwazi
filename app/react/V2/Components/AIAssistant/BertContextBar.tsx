@@ -8,6 +8,7 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { useOnClickOutsideElement } from '#app/utils/useOnClickOutsideElementHook.js';
+import { Translate } from '#app/I18N/index.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import type { ContextAddOptionId, ContextChip, ContextScopeMode } from './types.js';
 
@@ -76,7 +77,9 @@ const BertContextBar = ({
             onClick={() => setScopeOpen(open => !open)}
             className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-border bg-paper px-2 py-1 text-xs font-medium text-ink-secondary transition-colors hover:bg-warm"
           >
-            <span className="text-ink-muted">Context</span>
+            <span className="text-ink-muted">
+              <Translate>Context</Translate>
+            </span>
             <span className="text-ink">{contextModeLabel}</span>
             <ChevronDownIcon className="h-3.5 w-3.5 text-ink-muted" />
           </button>
@@ -148,7 +151,7 @@ const BertContextBar = ({
             onClick={() => setAddOpen(open => !open)}
           >
             <PlusIcon className="h-3.5 w-3.5" />
-            Add
+            <Translate>Add</Translate>
           </Button>
           {addOpen ? (
             <div

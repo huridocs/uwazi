@@ -3,6 +3,7 @@ import request from 'supertest';
 import { tenants } from '#api/tenants/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { AIAssistantFactory } from '../../AIAssistantFactory.js';
 import { aiAssistantRoutes } from '../AIAssistantRoutes.js';
@@ -18,15 +19,20 @@ const adminUser = {
   email: 'admin@test.com',
 };
 
-const app: Application = setUpApp(aiAssistantRoutes, (req: Request, _res: Response, next: NextFunction) => {
-  req.user = adminUser;
-  next();
-});
+const app: Application = setUpApp(
+  aiAssistantRoutes,
+  (req: Request, _res: Response, next: NextFunction) => {
+    req.user = adminUser;
+    next();
+  }
+);
 
 describe('AIAssistantRoutes', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({
-      settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
+      settings: [
+        { languages: [{ key: 'en' as LanguageISO6391, label: 'English', default: true }] },
+      ],
     });
     tenants.current().featureFlags!.aiAssistant = true;
   });

@@ -11,13 +11,7 @@ type ContextChip = {
   removable: boolean;
 };
 
-type ContextAddOptionId =
-  | 'page'
-  | 'template'
-  | 'connections'
-  | 'files'
-  | 'entity'
-  | 'file';
+type ContextAddOptionId = 'page' | 'template' | 'connections' | 'files' | 'entity' | 'file';
 
 type ChatMessage = {
   id: string;

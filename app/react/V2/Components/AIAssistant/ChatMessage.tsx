@@ -26,7 +26,9 @@ const ChatMessageView = ({
   if (isUser) {
     return (
       <article className="flex justify-end">
-        <p className="max-w-[85%] rounded-lg bg-parchment px-3 py-2 text-sm text-ink">{message.text}</p>
+        <p className="max-w-[85%] rounded-lg bg-parchment px-3 py-2 text-sm text-ink">
+          {message.text}
+        </p>
       </article>
     );
   }

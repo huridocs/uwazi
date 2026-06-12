@@ -1,6 +1,9 @@
 /** Strip common leading indentation so indented API payloads are not parsed as code blocks. */
 const normalizeMarkdown = (text: string): string => {
-  const lines = text.replace(/^\uFEFF/, '').replace(/\s+$/, '').split('\n');
+  const lines = text
+    .replace(/^\uFEFF/, '')
+    .replace(/\s+$/, '')
+    .split('\n');
 
   while (lines.length > 0 && lines[0].trim().length === 0) {
     lines.shift();
@@ -36,7 +39,8 @@ const MARKDOWN_CONTENT_CLASSNAME = [
   '[&_ul]:list-disc [&_ul]:pl-5',
   '[&_ol]:list-decimal [&_ol]:pl-5',
   '[&_li+li]:mt-1',
-  '[&_blockquote]:border-l-2 [&_blockquote]:border-border [&_blockquote]:pl-3 [&_blockquote]:text-ink-secondary',
+  '[&_blockquote]:border-l-2 [&_blockquote]:border-border [&_blockquote]:pl-3',
+  '[&_blockquote]:text-ink-secondary',
   '[&_code]:rounded [&_code]:bg-vellum [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-xs',
   '[&_pre]:overflow-x-auto [&_pre]:rounded-md [&_pre]:border [&_pre]:border-border [&_pre]:bg-vellum [&_pre]:px-3 [&_pre]:py-2',
   '[&_pre_code]:bg-transparent [&_pre_code]:p-0',

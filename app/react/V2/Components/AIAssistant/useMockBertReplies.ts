@@ -21,7 +21,11 @@ const buildGroundedReply = (prompt: string, chips: ContextChip[]): ChatMessage =
     id: createId(),
     role: 'assistant',
     timestamp: formatTime(),
-    text: `Working in context of **${scope}**. I'd ground my answer in the documents in scope and cite the passages as I go, then summarise what I find.${promptSnippet}`,
+    text: [
+      `Working in context of **${scope}**.`,
+      "I'd ground my answer in the documents in scope and cite the passages as I go,",
+      `then summarise what I find.${promptSnippet}`,
+    ].join(' '),
   };
 };
 

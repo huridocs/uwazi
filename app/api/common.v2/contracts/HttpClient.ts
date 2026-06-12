@@ -13,12 +13,12 @@ type GetInput = {
 
 type PostJsonInput = {
   url: string;
-  body: unknown;
+  body: string | object;
 };
 
 type DeleteJsonInput = {
   url: string;
-  body?: unknown;
+  body?: string | object;
 };
 
 interface HttpClient {

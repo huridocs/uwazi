@@ -20,8 +20,4 @@ type AIAssistantProgressPayload = {
 };
 
 export { aiAssistantEvents };
-export type {
-  AIAssistantErrorPayload,
-  AIAssistantProgressPayload,
-  AIAssistantReplyPayload,
-};
+export type { AIAssistantErrorPayload, AIAssistantProgressPayload, AIAssistantReplyPayload };

@@ -120,9 +120,7 @@ export function registerJobs(register: Register) {
 
   register(PXExtractParagraphsFromEntityJob, async () => new PXExtractParagraphsFromEntityJob());
 
-  register(AIAssistantPollRequestJob, async () =>
-    AIAssistantFactory.createPollRequestJob()
-  );
+  register(AIAssistantPollRequestJob, async () => AIAssistantFactory.createPollRequestJob());
 
   register(PXCreateParagraphsJob, async () => {
     const transactionManager = TransactionManagerFactory.default();

@@ -7,7 +7,7 @@ import {
 import { AIAssistantFactory } from '../AIAssistantFactory.js';
 import { buildUwaziCredentials } from './buildUwaziCredentials.js';
 
-type Dependencies = AbstractControllerDependencies<Request>;
+type Dependencies = AbstractControllerDependencies<SendMessageRequestBody>;
 
 const ContextChipSchema = z.object({
   id: z.string(),
@@ -26,9 +26,9 @@ const RequestSchema = z.object({
   }),
 });
 
-type Request = z.infer<typeof RequestSchema>;
+type SendMessageRequestBody = z.infer<typeof RequestSchema>;
 
-class SendAIAssistantMessageController extends AbstractController<Request> {
+class SendAIAssistantMessageController extends AbstractController<SendMessageRequestBody> {
   constructor(dependencies: Dependencies) {
     super(dependencies);
   }

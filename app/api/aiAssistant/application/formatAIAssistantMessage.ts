@@ -1,9 +1,6 @@
 import type { AIAssistantContextPayload } from './contracts/AIAssistantContracts.js';
 
-const formatAIAssistantMessage = (
-  message: string,
-  context: AIAssistantContextPayload
-): string => {
+const formatAIAssistantMessage = (message: string, context: AIAssistantContextPayload): string => {
   const chipLabels = context.chips
     .map(chip => chip.label)
     .filter(Boolean)

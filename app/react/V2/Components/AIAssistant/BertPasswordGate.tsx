@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { LockClosedIcon } from '@heroicons/react/24/outline';
+import { t, Translate } from '#app/I18N/index.js';
 import { Button } from '#V2/Components/UI/Button.js';
 
 type BertPasswordGateProps = {
@@ -25,10 +26,12 @@ const BertPasswordGate = ({ onUnlock }: BertPasswordGateProps) => {
       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-vellum text-ink-secondary">
         <LockClosedIcon className="h-5 w-5" />
       </div>
-      <h3 className="mt-4 text-base font-semibold text-ink">Confirm your password</h3>
+      <h3 className="mt-4 text-base font-semibold text-ink">
+        <Translate>Confirm your password</Translate>
+      </h3>
       <form onSubmit={handleSubmit} className="mt-6 w-full max-w-sm">
         <label htmlFor="bert-password" className="sr-only">
-          Password
+          {t('System', 'Password', null, false)}
         </label>
         <input
           id="bert-password"
@@ -40,7 +43,7 @@ const BertPasswordGate = ({ onUnlock }: BertPasswordGateProps) => {
         />
         {error ? <p className="mt-2 text-sm text-error-600">{error}</p> : null}
         <Button type="submit" className="mt-4 w-full">
-          Continue
+          <Translate>Continue</Translate>
         </Button>
       </form>
     </div>

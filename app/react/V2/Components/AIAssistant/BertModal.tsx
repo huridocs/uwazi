@@ -1,5 +1,8 @@
+/* eslint-disable react/no-multi-comp */
 import React, { useCallback, useEffect, useRef } from 'react';
+import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
 import { ChatBubbleBottomCenterTextIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { Translate } from '#app/I18N/index.js';
 import { Button, Modal } from '#V2/Components/UI/index.js';
 import { BertIconStacked } from './BertIcon.js';
 import { BertContextBar } from './BertContextBar.js';
@@ -73,11 +76,47 @@ const BertModal = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesEndRef.current) {
+      scrollIntoView(messagesEndRef.current, { behavior: 'smooth' });
+    }
   }, []);
 
   const showWelcome = messages.length === 0 && !isThinking && !replyError;
   const canClearChat = messages.length > 0 || isThinking || Boolean(replyError);
+
+  const renderModalBody = () => {
+    if (needsPasswordUnlock) {
+      return <BertPasswordGate onUnlock={unlockWithPassword} />;
+    }
+
+    if (showWelcome) {
+      return <BertWelcome />;
+    }
+
+    return (
+      <div className="flex flex-col gap-4 px-4 pb-2 pt-4">
+        {messages.map(message => (
+          <ChatMessageView
+            key={message.id}
+            message={message}
+            isStreaming={message.id === streamingMessageId}
+            onStreamComplete={finishStreaming}
+            onStreamProgress={scrollToBottom}
+          />
+        ))}
+        {isThinking ? <BertThinking progress={jobProgress} /> : null}
+        {replyError ? (
+          <div
+            role="alert"
+            className="rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-800"
+          >
+            {replyError}
+          </div>
+        ) : null}
+        <div ref={messagesEndRef} />
+      </div>
+    );
+  };
 
   useEffect(() => {
     if (!open || showWelcome) return;
@@ -94,10 +133,12 @@ const BertModal = ({
         <div className="flex min-w-0 items-center gap-2">
           <div className="flex items-center gap-1">
             <BertIconStacked />
-            <h2 className="text-base font-semibold text-ink">Bert</h2>
+            <h2 className="text-base font-semibold text-ink">
+              <Translate>Bert</Translate>
+            </h2>
           </div>
           <kbd className="rounded border border-border bg-warm px-1.5 py-0.5 text-[0.625rem] font-medium text-ink-muted sm:inline">
-            Ctrl K
+            <Translate>Ctrl K</Translate>
           </kbd>
           <Button
             type="button"
@@ -108,7 +149,7 @@ const BertModal = ({
             className="inline-flex items-center gap-1"
           >
             <ChatBubbleBottomCenterTextIcon className="h-3.5 w-3.5 shrink-0" />
-            New conversation
+            <Translate>New conversation</Translate>
           </Button>
         </div>
         <Modal.CloseButton onClick={onClose} />
@@ -123,35 +164,7 @@ const BertModal = ({
           onAddOption={addContextOption}
         />
       ) : null}
-      <Modal.Body className="min-h-[32rem]">
-        {needsPasswordUnlock ? (
-          <BertPasswordGate onUnlock={unlockWithPassword} />
-        ) : showWelcome ? (
-          <BertWelcome />
-        ) : (
-          <div className="flex flex-col gap-4 px-4 pb-2 pt-4">
-            {messages.map(message => (
-              <ChatMessageView
-                key={message.id}
-                message={message}
-                isStreaming={message.id === streamingMessageId}
-                onStreamComplete={finishStreaming}
-                onStreamProgress={scrollToBottom}
-              />
-            ))}
-            {isThinking ? <BertThinking progress={jobProgress} /> : null}
-            {replyError ? (
-              <div
-                role="alert"
-                className="rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-800"
-              >
-                {replyError}
-              </div>
-            ) : null}
-            <div ref={messagesEndRef} />
-          </div>
-        )}
-      </Modal.Body>
+      <Modal.Body className="min-h-[32rem]">{renderModalBody()}</Modal.Body>
 
       {!needsPasswordUnlock ? (
         <Modal.Footer className="shrink-0 !border-0 px-4 pb-4 pt-2">
@@ -163,7 +176,7 @@ const BertModal = ({
           />
           <p className="mt-2 flex items-center gap-1.5 text-xs text-ink-muted">
             <ClockIcon className="h-3.5 w-3.5 shrink-0" />
-            Some tasks may take a while. Bert will reply when it&apos;s done.
+            <Translate>Some tasks may take a while. Bert will reply when it&apos;s done.</Translate>
           </p>
         </Modal.Footer>
       ) : null}

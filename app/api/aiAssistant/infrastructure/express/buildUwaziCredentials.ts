@@ -2,7 +2,10 @@ import type { Request } from 'express';
 import { tenants } from '#api/tenants/index.js';
 import type { UwaziCredentials } from '../../application/contracts/AIAssistantContracts.js';
 
-const buildUwaziCredentials = (request: Request, password: string): UwaziCredentials | null => {
+const buildUwaziCredentials = (
+  request: Request<any, any, any>,
+  password: string
+): UwaziCredentials | null => {
   const username = request.user?.username;
   if (!username) {
     return null;

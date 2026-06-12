@@ -1,3 +1,4 @@
+/* eslint-disable import/exports-last, import/no-default-export, no-empty-function, react/jsx-props-no-spreading, react/no-multi-comp */
 import React, { useMemo } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { createStore, Provider } from 'jotai';
@@ -5,7 +6,10 @@ import { AskBertButton } from '#V2/Components/AIAssistant/AskBertButton.js';
 import { BertHost } from '#V2/Components/AIAssistant/BertHost.js';
 import { BertModal } from '#V2/Components/AIAssistant/BertModal.js';
 import { useBertState } from '#V2/Components/AIAssistant/useBertState.js';
-import { STORY_BERT_MESSAGES, STORY_CONTEXT_CHIPS } from '#V2/Components/AIAssistant/mockBertData.js';
+import {
+  STORY_BERT_MESSAGES,
+  STORY_CONTEXT_CHIPS,
+} from '#V2/Components/AIAssistant/mockBertData.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 
 const meta: Meta<typeof BertHost> = {
@@ -69,31 +73,33 @@ const Basic: Story = {
   ),
 };
 
-const Playground: Story = {
-  render: () => {
-    const store = useMemo(() => {
-      const nextStore = createStore();
-      nextStore.set(settingsAtom, {
-        features: {
-          aiAssistant: true,
-        },
-      });
-      return nextStore;
-    }, []);
+const PlaygroundStory = () => {
+  const store = useMemo(() => {
+    const nextStore = createStore();
+    nextStore.set(settingsAtom, {
+      features: {
+        aiAssistant: true,
+      },
+    });
+    return nextStore;
+  }, []);
 
-    return (
-      <Provider store={store}>
-        <DocumentBackdrop>
-          <MockHeaderBar />
-          <BertHost
-            mockReplies
-            initialMessages={STORY_BERT_MESSAGES}
-            initialContextChips={STORY_CONTEXT_CHIPS}
-          />
-        </DocumentBackdrop>
-      </Provider>
-    );
-  },
+  return (
+    <Provider store={store}>
+      <DocumentBackdrop>
+        <MockHeaderBar />
+        <BertHost
+          mockReplies
+          initialMessages={STORY_BERT_MESSAGES}
+          initialContextChips={STORY_CONTEXT_CHIPS}
+        />
+      </DocumentBackdrop>
+    </Provider>
+  );
+};
+
+const Playground: Story = {
+  render: () => <PlaygroundStory />,
 };
 
 export { Basic, Playground };

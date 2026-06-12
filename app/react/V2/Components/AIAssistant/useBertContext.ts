@@ -1,5 +1,9 @@
 import { useCallback, useMemo, useState } from 'react';
-import { buildContextSummary, CONTEXT_ADD_LABELS, contextKindForOption } from './bertContextUtils.js';
+import {
+  buildContextSummary,
+  CONTEXT_ADD_LABELS,
+  contextKindForOption,
+} from './bertContextUtils.js';
 import type { ContextAddOptionId, ContextChip, ContextScopeMode } from './types.js';
 
 type UseBertContextOptions = {

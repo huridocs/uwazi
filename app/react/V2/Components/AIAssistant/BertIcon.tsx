@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 import React from 'react';
 
 type BertIconStackedProps = {
@@ -10,12 +11,18 @@ type BertIconStackedProps = {
 
 const BertIconStacked = ({ squareSize = 6, gap = 2, className = '' }: BertIconStackedProps) => (
   <span
-    className={`inline-flex shrink-0 flex-col ${className}`.trim()}
+    className={['inline-flex shrink-0 flex-col', className].filter(Boolean).join(' ')}
     style={{ gap }}
     aria-hidden="true"
   >
-    <span className="rounded-[2px] bg-[#FF3D00]" style={{ width: squareSize, height: squareSize }} />
-    <span className="rounded-[2px] bg-[#18AEDD]" style={{ width: squareSize, height: squareSize }} />
+    <span
+      className="rounded-[2px] bg-[#FF3D00]"
+      style={{ width: squareSize, height: squareSize }}
+    />
+    <span
+      className="rounded-[2px] bg-[#18AEDD]"
+      style={{ width: squareSize, height: squareSize }}
+    />
   </span>
 );
 
