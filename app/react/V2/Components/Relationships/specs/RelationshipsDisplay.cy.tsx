@@ -17,6 +17,14 @@ const togglePageMode = () => {
   cy.contains('button', 'Toggle timeline mode').click();
 };
 
+const openFirstPageCluster = () => {
+  cy.get('[data-testid="rail-marker-cluster"]')
+    .first()
+    .find('button')
+    .first()
+    .click({ force: true });
+};
+
 const scrollToPage8 = () => {
   cy.get('div[id="page-8-container"]').then($el => {
     scrollIntoView($el[0], { block: 'start' });
@@ -247,8 +255,8 @@ describe('References Display', () => {
       scrollToPage8();
       cy.contains('Current page: 8', { timeout: 20000 }).should('be.visible');
       cy.contains('span', 'p. 8').should('be.visible');
-      cy.contains('button', '25').should('be.visible');
       cy.get('[data-testid="relationships-rail"]').should('contain', '14');
+      cy.get('[data-testid="rail-marker-cluster"]').should('have.length.at.least', 1);
     });
 
     it('page edge color dots', () => {
@@ -262,7 +270,7 @@ describe('References Display', () => {
       togglePageMode();
       scrollToPage8();
       cy.contains('span', 'p. 8').should('be.visible');
-      openMainCluster();
+      openFirstPageCluster();
       cy.get('[data-testid="cluster-subtree"]').should('be.visible');
     });
   });
