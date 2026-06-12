@@ -20,6 +20,8 @@ import {
   DateRangeField,
   MultidateField,
   MultiDateRangeField,
+  LinkField,
+  GeolocationField,
 } from './Components/index.js';
 import { MultiselectListOption } from '../../Forms/index.js';
 
@@ -266,6 +268,30 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
                 context={entityTemplate._id}
                 label={property.label}
                 field={`metadata.${property.name}`}
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+              />
+            );
+          }
+
+          if (property.type === 'link') {
+            return (
+              <LinkField<EditEntityFormValues>
+                context={entityTemplate._id}
+                label={property.label}
+                field={`metadata.${property.name}.0.value`}
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+              />
+            );
+          }
+
+          if (property.type === 'geolocation') {
+            return (
+              <GeolocationField<EditEntityFormValues>
+                context={entityTemplate._id}
+                label={property.label}
+                field={`metadata.${property.name}.0.value`}
                 registerOptions={{ required: property.required }}
                 disabled={disabled}
               />

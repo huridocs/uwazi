@@ -87,28 +87,28 @@ const templates: Template[] = [
         name: 'single_date',
       },
       {
-        _id: '1.5',
+        _id: '1.4',
         type: 'multidate',
         label: 'Multiple single dates',
         noLabel: false,
         name: 'multiple_dates',
       },
       {
-        _id: '1.6',
+        _id: '1.5',
         type: 'daterange',
         label: 'Single range date',
         noLabel: false,
         name: 'date_range',
       },
       {
-        _id: '1.7',
+        _id: '1.6',
         type: 'multidaterange',
         label: 'Multiple ranges of dates',
         noLabel: false,
         name: 'multiple_date_ranges',
       },
       {
-        _id: '1.8',
+        _id: '1.7',
         content: 'thes2',
         type: 'select',
         label: 'Single select',
@@ -116,7 +116,7 @@ const templates: Template[] = [
         name: 'status_selection',
       },
       {
-        _id: '1.9',
+        _id: '1.8',
         content: 'thes1',
         type: 'multiselect',
         label: 'Multiple selector',
@@ -124,7 +124,7 @@ const templates: Template[] = [
         name: 'category_tags',
       },
       {
-        _id: '1.11',
+        _id: '1.9',
         content: 'template2',
         type: 'relationship',
         label: 'Regular relationship with no inheritance',
@@ -133,14 +133,21 @@ const templates: Template[] = [
         name: 'nearby_incidents',
       },
       {
-        _id: '1.12',
+        _id: '1.10',
         type: 'link',
         label: 'External link',
         noLabel: false,
         name: 'external_link',
       },
       {
-        _id: '1.13',
+        _id: '1.11',
+        type: 'geolocation',
+        label: 'Location on map',
+        noLabel: false,
+        name: 'location_on_map',
+      },
+      {
+        _id: '1.12',
         type: 'image',
         label: 'Media with an image',
         noLabel: false,
@@ -148,21 +155,14 @@ const templates: Template[] = [
         name: 'selected_image',
       },
       {
-        _id: '1.15',
+        _id: '1.13',
         type: 'media',
         label: 'Media video with timelinks',
         noLabel: false,
         name: 'video_of_event',
       },
       {
-        _id: '1.19',
-        type: 'generatedid',
-        label: 'Property with generated ID',
-        noLabel: false,
-        name: 'document_id',
-      },
-      {
-        _id: '1.20',
+        _id: '1.14',
         type: 'numeric',
         label: 'Numeric property',
         noLabel: false,
@@ -420,7 +420,7 @@ const apiEntity: Entity = {
           '(/short-video.mp4, {"timelinks":{"00:00:02":"Timelink 1","00:00:04": "Timelink 2"}})',
       },
     ],
-    location_geolocation: [
+    location_on_map: [
       {
         value: {
           lat: 40.7128,

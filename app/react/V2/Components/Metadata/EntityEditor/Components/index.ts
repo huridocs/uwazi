@@ -6,3 +6,5 @@ export { DateField } from './DateField.js';
 export { DateRangeField } from './DateRangeField.js';
 export { MultidateField } from './MultidateField.js';
 export { MultiDateRangeField } from './MultiDateRangeField.js';
+export { LinkField } from './LinkField.js';
+export { GeolocationField } from './GeolocationField.js';
