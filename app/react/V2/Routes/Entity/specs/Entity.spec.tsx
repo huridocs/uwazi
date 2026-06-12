@@ -19,6 +19,18 @@ jest.mock('#V2/Components/PDFViewer', () => ({
   PDF: ({ fileUrl }: any) => <div data-testid="mock-pdf">PDF: {fileUrl}</div>,
 }));
 
+class ResizeObserverMock {
+  observe = jest.fn();
+
+  unobserve = jest.fn();
+
+  disconnect = jest.fn();
+
+  constructor(_callback: ResizeObserverCallback) {}
+}
+
+global.ResizeObserver = ResizeObserverMock as typeof ResizeObserver;
+
 const sampleEntity: Partial<EntityType> = {
   _id: 'ent1',
   sharedId: 'shared1',
