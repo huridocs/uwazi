@@ -6,7 +6,7 @@ import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import type { RelationshipGroup } from '../groupRelationships.js';
 import { PageCount } from './PageCount.js';
 import { PageLabel } from './PageLabel.js';
-import { computeMarkerY } from '../computeMarkerY.js';
+import { computeClusterOuterSize, computeMarkerY } from '../computeMarkerY.js';
 import { RelationshipMarker } from '../types.js';
 
 type PageModeProps = {
@@ -19,7 +19,6 @@ type PageModeProps = {
   pageHeight?: number;
 };
 
-const CLUSTER_MARKER_SIZE = 24;
 const POINT_MARKER_SIZE = 10;
 const DEFAULT_COLOR = '#A4CAFE';
 
@@ -96,11 +95,12 @@ const PageMode = ({
   const markers = useMemo(() => {
     const items = (pageClusters ?? []).map((element, index) => {
       const key = `page-${element.page}-${element.top}-${index}`;
-      const markerSize = element.type === 'cluster' ? CLUSTER_MARKER_SIZE : POINT_MARKER_SIZE;
+      const markerSize =
+        element.type === 'cluster'
+          ? computeClusterOuterSize(element.references.length)
+          : POINT_MARKER_SIZE;
       const position = getMarkerPosition(element.top, markerSize);
-      const trackRatio =
-        markerLayerHeight > 0 ? (position + markerSize / 2) / markerLayerHeight : 0.5;
-      return { key, element, position, trackRatio };
+      return { key, element, position };
     });
 
     return items
@@ -119,14 +119,13 @@ const PageMode = ({
 
       {hasCurrentPage && <PageLabel page={currentPage} markerLayerHeight={markerLayerHeight} />}
 
-      {markers.map(({ key, element, position, trackRatio, stackOrder }) => {
+      {markers.map(({ key, element, position, stackOrder }) => {
         if (element.type === 'cluster') {
           return (
             <Cluster
               key={key}
               position={position}
               stackOrder={stackOrder}
-              trackRatio={trackRatio}
               references={element.references}
               activePointId={activeRelationshipId}
               isOpen={openClusterKey === key}

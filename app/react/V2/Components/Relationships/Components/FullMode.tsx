@@ -3,7 +3,7 @@ import { Cluster } from './Cluster.js';
 import { Point } from './Point.js';
 import { FileType } from '#V2/api/entities/types.js';
 import type { DocumentRelationshipGroup } from '../groupRelationships.js';
-import { computeMarkerY } from '../computeMarkerY.js';
+import { computeClusterOuterSize, computeMarkerY } from '../computeMarkerY.js';
 import { RelationshipMarker } from '../types.js';
 
 type FullModeProps = {
@@ -17,7 +17,6 @@ type FullModeProps = {
   documentClusters?: DocumentRelationshipGroup[];
 };
 
-const CLUSTER_MARKER_SIZE = 24;
 const POINT_MARKER_SIZE = 10;
 
 const getMarkerTop = (marker: RelationshipMarker): number => {
@@ -43,7 +42,10 @@ const FullMode = ({
       documentClusters?.map((element, index) => {
         const key = `doc-${element.startPage}-${element.endPage}-${index}`;
         const top = getMarkerTop(element.references[0]);
-        const markerSize = element.type === 'cluster' ? CLUSTER_MARKER_SIZE : POINT_MARKER_SIZE;
+        const markerSize =
+          element.type === 'cluster'
+            ? computeClusterOuterSize(element.references.length)
+            : POINT_MARKER_SIZE;
         const position = computeMarkerY({
           mode: 'full',
           layerHeight: markerLayerHeight,
@@ -53,10 +55,7 @@ const FullMode = ({
           markerSize,
           pageHeight,
         });
-        const trackRatio =
-          markerLayerHeight > 0 ? (position + markerSize / 2) / markerLayerHeight : 0.5;
-
-        return { key, element, position, trackRatio };
+        return { key, element, position };
       }) ?? [];
 
     return items
@@ -64,14 +63,13 @@ const FullMode = ({
       .map((item, index) => ({ ...item, stackOrder: index + 1 }));
   }, [documentClusters, documentPages, markerLayerHeight, pageHeight]);
 
-  return markers.map(({ key, element, position, trackRatio, stackOrder }) => {
+  return markers.map(({ key, element, position, stackOrder }) => {
     if (element.type === 'cluster') {
       return (
         <Cluster
           key={key}
           position={position}
           stackOrder={stackOrder}
-          trackRatio={trackRatio}
           references={element.references}
           activePointId={activeRelationshipId}
           isOpen={openClusterKey === key}

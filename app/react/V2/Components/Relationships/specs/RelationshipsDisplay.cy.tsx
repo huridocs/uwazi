@@ -6,6 +6,26 @@ import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import { setupMediaIntercepts } from '../../UI/Files/specs/testHelpers.js';
 import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
 
+const { Basic } = composeStories(stories);
+
+const resetStoryArgs = () => {
+  Basic.args.locale = 'en';
+  Basic.args.fileUrl = '/api/files/sample.pdf';
+  Basic.args.activeRelationshipId = null;
+  Basic.args.onPointClick = undefined;
+  Basic.args.onClusterClick = undefined;
+};
+
+const mountStory = () => {
+  mount(
+    <ThemeProvider>
+      <Basic />
+    </ThemeProvider>
+  );
+  cy.get('.page[data-page-number="1"]', { timeout: 20000 }).should('exist');
+  cy.get('[data-testid="rail-marker-cluster"]', { timeout: 20000 }).should('exist');
+};
+
 const openMainCluster = () => {
   cy.get('[data-testid="rail-marker-cluster"]')
     .contains('button', '25', { timeout: 20000 })
@@ -29,6 +49,7 @@ const scrollToPage8 = () => {
   cy.get('div[id="page-8-container"]').then($el => {
     scrollIntoView($el[0], { block: 'start' });
   });
+  cy.contains('Current page: 8', { timeout: 20000 }).should('be.visible');
 };
 
 const getOverlappingPairs = (layers: { top: number; zIndex: number }[], distance = 30) =>
@@ -66,9 +87,15 @@ const getMarkerZIndex = (element: HTMLElement): number => {
   return 0;
 };
 
-describe('References Display', () => {
-  const { Basic } = composeStories(stories);
+const clickStandalonePerson2 = () => {
+  cy.get('[data-testid="relationships-rail"] [data-testid="rail-marker"]')
+    .filter((_index, element) => !element.closest('[data-testid="rail-marker-cluster"]'))
+    .filter(':contains("Person 2")')
+    .last()
+    .click({ force: true });
+};
 
+describe('References Display', () => {
   before(() => {
     Cypress.on('uncaught:exception', error => {
       if (error.message.includes('ResizeObserver loop completed with undelivered notifications.')) {
@@ -82,196 +109,258 @@ describe('References Display', () => {
   beforeEach(() => {
     setupMediaIntercepts();
     cy.viewport(1280, 800);
-    Basic.args.locale = 'en';
-    Basic.args.fileUrl = '/api/files/sample.pdf';
-
-    mount(
-      <ThemeProvider>
-        <Basic />
-      </ThemeProvider>
-    );
-
-    cy.get('.page[data-page-number="1"]', { timeout: 20000 }).should('exist');
+    resetStoryArgs();
   });
 
-  it('renders references story content', () => {
-    cy.contains('Relationships').should('be.visible');
-    cy.contains('Current page: 1').should('be.visible');
-    cy.contains('button', 'Toggle timeline mode').should('be.visible');
-  });
-
-  it('overlay inside document container', () => {
-    cy.get('[data-testid="document-container"]').within(() => {
-      cy.get('[data-testid="relationships-rail"]').should('be.visible');
-      cy.get('[data-testid="pdf-scroll-container"]').should('exist');
-      cy.get('#pdf-container').invoke('attr', 'style').should('include', 'width: 90%');
+  describe('layout and rendering', () => {
+    beforeEach(() => {
+      mountStory();
     });
-  });
 
-  it('keeps rail and clusters visible while scrolling', () => {
-    cy.get('[data-testid="relationships-rail"]').should('be.visible');
-    cy.contains('button', '25').should('be.visible');
+    it('renders references story content', () => {
+      cy.contains('Relationships').should('be.visible');
+      cy.contains('Current page: 1').should('be.visible');
+      cy.contains('button', 'Toggle timeline mode').should('be.visible');
+    });
 
-    cy.get('[data-testid="relationships-rail"]').then($rail => {
-      const railTopBefore = $rail[0].getBoundingClientRect().top;
-
-      cy.get('[data-testid="pdf-scroll-container"]').scrollTo(0, 4000, { duration: 0 });
-
-      cy.get('[data-testid="relationships-rail"]').then($railAfter => {
-        expect($railAfter[0].getBoundingClientRect().top).to.be.closeTo(railTopBefore, 2);
+    it('overlay inside document container', () => {
+      cy.get('[data-testid="document-container"]').within(() => {
+        cy.get('[data-testid="relationships-rail"]').should('be.visible');
+        cy.get('[data-testid="pdf-scroll-container"]').should('exist');
+        cy.get('#pdf-container').invoke('attr', 'style').should('include', 'width: 90%');
       });
+    });
+
+    it('keeps rail and clusters visible while scrolling', () => {
+      cy.get('[data-testid="relationships-rail"]').should('be.visible');
       cy.contains('button', '25').should('be.visible');
+
+      cy.get('[data-testid="relationships-rail"]').then($rail => {
+        const railTopBefore = $rail[0].getBoundingClientRect().top;
+
+        cy.get('[data-testid="pdf-scroll-container"]').scrollTo(0, 4000, { duration: 0 });
+
+        cy.get('[data-testid="relationships-rail"]').then($railAfter => {
+          expect($railAfter[0].getBoundingClientRect().top).to.be.closeTo(railTopBefore, 2);
+        });
+        cy.contains('button', '25').should('be.visible');
+      });
+    });
+
+    it('hides rail on mobile viewport', () => {
+      cy.viewport(375, 667);
+      cy.get('[data-testid="relationships-rail"]').should('not.exist');
+      cy.viewport(1280, 800);
+    });
+
+    describe('full document mode', () => {
+      it('clicks on a cluster and expands its subtree', () => {
+        openMainCluster();
+        cy.get('[data-testid="cluster-subtree"]').should('be.visible');
+      });
+
+      it('clicks on a point inside a cluster and shows the reference', () => {
+        openMainCluster();
+        cy.contains('[data-testid="rail-marker-cluster"]', '25').within(() => {
+          cy.contains('button', 'Person 1').click({ force: true });
+        });
+        cy.get('div[data-highlight-key]', { timeout: 20000 }).should('exist');
+      });
+
+      it('renders standalone point markers', () => {
+        cy.get('[data-testid="rail-marker"]').should('have.length.at.least', 1);
+        cy.get('span').filter(':contains("Person 2")').should('have.length.at.least', 1);
+      });
+
+      it('full mode Y uses top ratio', () => {
+        cy.get('[data-testid="rail-marker"]').then($markers => {
+          const tops = [...$markers].map(el => el.getBoundingClientRect().top);
+          const uniqueTops = new Set(tops.map(t => Math.round(t)));
+          expect(uniqueTops.size).to.be.greaterThan(1);
+        });
+      });
+
+      it('cluster size scales with count', () => {
+        cy.contains('button', '25').then($large => {
+          const largeWidth = $large[0].getBoundingClientRect().width;
+          cy.get('[data-testid="rail-marker"]')
+            .filter(':not(:contains("25"))')
+            .first()
+            .then($small => {
+              const smallWidth = $small[0].getBoundingClientRect().width;
+              expect(largeWidth).to.be.greaterThan(smallWidth);
+            });
+        });
+      });
+
+      it('collapsed cluster does not render a subtree', () => {
+        cy.get('[data-testid="cluster-subtree"]').should('not.exist');
+      });
+
+      it('cluster expand shows subtree points', () => {
+        openMainCluster();
+        cy.get('[data-testid="rail-marker-cluster"]')
+          .filter(':contains("25")')
+          .find('[data-testid="rail-marker"]')
+          .should('have.length.at.least', 2);
+      });
+
+      it('cluster subtree renders stem trunk and branch svg lines', () => {
+        openMainCluster();
+        cy.get('[data-testid="cluster-subtree"]').should('be.visible');
+        cy.get('[data-testid="cluster-subtree-svg"] line').should('have.length.at.least', 12);
+        cy.get('[data-testid="cluster-subtree-svg"] line').eq(0).should('have.attr', 'x1', '28');
+        cy.get('[data-testid="cluster-subtree-svg"] line').eq(0).should('have.attr', 'x2', '40');
+        cy.get('[data-testid="cluster-subtree-svg"] line').eq(1).should('have.attr', 'x1', '28');
+        cy.get('[data-testid="cluster-subtree-svg"] line').eq(1).should('have.attr', 'x2', '28');
+        cy.get('[data-testid="cluster-subtree-svg"] line').eq(2).should('have.attr', 'x1', '12');
+        cy.get('[data-testid="cluster-subtree-svg"] line').eq(2).should('have.attr', 'x2', '28');
+        cy.get('[data-testid="cluster-subtree-svg"] line').eq(2).should('have.attr', 'y1', '5');
+        cy.get('[data-testid="cluster-subtree-svg"] line').eq(2).should('have.attr', 'y2', '5');
+      });
+
+      it('aligns the cluster stem with the cluster button center', () => {
+        openMainCluster();
+        cy.contains('[data-testid="rail-marker-cluster"]', '25').within(() => {
+          cy.get('button[data-testid="rail-marker"]').then($button => {
+            const buttonCenter =
+              $button[0].getBoundingClientRect().top + $button[0].offsetHeight / 2;
+            cy.get('[data-testid="cluster-subtree-svg"] line')
+              .eq(0)
+              .then($stem => {
+                const stemRect = $stem[0].getBoundingClientRect();
+                const stemCenter = stemRect.top + stemRect.height / 2;
+                expect(stemCenter).to.be.closeTo(buttonCenter, 2);
+              });
+          });
+        });
+      });
+
+      it('cluster stacks above standalone points', () => {
+        cy.get('[data-testid="rail-marker-cluster"]')
+          .first()
+          .then($cluster => {
+            const clusterZ = getMarkerZIndex($cluster[0]);
+            cy.get('[data-testid="relationships-rail"]')
+              .find('[data-testid="rail-marker"]')
+              .not(':contains("25")')
+              .first()
+              .then($point => {
+                const pointZ = getMarkerZIndex($point[0]);
+                expect(clusterZ).to.be.greaterThan(pointZ);
+              });
+          });
+      });
+
+      it('later clusters stack above earlier clusters when overlapping', () => {
+        cy.get('[data-testid="rail-marker-cluster"]').then($clusters => {
+          const layers = [...$clusters].map(element => ({
+            top: element.getBoundingClientRect().top,
+            zIndex: getMarkerZIndex(element),
+          }));
+          assertLaterMarkersOnTop(layers);
+        });
+      });
+
+      it('later standalone points stack above earlier standalone points when overlapping', () => {
+        cy.get('[data-testid="relationships-rail"] [data-testid="rail-marker"]').then($markers => {
+          const layers = [...$markers]
+            .filter(
+              element =>
+                !element.closest('[data-testid="cluster-subtree"]') &&
+                !element.closest('[data-testid="rail-marker-cluster"]')
+            )
+            .map(element => ({
+              top: element.getBoundingClientRect().top,
+              zIndex: getMarkerZIndex(element),
+            }));
+
+          if (getOverlappingPairs(layers).length === 0) {
+            return;
+          }
+          assertLaterMarkersOnTop(layers);
+        });
+      });
+    });
+
+    describe('page mode', () => {
+      it('toggles to page mode and displays the current page label', () => {
+        togglePageMode();
+        cy.contains('span', 'p. 1').should('be.visible');
+      });
+
+      it('update as the pages scroll', () => {
+        togglePageMode();
+        cy.contains('span', 'p. 1').should('be.visible');
+        scrollToPage8();
+        cy.contains('Current page: 8', { timeout: 20000 }).should('be.visible');
+        cy.contains('span', 'p. 8').should('be.visible');
+        cy.get('[data-testid="relationships-rail"]').should('contain', '14');
+        cy.get('[data-testid="rail-marker-cluster"]').should('have.length.at.least', 1);
+      });
+
+      it('page edge color dots', () => {
+        togglePageMode();
+        scrollToPage8();
+        cy.contains('span', 'p. 8').should('be.visible');
+        cy.get('[data-testid="page-count-dots"]').should('exist');
+      });
+
+      it('cluster subtree renders in page mode', () => {
+        togglePageMode();
+        scrollToPage8();
+        cy.contains('span', 'p. 8').should('be.visible');
+        openFirstPageCluster();
+        cy.get('[data-testid="cluster-subtree"]').should('be.visible');
+      });
     });
   });
 
-  it('hides rail on mobile viewport', () => {
-    cy.viewport(375, 667);
-    cy.get('[data-testid="relationships-rail"]').should('not.exist');
-    cy.viewport(1280, 800);
-  });
+  describe('handler interactions', () => {
+    it('calls onClusterClick with cluster markers', () => {
+      Basic.args.onClusterClick = cy.stub().as('onClusterClick');
+      mountStory();
 
-  describe('full document mode', () => {
-    it('clicks on a cluster and expands its subtree', () => {
-      openMainCluster();
-      cy.get('[data-testid="cluster-subtree"]').should('be.visible');
+      cy.contains('button', '25').click({ force: true });
+
+      cy.get('@onClusterClick').should('have.been.calledOnce');
+      cy.get('@onClusterClick').its('firstCall.args.0').should('have.length', 25);
+      cy.get('@onClusterClick').its('firstCall.args.0.0.anchor.selections.0.page').should('eq', 8);
     });
 
-    it('clicks on a point inside a cluster and shows the reference', () => {
+    it('calls onPointClick when a cluster point is clicked', () => {
+      Basic.args.onPointClick = cy.stub().as('onPointClick');
+      mountStory();
+
       openMainCluster();
       cy.contains('[data-testid="rail-marker-cluster"]', '25').within(() => {
         cy.contains('button', 'Person 1').click({ force: true });
       });
-      cy.get('div[data-highlight-key]').should('exist');
+
+      cy.get('@onPointClick').should('have.been.calledOnce');
+      cy.get('@onPointClick').its('firstCall.args.0.target.title').should('eq', 'Person 1');
     });
 
-    it('renders standalone point markers', () => {
-      cy.get('[data-testid="rail-marker"]').should('have.length.at.least', 1);
-      cy.get('span').filter(':contains("Person 2")').should('have.length.at.least', 1);
+    it('calls onPointClick when a standalone marker is clicked', () => {
+      Basic.args.onPointClick = cy.stub().as('onPointClick');
+      mountStory();
+
+      clickStandalonePerson2();
+
+      cy.get('@onPointClick').should('have.been.calledOnce');
+      cy.get('@onPointClick').its('firstCall.args.0.target.title').should('eq', 'Person 2');
     });
 
-    it('full mode Y uses top ratio', () => {
-      cy.get('[data-testid="rail-marker"]').then($markers => {
-        const tops = [...$markers].map(el => el.getBoundingClientRect().top);
-        const uniqueTops = new Set(tops.map(t => Math.round(t)));
-        expect(uniqueTops.size).to.be.greaterThan(1);
-      });
-    });
+    it('renders the active marker with expanded styling', () => {
+      Basic.args.activeRelationshipId = 'ref-partner-1';
+      mountStory();
 
-    it('cluster size scales with count', () => {
-      cy.contains('button', '25').then($large => {
-        const largeWidth = $large[0].getBoundingClientRect().width;
-        cy.get('[data-testid="rail-marker"]')
-          .filter(':not(:contains("25"))')
-          .first()
-          .then($small => {
-            const smallWidth = $small[0].getBoundingClientRect().width;
-            expect(largeWidth).to.be.greaterThan(smallWidth);
-          });
-      });
-    });
-
-    it('collapsed cluster does not render a subtree', () => {
-      cy.get('[data-testid="cluster-subtree"]').should('not.exist');
-    });
-
-    it('cluster expand shows subtree points', () => {
-      openMainCluster();
-      cy.get('[data-testid="rail-marker-cluster"]')
-        .filter(':contains("25")')
-        .find('[data-testid="rail-marker"]')
-        .should('have.length.at.least', 2);
-    });
-
-    it('cluster subtree renders stem trunk and branch svg lines', () => {
-      openMainCluster();
-      cy.get('[data-testid="cluster-subtree"]').should('be.visible');
-      cy.get('[data-testid="cluster-subtree-svg"] line').should('have.length.at.least', 12);
-      cy.get('[data-testid="cluster-subtree-svg"] line').eq(0).should('have.attr', 'x1', '28');
-      cy.get('[data-testid="cluster-subtree-svg"] line').eq(0).should('have.attr', 'x2', '40');
-      cy.get('[data-testid="cluster-subtree-svg"] line').eq(1).should('have.attr', 'x1', '28');
-      cy.get('[data-testid="cluster-subtree-svg"] line').eq(1).should('have.attr', 'x2', '28');
-      cy.get('[data-testid="cluster-subtree-svg"] line').eq(2).should('have.attr', 'x1', '12');
-      cy.get('[data-testid="cluster-subtree-svg"] line').eq(2).should('have.attr', 'x2', '28');
-      cy.get('[data-testid="cluster-subtree-svg"] line').eq(2).should('have.attr', 'y1', '5');
-      cy.get('[data-testid="cluster-subtree-svg"] line').eq(2).should('have.attr', 'y2', '5');
-    });
-
-    it('cluster stacks above standalone points', () => {
-      cy.get('[data-testid="rail-marker-cluster"]')
+      cy.get('[data-testid="relationships-rail"] [data-testid="rail-marker"]')
+        .filter((_index, element) => !element.closest('[data-testid="rail-marker-cluster"]'))
+        .filter(':contains("Person 2")')
         .first()
-        .then($cluster => {
-          const clusterZ = getMarkerZIndex($cluster[0]);
-          cy.get('[data-testid="relationships-rail"]')
-            .find('[data-testid="rail-marker"]')
-            .not(':contains("25")')
-            .first()
-            .then($point => {
-              const pointZ = getMarkerZIndex($point[0]);
-              expect(clusterZ).to.be.greaterThan(pointZ);
-            });
-        });
-    });
-
-    it('later clusters stack above earlier clusters when overlapping', () => {
-      cy.get('[data-testid="rail-marker-cluster"]').then($clusters => {
-        const layers = [...$clusters].map(element => ({
-          top: element.getBoundingClientRect().top,
-          zIndex: getMarkerZIndex(element),
-        }));
-        assertLaterMarkersOnTop(layers);
-      });
-    });
-
-    it('later standalone points stack above earlier standalone points when overlapping', () => {
-      cy.get('[data-testid="relationships-rail"] [data-testid="rail-marker"]').then($markers => {
-        const layers = [...$markers]
-          .filter(
-            element =>
-              !element.closest('[data-testid="cluster-subtree"]') &&
-              !element.closest('[data-testid="rail-marker-cluster"]')
-          )
-          .map(element => ({
-            top: element.getBoundingClientRect().top,
-            zIndex: getMarkerZIndex(element),
-          }));
-
-        if (getOverlappingPairs(layers).length === 0) {
-          return;
-        }
-        assertLaterMarkersOnTop(layers);
-      });
-    });
-  });
-
-  describe('page mode', () => {
-    it('toggles to page mode and displays the current page label', () => {
-      togglePageMode();
-      cy.contains('span', 'p. 1').should('be.visible');
-    });
-
-    it('update as the pages scroll', () => {
-      togglePageMode();
-      cy.contains('span', 'p. 1').should('be.visible');
-      scrollToPage8();
-      cy.contains('Current page: 8', { timeout: 20000 }).should('be.visible');
-      cy.contains('span', 'p. 8').should('be.visible');
-      cy.get('[data-testid="relationships-rail"]').should('contain', '14');
-      cy.get('[data-testid="rail-marker-cluster"]').should('have.length.at.least', 1);
-    });
-
-    it('page edge color dots', () => {
-      togglePageMode();
-      scrollToPage8();
-      cy.contains('span', 'p. 8').should('be.visible');
-      cy.get('[data-testid="page-count-dots"]').should('exist');
-    });
-
-    it('cluster subtree renders in page mode', () => {
-      togglePageMode();
-      scrollToPage8();
-      cy.contains('span', 'p. 8').should('be.visible');
-      openFirstPageCluster();
-      cy.get('[data-testid="cluster-subtree"]').should('be.visible');
+        .find('span.rounded-full')
+        .should('have.css', 'width', '14px');
     });
   });
 });

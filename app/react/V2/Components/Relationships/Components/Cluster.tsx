@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { usePopper } from 'react-popper';
 import { useAnimateToPosition } from '../hooks/useAnimateToPosition.js';
 import { computeClusterOuterSize } from '../computeMarkerY.js';
 import { RelationshipMarker } from '../types.js';
@@ -9,7 +8,6 @@ import { ShowMoreButton } from './ShowMoreButton.js';
 type ClusterProps = {
   position: number;
   stackOrder?: number;
-  trackRatio?: number;
   references: RelationshipMarker[];
   onPointClick: (marker: RelationshipMarker) => void;
   onMoreClick: (markers: RelationshipMarker[]) => void;
@@ -30,30 +28,9 @@ const CLUSTER_STACK_BOOST = 500;
 const LINE_STROKE = 'var(--color-theme-text-secondary)';
 const LINE_OPACITY = 0.4;
 
-const getTreeTopOffset = (trackRatio: number, outerSize: number, pointsHeight: number): number => {
-  if (trackRatio < 0.25) {
-    return outerSize / 2 - POINT_SIZE / 2;
-  }
-  if (trackRatio > 0.75) {
-    return -(pointsHeight - POINT_SIZE) - (outerSize / 2 - POINT_SIZE / 2);
-  }
-  return -(pointsHeight / 2) + outerSize / 2;
-};
-
-const getStemMidY = (trackRatio: number, pointsHeight: number): number => {
-  if (trackRatio < 0.25) {
-    return POINT_SIZE / 2;
-  }
-  if (trackRatio > 0.75) {
-    return pointsHeight - POINT_SIZE / 2;
-  }
-  return pointsHeight / 2;
-};
-
 const Cluster = ({
   position,
   stackOrder = 1,
-  trackRatio = 0.5,
   references,
   onPointClick,
   onMoreClick,
@@ -64,20 +41,6 @@ const Cluster = ({
 }: ClusterProps) => {
   const animatedPosition = useAnimateToPosition(position);
   const [internalIsOpen, setInternalIsOpen] = useState(false);
-  const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null);
-  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
-
-  const { styles } = usePopper(referenceElement, popperElement, {
-    placement: 'left',
-    modifiers: [
-      {
-        name: 'preventOverflow',
-        options: {
-          altAxis: true,
-        },
-      },
-    ],
-  });
 
   const points = references.slice(0, 10);
   const extraPoints = references.slice(10);
@@ -87,8 +50,8 @@ const Cluster = ({
   const hasActiveRef = references.some(ref => ref._id === activePointId);
   const rowCount = points.length + (extraPoints.length > 0 ? 1 : 0);
   const pointsHeight = (rowCount - 1) * POINT_SPACING + POINT_SIZE;
-  const treeTopOffset = getTreeTopOffset(trackRatio, outerSize, pointsHeight);
-  const stemMidY = getStemMidY(trackRatio, pointsHeight);
+  const stemMidY = pointsHeight / 2;
+  const treeTopOffset = outerSize / 2 - stemMidY;
   const zIndex = clusterIsOpen ? stackOrder + 1500 : stackOrder + CLUSTER_STACK_BOOST;
 
   return (
@@ -98,7 +61,6 @@ const Cluster = ({
       style={{ top: `${animatedPosition}px`, zIndex }}
     >
       <button
-        ref={setReferenceElement}
         data-testid="rail-marker"
         type="button"
         onClick={() => {
@@ -124,10 +86,9 @@ const Cluster = ({
 
       {clusterIsOpen && (
         <div
-          ref={setPopperElement}
           data-testid="cluster-subtree"
           className="absolute pointer-events-none"
-          style={{ ...styles.popper, top: treeTopOffset, width: SVG_WIDTH, height: pointsHeight }}
+          style={{ left: -SVG_WIDTH, top: treeTopOffset, width: SVG_WIDTH, height: pointsHeight }}
         >
           <svg
             data-testid="cluster-subtree-svg"
