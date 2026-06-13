@@ -28,6 +28,7 @@ const DatavizChartView = ({ option, height = 320, className }: DatavizChartViewP
       option={option}
       style={style}
       notMerge
+      replaceMerge={['visualMap', 'series']}
       lazyUpdate
       opts={{ renderer: 'canvas' }}
     />

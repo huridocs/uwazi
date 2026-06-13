@@ -6,6 +6,7 @@ import {
   formatDatavizDataLabels,
   isDatavizMissingBucketKey,
 } from '#shared/dataviz/missingBucket.js';
+import { fillBreakdownMatrix } from '#shared/dataviz/fillBreakdownMatrix.js';
 
 type FilterDataForDisplayOptions = {
   locale?: string;
@@ -51,7 +52,7 @@ const filterDataForDisplay = (
   const labeled = formatDatavizDataLabels(localized, chart.missingValueLabel);
   const series = labeled.series.map(item => ({
     ...item,
-    points: filterPoints(item.points, chart),
+    points: filterPoints(fillBreakdownMatrix(item.points), chart),
   }));
 
   const totalEntities =

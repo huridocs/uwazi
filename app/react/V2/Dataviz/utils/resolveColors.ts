@@ -83,8 +83,11 @@ export const resolvePointColor = (
   const palette = resolvePalette(context);
   const key = String(point.key);
 
-  if (appearance.colorMode === 'custom' && appearance.valueColorMap?.[key]) {
-    return appearance.valueColorMap[key];
+  if (appearance.colorMode === 'custom') {
+    const custom = appearance.valueColorMap?.[key] ?? appearance.valueColorMap?.[point.label];
+    if (custom) {
+      return custom;
+    }
   }
 
   if (point.color) {

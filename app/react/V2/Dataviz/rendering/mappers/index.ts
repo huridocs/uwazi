@@ -9,7 +9,7 @@ import { mapStackedBarOption } from './stackedBarMapper.js';
 import { mapLineOption } from './lineMapper.js';
 import { mapGaugeOption } from './gaugeMapper.js';
 import { mapScatterOption } from './scatterMapper.js';
-import { mapHeatmapOption } from './heatmapMapper.js';
+import { mapHeatmapOption, finalizeHeatmapOption } from './heatmapMapper.js';
 import { mergeEChartsOption } from '../mergeEChartsOption.js';
 
 export type MapToEChartsOptionContext = {
@@ -68,5 +68,10 @@ export const mapToEChartsOption = (
     return null;
   }
 
-  return mergeEChartsOption(option, chart.echartsOverrides);
+  const merged = mergeEChartsOption(option, chart.echartsOverrides);
+  if (chart.type === 'heatmap') {
+    return finalizeHeatmapOption(option, merged);
+  }
+
+  return merged;
 };

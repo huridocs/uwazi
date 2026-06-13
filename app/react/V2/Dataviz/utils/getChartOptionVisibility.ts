@@ -18,8 +18,7 @@ const DEFAULT_VISIBILITY: ChartOptionVisibility = {
 
 const CHART_OPTION_VISIBILITY: Partial<Record<ChartType, Partial<ChartOptionVisibility>>> = {
   heatmap: {
-    legend: true,
-    legendLabel: 'Show color scale',
+    legend: false,
     tooltip: true,
     labels: true,
     missingValues: true,

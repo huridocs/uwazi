@@ -63,4 +63,71 @@ describe('filterDataForDisplay', () => {
     });
     expect(filtered.series[0]?.points[1]?.label).toBe('Sin datos');
   });
+
+  it('should fill missing breakdown values as zero before applying excludeZero', () => {
+    const filtered = filterDataForDisplay(
+      {
+        ...baseData,
+        series: [
+          {
+            id: 'main',
+            label: 'Series',
+            points: [
+              {
+                key: 'co',
+                label: 'Colombia',
+                value: 10,
+                breakdown: [
+                  { key: 'm', label: 'Hombre', value: 10 },
+                  { key: 'f', label: 'Mujer', value: 0 },
+                ],
+              },
+              {
+                key: 'cl',
+                label: 'Chile',
+                value: 6,
+                breakdown: [{ key: 'm', label: 'Hombre', value: 6 }],
+              },
+            ],
+          },
+        ],
+      },
+      { type: 'heatmap', excludeZero: false }
+    );
+
+    expect(filtered.series[0]?.points[1]?.breakdown).toEqual([
+      { key: 'm', label: 'Hombre', value: 6 },
+      { key: 'f', label: 'Mujer', value: 0 },
+    ]);
+  });
+
+  it('should remove zero breakdown values when excludeZero is enabled', () => {
+    const filtered = filterDataForDisplay(
+      {
+        ...baseData,
+        series: [
+          {
+            id: 'main',
+            label: 'Series',
+            points: [
+              {
+                key: 'co',
+                label: 'Colombia',
+                value: 10,
+                breakdown: [
+                  { key: 'm', label: 'Hombre', value: 10 },
+                  { key: 'f', label: 'Mujer', value: 0 },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      { type: 'heatmap', excludeZero: true }
+    );
+
+    expect(filtered.series[0]?.points[0]?.breakdown).toEqual([
+      { key: 'm', label: 'Hombre', value: 10 },
+    ]);
+  });
 });

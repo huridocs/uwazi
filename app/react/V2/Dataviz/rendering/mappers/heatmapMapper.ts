@@ -1,9 +1,10 @@
 import type { EChartsOption } from 'echarts';
+import { isDatavizMissingBucketKey } from '#shared/dataviz/missingBucket.js';
 import type { DatavizChartConfig } from '#V2/Dataviz/types/chartTypes.js';
 import type { DatavizAppearance } from '#V2/Dataviz/types/definition.js';
 import type { DataPoint, DatavizDataDTO } from '#V2/Dataviz/types/data.js';
-import { chartTextStyle } from '#V2/Dataviz/rendering/chartTheme.js';
 import { mixHexColor } from '#V2/Dataviz/utils/mixHexColor.js';
+import { resolveHeatmapCellIntensity } from '#V2/Dataviz/utils/resolveHeatmapCellIntensity.js';
 import {
   DEFAULT_CHART_PALETTE,
   resolveSeriesColors,
@@ -14,11 +15,11 @@ type HeatmapMapperContext = ResolveColorContext;
 
 type HeatmapCell = {
   value: [number, number, number];
-  itemStyle?: { color: string };
+  itemStyle: { color: string };
+  visualMap: false;
 };
 
-const HEATMAP_GRAY_LOW = '#FFFFFF';
-const HEATMAP_GRAY_HIGH = '#2D2D2D';
+const CELL_TINT_LOW = '#FFFFFF';
 
 const collectSecondarySeries = (points: DataPoint[]) => {
   const seriesMap = new Map<string, { key: string; label: string; sample?: DataPoint }>();
@@ -35,8 +36,33 @@ const collectSecondarySeries = (points: DataPoint[]) => {
   return Array.from(seriesMap.values());
 };
 
-const usesThemeHeatScale = (appearance: DatavizAppearance) =>
-  appearance.colorMode === 'theme' || appearance.colorMode === 'from_data';
+const filterHeatmapPrimaryPoints = (points: DataPoint[]): DataPoint[] =>
+  points.filter(point => !isDatavizMissingBucketKey(point.key));
+
+const collectMatrixValues = (
+  primaryPoints: DataPoint[],
+  secondarySeries: ReturnType<typeof collectSecondarySeries>,
+  chart: DatavizChartConfig
+): number[] =>
+  primaryPoints
+    .flatMap(point =>
+      secondarySeries.map(secondary => {
+        const match = point.breakdown?.find(item => String(item.key) === secondary.key);
+        return match?.value ?? 0;
+      })
+    )
+    .filter(value => !(chart.excludeZero && value === 0));
+
+const resolveColumnColor = (
+  secondary: { key: string; label: string },
+  index: number,
+  secondaryColors: string[],
+  appearance: DatavizAppearance
+): string =>
+  appearance.valueColorMap?.[secondary.key] ??
+  appearance.valueColorMap?.[secondary.label] ??
+  secondaryColors[index] ??
+  DEFAULT_CHART_PALETTE[index % DEFAULT_CHART_PALETTE.length]!;
 
 const buildHeatmapCells = (
   primaryPoints: DataPoint[],
@@ -44,69 +70,47 @@ const buildHeatmapCells = (
   secondaryColors: string[],
   appearance: DatavizAppearance,
   chart: DatavizChartConfig,
-  minValue: number,
   maxValue: number
 ): HeatmapCell[] => {
-  const secondaryKeyToIndex = new Map(secondarySeries.map((item, index) => [item.key, index]));
-  const secondaryKeyToColor = new Map(
-    secondarySeries.map((item, index) => [item.key, secondaryColors[index]!])
-  );
-  const themeScale = usesThemeHeatScale(appearance);
-  const range = Math.max(maxValue - minValue, 1);
-
   const cells: HeatmapCell[] = [];
 
   primaryPoints.forEach((point, yIndex) => {
-    point.breakdown?.forEach(item => {
-      if (chart.excludeZero && item.value === 0) {
+    secondarySeries.forEach((secondary, xIndex) => {
+      const match = point.breakdown?.find(item => String(item.key) === secondary.key);
+      const value = match?.value ?? 0;
+
+      if (chart.excludeZero && value === 0) {
         return;
       }
 
-      const xIndex = secondaryKeyToIndex.get(String(item.key));
-      if (xIndex === undefined) {
-        return;
-      }
-
-      const cell: HeatmapCell = {
-        value: [xIndex, yIndex, item.value],
-      };
-
-      if (!themeScale) {
-        const baseColor =
-          secondaryKeyToColor.get(String(item.key)) ??
-          appearance.valueColorMap?.[String(item.key)] ??
-          DEFAULT_CHART_PALETTE[xIndex % DEFAULT_CHART_PALETTE.length]!;
-        const intensity = (item.value - minValue) / range;
-        cell.itemStyle = { color: mixHexColor(HEATMAP_GRAY_LOW, baseColor, intensity) };
-      }
-
-      cells.push(cell);
+      const intensity = resolveHeatmapCellIntensity(value, maxValue);
+      cells.push({
+        value: [xIndex, yIndex, value],
+        itemStyle: {
+          color: mixHexColor(
+            CELL_TINT_LOW,
+            resolveColumnColor(secondary, xIndex, secondaryColors, appearance),
+            intensity
+          ),
+        },
+        visualMap: false,
+      });
     });
   });
 
   return cells;
 };
 
-const buildVisualMap = (
-  chart: DatavizChartConfig,
-  appearance: DatavizAppearance,
+const buildVisualMapStub = (
   minValue: number,
-  maxValue: number,
-  themeScale: boolean
-): EChartsOption['visualMap'] => ({
-  show: chart.showLegend ?? true,
+  maxValue: number
+): NonNullable<EChartsOption['visualMap']> => ({
+  show: false,
   min: minValue,
   max: maxValue,
-  calculable: true,
-  orient: 'horizontal',
-  left: 'center',
-  bottom: 8,
-  inRange: {
-    color: themeScale
-      ? [HEATMAP_GRAY_LOW, HEATMAP_GRAY_HIGH]
-      : [HEATMAP_GRAY_LOW, DEFAULT_CHART_PALETTE[0]!],
-  },
-  textStyle: chartTextStyle(appearance),
+  calculable: false,
+  seriesIndex: 0,
+  inRange: {},
 });
 
 export const mapHeatmapOption = (
@@ -120,32 +124,30 @@ export const mapHeatmapOption = (
     return { title: { text: 'No data', left: 'center', top: 'center' } };
   }
 
-  const yCategories = primary.points.map(point => point.label);
-  const secondarySeries = collectSecondarySeries(primary.points);
+  const primaryPoints = filterHeatmapPrimaryPoints(primary.points);
+  if (!primaryPoints.length) {
+    return { title: { text: 'No data', left: 'center', top: 'center' } };
+  }
+
+  const yCategories = primaryPoints.map(point => point.label);
+  const secondarySeries = collectSecondarySeries(primaryPoints);
   if (!secondarySeries.length) {
     return { title: { text: 'No data', left: 'center', top: 'center' } };
   }
 
   const secondaryPoints = secondarySeries.map(item => item.sample!).filter(Boolean);
   const secondaryColors = resolveSeriesColors(secondaryPoints, appearance, context);
-  const values = primary.points.flatMap(point =>
-    (point.breakdown ?? [])
-      .filter(item => !(chart.excludeZero && item.value === 0))
-      .map(item => item.value)
-  );
-  const minValue = values.length ? Math.min(...values) : 0;
-  const maxValue = values.length ? Math.max(...values) : 1;
-  const themeScale = usesThemeHeatScale(appearance);
+  const matrixValues = collectMatrixValues(primaryPoints, secondarySeries, chart);
+  const minValue = matrixValues.length ? Math.min(...matrixValues) : 0;
+  const maxValue = matrixValues.length ? Math.max(...matrixValues, 1) : 1;
   const heatmapData = buildHeatmapCells(
-    primary.points,
+    primaryPoints,
     secondarySeries,
     secondaryColors,
     appearance,
     chart,
-    minValue,
     maxValue
   );
-  const showColorScale = chart.showLegend ?? true;
 
   return {
     backgroundColor: appearance.themeColors?.background ?? 'transparent',
@@ -164,7 +166,7 @@ export const mapHeatmapOption = (
       left: 80,
       right: 40,
       top: 20,
-      bottom: showColorScale ? 72 : 40,
+      bottom: 24,
       containLabel: true,
     },
     xAxis: {
@@ -179,21 +181,20 @@ export const mapHeatmapOption = (
       splitArea: { show: true },
       axisLabel: { color: appearance.themeColors?.foreground, interval: 0 },
     },
-    visualMap: buildVisualMap(chart, appearance, minValue, maxValue, themeScale),
+    visualMap: buildVisualMapStub(minValue, maxValue),
     series: [
       {
         name: primary.label,
         type: 'heatmap',
+        visualMapIndex: 0,
         data: heatmapData,
         label: chart.showLabels
           ? {
               show: true,
               opacity: 1,
               color: appearance.themeColors?.foreground ?? '#1a1a1a',
-              formatter: (params: { value?: [number, number, number] }) => {
-                const value = params.value?.[2];
-                return value === 0 ? '' : String(value ?? '');
-              },
+              formatter: (params: { value?: [number, number, number] }) =>
+                String(params.value?.[2] ?? ''),
             }
           : undefined,
         emphasis: {
@@ -204,5 +205,31 @@ export const mapHeatmapOption = (
         },
       },
     ],
+  };
+};
+
+export const finalizeHeatmapOption = (
+  base: EChartsOption,
+  merged: EChartsOption
+): EChartsOption => {
+  const baseSeries = (base.series as EChartsOption['series']) ?? [];
+  const mergedSeries = (merged.series as EChartsOption['series']) ?? baseSeries;
+
+  return {
+    ...merged,
+    visualMap: base.visualMap,
+    legend: undefined,
+    series: mergedSeries.map((series, index) => {
+      const baseItem = baseSeries[index];
+      if (!baseItem || typeof baseItem !== 'object') {
+        return series;
+      }
+
+      return {
+        ...series,
+        visualMapIndex: 0,
+        data: baseItem.data ?? series.data,
+      };
+    }),
   };
 };

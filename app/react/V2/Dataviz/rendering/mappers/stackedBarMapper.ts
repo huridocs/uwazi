@@ -26,7 +26,10 @@ const resolveStackedSegmentValue = (
   match: DataPoint | undefined,
   chart: DatavizChartConfig
 ): number | string => {
-  if (!match || (chart.excludeZero && match.value === 0)) {
+  if (!match) {
+    return chart.excludeZero ? '-' : 0;
+  }
+  if (chart.excludeZero && match.value === 0) {
     return '-';
   }
   return match.value;
@@ -66,7 +69,7 @@ export const mapStackedBarOption = (
           position: 'inside' as const,
           formatter: (params: { value?: number | string }) => {
             const value = params.value;
-            if (value === '-' || value === 0 || value === '0') {
+            if (value === '-') {
               return '';
             }
             return String(value);
