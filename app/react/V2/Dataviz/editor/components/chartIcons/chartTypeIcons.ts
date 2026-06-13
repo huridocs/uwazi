@@ -8,6 +8,7 @@ import {
 import type { ChartType } from '#V2/Dataviz/types/chartTypes.js';
 import type { ChartIconProps } from './ChartIconProps.js';
 import { AreaChartIcon } from './AreaChartIcon.js';
+import { HeatmapChartIcon } from './HeatmapChartIcon.js';
 import { LineChartIcon } from './LineChartIcon.js';
 import { ScatterPlotIcon } from './ScatterPlotIcon.js';
 
@@ -17,6 +18,7 @@ export const CHART_TYPE_ICONS: Partial<Record<ChartType, ComponentType<ChartIcon
   bar: ChartBarIcon,
   horizontal_bar: ChartBarIcon,
   stacked_bar: ChartBarIcon,
+  heatmap: HeatmapChartIcon,
   line: LineChartIcon,
   area: AreaChartIcon,
   scatter: ScatterPlotIcon,

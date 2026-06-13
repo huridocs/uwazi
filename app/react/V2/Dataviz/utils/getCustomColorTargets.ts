@@ -14,13 +14,7 @@ export type CustomColorTarget = {
   defaultColor?: string;
 };
 
-const CHARTS_WITHOUT_CUSTOM: ChartType[] = [
-  'list',
-  'metric',
-  'gauge',
-  'heatmap',
-  'treemap',
-];
+const CHARTS_WITHOUT_CUSTOM: ChartType[] = ['list', 'metric', 'gauge', 'treemap'];
 
 const COMPARE_SERIES_CHARTS: ChartType[] = ['line', 'area', 'bar', 'horizontal_bar'];
 
@@ -57,7 +51,7 @@ export const getCustomColorTargetKind = (
     return 'none';
   }
 
-  if (chartType === 'stacked_bar') {
+  if (chartType === 'stacked_bar' || chartType === 'heatmap') {
     return hasBreakdownTargets(data) ? 'stacked_series' : 'none';
   }
 
@@ -115,5 +109,5 @@ export const CUSTOM_COLOR_TARGET_HINTS: Record<
 > = {
   series: 'Override the color of each data series (line or bar group).',
   bucket: 'Override the color of each category or slice.',
-  stacked_series: 'Override the color of each stack segment.',
+  stacked_series: 'Override the color of each stack segment or heatmap column.',
 };

@@ -5,6 +5,7 @@ import type { DatavizDefinition } from '#shared/types/datavizSchema.js';
 import { isManualDataSource } from '#shared/dataviz/manualData.js';
 import { validateLiveRefreshAllowed } from '#api/dataviz.v2/domain/validators/validateLiveRefreshAllowed.js';
 import { DatavizSchedulerService } from '#api/dataviz.v2/infrastructure/services/DatavizSchedulerService.js';
+import { normalizeDatavizRefresh } from '#shared/dataviz/normalizeDatavizRefresh.js';
 
 type Input = Omit<DatavizDefinition, 'id' | 'createdAt' | 'updatedAt'>;
 
@@ -37,7 +38,7 @@ class CreateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
       manualData: input.manualData,
       chart: input.chart,
       appearance: input.appearance,
-      refresh: input.refresh,
+      refresh: normalizeDatavizRefresh(input.refresh),
       createdAt: new Date(),
       updatedAt: new Date(),
     });

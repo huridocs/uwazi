@@ -11,6 +11,7 @@ import {
   getCustomColorTargets,
   supportsCustomColorMode,
 } from '#V2/Dataviz/utils/getCustomColorTargets.js';
+import { supportsTemplateColorMode } from '#V2/Dataviz/utils/supportsTemplateColorMode.js';
 import { ColorModeSelect } from '../appearance/ColorModeSelect.js';
 import { TemplateColorHint } from '../appearance/TemplateColorHint.js';
 import { CustomValueColorMapEditor } from '../appearance/CustomValueColorMapEditor.js';
@@ -25,8 +26,14 @@ type AppearanceTabProps = {
 const AppearanceTab = ({ definition, previewData, onPatchAppearance }: AppearanceTabProps) => {
   const { appearance, query, chart } = definition;
   const templates = useAtomValue(templatesAtom);
+  const primaryDimensionProperty = query.dimensions[0]?.property;
+  const supportsTemplateColors = supportsTemplateColorMode(
+    chart.type,
+    query.sources,
+    primaryDimensionProperty
+  );
   const isTemplateDimension =
-    query.dimensions[0]?.property === TEMPLATE_DIMENSION_PROPERTY || query.sources.length > 1;
+    primaryDimensionProperty === TEMPLATE_DIMENSION_PROPERTY || query.sources.length > 1;
 
   const colorContext = useMemo(() => {
     const templatesById: Record<string, { color?: string; name?: string }> = {};
@@ -52,6 +59,7 @@ const AppearanceTab = ({ definition, previewData, onPatchAppearance }: Appearanc
         <ColorModeSelect
           value={appearance.colorMode}
           supportsCustomColors={supportsCustom}
+          supportsTemplateColors={supportsTemplateColors}
           customTargetKind={customTargetKind}
           onChange={colorMode => onPatchAppearance({ colorMode })}
         />

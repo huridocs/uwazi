@@ -3,6 +3,7 @@ import { Checkbox } from '#V2/Components/Forms/Checkbox.js';
 import { Select } from '#V2/Components/Forms/Select.js';
 import { InputField } from '#V2/Components/Forms/InputField.js';
 import { CHART_TYPE_LABELS, isEchartsChartType } from '#V2/Dataviz/types/chartTypes.js';
+import { getChartOptionVisibility } from '#V2/Dataviz/utils/getChartOptionVisibility.js';
 import { getSupportedChartTypes } from '#V2/Dataviz/utils/getSupportedChartTypes.js';
 import type { DatavizDefinition } from '#V2/Dataviz/types/definition.js';
 import {
@@ -21,9 +22,9 @@ const ChartTab = ({ definition, onPatchChart }: ChartTabProps) => {
     definition.query.measures
   );
   const { chart } = definition;
-  const isMetric = chart.type === 'metric';
-  const isList = chart.type === 'list';
+  const optionVisibility = getChartOptionVisibility(chart.type);
   const usesEcharts = isEchartsChartType(chart.type);
+  const showDataFilters = optionVisibility.missingValues && (usesEcharts || chart.type === 'list');
 
   return (
     <div className="flex flex-col gap-6 p-4">
@@ -58,34 +59,41 @@ const ChartTab = ({ definition, onPatchChart }: ChartTabProps) => {
 
       <section className="flex flex-col gap-3">
         <h3 className="text-sm font-semibold text-ink">Chart options</h3>
-        {isMetric && (
+        {chart.type === 'metric' && (
           <p className="text-xs text-ink-secondary">
             Metric shows a single total count. Use the Appearance tab for colors.
           </p>
         )}
-        {usesEcharts && (
-          <>
-            <Checkbox
-              name="show-legend"
-              label="Show legend"
-              checked={chart.showLegend ?? true}
-              onChange={e => onPatchChart({ showLegend: (e.target as HTMLInputElement).checked })}
-            />
-            <Checkbox
-              name="show-tooltip"
-              label="Show tooltip"
-              checked={chart.showTooltip ?? true}
-              onChange={e => onPatchChart({ showTooltip: (e.target as HTMLInputElement).checked })}
-            />
-            <Checkbox
-              name="show-labels"
-              label="Show labels on chart"
-              checked={chart.showLabels ?? true}
-              onChange={e => onPatchChart({ showLabels: (e.target as HTMLInputElement).checked })}
-            />
-          </>
+        {chart.type === 'list' && (
+          <p className="text-xs text-ink-secondary">
+            List renders as a table. Use the options below to filter empty or zero values.
+          </p>
         )}
-        {(usesEcharts || isList) && (
+        {usesEcharts && optionVisibility.legend && (
+          <Checkbox
+            name="show-legend"
+            label={optionVisibility.legendLabel}
+            checked={chart.showLegend ?? true}
+            onChange={e => onPatchChart({ showLegend: (e.target as HTMLInputElement).checked })}
+          />
+        )}
+        {usesEcharts && optionVisibility.tooltip && (
+          <Checkbox
+            name="show-tooltip"
+            label="Show tooltip"
+            checked={chart.showTooltip ?? true}
+            onChange={e => onPatchChart({ showTooltip: (e.target as HTMLInputElement).checked })}
+          />
+        )}
+        {usesEcharts && optionVisibility.labels && (
+          <Checkbox
+            name="show-labels"
+            label="Show labels on chart"
+            checked={chart.showLabels ?? true}
+            onChange={e => onPatchChart({ showLabels: (e.target as HTMLInputElement).checked })}
+          />
+        )}
+        {showDataFilters && (
           <>
             <Checkbox
               name="show-missing-values"

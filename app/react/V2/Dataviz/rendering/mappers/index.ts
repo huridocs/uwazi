@@ -9,6 +9,7 @@ import { mapStackedBarOption } from './stackedBarMapper.js';
 import { mapLineOption } from './lineMapper.js';
 import { mapGaugeOption } from './gaugeMapper.js';
 import { mapScatterOption } from './scatterMapper.js';
+import { mapHeatmapOption } from './heatmapMapper.js';
 import { mergeEChartsOption } from '../mergeEChartsOption.js';
 
 export type MapToEChartsOptionContext = {
@@ -38,6 +39,9 @@ export const mapToEChartsOption = (
       break;
     case 'stacked_bar':
       option = mapStackedBarOption(displayData, chart, appearance, context);
+      break;
+    case 'heatmap':
+      option = mapHeatmapOption(displayData, chart, appearance, context);
       break;
     case 'bar':
     case 'horizontal_bar':

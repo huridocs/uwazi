@@ -45,9 +45,10 @@ export const getSupportedChartTypes = (
   if (twoD) {
     return [
       avail('stacked_bar', Boolean(count), 'Requires count measure'),
-      avail('bar', Boolean(count), 'Shows primary dimension totals only'),
-      avail('horizontal_bar', Boolean(count), 'Shows primary dimension totals only'),
-      avail('list', Boolean(count), 'Shows primary dimension totals only'),
+      avail('heatmap', Boolean(count), 'Requires count measure'),
+      avail('list', Boolean(count), 'Cross-tab table of both dimensions'),
+      avail('bar', false, 'Requires a single dimension'),
+      avail('horizontal_bar', false, 'Requires a single dimension'),
       avail('pie', false, 'Requires a single dimension'),
       avail('donut', false, 'Requires a single dimension'),
       avail('line', false, 'Requires a single date dimension'),
@@ -77,6 +78,7 @@ export const getSupportedChartTypes = (
       false,
       'Add a second categorical dimension (e.g. sex split by country)'
     ),
+    avail('heatmap', false, 'Add a second categorical dimension'),
     avail('scatter', Boolean(numericDim && sum), 'Requires numeric dimension'),
   ];
 };

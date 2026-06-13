@@ -8,6 +8,7 @@ import { DatavizNotFoundError } from '#api/dataviz.v2/domain/errors.js';
 import { isManualDataSource } from '#shared/dataviz/manualData.js';
 import { validateLiveRefreshAllowed } from '#api/dataviz.v2/domain/validators/validateLiveRefreshAllowed.js';
 import { DatavizSchedulerService } from '#api/dataviz.v2/infrastructure/services/DatavizSchedulerService.js';
+import { normalizeDatavizRefresh } from '#shared/dataviz/normalizeDatavizRefresh.js';
 
 type Input = DatavizDefinition;
 
@@ -45,7 +46,7 @@ class UpdateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
       manualData: input.manualData,
       chart: input.chart,
       appearance: input.appearance,
-      refresh: input.refresh,
+      refresh: normalizeDatavizRefresh(input.refresh),
       processing: existing.processing,
       createdAt: existing.createdAt,
       updatedAt: new Date(),

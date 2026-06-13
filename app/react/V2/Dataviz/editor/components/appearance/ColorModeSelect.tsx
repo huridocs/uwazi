@@ -27,6 +27,7 @@ const BASE_COLOR_MODE_OPTIONS: { value: ColorMode; label: string; hint: string }
 type ColorModeSelectProps = {
   value: ColorMode;
   supportsCustomColors: boolean;
+  supportsTemplateColors?: boolean;
   customTargetKind?: CustomColorTargetKind;
   onChange: (mode: ColorMode) => void;
 };
@@ -34,16 +35,23 @@ type ColorModeSelectProps = {
 const ColorModeSelect = ({
   value,
   supportsCustomColors,
+  supportsTemplateColors = true,
   customTargetKind = 'bucket',
   onChange,
 }: ColorModeSelectProps) => {
   const normalizedValue = value === 'from_data' ? 'theme' : value;
   const options = useMemo(
     () =>
-      BASE_COLOR_MODE_OPTIONS.filter(
-        option => option.value !== 'custom' || supportsCustomColors
-      ),
-    [supportsCustomColors]
+      BASE_COLOR_MODE_OPTIONS.filter(option => {
+        if (option.value === 'custom') {
+          return supportsCustomColors;
+        }
+        if (option.value === 'template') {
+          return supportsTemplateColors;
+        }
+        return true;
+      }),
+    [supportsCustomColors, supportsTemplateColors]
   );
   const effectiveValue = options.some(option => option.value === normalizedValue)
     ? normalizedValue

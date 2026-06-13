@@ -38,6 +38,12 @@ const REFRESH_OPTIONS: {
 
 const SNAPSHOT_MODES = new Set<RefreshMode>(['snapshot_manual', 'snapshot_scheduled']);
 
+const SCHEDULED_REFRESH_DEFAULTS: Partial<DatavizDefinition['refresh']> = {
+  schedule: 'daily',
+  scheduleTime: '02:00',
+  cronTimezone: 'UTC',
+};
+
 const formatRefreshedAt = (value?: string) => {
   if (!value) return null;
   return new Date(value).toLocaleString();
@@ -100,7 +106,19 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
                     name="refresh-mode"
                     checked={isSelected}
                     disabled={isDisabled}
-                    onChange={() => onPatchRefresh({ refreshMode: option.value })}
+                    onChange={() =>
+                      onPatchRefresh({
+                        refreshMode: option.value,
+                        ...(option.value === 'snapshot_scheduled'
+                          ? {
+                              schedule: refresh.schedule ?? SCHEDULED_REFRESH_DEFAULTS.schedule,
+                              scheduleTime:
+                                refresh.scheduleTime ?? SCHEDULED_REFRESH_DEFAULTS.scheduleTime,
+                              cronTimezone: SCHEDULED_REFRESH_DEFAULTS.cronTimezone,
+                            }
+                          : {}),
+                      })
+                    }
                     className="mt-1"
                   />
                   <div className="min-w-0 flex-1">
@@ -169,7 +187,7 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
             }
           />
           <label className="flex flex-col gap-1 text-sm text-ink-secondary">
-            Time
+            Time (UTC)
             <input
               id="schedule-time"
               type="time"
@@ -178,13 +196,9 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
               className="rounded-lg border border-border bg-paper px-3 py-2 text-sm text-ink"
             />
           </label>
-          <Select
-            id="timezone"
-            label="Timezone"
-            value={refresh.cronTimezone || 'UTC'}
-            options={[{ value: 'UTC', label: '(UTC) Coordinated Universal Time' }]}
-            onChange={e => onPatchRefresh({ cronTimezone: e.target.value })}
-          />
+          <p className="text-xs text-ink-secondary">
+            Schedules run in UTC (Coordinated Universal Time).
+          </p>
         </section>
       )}
     </div>

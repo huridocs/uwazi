@@ -13,6 +13,7 @@ export const ALL_CHART_TYPES: ChartType[] = [
   'bar',
   'horizontal_bar',
   'stacked_bar',
+  'heatmap',
   'line',
   'area',
   'list',
