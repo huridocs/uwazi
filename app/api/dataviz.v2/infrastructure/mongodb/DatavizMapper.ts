@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import { Dataviz } from '#api/dataviz.v2/domain/Dataviz.js';
 import { DatavizNotFoundError } from '#api/dataviz.v2/domain/errors.js';
 import type { DatavizSnapshot } from '#api/dataviz.v2/application/contracts/DatavizSnapshotsDataSource.js';
-import type { DatavizDataDTO } from '#shared/types/datavizSchema.js';
+import type { DatavizSnapshotPayload } from '#api/dataviz.v2/application/contracts/DatavizSnapshotsDataSource.js';
 import type { DatavizDBO, DatavizSnapshotDBO } from './DatavizDBO.js';
 
 class DatavizMapper {
@@ -12,7 +12,6 @@ class DatavizMapper {
       _id: ObjectId.createFromHexString(dataviz.id),
       name: dataviz.name,
       description: dataviz.description,
-      status: dataviz.status,
       dataSource: dataviz.dataSource,
       query: dataviz.query,
       manualData: dataviz.manualData,
@@ -26,11 +25,10 @@ class DatavizMapper {
   }
 
   static toDomain(dbo: DatavizDBO): Dataviz {
-    return Dataviz.fromDefinition({
+    return Dataviz.fromPersistence({
       id: dbo._id.toHexString(),
       name: dbo.name,
       description: dbo.description,
-      status: dbo.status,
       dataSource: dbo.dataSource,
       query: dbo.query,
       manualData: dbo.manualData,
@@ -57,7 +55,7 @@ class DatavizMapper {
     return {
       datavizId: dbo.datavizId.toHexString(),
       queryHash: dbo.queryHash,
-      payload: dbo.payload as DatavizDataDTO,
+      payload: dbo.payload as DatavizSnapshotPayload,
       generatedAt: new Date(dbo.generatedAt),
     };
   }

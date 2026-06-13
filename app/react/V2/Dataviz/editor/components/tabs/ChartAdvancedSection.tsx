@@ -80,7 +80,7 @@ const ChartAdvancedSection = ({
         <CodeEditor language="json" intialValue={editorValue} onChange={handleEditorChange} />
       </div>
       {parseError && <p className="text-xs text-red-600">{parseError}</p>}
-      <JsonCopyPanel title="Resolved ECharts option" value={resolvedOption} emptyMessage="No resolved option" />
+      <JsonCopyPanel title="Echarts configuration" value={resolvedOption} emptyMessage="No configuration" />
     </section>
   );
 };

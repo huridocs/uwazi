@@ -1,5 +1,4 @@
 export type {
-  DatavizStatus,
   DatavizDataSourceKind,
   DatavizManualDataPayload,
   PropertyTypeForDataviz,

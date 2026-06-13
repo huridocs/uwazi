@@ -101,7 +101,6 @@ describe('GetDatavizDataUseCase', () => {
 
     const dataviz = await create.execute({
       name: 'Manual chart',
-      status: 'draft',
       dataSource: 'manual',
       query: {
         sources: [],
@@ -136,11 +135,10 @@ describe('GetDatavizDataUseCase', () => {
     const { create, getData } = createSut();
 
     const dataviz = await create.execute({
-      name: 'Draft with pie chart',
-      status: 'draft',
+      name: 'Chart with pie',
       query: {
         sources: [{ templateId: templateId.toString() }],
-        dimensions: [],
+        dimensions: [{ property: 'date', propertyType: 'date' }],
         measures: [{ aggregation: 'count', countMode: 'all' }],
       },
       chart: { type: 'pie' },

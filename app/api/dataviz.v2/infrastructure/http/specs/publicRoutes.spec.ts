@@ -44,7 +44,6 @@ const createManualDataviz = async () =>
 
     return create.execute({
       name: 'Public embed chart',
-      status: 'published',
       dataSource: 'manual',
       query: {
         sources: [],
@@ -81,7 +80,6 @@ describe('public dataviz embed routes', () => {
     expect(response.body.data.series[0].points[0].label).toBe('Category A');
     expect(response.body.chart.type).toBe('pie');
     expect(response.body.appearance.colorMode).toBe('theme');
-    expect(response.body.sources).toEqual([]);
   });
 
   it('should reject anonymous access when the instance is private', async () => {
@@ -116,8 +114,8 @@ describe('public dataviz embed routes', () => {
     await settings.save({ ...current, private: false });
   });
 
-  it('should return 404 for draft visualizations', async () => {
-    const draft = await testingEnvironment.runWithContext(async () => {
+  it('should return 503 when a query chart has no snapshot', async () => {
+    const queryChart = await testingEnvironment.runWithContext(async () => {
       const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
       const create = new CreateDatavizUseCase(
         {
@@ -130,22 +128,23 @@ describe('public dataviz embed routes', () => {
       );
 
       return create.execute({
-        name: 'Draft only',
-        status: 'draft',
-        dataSource: 'manual',
+        name: 'Query without snapshot',
         query: {
-          sources: [],
-          dimensions: [],
+          sources: [{ templateId: '507f1f77bcf86cd799439011' }],
+          dimensions: [{ property: 'color', propertyType: 'select' }],
           measures: [{ aggregation: 'count', countMode: 'all' }],
         },
-        manualData: MANUAL_DATA_EXAMPLE,
         chart: { type: 'pie' },
         appearance: { colorMode: 'theme' },
         refresh: { refreshMode: 'live' },
       });
     });
 
-    await request(app).get(`/api/public/dataviz/${draft.id}/data`).expect(404);
+    const response = await request(app)
+      .get(`/api/public/dataviz/${queryChart.id}/data`)
+      .expect(503);
+
+    expect(response.body.code).toBe('DATAVIZ_SNAPSHOT_UNAVAILABLE');
   });
 
   it('should return 503 when refresh is in progress', async () => {

@@ -367,7 +367,6 @@ export const createDefaultDatavizDefinition = (
   id: DATAVIZ_CARS_BY_COLOR_ID,
   name: 'Cars by color',
   description: 'Count of cars by their main color.',
-  status: 'draft',
   query: {
     sources: [{ templateId: DATAVIZ_CARS_TEMPLATE_ID, alias: 'cars' }],
     dimensions: [
@@ -410,7 +409,6 @@ export const createEmptyDatavizDefinition = (): DatavizDefinition => ({
   id: 'dv_new',
   name: 'Untitled visualization',
   description: '',
-  status: 'draft',
   query: {
     sources: [{ templateId: DATAVIZ_CARS_TEMPLATE_ID }],
     dimensions: [],
@@ -481,7 +479,6 @@ export const createPersonasSexByCountryDefinition = (): DatavizDefinition => ({
   id: DATAVIZ_PERSONAS_SEX_COUNTRY_ID,
   name: 'Personas by country and sex',
   description: 'Count of people by country of birth, split by sex.',
-  status: 'draft',
   query: {
     sources: [{ templateId: DATAVIZ_PERSONAS_TEMPLATE_ID, alias: 'personas' }],
     dimensions: [

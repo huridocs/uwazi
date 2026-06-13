@@ -13,10 +13,16 @@ import { validateQueryStructure } from '#api/dataviz.v2/domain/validators/valida
 import type { DatavizDataSource } from '#api/dataviz.v2/application/contracts/DatavizDataSource.js';
 import type { DatavizQueryExecutor } from '#api/dataviz.v2/application/contracts/DatavizQueryExecutor.js';
 import type { DatavizSnapshotsDataSource } from '#api/dataviz.v2/application/contracts/DatavizSnapshotsDataSource.js';
+import type { DatavizSnapshot } from '#api/dataviz.v2/application/contracts/DatavizSnapshotsDataSource.js';
+import {
+  isLegacySnapshotPayload,
+  resolveSnapshotRenderPayload,
+} from './buildRenderSnapshot.js';
+
+export type ResolveDatavizDataMode = 'authoring' | 'render';
 
 export type ResolveDatavizDataOptions = {
-  allowLiveQuery: boolean;
-  requirePublished: boolean;
+  mode: ResolveDatavizDataMode;
 };
 
 export type ResolveDatavizDataDeps = {
@@ -34,6 +40,12 @@ type ResolveInput = {
   language: LanguageISO6391;
 };
 
+const extractSnapshotData = (snapshot: DatavizSnapshot, dataviz: Dataviz): DatavizDataDTO => {
+  const payload = resolveSnapshotRenderPayload(snapshot, dataviz);
+  const stale = snapshot.queryHash !== dataviz.queryHash;
+  return { ...payload.data, stale };
+};
+
 const tryReadSnapshot = async (
   id: string,
   dataviz: Dataviz,
@@ -42,14 +54,10 @@ const tryReadSnapshot = async (
 ): Promise<DatavizDataDTO | undefined> => {
   const snapshotResult = await snapshotsDS.getByDatavizId(id);
   if (snapshotResult.isOk()) {
-    const snapshot = snapshotResult.getData();
-    if (snapshot.queryHash === dataviz.queryHash) {
-      return { ...snapshot.payload, stale: false };
-    }
-    return { ...snapshot.payload, stale: true };
+    return extractSnapshotData(snapshotResult.getData(), dataviz);
   }
 
-  if (!options.allowLiveQuery && dataviz.refresh.refreshMode === 'live') {
+  if (options.mode === 'render') {
     throw new DatavizSnapshotUnavailableError(id);
   }
 
@@ -63,10 +71,6 @@ const resolveDatavizData = async (
   const { id, dataviz, draftQuery, options, actor, language } = input;
   const isPreview = Boolean(draftQuery);
 
-  if (options.requirePublished && dataviz.status !== 'published') {
-    throw new DatavizNotFoundError(id);
-  }
-
   if (dataviz.processing?.active && !isPreview) {
     throw new DatavizProcessingError(id);
   }
@@ -76,13 +80,18 @@ const resolveDatavizData = async (
   }
 
   const query = draftQuery ?? dataviz.query;
-  const shouldTrySnapshot = !isPreview && (!options.allowLiveQuery || dataviz.refresh.refreshMode !== 'live');
+  const shouldTrySnapshot =
+    !isPreview && (options.mode === 'render' || dataviz.refresh.refreshMode !== 'live');
 
   if (shouldTrySnapshot) {
     const snapshotData = await tryReadSnapshot(id, dataviz, deps.snapshotsDS, options);
     if (snapshotData) {
       return snapshotData;
     }
+  }
+
+  if (options.mode === 'render') {
+    throw new DatavizSnapshotUnavailableError(id);
   }
 
   validateQueryStructure(query);
@@ -118,4 +127,4 @@ const loadDatavizForData = async (
   return datavizResult.getData();
 };
 
-export { resolveDatavizData, loadDatavizForData };
+export { resolveDatavizData, loadDatavizForData, isLegacySnapshotPayload };

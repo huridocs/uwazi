@@ -13,6 +13,7 @@ import { DataInspector } from './DataInspector.js';
 import { QueryNormalizedView } from './QueryNormalizedView.js';
 import { ChartAdvancedSection } from '../tabs/ChartAdvancedSection.js';
 import { isManualDataSource } from '#shared/dataviz/manualData.js';
+import { isEchartsChartType } from '#V2/Dataviz/types/chartTypes.js';
 
 const PREVIEW_TABS: { id: PreviewTabId; label: string }[] = [
   { id: 'preview', label: 'Preview' },
@@ -71,7 +72,16 @@ const DatavizPreviewPanel = ({
   }, [displayData, definition.chart, definition.appearance, colorContext, locale, defaultLocale]);
 
   const isManual = isManualDataSource(definition.dataSource);
-  const visiblePreviewTabs = PREVIEW_TABS.filter(tab => !(tab.id === 'query' && isManual));
+  const usesEcharts = isEchartsChartType(definition.chart.type);
+  const visiblePreviewTabs = PREVIEW_TABS.filter(tab => {
+    if (tab.id === 'query' && isManual) {
+      return false;
+    }
+    if (tab.id === 'advanced' && !usesEcharts) {
+      return false;
+    }
+    return true;
+  });
   const isListChart = definition.chart.type === 'list';
   const isMetricChart = definition.chart.type === 'metric';
   const canRenderChart = isListChart || isMetricChart || chartOption !== null;

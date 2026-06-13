@@ -7,7 +7,6 @@ export type {
   CHART_TYPE_LABELS,
 } from './chartTypes.js';
 export type {
-  DatavizStatus,
   PropertyTypeForDataviz,
   FilterablePropertyType,
   DatavizFilterOperator,

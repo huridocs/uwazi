@@ -4,7 +4,6 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { DatavizDataSourceFactory } from './DatavizDataSourceFactory.js';
 import { DatavizSnapshotsDataSourceFactory } from './DatavizSnapshotsDataSourceFactory.js';
-import { DatavizQueryExecutorFactory } from './DatavizQueryExecutorFactory.js';
 
 class GetPublicDatavizEmbedUseCaseFactory {
   static default(overrides?: { targetLanguage?: LanguageISO6391 }) {
@@ -15,7 +14,6 @@ class GetPublicDatavizEmbedUseCaseFactory {
       {
         datavizDS: DatavizDataSourceFactory.default(),
         snapshotsDS: DatavizSnapshotsDataSourceFactory.default(),
-        queryExecutor: DatavizQueryExecutorFactory.default(),
         settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
       },
       { actor, tenant, targetLanguage: overrides?.targetLanguage }

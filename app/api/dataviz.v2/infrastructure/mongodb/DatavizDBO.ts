@@ -7,14 +7,12 @@ import type {
   DatavizProcessing,
   DatavizQuery,
   DatavizRefreshPolicy,
-  DatavizStatus,
 } from '#shared/types/datavizSchema.js';
 
 export type DatavizDBO = {
   _id: ObjectId;
   name: string;
   description?: string;
-  status?: DatavizStatus;
   dataSource?: DatavizDataSourceKind;
   query: DatavizQuery;
   manualData?: DatavizManualDataPayload;

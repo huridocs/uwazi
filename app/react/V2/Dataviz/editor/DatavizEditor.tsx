@@ -18,6 +18,7 @@ import { useLiveRefreshGuard } from './hooks/useLiveRefreshGuard.js';
 import { DatavizEditorConfigPanel } from './components/layout/DatavizEditorConfigPanel.js';
 import { DatavizPreviewPanel } from './components/preview/DatavizPreviewPanel.js';
 import { isManualDataSource } from '#shared/dataviz/manualData.js';
+import { isEchartsChartType } from '#V2/Dataviz/types/chartTypes.js';
 
 type DatavizEditorProps = {
   initialDefinition: DatavizDefinition;
@@ -53,16 +54,18 @@ const DatavizEditor = ({ initialDefinition, onDeleteRequest }: DatavizEditorProp
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!isManualDataSource(definition.dataSource)) {
-      return;
+    if (isManualDataSource(definition.dataSource)) {
+      if (activeTab === 'refresh') {
+        setActiveTab('data');
+      }
+      if (previewTab === 'query') {
+        setPreviewTab('preview');
+      }
     }
-    if (activeTab === 'refresh') {
-      setActiveTab('data');
-    }
-    if (previewTab === 'query') {
+    if (!isEchartsChartType(definition.chart.type) && previewTab === 'advanced') {
       setPreviewTab('preview');
     }
-  }, [definition.dataSource, activeTab, previewTab]);
+  }, [definition.dataSource, definition.chart.type, activeTab, previewTab]);
 
   const breadcrumbPath = useMemo(
     () => new Map([['Data visualizations', '/settings/dataviz']]),

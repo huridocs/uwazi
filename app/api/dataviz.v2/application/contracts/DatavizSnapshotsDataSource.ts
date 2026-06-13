@@ -1,10 +1,12 @@
-import type { DatavizDataDTO } from '#shared/types/datavizSchema.js';
+import type { DatavizDataDTO, DatavizSnapshotRenderPayload } from '#shared/types/datavizSchema.js';
 import { ResultType } from '#api/core/libs/Result.js';
+
+export type DatavizSnapshotPayload = DatavizDataDTO | DatavizSnapshotRenderPayload;
 
 export type DatavizSnapshot = {
   datavizId: string;
   queryHash: string;
-  payload: DatavizDataDTO;
+  payload: DatavizSnapshotPayload;
   generatedAt: Date;
 };
 

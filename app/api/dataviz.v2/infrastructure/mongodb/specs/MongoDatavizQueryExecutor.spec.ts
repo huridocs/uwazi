@@ -329,4 +329,25 @@ describe('MongoDatavizQueryExecutor', () => {
     expect(dto.meta.totalEntities).toBe(12);
     expect(dto.meta.truncated).toBe(false);
   });
+
+  it('should return total entity count for metric queries without dimensions', async () => {
+    const executor = createExecutor();
+    const admin = User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' });
+
+    const dto = await executor.execute(
+      {
+        sources: [{ templateId: templateId.toString() }],
+        dimensions: [],
+        measures: [{ aggregation: 'count', countMode: 'all' }],
+        language: 'en',
+      },
+      { actor: admin, language: 'en', datavizId: 'test-metric-count' }
+    );
+
+    expect(dto.series).toHaveLength(1);
+    expect(dto.series[0]?.points).toEqual([
+      expect.objectContaining({ key: 'total', label: 'Total', value: 12 }),
+    ]);
+    expect(dto.meta.totalEntities).toBe(12);
+  });
 });

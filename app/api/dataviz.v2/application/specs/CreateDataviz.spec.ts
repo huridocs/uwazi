@@ -52,25 +52,24 @@ describe('CreateDatavizUseCase', () => {
     expect(schedule).not.toHaveBeenCalled();
   });
 
-  it('should persist a draft without dimensions', async () => {
+  it('should reject query visualizations without dimensions unless using count metric', async () => {
     const schedule = jest.fn();
     const sut = createSut({ cancelPending: jest.fn(), schedule } as unknown as DatavizSchedulerService);
 
-    const dataviz = await sut.execute({
-      name: 'Untitled visualization',
-      status: 'draft',
-      query: {
-        sources: [{ templateId: '507f1f77bcf86cd799439011' }],
-        dimensions: [],
-        measures: [{ aggregation: 'count', countMode: 'all' }],
-      },
-      chart: { type: 'pie' },
-      appearance: { colorMode: 'from_data' },
-      refresh: { refreshMode: 'live' },
-    });
+    await expect(
+      sut.execute({
+        name: 'Untitled visualization',
+        query: {
+          sources: [{ templateId: '507f1f77bcf86cd799439011' }],
+          dimensions: [],
+          measures: [{ aggregation: 'sum', property: 'price', propertyType: 'numeric' }],
+        },
+        chart: { type: 'metric' },
+        appearance: { colorMode: 'from_data' },
+        refresh: { refreshMode: 'live' },
+      })
+    ).rejects.toThrow();
 
-    expect(dataviz.status).toBe('draft');
-    expect(dataviz.query.dimensions).toHaveLength(0);
     expect(schedule).not.toHaveBeenCalled();
   });
 

@@ -24,6 +24,7 @@ import {
   mergeUnionBuckets,
   normalizeBuckets,
   normalizeCompareSeries,
+  normalizeMetricCount,
   RawBucket,
 } from './executor/DatavizResultNormalizer.js';
 import { collectBucketKeysFromRawBuckets } from './executor/collectBucketKeys.js';
@@ -65,6 +66,11 @@ class MongoDatavizQueryExecutor
     const start = Date.now();
     const defaultLanguage = await this.settingsDS.getDefaultLanguageKey();
     const timeoutMs = context.timeoutMs ?? REFRESH_LIVE_TIMEOUT_MS;
+
+    if (query.dimensions.length === 0) {
+      return this.executeMetricCount(query, context, defaultLanguage, timeoutMs, start);
+    }
+
     const primaryDim = query.dimensions[0]!;
     const secondaryDim = query.dimensions[1];
     const maxBuckets = primaryDim.maxBuckets ?? DATAVIZ_MAX_BUCKETS;
@@ -157,6 +163,105 @@ class MongoDatavizQueryExecutor
       defaultLanguage: labelContext.defaultLanguage,
       missingBucketLabels: labelContext.missingBucketLabels,
     });
+  }
+
+  private async executeMetricCount(
+    query: DatavizQuery,
+    context: DatavizQueryContext,
+    language: string,
+    timeoutMs: number,
+    start: number
+  ) {
+    const permissionMatch = buildPermissionMatch(context.actor, query.includeUnpublished);
+    const counts: number[] = [];
+
+    for (const [sourceIndex, source] of query.sources.entries()) {
+      const count = await this.countSourceEntities({
+        query,
+        source,
+        sourceIndex,
+        sourceTemplateId: source.templateId,
+        language,
+        permissionMatch,
+        timeoutMs,
+      });
+      counts.push(count);
+    }
+
+    const labelContext = await buildDatavizMultilingualLabelContext({
+      db: this.db,
+      query,
+      settingsDS: this.settingsDS,
+      translationsDS: this.translationsDS,
+      bucketKeys: new Set(),
+    });
+
+    const templateCountById = new Map<string, number>();
+    query.sources.forEach(source => {
+      templateCountById.set(
+        source.templateId,
+        (templateCountById.get(source.templateId) ?? 0) + 1
+      );
+    });
+
+    const sourceLocalizedLabels = query.sources.map(source =>
+      resolveSeriesLocalizedLabels(
+        source.templateId,
+        source.alias,
+        templateCountById.get(source.templateId) ?? 1,
+        labelContext
+      )
+    );
+    const sourceLabels = sourceLocalizedLabels.map(labels =>
+      pickDefaultLocalizedLabel(labels, labelContext.defaultLanguage, 'Total')
+    );
+    const sourceIds = query.sources.map(
+      source => source.alias ?? source.templateId
+    );
+
+    return normalizeMetricCount({
+      counts,
+      sourceIds,
+      sourceLabels,
+      sourceLocalizedLabels,
+      datavizId: context.datavizId ?? '',
+      queryDurationMs: Date.now() - start,
+    });
+  }
+
+  private async countSourceEntities(params: {
+    query: DatavizQuery;
+    source: DatavizQuery['sources'][number];
+    sourceIndex: number;
+    sourceTemplateId: string;
+    language: string;
+    permissionMatch: object;
+    timeoutMs: number;
+  }): Promise<number> {
+    const { query, source, sourceIndex, sourceTemplateId, language, permissionMatch, timeoutMs } =
+      params;
+
+    const sourceFilters = filtersForSource(query.filters, source, sourceIndex);
+    const match: Record<string, unknown> = {
+      template: ObjectId.createFromHexString(sourceTemplateId),
+      language,
+      ...permissionMatch,
+      ...Object.assign({}, ...buildFilterMatch(sourceFilters)),
+    };
+
+    try {
+      const results = await this.getCollection()
+        .aggregate<{ count: number }>([{ $match: match }, { $count: 'count' }], {
+          maxTimeMS: timeoutMs,
+        })
+        .toArray();
+      return results[0]?.count ?? 0;
+    } catch (error) {
+      if (error instanceof Error && /timed out|maxTimeMS/i.test(error.message)) {
+        throw new DatavizQueryTimeoutError();
+      }
+      throw error;
+    }
   }
 
   private async aggregateSource(params: {

@@ -42,7 +42,7 @@ class GetDatavizDataUseCase extends AbstractUseCase<Input, Output, Deps> {
         id,
         dataviz,
         draftQuery,
-        options: { allowLiveQuery: true, requirePublished: false },
+        options: { mode: 'authoring' },
         actor: this.getActor(),
         language: this.resolveTargetLanguage(dataviz.query.language),
       },

@@ -1,5 +1,3 @@
-export type DatavizStatus = 'draft' | 'published';
-
 /** Client-side placeholder id for visualizations not yet persisted. */
 export const DATAVIZ_DRAFT_ID = 'dv_new';
 
@@ -148,7 +146,6 @@ export type DatavizDefinition = {
   id: string;
   name: string;
   description?: string;
-  status?: DatavizStatus;
   /** Defaults to `query` when omitted (legacy documents). */
   dataSource?: DatavizDataSourceKind;
   query: DatavizQuery;
@@ -207,11 +204,17 @@ export type DatavizManualDataPayload = {
   meta?: Partial<Pick<DatavizDataMeta, 'totalEntities' | 'truncated'>>;
 };
 
-export type DatavizPublicEmbedDTO = {
+export type DatavizEmbedPayload = {
   data: DatavizDataDTO;
   chart: DatavizChartConfig;
   appearance: DatavizAppearance;
-  sources: DatavizSource[];
+};
+
+export type DatavizSnapshotRenderPayload = DatavizEmbedPayload;
+
+/** @deprecated Use {@link DatavizEmbedPayload} — `sources` is no longer returned by the public embed API. */
+export type DatavizPublicEmbedDTO = DatavizEmbedPayload & {
+  sources?: DatavizSource[];
 };
 
 export const REFRESH_LIVE_MAX_ENTITIES = 10_000;

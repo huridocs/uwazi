@@ -27,7 +27,7 @@ class UpdateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
     }
     const existing = existingResult.getDataOrThrow();
 
-    if ((input.status ?? 'draft') === 'published' && !isManualDataSource(input.dataSource)) {
+    if (input.refresh.refreshMode === 'live' && !isManualDataSource(input.dataSource)) {
       validateLiveRefreshAllowed(input.refresh.refreshMode, input.query);
     }
 
@@ -40,7 +40,6 @@ class UpdateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
       id: input.id,
       name: input.name,
       description: input.description,
-      status: input.status,
       dataSource: input.dataSource,
       query: input.query,
       manualData: input.manualData,
@@ -67,7 +66,7 @@ class UpdateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
     await this.deps.scheduler.cancelPending(dataviz.id);
 
     if (dataviz.isScheduled) {
-      await this.deps.scheduler.schedule(dataviz, this.actor, queryChanged || refreshChanged);
+      await this.deps.scheduler.schedule(dataviz, this.getActor(), queryChanged || refreshChanged);
     }
 
     return dataviz;

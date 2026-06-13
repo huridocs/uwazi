@@ -1,5 +1,5 @@
 import React from 'react';
-import { DatavizEmbed } from '#V2/Dataviz/embed/DatavizEmbed.js';
+import { DatavizEmbedById } from '#V2/Dataviz/embed/DatavizEmbedById.js';
 
 type DatavizMarkdownProps = {
   id?: string;
@@ -13,7 +13,9 @@ const Dataviz = ({ id, height }: DatavizMarkdownProps) => {
 
   const parsedHeight = typeof height === 'string' ? Number(height) : height;
 
-  return <DatavizEmbed id={id} height={Number.isFinite(parsedHeight) ? parsedHeight : undefined} />;
+  return (
+    <DatavizEmbedById id={id} height={Number.isFinite(parsedHeight) ? parsedHeight : undefined} />
+  );
 };
 
 export { Dataviz };

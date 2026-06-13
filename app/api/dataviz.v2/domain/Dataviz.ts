@@ -7,7 +7,6 @@ import type {
   DatavizProcessing,
   DatavizQuery,
   DatavizRefreshPolicy,
-  DatavizStatus,
 } from '#shared/types/datavizSchema.js';
 import { computeQueryHash } from '#shared/dataviz/computeQueryHash.js';
 import { isManualDataSource } from '#shared/dataviz/manualData.js';
@@ -19,7 +18,6 @@ type Props = {
   id: string;
   name: string;
   description?: string;
-  status?: DatavizStatus;
   dataSource?: DatavizDataSourceKind;
   query: DatavizQuery;
   manualData?: DatavizManualDataPayload;
@@ -29,6 +27,8 @@ type Props = {
   processing?: DatavizProcessing;
   createdAt?: Date;
   updatedAt?: Date;
+  /** Skip invariant checks when rehydrating persisted documents (validation runs on save). */
+  skipValidation?: boolean;
 };
 
 class Dataviz {
@@ -37,8 +37,6 @@ class Dataviz {
   readonly name: string;
 
   readonly description?: string;
-
-  readonly status: DatavizStatus;
 
   readonly dataSource: DatavizDataSourceKind;
 
@@ -62,7 +60,6 @@ class Dataviz {
     this.id = props.id;
     this.name = props.name;
     this.description = props.description;
-    this.status = props.status ?? 'draft';
     this.dataSource = props.dataSource ?? 'query';
     this.query = props.query;
     this.manualData = props.manualData;
@@ -72,7 +69,9 @@ class Dataviz {
     this.processing = props.processing;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
-    this.validate();
+    if (!props.skipValidation) {
+      this.validate();
+    }
   }
 
   get queryHash(): string {
@@ -92,25 +91,24 @@ class Dataviz {
       throw new DatavizInvalidQueryError('Dataviz name is required');
     }
 
-    if (this.status === 'published') {
-      this.validatePublishedQuery();
-    }
-  }
-
-  private validatePublishedQuery(): void {
     if (isManualDataSource(this.dataSource)) {
       validateManualData(this.manualData);
       return;
     }
+
     validateExecutableDatavizQuery(this.query);
   }
 
+  validateForPersist(): void {
+    this.validate();
+  }
+
   withProcessing(processing: DatavizProcessing): Dataviz {
-    return new Dataviz({ ...this.toProps(), processing });
+    return new Dataviz({ ...this.toProps(), processing, skipValidation: true });
   }
 
   withRefresh(refresh: DatavizRefreshPolicy): Dataviz {
-    return new Dataviz({ ...this.toProps(), refresh });
+    return new Dataviz({ ...this.toProps(), refresh, skipValidation: true });
   }
 
   toDefinition(): DatavizDefinition {
@@ -118,7 +116,6 @@ class Dataviz {
       id: this.id,
       name: this.name,
       description: this.description,
-      status: this.status,
       dataSource: this.dataSource,
       query: this.query,
       manualData: this.manualData,
@@ -136,7 +133,6 @@ class Dataviz {
       id: this.id,
       name: this.name,
       description: this.description,
-      status: this.status,
       dataSource: this.dataSource,
       query: this.query,
       manualData: this.manualData,
@@ -149,12 +145,11 @@ class Dataviz {
     };
   }
 
-  static fromDefinition(definition: DatavizDefinition): Dataviz {
+  static fromPersistence(definition: DatavizDefinition): Dataviz {
     return new Dataviz({
       id: definition.id,
       name: definition.name,
       description: definition.description,
-      status: definition.status,
       dataSource: definition.dataSource,
       query: definition.query,
       manualData: definition.manualData,
@@ -164,7 +159,12 @@ class Dataviz {
       processing: definition.processing,
       createdAt: definition.createdAt ? new Date(definition.createdAt) : undefined,
       updatedAt: definition.updatedAt ? new Date(definition.updatedAt) : undefined,
+      skipValidation: true,
     });
+  }
+
+  static fromDefinition(definition: DatavizDefinition): Dataviz {
+    return Dataviz.fromPersistence(definition);
   }
 }
 

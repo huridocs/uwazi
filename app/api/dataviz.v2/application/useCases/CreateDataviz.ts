@@ -19,7 +19,7 @@ class CreateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
     const id = this.idGenerator.generate();
 
-    if ((input.status ?? 'draft') === 'published' && !isManualDataSource(input.dataSource)) {
+    if (input.refresh.refreshMode === 'live' && !isManualDataSource(input.dataSource)) {
       validateLiveRefreshAllowed(input.refresh.refreshMode, input.query);
     }
 
@@ -32,7 +32,6 @@ class CreateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
       id,
       name: input.name,
       description: input.description,
-      status: input.status,
       dataSource: input.dataSource,
       query: input.query,
       manualData: input.manualData,
@@ -48,7 +47,7 @@ class CreateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
     });
 
     if (dataviz.isScheduled) {
-      await this.deps.scheduler.schedule(dataviz, this.actor);
+      await this.deps.scheduler.schedule(dataviz, this.getActor());
     }
 
     return dataviz;

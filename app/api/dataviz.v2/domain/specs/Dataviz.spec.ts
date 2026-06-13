@@ -1,10 +1,9 @@
 import { Dataviz } from '../Dataviz.js';
 import { DatavizInvalidQueryError } from '../errors.js';
 
-const publishedBase = {
+const validBase = {
   id: 'dv_1',
   name: 'Cars by color',
-  status: 'published' as const,
   query: {
     sources: [{ templateId: '507f1f77bcf86cd799439011' }],
     dimensions: [{ property: 'color', propertyType: 'select' as const }],
@@ -16,43 +15,47 @@ const publishedBase = {
 };
 
 describe('Dataviz', () => {
-  it('should allow incomplete query configuration for drafts', () => {
+  it('should require dimensions when measure is not a count', () => {
     expect(
       () =>
         new Dataviz({
-          id: 'dv_draft',
+          id: 'dv_invalid',
           name: 'Untitled visualization',
-          status: 'draft',
+          query: {
+            sources: [{ templateId: '507f1f77bcf86cd799439011' }],
+            dimensions: [],
+            measures: [{ aggregation: 'sum', property: 'price', propertyType: 'numeric' }],
+          },
+          chart: { type: 'metric' },
+          appearance: { colorMode: 'from_data' },
+          refresh: { refreshMode: 'live' },
+        })
+    ).toThrow(DatavizInvalidQueryError);
+  });
+
+  it('should allow metric count queries without dimensions', () => {
+    expect(
+      () =>
+        new Dataviz({
+          id: 'dv_metric',
+          name: 'Entity total',
           query: {
             sources: [{ templateId: '507f1f77bcf86cd799439011' }],
             dimensions: [],
             measures: [{ aggregation: 'count', countMode: 'all' }],
           },
-          chart: { type: 'pie' },
-          appearance: { colorMode: 'from_data' },
+          chart: { type: 'metric' },
+          appearance: { colorMode: 'theme' },
           refresh: { refreshMode: 'live' },
         })
     ).not.toThrow();
   });
 
-  it('should require dimensions when status is published', () => {
+  it('should allow dataviz when chart type does not match query shape', () => {
     expect(
       () =>
         new Dataviz({
-          ...publishedBase,
-          query: {
-            ...publishedBase.query,
-            dimensions: [],
-          },
-        })
-    ).toThrow(DatavizInvalidQueryError);
-  });
-
-  it('should allow published dataviz when chart type does not match query shape', () => {
-    expect(
-      () =>
-        new Dataviz({
-          ...publishedBase,
+          ...validBase,
           query: {
             sources: [{ templateId: '507f1f77bcf86cd799439011' }],
             dimensions: [{ property: 'date', propertyType: 'date' }],

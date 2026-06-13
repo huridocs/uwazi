@@ -2,7 +2,7 @@ import { IncomingHttpHeaders } from 'http';
 import { api } from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import type { DatavizDefinition } from '#shared/types/datavizSchema.js';
-import type { DatavizDataDTO, DatavizPublicEmbedDTO } from '#shared/types/datavizSchema.js';
+import type { DatavizEmbedPayload, DatavizPublicEmbedDTO } from '#shared/types/datavizSchema.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
 export type DatavizCreateInput = Omit<DatavizDefinition, 'id' | 'createdAt' | 'updatedAt'>;
@@ -98,7 +98,7 @@ const getPublicEmbedData = async (
   id: string,
   locale?: string,
   headers?: IncomingHttpHeaders
-): Promise<DatavizPublicEmbedDTO | FetchResponseError> => {
+): Promise<DatavizEmbedPayload | FetchResponseError> => {
   try {
     const response = await api.get(
       `public/dataviz/${id}/data`,

@@ -298,3 +298,57 @@ export const mergeUnionBuckets = (
 };
 
 export type { RawBucket, DataSeries };
+
+export const normalizeMetricCount = (params: {
+  counts: number[];
+  sourceIds: string[];
+  sourceLabels: string[];
+  sourceLocalizedLabels?: LocalizedLabels[];
+  datavizId: string;
+  queryDurationMs: number;
+}): DatavizDataDTO => {
+  const {
+    counts,
+    sourceIds,
+    sourceLabels,
+    sourceLocalizedLabels,
+    datavizId,
+    queryDurationMs,
+  } = params;
+
+  const joinType = counts.length > 1 ? 'compare' : 'single';
+  const totalEntities = counts.reduce((sum, count) => sum + count, 0);
+
+  if (joinType === 'single') {
+    const value = counts[0] ?? 0;
+    return {
+      datavizId,
+      generatedAt: new Date().toISOString(),
+      stale: false,
+      meta: { totalEntities: value, truncated: false, queryDurationMs },
+      series: [
+        {
+          id: 'total',
+          label: sourceLabels[0] ?? 'Total',
+          labels: sourceLocalizedLabels?.[0],
+          points: [{ key: 'total', label: 'Total', value }],
+        },
+      ],
+    };
+  }
+
+  const series: DataSeries[] = counts.map((count, index) => ({
+    id: sourceIds[index] ?? `series-${index}`,
+    label: sourceLabels[index] ?? `Series ${index + 1}`,
+    labels: sourceLocalizedLabels?.[index],
+    points: [{ key: 'total', label: 'Total', value: count }],
+  }));
+
+  return {
+    datavizId,
+    generatedAt: new Date().toISOString(),
+    stale: false,
+    meta: { totalEntities, truncated: false, queryDurationMs },
+    series,
+  };
+};

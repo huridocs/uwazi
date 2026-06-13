@@ -46,6 +46,8 @@ import { ProtectedRoute } from './ProtectedRoute.js';
 import { isMobileDevice } from '../shared/detectDevice.js';
 import { loadIcons } from '#UI/Icon/library.js';
 import { resolveEmbedLocale } from '#shared/embed/resolveEmbedLocale.js';
+import { getPublicEmbedData } from '#V2/api/dataviz/index.js';
+import type { DatavizEmbedPayload } from '#shared/types/datavizSchema.js';
 
 loadIcons();
 
@@ -218,6 +220,48 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   return { reduxStore, atomStoreData: storeData.atomStoreData };
 };
 
+const DATAVIZ_EMBED_PATH = /^\/embed\/dataviz\/([^/]+)\/?$/;
+
+const parseDatavizEmbedId = (path: string): string | undefined => {
+  const match = path.match(DATAVIZ_EMBED_PATH);
+  return match?.[1];
+};
+
+const prepareMinimalDatavizEmbedStores = async (
+  req: ExpressRequest,
+  settings: ClientSettings,
+  language?: string
+) => {
+  const locale = I18NUtils.getLocale(language, settings.languages, req.cookies);
+  api.locale(locale);
+  const userAgent = req.get('user-agent') || '';
+  const userApiResponse = req.user || {};
+  const themeCustomization = tenants.current().featureFlags?.themeCustomization ?? false;
+  const settingsWithFlag = { ...settings, themeCustomization };
+
+  const storeData = convertObjectIdsToStrings({
+    reduxData: {
+      user: userApiResponse,
+      settings: {
+        collection: { ...settingsWithFlag, links: settingsWithFlag.links || [] },
+      },
+    },
+    atomStoreData: {
+      locale,
+      settings: settingsWithFlag,
+      user: userApiResponse,
+      isMobile: isMobileDevice(userAgent),
+    },
+  });
+
+  const reduxStore = createReduxStore({
+    ...storeData.reduxData,
+    locale,
+  } as unknown as IStore);
+
+  return { reduxStore, atomStoreData: storeData.atomStoreData };
+};
+
 const setReduxState = async (
   req: ExpressRequest,
   reduxState: IStore,
@@ -368,6 +412,8 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   const languageKeys = (settings?.languages?.map(lang => lang.key) as string[]) || [];
   const isEmbedPath = req.path.startsWith('/embed/');
+  const datavizEmbedId = isEmbedPath ? parseDatavizEmbedId(req.path) : undefined;
+  const isDatavizEmbed = Boolean(datavizEmbedId);
   const language = isEmbedPath
     ? resolveEmbedLocale({
         localeQuery: req.query.locale as string | string[] | undefined,
@@ -402,11 +448,34 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     return;
   }
 
-  const { reduxState, atomStore, atomStoreData } = await prepareStoreData(
-    req,
-    settingsWithFeatureFlags,
-    language
-  );
+  let datavizEmbedPayload: DatavizEmbedPayload | undefined;
+  let datavizEmbedError: FetchResponseError | undefined;
+  if (isDatavizEmbed && datavizEmbedId) {
+    const embedResult = await getPublicEmbedData(datavizEmbedId, language, {
+      Cookie: `connect.sid=${req.cookies['connect.sid']}`,
+      'Content-Language': language,
+      tenant: req.get('tenant'),
+    });
+    if (embedResult instanceof FetchResponseError) {
+      datavizEmbedError = embedResult;
+    } else {
+      datavizEmbedPayload = embedResult;
+    }
+  }
+
+  const { reduxState, atomStore, atomStoreData } = isDatavizEmbed
+    ? await (async () => {
+        const { reduxStore, atomStoreData: minimalAtomStoreData } =
+          await prepareMinimalDatavizEmbedStores(req, settingsWithFeatureFlags, language);
+        const atomStore = getStore();
+        hydrateAtomStore(minimalAtomStoreData as any, atomStore);
+        return {
+          reduxState: reduxStore.getState(),
+          atomStore,
+          atomStoreData: minimalAtomStoreData,
+        };
+      })()
+    : await prepareStoreData(req, settingsWithFeatureFlags, language);
 
   if (req.aborted) {
     logSSRAborted(req, 'Route data', ssrStart, routeName);
@@ -422,8 +491,10 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const { initialStore, initialState, loadingError } = await setReduxState(
     req,
     reduxState,
-    matched
+    isDatavizEmbed ? null : matched
   );
+
+  const resolvedLoadingError = datavizEmbedError ?? loadingError;
 
   const pageCssRaw = initialState.page?.pageView?.toJS?.()?.metadata?.css;
   const documentHeadPageCss =
@@ -439,7 +510,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
         <Provider store={atomStore}>
           <React.StrictMode>
-            <ErrorBoundary error={loadingError || ssrError}>
+            <ErrorBoundary error={resolvedLoadingError || ssrError}>
               <StaticRouterProvider
                 router={router}
                 context={staticHandleContext as any}
@@ -462,11 +533,12 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       content={componentHtml}
       head={Helmet.rewind()}
       user={req.user}
-      reduxData={initialState}
+      reduxData={isDatavizEmbed ? undefined : initialState}
       documentHeadPageCss={documentHeadPageCss}
       assets={assets}
-      loadingError={loadingError || ssrError}
+      loadingError={resolvedLoadingError || ssrError}
       featureFlags={clientFeatureFlags}
+      datavizEmbedPayload={datavizEmbedPayload}
       atomStoreData={{ ...atomStoreData, ...(globalMatomo && { globalMatomo }), ciMatomoActive }}
     />
   );
@@ -475,7 +547,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     logSSRAborted(req, 'Aborted before response', ssrStart, routeName);
     return;
   }
-  const responseCode = loadingError?.status || (ssrError ? 500 : 200);
+  const responseCode = resolvedLoadingError?.status || (ssrError ? 500 : 200);
   const resStatus = isCatchAll ? 404 : responseCode;
   res.status(resStatus).send(`<!DOCTYPE html>${html}`);
 };

@@ -6,6 +6,8 @@ import { DatavizDataSourceFactory } from './DatavizDataSourceFactory.js';
 import { DatavizSnapshotsDataSourceFactory } from './DatavizSnapshotsDataSourceFactory.js';
 import { DatavizQueryExecutorFactory } from './DatavizQueryExecutorFactory.js';
 
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+
 class RefreshDatavizSnapshotUseCaseFactory {
   static default(overrides?: { targetLanguage?: LanguageISO6391 }) {
     const { tenant, actor } = ExecutionContext;
@@ -17,6 +19,7 @@ class RefreshDatavizSnapshotUseCaseFactory {
         datavizDS: DatavizDataSourceFactory.default(),
         snapshotsDS: DatavizSnapshotsDataSourceFactory.default(),
         queryExecutor: DatavizQueryExecutorFactory.default(),
+        templatesDS: TemplatesDataSourceFactory.default(),
       },
       { actor, tenant, targetLanguage: overrides?.targetLanguage }
     );

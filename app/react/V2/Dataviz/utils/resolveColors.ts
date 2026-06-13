@@ -87,13 +87,13 @@ export const resolvePointColor = (
     return appearance.valueColorMap[key];
   }
 
+  if (point.color) {
+    return point.color;
+  }
+
   if (appearance.colorMode === 'template') {
     const templateColor = resolveTemplateColorForKey(key, context.templatesById);
     if (templateColor) return templateColor;
-  }
-
-  if (point.color && appearance.colorMode === 'from_data') {
-    return point.color;
   }
 
   return paletteAt(palette, index);

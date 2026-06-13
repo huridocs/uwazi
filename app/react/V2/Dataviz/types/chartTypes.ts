@@ -35,3 +35,6 @@ export const CHART_TYPE_LABELS: Record<ChartType, string> = {
   heatmap: 'Heatmap',
   treemap: 'Treemap',
 };
+
+export const isEchartsChartType = (type: ChartType): boolean =>
+  type !== 'list' && type !== 'metric';
