@@ -25,7 +25,8 @@ const FiltersSection = ({ filters, sources, onChange }: FiltersSectionProps) => 
     <section className="flex flex-col gap-3">
       <h3 className="text-sm font-semibold text-ink">Filters</h3>
       <p className="text-xs text-ink-secondary">
-        Narrow entities before aggregation. Saved in the definition for the backend executor.
+        Narrow entities before aggregation. With multiple sources, pick the property under the
+        source alias so each filter applies only to that series.
       </p>
       {filters.map((filter, index) => (
         <FilterRow

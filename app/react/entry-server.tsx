@@ -45,7 +45,7 @@ import { create as createReduxStore } from './store.js';
 import { ProtectedRoute } from './ProtectedRoute.js';
 import { isMobileDevice } from '../shared/detectDevice.js';
 import { loadIcons } from '#UI/Icon/library.js';
-import { ClientFeatureFlags } from './V2/shared/types.js';
+import { resolveEmbedLocale } from '#shared/embed/resolveEmbedLocale.js';
 
 loadIcons();
 
@@ -367,9 +367,18 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const pathPossibleLanguage = lastRouteMatched?.pathname.split('/')[1] || '';
 
   const languageKeys = (settings?.languages?.map(lang => lang.key) as string[]) || [];
-  const language = languageKeys.includes(pathPossibleLanguage)
-    ? pathPossibleLanguage
-    : req.language;
+  const isEmbedPath = req.path.startsWith('/embed/');
+  const language = isEmbedPath
+    ? resolveEmbedLocale({
+        localeQuery: req.query.locale as string | string[] | undefined,
+        contentLanguage: req.get('content-language'),
+        cookieLocale: req.cookies?.locale,
+        acceptLanguage: req.get('accept-language'),
+        languages: settings.languages ?? [],
+      })
+    : languageKeys.includes(pathPossibleLanguage)
+      ? pathPossibleLanguage
+      : req.language;
 
   const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
   const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();

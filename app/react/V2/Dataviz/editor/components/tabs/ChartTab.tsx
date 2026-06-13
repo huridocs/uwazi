@@ -1,28 +1,14 @@
 import React from 'react';
-import {
-  ChartBarIcon,
-  ChartPieIcon,
-  ListBulletIcon,
-  SignalIcon,
-} from '@heroicons/react/24/outline';
 import { Checkbox } from '#V2/Components/Forms/Checkbox.js';
 import { Select } from '#V2/Components/Forms/Select.js';
 import { InputField } from '#V2/Components/Forms/InputField.js';
-import { CHART_TYPE_LABELS, type ChartType } from '#V2/Dataviz/types/chartTypes.js';
+import { CHART_TYPE_LABELS } from '#V2/Dataviz/types/chartTypes.js';
 import { getSupportedChartTypes } from '#V2/Dataviz/utils/getSupportedChartTypes.js';
 import type { DatavizDefinition } from '#V2/Dataviz/types/definition.js';
-
-const CHART_ICONS: Partial<Record<ChartType, React.ComponentType<{ className?: string }>>> = {
-  pie: ChartPieIcon,
-  donut: ChartPieIcon,
-  bar: ChartBarIcon,
-  horizontal_bar: ChartBarIcon,
-  stacked_bar: ChartBarIcon,
-  list: ListBulletIcon,
-  gauge: SignalIcon,
-  line: ChartBarIcon,
-  area: ChartBarIcon,
-};
+import {
+  CHART_TYPE_ICONS,
+  DEFAULT_CHART_TYPE_ICON,
+} from '../chartIcons/chartTypeIcons.js';
 
 type ChartTabProps = {
   definition: DatavizDefinition;
@@ -42,7 +28,7 @@ const ChartTab = ({ definition, onPatchChart }: ChartTabProps) => {
         <h3 className="mb-3 text-sm font-semibold text-ink">Chart type</h3>
         <div className="grid grid-cols-3 gap-2">
           {availability.map(item => {
-            const Icon = CHART_ICONS[item.type] || ChartBarIcon;
+            const Icon = CHART_TYPE_ICONS[item.type] || DEFAULT_CHART_TYPE_ICON;
             const selected = chart.type === item.type;
             return (
               <button
@@ -86,6 +72,26 @@ const ChartTab = ({ definition, onPatchChart }: ChartTabProps) => {
           label="Show labels on chart"
           checked={chart.showLabels ?? true}
           onChange={e => onPatchChart({ showLabels: (e.target as HTMLInputElement).checked })}
+        />
+        <Checkbox
+          name="show-missing-values"
+          label="Show empty values (No data)"
+          checked={chart.showMissingValues ?? false}
+          onChange={e =>
+            onPatchChart({ showMissingValues: (e.target as HTMLInputElement).checked })
+          }
+        />
+        <Checkbox
+          name="exclude-zero"
+          label="Exclude zero values"
+          checked={chart.excludeZero ?? false}
+          onChange={e => onPatchChart({ excludeZero: (e.target as HTMLInputElement).checked })}
+        />
+        <InputField
+          id="missing-value-label"
+          label="Empty value label"
+          value={chart.missingValueLabel || 'No data'}
+          onChange={e => onPatchChart({ missingValueLabel: e.target.value })}
         />
         {(chart.type === 'pie' || chart.type === 'donut') && (
           <>

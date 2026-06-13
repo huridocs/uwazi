@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import type { DatavizDefinition } from '#V2/Dataviz/types/definition.js';
 import type { DatavizDataDTO } from '#V2/Dataviz/types/data.js';
+import { isManualDataSource } from '#shared/dataviz/manualData.js';
 import { getRefreshModeConstraints } from '#V2/Dataviz/utils/refreshModeConstraints.js';
 
 type UseLiveRefreshGuardInput = {
@@ -18,6 +19,8 @@ const useLiveRefreshGuard = ({
   previewQueryDurationMs,
   onPatchRefresh,
 }: UseLiveRefreshGuardInput) => {
+  const isManual = isManualDataSource(definition.dataSource);
+
   const constraints = useMemo(
     () =>
       getRefreshModeConstraints({
@@ -30,10 +33,13 @@ const useLiveRefreshGuard = ({
   );
 
   useEffect(() => {
+    if (isManual) {
+      return;
+    }
     if (definition.refresh.refreshMode === 'live' && !constraints.liveAllowed) {
       onPatchRefresh({ refreshMode: 'snapshot_manual' });
     }
-  }, [constraints.liveAllowed, definition.refresh.refreshMode, onPatchRefresh]);
+  }, [constraints.liveAllowed, definition.refresh.refreshMode, isManual, onPatchRefresh]);
 
   return constraints;
 };

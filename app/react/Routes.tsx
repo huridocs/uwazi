@@ -46,6 +46,13 @@ import {
   pagesListLoader,
 } from '#V2/Routes/Settings/Pages/index.js';
 import {
+  DatavizList,
+  datavizListLoader,
+  DatavizEditorRoute,
+  datavizEditorLoader,
+  datavizNewLoader,
+} from '#V2/Routes/Settings/Dataviz/index.js';
+import {
   customisationLoader,
   Customisation,
 } from '#V2/Routes/Settings/Customization/Customization.js';
@@ -90,6 +97,8 @@ import {
   UploadStatus,
   uploadStatusLoader,
 } from './V2/Routes/Settings/CSVUpload/index.js';
+import { DatavizEmbedRoute } from '#V2/Routes/Embed/DatavizEmbedRoute.js';
+import { PageEmbedRoute } from '#V2/Routes/Embed/PageEmbedRoute.js';
 
 const deconstructSearchQuery = (query?: string) => {
   if (!query) return '';
@@ -255,6 +264,23 @@ const getRoutesLayout = (
           loader={pageEditorLoader(headers)}
         />
       </Route>
+      <Route path="dataviz">
+        <Route
+          index
+          element={adminsOnlyRoute(<DatavizList />)}
+          loader={datavizListLoader(headers)}
+        />
+        <Route
+          path="new"
+          element={adminsOnlyRoute(<DatavizEditorRoute />)}
+          loader={datavizNewLoader(headers)}
+        />
+        <Route
+          path="edit/:id"
+          element={adminsOnlyRoute(<DatavizEditorRoute />)}
+          loader={datavizEditorLoader(headers)}
+        />
+      </Route>
       <Route path="templates">
         <Route index element={adminsOnlyRoute(<Templates />)} loader={templatesLoader(headers)} />
         <Route
@@ -417,6 +443,10 @@ const getRoutes = (
     >
       {layout}
       {languageKeys.map(langKey => languageLayout(langKey, layout))}
+      <Route path="embed">
+        <Route path="dataviz/:id" element={<DatavizEmbedRoute />} />
+        <Route path="page/:sharedId" element={<PageEmbedRoute />} />
+      </Route>
       <Route path="*" element={<GeneralError />} />
     </Route>
   );

@@ -1,3 +1,4 @@
+import { DATAVIZ_DRAFT_ID } from '#shared/types/datavizSchema.js';
 import {
   carsByColorDto,
   createDefaultDatavizDefinition,
@@ -46,19 +47,24 @@ const applyFilterDemo = (dto: DatavizDataDTO, definition: DatavizDefinition): Da
   return { ...dto, meta: { ...dto.meta, appliedFilters: filters } };
 };
 
-const resolveDataForDefinition = (definition: DatavizDefinition): DatavizDataDTO => {
-  const dimension = definition.query.dimensions[0];
+const resolveDataForQuery = (
+  id: string,
+  query: DatavizDefinition['query']
+): DatavizDataDTO => {
+  const dimension = query.dimensions[0];
   const base = {
-    datavizId: definition.id,
+    datavizId: id,
     generatedAt: new Date().toISOString(),
     stale: false,
   };
 
-  if (definition.query.dimensions.length >= 2) {
+  const definition = { id, query } as DatavizDefinition;
+
+  if (query.dimensions.length >= 2) {
     return applyFilterDemo({ ...personasSexByCountryDto, ...base }, definition);
   }
 
-  if (definition.query.sources.length > 1 || dimension?.property === TEMPLATE_DIMENSION_PROPERTY) {
+  if (query.sources.length > 1 || dimension?.property === TEMPLATE_DIMENSION_PROPERTY) {
     return applyFilterDemo({ ...multiSourceByTemplateDto, ...base }, definition);
   }
 
@@ -89,11 +95,19 @@ const createMockDatavizApi = (options: DatavizApiOptions = {}): DatavizApi => {
 
     saveDefinition: async (definition: DatavizDefinition) => {
       await delay(saveDelayMs);
+      const isNew = definition.id === DATAVIZ_DRAFT_ID;
+      const id = isNew ? `dv_${Date.now()}` : definition.id;
+      const now = new Date().toISOString();
       const saved = {
         ...definition,
-        updatedAt: new Date().toISOString(),
+        id,
+        createdAt: definition.createdAt ?? now,
+        updatedAt: now,
       };
-      definitions.set(definition.id, saved);
+      if (isNew) {
+        definitions.delete(DATAVIZ_DRAFT_ID);
+      }
+      definitions.set(id, saved);
       return saved;
     },
 
@@ -102,9 +116,26 @@ const createMockDatavizApi = (options: DatavizApiOptions = {}): DatavizApi => {
       definitions.delete(id);
     },
 
-    getData: async (definition: DatavizDefinition) => {
+    getData: async ({ id, query }) => {
       await delay(dataDelayMs);
-      return resolveDataForDefinition(definition);
+      return resolveDataForQuery(id, query);
+    },
+
+    refreshSnapshot: async (id: string) => {
+      await delay(dataDelayMs);
+      const definition = definitions.get(id);
+      if (!definition) {
+        throw new Error(`Dataviz not found: ${id}`);
+      }
+      const payload = resolveDataForQuery(id, definition.query);
+      const lastRefreshedAt = new Date().toISOString();
+      definitions.set(id, {
+        ...definition,
+        refresh: { ...definition.refresh, lastRefreshedAt },
+        processing: { active: false },
+        updatedAt: lastRefreshedAt,
+      });
+      return payload;
     },
   };
 };

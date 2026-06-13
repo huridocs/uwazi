@@ -1,38 +1,11 @@
-// Mirror of dataviz-requirements §5.3 / §6 — migrate to #shared when backend lands.
+export type {
+  ChartType,
+  PieLabelFormat,
+  DatavizPieOptions,
+  DatavizChartConfig,
+} from '#shared/types/datavizSchema.js';
 
-export type ChartType =
-  | 'pie'
-  | 'donut'
-  | 'bar'
-  | 'horizontal_bar'
-  | 'stacked_bar'
-  | 'line'
-  | 'area'
-  | 'list'
-  | 'gauge'
-  | 'metric'
-  | 'scatter'
-  | 'heatmap'
-  | 'treemap';
-
-export type PieLabelFormat = 'value' | 'percentage' | 'both';
-
-export type DatavizPieOptions = {
-  labelFormat?: PieLabelFormat;
-  maxSlices?: number;
-  othersLabel?: string;
-};
-
-export type DatavizChartConfig = {
-  type: ChartType;
-  orientation?: 'horizontal' | 'vertical';
-  stacked?: boolean;
-  showLegend?: boolean;
-  showLabels?: boolean;
-  showTooltip?: boolean;
-  excludeZero?: boolean;
-  pieOptions?: DatavizPieOptions;
-};
+import type { ChartType } from '#shared/types/datavizSchema.js';
 
 export const ALL_CHART_TYPES: ChartType[] = [
   'pie',

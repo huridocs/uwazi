@@ -13,7 +13,7 @@ const TemplateColorHint = ({ sources }: TemplateColorHintProps) => {
   return (
     <div className="rounded-lg bg-vellum p-3">
       <p className="text-xs text-ink-secondary mb-2">
-        Each bucket uses the template brand color when the dimension is entity type.
+        Each series uses the template brand color when comparing data sources.
       </p>
       <div className="flex flex-wrap gap-3">
         {sources.map(source => {

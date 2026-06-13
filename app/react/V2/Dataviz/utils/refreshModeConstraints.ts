@@ -1,25 +1,26 @@
 import type { DatavizDataMeta } from '#V2/Dataviz/types/data.js';
 import type { DatavizQuery } from '#V2/Dataviz/types/definition.js';
+import {
+  getRefreshModeConstraints as getSharedRefreshModeConstraints,
+  type RefreshModeBlockReason,
+  type RefreshModeConstraints,
+  type GetRefreshModeConstraintsInput,
+} from '#shared/dataviz/refreshModeConstraints.js';
+import {
+  REFRESH_LIVE_MAX_ENTITIES,
+  REFRESH_LIVE_SLOW_QUERY_MS,
+  REFRESH_LIVE_TIMEOUT_MS,
+} from '#shared/types/datavizSchema.js';
 import { hasTwoDimensions } from './twoDimensionalQuery.js';
 
-/** Mirrors §8.1 — backend must enforce the same thresholds on save. */
-export const REFRESH_LIVE_MAX_ENTITIES = 10_000;
-
-/** Preview or API-reported duration above this disables Live (§8.1). */
-export const REFRESH_LIVE_SLOW_QUERY_MS = 10_000;
-
-/** Documented live query timeout (§7.5); used to detect timeout errors in preview. */
-export const REFRESH_LIVE_TIMEOUT_MS = 30_000;
-
-export type RefreshModeBlockReason =
-  | 'RELATIONSHIP_JOIN'
-  | 'MULTI_SOURCE'
-  | 'MULTI_DIMENSION'
-  | 'HIGH_ENTITY_COUNT'
-  | 'TRUNCATED_RESULTS'
-  | 'SLOW_QUERY'
-  | 'QUERY_TIMEOUT'
-  | 'PREVIEW_ERROR';
+export {
+  REFRESH_LIVE_MAX_ENTITIES,
+  REFRESH_LIVE_SLOW_QUERY_MS,
+  REFRESH_LIVE_TIMEOUT_MS,
+  type RefreshModeBlockReason,
+  type RefreshModeConstraints,
+  type GetRefreshModeConstraintsInput,
+};
 
 const REASON_MESSAGES: Record<RefreshModeBlockReason, string> = {
   RELATIONSHIP_JOIN:
@@ -34,81 +35,23 @@ const REASON_MESSAGES: Record<RefreshModeBlockReason, string> = {
   PREVIEW_ERROR: 'Live refresh is not available until preview data loads successfully.',
 };
 
-export type RefreshModeConstraints = {
-  liveAllowed: boolean;
-  reasons: RefreshModeBlockReason[];
-  messages: string[];
-};
-
-export type GetRefreshModeConstraintsInput = {
-  query: DatavizQuery;
-  previewMeta?: DatavizDataMeta | null;
-  previewError?: string | null;
-  previewQueryDurationMs?: number;
-};
-
-const isTimeoutError = (error?: string | null) =>
-  Boolean(error && /timeout|time.?out|DATAVIZ_QUERY_TIMEOUT/i.test(error));
-
-const getStructuralConstraints = (query: DatavizQuery): RefreshModeBlockReason[] => {
-  const reasons: RefreshModeBlockReason[] = [];
-
-  if (query.join?.type === 'relationship') {
-    reasons.push('RELATIONSHIP_JOIN');
-  }
-
-  if (query.sources.length > 1) {
-    reasons.push('MULTI_SOURCE');
-  }
-
-  if (hasTwoDimensions(query.dimensions)) {
-    reasons.push('MULTI_DIMENSION');
-  }
-
-  return reasons;
-};
-
-const getEmpiricalConstraints = ({
-  previewMeta,
-  previewError,
-  previewQueryDurationMs,
-}: Pick<
-  GetRefreshModeConstraintsInput,
-  'previewMeta' | 'previewError' | 'previewQueryDurationMs'
->): RefreshModeBlockReason[] => {
-  const reasons: RefreshModeBlockReason[] = [];
-
-  if (previewMeta?.totalEntities != null && previewMeta.totalEntities > REFRESH_LIVE_MAX_ENTITIES) {
-    reasons.push('HIGH_ENTITY_COUNT');
-  }
-
-  if (previewMeta?.truncated) {
-    reasons.push('TRUNCATED_RESULTS');
-  }
-
-  const durationMs = Math.max(
-    previewMeta?.queryDurationMs ?? 0,
-    previewQueryDurationMs ?? 0
-  );
-
-  if (durationMs >= REFRESH_LIVE_SLOW_QUERY_MS) {
-    reasons.push('SLOW_QUERY');
-  }
-
-  if (isTimeoutError(previewError)) {
-    reasons.push('QUERY_TIMEOUT');
-  }
-
-  return reasons;
-};
-
 export const getRefreshModeConstraints = (
   input: GetRefreshModeConstraintsInput
-): RefreshModeConstraints => {
-  const reasons = [
-    ...getStructuralConstraints(input.query),
-    ...getEmpiricalConstraints(input),
-  ];
+): RefreshModeConstraints & { messages: string[] } => {
+  const base = getSharedRefreshModeConstraints(input);
+
+  if (!input.previewMeta && !input.previewError && input.query.sources.length > 0) {
+    // keep structural-only when no preview
+  }
+
+  const reasons = [...base.reasons];
+  if (
+    input.previewError &&
+    !reasons.includes('PREVIEW_ERROR') &&
+    !reasons.includes('QUERY_TIMEOUT')
+  ) {
+    reasons.push('PREVIEW_ERROR');
+  }
 
   const uniqueReasons = [...new Set(reasons)];
 
@@ -121,3 +64,6 @@ export const getRefreshModeConstraints = (
 
 export const getRefreshModeBlockMessage = (reason: RefreshModeBlockReason): string =>
   REASON_MESSAGES[reason];
+
+// re-export for tests that import hasTwoDimensions path
+export { hasTwoDimensions };

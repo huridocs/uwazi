@@ -1,9 +1,9 @@
 import React from 'react';
 import type { DatavizDefinition, EditorTabId } from '#V2/Dataviz/types/definition.js';
-import type { DataPoint } from '#V2/Dataviz/types/data.js';
+import type { DatavizDataDTO } from '#V2/Dataviz/types/data.js';
 import type { RefreshModeConstraints } from '#V2/Dataviz/utils/refreshModeConstraints.js';
-import { DatavizIconNav } from '../DatavizIconNav.js';
-import { BasicTab } from '../tabs/BasicTab.js';
+import { DatavizEditorTabBar } from '../DatavizEditorTabBar.js';
+import { InfoTab } from '../tabs/InfoTab.js';
 import { DataTab } from '../tabs/DataTab.js';
 import { ChartTab } from '../tabs/ChartTab.js';
 import { AppearanceTab } from '../tabs/AppearanceTab.js';
@@ -12,7 +12,9 @@ import { RefreshTab } from '../tabs/RefreshTab.js';
 type DatavizEditorConfigPanelProps = {
   definition: DatavizDefinition;
   activeTab: EditorTabId;
-  previewPoints?: DataPoint[];
+  previewData?: DatavizDataDTO | null;
+  previewLoading?: boolean;
+  previewError?: string | null;
   refreshConstraints: RefreshModeConstraints;
   onTabChange: (tab: EditorTabId) => void;
   onPatch: (patch: Partial<DatavizDefinition>) => void;
@@ -25,7 +27,9 @@ type DatavizEditorConfigPanelProps = {
 const DatavizEditorConfigPanel = ({
   definition,
   activeTab,
-  previewPoints,
+  previewData,
+  previewLoading = false,
+  previewError = null,
   refreshConstraints,
   onTabChange,
   onPatch,
@@ -36,12 +40,13 @@ const DatavizEditorConfigPanel = ({
 }: DatavizEditorConfigPanelProps) => {
   const renderTab = () => {
     switch (activeTab) {
-      case 'basic':
-        return <BasicTab definition={definition} onChange={onPatch} />;
+      case 'info':
+        return <InfoTab definition={definition} onChange={onPatch} />;
       case 'data':
         return (
           <DataTab
             definition={definition}
+            onPatch={onPatch}
             onPatchQuery={onPatchQuery}
             onPatchChart={onPatchChart}
           />
@@ -52,7 +57,7 @@ const DatavizEditorConfigPanel = ({
         return (
           <AppearanceTab
             definition={definition}
-            previewPoints={previewPoints}
+            previewData={previewData}
             onPatchAppearance={onPatchAppearance}
           />
         );
@@ -70,12 +75,14 @@ const DatavizEditorConfigPanel = ({
   };
 
   return (
-    <>
-      <DatavizIconNav activeTab={activeTab} onTabChange={onTabChange} />
-      <aside className="w-80 shrink-0 overflow-y-auto border-r border-border bg-paper">
-        {renderTab()}
-      </aside>
-    </>
+    <aside className="flex h-full min-h-0 w-[32rem] shrink-0 flex-col border-r border-border bg-paper">
+      <DatavizEditorTabBar
+        activeTab={activeTab}
+        dataSource={definition.dataSource}
+        onTabChange={onTabChange}
+      />
+      <div className="min-h-0 flex-1 overflow-y-auto bg-paper">{renderTab()}</div>
+    </aside>
   );
 };
 

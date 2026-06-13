@@ -1,16 +1,15 @@
 import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { Select } from '#V2/Components/Forms/Select.js';
-import { Checkbox } from '#V2/Components/Forms/Checkbox.js';
 import { InputField } from '#V2/Components/Forms/InputField.js';
 import { Pill } from '#V2/Components/UI/Pill.js';
 import { templatesAtom } from '#V2/atoms/index.js';
-import { filterDatavizProperties } from '#V2/Dataviz/utils/filterDatavizProperties.js';
+import { buildDimensionFromProperty } from '#V2/Dataviz/utils/buildDimensionFromProperty.js';
+import { getSharedDimensionProperties } from '#V2/Dataviz/utils/getSharedDimensionProperties.js';
 import {
   TEMPLATE_DIMENSION_PROPERTY,
   type DatavizSource,
   type DimensionSpec,
-  type PropertyTypeForDataviz,
 } from '#V2/Dataviz/types/definition.js';
 
 type DimensionSectionProps = {
@@ -40,10 +39,13 @@ const DimensionSection = ({
     sources.find(s => s.alias === dimension?.sourceAlias) || sources.find(s => s.templateId) || sources[0];
   const template = templates.find(t => t._id === activeSource?.templateId);
 
+  const availableProperties = useMemo(
+    () => getSharedDimensionProperties(sources, templates),
+    [sources, templates]
+  );
+
   const propertyOptions = useMemo(() => {
-    const base = filterDatavizProperties(template?.properties || []).filter(
-      p => !excludedProperties.includes(p.name)
-    );
+    const base = availableProperties.filter(p => !excludedProperties.includes(p.name));
     const options = [
       { value: '', label: allowNone ? 'None' : 'Select property…' },
       ...(allowTemplateDimension && multiSource
@@ -52,12 +54,13 @@ const DimensionSection = ({
       ...base.map(p => ({ value: p.name, label: p.label })),
     ];
     return options;
-  }, [template, multiSource, excludedProperties, allowTemplateDimension, allowNone]);
+  }, [availableProperties, multiSource, excludedProperties, allowTemplateDimension, allowNone]);
 
   const selectedProperty =
     dimension?.property === TEMPLATE_DIMENSION_PROPERTY
       ? { type: 'template', label: 'Entity type' }
-      : template?.properties?.find(p => p.name === dimension?.property);
+      : availableProperties.find(p => p.name === dimension?.property) ||
+        template?.properties?.find(p => p.name === dimension?.property);
 
   const handlePropertyChange = (propertyName: string) => {
     if (!propertyName) {
@@ -66,43 +69,29 @@ const DimensionSection = ({
     }
     if (propertyName === TEMPLATE_DIMENSION_PROPERTY) {
       onChange({
-        sourceAlias: dimension?.sourceAlias,
         property: TEMPLATE_DIMENSION_PROPERTY,
         propertyType: 'select',
         bucketStrategy: 'terms',
         sort: 'count_desc',
-        includeMissing: false,
         maxBuckets: 10,
       });
       return;
     }
-    const prop = template?.properties?.find(p => p.name === propertyName);
+    const prop = availableProperties.find(p => p.name === propertyName);
     if (!prop) return;
-    onChange({
-      sourceAlias: dimension?.sourceAlias,
-      property: prop.name,
-      propertyType: prop.type as PropertyTypeForDataviz,
-      bucketStrategy: prop.type === 'date' ? 'date_histogram' : 'terms',
-      sort: 'count_desc',
-      includeMissing: false,
-      maxBuckets: 10,
-    });
+    const next = buildDimensionFromProperty(prop, multiSource ? undefined : dimension?.sourceAlias);
+    if (next) {
+      onChange(next);
+    }
   };
 
   return (
     <section className="flex flex-col gap-3">
       <h3 className="text-sm font-semibold text-ink">{title}</h3>
-      {multiSource && dimension && (
-        <Select
-          id={`${idPrefix}-source`}
-          label="Source"
-          value={dimension.sourceAlias || sources[0]?.alias || ''}
-          options={sources.map(s => ({
-            value: s.alias || s.templateId,
-            label: s.alias || templates.find(t => t._id === s.templateId)?.name || s.templateId,
-          }))}
-          onChange={e => onChange({ ...dimension, sourceAlias: e.target.value })}
-        />
+      {multiSource && (
+        <p className="text-xs text-ink-secondary">
+          Only properties with the same name and configuration in every data source are available.
+        </p>
       )}
       <Select
         id={`${idPrefix}-property`}
@@ -116,22 +105,6 @@ const DimensionSection = ({
       )}
       {dimension && dimension.property !== TEMPLATE_DIMENSION_PROPERTY && (
         <>
-          <Select
-            id={`${idPrefix}-bucket-strategy`}
-            label="Bucket strategy"
-            value={dimension.bucketStrategy || 'terms'}
-            options={[
-              { value: 'terms', label: 'Terms (top values)' },
-              { value: 'date_histogram', label: 'Date histogram' },
-              { value: 'range', label: 'Range' },
-            ]}
-            onChange={e =>
-              onChange({
-                ...dimension,
-                bucketStrategy: e.target.value as DimensionSpec['bucketStrategy'],
-              })
-            }
-          />
           <Select
             id={`${idPrefix}-sort`}
             label="Sort by"
@@ -152,17 +125,6 @@ const DimensionSection = ({
             value={String(dimension.maxBuckets ?? 10)}
             onChange={e =>
               onChange({ ...dimension, maxBuckets: Number(e.target.value) || 10 })
-            }
-          />
-          <Checkbox
-            name={`${idPrefix}-include-missing`}
-            label="Include missing values"
-            checked={dimension.includeMissing ?? false}
-            onChange={e =>
-              onChange({
-                ...dimension,
-                includeMissing: (e.target as HTMLInputElement).checked,
-              })
             }
           />
         </>

@@ -1,7 +1,21 @@
-import React, { useCallback } from 'react';
-import type { DatavizDefinition, DimensionSpec } from '#V2/Dataviz/types/definition.js';
+import React, { useCallback, useEffect } from 'react';
+import { useAtomValue } from 'jotai';
+import type {
+  DatavizDataSourceKind,
+  DatavizDefinition,
+  DimensionSpec,
+  MeasureSpec,
+} from '#V2/Dataviz/types/definition.js';
+import { templatesAtom } from '#V2/atoms/index.js';
+import { isManualDataSource, MANUAL_DATA_EXAMPLE } from '#shared/dataviz/manualData.js';
 import { isTwoDimensionalQuery } from '#V2/Dataviz/utils/twoDimensionalQuery.js';
+import { resolveChartPatchForQuery } from '#V2/Dataviz/utils/resolveChartPatchForQuery.js';
+import { ensureSourceAliases } from '#V2/Dataviz/utils/ensureSourceAliases.js';
+import { sanitizeDimensionsForSources } from '#V2/Dataviz/utils/sanitizeDimensionsForSources.js';
+import { DataSourceKindSection } from '../data/DataSourceKindSection.js';
+import { ManualDataEditor } from '../data/ManualDataEditor.js';
 import { DataSourcesList } from '../data/sources/DataSourcesList.js';
+import { JoinModeSection } from '../data/sources/JoinModeSection.js';
 import { FiltersSection } from '../data/filters/FiltersSection.js';
 import { DimensionSection } from '../data/DimensionSection.js';
 import { MeasureSection } from '../data/MeasureSection.js';
@@ -9,74 +23,160 @@ import { SupportedChartTypesCallout } from '../data/SupportedChartTypesCallout.j
 
 type DataTabProps = {
   definition: DatavizDefinition;
+  onPatch: (patch: Partial<DatavizDefinition>) => void;
   onPatchQuery: (patch: Partial<DatavizDefinition['query']>) => void;
   onPatchChart?: (patch: Partial<DatavizDefinition['chart']>) => void;
 };
 
-const DataTab = ({ definition, onPatchQuery, onPatchChart }: DataTabProps) => {
+const DataTab = ({ definition, onPatch, onPatchQuery, onPatchChart }: DataTabProps) => {
+  const templates = useAtomValue(templatesAtom);
   const { query, chart } = definition;
+  const dataSource = definition.dataSource ?? 'query';
+  const isManual = isManualDataSource(dataSource);
   const primaryDimension = query.dimensions[0];
   const secondaryDimension = query.dimensions[1];
   const measure = query.measures[0] || { aggregation: 'count' as const, countMode: 'all' as const };
+
+  const handleDataSourceChange = (nextSource: DatavizDataSourceKind) => {
+    if (nextSource === 'manual') {
+      onPatch({
+        dataSource: 'manual',
+        manualData: definition.manualData ?? MANUAL_DATA_EXAMPLE,
+      });
+      return;
+    }
+    onPatch({ dataSource: 'query' });
+  };
+
+  const syncChartWithQuery = useCallback(
+    (dimensions: DimensionSpec[], measures: MeasureSpec[]) => {
+      if (!onPatchChart) return;
+      const chartPatch = resolveChartPatchForQuery(chart, dimensions, measures);
+      if (chartPatch) {
+        onPatchChart(chartPatch);
+      }
+    },
+    [chart, onPatchChart]
+  );
 
   const setDimensions = useCallback(
     (primary?: DimensionSpec, secondary?: DimensionSpec) => {
       const dimensions = [primary, secondary].filter((d): d is DimensionSpec => Boolean(d));
       onPatchQuery({ dimensions });
-
-      const willBeTwoD = dimensions.length >= 2;
-      if (willBeTwoD && chart.type !== 'stacked_bar' && onPatchChart) {
-        onPatchChart({ type: 'stacked_bar', stacked: true, showLegend: true });
-      }
-      if (!willBeTwoD && chart.type === 'stacked_bar' && onPatchChart) {
-        onPatchChart({ type: 'bar' });
-      }
+      syncChartWithQuery(dimensions, query.measures);
     },
-    [onPatchQuery, onPatchChart, chart.type]
+    [onPatchQuery, query.measures, syncChartWithQuery]
   );
+
+  const setMeasure = useCallback(
+    (nextMeasure: MeasureSpec) => {
+      const measures = [nextMeasure];
+      onPatchQuery({ measures });
+      syncChartWithQuery(query.dimensions, measures);
+    },
+    [onPatchQuery, query.dimensions, syncChartWithQuery]
+  );
+
+  const handleSourcesChange = useCallback(
+    (sources: DatavizDefinition['query']['sources']) => {
+      const structureChanged =
+        sources.length !== query.sources.length ||
+        sources.some((source, index) => source.templateId !== query.sources[index]?.templateId);
+
+      const templateNameById = new Map(
+        templates.filter(t => t._id).map(t => [t._id!, t.name])
+      );
+      const nextSources = structureChanged
+        ? ensureSourceAliases(sources, templateNameById)
+        : sources;
+      const nextDimensions = sanitizeDimensionsForSources(
+        query.dimensions,
+        nextSources,
+        templates
+      );
+
+      onPatchQuery({
+        sources: nextSources,
+        dimensions: nextDimensions,
+        join:
+          nextSources.length > 1
+            ? query.join?.type === 'union'
+              ? { type: 'union' }
+              : { type: 'compare' }
+            : undefined,
+      });
+      syncChartWithQuery(nextDimensions, query.measures);
+    },
+    [onPatchQuery, query.dimensions, query.join?.type, query.measures, syncChartWithQuery, templates]
+  );
+
+  const isMultiSource = query.sources.length > 1;
+
+  useEffect(() => {
+    if (isManual) {
+      return;
+    }
+    const sanitized = sanitizeDimensionsForSources(query.dimensions, query.sources, templates);
+    const changed =
+      sanitized.length !== query.dimensions.length ||
+      JSON.stringify(sanitized) !== JSON.stringify(query.dimensions);
+
+    if (changed) {
+      onPatchQuery({ dimensions: sanitized });
+      syncChartWithQuery(sanitized, query.measures);
+    }
+  }, [isManual, query.sources, templates]);
 
   return (
     <div className="flex flex-col gap-6 p-4">
-      <DataSourcesList
-        sources={query.sources}
-        onChange={sources =>
-          onPatchQuery({
-            sources,
-            join: sources.length > 1 ? { type: 'union' } : undefined,
-          })
-        }
-      />
-      <FiltersSection
-        filters={query.filters || []}
-        sources={query.sources}
-        onChange={filters => onPatchQuery({ filters })}
-      />
-      <DimensionSection
-        sources={query.sources}
-        dimension={primaryDimension}
-        onChange={dim => setDimensions(dim, secondaryDimension)}
-        title="Primary dimension (X-axis / categories)"
-        idPrefix="primary-dimension"
-        allowTemplateDimension
-      />
-      <DimensionSection
-        sources={query.sources}
-        dimension={secondaryDimension}
-        onChange={dim => setDimensions(primaryDimension, dim)}
-        title="Second dimension (series / stacks)"
-        idPrefix="secondary-dimension"
-        excludedProperties={primaryDimension?.property ? [primaryDimension.property] : []}
-        allowTemplateDimension={false}
-        allowNone
-      />
-      {isTwoDimensionalQuery(query.dimensions) && (
-        <p className="text-xs text-ink-secondary">
-          Two categorical dimensions enable stacked bar charts (e.g. country with sex breakdown).
-        </p>
+      <DataSourceKindSection value={dataSource} onChange={handleDataSourceChange} />
+
+      {isManual ? (
+        <ManualDataEditor
+          manualData={definition.manualData}
+          onChange={manualData => onPatch({ manualData })}
+        />
+      ) : (
+        <>
+          <DataSourcesList sources={query.sources} onChange={handleSourcesChange} />
+          {query.sources.length > 1 && (
+            <JoinModeSection join={query.join} onChange={join => onPatchQuery({ join })} />
+          )}
+          <FiltersSection
+            filters={query.filters || []}
+            sources={query.sources}
+            onChange={filters => onPatchQuery({ filters })}
+          />
+          <DimensionSection
+            sources={query.sources}
+            dimension={primaryDimension}
+            onChange={dim => setDimensions(dim, isMultiSource ? undefined : secondaryDimension)}
+            title="Primary dimension (X-axis / categories)"
+            idPrefix="primary-dimension"
+            allowTemplateDimension={!isMultiSource}
+          />
+          {!isMultiSource && (
+            <DimensionSection
+              sources={query.sources}
+              dimension={secondaryDimension}
+              onChange={dim => setDimensions(primaryDimension, dim)}
+              title="Second dimension (series / stacks)"
+              idPrefix="secondary-dimension"
+              excludedProperties={primaryDimension?.property ? [primaryDimension.property] : []}
+              allowTemplateDimension={false}
+              allowNone
+            />
+          )}
+          {!isMultiSource && isTwoDimensionalQuery(query.dimensions) && (
+            <p className="text-xs text-ink-secondary">
+              Two categorical dimensions enable stacked bar charts (e.g. country with sex breakdown).
+            </p>
+          )}
+          <MeasureSection measure={measure} onChange={setMeasure} />
+          <SupportedChartTypesCallout dimensions={query.dimensions} measures={query.measures} />
+          <p className="text-xs text-ink-muted">Preview updates automatically (300ms debounce)</p>
+        </>
       )}
-      <MeasureSection measure={measure} onChange={m => onPatchQuery({ measures: [m] })} />
-      <SupportedChartTypesCallout dimensions={query.dimensions} measures={query.measures} />
-      <p className="text-xs text-ink-muted">Preview updates automatically (300ms debounce)</p>
     </div>
   );
 };

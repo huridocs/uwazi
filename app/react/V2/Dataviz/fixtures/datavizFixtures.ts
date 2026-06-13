@@ -376,7 +376,6 @@ export const createDefaultDatavizDefinition = (
         propertyType: 'select',
         bucketStrategy: 'terms',
         sort: 'count_desc',
-        includeMissing: false,
         maxBuckets: 10,
       },
     ],

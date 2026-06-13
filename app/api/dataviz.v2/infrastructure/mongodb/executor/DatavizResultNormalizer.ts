@@ -1,0 +1,300 @@
+import type {
+  DataPoint,
+  DataSeries,
+  DatavizAppearance,
+  DatavizDataDTO,
+  DimensionSpec,
+  LocalizedLabels,
+} from '#shared/types/datavizSchema.js';
+import {
+  normalizeDatavizBucketKey,
+  serializeDatavizBucketKey,
+} from '#shared/dataviz/formatDimensionKeyLabel.js';
+import { DATAVIZ_MAX_BUCKETS } from '#shared/types/datavizSchema.js';
+import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import type { MultilingualLabelResolver } from './DatavizMultilingualLabelResolver.js';
+import { applyLocalizedPointLabels } from './applyLocalizedPointLabel.js';
+
+type RawBucket = {
+  _id:
+    | string
+    | number
+    | null
+    | { primary: string | number; secondary: string | number }
+    | { from: number; to: number };
+  count: number;
+};
+
+type LabelResolver = MultilingualLabelResolver;
+
+const sortPoints = (
+  points: DataPoint[],
+  sort?: DimensionSpec['sort']
+): DataPoint[] => {
+  const copy = [...points];
+  if (sort === 'label_asc' || sort === 'key_asc') {
+    copy.sort((a, b) => String(a.label).localeCompare(String(b.label)));
+  } else {
+    copy.sort((a, b) => b.value - a.value);
+  }
+  return copy;
+};
+
+const applyColors = (points: DataPoint[], appearance?: DatavizAppearance): DataPoint[] => {
+  if (!appearance) return points;
+  if (appearance.colorMode === 'custom' && appearance.valueColorMap) {
+    return points.map(p => ({
+      ...p,
+      color: appearance.valueColorMap![String(p.key)],
+    }));
+  }
+  return points;
+};
+
+const limitBreakdown = (
+  breakdown: DataPoint[],
+  secondaryDim: DimensionSpec
+): { breakdown: DataPoint[]; truncated: boolean } => {
+  const secondaryMax = secondaryDim.maxBuckets ?? DATAVIZ_MAX_BUCKETS;
+  const sorted = sortPoints(breakdown, secondaryDim.sort);
+  if (sorted.length <= secondaryMax) {
+    return { breakdown: sorted, truncated: false };
+  }
+  return { breakdown: sorted.slice(0, secondaryMax), truncated: true };
+};
+
+export const normalizeBuckets = (params: {
+  buckets: RawBucket[];
+  primaryDim: DimensionSpec;
+  secondaryDim?: DimensionSpec;
+  resolveLabel: LabelResolver;
+  datavizId: string;
+  queryDurationMs: number;
+  appearance?: DatavizAppearance;
+  seriesLabel?: string;
+  seriesLabels?: LocalizedLabels;
+  defaultLanguage: LanguageISO6391;
+  missingBucketLabels: LocalizedLabels;
+}): DatavizDataDTO => {
+  const {
+    buckets,
+    primaryDim,
+    secondaryDim,
+    resolveLabel,
+    datavizId,
+    queryDurationMs,
+    appearance,
+    seriesLabel = 'Series',
+    seriesLabels,
+    defaultLanguage,
+    missingBucketLabels,
+  } = params;
+
+  const primaryMax = primaryDim.maxBuckets ?? DATAVIZ_MAX_BUCKETS;
+
+  if (!secondaryDim) {
+    const totalEntities = buckets.reduce((sum, b) => sum + b.count, 0);
+    const truncated = buckets.length >= primaryMax;
+    const points: DataPoint[] = buckets.map(b => {
+      const key = normalizeDatavizBucketKey(b._id);
+      const { label, labels } = applyLocalizedPointLabels(
+        key,
+        primaryDim,
+        resolveLabel,
+        defaultLanguage,
+        missingBucketLabels
+      );
+      return {
+        key,
+        label,
+        labels,
+        value: b.count,
+      };
+    });
+
+    const sorted = applyColors(sortPoints(points, primaryDim.sort), appearance);
+
+    return {
+      datavizId,
+      generatedAt: new Date().toISOString(),
+      stale: false,
+      meta: { totalEntities, truncated, queryDurationMs },
+      series: [
+        {
+          id: 'main',
+          label: seriesLabel,
+          labels: seriesLabels,
+          points: sorted,
+        },
+      ],
+    };
+  }
+
+  const byPrimary = new Map<string | number, Map<string | number, number>>();
+
+  buckets.forEach(b => {
+    const id = b._id as { primary: string | number; secondary: string | number };
+    const primaryKey = normalizeDatavizBucketKey(id.primary);
+    const secondaryKey = normalizeDatavizBucketKey(id.secondary);
+    const primaryMapKey = serializeDatavizBucketKey(primaryKey);
+    const secondaryMapKey = serializeDatavizBucketKey(secondaryKey);
+    if (!byPrimary.has(primaryMapKey)) {
+      byPrimary.set(primaryMapKey, new Map());
+    }
+    byPrimary.get(primaryMapKey)!.set(secondaryMapKey, b.count);
+  });
+
+  const allPoints: DataPoint[] = [...byPrimary.entries()].map(([primaryMapKey, secondaryMap]) => {
+    const primaryKey = normalizeDatavizBucketKey(primaryMapKey);
+    const breakdown: DataPoint[] = [...secondaryMap.entries()].map(([secondaryMapKey, count]) => {
+      const secondaryKey = normalizeDatavizBucketKey(secondaryMapKey);
+      const { label, labels } = applyLocalizedPointLabels(
+        secondaryKey,
+        secondaryDim,
+        resolveLabel,
+        defaultLanguage,
+        missingBucketLabels
+      );
+      return {
+        key: secondaryKey,
+        label,
+        labels,
+        value: count,
+      };
+    });
+
+    const total = breakdown.reduce((sum, p) => sum + p.value, 0);
+    const primaryLocalized = applyLocalizedPointLabels(
+      primaryKey,
+      primaryDim,
+      resolveLabel,
+      defaultLanguage,
+      missingBucketLabels
+    );
+
+    return {
+      key: primaryKey,
+      label: primaryLocalized.label,
+      labels: primaryLocalized.labels,
+      value: total,
+      breakdown,
+    };
+  });
+
+  const totalEntities = allPoints.reduce((sum, p) => sum + p.value, 0);
+  const sortedPrimaries = sortPoints(allPoints, primaryDim.sort);
+  let truncated = sortedPrimaries.length > primaryMax;
+  const limitedPrimaries = sortedPrimaries.slice(0, primaryMax).map(point => {
+    const { breakdown, truncated: secondaryTruncated } = limitBreakdown(
+      point.breakdown ?? [],
+      secondaryDim
+    );
+    if (secondaryTruncated) {
+      truncated = true;
+    }
+    return { ...point, breakdown };
+  });
+
+  return {
+    datavizId,
+    generatedAt: new Date().toISOString(),
+    stale: false,
+    meta: { totalEntities, truncated, queryDurationMs },
+    series: [
+      {
+        id: 'main',
+        label: seriesLabel,
+        labels: seriesLabels,
+        points: applyColors(limitedPrimaries, appearance),
+      },
+    ],
+  };
+};
+
+export const normalizeCompareSeries = (params: {
+  bucketSets: RawBucket[][];
+  sourceIds: string[];
+  sourceLabels: string[];
+  sourceLocalizedLabels: LocalizedLabels[];
+  primaryDim: DimensionSpec;
+  resolveLabel: LabelResolver;
+  datavizId: string;
+  queryDurationMs: number;
+  appearance?: DatavizAppearance;
+  defaultLanguage: LanguageISO6391;
+  missingBucketLabels: LocalizedLabels;
+}): DatavizDataDTO => {
+  const {
+    bucketSets,
+    sourceIds,
+    sourceLabels,
+    sourceLocalizedLabels,
+    primaryDim,
+    resolveLabel,
+    datavizId,
+    queryDurationMs,
+    appearance,
+    defaultLanguage,
+    missingBucketLabels,
+  } = params;
+
+  const perSource = bucketSets.map((buckets, index) =>
+    normalizeBuckets({
+      buckets,
+      primaryDim,
+      resolveLabel,
+      datavizId,
+      queryDurationMs: 0,
+      appearance,
+      seriesLabel: sourceLabels[index] ?? 'Series',
+      seriesLabels: sourceLocalizedLabels[index],
+      defaultLanguage,
+      missingBucketLabels,
+    })
+  );
+
+  const series: DataSeries[] = perSource.map((dto, index) => ({
+    id: sourceIds[index] ?? `series-${index}`,
+    label: sourceLabels[index] ?? `Series ${index + 1}`,
+    labels: sourceLocalizedLabels[index],
+    points: dto.series[0]?.points ?? [],
+  }));
+
+  const totalEntities = perSource.reduce((sum, dto) => sum + (dto.meta.totalEntities ?? 0), 0);
+  const truncated = perSource.some(dto => dto.meta.truncated);
+
+  return {
+    datavizId,
+    generatedAt: new Date().toISOString(),
+    stale: false,
+    meta: { totalEntities, truncated, queryDurationMs },
+    series,
+  };
+};
+
+export const mergeUnionBuckets = (
+  bucketSets: RawBucket[][],
+  sourceLabels: string[]
+): { buckets: RawBucket[]; seriesLabel: string } => {
+  if (bucketSets.length === 1) {
+    return { buckets: bucketSets[0]!, seriesLabel: sourceLabels[0] ?? 'Series' };
+  }
+
+  const merged = new Map<string | number, number>();
+  bucketSets.forEach(buckets => {
+    buckets.forEach(b => {
+      const key = serializeDatavizBucketKey(b._id);
+      merged.set(key, (merged.get(key) ?? 0) + b.count);
+    });
+  });
+
+  return {
+    buckets: [...merged.entries()].map(([key, count]) => ({
+      _id: normalizeDatavizBucketKey(key),
+      count,
+    })),
+    seriesLabel: 'Union',
+  };
+};
+
+export type { RawBucket, DataSeries };

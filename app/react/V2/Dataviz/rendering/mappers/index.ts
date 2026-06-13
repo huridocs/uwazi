@@ -1,4 +1,5 @@
 import type { EChartsOption } from 'echarts';
+import { filterDataForDisplay } from '#V2/Dataviz/rendering/filterDataForDisplay.js';
 import type { DatavizChartConfig } from '#V2/Dataviz/types/chartTypes.js';
 import type { DatavizAppearance } from '#V2/Dataviz/types/definition.js';
 import type { DatavizDataDTO } from '#V2/Dataviz/types/data.js';
@@ -6,10 +7,16 @@ import { mapPieOption } from './pieMapper.js';
 import { mapBarOption } from './barMapper.js';
 import { mapStackedBarOption } from './stackedBarMapper.js';
 import { mapLineOption } from './lineMapper.js';
+import { mapGaugeOption } from './gaugeMapper.js';
+import { mapScatterOption } from './scatterMapper.js';
+import { mergeEChartsOption } from '../mergeEChartsOption.js';
 
 export type MapToEChartsOptionContext = {
-  templatesById?: Record<string, { color?: string }>;
+  templatesById?: Record<string, { color?: string; name?: string }>;
+  sources?: import('#shared/types/datavizSchema.js').DatavizSource[];
   themePalette?: string[];
+  locale?: string;
+  defaultLocale?: string;
 };
 
 export const mapToEChartsOption = (
@@ -18,23 +25,44 @@ export const mapToEChartsOption = (
   appearance: DatavizAppearance,
   context: MapToEChartsOptionContext = {}
 ): EChartsOption | null => {
+  const displayData = filterDataForDisplay(data, chart, {
+    locale: context.locale,
+    defaultLocale: context.defaultLocale,
+  });
+
+  let option: EChartsOption | null;
   switch (chart.type) {
     case 'pie':
     case 'donut':
-      return mapPieOption(data, chart, appearance, context);
+      option = mapPieOption(displayData, chart, appearance, context);
+      break;
     case 'stacked_bar':
-      return mapStackedBarOption(data, chart, appearance, context);
+      option = mapStackedBarOption(displayData, chart, appearance, context);
+      break;
     case 'bar':
     case 'horizontal_bar':
-      return mapBarOption(data, chart, appearance, context);
+      option = mapBarOption(displayData, chart, appearance, context);
+      break;
     case 'line':
     case 'area':
-      return mapLineOption(data, chart, appearance);
+      option = mapLineOption(displayData, chart, appearance, context);
+      break;
+    case 'gauge':
+      option = mapGaugeOption(displayData, chart, appearance);
+      break;
+    case 'scatter':
+      option = mapScatterOption(displayData, chart, appearance, context);
+      break;
     case 'list':
     case 'metric':
-    case 'gauge':
       return null;
     default:
       return null;
   }
+
+  if (!option) {
+    return null;
+  }
+
+  return mergeEChartsOption(option, chart.echartsOverrides);
 };

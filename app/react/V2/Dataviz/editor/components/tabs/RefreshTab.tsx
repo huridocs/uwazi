@@ -1,5 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { t, Translate } from '#app/I18N/index.js';
+import { Button } from '#V2/Components/UI/Button.js';
 import { Select } from '#V2/Components/Forms/Select.js';
+import { useDatavizApi } from '#V2/Dataviz/api/DatavizApiContext.js';
+import { isPersistedId } from '#V2/Dataviz/api/httpDatavizApi.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import type { DatavizDefinition, RefreshMode } from '#V2/Dataviz/types/definition.js';
 import type { RefreshModeConstraints } from '#V2/Dataviz/utils/refreshModeConstraints.js';
 
@@ -22,7 +27,7 @@ const REFRESH_OPTIONS: {
   {
     value: 'snapshot_manual',
     label: 'Snapshot (manual)',
-    description: 'Data is refreshed only when you click Refresh now.',
+    description: 'Stored data is updated only when you refresh the snapshot.',
   },
   {
     value: 'snapshot_scheduled',
@@ -31,8 +36,40 @@ const REFRESH_OPTIONS: {
   },
 ];
 
+const SNAPSHOT_MODES = new Set<RefreshMode>(['snapshot_manual', 'snapshot_scheduled']);
+
+const formatRefreshedAt = (value?: string) => {
+  if (!value) return null;
+  return new Date(value).toLocaleString();
+};
+
 const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps) => {
+  const api = useDatavizApi();
+  const { notify } = useRequestStatus();
+  const [refreshing, setRefreshing] = useState(false);
   const { refresh } = definition;
+  const canRefreshSnapshot = isPersistedId(definition.id);
+
+  const handleRefreshNow = async () => {
+    if (!canRefreshSnapshot || refreshing) {
+      return;
+    }
+
+    setRefreshing(true);
+    try {
+      await api.refreshSnapshot(definition.id);
+      const updated = await api.getDefinition(definition.id);
+      onPatchRefresh({
+        lastRefreshedAt: updated.refresh.lastRefreshedAt,
+        nextScheduledAt: updated.refresh.nextScheduledAt,
+      });
+      notify('success', t('System', 'Snapshot refreshed.', null, false));
+    } catch {
+      notify('error', t('System', 'An error occurred', null, false));
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-6 p-4">
@@ -42,31 +79,65 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
           const isLive = option.value === 'live';
           const isDisabled = isLive && !constraints.liveAllowed;
           const isSelected = refresh.refreshMode === option.value;
+          const showSnapshotActions = SNAPSHOT_MODES.has(option.value) && isSelected;
 
           return (
             <div key={option.value} className="flex flex-col gap-1">
-              <label
-                className={`flex gap-3 rounded-lg border p-3 ${
+              <div
+                className={`flex flex-col gap-3 rounded-lg border p-3 ${
                   isDisabled
-                    ? 'cursor-not-allowed border-border bg-vellum opacity-60'
+                    ? 'border-border bg-vellum opacity-60'
                     : isSelected
-                      ? 'cursor-pointer border-ink bg-warm'
-                      : 'cursor-pointer border-border hover:bg-vellum'
+                      ? 'border-ink bg-warm'
+                      : 'border-border'
                 }`}
               >
-                <input
-                  type="radio"
-                  name="refresh-mode"
-                  checked={isSelected}
-                  disabled={isDisabled}
-                  onChange={() => onPatchRefresh({ refreshMode: option.value })}
-                  className="mt-1"
-                />
-                <div>
-                  <p className="text-sm font-medium text-ink">{option.label}</p>
-                  <p className="text-xs text-ink-secondary">{option.description}</p>
-                </div>
-              </label>
+                <label
+                  className={`flex gap-3 ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                >
+                  <input
+                    type="radio"
+                    name="refresh-mode"
+                    checked={isSelected}
+                    disabled={isDisabled}
+                    onChange={() => onPatchRefresh({ refreshMode: option.value })}
+                    className="mt-1"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-ink">{option.label}</p>
+                    <p className="text-xs text-ink-secondary">{option.description}</p>
+                  </div>
+                </label>
+
+                {showSnapshotActions && (
+                  <div className="flex flex-col gap-2 border-t border-border-soft pt-3 pl-7">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="small"
+                      onClick={handleRefreshNow}
+                      disabled={!canRefreshSnapshot || refreshing}
+                    >
+                      {refreshing ? (
+                        <Translate>Refreshing…</Translate>
+                      ) : (
+                        <Translate>Refresh now</Translate>
+                      )}
+                    </Button>
+                    {!canRefreshSnapshot && (
+                      <p className="text-xs text-amber-700">
+                        Save the visualization before refreshing.
+                      </p>
+                    )}
+
+                    {refresh.lastRefreshedAt && (
+                      <p className="text-xs text-ink-muted">
+                        Last refreshed: {formatRefreshedAt(refresh.lastRefreshedAt)}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
               {isDisabled && constraints.messages.length > 0 && (
                 <ul className="ml-1 list-disc pl-5 text-xs text-ink-secondary">
                   {constraints.messages.map(message => (

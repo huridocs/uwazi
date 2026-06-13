@@ -1,4 +1,5 @@
 import React from 'react';
+import { JsonCopyPanel } from './JsonCopyPanel.js';
 import type { DatavizQuery } from '#V2/Dataviz/types/definition.js';
 
 type QueryNormalizedViewProps = {
@@ -6,9 +7,7 @@ type QueryNormalizedViewProps = {
 };
 
 const QueryNormalizedView = ({ query }: QueryNormalizedViewProps) => (
-  <pre className="overflow-auto rounded-lg bg-vellum p-4 text-xs text-ink">
-    {JSON.stringify(query, null, 2)}
-  </pre>
+  <JsonCopyPanel title="Query" value={query} />
 );
 
 export { QueryNormalizedView };

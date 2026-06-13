@@ -70,6 +70,8 @@ import settings from '#api/settings/index.js';
 import { AcceptSuggestionsFactory } from '#api/suggestions/infrastructure/AcceptSuggestionsFactory.js';
 import { AcceptSuggestionsJob } from '#api/suggestions/jobs/AcceptSuggestionsJob.js';
 import { CreateBlankStateSuggestionsJob } from '#api/suggestions/jobs/CreateBlankStateSuggestionsJob.js';
+import { DatavizScheduledRefreshJobFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizScheduledRefreshJobFactory.js';
+import { DatavizScheduledRefreshJob } from '#api/dataviz.v2/infrastructure/jobs/DatavizScheduledRefreshJob.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 
 type Register = <T extends Dispatchable>(
@@ -311,4 +313,6 @@ export function registerJobs(register: Register) {
   );
 
   register(DeleteLanguagePagesListener.asJob(), async () => new DeleteLanguagePagesListener({}));
+
+  register(DatavizScheduledRefreshJob, DatavizScheduledRefreshJobFactory.default);
 }

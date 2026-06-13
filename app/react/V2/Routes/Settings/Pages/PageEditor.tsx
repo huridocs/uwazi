@@ -34,6 +34,7 @@ import { MarkdownDeprecationBanner } from './components/PageEditorComponents.js'
 import { PageReleaseModal } from './components/PageReleaseModal.js';
 import { PageRestoreModal, type PageRestoreReleaseRow } from './components/PageRestoreModal.js';
 import { PageEditorLanguageSelector } from './components/PageEditorLanguageSelector.js';
+import { PageEmbedPanel } from './components/PageEmbedPanel.js';
 import {
   PageEditorCssPanel,
   PageEditorHtmlPanel,
@@ -369,6 +370,8 @@ const PageEditor = () => {
                         </div>
                       </Link>
                     )}
+
+                    {pageSharedId && <PageEmbedPanel sharedId={pageSharedId} />}
 
                     <div className="flex flex-wrap gap-2 pt-2">
                       <Button

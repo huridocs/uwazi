@@ -22,23 +22,13 @@ const MeasureSection = ({ measure, onChange }: MeasureSectionProps) => (
         { value: 'max', label: 'Maximum' },
       ]}
       onChange={e =>
-        onChange({ ...measure, aggregation: e.target.value as MeasureSpec['aggregation'] })
+        onChange({
+          ...measure,
+          aggregation: e.target.value as MeasureSpec['aggregation'],
+          countMode: 'all',
+        })
       }
     />
-    {measure.aggregation === 'count' && (
-      <Select
-        id="count-mode"
-        label="Count mode"
-        value={measure.countMode || 'all'}
-        options={[
-          { value: 'all', label: 'Count all entities' },
-          { value: 'filtered', label: 'Count filtered entities' },
-        ]}
-        onChange={e =>
-          onChange({ ...measure, countMode: e.target.value as MeasureSpec['countMode'] })
-        }
-      />
-    )}
   </section>
 );
 

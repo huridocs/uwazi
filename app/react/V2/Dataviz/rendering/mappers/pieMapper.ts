@@ -1,7 +1,8 @@
-import type { EChartsOption } from 'echarts';
+import type { EChartsOption, LegendComponentOption } from 'echarts';
 import type { DatavizChartConfig } from '#V2/Dataviz/types/chartTypes.js';
 import type { DatavizAppearance } from '#V2/Dataviz/types/definition.js';
 import type { DatavizDataDTO } from '#V2/Dataviz/types/data.js';
+import { chartTextStyle } from '#V2/Dataviz/rendering/chartTheme.js';
 import { resolveSeriesColors, type ResolveColorContext } from '#V2/Dataviz/utils/resolveColors.js';
 
 type PieMapperContext = ResolveColorContext;
@@ -17,6 +18,29 @@ const applyMaxSlices = (
   const rest = sorted.slice(maxSlices - 1);
   const otherValue = rest.reduce((sum, item) => sum + item.value, 0);
   return [...top, { name: othersLabel, value: otherValue }];
+};
+
+const buildPieLegend = (
+  names: string[],
+  appearance: DatavizAppearance,
+  showLegend?: boolean
+): LegendComponentOption | undefined => {
+  if (showLegend === false || names.length === 0) {
+    return undefined;
+  }
+
+  return {
+    type: names.length > 8 ? 'scroll' : 'plain',
+    orient: 'vertical',
+    right: 8,
+    top: 'middle',
+    height: names.length > 8 ? '75%' : undefined,
+    data: names,
+    itemWidth: 12,
+    itemHeight: 8,
+    itemGap: 10,
+    textStyle: chartTextStyle(appearance),
+  };
 };
 
 export const mapPieOption = (
@@ -50,6 +74,9 @@ export const mapPieOption = (
       : labelFormat === 'both'
         ? '{b}: {c} ({d}%)'
         : '{b}: {d}%';
+  const legendNames = chartData.map(item => item.name);
+  const showLegend = chart.showLegend ?? true;
+  const labelColor = chartTextStyle(appearance).color;
 
   return {
     backgroundColor: appearance.themeColors?.background ?? 'transparent',
@@ -57,18 +84,17 @@ export const mapPieOption = (
     tooltip: chart.showTooltip
       ? { trigger: 'item', formatter: '{b}: {c} ({d}%)' }
       : undefined,
-    legend: chart.showLegend
-      ? { orient: 'vertical', right: 10, top: 'center', textStyle: { color: appearance.themeColors?.foreground } }
-      : undefined,
+    legend: buildPieLegend(legendNames, appearance, showLegend),
     series: [
       {
         type: 'pie',
         radius: isDonut ? ['40%', '70%'] : '70%',
-        center: chart.showLegend ? ['40%', '50%'] : ['50%', '50%'],
+        center: showLegend ? ['38%', '50%'] : ['50%', '50%'],
         data: chartData,
         label: {
           show: chart.showLabels ?? true,
           formatter,
+          color: labelColor,
         },
         emphasis: {
           itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0,0,0,0.2)' },

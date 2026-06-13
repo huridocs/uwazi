@@ -1,5 +1,6 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import type { NextFunction, Request, Response } from 'express';
+import settings from '#api/settings/settings.js';
 import middleware from '../languageMiddleware.js';
 import fixtures from './languageFixtures.js';
 
@@ -86,6 +87,27 @@ describe('languageMiddleware', () => {
       await middleware(req, res, next);
       expect(req.language).toBe('es');
       expect(next).toHaveBeenCalled();
+    });
+  });
+
+  describe('public dataviz embed routes', () => {
+    it('should prefer ?locale= query param on /api/public/dataviz paths', async () => {
+      const current = await settings.get();
+      await settings.save({
+        ...current,
+        languages: [...current.languages, { key: 'pt', label: 'Portuguese' }],
+      });
+
+      req = createRequest({
+        path: '/api/public/dataviz/dv1/data',
+        query: { locale: 'pt' },
+        //@ts-ignore
+        get: () => undefined,
+        cookies: { locale: 'en' },
+      });
+
+      await middleware(req, res, next);
+      expect(req.language).toBe('pt');
     });
   });
 });

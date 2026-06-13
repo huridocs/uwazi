@@ -11,7 +11,6 @@ type DataSourcesListProps = {
 
 const DataSourcesList = ({ sources, onChange }: DataSourcesListProps) => {
   const [showModal, setShowModal] = useState(false);
-  const usedTemplateIds = sources.map(s => s.templateId);
 
   const updateSource = (index: number, source: DatavizSource) => {
     const next = [...sources];
@@ -32,11 +31,11 @@ const DataSourcesList = ({ sources, onChange }: DataSourcesListProps) => {
       <h3 className="text-sm font-semibold text-ink">Data sources</h3>
       {sources.map((source, index) => (
         <DataSourceRow
-          key={`${source.templateId}-${index}`}
+          key={`source-row-${index}`}
           source={source}
           index={index}
+          showAlias={sources.length > 1}
           canRemove={sources.length > 1}
-          usedTemplateIds={usedTemplateIds.filter(id => id !== source.templateId)}
           onChange={updated => updateSource(index, updated)}
           onRemove={() => removeSource(index)}
         />
@@ -46,7 +45,6 @@ const DataSourcesList = ({ sources, onChange }: DataSourcesListProps) => {
       </Button>
       {showModal && (
         <AddDataSourceModal
-          usedTemplateIds={usedTemplateIds}
           onAdd={addSource}
           onClose={() => setShowModal(false)}
         />

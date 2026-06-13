@@ -1,7 +1,9 @@
+import type { DatavizSource } from '#shared/types/datavizSchema.js';
 import type { DatavizAppearance } from '#V2/Dataviz/types/definition.js';
 import type { DataPoint } from '#V2/Dataviz/types/data.js';
+import { TEMPLATE_DIMENSION_PROPERTY } from '#shared/types/datavizSchema.js';
 
-const DEFAULT_PALETTE = [
+export const DEFAULT_CHART_PALETTE = [
   '#4A90D9',
   '#7B68EE',
   '#E67E22',
@@ -12,21 +14,64 @@ const DEFAULT_PALETTE = [
   '#F39C12',
 ];
 
+export type TemplateChartMeta = {
+  color?: string;
+  name?: string;
+};
+
 export type ResolveColorContext = {
-  templatesById?: Record<string, { color?: string }>;
+  templatesById?: Record<string, TemplateChartMeta>;
+  sources?: DatavizSource[];
   themePalette?: string[];
   index?: number;
 };
 
-const resolveFromData = (point: DataPoint, index: number, themePalette: string[]): string | undefined =>
-  point.color || themePalette[index % themePalette.length];
+const paletteAt = (palette: string[], index: number) => palette[index % palette.length]!;
 
-const resolveTemplateColor = (
-  point: DataPoint,
-  templatesById: Record<string, { color?: string }> | undefined
-): string | undefined => {
-  const key = String(point.key);
-  return templatesById?.[key]?.color;
+const resolvePalette = (context: ResolveColorContext) =>
+  context.themePalette?.length ? context.themePalette : DEFAULT_CHART_PALETTE;
+
+const findSourceForSeries = (
+  seriesId: string,
+  seriesLabel: string,
+  sources?: DatavizSource[]
+): DatavizSource | undefined =>
+  sources?.find(
+    source =>
+      source.alias === seriesId ||
+      source.alias === seriesLabel ||
+      source.templateId === seriesId ||
+      source.templateId === seriesLabel
+  );
+
+const resolveTemplateColorForKey = (
+  key: string,
+  templatesById: Record<string, TemplateChartMeta> | undefined
+): string | undefined => templatesById?.[key]?.color;
+
+export const resolveCompareSeriesDisplayLabel = (
+  seriesId: string,
+  seriesLabel: string,
+  context: ResolveColorContext = {}
+): string => {
+  const source = findSourceForSeries(seriesId, seriesLabel, context.sources);
+  if (!source) {
+    return seriesLabel;
+  }
+
+  const templateName = context.templatesById?.[source.templateId]?.name;
+  if (!templateName) {
+    return seriesLabel;
+  }
+
+  const sameTemplateSources =
+    context.sources?.filter(item => item.templateId === source.templateId).length ?? 0;
+
+  if (sameTemplateSources > 1 && source.alias) {
+    return `${templateName} (${source.alias})`;
+  }
+
+  return templateName;
 };
 
 export const resolvePointColor = (
@@ -35,7 +80,7 @@ export const resolvePointColor = (
   context: ResolveColorContext = {}
 ): string => {
   const index = context.index ?? 0;
-  const themePalette = context.themePalette?.length ? context.themePalette : DEFAULT_PALETTE;
+  const palette = resolvePalette(context);
   const key = String(point.key);
 
   if (appearance.colorMode === 'custom' && appearance.valueColorMap?.[key]) {
@@ -43,23 +88,44 @@ export const resolvePointColor = (
   }
 
   if (appearance.colorMode === 'template') {
-    const templateColor = resolveTemplateColor(point, context.templatesById);
+    const templateColor = resolveTemplateColorForKey(key, context.templatesById);
     if (templateColor) return templateColor;
   }
 
-  if (appearance.colorMode === 'theme') {
-    return themePalette[index % themePalette.length];
+  if (point.color && appearance.colorMode === 'from_data') {
+    return point.color;
   }
 
-  // from_data (default) and custom fallback
-  const fromData = resolveFromData(point, index, themePalette);
-  if (fromData) return fromData;
+  return paletteAt(palette, index);
+};
+
+export const resolveCompareSeriesColor = (
+  seriesId: string,
+  seriesLabel: string,
+  appearance: DatavizAppearance,
+  context: ResolveColorContext = {},
+  index = 0
+): string => {
+  const palette = resolvePalette(context);
 
   if (appearance.colorMode === 'custom') {
-    return themePalette[index % themePalette.length];
+    const displayLabel = resolveCompareSeriesDisplayLabel(seriesId, seriesLabel, context);
+    const custom =
+      appearance.valueColorMap?.[seriesId] ??
+      appearance.valueColorMap?.[seriesLabel] ??
+      appearance.valueColorMap?.[displayLabel];
+    if (custom) return custom;
   }
 
-  return themePalette[index % themePalette.length];
+  if (appearance.colorMode === 'template' && context.sources?.length) {
+    const source = findSourceForSeries(seriesId, seriesLabel, context.sources);
+    const templateColor = source
+      ? resolveTemplateColorForKey(source.templateId, context.templatesById)
+      : undefined;
+    if (templateColor) return templateColor;
+  }
+
+  return paletteAt(palette, index);
 };
 
 export const resolveSeriesColors = (
@@ -67,6 +133,14 @@ export const resolveSeriesColors = (
   appearance: DatavizAppearance,
   context: ResolveColorContext = {}
 ): string[] =>
-  points.map((point, index) =>
-    resolvePointColor(point, appearance, { ...context, index })
+  points.map((point, index) => resolvePointColor(point, appearance, { ...context, index }));
+
+export const usesTemplateSeriesColors = (
+  appearance: DatavizAppearance,
+  sources: DatavizSource[] | undefined,
+  primaryDimensionProperty?: string
+): boolean =>
+  appearance.colorMode === 'template' &&
+  Boolean(
+    sources && sources.length > 1 || primaryDimensionProperty === TEMPLATE_DIMENSION_PROPERTY
   );

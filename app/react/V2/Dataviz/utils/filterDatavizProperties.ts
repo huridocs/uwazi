@@ -10,8 +10,6 @@ const EXCLUDED_PROPERTY_TYPES = new Set([
   'geolocation',
   'generatedid',
   'nested',
-  'relationship',
-  'newRelationship',
 ]);
 
 export const isDatavizPropertyType = (type: string): boolean =>

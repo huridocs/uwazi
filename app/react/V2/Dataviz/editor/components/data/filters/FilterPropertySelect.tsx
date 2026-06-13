@@ -20,7 +20,10 @@ const FilterPropertySelect = ({ filter, sources, onChange }: FilterPropertySelec
       { value: '', label: 'Select property…' },
       ...props.map(p => ({
         value: `${p.sourceAlias || ''}::${p.propertyName}`,
-        label: sources.length > 1 ? `${p.templateName} · ${p.propertyLabel}` : p.propertyLabel,
+        label:
+          sources.length > 1
+            ? `${p.sourceAlias || p.templateName} · ${p.propertyLabel}`
+            : p.propertyLabel,
       })),
     ];
   }, [templates, sources]);

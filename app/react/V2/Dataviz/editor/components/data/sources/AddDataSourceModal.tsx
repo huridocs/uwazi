@@ -5,29 +5,20 @@ import { Button } from '#V2/Components/UI/Button.js';
 import { InputField } from '#V2/Components/Forms/InputField.js';
 import { templatesAtom } from '#V2/atoms/index.js';
 import type { DatavizSource } from '#V2/Dataviz/types/definition.js';
+import { defaultAlias, slugify } from '#V2/Dataviz/utils/ensureSourceAliases.js';
 
 type AddDataSourceModalProps = {
-  usedTemplateIds: string[];
   onAdd: (source: DatavizSource) => void;
   onClose: () => void;
 };
 
-const slugify = (name: string) =>
-  name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '_')
-    .replace(/^_|_$/g, '');
-
-const AddDataSourceModal = ({ usedTemplateIds, onAdd, onClose }: AddDataSourceModalProps) => {
+const AddDataSourceModal = ({ onAdd, onClose }: AddDataSourceModalProps) => {
   const templates = useAtomValue(templatesAtom);
   const [search, setSearch] = useState('');
 
   const available = useMemo(
-    () =>
-      templates.filter(
-        t => t._id && !usedTemplateIds.includes(t._id) && t.name.toLowerCase().includes(search.toLowerCase())
-      ),
-    [templates, usedTemplateIds, search]
+    () => templates.filter(t => t._id && t.name.toLowerCase().includes(search.toLowerCase())),
+    [templates, search]
   );
 
   return (
@@ -56,7 +47,7 @@ const AddDataSourceModal = ({ usedTemplateIds, onAdd, onClose }: AddDataSourceMo
                 onClick={() => {
                   onAdd({
                     templateId: template._id!,
-                    alias: slugify(template.name),
+                    alias: slugify(template.name) || defaultAlias(template.name, 0),
                   });
                   onClose();
                 }}

@@ -9,8 +9,8 @@ import type { DatavizSource } from '#V2/Dataviz/types/definition.js';
 type DataSourceRowProps = {
   source: DatavizSource;
   index: number;
+  showAlias: boolean;
   canRemove: boolean;
-  usedTemplateIds: string[];
   onChange: (source: DatavizSource) => void;
   onRemove: () => void;
 };
@@ -18,8 +18,8 @@ type DataSourceRowProps = {
 const DataSourceRow = ({
   source,
   index,
+  showAlias,
   canRemove,
-  usedTemplateIds,
   onChange,
   onRemove,
 }: DataSourceRowProps) => {
@@ -27,7 +27,7 @@ const DataSourceRow = ({
   const templateOptions = [
     { value: '', label: 'Select template…' },
     ...templates
-      .filter(t => t._id === source.templateId || !usedTemplateIds.includes(t._id!))
+      .filter(t => t._id)
       .map(t => ({ value: t._id!, label: t.name })),
   ];
 
@@ -53,12 +53,12 @@ const DataSourceRow = ({
         options={templateOptions}
         onChange={e => onChange({ ...source, templateId: e.target.value })}
       />
-      {index > 0 && (
+      {showAlias && (
         <InputField
           id={`source-alias-${index}`}
           label="Alias"
           value={source.alias || ''}
-          placeholder="e.g. cars"
+          placeholder="e.g. hombres"
           onChange={e => onChange({ ...source, alias: e.target.value })}
         />
       )}
