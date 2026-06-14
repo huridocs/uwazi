@@ -14,7 +14,9 @@ import { mergeEChartsOption } from '../mergeEChartsOption.js';
 
 export type MapToEChartsOptionContext = {
   templatesById?: Record<string, { color?: string; name?: string }>;
+  templatePropertiesById?: Record<string, Array<{ name: string; label: string }>>;
   sources?: import('#shared/types/datavizSchema.js').DatavizSource[];
+  dimensions?: import('#shared/types/datavizSchema.js').DimensionSpec[];
   themePalette?: string[];
   locale?: string;
   defaultLocale?: string;

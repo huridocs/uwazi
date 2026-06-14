@@ -60,6 +60,7 @@ const fixtures: DBFixture = {
         factory.inherit('owner', 'ownersTemplate', 'country'),
         factory.relationshipProp('garage', 'ownersTemplate'),
         factory.property('sexo', 'select', { content: sexThesaurusId.toString() }),
+        factory.property('registered_on', 'date'),
       ],
       commonProperties: factory.commonProperties(),
     },
@@ -122,6 +123,7 @@ const fixtures: DBFixture = {
           },
         ],
         garage: [{ value: 'owner_shared_1', label: 'Alice' }],
+        registered_on: [{ value: 1592179200 }],
       },
     },
     {
@@ -143,6 +145,7 @@ const fixtures: DBFixture = {
           },
         ],
         garage: [{ value: 'owner_shared_2', label: 'Bob' }],
+        registered_on: [{ value: 1623715200 }],
       },
     },
     ...Array.from({ length: 9 }, (_, index) => ({
@@ -156,6 +159,7 @@ const fixtures: DBFixture = {
         color: [{ value: colorId, label: 'Red' }],
         sexo: [{ value: hombreId, label: 'Hombre' }],
         garage: [{ value: `owner_shared_h_${index}`, label: `Owner ${index}` }],
+        ...(index < 2 ? { registered_on: [{ value: 1592179200 }] } : {}),
       },
     })),
     {
@@ -328,6 +332,28 @@ describe('MongoDatavizQueryExecutor', () => {
     expect(hombre?.value).toBe(10);
     expect(dto.meta.totalEntities).toBe(12);
     expect(dto.meta.truncated).toBe(false);
+  });
+
+  it('should bucket date dimensions by year by default', async () => {
+    const executor = createExecutor();
+    const admin = User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' });
+
+    const dto = await executor.execute(
+      {
+        sources: [{ templateId: templateId.toString() }],
+        dimensions: [{ property: 'registered_on', propertyType: 'date', bucketStrategy: 'date_histogram' }],
+        measures: [{ aggregation: 'count' }],
+        language: 'en',
+      },
+      { actor: admin, language: 'en', datavizId: 'test-date-year' }
+    );
+
+    expect(dto.series[0]?.points).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ key: 2020, label: '2020', value: 3 }),
+        expect.objectContaining({ key: 2021, label: '2021', value: 1 }),
+      ])
+    );
   });
 
   it('should return total entity count for metric queries without dimensions', async () => {

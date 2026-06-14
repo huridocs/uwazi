@@ -21,8 +21,10 @@ export { ConfirmNavigationModal } from './ConfirmNavigationModal.js';
 export { Truncate } from './Truncate.js';
 export { VerticalDrawer } from './VerticalDrawer.js';
 export { BlankState } from './BlankState.js';
+export { UwaziLoader } from './UwaziLoader.js';
 
 export type { PillColor } from './Pill.js';
 export type { TableProps, TableRow } from './Table/index.js';
 export type { TooltipProps } from './Tooltip.js';
 export type { ProgressBarProps } from './ProgressBar.js';
+export type { UwaziLoaderProps } from './UwaziLoader.js';

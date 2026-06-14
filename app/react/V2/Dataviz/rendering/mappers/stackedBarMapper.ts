@@ -40,14 +40,17 @@ export const mapStackedBarOption = (
   chart: DatavizChartConfig,
   appearance: DatavizAppearance,
   context: StackedBarMapperContext = {}
-): EChartsOption => {
+): EChartsOption | null => {
   const primary = dto.series[0];
   if (!primary?.points.length) {
-    return { title: { text: 'No data', left: 'center', top: 'center' } };
+    return null;
   }
 
   const categories = primary.points.map(point => point.label);
   const secondarySeries = collectSecondarySeries(primary.points);
+  if (!secondarySeries.length) {
+    return null;
+  }
   const secondaryPoints = secondarySeries.map(item => item.sample!).filter(Boolean);
   const seriesColors = resolveSeriesColors(secondaryPoints, appearance, context);
   const secondaryLabels = secondarySeries.map(item => item.label);

@@ -66,6 +66,19 @@ export const formatDatavizDateLabel = (timestamp: number, locale = 'en-US'): str
   });
 };
 
+export const formatDatavizNumericLabel = (value: number): string => {
+  if (!Number.isFinite(value)) {
+    return String(value);
+  }
+
+  const rounded = Math.round(value * 1000) / 1000;
+  if (Number.isInteger(rounded)) {
+    return String(rounded);
+  }
+
+  return String(parseFloat(rounded.toFixed(3)));
+};
+
 export const formatDatavizDateRangeLabel = (
   range: DatavizDateRangeKey,
   locale = 'en-US'
@@ -79,6 +92,7 @@ export const formatDatavizDimensionKeyLabel = (
   key: unknown,
   options: {
     propertyType?: DimensionSpec['propertyType'];
+    dateInterval?: DimensionSpec['dateInterval'];
     thesaurusLabels?: Map<string, string>;
     locale?: string;
   } = {}
@@ -90,6 +104,13 @@ export const formatDatavizDimensionKeyLabel = (
   }
 
   if (options.propertyType === 'date' || options.propertyType === 'multidate') {
+    const interval = options.dateInterval ?? 'year';
+    if (interval === 'year' && typeof normalizedKey === 'number') {
+      return String(normalizedKey);
+    }
+    if (interval === 'month' && typeof normalizedKey === 'string') {
+      return normalizedKey;
+    }
     if (typeof normalizedKey === 'number') {
       return formatDatavizDateLabel(normalizedKey, options.locale);
     }
@@ -102,6 +123,9 @@ export const formatDatavizDimensionKeyLabel = (
   }
 
   if (typeof normalizedKey === 'string' || typeof normalizedKey === 'number') {
+    if (options.propertyType === 'numeric' && typeof normalizedKey === 'number') {
+      return formatDatavizNumericLabel(normalizedKey);
+    }
     return options.thesaurusLabels?.get(String(normalizedKey)) ?? String(normalizedKey);
   }
 
@@ -110,6 +134,21 @@ export const formatDatavizDimensionKeyLabel = (
   }
 
   return String(normalizedKey);
+};
+
+export const compareDatavizBucketKeys = (left: unknown, right: unknown): number => {
+  const a = normalizeDatavizBucketKey(left);
+  const b = normalizeDatavizBucketKey(right);
+
+  if (typeof a === 'number' && typeof b === 'number') {
+    return a - b;
+  }
+
+  if (isDatavizDateRangeKey(a) && isDatavizDateRangeKey(b)) {
+    return a.from - b.from || a.to - b.to;
+  }
+
+  return String(a).localeCompare(String(b), undefined, { numeric: true });
 };
 
 export const serializeDatavizBucketKey = (key: unknown): string | number => {

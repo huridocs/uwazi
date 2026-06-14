@@ -29,7 +29,8 @@ const defaultDimensionOptions = (
   property,
   propertyType,
   bucketStrategy: propertyType === 'date' ? 'date_histogram' : 'terms',
-  sort: 'count_desc',
+  ...(propertyType === 'date' ? { dateInterval: 'year' as const } : {}),
+  sort: propertyType === 'date' || propertyType === 'numeric' ? 'key_asc' : 'count_desc',
   maxBuckets: 10,
 });
 

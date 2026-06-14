@@ -32,7 +32,7 @@ describe('stackedBarMapper', () => {
       { colorMode: 'theme' }
     );
 
-    const series = option.series as Array<{ data: Array<number | string> }>;
+    const series = option!.series as Array<{ data: Array<number | string> }>;
     expect(series[1]?.data).toEqual([0]);
   });
 
@@ -43,7 +43,29 @@ describe('stackedBarMapper', () => {
       { colorMode: 'theme' }
     );
 
-    const series = option.series as Array<{ data: Array<number | string> }>;
+    const series = option!.series as Array<{ data: Array<number | string> }>;
     expect(series[1]?.data).toEqual(['-']);
+  });
+
+  it('should return null when points have no breakdown', () => {
+    const option = mapStackedBarOption(
+      {
+        ...data,
+        series: [
+          {
+            id: 'main',
+            label: 'Series',
+            points: [
+              { key: 'a', label: 'Category A', value: 10 },
+              { key: 'b', label: 'Category B', value: 25 },
+            ],
+          },
+        ],
+      },
+      { type: 'stacked_bar' },
+      { colorMode: 'theme' }
+    );
+
+    expect(option).toBeNull();
   });
 });

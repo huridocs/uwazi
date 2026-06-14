@@ -2,6 +2,7 @@ import type { EChartsOption } from 'echarts';
 import type { DatavizChartConfig } from '#V2/Dataviz/types/chartTypes.js';
 import type { DatavizAppearance } from '#V2/Dataviz/types/definition.js';
 import type { DatavizDataDTO } from '#V2/Dataviz/types/data.js';
+import { compareDatavizBucketKeys } from '#shared/dataviz/formatDimensionKeyLabel.js';
 import {
   alignMultiSeriesForChart,
   isMultiSeriesCompare,
@@ -21,7 +22,7 @@ export const mapLineOption = (
   chart: DatavizChartConfig,
   appearance: DatavizAppearance,
   context: ResolveColorContext = {}
-): EChartsOption => {
+): EChartsOption | null => {
   const isArea = chart.type === 'area';
 
   if (isMultiSeriesCompare(dto)) {
@@ -60,12 +61,13 @@ export const mapLineOption = (
   }
 
   const series = dto.series[0];
-  if (!series) {
-    return { title: { text: 'No data', left: 'center', top: 'center' } };
+  if (!series?.points.length) {
+    return null;
   }
 
-  const categories = series.points.map(p => p.label);
-  const values = series.points.map(p => p.value);
+  const sortedPoints = [...series.points].sort((a, b) => compareDatavizBucketKeys(a.key, b.key));
+  const categories = sortedPoints.map(p => p.label);
+  const values = sortedPoints.map(p => p.value);
 
   return {
     backgroundColor: appearance.themeColors?.background ?? 'transparent',

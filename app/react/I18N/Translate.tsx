@@ -49,7 +49,7 @@ const Translate = ({
   const locale = useAtomValue(localeAtom);
   const [inlineEditState, setInlineEditState] = useAtom(inlineEditAtom);
 
-  const language = translations.find(
+  const language = (translations ?? []).find(
     (translation: { locale: string }) => translation.locale === locale
   );
   const activeClassName = inlineEditState.inlineEdit ? 'translation active' : 'translation';

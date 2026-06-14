@@ -52,7 +52,7 @@ const DatavizEditorConfigPanel = ({
           />
         );
       case 'chart':
-        return <ChartTab definition={definition} onPatchChart={onPatchChart} />;
+        return <ChartTab definition={definition} onPatchChart={onPatchChart} onPatchQuery={onPatchQuery} />;
       case 'appearance':
         return (
           <AppearanceTab

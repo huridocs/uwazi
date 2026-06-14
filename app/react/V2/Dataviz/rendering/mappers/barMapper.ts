@@ -24,7 +24,7 @@ export const mapBarOption = (
   chart: DatavizChartConfig,
   appearance: DatavizAppearance,
   context: BarMapperContext = {}
-): EChartsOption => {
+): EChartsOption | null => {
   const isHorizontal = chart.type === 'horizontal_bar';
 
   if (isMultiSeriesCompare(dto)) {
@@ -66,8 +66,8 @@ export const mapBarOption = (
   }
 
   const series = dto.series[0];
-  if (!series) {
-    return { title: { text: 'No data', left: 'center', top: 'center' } };
+  if (!series?.points.length) {
+    return null;
   }
 
   const categories = series.points.map(p => p.label);

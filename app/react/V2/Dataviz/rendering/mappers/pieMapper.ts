@@ -48,10 +48,10 @@ export const mapPieOption = (
   chart: DatavizChartConfig,
   appearance: DatavizAppearance,
   context: PieMapperContext = {}
-): EChartsOption => {
+): EChartsOption | null => {
   const series = dto.series[0];
-  if (!series) {
-    return { title: { text: 'No data', left: 'center', top: 'center' } };
+  if (!series?.points.length) {
+    return null;
   }
 
   const maxSlices = chart.pieOptions?.maxSlices ?? 10;

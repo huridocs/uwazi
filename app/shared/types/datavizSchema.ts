@@ -17,7 +17,9 @@ export type FilterablePropertyType = PropertyTypeForDataviz | 'text';
 
 export type DatavizFilterOperator =
   | 'eq'
+  | 'ne'
   | 'in'
+  | 'nin'
   | 'gte'
   | 'lte'
   | 'between'
@@ -90,8 +92,7 @@ export type ChartType =
   | 'gauge'
   | 'metric'
   | 'scatter'
-  | 'heatmap'
-  | 'treemap';
+  | 'heatmap';
 
 export type PieLabelFormat = 'value' | 'percentage' | 'both';
 

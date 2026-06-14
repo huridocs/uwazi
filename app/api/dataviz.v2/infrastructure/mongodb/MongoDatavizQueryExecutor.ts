@@ -19,7 +19,7 @@ import { buildPermissionMatch } from './executor/buildPermissionMatch.js';
 import { buildFilterMatch, filtersForSource } from './executor/buildFilterMatch.js';
 import { appendDimensionUnwindStages } from './executor/appendDimensionUnwindStages.js';
 import { coerceMissingValueStages } from './executor/coerceMissingValueStages.js';
-import { dimensionFieldExpression } from './executor/relationshipDimensionFields.js';
+import { dimensionBucketExpression } from './executor/dimensionBucketExpression.js';
 import {
   mergeUnionBuckets,
   normalizeBuckets,
@@ -298,8 +298,8 @@ class MongoDatavizQueryExecutor
       ...Object.assign({}, ...buildFilterMatch(sourceFilters)),
     };
 
-    const primaryField = dimensionFieldExpression(primaryDim);
-    const secondaryField = secondaryDim ? dimensionFieldExpression(secondaryDim) : undefined;
+    const primaryField = dimensionBucketExpression(primaryDim);
+    const secondaryField = secondaryDim ? dimensionBucketExpression(secondaryDim) : undefined;
 
     const pipeline: object[] = [{ $match: match }];
 

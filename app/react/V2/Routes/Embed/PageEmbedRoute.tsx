@@ -23,4 +23,8 @@ const PageEmbedRoute = () => {
   return <PageEmbedView />;
 };
 
+Object.assign(PageEmbedRoute, {
+  requestState: PageEmbedView.requestState,
+});
+
 export { PageEmbedRoute };

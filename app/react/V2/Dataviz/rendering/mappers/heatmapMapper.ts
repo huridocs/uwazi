@@ -118,21 +118,21 @@ export const mapHeatmapOption = (
   chart: DatavizChartConfig,
   appearance: DatavizAppearance,
   context: HeatmapMapperContext = {}
-): EChartsOption => {
+): EChartsOption | null => {
   const primary = dto.series[0];
   if (!primary?.points.length) {
-    return { title: { text: 'No data', left: 'center', top: 'center' } };
+    return null;
   }
 
   const primaryPoints = filterHeatmapPrimaryPoints(primary.points);
   if (!primaryPoints.length) {
-    return { title: { text: 'No data', left: 'center', top: 'center' } };
+    return null;
   }
 
   const yCategories = primaryPoints.map(point => point.label);
   const secondarySeries = collectSecondarySeries(primaryPoints);
   if (!secondarySeries.length) {
-    return { title: { text: 'No data', left: 'center', top: 'center' } };
+    return null;
   }
 
   const secondaryPoints = secondarySeries.map(item => item.sample!).filter(Boolean);

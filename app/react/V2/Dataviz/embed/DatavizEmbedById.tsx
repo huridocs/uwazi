@@ -1,6 +1,7 @@
 import React from 'react';
 import { DatavizEmbed } from '#V2/Dataviz/embed/DatavizEmbed.js';
 import { useDatavizEmbedData } from '#V2/Dataviz/embed/useDatavizEmbedData.js';
+import { DatavizLoadingIndicator } from '#V2/Dataviz/components/DatavizLoadingIndicator.js';
 
 type DatavizEmbedByIdProps = {
   id: string;
@@ -11,7 +12,11 @@ const DatavizEmbedById = ({ id, height }: DatavizEmbedByIdProps) => {
   const { payload, loading, error } = useDatavizEmbedData(id);
 
   if (loading) {
-    return <p className="text-sm text-ink-secondary">Loading visualization…</p>;
+    return (
+      <div className="flex min-h-48 items-center justify-center">
+        <DatavizLoadingIndicator />
+      </div>
+    );
   }
 
   if (error) {

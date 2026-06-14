@@ -12,6 +12,7 @@ import { DataSummaryTable } from './DataSummaryTable.js';
 import { DataInspector } from './DataInspector.js';
 import { QueryNormalizedView } from './QueryNormalizedView.js';
 import { ChartAdvancedSection } from '../tabs/ChartAdvancedSection.js';
+import { DatavizLoadingIndicator } from '#V2/Dataviz/components/DatavizLoadingIndicator.js';
 import { isManualDataSource } from '#shared/dataviz/manualData.js';
 import { isEchartsChartType } from '#V2/Dataviz/types/chartTypes.js';
 
@@ -48,11 +49,23 @@ const DatavizPreviewPanel = ({
 
   const colorContext = useMemo(() => {
     const templatesById: Record<string, { color?: string; name?: string }> = {};
+    const templatePropertiesById: Record<string, Array<{ name: string; label: string }>> = {};
     templates.forEach(t => {
-      if (t._id) templatesById[t._id] = { color: t.color, name: t.name };
+      if (t._id) {
+        templatesById[t._id] = { color: t.color, name: t.name };
+        templatePropertiesById[t._id] = [
+          ...(t.commonProperties || []),
+          ...(t.properties || []),
+        ].map(prop => ({ name: prop.name, label: prop.label }));
+      }
     });
-    return { templatesById, sources: definition.query.sources };
-  }, [templates, definition.query.sources]);
+    return {
+      templatesById,
+      templatePropertiesById,
+      sources: definition.query.sources,
+      dimensions: definition.query.dimensions,
+    };
+  }, [templates, definition.query.sources, definition.query.dimensions]);
 
   const displayData = useMemo(
     () =>
@@ -136,7 +149,7 @@ const DatavizPreviewPanel = ({
 
         {activeTab === 'preview' && (
           <div className="flex flex-col gap-4">
-            {loading && <p className="text-sm text-ink-secondary">Loading preview…</p>}
+            {loading && <DatavizLoadingIndicator centered />}
             {error && <p className="text-sm text-red-600">{error}</p>}
             {!loading && !error && displayData && (
               <>

@@ -32,8 +32,8 @@ const CHART_OPTION_VISIBILITY: Partial<Record<ChartType, Partial<ChartOptionVisi
   scatter: {
     legend: true,
     tooltip: true,
-    labels: true,
-    missingValues: true,
+    labels: false,
+    missingValues: false,
   },
   metric: {
     legend: false,

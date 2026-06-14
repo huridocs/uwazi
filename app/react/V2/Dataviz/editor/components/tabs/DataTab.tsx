@@ -43,15 +43,37 @@ const DataTab = ({ definition, onPatch, onPatchQuery, onPatchChart }: DataTabPro
         dataSource: 'manual',
         manualData: definition.manualData ?? MANUAL_DATA_EXAMPLE,
       });
+      if (onPatchChart) {
+        const chartPatch = resolveChartPatchForQuery(
+          chart,
+          query.dimensions,
+          query.measures,
+          'manual'
+        );
+        if (chartPatch) {
+          onPatchChart(chartPatch);
+        }
+      }
       return;
     }
     onPatch({ dataSource: 'query' });
+    if (onPatchChart) {
+      const chartPatch = resolveChartPatchForQuery(
+        chart,
+        query.dimensions,
+        query.measures,
+        'query'
+      );
+      if (chartPatch) {
+        onPatchChart(chartPatch);
+      }
+    }
   };
 
   const syncChartWithQuery = useCallback(
     (dimensions: DimensionSpec[], measures: MeasureSpec[]) => {
       if (!onPatchChart) return;
-      const chartPatch = resolveChartPatchForQuery(chart, dimensions, measures);
+      const chartPatch = resolveChartPatchForQuery(chart, dimensions, measures, dataSource);
       if (chartPatch) {
         onPatchChart(chartPatch);
       }
@@ -132,10 +154,17 @@ const DataTab = ({ definition, onPatch, onPatchQuery, onPatchChart }: DataTabPro
       <DataSourceKindSection value={dataSource} onChange={handleDataSourceChange} />
 
       {isManual ? (
-        <ManualDataEditor
-          manualData={definition.manualData}
-          onChange={manualData => onPatch({ manualData })}
-        />
+        <>
+          <ManualDataEditor
+            manualData={definition.manualData}
+            onChange={manualData => onPatch({ manualData })}
+          />
+          <SupportedChartTypesCallout
+            dimensions={query.dimensions}
+            measures={query.measures}
+            dataSource={dataSource}
+          />
+        </>
       ) : (
         <>
           <DataSourcesList sources={query.sources} onChange={handleSourcesChange} />
@@ -172,8 +201,17 @@ const DataTab = ({ definition, onPatch, onPatchQuery, onPatchChart }: DataTabPro
               Two categorical dimensions enable stacked bar charts (e.g. country with sex breakdown).
             </p>
           )}
+          {!isMultiSource && query.dimensions.length >= 2 && query.dimensions[1]?.propertyType === 'numeric' && (
+            <p className="text-xs text-ink-secondary">
+              Date or numeric × numeric enables scatter and heatmap (e.g. registration year vs engine size).
+            </p>
+          )}
           <MeasureSection measure={measure} onChange={setMeasure} />
-          <SupportedChartTypesCallout dimensions={query.dimensions} measures={query.measures} />
+          <SupportedChartTypesCallout
+            dimensions={query.dimensions}
+            measures={query.measures}
+            dataSource={dataSource}
+          />
           <p className="text-xs text-ink-muted">Preview updates automatically (300ms debounce)</p>
         </>
       )}

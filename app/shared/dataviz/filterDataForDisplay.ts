@@ -50,9 +50,12 @@ const filterDataForDisplay = (
         )
       : data;
   const labeled = formatDatavizDataLabels(localized, chart.missingValueLabel);
+  const preparePoints = (points: DataPoint[]) =>
+    chart.type === 'scatter' ? points : fillBreakdownMatrix(points);
+
   const series = labeled.series.map(item => ({
     ...item,
-    points: filterPoints(fillBreakdownMatrix(item.points), chart),
+    points: filterPoints(preparePoints(item.points), chart),
   }));
 
   const totalEntities =

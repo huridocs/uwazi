@@ -251,6 +251,7 @@ const prepareMinimalDatavizEmbedStores = async (
       settings: settingsWithFlag,
       user: userApiResponse,
       isMobile: isMobileDevice(userAgent),
+      translations: [],
     },
   });
 

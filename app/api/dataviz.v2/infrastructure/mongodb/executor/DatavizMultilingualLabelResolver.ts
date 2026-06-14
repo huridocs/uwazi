@@ -72,12 +72,20 @@ const resolveThesaurusLabels = (
 
 const resolveDateLabels = (
   key: unknown,
-  propertyType: DimensionSpec['propertyType'],
+  dim: DimensionSpec,
   languages: LanguageISO6391[]
 ): LocalizedLabels => {
   const normalizedKey = normalizeDatavizBucketKey(key);
+  const { propertyType } = dim;
+  const interval = dim.dateInterval ?? 'year';
 
   if (propertyType === 'date' || propertyType === 'multidate') {
+    if (interval === 'year' && typeof normalizedKey === 'number') {
+      return fillLanguages(languages, () => String(normalizedKey));
+    }
+    if (interval === 'month' && typeof normalizedKey === 'string') {
+      return fillLanguages(languages, () => normalizedKey);
+    }
     if (typeof normalizedKey === 'number') {
       return fillLanguages(languages, language =>
         formatDatavizDateLabel(normalizedKey, toLocale(language))
@@ -139,7 +147,7 @@ export const createMultilingualLabelResolver = (
       dim.propertyType === 'daterange' ||
       dim.propertyType === 'multidaterange'
     ) {
-      return resolveDateLabels(normalizedKey, dim.propertyType, ctx.languages);
+      return resolveDateLabels(normalizedKey, dim, ctx.languages);
     }
 
     const thesaurus = ctx.propertyThesaurus.get(dim.property);
@@ -149,6 +157,7 @@ export const createMultilingualLabelResolver = (
 
     const fallback = formatDatavizDimensionKeyLabel(normalizedKey, {
       propertyType: dim.propertyType,
+      dateInterval: dim.dateInterval,
     });
 
     return fillLanguages(ctx.languages, () => fallback);

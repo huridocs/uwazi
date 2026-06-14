@@ -2,8 +2,10 @@ import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { InputField } from '#V2/Components/Forms/InputField.js';
 import { Select } from '#V2/Components/Forms/Select.js';
+import { MultiSelect } from '#V2/Components/Forms/MultiSelect.js';
 import { templatesAtom, thesauriAtom } from '#V2/atoms/index.js';
 import type { DatavizFilter, DatavizSource } from '#V2/Dataviz/types/definition.js';
+import { usesMultipleValues } from '#V2/Dataviz/utils/filterOperators.js';
 
 type FilterValueInputProps = {
   filter: DatavizFilter;
@@ -47,14 +49,18 @@ const FilterValueInput = ({ filter, sources, onChange }: FilterValueInputProps) 
     );
   }
 
-  if (filter.operator === 'in' && filter.propertyType === 'select') {
+  if (
+    usesMultipleValues(filter.operator) &&
+    (filter.propertyType === 'select' || filter.propertyType === 'multiselect')
+  ) {
     return (
-      <Select
-        id={`filter-values-${filter.id}`}
+      <MultiSelect
         label="Values"
-        value={filter.values?.[0] || ''}
-        options={[{ value: '', label: 'Select…' }, ...thesaurusOptions]}
-        onChange={e => onChange({ values: e.target.value ? [e.target.value] : [] })}
+        value={filter.values ?? []}
+        options={thesaurusOptions}
+        onChange={values => onChange({ values })}
+        canBeEmpty
+        placeholder="Select values…"
       />
     );
   }
@@ -73,7 +79,7 @@ const FilterValueInput = ({ filter, sources, onChange }: FilterValueInputProps) 
     );
   }
 
-  if (filter.propertyType === 'select' && filter.operator === 'eq') {
+  if (filter.propertyType === 'select' && (filter.operator === 'eq' || filter.operator === 'ne')) {
     return (
       <Select
         id={`filter-value-${filter.id}`}
@@ -89,6 +95,7 @@ const FilterValueInput = ({ filter, sources, onChange }: FilterValueInputProps) 
     <InputField
       id={`filter-value-${filter.id}`}
       label="Value"
+      type={filter.propertyType === 'numeric' ? 'number' : 'text'}
       value={String(filter.value ?? '')}
       onChange={e => onChange({ value: e.target.value })}
     />

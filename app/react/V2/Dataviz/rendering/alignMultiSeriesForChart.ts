@@ -2,6 +2,7 @@ import type { DatavizDataDTO } from '#shared/types/datavizSchema.js';
 import {
   normalizeDatavizBucketKey,
   serializeDatavizBucketKey,
+  compareDatavizBucketKeys,
 } from '#shared/dataviz/formatDimensionKeyLabel.js';
 
 export type AlignedChartSeries = {
@@ -28,6 +29,10 @@ export const alignMultiSeriesForChart = (dto: DatavizDataDTO): AlignedMultiSerie
       }
     });
   });
+
+  categoryOrder.sort((left, right) =>
+    compareDatavizBucketKeys(normalizeDatavizBucketKey(left), normalizeDatavizBucketKey(right))
+  );
 
   const series = dto.series.map(item => {
     const valuesByKey = new Map(

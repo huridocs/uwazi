@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import serialize from 'serialize-javascript';
+import Immutable from 'immutable';
 
 import { PAGE_STYLE_ELEMENT_ID } from '#app/Pages/components/PageStyle.js';
 import { availableLanguages } from '#shared/language/index.js';
@@ -112,7 +113,18 @@ const safeHelmet = result => {
   return result;
 };
 
+const emptyReduxData = () => ({
+  settings: {
+    collection: Immutable.fromJS({
+      customCSS: '',
+      allowcustomJS: false,
+      customJS: '',
+    }),
+  },
+});
+
 const headTag = (head, CSS, reduxData, documentHeadPageCss) => {
+  const resolvedReduxData = reduxData ?? emptyReduxData();
   const ssrPageCss =
     typeof documentHeadPageCss === 'string' && documentHeadPageCss.trim()
       ? documentHeadPageCss
@@ -128,7 +140,9 @@ const headTag = (head, CSS, reduxData, documentHeadPageCss) => {
       ))}
       <style
         type="text/css"
-        dangerouslySetInnerHTML={{ __html: reduxData.settings.collection.get('customCSS') }}
+        dangerouslySetInnerHTML={{
+          __html: resolvedReduxData.settings.collection.get('customCSS'),
+        }}
       />
       {ssrPageCss != null && (
         <style
@@ -139,13 +153,15 @@ const headTag = (head, CSS, reduxData, documentHeadPageCss) => {
           dangerouslySetInnerHTML={{ __html: ssrPageCss }}
         />
       )}
-      {reduxData.settings.collection.get('allowcustomJS') && (
+      {resolvedReduxData.settings.collection.get('allowcustomJS') && (
         <script
-          dangerouslySetInnerHTML={{ __html: reduxData.settings.collection.get('customJS') }}
+          dangerouslySetInnerHTML={{
+            __html: resolvedReduxData.settings.collection.get('customJS'),
+          }}
         />
       )}
       {googelFonts}
-      {getFaviconLinks(reduxData)}
+      {getFaviconLinks(resolvedReduxData)}
     </head>
   );
 };

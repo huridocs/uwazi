@@ -130,4 +130,43 @@ describe('filterDataForDisplay', () => {
       { key: 'm', label: 'Hombre', value: 10 },
     ]);
   });
+
+  it('should not fill sparse breakdown matrix for scatter charts', () => {
+    const crossTabData = {
+      ...baseData,
+      meta: { totalEntities: 2, truncated: false },
+      series: [
+        {
+          id: 'main',
+          label: 'Cars',
+          points: [
+            {
+              key: 827017230,
+              label: 'Mar 16, 1996',
+              value: 1,
+              breakdown: [{ key: 1, label: '1', value: 1 }],
+            },
+            {
+              key: 835672919,
+              label: 'Jun 25, 1996',
+              value: 1,
+              breakdown: [{ key: 1.6, label: '1.6', value: 1 }],
+            },
+          ],
+        },
+      ],
+    };
+
+    const scatterFiltered = filterDataForDisplay(crossTabData, { type: 'scatter' });
+    const heatmapFiltered = filterDataForDisplay(crossTabData, { type: 'heatmap', excludeZero: false });
+
+    expect(scatterFiltered.series[0]?.points[0]?.breakdown).toEqual([
+      { key: 1, label: '1', value: 1 },
+    ]);
+    expect(scatterFiltered.series[0]?.points[1]?.breakdown).toEqual([
+      { key: 1.6, label: '1.6', value: 1 },
+    ]);
+    expect(heatmapFiltered.series[0]?.points[0]?.breakdown).toHaveLength(2);
+    expect(heatmapFiltered.series[0]?.points[1]?.breakdown).toHaveLength(2);
+  });
 });

@@ -679,3 +679,45 @@
 .tw-content.dark input[type='checkbox'] {
   accent-color: var(--color-theme-text-tertiary);
 }
+
+/* Uwazi loader — left-to-right sweep across 3×2 grid */
+@keyframes uwazi-cell-pulse {
+  0% {
+    opacity: 0.12;
+  }
+  30% {
+    opacity: 1;
+  }
+  60% {
+    opacity: 0.12;
+  }
+  100% {
+    opacity: 0.12;
+  }
+}
+
+.uwazi-loader-cell {
+  opacity: 0.12;
+}
+
+.uwazi-loader-cell:nth-child(1),
+.uwazi-loader-cell:nth-child(4) {
+  animation: uwazi-cell-pulse 1.2s ease-in-out infinite 0s;
+}
+
+.uwazi-loader-cell:nth-child(2),
+.uwazi-loader-cell:nth-child(5) {
+  animation: uwazi-cell-pulse 1.2s ease-in-out infinite 0.2s;
+}
+
+.uwazi-loader-cell:nth-child(3),
+.uwazi-loader-cell:nth-child(6) {
+  animation: uwazi-cell-pulse 1.2s ease-in-out infinite 0.4s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .uwazi-loader-cell {
+    animation: none !important;
+    opacity: 1;
+  }
+}

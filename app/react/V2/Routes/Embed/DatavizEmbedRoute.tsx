@@ -5,6 +5,7 @@ import { localeAtom, settingsAtom, userAtom } from '#V2/atoms/index.js';
 import { canUseExternalEmbed } from '#shared/embed/canUseExternalEmbed.js';
 import type { DatavizEmbedPayload } from '#shared/types/datavizSchema.js';
 import { DatavizEmbed } from '#V2/Dataviz/embed/DatavizEmbed.js';
+import { DatavizLoadingIndicator } from '#V2/Dataviz/components/DatavizLoadingIndicator.js';
 import { getPublicEmbedData } from '#V2/api/dataviz/index.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
@@ -84,8 +85,8 @@ const DatavizEmbedRoute = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-paper p-4">
-        <p className="text-sm text-ink-secondary">Loading visualization…</p>
+      <div className="flex min-h-screen items-center justify-center bg-paper p-4">
+        <DatavizLoadingIndicator />
       </div>
     );
   }

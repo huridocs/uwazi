@@ -5,6 +5,7 @@ import type { DatavizFilter, DatavizSource } from '#V2/Dataviz/types/definition.
 import {
   getOperatorsForPropertyType,
   OPERATOR_LABELS,
+  usesMultipleValues,
 } from '#V2/Dataviz/utils/filterOperators.js';
 import { FilterPropertySelect } from './FilterPropertySelect.js';
 import { FilterValueInput } from './FilterValueInput.js';
@@ -46,12 +47,28 @@ const FilterRow = ({ filter, sources, onChange, onRemove }: FilterRowProps) => {
             label="Operator"
             value={filter.operator}
             options={operators.map(op => ({ value: op, label: OPERATOR_LABELS[op] }))}
-            onChange={e =>
+            onChange={e => {
+              const operator = e.target.value as DatavizFilter['operator'];
+              const resetValues = usesMultipleValues(operator)
+                ? { value: undefined, from: undefined, to: undefined }
+                : { values: undefined, from: undefined, to: undefined };
+
+              if (operator === 'between') {
+                onChange({
+                  ...filter,
+                  operator,
+                  value: undefined,
+                  values: undefined,
+                });
+                return;
+              }
+
               onChange({
                 ...filter,
-                operator: e.target.value as DatavizFilter['operator'],
-              })
-            }
+                operator,
+                ...resetValues,
+              });
+            }}
           />
           <FilterValueInput
             filter={filter}

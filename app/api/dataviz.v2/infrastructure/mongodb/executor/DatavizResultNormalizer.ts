@@ -9,6 +9,7 @@ import type {
 import {
   normalizeDatavizBucketKey,
   serializeDatavizBucketKey,
+  compareDatavizBucketKeys,
 } from '#shared/dataviz/formatDimensionKeyLabel.js';
 import { DATAVIZ_MAX_BUCKETS } from '#shared/types/datavizSchema.js';
 import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
@@ -32,8 +33,10 @@ const sortPoints = (
   sort?: DimensionSpec['sort']
 ): DataPoint[] => {
   const copy = [...points];
-  if (sort === 'label_asc' || sort === 'key_asc') {
-    copy.sort((a, b) => String(a.label).localeCompare(String(b.label)));
+  if (sort === 'key_asc') {
+    copy.sort((a, b) => compareDatavizBucketKeys(a.key, b.key));
+  } else if (sort === 'label_asc') {
+    copy.sort((a, b) => String(a.label).localeCompare(String(b.label), undefined, { numeric: true }));
   } else {
     copy.sort((a, b) => b.value - a.value);
   }

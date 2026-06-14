@@ -19,7 +19,11 @@ export const ALL_CHART_TYPES: ChartType[] = [
   'list',
   'gauge',
   'metric',
+  'scatter',
 ];
+
+/** Chart types shown in the editor picker (excludes removed types such as treemap). */
+export const EDITOR_CHART_TYPES: ChartType[] = ALL_CHART_TYPES;
 
 export const CHART_TYPE_LABELS: Record<ChartType, string> = {
   pie: 'Pie',
@@ -34,7 +38,6 @@ export const CHART_TYPE_LABELS: Record<ChartType, string> = {
   metric: 'Metric',
   scatter: 'Scatter',
   heatmap: 'Heatmap',
-  treemap: 'Treemap',
 };
 
 export const isEchartsChartType = (type: ChartType): boolean =>

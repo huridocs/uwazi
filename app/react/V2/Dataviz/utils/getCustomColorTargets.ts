@@ -14,7 +14,7 @@ export type CustomColorTarget = {
   defaultColor?: string;
 };
 
-const CHARTS_WITHOUT_CUSTOM: ChartType[] = ['list', 'metric', 'gauge', 'treemap'];
+const CHARTS_WITHOUT_CUSTOM: ChartType[] = ['list', 'metric', 'gauge'];
 
 const COMPARE_SERIES_CHARTS: ChartType[] = ['line', 'area', 'bar', 'horizontal_bar'];
 

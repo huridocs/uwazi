@@ -54,6 +54,24 @@ describe('normalizeBuckets', () => {
     expect(dto.meta.totalEntities).toBe(8);
   });
 
+  it('should sort primary buckets by numeric key when sort is key_asc', () => {
+    const dto = normalizeBuckets({
+      buckets: [
+        { _id: 2005, count: 1 },
+        { _id: 1999, count: 3 },
+        { _id: 2003, count: 2 },
+      ],
+      primaryDim: { property: 'year', propertyType: 'date', sort: 'key_asc' },
+      resolveLabel,
+      datavizId: 'test',
+      queryDurationMs: 1,
+      defaultLanguage: 'en',
+      missingBucketLabels,
+    });
+
+    expect(dto.series[0]?.points.map(point => point.key)).toEqual([1999, 2003, 2005]);
+  });
+
   it('should limit primary and secondary buckets independently for two dimensions', () => {
     const buckets = [
       ...Array.from({ length: 9 }, (_, i) => ({
