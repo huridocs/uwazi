@@ -42,14 +42,17 @@ const fixtures: DBFixture = {
     ),
   ],
   files: [
-    fixturesFactory.fileDeprecated(
-      'fileToProcess',
-      'parentEntity',
-      'document',
-      fileNameToProcess,
-      'eng',
-      'fileNameToProcess.pdf'
-    ),
+    {
+      ...fixturesFactory.fileDeprecated(
+        'fileToProcess',
+        'parentEntity',
+        'document',
+        fileNameToProcess,
+        'eng',
+        'fileNameToProcess.pdf'
+      ),
+      mimetype: 'application/pdf',
+    },
     fixturesFactory.fileDeprecated(
       'unrelatedAttachment',
       'parentEntity',

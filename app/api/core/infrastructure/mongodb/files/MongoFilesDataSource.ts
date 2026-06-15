@@ -1,9 +1,8 @@
 /* eslint-disable max-lines */
 import { Db, ObjectId } from 'mongodb';
-import uniqBy from 'lodash/uniqBy.js';
 
 import { LanguageUtils } from '#shared/language/index.js';
-import { PropertySelectionSchema, LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
@@ -14,7 +13,7 @@ import {
   MongoDSOptions,
 } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
-import { Result } from '#api/core/libs/Result.js';
+import { Result, ResultType } from '#api/core/libs/Result.js';
 import { search } from '#api/search/index.js';
 import { FileStorage } from '../../../application/contracts/FileStorage.js';
 import {
@@ -34,24 +33,6 @@ type GetDocumentsForEntityQuery = {
 };
 
 type MongoFilesDataSourceOptions = MongoDSOptions;
-
-const mergePropertySelections = (
-  newSelections: PropertySelectionSchema[],
-  storedSelections: PropertySelectionSchema[]
-) => uniqBy(newSelections.concat(storedSelections), 'name').filter(s => !s.deleteSelection);
-
-const propertySelectionsHaveChanged = (
-  storedSelections: PropertySelectionSchema[],
-  mergedSelections: PropertySelectionSchema[]
-) => {
-  if (storedSelections.length !== mergedSelections.length) {
-    return true;
-  }
-
-  return storedSelections.some(
-    (selection, index) => selection.selection?.text !== mergedSelections[index].selection?.text
-  );
-};
 
 export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements FilesDataSource {
   protected collectionName = 'files';
@@ -185,26 +166,9 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     this.setFilesToReindex(files);
   }
 
-  async savePropertySelections(fileId: string, propertySelections: PropertySelectionSchema[]) {
-    const file = await this.getCollection<{
-      propertySelections?: PropertySelectionSchema[];
-    }>().findOne({ _id: new ObjectId(fileId) }, { projection: { propertySelections: 1 } });
-
-    if (!file) {
-      return;
-    }
-
-    const storedPropertySelections = file.propertySelections || [];
-    const mergedSelections = mergePropertySelections(propertySelections, storedPropertySelections);
-
-    if (!propertySelectionsHaveChanged(storedPropertySelections, mergedSelections)) {
-      return;
-    }
-
-    await this.getCollection().updateOne(
-      { _id: new ObjectId(fileId) },
-      { $set: { propertySelections: mergedSelections } }
-    );
+  async replaceFile(file: BaseFile): Promise<void> {
+    await this.getCollection().replaceOne({ _id: new ObjectId(file.id) }, FileMappers.toDBO(file));
+    this.setFilesToReindex([file]);
   }
 
   async deletePropertySelections(entityPropertyNames: string[], entitySharedIds: string[]) {
@@ -323,7 +287,9 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     return Result.ok(this.toModel(dbo));
   }
 
-  async getById(id: string) {
+  async getById<ReturnedFile extends BaseFile = BaseFile>(
+    id: string
+  ): Promise<ResultType<ReturnedFile, FileNotFound>> {
     const dbo = await this.getCollection().findOne(
       { _id: new ObjectId(id) },
       { projection: { fullText: 0 } }
@@ -332,7 +298,15 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       return Result.fail(new FileNotFound(`file with id: ${id} not found`));
     }
 
-    return Result.ok(this.toModel(dbo));
+    return Result.ok(this.toModel(dbo) as unknown as ReturnedFile);
+  }
+
+  async getByIds(ids: string[]): Promise<BaseFile[]> {
+    const objectIds = ids.map(id => new ObjectId(id));
+    const dbos = await this.getCollection()
+      .find({ _id: { $in: objectIds } }, { projection: { fullText: 0 } })
+      .toArray();
+    return dbos.map(dbo => this.toModel(dbo));
   }
 }
 
