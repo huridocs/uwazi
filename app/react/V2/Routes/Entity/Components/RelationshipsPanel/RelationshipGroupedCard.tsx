@@ -1,15 +1,12 @@
-import React, { useEffect, useState, type ReactNode } from 'react';
-import { useAtom } from 'jotai';
+import React, { useState, type ReactNode } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
-import {
-  relationshipsPanelCollapseAllSignalAtom,
-  relationshipsPanelExpandAllSignalAtom,
-} from './relationshipsPanelFiltersAtom.js';
+import { useExpandCollapseSignals } from './useExpandCollapseSignals.js';
 
 type RelationshipGroupedCardProps = {
   title: ReactNode;
   color?: string;
   count: number;
+  markerIds: string[];
   children: ReactNode;
 };
 
@@ -17,19 +14,11 @@ const RelationshipGroupedCard = ({
   title,
   color,
   count,
+  markerIds,
   children,
 }: RelationshipGroupedCardProps) => {
   const [expanded, setExpanded] = useState(false);
-  const [expandSignal] = useAtom(relationshipsPanelExpandAllSignalAtom);
-  const [collapseSignal] = useAtom(relationshipsPanelCollapseAllSignalAtom);
-
-  useEffect(() => {
-    if (expandSignal > 0) setExpanded(true);
-  }, [expandSignal]);
-
-  useEffect(() => {
-    if (collapseSignal > 0) setExpanded(false);
-  }, [collapseSignal]);
+  useExpandCollapseSignals(setExpanded, markerIds);
 
   return (
     <div className="overflow-hidden rounded-md border border-border/60 bg-paper">

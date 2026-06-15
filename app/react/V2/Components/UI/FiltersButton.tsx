@@ -2,12 +2,12 @@ import React from 'react';
 import { FunnelIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 
-type RelationshipsFiltersButtonProps = {
+type FiltersButtonProps = {
   activeCount: number;
   onClick: () => void;
 };
 
-const RelationshipsFiltersButton = ({ activeCount, onClick }: RelationshipsFiltersButtonProps) => {
+const FiltersButton = ({ activeCount, onClick }: FiltersButtonProps) => {
   const active = activeCount > 0;
 
   return (
@@ -34,4 +34,4 @@ const RelationshipsFiltersButton = ({ activeCount, onClick }: RelationshipsFilte
   );
 };
 
-export { RelationshipsFiltersButton };
+export { FiltersButton };

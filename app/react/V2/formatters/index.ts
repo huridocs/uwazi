@@ -19,6 +19,7 @@ export {
   groupingOptions,
   groupMarkers,
   getGroupLabel,
+  describeGroupLabel,
   getGroupColor,
 } from './relationships/relationshipsPanelGrouping.js';
 export type {

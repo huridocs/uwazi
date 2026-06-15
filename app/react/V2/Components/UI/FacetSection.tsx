@@ -2,7 +2,7 @@ import React, { useState, type ReactNode } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { checkboxInputClassName } from '#V2/Components/Forms/Checkbox.js';
 
-type RelationshipsFacetSectionProps = {
+type FacetSectionProps = {
   title: ReactNode;
   total: number;
   entries: [string, number][];
@@ -15,7 +15,7 @@ type RelationshipsFacetSectionProps = {
   noLabelText?: string;
 };
 
-const RelationshipsFacetSection = ({
+const FacetSection = ({
   title,
   total,
   entries,
@@ -26,7 +26,7 @@ const RelationshipsFacetSection = ({
   defaultExpanded = true,
   noLabelId,
   noLabelText = 'No label',
-}: RelationshipsFacetSectionProps) => {
+}: FacetSectionProps) => {
   const [open, setOpen] = useState(defaultExpanded);
   const activeCount = entries.reduce((sum, [id, count]) => sum + (selected[id] ? count : 0), 0);
   const noLabelEntry = noLabelId ? entries.find(([id]) => id === noLabelId) : undefined;
@@ -89,4 +89,4 @@ const RelationshipsFacetSection = ({
   );
 };
 
-export { RelationshipsFacetSection };
+export { FacetSection };

@@ -2,19 +2,14 @@ import React, { useEffect, type ReactNode } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 
-type RelationshipsFiltersDrawerProps = {
+type FiltersDrawerProps = {
   open: boolean;
   onClose: () => void;
   footer?: ReactNode;
   children: ReactNode;
 };
 
-const RelationshipsFiltersDrawer = ({
-  open,
-  onClose,
-  footer,
-  children,
-}: RelationshipsFiltersDrawerProps) => {
+const FiltersDrawer = ({ open, onClose, footer, children }: FiltersDrawerProps) => {
   useEffect(() => {
     if (!open) return undefined;
     const onKey = (event: KeyboardEvent) => {
@@ -68,4 +63,4 @@ const RelationshipsFiltersDrawer = ({
   );
 };
 
-export { RelationshipsFiltersDrawer };
+export { FiltersDrawer };

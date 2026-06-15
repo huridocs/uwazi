@@ -73,34 +73,63 @@ const isUnknownGroupKey = (key: string, by: RelationshipsPanelGroupBy): boolean 
   }
 };
 
+type GroupLabelDescriptor =
+  | { kind: 'translate'; key: string }
+  | { kind: 'translatePage'; page: string }
+  | { kind: 'text'; value: string };
+
+const directionLabelKey = (key: string): string => {
+  if (key === 'both') return 'Bidirectional';
+  if (key === 'incoming') return 'Incoming';
+  return 'Outgoing';
+};
+
+const describeGroupLabel = (
+  key: string,
+  by: RelationshipsPanelGroupBy,
+  context: GroupLabelContext,
+  markers: RelationshipMarker[]
+): GroupLabelDescriptor => {
+  switch (by) {
+    case 'direction':
+      return { kind: 'translate', key: directionLabelKey(key) };
+    case 'source-page':
+      if (key === 'no-page') return { kind: 'translate', key: 'No page' };
+      return { kind: 'translatePage', page: key };
+    case 'target-template':
+    case 'source-template': {
+      const name = context.templateName(key);
+      if (!name || key === 'unknown') return { kind: 'translate', key: 'Unknown template' };
+      return { kind: 'text', value: name };
+    }
+    case 'target-entity': {
+      const title = markers.find(marker => marker.target.sharedId === key)?.target.title;
+      if (!title) return { kind: 'translate', key: 'Unknown entity' };
+      return { kind: 'text', value: title };
+    }
+    case 'source-entity':
+      return { kind: 'text', value: context.selfTitle };
+    case 'relation-type': {
+      const name = context.relationshipTypeName(key);
+      if (!name || key === 'no_label') return { kind: 'text', value: key };
+      return { kind: 'text', value: name };
+    }
+    case 'none':
+    default:
+      return { kind: 'text', value: key };
+  }
+};
+
 const getGroupLabel = (
   key: string,
   by: RelationshipsPanelGroupBy,
   context: GroupLabelContext,
   markers: RelationshipMarker[]
 ): string => {
-  switch (by) {
-    case 'target-template':
-    case 'source-template':
-      return context.templateName(key) || 'Unknown template';
-    case 'target-entity':
-      return (
-        markers.find(marker => marker.target.sharedId === key)?.target.title ?? 'Unknown entity'
-      );
-    case 'source-entity':
-      return context.selfTitle;
-    case 'relation-type':
-      return context.relationshipTypeName(key) || key;
-    case 'direction':
-      if (key === 'both') return 'Bidirectional';
-      if (key === 'incoming') return 'Incoming';
-      return 'Outgoing';
-    case 'source-page':
-      return key === 'no-page' ? 'No page' : `Page ${key}`;
-    case 'none':
-    default:
-      return key;
-  }
+  const descriptor = describeGroupLabel(key, by, context, markers);
+  if (descriptor.kind === 'translate') return descriptor.key;
+  if (descriptor.kind === 'translatePage') return `Page ${descriptor.page}`;
+  return descriptor.value;
 };
 
 const getGroupColor = (
@@ -148,5 +177,12 @@ const groupMarkers = (
   });
 };
 
-export type { RelationshipsPanelGroupBy, GroupLabelContext };
-export { groupingOptions, getGroupKey, getGroupLabel, getGroupColor, groupMarkers };
+export type { RelationshipsPanelGroupBy, GroupLabelContext, GroupLabelDescriptor };
+export {
+  groupingOptions,
+  getGroupKey,
+  getGroupLabel,
+  describeGroupLabel,
+  getGroupColor,
+  groupMarkers,
+};

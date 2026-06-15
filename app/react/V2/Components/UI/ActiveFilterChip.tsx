@@ -1,0 +1,32 @@
+import React, { type ReactNode } from 'react';
+import { XMarkIcon } from '@heroicons/react/24/outline';
+
+type ActiveFilterChipProps = {
+  label: ReactNode;
+  color?: string;
+  onRemove: () => void;
+  removeAriaLabel?: string;
+};
+
+const ActiveFilterChip = ({ label, color, onRemove, removeAriaLabel }: ActiveFilterChipProps) => (
+  <span className="inline-flex h-6 max-w-[160px] items-center gap-1 truncate rounded border border-border/60 bg-[color-mix(in_srgb,var(--color-theme-ink)_6%,var(--color-theme-bg-surface))] pl-1.5 pr-1 text-[11px] font-medium text-ink-secondary">
+    {color && (
+      <span
+        className="h-1.5 w-1.5 shrink-0 rounded-[2px]"
+        style={{ backgroundColor: color }}
+        aria-hidden
+      />
+    )}
+    <span className="truncate">{label}</span>
+    <button
+      type="button"
+      onClick={onRemove}
+      aria-label={removeAriaLabel ?? 'Remove filter'}
+      className="flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-sm text-ink-tertiary hover:text-ink"
+    >
+      <XMarkIcon className="h-2.5 w-2.5" />
+    </button>
+  </span>
+);
+
+export { ActiveFilterChip };

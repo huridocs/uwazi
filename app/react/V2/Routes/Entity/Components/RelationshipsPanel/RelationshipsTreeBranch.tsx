@@ -1,11 +1,8 @@
-import React, { Children, useEffect, useState, type ReactNode } from 'react';
-import { useAtom, useAtomValue } from 'jotai';
+import React, { Children, useState, type ReactNode } from 'react';
+import { useAtomValue } from 'jotai';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
-import {
-  relationshipsPanelCollapseAllSignalAtom,
-  relationshipsPanelExpandAllSignalAtom,
-  relationshipsPanelZoomAtom,
-} from './relationshipsPanelFiltersAtom.js';
+import { relationshipsPanelZoomAtom } from './relationshipsPanelFiltersAtom.js';
+import { useExpandCollapseSignals } from './useExpandCollapseSignals.js';
 
 const RelationshipsTreeNode = ({ children }: { children: ReactNode }) => {
   const zoom = useAtomValue(relationshipsPanelZoomAtom);
@@ -36,6 +33,7 @@ type RelationshipsTreeBranchProps = {
   title: ReactNode;
   color?: string;
   count: number;
+  markerIds: string[];
   defaultExpanded?: boolean;
   children: ReactNode;
 };
@@ -44,20 +42,12 @@ const RelationshipsTreeBranch = ({
   title,
   color,
   count,
+  markerIds,
   defaultExpanded = true,
   children,
 }: RelationshipsTreeBranchProps) => {
   const [expanded, setExpanded] = useState(defaultExpanded);
-  const [expandSignal] = useAtom(relationshipsPanelExpandAllSignalAtom);
-  const [collapseSignal] = useAtom(relationshipsPanelCollapseAllSignalAtom);
-
-  useEffect(() => {
-    if (expandSignal > 0) setExpanded(true);
-  }, [expandSignal]);
-
-  useEffect(() => {
-    if (collapseSignal > 0) setExpanded(false);
-  }, [collapseSignal]);
+  useExpandCollapseSignals(setExpanded, markerIds);
 
   const items = Children.toArray(children);
 

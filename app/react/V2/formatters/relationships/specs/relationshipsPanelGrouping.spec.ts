@@ -1,5 +1,9 @@
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
-import { groupMarkers, type GroupLabelContext } from '../relationshipsPanelGrouping.js';
+import {
+  describeGroupLabel,
+  groupMarkers,
+  type GroupLabelContext,
+} from '../relationshipsPanelGrouping.js';
 
 const context: GroupLabelContext = {
   selfSharedId: 'self1',
@@ -83,5 +87,16 @@ describe('relationshipsPanelGrouping', () => {
     const markers = [marker('1', { page: 2 }), marker('2'), marker('3', { page: 1 })];
     const groups = groupMarkers(markers, 'source-page', context);
     expect(groups[groups.length - 1]?.[0]).toBe('no-page');
+  });
+
+  it('describes translatable group labels', () => {
+    expect(describeGroupLabel('incoming', 'direction', context, [])).toEqual({
+      kind: 'translate',
+      key: 'Incoming',
+    });
+    expect(describeGroupLabel('no-page', 'source-page', context, [])).toEqual({
+      kind: 'translate',
+      key: 'No page',
+    });
   });
 });

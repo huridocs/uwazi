@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAtom, useAtomValue } from 'jotai';
-import { XMarkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
+import { ActiveFilterChip } from '#V2/Components/UI/ActiveFilterChip.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import {
   relationshipsPanelActiveClusterRefIdsAtom,
@@ -10,9 +10,6 @@ import {
   relationshipsPanelSearchAtom,
   relationshipsPanelSortAtom,
 } from './relationshipsPanelFiltersAtom.js';
-
-const chipClass =
-  'inline-flex h-6 max-w-[160px] items-center gap-1 truncate rounded border border-border/60 bg-[color-mix(in_srgb,var(--color-theme-ink)_6%,var(--color-theme-bg-surface))] pl-1.5 pr-1 text-[11px] font-medium text-ink-secondary';
 
 const RelationshipsActiveFilterChips = () => {
   const [search, setSearch] = useAtom(relationshipsPanelSearchAtom);
@@ -32,111 +29,68 @@ const RelationshipsActiveFilterChips = () => {
     .filter(([, active]) => active)
     .map(([id]) => id);
 
+  const removeRelType = (id: string) =>
+    setRelTypeFilters(current => {
+      const next = { ...current };
+      delete next[id];
+      return next;
+    });
+
+  const removeEntityType = (id: string) =>
+    setEntityTypeFilters(current => {
+      const next = { ...current };
+      delete next[id];
+      return next;
+    });
+
   return (
     <>
       {search.trim() && (
-        <span className={chipClass}>
-          <span className="truncate">{`"${search}"`}</span>
-          <button
-            type="button"
-            onClick={() => setSearch('')}
-            aria-label="Clear search"
-            className="flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-sm text-ink-tertiary hover:text-ink"
-          >
-            <XMarkIcon className="h-2.5 w-2.5" />
-          </button>
-        </span>
+        <ActiveFilterChip
+          label={`"${search}"`}
+          onRemove={() => setSearch('')}
+          removeAriaLabel="Clear search"
+        />
       )}
       {sort === 'asc' && (
-        <span className={chipClass}>
-          <span>A → Z</span>
-          <button
-            type="button"
-            onClick={() => setSort('none')}
-            aria-label="Clear sort"
-            className="flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-sm text-ink-tertiary hover:text-ink"
-          >
-            <XMarkIcon className="h-2.5 w-2.5" />
-          </button>
-        </span>
+        <ActiveFilterChip
+          label="A → Z"
+          onRemove={() => setSort('none')}
+          removeAriaLabel="Clear sort"
+        />
       )}
       {sort === 'desc' && (
-        <span className={chipClass}>
-          <span>Z → A</span>
-          <button
-            type="button"
-            onClick={() => setSort('none')}
-            aria-label="Clear sort"
-            className="flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-sm text-ink-tertiary hover:text-ink"
-          >
-            <XMarkIcon className="h-2.5 w-2.5" />
-          </button>
-        </span>
+        <ActiveFilterChip
+          label="Z → A"
+          onRemove={() => setSort('none')}
+          removeAriaLabel="Clear sort"
+        />
       )}
       {activeRelTypes.map(id => (
-        <span key={`rel-${id}`} className={chipClass}>
-          <span className="truncate">
-            {relationshipTypes.find(type => type._id === id)?.name ?? id}
-          </span>
-          <button
-            type="button"
-            onClick={() =>
-              setRelTypeFilters(current => {
-                const next = { ...current };
-                delete next[id];
-                return next;
-              })
-            }
-            aria-label="Remove filter"
-            className="flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-sm text-ink-tertiary hover:text-ink"
-          >
-            <XMarkIcon className="h-2.5 w-2.5" />
-          </button>
-        </span>
+        <ActiveFilterChip
+          key={`rel-${id}`}
+          label={relationshipTypes.find(type => type._id === id)?.name ?? id}
+          onRemove={() => removeRelType(id)}
+        />
       ))}
       {activeEntityTypes.map(id => {
         const template = templates.find(item => item._id === id);
         const isNoLabel = id === 'unknown';
         return (
-          <span key={`ent-${id}`} className={chipClass}>
-            {template?.color && (
-              <span
-                className="h-1.5 w-1.5 shrink-0 rounded-[2px]"
-                style={{ backgroundColor: template.color }}
-              />
-            )}
-            <span className="truncate">{isNoLabel ? 'No label' : (template?.name ?? id)}</span>
-            <button
-              type="button"
-              onClick={() =>
-                setEntityTypeFilters(current => {
-                  const next = { ...current };
-                  delete next[id];
-                  return next;
-                })
-              }
-              aria-label="Remove filter"
-              className="flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-sm text-ink-tertiary hover:text-ink"
-            >
-              <XMarkIcon className="h-2.5 w-2.5" />
-            </button>
-          </span>
+          <ActiveFilterChip
+            key={`ent-${id}`}
+            label={isNoLabel ? 'No label' : (template?.name ?? id)}
+            color={template?.color}
+            onRemove={() => removeEntityType(id)}
+          />
         );
       })}
       {cluster && (
-        <span className={chipClass}>
-          <span>
-            <Translate>From selection</Translate>
-          </span>
-          <button
-            type="button"
-            onClick={() => setCluster(null)}
-            aria-label="Clear selection filter"
-            className="flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-sm text-ink-tertiary hover:text-ink"
-          >
-            <XMarkIcon className="h-2.5 w-2.5" />
-          </button>
-        </span>
+        <ActiveFilterChip
+          label={<Translate>From selection</Translate>}
+          onRemove={() => setCluster(null)}
+          removeAriaLabel="Clear selection filter"
+        />
       )}
     </>
   );

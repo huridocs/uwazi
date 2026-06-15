@@ -15,7 +15,10 @@ import {
   pdfController,
   scrollToRelationshipPanelAtom,
 } from '../../Components/atoms.js';
-import { relationshipsPanelActiveClusterRefIdsAtom } from '../../Components/RelationshipsPanel/relationshipsPanelFiltersAtom.js';
+import {
+  relationshipsPanelActiveClusterRefIdsAtom,
+  relationshipsPanelExpandForRefIdAtom,
+} from '../../Components/RelationshipsPanel/relationshipsPanelFiltersAtom.js';
 import { useRelationshipSelection } from '../../Components/useRelationshipSelection.js';
 import { SIDE_TAB } from '../tabIds.js';
 
@@ -36,6 +39,7 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
   const [activeClusterRefIds, setActiveClusterRefIds] = useAtom(
     relationshipsPanelActiveClusterRefIdsAtom
   );
+  const [, setExpandForRefId] = useAtom(relationshipsPanelExpandForRefIdAtom);
   const { activeRelationshipId, selectRelationship } = useRelationshipSelection();
   const { addEntry } = useTocActions();
   const { setCreateReferenceSelection } = useRelationshipsActions();
@@ -181,8 +185,9 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
     (relationshipId: string) => {
       openRelationshipsSideTab();
       setScrollToRelationshipPanel(relationshipId);
+      setExpandForRefId(relationshipId);
     },
-    [openRelationshipsSideTab, setScrollToRelationshipPanel]
+    [openRelationshipsSideTab, setScrollToRelationshipPanel, setExpandForRefId]
   );
 
   const handlePageNavigation = useCallback(

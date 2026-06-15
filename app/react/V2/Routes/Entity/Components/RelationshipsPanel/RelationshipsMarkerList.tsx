@@ -52,6 +52,7 @@ const renderGrouped = (
           }
           color={getGroupColor(key, groupBy, groupContext, groupMarkersList)}
           count={panelEntryCount(groupMarkersList, props.selfSharedId)}
+          markerIds={groupMarkersList.map(marker => marker._id)}
         >
           {subGroupBy === 'none' ? (
             <RelationshipsPanelEntryList {...props} markers={groupMarkersList} />
@@ -71,6 +72,7 @@ const renderGrouped = (
                     }
                     color={getGroupColor(subKey, subGroupBy, groupContext, subMarkers)}
                     count={panelEntryCount(subMarkers, props.selfSharedId)}
+                    markerIds={subMarkers.map(marker => marker._id)}
                   >
                     <RelationshipsPanelEntryList {...props} markers={subMarkers} />
                   </RelationshipGroupedCard>

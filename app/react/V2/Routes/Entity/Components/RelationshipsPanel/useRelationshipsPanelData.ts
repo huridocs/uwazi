@@ -1,67 +1,27 @@
-import { useMemo } from 'react';
-import { useAtomValue } from 'jotai';
+import { useEffect } from 'react';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { Entity } from '#V2/api/entities/types.js';
-import { relationshipTypesAtom } from '#V2/atoms/index.js';
 import {
-  computeStats,
-  filterAndSortMarkers,
-  projectRelationshipsPanel,
-} from '#V2/formatters/relationships/relationshipsPanelProjection.js';
-import {
-  relationshipsPanelActiveClusterRefIdsAtom,
-  relationshipsPanelEntityTypeFiltersAtom,
-  relationshipsPanelRelTypeFiltersAtom,
-  relationshipsPanelSearchAtom,
-  relationshipsPanelSortAtom,
-} from './relationshipsPanelFiltersAtom.js';
+  relationshipsPanelEntityAtom,
+  relationshipsPanelFilteredMarkersAtom,
+  relationshipsPanelHasRelationshipsAtom,
+  relationshipsPanelSourceMarkersAtom,
+  relationshipsPanelStatsAtom,
+} from './relationshipsPanelDataAtoms.js';
 
 const useRelationshipsPanelData = (entity?: Entity) => {
-  const searchQuery = useAtomValue(relationshipsPanelSearchAtom);
-  const sortOrder = useAtomValue(relationshipsPanelSortAtom);
-  const relTypeFilters = useAtomValue(relationshipsPanelRelTypeFiltersAtom);
-  const entityTypeFilters = useAtomValue(relationshipsPanelEntityTypeFiltersAtom);
-  const activeClusterRefIds = useAtomValue(relationshipsPanelActiveClusterRefIdsAtom);
-  const relationshipTypes = useAtomValue(relationshipTypesAtom);
+  const setEntity = useSetAtom(relationshipsPanelEntityAtom);
+  const markers = useAtomValue(relationshipsPanelFilteredMarkersAtom);
+  const sourceMarkers = useAtomValue(relationshipsPanelSourceMarkersAtom);
+  const stats = useAtomValue(relationshipsPanelStatsAtom);
+  const hasRelationships = useAtomValue(relationshipsPanelHasRelationshipsAtom);
 
-  const projection = useMemo(
-    () => (entity ? projectRelationshipsPanel(entity) : { markers: [], stats: computeStats([]) }),
-    [entity]
-  );
+  useEffect(() => {
+    setEntity(entity);
+    return () => setEntity(undefined);
+  }, [entity, setEntity]);
 
-  const relationshipTypeName = useMemo(() => {
-    const byId = new Map(relationshipTypes.map(type => [type._id, type.name ?? '']));
-    return (typeId: string) => byId.get(typeId) ?? '';
-  }, [relationshipTypes]);
-
-  const markers = useMemo(
-    () =>
-      filterAndSortMarkers(projection.markers, {
-        searchQuery,
-        sortOrder,
-        relationshipTypeName,
-        relTypeFilters,
-        entityTypeFilters,
-        activeClusterRefIds,
-      }),
-    [
-      projection.markers,
-      searchQuery,
-      sortOrder,
-      relationshipTypeName,
-      relTypeFilters,
-      entityTypeFilters,
-      activeClusterRefIds,
-    ]
-  );
-
-  const stats = useMemo(() => computeStats(markers), [markers]);
-
-  return {
-    markers,
-    sourceMarkers: projection.markers,
-    stats,
-    hasRelationships: projection.markers.length > 0,
-  };
+  return { markers, sourceMarkers, stats, hasRelationships };
 };
 
 export { useRelationshipsPanelData };

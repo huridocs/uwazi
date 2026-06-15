@@ -4,7 +4,7 @@ import {
   panelEntryKey,
 } from '#V2/formatters/relationships/relationshipsPanelDerivation.js';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
-import { RelationshipsPanelEntry } from './RelationshipsPanelEntry.js';
+import { RelationshipPanelRow } from './RelationshipPanelRow.js';
 
 type RelationshipsPanelEntryListProps = {
   markers: RelationshipMarker[];
@@ -30,7 +30,7 @@ const RelationshipsPanelEntryList = ({
 }: RelationshipsPanelEntryListProps) => {
   const entries = buildPanelListEntries(markers, selfSharedId);
   const content = entries.map(entry => (
-    <RelationshipsPanelEntry
+    <RelationshipPanelRow
       key={panelEntryKey(entry)}
       entry={entry}
       selfSharedId={selfSharedId}

@@ -9,13 +9,12 @@ import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import { searchByTitle } from '#V2/api/entities/index.js';
 import { deleteReference, saveTextReference } from '#V2/api/relationships/index.js';
-import { ConfirmationModal, BlankState } from '#V2/Components/UI/index.js';
+import { ConfirmationModal, BlankState, FiltersDrawer } from '#V2/Components/UI/index.js';
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { CreateReference } from './CreateReference.js';
 import { RelationshipsPanelToolbar } from './RelationshipsPanelToolbar.js';
 import { RelationshipsPanelBody } from './RelationshipsPanelBody.js';
-import { RelationshipsFiltersDrawer } from './RelationshipsFiltersDrawer.js';
 import { RelationshipsFilterDrawerContent } from './RelationshipsFilterDrawerContent.js';
 import {
   useRelationships,
@@ -24,13 +23,9 @@ import {
   selectedRelationshipIdsAtom,
 } from './relationshipsAtom.js';
 import {
-  relationshipsPanelActiveClusterRefIdsAtom,
   relationshipsPanelActiveFilterCountAtom,
-  relationshipsPanelEntityTypeFiltersAtom,
+  relationshipsPanelClearFiltersAtom,
   relationshipsPanelFiltersDrawerOpenAtom,
-  relationshipsPanelRelTypeFiltersAtom,
-  relationshipsPanelSearchAtom,
-  relationshipsPanelSortAtom,
 } from './relationshipsPanelFiltersAtom.js';
 import { useRelationshipSelection } from '../useRelationshipSelection.js';
 import { useRelationshipsPanelData } from './useRelationshipsPanelData.js';
@@ -50,14 +45,10 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
   const revalidator = useRevalidator();
   const { activeRelationshipId, selectRelationship, clearRelationshipSelection } =
     useRelationshipSelection();
-  const { markers, sourceMarkers, stats, hasRelationships } = useRelationshipsPanelData(entity);
+  const { markers, stats, hasRelationships } = useRelationshipsPanelData(entity);
   const [filtersOpen, setFiltersOpen] = useAtom(relationshipsPanelFiltersDrawerOpenAtom);
   const activeFilterCount = useAtomValue(relationshipsPanelActiveFilterCountAtom);
-  const [, setSearch] = useAtom(relationshipsPanelSearchAtom);
-  const [, setSort] = useAtom(relationshipsPanelSortAtom);
-  const [, setRelTypeFilters] = useAtom(relationshipsPanelRelTypeFiltersAtom);
-  const [, setEntityTypeFilters] = useAtom(relationshipsPanelEntityTypeFiltersAtom);
-  const [, setActiveClusterRefIds] = useAtom(relationshipsPanelActiveClusterRefIdsAtom);
+  const clearAllFilters = useSetAtom(relationshipsPanelClearFiltersAtom);
   const resetEditMode = useSetAtom(relationshipsEditModeAtom);
   const resetSelected = useSetAtom(selectedRelationshipIdsAtom);
 
@@ -141,14 +132,6 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
   const handleCancelCreate = useCallback(() => {
     setCreateReferenceSelection(undefined, undefined);
   }, [setCreateReferenceSelection]);
-
-  const clearAllFilters = useCallback(() => {
-    setRelTypeFilters({});
-    setEntityTypeFilters({});
-    setSearch('');
-    setSort('none');
-    setActiveClusterRefIds(null);
-  }, [setActiveClusterRefIds, setEntityTypeFilters, setRelTypeFilters, setSearch, setSort]);
 
   const handleSaveReference = useCallback(
     async (data: {
@@ -256,14 +239,14 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
           <RelationshipsPanelToolbar stats={stats} onOpenFilters={() => setFiltersOpen(true)} />
         )}
         <Panel.Body className="pr-1 pb-2">{listBody}</Panel.Body>
-        <RelationshipsFiltersDrawer
+        <FiltersDrawer
           open={filtersOpen}
           onClose={() => setFiltersOpen(false)}
           footer={
             activeFilterCount > 0 ? (
               <button
                 type="button"
-                onClick={clearAllFilters}
+                onClick={() => clearAllFilters()}
                 className="cursor-pointer text-[11px] font-medium text-ink-secondary transition-colors hover:text-ink"
               >
                 <Translate>Clear all filters</Translate>
@@ -271,8 +254,8 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
             ) : null
           }
         >
-          <RelationshipsFilterDrawerContent sourceMarkers={sourceMarkers} />
-        </RelationshipsFiltersDrawer>
+          <RelationshipsFilterDrawerContent />
+        </FiltersDrawer>
       </Panel>
       {relationshipToDelete && (
         <ConfirmationModal

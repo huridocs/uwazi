@@ -4,6 +4,7 @@ import { templatesAtom } from '#V2/atoms/index.js';
 import { relationshipToHighlight } from '#V2/Components/PDFViewer/index.js';
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { activeRelationshipIdAtom, pdfController, scrollToRelationshipPanelAtom } from './atoms.js';
+import { relationshipsPanelExpandForRefIdAtom } from './RelationshipsPanel/relationshipsPanelFiltersAtom.js';
 
 type SelectOptions = {
   scrollPanel?: boolean;
@@ -12,6 +13,7 @@ type SelectOptions = {
 const useRelationshipSelection = () => {
   const [activeRelationshipId, setActiveRelationshipId] = useAtom(activeRelationshipIdAtom);
   const [, setScrollToRelationshipPanel] = useAtom(scrollToRelationshipPanelAtom);
+  const [, setExpandForRefId] = useAtom(relationshipsPanelExpandForRefIdAtom);
   const mainPdfController = useAtomValue(pdfController);
   const templates = useAtomValue(templatesAtom);
 
@@ -32,6 +34,7 @@ const useRelationshipSelection = () => {
       setActiveRelationshipId(marker._id);
       if (options?.scrollPanel) {
         setScrollToRelationshipPanel(marker._id);
+        setExpandForRefId(marker._id);
       }
 
       const page = marker.anchor?.selections?.[0]?.page;
@@ -51,6 +54,7 @@ const useRelationshipSelection = () => {
       mainPdfController,
       setActiveRelationshipId,
       setScrollToRelationshipPanel,
+      setExpandForRefId,
     ]
   );
 

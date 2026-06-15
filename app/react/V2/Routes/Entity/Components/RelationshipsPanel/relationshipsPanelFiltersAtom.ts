@@ -17,6 +17,15 @@ const relationshipsPanelRelTypeFiltersAtom = atom<Record<string, boolean>>({});
 const relationshipsPanelEntityTypeFiltersAtom = atom<Record<string, boolean>>({});
 const relationshipsPanelActiveClusterRefIdsAtom = atom<string[] | null>(null);
 const relationshipsPanelFiltersDrawerOpenAtom = atom(false);
+const relationshipsPanelExpandForRefIdAtom = atom<string | null>(null);
+
+const relationshipsPanelClearFiltersAtom = atom(null, (_get, set) => {
+  set(relationshipsPanelRelTypeFiltersAtom, {});
+  set(relationshipsPanelEntityTypeFiltersAtom, {});
+  set(relationshipsPanelSearchAtom, '');
+  set(relationshipsPanelSortAtom, 'none');
+  set(relationshipsPanelActiveClusterRefIdsAtom, null);
+});
 
 const relationshipsPanelActiveFilterCountAtom = atom(get => {
   let count = 0;
@@ -42,5 +51,7 @@ export {
   relationshipsPanelEntityTypeFiltersAtom,
   relationshipsPanelActiveClusterRefIdsAtom,
   relationshipsPanelFiltersDrawerOpenAtom,
+  relationshipsPanelExpandForRefIdAtom,
+  relationshipsPanelClearFiltersAtom,
   relationshipsPanelActiveFilterCountAtom,
 };

@@ -12,7 +12,7 @@ import { RelationshipsSortControl } from './RelationshipsSortControl.js';
 import { RelationshipsGroupByControl } from './RelationshipsGroupByControl.js';
 import { RelationshipsViewControls } from './RelationshipsViewControls.js';
 import { RelationshipsZoomControl } from './RelationshipsZoomControl.js';
-import { RelationshipsFiltersButton } from './RelationshipsFiltersButton.js';
+import { FiltersButton } from '#V2/Components/UI/FiltersButton.js';
 
 type RelationshipsPanelToolbarProps = {
   stats: RelationshipsPanelStats;
@@ -40,7 +40,7 @@ const RelationshipsPanelToolbar = ({ stats, onOpenFilters }: RelationshipsPanelT
           />
           <RelationshipsSortControl />
         </div>
-        <RelationshipsFiltersButton activeCount={activeFilterCount} onClick={onOpenFilters} />
+        <FiltersButton activeCount={activeFilterCount} onClick={onOpenFilters} />
       </div>
       {view !== 'graph' && <RelationshipsListInfoRow stats={stats} />}
     </div>

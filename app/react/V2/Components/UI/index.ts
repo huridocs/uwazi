@@ -29,6 +29,13 @@ export { ConfirmNavigationModal } from './ConfirmNavigationModal.js';
 export { Truncate } from './Truncate.js';
 export { VerticalDrawer } from './VerticalDrawer.js';
 export { BlankState } from './BlankState.js';
+export { ActiveFilterChip } from './ActiveFilterChip.js';
+export { SegmentedControl } from './SegmentedControl.js';
+export { DropdownListbox } from './DropdownListbox.js';
+export { ListCardRow } from './ListCardRow.js';
+export { FacetSection } from './FacetSection.js';
+export { FiltersDrawer } from './FiltersDrawer.js';
+export { FiltersButton } from './FiltersButton.js';
 
 export type { PillColor } from './Pill.js';
 export type { TableProps, TableRow } from './Table/index.js';

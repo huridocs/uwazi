@@ -12,7 +12,7 @@ import {
   groupMarkers,
   type GroupLabelContext,
 } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
-import { RelationshipsPanelEntry } from './RelationshipsPanelEntry.js';
+import { RelationshipPanelRow } from './RelationshipPanelRow.js';
 import { panelEntryCount } from './RelationshipsPanelEntryList.js';
 import { RelationshipsTreeBranch, RelationshipsTreeNode } from './RelationshipsTreeBranch.js';
 import { RelationshipsGroupLabel } from './RelationshipsGroupLabel.js';
@@ -38,7 +38,7 @@ const renderEntries = (
 ) =>
   buildPanelListEntries(items, selfSharedId).map(entry => (
     <RelationshipsTreeNode key={panelEntryKey(entry)}>
-      <RelationshipsPanelEntry
+      <RelationshipPanelRow
         entry={entry}
         selfSharedId={selfSharedId}
         activeRelationshipId={props.activeRelationshipId}
@@ -98,6 +98,7 @@ const RelationshipsTreeView = ({
           }
           color={getGroupColor(key, groupBy, groupContext, groupMarkersList)}
           count={panelEntryCount(groupMarkersList, selfSharedId)}
+          markerIds={groupMarkersList.map(marker => marker._id)}
         >
           {subGroupBy === 'none'
             ? renderEntries(groupMarkersList, selfSharedId, rowProps)
@@ -115,6 +116,7 @@ const RelationshipsTreeView = ({
                     }
                     color={getGroupColor(subKey, subGroupBy, groupContext, subMarkers)}
                     count={panelEntryCount(subMarkers, selfSharedId)}
+                    markerIds={subMarkers.map(marker => marker._id)}
                   >
                     {renderEntries(subMarkers, selfSharedId, rowProps)}
                   </RelationshipsTreeBranch>

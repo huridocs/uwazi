@@ -7,12 +7,13 @@ import { directionOf } from '#V2/formatters/relationships/types.js';
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { scrollToRelationshipPanelAtom } from '../atoms.js';
 import { relationshipsEditModeAtom } from './relationshipsAtom.js';
-import { relationshipsPanelZoomAtom } from './relationshipsPanelFiltersAtom.js';
 import { DirectionGlyph } from './DirectionGlyph.js';
 import { EntityPill } from './EntityPill.js';
-import { ListCardRow } from './ListCardRow.js';
+import { ListCardRow } from '#V2/Components/UI/ListCardRow.js';
 import { PageTag } from './PageTag.js';
 import { RelationshipRowCheckbox } from './RelationshipRowCheckbox.js';
+import { useRelationshipsPanelZoom } from './useRelationshipsPanelZoom.js';
+import { useRelationshipRowVisibility } from './useRelationshipRowVisibility.js';
 
 type RelationshipRowProps = {
   marker: RelationshipMarker;
@@ -38,9 +39,8 @@ const RelationshipRow = ({
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const templates = useAtomValue(templatesAtom);
   const editMode = useAtomValue(relationshipsEditModeAtom);
-  const zoom = useAtomValue(relationshipsPanelZoomAtom);
-  const compact = zoom === 'compact';
-  const overview = zoom === 'overview';
+  const { rowPadding, metaHidden, snippetLines } = useRelationshipsPanelZoom();
+  const { hideTargetPill, hideTemplateName, hideRelationType } = useRelationshipRowVisibility();
   const referenceText = marker.anchor?.text?.trim() ?? '';
   const referencePage = marker.anchor?.selections?.[0]?.page;
   const templateName =
@@ -50,11 +50,6 @@ const RelationshipRow = ({
     marker.view.relationshipTypeName ??
     '';
   const direction = directionOf(marker.view, selfSharedId);
-  const rowPadding = (() => {
-    if (overview) return '!py-1.5';
-    if (compact) return '!py-2';
-    return undefined;
-  })();
 
   useEffect(() => {
     if (scrollToRelationshipId !== marker._id) {
@@ -71,22 +66,24 @@ const RelationshipRow = ({
       onClick={onClick}
       className={rowPadding}
     >
-      <div className={`flex items-start justify-between gap-2 ${overview ? 'mb-0' : 'mb-1.5'}`}>
+      <div className={`flex items-start justify-between gap-2 ${metaHidden ? 'mb-0' : 'mb-1.5'}`}>
         <div className="flex min-w-0 items-center gap-1.5">
           <RelationshipRowCheckbox relationshipId={marker._id} />
-          <EntityPill templateId={marker.target.templateId} label={marker.target.title || '-'} />
+          {!hideTargetPill && (
+            <EntityPill templateId={marker.target.templateId} label={marker.target.title || '-'} />
+          )}
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
-          {templateName && !overview && (
+          {templateName && !metaHidden && !hideTemplateName && (
             <span className="text-[10px] text-ink-tertiary">{templateName}</span>
           )}
           {referencePage !== undefined && <PageTag page={referencePage} onClick={onClick} />}
         </div>
       </div>
-      {referenceText && !overview && (
+      {referenceText && !metaHidden && (
         <p
           className={`text-xs leading-relaxed text-ink-secondary ${
-            compact ? 'line-clamp-1' : 'line-clamp-2'
+            snippetLines === 1 ? 'line-clamp-1' : 'line-clamp-2'
           }`}
         >
           {referenceText}
@@ -95,7 +92,9 @@ const RelationshipRow = ({
       <div className="mt-1 flex items-center justify-between text-[10px] text-ink-tertiary">
         <span className="flex items-center gap-1">
           <DirectionGlyph direction={direction} />
-          {relationshipTypeName && <span className="capitalize">{relationshipTypeName}</span>}
+          {!hideRelationType && relationshipTypeName && (
+            <span className="capitalize">{relationshipTypeName}</span>
+          )}
         </span>
         <div className="flex items-center gap-0.5">
           {!editMode && onView && (
