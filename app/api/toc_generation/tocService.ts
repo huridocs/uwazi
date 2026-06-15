@@ -1,4 +1,5 @@
-import { files, storage } from '#api/files/index.js';
+import { storage } from '#api/files/index.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { prettifyError } from '#api/utils/handleError.js';
 import { legacyLogger } from '#api/log/index.js';
 import request from '#shared/JSONRequest.js';
@@ -76,15 +77,7 @@ const tocService = {
   },
 
   async processNext(url: string) {
-    const [nextFile] = await files.get(
-      {
-        type: 'document',
-        filename: { $exists: true },
-        'toc.0': { $exists: false },
-      },
-      '',
-      { sort: { _id: 1 }, limit: 1 }
-    );
+    const nextFile = (await FilesDAOFactory.default().getNextDocumentWithoutToc()).getData(null);
 
     if (nextFile && nextFile.filename) {
       try {

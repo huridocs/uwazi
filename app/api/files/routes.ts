@@ -1,5 +1,6 @@
 /* eslint-disable max-statements */
 import type { Application } from 'express';
+import { ObjectId } from 'mongodb';
 import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
 import needsAuthorization from '#api/auth/authMiddleware.js';
 import { DownloadFileController } from '#api/core/infrastructure/express/DownloadFileController.js';
@@ -15,6 +16,7 @@ import { UserSchema } from '#shared/types/userType.js';
 import { validation } from '../utils/index.js';
 import { files } from './files.js';
 import { MutateFileController } from '#api/core/infrastructure/express/files/MutateFileController.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 
 const checkEntityPermission = async (
   file: FileType,
@@ -22,7 +24,7 @@ const checkEntityPermission = async (
   level: 'read' | 'write' = 'read'
 ): Promise<boolean> => {
   if (['admin'].includes(user?.role || '')) return true;
-  const [fileInDB] = await files.get({ _id: file._id });
+  const fileInDB = (await FilesDAOFactory.default().getById(file._id.toString())).getData(null);
 
   if (!fileInDB || (fileInDB.type === 'custom' && level === 'write')) {
     return false;
@@ -171,7 +173,14 @@ export default (app: Application) => {
       },
     }),
     async (req, res) => {
-      res.json(await filterByEntityPermissions(await files.get(req.query)));
+      const query: Record<string, unknown> = {};
+      if (typeof req.query._id === 'string') {
+        query._id = new ObjectId(req.query._id);
+      }
+      if (typeof req.query.type === 'string') {
+        query.type = req.query.type;
+      }
+      res.json(await filterByEntityPermissions(await FilesDAOFactory.default().getByQuery(query)));
     }
   );
 };
