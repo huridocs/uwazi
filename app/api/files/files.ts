@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+import { inspect } from 'util';
 import entities from '#api/entities/index.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
@@ -7,7 +8,6 @@ import { search } from '#api/search/index.js';
 import { cleanupRecordsOfFiles } from '#api/services/ocr/ocrRecords.js';
 import { validateFile } from '#shared/types/fileSchema.js';
 import { FileType } from '#shared/types/fileType.js';
-import { inspect } from 'util';
 import { FileCreatedEvent } from './events/FileCreatedEvent.js';
 import { FilesDeletedEvent } from './events/FilesDeletedEvent.js';
 import { FileUpdatedEvent } from './events/FileUpdatedEvent.js';
@@ -15,6 +15,11 @@ import { mimeTypeFromUrl } from './extensionHelper.js';
 import { filesModel } from './filesModel.js';
 import { storage } from './storage.js';
 import { V2 } from './v2_support.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { FileMappers } from '#api/core/infrastructure/mongodb/files/FilesMappers.js';
 
 const deduceMimeType = (_file: FileType) => {
   const file = { ..._file };
@@ -93,10 +98,19 @@ export const files = {
   },
 
   async tocReviewed(_id: string, language: string) {
-    const savedFile = await files.save({ _id, generatedToc: false });
-    const sameEntityFiles = await files.get({ entity: savedFile.entity }, { generatedToc: 1 });
+    const existingFile = (
+      await FilesDataSourceFactory.default().getById<PDFDocument>(_id)
+    ).getDataOrThrow();
+
+    const updatedFile = existingFile.update({ generatedToc: false });
+
+    await ExecutionContext.transactionManager.run(async () =>
+      FilesServiceFactory.default().bulkUpsert([updatedFile])
+    );
+
+    const sameEntityFiles = await files.get({ entity: updatedFile.entity }, { generatedToc: 1 });
     const [entity] = await entities.get({
-      sharedId: savedFile.entity,
+      sharedId: updatedFile.entity,
     });
 
     await entities.save(
@@ -112,6 +126,6 @@ export const files = {
       { user: {}, language }
     );
 
-    return savedFile;
+    return FileMappers.toDBO(updatedFile);
   },
 };

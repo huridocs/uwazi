@@ -14,7 +14,7 @@ import { FileType } from '#shared/types/fileType.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { validation } from '../utils/index.js';
 import { files } from './files.js';
-import { UpdateFileController } from '#api/core/infrastructure/express/files/UpdateFileController.js';
+import { MutateFileController } from '#api/core/infrastructure/express/files/MutateFileController.js';
 
 const checkEntityPermission = async (
   file: FileType,
@@ -105,7 +105,7 @@ export default (app: Application) => {
         body: fileSchema,
       },
     }),
-    UpdateFileController.createHandler()
+    MutateFileController.createHandler()
   );
 
   app.post(
