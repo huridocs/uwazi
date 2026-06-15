@@ -39,6 +39,9 @@ const fixtures = {
         'eng'
       ),
       originalname: 'sourceFileOriginalName.pdf',
+      mimetype: 'application/pdf',
+      size: 1000,
+      creationDate: 1000,
     },
     {
       ...fixturesFactory.fileDeprecated(

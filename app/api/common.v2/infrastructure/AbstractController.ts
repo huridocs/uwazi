@@ -9,7 +9,7 @@ import { User } from '#api/users.v2/model/User.js';
 
 export type Dependencies<RequestBody = any> = {
   response: Response;
-  request: Request<unknown, any, RequestBody>;
+  request: Request<any, any, RequestBody>;
 };
 
 export abstract class AbstractController<RequestBody = any> {

@@ -1,5 +1,4 @@
 /* eslint-disable max-statements */
-import { ObjectId } from 'mongodb';
 import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
 import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { FileNotFound } from '#api/core/domain/files/errors.js';
@@ -277,59 +276,6 @@ describe('MongoFilesDataSource', () => {
       await elasticTesting.refresh();
       //@ts-ignore
       expect((await elasticTesting.getIndexedEntities())[1].documents[0].status).toBe('failed');
-    });
-  });
-
-  describe('savePropertySelections', () => {
-    it('should merge, deduplicate and persist property selections', async () => {
-      const { ds } = createDs();
-
-      await ds.savePropertySelections(f.idString('processed1'), [
-        {
-          name: 'property1',
-          selection: {
-            text: 'updated text',
-            selectionRectangles: [{ top: 1, left: 2, width: 3, height: 4, page: '1' }],
-          },
-        },
-        {
-          name: 'new_property',
-          selection: {
-            text: 'new text',
-            selectionRectangles: [{ top: 5, left: 6, width: 7, height: 8, page: '2' }],
-          },
-        },
-        { name: 'to_be_deleted', deleteSelection: true },
-      ]);
-
-      const file = await testingEnvironment.db
-        .getCollection('files')!
-        .findOne({ _id: f.id('processed1') });
-
-      expect(file?.propertySelections).toEqual([
-        {
-          name: 'property1',
-          selection: {
-            text: 'updated text',
-            selectionRectangles: [{ top: 1, left: 2, width: 3, height: 4, page: '1' }],
-          },
-        },
-        {
-          name: 'new_property',
-          selection: {
-            text: 'new text',
-            selectionRectangles: [{ top: 5, left: 6, width: 7, height: 8, page: '2' }],
-          },
-        },
-      ]);
-    });
-
-    it('should do nothing if file does not exist', async () => {
-      const { ds } = createDs();
-
-      await expect(
-        ds.savePropertySelections(new ObjectId().toHexString(), [{ name: 'title' }])
-      ).resolves.toBeUndefined();
     });
   });
 

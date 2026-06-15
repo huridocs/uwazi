@@ -1,5 +1,6 @@
 /* eslint-disable max-statements */
 import { Request, Response } from 'express';
+import { ObjectId } from 'mongodb';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { UpdateFileController } from '../UpdateFileController.js';
 import { UpdateFileUseCaseFactory } from '#api/core/infrastructure/factories/UpdateFileUseCaseFactory.js';
@@ -9,6 +10,7 @@ import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.
 import { files } from '#api/files/files.js';
 import * as filesRoutes from '#api/files/routes.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
 
 type CreateSutProps = {
   request?: Partial<Request>;
@@ -25,17 +27,18 @@ const createSut = (props?: CreateSutProps) => {
 
   ExecutionContext.attachContext(sut, 'handleAsync', {
     factories: { logger: LoggerFactory.forTests } as any,
-    tenant: { featureFlags: { v2UpdateFile: props?.featureFlag ?? true } } as any,
   });
 
   return { sut, request, response };
 };
 
 describe('UpdateFileController', () => {
+  const file = FileBuilder.processedDocument(new ObjectId().toString());
+
   beforeEach(() => {
     jest.spyOn(UpdateFileUseCaseFactory, 'default').mockReturnValue(
       TestUtils.mockClass<UpdateFile>({
-        execute: jest.fn().mockResolvedValue({ toDTO: jest.fn().mockReturnValue({}) }),
+        execute: jest.fn().mockResolvedValue(file),
       })
     );
 
@@ -76,6 +79,10 @@ describe('UpdateFileController', () => {
       request: { body: { _id: 'file4', toc } },
     });
 
+    const sut5 = createSut({
+      request: { body: { _id: 'file5', url: 'http://example.com' } },
+    });
+
     await sut1.sut.handleAsync();
     expect(UpdateFileUseCaseFactory.default().execute).toHaveBeenCalledWith({
       fileId: 'file1',
@@ -100,6 +107,12 @@ describe('UpdateFileController', () => {
       fileId: 'file4',
       toc,
     });
+
+    await sut5.sut.handleAsync();
+    expect(UpdateFileUseCaseFactory.default().execute).toHaveBeenCalledWith({
+      fileId: 'file5',
+      url: 'http://example.com',
+    });
   });
 
   it('should validate request before calling use case', async () => {
@@ -107,62 +120,12 @@ describe('UpdateFileController', () => {
     const sutBadOptionals = createSut({
       request: { body: { _id: 'file1', language: '', originalname: '' } },
     });
-
-    await expect(sutEmptyId.sut.handleAsync()).rejects.toThrow();
-    await expect(sutBadOptionals.sut.handleAsync()).rejects.toThrow();
-  });
-
-  it('should fall back to v1 when _id is null or undefined even with v2 flag enabled', async () => {
-    const sutNoBody = createSut({ featureFlag: true, request: {} });
-    const sutNoId = createSut({ featureFlag: true, request: { body: {} } });
-    const sutUndefinedId = createSut({
-      featureFlag: true,
-      request: { body: { _id: undefined } },
-    });
-    const sutNullId = createSut({ featureFlag: true, request: { body: { _id: null } } });
-    const sutUrlCreate = createSut({
-      featureFlag: true,
-      request: {
-        body: {
-          originalname: 'doc.pdf',
-          url: 'https://example.com/doc.pdf',
-          entity: 'entity1',
-          type: 'attachment',
-        },
-      },
+    const sutBadUrl = createSut({
+      request: { body: { _id: 'file1', url: '' } },
     });
 
-    for (const sut of [sutNoBody, sutNoId, sutUndefinedId, sutNullId, sutUrlCreate]) {
-      jest.clearAllMocks();
-      jest.spyOn(files, 'save').mockResolvedValue({ _id: 'file1' } as any);
-      jest.spyOn(filesRoutes, 'checkEntityPermission').mockResolvedValue(true);
-
-      // eslint-disable-next-line no-await-in-loop
-      await sut.sut.handleAsync();
-
-      expect(files.save).toHaveBeenCalled();
-      expect(UpdateFileUseCaseFactory.default).not.toHaveBeenCalled();
-    }
-  });
-
-  it('should execute v1 use case when feature flag is off', async () => {
-    const sut1 = createSut({ featureFlag: false, request: { body: { _id: 'file1' } } });
-    const sut2 = createSut({ request: { body: { _id: 'file2' } } });
-
-    await sut1.sut.handleAsync();
-    expect(files.save).toHaveBeenCalledWith({ _id: 'file1' });
-    expect(sut1.response.json).toHaveBeenCalled();
-
-    expect(UpdateFileUseCaseFactory.default).not.toHaveBeenCalled();
-    expect(sut2.response.json).not.toHaveBeenCalled();
-
-    jest.clearAllMocks();
-
-    await sut2.sut.handleAsync();
-    expect(files.save).not.toHaveBeenCalled();
-    expect(sut1.response.json).not.toHaveBeenCalled();
-
-    expect(UpdateFileUseCaseFactory.default).toHaveBeenCalled();
-    expect(sut2.response.json).toHaveBeenCalled();
+    await expect(sutEmptyId.sut.handleAsync()).rejects.toMatchSnapshot();
+    await expect(sutBadOptionals.sut.handleAsync()).rejects.toMatchSnapshot();
+    await expect(sutBadUrl.sut.handleAsync()).rejects.toMatchSnapshot();
   });
 });
