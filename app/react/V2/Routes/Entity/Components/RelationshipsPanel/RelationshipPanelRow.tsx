@@ -5,7 +5,7 @@ import { relationshipTypesAtom } from '#V2/atoms/index.js';
 import type { PanelListEntry } from '#V2/formatters/relationships/relationshipsPanelDerivation.js';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { DirectionGlyph } from './DirectionGlyph.js';
-import { EntityPill } from './EntityPill.js';
+import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
 import { RelationshipRow } from './RelationshipRow.js';
 import { CollapsibleRelationshipRow } from './CollapsibleRelationshipRow.js';
 import { useRelationshipRowVisibility } from './useRelationshipRowVisibility.js';
@@ -66,7 +66,7 @@ const RelationshipPanelRow = ({ entry, ...handlers }: RelationshipPanelRowProps)
         evidenceCount={aggregate.markerIds.length}
         header={
           hideTargetPill ? null : (
-            <EntityPill templateId={aggregate.targetTemplateId} label={aggregate.targetTitle} />
+            <TemplatePill templateId={aggregate.targetTemplateId} label={aggregate.targetTitle} />
           )
         }
         meta={
@@ -96,7 +96,7 @@ const RelationshipPanelRow = ({ entry, ...handlers }: RelationshipPanelRowProps)
         hideTargetPill ? null : (
           <>
             {hub.members.map(member => (
-              <EntityPill
+              <TemplatePill
                 key={member.sharedId}
                 templateId={member.templateId}
                 label={member.title}

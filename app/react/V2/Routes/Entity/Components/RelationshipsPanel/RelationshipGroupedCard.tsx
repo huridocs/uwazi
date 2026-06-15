@@ -1,5 +1,6 @@
 import React, { useState, type ReactNode } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import { ColorDot } from '#V2/Components/UI/ColorDot.js';
 import { useExpandCollapseSignals } from './useExpandCollapseSignals.js';
 
 type RelationshipGroupedCardProps = {
@@ -33,13 +34,7 @@ const RelationshipGroupedCard = ({
           }`}
           aria-hidden
         />
-        {color && (
-          <span
-            className="h-2 w-2 shrink-0 rounded-[2px]"
-            style={{ backgroundColor: color }}
-            aria-hidden
-          />
-        )}
+        {color && <ColorDot color={color} size="md" />}
         <span className="truncate text-sm font-medium text-ink">{title}</span>
         <span className="ml-auto shrink-0 rounded bg-warm px-1.5 text-[10px] font-semibold tabular-nums text-ink-tertiary">
           {count}

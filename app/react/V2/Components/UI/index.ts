@@ -36,6 +36,8 @@ export { ListCardRow } from './ListCardRow.js';
 export { FacetSection } from './FacetSection.js';
 export { FiltersDrawer } from './FiltersDrawer.js';
 export { FiltersButton } from './FiltersButton.js';
+export { ColorDot } from './ColorDot.js';
+export { TemplatePill } from './TemplatePill.js';
 
 export type { PillColor } from './Pill.js';
 export type { TableProps, TableRow } from './Table/index.js';

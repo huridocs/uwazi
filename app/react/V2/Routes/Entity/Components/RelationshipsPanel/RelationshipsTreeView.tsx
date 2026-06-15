@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useAtom } from 'jotai';
-import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import {
@@ -15,6 +14,7 @@ import {
 import { RelationshipPanelRow } from './RelationshipPanelRow.js';
 import { panelEntryCount } from './RelationshipsPanelEntryList.js';
 import { RelationshipsTreeBranch, RelationshipsTreeNode } from './RelationshipsTreeBranch.js';
+import { RelationshipsEmptyView } from './RelationshipsEmptyView.js';
 import { RelationshipsGroupLabel } from './RelationshipsGroupLabel.js';
 import {
   relationshipsPanelGroupByAtom,
@@ -68,23 +68,20 @@ const RelationshipsTreeView = ({
 
   if (markers.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <LinkIcon className="mb-3 h-9 w-9 text-ink-tertiary/40" />
-        <p className="text-sm text-ink-tertiary">
-          <Translate>No relationships found</Translate>
-        </p>
-      </div>
+      <RelationshipsEmptyView>
+        <Translate>No relationships found</Translate>
+      </RelationshipsEmptyView>
     );
   }
 
   if (groupBy === 'none') {
-    return <div className="px-3 py-3">{renderEntries(markers, selfSharedId, rowProps)}</div>;
+    return <div className="py-3">{renderEntries(markers, selfSharedId, rowProps)}</div>;
   }
 
   const primaryGroups = groupMarkers(markers, groupBy, groupContext);
 
   return (
-    <div className="px-3 py-3">
+    <div className="py-3">
       {primaryGroups.map(([key, groupMarkersList]) => (
         <RelationshipsTreeBranch
           key={key || 'all'}

@@ -19,7 +19,7 @@ const RelationshipsListInfoRow = ({ stats }: RelationshipsListInfoRowProps) => {
   const groupingEnabled = groupBy !== 'none';
 
   return (
-    <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 px-3 pb-2 pt-1 text-[11px] text-ink-tertiary">
+    <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 pb-2 pt-1 text-[11px] text-ink-tertiary">
       <span className="shrink-0">
         <span className="font-semibold tabular-nums text-ink-secondary">{stats.aggregates}</span>{' '}
         <Translate>relationships</Translate>,{' '}

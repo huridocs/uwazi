@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAtom, useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
+import { ColorDot } from '#V2/Components/UI/ColorDot.js';
 import { FacetSection } from '#V2/Components/UI/FacetSection.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import { relationshipsPanelFacetCountsAtom } from './relationshipsPanelDataAtoms.js';
@@ -44,12 +45,7 @@ const RelationshipsFilterDrawerContent = () => {
         noLabelId="unknown"
         renderMarker={id => {
           const color = templateColor(id);
-          return color ? (
-            <span
-              className="h-1.5 w-1.5 shrink-0 rounded-[2px]"
-              style={{ backgroundColor: color }}
-            />
-          ) : null;
+          return color ? <ColorDot color={color} /> : null;
         }}
       />
     </>

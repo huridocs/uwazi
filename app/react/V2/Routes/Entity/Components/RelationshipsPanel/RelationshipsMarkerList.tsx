@@ -9,7 +9,6 @@ import {
 } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
 import { RelationshipGroupedCard } from './RelationshipGroupedCard.js';
 import { RelationshipsGroupLabel } from './RelationshipsGroupLabel.js';
-import { RelationshipsPanelEntries } from './RelationshipsPanelEntries.js';
 import { panelEntryCount, RelationshipsPanelEntryList } from './RelationshipsPanelEntryList.js';
 import {
   relationshipsPanelGroupByAtom,
@@ -104,7 +103,7 @@ const RelationshipsMarkerList = ({
   }, [groupBy, subGroupBy, setSubGroupBy]);
 
   if (groupBy === 'none') {
-    return <RelationshipsPanelEntries markers={markers} {...rowProps} />;
+    return <RelationshipsPanelEntryList bordered markers={markers} {...rowProps} />;
   }
 
   return renderGrouped(markers, groupBy, subGroupBy, groupContext, rowProps);

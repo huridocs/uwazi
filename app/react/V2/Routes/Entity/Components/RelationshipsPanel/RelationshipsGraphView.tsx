@@ -1,6 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { useAtomValue } from 'jotai';
-import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import {
@@ -12,6 +11,7 @@ import {
   VIEW_W,
 } from '#V2/formatters/relationships/relationshipsPanelGraph.js';
 import type { GroupLabelContext } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
+import { RelationshipsEmptyView } from './RelationshipsEmptyView.js';
 import { relationshipsPanelGroupByAtom } from './relationshipsPanelFiltersAtom.js';
 
 type RelationshipsGraphViewProps = {
@@ -43,12 +43,9 @@ const RelationshipsGraphView = ({
 
   if (nodes.length === 0) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center bg-warm py-16">
-        <LinkIcon className="mb-3 h-9 w-9 text-ink-tertiary/40" />
-        <p className="text-sm text-ink-tertiary">
-          <Translate>No relationships to graph</Translate>
-        </p>
-      </div>
+      <RelationshipsEmptyView className="flex-1 bg-warm py-16">
+        <Translate>No relationships to graph</Translate>
+      </RelationshipsEmptyView>
     );
   }
 

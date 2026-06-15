@@ -8,7 +8,7 @@ import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { scrollToRelationshipPanelAtom } from '../atoms.js';
 import { relationshipsEditModeAtom } from './relationshipsAtom.js';
 import { DirectionGlyph } from './DirectionGlyph.js';
-import { EntityPill } from './EntityPill.js';
+import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
 import { ListCardRow } from '#V2/Components/UI/ListCardRow.js';
 import { PageTag } from './PageTag.js';
 import { RelationshipRowCheckbox } from './RelationshipRowCheckbox.js';
@@ -70,7 +70,10 @@ const RelationshipRow = ({
         <div className="flex min-w-0 items-center gap-1.5">
           <RelationshipRowCheckbox relationshipId={marker._id} />
           {!hideTargetPill && (
-            <EntityPill templateId={marker.target.templateId} label={marker.target.title || '-'} />
+            <TemplatePill
+              templateId={marker.target.templateId}
+              label={marker.target.title || '-'}
+            />
           )}
         </div>
         <div className="flex shrink-0 items-center gap-1.5">

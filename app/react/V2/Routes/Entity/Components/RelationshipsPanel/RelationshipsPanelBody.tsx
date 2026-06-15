@@ -61,7 +61,7 @@ const RelationshipsPanelBody = ({
   }
 
   return (
-    <div className="px-3 py-3">
+    <div className="py-3">
       <RelationshipsMarkerList
         markers={markers}
         groupContext={groupContext}

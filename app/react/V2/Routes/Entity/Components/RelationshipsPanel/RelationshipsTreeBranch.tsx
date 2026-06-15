@@ -1,6 +1,7 @@
 import React, { Children, useState, type ReactNode } from 'react';
 import { useAtomValue } from 'jotai';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
+import { ColorDot } from '#V2/Components/UI/ColorDot.js';
 import { relationshipsPanelZoomAtom } from './relationshipsPanelFiltersAtom.js';
 import { useExpandCollapseSignals } from './useExpandCollapseSignals.js';
 
@@ -65,13 +66,7 @@ const RelationshipsTreeBranch = ({
           }`}
           aria-hidden
         />
-        {color && (
-          <span
-            className="h-2 w-2 shrink-0 rounded-[2px]"
-            style={{ backgroundColor: color }}
-            aria-hidden
-          />
-        )}
+        {color && <ColorDot color={color} size="md" />}
         <span className="truncate text-sm font-medium text-ink">{title}</span>
         <span className="ml-auto shrink-0 text-[11px] tabular-nums text-ink-tertiary">{count}</span>
       </button>

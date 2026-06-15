@@ -25,7 +25,7 @@ const RelationshipsSearchBar = () => {
   }, [hintOpen]);
 
   return (
-    <div className="flex items-center gap-1.5 px-3 pb-2 pt-0.5">
+    <div className="flex items-center gap-1.5 pb-2 pt-0.5">
       <div
         className="flex min-h-8 min-w-0 flex-1 cursor-text flex-wrap items-center gap-1 rounded-md border border-border bg-warm py-1 pl-2 pr-2 transition-all focus-within:border-ink/40 focus-within:ring-2 focus-within:ring-ink/20"
         onClick={() => inputRef.current?.focus()}
