@@ -49,6 +49,21 @@ export default {
     return dao.getByContent(contentId);
   },
 
+  async getByContents(contentIds: string[]) {
+    const dao = TemplatesDAOFactory.default();
+    return dao.getByContents(contentIds);
+  },
+
+  async getByInheritedProperties(propertyIds: string[]) {
+    const dao = TemplatesDAOFactory.default();
+    return dao.getByInheritedProperties(propertyIds);
+  },
+
+  async getByEntityViewPage(pageId: string) {
+    const dao = TemplatesDAOFactory.default();
+    return dao.getByEntityViewPage(pageId);
+  },
+
   async getDefaultTemplate() {
     const dao = TemplatesDAOFactory.default();
     return dao.getDefaultTemplate();

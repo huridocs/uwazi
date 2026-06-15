@@ -39,6 +39,22 @@ class MongoTemplatesDAO extends MongoDataSource<TemplateDBO> {
     return this.getCollection().find({ 'properties.content': contentId }).toArray();
   }
 
+  async getByContents(contentIds: string[]): Promise<TemplateDBO[]> {
+    return this.getCollection()
+      .find({ 'properties.content': { $in: contentIds } })
+      .toArray();
+  }
+
+  async getByInheritedProperties(propertyIds: string[]): Promise<TemplateDBO[]> {
+    return this.getCollection()
+      .find({ 'properties.inherit.property': { $in: propertyIds } })
+      .toArray();
+  }
+
+  async getByEntityViewPage(pageId: string): Promise<TemplateDBO[]> {
+    return this.getCollection().find({ entityViewPage: pageId }).toArray();
+  }
+
   async getDefaultTemplate(): Promise<TemplateDBO | null> {
     const template = await this.getCollection().findOne({ default: true });
     return template || null;

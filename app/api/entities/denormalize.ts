@@ -80,9 +80,7 @@ const uniqueByNameAndInheritProperty = (updates: DenormalizationUpdate[]) =>
 const oneJumpRelatedProps = async (contentId: string) => {
   const anyEntityOrDocument = '';
   const contentIds = [contentId, anyEntityOrDocument];
-  return (await templates.getByMongoQuery({ 'properties.content': { $in: contentIds } })).reduce<
-    PropWithTemplate[]
-  >(
+  return (await templates.getByContents(contentIds)).reduce<PropWithTemplate[]>(
     (props, template) =>
       props.concat(
         (template.properties || [])
@@ -127,9 +125,7 @@ const twoJumpsRelatedProps = async (contentId: string) => {
     .map<string | undefined>(p => p._id?.toString())
     .filter<string>(<(v: string | undefined) => v is string>(v => !!v));
 
-  return (
-    await templates.getByMongoQuery({ 'properties.inherit.property': { $in: contentIds } })
-  ).reduce<PropWithTemplate[]>(
+  return (await templates.getByInheritedProperties(contentIds)).reduce<PropWithTemplate[]>(
     (props, template) =>
       props.concat(
         (template.properties || []).filter(p => contentIds.includes(p.inherit?.property || ''))

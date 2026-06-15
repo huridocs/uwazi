@@ -35,9 +35,7 @@ export default {
   },
 
   async delete(sharedId: string) {
-    const templatesUsingPage = await templates.getByMongoQuery({
-      entityViewPage: sharedId,
-    });
+    const templatesUsingPage = await templates.getByEntityViewPage(sharedId);
     if (templatesUsingPage.length > 0) {
       const templatesTitles = templatesUsingPage.map(template => template.name);
       return Promise.reject(

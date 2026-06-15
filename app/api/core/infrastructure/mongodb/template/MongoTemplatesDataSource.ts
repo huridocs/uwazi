@@ -295,7 +295,7 @@ export class MongoTemplatesDataSource
       { _id: new ObjectId(id) },
       {
         $set: { 'processing.active': true },
-        // @ts-ignore when @ts-ignore when updating nested objects ts cant infer the proper type
+        // @ts-ignore when updating nested objects ts cant infer the proper type
         $inc: { 'processing.totalJobs': totalJobs },
       }
     );
