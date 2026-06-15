@@ -9,9 +9,7 @@ import syncsModel from './syncsModel.js';
 
 const removeDeletedTemplatesFromConfig = async (config: SyncConfig['config']) => {
   const newConfig = { ...config };
-  const templatesIds = (await templates.getByMongoQuery({}, '_id')).map(template =>
-    template._id.toString()
-  );
+  const templatesIds = await templates.getAllIds();
   newConfig.templates = Object.keys(newConfig.templates || {}).reduce(
     (newTemplatesConfig, templateId) => {
       if (newTemplatesConfig && templatesIds.includes(templateId)) {

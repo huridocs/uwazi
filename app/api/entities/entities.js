@@ -348,13 +348,13 @@ export default {
     if (doc.sharedId) {
       await this.updateEntity(this.sanitize(doc, template), template);
     } else {
-      const [{ languages }, [defaultTemplate]] = await Promise.all([
+      const [{ languages }, defaultTemplate] = await Promise.all([
         settings.get(),
-        templates.getByMongoQuery({ default: true }),
+        templates.getDefaultTemplate(),
       ]);
 
       if (!doc.template) {
-        doc.template = defaultTemplate._id;
+        doc.template = defaultTemplate?._id;
         docTemplate = defaultTemplate;
       }
       doc.metadata = doc.metadata || {};
@@ -391,14 +391,12 @@ export default {
     }
 
     doc.sharedId = doc.sharedId || ID();
-    const [template, [defaultTemplate]] = await Promise.all([
+    const [template, defaultTemplate] = await Promise.all([
       this.getEntityTemplate(doc, language),
-      templates.getByMongoQuery({ default: true }),
+      templates.getDefaultTemplate(),
     ]);
     let docTemplate = template;
     if (!doc.template) {
-      doc.template = defaultTemplate._id;
-      doc.metadata = {};
       docTemplate = defaultTemplate;
     }
     const entity = this.sanitize(doc, docTemplate);

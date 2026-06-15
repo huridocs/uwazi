@@ -154,46 +154,6 @@ describe('templates', () => {
     });
   });
 
-  describe('getPropertiesByName()', () => {
-    it('should get properties with the name provided', async () => {
-      const newTemplate = {
-        name: 'created template 3',
-        properties: [
-          { label: 'label', type: 'text' },
-          { label: 'Date', type: 'date' },
-        ],
-      };
-      const newTemplate2 = {
-        name: 'created template 4',
-        properties: [{ label: 'number', type: 'numeric' }],
-      };
-
-      await testingEnvironment.runWithContext(async () =>
-        TemplateFacade.createWithDefaultValues(newTemplate)
-      );
-      await testingEnvironment.runWithContext(async () =>
-        TemplateFacade.createWithDefaultValues(newTemplate2)
-      );
-
-      const properties = await templates.getPropertiesByName(['date', 'label', 'number', 'title']);
-
-      expect(properties).toMatchObject([
-        { name: 'title', type: 'text' },
-        { name: 'label', type: 'text' },
-        { name: 'date', type: 'date' },
-        { name: 'number', type: 'numeric' },
-      ]);
-    });
-
-    it('should throw an error when a property is not found', async () => {
-      try {
-        await templates.getPropertiesByName(['nonexistent property name']);
-      } catch (e) {
-        expect(e.message).toEqual('Properties not found: nonexistent property name');
-      }
-    });
-  });
-
   describe('inherit', () => {
     let savedTemplate: TemplateSchema;
     beforeAll(async () => {

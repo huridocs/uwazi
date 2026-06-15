@@ -2,7 +2,6 @@ import { ClientSession, ObjectId } from 'mongodb';
 
 import entities from '#api/entities/index.js';
 import createError from '#api/utils/Error.js';
-import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { LanguageISO6391, PropertySchema } from '#shared/types/commonTypes.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
@@ -40,6 +39,21 @@ export default {
     return dao.get(ids);
   },
 
+  async getByNames(names: string[]) {
+    const dao = TemplatesDAOFactory.default();
+    return dao.getByNames(names);
+  },
+
+  async getDefaultTemplate() {
+    const dao = TemplatesDAOFactory.default();
+    return dao.getDefaultTemplate();
+  },
+
+  async getAllIds() {
+    const dao = TemplatesDAOFactory.default();
+    return dao.getAllIds();
+  },
+
   async getByMongoQuery(query: any = {}, projection?: any) {
     return model.get(query, projection);
   },
@@ -51,33 +65,11 @@ export default {
   },
 
   async getPropertyByName(propertyName: string): Promise<PropertySchema> {
-    const [property] = await this.getPropertiesByName([propertyName]);
-    return property;
-  },
-
-  async getPropertiesByName(propertyNames: string[]): Promise<PropertySchema[]> {
-    const nameSet = new Set(propertyNames);
-    const templates = await this.getByMongoQuery({
-      $or: [
-        { 'properties.name': { $in: propertyNames } },
-        { 'commonProperties.name': { $in: propertyNames } },
-      ],
-    });
-    const allProperties = templates
-      .map(template => [template.properties || [], template.commonProperties || []])
-      .flat()
-      .flat()
-      .filter(t => nameSet.has(t.name));
-    const propertiesByName = objectIndex(
-      allProperties,
-      p => p.name,
-      p => p
-    );
-    const missingProperties = propertyNames.filter(name => !propertiesByName[name]);
-    if (missingProperties.length > 0) {
-      throw createError(`Properties not found: ${missingProperties.join(', ')}`);
+    const property = await TemplatesDAOFactory.default().getPropertyByName(propertyName);
+    if (!property) {
+      throw createError(`Properties not found: ${propertyName}`);
     }
-    return Array.from(Object.values(propertiesByName));
+    return property;
   },
 
   async delete(template: Partial<TemplateSchema>) {
