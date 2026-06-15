@@ -38,6 +38,8 @@ export { FiltersDrawer } from './FiltersDrawer.js';
 export { FiltersButton } from './FiltersButton.js';
 export { ColorDot } from './ColorDot.js';
 export { TemplatePill } from './TemplatePill.js';
+export { CollapsibleSectionHeader } from './CollapsibleSectionHeader.js';
+export { IconButton } from './IconButton.js';
 
 export type { PillColor } from './Pill.js';
 export type { TableProps, TableRow } from './Table/index.js';

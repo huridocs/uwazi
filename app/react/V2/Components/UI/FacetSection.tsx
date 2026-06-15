@@ -1,6 +1,6 @@
 import React, { useState, type ReactNode } from 'react';
-import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { checkboxInputClassName } from '#V2/Components/Forms/Checkbox.js';
+import { CollapsibleSectionHeader } from './CollapsibleSectionHeader.js';
 
 type FacetSectionProps = {
   title: ReactNode;
@@ -34,19 +34,13 @@ const FacetSection = ({
 
   return (
     <div className="border-b border-border-soft">
-      <button
-        type="button"
-        onClick={() => setOpen(current => !current)}
-        className="flex w-full cursor-pointer items-center gap-2 px-4 py-2.5 transition-colors hover:bg-warm"
-      >
-        <ChevronDownIcon
-          className={`h-3 w-3 shrink-0 text-ink-tertiary transition-transform ${open ? '' : '-rotate-90'}`}
-        />
-        <span className="text-xs font-semibold text-ink-secondary">{title}</span>
-        <span className="ml-auto text-[11px] tabular-nums text-ink-tertiary">
-          {activeCount > 0 ? `${activeCount}/${total}` : total}
-        </span>
-      </button>
+      <CollapsibleSectionHeader
+        variant="facet"
+        title={title}
+        expanded={open}
+        onToggle={() => setOpen(current => !current)}
+        count={activeCount > 0 ? `${activeCount}/${total}` : total}
+      />
       {open && (
         <div className="pb-2">
           {regularEntries.map(([id, count]) => (

@@ -1,6 +1,7 @@
 import React, { useEffect, type ReactNode } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
+import { IconButton } from './IconButton.js';
 
 type FiltersDrawerProps = {
   open: boolean;
@@ -45,14 +46,9 @@ const FiltersDrawer = ({ open, onClose, footer, children }: FiltersDrawerProps) 
           <span className="text-xs font-semibold text-ink-secondary">
             <Translate>Filters</Translate>
           </span>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close filters"
-            className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-sm text-ink-tertiary transition-colors hover:text-ink"
-          >
+          <IconButton variant="drawer" onClick={onClose} aria-label="Close filters">
             <XMarkIcon className="h-3.5 w-3.5" />
-          </button>
+          </IconButton>
         </header>
         <div className="flex-1 overflow-auto">{children}</div>
         {footer && (

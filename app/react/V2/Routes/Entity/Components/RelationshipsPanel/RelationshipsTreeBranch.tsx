@@ -1,7 +1,6 @@
 import React, { Children, useState, type ReactNode } from 'react';
 import { useAtomValue } from 'jotai';
-import { ChevronRightIcon } from '@heroicons/react/24/outline';
-import { ColorDot } from '#V2/Components/UI/ColorDot.js';
+import { CollapsibleSectionHeader } from '#V2/Components/UI/CollapsibleSectionHeader.js';
 import { relationshipsPanelZoomAtom } from './relationshipsPanelFiltersAtom.js';
 import { useExpandCollapseSignals } from './useExpandCollapseSignals.js';
 
@@ -54,22 +53,14 @@ const RelationshipsTreeBranch = ({
 
   return (
     <div>
-      <button
-        type="button"
-        onClick={() => setExpanded(current => !current)}
-        aria-expanded={expanded}
-        className="flex w-full cursor-pointer items-center gap-1.5 rounded px-2 py-1.5 text-left transition-colors hover:bg-warm/60"
-      >
-        <ChevronRightIcon
-          className={`h-3 w-3 shrink-0 transition-transform ${
-            expanded ? 'rotate-90 text-ink-secondary' : 'text-ink-tertiary'
-          }`}
-          aria-hidden
-        />
-        {color && <ColorDot color={color} size="md" />}
-        <span className="truncate text-sm font-medium text-ink">{title}</span>
-        <span className="ml-auto shrink-0 text-[11px] tabular-nums text-ink-tertiary">{count}</span>
-      </button>
+      <CollapsibleSectionHeader
+        variant="tree"
+        title={title}
+        expanded={expanded}
+        onToggle={() => setExpanded(current => !current)}
+        color={color}
+        count={count}
+      />
       {expanded && items.length > 0 && (
         <div className="ml-[14px]">
           {items.map((child, index) => (

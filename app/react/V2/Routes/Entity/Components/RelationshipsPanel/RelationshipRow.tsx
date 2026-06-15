@@ -10,6 +10,7 @@ import { relationshipsEditModeAtom } from './relationshipsAtom.js';
 import { DirectionGlyph } from './DirectionGlyph.js';
 import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
 import { ListCardRow } from '#V2/Components/UI/ListCardRow.js';
+import { IconButton } from '#V2/Components/UI/IconButton.js';
 import { PageTag } from './PageTag.js';
 import { RelationshipRowCheckbox } from './RelationshipRowCheckbox.js';
 import { useRelationshipsPanelZoom } from './useRelationshipsPanelZoom.js';
@@ -101,30 +102,30 @@ const RelationshipRow = ({
         </span>
         <div className="flex items-center gap-0.5">
           {!editMode && onView && (
-            <button
-              type="button"
+            <IconButton
+              variant="ghost"
+              showOnGroupHover
+              aria-label={t('System', 'Preview entity', null, false)}
               onClick={e => {
                 e.stopPropagation();
                 onView();
               }}
-              aria-label={t('System', 'Preview entity', null, false)}
-              className="cursor-pointer rounded p-1 text-ink-muted opacity-0 transition-all group-hover:opacity-100 hover:bg-warm hover:text-ink"
             >
               <EyeIcon className="h-3 w-3" />
-            </button>
+            </IconButton>
           )}
           {!editMode && onDelete && (
-            <button
-              type="button"
+            <IconButton
+              variant="danger"
+              showOnGroupHover
+              aria-label={t('System', 'Delete relationship', null, false)}
               onClick={e => {
                 e.stopPropagation();
                 onDelete();
               }}
-              aria-label={t('System', 'Delete relationship', null, false)}
-              className="cursor-pointer rounded p-1 text-ink-muted opacity-0 transition-all group-hover:opacity-100 hover:bg-emphasis-tint hover:text-emphasis"
             >
               <TrashIcon className="h-3 w-3" />
-            </button>
+            </IconButton>
           )}
         </div>
       </div>

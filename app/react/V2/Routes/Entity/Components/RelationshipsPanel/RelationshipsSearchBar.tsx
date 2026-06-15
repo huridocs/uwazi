@@ -6,6 +6,7 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
+import { IconButton } from '#V2/Components/UI/IconButton.js';
 import { relationshipsPanelSearchAtom } from './relationshipsPanelFiltersAtom.js';
 import { RelationshipsActiveFilterChips } from './RelationshipsActiveFilterChips.js';
 
@@ -41,35 +42,33 @@ const RelationshipsSearchBar = () => {
           className="h-6 min-w-[100px] flex-1 bg-transparent text-xs font-medium placeholder:text-ink-muted focus:outline-none"
         />
         {query && (
-          <button
-            type="button"
+          <IconButton
+            variant="clear"
+            aria-label={t('System', 'Clear search', null, false)}
             onClick={() => {
               setQuery('');
               inputRef.current?.focus();
             }}
-            aria-label={t('System', 'Clear search', null, false)}
-            className="shrink-0 cursor-pointer rounded-full p-0.5 text-ink-muted transition-colors hover:bg-parchment hover:text-ink"
           >
             <XMarkIcon className="h-3 w-3" />
-          </button>
+          </IconButton>
         )}
         <div ref={hintRef} className="relative shrink-0">
-          <button
-            type="button"
+          <IconButton
+            variant="subtle"
+            aria-label={t('System', 'Search tips', null, false)}
+            ariaExpanded={hintOpen}
             onClick={event => {
               event.stopPropagation();
               setHintOpen(open => !open);
             }}
-            aria-label={t('System', 'Search tips', null, false)}
-            aria-expanded={hintOpen}
-            className="cursor-pointer rounded-full p-0.5 text-ink-muted transition-colors hover:text-ink"
           >
             {query ? (
               <QuestionMarkCircleIcon className="h-3.5 w-3.5" />
             ) : (
               <MagnifyingGlassIcon className="h-3.5 w-3.5" />
             )}
-          </button>
+          </IconButton>
           {hintOpen && (
             <div
               role="dialog"
