@@ -47,7 +47,9 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
             id={field}
             checkboxes
             label={
-              <div className="font-semibold">
+              <div
+                className={`font-semibold ${fieldState.invalid ? 'text-(--color-theme-control-text-error)' : ''}`}
+              >
                 <Translate className="" context={context}>
                   {label}
                 </Translate>

@@ -221,7 +221,15 @@ const templates: Template[] = [
         isCommonProperty: true,
       },
     ],
-    properties: [],
+    properties: [
+      {
+        _id: '2.1',
+        type: 'markdown',
+        label: 'Report',
+        noLabel: false,
+        name: 'report',
+      },
+    ],
   },
   {
     _id: 'template3',
@@ -251,7 +259,15 @@ const templates: Template[] = [
         isCommonProperty: true,
       },
     ],
-    properties: [],
+    properties: [
+      {
+        _id: '3.1',
+        type: 'geolocation',
+        label: 'Location',
+        noLabel: false,
+        name: 'location',
+      },
+    ],
   },
 ];
 

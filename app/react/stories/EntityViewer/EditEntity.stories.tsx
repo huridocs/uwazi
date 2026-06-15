@@ -60,8 +60,8 @@ const EditEntityComponent = ({
 
   const handleSave = (updatedEntity?: Entity) => {
     if (updatedEntity) {
-      setSavedEntity(updatedEntity);
       onSave?.(updatedEntity);
+      setSavedEntity(updatedEntity);
     }
   };
 

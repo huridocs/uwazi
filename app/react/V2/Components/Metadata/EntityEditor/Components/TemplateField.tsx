@@ -40,7 +40,7 @@ const TemplateField = <TFormValues extends FieldValues = FieldValues>({
     hideFilters={hideFilters}
     singleSelect
     getSelectedValues={getTemplateSelectedValues}
-    onSelectedValuesChange={selectedValues => selectedValues[0] ?? ''}
+    onSelectedValuesChange={selectedValues => selectedValues[0] || undefined}
   />
 );
 

@@ -1,5 +1,5 @@
-/* eslint-disable max-lines */
-import React, { useMemo } from 'react';
+/* eslint-disable max-lines, max-statements */
+import React, { useEffect, useMemo } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { PropertySchema } from '#shared/types/commonTypes.js';
@@ -8,7 +8,6 @@ import { ClientThesaurus } from '#app/apiResponseTypes.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { thesauriAtom } from '#V2/atoms/thesauriAtom.js';
-import { ClientTemplateSchema } from '#V2/shared/types.js';
 import { resolvePropertyMetadataValues, toMetadataObjectSchema } from '#V2/formatters/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import {
@@ -107,60 +106,74 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
   const templates = useAtomValue(templatesAtom);
   const thesauri = useAtomValue(thesauriAtom);
 
-  const { availableTemplates, entityTemplate, metadataProperties } = useMemo(
+  const availableTemplates = useMemo(
     () =>
-      templates.reduce(
-        (
-          acc: {
-            availableTemplates: MultiselectListOption[];
-            entityTemplate: ClientTemplateSchema;
-            metadataProperties: Properties[];
-          },
-          template
-        ) => {
-          const label = t(template._id, template.name, null, false);
+      templates.map(template => {
+        const label = t(template._id, template.name, null, false);
 
-          acc.availableTemplates.push({
-            label,
-            searchLabel: label,
-            value: template._id,
-          });
-
-          if (template._id === entity?.template) {
-            acc.entityTemplate = template;
-            template.properties?.forEach(property => {
-              acc.metadataProperties.push({
-                _id: String(property._id ?? property.name),
-                type: property.type,
-                name: property.name,
-                label: property.label,
-                required: property.required,
-                content: property.content,
-              });
-            });
-          }
-
-          return acc;
-        },
-        { availableTemplates: [], entityTemplate: templates[0], metadataProperties: [] }
-      ),
-    [entity, templates]
-  );
-
-  const defaultMetadataValues = useMemo(
-    () => formatMetadataForForm(metadataProperties, entity?.metadata),
-    [entity?.metadata, metadataProperties]
+        return {
+          label,
+          searchLabel: label,
+          value: template._id,
+        };
+      }),
+    [templates]
   );
 
   const formContext = useForm<EditEntityFormValues>({
-    values: {
-      title: entity?.title ?? '',
-      template: entity?.template ?? '',
-      metadata: defaultMetadataValues,
+    defaultValues: {
+      title: entity?.title || '',
+      template: entity?.template || '',
+      metadata: formatMetadataForForm(
+        templates
+          .find(template => template._id === entity?.template)
+          ?.properties?.map(property => ({
+            _id: String(property._id ?? property.name),
+            type: property.type,
+            name: property.name,
+            label: property.label,
+            required: property.required,
+            content: property.content,
+          })) || [],
+        entity?.metadata
+      ),
     },
   });
 
-  const { handleSubmit } = formContext;
+  const { handleSubmit, watch, reset, getValues } = formContext;
+  const selectedTemplate = watch('template');
+  const metadata = watch('metadata');
+
+  const activeTemplate = useMemo(
+    () =>
+      templates.find(template => template._id === selectedTemplate) ||
+      templates.find(template => template._id === entity?.template),
+    [entity?.template, selectedTemplate, templates]
+  );
+
+  const metadataProperties = useMemo(
+    () =>
+      activeTemplate?.properties?.map(property => ({
+        _id: String(property._id ?? property.name),
+        type: property.type,
+        name: property.name,
+        label: property.label,
+        required: property.required,
+        content: property.content,
+      })) || [],
+    [activeTemplate]
+  );
+
+  const isMetadataReady = metadataProperties.every(
+    property => metadata?.[property.name] !== undefined
+  );
+
+  useEffect(() => {
+    reset({
+      ...getValues(),
+      metadata: formatMetadataForForm(metadataProperties, entity?.metadata),
+    });
+  }, [entity?.metadata, getValues, metadataProperties, reset]);
 
   const submit = handleSubmit(values => {
     if (!entity) {
@@ -201,160 +214,159 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
           options={availableTemplates}
           hideFilters
         />
+        {isMetadataReady &&
+          metadataProperties.map(property => {
+            if (
+              property.type === 'text' ||
+              property.type === 'numeric' ||
+              property.type === 'generatedid'
+            ) {
+              return (
+                <TextField<EditEntityFormValues>
+                  context={activeTemplate?._id ?? ''}
+                  label={property.label}
+                  field={`metadata.${property.name}.0.value`}
+                  registerOptions={{ required: property.required }}
+                  disabled={disabled}
+                  type={property.type === 'text' ? property.type : 'number'}
+                />
+              );
+            }
 
-        {/* eslint-disable-next-line max-statements */}
-        {metadataProperties.map(property => {
-          if (
-            property.type === 'text' ||
-            property.type === 'numeric' ||
-            property.type === 'generatedid'
-          ) {
-            return (
-              <TextField<EditEntityFormValues>
-                context={entityTemplate._id}
-                label={property.label}
-                field={`metadata.${property.name}.0.value`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-                type={property.type === 'text' ? property.type : 'number'}
-              />
-            );
-          }
+            if (property.type === 'select') {
+              return (
+                <SelectField<EditEntityFormValues>
+                  context={property.content || 'System'}
+                  label={property.label}
+                  field={`metadata.${property.name}`}
+                  registerOptions={{ required: property.required }}
+                  disabled={disabled}
+                  options={thesaurusToOptions(thesauri, property)}
+                  hideFilters
+                />
+              );
+            }
 
-          if (property.type === 'select') {
-            return (
-              <SelectField<EditEntityFormValues>
-                context={property.content || 'System'}
-                label={property.label}
-                field={`metadata.${property.name}`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-                options={thesaurusToOptions(thesauri, property)}
-                hideFilters
-              />
-            );
-          }
+            if (property.type === 'multiselect') {
+              return (
+                <MultiselectField<EditEntityFormValues>
+                  context={property.content || 'System'}
+                  label={property.label}
+                  field={`metadata.${property.name}`}
+                  registerOptions={{ required: property.required }}
+                  disabled={disabled}
+                  options={thesaurusToOptions(thesauri, property)}
+                />
+              );
+            }
 
-          if (property.type === 'multiselect') {
-            return (
-              <MultiselectField<EditEntityFormValues>
-                context={property.content || 'System'}
-                label={property.label}
-                field={`metadata.${property.name}`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-                options={thesaurusToOptions(thesauri, property)}
-              />
-            );
-          }
+            if (property.type === 'relationship') {
+              return (
+                <RelationshipField<EditEntityFormValues>
+                  context={activeTemplate?._id ?? ''}
+                  label={property.label}
+                  field={`metadata.${property.name}`}
+                  registerOptions={{ required: property.required }}
+                  disabled={disabled}
+                  options={relationshipToOptions(property, entity?.metadata)}
+                />
+              );
+            }
 
-          if (property.type === 'relationship') {
-            return (
-              <RelationshipField<EditEntityFormValues>
-                context={entityTemplate._id}
-                label={property.label}
-                field={`metadata.${property.name}`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-                options={relationshipToOptions(property, entity?.metadata)}
-              />
-            );
-          }
+            if (property.type === 'date') {
+              return (
+                <DateField<EditEntityFormValues>
+                  context={activeTemplate?._id ?? ''}
+                  label={property.label}
+                  field={`metadata.${property.name}.0.value`}
+                  registerOptions={{ required: property.required }}
+                  disabled={disabled}
+                />
+              );
+            }
 
-          if (property.type === 'date') {
-            return (
-              <DateField<EditEntityFormValues>
-                context={entityTemplate._id}
-                label={property.label}
-                field={`metadata.${property.name}.0.value`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-              />
-            );
-          }
+            if (property.type === 'daterange') {
+              return (
+                <DateRangeField<EditEntityFormValues>
+                  context={activeTemplate?._id ?? ''}
+                  label={property.label}
+                  field={`metadata.${property.name}.0.value`}
+                  registerOptions={{ required: property.required }}
+                  disabled={disabled}
+                />
+              );
+            }
 
-          if (property.type === 'daterange') {
-            return (
-              <DateRangeField<EditEntityFormValues>
-                context={entityTemplate._id}
-                label={property.label}
-                field={`metadata.${property.name}.0.value`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-              />
-            );
-          }
+            if (property.type === 'multidate') {
+              return (
+                <MultidateField<EditEntityFormValues>
+                  context={activeTemplate?._id ?? ''}
+                  label={property.label}
+                  field={`metadata.${property.name}`}
+                  registerOptions={{ required: property.required }}
+                  disabled={disabled}
+                />
+              );
+            }
 
-          if (property.type === 'multidate') {
-            return (
-              <MultidateField<EditEntityFormValues>
-                context={entityTemplate._id}
-                label={property.label}
-                field={`metadata.${property.name}`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-              />
-            );
-          }
+            if (property.type === 'multidaterange') {
+              return (
+                <MultiDateRangeField<EditEntityFormValues>
+                  context={activeTemplate?._id ?? ''}
+                  label={property.label}
+                  field={`metadata.${property.name}`}
+                  registerOptions={{ required: property.required }}
+                  disabled={disabled}
+                />
+              );
+            }
 
-          if (property.type === 'multidaterange') {
-            return (
-              <MultiDateRangeField<EditEntityFormValues>
-                context={entityTemplate._id}
-                label={property.label}
-                field={`metadata.${property.name}`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-              />
-            );
-          }
+            if (property.type === 'link') {
+              return (
+                <LinkField<EditEntityFormValues>
+                  context={activeTemplate?._id ?? ''}
+                  label={property.label}
+                  field={`metadata.${property.name}.0.value`}
+                  registerOptions={{ required: property.required }}
+                  disabled={disabled}
+                />
+              );
+            }
 
-          if (property.type === 'link') {
-            return (
-              <LinkField<EditEntityFormValues>
-                context={entityTemplate._id}
-                label={property.label}
-                field={`metadata.${property.name}.0.value`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-              />
-            );
-          }
+            if (property.type === 'geolocation') {
+              return (
+                <GeolocationField<EditEntityFormValues>
+                  context={activeTemplate?._id ?? ''}
+                  label={property.label}
+                  field={`metadata.${property.name}.0.value`}
+                  registerOptions={{ required: property.required }}
+                  disabled={disabled}
+                />
+              );
+            }
 
-          if (property.type === 'geolocation') {
-            return (
-              <GeolocationField<EditEntityFormValues>
-                context={entityTemplate._id}
-                label={property.label}
-                field={`metadata.${property.name}.0.value`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-              />
-            );
-          }
+            if (property.type === 'markdown') {
+              return (
+                <MarkdownField<EditEntityFormValues>
+                  context={activeTemplate?._id ?? ''}
+                  label={property.label}
+                  field={`metadata.${property.name}.0.value`}
+                  registerOptions={{ required: property.required }}
+                  disabled={disabled}
+                />
+              );
+            }
 
-          if (property.type === 'markdown') {
-            return (
-              <MarkdownField<EditEntityFormValues>
-                context={entityTemplate._id}
-                label={property.label}
-                field={`metadata.${property.name}.0.value`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-              />
-            );
-          }
+            if (
+              property.type === 'image' ||
+              property.type === 'media' ||
+              property.type === 'preview'
+            ) {
+              return <p no-translate="true">Image, media and preview fields not implement yet.</p>;
+            }
 
-          if (
-            property.type === 'image' ||
-            property.type === 'media' ||
-            property.type === 'preview'
-          ) {
-            <p no-translate="true">Image, media and preview fields not implement yet.</p>;
-          }
-
-          return undefined;
-        })}
+            return undefined;
+          })}
       </form>
     </FormProvider>
   );
