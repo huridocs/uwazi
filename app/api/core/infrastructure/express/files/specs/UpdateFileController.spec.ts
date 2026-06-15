@@ -1,5 +1,6 @@
 /* eslint-disable max-statements */
 import { Request, Response } from 'express';
+import { ObjectId } from 'mongodb';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { UpdateFileController } from '../UpdateFileController.js';
 import { UpdateFileUseCaseFactory } from '#api/core/infrastructure/factories/UpdateFileUseCaseFactory.js';
@@ -9,6 +10,7 @@ import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.
 import { files } from '#api/files/files.js';
 import * as filesRoutes from '#api/files/routes.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
 
 type CreateSutProps = {
   request?: Partial<Request>;
@@ -31,10 +33,12 @@ const createSut = (props?: CreateSutProps) => {
 };
 
 describe('UpdateFileController', () => {
+  const file = FileBuilder.processedDocument(new ObjectId().toString());
+
   beforeEach(() => {
     jest.spyOn(UpdateFileUseCaseFactory, 'default').mockReturnValue(
       TestUtils.mockClass<UpdateFile>({
-        execute: jest.fn().mockResolvedValue({ toDTO: jest.fn().mockReturnValue({}) }),
+        execute: jest.fn().mockResolvedValue(file),
       })
     );
 

@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { ObjectId } from 'mongodb';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { MutateFileController } from '../MutateFileController.js';
 import { CreateFileFromURLUseCaseFactory } from '#api/core/infrastructure/factories/CreateFileFromURLUseCaseFactory.js';
@@ -10,6 +11,8 @@ import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.
 import { files } from '#api/files/files.js';
 import * as filesRoutes from '#api/files/routes.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
+import { FileMappers } from '#api/core/infrastructure/mongodb/files/FilesMappers.js';
 
 type CreateSutProps = {
   request?: Partial<Request>;
@@ -31,20 +34,19 @@ const createSut = (props?: CreateSutProps) => {
 };
 
 describe('MutateFileController', () => {
+  const urlAttachment = FileBuilder.urlAttachment(new ObjectId().toString());
+  const attachment = FileBuilder.attachment(new ObjectId().toString());
+
   beforeEach(() => {
     jest.spyOn(CreateFileFromURLUseCaseFactory, 'default').mockReturnValue(
       TestUtils.mockClass<CreateFileFromURL>({
-        execute: jest
-          .fn()
-          .mockResolvedValue({ toDTO: jest.fn().mockReturnValue({ _id: 'newFile' }) }),
+        execute: jest.fn().mockResolvedValue(urlAttachment),
       })
     );
 
     jest.spyOn(UpdateFileUseCaseFactory, 'default').mockReturnValue(
       TestUtils.mockClass<UpdateFile>({
-        execute: jest
-          .fn()
-          .mockResolvedValue({ toDTO: jest.fn().mockReturnValue({ _id: 'file1' }) }),
+        execute: jest.fn().mockResolvedValue(attachment),
       })
     );
 
@@ -81,7 +83,7 @@ describe('MutateFileController', () => {
       });
       expect(UpdateFileUseCaseFactory.default().execute).not.toHaveBeenCalled();
       expect(files.save).not.toHaveBeenCalled();
-      expect(response.json).toHaveBeenCalledWith({ _id: 'newFile' });
+      expect(response.json).toHaveBeenCalledWith(FileMappers.toDBO(urlAttachment));
     });
 
     it('should throw FileTypeNotSupportedError when type is not attachment', async () => {
@@ -125,7 +127,7 @@ describe('MutateFileController', () => {
         fileId: 'file1',
         language: 'en',
       });
-      expect(response.json).toHaveBeenCalledWith({ _id: 'file1' });
+      expect(response.json).toHaveBeenCalledWith(FileMappers.toDBO(attachment));
     });
 
     it('should pass originalname and toc to UpdateFile use case', async () => {
