@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useRevalidator } from 'react-router';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
@@ -6,14 +6,14 @@ import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { Entity, FileType } from '#V2/api/entities/types.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
-import { relationshipTypesAtom } from '#V2/atoms/index.js';
+import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import { searchByTitle } from '#V2/api/entities/index.js';
 import { deleteReference, saveTextReference } from '#V2/api/relationships/index.js';
 import { ConfirmationModal, BlankState } from '#V2/Components/UI/index.js';
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { CreateReference } from './CreateReference.js';
-import { RelationshipRow } from './RelationshipRow.js';
+import { RelationshipsMarkerList } from './RelationshipsMarkerList.js';
 import { RelationshipsPanelToolbar } from './RelationshipsPanelToolbar.js';
 import {
   useRelationships,
@@ -33,6 +33,7 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
   const [relationshipToDelete, setRelationshipToDelete] = useState<RelationshipMarker | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
+  const templates = useAtomValue(templatesAtom);
   const { createReferenceSelection, createReferenceMode } = useRelationships();
   const { setCreateReferenceSelection } = useRelationshipsActions();
   const revalidator = useRevalidator();
@@ -41,6 +42,21 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
   const { markers, stats, hasRelationships } = useRelationshipsPanelData(entity);
   const resetEditMode = useSetAtom(relationshipsEditModeAtom);
   const resetSelected = useSetAtom(selectedRelationshipIdsAtom);
+
+  const groupContext = useMemo(
+    () => ({
+      selfSharedId: entity?.sharedId ?? '',
+      selfTitle: entity?.title ?? '',
+      selfTemplateId: entity?.template ?? '',
+      relationshipTypeName: (typeId: string) =>
+        relationshipTypes.find(type => type._id === typeId)?.name ?? typeId,
+      templateName: (templateId: string) =>
+        templates.find(template => template._id === templateId)?.name ?? templateId,
+      templateColor: (templateId: string) =>
+        templates.find(template => template._id === templateId)?.color,
+    }),
+    [entity?.sharedId, entity?.title, entity?.template, relationshipTypes, templates]
+  );
 
   useEffect(
     () => () => {
@@ -194,19 +210,15 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
       );
     }
     return (
-      <div className="overflow-hidden rounded-md border border-border/60 bg-paper">
-        {markers.map((marker, index) => (
-          <RelationshipRow
-            key={marker._id || `relationship-${index}`}
-            marker={marker}
-            selfSharedId={entity?.sharedId ?? ''}
-            isSelected={activeRelationshipId === marker._id}
-            onClick={() => handleRelationshipClick(marker)}
-            onView={() => handleViewClick(marker)}
-            onDelete={() => handleDeleteClick(marker)}
-          />
-        ))}
-      </div>
+      <RelationshipsMarkerList
+        markers={markers}
+        groupContext={groupContext}
+        selfSharedId={entity?.sharedId ?? ''}
+        activeRelationshipId={activeRelationshipId}
+        onClick={handleRelationshipClick}
+        onView={handleViewClick}
+        onDelete={handleDeleteClick}
+      />
     );
   })();
 

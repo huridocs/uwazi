@@ -1,3 +1,4 @@
+import { Relationship } from '#api/relationships.v2/model/Relationship.js';
 import { Entity } from '#V2/api/entities/types.js';
 import {
   computeStats,
@@ -82,6 +83,37 @@ describe('relationshipsPanelProjection', () => {
     expect(sorted[1]?.anchor?.selections?.[0]?.page).toBe(2);
   });
 
+  it('sorts text-anchored markers before entity-level on appearance sort', () => {
+    const withEntityLevel = {
+      ...entity,
+      relations: [
+        ...((entity.relations ?? []) as Relationship[]),
+        {
+          template: 'relC',
+          _id: 'c5',
+          hub: 'h3',
+          entity: 'self1',
+        },
+        {
+          template: null,
+          _id: 'c6',
+          hub: 'h3',
+          entity: 'target2',
+          entityData: { title: 'Other', template: 't2' },
+        },
+      ],
+    } as Entity;
+    const { markers } = projectRelationshipsPanel(withEntityLevel);
+    const sorted = filterAndSortMarkers(markers, {
+      searchQuery: '',
+      sortOrder: 'appearance',
+      relationshipTypeName: () => '',
+    });
+    const firstUnanchored = sorted.findIndex(marker => !marker.anchor);
+    expect(firstUnanchored).toBeGreaterThan(0);
+    expect(sorted.slice(0, firstUnanchored).every(marker => marker.anchor)).toBe(true);
+  });
+
   it('computes stats for a marker subset', () => {
     const { markers } = projectRelationshipsPanel(entity);
     expect(computeStats(markers.slice(0, 1))).toEqual({
@@ -89,5 +121,29 @@ describe('relationshipsPanelProjection', () => {
       entities: 1,
       aggregates: 1,
     });
+  });
+
+  it('counts text-anchored markers as references', () => {
+    const withEntityLevel = {
+      ...entity,
+      relations: [
+        ...((entity.relations ?? []) as Relationship[]),
+        {
+          template: 'relC',
+          _id: 'c5',
+          hub: 'h3',
+          entity: 'self1',
+        },
+        {
+          template: null,
+          _id: 'c6',
+          hub: 'h3',
+          entity: 'target2',
+          entityData: { title: 'Other', template: 't2' },
+        },
+      ],
+    } as Entity;
+    const { stats } = projectRelationshipsPanel(withEntityLevel);
+    expect(stats).toEqual({ references: 2, entities: 2, aggregates: 3 });
   });
 });

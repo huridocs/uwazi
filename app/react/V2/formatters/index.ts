@@ -15,5 +15,15 @@ export {
   filterAndSortMarkers,
   computeStats,
 } from './relationships/relationshipsPanelProjection.js';
+export {
+  groupingOptions,
+  groupMarkers,
+  getGroupLabel,
+  getGroupColor,
+} from './relationships/relationshipsPanelGrouping.js';
+export type {
+  RelationshipsPanelGroupBy,
+  GroupLabelContext,
+} from './relationships/relationshipsPanelGrouping.js';
 export { formatNestedProperty } from './metadata/formatNestedProperty.js';
 export { formatDenormalizedNewRelationship } from './metadata/formatDenormalizedNewRelationship.js';

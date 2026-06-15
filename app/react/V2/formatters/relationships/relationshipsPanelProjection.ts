@@ -19,7 +19,7 @@ const aggregateKey = (marker: RelationshipMarker): string =>
   `${marker.target.sharedId}::${marker.view.type}`;
 
 const computeStats = (markers: RelationshipMarker[]): RelationshipsPanelStats => ({
-  references: markers.length,
+  references: markers.filter(marker => marker.anchor).length,
   entities: new Set(markers.map(marker => marker.target.sharedId)).size,
   aggregates: new Set(markers.map(aggregateKey)).size,
 });
@@ -33,8 +33,12 @@ const markerHaystack = (marker: RelationshipMarker, relationshipTypeName: string
   `${marker.anchor?.text ?? ''} ${marker.target.title} ${relationshipTypeName}`.toLowerCase();
 
 const compareAppearance = (a: RelationshipMarker, b: RelationshipMarker): number => {
-  const pageA = a.anchor?.selections?.[0]?.page ?? -1;
-  const pageB = b.anchor?.selections?.[0]?.page ?? -1;
+  const anchorRank = (marker: RelationshipMarker) => (marker.anchor ? 0 : 1);
+  const rankDiff = anchorRank(a) - anchorRank(b);
+  if (rankDiff !== 0) return rankDiff;
+
+  const pageA = a.anchor?.selections?.[0]?.page ?? 0;
+  const pageB = b.anchor?.selections?.[0]?.page ?? 0;
   if (pageA !== pageB) return pageA - pageB;
   const topA = a.anchor?.selections?.[0]?.top ?? 0;
   const topB = b.anchor?.selections?.[0]?.top ?? 0;
