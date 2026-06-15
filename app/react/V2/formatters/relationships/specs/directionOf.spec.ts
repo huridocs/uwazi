@@ -2,6 +2,7 @@ import { directionOf, type RelationshipView } from '../types.js';
 
 const outgoingView: RelationshipView = {
   _id: 'out',
+  hub: 'hub-out',
   type: 'rel',
   relationTypeOnSelf: false,
   from: {
@@ -23,6 +24,7 @@ const outgoingView: RelationshipView = {
 
 const incomingView: RelationshipView = {
   _id: 'in',
+  hub: 'hub-in',
   type: 'rel',
   relationTypeOnSelf: true,
   from: {
@@ -54,6 +56,7 @@ describe('directionOf', () => {
   it('returns outgoing for entity-level links where the partner carries the type', () => {
     const entityLevel: RelationshipView = {
       _id: 'el-out',
+      hub: 'hub-el-out',
       type: 'rel',
       relationTypeOnSelf: false,
       from: {
@@ -76,6 +79,7 @@ describe('directionOf', () => {
   it('returns incoming for entity-level links where self carries the type', () => {
     const entityLevel: RelationshipView = {
       _id: 'el-in',
+      hub: 'hub-el-in',
       type: 'rel',
       relationTypeOnSelf: true,
       from: {

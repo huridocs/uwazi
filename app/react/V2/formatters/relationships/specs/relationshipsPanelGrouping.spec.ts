@@ -21,6 +21,7 @@ const marker = (
   _id: id,
   view: {
     _id: id,
+    hub: overrides.view?.hub ?? `hub-${id}`,
     type: overrides.type ?? 'relA',
     from: {
       type: 'entity',

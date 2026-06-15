@@ -28,6 +28,7 @@ const makeMarker = (
     _id,
     view: {
       _id,
+      hub: `h-${_id}`,
       type: 'relType',
       from,
       to: {

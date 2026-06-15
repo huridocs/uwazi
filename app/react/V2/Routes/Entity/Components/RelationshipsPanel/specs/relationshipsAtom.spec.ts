@@ -13,6 +13,7 @@ const selection: TextSelection = {
 
 const relationship: RelationshipView = {
   _id: 'rel-1',
+  hub: 'h1',
   type: 'rel-type',
   from: {
     type: 'entity',

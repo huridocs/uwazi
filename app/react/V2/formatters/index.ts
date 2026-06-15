@@ -25,5 +25,12 @@ export type {
   RelationshipsPanelGroupBy,
   GroupLabelContext,
 } from './relationships/relationshipsPanelGrouping.js';
+export { buildPanelListEntries } from './relationships/relationshipsPanelDerivation.js';
+export { buildGraphLayout } from './relationships/relationshipsPanelGraph.js';
+export type {
+  PanelListEntry,
+  RelationshipAggregate,
+  RelationshipHub,
+} from './relationships/relationshipsPanelDerivation.js';
 export { formatNestedProperty } from './metadata/formatNestedProperty.js';
 export { formatDenormalizedNewRelationship } from './metadata/formatDenormalizedNewRelationship.js';

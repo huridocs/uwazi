@@ -15,6 +15,7 @@ import {
   pdfController,
   scrollToRelationshipPanelAtom,
 } from '../../Components/atoms.js';
+import { relationshipsPanelActiveClusterRefIdsAtom } from '../../Components/RelationshipsPanel/relationshipsPanelFiltersAtom.js';
 import { useRelationshipSelection } from '../../Components/useRelationshipSelection.js';
 import { SIDE_TAB } from '../tabIds.js';
 
@@ -32,6 +33,9 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
   const setPDFControlsAtom = useSetAtom(pdfController);
   const [selectedText, setSelectedText] = useAtom(documentPdfSelectionAtom);
   const setScrollToRelationshipPanel = useSetAtom(scrollToRelationshipPanelAtom);
+  const [activeClusterRefIds, setActiveClusterRefIds] = useAtom(
+    relationshipsPanelActiveClusterRefIdsAtom
+  );
   const { activeRelationshipId, selectRelationship } = useRelationshipSelection();
   const { addEntry } = useTocActions();
   const { setCreateReferenceSelection } = useRelationshipsActions();
@@ -136,6 +140,43 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
     [entity, openRelationshipsSideTab, selectRelationship]
   );
 
+  const handleClusterClick = useCallback(
+    (markers: RelationshipMarker[]) => {
+      if (!entity || markers.length === 0) return;
+      const clusterPage = markers[0]?.anchor?.selections?.[0]?.page;
+      if (!clusterPage) return;
+
+      const ids = markers.map(marker => marker._id);
+      const isSameCluster =
+        activeClusterRefIds !== null &&
+        activeClusterRefIds.length === ids.length &&
+        ids.every(id => activeClusterRefIds.includes(id));
+
+      if (isSameCluster) {
+        setActiveClusterRefIds(null);
+        return;
+      }
+
+      setActiveClusterRefIds(ids);
+      openRelationshipsSideTab();
+      mainPdfController?.goToPage(clusterPage);
+    },
+    [
+      activeClusterRefIds,
+      entity,
+      mainPdfController,
+      openRelationshipsSideTab,
+      setActiveClusterRefIds,
+    ]
+  );
+
+  useEffect(
+    () => () => {
+      setActiveClusterRefIds(null);
+    },
+    [entity?.sharedId, setActiveClusterRefIds]
+  );
+
   const handleHighlightClick = useCallback(
     (relationshipId: string) => {
       openRelationshipsSideTab();
@@ -212,6 +253,7 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
     handlePageNavigation,
     handlePageChange,
     handleRailPointClick,
+    handleClusterClick,
     handleHighlightClick,
     onPdfReady,
   };

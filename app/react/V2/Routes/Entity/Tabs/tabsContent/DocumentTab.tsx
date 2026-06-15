@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useAtomValue } from 'jotai';
 import { PDF } from '#V2/Components/PDFViewer/index.js';
 import { RelationshipsDisplay } from '#V2/Components/Relationships/index.js';
-import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { DocumentViewModeSelect } from '../../Components/DocumentViewModeSelect.js';
 import { PlainText } from '../../Components/PlainText.js';
-import { pdfController } from '../../Components/atoms.js';
 import { useDocumentPdfView } from '../hooks/useDocumentPdfView.js';
 
 type DocumentTabProps = {
@@ -33,14 +30,13 @@ const DocumentTab = ({
     handlePageChange,
     handleHighlightClick,
     handleRailPointClick,
+    handleClusterClick,
     onPdfReady,
   } = useDocumentPdfView({ mainDocument, entity });
 
-  const mainPdfController = useAtomValue(pdfController);
   const isMobile = useIsMobile();
   const [pdfScrollRoot, setPdfScrollRoot] = useState<HTMLDivElement | null>(null);
   const [pageHeight, setPageHeight] = useState<number | undefined>();
-  const [currentClusterPage, setCurrentClusterPage] = useState<number | null>(null);
 
   useEffect(() => {
     if (isRaw) {
@@ -74,15 +70,6 @@ const DocumentTab = ({
     };
   }, [isRaw, pageNumber]);
 
-  const onClusterClick = (markers: RelationshipMarker[]) => {
-    const clusterPage = markers?.[0]?.anchor?.selections?.[0]?.page;
-    if (!clusterPage) return;
-    if (clusterPage !== currentClusterPage) {
-      setCurrentClusterPage(clusterPage);
-      mainPdfController?.goToPage(clusterPage);
-    }
-  };
-
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col gap-3 overflow-hidden">
       {showViewModeSelect ? (
@@ -115,7 +102,7 @@ const DocumentTab = ({
             pageHeight={pageHeight}
             activeRelationshipId={activeRelationshipId}
             onPointClick={handleRailPointClick}
-            onClusterClick={onClusterClick}
+            onClusterClick={handleClusterClick}
           />
         )}
       </div>

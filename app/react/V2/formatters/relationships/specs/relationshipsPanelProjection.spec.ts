@@ -146,4 +146,38 @@ describe('relationshipsPanelProjection', () => {
     const { stats } = projectRelationshipsPanel(withEntityLevel);
     expect(stats).toEqual({ references: 2, entities: 2, aggregates: 3 });
   });
+
+  it('filters markers by relation type facet', () => {
+    const { markers } = projectRelationshipsPanel(entity);
+    const filtered = filterAndSortMarkers(markers, {
+      searchQuery: '',
+      sortOrder: 'none',
+      relationshipTypeName: id => (id === 'relA' ? 'Type A' : 'Type B'),
+      relTypeFilters: { relA: true },
+    });
+    expect(filtered).toHaveLength(1);
+    expect(filtered[0]?.view.type).toBe('relA');
+  });
+
+  it('filters markers by active cluster ids', () => {
+    const { markers } = projectRelationshipsPanel(entity);
+    const filtered = filterAndSortMarkers(markers, {
+      searchQuery: '',
+      sortOrder: 'none',
+      relationshipTypeName: () => '',
+      activeClusterRefIds: [markers[0]?._id ?? ''],
+    });
+    expect(filtered).toHaveLength(1);
+  });
+
+  it('filters markers with boolean search', () => {
+    const { markers } = projectRelationshipsPanel(entity);
+    const filtered = filterAndSortMarkers(markers, {
+      searchQuery: 'alpha NOT beta',
+      sortOrder: 'none',
+      relationshipTypeName: () => '',
+    });
+    expect(filtered).toHaveLength(1);
+    expect(filtered[0]?.anchor?.text).toContain('alpha');
+  });
 });

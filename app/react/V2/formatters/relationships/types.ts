@@ -35,6 +35,7 @@ type Pointer = EntityPointer | FilePointer | TextReferencePointer;
 
 interface RelationshipView {
   readonly _id: string;
+  readonly hub: string;
   readonly type: string;
   readonly relationshipTypeName?: string;
   readonly from: Pointer;

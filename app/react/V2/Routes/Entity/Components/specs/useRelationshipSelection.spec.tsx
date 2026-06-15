@@ -17,6 +17,7 @@ const marker: RelationshipMarker = {
   _id: 'ref-partner-0',
   view: {
     _id: 'ref-partner-0',
+    hub: 'h1',
     type: 'rel-type',
     from: {
       type: 'textReference',

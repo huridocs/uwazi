@@ -8,6 +8,9 @@ import {
   projectRelationshipsPanel,
 } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
 import {
+  relationshipsPanelActiveClusterRefIdsAtom,
+  relationshipsPanelEntityTypeFiltersAtom,
+  relationshipsPanelRelTypeFiltersAtom,
   relationshipsPanelSearchAtom,
   relationshipsPanelSortAtom,
 } from './relationshipsPanelFiltersAtom.js';
@@ -15,6 +18,9 @@ import {
 const useRelationshipsPanelData = (entity?: Entity) => {
   const searchQuery = useAtomValue(relationshipsPanelSearchAtom);
   const sortOrder = useAtomValue(relationshipsPanelSortAtom);
+  const relTypeFilters = useAtomValue(relationshipsPanelRelTypeFiltersAtom);
+  const entityTypeFilters = useAtomValue(relationshipsPanelEntityTypeFiltersAtom);
+  const activeClusterRefIds = useAtomValue(relationshipsPanelActiveClusterRefIdsAtom);
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
 
   const projection = useMemo(
@@ -33,13 +39,29 @@ const useRelationshipsPanelData = (entity?: Entity) => {
         searchQuery,
         sortOrder,
         relationshipTypeName,
+        relTypeFilters,
+        entityTypeFilters,
+        activeClusterRefIds,
       }),
-    [projection.markers, searchQuery, sortOrder, relationshipTypeName]
+    [
+      projection.markers,
+      searchQuery,
+      sortOrder,
+      relationshipTypeName,
+      relTypeFilters,
+      entityTypeFilters,
+      activeClusterRefIds,
+    ]
   );
 
   const stats = useMemo(() => computeStats(markers), [markers]);
 
-  return { markers, stats, hasRelationships: projection.markers.length > 0 };
+  return {
+    markers,
+    sourceMarkers: projection.markers,
+    stats,
+    hasRelationships: projection.markers.length > 0,
+  };
 };
 
 export { useRelationshipsPanelData };

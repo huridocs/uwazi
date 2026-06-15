@@ -1,4 +1,5 @@
 Key,Greek
+"""exact phrase""","""exact phrase"""
 *please keep this key secret and don't share it.,*κρατήστε μυστικό αυτό το κλειδί και μην το μοιραστείτε με κανέναν.
 + click to select multiple cards.,+ κάντε κλικ για να επιλέξετε πολλαπλές κάρτες.
 2FA,2FA
@@ -8,6 +9,7 @@ A generated ID will be the default title.,Ως προεπιλεγμένος τί
 A source template must,Ένα πρότυπο προέλευσης πρέπει
 A target template needs to have the following properties,Ένα πρότυπο προορισμού πρέπει να έχει τις ακόλουθες ιδιότητες
 A valid email is required,Απαιτείται έγκυρη διεύθυνση email
+A → Z,A → Z
 Accept,Αποδοχή
 Accepted suggestion on entity,Η πρόταση για την οντότητα έγινε αποδεκτή
 Accepting suggestions,Αποδοχή προτάσεων
@@ -92,6 +94,7 @@ An error has occurred while uninstalling a language:,An error has occurred while
 An error occurred,Παρουσιάστηκε σφάλμα
 Analytics,Αναλυτικά στοιχεία
 Analytics description,"Αν θέλετε να παρακολουθείτε αναλυτικά στοιχεία σχετικά με τις επισκέψεις στη συλλογή σας, το Uwazi υποστηρίζει τόσο το Google Analytics όσο και το Matomo."
+AND OR NOT,AND OR NOT
 Any entity,Οποιαδήποτε οντότητα
 Apply,Εφαρμογή
 Are you sure you want to continue?,Θέλετε σίγουρα να συνεχίσετε;
@@ -159,6 +162,7 @@ Chrome header,Chrome header
 Clear,Εκκαθάριση
 Clear all,Εκκαθάριση όλων
 Clear All,Εκκαθάριση όλων
+Clear all filters,Clear all filters
 Clear coordinates,Εκκαθάριση συντεταγμένων
 Clear Filters,Εκκαθάριση φίλτρων
 Clear PDF selection,Εκκαθάριση επιλογής PDF
@@ -431,6 +435,7 @@ Forms and email configuration,Διαμόρφωση φορμών και email
 From,Από
 From all suggestions,Από όλες τις προτάσεις
 From previous step,Από το προηγούμενο βήμα
+From selection,From selection
 Full mode,Full mode
 Full width,Πλήρες πλάτος
 General,Γενικά
@@ -465,6 +470,7 @@ Hide restricted relationships from public,Hide restricted relationships from pub
 Hide toolbar,Απόκρυψη γραμμής εργαλείων
 HTML,HTML
 https://yourdomain,https://yourdomain
+hub,hub
 hubs,κόμβοι
 Hybrid,Υβριδικό
 Icon,Εικονίδιο
@@ -665,6 +671,7 @@ No relationship types available,No relationship types available
 No Relationships,Δεν υπάρχουν σχέσεις
 No Relationships description,Οι σχέσεις είναι δεσμοί μεταξύ οντοτήτων.
 No relationships found,No relationships found
+No relationships to graph,No relationships to graph
 No releases yet,No releases yet
 No results found,No results found
 No table of contents,Δεν υπάρχει πίνακας περιεχομένων
@@ -733,6 +740,7 @@ Paragraph Extractor added,Προστέθηκε εξαγωγέας παραγρά
 Paragraph text extraction property (rich text),Ιδιότητα εξαγωγής κειμένου παραγράφου (εμπλουτισμένο κείμενο)
 Paragraphs,Παράγραφοι
 Paragraphs deleted,Οι παράγραφοι διαγράφηκαν
+parties,parties
 Password,Κωδικός πρόσβασης
 Password + 2fa,Κωδικός πρόσβασης + 2fa
 Password changed success,Ο κωδικός πρόσβασης άλλαξε επιτυχώς
@@ -869,6 +877,7 @@ Reviewed,Προεπισκόπηθηκε
 Role,Ρόλος
 Route,Διαδρομή
 Row,Σειρά
+Row density,Row density
 Rows failed,Rows failed
 Rows processed,Rows processed
 Sample,Δείγμα
@@ -883,7 +892,7 @@ Saving...,Saving...
 Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,Αναζήτηση
-"Search by title, text, or type","Search by title, text, or type"
+"Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
 Search item,Αναζήτηση στοιχείου
 Search related entities or documents,Αναζήτηση σχετικών οντοτήτων ή εγγράφων
 Search relationships,Search relationships
@@ -891,6 +900,7 @@ Search relevance,Συνάφεια αναζήτησης
 Search text,Aναζήτηση κείμενου
 Search text description,Πληκτρολογήστε κάτι στο πλαίσιο αναζήτησης για να λάβετε αποτελέσματα.
 Search Tips,Συμβουλές αναζήτησης
+Search tips,Search tips
 Search Tips: boolean,"AND, OR και NOT για αναζητήσεις boolean. Δηλαδή ""status AND women NOT Nicaragua"" θα αντιστοιχίσει οτιδήποτε περιέχει και τις δύο λέξεις status και women, και κατ' ανάγκη δεν περιέχει τη λέξη Nicaragua."
 Search Tips: exact term,"Ακριβής αντιστοιχία όρου περικλείοντας τη φράση αναζήτησης με εισαγωγικά. Δηλαδή ""Costa Rica"" θα δώσει διαφορετικά αποτελέσματα σε σύγκριση με Costa Rica χωρίς εισαγωγικά."
 Search Tips: one char wildcard,"? για μπαλαντέρ ενός χαρακτήρα. Δηλαδή: ""198?"" θα αντιστοιχίσει από το 1980 έως το 1989 και επίσης 198a, 198b, κ.λπ."
@@ -973,6 +983,7 @@ Source template,Πρότυπο πηγής
 Source Template,Πρότυπο πηγής
 Source's role in the relationship Source-Target.,Ο ρόλος της πηγής στη σχέση πηγή-στόχος.
 Stage,Stage
+stat*,stat*
 State,Πολιτεία
 Statistics,Στατιστικά στοιχεία
 Stats & Filters,Στατιστικά & φίλτρα
@@ -1003,6 +1014,7 @@ Table of Contents,Πίνακας περιεχομένων
 Table of contents,Πίνακας περιεχομένων
 Table of contents saved successfully,Table of contents saved successfully
 Table view,Προβολή πίνακα
+Target entity type,Target entity type
 Target relationship type,Τύπος σχέσης στόχου
 Target Template,Πρότυπο στόχου
 Target template,Πρότυπο στόχου
@@ -1215,6 +1227,7 @@ will be updated with the same value.,θα ενημερωθεί με την ίδ�
 Will show the entire media inside the container.,Θα εμφανίσει ολόκληρο το πολυμέσο μέσα στο περιέχον.
 with,με
 With great power comes great responsibility!,Με τη μεγάλη δύναμη έρχεται και η μεγάλη ευθύνη!
+wom?n,wom?n
 x less,λιγότερα
 x more,περισσότερα
 Year,Έτος
@@ -1232,7 +1245,15 @@ You should activate this feature for enhanced account security,Θα πρέπει
 You should activate this feature for enhanced account security.,Θα πρέπει να ενεργοποιήσετε αυτή τη λειτουργία για αυξημένη ασφάλεια λογαριασμού.
 You won't be able to save an entity if this property is empty.,Δεν θα μπορείτε να αποθηκεύσετε μια οντότητα αν αυτή η ιδιότητα είναι κενή.
 Your account's security is enhanced with two-factor authentication.,Η ασφάλεια του λογαριασμού σας ενισχύεται με την πιστοποίηση ταυτότητας δύο παραγόντων.
+Z → A,Z → A
 Zoom in,Μεγέθυνση
 Zoom in library view,Μεγέθυνση προβολής βιβλιοθήκης
 Zoom out,Σμίκρυνση
 Zoom out library view,Σμίκρυνση προβολής βιβλιοθήκης
+— boolean,— boolean
+"— group
+                  expressions","— group
+                  expressions"
+— match verbatim,— match verbatim
+— one character,— one character
+— wildcard,— wildcard

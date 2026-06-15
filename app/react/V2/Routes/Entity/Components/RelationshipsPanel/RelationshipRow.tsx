@@ -7,6 +7,7 @@ import { directionOf } from '#V2/formatters/relationships/types.js';
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { scrollToRelationshipPanelAtom } from '../atoms.js';
 import { relationshipsEditModeAtom } from './relationshipsAtom.js';
+import { relationshipsPanelZoomAtom } from './relationshipsPanelFiltersAtom.js';
 import { DirectionGlyph } from './DirectionGlyph.js';
 import { EntityPill } from './EntityPill.js';
 import { ListCardRow } from './ListCardRow.js';
@@ -37,6 +38,9 @@ const RelationshipRow = ({
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const templates = useAtomValue(templatesAtom);
   const editMode = useAtomValue(relationshipsEditModeAtom);
+  const zoom = useAtomValue(relationshipsPanelZoomAtom);
+  const compact = zoom === 'compact';
+  const overview = zoom === 'overview';
   const referenceText = marker.anchor?.text?.trim() ?? '';
   const referencePage = marker.anchor?.selections?.[0]?.page;
   const templateName =
@@ -46,6 +50,11 @@ const RelationshipRow = ({
     marker.view.relationshipTypeName ??
     '';
   const direction = directionOf(marker.view, selfSharedId);
+  const rowPadding = (() => {
+    if (overview) return '!py-1.5';
+    if (compact) return '!py-2';
+    return undefined;
+  })();
 
   useEffect(() => {
     if (scrollToRelationshipId !== marker._id) {
@@ -56,19 +65,32 @@ const RelationshipRow = ({
   }, [marker._id, scrollToRelationshipId, setScrollToRelationshipId]);
 
   return (
-    <ListCardRow ref={rowRef} selected={Boolean(isSelected)} onClick={onClick}>
-      <div className="mb-1.5 flex items-start justify-between gap-2">
+    <ListCardRow
+      ref={rowRef}
+      selected={Boolean(isSelected)}
+      onClick={onClick}
+      className={rowPadding}
+    >
+      <div className={`flex items-start justify-between gap-2 ${overview ? 'mb-0' : 'mb-1.5'}`}>
         <div className="flex min-w-0 items-center gap-1.5">
           <RelationshipRowCheckbox relationshipId={marker._id} />
           <EntityPill templateId={marker.target.templateId} label={marker.target.title || '-'} />
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
-          {templateName && <span className="text-[10px] text-ink-tertiary">{templateName}</span>}
+          {templateName && !overview && (
+            <span className="text-[10px] text-ink-tertiary">{templateName}</span>
+          )}
           {referencePage !== undefined && <PageTag page={referencePage} onClick={onClick} />}
         </div>
       </div>
-      {referenceText && (
-        <p className="line-clamp-2 text-xs leading-relaxed text-ink-secondary">{referenceText}</p>
+      {referenceText && !overview && (
+        <p
+          className={`text-xs leading-relaxed text-ink-secondary ${
+            compact ? 'line-clamp-1' : 'line-clamp-2'
+          }`}
+        >
+          {referenceText}
+        </p>
       )}
       <div className="mt-1 flex items-center justify-between text-[10px] text-ink-tertiary">
         <span className="flex items-center gap-1">

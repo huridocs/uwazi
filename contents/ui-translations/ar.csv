@@ -1,4 +1,5 @@
 Key,Arabic
+"""exact phrase""","""exact phrase"""
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
 2FA,2FA
@@ -8,6 +9,7 @@ A generated ID will be the default title.,سيكون معرف تم إنشاؤه 
 A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,البريد الإلكتروني مطلوب
+A → Z,A → Z
 Accept,قبول
 Accepted suggestion on entity,Accepted suggestion on entity
 Accepting suggestions,Accepting suggestions
@@ -92,6 +94,7 @@ An error has occurred while uninstalling a language:,An error has occurred while
 An error occurred,An error occurred
 Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
+AND OR NOT,AND OR NOT
 Any entity,Any entity
 Apply,Apply
 Are you sure you want to continue?,Are you sure you want to continue?
@@ -157,6 +160,7 @@ Chrome header,Chrome header
 Clear,Clear
 Clear all,Clear all
 Clear All,Clear All
+Clear all filters,Clear all filters
 Clear coordinates,مسح الإحداثيات
 Clear Filters,مسح عوامل التصفية
 Clear PDF selection,Clear PDF selection
@@ -429,6 +433,7 @@ Forms and email configuration,تكوين النماذج والبريد الإل�
 From,From
 From all suggestions,From all suggestions
 From previous step,From previous step
+From selection,From selection
 Full mode,Full mode
 Full width,Full width
 General,عام
@@ -463,6 +468,7 @@ Hide restricted relationships from public,Hide restricted relationships from pub
 Hide toolbar,Hide toolbar
 HTML,HTML
 https://yourdomain,https://yourdomain
+hub,hub
 hubs,محاور
 Hybrid,هجين
 Icon,أيقونة
@@ -663,6 +669,7 @@ No relationship types available,No relationship types available
 No Relationships,لا توجد علاقات
 No Relationships description,العلاقات هي الروابط بين الكيانات
 No relationships found,No relationships found
+No relationships to graph,No relationships to graph
 No releases yet,No releases yet
 No results found,No results found
 No table of contents,لا يوجد جدول المحتويات
@@ -731,6 +738,7 @@ Paragraph Extractor added,Paragraph Extractor added
 Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
 Paragraphs deleted,Paragraphs deleted
+parties,parties
 Password,كلمه المرور
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -867,6 +875,7 @@ Reviewed,تمت مراجعته
 Role,دور
 Route,مسار
 Row,Row
+Row density,Row density
 Rows failed,Rows failed
 Rows processed,Rows processed
 Sample,عينة
@@ -881,7 +890,7 @@ Saving...,Saving...
 Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,ابحث
-"Search by title, text, or type","Search by title, text, or type"
+"Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
 Search item,البحث عن بند
 Search related entities or documents,البحث عن الكيانات أو المستندات ذات الصلة
 Search relationships,Search relationships
@@ -889,6 +898,7 @@ Search relevance,ملائمة البحث
 Search text,بحث النص
 Search text description,اكتب نص في خانة البحث لتظهر بعض النتائج
 Search Tips,نصائح البحث
+Search tips,Search tips
 Search Tips: boolean,نصائح البحث: Boolean
 Search Tips: exact term,نصائح البحث: المصطلح الدقيق
 Search Tips: one char wildcard,نصائح البحث: واحد char wildcard
@@ -971,6 +981,7 @@ Source template,Source template
 Source Template,Source Template
 Source's role in the relationship Source-Target.,Source's role in the relationship Source-Target.
 Stage,Stage
+stat*,stat*
 State,State
 Statistics,Statistics
 Stats & Filters,Stats & Filters
@@ -1001,6 +1012,7 @@ Table of Contents,جدول المحتويات
 Table of contents,جدول المحتويات
 Table of contents saved successfully,Table of contents saved successfully
 Table view,معاينة الجدول
+Target entity type,Target entity type
 Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
@@ -1213,6 +1225,7 @@ will be updated with the same value.,سيحدث بالقيمة نفسها
 Will show the entire media inside the container.,Will show the entire media inside the container.
 with,مع
 With great power comes great responsibility!,كلما ازدادت القوة، ازدادت معها المسؤولية!
+wom?n,wom?n
 x less,X أقل
 x more,X أكثر
 Year,سنة
@@ -1230,7 +1243,15 @@ You should activate this feature for enhanced account security,يجب عليك �
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
 You won't be able to save an entity if this property is empty.,You won't be able to save an entity if this property is empty.
 Your account's security is enhanced with two-factor authentication.,Your account's security is enhanced with two-factor authentication.
+Z → A,Z → A
 Zoom in,تكبير
 Zoom in library view,تكبير في المعاينة المكتبية
 Zoom out,تصغير
 Zoom out library view,تصغير في المعاينة المكتبية
+— boolean,— boolean
+"— group
+                  expressions","— group
+                  expressions"
+— match verbatim,— match verbatim
+— one character,— one character
+— wildcard,— wildcard

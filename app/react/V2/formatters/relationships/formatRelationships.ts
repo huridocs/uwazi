@@ -73,6 +73,7 @@ const formatRelationships = (entity: Entity): RelationshipView[] => {
 
     acc.push({
       _id: String(target._id),
+      hub: String(source.hub),
       type: relationType ? String(relationType) : '',
       from,
       to,

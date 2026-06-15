@@ -10,6 +10,7 @@ import {
 import { RelationshipRow } from './RelationshipRow.js';
 import { RelationshipGroupedCard } from './RelationshipGroupedCard.js';
 import { RelationshipsGroupLabel } from './RelationshipsGroupLabel.js';
+import { RelationshipsPanelEntries } from './RelationshipsPanelEntries.js';
 import {
   relationshipsPanelGroupByAtom,
   relationshipsPanelSubGroupByAtom,
@@ -116,9 +117,14 @@ const RelationshipsMarkerList = ({
 
   if (groupBy === 'none') {
     return (
-      <div className="overflow-hidden rounded-md border border-border/60 bg-paper">
-        {renderRows(markers, rowProps)}
-      </div>
+      <RelationshipsPanelEntries
+        markers={markers}
+        selfSharedId={selfSharedId}
+        activeRelationshipId={activeRelationshipId}
+        onClick={onClick}
+        onView={onView}
+        onDelete={onDelete}
+      />
     );
   }
 

@@ -105,6 +105,7 @@ describe('formatRelationships', () => {
     expect(result).toEqual([
       {
         _id: 'conn2',
+        hub: 'hub1',
         type: 'relationshipType1',
         from: {
           type: 'textReference',
@@ -125,6 +126,7 @@ describe('formatRelationships', () => {
       },
       {
         _id: 'conn4',
+        hub: 'hub2',
         type: 'relationshipType2',
         from: {
           type: 'textReference',
@@ -152,6 +154,7 @@ describe('formatRelationships', () => {
     expect(result).toEqual([
       {
         _id: 'conn-el-target',
+        hub: 'hub-el',
         type: 'relType1',
         from: {
           type: 'entity',
@@ -194,6 +197,7 @@ describe('formatRelationships', () => {
     expect(formatRelationships(entity)).toEqual([
       {
         _id: 'conn-in-partner',
+        hub: 'hub-in',
         type: 'replicaType',
         from: {
           type: 'entity',

@@ -1,6 +1,7 @@
 import { Entity } from '#V2/api/entities/types.js';
 import { RelationshipMarker, toMarker } from '#V2/Components/Relationships/types.js';
 import { formatRelationships } from './formatRelationships.js';
+import { buildMatcher } from './relationshipsPanelSearchQuery.js';
 
 type RelationshipsPanelSort = 'none' | 'appearance' | 'asc' | 'desc';
 
@@ -45,20 +46,51 @@ const compareAppearance = (a: RelationshipMarker, b: RelationshipMarker): number
   return topA - topB;
 };
 
+type RelationshipsPanelFilterOptions = {
+  searchQuery: string;
+  sortOrder: RelationshipsPanelSort;
+  relationshipTypeName: (typeId: string) => string;
+  relTypeFilters?: Record<string, boolean>;
+  entityTypeFilters?: Record<string, boolean>;
+  activeClusterRefIds?: string[] | null;
+};
+
+const activeFacetIds = (filters: Record<string, boolean> | undefined): string[] =>
+  Object.entries(filters ?? {})
+    .filter(([, active]) => active)
+    .map(([id]) => id);
+
 const filterAndSortMarkers = (
   markers: RelationshipMarker[],
-  options: {
-    searchQuery: string;
-    sortOrder: RelationshipsPanelSort;
-    relationshipTypeName: (typeId: string) => string;
-  }
+  options: RelationshipsPanelFilterOptions
 ): RelationshipMarker[] => {
-  const query = options.searchQuery.trim().toLowerCase();
   let result = markers;
 
-  if (query) {
+  const clusterIds = options.activeClusterRefIds;
+  if (clusterIds?.length) {
+    const cluster = new Set(clusterIds);
+    result = result.filter(marker => cluster.has(marker._id));
+  }
+
+  const relTypes = activeFacetIds(options.relTypeFilters);
+  if (relTypes.length) {
+    const allowed = new Set(relTypes);
+    result = result.filter(marker => allowed.has(marker.view.type));
+  }
+
+  const entityTypes = activeFacetIds(options.entityTypeFilters);
+  if (entityTypes.length) {
+    const allowed = new Set(entityTypes);
+    result = result.filter(marker => {
+      const templateId = marker.target.templateId || 'unknown';
+      return allowed.has(templateId);
+    });
+  }
+
+  const matcher = buildMatcher(options.searchQuery);
+  if (matcher) {
     result = result.filter(marker =>
-      markerHaystack(marker, options.relationshipTypeName(marker.view.type)).includes(query)
+      matcher(markerHaystack(marker, options.relationshipTypeName(marker.view.type)))
     );
   }
 
@@ -74,5 +106,10 @@ const filterAndSortMarkers = (
   return [...result].sort((a, b) => a.target.title.localeCompare(b.target.title) * dir);
 };
 
-export type { RelationshipsPanelSort, RelationshipsPanelStats, RelationshipsPanelProjection };
-export { projectRelationshipsPanel, filterAndSortMarkers, computeStats };
+export type {
+  RelationshipsPanelSort,
+  RelationshipsPanelStats,
+  RelationshipsPanelProjection,
+  RelationshipsPanelFilterOptions,
+};
+export { projectRelationshipsPanel, filterAndSortMarkers, computeStats, compareAppearance };
