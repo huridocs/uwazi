@@ -36,6 +36,7 @@ const makeMarker = (
         entityTitle: `Target ${_id}`,
         entityTemplateId: templateId,
       },
+      relationTypeOnSelf: false,
     },
     target: { sharedId: `t-${_id}`, title: `Target ${_id}`, templateId },
     anchor: from.type === 'textReference' ? from : undefined,

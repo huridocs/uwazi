@@ -76,6 +76,7 @@ const formatRelationships = (entity: Entity): RelationshipView[] => {
       type: relationType ? String(relationType) : '',
       from,
       to,
+      relationTypeOnSelf: Boolean(source.template),
     });
 
     return acc;

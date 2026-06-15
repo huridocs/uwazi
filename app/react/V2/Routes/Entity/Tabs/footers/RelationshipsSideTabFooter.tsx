@@ -1,6 +1,1 @@
-import React from 'react';
-import { EntityTabFooter } from '../EntityTabFooter.js';
-
-const RelationshipsSideTabFooter = () => <EntityTabFooter />;
-
-export { RelationshipsSideTabFooter };
+export { RelationshipsTabFooter as RelationshipsSideTabFooter } from './RelationshipsTabFooter.js';

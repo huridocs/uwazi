@@ -5,6 +5,9 @@ import { RelationshipView } from '#V2/formatters/relationships/types.js';
 
 type ReferenceMode = 'entity' | 'text';
 
+const relationshipsEditModeAtom = atom(false);
+const selectedRelationshipIdsAtom = atom<Set<string>>(new Set<string>());
+
 type RelationshipsState = {
   relationships: RelationshipView[] | undefined;
   createReferenceSelection: TextSelection | undefined;
@@ -64,4 +67,9 @@ export function useRelationshipsActions() {
 }
 
 export type { ReferenceMode };
-export { relationshipsStateAtom, relationshipsActions };
+export {
+  relationshipsStateAtom,
+  relationshipsActions,
+  relationshipsEditModeAtom,
+  selectedRelationshipIdsAtom,
+};

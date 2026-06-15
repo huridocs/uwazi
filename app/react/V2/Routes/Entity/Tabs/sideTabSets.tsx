@@ -3,7 +3,6 @@ import {
   Bars3CenterLeftIcon,
   DocumentTextIcon,
   LanguageIcon,
-  LinkIcon,
   ListBulletIcon,
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
@@ -11,6 +10,7 @@ import { Translate } from '#app/I18N/index.js';
 import { RelationshipPropertyIcon } from '#V2/Components/CustomIcons/index.js';
 import type { TabButtonDef } from '#V2/Components/UI/index.js';
 import type { Entity as EntityType } from '#V2/api/entities/types.js';
+import { formatRelationships } from '#V2/formatters/index.js';
 import { TabLabel } from '../Components/TabLabel.js';
 import { MAIN_TAB, SIDE_TAB, type MainTabId } from './tabIds.js';
 
@@ -33,6 +33,14 @@ const getSideTabButtons = ({
   filesSideTabs,
 }: GetSideTabButtonsParams): TabButtonDef[] => {
   const buttons: TabButtonDef[] = [];
+  const relationshipsCount = entity ? formatRelationships(entity).length : 0;
+  const relationshipsTabLabel = (
+    <TabLabel
+      text="Relationships"
+      icon={<RelationshipPropertyIcon className="h-5 w-5" />}
+      count={relationshipsCount}
+    />
+  );
 
   const pushMetadata = () => {
     if (!entity) return;
@@ -59,17 +67,8 @@ const getSideTabButtons = ({
           label: <TabLabel text="ToC" icon={<ListBulletIcon className="h-5 w-5" />} />,
         },
         {
-          id: SIDE_TAB.REFERENCES,
-          label: <TabLabel text="References" icon={<LinkIcon className="h-5 w-5" />} />,
-        },
-        {
           id: SIDE_TAB.RELATIONSHIPS,
-          label: (
-            <TabLabel
-              text="Relationships"
-              icon={<RelationshipPropertyIcon className="h-5 w-5" />}
-            />
-          ),
+          label: relationshipsTabLabel,
         },
         {
           id: SIDE_TAB.SEARCH,
@@ -82,12 +81,7 @@ const getSideTabButtons = ({
       buttons.push(
         {
           id: SIDE_TAB.RELATIONSHIPS,
-          label: (
-            <TabLabel
-              text="Relationships"
-              icon={<RelationshipPropertyIcon className="h-5 w-5" />}
-            />
-          ),
+          label: relationshipsTabLabel,
         },
         {
           id: SIDE_TAB.SEARCH,

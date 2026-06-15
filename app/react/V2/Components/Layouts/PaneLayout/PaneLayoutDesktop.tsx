@@ -171,7 +171,7 @@ const PaneLayoutDesktop = ({
             style={{ width: widths.length > 0 ? widths[index] : initialWidths?.current?.[index] }}
             className="h-full min-h-0"
           >
-            <div className="h-full min-h-0 min-w-0 overflow-auto">{child}</div>
+            <div className="h-full min-h-0 min-w-0 overflow-hidden">{child}</div>
           </section>
 
           {index < children.length - 1 && (

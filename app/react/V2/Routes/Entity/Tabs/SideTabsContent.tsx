@@ -5,7 +5,6 @@ import { SIDE_TAB, type SideTabId } from './tabIds.js';
 import { DocumentTab } from './tabsContent/DocumentTab.js';
 import { MetadataTab } from './tabsContent/MetadataTab.js';
 import { ToCTab } from './tabsContent/ToCTab.js';
-import { ReferencesTab } from './tabsContent/ReferencesTab.js';
 import { RelationshipsSideTab } from './tabsContent/RelationshipsSideTab.js';
 import { SearchTab } from './tabsContent/SearchTab.js';
 import { FilesSideTab } from './tabsContent/FilesSideTab.js';
@@ -49,9 +48,6 @@ const SideTabsContent = ({
       break;
     case SIDE_TAB.TOC:
       content = <ToCTab mainDocument={mainDocument} />;
-      break;
-    case SIDE_TAB.REFERENCES:
-      content = <ReferencesTab entity={entity} mainDocument={mainDocument} />;
       break;
     case SIDE_TAB.RELATIONSHIPS:
       content = <RelationshipsSideTab entity={entity} mainDocument={mainDocument} />;

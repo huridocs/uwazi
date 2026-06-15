@@ -53,6 +53,8 @@ const checkEntityRendered = async () => {
   expect(titleElements.length).toBeGreaterThan(0);
 };
 
+const relationshipsSideTab = /^Relationships/;
+
 describe('Entity view', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -194,7 +196,9 @@ describe('Entity view', () => {
       const sideTabs = within(tablists[1]);
 
       expect(sideTabs.getByRole('tab', { name: 'Metadata' })).toBeInTheDocument();
-      expect(sideTabs.getByRole('tab', { name: 'Relationships' })).toBeInTheDocument();
+      expect(sideTabs.getByRole('tab', { name: 'ToC' })).toBeInTheDocument();
+      expect(sideTabs.getByRole('tab', { name: relationshipsSideTab })).toBeInTheDocument();
+      expect(sideTabs.getByRole('tab', { name: 'Search' })).toBeInTheDocument();
     });
 
     it('should update the side tabs when switching main tabs', async () => {
@@ -213,7 +217,7 @@ describe('Entity view', () => {
         expect(sideTabs.queryByRole('tab', { name: 'Metadata' })).not.toBeInTheDocument();
         expect(sideTabs.queryByRole('tab', { name: 'ToC' })).not.toBeInTheDocument();
         expect(sideTabs.queryByRole('tab', { name: 'References' })).not.toBeInTheDocument();
-        expect(sideTabs.getByRole('tab', { name: 'Relationships' })).toBeInTheDocument();
+        expect(sideTabs.getByRole('tab', { name: relationshipsSideTab })).toBeInTheDocument();
         expect(sideTabs.getByRole('tab', { name: 'Search' })).toBeInTheDocument();
       });
 
@@ -265,11 +269,11 @@ describe('Entity view', () => {
       let mainTabs = within(tablists[0]);
       let sideTabs = within(tablists[1]);
 
-      const relsSideTab = sideTabs.getByRole('tab', { name: 'Relationships' });
+      const relsSideTab = sideTabs.getByRole('tab', { name: relationshipsSideTab });
       fireEvent.click(relsSideTab);
 
       await waitFor(() => {
-        expect(sideTabs.getByRole('tab', { name: 'Relationships' })).toHaveAttribute(
+        expect(sideTabs.getByRole('tab', { name: relationshipsSideTab })).toHaveAttribute(
           'aria-selected',
           'true'
         );
@@ -288,7 +292,7 @@ describe('Entity view', () => {
           'true'
         );
 
-        expect(sideTabs.getByRole('tab', { name: 'Relationships' })).toHaveAttribute(
+        expect(sideTabs.getByRole('tab', { name: relationshipsSideTab })).toHaveAttribute(
           'aria-selected',
           'true'
         );

@@ -8,7 +8,7 @@ type RelationshipsSideTabProps = {
 };
 
 const RelationshipsSideTab = ({ entity, mainDocument }: RelationshipsSideTabProps) => (
-  <div className="min-h-0 flex-1 overflow-y-auto [&_.panel]:border-0">
+  <div className="flex h-full min-h-0 flex-col [&_.panel]:h-full [&_.panel]:border-0">
     <RelationshipsPanel entity={entity} mainDocument={mainDocument} />
   </div>
 );

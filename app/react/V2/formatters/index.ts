@@ -10,5 +10,10 @@ export { formatSelectProperty } from './metadata/formatSelectProperty.js';
 export { formatEntityFiles } from './files/formatEntityFiles.js';
 export { getMainDocument } from './files/getMainDocument.js';
 export { formatRelationships } from './relationships/formatRelationships.js';
+export {
+  projectRelationshipsPanel,
+  filterAndSortMarkers,
+  computeStats,
+} from './relationships/relationshipsPanelProjection.js';
 export { formatNestedProperty } from './metadata/formatNestedProperty.js';
 export { formatDenormalizedNewRelationship } from './metadata/formatDenormalizedNewRelationship.js';

@@ -26,6 +26,7 @@ const relationship: RelationshipView = {
     entityTitle: 'Target',
     entityTemplateId: 'template2',
   },
+  relationTypeOnSelf: false,
 };
 
 describe('relationshipsAtom', () => {

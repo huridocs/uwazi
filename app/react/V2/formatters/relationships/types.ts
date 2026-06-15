@@ -39,6 +39,8 @@ interface RelationshipView {
   readonly relationshipTypeName?: string;
   readonly from: Pointer;
   readonly to: Pointer;
+  /** True when the self-side hub connection carries the relation type template. */
+  readonly relationTypeOnSelf: boolean;
 }
 
 const isTextReference = (pointer: Pointer): pointer is TextReferencePointer =>
@@ -58,6 +60,21 @@ const anchorOf = (
   return isTextReference(self) ? self : undefined;
 };
 
+type RelationshipDirection = 'incoming' | 'outgoing' | 'both';
+
+const directionOf = (
+  relationship: RelationshipView,
+  selfSharedId: string
+): RelationshipDirection => {
+  const selfAnchored = isTextReference(selfPointer(relationship, selfSharedId));
+  const targetAnchored = isTextReference(targetPointer(relationship, selfSharedId));
+  if (selfAnchored && targetAnchored) return 'both';
+  if (selfAnchored) return 'outgoing';
+  if (targetAnchored) return 'incoming';
+  if (relationship.relationTypeOnSelf) return 'incoming';
+  return 'outgoing';
+};
+
 export type {
   Selection,
   Pointer,
@@ -65,5 +82,6 @@ export type {
   FilePointer,
   TextReferencePointer,
   RelationshipView,
+  RelationshipDirection,
 };
-export { isTextReference, selfPointer, targetPointer, anchorOf };
+export { isTextReference, selfPointer, targetPointer, anchorOf, directionOf };

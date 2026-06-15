@@ -28,6 +28,7 @@ const marker: RelationshipMarker = {
       entityTitle: 'Person 2',
       entityTemplateId: 'template3',
     },
+    relationTypeOnSelf: false,
   },
   target: { sharedId: 'target1', title: 'Person 2', templateId: 'template3' },
   anchor: {

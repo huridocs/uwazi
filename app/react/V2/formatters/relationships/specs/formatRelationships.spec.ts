@@ -121,6 +121,7 @@ describe('formatRelationships', () => {
           entityTitle: 'Target Entity',
           entityTemplateId: 'targetTemplate1',
         },
+        relationTypeOnSelf: true,
       },
       {
         _id: 'conn4',
@@ -140,6 +141,7 @@ describe('formatRelationships', () => {
           entityTitle: 'Another Target',
           entityTemplateId: 'targetTemplate2',
         },
+        relationTypeOnSelf: true,
       },
     ]);
   });
@@ -163,6 +165,49 @@ describe('formatRelationships', () => {
           entityTitle: 'Target Entity EL',
           entityTemplateId: 'targetTemplate-el',
         },
+        relationTypeOnSelf: false,
+      },
+    ]);
+  });
+
+  it('marks entity-level links as incoming when the self side carries the type', () => {
+    const entity = {
+      _id: 'entity-in',
+      sharedId: 'currentId',
+      language: 'en',
+      title: 'Current Entity',
+      template: 'template1',
+      creationDate: 1,
+      user: 'user1',
+      relations: [
+        { template: 'replicaType', _id: 'conn-in-self', hub: 'hub-in', entity: 'currentId' },
+        {
+          template: null,
+          _id: 'conn-in-partner',
+          hub: 'hub-in',
+          entity: 'ext1Id',
+          entityData: { _id: 'ext1', title: 'ext1', template: 'extTemplate' },
+        },
+      ],
+    } as Entity;
+
+    expect(formatRelationships(entity)).toEqual([
+      {
+        _id: 'conn-in-partner',
+        type: 'replicaType',
+        from: {
+          type: 'entity',
+          entity: 'currentId',
+          entityTitle: 'Current Entity',
+          entityTemplateId: 'template1',
+        },
+        to: {
+          type: 'entity',
+          entity: 'ext1Id',
+          entityTitle: 'ext1',
+          entityTemplateId: 'extTemplate',
+        },
+        relationTypeOnSelf: true,
       },
     ]);
   });

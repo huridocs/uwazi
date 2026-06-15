@@ -84,7 +84,7 @@ const EntityView = ({ entity, mainDocument, pagePlaintext, searchResults }: Enti
   const activeSideTab = useMemo<SideTabId | undefined>(() => {
     const sideTab = searchParams.get(SIDE_TAB_PARAM);
 
-    if (isValidSideTab(sideTab)) {
+    if (isValidSideTab(sideTab) && sideTabButtons.some(button => button.id === sideTab)) {
       return sideTab;
     }
 

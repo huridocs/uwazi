@@ -54,7 +54,7 @@ const SideTabsPanel = ({
             pagePlaintext={pagePlaintext}
           />
         </div>
-        <SideTabsFooters activeTabId={activeSideTab} mainDocument={mainDocument} />
+        <SideTabsFooters activeTabId={activeSideTab} entity={entity} mainDocument={mainDocument} />
       </div>
     </div>
   );

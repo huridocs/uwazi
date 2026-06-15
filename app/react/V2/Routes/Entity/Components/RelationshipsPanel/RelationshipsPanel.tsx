@@ -1,29 +1,34 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { useRevalidator } from 'react-router';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
-import { useAtomValue } from 'jotai';
 import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { Entity, FileType } from '#V2/api/entities/types.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { relationshipTypesAtom } from '#V2/atoms/index.js';
 import { searchByTitle } from '#V2/api/entities/index.js';
-import { formatRelationships } from '#V2/formatters/index.js';
 import { deleteReference, saveTextReference } from '#V2/api/relationships/index.js';
 import { ConfirmationModal, BlankState } from '#V2/Components/UI/index.js';
-import { RelationshipMarker, toMarker } from '#V2/Components/Relationships/types.js';
+import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { CreateReference } from './CreateReference.js';
 import { RelationshipRow } from './RelationshipRow.js';
-import { useRelationships, useRelationshipsActions } from './relationshipsAtom.js';
+import { RelationshipsPanelToolbar } from './RelationshipsPanelToolbar.js';
+import {
+  useRelationships,
+  useRelationshipsActions,
+  relationshipsEditModeAtom,
+  selectedRelationshipIdsAtom,
+} from './relationshipsAtom.js';
 import { useRelationshipSelection } from '../useRelationshipSelection.js';
+import { useRelationshipsPanelData } from './useRelationshipsPanelData.js';
 
 type RelationshipsPanelProps = {
   entity?: Entity;
   mainDocument?: FileType;
 };
 
-// eslint-disable-next-line max-statements
 const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) => {
   const [relationshipToDelete, setRelationshipToDelete] = useState<RelationshipMarker | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -33,9 +38,16 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
   const revalidator = useRevalidator();
   const { activeRelationshipId, selectRelationship, clearRelationshipSelection } =
     useRelationshipSelection();
-  const relationships = useMemo<RelationshipMarker[]>(
-    () => (entity ? formatRelationships(entity).map(view => toMarker(view, entity.sharedId)) : []),
-    [entity]
+  const { markers, stats, hasRelationships } = useRelationshipsPanelData(entity);
+  const resetEditMode = useSetAtom(relationshipsEditModeAtom);
+  const resetSelected = useSetAtom(selectedRelationshipIdsAtom);
+
+  useEffect(
+    () => () => {
+      resetEditMode(false);
+      resetSelected(new Set());
+    },
+    [resetEditMode, resetSelected]
   );
 
   const lookup = useCallback(
@@ -55,6 +67,10 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
     },
     [selectRelationship]
   );
+
+  const handleViewClick = useCallback((marker: RelationshipMarker) => {
+    window.open(`/entity/${marker.target.sharedId}`, '_blank', 'noopener,noreferrer');
+  }, []);
 
   const handleDeleteClick = useCallback((marker: RelationshipMarker) => {
     setRelationshipToDelete(marker);
@@ -156,40 +172,51 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
   }
 
   // Otherwise, show the references list
+  const listBody = (() => {
+    if (!hasRelationships) {
+      return (
+        <BlankState
+          icon={
+            <LinkIcon className="h-7 w-7 text-ink rounded-full bg-[color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] p-1" />
+          }
+          title={<Translate>No Relationships</Translate>}
+          description={
+            <Translate>To add references you can start by selecting text in the document</Translate>
+          }
+        />
+      );
+    }
+    if (markers.length === 0) {
+      return (
+        <p className="py-8 text-center text-sm text-ink-tertiary">
+          <Translate>No relationships found</Translate>
+        </p>
+      );
+    }
+    return (
+      <div className="overflow-hidden rounded-md border border-border/60 bg-paper">
+        {markers.map((marker, index) => (
+          <RelationshipRow
+            key={marker._id || `relationship-${index}`}
+            marker={marker}
+            selfSharedId={entity?.sharedId ?? ''}
+            isSelected={activeRelationshipId === marker._id}
+            onClick={() => handleRelationshipClick(marker)}
+            onView={() => handleViewClick(marker)}
+            onDelete={() => handleDeleteClick(marker)}
+          />
+        ))}
+      </div>
+    );
+  })();
+
   return (
     <>
       <Panel>
-        <Panel.Body className="pr-1">
-          <div className="flex flex-col gap-(--spacing-theme-3) h-full">
-            {relationships.length > 0 ? (
-              relationships.map((marker, index) => (
-                <RelationshipRow
-                  key={marker._id || `relationship-${index}`}
-                  marker={marker}
-                  isSelected={activeRelationshipId === marker._id}
-                  onClick={() => handleRelationshipClick(marker)}
-                  onDelete={() => handleDeleteClick(marker)}
-                />
-              ))
-            ) : (
-              <BlankState
-                icon={
-                  <LinkIcon className="h-7 w-7 text-ink rounded-full bg-[color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] p-1" />
-                }
-                title={<Translate>No Relationships</Translate>}
-                description={
-                  <Translate>
-                    To add references you can start by selecting text in the document
-                  </Translate>
-                }
-              />
-            )}
-          </div>
+        {hasRelationships && <RelationshipsPanelToolbar stats={stats} />}
+        <Panel.Body className="pr-1 pb-2">
+          <div className="px-3 py-3">{listBody}</div>
         </Panel.Body>
-
-        <Panel.Footer>
-          <div className="flex items-center justify-between w-full" />
-        </Panel.Footer>
       </Panel>
 
       {relationshipToDelete && (
