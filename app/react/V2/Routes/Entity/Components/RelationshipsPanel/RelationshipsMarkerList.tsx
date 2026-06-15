@@ -3,13 +3,13 @@ import { useAtom } from 'jotai';
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import {
   getGroupColor,
-  getGroupLabel,
   groupMarkers,
   type GroupLabelContext,
   type RelationshipsPanelGroupBy,
 } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
 import { RelationshipRow } from './RelationshipRow.js';
 import { RelationshipGroupedCard } from './RelationshipGroupedCard.js';
+import { RelationshipsGroupLabel } from './RelationshipsGroupLabel.js';
 import {
   relationshipsPanelGroupByAtom,
   relationshipsPanelSubGroupByAtom,
@@ -55,7 +55,14 @@ const renderGrouped = (
       {primaryGroups.map(([key, groupMarkersList]) => (
         <RelationshipGroupedCard
           key={key || 'all'}
-          title={getGroupLabel(key, groupBy, groupContext, groupMarkersList)}
+          title={
+            <RelationshipsGroupLabel
+              groupKey={key}
+              groupBy={groupBy}
+              groupContext={groupContext}
+              markers={groupMarkersList}
+            />
+          }
           color={getGroupColor(key, groupBy, groupContext, groupMarkersList)}
           count={groupMarkersList.length}
         >
@@ -67,7 +74,14 @@ const renderGrouped = (
                 ([subKey, subMarkers]) => (
                   <RelationshipGroupedCard
                     key={`${key}::${subKey}`}
-                    title={getGroupLabel(subKey, subGroupBy, groupContext, subMarkers)}
+                    title={
+                      <RelationshipsGroupLabel
+                        groupKey={subKey}
+                        groupBy={subGroupBy}
+                        groupContext={groupContext}
+                        markers={subMarkers}
+                      />
+                    }
                     color={getGroupColor(subKey, subGroupBy, groupContext, subMarkers)}
                     count={subMarkers.length}
                   >

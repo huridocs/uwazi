@@ -95,12 +95,13 @@ Analytics description,"If you want to track analytics related to your collection
 Any entity,Any entity
 Apply,Apply
 Are you sure you want to continue?,Are you sure you want to continue?
+Are you sure you want to delete,Are you sure you want to delete
 Are you sure you want to delete this attachment?,Are you sure you want to delete this attachment?
 Are you sure you want to delete this connection?,Are you sure you want to delete this connection?
 Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
 Are you sure you want to delete this file?,Are you sure you want to delete this file?
 Are you sure you want to delete this item?,Are you sure you want to delete this item?
-Are you sure you want to delete this reference? This action cannot be undone.,Are you sure you want to delete this reference? This action cannot be undone.
+Are you sure you want to delete this relationship? This action cannot be undone.,Are you sure you want to delete this relationship? This action cannot be undone.
 Are you sure?,Are you sure?
 Attachment,Attachment
 Attachment deleted,Attachment deleted
@@ -120,6 +121,7 @@ Back to details,Back to details
 Back to search,검색으로
 Bad Request,Bad Request
 Basic,Basic
+Bidirectional,Bidirectional
 Body,바디
 Browse files to upload,업로드할 파일 탐색
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
@@ -159,6 +161,7 @@ Clear All,Clear All
 Clear coordinates,좌표 초기화
 Clear Filters,필터 초기화
 Clear PDF selection,Clear PDF selection
+Clear search,Clear search
 Click,Click
 Click here,여기를 클릭하십시오
 Click to fill,텍스트 자동 채우기
@@ -272,7 +275,8 @@ DELETE,삭제
 Delete entities and documents,Delete entities and documents
 Delete file,Delete file
 Delete language,언어 삭제
-Delete reference,Delete reference
+Delete relationship,Delete relationship
+Delete relationships,Delete relationships
 Delete?,Delete?
 Deleted attachment,Deleted attachment
 Deleted custom file,Deleted custom file
@@ -439,6 +443,7 @@ Google Analytics,구글 분석
 Google Analytics ID,구글 분석 ID
 Google Maps,Google Maps
 Group,Group
+Group by:,Group by:
 Group Options,Group Options
 Group saved,Group saved
 Group updated,Group updated
@@ -488,6 +493,7 @@ Importing data in progress,데이터 업로드 중
 in,안
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,OCR 대기 중
+Incoming,Incoming
 Indexing entities may take a few minutes,엔티티 색인 작업에는 몇 분이 소요될 수 있습니다.
 Info,정보
 Information extraction training,Information extraction training
@@ -650,12 +656,14 @@ No label,No label
 No notifications or active tasks.,No notifications or active tasks.
 No options,No options
 No options found,검색된 옵션 없음
+No page,No page
 No property,속성 없음
 No References,참고문헌 없음
 No References description,References are parts of this document related with other documents and entities.
 No relationship types available,No relationship types available
 No Relationships,관계 없음
 No Relationships description,Relationships are bonds between entities.
+No relationships found,No relationships found
 No releases yet,No releases yet
 No results found,No results found
 No table of contents,목차 없음
@@ -711,6 +719,8 @@ Other,기타
 other,기타
 Other users will be affected by this action!,Other users will be affected by this action!
 Others,Others
+Outgoing,Outgoing
+p.,p.
 Page,페이지
 Page not found,Page not found
 Page published successfully.,Page published successfully.
@@ -749,6 +759,7 @@ Preserve Extension,Preserve Extension
 Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
 Press enter to add,Enter 키를 눌러 추가
 Preview,미리보기
+Preview entity,Preview entity
 Previous,이전
 Primary button,Primary button
 Primary document,Primary document
@@ -808,6 +819,7 @@ Receiving email description,"If you have a contact form, this is the email addre
 Recommended,Recommended
 Reference,Reference
 References,참고문헌
+references,references
 Reject,거부
 Related entities created,Related entities created
 Relation type,Relation type
@@ -821,6 +833,7 @@ Relationship types,연결 유형
 relationships,연결
 Relationships,연결
 Relationships saved,Relationships saved
+relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,연결 유형 저장 완료
 Release message,Release message
 remaining files,remaining files
@@ -869,8 +882,10 @@ Saving...,Saving...
 Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,검색
+"Search by title, text, or type","Search by title, text, or type"
 Search item,아이템 검색
 Search related entities or documents,연결된 엔티티 및 문서 검색
+Search relationships,Search relationships
 Search relevance,관련성 검색
 Search text,텍스트 검색
 Search text description,Type something in the search box to get some results.
@@ -892,6 +907,7 @@ Select an existing image,Select an existing image
 Select favicon image,Select favicon image
 Select files on your device,기기에서 파일을 선택하십시오.
 Select from computer,Select from computer
+Select relationship,Select relationship
 Select relationship type,연결 유형 선택
 Select site logo image,Select site logo image
 Select target paragraph,대상 단락 선택
@@ -947,6 +963,8 @@ Sort,분류하기
 Sort ascending,Sort ascending
 Sort by,정렬 기준
 Sort descending,Sort descending
+Sort order,Sort order
+Sort:,Sort:
 sorted by,정렬 기준
 Source,Source
 Source relationship type,Source relationship type
@@ -1022,6 +1040,7 @@ Theme instance file invalid,Theme instance file invalid
 Theme logotype,Theme logotype
 Theme presets,Theme presets
 Theme preview,Theme preview
+Then by:,Then by:
 There are no pages enabled for entity view,엔티티 뷰가 활성화된 페이지가 없습니다.
 There are no untranslated terms,There are no untranslated terms
 Thesauri,시소러스
@@ -1118,6 +1137,8 @@ Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
 Uninstalling language,Uninstalling language
+Unknown entity,Unknown entity
+Unknown template,Unknown template
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,OCR 지원되지 않는 언어

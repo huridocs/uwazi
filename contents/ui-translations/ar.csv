@@ -95,12 +95,13 @@ Analytics description,"If you want to track analytics related to your collection
 Any entity,Any entity
 Apply,Apply
 Are you sure you want to continue?,Are you sure you want to continue?
+Are you sure you want to delete,Are you sure you want to delete
 Are you sure you want to delete this attachment?,Are you sure you want to delete this attachment?
 Are you sure you want to delete this connection?,Are you sure you want to delete this connection?
 Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
 Are you sure you want to delete this file?,Are you sure you want to delete this file?
 Are you sure you want to delete this item?,Are you sure you want to delete this item?
-Are you sure you want to delete this reference? This action cannot be undone.,Are you sure you want to delete this reference? This action cannot be undone.
+Are you sure you want to delete this relationship? This action cannot be undone.,Are you sure you want to delete this relationship? This action cannot be undone.
 Are you sure?,Are you sure?
 Attachment,Attachment
 Attachment deleted,Attachment deleted
@@ -120,6 +121,7 @@ Back to details,Back to details
 Back to search,العودة إلى البحث
 Bad Request,Bad Request
 Basic,Basic
+Bidirectional,Bidirectional
 Body,يجب الاطلاع على السياق لتحديد الترجمة الأنسب
 Browse files to upload,تصفح الملفات المراد تحميلها
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
@@ -158,6 +160,7 @@ Clear All,Clear All
 Clear coordinates,مسح الإحداثيات
 Clear Filters,مسح عوامل التصفية
 Clear PDF selection,Clear PDF selection
+Clear search,Clear search
 Click,Click
 Click here,انقر هنا
 Click to fill,انقر للتعبئة
@@ -271,7 +274,8 @@ DELETE,حذف
 Delete entities and documents,Delete entities and documents
 Delete file,مسح الملف
 Delete language,حذف اللغة
-Delete reference,Delete reference
+Delete relationship,Delete relationship
+Delete relationships,Delete relationships
 Delete?,Delete?
 Deleted attachment,Deleted attachment
 Deleted custom file,Deleted custom file
@@ -438,6 +442,7 @@ Google Analytics,Google Analytics
 Google Analytics ID,معرف Google Analytics
 Google Maps,خرائط جوجل
 Group,Group
+Group by:,Group by:
 Group Options,Group Options
 Group saved,Group saved
 Group updated,Group updated
@@ -487,6 +492,7 @@ Importing data in progress,جاري استيراد البيانات
 in,في
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,جاري التعرف الضوئي علي الحروف
+Incoming,Incoming
 Indexing entities may take a few minutes,قد تستغرق فهرسة الكيانات (الإدخالات) بضع دقائق
 Info,معلومات
 Information extraction training,Information extraction training
@@ -649,12 +655,14 @@ No label,No label
 No notifications or active tasks.,No notifications or active tasks.
 No options,No options
 No options found,لم يتم العثور على خيارات
+No page,No page
 No property,هذه الخاصية غير متوفرة
 No References,لا مرجع
 No References description,المراجع هي اجزاء من الوثيقة التي لها علاقة بوثائق وكيانات أخرى
 No relationship types available,No relationship types available
 No Relationships,لا توجد علاقات
 No Relationships description,العلاقات هي الروابط بين الكيانات
+No relationships found,No relationships found
 No releases yet,No releases yet
 No results found,No results found
 No table of contents,لا يوجد جدول المحتويات
@@ -710,6 +718,8 @@ Other,آخر
 other,آخر
 Other users will be affected by this action!,Other users will be affected by this action!
 Others,Others
+Outgoing,Outgoing
+p.,p.
 Page,صفحة
 Page not found,لم يتم العثور على الصفحة
 Page published successfully.,Page published successfully.
@@ -748,6 +758,7 @@ Preserve Extension,Preserve Extension
 Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
 Press enter to add,اضغط على مفتاح الإدخال لإضافة
 Preview,معاينة
+Preview entity,Preview entity
 Previous,سابق
 Primary button,Primary button
 Primary document,Primary document
@@ -807,6 +818,7 @@ Receiving email description,"If you have a contact form, this is the email addre
 Recommended,Recommended
 Reference,Reference
 References,مراجع
+references,مراجع
 Reject,رفض
 Related entities created,Related entities created
 Relation type,Relation type
@@ -820,6 +832,7 @@ Relationship types,أنواع العلاقات
 relationships,العلاقات
 Relationships,العلاقات
 Relationships saved,Relationships saved
+relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,تم حفظ نوع العلاقة
 Release message,Release message
 remaining files,remaining files
@@ -868,8 +881,10 @@ Saving...,Saving...
 Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,ابحث
+"Search by title, text, or type","Search by title, text, or type"
 Search item,البحث عن بند
 Search related entities or documents,البحث عن الكيانات أو المستندات ذات الصلة
+Search relationships,Search relationships
 Search relevance,ملائمة البحث
 Search text,بحث النص
 Search text description,اكتب نص في خانة البحث لتظهر بعض النتائج
@@ -891,6 +906,7 @@ Select an existing image,Select an existing image
 Select favicon image,Select favicon image
 Select files on your device,اختر الملفات في جهازك
 Select from computer,Select from computer
+Select relationship,Select relationship
 Select relationship type,اختر نوع العلاقة
 Select site logo image,Select site logo image
 Select target paragraph,اختر الفقرة المستهدفة
@@ -946,6 +962,8 @@ Sort,تصنيف
 Sort ascending,Sort ascending
 Sort by,ترتيب حسب
 Sort descending,Sort descending
+Sort order,Sort order
+Sort:,Sort:
 sorted by,مرتبة حسب
 Source,Source
 Source relationship type,Source relationship type
@@ -1021,6 +1039,7 @@ Theme instance file invalid,Theme instance file invalid
 Theme logotype,Theme logotype
 Theme presets,Theme presets
 Theme preview,Theme preview
+Then by:,Then by:
 There are no pages enabled for entity view,لا توجد صفحات ممكنة لمعاينة الكيان (الإدخال)
 There are no untranslated terms,There are no untranslated terms
 Thesauri,قائمة المفردات
@@ -1117,6 +1136,8 @@ Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
 Uninstalling language,Uninstalling language
+Unknown entity,Unknown entity
+Unknown template,Unknown template
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,لغة الOCR غير مدعومة

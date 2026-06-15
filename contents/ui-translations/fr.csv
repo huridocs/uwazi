@@ -95,12 +95,13 @@ Analytics description,"If you want to track analytics related to your collection
 Any entity,Any entity
 Apply,Apply
 Are you sure you want to continue?,Are you sure you want to continue?
+Are you sure you want to delete,Are you sure you want to delete
 Are you sure you want to delete this attachment?,Are you sure you want to delete this attachment?
 Are you sure you want to delete this connection?,Are you sure you want to delete this connection?
 Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
 Are you sure you want to delete this file?,Are you sure you want to delete this file?
 Are you sure you want to delete this item?,Are you sure you want to delete this item?
-Are you sure you want to delete this reference? This action cannot be undone.,Are you sure you want to delete this reference? This action cannot be undone.
+Are you sure you want to delete this relationship? This action cannot be undone.,Are you sure you want to delete this relationship? This action cannot be undone.
 Are you sure?,Are you sure?
 Attachment,Attachment
 Attachment deleted,Attachment deleted
@@ -120,6 +121,7 @@ Back to details,Back to details
 Back to search,Retour à la recherche
 Bad Request,Bad Request
 Basic,Basic
+Bidirectional,Bidirectional
 Body,Corps
 Browse files to upload,Parcourir les fichiers à télécharger
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
@@ -158,6 +160,7 @@ Clear All,Clear All
 Clear coordinates,Effacer les coordonnées
 Clear Filters,Effacer les filtres
 Clear PDF selection,Clear PDF selection
+Clear search,Clear search
 Click,Click
 Click here,Cliquez ici
 Click to fill,Cliquez pour remplir
@@ -271,7 +274,8 @@ DELETE,Effacer
 Delete entities and documents,Delete entities and documents
 Delete file,Supprimer le fichier
 Delete language,Supprimer la langue
-Delete reference,Delete reference
+Delete relationship,Delete relationship
+Delete relationships,Delete relationships
 Delete?,Delete?
 Deleted attachment,Deleted attachment
 Deleted custom file,Deleted custom file
@@ -438,6 +442,7 @@ Google Analytics,Google Analytics
 Google Analytics ID,Indentifiant Google Analytics
 Google Maps,Google Maps
 Group,Group
+Group by:,Group by:
 Group Options,Group Options
 Group saved,Group saved
 Group updated,Group updated
@@ -487,6 +492,7 @@ Importing data in progress,Importation de données en cours
 in,dans
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,dans la file d'attente OCR
+Incoming,Incoming
 Indexing entities may take a few minutes,L'indexation des entités peut prendre quelques minutes
 Info,Info
 Information extraction training,Information extraction training
@@ -649,12 +655,14 @@ No label,No label
 No notifications or active tasks.,No notifications or active tasks.
 No options,No options
 No options found,Aucune option trouvée
+No page,No page
 No property,Aucune propriété
 No References,Pas de références
 No References description,References are parts of this document related with other documents and entities.
 No relationship types available,No relationship types available
 No Relationships,Aucune relation
 No Relationships description,Relationships are bonds between entities.
+No relationships found,No relationships found
 No releases yet,No releases yet
 No results found,No results found
 No table of contents,Aucune table des matières
@@ -710,6 +718,8 @@ Other,Autre
 other,Autre
 Other users will be affected by this action!,Other users will be affected by this action!
 Others,Others
+Outgoing,Outgoing
+p.,p.
 Page,Page
 Page not found,Page non trouvée
 Page published successfully.,Page published successfully.
@@ -748,6 +758,7 @@ Preserve Extension,Preserve Extension
 Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
 Press enter to add,Appuyez sur la touche Entrée pour ajouter
 Preview,Aperçu
+Preview entity,Preview entity
 Previous,Précédent
 Primary button,Primary button
 Primary document,Primary document
@@ -807,6 +818,7 @@ Receiving email description,"If you have a contact form, this is the email addre
 Recommended,Recommended
 Reference,Reference
 References,Références
+references,references
 Reject,Rejeter
 Related entities created,Related entities created
 Relation type,Relation type
@@ -820,6 +832,7 @@ Relationship types,Types de relations
 relationships,Relations
 Relationships,Relations
 Relationships saved,Relationships saved
+relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,Type de relation sauvegardé
 Release message,Release message
 remaining files,remaining files
@@ -868,8 +881,10 @@ Saving...,Saving...
 Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,Recherche
+"Search by title, text, or type","Search by title, text, or type"
 Search item,Recherche d'éléménts
 Search related entities or documents,Rechercher des entités ou des documents liés
+Search relationships,Search relationships
 Search relevance,Pertinence de recherche
 Search text,Recherche de texte
 Search text description,Type something in the search box to get some results.
@@ -891,6 +906,7 @@ Select an existing image,Select an existing image
 Select favicon image,Sélectionner l'image du favicon
 Select files on your device,Sélectionnez les fichiers sur votre appareil
 Select from computer,Select from computer
+Select relationship,Select relationship
 Select relationship type,Sélectionner le type de relation
 Select site logo image,Sélectionner l'image du logo du site
 Select target paragraph,Sélectionner le paragraphe cible
@@ -946,6 +962,8 @@ Sort,Trier
 Sort ascending,Sort ascending
 Sort by,Trier par
 Sort descending,Sort descending
+Sort order,Sort order
+Sort:,Sort:
 sorted by,Trié par
 Source,Source
 Source relationship type,Source relationship type
@@ -1021,6 +1039,7 @@ Theme instance file invalid,Theme instance file invalid
 Theme logotype,Theme logotype
 Theme presets,Theme presets
 Theme preview,Theme preview
+Then by:,Then by:
 There are no pages enabled for entity view,Il n'y a pas de pages activées pour la visualisation des entités
 There are no untranslated terms,There are no untranslated terms
 Thesauri,Thesauri
@@ -1117,6 +1136,8 @@ Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
 Uninstalling language,Uninstalling language
+Unknown entity,Unknown entity
+Unknown template,Unknown template
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,Langage OCR non supporté

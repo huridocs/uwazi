@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { useAtom } from 'jotai';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { t } from '#app/I18N/index.js';
 import { relationshipsPanelSearchAtom } from './relationshipsPanelFiltersAtom.js';
 
 const RelationshipsSearchBar = () => {
@@ -18,8 +19,8 @@ const RelationshipsSearchBar = () => {
           type="text"
           value={query}
           onChange={e => setQuery(e.target.value)}
-          placeholder='Search  •  AND, OR, NOT, "exact", wild*'
-          aria-label="Search relationships"
+          placeholder={t('System', 'Search by title, text, or type', null, false)}
+          aria-label={t('System', 'Search relationships', null, false)}
           className="h-6 min-w-[100px] flex-1 bg-transparent text-xs font-medium placeholder:text-ink-muted focus:outline-none"
         />
         {query && (
@@ -29,7 +30,7 @@ const RelationshipsSearchBar = () => {
               setQuery('');
               inputRef.current?.focus();
             }}
-            aria-label="Clear search"
+            aria-label={t('System', 'Clear search', null, false)}
             className="shrink-0 cursor-pointer rounded-full p-0.5 text-ink-muted transition-colors hover:bg-parchment hover:text-ink"
           >
             <XMarkIcon className="h-3 w-3" />

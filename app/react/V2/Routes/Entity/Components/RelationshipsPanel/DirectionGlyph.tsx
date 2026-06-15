@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowLeftIcon, ArrowRightIcon, ArrowsRightLeftIcon } from '@heroicons/react/24/outline';
+import { t } from '#app/I18N/index.js';
 
 type Direction = 'incoming' | 'outgoing' | 'both';
 
@@ -7,13 +8,20 @@ type DirectionGlyphProps = {
   direction: Direction;
 };
 
+const directionTitles: Record<Direction, string> = {
+  both: 'Bidirectional',
+  incoming: 'Incoming',
+  outgoing: 'Outgoing',
+};
+
 const DirectionGlyph = ({ direction }: DirectionGlyphProps) => {
   const config = {
-    both: { Icon: ArrowsRightLeftIcon, title: 'Bidirectional', box: 'h-3 w-4' },
-    incoming: { Icon: ArrowLeftIcon, title: 'Incoming', box: 'h-3 w-3' },
-    outgoing: { Icon: ArrowRightIcon, title: 'Outgoing', box: 'h-3 w-3' },
+    both: { Icon: ArrowsRightLeftIcon, box: 'h-3 w-4' },
+    incoming: { Icon: ArrowLeftIcon, box: 'h-3 w-3' },
+    outgoing: { Icon: ArrowRightIcon, box: 'h-3 w-3' },
   }[direction];
-  const { Icon, title, box } = config;
+  const { Icon, box } = config;
+  const title = t('System', directionTitles[direction], null, false);
 
   return (
     <span

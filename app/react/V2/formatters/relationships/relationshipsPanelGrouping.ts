@@ -20,15 +20,15 @@ type GroupLabelContext = {
   templateColor: (templateId: string) => string | undefined;
 };
 
-const groupingOptions: { id: RelationshipsPanelGroupBy; label: string }[] = [
-  { id: 'none', label: 'None' },
-  { id: 'target-template', label: 'Target template' },
-  { id: 'target-entity', label: 'Target entity' },
-  { id: 'source-template', label: 'Source template' },
-  { id: 'source-entity', label: 'Source entity' },
-  { id: 'relation-type', label: 'Relation type' },
-  { id: 'direction', label: 'Direction' },
-  { id: 'source-page', label: 'Source page' },
+const groupingOptions: { id: RelationshipsPanelGroupBy }[] = [
+  { id: 'none' },
+  { id: 'target-template' },
+  { id: 'target-entity' },
+  { id: 'source-template' },
+  { id: 'source-entity' },
+  { id: 'relation-type' },
+  { id: 'direction' },
+  { id: 'source-page' },
 ];
 
 const getGroupKey = (

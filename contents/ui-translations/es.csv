@@ -95,12 +95,13 @@ Analytics description,"Si quieres dar seguimiento a las analíticas relacionadas
 Any entity,Any entity
 Apply,Apply
 Are you sure you want to continue?,Estás seguro que quieres continuar?
+Are you sure you want to delete,Estás seguro que quieres eliminar
 Are you sure you want to delete this attachment?,Estás seguro que quieres eliminar este archivo adjunto?
 Are you sure you want to delete this connection?,Estás seguro que quieres eliminar esta relación?
 Are you sure you want to delete this entity?,Estás seguro que quieres eliminar esta entidad?
 Are you sure you want to delete this file?,Estás seguro que quieres eliminar este archivo?
 Are you sure you want to delete this item?,Estás seguro que quieres eliminar este elemento?
-Are you sure you want to delete this reference? This action cannot be undone.,Are you sure you want to delete this reference? This action cannot be undone.
+Are you sure you want to delete this relationship? This action cannot be undone.,Estás seguro que quieres eliminar esta relación? Esta acción no puede revertirse.
 Are you sure?,Estás seguro?
 Attachment,Archivo
 Attachment deleted,Archivo adjunto eliminado
@@ -120,6 +121,7 @@ Back to details,Back to details
 Back to search,Volver a la búsqueda
 Bad Request,Petición incorrecta
 Basic,Básico
+Bidirectional,Bidireccional
 Body,Cuerpo
 Browse files to upload,Explorar archivos para subir
 "by ids, methods, keywords, etc.","por ids, métodos, palabras clave, etc."
@@ -127,12 +129,12 @@ Can edit,Puede editar
 Can see,Puede visualizar
 Can view,Puede visualizar
 Cancel,Cancelar
-cancel csv import,Cancel the import process. This will stop the creation of new entities. Already created entities will not be affected
-Canceling,Canceling
+cancel csv import,Cancelar el proceso de importación. Esto detendrá la creación de nuevas entidades. Las entidades ya creadas no serán afectadas
+Canceling,Cancelando
 Canceling...,Cancelando
-Cancelled,Cancelled
-Cannot connect to server,Cannot connect to server
-Cannot find extractor,Cannot find extractor
+Cancelled,Cancelado
+Cannot connect to server,No se puede conectar con el servidor
+Cannot find extractor,No se puede encontrar el extractor
 Captcha,Captcha
 Captcha bypass,"Al estar activo, puede permitir que los usuarios envíen sus plantillas incluidas en la lista blanca sin tener que ingresar un CAPTCHA.
 El formulario aún presentará el captcha a los usuarios finales, pero el endpoint de la API permitirá envíos sin validación de CAPTCHA si se incluye la cabecera “Bypass-Captcha: true"". Esta opción no es segura y puede set aprovechada para inundar su instancia con spam o contenido malicioso."
@@ -152,11 +154,12 @@ Choose,Choose
 Choose which data to use for training,Choose which data to use for training
 Chrome header,Chrome header
 Clear,Limpiar
-Clear all,Clear all
-Clear All,Clear All
+Clear all,Limpiar todo
+Clear All,Limpiar Todo
 Clear coordinates,Limpiar coordenadas
 Clear Filters,Limpiar filtros
 Clear PDF selection,Limpiar la selección PDF
+Clear search,Limpiar búsqueda
 Click,Click
 Click here,Haz click aquí
 Click to fill,Click para completar
@@ -270,7 +273,8 @@ DELETE,Eliminar
 Delete entities and documents,Eliminar entidades y documentos
 Delete file,Eliminar archivo
 Delete language,Eliminar idioma
-Delete reference,Delete reference
+Delete relationship,Eliminar relación
+Delete relationships,Eliminar relaciones
 Delete?,Delete?
 Deleted attachment,Archivo adjunto eliminado
 Deleted custom file,Archivo personalizado eliminado
@@ -437,10 +441,11 @@ Google Analytics,Google Analytics
 Google Analytics ID,ID de Google Analytics
 Google Maps,Google Maps
 Group,Grupo
-Group Options,Group Options
-Group saved,Group saved
+Group by:,Agrupar por:
+Group Options,Opciones de agrupación
+Group saved,Grupo guardado
 Group updated,Grupo actualizado
-Grouped geolocation properties,Grouped geolocation properties
+Grouped geolocation properties,Propiedades de geolocalización agrupadas
 Groups,Grupos
 Header and button preview,Header and button preview
 Header bar active background,Header bar active background
@@ -486,17 +491,18 @@ Importing data in progress,Importación de datos en curso
 in,en
 "In a group, either all relationships must have a hub or none of them.","En un grupo, todas las relaciones deben tener un nodo o ninguno de ellos."
 In OCR queue,En cola para ROC
+Incoming,Entrante
 Indexing entities may take a few minutes,La indexación de entidades puede tomar unos minutos.
 Info,Información
 Information extraction training,Entrenamiento de extracción de información
 Inherit,Heredar
 Inherit property,Heredar propiedad
-Inherit type,Inherit type
-Input,Input
+Inherit type,Tipo de herencia
+Input,Entrada
 Install,Instalar
 Install Language(s),Instalar Idioma(s)
-Install the browser extension.,Install the browser extension.
-Installing languages,Installing languages
+Install the browser extension.,Instalar la extensión del navegador.
+Installing languages,Instalando idiomas
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,"Se han enviado las instrucciones para restablecer tu contraseña, por favor revisa tu correo electrónico."
 Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
@@ -648,16 +654,18 @@ No label,No label
 No notifications or active tasks.,No notifications or active tasks.
 No options,No options
 No options found,Opciones no encontradas
+No page,No hay página
 No property,Ninguna propiedad
 No References,Sin referencias
 No References description,Las referencias son partes de este documento relacionadas con otros documentos y entidades.
 No relationship types available,No relationship types available
 No Relationships,No existen relaciones
 No Relationships description,Las relaciones son vínculos entre entidades.
+No relationships found,No se encontraron relaciones
 No releases yet,No releases yet
-No results found,No results found
+No results found,No se encontraron resultados
 No table of contents,Sin Tabla de Contenidos
-No Table of contents,No Table of contents
+No Table of contents,Sin Tabla de Contenidos
 No table of contents description,Sin descripción de Tabla de Contenidos
 No text match,Sin coincidencias de texto
 No text match description,Puedes escribir algo diferente en la barra de búsqueda para obtener algunos resultados.
@@ -669,15 +677,15 @@ No Value,Sin valor
 "No, cancel","No, cancelar"
 Non processed,No procesados
 Non-labeled,Non-labeled
-Non-latin characters support,Non-latin characters support
+Non-latin characters support,Soporte de caracteres no latinos
 Normal view,Vista normal
 Not already been use as source template in another extractor,Not already been use as source template in another extractor
 Not already been use as target template,Not already been use as target template
 Not Found,No encontrado
-Nothing selected,Nothing selected
-Notifications,Notifications
+Nothing selected,Nada seleccionado
+Notifications,Notificaciones
 Obsolete,Obsoleto
-obsolete,obsolete
+obsolete,obsoleto
 OCR,ROC
 OCR button tip,Esto procesará el documento para reconocer su texto. El archivo original se agregará como un archivo de soporte.
 OCR completed,ROC completado
@@ -709,6 +717,8 @@ Other,Otro
 other,Otro
 Other users will be affected by this action!,Otros usuarios pueden resultar afectados por ésta acción!
 Others,Others
+Outgoing,Saliente
+p.,p.
 Page,Página
 Page not found,Página no encontrada
 Page published successfully.,Page published successfully.
@@ -747,6 +757,7 @@ Preserve Extension,Extensión Preservar
 Preserve Setup Description,"Si conoces el URL y TOKEN de Uwazi, haz click en el enlace a continuación y completa la información requerida."
 Press enter to add,Pulsa ENTER para añadir
 Preview,Previsualizar
+Preview entity,Previsualizar entidad
 Previous,Anterior
 Primary button,Primary button
 Primary document,Primary document
@@ -806,25 +817,27 @@ Receiving email description,"Si tienes un formulario de contacto, esta es la dir
 Recommended,Recommended
 Reference,Reference
 References,Referencias
+references,referencias
 Reject,Rechazar
 Related entities created,Related entities created
-Relation type,Relation type
+Relation type,Tipo de relación
 Relationship,Relación
 Relationship Type,Tipo de relación
 Relationship type,Relationship type
-Relationship type created successfully.,Relationship type created successfully.
-Relationship type name,Relationship type name
-Relationship type name already exists,Relationship type name already exists
+Relationship type created successfully.,Tipo de relación creado exitosamente.
+Relationship type name,Nombre de tipo de relación
+Relationship type name already exists,El nombre de la relación ya existe
 Relationship types,Tipos de relación
 relationships,relaciones
 Relationships,relaciones
 Relationships saved,Relaciones guardadas
+relationships? This action cannot be undone.,relactiones? Esta acción no puede revertirse.
 RelationType saved,Tipo de Relación guardada
 Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Eliminar
-Remove from training set,Remove from training set
+Remove from training set,Eliminar del conjunto de entrenamiento
 remove icon,eliminar ícono
 Removed language,Idioma eliminado
 Rename,Renombrar
@@ -867,8 +880,10 @@ Saving...,Saving...
 Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,Buscar
+"Search by title, text, or type","Buscar por título, texto o tipo"
 Search item,Buscar elemento
 Search related entities or documents,Buscar entidades o documentos relacionados
+Search relationships,Buscar relaciones
 Search relevance,Relevancia de la búsqueda
 Search text,Buscar texto
 Search text description,Escribe algo en la barra de búsqueda para obtener resultados.
@@ -878,7 +893,7 @@ Search Tips: exact term,"Coincidencia exacta del término encerrando su cadena d
 Search Tips: one char wildcard,"? para un carácter comodín. Es decir: ""198?"" coincidirá con 1980 a 1989 y también con 198a, 198b, etc."
 Search Tips: proximity,"~ para búsquedas de proximidad. Es decir: ""el estado""~5 encontrará cualquier cosa que tenga ""el"" y ""estado"" dentro de una distancia de 5 palabras, como ""el estado procesal"", ""el estado legal específico""."
 Search Tips: wildcard,"Utilice un * para la búsqueda con comodines. Es decir: ""juris*"" coincidirá con palabras como jurisdicción, jurisdiccional, juristas, jurisprudencia, etc."
-Searching...,Searching...
+Searching...,Buscando...
 Secondary button,Secondary button
 Secret keys,Secret keys
 Security,Security
@@ -890,6 +905,7 @@ Select an existing image,Select an existing image
 Select favicon image,Seleccionar imagen del favicon
 Select files on your device,Seleccionar archivos de tu dispositivo
 Select from computer,Seleccionar desde la computadora
+Select relationship,Seleccionar relación
 Select relationship type,Seleccionar tipo de relación
 Select site logo image,Seleccionar imagen del logotipo del sitio
 Select target paragraph,Seleccionar párrafo de destino
@@ -899,13 +915,13 @@ Select...,Seleccionar
 Selected,Seleccionado
 selected,seleccionado(s)
 selected of,seleccionados de
-Selected or suggested,Selected or suggested
-Selected templates,Selected templates
+Selected or suggested,Seleccionado o sugerido
+Selected templates,Plantillas seleccionadas
 Send,Enviar
 Send recovery email,Enviar correo electrónico de recuperación
 Sending email,Correo electrónico de envío
 Sending email description,Esta es la dirección de correo electrónico que aparecerá como remitente cuando se envíe un correo electrónico desde tu colección Uwazi a usuarios registrados. La dirección predeterminada es *no-reply@uwazi.io*. Puedes configurar una dirección personalizada aquí.
-Sending labeled data,Sending labeled data
+Sending labeled data,Enviando datos etiquetados
 Services,Servicios
 Set as default,Establecer como predeterminado
 Set default language,Establecer idioma predeterminado
@@ -945,6 +961,8 @@ Sort,Ordenar
 Sort ascending,Orden ascendente
 Sort by,Ordenar por
 Sort descending,Orden descendiente
+Sort order,Ordenamiento
+Sort:,Ordenar:
 sorted by,ordenado por
 Source,Source
 Source relationship type,Source relationship type
@@ -1019,6 +1037,7 @@ Theme instance file invalid,Theme instance file invalid
 Theme logotype,Theme logotype
 Theme presets,Theme presets
 Theme preview,Theme preview
+Then by:,Luego por:
 There are no pages enabled for entity view,No hay páginas habilitadas para la vista de entidad
 There are no untranslated terms,No hay términos sin traducir
 Thesauri,Tesauros
@@ -1115,15 +1134,17 @@ Unexpected error,Error inesperado
 Uninstall,Desinstalar
 Uninstall language,Desinstalar idioma
 Uninstalling language,Uninstalling language
+Unknown entity,Entidad desconocida
+Unknown template,Plantilla desconocida
 Unlink,Desenlazar
-Unlock account,Unlock account
+Unlock account,Desbloquear cuenta
 Unsupported OCR language,Idioma no soportado para ROC
-Untitled,Untitled
+Untitled,Sin título
 Untranslated Terms,Términos sin traducir
 Update,Actualizar
 UPDATE,Actualizar
 Update success,Actualización exitosa
-Updated,Updated
+Updated,Actualizado
 Updated file,Archivo actualizado
 Updated multiple entities,Múltiples entidades actualizadas
 Updated permissions on entity,Permisos sobre la entidad actualizados

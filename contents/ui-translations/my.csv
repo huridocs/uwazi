@@ -95,12 +95,13 @@ Analytics description,"If you want to track analytics related to your collection
 Any entity,Any entity
 Apply,Apply
 Are you sure you want to continue?,Are you sure you want to continue?
+Are you sure you want to delete,Are you sure you want to delete
 Are you sure you want to delete this attachment?,Are you sure you want to delete this attachment?
 Are you sure you want to delete this connection?,Are you sure you want to delete this connection?
 Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
 Are you sure you want to delete this file?,Are you sure you want to delete this file?
 Are you sure you want to delete this item?,Are you sure you want to delete this item?
-Are you sure you want to delete this reference? This action cannot be undone.,Are you sure you want to delete this reference? This action cannot be undone.
+Are you sure you want to delete this relationship? This action cannot be undone.,Are you sure you want to delete this relationship? This action cannot be undone.
 Are you sure?,Are you sure?
 Attachment,Attachment
 Attachment deleted,Attachment deleted
@@ -120,6 +121,7 @@ Back to details,Back to details
 Back to search,ရှာဖွေမှုသို့ ပြန်သွားရန်
 Bad Request,Bad Request
 Basic,Basic
+Bidirectional,Bidirectional
 Body,စာကိုယ်
 Browse files to upload,အပ်လုဒ်လုပ်ရန် ဖိုင်များကို ရှာဖွေပါ
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
@@ -159,6 +161,7 @@ Clear All,Clear All
 Clear coordinates,ကိုဩဒိနိတ်များကို ရှင်းလင်းရန်
 Clear Filters,စစ်ထုတ်မှုများကို ရှင်းလင်းရန်
 Clear PDF selection,Clear PDF selection
+Clear search,Clear search
 Click,Click
 Click here,ဒီမှာ နှိပ်ပါ
 Click to fill,ဖြည့်ရန် နှိပ်ပါ
@@ -272,7 +275,8 @@ DELETE,ဖျက်ရန်
 Delete entities and documents,Delete entities and documents
 Delete file,Delete file
 Delete language,ဘာသာစကား ဖျက်ရန်
-Delete reference,Delete reference
+Delete relationship,Delete relationship
+Delete relationships,Delete relationships
 Delete?,Delete?
 Deleted attachment,Deleted attachment
 Deleted custom file,Deleted custom file
@@ -439,6 +443,7 @@ Google Analytics,Google Analytics
 Google Analytics ID,Google Analytics ID
 Google Maps,Google Maps
 Group,Group
+Group by:,Group by:
 Group Options,Group Options
 Group saved,Group saved
 Group updated,Group updated
@@ -488,6 +493,7 @@ Importing data in progress,ဒေတာ ထည့်သွင်းဆဲ
 in,၌
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,In OCR queue
+Incoming,Incoming
 Indexing entities may take a few minutes,ဖြည့်သွင်းချက်များကို အညွှန်းတပ်ခြင်းသည် မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်
 Info,အချက်အလက်
 Information extraction training,Information extraction training
@@ -650,12 +656,14 @@ No label,No label
 No notifications or active tasks.,No notifications or active tasks.
 No options,No options
 No options found,ရွေးချယ်စရာ မရှိပါ
+No page,No page
 No property,ထူးခြားချက် မရှိပါ
 No References,ကိုးကားချက် မရှိပါ
 No References description,References are parts of this document related with other documents and entities.
 No relationship types available,No relationship types available
 No Relationships,ဆက်နွှယ်မှု မရှိပါ
 No Relationships description,Relationships are bonds between entities.
+No relationships found,No relationships found
 No releases yet,No releases yet
 No results found,No results found
 No table of contents,မာတိကာ မရှိပါ
@@ -711,6 +719,8 @@ Other,အခြား
 other,အခြား
 Other users will be affected by this action!,Other users will be affected by this action!
 Others,Others
+Outgoing,Outgoing
+p.,p.
 Page,စာမျက်နှာ
 Page not found,Page not found
 Page published successfully.,Page published successfully.
@@ -749,6 +759,7 @@ Preserve Extension,Preserve Extension
 Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
 Press enter to add,ထည့်ရန် enter ကို နှိပ်ပါ
 Preview,ကြိုကြည့်ရန်
+Preview entity,Preview entity
 Previous,ယခင်
 Primary button,Primary button
 Primary document,Primary document
@@ -808,6 +819,7 @@ Receiving email description,"If you have a contact form, this is the email addre
 Recommended,Recommended
 Reference,Reference
 References,ကိုးကားချက်များ
+references,references
 Reject,ငြင်းပယ်ရန်
 Related entities created,Related entities created
 Relation type,Relation type
@@ -821,6 +833,7 @@ Relationship types,ဆက်နွှယ်မှု အမျိုးအစာ
 relationships,ဆက်နွှယ်မှုများ
 Relationships,ဆက်နွှယ်မှုများ
 Relationships saved,Relationships saved
+relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,RelationType သိမ်းဆည်းပြီး
 Release message,Release message
 remaining files,remaining files
@@ -869,8 +882,10 @@ Saving...,Saving...
 Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,ရှာဖွေရန်
+"Search by title, text, or type","Search by title, text, or type"
 Search item,အိုင်တမ် ရှာရန်
 Search related entities or documents,သက်ဆိုင်ရာ ဖြည့်သွင်းချက် သို့မဟုတ် စာရွက်စာတမ်းများကို ရှာရန်
+Search relationships,Search relationships
 Search relevance,ရှာဖွေမှု ဆီလျော်ခြင်း
 Search text,ရှာဖွေမှု စာသား
 Search text description,Type something in the search box to get some results.
@@ -892,6 +907,7 @@ Select an existing image,Select an existing image
 Select favicon image,Select favicon image
 Select files on your device,သင့်စက်ပေါ်ရှိ ဖိုင်များကို ရွေးချယ်ရန်
 Select from computer,Select from computer
+Select relationship,Select relationship
 Select relationship type,ဆက်နွှယ်မှု အမျိုးအစား ရွေးချယ်ရန်
 Select site logo image,Select site logo image
 Select target paragraph,ပစ်မှတ်ထား စာပိုဒ်ကို ရွေးချယ်ရန်
@@ -947,6 +963,8 @@ Sort,အမျိုးအစားခွဲရန်
 Sort ascending,Sort ascending
 Sort by,ဤသို့ အမျိုးအစားခွဲရန်
 Sort descending,Sort descending
+Sort order,Sort order
+Sort:,Sort:
 sorted by,ဤသို့ အမျိုးအစားခွဲထားသည်
 Source,Source
 Source relationship type,Source relationship type
@@ -1022,6 +1040,7 @@ Theme instance file invalid,Theme instance file invalid
 Theme logotype,Theme logotype
 Theme presets,Theme presets
 Theme preview,Theme preview
+Then by:,Then by:
 There are no pages enabled for entity view,ဖြည့်သွင်းချက် မြင်ကွင်းအတွက် ဖွင့်ထားသော စာမျက်နှာများ မရှိပါ
 There are no untranslated terms,There are no untranslated terms
 Thesauri,ဝေါဟာရပဒေသာကျမ်းများ
@@ -1118,6 +1137,8 @@ Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
 Uninstalling language,Uninstalling language
+Unknown entity,Unknown entity
+Unknown template,Unknown template
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,Unsupported OCR language

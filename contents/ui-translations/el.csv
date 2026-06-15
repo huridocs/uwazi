@@ -95,12 +95,13 @@ Analytics description,"Αν θέλετε να παρακολουθείτε αν�
 Any entity,Οποιαδήποτε οντότητα
 Apply,Εφαρμογή
 Are you sure you want to continue?,Θέλετε σίγουρα να συνεχίσετε;
+Are you sure you want to delete,Are you sure you want to delete
 Are you sure you want to delete this attachment?,Θέλετε σίγουρα να διαγράψετε αυτό το συνημμένο αρχείο;
 Are you sure you want to delete this connection?,Θέλετε σίγουρα να διαγράψετε αυτή τη σύνδεση;
 Are you sure you want to delete this entity?,Θέλετε σίγουρα να διαγράψετε αυτή την οντότητα;
 Are you sure you want to delete this file?,Θέλετε σίγουρα να διαγράψετε αυτό το αρχείο;
 Are you sure you want to delete this item?,Θέλετε σίγουρα να διαγράψετε αυτό το στοιχείο;
-Are you sure you want to delete this reference? This action cannot be undone.,Are you sure you want to delete this reference? This action cannot be undone.
+Are you sure you want to delete this relationship? This action cannot be undone.,Are you sure you want to delete this relationship? This action cannot be undone.
 Are you sure?,Θέλετε σίγουρα να συνεχίσετε;
 Attachment,Το συνημμένο
 Attachment deleted,Το συνημμένο αρχείο διαγράφηκε
@@ -120,6 +121,7 @@ Back to details,Back to details
 Back to search,Επιστροφή στην αναζήτηση
 Bad Request,Κακό αίτημα
 Basic,Βασικό
+Bidirectional,Bidirectional
 Body,Σώμα
 Browse files to upload,Αναζήτηση αρχείων για μεταφόρτωση
 "by ids, methods, keywords, etc.","με αναγνωριστικά, μεθόδους, λέξεις-κλειδιά, κ.λπ."
@@ -160,6 +162,7 @@ Clear All,Εκκαθάριση όλων
 Clear coordinates,Εκκαθάριση συντεταγμένων
 Clear Filters,Εκκαθάριση φίλτρων
 Clear PDF selection,Εκκαθάριση επιλογής PDF
+Clear search,Clear search
 Click,Κάντε κλικ
 Click here,Κάντε κλικ εδώ
 Click to fill,Κάντε κλικ για να συμπληρώσετε
@@ -273,7 +276,8 @@ DELETE,ΔΙΑΓΡΑΦΗ
 Delete entities and documents,Διαγραφή οντοτήτων και εγγράφων
 Delete file,Διαγραφή αρχείου
 Delete language,Διαγραφή γλώσσας
-Delete reference,Delete reference
+Delete relationship,Delete relationship
+Delete relationships,Delete relationships
 Delete?,Delete?
 Deleted attachment,Διαγράφηκε συνημμένο αρχείο
 Deleted custom file,Διαγράφηκε προσαρμοσμένο αρχείο
@@ -440,6 +444,7 @@ Google Analytics,Google Analytics
 Google Analytics ID,Αναγνωριστικό Google Analytics
 Google Maps,Χάρτες Google
 Group,Ομάδα
+Group by:,Group by:
 Group Options,Επιλογές ομάδας
 Group saved,Η ομάδα αποθηκεύτηκε
 Group updated,Η ομάδα ενημερώθηκε
@@ -489,6 +494,7 @@ Importing data in progress,Εισαγωγή δεδομένων σε εξέλιξ
 in,σε
 "In a group, either all relationships must have a hub or none of them.","Σε μια ομάδα, είτε όλες οι σχέσεις πρέπει να έχουν έναν κόμβο είτε καμία από αυτές."
 In OCR queue,Στην ουρά OCR
+Incoming,Incoming
 Indexing entities may take a few minutes,Η ευρετηριοποίηση οντοτήτων μπορεί να διαρκέσει μερικά λεπτά
 Info,Πληροφορίες
 Information extraction training,Εκπαίδευση εξαγωγής πληροφοριών
@@ -651,12 +657,14 @@ No label,Χωρίς ετικέτα
 No notifications or active tasks.,No notifications or active tasks.
 No options,Δεν υπάρχουν επιλογές
 No options found,Δεν βρέθηκαν επιλογές
+No page,No page
 No property,Το στοιχείο δεν έχει αυτήν την ιδιότητα
 No References,Δεν υπάρχουν αναφορές
 No References description,Οι αναφορές είναι τμήματα αυτού του εγγράφου που σχετίζονται με άλλα έγγραφα και οντότητες.
 No relationship types available,No relationship types available
 No Relationships,Δεν υπάρχουν σχέσεις
 No Relationships description,Οι σχέσεις είναι δεσμοί μεταξύ οντοτήτων.
+No relationships found,No relationships found
 No releases yet,No releases yet
 No results found,No results found
 No table of contents,Δεν υπάρχει πίνακας περιεχομένων
@@ -712,6 +720,8 @@ Other,Άλλα
 other,άλλα
 Other users will be affected by this action!,Αυτή η ενέργεια θα επηρεάσει και άλλους χρήστες.
 Others,Άλλοι
+Outgoing,Outgoing
+p.,p.
 Page,Σελίδα
 Page not found,Η σελίδα δεν βρέθηκε
 Page published successfully.,Page published successfully.
@@ -750,6 +760,7 @@ Preserve Extension,Preserve επέκταση
 Preserve Setup Description,"Εάν γνωρίζετε το URL και το TOKEN του Uwazi σας, κάντε κλικ στον παρακάτω σύνδεσμο και συμπληρώστε τις απαιτούμενες πληροφορίες."
 Press enter to add,Πατήστε Enter για προσθήκη
 Preview,Προεπισκόπηση
+Preview entity,Preview entity
 Previous,Προηγούμενο
 Primary button,Primary button
 Primary document,Primary document
@@ -809,6 +820,7 @@ Receiving email description,"Εάν διαθέτετε φόρμα επικοιν
 Recommended,Recommended
 Reference,Αναφορά
 References,Αναφορές
+references,Αναφορές
 Reject,Απόρριψη
 Related entities created,Related entities created
 Relation type,Τύπος σχέσης
@@ -822,6 +834,7 @@ Relationship types,Τύποι σχέσεων
 relationships,σχέσεις
 Relationships,Σχέσεις
 Relationships saved,Οι σχέσεις αποθηκεύτηκαν
+relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,Ο τύπος σχέσης αποθηκεύτηκε
 Release message,Release message
 remaining files,υπόλοιπα αρχεία
@@ -870,8 +883,10 @@ Saving...,Saving...
 Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,Αναζήτηση
+"Search by title, text, or type","Search by title, text, or type"
 Search item,Αναζήτηση στοιχείου
 Search related entities or documents,Αναζήτηση σχετικών οντοτήτων ή εγγράφων
+Search relationships,Search relationships
 Search relevance,Συνάφεια αναζήτησης
 Search text,Aναζήτηση κείμενου
 Search text description,Πληκτρολογήστε κάτι στο πλαίσιο αναζήτησης για να λάβετε αποτελέσματα.
@@ -893,6 +908,7 @@ Select an existing image,Select an existing image
 Select favicon image,Επιλογή εικόνας favicon
 Select files on your device,Επιλογή αρχείων στη συσκευή σας
 Select from computer,Επιλογή από τον υπολογιστή
+Select relationship,Select relationship
 Select relationship type,Επιλογή τύπου σχέσης
 Select site logo image,Επιλογή εικόνας λογότυπου ιστότοπου
 Select target paragraph,Επιλογή παράγραφου-στόχου
@@ -948,6 +964,8 @@ Sort,Ταξινόμηση
 Sort ascending,Ταξινόμηση αύξουσα
 Sort by,Ταξινόμηση κατά
 Sort descending,Ταξινόμηση φθίνουσα
+Sort order,Sort order
+Sort:,Sort:
 sorted by,Ταξινόμηση κατά
 Source,Πηγή
 Source relationship type,Τύπος σχέσης πηγής
@@ -1023,6 +1041,7 @@ Theme instance file invalid,Theme instance file invalid
 Theme logotype,Theme logotype
 Theme presets,Theme presets
 Theme preview,Theme preview
+Then by:,Then by:
 There are no pages enabled for entity view,Δεν υπάρχουν σελίδες ενεργοποιημένες για την προβολή οντότητας
 There are no untranslated terms,Δεν υπάρχουν αμετάφραστοι όροι
 Thesauri,Θησαυροί
@@ -1119,6 +1138,8 @@ Unexpected error,Μη αναμενόμενο σφάλμα
 Uninstall,Απεγκατάσταση
 Uninstall language,Απεγκατάσταση γλώσσας
 Uninstalling language,Uninstalling language
+Unknown entity,Unknown entity
+Unknown template,Unknown template
 Unlink,Αποσύνδεση
 Unlock account,Ξεκλείδωμα λογαριασμού
 Unsupported OCR language,Μη υποστηριζόμενη γλώσσα OCR

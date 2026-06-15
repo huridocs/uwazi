@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAtom } from 'jotai';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import { t, Translate } from '#app/I18N/index.js';
 import {
   groupingOptions,
   type RelationshipsPanelGroupBy,
@@ -9,6 +10,7 @@ import {
   relationshipsPanelGroupByAtom,
   relationshipsPanelSubGroupByAtom,
 } from './relationshipsPanelFiltersAtom.js';
+import { groupingOptionLabels } from './relationshipsPanelLabels.js';
 
 type RelationshipsGroupByControlProps = {
   axis?: 'primary' | 'secondary';
@@ -27,7 +29,10 @@ const RelationshipsGroupByControl = ({
   const setValue = axis === 'primary' ? setGroupBy : setSubGroupBy;
   const [open, setOpen] = useState(false);
   const active = groupingOptions.find(option => option.id === value);
-  const labelPrefix = axis === 'primary' ? 'Group by:' : 'Then by:';
+  const labelPrefix =
+    axis === 'primary'
+      ? t('System', 'Group by:', null, false)
+      : t('System', 'Then by:', null, false);
   const visibleOptions = groupingOptions.filter(
     option => option.id === 'none' || option.id !== excludeOption
   );
@@ -46,8 +51,10 @@ const RelationshipsGroupByControl = ({
             : 'cursor-pointer text-ink-secondary hover:bg-parchment hover:text-ink'
         }`}
       >
-        <span className="text-ink-tertiary">{labelPrefix}</span>
-        <span>{active?.label}</span>
+        <span className="text-ink-tertiary">
+          {axis === 'primary' ? <Translate>Group by:</Translate> : <Translate>Then by:</Translate>}
+        </span>
+        <span>{active && <Translate>{groupingOptionLabels[active.id]}</Translate>}</span>
         <ChevronDownIcon className="h-2.5 w-2.5 text-ink-muted" aria-hidden />
       </button>
       {open && !disabled && (
@@ -75,7 +82,7 @@ const RelationshipsGroupByControl = ({
                   value === option.id ? 'bg-vellum text-ink' : 'text-ink-secondary hover:bg-warm'
                 }`}
               >
-                {option.label}
+                <Translate>{groupingOptionLabels[option.id]}</Translate>
               </button>
             ))}
           </div>

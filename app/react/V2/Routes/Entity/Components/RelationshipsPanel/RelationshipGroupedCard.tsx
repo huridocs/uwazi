@@ -7,7 +7,7 @@ import {
 } from './relationshipsPanelFiltersAtom.js';
 
 type RelationshipGroupedCardProps = {
-  title: string;
+  title: ReactNode;
   color?: string;
   count: number;
   children: ReactNode;

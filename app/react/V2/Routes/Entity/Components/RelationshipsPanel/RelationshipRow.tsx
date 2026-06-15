@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
 import { EyeIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { t } from '#app/I18N/index.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import { directionOf } from '#V2/formatters/relationships/types.js';
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
@@ -38,7 +39,8 @@ const RelationshipRow = ({
   const editMode = useAtomValue(relationshipsEditModeAtom);
   const referenceText = marker.anchor?.text?.trim() ?? '';
   const referencePage = marker.anchor?.selections?.[0]?.page;
-  const templateName = templates.find(t => t._id === marker.target.templateId)?.name ?? '';
+  const templateName =
+    templates.find(template => template._id === marker.target.templateId)?.name ?? '';
   const relationshipTypeName =
     relationshipTypes.find(type => type._id === marker.view.type)?.name ??
     marker.view.relationshipTypeName ??
@@ -81,7 +83,7 @@ const RelationshipRow = ({
                 e.stopPropagation();
                 onView();
               }}
-              aria-label="Preview entity"
+              aria-label={t('System', 'Preview entity', null, false)}
               className="cursor-pointer rounded p-1 text-ink-muted opacity-0 transition-all group-hover:opacity-100 hover:bg-warm hover:text-ink"
             >
               <EyeIcon className="h-3 w-3" />
@@ -94,7 +96,7 @@ const RelationshipRow = ({
                 e.stopPropagation();
                 onDelete();
               }}
-              aria-label="Delete relationship"
+              aria-label={t('System', 'Delete relationship', null, false)}
               className="cursor-pointer rounded p-1 text-ink-muted opacity-0 transition-all group-hover:opacity-100 hover:bg-emphasis-tint hover:text-emphasis"
             >
               <TrashIcon className="h-3 w-3" />

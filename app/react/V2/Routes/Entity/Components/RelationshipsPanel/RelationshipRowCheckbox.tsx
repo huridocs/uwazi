@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAtom, useAtomValue } from 'jotai';
+import { t } from '#app/I18N/index.js';
 import { checkboxInputClassName } from '#V2/Components/Forms/Checkbox.js';
 import { relationshipsEditModeAtom, selectedRelationshipIdsAtom } from './relationshipsAtom.js';
 
@@ -22,7 +23,7 @@ const RelationshipRowCheckbox = ({ relationshipId }: RelationshipRowCheckboxProp
       <input
         type="checkbox"
         checked={checked}
-        aria-label="Select relationship"
+        aria-label={t('System', 'Select relationship', null, false)}
         onChange={() => {
           setSelected(prev => {
             const next = new Set(prev);

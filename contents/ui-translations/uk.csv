@@ -95,12 +95,13 @@ Analytics description,"Якщо ви хочете відстежувати ан�
 Any entity,Будь-який суб'єкт
 Apply,Подати заявку
 Are you sure you want to continue?,"Ви впевнені, що хочете продовжувати?"
+Are you sure you want to delete,Are you sure you want to delete
 Are you sure you want to delete this attachment?,"Ви впевнені, що хочете видалити цей вкладення?"
 Are you sure you want to delete this connection?,"Ви впевнені, що хочете видалити це з'єднання?"
 Are you sure you want to delete this entity?,"Ви впевнені, що хочете видалити цю сутність?"
 Are you sure you want to delete this file?,"Ви впевнені, що хочете видалити цей файл?"
 Are you sure you want to delete this item?,"Ви впевнені, що хочете видалити цей елемент?"
-Are you sure you want to delete this reference? This action cannot be undone.,Are you sure you want to delete this reference? This action cannot be undone.
+Are you sure you want to delete this relationship? This action cannot be undone.,Are you sure you want to delete this relationship? This action cannot be undone.
 Are you sure?,Ти впевнений?
 Attachment,Вкладення
 Attachment deleted,Вкладення видалено
@@ -120,6 +121,7 @@ Back to details,Back to details
 Back to search,Назад до пошуку
 Bad Request,Поганий запит
 Basic,Базовий
+Bidirectional,Bidirectional
 Body,Основна частина
 Browse files to upload,Перегляньте файли для завантаження
 "by ids, methods, keywords, etc.","за ідентифікаторами, методами, ключовими словами тощо."
@@ -161,6 +163,7 @@ Clear All,Очистити все.
 Clear coordinates,Очистити координати
 Clear Filters,Очистити фільтри
 Clear PDF selection,Очистити вибір PDF
+Clear search,Clear search
 Click,Клац!
 Click here,Натисніть сюди
 Click to fill,"Натисніть, щоб заповнити"
@@ -274,7 +277,8 @@ DELETE,Видалити
 Delete entities and documents,Видалити документи та об'єкти
 Delete file,Видалити файл
 Delete language,Видалити мову
-Delete reference,Delete reference
+Delete relationship,Delete relationship
+Delete relationships,Delete relationships
 Delete?,Delete?
 Deleted attachment,Видалено вкладення
 Deleted custom file,Видалено користувацький файл
@@ -441,6 +445,7 @@ Google Analytics,Google Аналітики
 Google Analytics ID,ID Google Аналітики
 Google Maps,Карти Google
 Group,Групи
+Group by:,Group by:
 Group Options,Параметри групи
 Group saved,Групу збережено
 Group updated,Групу оновлено
@@ -490,6 +495,7 @@ Importing data in progress,Імпортування даних під час в�
 in,в
 "In a group, either all relationships must have a hub or none of them.","У групі або всі відносини повинні мати центр, або жоден з них."
 In OCR queue,У черзі на оптичне розпізнавання символів
+Incoming,Incoming
 Indexing entities may take a few minutes,Індексація об'єктів може тривати декілька хвилин
 Info,Інформація
 Information extraction training,Тренінг з вилучення інформації
@@ -652,12 +658,14 @@ No label,Без етикетки
 No notifications or active tasks.,No notifications or active tasks.
 No options,Без варіантів
 No options found,Варіантів не знайдено
+No page,No page
 No property,Товар не має цієї властивості
 No References,Немає посилань
 No References description,"Посилання - це частини цього документа, пов'язані з іншими документами та об'єктами."
 No relationship types available,No relationship types available
 No Relationships,Немає взаємозв'язків
 No Relationships description,Відносини - це зв'язки між суб'єктами.
+No relationships found,No relationships found
 No releases yet,No releases yet
 No results found,No results found
 No table of contents,Немає змісту
@@ -713,6 +721,8 @@ Other,Інший
 other,Інший
 Other users will be affected by this action!,Ця дія вплине на інших користувачів!
 Others,Інші
+Outgoing,Outgoing
+p.,p.
 Page,Сторінка
 Page not found,Сторінку не знайдено
 Page published successfully.,Page published successfully.
@@ -751,6 +761,7 @@ Preserve Extension,Зберегти розширення
 Preserve Setup Description,"Якщо ви знаєте свій Uwazi URL і TOKEN, перейдіть за посиланням нижче і заповніть необхідну інформацію."
 Press enter to add,"Натисніть Enter, щоб додати"
 Preview,Попередній перегляд
+Preview entity,Preview entity
 Previous,Попередній
 Primary button,Primary button
 Primary document,Primary document
@@ -810,6 +821,7 @@ Receiving email description,"Якщо у вас є контактна форма
 Recommended,Recommended
 Reference,Посилання
 References,Посилання
+references,references
 Reject,Відхилити
 Related entities created,Related entities created
 Relation type,Тип відношення
@@ -823,6 +835,7 @@ Relationship types,Тип взаємозв'язку
 relationships,Взаємозв'язки
 Relationships,Взаємозв'язки
 Relationships saved,Відносини збережені
+relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,Тип взаємозв'язку збережено
 Release message,Release message
 remaining files,решта файлів
@@ -871,8 +884,10 @@ Saving...,Saving...
 Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,Шукати
+"Search by title, text, or type","Search by title, text, or type"
 Search item,Шукати предмет
 Search related entities or documents,Шукати взаємопов'язані об'єкти та документи
+Search relationships,Search relationships
 Search relevance,Релевантність пошуку
 Search text,Пошук за текстом
 Search text description,"Введіть щось у вікні пошуку, щоб отримати результати."
@@ -894,6 +909,7 @@ Select an existing image,Select an existing image
 Select favicon image,Вибрати зображення фавікону
 Select files on your device,Вибрати файли на вашому пристрої
 Select from computer,Виберіть з комп'ютера
+Select relationship,Select relationship
 Select relationship type,Виберіть тип взаємозв'язків
 Select site logo image,Вибрати зображення логотипу сайту
 Select target paragraph,Виберіть цільовий абзац
@@ -949,6 +965,8 @@ Sort,Сортувати
 Sort ascending,Сортування за зростанням
 Sort by,Сортувати за
 Sort descending,Сортування за спаданням
+Sort order,Sort order
+Sort:,Sort:
 sorted by,відсортовано за
 Source,Джерело
 Source relationship type,Тип вихідного відношення
@@ -1024,6 +1042,7 @@ Theme instance file invalid,Theme instance file invalid
 Theme logotype,Theme logotype
 Theme presets,Theme presets
 Theme preview,Theme preview
+Then by:,Then by:
 There are no pages enabled for entity view,"Немає сторінок з можливостями, які надаються для перегляду об'єкта"
 There are no untranslated terms,Немає неперекладених термінів
 Thesauri,Предметний покажчик
@@ -1120,6 +1139,8 @@ Unexpected error,Неочікувана помилка
 Uninstall,Видалити
 Uninstall language,Видалити мову
 Uninstalling language,Uninstalling language
+Unknown entity,Unknown entity
+Unknown template,Unknown template
 Unlink,Роз'єднати зв'язок.
 Unlock account,Розблокувати обліковий запис
 Unsupported OCR language,Непідтримувана мова оптичного розпізнавання символів
