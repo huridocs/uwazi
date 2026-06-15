@@ -13,6 +13,7 @@ import {
   type GroupLabelContext,
 } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
 import { RelationshipsPanelEntry } from './RelationshipsPanelEntry.js';
+import { panelEntryCount } from './RelationshipsPanelEntryList.js';
 import { RelationshipsTreeBranch, RelationshipsTreeNode } from './RelationshipsTreeBranch.js';
 import { RelationshipsGroupLabel } from './RelationshipsGroupLabel.js';
 import {
@@ -29,9 +30,6 @@ type RelationshipsTreeViewProps = {
   onView: (marker: RelationshipMarker) => void;
   onDelete: (marker: RelationshipMarker) => void;
 };
-
-const entryCount = (items: RelationshipMarker[], selfSharedId: string) =>
-  buildPanelListEntries(items, selfSharedId).length;
 
 const renderEntries = (
   items: RelationshipMarker[],
@@ -99,7 +97,7 @@ const RelationshipsTreeView = ({
             />
           }
           color={getGroupColor(key, groupBy, groupContext, groupMarkersList)}
-          count={entryCount(groupMarkersList, selfSharedId)}
+          count={panelEntryCount(groupMarkersList, selfSharedId)}
         >
           {subGroupBy === 'none'
             ? renderEntries(groupMarkersList, selfSharedId, rowProps)
@@ -116,7 +114,7 @@ const RelationshipsTreeView = ({
                       />
                     }
                     color={getGroupColor(subKey, subGroupBy, groupContext, subMarkers)}
-                    count={entryCount(subMarkers, selfSharedId)}
+                    count={panelEntryCount(subMarkers, selfSharedId)}
                   >
                     {renderEntries(subMarkers, selfSharedId, rowProps)}
                   </RelationshipsTreeBranch>

@@ -1,6 +1,7 @@
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
-import { directionOf, type RelationshipDirection } from './types.js';
-import type { RelationshipAggregate } from './relationshipsPanelDerivation.js';
+import type { RelationshipAggregate } from './relationshipsPanelAggregates.js';
+import { listAggregates } from './relationshipsPanelAggregates.js';
+import type { RelationshipDirection } from './types.js';
 import {
   getGroupColor,
   getGroupLabel,
@@ -42,41 +43,6 @@ const FIRST_RING_R = 140;
 const RING_GAP = 36;
 const ARC_GAP = 28;
 
-const aggregateKey = (marker: RelationshipMarker): string =>
-  `${marker.target.sharedId}::${marker.view.type}`;
-
-const deriveGraphAggregates = (
-  markers: RelationshipMarker[],
-  selfSharedId: string
-): RelationshipAggregate[] => {
-  const map = new Map<string, RelationshipAggregate>();
-  for (const marker of markers) {
-    const key = aggregateKey(marker);
-    const direction = directionOf(marker.view, selfSharedId);
-    const page = marker.anchor?.selections[0]?.page;
-    const existing = map.get(key);
-    if (existing) {
-      existing.markerIds.push(marker._id);
-      if (!existing.directions.includes(direction)) existing.directions.push(direction);
-      if (page !== undefined && (existing.firstPage === undefined || page < existing.firstPage)) {
-        existing.firstPage = page;
-      }
-    } else {
-      map.set(key, {
-        id: key,
-        targetSharedId: marker.target.sharedId,
-        targetTitle: marker.target.title,
-        targetTemplateId: marker.target.templateId,
-        relationType: marker.view.type,
-        directions: [direction],
-        firstPage: page,
-        markerIds: [marker._id],
-      });
-    }
-  }
-  return Array.from(map.values());
-};
-
 const aggregateGroupKey = (
   aggregate: RelationshipAggregate,
   groupBy: RelationshipsPanelGroupBy
@@ -107,7 +73,7 @@ const buildGraphLayout = (
   groupContext: GroupLabelContext,
   activeRelationshipId?: string
 ): { spokes: GraphSpoke[]; nodes: GraphNode[] } => {
-  const aggregates = deriveGraphAggregates(markers, selfSharedId);
+  const aggregates = listAggregates(markers, selfSharedId);
   const byKey = new Map<string, RelationshipAggregate[]>();
 
   for (const aggregate of aggregates) {
@@ -191,4 +157,4 @@ const buildGraphLayout = (
 };
 
 export type { GraphNode, GraphSpoke };
-export { VIEW_W, VIEW_H, CX, CY, SOURCE_R, buildGraphLayout, deriveGraphAggregates };
+export { VIEW_W, VIEW_H, CX, CY, SOURCE_R, buildGraphLayout };

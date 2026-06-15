@@ -2,6 +2,7 @@ import { Entity } from '#V2/api/entities/types.js';
 import { RelationshipMarker, toMarker } from '#V2/Components/Relationships/types.js';
 import { formatRelationships } from './formatRelationships.js';
 import { buildMatcher } from './relationshipsPanelSearchQuery.js';
+import { aggregateKey } from './relationshipsPanelAggregates.js';
 
 type RelationshipsPanelSort = 'none' | 'appearance' | 'asc' | 'desc';
 
@@ -15,9 +16,6 @@ type RelationshipsPanelProjection = {
   markers: RelationshipMarker[];
   stats: RelationshipsPanelStats;
 };
-
-const aggregateKey = (marker: RelationshipMarker): string =>
-  `${marker.target.sharedId}::${marker.view.type}`;
 
 const computeStats = (markers: RelationshipMarker[]): RelationshipsPanelStats => ({
   references: markers.filter(marker => marker.anchor).length,

@@ -1,17 +1,10 @@
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
-import { directionOf, type RelationshipDirection } from './types.js';
 import { compareAppearance } from './relationshipsPanelProjection.js';
-
-type RelationshipAggregate = {
-  id: string;
-  targetSharedId: string;
-  targetTitle: string;
-  targetTemplateId: string;
-  relationType: string;
-  directions: RelationshipDirection[];
-  firstPage?: number;
-  markerIds: string[];
-};
+import {
+  aggregateKey,
+  deriveAggregates,
+  type RelationshipAggregate,
+} from './relationshipsPanelAggregates.js';
 
 type RelationshipHubMember = {
   sharedId: string;
@@ -33,9 +26,6 @@ type PanelListEntry =
   | { kind: 'aggregate'; aggregate: RelationshipAggregate; markers: RelationshipMarker[] }
   | { kind: 'hub'; hub: RelationshipHub; markers: RelationshipMarker[] };
 
-const aggregateKey = (marker: RelationshipMarker): string =>
-  `${marker.target.sharedId}::${marker.view.type}`;
-
 const firstPageOf = (marker: RelationshipMarker): number | undefined =>
   marker.anchor?.selections[0]?.page;
 
@@ -46,38 +36,6 @@ const compareEntries = (a: PanelListEntry, b: PanelListEntry): number => {
   const right = markerOf(b);
   if (!left || !right) return 0;
   return compareAppearance(left, right);
-};
-
-const deriveAggregates = (
-  markers: RelationshipMarker[],
-  selfSharedId: string
-): Map<string, RelationshipAggregate> => {
-  const map = new Map<string, RelationshipAggregate>();
-  for (const marker of markers) {
-    const key = aggregateKey(marker);
-    const direction = directionOf(marker.view, selfSharedId);
-    const page = firstPageOf(marker);
-    const existing = map.get(key);
-    if (existing) {
-      existing.markerIds.push(marker._id);
-      if (!existing.directions.includes(direction)) existing.directions.push(direction);
-      if (page !== undefined && (existing.firstPage === undefined || page < existing.firstPage)) {
-        existing.firstPage = page;
-      }
-    } else {
-      map.set(key, {
-        id: key,
-        targetSharedId: marker.target.sharedId,
-        targetTitle: marker.target.title,
-        targetTemplateId: marker.target.templateId,
-        relationType: marker.view.type,
-        directions: [direction],
-        firstPage: page,
-        markerIds: [marker._id],
-      });
-    }
-  }
-  return map;
 };
 
 const deriveHub = (hubId: string, markers: RelationshipMarker[]): RelationshipHub => {
@@ -177,4 +135,4 @@ const panelEntryKey = (entry: PanelListEntry): string => {
 };
 
 export type { RelationshipAggregate, RelationshipHub, RelationshipHubMember, PanelListEntry };
-export { buildPanelListEntries, deriveAggregates, deriveHub, panelEntryKey };
+export { buildPanelListEntries, deriveHub, panelEntryKey };
