@@ -30,6 +30,7 @@ export type FileUpdateInput = {
   toc?: TableOfContent[];
   generatedToc?: boolean;
   propertySelections?: PropertySelectionSchema[];
+  url?: string;
 };
 
 export type PDFDocumentDTO = BaseFileDTO &

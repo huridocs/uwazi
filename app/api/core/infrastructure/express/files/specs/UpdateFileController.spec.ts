@@ -75,6 +75,10 @@ describe('UpdateFileController', () => {
       request: { body: { _id: 'file4', toc } },
     });
 
+    const sut5 = createSut({
+      request: { body: { _id: 'file5', url: 'http://example.com' } },
+    });
+
     await sut1.sut.handleAsync();
     expect(UpdateFileUseCaseFactory.default().execute).toHaveBeenCalledWith({
       fileId: 'file1',
@@ -99,6 +103,12 @@ describe('UpdateFileController', () => {
       fileId: 'file4',
       toc,
     });
+
+    await sut5.sut.handleAsync();
+    expect(UpdateFileUseCaseFactory.default().execute).toHaveBeenCalledWith({
+      fileId: 'file5',
+      url: 'http://example.com',
+    });
   });
 
   it('should validate request before calling use case', async () => {
@@ -106,8 +116,12 @@ describe('UpdateFileController', () => {
     const sutBadOptionals = createSut({
       request: { body: { _id: 'file1', language: '', originalname: '' } },
     });
+    const sutBadUrl = createSut({
+      request: { body: { _id: 'file1', url: '' } },
+    });
 
-    await expect(sutEmptyId.sut.handleAsync()).rejects.toThrow();
-    await expect(sutBadOptionals.sut.handleAsync()).rejects.toThrow();
+    await expect(sutEmptyId.sut.handleAsync()).rejects.toMatchSnapshot();
+    await expect(sutBadOptionals.sut.handleAsync()).rejects.toMatchSnapshot();
+    await expect(sutBadUrl.sut.handleAsync()).rejects.toMatchSnapshot();
   });
 });

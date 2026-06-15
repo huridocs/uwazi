@@ -2,7 +2,6 @@ import { z } from 'zod';
 import uniqBy from 'lodash/uniqBy.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { LanguageISO6391, PropertySelectionSchema } from '#shared/types/commonTypes.js';
-import { ObjectUtils } from '#api/common.v2/utils/Object.js';
 import { BaseFile, BaseFileProps } from './BaseFile.js';
 import { FileContents } from './FileContents.js';
 import { FullText, FileUpdateInput, PDFDocumentDTO, TableOfContent } from './domainTypes.js';
@@ -52,10 +51,6 @@ const Schema = z
       }
     }
   });
-
-const IMMUTABLE_PDF_KEYS = ['fullText', 'entity', 'totalPages'] as const satisfies ReadonlyArray<
-  keyof Props
->;
 
 const propertySelectionsHaveChanged = (
   stored: PropertySelectionSchema[],
@@ -170,18 +165,13 @@ export class PDFDocument extends BaseFile<Props> {
       }
     }
 
-    const sanitized = ObjectUtils.sanitize(
-      {
-        originalname: input.originalname,
-        language: input.language,
-        toc: input.toc,
-        generatedToc: input.generatedToc,
-        propertySelections,
-      } as Partial<Props>,
-      IMMUTABLE_PDF_KEYS
-    );
-
-    const updated = this.clone(sanitized as Partial<Props>);
+    const updated = this.clone({
+      originalname: input.originalname,
+      language: input.language,
+      toc: input.toc,
+      generatedToc: input.generatedToc,
+      propertySelections,
+    });
 
     if (this.language !== updated.language) {
       updated.languageChanged();

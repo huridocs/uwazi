@@ -12,6 +12,7 @@ type Input = {
   originalname?: string;
   language?: LanguageISO6391;
   toc?: TableOfContent[];
+  url?: string;
   propertySelections?: PropertySelectionSchema[];
 };
 type Output = BaseFile;
@@ -39,6 +40,7 @@ class UpdateFile extends AbstractUseCase<Input, Output, Deps> {
       language: input.language,
       toc: input.toc,
       propertySelections: input.propertySelections,
+      url: input.url,
     });
 
     await this.transactionManager.run(async () => this.deps.filesService.bulkUpsert([updatedFile]));

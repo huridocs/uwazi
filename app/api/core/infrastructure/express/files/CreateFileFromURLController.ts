@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { CreateFileFromURLUseCaseFactory } from '../../factories/CreateFileFromURLUseCaseFactory.js';
+import { FileMappers } from '../../mongodb/files/FilesMappers.js';
 
 const RequestSchema = z.object({
   url: z.string().url(),
@@ -28,7 +29,7 @@ class CreateFileFromURLController extends AbstractController {
         durationMs: Date.now() - start,
       });
 
-      this.response.json(output.toDTO());
+      this.response.json(FileMappers.toDBO(output));
     } catch (error: unknown) {
       ExecutionContext.logger.info(
         `Create file from URL execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`,

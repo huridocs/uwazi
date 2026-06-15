@@ -4,6 +4,7 @@ import { UpdateFileInput } from '#api/core/application/UpdateFile.js';
 import { UpdateFileUseCaseFactory } from '../../factories/UpdateFileUseCaseFactory.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { FileMappers } from '../../mongodb/files/FilesMappers.js';
 
 const TocEntrySchema = z.object({
   label: z.string().optional(),
@@ -48,6 +49,7 @@ const RequestSchema = z.object({
   language: z.string().min(3).optional(),
   toc: z.array(TocEntrySchema).optional(),
   propertySelections: z.array(PropertySelectionSchema).optional(),
+  url: z.string().url().optional(),
 });
 
 class UpdateFileController extends AbstractController {
@@ -65,6 +67,7 @@ class UpdateFileController extends AbstractController {
           : undefined,
         toc: request.toc,
         propertySelections: request.propertySelections,
+        url: request.url,
       };
 
       const output = await UpdateFileUseCaseFactory.default().execute(input);
@@ -75,7 +78,7 @@ class UpdateFileController extends AbstractController {
         durationMs: Date.now() - start,
       });
 
-      this.response.json(output.toDTO());
+      this.response.json(FileMappers.toDBO(output));
     } catch (error: unknown) {
       ExecutionContext.logger.info(
         `Update file execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
