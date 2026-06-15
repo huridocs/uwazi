@@ -32,7 +32,7 @@ class GetRelationshipMigrationFieldService {
   }
 
   async getAllCombinedWithInferred() {
-    const allV1Properties = (await this.templatesDS.getAllProperties().all()).filter(
+    const allV1Properties = (await this.templatesDS.getAllProperties()).filter(
       p => p instanceof V1RelationshipProperty
     ) as V1RelationshipProperty[];
     const allV1Info = allV1Properties.map(

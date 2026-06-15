@@ -47,6 +47,22 @@ class MongoTemplatesDAO extends MongoDataSource<TemplateDBO> {
       .toArray();
   }
 
+  async getPropertyByName(name: string): Promise<PropertySchema | undefined> {
+    const template = await this.getCollection().findOne({
+      $or: [{ 'properties.name': name }, { 'commonProperties.name': name }],
+    });
+
+    if (!template) {
+      return undefined;
+    }
+
+    const property = [...(template.properties || []), ...(template.commonProperties || [])].find(
+      p => p.name === name
+    );
+
+    return property;
+  }
+
   async getAllFilterableProperties(): Promise<PropertyDescriptor[]> {
     const fromTemplates = await this.getCollection()
       .aggregate<PropertyDescriptor>([
@@ -72,22 +88,6 @@ class MongoTemplatesDAO extends MongoDataSource<TemplateDBO> {
 
     const title: PropertyDescriptor = { name: 'title', type: 'text' };
     return [title, ...fromTemplates];
-  }
-
-  async getPropertyByName(name: string): Promise<PropertySchema | undefined> {
-    const template = await this.getCollection().findOne({
-      $or: [{ 'properties.name': name }, { 'commonProperties.name': name }],
-    });
-
-    if (!template) {
-      return undefined;
-    }
-
-    const property = [...(template.properties || []), ...(template.commonProperties || [])].find(
-      p => p.name === name
-    );
-
-    return property;
   }
 }
 

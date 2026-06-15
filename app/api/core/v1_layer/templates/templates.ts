@@ -54,16 +54,6 @@ export default {
     return dao.getAllIds();
   },
 
-  async getByMongoQuery(query: any = {}, projection?: any) {
-    return model.get(query, projection);
-  },
-
-  async getById(templateId: ObjectId | string) {
-    const dao = TemplatesDAOFactory.default();
-    const result = await dao.get([templateId.toString()]);
-    return result[0] || null;
-  },
-
   async getPropertyByName(propertyName: string): Promise<PropertySchema> {
     const property = await TemplatesDAOFactory.default().getPropertyByName(propertyName);
     if (!property) {
@@ -72,8 +62,18 @@ export default {
     return property;
   },
 
+  async getById(templateId: ObjectId | string) {
+    const dao = TemplatesDAOFactory.default();
+    const result = await dao.get([templateId.toString()]);
+    return result[0] || null;
+  },
+
   async delete(template: Partial<TemplateSchema>) {
     return TemplateFacade.delete({ _id: template._id!.toString() });
+  },
+
+  async getByMongoQuery(query: any = {}, projection?: any) {
+    return model.get(query, projection);
   },
 
   async countByTemplate(template: string, session?: ClientSession) {
