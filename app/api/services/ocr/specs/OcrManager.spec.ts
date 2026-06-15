@@ -1,11 +1,11 @@
 /* eslint-disable max-statements */
-/* eslint-disable max-lines */
+
 import fetchMock from 'fetch-mock';
+import { Readable } from 'stream';
 import { files, storage } from '#api/files/index.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import settings from '#api/settings/settings.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { Readable } from 'stream';
 import request from '#shared/JSONRequest.js';
 import * as sockets from '#api/socketio/setupSockets.js';
 import * as handleError from '#api/utils/handleError.js';
@@ -85,7 +85,8 @@ describe('OcrManager', () => {
     ocrManager.start();
   });
 
-  beforeEach(() => {
+  afterEach(async () => {
+    await testingEnvironment.setFixtures(fixtures);
     mocks.jestMocks['storage.fileContents'] = jest
       .spyOn(storage, 'fileContents')
       .mockResolvedValue(Buffer.from('file_content'));
@@ -97,7 +98,7 @@ describe('OcrManager', () => {
   });
 
   describe('on success', () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
       await ocrManager.addToQueue(sourceFile);
       await storage.removeFile('generatedUwaziFilename', 'document');
@@ -138,7 +139,7 @@ describe('OcrManager', () => {
     });
 
     describe('when there are results', () => {
-      beforeAll(async () => {
+      beforeEach(async () => {
         mocks.jestMocks['date.now'].mockReturnValue(1001);
         await mocks.taskManagerMock.trigger(mockedMessageFromRedis);
       });
