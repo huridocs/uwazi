@@ -35,6 +35,10 @@ class MongoTemplatesDAO extends MongoDataSource<TemplateDBO> {
       .toArray();
   }
 
+  async getByContent(contentId: string): Promise<TemplateDBO[]> {
+    return this.getCollection().find({ 'properties.content': contentId }).toArray();
+  }
+
   async getDefaultTemplate(): Promise<TemplateDBO | null> {
     const template = await this.getCollection().findOne({ default: true });
     return template || null;

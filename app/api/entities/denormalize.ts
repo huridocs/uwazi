@@ -119,9 +119,7 @@ const oneJumpUpdates = async (
 };
 
 const twoJumpsRelatedProps = async (contentId: string) => {
-  const properties: PropertySchema[] = (
-    await templates.getByMongoQuery({ 'properties.content': contentId })
-  )
+  const properties: PropertySchema[] = (await templates.getByContent(contentId))
     .reduce<PropertySchema[]>((m, t) => m.concat(t.properties || []), [])
     .filter(p => contentId === p.content?.toString());
 

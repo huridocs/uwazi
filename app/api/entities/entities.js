@@ -585,25 +585,22 @@ export default {
   /** Propagate the deletion metadata.value id to all entity metadata. */
   async deleteFromMetadata(deletedId, propertyContent, propTypes) {
     const includesRelationships = propTypes.includes(propertyTypes.relationship);
-    const allTemplates = await templates.getByMongoQuery({
-      $or: [
-        {
-          'properties.content': { $in: [propertyContent, ''] },
-        },
-        ...(includesRelationships
-          ? [
-              {
-                properties: {
-                  $elemMatch: {
-                    type: propertyTypes.relationship,
-                    content: null,
-                  },
+    const contentOrEmpty = [propertyContent, ''];
+    const allTemplates = includesRelationships
+      ? await templates.getByMongoQuery({
+          $or: [
+            { 'properties.content': { $in: contentOrEmpty } },
+            {
+              properties: {
+                $elemMatch: {
+                  type: propertyTypes.relationship,
+                  content: null,
                 },
               },
-            ]
-          : []),
-      ],
-    });
+            },
+          ],
+        })
+      : await templates.getByMongoQuery({ 'properties.content': { $in: contentOrEmpty } });
     const allProperties = allTemplates.reduce((m, t) => m.concat(t.properties), []);
     const properties = allProperties.filter(p => propTypes.includes(p.type));
     const query = { $or: [] };
@@ -630,14 +627,6 @@ export default {
     if (entities.length > 0) {
       await search.indexEntities({ _id: { $in: entities.map(e => e._id.toString()) } }, null, 1000);
     }
-  },
-
-  /** Propagate the deletion of a thesaurus entry to all entity metadata. */
-  async deleteThesaurusFromMetadata(deletedId, thesaurusId) {
-    await this.deleteFromMetadata(deletedId, thesaurusId, [
-      propertyTypes.select,
-      propertyTypes.multiselect,
-    ]);
   },
 
   /** Propagate the deletion of a related entity to all entity metadata. */

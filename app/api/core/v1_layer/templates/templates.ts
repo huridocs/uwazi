@@ -44,6 +44,11 @@ export default {
     return dao.getByNames(names);
   },
 
+  async getByContent(contentId: string) {
+    const dao = TemplatesDAOFactory.default();
+    return dao.getByContent(contentId);
+  },
+
   async getDefaultTemplate() {
     const dao = TemplatesDAOFactory.default();
     return dao.getDefaultTemplate();

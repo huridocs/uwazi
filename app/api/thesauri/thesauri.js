@@ -135,7 +135,7 @@ const thesauri = {
     }
 
     const dictionaries = await ThesauriDAOFactory.default().get(ids);
-    const allTemplates = ids ? await templates.get(ids) : await templates.getByMongoQuery({});
+    const allTemplates = ids ? await templates.get(ids) : await templates.get();
 
     if (allTemplates.length && language) {
       const templateCount = await search.countPerTemplate(language);
