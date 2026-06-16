@@ -3,7 +3,7 @@ import 'cypress-axe';
 import { mount } from 'cypress/react';
 import { composeStories } from '@storybook/react';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
-import * as stories from '#app/stories/EntityViewer/EditEntity.stories.tsx';
+import * as stories from '#app/stories/EntityViewer/EditEntity.stories.js';
 
 describe('Entity edit', () => {
   const { Basic } = composeStories(stories);
