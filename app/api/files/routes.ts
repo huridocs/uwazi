@@ -35,7 +35,7 @@ const checkEntityPermission = async (
   }
 
   const relatedEntities: EntitySchema[] = await entities.get(
-    { sharedId: (fileInDB as any).entity },
+    { sharedId: fileInDB.entity! },
     '_id, permissions',
     { withoutDocuments: true }
   );

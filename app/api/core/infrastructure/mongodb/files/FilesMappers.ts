@@ -1,5 +1,5 @@
-import { BaseFile, FileContentLoader } from '#api/core/domain/files/BaseFile.js';
 import { ObjectId } from 'mongodb';
+import { BaseFile, FileContentLoader } from '#api/core/domain/files/BaseFile.js';
 import { FileAttachment } from '../../../domain/files/FileAttachment.js';
 import { CustomUpload } from '../../../domain/files/CustomUpload.js';
 import { PDFDocument } from '../../../domain/files/PDFDocument.js';
@@ -54,7 +54,6 @@ function pdfDocumentFromDBO(
     content: contentLoader({ type: dbo.type, filename: dbo.filename }),
     entity: dbo.entity,
     status: dbo.status ?? 'processing',
-    propertySelections: dbo.propertySelections,
   });
 }
 
@@ -114,15 +113,15 @@ export const FileMappers = {
   toModel(dbo: FileDBO, { contentLoader }: { contentLoader: FileContentLoader }) {
     switch (dbo.type) {
       case 'document':
-        return pdfDocumentFromDBO(dbo, contentLoader);
+        return pdfDocumentFromDBO(dbo as ProcessedPDFDBO | ProcessingPDFDBO, contentLoader);
       case 'attachment':
-        return dbo.url
-          ? urlAttachmentFromDBO(dbo)
+        return dbo?.url
+          ? urlAttachmentFromDBO(dbo as URLAttachmentDBO)
           : fileAttachmentFromDBO(dbo as FileAttachmentDBO, contentLoader);
       case 'custom':
-        return customUploadFromDBO(dbo, contentLoader);
+        return customUploadFromDBO(dbo as CustomDBO, contentLoader);
       case 'thumbnail':
-        return thumbnailFromDBO(dbo, contentLoader);
+        return thumbnailFromDBO(dbo as ThumbnailDBO, contentLoader);
       default:
         throw new Error('Unknown file type');
     }

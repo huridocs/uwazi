@@ -1,3 +1,4 @@
+/* eslint-disable import/exports-last */
 import { ObjectId } from 'mongodb';
 import { LanguageISO6393 } from '#shared/language/languageISO639_3.js';
 import type { PropertySelectionSchema } from '#shared/types/commonTypes.js';
@@ -11,61 +12,85 @@ export type {
   CustomDTO,
 } from '#api/core/domain/files/domainTypes.js';
 
-type BaseFileDBO = {
+type BaseFields = {
   _id: ObjectId;
   originalname: string;
   filename: string;
   mimetype: string;
   size: number;
   creationDate: number;
+  type: 'custom' | 'document' | 'thumbnail' | 'attachment';
 };
 
-export type BaseDocument = BaseFileDBO & {
+// ── Specialized types ────────────────────────────────────────────────────────
+type ProcessingPDFFields = {
   type: 'document';
   entity: string;
-  propertySelections?: PropertySelectionSchema[];
-};
-
-export type ProcessingPDFDBO = BaseDocument & {
   status: 'processing' | 'failed';
 };
 
-export type ProcessedPDFDBO = BaseDocument & {
+type ProcessedPDFFields = {
+  type: 'document';
+  entity: string;
+  status: 'ready';
   totalPages: number;
   language: LanguageISO6393;
-  status: 'ready';
-  fullText?: { [k: string]: string };
   generatedToc: boolean;
   toc?: TableOfContent[];
+  fullText?: Record<string, string>;
+  propertySelections?: PropertySelectionSchema[];
 };
 
-export type PDFDocumentDBO = ProcessingPDFDBO | ProcessedPDFDBO;
-
-export type FileAttachmentDBO = BaseFileDBO & {
+type FileAttachmentFields = {
   type: 'attachment';
   entity: string;
-  url?: never;
 };
 
-export type URLAttachmentDBO = BaseFileDBO & {
+type URLAttachmentFields = {
   type: 'attachment';
   entity: string;
   url: string;
 };
 
-export type CustomDBO = BaseFileDBO & {
+type CustomFields = {
   type: 'custom';
 };
 
-export type ThumbnailDBO = BaseFileDBO & {
+type ThumbnailFields = {
+  type: 'thumbnail';
   entity: string;
   language: LanguageISO6393;
-  type: 'thumbnail';
 };
 
-export type FileDBO =
-  | PDFDocumentDBO
-  | FileAttachmentDBO
-  | CustomDBO
-  | ThumbnailDBO
-  | URLAttachmentDBO;
+// ── Public specialized DBOs (Base + Fields) ───────────────────────────────────
+export type ProcessingPDFDBO = BaseFields & ProcessingPDFFields;
+export type ProcessedPDFDBO = BaseFields & ProcessedPDFFields;
+export type PDFDocumentDBO = ProcessingPDFDBO | ProcessedPDFDBO;
+
+export type FileAttachmentDBO = BaseFields & FileAttachmentFields;
+export type URLAttachmentDBO = BaseFields & URLAttachmentFields;
+
+export type CustomDBO = BaseFields & CustomFields;
+export type ThumbnailDBO = BaseFields & ThumbnailFields;
+
+// ── FileDBO derived from all specialized types ────────────────────────────────
+
+type AllSpecializedFields =
+  | ProcessingPDFFields
+  | ProcessedPDFFields
+  | FileAttachmentFields
+  | URLAttachmentFields
+  | CustomFields
+  | ThumbnailFields;
+
+type AllKeysOfUnion<T> = T extends unknown ? keyof T : never;
+
+type ValueFromUnion<T, K extends AllKeysOfUnion<T>> = T extends { [P in K]?: infer V | undefined }
+  ? V
+  : never;
+
+type MergedSpecializedFields = {
+  [K in AllKeysOfUnion<AllSpecializedFields>]: ValueFromUnion<AllSpecializedFields, K>;
+};
+
+export type FileDBO = BaseFields & Partial<Omit<MergedSpecializedFields, 'type'>>;

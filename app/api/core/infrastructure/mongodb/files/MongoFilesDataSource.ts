@@ -3,6 +3,7 @@ import { Db, ObjectId } from 'mongodb';
 
 import { LanguageUtils } from '#shared/language/index.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { LanguageISO6393 } from '#shared/language/languageISO639_3.js';
 
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
@@ -28,7 +29,7 @@ import { TransactionManager } from '#api/core/application/contracts/TransactionM
 type GetDocumentsForEntityQuery = {
   entity: string;
   type: 'document';
-  language?: { $in: string[] };
+  language?: { $in: LanguageISO6393[] };
   status: 'ready';
 };
 
@@ -241,7 +242,7 @@ export class MongoFilesDataSource extends MongoDataSource<FileDBO> implements Fi
           langauges.push(language);
         }
         return langauges;
-      }, [] as string[]);
+      }, [] as LanguageISO6393[]);
 
       if (inLanguages.length) {
         query.language = { $in: inLanguages };
