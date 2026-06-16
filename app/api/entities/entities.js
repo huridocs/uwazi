@@ -285,7 +285,7 @@ function sanitize(doc, template) {
 const withDocuments = async (entities, documentsFullText) => {
   const sharedIds = entities.map(entity => entity.sharedId);
   const allFiles = await FilesDAOFactory.default().getByEntitySharedIds(sharedIds, {
-    projection: documentsFullText ? { fullText: 1 } : { fullText: 0 },
+    projection: documentsFullText ? {} : { fullText: 0 },
   });
   const idFileMap = new Map();
   allFiles.forEach(file => {
