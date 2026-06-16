@@ -47,6 +47,8 @@ const mainDoc = {
   mimetype: 'application/pdf',
   type: 'document',
   language: 'eng',
+  status: 'ready',
+  totalPages: 1,
 } as const;
 
 const customPDF = {

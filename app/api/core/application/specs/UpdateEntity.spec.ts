@@ -878,7 +878,7 @@ describe('UpdateEntityUseCase', () => {
         files: [
           {
             id: factory.id('entity1_doc1').toHexString(),
-            originalname: 'Document 1.pdf',
+            originalname: 'Document 1 changed.pdf',
           },
           {
             id: factory.id('entity1_doc2').toHexString(),
@@ -905,15 +905,20 @@ describe('UpdateEntityUseCase', () => {
 
       const file = await getFileById('entity1_doc1');
 
-      expect(file?.propertySelections).toEqual([
-        {
-          name: 'title',
-          selection: {
-            text: 'Entity 1 EN',
-            selectionRectangles: [{ top: 10, left: 20, width: 30, height: 40, page: '1' }],
+      expect(file).toMatchObject({
+        _id: factory.id('entity1_doc1'),
+        entity: 'entity1',
+        originalname: 'Document 1 changed.pdf',
+        propertySelections: [
+          {
+            name: 'title',
+            selection: {
+              text: 'Entity 1 EN',
+              selectionRectangles: [{ top: 10, left: 20, width: 30, height: 40, page: '1' }],
+            },
           },
-        },
-      ]);
+        ],
+      });
     });
 
     it('should not persist property selections if selected file does not belong to entity', async () => {

@@ -4,10 +4,7 @@ import { UpdateFileInput } from '#api/core/application/UpdateFile.js';
 import { UpdateFileUseCaseFactory } from '../../factories/UpdateFileUseCaseFactory.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { createError } from '#api/utils/index.js';
-import { files } from '#api/files/files.js';
-import { checkEntityPermission } from '#api/files/routes.js';
+import { FileMappers } from '../../mongodb/files/FilesMappers.js';
 
 const TocEntrySchema = z.object({
   label: z.string().optional(),
@@ -25,30 +22,38 @@ const TocEntrySchema = z.object({
     .optional(),
 });
 
+const SelectionRectangleSchema = z.object({
+  top: z.number(),
+  left: z.number(),
+  width: z.number(),
+  height: z.number(),
+  page: z.string().optional(),
+});
+
+const SelectionSchema = z.object({
+  text: z.string().optional(),
+  selectionRectangles: z.array(SelectionRectangleSchema).optional(),
+});
+
+const PropertySelectionSchema = z.object({
+  propertyID: z.string().optional(),
+  name: z.string().optional(),
+  timestamp: z.string().optional(),
+  deleteSelection: z.boolean().optional(),
+  selection: SelectionSchema.optional(),
+});
+
 const RequestSchema = z.object({
   _id: z.string().min(1),
   originalname: z.string().min(1).optional(),
   language: z.string().min(3).optional(),
   toc: z.array(TocEntrySchema).optional(),
+  propertySelections: z.array(PropertySelectionSchema).optional(),
+  url: z.string().url().optional(),
 });
 
 class UpdateFileController extends AbstractController {
   protected async handle(): Promise<void> {
-    if (!ExecutionContext.tenant.featureFlags?.v2UpdateFile || this.request.body?._id == null) {
-      if (
-        !(await checkEntityPermission(
-          this.request.body,
-          permissionsContext.getUserInContext(),
-          'write'
-        ))
-      ) {
-        throw createError('file not found', 404);
-      }
-      const result = await files.save(this.request.body);
-      this.response.json(result);
-      return;
-    }
-
     const start = Date.now();
 
     try {
@@ -61,6 +66,8 @@ class UpdateFileController extends AbstractController {
           ? LanguageUtils.fromISO639_3(request.language).ISO639_1
           : undefined,
         toc: request.toc,
+        propertySelections: request.propertySelections,
+        url: request.url,
       };
 
       const output = await UpdateFileUseCaseFactory.default().execute(input);
@@ -71,7 +78,7 @@ class UpdateFileController extends AbstractController {
         durationMs: Date.now() - start,
       });
 
-      this.response.json(output.toDTO());
+      this.response.json(FileMappers.toDBO(output));
     } catch (error: unknown) {
       ExecutionContext.logger.info(
         `Update file execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`,

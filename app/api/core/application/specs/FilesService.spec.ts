@@ -12,9 +12,8 @@ import { pipeline } from 'stream/promises';
 /* eslint-disable max-statements */
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
-import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { FileStorage, FileWithContent } from '#api/core/application/contracts/FileStorage.js';
 import { FileContents } from '#api/core/domain/files/FileContents.js';
-import { FileWithContent } from '#api/core/application/contracts/FileStorage.js';
 import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
 import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
@@ -22,6 +21,7 @@ import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesSer
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { FileMappers } from '#api/core/infrastructure/mongodb/files/FilesMappers.js';
 import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { tenants } from '#api/tenants/index.js';
@@ -305,6 +305,63 @@ describe('FilesService', () => {
     });
   });
 
+  describe('demoteToAttachment', () => {
+    const fixtures: DBFixture = {
+      settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+      entities: [f.entity('entity1')],
+      files: [
+        f.document('demote_doc', {
+          entity: 'entity1',
+          mimetype: 'application/pdf',
+          status: 'ready',
+          language: 'en',
+          totalPages: 5,
+          fullText: { 1: 'text content' },
+          generatedToc: true,
+          propertySelections: [{ name: 'test', selection: { text: 'highlight' } }],
+        }),
+        f.attachment('demote_attach', {
+          entity: 'entity1',
+          mimetype: 'text/plain',
+        }),
+      ],
+    };
+
+    beforeAll(async () => {
+      await testingEnvironment.setUp(fixtures);
+    });
+
+    it('should demote a document to an attachment and clear document-specific fields', async () => {
+      const docId = f.idString('demote_doc');
+      const { service } = createService();
+      await service.demoteToAttachment(docId);
+
+      const dbFiles = await testingEnvironment.db.getAllFrom('files');
+      const demoted = dbFiles.find(file => file._id.toString() === docId)!;
+
+      expect(demoted).toBeDefined();
+      expect(demoted.type).toBe('attachment');
+      expect(demoted.entity).toBe('entity1');
+      expect(demoted.fullText).toBeUndefined();
+      expect(demoted.totalPages).toBeUndefined();
+      expect(demoted.propertySelections).toBeUndefined();
+      expect(demoted.generatedToc).toBeUndefined();
+      expect(demoted.language).toBeUndefined();
+      expect(demoted.status).toBeUndefined();
+    });
+
+    it('should throw when file is not found', async () => {
+      const { service } = createService();
+      await expect(service.demoteToAttachment('non_existent_id')).rejects.toThrow();
+    });
+
+    it('should throw when file is not a document', async () => {
+      const attachId = f.idString('demote_attach');
+      const { service } = createService();
+      await expect(service.demoteToAttachment(attachId)).rejects.toThrow(/expected 'document'/);
+    });
+  });
+
   describe('when bulk upserting files', () => {
     it('should only update files that have changes', async () => {
       const filesDS = TestUtils.mockClass<FilesDataSource>({ bulkUpdate: jest.fn() });
@@ -314,7 +371,7 @@ describe('FilesService', () => {
 
       const { service, transactionManager } = createService({ filesDS, eventBus });
 
-      const file = FileBuilder.document('file1');
+      const file = FileBuilder.document('507f191e810c19729de860ea');
 
       await service.bulkUpsert([file]);
       await transactionManager.executeOnCommitHandlers(null);
@@ -331,8 +388,8 @@ describe('FilesService', () => {
 
       expect(eventBus.emit).toHaveBeenCalledWith(
         new FileUpdatedEvent({
-          after: updateFile.toDTO(),
-          before: updateFile.previousVersion!.toDTO(),
+          after: FileMappers.toDBO(updateFile),
+          before: FileMappers.toDBO(updateFile.previousVersion!),
         })
       );
     });
