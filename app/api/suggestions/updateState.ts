@@ -120,7 +120,7 @@ export const postProcessCurrentValues = (
 export const updateStates = async (query: Record<string, unknown>) => {
   const { languages } = await settings.get();
   const propertyTypes = objectIndex(
-    (await templates.get({})).map(t => t.properties || []).flat(),
+    (await templates.get()).map(t => t.properties || []).flat(),
     p => p.name,
     p => p.type
   );

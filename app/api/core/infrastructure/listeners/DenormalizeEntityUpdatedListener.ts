@@ -16,9 +16,10 @@ class DenormalizeEntityUpdatedListener extends Listener<EntityUpdatedEvent, Deps
   static eventName = EntityUpdatedEvent.name;
 
   async handle(): Promise<void> {
-    const [templateBefore, templateAfter] = await this.deps.templatesDS
-      .getByIds([this.params.before.templateId, this.params.after.templateId])
-      .all();
+    const [templateBefore, templateAfter] = await this.deps.templatesDS.getByIds([
+      this.params.before.templateId,
+      this.params.after.templateId,
+    ]);
 
     const beforeEntity = new Entity({ template: templateBefore, ...this.params.before });
     const afterEntity = new Entity({

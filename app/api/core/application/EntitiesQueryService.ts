@@ -135,7 +135,7 @@ class EntitiesQueryService {
     entityDBOs: EntityDBO[]
   ): Promise<Map<string, Set<string>>> {
     const templateIds = [...new Set(entityDBOs.map(e => e.template.toString()))];
-    const templates = await this.deps.templatesDS.getByIds(templateIds).all();
+    const templates = await this.deps.templatesDS.getByIds(templateIds);
 
     this.validateAllTemplatesLoaded(templates, templateIds);
 

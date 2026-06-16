@@ -89,7 +89,7 @@ describe('getAllProperties()', () => {
   it('should return all the properties properly typed', async () => {
     const { sut } = createSut();
 
-    const result = await sut.getAllProperties().all();
+    const result = await sut.getAllProperties();
 
     expect(result.length).toBe(4);
     expect(result[0]).toBeInstanceOf(RelationshipProperty);
@@ -121,7 +121,7 @@ describe('when requesting the relationship properties configured in the system',
   it('should return all the relationship properties', async () => {
     const { sut } = createSut();
 
-    const result = await sut.getAllRelationshipProperties().all();
+    const result = await sut.getAllRelationshipProperties();
 
     expect(result.length).toBe(3);
     result.forEach(property => {
@@ -180,20 +180,16 @@ describe('when requesting a property by name', () => {
       expect(prop.type).toEqual(type);
     }
   );
-
-  it('should cache the map', () => {
-    // eslint-disable-next-line dot-notation
-    expect(tds['_nameToPropertyMap']).not.toBeUndefined();
-  });
 });
 
 describe('getByIds()', () => {
   it('should return the templates', async () => {
     const { sut } = createSut();
 
-    const result = await sut
-      .getByIds([factory.id('template1').toString(), factory.id('template2').toString()])
-      .all();
+    const result = await sut.getByIds([
+      factory.id('template1').toString(),
+      factory.id('template2').toString(),
+    ]);
     expect(result).toMatchObject([
       {
         id: factory.id('template1').toString(),
@@ -211,7 +207,7 @@ describe('getByNames()', () => {
   it('should return the templates', async () => {
     const { sut } = createSut();
 
-    const result = await sut.getByNames(['template1', 'template3']).all();
+    const result = await sut.getByNames(['template1', 'template3']);
 
     expect(result).toMatchObject([
       {
