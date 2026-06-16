@@ -13,7 +13,11 @@ import {
 } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
 import { RelationshipPanelRow } from './RelationshipPanelRow.js';
 import { panelEntryCount } from './RelationshipsPanelEntryList.js';
-import { RelationshipsTreeBranch, RelationshipsTreeNode } from './RelationshipsTreeBranch.js';
+import {
+  RelationshipsTreeBranch,
+  RelationshipsTreeNode,
+  getTreeLine,
+} from './RelationshipsTreeBranch.js';
 import { RelationshipsEmptyView } from './RelationshipsEmptyView.js';
 import { RelationshipsGroupLabel } from './RelationshipsGroupLabel.js';
 import {
@@ -31,22 +35,21 @@ type RelationshipsTreeViewProps = {
   onDelete: (marker: RelationshipMarker) => void;
 };
 
-const renderEntries = (
+const renderEntryRows = (
   items: RelationshipMarker[],
   selfSharedId: string,
   props: Omit<RelationshipsTreeViewProps, 'markers' | 'groupContext' | 'selfSharedId'>
 ) =>
   buildPanelListEntries(items, selfSharedId).map(entry => (
-    <RelationshipsTreeNode key={panelEntryKey(entry)}>
-      <RelationshipPanelRow
-        entry={entry}
-        selfSharedId={selfSharedId}
-        activeRelationshipId={props.activeRelationshipId}
-        onClick={props.onClick}
-        onView={props.onView}
-        onDelete={props.onDelete}
-      />
-    </RelationshipsTreeNode>
+    <RelationshipPanelRow
+      key={panelEntryKey(entry)}
+      entry={entry}
+      selfSharedId={selfSharedId}
+      activeRelationshipId={props.activeRelationshipId}
+      onClick={props.onClick}
+      onView={props.onView}
+      onDelete={props.onDelete}
+    />
   ));
 
 const RelationshipsTreeView = ({
@@ -75,7 +78,26 @@ const RelationshipsTreeView = ({
   }
 
   if (groupBy === 'none') {
-    return <div className="py-3">{renderEntries(markers, selfSharedId, rowProps)}</div>;
+    const entries = buildPanelListEntries(markers, selfSharedId);
+    return (
+      <div className="py-3">
+        {entries.map((entry, index) => (
+          <RelationshipsTreeNode
+            key={panelEntryKey(entry)}
+            treeLine={getTreeLine(index, entries.length)}
+          >
+            <RelationshipPanelRow
+              entry={entry}
+              selfSharedId={selfSharedId}
+              activeRelationshipId={activeRelationshipId}
+              onClick={onClick}
+              onView={onView}
+              onDelete={onDelete}
+            />
+          </RelationshipsTreeNode>
+        ))}
+      </div>
+    );
   }
 
   const primaryGroups = groupMarkers(markers, groupBy, groupContext);
@@ -85,6 +107,7 @@ const RelationshipsTreeView = ({
       {primaryGroups.map(([key, groupMarkersList]) => (
         <RelationshipsTreeBranch
           key={key || 'all'}
+          connectHeader={false}
           title={
             <RelationshipsGroupLabel
               groupKey={key}
@@ -98,7 +121,7 @@ const RelationshipsTreeView = ({
           markerIds={groupMarkersList.map(marker => marker._id)}
         >
           {subGroupBy === 'none'
-            ? renderEntries(groupMarkersList, selfSharedId, rowProps)
+            ? renderEntryRows(groupMarkersList, selfSharedId, rowProps)
             : groupMarkers(groupMarkersList, subGroupBy, groupContext).map(
                 ([subKey, subMarkers]) => (
                   <RelationshipsTreeBranch
@@ -115,7 +138,7 @@ const RelationshipsTreeView = ({
                     count={panelEntryCount(subMarkers, selfSharedId)}
                     markerIds={subMarkers.map(marker => marker._id)}
                   >
-                    {renderEntries(subMarkers, selfSharedId, rowProps)}
+                    {renderEntryRows(subMarkers, selfSharedId, rowProps)}
                   </RelationshipsTreeBranch>
                 )
               )}

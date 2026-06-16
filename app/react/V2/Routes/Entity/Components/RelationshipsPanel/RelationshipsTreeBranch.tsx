@@ -1,22 +1,42 @@
-import React, { Children, useState, type ReactNode } from 'react';
+import React, { Children, isValidElement, useState, type ReactElement, type ReactNode } from 'react';
 import { useAtomValue } from 'jotai';
 import { CollapsibleSectionHeader } from '#V2/Components/UI/CollapsibleSectionHeader.js';
 import { relationshipsPanelZoomAtom } from './relationshipsPanelFiltersAtom.js';
 import { useExpandCollapseSignals } from './useExpandCollapseSignals.js';
 
-const RelationshipsTreeNode = ({ children }: { children: ReactNode }) => {
+type TreeLine = 'only' | 'first' | 'middle' | 'last';
+
+const getTreeLine = (index: number, count: number): TreeLine => {
+  if (count <= 1) return 'only';
+  if (index === 0) return 'first';
+  if (index === count - 1) return 'last';
+  return 'middle';
+};
+
+const treeLineBeforeClass: Record<TreeLine, string> = {
+  only: 'before:top-0 before:h-[18px]',
+  first: 'before:top-0 before:bottom-0',
+  middle: 'before:top-0 before:bottom-0',
+  last: 'before:top-0 before:h-[18px]',
+};
+
+const treeNodeBaseClass = [
+  'relative pl-5',
+  "before:absolute before:left-0 before:border-l before:border-border-soft before:content-['']",
+  "after:absolute after:left-0 after:top-[18px] after:w-[22px] after:border-t after:border-border-soft after:content-['']",
+].join(' ');
+
+type RelationshipsTreeNodeProps = {
+  children: ReactNode;
+  treeLine?: TreeLine;
+};
+
+const RelationshipsTreeNode = ({ children, treeLine = 'only' }: RelationshipsTreeNodeProps) => {
   const zoom = useAtomValue(relationshipsPanelZoomAtom);
   const showDot = zoom === 'overview';
 
   return (
-    <div
-      className={[
-        'relative pl-5',
-        "before:absolute before:bottom-0 before:left-0 before:top-0 before:border-l before:border-border-soft before:content-['']",
-        'last:before:bottom-auto last:before:h-[18px]',
-        "after:absolute after:left-0 after:top-[18px] after:w-[22px] after:border-t after:border-border-soft after:content-['']",
-      ].join(' ')}
-    >
+    <div className={`${treeNodeBaseClass} ${treeLineBeforeClass[treeLine]}`}>
       {showDot && (
         <span
           aria-hidden
@@ -35,6 +55,8 @@ type RelationshipsTreeBranchProps = {
   count: number;
   markerIds: string[];
   defaultExpanded?: boolean;
+  connectHeader?: boolean;
+  treeLine?: TreeLine;
   children: ReactNode;
 };
 
@@ -44,6 +66,8 @@ const RelationshipsTreeBranch = ({
   count,
   markerIds,
   defaultExpanded = true,
+  connectHeader = true,
+  treeLine = 'only',
   children,
 }: RelationshipsTreeBranchProps) => {
   const [expanded, setExpanded] = useState(defaultExpanded);
@@ -51,25 +75,56 @@ const RelationshipsTreeBranch = ({
 
   const items = Children.toArray(children);
 
+  const header = (
+    <CollapsibleSectionHeader
+      variant="tree"
+      title={title}
+      expanded={expanded}
+      onToggle={() => setExpanded(current => !current)}
+      color={color}
+      count={count}
+    />
+  );
+
+  const childList =
+    expanded && items.length > 0 ? (
+      <div className="ml-[14px]">
+        {items.map((child, index) => {
+          const line = getTreeLine(index, items.length);
+          if (
+            isValidElement(child) &&
+            (child as ReactElement<RelationshipsTreeBranchProps>).type === RelationshipsTreeBranch
+          ) {
+            return React.cloneElement(
+              child as ReactElement<RelationshipsTreeBranchProps>,
+              { treeLine: line, connectHeader: true }
+            );
+          }
+          return (
+            <RelationshipsTreeNode key={index} treeLine={line}>
+              {child}
+            </RelationshipsTreeNode>
+          );
+        })}
+      </div>
+    ) : null;
+
+  if (!connectHeader) {
+    return (
+      <div>
+        {header}
+        {childList}
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <CollapsibleSectionHeader
-        variant="tree"
-        title={title}
-        expanded={expanded}
-        onToggle={() => setExpanded(current => !current)}
-        color={color}
-        count={count}
-      />
-      {expanded && items.length > 0 && (
-        <div className="ml-[14px]">
-          {items.map((child, index) => (
-            <RelationshipsTreeNode key={index}>{child}</RelationshipsTreeNode>
-          ))}
-        </div>
-      )}
-    </div>
+    <RelationshipsTreeNode treeLine={treeLine}>
+      {header}
+      {childList}
+    </RelationshipsTreeNode>
   );
 };
 
-export { RelationshipsTreeBranch, RelationshipsTreeNode };
+export type { TreeLine };
+export { RelationshipsTreeBranch, RelationshipsTreeNode, getTreeLine };

@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { ColorDot } from '#V2/Components/UI/ColorDot.js';
 import { CollapsibleSectionHeader } from '#V2/Components/UI/CollapsibleSectionHeader.js';
 import { FacetSection } from '#V2/Components/UI/FacetSection.js';
+import { RelationshipsTreeBranch } from '#V2/Routes/Entity/Components/RelationshipsPanel/RelationshipsTreeBranch.js';
 
 const templateColors: Record<string, string> = {
   person: '#f59e0b',
@@ -67,63 +68,28 @@ const GroupedPreview = () => {
   );
 };
 
-const TreeNode = ({ children }: { children: React.ReactNode }) => (
-  <div
-    className={[
-      'relative pl-5',
-      "before:absolute before:bottom-0 before:left-0 before:top-0 before:border-l before:border-border-soft before:content-['']",
-      'last:before:bottom-auto last:before:h-[18px]',
-      "after:absolute after:left-0 after:top-[18px] after:w-[22px] after:border-t after:border-border-soft after:content-['']",
-    ].join(' ')}
-  >
-    {children}
+const TreePreview = () => (
+  <div className="max-w-md rounded-md bg-paper p-2">
+    <RelationshipsTreeBranch
+      connectHeader={false}
+      title="This document"
+      color={templateColors.document}
+      count={4}
+      markerIds={[]}
+    >
+      <RelationshipsTreeBranch
+        title="Person"
+        color={templateColors.person}
+        count={3}
+        markerIds={[]}
+      >
+        <p className="py-1.5 pl-2 text-xs text-ink-secondary">Mexico</p>
+        <p className="py-1.5 pl-2 text-xs text-ink-secondary">Ana García</p>
+      </RelationshipsTreeBranch>
+      <p className="py-1.5 pl-2 text-xs text-ink-secondary">Country · Mexico</p>
+    </RelationshipsTreeBranch>
   </div>
 );
-
-const TreePreview = () => {
-  const [rootOpen, setRootOpen] = useState(true);
-  const [childOpen, setChildOpen] = useState(true);
-
-  return (
-    <div className="max-w-md rounded-md bg-paper p-2">
-      <CollapsibleSectionHeader
-        variant="tree"
-        title="This document"
-        color={templateColors.document}
-        count={4}
-        expanded={rootOpen}
-        onToggle={() => setRootOpen(current => !current)}
-      />
-      {rootOpen && (
-        <div className="ml-[14px]">
-          <TreeNode>
-            <CollapsibleSectionHeader
-              variant="tree"
-              title="Person"
-              color={templateColors.person}
-              count={3}
-              expanded={childOpen}
-              onToggle={() => setChildOpen(current => !current)}
-            />
-            {childOpen && (
-              <div className="ml-[14px]">
-                <TreeNode>
-                  <p className="py-1.5 pl-2 text-xs text-ink-secondary">Mexico</p>
-                </TreeNode>
-                <TreeNode>
-                  <p className="py-1.5 pl-2 text-xs text-ink-secondary">Ana García</p>
-                </TreeNode>
-              </div>
-            )}
-          </TreeNode>
-          <TreeNode>
-            <p className="py-1.5 pl-2 text-xs text-ink-secondary">Country · Mexico</p>
-          </TreeNode>
-        </div>
-      )}
-    </div>
-  );
-};
 
 const meta: Meta = {
   title: 'Components/UI/CollapsibleSectionHeader',
