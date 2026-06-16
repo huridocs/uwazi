@@ -25,41 +25,40 @@ const viewOptions = [
   { id: 'graph' as const, title: 'Graph', Icon: NetworkIcon },
 ];
 
+const OptionsApiPreview = () => {
+  const [value, setValue] = useState<'list' | 'tree' | 'graph'>('list');
+  return (
+    <div className="tw-content p-4">
+      <SegmentedControl ariaLabel="View" value={value} options={viewOptions} onChange={setValue} />
+    </div>
+  );
+};
+
+const ComposedPreview = () => {
+  const [value, setValue] = useState<'list' | 'tree' | 'graph'>('list');
+  return (
+    <div className="tw-content p-4">
+      <SegmentedControlRoot
+        ariaLabel="View"
+        value={value}
+        onValueChange={next => setValue(next as typeof value)}
+      >
+        {viewOptions.map(option => (
+          <SegmentedControlItem key={option.id} value={option.id} ariaLabel={option.title}>
+            <option.Icon className="h-3 w-3" aria-hidden />
+          </SegmentedControlItem>
+        ))}
+      </SegmentedControlRoot>
+    </div>
+  );
+};
+
 const OptionsApi: Story = {
-  render: () => {
-    const [value, setValue] = useState<'list' | 'tree' | 'graph'>('list');
-    return (
-      <div className="tw-content p-4">
-        <SegmentedControl
-          ariaLabel="View"
-          value={value}
-          options={viewOptions}
-          onChange={setValue}
-        />
-      </div>
-    );
-  },
+  render: () => <OptionsApiPreview />,
 };
 
 const Composed: Story = {
-  render: () => {
-    const [value, setValue] = useState<'list' | 'tree' | 'graph'>('list');
-    return (
-      <div className="tw-content p-4">
-        <SegmentedControlRoot
-          ariaLabel="View"
-          value={value}
-          onValueChange={next => setValue(next as typeof value)}
-        >
-          {viewOptions.map(option => (
-            <SegmentedControlItem key={option.id} value={option.id} ariaLabel={option.title}>
-              <option.Icon className="h-3 w-3" aria-hidden />
-            </SegmentedControlItem>
-          ))}
-        </SegmentedControlRoot>
-      </div>
-    );
-  },
+  render: () => <ComposedPreview />,
 };
 
 const Disabled: Story = {

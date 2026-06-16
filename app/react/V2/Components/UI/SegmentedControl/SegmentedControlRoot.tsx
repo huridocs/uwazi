@@ -1,4 +1,4 @@
-import React, { type KeyboardEvent, type ReactNode } from 'react';
+import React, { useMemo, type KeyboardEvent, type ReactNode } from 'react';
 import { segmentRootClass } from './segmentedControlStyles.js';
 import { SegmentedControlContext } from './SegmentedControlContext.js';
 
@@ -66,13 +66,16 @@ const SegmentedControlRoot = ({
   value,
   onValueChange,
 }: SegmentedControlRootProps) => {
-  const contextValue =
-    value !== undefined && onValueChange ? { value, onValueChange, disabled } : null;
+  const contextValue = useMemo(
+    () => (value !== undefined && onValueChange ? { value, onValueChange, disabled } : null),
+    [value, onValueChange, disabled]
+  );
 
   return (
     <SegmentedControlContext.Provider value={contextValue}>
       <div
         role="radiogroup"
+        tabIndex={-1}
         aria-label={ariaLabel}
         aria-disabled={disabled}
         className={segmentRootClass(disabled, className)}

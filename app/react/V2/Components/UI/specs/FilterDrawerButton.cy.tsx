@@ -31,6 +31,8 @@ describe('FilterDrawerButton', () => {
 
   it('should show active state with the filter count', () => {
     mount(<Active />);
-    cy.contains('button', 'Filters').should('have.attr', 'aria-pressed', 'true').and('contain', '3');
+    cy.contains('button', 'Filters')
+      .should('have.attr', 'aria-pressed', 'true')
+      .and('contain', '3');
   });
 });

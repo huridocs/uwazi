@@ -1,4 +1,4 @@
-import React, { createContext, useContext, type ReactNode } from 'react';
+import { createContext, useContext } from 'react';
 
 type SegmentedControlContextValue = {
   value: string;
