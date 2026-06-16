@@ -1,161 +1,16 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import React from 'react';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { expect, fn, userEvent, within } from 'storybook/test';
-import { BrowserRouter } from 'react-router';
-import { createStore, Provider } from 'jotai';
-import { Translate } from '#app/I18N/index.js';
-import { localeAtom, templatesAtom, translationsAtom } from '#V2/atoms/index.js';
-import { PDF, PDFControls, relationshipToHighlight } from '#V2/Components/PDFViewer/index.js';
-import { RelationshipsDisplay } from '#V2/Components/Relationships/index.js';
-import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
-import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
-import { apiEntity, translations, templates } from '../fixtures/referencesFixtures.js';
+import {
+  RelationshipsDocumentStory,
+  type RelationshipsDocumentStoryProps,
+} from './RelationshipsDocumentStory.js';
+import { RelationshipsPanelStory } from './RelationshipsPanelStory.js';
+import { RelationshipsWithPanelStory } from './RelationshipsWithPanelStory.js';
 
-type RelationshipsDisplayStoryProps = {
-  locale: 'en' | 'es';
-  fileUrl?: string;
-  activeRelationshipId?: string | null;
-  onPointClick?: (marker: RelationshipMarker) => void;
-  onClusterClick?: (markers: RelationshipMarker[]) => void;
-};
-
-const RelationshipsDisplayComponent = ({
-  locale,
-  fileUrl = '/sample.pdf',
-  activeRelationshipId = null,
-  onPointClick,
-  onClusterClick,
-}: RelationshipsDisplayStoryProps) => {
-  const store = createStore();
-  store.set(templatesAtom, templates);
-  store.set(localeAtom, locale);
-  store.set(translationsAtom, translations);
-  const documentControls = useRef<PDFControls>();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [currentClusterPage, setCurrentClusterPage] = useState<number | null>(null);
-  const [pageHeight, setPageHeight] = useState<number | undefined>();
-  const [pdfScrollRoot, setPdfScrollRoot] = useState<HTMLDivElement | null>(null);
-  const isMobile = useIsMobile();
-
-  useEffect(() => {
-    const pageNumber = currentPage.toString();
-    const pageElement = document.querySelector<HTMLDivElement>(
-      `.page[data-page-number="${pageNumber}"]`
-    );
-
-    if (!pageElement) {
-      setPageHeight(undefined);
-      return undefined;
-    }
-
-    const updateHeight = () => {
-      const { height } = pageElement.getBoundingClientRect();
-      setPageHeight(height > 0 ? height : undefined);
-    };
-
-    updateHeight();
-    const observer = new ResizeObserver(updateHeight);
-    observer.observe(pageElement);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [currentPage]);
-
-  const defaultOnPointClick = useCallback((marker: RelationshipMarker) => {
-    const color = templates.find(t => t._id === marker.target.templateId)?.color;
-    const highlight = relationshipToHighlight(marker.anchor, color);
-    if (highlight) {
-      documentControls.current?.toggleHighlights([highlight]);
-    }
-  }, []);
-
-  const defaultOnClusterClick = useCallback(
-    (markers: RelationshipMarker[]) => {
-      const page = markers?.[0]?.anchor?.selections?.[0]?.page;
-      if (!page) {
-        documentControls.current?.toggleHighlights([]);
-        return;
-      }
-      if (page !== currentClusterPage) {
-        setCurrentClusterPage(page);
-        documentControls.current?.goToPage(page);
-      } else {
-        documentControls.current?.toggleHighlights([]);
-      }
-    },
-    [currentClusterPage]
-  );
-
-  const handlePointClick = useCallback(
-    (marker: RelationshipMarker) => {
-      onPointClick?.(marker);
-      defaultOnPointClick(marker);
-    },
-    [defaultOnPointClick, onPointClick]
-  );
-
-  const handleClusterClick = useCallback(
-    (markers: RelationshipMarker[]) => {
-      onClusterClick?.(markers);
-      defaultOnClusterClick(markers);
-    },
-    [defaultOnClusterClick, onClusterClick]
-  );
-
-  return (
-    <div className="h-screen max-h-200 bg-(--color-theme-surface-raised)">
-      <BrowserRouter>
-        <Provider store={store}>
-          <div className="flex h-full w-full flex-col gap-(--spacing-theme-3) p-4 text-ink">
-            <div>
-              <Translate>Relationships</Translate>
-              <p>
-                <Translate>Current page</Translate>: {currentPage}
-              </p>
-            </div>
-            <div
-              data-testid="document-container"
-              className="relative min-h-0 flex-1 rounded-md bg-(--color-theme-surface-warm)"
-            >
-              <div
-                ref={setPdfScrollRoot}
-                data-testid="pdf-scroll-container"
-                className="absolute inset-0 overflow-y-auto"
-              >
-                <PDF
-                  fileUrl={fileUrl}
-                  size={{ height: '100%', width: '90%' }}
-                  scrollRoot={pdfScrollRoot}
-                  onPdfReady={controls => {
-                    documentControls.current = controls;
-                  }}
-                  onPageChange={page => {
-                    setCurrentPage(page);
-                  }}
-                />
-              </div>
-              <RelationshipsDisplay
-                entity={apiEntity}
-                document={apiEntity.documents![0]}
-                currentPage={currentPage}
-                pageHeight={pageHeight}
-                showRail={!isMobile}
-                activeRelationshipId={activeRelationshipId}
-                onPointClick={handlePointClick}
-                onClusterClick={handleClusterClick}
-              />
-            </div>
-          </div>
-        </Provider>
-      </BrowserRouter>
-    </div>
-  );
-};
-
-const meta: Meta<typeof RelationshipsDisplayComponent> = {
+const meta: Meta<typeof RelationshipsDocumentStory> = {
   title: 'EntityViewer/RelationshipsDisplay',
-  component: RelationshipsDisplayComponent,
+  component: RelationshipsDocumentStory,
   args: {
     locale: 'en',
     activeRelationshipId: null,
@@ -169,10 +24,10 @@ const meta: Meta<typeof RelationshipsDisplayComponent> = {
   },
 };
 
-type Story = StoryObj<typeof RelationshipsDisplayComponent>;
+type Story = StoryObj<RelationshipsDocumentStoryProps>;
 
 const Primary: Story = {
-  render: args => <RelationshipsDisplayComponent {...args} />,
+  render: args => <RelationshipsDocumentStory {...args} />,
 };
 
 const Basic: Story = {
@@ -233,6 +88,15 @@ const StandalonePointClick: Story = {
   },
 };
 
+const Panel: Story = {
+  render: () => <RelationshipsPanelStory locale="en" />,
+  parameters: { layout: 'fullscreen' },
+};
+
+const WithPanel: Story = {
+  render: () => <RelationshipsWithPanelStory locale="en" />,
+  parameters: { layout: 'fullscreen' },
+};
+
 export default meta;
-export { Basic, ClusterClick, PointInClusterClick, StandalonePointClick };
-export type { RelationshipsDisplayStoryProps };
+export { Basic, ClusterClick, PointInClusterClick, StandalonePointClick, Panel, WithPanel };

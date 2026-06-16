@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useAtomValue, useSetAtom, useAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { useRevalidator } from 'react-router';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
 import { LinkIcon } from '@heroicons/react/24/outline';
@@ -9,24 +9,19 @@ import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import { searchByTitle } from '#V2/api/entities/index.js';
 import { deleteReference, saveTextReference } from '#V2/api/relationships/index.js';
-import { ConfirmationModal, BlankState, FiltersDrawer } from '#V2/Components/UI/index.js';
+import { ConfirmationModal, BlankState } from '#V2/Components/UI/index.js';
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { CreateReference } from './CreateReference.js';
 import { RelationshipsPanelToolbar } from './RelationshipsPanelToolbar.js';
 import { RelationshipsPanelBody } from './RelationshipsPanelBody.js';
-import { RelationshipsFilterDrawerContent } from './RelationshipsFilterDrawerContent.js';
 import {
   useRelationships,
   useRelationshipsActions,
   relationshipsEditModeAtom,
   selectedRelationshipIdsAtom,
 } from './relationshipsAtom.js';
-import {
-  relationshipsPanelActiveFilterCountAtom,
-  relationshipsPanelClearFiltersAtom,
-  relationshipsPanelFiltersDrawerOpenAtom,
-} from './relationshipsPanelFiltersAtom.js';
+import { relationshipsPanelFiltersDrawerOpenAtom } from './relationshipsPanelFiltersAtom.js';
 import { useRelationshipSelection } from '../useRelationshipSelection.js';
 import { useRelationshipsPanelData } from './useRelationshipsPanelData.js';
 
@@ -46,9 +41,7 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
   const { activeRelationshipId, selectRelationship, clearRelationshipSelection } =
     useRelationshipSelection();
   const { markers, stats, hasRelationships } = useRelationshipsPanelData(entity);
-  const [filtersOpen, setFiltersOpen] = useAtom(relationshipsPanelFiltersDrawerOpenAtom);
-  const activeFilterCount = useAtomValue(relationshipsPanelActiveFilterCountAtom);
-  const clearAllFilters = useSetAtom(relationshipsPanelClearFiltersAtom);
+  const setFiltersOpen = useSetAtom(relationshipsPanelFiltersDrawerOpenAtom);
   const resetEditMode = useSetAtom(relationshipsEditModeAtom);
   const resetSelected = useSetAtom(selectedRelationshipIdsAtom);
 
@@ -239,23 +232,6 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
           <RelationshipsPanelToolbar stats={stats} onOpenFilters={() => setFiltersOpen(true)} />
         )}
         <Panel.Body className="pr-1 pb-2">{listBody}</Panel.Body>
-        <FiltersDrawer
-          open={filtersOpen}
-          onClose={() => setFiltersOpen(false)}
-          footer={
-            activeFilterCount > 0 ? (
-              <button
-                type="button"
-                onClick={() => clearAllFilters()}
-                className="cursor-pointer text-[11px] font-medium text-ink-secondary transition-colors hover:text-ink"
-              >
-                <Translate>Clear all filters</Translate>
-              </button>
-            ) : null
-          }
-        >
-          <RelationshipsFilterDrawerContent />
-        </FiltersDrawer>
       </Panel>
       {relationshipToDelete && (
         <ConfirmationModal

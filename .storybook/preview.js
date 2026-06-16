@@ -181,6 +181,7 @@ export const decorators = [
               id: 'tw-container',
               className: themeFrame.className,
               'data-theme-custom': true,
+              dir: 'ltr',
               style: themeFrame.style,
             },
             React.createElement(Story)

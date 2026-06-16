@@ -15,6 +15,17 @@ const getClientXValue = (event: MouseEvent | TouchEvent | Event): number | undef
 const ratiosToPixels = (ratios: number[], containerWidth: number) =>
   ratios.map(percentage => Math.max(percentage * containerWidth, MIN_WIDTH));
 
+const pixelsFromRatios = (ratios: number[], containerWidth: number): number[] => {
+  const separatorCount = ratios.length - 1;
+  const fromRatios = ratiosToPixels(ratios, containerWidth);
+  const total = fromRatios.reduce((a, b) => a + b, 0);
+  if (total > containerWidth) {
+    const scale = (containerWidth - separatorCount * SEPARATOR_PX) / total;
+    return fromRatios.map(width => width * scale);
+  }
+  return fromRatios;
+};
+
 const getRatiosFromLocalStorage = (localStorageKey?: string): number[] => {
   if (isClient && localStorageKey) {
     try {
@@ -47,6 +58,7 @@ const PaneLayoutDesktop = ({
   const draggingIndex = useRef<number | null>(null);
   const [widths, setWidths] = useState<number[]>([]);
   const widthsRef = useRef<number[]>([]);
+  const ratiosRef = useRef<number[]>([]);
   const initialWidths = useRef(defaultRatios?.map(ratio => `${ratio * 100}%`));
 
   const handleResize = useCallback(
@@ -75,6 +87,7 @@ const PaneLayoutDesktop = ({
         setWidths(currentWidths);
 
         const ratios = currentWidths.map(w => w / (containerRect.width || 1));
+        ratiosRef.current = ratios;
         setRatiosToLocalStorage(ratios, localStorageKey);
       }
     },
@@ -96,42 +109,41 @@ const PaneLayoutDesktop = ({
       return;
     }
 
-    const containerRect = containerRef.current.getBoundingClientRect();
-    const containerWidth = containerRect.width || 1;
+    const containerWidth = containerRef.current.getBoundingClientRect().width || 1;
     const separatorCount = children.length - 1;
-
     const savedRatios = getRatiosFromLocalStorage(localStorageKey);
 
+    let ratios: number[];
     if (savedRatios.length === children.length) {
-      const fromStorage = ratiosToPixels(savedRatios, containerWidth);
-      const total = fromStorage.reduce((a, b) => a + b, 0);
-      if (total > containerWidth) {
-        const scale = (containerWidth - separatorCount * SEPARATOR_PX) / total;
-        setWidths(fromStorage.map(width => width * scale));
-      } else {
-        setWidths(fromStorage);
-      }
+      ratios = savedRatios;
     } else if (defaultRatios?.length) {
-      setWidths(ratiosToPixels(defaultRatios, containerWidth));
+      ratios = defaultRatios;
     } else {
       const initialWidth =
         (containerWidth - separatorCount * SEPARATOR_PX) / Math.max(1, children.length);
       const initials = children.map(() => Math.max(initialWidth, MIN_WIDTH));
-      setWidths(initials);
+      ratios = initials.map(width => width / containerWidth);
     }
+
+    ratiosRef.current = ratios;
+    setWidths(pixelsFromRatios(ratios, containerWidth));
   }, [children, localStorageKey, defaultRatios]);
 
   useEffect(() => {
-    const handleScreenResize = () => {
-      if (!containerRef.current) return;
-      const containerRect = containerRef.current.getBoundingClientRect();
-      const containerWidth = containerRect.width || 1;
-      const percentages = widthsRef.current.map(w => w / containerWidth);
-      setWidths(ratiosToPixels(percentages, containerWidth));
-    };
+    const container = containerRef.current;
+    if (!container) return undefined;
 
-    window.addEventListener('resize', handleScreenResize);
-    return () => window.removeEventListener('resize', handleScreenResize);
+    const observer = new ResizeObserver(entries => {
+      if (draggingIndex.current !== null) return;
+      const entry = entries[0];
+      if (!entry || ratiosRef.current.length === 0) return;
+
+      const containerWidth = entry.contentRect.width || 1;
+      setWidths(pixelsFromRatios(ratiosRef.current, containerWidth));
+    });
+
+    observer.observe(container);
+    return () => observer.disconnect();
   }, []);
 
   const onMouseDown = (event: React.MouseEvent<HTMLDivElement>, index: number) => {

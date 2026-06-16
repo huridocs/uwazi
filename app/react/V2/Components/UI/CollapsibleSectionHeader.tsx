@@ -15,22 +15,22 @@ type CollapsibleSectionHeaderProps = {
 
 const buttonClass: Record<CollapsibleSectionHeaderVariant, string> = {
   facet:
-    'flex w-full cursor-pointer items-center gap-2 px-4 py-2.5 transition-colors hover:bg-warm',
-  group: 'flex w-full items-center gap-2 px-3 py-2 transition-colors hover:bg-warm',
-  tree: 'flex w-full cursor-pointer items-center gap-1.5 rounded px-2 py-1.5 text-left transition-colors hover:bg-warm/60',
+    'flex w-full min-w-0 cursor-pointer items-center gap-2 border-0 bg-transparent px-4 py-2.5 text-left transition-colors hover:bg-warm',
+  group:
+    'flex w-full min-w-0 items-center gap-2 border-0 bg-transparent px-3 py-2 text-left transition-colors hover:bg-warm',
+  tree: 'flex w-full min-w-0 cursor-pointer items-center gap-1.5 rounded border-0 bg-transparent px-2 py-1.5 text-left transition-colors hover:bg-warm/60',
 };
 
 const titleClass: Record<CollapsibleSectionHeaderVariant, string> = {
-  facet: 'text-xs font-semibold text-ink-secondary',
-  group: 'truncate text-sm font-medium text-ink',
-  tree: 'truncate text-sm font-medium text-ink',
+  facet: 'min-w-0 flex-1 truncate text-left text-xs font-semibold text-ink-secondary',
+  group: 'min-w-0 flex-1 truncate text-left text-sm font-medium text-ink',
+  tree: 'min-w-0 flex-1 truncate text-left text-sm font-medium text-ink',
 };
 
 const countClass: Record<CollapsibleSectionHeaderVariant, string> = {
-  facet: 'ml-auto text-[11px] tabular-nums text-ink-tertiary',
-  group:
-    'ml-auto shrink-0 rounded bg-warm px-1.5 text-[10px] font-semibold tabular-nums text-ink-tertiary',
-  tree: 'ml-auto shrink-0 text-[11px] tabular-nums text-ink-tertiary',
+  facet: 'shrink-0 text-[11px] tabular-nums text-ink-tertiary',
+  group: 'shrink-0 rounded bg-warm px-1.5 text-[10px] font-semibold tabular-nums text-ink-tertiary',
+  tree: 'shrink-0 text-[11px] tabular-nums text-ink-tertiary',
 };
 
 const CollapsibleSectionHeader = ({
