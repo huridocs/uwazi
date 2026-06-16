@@ -147,33 +147,6 @@ type RelationshipsDocumentStoryProps = {
   onClusterClick?: (markers: RelationshipMarker[]) => void;
 };
 
-const RelationshipsDocumentStory = ({
-  locale,
-  fileUrl = '/sample.pdf',
-  activeRelationshipId = null,
-  onPointClick,
-  onClusterClick,
-}: RelationshipsDocumentStoryProps) => {
-  const store = createRelationshipsStoryStore(locale);
-  const mainDocument = apiEntity.documents![0];
-
-  return (
-    <div className="h-screen max-h-200 bg-(--color-theme-surface-raised)">
-      <BrowserRouter>
-        <Provider store={store}>
-          <RelationshipsDocumentStoryBody
-            fileUrl={fileUrl}
-            activeRelationshipId={activeRelationshipId}
-            onPointClick={onPointClick}
-            onClusterClick={onClusterClick}
-            mainDocument={mainDocument}
-          />
-        </Provider>
-      </BrowserRouter>
-    </div>
-  );
-};
-
 const RelationshipsDocumentStoryBody = ({
   fileUrl,
   activeRelationshipId,
@@ -202,6 +175,33 @@ const RelationshipsDocumentStoryBody = ({
           onPageChange={setCurrentPage}
         />
       </div>
+    </div>
+  );
+};
+
+const RelationshipsDocumentStory = ({
+  locale,
+  fileUrl = '/sample.pdf',
+  activeRelationshipId = null,
+  onPointClick,
+  onClusterClick,
+}: RelationshipsDocumentStoryProps) => {
+  const store = createRelationshipsStoryStore(locale);
+  const mainDocument = apiEntity.documents![0];
+
+  return (
+    <div className="h-screen max-h-200 bg-(--color-theme-surface-raised)">
+      <BrowserRouter>
+        <Provider tore={store}>
+          <RelationshipsDocumentStoryBody
+            fileUrl={fileUrl}
+            activeRelationshipId={activeRelationshipId}
+            onPointClick={onPointClick}
+            onClusterClick={onClusterClick}
+            mainDocument={mainDocument}
+          />
+        </Provider>
+      </BrowserRouter>
     </div>
   );
 };
