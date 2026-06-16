@@ -2,7 +2,7 @@ import React from 'react';
 import { useAtom } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { Button } from '#V2/Components/UI/index.js';
-import { isEditingAtom } from '../atoms/isEditingAtom';
+import { isEditingAtom } from '../atoms/isEditingAtom.js';
 
 const MetadataDisplayFooter = () => {
   const [isEditing, setIsEditing] = useAtom(isEditingAtom);

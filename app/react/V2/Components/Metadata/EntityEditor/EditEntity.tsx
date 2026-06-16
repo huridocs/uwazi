@@ -67,7 +67,7 @@ const thesaurusToOptions = (
       items: value.values?.map(child => ({
         label: child.label,
         searchLabel: child.label,
-        value: child.id || value.label,
+        value: child.id || child.label,
       })),
     })) || [];
 
@@ -204,11 +204,7 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
         />
         {isMetadataReady &&
           metadataProperties.map(property => {
-            if (
-              property.type === 'text' ||
-              property.type === 'numeric' ||
-              property.type === 'generatedid'
-            ) {
+            if (property.type === 'text' || property.type === 'generatedid') {
               return (
                 <TextField<EditEntityFormValues>
                   context={activeTemplate?._id ?? ''}
@@ -216,7 +212,22 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
                   field={`metadata.${property.name}.0.value`}
                   registerOptions={{ required: property.required }}
                   disabled={disabled}
-                  type={property.type === 'text' ? property.type : 'number'}
+                  type="text"
+                  key={property._id}
+                />
+              );
+            }
+
+            if (property.type === 'numeric') {
+              return (
+                <TextField<EditEntityFormValues>
+                  context={activeTemplate?._id ?? ''}
+                  label={property.label}
+                  field={`metadata.${property.name}.0.value`}
+                  registerOptions={{ required: property.required }}
+                  disabled={disabled}
+                  type="number"
+                  key={property._id}
                 />
               );
             }
@@ -231,6 +242,7 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
                   disabled={disabled}
                   options={thesaurusToOptions(thesauri, property)}
                   hideFilters
+                  key={property._id}
                 />
               );
             }
@@ -244,6 +256,7 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
                   registerOptions={{ required: property.required }}
                   disabled={disabled}
                   options={thesaurusToOptions(thesauri, property)}
+                  key={property._id}
                 />
               );
             }
@@ -257,6 +270,7 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
                   registerOptions={{ required: property.required }}
                   disabled={disabled}
                   options={relationshipToOptions(property, entity?.metadata)}
+                  key={property._id}
                 />
               );
             }
@@ -269,6 +283,7 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
                   field={`metadata.${property.name}.0.value`}
                   registerOptions={{ required: property.required }}
                   disabled={disabled}
+                  key={property._id}
                 />
               );
             }
@@ -281,6 +296,7 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
                   field={`metadata.${property.name}.0.value`}
                   registerOptions={{ required: property.required }}
                   disabled={disabled}
+                  key={property._id}
                 />
               );
             }
@@ -293,6 +309,7 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
                   field={`metadata.${property.name}`}
                   registerOptions={{ required: property.required }}
                   disabled={disabled}
+                  key={property._id}
                 />
               );
             }
@@ -305,6 +322,7 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
                   field={`metadata.${property.name}`}
                   registerOptions={{ required: property.required }}
                   disabled={disabled}
+                  key={property._id}
                 />
               );
             }
@@ -317,6 +335,7 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
                   field={`metadata.${property.name}.0.value`}
                   registerOptions={{ required: property.required }}
                   disabled={disabled}
+                  key={property._id}
                 />
               );
             }
@@ -329,6 +348,7 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
                   field={`metadata.${property.name}.0.value`}
                   registerOptions={{ required: property.required }}
                   disabled={disabled}
+                  key={property._id}
                 />
               );
             }
@@ -341,6 +361,7 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
                   field={`metadata.${property.name}.0.value`}
                   registerOptions={{ required: property.required }}
                   disabled={disabled}
+                  key={property._id}
                 />
               );
             }

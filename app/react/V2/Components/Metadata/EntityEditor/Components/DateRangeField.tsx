@@ -12,8 +12,8 @@ type DateRangeFieldProps<TFormValues extends FieldValues = FieldValues> = {
 };
 
 const toRangeValue = (value: { from: number; to: number } | undefined) => ({
-  from: value?.from || undefined,
-  to: value?.to || undefined,
+  from: value?.from ?? undefined,
+  to: value?.to ?? undefined,
 });
 
 const DateRangeField = <TFormValues extends FieldValues = FieldValues>({

@@ -45,7 +45,7 @@ describe('Entity edit', () => {
     });
 
     it('should check the Markdown field value', () => {
-      cy.get('textarea[id="metadata.rich_text_field.0.value"').should(
+      cy.get('textarea[id="metadata.rich_text_field.0.value"]').should(
         'have.value',
         '**Bold text**, *italic text*, and a [link](https://example.com)'
       );
@@ -198,7 +198,7 @@ describe('Entity edit', () => {
 
         cy.get('@saveSpy').should('have.been.calledOnce');
         cy.get('@saveSpy').then(spy => {
-          const saved = spy.getCall(0).args[0];
+          const saved = (spy as unknown as Cypress.Agent<sinon.SinonSpy>).getCall(0).args[0];
           expect(saved.title).to.equal('A new title');
 
           expect(saved.metadata.single_date).to.deep.equal([{ value: 943920000 }]);
@@ -218,10 +218,9 @@ describe('Entity edit', () => {
             { value: 'thes1.2', label: 'Again' },
           ]);
 
-          expect(saved.metadata.related_people.map(p => p.value)).to.have.members([
-            'entity2',
-            'entity3',
-          ]);
+          expect(
+            saved.metadata.related_people.map((p: { value: string }) => p.value)
+          ).to.have.members(['entity2', 'entity3']);
         });
       });
     });
