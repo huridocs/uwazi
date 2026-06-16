@@ -16,4 +16,5 @@ export {
   createPersonasSexByCountryDefinition,
   multiSourceByTemplateDto,
   personasSexByCountryDto,
+  wildlifeByHabitatDto,
 } from '#V2/Dataviz/fixtures/datavizFixtures.js';

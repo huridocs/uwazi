@@ -248,74 +248,57 @@ export const yearHistogramDto: DatavizDataDTO = {
   ],
 };
 
-export const personasSexByCountryDto: DatavizDataDTO = {
+export const wildlifeByHabitatDto: DatavizDataDTO = {
   datavizId: DATAVIZ_PERSONAS_SEX_COUNTRY_ID,
   generatedAt: new Date().toISOString(),
   stale: false,
   meta: {
-    totalEntities: 520,
+    totalEntities: 205,
     truncated: false,
     queryDurationMs: 135,
   },
   series: [
     {
-      id: 'birth_country',
-      label: 'Country of birth',
+      id: 'habitat',
+      label: 'Habitat',
       points: [
         {
-          key: 'country_ar',
-          label: 'Argentina',
-          value: 180,
+          key: 'forest',
+          label: 'Forest',
+          value: 86,
           breakdown: [
-            { key: 'sex_female', label: 'Female', value: 102, color: '#D63384' },
-            { key: 'sex_male', label: 'Male', value: 72, color: '#4A90D9' },
-            { key: 'sex_other', label: 'Other', value: 6, color: '#95A5A6' },
+            { key: 'bear', label: 'Bear', value: 24, color: '#8B4513' },
+            { key: 'wolf', label: 'Wolf', value: 18, color: '#708090' },
+            { key: 'deer', label: 'Deer', value: 44, color: '#C4A35A' },
           ],
         },
         {
-          key: 'country_cl',
-          label: 'Chile',
-          value: 95,
+          key: 'wetland',
+          label: 'Wetland',
+          value: 52,
           breakdown: [
-            { key: 'sex_female', label: 'Female', value: 48, color: '#D63384' },
-            { key: 'sex_male', label: 'Male', value: 45, color: '#4A90D9' },
-            { key: 'sex_other', label: 'Other', value: 2, color: '#95A5A6' },
+            { key: 'bear', label: 'Bear', value: 6, color: '#8B4513' },
+            { key: 'wolf', label: 'Wolf', value: 4, color: '#708090' },
+            { key: 'deer', label: 'Deer', value: 42, color: '#C4A35A' },
           ],
         },
         {
-          key: 'country_co',
-          label: 'Colombia',
-          value: 130,
+          key: 'grassland',
+          label: 'Grassland',
+          value: 67,
           breakdown: [
-            { key: 'sex_female', label: 'Female', value: 71, color: '#D63384' },
-            { key: 'sex_male', label: 'Male', value: 55, color: '#4A90D9' },
-            { key: 'sex_other', label: 'Other', value: 4, color: '#95A5A6' },
-          ],
-        },
-        {
-          key: 'country_mx',
-          label: 'Mexico',
-          value: 88,
-          breakdown: [
-            { key: 'sex_female', label: 'Female', value: 44, color: '#D63384' },
-            { key: 'sex_male', label: 'Male', value: 41, color: '#4A90D9' },
-            { key: 'sex_other', label: 'Other', value: 3, color: '#95A5A6' },
-          ],
-        },
-        {
-          key: 'country_other',
-          label: 'Other',
-          value: 27,
-          breakdown: [
-            { key: 'sex_female', label: 'Female', value: 14, color: '#D63384' },
-            { key: 'sex_male', label: 'Male', value: 11, color: '#4A90D9' },
-            { key: 'sex_other', label: 'Other', value: 2, color: '#95A5A6' },
+            { key: 'bear', label: 'Bear', value: 12, color: '#8B4513' },
+            { key: 'wolf', label: 'Wolf', value: 28, color: '#708090' },
+            { key: 'deer', label: 'Deer', value: 27, color: '#C4A35A' },
           ],
         },
       ],
     },
   ],
 };
+
+/** @deprecated Use wildlifeByHabitatDto */
+export const personasSexByCountryDto = wildlifeByHabitatDto;
 
 export const multiSourceByTemplateDto: DatavizDataDTO = {
   datavizId: DATAVIZ_CARS_BY_COLOR_ID,
@@ -477,8 +460,8 @@ export const createWithFiltersDefinition = (): DatavizDefinition => ({
 
 export const createPersonasSexByCountryDefinition = (): DatavizDefinition => ({
   id: DATAVIZ_PERSONAS_SEX_COUNTRY_ID,
-  name: 'Personas by country and sex',
-  description: 'Count of people by country of birth, split by sex.',
+  name: 'Wildlife by habitat and species',
+  description: 'Animal sightings by habitat, split by species.',
   query: {
     sources: [{ templateId: DATAVIZ_PERSONAS_TEMPLATE_ID, alias: 'personas' }],
     dimensions: [

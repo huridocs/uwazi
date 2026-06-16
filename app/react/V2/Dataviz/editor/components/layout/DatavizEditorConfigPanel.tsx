@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { Tabs } from '#V2/Components/UI/index.js';
+import { isManualDataSource } from '#shared/dataviz/manualData.js';
 import type { DatavizDefinition, EditorTabId } from '#V2/Dataviz/types/definition.js';
 import type { DatavizDataDTO } from '#V2/Dataviz/types/data.js';
 import type { RefreshModeConstraints } from '#V2/Dataviz/utils/refreshModeConstraints.js';
-import { DatavizEditorTabBar } from '../DatavizEditorTabBar.js';
 import { InfoTab } from '../tabs/InfoTab.js';
 import { DataTab } from '../tabs/DataTab.js';
 import { ChartTab } from '../tabs/ChartTab.js';
@@ -28,8 +29,6 @@ const DatavizEditorConfigPanel = ({
   definition,
   activeTab,
   previewData,
-  previewLoading = false,
-  previewError = null,
   refreshConstraints,
   onTabChange,
   onPatch,
@@ -38,50 +37,75 @@ const DatavizEditorConfigPanel = ({
   onPatchAppearance,
   onPatchRefresh,
 }: DatavizEditorConfigPanelProps) => {
-  const renderTab = () => {
-    switch (activeTab) {
-      case 'info':
-        return <InfoTab definition={definition} onChange={onPatch} />;
-      case 'data':
-        return (
-          <DataTab
-            definition={definition}
-            onPatch={onPatch}
-            onPatchQuery={onPatchQuery}
-            onPatchChart={onPatchChart}
-          />
-        );
-      case 'chart':
-        return <ChartTab definition={definition} onPatchChart={onPatchChart} onPatchQuery={onPatchQuery} />;
-      case 'appearance':
-        return (
-          <AppearanceTab
-            definition={definition}
-            previewData={previewData}
-            onPatchAppearance={onPatchAppearance}
-          />
-        );
-      case 'refresh':
-        return (
+  const showRefreshTab = !isManualDataSource(definition.dataSource);
+
+  const tabElements = useMemo(() => {
+    const tabs = [
+      <Tabs.Tab key="info" id="info" label="Info">
+        <InfoTab definition={definition} onChange={onPatch} />
+      </Tabs.Tab>,
+      <Tabs.Tab key="data" id="data" label="Data">
+        <DataTab
+          definition={definition}
+          onPatch={onPatch}
+          onPatchQuery={onPatchQuery}
+          onPatchChart={onPatchChart}
+        />
+      </Tabs.Tab>,
+      <Tabs.Tab key="chart" id="chart" label="Chart">
+        <ChartTab
+          definition={definition}
+          onPatchChart={onPatchChart}
+          onPatchQuery={onPatchQuery}
+        />
+      </Tabs.Tab>,
+      <Tabs.Tab key="appearance" id="appearance" label="Appearance">
+        <AppearanceTab
+          definition={definition}
+          previewData={previewData}
+          onPatchAppearance={onPatchAppearance}
+        />
+      </Tabs.Tab>,
+    ];
+
+    if (showRefreshTab) {
+      tabs.push(
+        <Tabs.Tab key="refresh" id="refresh" label="Refresh">
           <RefreshTab
             definition={definition}
             constraints={refreshConstraints}
             onPatchRefresh={onPatchRefresh}
           />
-        );
-      default:
-        return null;
+        </Tabs.Tab>
+      );
     }
-  };
+
+    return tabs;
+  }, [
+    definition,
+    onPatch,
+    onPatchAppearance,
+    onPatchChart,
+    onPatchQuery,
+    onPatchRefresh,
+    previewData,
+    refreshConstraints,
+    showRefreshTab,
+  ]);
 
   return (
-    <aside className="flex h-full min-h-0 w-[32rem] shrink-0 flex-col border-r border-border bg-paper">
-      <DatavizEditorTabBar
-        activeTab={activeTab}
-        dataSource={definition.dataSource}
-        onTabChange={onTabChange}
-      />
-      <div className="min-h-0 flex-1 overflow-y-auto bg-paper">{renderTab()}</div>
+    <aside className="flex h-full min-h-0 w-[32rem] shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-paper">
+      <Tabs
+        unmountTabs={false}
+        domIdPrefix="dataviz-config"
+        initialTabId={activeTab}
+        onTabSelected={tabId => onTabChange(tabId as EditorTabId)}
+        tabListAriaLabel="Dataviz editor"
+        tabListClassName="!mx-3 !mt-3 !mb-0"
+        className="min-h-0 flex-1"
+      >
+        {tabElements}
+      </Tabs>
     </aside>
   );
 };

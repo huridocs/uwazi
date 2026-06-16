@@ -13,12 +13,12 @@ const DATA_SOURCE_OPTIONS: {
 }[] = [
   {
     value: 'query',
-    label: 'Query (templates)',
+    label: 'Query',
     description: 'Load data from entity templates.',
   },
   {
     value: 'manual',
-    label: 'Manual (JSON)',
+    label: 'Manual',
     description: 'Paste chart-ready JSON.',
   },
 ];

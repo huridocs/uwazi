@@ -3,11 +3,7 @@ import { Link, useNavigate } from 'react-router';
 import { t, Translate } from '#app/I18N/index.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button } from '#V2/Components/UI/Button.js';
-import type {
-  EditorTabId,
-  PreviewTabId,
-  DatavizDefinition,
-} from '#V2/Dataviz/types/definition.js';
+import type { EditorTabId, PreviewTabId, DatavizDefinition } from '#V2/Dataviz/types/definition.js';
 import { useDatavizApi } from '#V2/Dataviz/api/DatavizApiContext.js';
 import { isPersistedId } from '#V2/Dataviz/api/httpDatavizApi.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
@@ -30,15 +26,8 @@ const DatavizEditor = ({ initialDefinition, onDeleteRequest }: DatavizEditorProp
   const navigate = useNavigate();
   const { notify } = useRequestStatus();
   const normalizedInitial = normalizeLegacyDefinition(initialDefinition);
-  const {
-    definition,
-    patch,
-    patchQuery,
-    patchChart,
-    patchAppearance,
-    patchRefresh,
-    replace,
-  } = useDatavizEditorState(normalizedInitial);
+  const { definition, patch, patchQuery, patchChart, patchAppearance, patchRefresh, replace } =
+    useDatavizEditorState(normalizedInitial);
   const { data, loading, error, queryDurationMs } = useDatavizPreview(definition);
   const refreshConstraints = useLiveRefreshGuard({
     definition,
@@ -67,10 +56,7 @@ const DatavizEditor = ({ initialDefinition, onDeleteRequest }: DatavizEditorProp
     }
   }, [definition.dataSource, definition.chart.type, activeTab, previewTab]);
 
-  const breadcrumbPath = useMemo(
-    () => new Map([['Data visualizations', '/settings/dataviz']]),
-    []
-  );
+  const breadcrumbPath = useMemo(() => new Map([['Data visualizations', '/settings/dataviz']]), []);
 
   const handleSave = async () => {
     setSaving(true);
@@ -106,7 +92,7 @@ const DatavizEditor = ({ initialDefinition, onDeleteRequest }: DatavizEditorProp
         />
 
         <SettingsContent.Body className="!bg-paper flex min-h-0 flex-1 flex-col !px-0">
-          <div className="flex min-h-0 flex-1 w-full">
+          <div className="flex min-h-0 flex-1 w-full gap-3 bg-parchment p-3">
             <DatavizEditorConfigPanel
               definition={definition}
               activeTab={activeTab}
@@ -141,7 +127,13 @@ const DatavizEditor = ({ initialDefinition, onDeleteRequest }: DatavizEditorProp
               </Button>
             </Link>
             {isPersistedId(definition.id) && (
-              <Button type="button" variant="danger" size="small" onClick={handleDelete} disabled={saving}>
+              <Button
+                type="button"
+                variant="danger"
+                size="small"
+                onClick={handleDelete}
+                disabled={saving}
+              >
                 <Translate>Delete</Translate>
               </Button>
             )}

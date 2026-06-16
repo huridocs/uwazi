@@ -15,6 +15,21 @@ describe('formatDimensionKeyLabel', () => {
     );
   });
 
+  it('should format week and computed year bucket keys', () => {
+    expect(
+      formatDatavizDimensionKeyLabel('2024-W03', {
+        propertyType: 'date',
+        dateInterval: 'week',
+      })
+    ).toBe('2024-W03');
+    expect(
+      formatDatavizDimensionKeyLabel(42, {
+        propertyType: 'date',
+        dateInterval: 'computed_years',
+      })
+    ).toBe('42');
+  });
+
   it('should format year bucket keys for date dimensions by default', () => {
     expect(formatDatavizDimensionKeyLabel(2022, { propertyType: 'date' })).toBe('2022');
   });

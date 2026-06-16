@@ -1,4 +1,4 @@
-import type { DataPoint, DatavizChartConfig, DatavizDataDTO } from '#shared/types/datavizSchema.js';
+import type { DataPoint, DatavizChartConfig, DatavizDataDTO, DimensionSpec, MeasureSpec } from '#shared/types/datavizSchema.js';
 import { projectDatavizLabelsForLocale } from '#shared/dataviz/projectDatavizLabelsForLocale.js';
 import {
   DATAVIZ_MISSING_BUCKET_KEY,
@@ -7,10 +7,16 @@ import {
   isDatavizMissingBucketKey,
 } from '#shared/dataviz/missingBucket.js';
 import { fillBreakdownMatrix } from '#shared/dataviz/fillBreakdownMatrix.js';
+import {
+  derivePrimaryMeasureFromNumericBreakdown,
+  shouldDerivePrimaryMeasureFromNumericBreakdown,
+} from '#shared/dataviz/derivePrimaryMeasureFromNumericBreakdown.js';
 
 type FilterDataForDisplayOptions = {
   locale?: string;
   defaultLocale?: string;
+  dimensions?: DimensionSpec[];
+  measures?: MeasureSpec[];
 };
 
 const shouldIncludePoint = (point: DataPoint, chart: DatavizChartConfig): boolean => {
@@ -50,13 +56,27 @@ const filterDataForDisplay = (
         )
       : data;
   const labeled = formatDatavizDataLabels(localized, chart.missingValueLabel);
+  const derivePrimaryMeasure = shouldDerivePrimaryMeasureFromNumericBreakdown(
+    chart,
+    options.dimensions,
+    options.measures
+  );
+  const measureAggregation = options.measures?.[0]?.aggregation;
   const preparePoints = (points: DataPoint[]) =>
     chart.type === 'scatter' ? points : fillBreakdownMatrix(points);
 
-  const series = labeled.series.map(item => ({
-    ...item,
-    points: filterPoints(preparePoints(item.points), chart),
-  }));
+  const series = labeled.series.map(item => {
+    const filtered = filterPoints(preparePoints(item.points), chart);
+    const points =
+      derivePrimaryMeasure && measureAggregation
+        ? derivePrimaryMeasureFromNumericBreakdown(filtered, measureAggregation)
+        : filtered;
+
+    return {
+      ...item,
+      points,
+    };
+  });
 
   const totalEntities =
     series.reduce(

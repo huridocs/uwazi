@@ -80,6 +80,12 @@ const resolveDateLabels = (
   const interval = dim.dateInterval ?? 'year';
 
   if (propertyType === 'date' || propertyType === 'multidate') {
+    if (interval === 'computed_years' && typeof normalizedKey === 'number') {
+      return fillLanguages(languages, () => String(normalizedKey));
+    }
+    if (interval === 'week' && typeof normalizedKey === 'string') {
+      return fillLanguages(languages, () => normalizedKey);
+    }
     if (interval === 'year' && typeof normalizedKey === 'number') {
       return fillLanguages(languages, () => String(normalizedKey));
     }
@@ -93,13 +99,29 @@ const resolveDateLabels = (
     }
   }
 
-  if (
-    (propertyType === 'daterange' || propertyType === 'multidaterange') &&
-    isDatavizDateRangeKey(normalizedKey)
-  ) {
-    return fillLanguages(languages, language =>
-      formatDatavizDateRangeLabel(normalizedKey, toLocale(language))
-    );
+  if (propertyType === 'daterange' || propertyType === 'multidaterange') {
+    if (interval === 'computed_years' && typeof normalizedKey === 'number') {
+      return fillLanguages(languages, () => String(normalizedKey));
+    }
+    if (interval === 'week' && typeof normalizedKey === 'string') {
+      return fillLanguages(languages, () => normalizedKey);
+    }
+    if (interval === 'year' && typeof normalizedKey === 'number') {
+      return fillLanguages(languages, () => String(normalizedKey));
+    }
+    if (interval === 'month' && typeof normalizedKey === 'string') {
+      return fillLanguages(languages, () => normalizedKey);
+    }
+    if (typeof normalizedKey === 'number') {
+      return fillLanguages(languages, language =>
+        formatDatavizDateLabel(normalizedKey, toLocale(language))
+      );
+    }
+    if (isDatavizDateRangeKey(normalizedKey)) {
+      return fillLanguages(languages, language =>
+        formatDatavizDateRangeLabel(normalizedKey, toLocale(language))
+      );
+    }
   }
 
   return fillLanguages(languages, () => String(normalizedKey));

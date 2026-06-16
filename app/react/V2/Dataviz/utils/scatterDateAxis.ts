@@ -113,7 +113,7 @@ export const resolveScatterDateDimensionPatch = (
   }
 
   const primary = dimensions[0];
-  if (!primary || primary.propertyType !== 'date' || primary.dateInterval === 'day') {
+  if (!primary || primary.propertyType !== 'date' || primary.dateInterval !== 'year') {
     return null;
   }
 

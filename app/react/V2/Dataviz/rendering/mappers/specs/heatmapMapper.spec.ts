@@ -9,25 +9,25 @@ const twoDimensionalData = {
   meta: { totalEntities: 6, truncated: false },
   series: [
     {
-      id: 'countries',
-      label: 'Countries',
+      id: 'habitat',
+      label: 'Habitat',
       points: [
         {
-          key: 'pe',
-          label: 'Peru',
+          key: 'forest',
+          label: 'Forest',
           value: 3,
           breakdown: [
-            { key: 'm', label: 'Male', value: 2 },
-            { key: 'f', label: 'Female', value: 1 },
+            { key: 'bear', label: 'Bear', value: 2 },
+            { key: 'wolf', label: 'Wolf', value: 1 },
           ],
         },
         {
-          key: 'co',
-          label: 'Colombia',
+          key: 'wetland',
+          label: 'Wetland',
           value: 3,
           breakdown: [
-            { key: 'm', label: 'Male', value: 1 },
-            { key: 'f', label: 'Female', value: 2 },
+            { key: 'bear', label: 'Bear', value: 1 },
+            { key: 'wolf', label: 'Wolf', value: 2 },
           ],
         },
       ],
@@ -81,8 +81,8 @@ describe('heatmapMapper', () => {
       {
         colorMode: 'custom',
         valueColorMap: {
-          m: '#111111',
-          f: '#00aa55',
+          bear: '#111111',
+          wolf: '#00aa55',
         },
       }
     );
@@ -113,8 +113,8 @@ describe('heatmapMapper', () => {
                 label: 'Chile',
                 value: 1,
                 breakdown: [
-                  { key: 'm', label: 'Male', value: 1 },
-                  { key: 'f', label: 'Female', value: 0 },
+                  { key: 'bear', label: 'Bear', value: 1 },
+                  { key: 'wolf', label: 'Wolf', value: 0 },
                 ],
               },
             ],
@@ -143,8 +143,8 @@ describe('heatmapMapper', () => {
                 label: 'Chile',
                 value: 1,
                 breakdown: [
-                  { key: 'm', label: 'Male', value: 1 },
-                  { key: 'f', label: 'Female', value: 0 },
+                  { key: 'bear', label: 'Bear', value: 1 },
+                  { key: 'wolf', label: 'Wolf', value: 0 },
                 ],
               },
             ],

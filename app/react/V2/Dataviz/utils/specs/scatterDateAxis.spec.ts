@@ -70,4 +70,13 @@ describe('resolveScatterDateDimensionPatch', () => {
       )
     ).toBeNull();
   });
+
+  it('should not patch computed years date buckets for scatter', () => {
+    expect(
+      resolveScatterDateDimensionPatch(
+        [{ ...yearDimension, dateInterval: 'computed_years' }],
+        'scatter'
+      )
+    ).toBeNull();
+  });
 });

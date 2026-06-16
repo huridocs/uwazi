@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { Checkbox } from '#V2/Components/Forms/Checkbox.js';
+import { InputColorPicker } from '#V2/Components/Forms/InputColorPicker.js';
 
 type ThemeColorsSectionProps = {
   background?: string;
@@ -31,30 +32,24 @@ const ThemeColorsSection = ({ background, foreground, onChange }: ThemeColorsSec
         checked={isTransparent}
         onChange={e => handleTransparentChange((e.target as HTMLInputElement).checked)}
       />
-      <label className="flex flex-col gap-1 text-sm text-ink-secondary">
-        Background
-        <input
-          id="bg-color"
-          type="color"
-          value={isTransparent ? lastSolidBackground.current : background || '#ffffff'}
-          disabled={isTransparent}
-          onChange={e => {
-            lastSolidBackground.current = e.target.value;
-            onChange({ background: e.target.value });
-          }}
-          className="h-8 w-full cursor-pointer rounded border border-border disabled:cursor-not-allowed disabled:opacity-50"
-        />
-      </label>
-      <label className="flex flex-col gap-1 text-sm text-ink-secondary">
-        Foreground
-        <input
-          id="fg-color"
-          type="color"
-          value={foreground || '#1a1a1a'}
-          onChange={e => onChange({ foreground: e.target.value })}
-          className="h-8 w-full cursor-pointer rounded border border-border"
-        />
-      </label>
+      <InputColorPicker
+        id="bg-color"
+        name="background-color"
+        value={isTransparent ? lastSolidBackground.current : background || '#ffffff'}
+        label="Background"
+        disabled={isTransparent}
+        onChange={color => {
+          lastSolidBackground.current = color;
+          onChange({ background: color });
+        }}
+      />
+      <InputColorPicker
+        id="fg-color"
+        name="foreground-color"
+        value={foreground || '#1a1a1a'}
+        label="Foreground"
+        onChange={color => onChange({ foreground: color })}
+      />
     </section>
   );
 };

@@ -17,6 +17,7 @@ export type MapToEChartsOptionContext = {
   templatePropertiesById?: Record<string, Array<{ name: string; label: string }>>;
   sources?: import('#shared/types/datavizSchema.js').DatavizSource[];
   dimensions?: import('#shared/types/datavizSchema.js').DimensionSpec[];
+  measures?: import('#shared/types/datavizSchema.js').MeasureSpec[];
   themePalette?: string[];
   locale?: string;
   defaultLocale?: string;
@@ -31,6 +32,8 @@ export const mapToEChartsOption = (
   const displayData = filterDataForDisplay(data, chart, {
     locale: context.locale,
     defaultLocale: context.defaultLocale,
+    dimensions: context.dimensions,
+    measures: context.measures,
   });
 
   let option: EChartsOption | null;

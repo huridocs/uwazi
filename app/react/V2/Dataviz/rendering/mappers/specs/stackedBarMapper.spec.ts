@@ -8,16 +8,16 @@ describe('stackedBarMapper', () => {
     meta: { totalEntities: 16, truncated: false },
     series: [
       {
-        id: 'countries',
-        label: 'Countries',
+        id: 'habitat',
+        label: 'Habitat',
         points: [
           {
-            key: 'co',
-            label: 'Colombia',
+            key: 'forest',
+            label: 'Forest',
             value: 10,
             breakdown: [
-              { key: 'm', label: 'Hombre', value: 10 },
-              { key: 'f', label: 'Mujer', value: 0 },
+              { key: 'bear', label: 'Bear', value: 10 },
+              { key: 'wolf', label: 'Wolf', value: 0 },
             ],
           },
         ],

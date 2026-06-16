@@ -57,7 +57,12 @@ const resolveDatavizRenderSnapshot = async (
   const data = filterDataForDisplay(
     { ...renderPayload.data, stale },
     renderPayload.chart,
-    { locale, defaultLocale }
+    {
+      locale,
+      defaultLocale,
+      dimensions: dataviz.query.dimensions,
+      measures: dataviz.query.measures,
+    }
   );
 
   return {

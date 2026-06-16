@@ -51,7 +51,7 @@ export type DimensionSpec = {
   /** When set, `property` is a relationship/newRelationship template property. */
   relationshipMode?: RelationshipDimensionMode;
   bucketStrategy?: 'terms' | 'date_histogram' | 'range';
-  dateInterval?: 'day' | 'month' | 'year';
+  dateInterval?: 'day' | 'week' | 'month' | 'year' | 'computed_years';
   sort?: 'count_desc' | 'label_asc' | 'key_asc';
   maxBuckets?: number;
 };

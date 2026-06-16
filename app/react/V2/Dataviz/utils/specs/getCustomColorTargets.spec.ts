@@ -1,7 +1,7 @@
 import type { DatavizDataDTO } from '#V2/Dataviz/types/data.js';
 import {
   carsByColorDto,
-  personasSexByCountryDto,
+  wildlifeByHabitatDto,
   yearHistogramDto,
 } from '#V2/Dataviz/fixtures/datavizFixtures.js';
 import {
@@ -17,16 +17,16 @@ const compareLineDto: DatavizDataDTO = {
   meta: { totalEntities: 10, truncated: false, queryDurationMs: 50 },
   series: [
     {
-      id: 'hombres',
-      label: 'Hombres',
+      id: 'forest',
+      label: 'Forest',
       points: [
         { key: '1980', label: 'Jan 1, 1980 ~ Dec 31, 1985', value: 6 },
         { key: '2004', label: 'Jan 1, 2004 ~ Dec 31, 2007', value: 2 },
       ],
     },
     {
-      id: 'mujeres',
-      label: 'Mujeres',
+      id: 'wetland',
+      label: 'Wetland',
       points: [
         { key: '1980', label: 'Jan 1, 1980 ~ Dec 31, 1985', value: 0 },
         { key: '2004', label: 'Jan 1, 2004 ~ Dec 31, 2007', value: 3 },
@@ -42,8 +42,8 @@ describe('getCustomColorTargets', () => {
 
     const targets = getCustomColorTargets('line', compareLineDto);
     expect(targets).toEqual([
-      { key: 'hombres', label: 'Hombres' },
-      { key: 'mujeres', label: 'Mujeres' },
+      { key: 'forest', label: 'Forest' },
+      { key: 'wetland', label: 'Wetland' },
     ]);
   });
 
@@ -67,11 +67,11 @@ describe('getCustomColorTargets', () => {
   });
 
   it('should use stacked segment targets for stacked bar charts', () => {
-    expect(getCustomColorTargetKind('stacked_bar', personasSexByCountryDto)).toBe('stacked_series');
+    expect(getCustomColorTargetKind('stacked_bar', wildlifeByHabitatDto)).toBe('stacked_series');
 
-    const targets = getCustomColorTargets('stacked_bar', personasSexByCountryDto);
-    expect(targets.map(target => target.key)).toEqual(['sex_female', 'sex_male', 'sex_other']);
-    expect(targets[0]).toMatchObject({ label: 'Female', defaultColor: '#D63384' });
+    const targets = getCustomColorTargets('stacked_bar', wildlifeByHabitatDto);
+    expect(targets.map(target => target.key)).toEqual(['bear', 'wolf', 'deer']);
+    expect(targets[0]).toMatchObject({ label: 'Bear', defaultColor: '#8B4513' });
   });
 
   it('should not support custom colors for metric, list, and gauge charts', () => {

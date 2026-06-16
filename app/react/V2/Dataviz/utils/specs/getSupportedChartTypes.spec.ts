@@ -11,6 +11,7 @@ const numericCrossTab = [
 ];
 
 const countMeasure = [{ aggregation: 'count' as const }];
+const maxMeasure = [{ aggregation: 'max' as const, countMode: 'all' as const }];
 
 describe('getSupportedChartTypes', () => {
   it('should enable cross-tab friendly charts and disable single-dimension bars for two dimensions', () => {
@@ -32,6 +33,18 @@ describe('getSupportedChartTypes', () => {
     expect(byType.scatter?.enabled).toBe(true);
     expect(byType.heatmap?.enabled).toBe(true);
     expect(byType.stacked_bar?.enabled).toBe(false);
+  });
+
+  it('should enable line and bar for date × numeric cross-tab with value measures', () => {
+    const availability = getSupportedChartTypes(numericCrossTab, maxMeasure);
+    const byType = Object.fromEntries(availability.map(item => [item.type, item]));
+
+    expect(byType.line?.enabled).toBe(true);
+    expect(byType.area?.enabled).toBe(true);
+    expect(byType.bar?.enabled).toBe(true);
+    expect(byType.scatter?.enabled).toBe(true);
+    expect(byType.heatmap?.enabled).toBe(true);
+    expect(byType.pie?.enabled).toBe(false);
   });
 
   it('should enable all editor chart types for manual data', () => {

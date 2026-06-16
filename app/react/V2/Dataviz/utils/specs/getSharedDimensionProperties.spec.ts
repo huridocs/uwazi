@@ -73,4 +73,28 @@ describe('getSharedDimensionProperties', () => {
 
     expect(shared.map(property => property.name)).toEqual(['sexo', 'edad']);
   });
+
+  it('should exclude multidate, daterange, and multidaterange properties', () => {
+    const properties = getSharedDimensionProperties(
+      [{ templateId: 'tpl-a', alias: 'a' }],
+      [
+        {
+          _id: 'tpl-a',
+          name: 'A',
+          properties: [
+            { name: 'created', label: 'Created', type: 'date' },
+            { name: 'dates', label: 'Dates', type: 'multidate' },
+            { name: 'period', label: 'Period', type: 'daterange' },
+            { name: 'periods', label: 'Periods', type: 'multidaterange' },
+            relationship('mandates', 'tpl-b', 'rel-1', {
+              property: 'start',
+              type: 'multidate',
+            }),
+          ],
+        },
+      ]
+    );
+
+    expect(properties.map(property => property.name)).toEqual(['created']);
+  });
 });

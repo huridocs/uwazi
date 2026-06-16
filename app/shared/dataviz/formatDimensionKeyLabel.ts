@@ -105,6 +105,12 @@ export const formatDatavizDimensionKeyLabel = (
 
   if (options.propertyType === 'date' || options.propertyType === 'multidate') {
     const interval = options.dateInterval ?? 'year';
+    if (interval === 'computed_years' && typeof normalizedKey === 'number') {
+      return formatDatavizNumericLabel(normalizedKey);
+    }
+    if (interval === 'week' && typeof normalizedKey === 'string') {
+      return normalizedKey;
+    }
     if (interval === 'year' && typeof normalizedKey === 'number') {
       return String(normalizedKey);
     }
@@ -117,6 +123,22 @@ export const formatDatavizDimensionKeyLabel = (
   }
 
   if (options.propertyType === 'daterange' || options.propertyType === 'multidaterange') {
+    const interval = options.dateInterval ?? 'year';
+    if (interval === 'computed_years' && typeof normalizedKey === 'number') {
+      return formatDatavizNumericLabel(normalizedKey);
+    }
+    if (interval === 'week' && typeof normalizedKey === 'string') {
+      return normalizedKey;
+    }
+    if (interval === 'year' && typeof normalizedKey === 'number') {
+      return String(normalizedKey);
+    }
+    if (interval === 'month' && typeof normalizedKey === 'string') {
+      return normalizedKey;
+    }
+    if (typeof normalizedKey === 'number') {
+      return formatDatavizDateLabel(normalizedKey, options.locale);
+    }
     if (isDatavizDateRangeKey(normalizedKey)) {
       return formatDatavizDateRangeLabel(normalizedKey, options.locale);
     }

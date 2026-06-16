@@ -20,6 +20,7 @@ import { buildFilterMatch, filtersForSource } from './executor/buildFilterMatch.
 import { appendDimensionUnwindStages } from './executor/appendDimensionUnwindStages.js';
 import { coerceMissingValueStages } from './executor/coerceMissingValueStages.js';
 import { dimensionBucketExpression } from './executor/dimensionBucketExpression.js';
+import { buildMeasureGroupAccumulator } from './executor/measureFieldExpression.js';
 import {
   mergeUnionBuckets,
   normalizeBuckets,
@@ -162,6 +163,7 @@ class MongoDatavizQueryExecutor
       seriesLabels: sourceLocalizedLabels[0],
       defaultLanguage: labelContext.defaultLanguage,
       missingBucketLabels: labelContext.missingBucketLabels,
+      measure: query.measures[0],
     });
   }
 
@@ -320,18 +322,21 @@ class MongoDatavizQueryExecutor
       coerceMissingValueStages(pipeline, '__secondary');
     }
 
+    const measure = query.measures[0] ?? { aggregation: 'count' as const };
+    const measureAccumulator = buildMeasureGroupAccumulator(measure);
+
     if (secondaryField) {
       pipeline.push({
         $group: {
           _id: { primary: '$__primary', secondary: '$__secondary' },
-          count: { $sum: 1 },
+          ...measureAccumulator,
         },
       });
     } else {
       pipeline.push({
         $group: {
           _id: '$__primary',
-          count: { $sum: 1 },
+          ...measureAccumulator,
         },
       });
     }

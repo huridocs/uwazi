@@ -11,8 +11,8 @@ const heatmapData = {
   meta: { totalEntities: 24, truncated: false },
   series: [
     {
-      id: 'countries',
-      label: 'Countries',
+      id: 'habitat',
+      label: 'Habitat',
       points: [
         {
           key: DATAVIZ_MISSING_BUCKET_KEY,
@@ -20,27 +20,27 @@ const heatmapData = {
           value: 15,
           breakdown: [
             { key: DATAVIZ_MISSING_BUCKET_KEY, label: 'No data', value: 14 },
-            { key: 'm', label: 'Hombre', value: 1 },
-            { key: 'f', label: 'Mujer', value: 0 },
+            { key: 'bear', label: 'Bear', value: 1 },
+            { key: 'wolf', label: 'Wolf', value: 0 },
           ],
         },
         {
-          key: 'us',
-          label: 'United States',
+          key: 'forest',
+          label: 'Forest',
           value: 11,
           breakdown: [
             { key: DATAVIZ_MISSING_BUCKET_KEY, label: 'No data', value: 0 },
-            { key: 'm', label: 'Hombre', value: 10 },
-            { key: 'f', label: 'Mujer', value: 1 },
+            { key: 'bear', label: 'Bear', value: 10 },
+            { key: 'wolf', label: 'Wolf', value: 1 },
           ],
         },
         {
-          key: 'cl',
-          label: 'Chile',
+          key: 'wetland',
+          label: 'Wetland',
           value: 6,
           breakdown: [
-            { key: 'm', label: 'Hombre', value: 6 },
-            { key: 'f', label: 'Mujer', value: 0 },
+            { key: 'bear', label: 'Bear', value: 6 },
+            { key: 'wolf', label: 'Wolf', value: 0 },
           ],
         },
       ],
@@ -70,11 +70,11 @@ describe('heatmap rendering integration', () => {
       { colorMode: 'theme' }
     );
 
-    expect(option.yAxis).toMatchObject({
-      data: ['United States', 'Chile'],
+    expect(option!.yAxis).toMatchObject({
+      data: ['Forest', 'Wetland'],
     });
-    expect(option.xAxis).toMatchObject({
-      data: ['No data', 'Hombre', 'Mujer'],
+    expect(option!.xAxis).toMatchObject({
+      data: ['No data', 'Bear', 'Wolf'],
     });
   });
 
@@ -86,32 +86,32 @@ describe('heatmap rendering integration', () => {
         colorMode: 'custom',
         valueColorMap: {
           [DATAVIZ_MISSING_BUCKET_KEY]: '#00ff00',
-          m: '#0000ff',
-          f: '#ff00ff',
+          bear: '#0000ff',
+          wolf: '#ff00ff',
         },
       }
     );
 
-    expect(option.visualMap).toMatchObject({
+    expect(option!.visualMap).toMatchObject({
       show: false,
       inRange: {},
     });
 
-    const series = option.series as Array<{
+    const series = option!.series as Array<{
       data: Array<{ value: number[]; itemStyle?: { color: string }; visualMap?: boolean }>;
     }>;
     expect(series[0]?.data.every(item => item.visualMap === false)).toBe(true);
 
-    const usMale = series[0]?.data.find(item => item.value[0] === 1 && item.value[1] === 0);
-    const usFemale = series[0]?.data.find(item => item.value[0] === 2 && item.value[1] === 0);
-    expect(usMale?.itemStyle?.color).toBe(
+    const forestBear = series[0]?.data.find(item => item.value[0] === 1 && item.value[1] === 0);
+    const forestWolf = series[0]?.data.find(item => item.value[0] === 2 && item.value[1] === 0);
+    expect(forestBear?.itemStyle?.color).toBe(
       mixHexColor('#FFFFFF', '#0000ff', resolveHeatmapCellIntensity(10, 10))
     );
-    expect(usFemale?.itemStyle?.color).toBe(
+    expect(forestWolf?.itemStyle?.color).toBe(
       mixHexColor('#FFFFFF', '#ff00ff', resolveHeatmapCellIntensity(1, 10))
     );
-    expect(isGrayscale(usMale?.itemStyle?.color ?? '')).toBe(false);
-    expect(isGrayscale(usFemale?.itemStyle?.color ?? '')).toBe(false);
+    expect(isGrayscale(forestBear?.itemStyle?.color ?? '')).toBe(false);
+    expect(isGrayscale(forestWolf?.itemStyle?.color ?? '')).toBe(false);
   });
 
   it('should strip merged visualMap overrides', () => {
@@ -120,10 +120,10 @@ describe('heatmap rendering integration', () => {
       { type: 'heatmap', showMissingValues: true },
       {
         colorMode: 'custom',
-        valueColorMap: { m: '#123456', f: '#654321' },
+        valueColorMap: { bear: '#123456', wolf: '#654321' },
       }
     );
-    const merged = finalizeHeatmapOption(base, {
+    const merged = finalizeHeatmapOption(base!, {
       ...base,
       visualMap: {
         show: true,
@@ -143,7 +143,7 @@ describe('heatmap rendering integration', () => {
       inRange: {},
     });
     const series = merged.series as Array<{ data: unknown }>;
-    expect(series[0]?.data).toEqual((base.series as Array<{ data: unknown }>)[0]?.data);
+    expect(series[0]?.data).toEqual((base!.series as Array<{ data: unknown }>)[0]?.data);
   });
 
   it('should keep custom colors when advanced overrides try to inject a visible visualMap', () => {
@@ -161,7 +161,7 @@ describe('heatmap rendering integration', () => {
       },
       {
         colorMode: 'custom',
-        valueColorMap: { m: '#112233', f: '#33aa66' },
+        valueColorMap: { bear: '#112233', wolf: '#33aa66' },
       }
     );
 

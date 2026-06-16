@@ -74,17 +74,32 @@ export const getSupportedChartTypes = (
   }
 
   if (numericCrossTab) {
+    const primarySequential = isSequentialDimension(dimensions[0]);
+    const measureValue = count || sum;
+
     return [
-      avail('scatter', Boolean(count), 'Plots year vs numeric breakdown'),
-      avail('heatmap', Boolean(count), 'Requires count measure'),
-      avail('list', Boolean(count), 'Cross-tab table of both dimensions'),
+      avail('scatter', measureValue, 'Plots primary dimension vs numeric breakdown'),
+      avail('heatmap', measureValue, 'Requires a value or count measure'),
+      avail('list', measureValue, 'Cross-tab table of both dimensions'),
+      avail(
+        'line',
+        Boolean(measureValue && primarySequential),
+        'Plots the measure over the primary dimension'
+      ),
+      avail(
+        'area',
+        Boolean(measureValue && primarySequential),
+        'Plots the measure over the primary dimension'
+      ),
+      avail(
+        'bar',
+        Boolean(measureValue && primarySequential),
+        'Plots the measure over the primary dimension'
+      ),
       avail('stacked_bar', false, 'Requires two categorical dimensions'),
-      avail('bar', false, 'Requires a single dimension'),
-      avail('horizontal_bar', false, 'Requires a single dimension'),
+      avail('horizontal_bar', false, 'Requires a single categorical dimension'),
       avail('pie', false, 'Requires a single dimension'),
       avail('donut', false, 'Requires a single dimension'),
-      avail('line', false, 'Requires a single dimension'),
-      avail('area', false, 'Requires a single dimension'),
       avail('gauge', false, 'Not available with two dimensions'),
       avail('metric', false, 'Not available with two dimensions'),
     ];

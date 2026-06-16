@@ -5,7 +5,7 @@ import {
   DATAVIZ_CARS_BY_COLOR_ID,
   mileageBarDto,
   multiSourceByTemplateDto,
-  personasSexByCountryDto,
+  wildlifeByHabitatDto,
   yearHistogramDto,
 } from '#V2/Dataviz/fixtures/datavizFixtures.js';
 import { TEMPLATE_DIMENSION_PROPERTY } from '#V2/Dataviz/types/definition.js';
@@ -61,7 +61,7 @@ const resolveDataForQuery = (
   const definition = { id, query } as DatavizDefinition;
 
   if (query.dimensions.length >= 2) {
-    return applyFilterDemo({ ...personasSexByCountryDto, ...base }, definition);
+    return applyFilterDemo({ ...wildlifeByHabitatDto, ...base }, definition);
   }
 
   if (query.sources.length > 1 || dimension?.property === TEMPLATE_DIMENSION_PROPERTY) {

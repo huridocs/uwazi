@@ -7,15 +7,71 @@ import { templatesAtom } from '#V2/atoms/index.js';
 import { buildDimensionFromProperty } from '#V2/Dataviz/utils/buildDimensionFromProperty.js';
 import { getSharedDimensionProperties } from '#V2/Dataviz/utils/getSharedDimensionProperties.js';
 import {
+  isDateLikePropertyType,
+  isNumericPropertyType,
+} from '#shared/dataviz/dimensionPropertyTypes.js';
+import {
   TEMPLATE_DIMENSION_PROPERTY,
   type DatavizSource,
   type DimensionSpec,
+  type MeasureSpec,
 } from '#V2/Dataviz/types/definition.js';
+
+const NUMERIC_AGGREGATION_OPTIONS = [
+  { value: 'sum', label: 'Sum' },
+  { value: 'avg', label: 'Avg' },
+  { value: 'min', label: 'Min' },
+  { value: 'max', label: 'Max' },
+  { value: 'count', label: 'Count' },
+] as const;
+
+const DATE_INTERVAL_OPTIONS = [
+  { value: 'year', label: 'Year' },
+  { value: 'month', label: 'Month' },
+  { value: 'week', label: 'Week' },
+  { value: 'computed_years', label: 'Computed years' },
+] as const;
+
+type DateIntervalOption = (typeof DATE_INTERVAL_OPTIONS)[number]['value'];
+
+const toDateIntervalValue = (interval?: DimensionSpec['dateInterval']): DateIntervalOption => {
+  if (interval === 'month' || interval === 'week' || interval === 'computed_years') {
+    return interval;
+  }
+  return 'year';
+};
+
+const buildMeasureForNumericDimension = (
+  dimension: DimensionSpec,
+  aggregation: MeasureSpec['aggregation']
+): MeasureSpec => {
+  if (aggregation === 'count') {
+    return { aggregation: 'count', countMode: 'all' };
+  }
+  return {
+    aggregation,
+    property: dimension.property,
+    propertyType: 'numeric',
+    countMode: 'all',
+  };
+};
+
+const isMeasureOwnedByDimension = (dimension: DimensionSpec, measure?: MeasureSpec): boolean => {
+  if (!measure) {
+    return false;
+  }
+  if (measure.aggregation === 'count') {
+    return true;
+  }
+  return measure.property === dimension.property;
+};
 
 type DimensionSectionProps = {
   sources: DatavizSource[];
   dimension?: DimensionSpec;
   onChange: (dimension: DimensionSpec | undefined) => void;
+  measure?: MeasureSpec;
+  onMeasureChange?: (measure: MeasureSpec) => void;
   title?: string;
   idPrefix?: string;
   excludedProperties?: string[];
@@ -27,6 +83,8 @@ const DimensionSection = ({
   sources,
   dimension,
   onChange,
+  measure,
+  onMeasureChange,
   title = 'Dimension (X-axis / categories)',
   idPrefix = 'dimension',
   excludedProperties = [],
@@ -62,6 +120,22 @@ const DimensionSection = ({
       : availableProperties.find(p => p.name === dimension?.property) ||
         template?.properties?.find(p => p.name === dimension?.property);
 
+  const showNumericAggregation =
+    Boolean(dimension) &&
+    dimension.property !== TEMPLATE_DIMENSION_PROPERTY &&
+    isNumericPropertyType(dimension.propertyType) &&
+    Boolean(onMeasureChange);
+
+  const showDateInterval =
+    Boolean(dimension) &&
+    dimension.property !== TEMPLATE_DIMENSION_PROPERTY &&
+    isDateLikePropertyType(dimension.propertyType);
+
+  const numericAggregationValue =
+    showNumericAggregation && isMeasureOwnedByDimension(dimension!, measure)
+      ? measure?.aggregation ?? 'count'
+      : 'count';
+
   const handlePropertyChange = (propertyName: string) => {
     if (!propertyName) {
       onChange(undefined);
@@ -82,7 +156,33 @@ const DimensionSection = ({
     const next = buildDimensionFromProperty(prop, multiSource ? undefined : dimension?.sourceAlias);
     if (next) {
       onChange(next);
+      if (onMeasureChange && isNumericPropertyType(next.propertyType)) {
+        onMeasureChange(buildMeasureForNumericDimension(next, 'count'));
+      }
     }
+  };
+
+  const handleNumericAggregationChange = (aggregationId: string) => {
+    if (!dimension || !onMeasureChange) {
+      return;
+    }
+    onMeasureChange(
+      buildMeasureForNumericDimension(
+        dimension,
+        aggregationId as MeasureSpec['aggregation']
+      )
+    );
+  };
+
+  const handleDateIntervalChange = (intervalId: string) => {
+    if (!dimension) {
+      return;
+    }
+    onChange({
+      ...dimension,
+      bucketStrategy: 'date_histogram',
+      dateInterval: intervalId as DimensionSpec['dateInterval'],
+    });
   };
 
   return (
@@ -102,6 +202,24 @@ const DimensionSection = ({
       />
       {selectedProperty && (
         <Pill color="blue">{selectedProperty.type}</Pill>
+      )}
+      {showNumericAggregation && (
+        <Select
+          id={`${idPrefix}-aggregation`}
+          label="Aggregation"
+          value={numericAggregationValue}
+          options={[...NUMERIC_AGGREGATION_OPTIONS]}
+          onChange={e => handleNumericAggregationChange(e.target.value)}
+        />
+      )}
+      {showDateInterval && (
+        <Select
+          id={`${idPrefix}-date-interval`}
+          label="Date interval"
+          value={toDateIntervalValue(dimension?.dateInterval)}
+          options={[...DATE_INTERVAL_OPTIONS]}
+          onChange={e => handleDateIntervalChange(e.target.value)}
+        />
       )}
       {dimension && dimension.property !== TEMPLATE_DIMENSION_PROPERTY && (
         <>

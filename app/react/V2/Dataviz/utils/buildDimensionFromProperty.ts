@@ -1,5 +1,9 @@
 import type { ClientPropertySchema } from '#app/istore.js';
 import type { DimensionSpec, PropertyTypeForDataviz } from '#V2/Dataviz/types/definition.js';
+import {
+  isDateLikePropertyType,
+  isDimensionPropertyTypeEnabled,
+} from '#shared/dataviz/dimensionPropertyTypes.js';
 import { isInheritableRelationshipType } from '#shared/dataviz/relationshipDimension.js';
 
 const RELATIONSHIP_TYPES = new Set(['relationship', 'newRelationship']);
@@ -10,14 +14,12 @@ const toDatavizPropertyType = (type: string): PropertyTypeForDataviz | null => {
     'multiselect',
     'numeric',
     'date',
-    'daterange',
-    'multidate',
-    'multidaterange',
     'generatedid',
   ];
-  return allowed.includes(type as PropertyTypeForDataviz)
-    ? (type as PropertyTypeForDataviz)
-    : null;
+  if (!allowed.includes(type as PropertyTypeForDataviz)) {
+    return null;
+  }
+  return isDimensionPropertyTypeEnabled(type) ? (type as PropertyTypeForDataviz) : null;
 };
 
 const defaultDimensionOptions = (
@@ -28,8 +30,9 @@ const defaultDimensionOptions = (
   sourceAlias,
   property,
   propertyType,
-  bucketStrategy: propertyType === 'date' ? 'date_histogram' : 'terms',
-  ...(propertyType === 'date' ? { dateInterval: 'year' as const } : {}),
+  bucketStrategy:
+    propertyType === 'date' || isDateLikePropertyType(propertyType) ? 'date_histogram' : 'terms',
+  ...(isDateLikePropertyType(propertyType) ? { dateInterval: 'year' as const } : {}),
   sort: propertyType === 'date' || propertyType === 'numeric' ? 'key_asc' : 'count_desc',
   maxBuckets: 10,
 });

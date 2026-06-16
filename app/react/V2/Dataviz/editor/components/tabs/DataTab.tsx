@@ -18,7 +18,6 @@ import { DataSourcesList } from '../data/sources/DataSourcesList.js';
 import { JoinModeSection } from '../data/sources/JoinModeSection.js';
 import { FiltersSection } from '../data/filters/FiltersSection.js';
 import { DimensionSection } from '../data/DimensionSection.js';
-import { MeasureSection } from '../data/MeasureSection.js';
 import { SupportedChartTypesCallout } from '../data/SupportedChartTypesCallout.js';
 
 type DataTabProps = {
@@ -158,6 +157,12 @@ const DataTab = ({ definition, onPatch, onPatchQuery, onPatchChart }: DataTabPro
           <ManualDataEditor
             manualData={definition.manualData}
             onChange={manualData => onPatch({ manualData })}
+            onLoadExample={chartType => {
+              onPatchChart?.({
+                type: chartType,
+                ...(chartType === 'scatter' ? { showLabels: false } : {}),
+              });
+            }}
           />
           <SupportedChartTypesCallout
             dimensions={query.dimensions}
@@ -179,6 +184,8 @@ const DataTab = ({ definition, onPatch, onPatchQuery, onPatchChart }: DataTabPro
           <DimensionSection
             sources={query.sources}
             dimension={primaryDimension}
+            measure={measure}
+            onMeasureChange={setMeasure}
             onChange={dim => setDimensions(dim, isMultiSource ? undefined : secondaryDimension)}
             title="Primary dimension (X-axis / categories)"
             idPrefix="primary-dimension"
@@ -188,6 +195,8 @@ const DataTab = ({ definition, onPatch, onPatchQuery, onPatchChart }: DataTabPro
             <DimensionSection
               sources={query.sources}
               dimension={secondaryDimension}
+              measure={measure}
+              onMeasureChange={setMeasure}
               onChange={dim => setDimensions(primaryDimension, dim)}
               title="Second dimension (series / stacks)"
               idPrefix="secondary-dimension"
@@ -203,10 +212,10 @@ const DataTab = ({ definition, onPatch, onPatchQuery, onPatchChart }: DataTabPro
           )}
           {!isMultiSource && query.dimensions.length >= 2 && query.dimensions[1]?.propertyType === 'numeric' && (
             <p className="text-xs text-ink-secondary">
-              Date or numeric × numeric enables scatter and heatmap (e.g. registration year vs engine size).
+              Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
+              measure over the primary dimension (e.g. max engine size per registration date).
             </p>
           )}
-          <MeasureSection measure={measure} onChange={setMeasure} />
           <SupportedChartTypesCallout
             dimensions={query.dimensions}
             measures={query.measures}

@@ -5,6 +5,7 @@ import type {
   DatavizDataDTO,
   DimensionSpec,
   LocalizedLabels,
+  MeasureSpec,
 } from '#shared/types/datavizSchema.js';
 import {
   normalizeDatavizBucketKey,
@@ -54,6 +55,33 @@ const applyColors = (points: DataPoint[], appearance?: DatavizAppearance): DataP
   return points;
 };
 
+const rollupPrimaryValue = (breakdown: DataPoint[], measure?: MeasureSpec): number => {
+  if (!breakdown.length) {
+    return 0;
+  }
+
+  const values = breakdown.map(point => point.value);
+  const aggregation = measure?.aggregation ?? 'count';
+
+  if (aggregation === 'count' || !measure?.property) {
+    return values.reduce((sum, value) => sum + value, 0);
+  }
+
+  if (aggregation === 'sum') {
+    return values.reduce((sum, value) => sum + value, 0);
+  }
+
+  if (aggregation === 'avg') {
+    return values.reduce((sum, value) => sum + value, 0) / values.length;
+  }
+
+  if (aggregation === 'min') {
+    return Math.min(...values);
+  }
+
+  return Math.max(...values);
+};
+
 const limitBreakdown = (
   breakdown: DataPoint[],
   secondaryDim: DimensionSpec
@@ -78,6 +106,7 @@ export const normalizeBuckets = (params: {
   seriesLabels?: LocalizedLabels;
   defaultLanguage: LanguageISO6391;
   missingBucketLabels: LocalizedLabels;
+  measure?: MeasureSpec;
 }): DatavizDataDTO => {
   const {
     buckets,
@@ -91,6 +120,7 @@ export const normalizeBuckets = (params: {
     seriesLabels,
     defaultLanguage,
     missingBucketLabels,
+    measure,
   } = params;
 
   const primaryMax = primaryDim.maxBuckets ?? DATAVIZ_MAX_BUCKETS;
@@ -166,7 +196,7 @@ export const normalizeBuckets = (params: {
       };
     });
 
-    const total = breakdown.reduce((sum, p) => sum + p.value, 0);
+    const total = rollupPrimaryValue(breakdown, measure);
     const primaryLocalized = applyLocalizedPointLabels(
       primaryKey,
       primaryDim,

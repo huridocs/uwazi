@@ -48,13 +48,26 @@ const ChartAdvancedSection = ({
     const displayData = filterDataForDisplay(previewData, definition.chart, {
       locale,
       defaultLocale,
+      dimensions: definition.query.dimensions,
+      measures: definition.query.measures,
     });
     return mapToEChartsOption(displayData, definition.chart, definition.appearance, {
       ...colorContext,
+      dimensions: definition.query.dimensions,
+      measures: definition.query.measures,
       locale,
       defaultLocale,
     });
-  }, [previewData, definition.chart, definition.appearance, colorContext, locale, defaultLocale]);
+  }, [
+    previewData,
+    definition.chart,
+    definition.appearance,
+    definition.query.dimensions,
+    definition.query.measures,
+    colorContext,
+    locale,
+    defaultLocale,
+  ]);
 
   const handleEditorChange = (value: string) => {
     setEditorValue(value);

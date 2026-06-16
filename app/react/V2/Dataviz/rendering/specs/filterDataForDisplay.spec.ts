@@ -169,4 +169,45 @@ describe('filterDataForDisplay', () => {
     expect(heatmapFiltered.series[0]?.points[0]?.breakdown).toHaveLength(2);
     expect(heatmapFiltered.series[0]?.points[1]?.breakdown).toHaveLength(2);
   });
+
+  it('should derive primary values for line charts with numeric cross-tab value measures', () => {
+    const crossTabData = {
+      ...baseData,
+      meta: { totalEntities: 2, truncated: false },
+      series: [
+        {
+          id: 'main',
+          label: 'Cars',
+          points: [
+            {
+              key: 827017230,
+              label: 'Mar 16, 1996',
+              value: 1,
+              breakdown: [{ key: 1, label: '1', value: 1 }],
+            },
+            {
+              key: 835672919,
+              label: 'Jun 25, 1996',
+              value: 1,
+              breakdown: [{ key: 1.6, label: '1.6', value: 1 }],
+            },
+          ],
+        },
+      ],
+    };
+
+    const filtered = filterDataForDisplay(
+      crossTabData,
+      { type: 'line' },
+      {
+        dimensions: [
+          { property: 'registration_date', propertyType: 'date' },
+          { property: 'engine_size', propertyType: 'numeric' },
+        ],
+        measures: [{ aggregation: 'max' }],
+      }
+    );
+
+    expect(filtered.series[0]?.points.map(point => point.value)).toEqual([1, 1.6]);
+  });
 });

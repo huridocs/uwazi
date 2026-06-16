@@ -1,4 +1,5 @@
 import React from 'react';
+import { InputColorPicker } from '#V2/Components/Forms/InputColorPicker.js';
 import type { CustomColorTarget, CustomColorTargetKind } from '#V2/Dataviz/utils/getCustomColorTargets.js';
 
 const EMPTY_MESSAGES: Partial<Record<CustomColorTargetKind, string>> = {
@@ -31,18 +32,18 @@ const CustomValueColorMapEditor = ({
   return (
     <div className="flex flex-col gap-2">
       {targets.map(target => (
-        <label
+        <div
           key={target.key}
           className="flex items-center justify-between gap-3 rounded-lg border border-border-soft px-3 py-2"
         >
           <span className="text-sm text-ink">{target.label}</span>
-          <input
-            type="color"
+          <InputColorPicker
+            id={`custom-color-${target.key}`}
+            name={`custom-color-${target.key}`}
             value={valueColorMap[target.key] || target.defaultColor || '#4A90D9'}
-            onChange={e => onChange({ ...valueColorMap, [target.key]: e.target.value })}
-            className="h-8 w-12 cursor-pointer rounded border border-border"
+            onChange={color => onChange({ ...valueColorMap, [target.key]: color })}
           />
-        </label>
+        </div>
       ))}
     </div>
   );
