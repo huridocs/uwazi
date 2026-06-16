@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom } from 'jotai';
 import { t } from '#app/I18N/index.js';
 import {
   CircleDotIcon,
@@ -8,8 +8,6 @@ import {
 } from '#V2/Components/CustomIcons/RelationshipsPanelIcons.js';
 import { SegmentedControl } from '#V2/Components/UI/SegmentedControl/index.js';
 import {
-  relationshipsPanelGroupByAtom,
-  relationshipsPanelViewAtom,
   relationshipsPanelZoomAtom,
   type RelationshipsPanelZoom,
 } from './relationshipsPanelFiltersAtom.js';
@@ -24,11 +22,12 @@ const zoomOptions: {
   { id: 'overview', label: 'Overview', Icon: CircleDotIcon },
 ];
 
-const RelationshipsZoomControl = () => {
+type RelationshipsZoomControlProps = {
+  disabled?: boolean;
+};
+
+const RelationshipsZoomControl = ({ disabled = false }: RelationshipsZoomControlProps) => {
   const [zoom, setZoom] = useAtom(relationshipsPanelZoomAtom);
-  const view = useAtomValue(relationshipsPanelViewAtom);
-  const groupBy = useAtomValue(relationshipsPanelGroupByAtom);
-  const disabled = view === 'graph' || (view === 'list' && groupBy === 'none');
 
   return (
     <SegmentedControl

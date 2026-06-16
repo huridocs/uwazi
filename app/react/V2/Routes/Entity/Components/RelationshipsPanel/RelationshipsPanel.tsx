@@ -78,7 +78,6 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
     []
   );
 
-  // TODO: Implement view functionality
   const handleRelationshipClick = useCallback(
     (marker: RelationshipMarker) => {
       selectRelationship(marker);
@@ -105,8 +104,6 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
       }
       entityLoaderCache.invalidateEntity(entity.sharedId);
       await revalidator.revalidate();
-    } catch (error) {
-      console.error('Error deleting relationship:', error);
     } finally {
       setIsDeleting(false);
     }
@@ -134,48 +131,25 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
       targetFileId?: string;
       targetSelection?: TextSelection;
     }) => {
-      if (!entity) {
-        console.error('Cannot save reference: entity is not available');
-        return;
-      }
+      if (!entity || !mainDocument?._id) return;
 
-      // Get source file ID (main document)
-      const sourceFile = mainDocument;
-      if (!sourceFile?._id) {
-        console.error('Cannot save reference: source file is not available');
-        return;
-      }
+      await saveTextReference({
+        sourceEntitySharedId: entity.sharedId,
+        sourceFileId: String(mainDocument._id),
+        sourceSelection: data.selection,
+        targetEntitySharedId: data.targetEntityId,
+        relationshipType: data.relationshipType,
+        ...(data.targetFileId && { targetFileId: data.targetFileId }),
+        ...(data.targetSelection && { targetSelection: data.targetSelection }),
+      });
 
-      if (!data.targetEntityId) {
-        console.error('Cannot save reference: targetEntityId is not available');
-        return;
-      }
-
-      try {
-        await saveTextReference({
-          sourceEntitySharedId: entity.sharedId,
-          sourceFileId: String(sourceFile._id),
-          sourceSelection: data.selection,
-          targetEntitySharedId: data.targetEntityId,
-          relationshipType: data.relationshipType,
-          ...(data.targetFileId && { targetFileId: data.targetFileId }),
-          ...(data.targetSelection && { targetSelection: data.targetSelection }),
-        });
-
-        // Clear the create reference selection after successful save
-        setCreateReferenceSelection(undefined, undefined);
-        // Invalidate cache and revalidate to refresh the entity data and show the new reference
-        entityLoaderCache.invalidateEntity(entity.sharedId);
-        await revalidator.revalidate();
-      } catch (error) {
-        console.error('Error saving reference:', error);
-        // TODO: Show error notification to user
-      }
+      setCreateReferenceSelection(undefined, undefined);
+      entityLoaderCache.invalidateEntity(entity.sharedId);
+      await revalidator.revalidate();
     },
     [entity, mainDocument, setCreateReferenceSelection, revalidator]
   );
 
-  // If there's a createReferenceSelection, show the CreateReference component
   if (createReferenceSelection) {
     return (
       <CreateReference
@@ -189,8 +163,7 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
     );
   }
 
-  // Otherwise, show the references list
-  const listBody = (() => {
+  const renderBody = () => {
     if (!hasRelationships) {
       return (
         <BlankState
@@ -223,7 +196,7 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
         onDelete={handleDeleteClick}
       />
     );
-  })();
+  };
 
   return (
     <>
@@ -231,7 +204,7 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
         {hasRelationships && (
           <RelationshipsPanelToolbar stats={stats} onOpenFilters={() => setFiltersOpen(true)} />
         )}
-        <Panel.Body className="pr-1 pb-2">{listBody}</Panel.Body>
+        <Panel.Body className="pr-1 pb-2">{renderBody()}</Panel.Body>
       </Panel>
       {relationshipToDelete && (
         <ConfirmationModal

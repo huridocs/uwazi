@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { t, Translate } from '#app/I18N/index.js';
 import { DropdownListbox } from '#V2/Components/UI/DropdownListbox.js';
 import {
@@ -9,6 +9,7 @@ import {
 import {
   relationshipsPanelGroupByAtom,
   relationshipsPanelSubGroupByAtom,
+  setRelationshipsPanelGroupByAtom,
 } from './relationshipsPanelFiltersAtom.js';
 import { groupingOptionLabels } from './relationshipsPanelLabels.js';
 
@@ -23,8 +24,9 @@ const RelationshipsGroupByControl = ({
   disabled = false,
   excludeOption,
 }: RelationshipsGroupByControlProps) => {
-  const [groupBy, setGroupBy] = useAtom(relationshipsPanelGroupByAtom);
+  const [groupBy] = useAtom(relationshipsPanelGroupByAtom);
   const [subGroupBy, setSubGroupBy] = useAtom(relationshipsPanelSubGroupByAtom);
+  const setGroupBy = useSetAtom(setRelationshipsPanelGroupByAtom);
   const value = axis === 'primary' ? groupBy : subGroupBy;
   const setValue = axis === 'primary' ? setGroupBy : setSubGroupBy;
   const visibleOptions = groupingOptions.filter(
@@ -44,12 +46,7 @@ const RelationshipsGroupByControl = ({
           ? t('System', 'Group by:', null, false)
           : t('System', 'Then by:', null, false)
       }
-      onChange={id => {
-        if (axis === 'primary' && id !== 'none' && subGroupBy === id) {
-          setSubGroupBy('none');
-        }
-        setValue(id);
-      }}
+      onChange={setValue}
       options={visibleOptions.map(option => ({
         id: option.id,
         label: <Translate>{groupingOptionLabels[option.id]}</Translate>,

@@ -19,6 +19,16 @@ const relationshipsPanelActiveClusterRefIdsAtom = atom<string[] | null>(null);
 const relationshipsPanelFiltersDrawerOpenAtom = atom(false);
 const relationshipsPanelExpandForRefIdAtom = atom<string | null>(null);
 
+const setRelationshipsPanelGroupByAtom = atom(
+  null,
+  (get, set, value: RelationshipsPanelGroupBy) => {
+    set(relationshipsPanelGroupByAtom, value);
+    if (value !== 'none' && get(relationshipsPanelSubGroupByAtom) === value) {
+      set(relationshipsPanelSubGroupByAtom, 'none');
+    }
+  }
+);
+
 const relationshipsPanelClearFiltersAtom = atom(null, (_get, set) => {
   set(relationshipsPanelRelTypeFiltersAtom, {});
   set(relationshipsPanelEntityTypeFiltersAtom, {});
@@ -42,6 +52,7 @@ export {
   relationshipsPanelSearchAtom,
   relationshipsPanelSortAtom,
   relationshipsPanelGroupByAtom,
+  setRelationshipsPanelGroupByAtom,
   relationshipsPanelSubGroupByAtom,
   relationshipsPanelViewAtom,
   relationshipsPanelZoomAtom,

@@ -1,7 +1,10 @@
 import React from 'react';
 import { useAtomValue } from 'jotai';
 import { FilterDrawerButton } from '#V2/Components/UI/FilterDrawerButton.js';
-import { relationshipsPanelGroupByAtom } from './relationshipsPanelFiltersAtom.js';
+import {
+  relationshipsPanelGroupByAtom,
+  relationshipsPanelViewAtom,
+} from './relationshipsPanelFiltersAtom.js';
 import { RelationshipsGroupByControl } from './RelationshipsGroupByControl.js';
 import { RelationshipsSortControl } from './RelationshipsSortControl.js';
 import { RelationshipsViewControl } from './RelationshipsViewControl.js';
@@ -16,7 +19,9 @@ const RelationshipsPanelToolbarControls = ({
   activeFilterCount,
   onOpenFilters,
 }: RelationshipsPanelToolbarControlsProps) => {
+  const view = useAtomValue(relationshipsPanelViewAtom);
   const groupBy = useAtomValue(relationshipsPanelGroupByAtom);
+  const zoomDisabled = view === 'graph' || (view === 'list' && groupBy === 'none');
 
   return (
     <div className="flex w-full flex-wrap items-center gap-x-2 gap-y-1.5">
@@ -31,7 +36,7 @@ const RelationshipsPanelToolbarControls = ({
         <RelationshipsSortControl />
       </div>
       <div className="flex min-w-fit flex-1 items-center justify-end gap-1.5">
-        <RelationshipsZoomControl />
+        <RelationshipsZoomControl disabled={zoomDisabled} />
         <FilterDrawerButton activeCount={activeFilterCount} onClick={onOpenFilters} />
       </div>
     </div>
