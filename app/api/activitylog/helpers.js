@@ -41,13 +41,16 @@ const loadEntityFromPublicForm = async data => {
 
 const loadTemplate = async data => {
   let templateId = data.template || data._id;
+  let templateData;
 
   if (data.entity) {
     const entity = JSON.parse(data.entity);
     templateId = entity.template;
   }
 
-  const templateData = await templates.getById(templateId);
+  if (templateId) {
+    templateData = await templates.getById(templateId);
+  }
   return { ...data, templateData };
 };
 

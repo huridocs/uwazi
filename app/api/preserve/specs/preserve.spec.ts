@@ -55,9 +55,9 @@ describe('Preserve', () => {
       });
 
       it('should not create template if another configs exists in the DB', async () => {
-        const savedTemplates = await templates.get({});
+        const savedTemplates = await templates.get();
         await testingEnvironment.runWithContext(async () => Preserve.setup('en', { _id: userId2 }));
-        const templatesAfterSetup = await templates.get({});
+        const templatesAfterSetup = await templates.get();
         expect(savedTemplates.length).toEqual(templatesAfterSetup.length);
         const savedSettings: any = await settings.get({});
         const savedConfigs = savedSettings.features.preserve.config;

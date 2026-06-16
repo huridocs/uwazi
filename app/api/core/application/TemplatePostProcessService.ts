@@ -62,7 +62,7 @@ class TemplatePostProcessService {
       }
 
       if (context?.fullReindex) {
-        let templates = await this.deps.templatesDS.getAll().all();
+        let templates = await this.deps.templatesDS.getAll();
         if (diff.hasAnyPostProcessChanges()) {
           templates = templates.filter(t => t.id !== after.id);
         }

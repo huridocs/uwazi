@@ -74,13 +74,13 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
         const entities = await (
           await this.dependencies.entitiesDS.getEntitiesBySharedIds(entitiesIds)
         ).all();
-        const relationshipProps = await this.dependencies.templatesDS
-          .getV1RelationshipPropertiesByIds(modifiedRelationshipsProps)
-          .all();
+        const relationshipProps =
+          await this.dependencies.templatesDS.getV1RelationshipPropertiesByIds(
+            modifiedRelationshipsProps
+          );
 
-        const generatedIdProps = await this.dependencies.templatesDS
-          .getGeneratedIdPropertiesByIds(newGeneratedIdProps)
-          .all();
+        const generatedIdProps =
+          await this.dependencies.templatesDS.getGeneratedIdPropertiesByIds(newGeneratedIdProps);
         const modifiedEntities = cloneDeep(entities);
 
         if (relationshipProps.length) {
