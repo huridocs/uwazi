@@ -102,12 +102,12 @@ describe('MongoFilesDAO', () => {
       });
     });
 
-    it('includes fullText when withFullText is true', async () => {
+    it('includes fullText when projection includes fullText', async () => {
       const sut = createSut();
       const result = await sut.getById<ProcessedPDFDBO>(
         factory.id('doc_with_fulltext').toString(),
         {
-          withFullText: true,
+          projection: { fullText: 1 },
         }
       );
       expect(result.isOk()).toBe(true);
@@ -121,11 +121,14 @@ describe('MongoFilesDAO', () => {
       expect(result.getDataOrThrow()).not.toHaveProperty('fullText');
     });
 
-    it('excludes fullText when withFullText is false', async () => {
+    it('excludes fullText when projection explicitly excludes it', async () => {
       const sut = createSut();
-      const result = await sut.getById(factory.id('doc_with_fulltext').toString(), {
-        withFullText: false,
-      });
+      const result = await sut.getById<ProcessedPDFDBO>(
+        factory.id('doc_with_fulltext').toString(),
+        {
+          projection: { fullText: 0 },
+        }
+      );
       expect(result.isOk()).toBe(true);
       expect(result.getDataOrThrow()).not.toHaveProperty('fullText');
     });
@@ -167,6 +170,22 @@ describe('MongoFilesDAO', () => {
         entity: 'entity_1',
         type: 'document',
       });
+    });
+
+    it('excludes fullText by default', async () => {
+      const sut = createSut();
+      const result = await sut.getByFilename('doc_with_fulltext');
+      expect(result.isOk()).toBe(true);
+      expect(result.getDataOrThrow()).not.toHaveProperty('fullText');
+    });
+
+    it('includes fullText when projection includes fullText', async () => {
+      const sut = createSut();
+      const result = await sut.getByFilename<ProcessedPDFDBO>('doc_with_fulltext', {
+        projection: { fullText: 1 },
+      });
+      expect(result.isOk()).toBe(true);
+      expect(result.getDataOrThrow().fullText).toEqual({ 1: 'page one content' });
     });
 
     it('returns Result.fail with FileNotFound when filename does not exist', async () => {
@@ -240,6 +259,14 @@ describe('MongoFilesDAO', () => {
       const thumbnails = files.filter(f => f.type === 'thumbnail');
       expect(thumbnails).toHaveLength(1);
     });
+
+    it('excludes fullText by default', async () => {
+      const sut = createSut();
+      const files = await sut.getByEntity('entity_1');
+      const docWithFullText = files.find(f => f.filename === 'doc_with_fulltext');
+      expect(docWithFullText).toBeDefined();
+      expect(docWithFullText).not.toHaveProperty('fullText');
+    });
   });
 
   describe('getByEntitySharedIds()', () => {
@@ -271,7 +298,7 @@ describe('MongoFilesDAO', () => {
 
     it('returns files filtered by type', async () => {
       const sut = createSut();
-      const files = await sut.getByEntitySharedIds(['entity_x'], { type: 'document' });
+      const files = await sut.getByEntitySharedIds(['entity_x'], { types: ['document'] });
       expect(files).toHaveLength(2);
       expect(files.every(f => f.type === 'document')).toBe(true);
     });
@@ -280,7 +307,7 @@ describe('MongoFilesDAO', () => {
       const sut = createSut();
       const files = await sut.getByEntitySharedIds(['entity_x'], {
         languages: ['eng'],
-        type: 'document',
+        types: ['document'],
       });
       expect(files).toHaveLength(1);
       expect(files[0].filename).toBe('doc_x_en');
@@ -295,10 +322,10 @@ describe('MongoFilesDAO', () => {
       });
     });
 
-    it('includes fullText when includeFullText is true', async () => {
+    it('includes fullText when projection includes fullText', async () => {
       const sut = createSut();
       const files = await sut.getByEntitySharedIds<ProcessedPDFDBO>(['entity_1'], {
-        includeFullText: true,
+        projection: { fullText: 1, filename: 1 },
       });
       const docWithFullText = files.find(f => f.filename === 'doc_with_fulltext');
       expect(docWithFullText?.fullText).toEqual({ 1: 'page one content' });
@@ -312,6 +339,13 @@ describe('MongoFilesDAO', () => {
   });
 
   describe('getByQuery()', () => {
+    it('excludes fullText by default', async () => {
+      const sut = createSut();
+      const files = await sut.getByQuery({ filename: 'doc_with_fulltext' });
+      expect(files).toHaveLength(1);
+      expect(files[0]).not.toHaveProperty('fullText');
+    });
+
     it('returns matching files for a simple equality query', async () => {
       const sut = createSut();
       const files = await sut.getByQuery({ type: 'attachment' });

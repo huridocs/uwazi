@@ -22,7 +22,7 @@ import {
 } from '../../../application/contracts/FilesDataSource.js';
 import { FileNotFound, ProcessingFileNotFound } from '../../../domain/files/errors.js';
 import { FileMappers } from './FilesMappers.js';
-import { fileDBO } from './schemas/filesTypes.js';
+import { FileDBO } from './schemas/filesTypes.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 type GetDocumentsForEntityQuery = {
@@ -34,7 +34,7 @@ type GetDocumentsForEntityQuery = {
 
 type MongoFilesDataSourceOptions = MongoDSOptions;
 
-export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements FilesDataSource {
+export class MongoFilesDataSource extends MongoDataSource<FileDBO> implements FilesDataSource {
   protected collectionName = 'files';
 
   protected filesToReindex = new Set<BaseFile>();
@@ -77,7 +77,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     this.setFilesToReindex(files);
   }
 
-  private toModel(dbo: fileDBO) {
+  private toModel(dbo: FileDBO) {
     return FileMappers.toModel(dbo, {
       contentLoader: this.fileStorage.getFile.bind(this.fileStorage),
     });
@@ -92,7 +92,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
   }
 
   getByEntitiesIds(entitySharedIds: string[]): ResultSet<BaseFile> {
-    return new MongoResultSet<fileDBO, BaseFile>(
+    return new MongoResultSet<FileDBO, BaseFile>(
       this.getCollection().find({
         type: { $ne: 'thumbnail' },
         entity: { $in: entitySharedIds },
@@ -102,7 +102,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
   }
 
   getThumbnails(entitySharedIds: string[]): ResultSet<Thumbnail> {
-    return new MongoResultSet<fileDBO, Thumbnail>(
+    return new MongoResultSet<FileDBO, Thumbnail>(
       this.getCollection().find({
         entity: { $in: entitySharedIds },
         type: 'thumbnail',
@@ -112,7 +112,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
   }
 
   getThumbnailsByLanguage(language: LanguageISO6391): ResultSet<Thumbnail> {
-    return new MongoResultSet<fileDBO, Thumbnail>(
+    return new MongoResultSet<FileDBO, Thumbnail>(
       this.getCollection().find({
         type: 'thumbnail',
         language: LanguageUtils.fromISO639_1(language).ISO639_3,
@@ -123,7 +123,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
 
   getThumbnailsForProcessedPDFs(documentIds: string[]): ResultSet<Thumbnail> {
     const filenames = documentIds.map(id => `${id}.jpg`);
-    return new MongoResultSet<fileDBO, Thumbnail>(
+    return new MongoResultSet<FileDBO, Thumbnail>(
       this.getCollection().find({
         filename: { $in: filenames },
         type: 'thumbnail',
@@ -248,14 +248,14 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       }
     }
 
-    return new MongoResultSet<fileDBO, PDFDocument>(
+    return new MongoResultSet<FileDBO, PDFDocument>(
       this.getCollection().find(query, { projection: { fullText: 0 } }),
       dbo => this.toModel(dbo) as PDFDocument
     );
   }
 
   getAll() {
-    return new MongoResultSet<fileDBO, BaseFile>(
+    return new MongoResultSet<FileDBO, BaseFile>(
       this.getCollection().find({}, { projection: { fullText: 0 } }),
       dbo => this.toModel(dbo)
     );
@@ -272,7 +272,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     return foundFiles === files.length;
   }
 
-  async getByFilename(filename: string, allowedTypes?: fileDBO['type'][]) {
+  async getByFilename(filename: string, allowedTypes?: FileDBO['type'][]) {
     const dbo = await this.getCollection().findOne(
       {
         filename,

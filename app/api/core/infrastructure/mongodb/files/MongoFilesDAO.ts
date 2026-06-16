@@ -1,28 +1,31 @@
-import { Db, Document, FindOptions, ObjectId, Sort } from 'mongodb';
+import { Db, Document, FindOptions, ObjectId } from 'mongodb';
 import { MongoDataSource } from '../common/MongoDataSource.js';
 import { MongoTransactionManager } from '../common/MongoTransactionManager.js';
-import { fileDBO } from './schemas/filesTypes.js';
+import { FileDBO } from './schemas/filesTypes.js';
 import { Result } from '#api/core/libs/Result.js';
 import type { ResultType } from '#api/core/libs/Result.js';
 import { FileNotFound } from '#api/core/domain/files/errors.js';
+import type { GetFileOptions, ListFileOptions, EntityFileOptions } from './queryOptions.js';
 
 type Deps = {
   db: Db;
   transactionManager: MongoTransactionManager;
 };
 
-class MongoFilesDAO extends MongoDataSource<fileDBO> {
+const defaultProjection: Document = { fullText: 0 };
+
+class MongoFilesDAO extends MongoDataSource<FileDBO> {
   protected collectionName = 'files';
 
   constructor(deps: Deps) {
     super(deps.db, deps.transactionManager);
   }
 
-  async getById<T extends fileDBO = fileDBO>(
+  async getById<T extends FileDBO = FileDBO>(
     id: string,
-    options?: { withFullText?: boolean }
+    options?: GetFileOptions<T>
   ): Promise<ResultType<T, FileNotFound>> {
-    const projection = options?.withFullText ? undefined : { fullText: 0 };
+    const projection = options?.projection ?? defaultProjection;
 
     const dbo = await this.getCollection().findOne({ _id: new ObjectId(id) }, { projection });
     if (!dbo) {
@@ -32,10 +35,13 @@ class MongoFilesDAO extends MongoDataSource<fileDBO> {
     return Result.ok(dbo as T);
   }
 
-  async getByFilename<T extends fileDBO = fileDBO>(
-    filename: string
+  async getByFilename<T extends FileDBO = FileDBO>(
+    filename: string,
+    options?: GetFileOptions<T>
   ): Promise<ResultType<T, FileNotFound>> {
-    const dbo = await this.getCollection().findOne({ filename });
+    const projection = options?.projection ?? defaultProjection;
+
+    const dbo = await this.getCollection().findOne({ filename }, { projection });
     if (!dbo) {
       return Result.fail(new FileNotFound(`file: ${filename} not found`));
     }
@@ -43,39 +49,43 @@ class MongoFilesDAO extends MongoDataSource<fileDBO> {
     return Result.ok(dbo as T);
   }
 
-  async getByEntity<T extends fileDBO = fileDBO>(
+  async getByEntity<T extends FileDBO = FileDBO>(
     sharedId: string,
-    options?: { types?: fileDBO['type'][]; projection?: Document }
+    options?: EntityFileOptions<T>
   ): Promise<T[]> {
     const filter: Record<string, unknown> = { entity: sharedId };
     if (options?.types) {
       filter.type = { $in: options.types };
     }
 
-    return this.getCollection()
-      .find(filter, { projection: options?.projection })
-      .toArray() as Promise<T[]>;
+    const findOptions: FindOptions = {};
+    findOptions.projection = options?.projection ?? defaultProjection;
+    if (options?.sort) findOptions.sort = options.sort;
+    if (options?.limit) findOptions.limit = options.limit;
+
+    return this.getCollection().find(filter, findOptions).toArray() as Promise<T[]>;
   }
 
-  async getByQuery<T = fileDBO>(
+  async getByQuery<T extends FileDBO = FileDBO>(
     query: Record<string, unknown>,
-    options?: { projection?: Document; sort?: Sort; limit?: number }
+    options?: ListFileOptions<T>
   ): Promise<T[]> {
     const findOptions: FindOptions = {};
-    if (options?.projection) findOptions.projection = options.projection;
+    findOptions.projection = options?.projection ?? defaultProjection;
     if (options?.sort) findOptions.sort = options.sort;
     if (options?.limit) findOptions.limit = options.limit;
 
     return this.getCollection().find(query, findOptions).toArray() as Promise<T[]>;
   }
 
-  async getNextDocumentWithoutToc<T extends fileDBO = fileDBO>(): Promise<
-    ResultType<T, FileNotFound>
-  > {
+  async getNextDocumentWithoutToc<T extends FileDBO = FileDBO>(
+    options?: GetFileOptions<T>
+  ): Promise<ResultType<T, FileNotFound>> {
+    const projection = options?.projection ?? defaultProjection;
     const dbos = await this.getCollection()
       .find(
         { type: 'document', filename: { $exists: true }, 'toc.0': { $exists: false } },
-        { projection: { fullText: 0 } }
+        { projection }
       )
       .sort({ _id: 1 })
       .limit(1)
@@ -88,22 +98,25 @@ class MongoFilesDAO extends MongoDataSource<fileDBO> {
     return Result.ok(dbos[0] as T);
   }
 
-  async getByEntitySharedIds<T extends fileDBO = fileDBO>(
+  async getByEntitySharedIds<T extends FileDBO = FileDBO>(
     sharedIds: string[],
-    options?: { includeFullText?: boolean; languages?: string[]; type?: fileDBO['type'] }
+    options?: EntityFileOptions<T>
   ): Promise<T[]> {
     const filter: Record<string, unknown> = { entity: { $in: sharedIds } };
     if (options?.languages) {
       filter.language = { $in: options.languages };
     }
 
-    if (options?.type) {
-      filter.type = options.type;
+    if (options?.types) {
+      filter.type = { $in: options.types };
     }
 
-    const projection = options?.includeFullText ? undefined : { fullText: 0 };
+    const findOptions: FindOptions = {};
+    findOptions.projection = options?.projection ?? defaultProjection;
+    if (options?.sort) findOptions.sort = options.sort;
+    if (options?.limit) findOptions.limit = options.limit;
 
-    return this.getCollection().find(filter, { projection }).toArray() as Promise<T[]>;
+    return this.getCollection().find(filter, findOptions).toArray() as Promise<T[]>;
   }
 }
 

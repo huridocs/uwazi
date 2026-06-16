@@ -13,10 +13,10 @@ import {
   ThumbnailDBO,
   URLAttachmentDBO,
   CustomDBO,
-  fileDBO,
+  FileDBO,
 } from './schemas/filesTypes.js';
 
-function dboCommonFields(dbo: fileDBO) {
+function dboCommonFields(dbo: FileDBO) {
   return {
     id: dbo._id.toString(),
     originalname: dbo.originalname,
@@ -111,7 +111,7 @@ function customUploadToDBO(file: CustomUpload): CustomDBO {
 }
 
 export const FileMappers = {
-  toModel(dbo: fileDBO, { contentLoader }: { contentLoader: FileContentLoader }) {
+  toModel(dbo: FileDBO, { contentLoader }: { contentLoader: FileContentLoader }) {
     switch (dbo.type) {
       case 'document':
         return pdfDocumentFromDBO(dbo, contentLoader);
@@ -128,7 +128,7 @@ export const FileMappers = {
     }
   },
 
-  toDBO(file: BaseFile): fileDBO {
+  toDBO(file: BaseFile): FileDBO {
     if (file instanceof PDFDocument) return pdfDocumentToDBO(file);
     if (file instanceof FileAttachment) return fileAttachmentToDBO(file);
     if (file instanceof URLAttachment) return urlAttachmentToDBO(file);

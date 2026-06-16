@@ -63,9 +63,8 @@ export type ThumbnailDBO = BaseFileDBO & {
   type: 'thumbnail';
 };
 
-export type fileDBO =
-  | ProcessingPDFDBO
-  | ProcessedPDFDBO
+export type FileDBO =
+  | PDFDocumentDBO
   | FileAttachmentDBO
   | CustomDBO
   | ThumbnailDBO
