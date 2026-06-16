@@ -190,6 +190,18 @@ type MetadataProperty =
   | LinkMetadataProperty
   | RelationshipMetadataProperty;
 
+type MetadataValue = {
+  value?: unknown;
+  label?: string;
+  parent?: { value?: unknown; label?: string };
+  type?: string;
+  icon?: unknown;
+  color?: string;
+  authorized?: false;
+  inheritedValue?: MetadataValue[];
+  inheritedType?: BaseMetadataProperty['inheritedType'];
+};
+
 export type {
   MetadataProperty,
   BaseMetadataProperty,
@@ -209,4 +221,5 @@ export type {
   PreviewMetadataProperty,
   EntityFile,
   RelatedRelationshipMetadataProperty,
+  MetadataValue,
 };

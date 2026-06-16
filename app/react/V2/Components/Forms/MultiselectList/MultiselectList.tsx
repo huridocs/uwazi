@@ -38,6 +38,7 @@ interface MultiselectListProps {
   itemContainerClassName?: string;
   hideFilters?: boolean;
   noItems?: string | React.ReactNode;
+  id?: string;
 }
 
 const WrapChild = ({ children }: { children: string | React.ReactNode }) =>
@@ -96,6 +97,7 @@ const MultiselectList = ({
   hideFilters = false,
   itemClassName,
   itemContainerClassName,
+  id = 'search-multiselect',
   noItems = <Translate>No items available</Translate>,
 }: MultiselectListProps) => {
   const [selections, setSelections] = useState<string[]>(selectedValues || []);
@@ -295,13 +297,13 @@ const MultiselectList = ({
 
   return (
     <div className={`flex flex-col h-full ${className}`}>
-      <div className="w-full mb-2 bg-white">
-        <Label htmlFor="search-multiselect" hideLabel={!label} hasErrors={Boolean(hasErrors)}>
+      <div className="w-full bg-(--bg-surface)">
+        <Label htmlFor={id} hideLabel={!label} hasErrors={Boolean(hasErrors)}>
           {label}
         </Label>
         <InputField
-          id="search-multiselect"
-          label="search-multiselect"
+          id={id}
+          label={label}
           hideLabel
           placeholder={t('System', 'Search', null, false)}
           value={searchTerm}
@@ -312,6 +314,7 @@ const MultiselectList = ({
             setSearchTerm(e.currentTarget.value);
             setIsDirty(true);
           }}
+          className="text-(--text-primary)"
         />
         {!hideFilters && (
           <div className="flex mx-1 my-4 flex-nowrap" data-testid="multiselectlist-filters">
