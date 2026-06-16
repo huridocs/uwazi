@@ -128,4 +128,5 @@ const RelationshipPanelRow = ({ entry, ...handlers }: RelationshipPanelRowProps)
   );
 };
 
+export type { RelationshipPanelRowHandlers };
 export { RelationshipPanelRow };

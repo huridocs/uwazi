@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
-import { useAtom } from 'jotai';
-import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
+import React from 'react';
+import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import {
   getGroupColor,
   groupMarkers,
@@ -10,29 +9,20 @@ import {
 import { RelationshipGroupedCard } from './RelationshipGroupedCard.js';
 import { RelationshipsGroupLabel } from './RelationshipsGroupLabel.js';
 import { panelEntryCount, RelationshipsPanelEntryList } from './RelationshipsPanelEntryList.js';
-import {
-  relationshipsPanelGroupByAtom,
-  relationshipsPanelSubGroupByAtom,
-} from './relationshipsPanelFiltersAtom.js';
+import { type RelationshipPanelRowHandlers } from './RelationshipPanelRow.js';
+import { useRelationshipsGroupBy } from './useRelationshipsGroupBy.js';
 
-type RelationshipsMarkerListProps = {
+type RelationshipsMarkerListProps = RelationshipPanelRowHandlers & {
   markers: RelationshipMarker[];
   groupContext: GroupLabelContext;
-  selfSharedId: string;
-  activeRelationshipId?: string;
-  onClick: (marker: RelationshipMarker) => void;
-  onView: (marker: RelationshipMarker) => void;
-  onDelete: (marker: RelationshipMarker) => void;
 };
-
-type RowProps = Omit<RelationshipsMarkerListProps, 'markers' | 'groupContext'>;
 
 const renderGrouped = (
   items: RelationshipMarker[],
   groupBy: RelationshipsPanelGroupBy,
   subGroupBy: RelationshipsPanelGroupBy,
   groupContext: GroupLabelContext,
-  props: RowProps
+  props: RelationshipPanelRowHandlers
 ) => {
   const primaryGroups = groupMarkers(items, groupBy, groupContext);
 
@@ -94,13 +84,8 @@ const RelationshipsMarkerList = ({
   onView,
   onDelete,
 }: RelationshipsMarkerListProps) => {
-  const [groupBy] = useAtom(relationshipsPanelGroupByAtom);
-  const [subGroupBy, setSubGroupBy] = useAtom(relationshipsPanelSubGroupByAtom);
+  const { groupBy, subGroupBy } = useRelationshipsGroupBy();
   const rowProps = { selfSharedId, activeRelationshipId, onClick, onView, onDelete };
-
-  useEffect(() => {
-    if (groupBy !== 'none' && subGroupBy === groupBy) setSubGroupBy('none');
-  }, [groupBy, subGroupBy, setSubGroupBy]);
 
   if (groupBy === 'none') {
     return <RelationshipsPanelEntryList bordered markers={markers} {...rowProps} />;

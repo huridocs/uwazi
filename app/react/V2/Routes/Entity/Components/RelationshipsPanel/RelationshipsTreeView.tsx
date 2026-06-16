@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react';
-import { useAtom } from 'jotai';
+import React from 'react';
 import { Translate } from '#app/I18N/index.js';
-import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
+import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import {
   buildPanelListEntries,
   panelEntryKey,
@@ -11,8 +10,8 @@ import {
   groupMarkers,
   type GroupLabelContext,
 } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
-import { RelationshipPanelRow } from './RelationshipPanelRow.js';
-import { panelEntryCount } from './RelationshipsPanelEntryList.js';
+import { RelationshipPanelRow, type RelationshipPanelRowHandlers } from './RelationshipPanelRow.js';
+import { panelEntryCount, RelationshipsPanelEntryList } from './RelationshipsPanelEntryList.js';
 import {
   RelationshipsTreeBranch,
   RelationshipsTreeNode,
@@ -20,37 +19,12 @@ import {
 } from './RelationshipsTreeBranch.js';
 import { RelationshipsEmptyView } from './RelationshipsEmptyView.js';
 import { RelationshipsGroupLabel } from './RelationshipsGroupLabel.js';
-import {
-  relationshipsPanelGroupByAtom,
-  relationshipsPanelSubGroupByAtom,
-} from './relationshipsPanelFiltersAtom.js';
+import { useRelationshipsGroupBy } from './useRelationshipsGroupBy.js';
 
-type RelationshipsTreeViewProps = {
+type RelationshipsTreeViewProps = RelationshipPanelRowHandlers & {
   markers: RelationshipMarker[];
   groupContext: GroupLabelContext;
-  selfSharedId: string;
-  activeRelationshipId?: string;
-  onClick: (marker: RelationshipMarker) => void;
-  onView: (marker: RelationshipMarker) => void;
-  onDelete: (marker: RelationshipMarker) => void;
 };
-
-const renderEntryRows = (
-  items: RelationshipMarker[],
-  selfSharedId: string,
-  props: Omit<RelationshipsTreeViewProps, 'markers' | 'groupContext' | 'selfSharedId'>
-) =>
-  buildPanelListEntries(items, selfSharedId).map(entry => (
-    <RelationshipPanelRow
-      key={panelEntryKey(entry)}
-      entry={entry}
-      selfSharedId={selfSharedId}
-      activeRelationshipId={props.activeRelationshipId}
-      onClick={props.onClick}
-      onView={props.onView}
-      onDelete={props.onDelete}
-    />
-  ));
 
 const RelationshipsTreeView = ({
   markers,
@@ -61,13 +35,8 @@ const RelationshipsTreeView = ({
   onView,
   onDelete,
 }: RelationshipsTreeViewProps) => {
-  const [groupBy] = useAtom(relationshipsPanelGroupByAtom);
-  const [subGroupBy, setSubGroupBy] = useAtom(relationshipsPanelSubGroupByAtom);
-  const rowProps = { activeRelationshipId, onClick, onView, onDelete };
-
-  useEffect(() => {
-    if (groupBy !== 'none' && subGroupBy === groupBy) setSubGroupBy('none');
-  }, [groupBy, subGroupBy, setSubGroupBy]);
+  const { groupBy, subGroupBy } = useRelationshipsGroupBy();
+  const rowProps = { selfSharedId, activeRelationshipId, onClick, onView, onDelete };
 
   if (markers.length === 0) {
     return (
@@ -86,14 +55,7 @@ const RelationshipsTreeView = ({
             key={panelEntryKey(entry)}
             treeLine={getTreeLine(index, entries.length)}
           >
-            <RelationshipPanelRow
-              entry={entry}
-              selfSharedId={selfSharedId}
-              activeRelationshipId={activeRelationshipId}
-              onClick={onClick}
-              onView={onView}
-              onDelete={onDelete}
-            />
+            <RelationshipPanelRow entry={entry} {...rowProps} />
           </RelationshipsTreeNode>
         ))}
       </div>
@@ -120,28 +82,28 @@ const RelationshipsTreeView = ({
           count={panelEntryCount(groupMarkersList, selfSharedId)}
           markerIds={groupMarkersList.map(marker => marker._id)}
         >
-          {subGroupBy === 'none'
-            ? renderEntryRows(groupMarkersList, selfSharedId, rowProps)
-            : groupMarkers(groupMarkersList, subGroupBy, groupContext).map(
-                ([subKey, subMarkers]) => (
-                  <RelationshipsTreeBranch
-                    key={`${key}::${subKey}`}
-                    title={
-                      <RelationshipsGroupLabel
-                        groupKey={subKey}
-                        groupBy={subGroupBy}
-                        groupContext={groupContext}
-                        markers={subMarkers}
-                      />
-                    }
-                    color={getGroupColor(subKey, subGroupBy, groupContext, subMarkers)}
-                    count={panelEntryCount(subMarkers, selfSharedId)}
-                    markerIds={subMarkers.map(marker => marker._id)}
-                  >
-                    {renderEntryRows(subMarkers, selfSharedId, rowProps)}
-                  </RelationshipsTreeBranch>
-                )
-              )}
+          {subGroupBy === 'none' ? (
+            <RelationshipsPanelEntryList markers={groupMarkersList} {...rowProps} />
+          ) : (
+            groupMarkers(groupMarkersList, subGroupBy, groupContext).map(([subKey, subMarkers]) => (
+              <RelationshipsTreeBranch
+                key={`${key}::${subKey}`}
+                title={
+                  <RelationshipsGroupLabel
+                    groupKey={subKey}
+                    groupBy={subGroupBy}
+                    groupContext={groupContext}
+                    markers={subMarkers}
+                  />
+                }
+                color={getGroupColor(subKey, subGroupBy, groupContext, subMarkers)}
+                count={panelEntryCount(subMarkers, selfSharedId)}
+                markerIds={subMarkers.map(marker => marker._id)}
+              >
+                <RelationshipsPanelEntryList markers={subMarkers} {...rowProps} />
+              </RelationshipsTreeBranch>
+            ))
+          )}
         </RelationshipsTreeBranch>
       ))}
     </div>

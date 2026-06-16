@@ -4,15 +4,10 @@ import {
   panelEntryKey,
 } from '#V2/formatters/relationships/relationshipsPanelDerivation.js';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
-import { RelationshipPanelRow } from './RelationshipPanelRow.js';
+import { RelationshipPanelRow, type RelationshipPanelRowHandlers } from './RelationshipPanelRow.js';
 
-type RelationshipsPanelEntryListProps = {
+type RelationshipsPanelEntryListProps = RelationshipPanelRowHandlers & {
   markers: RelationshipMarker[];
-  selfSharedId: string;
-  activeRelationshipId?: string;
-  onClick: (marker: RelationshipMarker) => void;
-  onView: (marker: RelationshipMarker) => void;
-  onDelete: (marker: RelationshipMarker) => void;
   bordered?: boolean;
 };
 

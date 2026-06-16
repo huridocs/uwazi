@@ -23,6 +23,8 @@ type RelationshipsGraphViewProps = {
   onNodeClick: (markerId: string) => void;
 };
 
+const STEP = 0.25;
+
 const RelationshipsGraphView = ({
   markers,
   groupContext,
@@ -48,8 +50,6 @@ const RelationshipsGraphView = ({
       </RelationshipsEmptyView>
     );
   }
-
-  const STEP = 0.25;
 
   const onPointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
     if ((e.target as SVGElement).dataset.node) return;
@@ -89,7 +89,8 @@ const RelationshipsGraphView = ({
   };
 
   const zoomIn = () => setTransform(prev => ({ ...prev, scale: Math.min(prev.scale + STEP, 4) }));
-  const zoomOut = () => setTransform(prev => ({ ...prev, scale: Math.max(prev.scale - STEP, 0.25) }));
+  const zoomOut = () =>
+    setTransform(prev => ({ ...prev, scale: Math.max(prev.scale - STEP, 0.25) }));
   const reset = () => setTransform({ tx: 0, ty: 0, scale: 1 });
 
   return (

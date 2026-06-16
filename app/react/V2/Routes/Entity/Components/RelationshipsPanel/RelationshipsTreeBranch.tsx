@@ -1,4 +1,10 @@
-import React, { Children, isValidElement, useState, type ReactElement, type ReactNode } from 'react';
+import React, {
+  Children,
+  isValidElement,
+  useState,
+  type ReactElement,
+  type ReactNode,
+} from 'react';
 import { useAtomValue } from 'jotai';
 import { CollapsibleSectionHeader } from '#V2/Components/UI/CollapsibleSectionHeader.js';
 import { relationshipsPanelZoomAtom } from './relationshipsPanelFiltersAtom.js';
@@ -95,10 +101,10 @@ const RelationshipsTreeBranch = ({
             isValidElement(child) &&
             (child as ReactElement<RelationshipsTreeBranchProps>).type === RelationshipsTreeBranch
           ) {
-            return React.cloneElement(
-              child as ReactElement<RelationshipsTreeBranchProps>,
-              { treeLine: line, connectHeader: true }
-            );
+            return React.cloneElement(child as ReactElement<RelationshipsTreeBranchProps>, {
+              treeLine: line,
+              connectHeader: true,
+            });
           }
           return (
             <RelationshipsTreeNode key={index} treeLine={line}>
