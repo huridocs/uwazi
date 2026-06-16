@@ -1,5 +1,6 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DeleteTemplateUseCaseFactory } from '#api/core/infrastructure/factories/DeleteTemplateUseCaseFactory.js';
 import {
@@ -29,176 +30,205 @@ import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 
-const createSut = () =>
-  testingEnvironment.runWithContext(() => DeleteTemplateUseCaseFactory.default(), {
-    factories: {
-      jobsDispatcher: () => {
-        const tm = ExecutionContext.transactionManager as MongoTransactionManager;
-        const templatesDS = TemplatesDataSourceFactory.default({ transactionManager: tm });
-        const multiLanguageEntitiesDS = EntitiesDataSourceFactory.default({
-          transactionManager: tm,
-        });
-        const filesDS = FilesDataSourceFactory.default();
-        const relationshipsV1DS = new MongoRelationshipsV1DataSource(getConnection(), tm);
-        return new SyncDispatcherForTests({
-          TemplatePostProcessEntitiesJob: async () =>
-            new TemplatePostProcessEntitiesJob({
-              useCase: new TemplateUpdateDenormalizeEntitiesBatch({
-                entitiesDS: multiLanguageEntitiesDS,
-                relationshipsV1DS,
-                templatesDS,
-                transactionManager: tm,
-                filesDS,
-              }),
-              templatesDS,
-            }),
-        });
-      },
-    },
-  });
+type TestConfig = {
+  name: string;
+  postgresTemplates: boolean;
+  getTemplates: () => Promise<any[]>;
+};
+
+const testConfigs: TestConfig[] = [
+  {
+    name: 'Mongo',
+    postgresTemplates: false,
+    getTemplates: async () => testingEnvironment.db.getAllFrom('templates') as Promise<any[]>,
+  },
+  {
+    name: 'Postgres',
+    postgresTemplates: true,
+    getTemplates: async () =>
+      testingEnvironment.pg
+        .getAllFrom('templates')
+        .then(rows => rows.map(({ tenant_id: _, ...rest }) => rest) as any[]),
+  },
+];
 
 describe('DeleteTemplateUseCase', () => {
+  beforeAll(async () => {
+    await testingEnvironment.setUp(fixtures, {
+      elasticIndex: 'delete_template_use_case',
+      postgres: true,
+    });
+  });
+
   beforeEach(async () => {
     jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
-    await testingEnvironment.setUp(fixtures, 'delete_template_use_case');
+    await testingEnvironment.setFixtures(fixtures);
   });
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should delete properties of other templates using this template as select/relationship', async () => {
-    await createSut().execute({ templateId: templateToBeDeleted.toString() });
+  describe.each(testConfigs)('$name', ({ postgresTemplates, getTemplates }) => {
+    const createSut = () =>
+      testingEnvironment.runWithContext(() => DeleteTemplateUseCaseFactory.default(), {
+        factories: {
+          jobsDispatcher: () => {
+            const tm = ExecutionContext.transactionManager as MongoTransactionManager;
+            const templatesDS = TemplatesDataSourceFactory.default({ transactionManager: tm });
+            const multiLanguageEntitiesDS = EntitiesDataSourceFactory.default({
+              transactionManager: tm,
+            });
+            const filesDS = FilesDataSourceFactory.default();
+            const relationshipsV1DS = new MongoRelationshipsV1DataSource(getConnection(), tm);
+            return new SyncDispatcherForTests({
+              TemplatePostProcessEntitiesJob: async () =>
+                new TemplatePostProcessEntitiesJob({
+                  useCase: new TemplateUpdateDenormalizeEntitiesBatch({
+                    entitiesDS: multiLanguageEntitiesDS,
+                    relationshipsV1DS,
+                    templatesDS,
+                    transactionManager: tm,
+                    filesDS,
+                  }),
+                  templatesDS,
+                }),
+            });
+          },
+        },
+        ...(postgresTemplates
+          ? {
+              tenant: {
+                ...testingTenants.current(),
+                featureFlags: { postgresTemplates: true },
+              },
+            }
+          : {}),
+      });
 
-    const allTemplates = await testingEnvironment.db.getAllFrom('templates');
-    const template1 = allTemplates.find(t => t.name === 'thesauri template');
-
-    expect(template1?.properties?.length).toBe(1);
-    expect(template1?.properties?.[0]?.label).toBe('select');
-
-    const template2 = allTemplates.find(t => t.name === 'thesauri template 2');
-    expect(template2?.properties?.length).toBe(1);
-    expect(template2?.properties?.[0]?.label).toBe('select2');
-
-    const template3 = allTemplates.find(t => t.name === 'thesauri template 3');
-    expect(template3?.properties?.length).toBe(2);
-    expect(template3?.properties?.[0]?.label).toBe('text');
-    expect(template3?.properties?.[1]?.label).toBe('text2');
-  });
-
-  it('should remove the related metadata from entities using this template as a select/relationship, from all languages', async () => {
-    await createSut().execute({ templateId: templateToBeDeleted.toString() });
-
-    const relatedEntities = await db.mongodb
-      ?.collection('entities')
-      .find({
-        template: { $in: [thesaurusTemplateId, thesaurusTemplate2Id, thesaurusTemplate3Id] },
-      })
-      .sort({ title: 1 })
-      .toArray();
-
-    const titles = relatedEntities?.map(e => e.title);
-    expect(titles).toEqual([
-      't1-1_en',
-      't1-1_es',
-      't1-1_pt',
-      't1-2_en',
-      't1-2_es',
-      't1-2_pt',
-      't1-3_en',
-      't1-3_es',
-      't1-3_pt',
-      't2-1_en',
-      't2-1_es',
-      't2-1_pt',
-    ]);
-    ['en', 'es', 'pt'].forEach(l => {
-      const metadatas = relatedEntities?.filter(e => e.language === l).map(e => e.metadata);
-      expect(metadatas).toMatchObject([
-        { select: [] },
-        { select: [] },
-        { select: [] },
-        { select2: [] },
-      ]);
-    });
-  });
-
-  it('should delete a template when no document is using it', async () => {
-    jest.spyOn(templates, 'countByTemplate').mockImplementation(async () => Promise.resolve(0));
-
-    const response = await createSut().execute({ templateId: templateToBeDeleted.toString() });
-
-    expect(response).toEqual({ templateId: templateToBeDeleted.toString() });
-
-    const allTemplates = await templates.get();
-    const deleted = allTemplates.find(template1 => template1.name === 'to be deleted');
-
-    expect(deleted).not.toBeDefined();
-  });
-
-  it('should delete the template translation', async () => {
-    jest.spyOn(documents, 'countByTemplate').mockImplementation(async () => Promise.resolve(0));
-
-    await createSut().execute({ templateId: templateToBeDeleted.toString() });
-    const translation = await testingEnvironment.db
-      .getCollection('translationsV2')
-      ?.findOne({ 'context.id': templateToBeDeleted });
-
-    expect(translation).toBeNull();
-  });
-
-  it(`should emit a ${TemplateDeletedEvent.name} event`, async () => {
-    const emitSpy = spyOnEmit();
-
-    await createSut().execute({ templateId: templateToBeDeleted.toString() });
-
-    emitSpy.expectToEmitEvent(TemplateDeletedEvent);
-  });
-
-  it('should throw an error when there is documents using it', async () => {
-    jest.spyOn(templates, 'countByTemplate').mockImplementation(async () => Promise.resolve(1));
-    await testingEnvironment.setFixtures({
-      ...fixtures,
-      entities: [
-        ...fixtures.entities!,
-        ...createEntitiesInAllLanguages(
-          'templateToBeDeleted entity',
-          db.id(templateToBeDeleted),
-          {}
-        ),
-      ],
-    });
-
-    try {
+    it('should delete properties of other templates using this template as select/relationship', async () => {
       await createSut().execute({ templateId: templateToBeDeleted.toString() });
-      throw new Error(
-        'should not delete the template and throw an error because there is some documents associated with the template'
-      );
-    } catch (error) {
-      expect(error).toBeInstanceOf(TemplateInUseError);
-    }
-  });
 
-  it('should handle a non existing template', async () => {
-    try {
-      await createSut().execute({ templateId: new ObjectId().toString() });
-    } catch (error) {
-      throw new Error(
-        'should not delete the template and throw an error because it is the default template'
-      );
-    }
-  });
+      const allTemplates = await getTemplates();
+      const deleted = allTemplates.find(template1 => template1.name === 'to be deleted');
 
-  it('should throw an error when the template is the default template', async () => {
-    try {
-      await createSut().execute({ templateId: templateToBeEditedId.toString() });
-      throw new Error(
-        'should not delete the template and throw an error because it is the default template'
-      );
-    } catch (error) {
-      expect(error.message).toEqual(
-        'The default template cannot be deleted. Please set a different template as the default before deleting this one.'
-      );
-    }
+      expect(deleted).not.toBeDefined();
+    });
+
+    it('should remove the related metadata from entities using this template as a select/relationship, from all languages', async () => {
+      await createSut().execute({ templateId: templateToBeDeleted.toString() });
+
+      const relatedEntities = await db.mongodb
+        ?.collection('entities')
+        .find({
+          template: { $in: [thesaurusTemplateId, thesaurusTemplate2Id, thesaurusTemplate3Id] },
+        })
+        .sort({ title: 1 })
+        .toArray();
+
+      const titles = relatedEntities?.map(e => e.title);
+      expect(titles).toEqual([
+        't1-1_en',
+        't1-1_es',
+        't1-1_pt',
+        't1-2_en',
+        't1-2_es',
+        't1-2_pt',
+        't1-3_en',
+        't1-3_es',
+        't1-3_pt',
+        't2-1_en',
+        't2-1_es',
+        't2-1_pt',
+      ]);
+      ['en', 'es', 'pt'].forEach(l => {
+        const metadatas = relatedEntities?.filter(e => e.language === l).map(e => e.metadata);
+        expect(metadatas).toMatchObject([
+          { select: [] },
+          { select: [] },
+          { select: [] },
+          { select2: [] },
+        ]);
+      });
+    });
+
+    it('should delete a template when no document is using it', async () => {
+      jest.spyOn(templates, 'countByTemplate').mockImplementation(async () => Promise.resolve(0));
+
+      const response = await createSut().execute({ templateId: templateToBeDeleted.toString() });
+
+      expect(response).toEqual({ templateId: templateToBeDeleted.toString() });
+
+      const allTemplates = await getTemplates();
+      const deleted = allTemplates.find(template1 => template1.name === 'to be deleted');
+
+      expect(deleted).not.toBeDefined();
+    });
+
+    it('should delete the template translation', async () => {
+      jest.spyOn(documents, 'countByTemplate').mockImplementation(async () => Promise.resolve(0));
+
+      await createSut().execute({ templateId: templateToBeDeleted.toString() });
+      const translation = await testingEnvironment.db
+        .getCollection('translationsV2')
+        ?.findOne({ 'context.id': templateToBeDeleted });
+
+      expect(translation).toBeNull();
+    });
+
+    it(`should emit a ${TemplateDeletedEvent.name} event`, async () => {
+      const emitSpy = spyOnEmit();
+
+      await createSut().execute({ templateId: templateToBeDeleted.toString() });
+
+      emitSpy.expectToEmitEvent(TemplateDeletedEvent);
+    });
+
+    it('should throw an error when there is documents using it', async () => {
+      jest.spyOn(templates, 'countByTemplate').mockImplementation(async () => Promise.resolve(1));
+      await testingEnvironment.setFixtures({
+        ...fixtures,
+        entities: [
+          ...fixtures.entities!,
+          ...createEntitiesInAllLanguages(
+            'templateToBeDeleted entity',
+            db.id(templateToBeDeleted),
+            {}
+          ),
+        ],
+      });
+
+      try {
+        await createSut().execute({ templateId: templateToBeDeleted.toString() });
+        throw new Error(
+          'should not delete the template and throw an error because there is some documents associated with the template'
+        );
+      } catch (error) {
+        expect(error).toBeInstanceOf(TemplateInUseError);
+      }
+    });
+
+    it('should handle a non existing template', async () => {
+      try {
+        await createSut().execute({ templateId: new ObjectId().toString() });
+      } catch (error) {
+        throw new Error(
+          'should not delete the template and throw an error because it is the default template'
+        );
+      }
+    });
+
+    it('should throw an error when the template is the default template', async () => {
+      try {
+        await createSut().execute({ templateId: templateToBeEditedId.toString() });
+        throw new Error(
+          'should not delete the template and throw an error because it is the default template'
+        );
+      } catch (error) {
+        expect(error.message).toEqual(
+          'The default template cannot be deleted. Please set a different template as the default before deleting this one.'
+        );
+      }
+    });
   });
 });

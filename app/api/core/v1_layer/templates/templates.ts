@@ -7,6 +7,22 @@ import { TemplateSchema } from '#shared/types/templateType.js';
 import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
 import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
+import { PostgresTemplateMapper } from '#api/core/infrastructure/postgresql/template/PostgresTemplateMapper.js';
+import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
+import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
+import { TemplateRow } from '#api/core/infrastructure/postgresql/template/PostgresTemplateMapper.js';
+
+type TemplateDaoShape = (TemplateRow | TemplateDBO) & { name?: string };
+
+const isTemplateRow = (template: TemplateDaoShape): template is TemplateRow =>
+  typeof template._id === 'string';
+
+const toMongoSchema = (template: TemplateDaoShape): TemplateDBO => {
+  if (isTemplateRow(template)) {
+    return MongoTemplateMapper.toSchema(PostgresTemplateMapper.toDomain(template as TemplateRow));
+  }
+  return template as TemplateDBO;
+};
 
 const getRelatedThesauri = async (template: TemplateSchema) => {
   const thesauriIds = (template.properties || [])
@@ -35,42 +51,50 @@ export default {
 
   async get(ids?: string[]) {
     const dao = TemplatesDAOFactory.default();
-    return dao.get(ids);
+    const rows = await dao.get(ids);
+    return rows.map(toMongoSchema);
   },
 
   async getByNames(names: string[]) {
     const dao = TemplatesDAOFactory.default();
-    return dao.getByNames(names);
+    const rows = await dao.getByNames(names);
+    return rows.map(toMongoSchema);
   },
 
   async getByContent(contentId: string) {
     const dao = TemplatesDAOFactory.default();
-    return dao.getByContent(contentId);
+    const rows = await dao.getByContent(contentId);
+    return rows.map(toMongoSchema);
   },
 
   async getByContents(contentIds: string[]) {
     const dao = TemplatesDAOFactory.default();
-    return dao.getByContents(contentIds);
+    const rows = await dao.getByContents(contentIds);
+    return rows.map(toMongoSchema);
   },
 
   async getByInheritedProperties(propertyIds: string[]) {
     const dao = TemplatesDAOFactory.default();
-    return dao.getByInheritedProperties(propertyIds);
+    const rows = await dao.getByInheritedProperties(propertyIds);
+    return rows.map(toMongoSchema);
   },
 
   async getByEntityViewPage(pageId: string) {
     const dao = TemplatesDAOFactory.default();
-    return dao.getByEntityViewPage(pageId);
+    const rows = await dao.getByEntityViewPage(pageId);
+    return rows.map(toMongoSchema);
   },
 
   async getByContentsOrUnrestrictedRelationship(contentIds: string[]) {
     const dao = TemplatesDAOFactory.default();
-    return dao.getByContentsOrUnrestrictedRelationship(contentIds);
+    const rows = await dao.getByContentsOrUnrestrictedRelationship(contentIds);
+    return rows.map(toMongoSchema);
   },
 
   async getDefaultTemplate() {
     const dao = TemplatesDAOFactory.default();
-    return dao.getDefaultTemplate();
+    const row = await dao.getDefaultTemplate();
+    return row ? toMongoSchema(row) : null;
   },
 
   async getAllIds() {
@@ -88,8 +112,9 @@ export default {
 
   async getById(templateId: ObjectId | string) {
     const dao = TemplatesDAOFactory.default();
-    const result = await dao.get([templateId.toString()]);
-    return result[0] || null;
+    const rows = await dao.get([templateId.toString()]);
+    const row = rows[0];
+    return row ? toMongoSchema(row) : null;
   },
 
   async delete(template: Partial<TemplateSchema>) {
@@ -107,7 +132,11 @@ export default {
 
   async findUsingRelationTypeInProp(relationTypeId: string, session?: ClientSession) {
     const dao = TemplatesDAOFactory.default();
-    return dao.findUsingRelationTypeInProp(relationTypeId, session);
+    const rows = await dao.findUsingRelationTypeInProp(relationTypeId, session);
+    return rows.map(row => ({
+      _id: typeof row._id === 'string' ? new ObjectId(row._id) : row._id,
+      name: row.name,
+    }));
   },
 
   getRelatedThesauri,

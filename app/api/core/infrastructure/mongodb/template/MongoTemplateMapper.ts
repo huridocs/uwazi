@@ -36,7 +36,7 @@ import { PropertySchema } from '#shared/types/commonTypes.js';
 import { TraverseQueryDBO } from './DBOs/RelationshipsQueryDBO.js';
 import { TemplateDBO } from './DBOs/TemplateDBO.js';
 
-class CommonPropertyMapper {
+export class CommonPropertyMapper {
   static toSchema(domain: CommonProperty): PropertySchema {
     const base: PropertySchema = {
       _id: ObjectId.createFromHexString(domain.id),

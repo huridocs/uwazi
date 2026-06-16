@@ -43,6 +43,7 @@ const mongoSchema = new mongoose.Schema({
     v2Languages: Boolean,
     newHeader: Boolean,
     postgresThesauri: Boolean,
+    postgresTemplates: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,

@@ -28,6 +28,7 @@ type Tenant = {
     newHeader?: boolean;
     v2Languages?: boolean;
     postgresThesauri?: boolean;
+    postgresTemplates?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongodb';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -14,31 +14,71 @@ import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
 import { CreateTemplateUseCase } from '../CreateTemplate.js';
 
-const createSut = () =>
-  testingEnvironment.runWithContext(() => {
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
-    const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
-    const idGenerator = IdGeneratorFactory.default();
-    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
-    const translationService = new LegacyTranslationService();
-    const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
-    const pageService = LegacyPageServiceFactory.default({ transactionManager });
+type TestConfig = {
+  name: string;
+  postgresTemplates: boolean;
+  getTemplates: () => Promise<any[]>;
+};
 
-    const sut = new CreateTemplateUseCase({
-      templatesDS,
-      idGenerator,
-      thesauriDS: new MongoThesauriDataSource(getConnection(), transactionManager),
-      settingsDS,
-      translationService,
-      relationshipTypesDS,
-      transactionManager,
-      pageService,
-    });
+const testConfigs: TestConfig[] = [
+  {
+    name: 'Mongo',
+    postgresTemplates: false,
+    getTemplates: async () => testingEnvironment.db.getAllFrom('templates') as Promise<any[]>,
+  },
+  {
+    name: 'Postgres',
+    postgresTemplates: true,
+    getTemplates: async () =>
+      testingEnvironment.pg
+        .getAllFrom('templates')
+        .then(rows => rows.map(({ tenant_id: _, ...rest }) => rest) as any[]),
+  },
+];
 
-    return { sut };
-  });
+type CreateProps = {
+  thesauriDS?: ThesauriDataSource;
+  translationService?: LegacyTranslationService;
+};
+
+const createSut = (props?: CreateProps, postgresTemplates = false) =>
+  testingEnvironment.runWithContext(
+    () => {
+      const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+      const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
+      const idGenerator = IdGeneratorFactory.default();
+      const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+      const translationService = props?.translationService ?? new LegacyTranslationService();
+      const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
+      const pageService = LegacyPageServiceFactory.default({ transactionManager });
+
+      const sut = new CreateTemplateUseCase({
+        templatesDS,
+        idGenerator,
+        thesauriDS:
+          props?.thesauriDS ?? new MongoThesauriDataSource(getConnection(), transactionManager),
+        settingsDS,
+        translationService,
+        relationshipTypesDS,
+        transactionManager,
+        pageService,
+      });
+
+      return { sut };
+    },
+    postgresTemplates
+      ? {
+          tenant: {
+            ...testingTenants.current(),
+            featureFlags: { postgresTemplates: true },
+          },
+        }
+      : undefined
+  );
 
 const factory = getFixturesFactory();
 
@@ -100,7 +140,10 @@ const fixtures: DBFixture = {
 
 describe('CreateTemplateUseCase', () => {
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures, 'templates_spec_index.v2');
+    await testingEnvironment.setUp(fixtures, {
+      elasticIndex: 'templates_spec_index.v2',
+      postgres: true,
+    });
   });
 
   afterEach(async () => testingEnvironment.setFixtures(fixtures));
@@ -109,501 +152,518 @@ describe('CreateTemplateUseCase', () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should create a Template', async () => {
-    const { sut } = createSut();
+  describe.each(testConfigs)('$name', ({ postgresTemplates, getTemplates }) => {
+    it('should create a Template', async () => {
+      const { sut } = createSut(undefined, postgresTemplates);
 
-    const output = await sut.execute({
-      name: 'Template Name',
-      properties: [
-        { label: 'Text', type: PropertyTypeEnum.Text },
-        { label: 'Date', type: PropertyTypeEnum.Date },
-        { label: 'Date Range', type: PropertyTypeEnum.DateRange },
-        { label: 'Geolocation', type: PropertyTypeEnum.Geolocation },
-        { label: 'Image', type: PropertyTypeEnum.Image },
-        { label: 'Link', type: PropertyTypeEnum.Link },
-        { label: 'Markdown', type: PropertyTypeEnum.Markdown },
-        { label: 'Media', type: PropertyTypeEnum.Media },
-        { label: 'Multi Date', type: PropertyTypeEnum.MultiDate },
-        { label: 'Multi Date Range', type: PropertyTypeEnum.MultiDateRange },
-        { label: 'Numeric', type: PropertyTypeEnum.Numeric },
-        { label: 'Preview', type: PropertyTypeEnum.Preview },
-        { label: 'Generated Id', type: PropertyTypeEnum.GeneratedId },
-        {
-          label: 'Select',
-          type: PropertyTypeEnum.Select,
-          content: factory.id('thesaurusId').toHexString(),
-        },
-        {
-          label: 'Multi Select',
-          type: PropertyTypeEnum.MultiSelect,
-          content: factory.id('thesaurusId').toHexString(),
-        },
-        {
-          label: 'Relationship to any',
-          type: PropertyTypeEnum.Relationship,
-          relationType: factory.id('relationTypeId').toHexString(),
-        },
-
-        {
-          label: 'Relationship to Property as target',
-          type: PropertyTypeEnum.Relationship,
-          relationType: factory.id('relationTypeId').toHexString(),
-          content: factory.id('targetedTemplate').toHexString(),
-          inherit: {
-            property: factory.id('date1').toHexString(),
-            type: PropertyTypeEnum.Date,
+      const output = await sut.execute({
+        name: 'Template Name',
+        properties: [
+          { label: 'Text', type: PropertyTypeEnum.Text },
+          { label: 'Date', type: PropertyTypeEnum.Date },
+          { label: 'Date Range', type: PropertyTypeEnum.DateRange },
+          { label: 'Geolocation', type: PropertyTypeEnum.Geolocation },
+          { label: 'Image', type: PropertyTypeEnum.Image },
+          { label: 'Link', type: PropertyTypeEnum.Link },
+          { label: 'Markdown', type: PropertyTypeEnum.Markdown },
+          { label: 'Media', type: PropertyTypeEnum.Media },
+          { label: 'Multi Date', type: PropertyTypeEnum.MultiDate },
+          { label: 'Multi Date Range', type: PropertyTypeEnum.MultiDateRange },
+          { label: 'Numeric', type: PropertyTypeEnum.Numeric },
+          { label: 'Preview', type: PropertyTypeEnum.Preview },
+          { label: 'Generated Id', type: PropertyTypeEnum.GeneratedId },
+          {
+            label: 'Select',
+            type: PropertyTypeEnum.Select,
+            content: factory.id('thesaurusId').toHexString(),
           },
-        },
-        { label: 'Nested', type: PropertyTypeEnum.Nested },
-
-        // { label: 'New Relationship', type: PropertyTypeEnum.newRelationship }, // missing
-      ],
-      commonProperties: [
-        { label: 'Title', type: PropertyTypeEnum.Text, name: 'title', isCommonProperty: true },
-        {
-          label: 'Creation Date',
-          type: PropertyTypeEnum.Date,
-          name: 'creationDate',
-          isCommonProperty: true,
-        },
-        {
-          label: 'Edit Date',
-          type: PropertyTypeEnum.Date,
-          name: 'editDate',
-          isCommonProperty: true,
-        },
-      ],
-      color: '#142134',
-    });
-
-    const created = (await testingEnvironment.db.getAllFrom('templates'))?.find(
-      t => t._id.toHexString() === output.id
-    );
-
-    expect(created).toEqual({
-      _id: expect.any(ObjectId),
-      color: '#142134',
-      name: 'Template Name',
-      default: false,
-      entityViewPage: '',
-      processing: { active: false },
-      commonProperties: [
-        {
-          _id: expect.any(ObjectId),
-          type: 'text',
-          label: 'Title',
-          name: 'title',
-          isCommonProperty: true,
-          noLabel: false,
-          required: false,
-          showInCard: false,
-          generatedId: false,
-          prioritySorting: false,
-        },
-        {
-          _id: expect.any(ObjectId),
-          type: 'date',
-          label: 'Creation Date',
-          name: 'creationDate',
-          isCommonProperty: true,
-          noLabel: false,
-          required: false,
-          showInCard: false,
-          prioritySorting: false,
-        },
-        {
-          _id: expect.any(ObjectId),
-          type: 'date',
-          label: 'Edit Date',
-          name: 'editDate',
-          isCommonProperty: true,
-          noLabel: false,
-          required: false,
-          showInCard: false,
-          prioritySorting: false,
-        },
-      ],
-      properties: [
-        {
-          _id: expect.any(ObjectId),
-          type: 'text',
-          label: 'Text',
-          name: 'text',
-          noLabel: false,
-          required: false,
-          showInCard: false,
-          generatedId: false,
-          filter: false,
-          defaultfilter: false,
-          prioritySorting: false,
-        },
-        {
-          _id: expect.any(ObjectId),
-          type: 'date',
-          label: 'Date',
-          name: 'date',
-          noLabel: false,
-          required: false,
-          showInCard: false,
-          filter: false,
-          defaultfilter: false,
-          prioritySorting: false,
-        },
-        {
-          _id: expect.any(ObjectId),
-          type: 'daterange',
-          label: 'Date Range',
-          name: 'date_range',
-          noLabel: false,
-          required: false,
-          showInCard: false,
-          filter: false,
-          defaultfilter: false,
-          prioritySorting: false,
-        },
-        {
-          _id: expect.any(ObjectId),
-          type: 'geolocation',
-          label: 'Geolocation',
-          name: 'geolocation_geolocation',
-          noLabel: false,
-          required: false,
-          showInCard: false,
-        },
-        {
-          _id: expect.any(ObjectId),
-          type: 'image',
-          label: 'Image',
-          name: 'image',
-          noLabel: false,
-          required: false,
-          showInCard: false,
-          style: 'cover',
-          fullWidth: false,
-        },
-        {
-          _id: expect.any(ObjectId),
-          type: 'link',
-          label: 'Link',
-          name: 'link',
-          noLabel: false,
-          required: false,
-          showInCard: false,
-        },
-        {
-          _id: expect.any(ObjectId),
-          type: 'markdown',
-          label: 'Markdown',
-          name: 'markdown',
-          noLabel: false,
-          required: false,
-          showInCard: false,
-          filter: false,
-          defaultfilter: false,
-          prioritySorting: false,
-        },
-        {
-          _id: expect.any(ObjectId),
-          type: 'media',
-          label: 'Media',
-          name: 'media',
-          noLabel: false,
-          required: false,
-          showInCard: false,
-          style: 'cover',
-          fullWidth: false,
-        },
-        {
-          _id: expect.any(ObjectId),
-          type: 'multidate',
-          label: 'Multi Date',
-          name: 'multi_date',
-          noLabel: false,
-          required: false,
-          showInCard: false,
-          filter: false,
-          defaultfilter: false,
-          prioritySorting: false,
-        },
-        {
-          _id: expect.any(ObjectId),
-          type: 'multidaterange',
-          label: 'Multi Date Range',
-          name: 'multi_date_range',
-          noLabel: false,
-          required: false,
-          showInCard: false,
-          filter: false,
-          defaultfilter: false,
-          prioritySorting: false,
-        },
-        {
-          _id: expect.any(ObjectId),
-          type: 'numeric',
-          label: 'Numeric',
-          name: 'numeric',
-          noLabel: false,
-          required: false,
-          showInCard: false,
-          filter: false,
-          defaultfilter: false,
-          prioritySorting: false,
-        },
-        {
-          _id: expect.any(ObjectId),
-          type: 'preview',
-          label: 'Preview',
-          name: 'preview',
-          noLabel: false,
-          required: false,
-          showInCard: false,
-          style: 'cover',
-          fullWidth: false,
-        },
-        {
-          _id: expect.any(ObjectId),
-          label: 'Generated Id',
-          type: 'generatedid',
-          name: 'generated_id',
-          defaultfilter: false,
-          filter: false,
-          noLabel: false,
-          prioritySorting: false,
-          required: false,
-          showInCard: false,
-        },
-        {
-          _id: expect.any(ObjectId),
-          type: 'select',
-          label: 'Select',
-          name: 'select',
-          content: factory.id('thesaurusId').toHexString(),
-          defaultfilter: false,
-          filter: false,
-          noLabel: false,
-          prioritySorting: false,
-          required: false,
-          showInCard: false,
-        },
-        {
-          _id: expect.any(ObjectId),
-          type: 'multiselect',
-          name: 'multi_select',
-          label: 'Multi Select',
-          content: factory.id('thesaurusId').toHexString(),
-          defaultfilter: false,
-          filter: false,
-          noLabel: false,
-          prioritySorting: false,
-          required: false,
-          showInCard: false,
-        },
-        {
-          _id: expect.any(ObjectId),
-          type: 'relationship',
-          name: 'relationship_to_any',
-          label: 'Relationship to any',
-          content: '',
-          relationType: factory.id('relationTypeId').toHexString(),
-          inherit: null,
-
-          defaultfilter: false,
-          filter: false,
-          noLabel: false,
-          prioritySorting: false,
-          required: false,
-          showInCard: false,
-        },
-        {
-          _id: expect.any(ObjectId),
-          type: 'relationship',
-          content: factory.id('targetedTemplate').toHexString(),
-          relationType: factory.id('relationTypeId').toHexString(),
-          label: 'Relationship to Property as target',
-          name: 'relationship_to_property_as_target',
-          inherit: {
-            property: factory.id('date1').toHexString(),
-            type: 'date',
+          {
+            label: 'Multi Select',
+            type: PropertyTypeEnum.MultiSelect,
+            content: factory.id('thesaurusId').toHexString(),
           },
-          defaultfilter: false,
-          filter: false,
-          noLabel: false,
-          prioritySorting: false,
-          required: false,
-          showInCard: false,
-        },
+          {
+            label: 'Relationship to any',
+            type: PropertyTypeEnum.Relationship,
+            relationType: factory.id('relationTypeId').toHexString(),
+          },
 
-        {
-          _id: expect.any(ObjectId),
-          defaultfilter: false,
-          nestedProperties: [],
-          filter: false,
-          label: 'Nested',
-          name: 'nested_nested',
-          noLabel: false,
-          prioritySorting: false,
-          required: false,
-          showInCard: false,
-          type: 'nested',
-        },
-      ],
-    });
-  });
-
-  it('should throw if Template name is not unique on the system', async () => {
-    await testingEnvironment.setFixtures({
-      ...fixtures,
-      templates: [
-        {
-          color: '#142134',
-          name: 'Template Name',
-          default: false,
-          commonProperties: [
-            {
-              type: 'text',
-              label: 'Title',
-              name: 'title',
-              isCommonProperty: true,
-              noLabel: false,
-              required: false,
-              showInCard: false,
-              generatedId: false,
-              prioritySorting: false,
+          {
+            label: 'Relationship to Property as target',
+            type: PropertyTypeEnum.Relationship,
+            relationType: factory.id('relationTypeId').toHexString(),
+            content: factory.id('targetedTemplate').toHexString(),
+            inherit: {
+              property: factory.id('date1').toHexString(),
+              type: PropertyTypeEnum.Date,
             },
-            {
+          },
+          { label: 'Nested', type: PropertyTypeEnum.Nested },
+
+          // { label: 'New Relationship', type: PropertyTypeEnum.newRelationship }, // missing
+        ],
+        commonProperties: [
+          { label: 'Title', type: PropertyTypeEnum.Text, name: 'title', isCommonProperty: true },
+          {
+            label: 'Creation Date',
+            type: PropertyTypeEnum.Date,
+            name: 'creationDate',
+            isCommonProperty: true,
+          },
+          {
+            label: 'Edit Date',
+            type: PropertyTypeEnum.Date,
+            name: 'editDate',
+            isCommonProperty: true,
+          },
+        ],
+        color: '#142134',
+      });
+
+      const created = (await getTemplates()).find(t => t._id.toString() === output.id);
+
+      expect(created).toMatchObject({
+        color: '#142134',
+        name: 'Template Name',
+        default: false,
+        entityViewPage: '',
+        processing: { active: false },
+        commonProperties: [
+          {
+            type: 'text',
+            label: 'Title',
+            name: 'title',
+            isCommonProperty: true,
+            noLabel: false,
+            required: false,
+            showInCard: false,
+            generatedId: false,
+            prioritySorting: false,
+          },
+          {
+            type: 'date',
+            label: 'Creation Date',
+            name: 'creationDate',
+            isCommonProperty: true,
+            noLabel: false,
+            required: false,
+            showInCard: false,
+            prioritySorting: false,
+          },
+          {
+            type: 'date',
+            label: 'Edit Date',
+            name: 'editDate',
+            isCommonProperty: true,
+            noLabel: false,
+            required: false,
+            showInCard: false,
+            prioritySorting: false,
+          },
+        ],
+        properties: [
+          {
+            type: 'text',
+            label: 'Text',
+            name: 'text',
+            noLabel: false,
+            required: false,
+            showInCard: false,
+            generatedId: false,
+            filter: false,
+            defaultfilter: false,
+            prioritySorting: false,
+          },
+          {
+            type: 'date',
+            label: 'Date',
+            name: 'date',
+            noLabel: false,
+            required: false,
+            showInCard: false,
+            filter: false,
+            defaultfilter: false,
+            prioritySorting: false,
+          },
+          {
+            type: 'daterange',
+            label: 'Date Range',
+            name: 'date_range',
+            noLabel: false,
+            required: false,
+            showInCard: false,
+            filter: false,
+            defaultfilter: false,
+            prioritySorting: false,
+          },
+          {
+            type: 'geolocation',
+            label: 'Geolocation',
+            name: 'geolocation_geolocation',
+            noLabel: false,
+            required: false,
+            showInCard: false,
+          },
+          {
+            type: 'image',
+            label: 'Image',
+            name: 'image',
+            noLabel: false,
+            required: false,
+            showInCard: false,
+            style: 'cover',
+            fullWidth: false,
+          },
+          {
+            type: 'link',
+            label: 'Link',
+            name: 'link',
+            noLabel: false,
+            required: false,
+            showInCard: false,
+          },
+          {
+            type: 'markdown',
+            label: 'Markdown',
+            name: 'markdown',
+            noLabel: false,
+            required: false,
+            showInCard: false,
+            filter: false,
+            defaultfilter: false,
+            prioritySorting: false,
+          },
+          {
+            type: 'media',
+            label: 'Media',
+            name: 'media',
+            noLabel: false,
+            required: false,
+            showInCard: false,
+            style: 'cover',
+            fullWidth: false,
+          },
+          {
+            type: 'multidate',
+            label: 'Multi Date',
+            name: 'multi_date',
+            noLabel: false,
+            required: false,
+            showInCard: false,
+            filter: false,
+            defaultfilter: false,
+            prioritySorting: false,
+          },
+          {
+            type: 'multidaterange',
+            label: 'Multi Date Range',
+            name: 'multi_date_range',
+            noLabel: false,
+            required: false,
+            showInCard: false,
+            filter: false,
+            defaultfilter: false,
+            prioritySorting: false,
+          },
+          {
+            type: 'numeric',
+            label: 'Numeric',
+            name: 'numeric',
+            noLabel: false,
+            required: false,
+            showInCard: false,
+            filter: false,
+            defaultfilter: false,
+            prioritySorting: false,
+          },
+          {
+            type: 'preview',
+            label: 'Preview',
+            name: 'preview',
+            noLabel: false,
+            required: false,
+            showInCard: false,
+            style: 'cover',
+            fullWidth: false,
+          },
+          {
+            label: 'Generated Id',
+            type: 'generatedid',
+            name: 'generated_id',
+            defaultfilter: false,
+            filter: false,
+            noLabel: false,
+            prioritySorting: false,
+            required: false,
+            showInCard: false,
+          },
+          {
+            type: 'select',
+            label: 'Select',
+            name: 'select',
+            content: factory.id('thesaurusId').toHexString(),
+            defaultfilter: false,
+            filter: false,
+            noLabel: false,
+            prioritySorting: false,
+            required: false,
+            showInCard: false,
+          },
+          {
+            type: 'multiselect',
+            name: 'multi_select',
+            label: 'Multi Select',
+            content: factory.id('thesaurusId').toHexString(),
+            defaultfilter: false,
+            filter: false,
+            noLabel: false,
+            prioritySorting: false,
+            required: false,
+            showInCard: false,
+          },
+          {
+            type: 'relationship',
+            name: 'relationship_to_any',
+            label: 'Relationship to any',
+            content: '',
+            relationType: factory.id('relationTypeId').toHexString(),
+
+            defaultfilter: false,
+            filter: false,
+            noLabel: false,
+            prioritySorting: false,
+            required: false,
+            showInCard: false,
+          },
+          {
+            type: 'relationship',
+            content: factory.id('targetedTemplate').toHexString(),
+            relationType: factory.id('relationTypeId').toHexString(),
+            label: 'Relationship to Property as target',
+            name: 'relationship_to_property_as_target',
+            inherit: {
+              property: factory.id('date1').toHexString(),
               type: 'date',
+            },
+            defaultfilter: false,
+            filter: false,
+            noLabel: false,
+            prioritySorting: false,
+            required: false,
+            showInCard: false,
+          },
+
+          {
+            defaultfilter: false,
+            nestedProperties: [],
+            filter: false,
+            label: 'Nested',
+            name: 'nested_nested',
+            noLabel: false,
+            prioritySorting: false,
+            required: false,
+            showInCard: false,
+            type: 'nested',
+          },
+        ],
+      });
+    });
+
+    it('should throw if Template name is not unique on the system', async () => {
+      await testingEnvironment.setFixtures({
+        ...fixtures,
+        templates: [
+          {
+            color: '#142134',
+            name: 'Template Name',
+            default: false,
+            commonProperties: [
+              {
+                type: 'text',
+                label: 'Title',
+                name: 'title',
+                isCommonProperty: true,
+                noLabel: false,
+                required: false,
+                showInCard: false,
+                generatedId: false,
+                prioritySorting: false,
+              },
+              {
+                type: 'date',
+                label: 'Creation Date',
+                name: 'creationDate',
+                isCommonProperty: true,
+                noLabel: false,
+                required: false,
+                showInCard: false,
+                prioritySorting: false,
+              },
+              {
+                type: 'date',
+                label: 'Edit Date',
+                name: 'editDate',
+                isCommonProperty: true,
+                noLabel: false,
+                required: false,
+                showInCard: false,
+                prioritySorting: false,
+              },
+            ],
+            properties: [
+              {
+                type: 'text',
+                label: 'Text',
+                name: 'text',
+                noLabel: false,
+                required: false,
+                showInCard: false,
+                generatedId: false,
+                filter: false,
+                defaultfilter: false,
+                prioritySorting: false,
+              },
+            ],
+          },
+        ],
+      });
+
+      const { sut } = createSut(undefined, postgresTemplates);
+
+      await expect(
+        sut.execute({
+          name: 'Template Name',
+          properties: [{ label: 'Text2', type: PropertyTypeEnum.Text }],
+          commonProperties: [
+            { label: 'Title', type: PropertyTypeEnum.Text, name: 'title', isCommonProperty: true },
+            {
               label: 'Creation Date',
+              type: PropertyTypeEnum.Date,
               name: 'creationDate',
               isCommonProperty: true,
-              noLabel: false,
-              required: false,
-              showInCard: false,
-              prioritySorting: false,
             },
             {
-              type: 'date',
               label: 'Edit Date',
+              type: PropertyTypeEnum.Date,
               name: 'editDate',
               isCommonProperty: true,
-              noLabel: false,
-              required: false,
-              showInCard: false,
-              prioritySorting: false,
             },
           ],
-          properties: [
+          color: '#142134',
+        })
+      ).rejects.toThrow(TemplateWithDuplicatedNameOnTheSystemError);
+
+      const templates = await getTemplates();
+
+      expect(templates).toHaveLength(1);
+    });
+
+    it('should throw if entity view page does not exist', async () => {
+      const { sut } = createSut(undefined, postgresTemplates);
+      await expect(
+        sut.execute({
+          name: 'Template Name',
+          properties: [],
+          commonProperties: [
+            { label: 'Title', type: PropertyTypeEnum.Text, name: 'title', isCommonProperty: true },
             {
-              type: 'text',
-              label: 'Text',
-              name: 'text',
-              noLabel: false,
-              required: false,
-              showInCard: false,
-              generatedId: false,
-              filter: false,
-              defaultfilter: false,
-              prioritySorting: false,
+              label: 'Creation Date',
+              type: PropertyTypeEnum.Date,
+              name: 'creationDate',
+              isCommonProperty: true,
+            },
+            {
+              label: 'Edit Date',
+              type: PropertyTypeEnum.Date,
+              name: 'editDate',
+              isCommonProperty: true,
             },
           ],
-        },
-      ],
+          color: '#142134',
+          entityViewPage: 'not_exists',
+        })
+      ).rejects.toMatchObject({
+        errors: [
+          expect.objectContaining({
+            message: 'The selected page does not exist',
+            keyword: 'entityViewPageExists',
+          }),
+        ],
+      });
     });
 
-    const { sut } = createSut();
-
-    await expect(
-      sut.execute({
-        name: 'Template Name',
-        properties: [{ label: 'Text2', type: PropertyTypeEnum.Text }],
-        commonProperties: [
-          { label: 'Title', type: PropertyTypeEnum.Text, name: 'title', isCommonProperty: true },
-          {
-            label: 'Creation Date',
-            type: PropertyTypeEnum.Date,
-            name: 'creationDate',
-            isCommonProperty: true,
-          },
-          {
-            label: 'Edit Date',
-            type: PropertyTypeEnum.Date,
-            name: 'editDate',
-            isCommonProperty: true,
-          },
+    it('should throw if entity view page is not enabled', async () => {
+      const { sut } = createSut(undefined, postgresTemplates);
+      await expect(
+        sut.execute({
+          name: 'Template Name',
+          properties: [],
+          commonProperties: [
+            { label: 'Title', type: PropertyTypeEnum.Text, name: 'title', isCommonProperty: true },
+            {
+              label: 'Creation Date',
+              type: PropertyTypeEnum.Date,
+              name: 'creationDate',
+              isCommonProperty: true,
+            },
+            {
+              label: 'Edit Date',
+              type: PropertyTypeEnum.Date,
+              name: 'editDate',
+              isCommonProperty: true,
+            },
+          ],
+          color: '#142134',
+          entityViewPage: 'existing_not_enabled',
+        })
+      ).rejects.toMatchObject({
+        errors: [
+          expect.objectContaining({
+            message: 'The selected page is not enabled for entity view',
+            keyword: 'entityViewPageIsEnabled',
+          }),
         ],
-        color: '#142134',
-      })
-    ).rejects.toThrow(TemplateWithDuplicatedNameOnTheSystemError);
-
-    const templates = await testingEnvironment.db.getAllFrom('templates');
-
-    expect(templates).toHaveLength(1);
-  });
-
-  it('should throw if entity view page does not exist', async () => {
-    const { sut } = createSut();
-    await expect(
-      sut.execute({
-        name: 'Template Name',
-        properties: [],
-        commonProperties: [
-          { label: 'Title', type: PropertyTypeEnum.Text, name: 'title', isCommonProperty: true },
-          {
-            label: 'Creation Date',
-            type: PropertyTypeEnum.Date,
-            name: 'creationDate',
-            isCommonProperty: true,
-          },
-          {
-            label: 'Edit Date',
-            type: PropertyTypeEnum.Date,
-            name: 'editDate',
-            isCommonProperty: true,
-          },
-        ],
-        color: '#142134',
-        entityViewPage: 'not_exists',
-      })
-    ).rejects.toMatchObject({
-      errors: [
-        expect.objectContaining({
-          message: 'The selected page does not exist',
-          keyword: 'entityViewPageExists',
-        }),
-      ],
+      });
     });
-  });
 
-  it('should throw if entity view page is not enabled', async () => {
-    const { sut } = createSut();
-    await expect(
-      sut.execute({
-        name: 'Template Name',
-        properties: [],
-        commonProperties: [
-          { label: 'Title', type: PropertyTypeEnum.Text, name: 'title', isCommonProperty: true },
-          {
-            label: 'Creation Date',
-            type: PropertyTypeEnum.Date,
-            name: 'creationDate',
-            isCommonProperty: true,
-          },
-          {
-            label: 'Edit Date',
-            type: PropertyTypeEnum.Date,
-            name: 'editDate',
-            isCommonProperty: true,
-          },
-        ],
-        color: '#142134',
-        entityViewPage: 'existing_not_enabled',
-      })
-    ).rejects.toMatchObject({
-      errors: [
-        expect.objectContaining({
-          message: 'The selected page is not enabled for entity view',
-          keyword: 'entityViewPageIsEnabled',
-        }),
-      ],
-    });
+    if (postgresTemplates) {
+      it('should NOT revert the PG write when the Mongo transaction rolls back', async () => {
+        const translationService = TestUtils.mockClass<LegacyTranslationService>({
+          createTemplateTranslation: jest.fn().mockRejectedValue(new Error('Creation failed')),
+        });
+
+        const { sut } = createSut({ translationService }, postgresTemplates);
+
+        await expect(
+          sut.execute({
+            name: 'Failing Template',
+            properties: [{ label: 'Text', type: PropertyTypeEnum.Text }],
+            commonProperties: [
+              {
+                label: 'Title',
+                type: PropertyTypeEnum.Text,
+                name: 'title',
+                isCommonProperty: true,
+              },
+              {
+                label: 'Creation Date',
+                type: PropertyTypeEnum.Date,
+                name: 'creationDate',
+                isCommonProperty: true,
+              },
+              {
+                label: 'Edit Date',
+                type: PropertyTypeEnum.Date,
+                name: 'editDate',
+                isCommonProperty: true,
+              },
+            ],
+          })
+        ).rejects.toThrow('Creation failed');
+
+        const templates = await getTemplates();
+        expect(templates.some(t => t.name === 'Failing Template')).toBe(true);
+      });
+    }
   });
 });

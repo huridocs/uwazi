@@ -6,10 +6,10 @@ import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common
 import entities from '#api/entities/entities.js';
 import v1EntitiesModel from '#api/entities/entitiesModel.js';
 import { search } from '#api/search/index.js';
-import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { Db, ObjectId } from 'mongodb';
 import { MetadataSchema } from '#shared/types/commonTypes.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource.js';
 import { Entity, EntityMetadata, MetadataValue } from '../model/Entity.js';
 import { EntityMappers } from './EntityMapper.js';
@@ -23,11 +23,11 @@ export class MongoEntitiesDataSource
 
   private settingsDS: SettingsDataSource;
 
-  protected templatesDS: MongoTemplatesDataSource;
+  protected templatesDS: TemplatesDataSource;
 
   constructor(
     db: Db,
-    templatesDS: MongoTemplatesDataSource,
+    templatesDS: TemplatesDataSource,
     settingsDS: SettingsDataSource,
     transactionManager: MongoTransactionManager
   ) {
