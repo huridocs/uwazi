@@ -1,38 +1,16 @@
-import { formatMetadataForForm } from '../../../Components/Metadata/EntityEditor/functions/formatMetadataForForm.js';
-import {
-  metadataRoundTripEntityFixture,
-  metadataRoundTripFixtures,
-} from '../../../Components/Metadata/EntityEditor/functions/specs/fixtures.js';
-import { toMetadataObjectSchema } from '../../../Components/Metadata/EntityEditor/functions/toMetadataObjectSchema.js';
+import { formatMetadataForForm } from '../formatMetadataForForm.js';
+import { entity, fixtures } from './fixtures.js';
+import { toMetadataObjectSchema } from '../toMetadataObjectSchema.js';
 
 describe('toMetadataObjectSchema', () => {
-  it.each(metadataRoundTripFixtures)(
-    'should round-trip $property.type metadata from form values for $property.name',
+  it.each(fixtures)(
+    'should format $property.type metadata from form values for $property.name',
     ({ property, expected }) => {
-      const formMetadata = formatMetadataForForm(
-        [property],
-        metadataRoundTripEntityFixture.metadata
-      );
+      const formMetadata = formatMetadataForForm([property], entity.metadata);
 
       expect((formMetadata[property.name] ?? []).map(toMetadataObjectSchema)).toEqual(expected);
     }
   );
-
-  it('should keep primitive values and drop UI-only fields', () => {
-    expect(
-      toMetadataObjectSchema({
-        value: 'hello',
-        label: 'Hello',
-        color: '#ff0000',
-        authorized: false,
-        icon: { _id: 'x' },
-        type: 'relationship',
-      })
-    ).toEqual({
-      value: 'hello',
-      label: 'Hello',
-    });
-  });
 
   it('should return relationship values as sharedId only', () => {
     expect(

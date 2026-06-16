@@ -181,7 +181,6 @@ describe('Entity edit', () => {
 
     describe('Metadata', () => {
       it('should edit a few items and save', () => {
-        const originalEntity = Basic.args.entity!;
         const saveSpy = cy.stub().as('saveSpy');
         mount(
           <ThemeProvider>

@@ -1,11 +1,11 @@
 /* eslint-disable max-statements */
+import type { MetadataValue } from '#app/V2/formatters/types.js';
 import type {
   MetadataObjectSchema,
   PropertyValueSchema,
   InheritedValueSchema,
   SelectParentSchema,
 } from '#shared/types/commonTypes.js';
-import type { MetadataValue } from '../types.js';
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;

@@ -13,4 +13,3 @@ export { formatReferences } from './relationships/formatReferences.js';
 export { formatNestedProperty } from './metadata/formatNestedProperty.js';
 export { formatDenormalizedNewRelationship } from './metadata/formatDenormalizedNewRelationship.js';
 export { resolvePropertyMetadataValues } from './metadata/resolvePropertyMetadataValues.js';
-export { toMetadataObjectSchema } from './metadata/toMetadataObjectSchema.js';

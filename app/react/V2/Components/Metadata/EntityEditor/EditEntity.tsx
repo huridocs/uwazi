@@ -2,13 +2,12 @@
 import React, { useEffect, useMemo } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
-import { PropertySchema } from '#shared/types/commonTypes.js';
 import { t } from '#app/I18N/index.js';
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { thesauriAtom } from '#V2/atoms/thesauriAtom.js';
-import { resolvePropertyMetadataValues, toMetadataObjectSchema } from '#V2/formatters/index.js';
+import { resolvePropertyMetadataValues } from '#V2/formatters/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import {
   TextField,
@@ -25,6 +24,11 @@ import {
   MarkdownField,
 } from './Components/index.js';
 import { MultiselectListOption } from '../../Forms/index.js';
+import {
+  formatMetadataForForm,
+  type FormMetadataProperty,
+} from './functions/formatMetadataForForm.js';
+import { toMetadataObjectSchema } from './functions/toMetadataObjectSchema.js';
 
 type EditEntityFormValues = {
   title: Entity['title'];
@@ -39,23 +43,7 @@ type EditEntityProps = {
   disabled?: boolean;
 };
 
-type Properties = {
-  _id: string;
-  type: PropertySchema['type'];
-  name: string;
-  label: string;
-  required?: boolean;
-  content?: string;
-};
-
-const formatMetadataForForm = (
-  templateProperties: Properties[],
-  entityMetadata?: Entity['metadata']
-): EditEntityFormValues['metadata'] =>
-  templateProperties.reduce<EditEntityFormValues['metadata']>((acc, property) => {
-    acc[property.name] = resolvePropertyMetadataValues(property, entityMetadata);
-    return acc;
-  }, {});
+type Properties = FormMetadataProperty;
 
 const formatMetadataForEntity = (
   metadata: EditEntityFormValues['metadata'],
