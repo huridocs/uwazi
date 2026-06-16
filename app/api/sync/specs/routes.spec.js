@@ -6,6 +6,7 @@ import '#api/utils/jasmineHelpers.js';
 import { ObjectId } from 'mongodb';
 
 import * as index from '#api/search/entitiesIndex.js';
+import { SyncHandlerRegistry } from '#api/sync/SyncHandlerRegistry.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import instrumentRoutes from '../../utils/instrumentRoutes.js';
 import syncRoutes from '../routes.js';
@@ -75,8 +76,13 @@ describe('sync', () => {
     describe('when namespace is templates', () => {
       it('should update the mappings', async () => {
         jest.spyOn(index, 'updateMapping').mockImplementation(() => {});
-        const templates = { save: jest.fn() };
-        models.templates = () => templates;
+        const handler = {
+          save: jest.fn(),
+          saveMultiple: jest.fn(),
+          getById: jest.fn(),
+          delete: jest.fn(),
+        };
+        SyncHandlerRegistry.register('templates', () => handler);
 
         req.body = {
           namespace: 'templates',
@@ -84,14 +90,19 @@ describe('sync', () => {
         };
 
         await routes.post('/api/sync', req);
-        expect(templates.save).toHaveBeenCalledWith({ _id: 'id' });
+        expect(handler.save).toHaveBeenCalledWith({ _id: 'id' });
         expect(index.updateMapping).toHaveBeenCalledWith([req.body.data]);
       });
 
       it('should update the mappings if many templates are provided', async () => {
         jest.spyOn(index, 'updateMapping').mockImplementation(() => {});
-        const templates = { save: jest.fn(), saveMultiple: jest.fn() };
-        models.templates = () => templates;
+        const handler = {
+          save: jest.fn(),
+          saveMultiple: jest.fn(),
+          getById: jest.fn(),
+          delete: jest.fn(),
+        };
+        SyncHandlerRegistry.register('templates', () => handler);
 
         req.body = {
           namespace: 'templates',
@@ -99,23 +110,19 @@ describe('sync', () => {
         };
 
         await routes.post('/api/sync', req);
-        expect(templates.saveMultiple).toHaveBeenCalledWith([{ _id: 'id1' }, { _id: 'id2' }]);
+        expect(handler.saveMultiple).toHaveBeenCalledWith([{ _id: 'id1' }, { _id: 'id2' }]);
         expect(index.updateMapping).toHaveBeenCalledWith(req.body.data);
       });
 
-      it('should set the rest of the templates as non-default if the provided is default', async () => {
+      it('should delegate default template handling to the sync handler', async () => {
         jest.spyOn(index, 'updateMapping').mockImplementation(() => {});
-        const templates = {
+        const handler = {
+          save: jest.fn(),
           saveMultiple: jest.fn(),
-          get: jest.fn().mockResolvedValue([
-            {
-              _id: 'prevDefault',
-              name: 'Previous default',
-              default: true,
-            },
-          ]),
+          getById: jest.fn(),
+          delete: jest.fn(),
         };
-        models.templates = () => templates;
+        SyncHandlerRegistry.register('templates', () => handler);
 
         req.body = {
           namespace: 'templates',
@@ -123,15 +130,8 @@ describe('sync', () => {
         };
 
         await routes.post('/api/sync', req);
-        expect(templates.saveMultiple).toHaveBeenCalledWith([
-          {
-            _id: 'prevDefault',
-            name: 'Previous default',
-            default: false,
-          },
-          { _id: 'id', default: true },
-        ]);
-        expect(index.updateMapping).toHaveBeenCalledWith(req.body.data);
+        expect(handler.save).toHaveBeenCalledWith({ _id: 'id', default: true });
+        expect(index.updateMapping).toHaveBeenCalledWith([req.body.data]);
       });
     });
 

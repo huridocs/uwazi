@@ -584,23 +584,8 @@ export default {
 
   /** Propagate the deletion metadata.value id to all entity metadata. */
   async deleteFromMetadata(deletedId, propertyContent, propTypes) {
-    const includesRelationships = propTypes.includes(propertyTypes.relationship);
     const contentOrEmpty = [propertyContent, ''];
-    const allTemplates = includesRelationships
-      ? await templates.getByMongoQuery({
-          $or: [
-            { 'properties.content': { $in: contentOrEmpty } },
-            {
-              properties: {
-                $elemMatch: {
-                  type: propertyTypes.relationship,
-                  content: null,
-                },
-              },
-            },
-          ],
-        })
-      : await templates.getByMongoQuery({ 'properties.content': { $in: contentOrEmpty } });
+    const allTemplates = await templates.getByContentsOrUnrestrictedRelationship(contentOrEmpty);
     const allProperties = allTemplates.reduce((m, t) => m.concat(t.properties), []);
     const properties = allProperties.filter(p => propTypes.includes(p.type));
     const query = { $or: [] };
@@ -608,9 +593,7 @@ export default {
     const contentMatches = p =>
       (p.content && p.content.toString() === propertyContent.toString()) ||
       p.content === '' ||
-      (includesRelationships &&
-        p.type === propertyTypes.relationship &&
-        typeof p.content === 'undefined');
+      (p.type === propertyTypes.relationship && typeof p.content === 'undefined');
     query.$or = properties
       .filter(p => propertyContent && contentMatches(p))
       .map(property => {

@@ -5,7 +5,6 @@ import createError from '#api/utils/Error.js';
 import { LanguageISO6391, PropertySchema } from '#shared/types/commonTypes.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
-import model from './templatesModel.js';
 import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 
@@ -64,6 +63,11 @@ export default {
     return dao.getByEntityViewPage(pageId);
   },
 
+  async getByContentsOrUnrestrictedRelationship(contentIds: string[]) {
+    const dao = TemplatesDAOFactory.default();
+    return dao.getByContentsOrUnrestrictedRelationship(contentIds);
+  },
+
   async getDefaultTemplate() {
     const dao = TemplatesDAOFactory.default();
     return dao.getDefaultTemplate();
@@ -92,20 +96,18 @@ export default {
     return TemplateFacade.delete({ _id: template._id!.toString() });
   },
 
-  async getByMongoQuery(query: any = {}, projection?: any) {
-    return model.get(query, projection);
-  },
-
   async countByTemplate(template: string, session?: ClientSession) {
     return entities.countByTemplate(template, session);
   },
 
   async countByThesauri(thesauriId: string) {
-    return model.count({ 'properties.content': thesauriId });
+    const dao = TemplatesDAOFactory.default();
+    return dao.countByThesauri(thesauriId);
   },
 
   async findUsingRelationTypeInProp(relationTypeId: string, session?: ClientSession) {
-    return model.get({ 'properties.relationType': relationTypeId }, 'name', { session });
+    const dao = TemplatesDAOFactory.default();
+    return dao.findUsingRelationTypeInProp(relationTypeId, session);
   },
 
   getRelatedThesauri,

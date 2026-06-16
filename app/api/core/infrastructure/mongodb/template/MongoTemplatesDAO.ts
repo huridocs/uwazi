@@ -1,4 +1,4 @@
-import { Db, ObjectId } from 'mongodb';
+import { Db, ObjectId, ClientSession } from 'mongodb';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { TemplateDBO } from './DBOs/TemplateDBO.js';
@@ -6,6 +6,10 @@ import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 
 type PropertyDescriptor = { name: string; type: PropertyType; inheritedType?: PropertyType };
+
+const asString = (id: string | ObjectId): string => (typeof id === 'string' ? id : id.toString());
+
+const asStrings = (ids: (string | ObjectId)[]): string[] => ids.map(asString);
 
 type Deps = {
   db: Db;
@@ -36,12 +40,14 @@ class MongoTemplatesDAO extends MongoDataSource<TemplateDBO> {
   }
 
   async getByContent(contentId: string): Promise<TemplateDBO[]> {
-    return this.getCollection().find({ 'properties.content': contentId }).toArray();
+    return this.getCollection()
+      .find({ 'properties.content': asString(contentId) })
+      .toArray();
   }
 
   async getByContents(contentIds: string[]): Promise<TemplateDBO[]> {
     return this.getCollection()
-      .find({ 'properties.content': { $in: contentIds } })
+      .find({ 'properties.content': { $in: asStrings(contentIds) } })
       .toArray();
   }
 
@@ -53,6 +59,30 @@ class MongoTemplatesDAO extends MongoDataSource<TemplateDBO> {
 
   async getByEntityViewPage(pageId: string): Promise<TemplateDBO[]> {
     return this.getCollection().find({ entityViewPage: pageId }).toArray();
+  }
+
+  async getByContentsOrUnrestrictedRelationship(contentIds: string[]): Promise<TemplateDBO[]> {
+    return this.getCollection()
+      .find({
+        $or: [
+          { 'properties.content': { $in: asStrings(contentIds) } },
+          { properties: { $elemMatch: { type: 'relationship', content: null } } },
+        ],
+      })
+      .toArray();
+  }
+
+  async countByThesauri(thesauriId: string): Promise<number> {
+    return this.getCollection().countDocuments({ 'properties.content': asString(thesauriId) });
+  }
+
+  async findUsingRelationTypeInProp(
+    relationTypeId: string,
+    session?: ClientSession
+  ): Promise<Pick<TemplateDBO, '_id' | 'name'>[]> {
+    return this.getCollection()
+      .find({ 'properties.relationType': relationTypeId }, { projection: { name: 1 }, session })
+      .toArray();
   }
 
   async getDefaultTemplate(): Promise<TemplateDBO | null> {
