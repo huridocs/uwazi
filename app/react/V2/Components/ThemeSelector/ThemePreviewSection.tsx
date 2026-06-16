@@ -1,6 +1,6 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
-import { SectionHeading, SurfacePanel } from '#V2/Components/UI/index.js';
+import { SectionHeading, SegmentedControl, SurfacePanel } from '#V2/Components/UI/index.js';
 import { checkContrast, getContrastTextColor } from '#shared/utils/contrast.js';
 import { ACCENT_PRIMARY_KEY, appliedTheme, THEME_MODES } from '#V2/theme/themes.js';
 import type { ThemeMode } from '#V2/theme/themes.js';
@@ -15,12 +15,6 @@ type ThemePreviewSectionProps = {
   siteLogo?: string | undefined;
   favicon?: string | undefined;
 };
-
-const modeButtonClass = (selected: boolean) =>
-  [
-    'rounded-md px-3 py-1.5 text-xs font-medium transition-colors',
-    selected ? 'bg-ink text-parchment' : 'bg-warm text-ink-secondary hover:bg-parchment',
-  ].join(' ');
 
 const contrastChecks = (themeVars: ThemeVars, mode: ThemeMode) => {
   const resolved = appliedTheme(themeVars, mode, true);
@@ -84,18 +78,17 @@ const ThemePreviewSection = ({
         <SectionHeading>
           <Translate>Live preview</Translate>
         </SectionHeading>
-        <div className="flex items-center gap-2 rounded-lg bg-warm p-1">
-          {THEME_MODES.map(mode => (
-            <button
-              key={mode}
-              type="button"
-              className={modeButtonClass(previewMode === mode)}
-              onClick={() => setPreviewMode(mode)}
-            >
-              {mode === 'light' ? <Translate>Light</Translate> : <Translate>Dark</Translate>}
-            </button>
-          ))}
-        </div>
+        <SegmentedControl
+          value={previewMode}
+          onChange={setPreviewMode}
+          ariaLabel="Preview mode"
+          showLabels
+          options={THEME_MODES.map(mode => ({
+            id: mode,
+            title: mode,
+            label: mode === 'light' ? <Translate>Light</Translate> : <Translate>Dark</Translate>,
+          }))}
+        />
       </div>
       {failedChecks.length ? (
         <SurfacePanel

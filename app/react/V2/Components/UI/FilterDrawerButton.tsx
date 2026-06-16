@@ -2,12 +2,12 @@ import React from 'react';
 import { FunnelIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 
-type FiltersButtonProps = {
+type FilterDrawerButtonProps = {
   activeCount: number;
   onClick: () => void;
 };
 
-const FiltersButton = ({ activeCount, onClick }: FiltersButtonProps) => {
+const FilterDrawerButton = ({ activeCount, onClick }: FilterDrawerButtonProps) => {
   const active = activeCount > 0;
 
   return (
@@ -34,4 +34,5 @@ const FiltersButton = ({ activeCount, onClick }: FiltersButtonProps) => {
   );
 };
 
-export { FiltersButton };
+export type { FilterDrawerButtonProps };
+export { FilterDrawerButton };
