@@ -39,7 +39,7 @@ export class MongoATConfigDataSource
     const settings = await this.getCollection().findOne();
     const rawConfig = settings?.features?.automaticTranslation ?? { active: false };
 
-    const validProperties = await this.templates.getAllTextProperties().all();
+    const validProperties = await this.templates.getAllTextProperties();
     const configuredLanguages = await this.settings.getLanguageKeys();
     const supportedLanguages = await this.automaticTranslation.supportedLanguages();
 

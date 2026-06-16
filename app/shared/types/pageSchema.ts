@@ -2,6 +2,7 @@ import Ajv from 'ajv';
 
 import { objectIdSchema } from '#shared/types/commonSchemas.js';
 import { wrapValidator } from '#shared/tsUtils.js';
+import templates from '#api/core/v1_layer/templates/index.js';
 import { PageType } from './pageType.js';
 
 const ajv = new Ajv({ allErrors: true });
@@ -14,14 +15,10 @@ ajv.addKeyword({
   type: 'object',
   async validate(_fields: any, page: PageType) {
     if (page.sharedId) {
-      const { default: templatesModel } =
-        await import('#api/core/v1_layer/templates/templatesModel.js');
-      const templates = await templatesModel.get({
-        entityViewPage: page.sharedId,
-      });
+      const templatesUsingPage = await templates.getByEntityViewPage(page.sharedId);
 
-      if (templates.length > 0 && !page.entityView) {
-        const templatesTitles = templates.map(template => template.name);
+      if (templatesUsingPage.length > 0 && !page.entityView) {
+        const templatesTitles = templatesUsingPage.map(template => template.name);
         throw new Ajv.ValidationError([
           {
             keyword: 'validatePageIsNotEntityView',

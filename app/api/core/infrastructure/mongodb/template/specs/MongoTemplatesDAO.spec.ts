@@ -157,4 +157,62 @@ describe('MongoTemplatesDAO', () => {
       });
     });
   });
+
+  describe('get()', () => {
+    it('should return all templates when called without ids', async () => {
+      const { sut } = createSut();
+      const result = await sut.get();
+
+      expect(result).toHaveLength(2);
+      expect(result.map(t => t.name)).toContain('template1');
+      expect(result.map(t => t.name)).toContain('template2');
+    });
+
+    it('should return templates matching the given ids', async () => {
+      const { sut } = createSut();
+      const all = await sut.get();
+      const ids = all.map(t => t._id.toString());
+
+      const result = await sut.get([ids[0]]);
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('template1');
+    });
+
+    it('should return multiple templates when given multiple ids', async () => {
+      const { sut } = createSut();
+      const all = await sut.get();
+      const ids = all.map(t => t._id.toString());
+
+      const result = await sut.get(ids);
+      expect(result).toHaveLength(2);
+    });
+
+    it('should return empty array when no ids match', async () => {
+      const { sut } = createSut();
+      const result = await sut.get(['000000000000000000000000']);
+      expect(result).toEqual([]);
+    });
+
+    it('should return empty array when ids array is empty', async () => {
+      const { sut } = createSut();
+      const result = await sut.get([]);
+      expect(result).toEqual([]);
+    });
+
+    it('should read templates through the active transaction session', async () => {
+      await testingEnvironment.setUp({ templates: [] });
+      const { sut, transactionManager } = createSut();
+
+      await transactionManager.run(async () => {
+        const session = transactionManager.getSession()!;
+        await getConnection()
+          .collection('templates')
+          .insertOne(factory.template('tx_template', []), { session });
+
+        const result = await sut.get();
+        expect(result).toHaveLength(1);
+        expect(result[0].name).toBe('tx_template');
+      });
+    });
+  });
 });

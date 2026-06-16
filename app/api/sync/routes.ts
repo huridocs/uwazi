@@ -9,8 +9,6 @@ import { storage, uploadMiddleware } from '#api/files/index.js';
 import { updateMapping } from '#api/search/entitiesIndex.js';
 import { TranslationType } from '#shared/translationType.js';
 import { FileType } from '#shared/types/fileType.js';
-
-import { TemplateSchema } from '#shared/types/templateType.js';
 import { needsAuthorization } from '../auth/index.js';
 import { SyncHandlerRegistry } from './SyncHandlerRegistry.js';
 import { registerSyncHandlers } from './registerSyncHandlers.js';
@@ -78,29 +76,6 @@ const preserveTranslations = async (syncData: TranslationType): Promise<Translat
   return syncData;
 };
 
-const keepOnlyOneDefaultTemplate = async (
-  syncData: TemplateSchema | TemplateSchema[]
-): Promise<TemplateSchema | TemplateSchema[]> => {
-  const syncDataArray = Array.isArray(syncData) ? syncData : [syncData];
-  const syncedDefault = syncDataArray.find(template => template.default);
-  if (syncedDefault) {
-    const [otherDefault] = (await models
-      .templates()
-      .get({ _id: { $ne: syncedDefault._id }, default: true })) as TemplateSchema[];
-    if (otherDefault) {
-      return [
-        {
-          ...otherDefault,
-          default: false,
-        },
-        ...syncDataArray,
-      ];
-    }
-  }
-
-  return syncData;
-};
-
 export default (app: Application) => {
   registerSyncHandlers();
 
@@ -113,10 +88,6 @@ export default (app: Application) => {
 
       if (req.body.namespace === 'translations') {
         req.body.data = await preserveTranslations(req.body.data);
-      }
-
-      if (req.body.namespace === 'templates') {
-        req.body.data = await keepOnlyOneDefaultTemplate(req.body.data);
       }
 
       if (req.body.namespace === 'translationsV2') {
