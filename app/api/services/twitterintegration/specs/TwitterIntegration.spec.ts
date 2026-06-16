@@ -12,7 +12,6 @@ import {
   fixturesTenantWithoutTwitter,
 } from '#api/services/twitterintegration/specs/fixtures.js';
 import EntitiesModel from '#api/entities/entitiesModel.js';
-import templates from '#api/core/v1_layer/templates/templates.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { tenants } from '#api/tenants/index.js';
@@ -95,10 +94,11 @@ describe('TwitterIntegration', () => {
       })
     );
 
-    const [hashtagTemplate] = await templates.get({ name: 'Hashtags' });
-    const [tweetsTemplate] = await templates.get({ name: 'Tweets' });
-    expect(hashtagTemplate.name).toBe('Hashtags');
-    expect(tweetsTemplate.name).toBe('Tweets');
+    const allTemplates = await testingEnvironment.db.getAllFrom('templates');
+    const hashtagTemplate = allTemplates.find(t => t.name === 'Hashtags');
+    const tweetsTemplate = allTemplates.find(t => t.name === 'Tweets');
+    expect(hashtagTemplate!.name).toBe('Hashtags');
+    expect(tweetsTemplate!.name).toBe('Tweets');
   });
 
   it('should create other templates if they do not exist', async () => {
@@ -112,10 +112,11 @@ describe('TwitterIntegration', () => {
       })
     );
 
-    const [hashtagTemplate] = await templates.get({ name: 'OtherHashtags' });
-    const [tweetsTemplate] = await templates.get({ name: 'OtherTweets' });
-    expect(hashtagTemplate.name).toBe('OtherHashtags');
-    expect(tweetsTemplate.name).toBe('OtherTweets');
+    const allTemplates = await testingEnvironment.db.getAllFrom('templates');
+    const hashtagTemplate = allTemplates.find(t => t.name === 'OtherHashtags');
+    const tweetsTemplate = allTemplates.find(t => t.name === 'OtherTweets');
+    expect(hashtagTemplate!.name).toBe('OtherHashtags');
+    expect(tweetsTemplate!.name).toBe('OtherTweets');
   });
 
   it('should store one tweet', async () => {

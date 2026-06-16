@@ -1,5 +1,5 @@
 import { EnforcedWithId } from '#api/odm/index.js';
-import templatesModel from '#api/core/v1_layer/templates/templatesModel.js';
+import templates from '#api/core/v1_layer/templates/templates.js';
 import { ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { ModelStatus } from '#shared/types/IXModelSchema.js';
@@ -37,7 +37,7 @@ type SaveModelProcessOptions = {
 
 export class IXServices {
   static async getTargetProperty({ extractor }: GetTargetPropertyInput) {
-    const template = await templatesModel.getById(extractor.templates[0]);
+    const template = await templates.getById(extractor.templates[0]);
     const property =
       extractor.property === 'title'
         ? template?.commonProperties?.find(p => p.name === extractor.property)

@@ -50,7 +50,7 @@ export class DenormalizationService {
     language: string,
     relatedEntities: Entity[] = []
   ) {
-    const properties = await this.templatesDS.getAllRelationshipProperties().all();
+    const properties = await this.templatesDS.getAllRelationshipProperties();
     const entities: { sharedId: string; property: string }[] = [];
     await Promise.all(
       properties.map(async property => {
@@ -150,7 +150,7 @@ export class DenormalizationService {
   }
 
   private async updateDenormalizedMetadataDirectly(changedEntityIds: string[], language: string) {
-    const relationshipProperties = await this.templatesDS.getAllRelationshipProperties().all();
+    const relationshipProperties = await this.templatesDS.getAllRelationshipProperties();
     const relationshipPropertyNames = relationshipProperties.map(property => property.name);
 
     await this.entitiesDS.getByIds(changedEntityIds, language).forEach(async entity => {
