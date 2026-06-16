@@ -192,7 +192,7 @@ const RelationshipsDocumentStory = ({
   return (
     <div className="h-screen max-h-200 bg-(--color-theme-surface-raised)">
       <BrowserRouter>
-        <Provider tore={store}>
+        <Provider store={store}>
           <RelationshipsDocumentStoryBody
             fileUrl={fileUrl}
             activeRelationshipId={activeRelationshipId}
