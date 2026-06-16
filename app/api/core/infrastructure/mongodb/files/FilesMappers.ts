@@ -46,6 +46,7 @@ function pdfDocumentFromDBO(
         }),
       generatedToc: dbo.generatedToc,
       toc: dbo.toc,
+      propertySelections: dbo.propertySelections,
     });
   }
   return new PDFDocument({
@@ -53,6 +54,7 @@ function pdfDocumentFromDBO(
     content: contentLoader({ type: dbo.type, filename: dbo.filename }),
     entity: dbo.entity,
     status: dbo.status ?? 'processing',
+    propertySelections: dbo.propertySelections,
   });
 }
 

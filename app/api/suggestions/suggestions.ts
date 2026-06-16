@@ -1,18 +1,16 @@
+/* eslint-disable no-continue */
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
 
-import { files } from '#api/files/files.js';
 import { EnforcedWithId, UwaziFilterQuery } from '#api/odm/index.js';
 import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 import templates from '#api/core/v1_layer/templates/index.js';
-import { syncedPromiseLoop } from '#shared/data_utils/promiseUtils.js';
-import {
-  PropertySelectionSchema,
-  ObjectIdSchema,
-  PropertySchema,
-} from '#shared/types/commonTypes.js';
-import { FileType } from '#shared/types/fileType.js';
+import { ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';
+import { BaseFile } from '#api/core/domain/files/BaseFile.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { IXSuggestionAggregation, IXSuggestionType } from '#shared/types/suggestionType.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import {
@@ -35,40 +33,52 @@ const updatePropertySelections = async (
 ) => {
   if (propertyTypeIsWithoutPropertySelections(property.type)) return;
 
-  const fetchedFiles = await files.get({ _id: { $in: suggestions.map(s => s.fileId) } });
-  const suggestionsByFileId = objectIndex(
-    suggestions,
-    s => s.fileId?.toString() || '',
-    s => s
+  const filesDS = FilesDataSourceFactory.default();
+  const filesService = FilesServiceFactory.default();
+  const transactionManager = TransactionManagerFactory.default();
+
+  const suggestionFileIds = suggestions.map(s => s.fileId).filter(Boolean);
+  if (!suggestionFileIds.length) return;
+
+  const fetchedFiles = await filesDS.getByIds(suggestionFileIds as string[]);
+  const filesById = objectIndex(
+    fetchedFiles,
+    f => f.id.toString() || '',
+    f => f
   );
 
-  await syncedPromiseLoop(fetchedFiles, async (file: EnforcedWithId<FileType>) => {
-    const suggestion = suggestionsByFileId[file._id.toString()];
-    file.propertySelections = file.propertySelections ? file.propertySelections : [];
+  const updatedFiles: BaseFile[] = [];
 
-    const propertySelection = file.propertySelections.find(
-      (em: any) => em.name === suggestion.propertyName
-    ) as PropertySelectionSchema;
+  for (const suggestion of suggestions) {
+    const fileId = suggestion.fileId?.toString();
+    if (!fileId) continue;
 
-    if (!propertySelection) {
-      file.propertySelections.push({
-        name: suggestion.propertyName,
-        timestamp: Date(),
-        selection: {
-          text: suggestion.suggestedText || suggestion.suggestedValue?.toString(),
-          selectionRectangles: suggestion.selectionRectangles,
+    const file = filesById[fileId];
+    if (!file) continue;
+
+    const updated = file.update({
+      propertySelections: [
+        {
+          name: suggestion.propertyName,
+          timestamp: Date(),
+          selection: {
+            text: suggestion.suggestedText || suggestion.suggestedValue?.toString(),
+            selectionRectangles: suggestion.selectionRectangles,
+          },
         },
-      });
-    } else {
-      propertySelection.timestamp = Date();
-      propertySelection.selection = {
-        text: suggestion.suggestedText || suggestion.suggestedValue?.toString(),
-        selectionRectangles: suggestion.selectionRectangles,
-      };
-    }
+      ],
+    });
 
-    await files.save(file);
-  });
+    if (updated.hasChanged) {
+      updatedFiles.push(updated);
+    }
+  }
+
+  if (updatedFiles.length > 0) {
+    await transactionManager.run(async () => {
+      await filesService.bulkUpsert(updatedFiles);
+    });
+  }
 };
 
 const propertyTypesWithAllLanguages = new Set(['numeric', 'date', 'select', 'multiselect']);

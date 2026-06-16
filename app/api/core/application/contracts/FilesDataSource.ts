@@ -3,7 +3,7 @@ import { BaseFile } from '#api/core/domain/files/BaseFile.js';
 import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
 import { ResultType } from '#api/core/libs/Result.js';
 import { PDFDocument } from '../../domain/files/PDFDocument.js';
-import { PropertySelectionSchema, LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { FileNotFound, ProcessingFileNotFound } from '../../domain/files/errors.js';
 import { FileType } from '../../domain/files/FileType.js';
 
@@ -16,12 +16,9 @@ interface FilesDataSource {
   bulkCreate(files: [BaseFile, ...BaseFile[]]): Promise<void>;
   update(file: BaseFile): Promise<void>;
   bulkUpdate(files: BaseFile[]): Promise<void>;
+  replaceFile(file: BaseFile): Promise<void>;
   delete(files: BaseFile[]): Promise<void>;
   getProcessingById(documentId: string): Promise<ResultType<PDFDocument, ProcessingFileNotFound>>;
-  savePropertySelections(
-    fileId: string,
-    propertySelections: PropertySelectionSchema[]
-  ): Promise<void>;
   deletePropertySelections(entityPropertyNames: string[], entitySharedIds: string[]): Promise<void>;
   renamePropertySelections(
     renamedPropertyNames: { [previousName: string]: string },
@@ -41,6 +38,7 @@ interface FilesDataSource {
     filename: string,
     allowedTypes?: FileType[]
   ): Promise<ResultType<BaseFile, FileNotFound>>;
-  getById(id: string): Promise<ResultType<BaseFile, FileNotFound>>;
+  getById<T extends BaseFile = BaseFile>(id: string): Promise<ResultType<T, FileNotFound>>;
+  getByIds(ids: string[]): Promise<BaseFile[]>;
 }
 export type { FilesDataSource, GetDocumentsForEntityOptions };

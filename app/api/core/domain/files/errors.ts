@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import { DomainError } from '#api/core/domain/error/DomainError.js';
 import { PDFDocument } from './PDFDocument.js';
 
@@ -25,5 +26,15 @@ export class FileContentError extends DomainError {
 export class FileNotFound extends DomainError {
   constructor(message: string, cause?: Error) {
     super(message, 'file.not_found', cause);
+  }
+}
+
+export class CannotTransformFileToAttachment extends DomainError {
+  constructor(id: string, type: string, cause?: Error) {
+    super(
+      `Cannot transform File ${id}: type is '${type}', expected 'document'`,
+      'file.cannot_transform_to_attachment',
+      cause
+    );
   }
 }
