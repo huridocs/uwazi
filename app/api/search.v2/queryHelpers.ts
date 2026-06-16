@@ -1,6 +1,6 @@
 import { elastic } from '#api/search/index.js';
 import { SearchQuery } from '#shared/types/SearchQueryType.js';
-import templatesModel from '#api/core/v1_layer/templates/templates.js';
+import templates from '#api/core/v1_layer/templates/templates.js';
 import propertiesHelper from '#shared/commonProperties.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 
@@ -23,8 +23,8 @@ const extractFullTextGroups = (searchString: string) => {
 
 // eslint-disable-next-line max-statements
 async function extractSearchParams(query: SearchQuery) {
-  const templates = await templatesModel.get();
-  const uniqueProperties = (propertiesHelper.allUniqueProperties(templates) as PropertySchema[])
+  const allTemplates = await templates.get();
+  const uniqueProperties = (propertiesHelper.allUniqueProperties(allTemplates) as PropertySchema[])
     .map(prop =>
       ['text', 'markdown', 'generatedid'].includes(prop.type)
         ? `metadata.${prop.name}.value`

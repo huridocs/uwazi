@@ -213,7 +213,7 @@ async function getEntityTemplate(doc, language) {
     template = await templates.getById(doc.template);
   } else if (doc.sharedId) {
     const storedDoc = await this.getById(doc.sharedId, language);
-    if (storedDoc) {
+    if (storedDoc?.template) {
       template = await templates.getById(storedDoc.template);
     }
   }
@@ -348,13 +348,13 @@ export default {
     if (doc.sharedId) {
       await this.updateEntity(this.sanitize(doc, template), template);
     } else {
-      const [{ languages }, [defaultTemplate]] = await Promise.all([
+      const [{ languages }, defaultTemplate] = await Promise.all([
         settings.get(),
-        templates.get({ default: true }),
+        templates.getDefaultTemplate(),
       ]);
 
       if (!doc.template) {
-        doc.template = defaultTemplate._id;
+        doc.template = defaultTemplate?._id;
         docTemplate = defaultTemplate;
       }
       doc.metadata = doc.metadata || {};
@@ -391,14 +391,12 @@ export default {
     }
 
     doc.sharedId = doc.sharedId || ID();
-    const [template, [defaultTemplate]] = await Promise.all([
+    const [template, defaultTemplate] = await Promise.all([
       this.getEntityTemplate(doc, language),
-      templates.get({ default: true }),
+      templates.getDefaultTemplate(),
     ]);
     let docTemplate = template;
     if (!doc.template) {
-      doc.template = defaultTemplate._id;
-      doc.metadata = {};
       docTemplate = defaultTemplate;
     }
     const entity = this.sanitize(doc, docTemplate);
@@ -586,26 +584,8 @@ export default {
 
   /** Propagate the deletion metadata.value id to all entity metadata. */
   async deleteFromMetadata(deletedId, propertyContent, propTypes) {
-    const includesRelationships = propTypes.includes(propertyTypes.relationship);
-    const allTemplates = await templates.get({
-      $or: [
-        {
-          'properties.content': { $in: [propertyContent, ''] },
-        },
-        ...(includesRelationships
-          ? [
-              {
-                properties: {
-                  $elemMatch: {
-                    type: propertyTypes.relationship,
-                    content: null,
-                  },
-                },
-              },
-            ]
-          : []),
-      ],
-    });
+    const contentOrEmpty = [propertyContent, ''];
+    const allTemplates = await templates.getByContentsOrUnrestrictedRelationship(contentOrEmpty);
     const allProperties = allTemplates.reduce((m, t) => m.concat(t.properties), []);
     const properties = allProperties.filter(p => propTypes.includes(p.type));
     const query = { $or: [] };
@@ -613,9 +593,7 @@ export default {
     const contentMatches = p =>
       (p.content && p.content.toString() === propertyContent.toString()) ||
       p.content === '' ||
-      (includesRelationships &&
-        p.type === propertyTypes.relationship &&
-        typeof p.content === 'undefined');
+      (p.type === propertyTypes.relationship && typeof p.content === 'undefined');
     query.$or = properties
       .filter(p => propertyContent && contentMatches(p))
       .map(property => {
@@ -632,14 +610,6 @@ export default {
     if (entities.length > 0) {
       await search.indexEntities({ _id: { $in: entities.map(e => e._id.toString()) } }, null, 1000);
     }
-  },
-
-  /** Propagate the deletion of a thesaurus entry to all entity metadata. */
-  async deleteThesaurusFromMetadata(deletedId, thesaurusId) {
-    await this.deleteFromMetadata(deletedId, thesaurusId, [
-      propertyTypes.select,
-      propertyTypes.multiselect,
-    ]);
   },
 
   /** Propagate the deletion of a related entity to all entity metadata. */

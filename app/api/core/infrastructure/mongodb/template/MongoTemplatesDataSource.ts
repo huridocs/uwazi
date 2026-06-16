@@ -5,7 +5,6 @@ import {
   MongoDSOptions,
 } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
-import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import {
   DefaultTemplateNotFoundError,
@@ -14,7 +13,6 @@ import {
 import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { resetIndex, updateMapping } from '#api/search/entitiesIndex.js';
-import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { Property } from '../../../domain/template/Property.js';
 import { RelationshipProperty } from '../../../domain/template/RelationshipProperty.js';
 import { Template } from '../../../domain/template/Template.js';
@@ -23,8 +21,9 @@ import { V1RelationshipProperty } from '../../../domain/template/V1RelationshipP
 import { TemplateDBO } from './DBOs/TemplateDBO.js';
 import { MongoTemplateMapper, MongoTemplatePropertyMapper } from './MongoTemplateMapper.js';
 import { mapPropertyQuery } from './QueryMapper.js';
+import { MongoTemplatesDAO } from './MongoTemplatesDAO.js';
 
-type Deps = {
+type MongoTemplatesDataSourceDeps = {
   db: Db;
   transactionManager: MongoTransactionManager;
   options?: MongoDSOptions;
@@ -36,12 +35,17 @@ export class MongoTemplatesDataSource
 {
   protected collectionName = 'templates';
 
-  private _nameToPropertyMap?: Record<string, Property>;
+  private dao: MongoTemplatesDAO;
 
   private templatesMutated = new Map<ObjectId, TemplateDBO>();
 
-  constructor(deps: Deps) {
+  constructor(deps: MongoTemplatesDataSourceDeps) {
     super(deps.db, deps.transactionManager, deps.options);
+
+    this.dao = new MongoTemplatesDAO({
+      db: deps.db,
+      transactionManager: deps.transactionManager,
+    });
 
     this.transactionManager.onCommitted(async () => {
       const templates = [...this.templatesMutated.values()];
@@ -60,11 +64,12 @@ export class MongoTemplatesDataSource
     return updateMapping([MongoTemplateMapper.toSchema(template)]);
   }
 
-  getAll() {
-    return new MongoResultSet(this.getCollection().find({}), MongoTemplateMapper.toDomain);
+  async getAll(): Promise<Template[]> {
+    const templates = await this.dao.get();
+    return templates.map(MongoTemplateMapper.toDomain);
   }
 
-  getAllRelationshipProperties() {
+  async getAllRelationshipProperties(): Promise<RelationshipProperty[]> {
     const cursor = this.getCollection().aggregate([
       {
         $match: {
@@ -85,8 +90,8 @@ export class MongoTemplatesDataSource
       },
     ]);
 
-    return new MongoResultSet(
-      cursor,
+    const dbos = await cursor.toArray();
+    return dbos.map(
       template =>
         new RelationshipProperty(
           template.properties._id,
@@ -99,7 +104,7 @@ export class MongoTemplatesDataSource
     );
   }
 
-  getGeneratedIdPropertiesByIds(propertyIds: string[]) {
+  async getGeneratedIdPropertiesByIds(propertyIds: string[]): Promise<GenerateIdProperty[]> {
     const cursor = this.getCollection().aggregate([
       { $unwind: '$properties' },
       {
@@ -114,8 +119,9 @@ export class MongoTemplatesDataSource
         },
       },
     ]);
-    return new MongoResultSet(
-      cursor,
+
+    const dbos = await cursor.toArray();
+    return dbos.map(
       template =>
         new GenerateIdProperty({
           id: template.properties._id,
@@ -126,7 +132,7 @@ export class MongoTemplatesDataSource
     );
   }
 
-  getV1RelationshipPropertiesByIds(propertyIds: string[]) {
+  async getV1RelationshipPropertiesByIds(propertyIds: string[]): Promise<V1RelationshipProperty[]> {
     const cursor = this.getCollection().aggregate([
       { $unwind: '$properties' },
       {
@@ -143,8 +149,8 @@ export class MongoTemplatesDataSource
       },
     ]);
 
-    return new MongoResultSet(
-      cursor,
+    const dbos = await cursor.toArray();
+    return dbos.map(
       template =>
         new V1RelationshipProperty(
           template.properties._id,
@@ -158,7 +164,7 @@ export class MongoTemplatesDataSource
     );
   }
 
-  getAllTextProperties() {
+  async getAllTextProperties(): Promise<Property[]> {
     const cursor = this.getCollection().aggregate([
       {
         $addFields: {
@@ -181,31 +187,23 @@ export class MongoTemplatesDataSource
       },
     ]);
 
-    return new MongoResultSet(cursor, template =>
+    const dbos = await cursor.toArray();
+    return dbos.map(template =>
       MongoTemplatePropertyMapper.toDomain(template.textProperty, template._id.toString())
     );
   }
 
-  async getPropertyByName(name: string) {
-    if (!this._nameToPropertyMap) {
-      const templates = await this.getCollection().find({}).toArray();
-      const properties = templates
-        .map(
-          t =>
-            t.properties.map(p => MongoTemplatePropertyMapper.toDomain(p, t._id.toHexString())) ||
-            []
-        )
-        .flat();
-      this._nameToPropertyMap = objectIndex(
-        properties,
-        p => p.name,
-        p => p
-      );
+  async getPropertyByName(name: string): Promise<Property> {
+    const property = await this.dao.getPropertyByName(name);
+
+    if (!property) {
+      throw new Error(`Property not found: ${name}`);
     }
-    return this._nameToPropertyMap[name];
+
+    return MongoTemplatePropertyMapper.toDomain(property, property._id!.toString());
   }
 
-  async getPropertiesBeingInherited(properties: Property[]) {
+  async getPropertiesBeingInherited(properties: Property[]): Promise<Property[]> {
     const cursor = this.getCollection().aggregate([
       {
         $match: { 'properties.inherit.property': { $in: properties.map(p => p.id) } },
@@ -228,7 +226,7 @@ export class MongoTemplatesDataSource
     return [];
   }
 
-  getAllProperties() {
+  async getAllProperties(): Promise<Property[]> {
     const cursor = this.getCollection().aggregate([
       {
         $match: {},
@@ -242,48 +240,41 @@ export class MongoTemplatesDataSource
       },
     ]);
 
-    return new MongoResultSet(cursor, template =>
+    const dbos = await cursor.toArray();
+    return dbos.map(template =>
       MongoTemplatePropertyMapper.toDomain(template.properties, template._id.toString())
     );
   }
 
-  getTemplatesIdsHavingProperty(propertyName: string) {
-    const cursor = this.getCollection().find(
-      { 'properties.name': propertyName },
-      { projection: { _id: 1 } }
-    );
-    return new MongoResultSet(cursor, template => MongoIdHandler.mapToApp(template._id));
+  async getTemplatesIdsHavingProperty(propertyName: string): Promise<string[]> {
+    const templates = await this.getCollection()
+      .find({ 'properties.name': propertyName }, { projection: { _id: 1 } })
+      .toArray();
+    return templates.map(template => MongoIdHandler.mapToApp(template._id));
   }
 
-  getAllTemplatesIds() {
-    const cursor = this.getCollection().find({}, { projection: { _id: 1 } });
-    return new MongoResultSet(cursor, template => MongoIdHandler.mapToApp(template._id));
+  async getAllTemplatesIds(): Promise<string[]> {
+    return this.dao.getAllIds();
   }
 
-  getByIds(ids: Template['id'][]) {
-    const templatesCursor = this.getCollection().find({
-      _id: { $in: ids.map(MongoIdHandler.mapToDb) },
-    });
-
-    return new MongoResultSet(templatesCursor, MongoTemplateMapper.toDomain);
+  async getByIds(ids: Template['id'][]): Promise<Template[]> {
+    const templates = await this.dao.get(ids);
+    return templates.map(MongoTemplateMapper.toDomain);
   }
 
-  getByNames(names: Template['name'][]) {
-    const templatesCursor = this.getCollection().find({
-      name: { $in: names },
-    });
-
-    return new MongoResultSet(templatesCursor, MongoTemplateMapper.toDomain);
+  async getByNames(names: Template['name'][]): Promise<Template[]> {
+    const templates = await this.dao.getByNames(names);
+    return templates.map(MongoTemplateMapper.toDomain);
   }
 
   async getById(id: string): Promise<ResultType<Template, TemplateDoesNotExistError>> {
-    const schema = await this.getCollection().findOne({ _id: new ObjectId(id) });
+    const templates = await this.dao.get([id]);
 
-    if (!schema) {
+    if (!templates.length) {
       return Result.fail(new TemplateDoesNotExistError(id));
     }
 
-    return Result.ok(MongoTemplateMapper.toDomain(schema));
+    return Result.ok(MongoTemplateMapper.toDomain(templates[0]));
   }
 
   async incrementProcessingTracking(id: Template['id']) {
@@ -373,13 +364,13 @@ export class MongoTemplatesDataSource
   }
 
   async getDefaultTemplate(): Promise<ResultType<Template, DefaultTemplateNotFoundError>> {
-    const schema = await this.getCollection().findOne({ default: true });
+    const template = await this.dao.getDefaultTemplate();
 
-    if (!schema) {
+    if (!template) {
       return Result.fail(new DefaultTemplateNotFoundError());
     }
 
-    return Result.ok(MongoTemplateMapper.toDomain(schema));
+    return Result.ok(MongoTemplateMapper.toDomain(template));
   }
 
   async countByThesauri(thesaurusId: string): Promise<number> {
@@ -416,4 +407,4 @@ export class MongoTemplatesDataSource
   }
 }
 
-export type { Deps as MongoTemplatesDataSourceDeps };
+export type { MongoTemplatesDataSourceDeps };
