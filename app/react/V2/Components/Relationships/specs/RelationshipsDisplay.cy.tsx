@@ -1,37 +1,16 @@
 import React from 'react';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react';
-import * as stories from '#app/stories/EntityViewer/Relationships.stories.js';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
-import { setupMediaIntercepts } from '../../UI/Files/specs/testHelpers.js';
 import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
-
-const { Basic } = composeStories(stories);
-
-const resetStoryArgs = () => {
-  Basic.args.locale = 'en';
-  Basic.args.fileUrl = '/api/files/sample.pdf';
-  Basic.args.activeRelationshipId = null;
-  Basic.args.onPointClick = undefined;
-  Basic.args.onClusterClick = undefined;
-};
-
-const mountStory = () => {
-  mount(
-    <ThemeProvider>
-      <Basic />
-    </ThemeProvider>
-  );
-  cy.get('.page[data-page-number="1"]', { timeout: 20000 }).should('exist');
-  cy.get('[data-testid="rail-marker-cluster"]', { timeout: 20000 }).should('exist');
-};
-
-const openMainCluster = () => {
-  cy.get('[data-testid="rail-marker-cluster"]')
-    .contains('button', '25', { timeout: 20000 })
-    .should('be.visible')
-    .click({ force: true });
-};
+import {
+  Basic,
+  mountBasicStory,
+  openMainCluster,
+  clickStandalonePerson2,
+  prepareRelationshipsViewport,
+  resetBasicStoryArgs,
+  suppressResizeObserverLoop,
+} from './relationshipsCyHelpers.js';
 
 const togglePageMode = () => {
   cy.contains('button', 'Toggle timeline mode').click();
@@ -87,34 +66,19 @@ const getMarkerZIndex = (element: HTMLElement): number => {
   return 0;
 };
 
-const clickStandalonePerson2 = () => {
-  cy.get('[data-testid="relationships-rail"] [data-testid="rail-marker"]')
-    .filter((_index, element) => !element.closest('[data-testid="rail-marker-cluster"]'))
-    .filter(':contains("Person 2")')
-    .last()
-    .click({ force: true });
-};
-
 describe('References Display', () => {
   before(() => {
-    Cypress.on('uncaught:exception', error => {
-      if (error.message.includes('ResizeObserver loop completed with undelivered notifications.')) {
-        return false;
-      }
-
-      return true;
-    });
+    suppressResizeObserverLoop();
   });
 
   beforeEach(() => {
-    setupMediaIntercepts();
-    cy.viewport(1280, 800);
-    resetStoryArgs();
+    prepareRelationshipsViewport();
+    resetBasicStoryArgs();
   });
 
   describe('layout and rendering', () => {
     beforeEach(() => {
-      mountStory();
+      mountBasicStory();
     });
 
     it('renders references story content', () => {
@@ -319,7 +283,7 @@ describe('References Display', () => {
   describe('handler interactions', () => {
     it('calls onClusterClick with cluster markers', () => {
       Basic.args.onClusterClick = cy.stub().as('onClusterClick');
-      mountStory();
+      mountBasicStory();
 
       cy.contains('button', '25').click({ force: true });
 
@@ -330,7 +294,7 @@ describe('References Display', () => {
 
     it('calls onPointClick when a cluster point is clicked', () => {
       Basic.args.onPointClick = cy.stub().as('onPointClick');
-      mountStory();
+      mountBasicStory();
 
       openMainCluster();
       cy.contains('[data-testid="rail-marker-cluster"]', '25').within(() => {
@@ -343,7 +307,7 @@ describe('References Display', () => {
 
     it('calls onPointClick when a standalone marker is clicked', () => {
       Basic.args.onPointClick = cy.stub().as('onPointClick');
-      mountStory();
+      mountBasicStory();
 
       clickStandalonePerson2();
 
