@@ -9,6 +9,7 @@ import { getSharedDimensionProperties } from '#V2/Dataviz/utils/getSharedDimensi
 import {
   isDateLikePropertyType,
   isNumericPropertyType,
+  getDefaultDimensionSort,
 } from '#shared/dataviz/dimensionPropertyTypes.js';
 import {
   TEMPLATE_DIMENSION_PROPERTY,
@@ -146,7 +147,7 @@ const DimensionSection = ({
         property: TEMPLATE_DIMENSION_PROPERTY,
         propertyType: 'select',
         bucketStrategy: 'terms',
-        sort: 'count_desc',
+        sort: getDefaultDimensionSort('select'),
         maxBuckets: 10,
       });
       return;
@@ -222,30 +223,15 @@ const DimensionSection = ({
         />
       )}
       {dimension && dimension.property !== TEMPLATE_DIMENSION_PROPERTY && (
-        <>
-          <Select
-            id={`${idPrefix}-sort`}
-            label="Sort by"
-            value={dimension.sort || 'count_desc'}
-            options={[
-              { value: 'count_desc', label: 'Count (desc)' },
-              { value: 'label_asc', label: 'Label (asc)' },
-              { value: 'key_asc', label: 'Key (asc)' },
-            ]}
-            onChange={e =>
-              onChange({ ...dimension, sort: e.target.value as DimensionSpec['sort'] })
-            }
-          />
-          <InputField
-            id={`${idPrefix}-max-buckets`}
-            label="Max buckets"
-            type="number"
-            value={String(dimension.maxBuckets ?? 10)}
-            onChange={e =>
-              onChange({ ...dimension, maxBuckets: Number(e.target.value) || 10 })
-            }
-          />
-        </>
+        <InputField
+          id={`${idPrefix}-max-buckets`}
+          label="Max buckets"
+          type="number"
+          value={String(dimension.maxBuckets ?? 10)}
+          onChange={e =>
+            onChange({ ...dimension, maxBuckets: Number(e.target.value) || 10 })
+          }
+        />
       )}
     </section>
   );

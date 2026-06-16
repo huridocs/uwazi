@@ -3,6 +3,7 @@ import type { DimensionSpec, PropertyTypeForDataviz } from '#V2/Dataviz/types/de
 import {
   isDateLikePropertyType,
   isDimensionPropertyTypeEnabled,
+  getDefaultDimensionSort,
 } from '#shared/dataviz/dimensionPropertyTypes.js';
 import { isInheritableRelationshipType } from '#shared/dataviz/relationshipDimension.js';
 
@@ -33,7 +34,7 @@ const defaultDimensionOptions = (
   bucketStrategy:
     propertyType === 'date' || isDateLikePropertyType(propertyType) ? 'date_histogram' : 'terms',
   ...(isDateLikePropertyType(propertyType) ? { dateInterval: 'year' as const } : {}),
-  sort: propertyType === 'date' || propertyType === 'numeric' ? 'key_asc' : 'count_desc',
+  sort: getDefaultDimensionSort(propertyType),
   maxBuckets: 10,
 });
 
