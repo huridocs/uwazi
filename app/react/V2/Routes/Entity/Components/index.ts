@@ -13,3 +13,4 @@ export {
   useEntityFiles,
 } from './Files/index.js';
 export { ToCPanel } from './ToC/ToCPanel.js';
+export { MetadataDisplayFooter } from './MetadataDisplayFooter.js';
