@@ -12,8 +12,7 @@ type MetadataTabProps = {
 const MetadataTab = ({ entity }: MetadataTabProps) => {
   const [isEditing, setIsEditing] = useAtom(isEditingAtom);
 
-  const onSave = (editedEntity?: Entity) => {
-    console.log(editedEntity);
+  const onSave = (_editedEntity?: Entity) => {
     setIsEditing(false);
   };
 
