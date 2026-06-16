@@ -7,6 +7,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { MongoFilesDAO } from '../MongoFilesDAO.js';
 import { FileNotFound } from '#api/core/domain/files/errors.js';
+import { ProcessedPDFDBO } from '../schemas/filesTypes.js';
 
 const factory = getFixturesFactory();
 
@@ -103,9 +104,12 @@ describe('MongoFilesDAO', () => {
 
     it('includes fullText when withFullText is true', async () => {
       const sut = createSut();
-      const result = await sut.getById(factory.id('doc_with_fulltext').toString(), {
-        withFullText: true,
-      });
+      const result = await sut.getById<ProcessedPDFDBO>(
+        factory.id('doc_with_fulltext').toString(),
+        {
+          withFullText: true,
+        }
+      );
       expect(result.isOk()).toBe(true);
       expect(result.getDataOrThrow().fullText).toEqual({ 1: 'page one content' });
     });
@@ -258,7 +262,9 @@ describe('MongoFilesDAO', () => {
 
     it('returns files filtered by language', async () => {
       const sut = createSut();
-      const files = await sut.getByEntitySharedIds(['entity_x'], { languages: ['eng'] });
+      const files = await sut.getByEntitySharedIds<ProcessedPDFDBO>(['entity_x'], {
+        languages: ['eng'],
+      });
       expect(files).toHaveLength(2);
       expect(files.every(f => f.language === 'eng')).toBe(true);
     });
@@ -291,7 +297,9 @@ describe('MongoFilesDAO', () => {
 
     it('includes fullText when includeFullText is true', async () => {
       const sut = createSut();
-      const files = await sut.getByEntitySharedIds(['entity_1'], { includeFullText: true });
+      const files = await sut.getByEntitySharedIds<ProcessedPDFDBO>(['entity_1'], {
+        includeFullText: true,
+      });
       const docWithFullText = files.find(f => f.filename === 'doc_with_fulltext');
       expect(docWithFullText?.fullText).toEqual({ 1: 'page one content' });
     });
@@ -313,7 +321,9 @@ describe('MongoFilesDAO', () => {
 
     it('returns matching files for a $in query', async () => {
       const sut = createSut();
-      const files = await sut.getByQuery({ entity: { $in: ['entity_a', 'entity_x'] } });
+      const files = await sut.getByQuery<ProcessedPDFDBO>({
+        entity: { $in: ['entity_a', 'entity_x'] },
+      });
       expect(files.length).toBeGreaterThanOrEqual(1);
       expect(files.every(f => ['entity_a', 'entity_x'].includes(f.entity))).toBe(true);
     });
@@ -341,6 +351,7 @@ describe('MongoFilesDAO', () => {
         { sort: { _id: -1 }, projection: { _id: 1 } }
       );
       expect(files.length).toBeGreaterThan(1);
+      // eslint-disable-next-line no-plusplus
       for (let i = 1; i < files.length; i++) {
         expect(files[i - 1]._id.toString() >= files[i]._id.toString()).toBe(true);
       }
@@ -371,12 +382,12 @@ describe('MongoFilesDAO', () => {
             factory.document('doc_toc_1', {
               entity: 'e1',
               status: 'ready',
-              toc: [{ heading: 'Intro' }],
+              toc: [{ label: 'Intro' }],
             }),
             factory.document('doc_toc_2', {
               entity: 'e2',
               status: 'ready',
-              toc: [{ heading: 'Chapter 1' }],
+              toc: [{ label: 'Chapter 1' }],
             }),
           ],
         });

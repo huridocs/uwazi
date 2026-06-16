@@ -18,86 +18,92 @@ class MongoFilesDAO extends MongoDataSource<fileDBO> {
     super(deps.db, deps.transactionManager);
   }
 
-  async getById(
+  async getById<T extends fileDBO = fileDBO>(
     id: string,
     options?: { withFullText?: boolean }
-  ): Promise<ResultType<fileDBO, FileNotFound>> {
+  ): Promise<ResultType<T, FileNotFound>> {
     const projection = options?.withFullText ? undefined : { fullText: 0 };
 
-    return this.getCollection()
-      .findOne({ _id: new ObjectId(id) }, { projection })
-      .then(dbo => {
-        if (!dbo) {
-          return Result.fail(new FileNotFound(`file with id: ${id} not found`));
-        }
-        return Result.ok(dbo);
-      });
+    const dbo = await this.getCollection().findOne({ _id: new ObjectId(id) }, { projection });
+    if (!dbo) {
+      return Result.fail(new FileNotFound(`file with id: ${id} not found`));
+    }
+
+    return Result.ok(dbo as T);
   }
 
-  async getByFilename(filename: string): Promise<ResultType<fileDBO, FileNotFound>> {
-    return this.getCollection()
-      .findOne({ filename })
-      .then(dbo => {
-        if (!dbo) {
-          return Result.fail(new FileNotFound(`file: ${filename} not found`));
-        }
-        return Result.ok(dbo);
-      });
+  async getByFilename<T extends fileDBO = fileDBO>(
+    filename: string
+  ): Promise<ResultType<T, FileNotFound>> {
+    const dbo = await this.getCollection().findOne({ filename });
+    if (!dbo) {
+      return Result.fail(new FileNotFound(`file: ${filename} not found`));
+    }
+
+    return Result.ok(dbo as T);
   }
 
-  async getByEntity(
+  async getByEntity<T extends fileDBO = fileDBO>(
     sharedId: string,
     options?: { types?: fileDBO['type'][]; projection?: Document }
-  ): Promise<fileDBO[]> {
+  ): Promise<T[]> {
     const filter: Record<string, unknown> = { entity: sharedId };
     if (options?.types) {
       filter.type = { $in: options.types };
     }
-    return this.getCollection().find(filter, { projection: options?.projection }).toArray();
+
+    return this.getCollection()
+      .find(filter, { projection: options?.projection })
+      .toArray() as Promise<T[]>;
   }
 
-  async getByQuery(
+  async getByQuery<T = fileDBO>(
     query: Record<string, unknown>,
     options?: { projection?: Document; sort?: Sort; limit?: number }
-  ): Promise<fileDBO[]> {
+  ): Promise<T[]> {
     const findOptions: FindOptions = {};
     if (options?.projection) findOptions.projection = options.projection;
     if (options?.sort) findOptions.sort = options.sort;
     if (options?.limit) findOptions.limit = options.limit;
-    return this.getCollection().find(query, findOptions).toArray();
+
+    return this.getCollection().find(query, findOptions).toArray() as Promise<T[]>;
   }
 
-  async getNextDocumentWithoutToc(): Promise<ResultType<fileDBO, FileNotFound>> {
-    return this.getCollection()
+  async getNextDocumentWithoutToc<T extends fileDBO = fileDBO>(): Promise<
+    ResultType<T, FileNotFound>
+  > {
+    const dbos = await this.getCollection()
       .find(
         { type: 'document', filename: { $exists: true }, 'toc.0': { $exists: false } },
         { projection: { fullText: 0 } }
       )
       .sort({ _id: 1 })
       .limit(1)
-      .toArray()
-      .then(dbos => {
-        if (!dbos.length) {
-          return Result.fail(new FileNotFound('no document without toc found'));
-        }
-        return Result.ok(dbos[0]);
-      });
+      .toArray();
+
+    if (!dbos.length) {
+      return Result.fail(new FileNotFound('no document without toc found'));
+    }
+
+    return Result.ok(dbos[0] as T);
   }
 
-  async getByEntitySharedIds(
+  async getByEntitySharedIds<T extends fileDBO = fileDBO>(
     sharedIds: string[],
     options?: { includeFullText?: boolean; languages?: string[]; type?: fileDBO['type'] }
-  ): Promise<fileDBO[]> {
+  ): Promise<T[]> {
     const filter: Record<string, unknown> = { entity: { $in: sharedIds } };
     if (options?.languages) {
       filter.language = { $in: options.languages };
     }
+
     if (options?.type) {
       filter.type = options.type;
     }
+
     const projection = options?.includeFullText ? undefined : { fullText: 0 };
 
-    return this.getCollection().find(filter, { projection }).toArray();
+    return this.getCollection().find(filter, { projection }).toArray() as Promise<T[]>;
   }
 }
 

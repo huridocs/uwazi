@@ -24,7 +24,7 @@ const checkEntityPermission = async (
   level: 'read' | 'write' = 'read'
 ): Promise<boolean> => {
   if (['admin'].includes(user?.role || '')) return true;
-  const fileInDB = (await FilesDAOFactory.default().getById(file._id.toString())).getData(null);
+  const fileInDB = (await FilesDAOFactory.default().getById(file._id!.toString())).getData(null);
 
   if (!fileInDB || (fileInDB.type === 'custom' && level === 'write')) {
     return false;
@@ -35,7 +35,7 @@ const checkEntityPermission = async (
   }
 
   const relatedEntities: EntitySchema[] = await entities.get(
-    { sharedId: fileInDB.entity },
+    { sharedId: (fileInDB as any).entity },
     '_id, permissions',
     { withoutDocuments: true }
   );

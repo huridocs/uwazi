@@ -10,7 +10,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
-import { files, storage } from '#api/files/index.js';
+import { storage } from '#api/files/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import relationships from '#api/relationships/relationships.js';
 import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
@@ -184,7 +184,7 @@ const processResults = async (message: ResultsMessage): Promise<void> => {
     try {
       const originalFile = (
         await FilesDAOFactory.default().getByFilename(message.params!.filename)
-      ).getData(null);
+      ).getDataOrThrow();
       const [record] = await getForSourceFile(originalFile);
 
       if (!record) return;
