@@ -11,6 +11,9 @@ import {
   IXSuggestionsFilter,
 } from '#shared/types/suggestionType.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { Suggestions } from '../suggestions.js';
 import {
   factory,
@@ -905,6 +908,46 @@ describe('suggestions', () => {
           hub: newHub,
         });
       });
+    });
+  });
+
+  describe('updatePropertySelections (via accept)', () => {
+    beforeEach(async () => {
+      await testingEnvironment.setUp(fixtures);
+    });
+
+    it('should update file property selections directly via V2 infrastructure', async () => {
+      const fileId = factory.id('fileForentityWithSelects');
+
+      await testingEnvironment.runWithContext(async () => {
+        const filesDS = FilesDataSourceFactory.default();
+        const filesService = FilesServiceFactory.default();
+        const transactionManager = TransactionManagerFactory.default();
+
+        const [file] = await filesDS.getByIds([fileId.toString()]);
+        expect(file).toBeDefined();
+
+        const updated = file.update({
+          propertySelections: [
+            {
+              name: 'property_select',
+              timestamp: Date(),
+              selection: { text: '1A', selectionRectangles: [] },
+            },
+          ],
+        });
+
+        expect(updated.hasChanged).toBe(true);
+
+        await transactionManager.run(async () => {
+          await filesService.bulkUpsert([updated]);
+        });
+      });
+
+      const savedFile = await db.mongodb?.collection('files').findOne({ _id: fileId });
+      expect(savedFile?.propertySelections).toBeDefined();
+      expect(savedFile?.propertySelections).toHaveLength(1);
+      expect(savedFile?.propertySelections[0].name).toBe('property_select');
     });
   });
 
