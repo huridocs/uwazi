@@ -25,9 +25,9 @@ export class GenerateAutomaticTranslationsCofig {
   async execute(semanticConfig: SemanticConfig | unknown) {
     this.validator.ensure(semanticConfig);
 
-    const templatesData = await this.templatsDS
-      .getByNames(semanticConfig.templates.map(t => t.template))
-      .all();
+    const templatesData = await this.templatsDS.getByNames(
+      semanticConfig.templates.map(t => t.template)
+    );
 
     const templates = semanticConfig.templates.map(configData => {
       const templateData = templatesData.find(t => t.name === configData.template);

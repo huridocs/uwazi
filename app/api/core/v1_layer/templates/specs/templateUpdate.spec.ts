@@ -49,7 +49,7 @@ describe('templates', () => {
       await testingEnvironment.runWithContext(async () => {
         await templates.save(toSave, 'en');
       });
-      const [edited] = await templates.get(templateToBeEditedId);
+      const [edited] = await templates.get([templateToBeEditedId.toString()]);
       expect(edited.name).toBe('changed name');
     });
 

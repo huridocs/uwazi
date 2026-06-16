@@ -16,7 +16,7 @@ import { filterOptions } from '#shared/optionsUtils.js';
 import { checkWritePermissions } from '#shared/permissionsUtils.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { UserRole } from '#shared/types/userSchema.js';
-import templatesModel from '../core/v1_layer/templates/index.js';
+import templatesFacade from '../core/v1_layer/templates/index.js';
 import entitiesModel from '../entities/entitiesModel.js';
 import thesauri from '../thesauri/index.js';
 import documentQueryBuilder from './documentQueryBuilder.js';
@@ -803,11 +803,11 @@ const buildQuery = async (query, language, user, resources) => {
 const search = {
   // eslint-disable-next-line max-statements
   async search(query, language, user) {
-    const resources = await Promise.all([templatesModel.get(), thesauri.dictionaries()]);
-    const [templates, dictionaries] = resources;
+    const resources = await Promise.all([templatesFacade.get(), thesauri.dictionaries()]);
+    const [templatesData, dictionaries] = resources;
     const queryBuilder = await buildQuery(query, language, user, resources);
     if (query.geolocation) {
-      searchGeolocation(queryBuilder, templates);
+      searchGeolocation(queryBuilder, templatesData);
     }
 
     if (query.aggregatePermissionsByLevel) {
@@ -833,7 +833,7 @@ const search = {
       .then(async response => {
         const processed = await processResponse(
           response,
-          templates,
+          templatesData,
           dictionaries,
           language,
           query.filters
@@ -856,13 +856,13 @@ const search = {
   },
 
   async searchSnippets(searchTerm, sharedId, language, user) {
-    const templates = await templatesModel.get();
+    const templatesData = await templatesFacade.get();
 
     const searchTextType = searchTerm
       ? await searchTypeFromSearchTermValidity(searchTerm)
       : 'query_string';
     const searchFields = propertiesHelper
-      .textFields(templates)
+      .textFields(templatesData)
       .map(prop => `metadata.${prop.name}.value`)
       .concat(['title', 'fullText']);
     const query = documentQueryBuilder()
@@ -946,20 +946,20 @@ const search = {
   },
 
   async autocompleteAggregations(query, language, propertyName, _searchTerm, user) {
-    const [templates, dictionaries] = await Promise.all([
-      templatesModel.get(),
+    const [templatesData, dictionaries] = await Promise.all([
+      templatesFacade.get(),
       thesauri.dictionaries(),
     ]);
 
     const searchTerm = _searchTerm || '';
 
     const queryBuilder = await buildQuery({ ...query, limit: 0 }, language, user, [
-      templates,
+      templatesData,
       dictionaries,
     ]);
 
     const property = propertiesHelper
-      .allUniqueProperties(templates)
+      .allUniqueProperties(templatesData)
       .find(p => p.name === propertyName);
 
     if (!property) {
@@ -982,7 +982,7 @@ const search = {
 
     const sanitizedAggregations = await _sanitizeAggregations(
       response.body.aggregations.all,
-      templates,
+      templatesData,
       dictionaries,
       language,
       preloadOptionsSearch()
@@ -1046,8 +1046,8 @@ const search = {
   },
 
   async updateTemplatesMapping() {
-    const templates = await templatesModel.get();
-    return updateMapping(templates);
+    const templatesData = await templatesFacade.get();
+    return updateMapping(templatesData);
   },
 
   async countPerTemplate(language) {
