@@ -1,29 +1,27 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { useRevalidator } from 'react-router';
-import { TextSelection } from '@huridocs/react-text-selection-handler';
 import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { Entity, FileType } from '#V2/api/entities/types.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
-import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
+import { relationshipTypesAtom } from '#V2/atoms/index.js';
 import { searchByTitle } from '#V2/api/entities/index.js';
-import { deleteReference, saveTextReference } from '#V2/api/relationships/index.js';
 import { ConfirmationModal, BlankState } from '#V2/Components/UI/index.js';
-import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
-import { entityLoaderCache } from '../../EntityLoaderCache.js';
+import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { CreateReference } from './CreateReference.js';
 import { RelationshipsPanelToolbar } from './RelationshipsPanelToolbar.js';
 import { RelationshipsPanelBody } from './RelationshipsPanelBody.js';
 import {
   useRelationships,
-  useRelationshipsActions,
   relationshipsEditModeAtom,
   selectedRelationshipIdsAtom,
 } from './relationshipsAtom.js';
 import { relationshipsPanelFiltersDrawerOpenAtom } from './relationshipsPanelFiltersAtom.js';
 import { useRelationshipSelection } from '../useRelationshipSelection.js';
 import { useRelationshipsPanelData } from './useRelationshipsPanelData.js';
+import { useGroupLabelContext } from './useGroupLabelContext.js';
+import { useRelationshipDelete } from './useRelationshipDelete.js';
+import { useRelationshipSave } from './useRelationshipSave.js';
 
 type RelationshipsPanelProps = {
   entity?: Entity;
@@ -31,42 +29,25 @@ type RelationshipsPanelProps = {
 };
 
 const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) => {
-  const [relationshipToDelete, setRelationshipToDelete] = useState<RelationshipMarker | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const relationshipTypes = useAtomValue(relationshipTypesAtom);
-  const templates = useAtomValue(templatesAtom);
   const { createReferenceSelection, createReferenceMode } = useRelationships();
-  const { setCreateReferenceSelection } = useRelationshipsActions();
-  const revalidator = useRevalidator();
   const { activeRelationshipId, selectRelationship, clearRelationshipSelection } =
     useRelationshipSelection();
   const { markers, stats, hasRelationships } = useRelationshipsPanelData(entity);
+  const groupContext = useGroupLabelContext(entity);
+  const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const setFiltersOpen = useSetAtom(relationshipsPanelFiltersDrawerOpenAtom);
   const resetEditMode = useSetAtom(relationshipsEditModeAtom);
   const resetSelected = useSetAtom(selectedRelationshipIdsAtom);
 
-  const groupContext = useMemo(
-    () => ({
-      selfSharedId: entity?.sharedId ?? '',
-      selfTitle: entity?.title ?? '',
-      selfTemplateId: entity?.template ?? '',
-      relationshipTypeName: (typeId: string) =>
-        relationshipTypes.find(type => type._id === typeId)?.name ?? typeId,
-      templateName: (templateId: string) =>
-        templates.find(template => template._id === templateId)?.name ?? templateId,
-      templateColor: (templateId: string) =>
-        templates.find(template => template._id === templateId)?.color,
-    }),
-    [entity?.sharedId, entity?.title, entity?.template, relationshipTypes, templates]
-  );
+  const {
+    relationshipToDelete,
+    isDeleting,
+    handleDeleteClick,
+    handleConfirmDelete,
+    handleCancelDelete,
+  } = useRelationshipDelete(entity, activeRelationshipId, clearRelationshipSelection);
 
-  useEffect(
-    () => () => {
-      resetEditMode(false);
-      resetSelected(new Set());
-    },
-    [resetEditMode, resetSelected]
-  );
+  const { handleSaveReference, handleCancelCreate } = useRelationshipSave(entity, mainDocument);
 
   const lookup = useCallback(
     async (searchString: string) =>
@@ -79,75 +60,22 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
   );
 
   const handleRelationshipClick = useCallback(
-    (marker: RelationshipMarker) => {
-      selectRelationship(marker);
-    },
+    (marker: RelationshipMarker) => selectRelationship(marker),
     [selectRelationship]
   );
 
-  const handleViewClick = useCallback((marker: RelationshipMarker) => {
-    window.open(`/entity/${marker.target.sharedId}`, '_blank', 'noopener,noreferrer');
-  }, []);
+  const handleViewClick = useCallback(
+    (marker: RelationshipMarker) =>
+      window.open(`/entity/${marker.target.sharedId}`, '_blank', 'noopener,noreferrer'),
+    []
+  );
 
-  const handleDeleteClick = useCallback((marker: RelationshipMarker) => {
-    setRelationshipToDelete(marker);
-  }, []);
-
-  const handleConfirmDelete = useCallback(async () => {
-    if (!relationshipToDelete?._id || !entity?.sharedId) return;
-    setIsDeleting(true);
-    try {
-      await deleteReference(String(relationshipToDelete._id));
-      setRelationshipToDelete(null);
-      if (activeRelationshipId === relationshipToDelete._id) {
-        clearRelationshipSelection();
-      }
-      entityLoaderCache.invalidateEntity(entity.sharedId);
-      await revalidator.revalidate();
-    } finally {
-      setIsDeleting(false);
-    }
-  }, [
-    relationshipToDelete,
-    entity?.sharedId,
-    activeRelationshipId,
-    clearRelationshipSelection,
-    revalidator,
-  ]);
-
-  const handleCancelDelete = useCallback(() => {
-    if (!isDeleting) setRelationshipToDelete(null);
-  }, [isDeleting]);
-
-  const handleCancelCreate = useCallback(() => {
-    setCreateReferenceSelection(undefined, undefined);
-  }, [setCreateReferenceSelection]);
-
-  const handleSaveReference = useCallback(
-    async (data: {
-      selection: TextSelection;
-      targetEntityId: string;
-      relationshipType: string;
-      targetFileId?: string;
-      targetSelection?: TextSelection;
-    }) => {
-      if (!entity || !mainDocument?._id) return;
-
-      await saveTextReference({
-        sourceEntitySharedId: entity.sharedId,
-        sourceFileId: String(mainDocument._id),
-        sourceSelection: data.selection,
-        targetEntitySharedId: data.targetEntityId,
-        relationshipType: data.relationshipType,
-        ...(data.targetFileId && { targetFileId: data.targetFileId }),
-        ...(data.targetSelection && { targetSelection: data.targetSelection }),
-      });
-
-      setCreateReferenceSelection(undefined, undefined);
-      entityLoaderCache.invalidateEntity(entity.sharedId);
-      await revalidator.revalidate();
+  useEffect(
+    () => () => {
+      resetEditMode(false);
+      resetSelected(new Set());
     },
-    [entity, mainDocument, setCreateReferenceSelection, revalidator]
+    [resetEditMode, resetSelected]
   );
 
   if (createReferenceSelection) {
