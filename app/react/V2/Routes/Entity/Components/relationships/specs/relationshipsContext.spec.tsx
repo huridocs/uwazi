@@ -10,6 +10,7 @@ import {
   EntityScopedProvider,
   useRelationships,
   useRelationshipsActions,
+  useRelationshipsPanelFilters,
 } from '#V2/Routes/Entity/Components/context/index.js';
 
 const selection: TextSelection = {
@@ -89,5 +90,36 @@ describe('relationships state context', () => {
     });
 
     expect(result.current.state.relationships).toEqual([]);
+  });
+});
+
+describe('relationships panel filters', () => {
+  it('counts active filters', () => {
+    const { result } = renderHook(() => useRelationshipsPanelFilters(), { wrapper });
+
+    act(() => {
+      result.current.setSearch('witness');
+      result.current.setSort('title');
+      result.current.setRelTypeFilters({ 'type-a': true });
+      result.current.setActiveClusterRefIds(['ref-1']);
+    });
+
+    expect(result.current.activeFilterCount).toBe(4);
+  });
+
+  it('resets filters via clearFilters', () => {
+    const { result } = renderHook(() => useRelationshipsPanelFilters(), { wrapper });
+
+    act(() => {
+      result.current.setSearch('witness');
+      result.current.setSort('title');
+      result.current.clearFilters();
+    });
+
+    expect(result.current).toMatchObject({
+      search: '',
+      sort: 'none',
+      activeFilterCount: 0,
+    });
   });
 });

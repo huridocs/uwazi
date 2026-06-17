@@ -2,6 +2,7 @@ import React, { type ReactNode } from 'react';
 import { useTabGroup } from '#V2/Components/UI/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { MAIN_TAB, type MainTabId } from './tabIds.js';
+import { useEntityTabNavigation } from './hooks/useEntityTabNavigation.js';
 import { DocumentTab } from './tabsContent/DocumentTab.js';
 import { MetadataTab } from './tabsContent/MetadataTab.js';
 import {
@@ -25,6 +26,7 @@ const MainTabsContent = ({
 }: MainTabsContentProps) => {
   const { activeTabId: atomActiveTabId } = useTabGroup('entity-main');
   const activeTabId = atomActiveTabId ?? urlActiveTabId;
+  const { focusDocumentPanel, relationshipsOnMain } = useEntityTabNavigation();
 
   let content: ReactNode = null;
 
@@ -42,7 +44,11 @@ const MainTabsContent = ({
     case MAIN_TAB.RELATIONSHIPS:
       content = (
         <div className="flex min-h-0 flex-1 flex-col px-3 pt-2">
-          <RelationshipsPanel mainDocument={mainDocument} />
+          <RelationshipsPanel
+            mainDocument={mainDocument}
+            focusDocumentOnSelect={relationshipsOnMain}
+            onFocusDocument={focusDocumentPanel}
+          />
         </div>
       );
       break;

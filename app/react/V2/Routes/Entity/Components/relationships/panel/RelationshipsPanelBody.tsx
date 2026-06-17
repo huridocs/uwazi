@@ -4,47 +4,13 @@ import type { GroupLabelContext } from '#V2/formatters/relationships/relationshi
 import { RelationshipsTreeView } from '../views/RelationshipsTreeView.js';
 import { RelationshipsGraphView } from '../views/RelationshipsGraphView.js';
 import { type RelationshipPanelRowHandlers } from '../rows/RelationshipPanelRow.js';
-import { RelationshipsPanelEntryList } from '../panel/RelationshipsPanelEntryList.js';
-import { RelationshipsGroupedSections } from '../panel/RelationshipsGroupedSections.js';
+import { RelationshipsMarkerListBody } from './RelationshipsMarkerListBody.js';
 import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/context/index.js';
 
 type RelationshipsPanelBodyProps = RelationshipPanelRowHandlers & {
   markers: RelationshipMarker[];
   groupContext: GroupLabelContext;
   selfTitle: string;
-};
-
-const RelationshipsListBody = ({
-  markers,
-  groupContext,
-  ...rowProps
-}: RelationshipPanelRowHandlers & {
-  markers: RelationshipMarker[];
-  groupContext: GroupLabelContext;
-}) => {
-  const { groupBy, subGroupBy } = useRelationshipsPanelFilters();
-
-  if (groupBy === 'none') {
-    return (
-      <RelationshipsPanelEntryList
-        bordered
-        markers={markers}
-        groupContext={groupContext}
-        {...rowProps}
-      />
-    );
-  }
-
-  return (
-    <RelationshipsGroupedSections
-      markers={markers}
-      groupContext={groupContext}
-      groupBy={groupBy}
-      subGroupBy={subGroupBy}
-      variant="list"
-      {...rowProps}
-    />
-  );
 };
 
 const RelationshipsPanelBody = ({
@@ -82,7 +48,12 @@ const RelationshipsPanelBody = ({
 
   return (
     <div className="py-3">
-      <RelationshipsListBody markers={markers} groupContext={groupContext} {...rowProps} />
+      <RelationshipsMarkerListBody
+        variant="list"
+        markers={markers}
+        groupContext={groupContext}
+        {...rowProps}
+      />
     </div>
   );
 };

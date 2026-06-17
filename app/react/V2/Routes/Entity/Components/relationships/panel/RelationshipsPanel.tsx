@@ -23,13 +23,18 @@ import { useRelationshipSelection } from '#V2/Routes/Entity/Components/document/
 import { useGroupLabelContext } from '../hooks/useGroupLabelContext.js';
 import { useRelationshipDelete } from '../hooks/useRelationshipDelete.js';
 import { useRelationshipSave } from '../hooks/useRelationshipSave.js';
-import { useEntityTabNavigation } from '../../../Tabs/hooks/useEntityTabNavigation.js';
 
 type RelationshipsPanelProps = {
   mainDocument?: FileType;
+  focusDocumentOnSelect?: boolean;
+  onFocusDocument?: () => void;
 };
 
-const RelationshipsPanel = ({ mainDocument }: RelationshipsPanelProps) => {
+const RelationshipsPanel = ({
+  mainDocument,
+  focusDocumentOnSelect = false,
+  onFocusDocument,
+}: RelationshipsPanelProps) => {
   const { createReferenceSelection, createReferenceMode } = useRelationships();
   const { activeRelationshipId, selectRelationship, clearRelationshipSelection } =
     useRelationshipSelection();
@@ -37,7 +42,6 @@ const RelationshipsPanel = ({ mainDocument }: RelationshipsPanelProps) => {
   const groupContext = useGroupLabelContext();
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const { view, activeFilterCount, setFiltersDrawerOpen } = useRelationshipsPanelFilters();
-  const { focusDocumentPanel, relationshipsOnMain } = useEntityTabNavigation();
   const { setSelectedRelationshipIds, setRelationshipsEditMode } = useEntityScopedContext();
 
   const {
@@ -62,12 +66,12 @@ const RelationshipsPanel = ({ mainDocument }: RelationshipsPanelProps) => {
 
   const handleRelationshipClick = useCallback(
     (marker: RelationshipMarker) => {
-      if (relationshipsOnMain && marker.anchor?.selections?.[0]?.page) {
-        focusDocumentPanel();
+      if (focusDocumentOnSelect && marker.anchor?.selections?.[0]?.page) {
+        onFocusDocument?.();
       }
       selectRelationship(marker, { scrollPanel: true });
     },
-    [focusDocumentPanel, relationshipsOnMain, selectRelationship]
+    [focusDocumentOnSelect, onFocusDocument, selectRelationship]
   );
 
   const handleViewClick = useCallback(

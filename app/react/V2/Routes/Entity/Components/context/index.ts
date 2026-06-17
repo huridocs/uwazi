@@ -5,12 +5,12 @@ export {
   useEntityScopedEntity,
   useRelationships,
   useRelationshipsActions,
-  useRelationshipsPanelData,
   useRelationshipsPanelFilters,
   useMetadataEditing,
   useToc,
   useTocActions,
 } from './EntityScopedProvider.js';
+export { useRelationshipsPanelData } from '../relationships/hooks/useRelationshipsPanelData.js';
 export type {
   ReferenceMode,
   RelationshipsPanelView,

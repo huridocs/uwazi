@@ -1,24 +1,13 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { useAtomValue } from 'jotai';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
 import type { TocSchema } from '#shared/types/commonTypes.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import type { PDFControls } from '#V2/Components/PDFViewer/index.js';
-import { relationshipTypesAtom } from '#V2/atoms/index.js';
 import type { RelationshipView } from '#V2/formatters/relationships/types.js';
-import {
-  computeStats,
-  filterAndSortMarkers,
-  projectRelationshipsPanel,
-  type RelationshipsPanelSort,
-} from '#V2/formatters/relationships/relationshipsPanelProjection.js';
 import type { RelationshipsPanelGroupBy } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
-import { computeFacetCounts } from '#V2/formatters/relationships/relationshipsPanelFacets.js';
-import {
-  sortTocEntries,
-  findItemsWithChildren,
-  normalizeToc,
-} from '#V2/Routes/Entity/Components/ToC/index.js';
+import type { RelationshipsPanelSort } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
+import { sortTocEntries } from '../ToC/ToC.js';
+import { findItemsWithChildren, normalizeToc } from '../ToC/utils.js';
 
 type ReferenceMode = 'entity' | 'text';
 type RelationshipsPanelView = 'list' | 'tree' | 'graph';
@@ -467,47 +456,6 @@ const useRelationshipsPanelFilters = () => {
   };
 };
 
-const useRelationshipsPanelData = () => {
-  const entity = useEntityScopedEntity();
-  const relationshipTypes = useAtomValue(relationshipTypesAtom);
-  const filters = useRelationshipsPanelFilters();
-  const sourceMarkers = useMemo(() => projectRelationshipsPanel(entity).markers, [entity]);
-  const relationshipTypeName = useCallback(
-    (typeId: string) => relationshipTypes.find(type => type._id === typeId)?.name ?? '',
-    [relationshipTypes]
-  );
-  const markers = useMemo(
-    () =>
-      filterAndSortMarkers(sourceMarkers, {
-        searchQuery: filters.search,
-        sortOrder: filters.sort,
-        relationshipTypeName,
-        relTypeFilters: filters.relTypeFilters,
-        entityTypeFilters: filters.entityTypeFilters,
-        activeClusterRefIds: filters.activeClusterRefIds,
-      }),
-    [
-      filters.activeClusterRefIds,
-      filters.entityTypeFilters,
-      filters.relTypeFilters,
-      filters.search,
-      filters.sort,
-      relationshipTypeName,
-      sourceMarkers,
-    ]
-  );
-  const stats = useMemo(() => computeStats(markers), [markers]);
-  const facetCounts = useMemo(() => computeFacetCounts(sourceMarkers), [sourceMarkers]);
-
-  return {
-    markers,
-    sourceMarkers,
-    stats,
-    facetCounts,
-    hasRelationships: sourceMarkers.length > 0,
-  };
-};
-
 const useToc = () => useEntityScopedContext().tocState;
 
 const useTocActions = () => {
@@ -541,7 +489,6 @@ export {
   useEntityScopedEntity,
   useRelationships,
   useRelationshipsActions,
-  useRelationshipsPanelData,
   useRelationshipsPanelFilters,
   useMetadataEditing,
   useToc,
