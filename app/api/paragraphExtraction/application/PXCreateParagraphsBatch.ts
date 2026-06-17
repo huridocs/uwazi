@@ -95,7 +95,7 @@ class PXCreateParagraphsBatch implements UseCase<PXCreateParagraphsBatchInput, O
     });
 
     await this.dependencies.transactionManager.run(async () => {
-      await this.dependencies.entitiesService.bulkInsert(entities, {
+      await this.dependencies.entitiesService.insert(entities, {
         tenantName: tenants.current().name,
         actorId: user._id.toString(),
         targetLanguage: targetLanguage!.language,

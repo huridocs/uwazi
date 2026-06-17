@@ -1,13 +1,19 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { DenormalizeThesaurusEntitiesUseCaseFactory } from '#api/core/infrastructure/factories/DenormalizeThesaurusEntitiesUseCaseFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { EntityUpdatedEvent } from '#api/core/domain/entity/EntityUpdatedEvent.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { factory, fixtures } from './DenormalizeThesaurusEntitiesFixtures.js';
 
-const createSut = () =>
-  testingEnvironment.runWithContext(() => ({
+const createSut = () => {
+  const { sut, eventEmitter } = testingEnvironment.runWithContext(() => ({
     sut: DenormalizeThesaurusEntitiesUseCaseFactory.default(),
+    eventEmitter: ExecutionContext.eventEmitter,
   }));
+
+  return { sut, eventEmitter };
+};
 
 describe('DenormalizeThesaurusEntities', () => {
   beforeAll(async () => {
@@ -23,12 +29,14 @@ describe('DenormalizeThesaurusEntities', () => {
   });
 
   it('should update thesaurus labels on entities', async () => {
-    const { sut } = createSut();
+    const { sut, eventEmitter } = createSut();
 
     await sut.execute({
       thesaurusId: factory.id('countries').toString(),
       sharedIds: ['entity_1', 'entity_2', 'entity_3', 'entity_4', 'entity_5'],
     });
+
+    expect(eventEmitter.emit).toHaveBeenCalledWith(expect.any(EntityUpdatedEvent));
 
     const after = await testingEnvironment.db.getAllFrom('entities');
 
