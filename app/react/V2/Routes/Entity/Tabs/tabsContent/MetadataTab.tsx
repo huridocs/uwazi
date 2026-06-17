@@ -2,7 +2,7 @@ import React from 'react';
 import { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { EditEntity } from '#V2/Components/Metadata/EntityEditor/index.js';
-import { useMetadataEditing } from '../../Components/EntityScopedProvider.js';
+import { useMetadataEditing } from '../../Components/context/EntityScopedProvider.js';
 
 type MetadataTabProps = {
   entity: Entity;

@@ -7,8 +7,8 @@ import { Entity, FileType } from '#V2/api/entities/types.js';
 import {
   useDocumentInteraction,
   useRelationshipsPanelFilters,
-} from '#V2/Routes/Entity/Components/EntityScopedProvider.js';
-import { useRelationshipSelection } from '#V2/Routes/Entity/Components/useRelationshipSelection.js';
+} from '#V2/Routes/Entity/Components/context/EntityScopedProvider.js';
+import { useRelationshipSelection } from '#V2/Routes/Entity/Components/document/useRelationshipSelection.js';
 
 type RelationshipsSyncedDocumentViewProps = {
   entity: Entity;

@@ -1,12 +1,12 @@
 export * from '../urlParams.js';
-export { EntityMainPaneHeader } from './EntityMainPaneHeader.js';
-export { DocumentViewModeSelect } from './DocumentViewModeSelect.js';
-export { TabLabel } from './TabLabel.js';
-export { RelationshipsPanel } from './RelationshipsPanel/RelationshipsPanel.js';
-export { SearchResults } from './SearchResults.js';
-export { SearchHintsModal } from './SearchHintsModal.js';
-export { EntityScopedProvider } from './EntityScopedProvider.js';
-export { FileList } from './FileList.js';
+export { EntityMainPaneHeader } from './shared/EntityMainPaneHeader.js';
+export { DocumentViewModeSelect } from './document/DocumentViewModeSelect.js';
+export { TabLabel } from './shared/TabLabel.js';
+export { RelationshipsPanel } from './relationships/panel/RelationshipsPanel.js';
+export { SearchResults } from './search/SearchResults.js';
+export { SearchHintsModal } from './search/SearchHintsModal.js';
+export { EntityScopedProvider } from './context/EntityScopedProvider.js';
+export { FileList } from './shared/FileList.js';
 export {
   EntityFilesProvider,
   FilesDeleteConfirmationModal,
@@ -14,4 +14,4 @@ export {
   useEntityFiles,
 } from './Files/index.js';
 export { ToCPanel } from './ToC/ToCPanel.js';
-export { MetadataDisplayFooter } from './MetadataDisplayFooter.js';
+export { MetadataDisplayFooter } from './metadata/MetadataDisplayFooter.js';

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/EntityScopedProvider.js';
+import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/context/EntityScopedProvider.js';
 
 const ResetRelationshipsFiltersDrawer = () => {
   const { setFiltersDrawerOpen } = useRelationshipsPanelFilters();

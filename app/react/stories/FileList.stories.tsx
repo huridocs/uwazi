@@ -2,7 +2,7 @@ import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { createStore, Provider } from 'jotai';
 import { settingsAtom, templatesAtom } from '#V2/atoms/index.js';
-import { FileList } from '#V2/Routes/Entity/Components/FileList.js';
+import { FileList } from '#V2/Routes/Entity/Components/shared/FileList.js';
 import { Entity } from '#app/V2/api/entities/types.js';
 
 const store = createStore();

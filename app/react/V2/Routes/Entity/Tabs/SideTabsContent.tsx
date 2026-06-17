@@ -5,7 +5,7 @@ import { SIDE_TAB, type SideTabId } from './tabIds.js';
 import { DocumentTab } from './tabsContent/DocumentTab.js';
 import { MetadataTab } from './tabsContent/MetadataTab.js';
 import { ToCTab } from './tabsContent/ToCTab.js';
-import { RelationshipsPanel } from '../Components/RelationshipsPanel/RelationshipsPanel.js';
+import { RelationshipsPanel } from '../Components/relationships/panel/RelationshipsPanel.js';
 import { SearchTab } from './tabsContent/SearchTab.js';
 import { FilesSideTab } from './tabsContent/FilesSideTab.js';
 import { TranslationsTab } from './tabsContent/TranslationsTab.js';

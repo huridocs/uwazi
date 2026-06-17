@@ -2,7 +2,7 @@ import React from 'react';
 import { t, Translate } from '#app/I18N/index.js';
 import { NeedAuthorization, Button } from '#V2/Components/UI/index.js';
 import type { FileType } from '#V2/api/entities/types.js';
-import { OCRButton } from '../../Components/OCRButton.js';
+import { OCRButton } from '../../Components/shared/OCRButton.js';
 import { EntityTabFooter } from '../EntityTabFooter.js';
 import { useDocumentPdfView } from '../hooks/useDocumentPdfView.js';
 

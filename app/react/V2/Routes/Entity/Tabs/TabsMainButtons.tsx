@@ -4,7 +4,7 @@ import { TabButtons } from '#V2/Components/UI/index.js';
 import { RelationshipPropertyIcon } from '#V2/Components/CustomIcons/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { countEntityRelationships } from '#V2/formatters/index.js';
-import { TabLabel } from '../Components/TabLabel.js';
+import { TabLabel } from '../Components/shared/TabLabel.js';
 import { MAIN_TAB } from './tabIds.js';
 
 type TabsMainButtonsProps = {

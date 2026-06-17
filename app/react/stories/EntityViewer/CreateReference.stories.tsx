@@ -2,7 +2,7 @@ import React from 'react';
 import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
 import { ClientRelationshipType } from '#app/apiResponseTypes.js';
-import { CreateReference } from '#V2/Routes/Entity/Components/RelationshipsPanel/CreateReference.js';
+import { CreateReference } from '#V2/Routes/Entity/Components/relationships/create-reference/CreateReference.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { searchByTitle } from '#V2/api/entities/index.js';
 

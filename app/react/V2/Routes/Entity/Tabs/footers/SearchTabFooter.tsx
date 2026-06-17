@@ -1,6 +1,6 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
-import { useDocumentInteraction } from '../../Components/EntityScopedProvider.js';
+import { useDocumentInteraction } from '../../Components/context/EntityScopedProvider.js';
 import { EntityTabFooter } from '../EntityTabFooter.js';
 
 const SearchTabFooter = () => {

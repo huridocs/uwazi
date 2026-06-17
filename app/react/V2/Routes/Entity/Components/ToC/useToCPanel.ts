@@ -12,7 +12,7 @@ import {
   useEntityScopedContext,
   useToc,
   useTocActions,
-} from '../EntityScopedProvider.js';
+} from '../context/EntityScopedProvider.js';
 import { getPageNumber } from './utils.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 

@@ -14,8 +14,8 @@ import {
   useRelationshipsActions,
   useRelationshipsPanelFilters,
   useTocActions,
-} from '../../Components/EntityScopedProvider.js';
-import { useRelationshipSelection } from '../../Components/useRelationshipSelection.js';
+} from '../../Components/context/EntityScopedProvider.js';
+import { useRelationshipSelection } from '../../Components/document/useRelationshipSelection.js';
 import { SIDE_TAB } from '../tabIds.js';
 import { useEntityTabNavigation } from './useEntityTabNavigation.js';
 

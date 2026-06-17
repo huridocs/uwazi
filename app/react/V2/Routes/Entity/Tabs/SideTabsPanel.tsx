@@ -5,7 +5,7 @@ import { SIDE_TAB, type MainTabId, type SideTabId } from './tabIds.js';
 import { TabsSideButtons } from './TabsSideButtons.js';
 import { SideTabsContent } from './SideTabsContent.js';
 import { SideTabsFooters } from './SideTabsFooters.js';
-import { RelationshipsFiltersDrawer } from '../Components/RelationshipsPanel/RelationshipsFiltersDrawer.js';
+import { RelationshipsFiltersDrawer } from '../Components/relationships/filters/RelationshipsFiltersDrawer.js';
 
 type SideTabsPanelProps = {
   activeMainTab: MainTabId;
