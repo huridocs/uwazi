@@ -35,3 +35,4 @@ export type {
 } from './relationships/relationshipsPanelDerivation.js';
 export { formatNestedProperty } from './metadata/formatNestedProperty.js';
 export { formatDenormalizedNewRelationship } from './metadata/formatDenormalizedNewRelationship.js';
+export { resolvePropertyMetadataValues } from './metadata/resolvePropertyMetadataValues.js';
