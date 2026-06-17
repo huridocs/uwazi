@@ -1,5 +1,4 @@
 Key,Ukrainian
-"""exact phrase""","""exact phrase"""
 *please keep this key secret and don't share it.,"*будь ласка, зберігайте цей ключ у таємниці та не передавайте його нікому."
 + click to select multiple cards.,"(+) натисніть, щоб вибрати декілька карток"
 2FA,2FA
@@ -382,6 +381,7 @@ Error loading your image,Помилка завантаження зображе�
 Error saving template.,Шаблон збереження помилок.
 Error setting default template,Помилка встановлення шаблону за замовчуванням
 Error updating thesauri.,Помилка оновлення тезаурусів.
+exact phrase,exact phrase
 Expand all,Розгорнути все
 Expand All,Expand All
 Export CSV,Експортувати CSV
@@ -456,6 +456,7 @@ Google Analytics ID,ID Google Аналітики
 Google Maps,Карти Google
 Group,Групи
 Group by:,Group by:
+group expressions,group expressions
 Group Options,Параметри групи
 Group saved,Групу збережено
 Group updated,Групу оновлено
@@ -606,6 +607,7 @@ marked for training,позначені для навчання
 Marked for training + all labeled entries,Позначено для навчання + всі позначені записи
 Marked for training only,Позначено тільки для навчання
 Match,Матч
+match verbatim,match verbatim
 Matching,Відповідність
 matching,відповідність
 Matomo,Матомо.
@@ -715,6 +717,7 @@ OCR PDF,Оптичне розпізнавання символів PDF
 of,з
 Ok,Гаразд
 OK,ГАРАЗД.
+one character,one character
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Доступні лише шаблони, які не використовуються як джерело в інших екстракторах і не
                 вибрані як ціль у цьому екстракторі, доступні для вибору."
@@ -1231,6 +1234,7 @@ We can't find the page you're looking for.,"Ми не можемо знайти 
 Welcome to Uwazi,Ласкаво просимо до Uwazi
 "Well, this is awkward...","Що ж, це незручно..."
 Whitelisted templates,Шаблони білого списку
+wildcard,wildcard
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Намагатиметься заповнити контейнер, використовуючи всю його ширину. У картках, ймовірно, відбудеться обрізання."
 will be updated with the same value.,оновлюватиметься з цим же значенням
 Will show the entire media inside the container.,Покаже всі носії всередині контейнера.
@@ -1260,9 +1264,3 @@ Zoom in library view,Збільшити масштаб перегляду біб
 Zoom out,Зменшити масштаб
 Zoom out library view,Зменшити масштаб перегляду бібліотеки
 — boolean,— boolean
-"— group
-                  expressions","— group
-                  expressions"
-— match verbatim,— match verbatim
-— one character,— one character
-— wildcard,— wildcard

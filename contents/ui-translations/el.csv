@@ -1,5 +1,4 @@
 Key,Greek
-"""exact phrase""","""exact phrase"""
 *please keep this key secret and don't share it.,*κρατήστε μυστικό αυτό το κλειδί και μην το μοιραστείτε με κανέναν.
 + click to select multiple cards.,+ κάντε κλικ για να επιλέξετε πολλαπλές κάρτες.
 2FA,2FA
@@ -381,6 +380,7 @@ Error loading your image,Σφάλμα φόρτωσης της εικόνας σ�
 Error saving template.,Σφάλμα αποθήκευσης προτύπου.
 Error setting default template,Σφάλμα ρύθμισης προεπιλεγμένου προτύπου
 Error updating thesauri.,Σφάλμα ενημέρωσης θησαυρών.
+exact phrase,exact phrase
 Expand all,Ανάπτυξη όλων
 Expand All,Expand All
 Export CSV,Εξαγωγή CSV
@@ -455,6 +455,7 @@ Google Analytics ID,Αναγνωριστικό Google Analytics
 Google Maps,Χάρτες Google
 Group,Ομάδα
 Group by:,Group by:
+group expressions,group expressions
 Group Options,Επιλογές ομάδας
 Group saved,Η ομάδα αποθηκεύτηκε
 Group updated,Η ομάδα ενημερώθηκε
@@ -605,6 +606,7 @@ marked for training,επισημασμένο για εκπαίδευση
 Marked for training + all labeled entries,Επισημασμένα για εκπαίδευση + όλες οι καταχωρίσεις με ετικέτα
 Marked for training only,Μόνο επισημασμένα για εκπαίδευση
 Match,Αντιστοιχία
+match verbatim,match verbatim
 Matching,Αντιστοίχιση
 matching,αντιστοίχιση
 Matomo,Matomo
@@ -714,6 +716,7 @@ OCR PDF,OCR PDF
 of,από
 Ok,Εντάξει
 OK,Εντάξει
+one character,one character
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Μόνο τα πρότυπα που δεν χρησιμοποιούνται ως πηγή σε κανέναν άλλο εξαγωγέα και δεν έχουν 
                 επιλεγεί ως προορισμός σε αυτόν τον εξαγωγέα είναι διαθέσιμα για επιλογή."
@@ -1230,6 +1233,7 @@ We can't find the page you're looking for.,Δεν μπορούμε να βρού
 Welcome to Uwazi,Καλώς ήλθατε στο Uwazi
 "Well, this is awkward...","Λοιπόν, αυτό είναι άβολο..."
 Whitelisted templates,Επιτρεπόμενα πρότυπα
+wildcard,wildcard
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Θα επιχειρήσει να γεμίσει το περιέχον, χρησιμοποιώντας ολόκληρο το πλάτος του. Στις κάρτες, είναι πιθανό να προκύψει περικοπή."
 will be updated with the same value.,θα ενημερωθεί με την ίδια τιμή.
 Will show the entire media inside the container.,Θα εμφανίσει ολόκληρο το πολυμέσο μέσα στο περιέχον.
@@ -1259,9 +1263,3 @@ Zoom in library view,Μεγέθυνση προβολής βιβλιοθήκης
 Zoom out,Σμίκρυνση
 Zoom out library view,Σμίκρυνση προβολής βιβλιοθήκης
 — boolean,— boolean
-"— group
-                  expressions","— group
-                  expressions"
-— match verbatim,— match verbatim
-— one character,— one character
-— wildcard,— wildcard

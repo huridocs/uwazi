@@ -1,5 +1,4 @@
 Key,English
-"""exact phrase""","""exact phrase"""
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
 2FA,2FA
@@ -382,6 +381,7 @@ Error loading your image,Error loading your image
 Error saving template.,Error saving template.
 Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
+exact phrase,exact phrase
 Expand all,Expand all
 Expand All,Expand All
 Export CSV,Export CSV
@@ -456,6 +456,7 @@ Google Analytics ID,Google Analytics ID
 Google Maps,Google Maps
 Group,Group
 Group by:,Group by:
+group expressions,group expressions
 Group Options,Group Options
 Group saved,Group saved
 Group updated,Group updated
@@ -606,6 +607,7 @@ marked for training,marked for training
 Marked for training + all labeled entries,Marked for training + all labeled entries
 Marked for training only,Marked for training only
 Match,Match
+match verbatim,match verbatim
 Matching,Matching
 matching,matching
 Matomo,Matomo
@@ -715,6 +717,7 @@ OCR PDF,OCR PDF
 of,of
 Ok,Ok
 OK,OK
+one character,one character
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection."
@@ -1231,6 +1234,7 @@ We can't find the page you're looking for.,We can't find the page you're looking
 Welcome to Uwazi,Welcome to Uwazi
 "Well, this is awkward...","Well, this is awkward..."
 Whitelisted templates,Whitelisted templates
+wildcard,wildcard
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
 will be updated with the same value.,will be updated with the same value.
 Will show the entire media inside the container.,Will show the entire media inside the container.
@@ -1260,9 +1264,3 @@ Zoom in library view,Zoom in library view
 Zoom out,Zoom out
 Zoom out library view,Zoom out library view
 — boolean,— boolean
-"— group
-                  expressions","— group
-                  expressions"
-— match verbatim,— match verbatim
-— one character,— one character
-— wildcard,— wildcard

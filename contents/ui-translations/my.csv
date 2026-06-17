@@ -1,5 +1,4 @@
 Key,Burmese
-"""exact phrase""","""exact phrase"""
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
 2FA,2FA
@@ -380,6 +379,7 @@ Error loading your image,Error loading your image
 Error saving template.,Error saving template.
 Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
+exact phrase,exact phrase
 Expand all,Expand all
 Expand All,Expand All
 Export CSV,CSV တင်ပို့ရန်
@@ -454,6 +454,7 @@ Google Analytics ID,Google Analytics ID
 Google Maps,Google Maps
 Group,Group
 Group by:,Group by:
+group expressions,group expressions
 Group Options,Group Options
 Group saved,Group saved
 Group updated,Group updated
@@ -604,6 +605,7 @@ marked for training,marked for training
 Marked for training + all labeled entries,Marked for training + all labeled entries
 Marked for training only,Marked for training only
 Match,Match
+match verbatim,match verbatim
 Matching,Matching
 matching,matching
 Matomo,Matomo
@@ -713,6 +715,7 @@ OCR PDF,OCR PDF
 of,၏
 Ok,အိုကေ
 OK,အိုကေ
+one character,one character
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection."
@@ -1229,6 +1232,7 @@ We can't find the page you're looking for.,We can't find the page you're looking
 Welcome to Uwazi,Uwazi မှ ကြိုဆိုပါသည်
 "Well, this is awkward...",အင်း၊ ဒါက ထူးဆန်းပါတယ်...
 Whitelisted templates,Whitelisted templates
+wildcard,wildcard
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
 will be updated with the same value.,တူညီသော တန်ဖိုးဖြင့် အပ်ဒိတ်လုပ်ပါမည်။
 Will show the entire media inside the container.,Will show the entire media inside the container.
@@ -1258,9 +1262,3 @@ Zoom in library view,စာကြည့်တိုက် မြင်ကွင�
 Zoom out,ချဲ့သည်
 Zoom out library view,စာကြည့်တိုက် မြင်ကွင်းကို ချဲ့သည်
 — boolean,— boolean
-"— group
-                  expressions","— group
-                  expressions"
-— match verbatim,— match verbatim
-— one character,— one character
-— wildcard,— wildcard

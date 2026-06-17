@@ -11,20 +11,32 @@ const RelationshipsSearchTips = () => (
     </div>
     <ul className="space-y-1 text-ink-secondary">
       <li>
-        <code className="font-mono text-[10px] text-ink">AND OR NOT</code> — boolean
+        <code className="font-mono text-[10px] text-ink">
+          <Translate>AND OR NOT</Translate>
+        </code>{' '}
+        — boolean
       </li>
       <li>
-        <code className="font-mono text-[10px] text-ink">&quot;exact phrase&quot;</code> — match
-        verbatim
+        <code className="font-mono text-[10px] text-ink">
+          &quot;<Translate>exact phrase</Translate>&quot;
+        </code>{' '}
+        — <Translate>match verbatim</Translate>
       </li>
       <li>
-        <code className="font-mono text-[10px] text-ink">stat*</code> — wildcard
+        <code className="font-mono text-[10px] text-ink">
+          <Translate>stat*</Translate>
+        </code>{' '}
+        — <Translate>wildcard</Translate>
       </li>
       <li>
-        <code className="font-mono text-[10px] text-ink">wom?n</code> — one character
+        <code className="font-mono text-[10px] text-ink">
+          <Translate>wom?n</Translate>
+        </code>{' '}
+        <Translate>one character</Translate>
       </li>
       <li>
-        <code className="font-mono text-[10px] text-ink">( ... )</code> — group expressions
+        <code className="font-mono text-[10px] text-ink">( ... )</code> —{' '}
+        <Translate>group expressions</Translate>
       </li>
     </ul>
   </>
