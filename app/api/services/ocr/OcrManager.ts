@@ -3,13 +3,14 @@ import { ObjectId } from 'mongodb';
 import { Readable } from 'stream';
 import urljoin from 'url-join';
 import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
-import { files, storage } from '#api/files/index.js';
+import { storage } from '#api/files/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import relationships from '#api/relationships/relationships.js';
 import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
@@ -181,7 +182,9 @@ const handleOcrError = async (
 const processResults = async (message: ResultsMessage): Promise<void> => {
   await tenants.run(async () => {
     try {
-      const [originalFile] = await files.get({ filename: message.params!.filename });
+      const originalFile = (
+        await FilesDAOFactory.default().getByFilename(message.params!.filename)
+      ).getDataOrThrow();
       const [record] = await getForSourceFile(originalFile);
 
       if (!record) return;

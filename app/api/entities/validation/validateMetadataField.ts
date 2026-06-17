@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongodb';
 import Ajv, { ErrorObject } from 'ajv';
-import { isUndefined, isNull } from 'util';
 import { ensure } from '#shared/tsUtils.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { PropertySchema, MetadataObjectSchema } from '#shared/types/commonTypes.js';
@@ -12,7 +11,7 @@ import thesauris from '#api/thesauri/index.js';
 import { flatThesaurusValues } from '#api/thesauri/thesauri.js';
 import { validators, customErrorMessages } from './metadataValidators.js';
 
-const hasValue = (value: any) => !isUndefined(value) && !isNull(value);
+const hasValue = (value: any) => value !== undefined && value !== null;
 
 const validationError = (
   error: Partial<ErrorObject>,
