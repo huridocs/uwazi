@@ -23,8 +23,8 @@ const RelationshipsSideTabsStub = () => (
 );
 
 const RelationshipsWithPanelStory = ({ locale }: RelationshipsWithPanelStoryProps) => {
-  const store = useMemo(() => createRelationshipsStoryStore(locale), [locale]);
   const entity = useMemo(() => structuredClone(apiEntity), []);
+  const store = useMemo(() => createRelationshipsStoryStore(locale, entity), [entity, locale]);
   const mainDocument = entity.documents![0];
   const router = useMemo(
     () =>
@@ -54,7 +54,7 @@ const RelationshipsWithPanelStory = ({ locale }: RelationshipsWithPanelStoryProp
                           <RelationshipsSideTabsStub />
                         </div>
                         <div className="min-h-0 flex-1 overflow-hidden px-3 pt-2.5">
-                          <RelationshipsPanel entity={entity} mainDocument={mainDocument} />
+                          <RelationshipsPanel mainDocument={mainDocument} />
                         </div>
                         <RelationshipsFiltersDrawer />
                       </div>

@@ -27,7 +27,14 @@ const RelationshipsListBody = ({
   const { groupBy, subGroupBy } = useRelationshipsGroupBy();
 
   if (groupBy === 'none') {
-    return <RelationshipsPanelEntryList bordered markers={markers} {...rowProps} />;
+    return (
+      <RelationshipsPanelEntryList
+        bordered
+        markers={markers}
+        groupContext={groupContext}
+        {...rowProps}
+      />
+    );
   }
 
   return (

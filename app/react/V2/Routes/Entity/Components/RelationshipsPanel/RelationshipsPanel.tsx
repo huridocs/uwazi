@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
-import { Entity, FileType } from '#V2/api/entities/types.js';
+import type { FileType } from '#V2/api/entities/types.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { relationshipTypesAtom } from '#V2/atoms/index.js';
 import { searchByTitle } from '#V2/api/entities/index.js';
@@ -31,16 +31,15 @@ import { useRelationshipSave } from './useRelationshipSave.js';
 import { useEntityTabNavigation } from '../../Tabs/hooks/useEntityTabNavigation.js';
 
 type RelationshipsPanelProps = {
-  entity?: Entity;
   mainDocument?: FileType;
 };
 
-const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) => {
+const RelationshipsPanel = ({ mainDocument }: RelationshipsPanelProps) => {
   const { createReferenceSelection, createReferenceMode } = useRelationships();
   const { activeRelationshipId, selectRelationship, clearRelationshipSelection } =
     useRelationshipSelection();
   const { markers, stats, hasRelationships } = useRelationshipsPanelData();
-  const groupContext = useGroupLabelContext(entity);
+  const groupContext = useGroupLabelContext();
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const view = useAtomValue(relationshipsPanelViewAtom);
   const activeFilterCount = useAtomValue(relationshipsPanelActiveFilterCountAtom);
@@ -55,9 +54,9 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
     handleDeleteClick,
     handleConfirmDelete,
     handleCancelDelete,
-  } = useRelationshipDelete(entity, activeRelationshipId, clearRelationshipSelection);
+  } = useRelationshipDelete(activeRelationshipId, clearRelationshipSelection);
 
-  const { handleSaveReference, handleCancelCreate } = useRelationshipSave(entity, mainDocument);
+  const { handleSaveReference, handleCancelCreate } = useRelationshipSave(mainDocument);
 
   const lookup = useCallback(
     async (searchString: string) =>
@@ -133,8 +132,8 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
       <RelationshipsPanelBody
         markers={markers}
         groupContext={groupContext}
-        selfSharedId={entity?.sharedId ?? ''}
-        selfTitle={entity?.title ?? ''}
+        selfSharedId={groupContext.selfSharedId}
+        selfTitle={groupContext.selfTitle}
         activeRelationshipId={activeRelationshipId ?? undefined}
         onClick={handleRelationshipClick}
         onView={handleViewClick}

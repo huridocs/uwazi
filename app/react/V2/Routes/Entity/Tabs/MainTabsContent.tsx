@@ -40,7 +40,7 @@ const MainTabsContent = ({
     case MAIN_TAB.RELATIONSHIPS:
       content = (
         <div className="flex min-h-0 flex-1 flex-col px-3 pt-2">
-          <RelationshipsPanel entity={entity} mainDocument={mainDocument} />
+          <RelationshipsPanel mainDocument={mainDocument} />
         </div>
       );
       break;

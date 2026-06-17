@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
-import type { Entity } from '#V2/api/entities/types.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
+import { useRelationshipsPanelEntity } from './useRelationshipsPanelEntity.js';
 
-const useGroupLabelContext = (entity: Entity | undefined) => {
+const useGroupLabelContext = () => {
+  const entity = useRelationshipsPanelEntity();
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const templates = useAtomValue(templatesAtom);
 

@@ -19,6 +19,7 @@ import { useRelationshipRowVisibility } from './useRelationshipRowVisibility.js'
 type RelationshipRowProps = {
   marker: RelationshipMarker;
   selfSharedId: string;
+  relationshipTypeName?: string;
   isSelected?: boolean;
   onClick?: () => void;
   onView?: () => void;
@@ -28,6 +29,7 @@ type RelationshipRowProps = {
 const RelationshipRow = ({
   marker,
   selfSharedId,
+  relationshipTypeName: relationshipTypeNameProp,
   isSelected,
   onClick,
   onView,
@@ -47,6 +49,7 @@ const RelationshipRow = ({
   const templateName =
     templates.find(template => template._id === marker.target.templateId)?.name ?? '';
   const relationshipTypeName =
+    relationshipTypeNameProp ??
     relationshipTypes.find(type => type._id === marker.view.type)?.name ??
     marker.view.relationshipTypeName ??
     '';

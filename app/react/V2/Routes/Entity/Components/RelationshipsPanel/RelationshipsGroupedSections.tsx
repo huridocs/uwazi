@@ -48,7 +48,13 @@ const renderSubGroups = (
       const color = getGroupColor(subKey, subGroupBy, groupContext, subMarkers);
       const count = panelEntryCount(subMarkers, rowProps.selfSharedId);
       const markerIds = subMarkers.map(marker => marker._id);
-      const entries = <RelationshipsPanelEntryList markers={subMarkers} {...rowProps} />;
+      const entries = (
+        <RelationshipsPanelEntryList
+          markers={subMarkers}
+          groupContext={groupContext}
+          {...rowProps}
+        />
+      );
 
       if (variant === 'list') {
         return (
@@ -102,7 +108,11 @@ const RelationshipsGroupedSections = ({
     const markerIds = groupMarkersList.map(marker => marker._id);
     const content =
       subGroupBy === 'none' ? (
-        <RelationshipsPanelEntryList markers={groupMarkersList} {...rowProps} />
+        <RelationshipsPanelEntryList
+          markers={groupMarkersList}
+          groupContext={groupContext}
+          {...rowProps}
+        />
       ) : (
         renderSubGroups(key, groupMarkersList, subGroupBy, groupContext, rowProps, variant)
       );

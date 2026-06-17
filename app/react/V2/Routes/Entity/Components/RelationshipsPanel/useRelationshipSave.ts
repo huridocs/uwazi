@@ -1,10 +1,11 @@
 import { useCallback } from 'react';
 import { useRevalidator } from 'react-router';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
-import type { Entity, FileType } from '#V2/api/entities/types.js';
+import type { FileType } from '#V2/api/entities/types.js';
 import { saveTextReference } from '#V2/api/relationships/index.js';
-import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { useRelationshipsActions } from './relationshipsAtom.js';
+import { useRelationshipsPanelEntity } from './useRelationshipsPanelEntity.js';
+import { refreshEntityRelationships } from './refreshEntityRelationships.js';
 
 type SaveReferenceData = {
   selection: TextSelection;
@@ -14,17 +15,19 @@ type SaveReferenceData = {
   targetSelection?: TextSelection;
 };
 
-const useRelationshipSave = (entity: Entity | undefined, mainDocument: FileType | undefined) => {
+const useRelationshipSave = (mainDocument?: FileType) => {
+  const entity = useRelationshipsPanelEntity();
   const { setCreateReferenceSelection } = useRelationshipsActions();
   const revalidator = useRevalidator();
+  const document = mainDocument ?? entity?.documents?.[0];
 
   const handleSaveReference = useCallback(
     async (data: SaveReferenceData) => {
-      if (!entity || !mainDocument?._id) return;
+      if (!entity || !document?._id) return;
 
       await saveTextReference({
         sourceEntitySharedId: entity.sharedId,
-        sourceFileId: String(mainDocument._id),
+        sourceFileId: String(document._id),
         sourceSelection: data.selection,
         targetEntitySharedId: data.targetEntityId,
         relationshipType: data.relationshipType,
@@ -33,10 +36,9 @@ const useRelationshipSave = (entity: Entity | undefined, mainDocument: FileType 
       });
 
       setCreateReferenceSelection(undefined, undefined);
-      entityLoaderCache.invalidateEntity(entity.sharedId);
-      await revalidator.revalidate();
+      await refreshEntityRelationships(entity.sharedId, revalidator);
     },
-    [entity, mainDocument, setCreateReferenceSelection, revalidator]
+    [document, entity, setCreateReferenceSelection, revalidator]
   );
 
   const handleCancelCreate = useCallback(() => {

@@ -15,7 +15,6 @@ type MainTabsFootersProps = {
 
 const MainTabsFooters = ({
   activeTabId: urlActiveTabId,
-  entity,
   mainDocument,
 }: MainTabsFootersProps) => {
   const { activeTabId: atomActiveTabId } = useTabGroup('entity-main');
@@ -28,7 +27,7 @@ const MainTabsFooters = ({
     case MAIN_TAB.METADATA:
       return <MetadataTabFooter />;
     case MAIN_TAB.RELATIONSHIPS:
-      return <RelationshipsTabFooter entity={entity} />;
+      return <RelationshipsTabFooter />;
     case MAIN_TAB.FILES:
       return <FilesTabFooter />;
     default:

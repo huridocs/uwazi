@@ -18,7 +18,6 @@ type SideTabsFootersProps = {
 
 const SideTabsFooters = ({
   activeTabId: urlActiveTabId,
-  entity,
   mainDocument,
 }: SideTabsFootersProps) => {
   const { activeTabId: atomActiveTabId } = useTabGroup('entity-side');
@@ -35,7 +34,7 @@ const SideTabsFooters = ({
     case SIDE_TAB.TOC:
       return <ToCTabFooter mainDocument={mainDocument} />;
     case SIDE_TAB.RELATIONSHIPS:
-      return <RelationshipsTabFooter entity={entity} />;
+      return <RelationshipsTabFooter />;
     case SIDE_TAB.SEARCH:
       return <SearchTabFooter />;
     case SIDE_TAB.FILE:

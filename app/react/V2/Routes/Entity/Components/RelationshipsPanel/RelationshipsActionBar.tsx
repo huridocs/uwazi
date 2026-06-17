@@ -1,31 +1,36 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useRevalidator } from 'react-router';
 import { useAtom } from 'jotai';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
-import { Entity } from '#V2/api/entities/types.js';
 import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
-import { deleteReference } from '#V2/api/relationships/index.js';
 import { countEntityRelationships } from '#V2/formatters/index.js';
 import { useRelationshipSelection } from '../useRelationshipSelection.js';
-import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { relationshipsEditModeAtom, selectedRelationshipIdsAtom } from './relationshipsAtom.js';
+import { useRelationshipsPanelEntity } from './useRelationshipsPanelEntity.js';
+import { useRelationshipBulkDelete } from './useRelationshipBulkDelete.js';
 
-type RelationshipsActionBarProps = {
-  entity?: Entity;
-};
-
-const RelationshipsActionBar = ({ entity }: RelationshipsActionBarProps) => {
+const RelationshipsActionBar = () => {
+  const entity = useRelationshipsPanelEntity();
   const [editMode, setEditMode] = useAtom(relationshipsEditModeAtom);
   const [selected, setSelected] = useAtom(selectedRelationshipIdsAtom);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const revalidator = useRevalidator();
   const { activeRelationshipId, clearRelationshipSelection } = useRelationshipSelection();
 
   const totalCount = useMemo(() => (entity ? countEntityRelationships(entity) : 0), [entity]);
   const selectedCount = selected.size;
   const hasSelection = selectedCount > 0;
+
+  const clearSelection = useCallback(() => {
+    setSelected(new Set());
+    setConfirmDelete(false);
+  }, [setSelected]);
+
+  const { isDeleting, deleteSelected } = useRelationshipBulkDelete(selected, () => {
+    if (activeRelationshipId && selected.has(activeRelationshipId)) {
+      clearRelationshipSelection();
+    }
+    clearSelection();
+  });
 
   const cancelEdit = useCallback(() => {
     setSelected(new Set());
@@ -37,31 +42,8 @@ const RelationshipsActionBar = ({ entity }: RelationshipsActionBarProps) => {
   }, [setEditMode]);
 
   const handleConfirmDelete = useCallback(async () => {
-    if (!entity?.sharedId || selectedCount === 0) return;
-    setIsDeleting(true);
-    try {
-      await Promise.all([...selected].map(async id => deleteReference(id)));
-      if (activeRelationshipId && selected.has(activeRelationshipId)) {
-        clearRelationshipSelection();
-      }
-      setSelected(new Set());
-      setConfirmDelete(false);
-      entityLoaderCache.invalidateEntity(entity.sharedId);
-      await revalidator.revalidate();
-    } catch (error) {
-      console.error('Error deleting relationships:', error);
-    } finally {
-      setIsDeleting(false);
-    }
-  }, [
-    activeRelationshipId,
-    clearRelationshipSelection,
-    entity?.sharedId,
-    revalidator,
-    selected,
-    selectedCount,
-    setSelected,
-  ]);
+    await deleteSelected();
+  }, [deleteSelected]);
 
   return (
     <>

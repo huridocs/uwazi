@@ -1,8 +1,7 @@
 import React from 'react';
-import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
-import { relationshipTypesAtom } from '#V2/atoms/index.js';
 import type { PanelListEntry } from '#V2/formatters/relationships/relationshipsPanelDerivation.js';
+import type { GroupLabelContext } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { DirectionGlyph } from './DirectionGlyph.js';
 import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
@@ -20,14 +19,20 @@ type RelationshipPanelRowHandlers = {
 
 type RelationshipPanelRowProps = RelationshipPanelRowHandlers & {
   entry: PanelListEntry;
+  groupContext: GroupLabelContext;
 };
 
-const renderNestedRows = (markers: RelationshipMarker[], handlers: RelationshipPanelRowHandlers) =>
+const renderNestedRows = (
+  markers: RelationshipMarker[],
+  handlers: RelationshipPanelRowHandlers,
+  groupContext: GroupLabelContext
+) =>
   markers.map((marker, index) => (
     <RelationshipRow
       key={marker._id || `nested-${index}`}
       marker={marker}
       selfSharedId={handlers.selfSharedId}
+      relationshipTypeName={groupContext.relationshipTypeName(marker.view.type)}
       isSelected={handlers.activeRelationshipId === marker._id}
       onClick={() => handlers.onClick(marker)}
       onView={() => handlers.onView(marker)}
@@ -35,8 +40,7 @@ const renderNestedRows = (markers: RelationshipMarker[], handlers: RelationshipP
     />
   ));
 
-const RelationshipPanelRow = ({ entry, ...handlers }: RelationshipPanelRowProps) => {
-  const relationshipTypes = useAtomValue(relationshipTypesAtom);
+const RelationshipPanelRow = ({ entry, groupContext, ...handlers }: RelationshipPanelRowProps) => {
   const { hideTargetPill, hideRelationType } = useRelationshipRowVisibility();
 
   if (entry.kind === 'reference') {
@@ -44,6 +48,7 @@ const RelationshipPanelRow = ({ entry, ...handlers }: RelationshipPanelRowProps)
       <RelationshipRow
         marker={entry.marker}
         selfSharedId={handlers.selfSharedId}
+        relationshipTypeName={groupContext.relationshipTypeName(entry.marker.view.type)}
         isSelected={handlers.activeRelationshipId === entry.marker._id}
         onClick={() => handlers.onClick(entry.marker)}
         onView={() => handlers.onView(entry.marker)}
@@ -54,9 +59,7 @@ const RelationshipPanelRow = ({ entry, ...handlers }: RelationshipPanelRowProps)
 
   if (entry.kind === 'aggregate') {
     const { aggregate, markers } = entry;
-    const relationshipTypeName =
-      relationshipTypes.find(type => type._id === aggregate.relationType)?.name ??
-      aggregate.relationType;
+    const relationshipTypeName = groupContext.relationshipTypeName(aggregate.relationType);
     const glyphDirection =
       aggregate.directions.length > 1 ? 'both' : (aggregate.directions[0] ?? 'outgoing');
 
@@ -80,14 +83,13 @@ const RelationshipPanelRow = ({ entry, ...handlers }: RelationshipPanelRowProps)
           </>
         }
       >
-        {renderNestedRows(markers, handlers)}
+        {renderNestedRows(markers, handlers, groupContext)}
       </CollapsibleRelationshipRow>
     );
   }
 
   const { hub, markers } = entry;
-  const relationshipTypeName =
-    relationshipTypes.find(type => type._id === hub.relationType)?.name ?? hub.relationType;
+  const relationshipTypeName = groupContext.relationshipTypeName(hub.relationType);
 
   return (
     <CollapsibleRelationshipRow
@@ -124,7 +126,7 @@ const RelationshipPanelRow = ({ entry, ...handlers }: RelationshipPanelRowProps)
         </>
       }
     >
-      {renderNestedRows(markers, handlers)}
+      {renderNestedRows(markers, handlers, groupContext)}
     </CollapsibleRelationshipRow>
   );
 };

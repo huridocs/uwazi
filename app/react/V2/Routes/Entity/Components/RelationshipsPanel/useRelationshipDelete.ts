@@ -1,15 +1,14 @@
 import { useCallback, useState } from 'react';
 import { useRevalidator } from 'react-router';
-import type { Entity } from '#V2/api/entities/types.js';
-import { deleteReference } from '#V2/api/relationships/index.js';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
-import { entityLoaderCache } from '../../EntityLoaderCache.js';
+import { useRelationshipsPanelEntity } from './useRelationshipsPanelEntity.js';
+import { deleteReferencesById, refreshEntityRelationships } from './refreshEntityRelationships.js';
 
 const useRelationshipDelete = (
-  entity: Entity | undefined,
   activeRelationshipId: string | null | undefined,
   clearRelationshipSelection: () => void
 ) => {
+  const entity = useRelationshipsPanelEntity();
   const [relationshipToDelete, setRelationshipToDelete] = useState<RelationshipMarker | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const revalidator = useRevalidator();
@@ -22,11 +21,10 @@ const useRelationshipDelete = (
     if (!relationshipToDelete?._id || !entity?.sharedId) return;
     setIsDeleting(true);
     try {
-      await deleteReference(String(relationshipToDelete._id));
+      await deleteReferencesById([String(relationshipToDelete._id)]);
       setRelationshipToDelete(null);
       if (activeRelationshipId === relationshipToDelete._id) clearRelationshipSelection();
-      entityLoaderCache.invalidateEntity(entity.sharedId);
-      await revalidator.revalidate();
+      await refreshEntityRelationships(entity.sharedId, revalidator);
     } finally {
       setIsDeleting(false);
     }
