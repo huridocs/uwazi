@@ -22,7 +22,6 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 import { EntityUpdatedEvent as LegacyEntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
-import { User } from '#api/users.v2/model/User.js';
 import { EntitiesServiceDeps } from '../EntitiesService.js';
 import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
 import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
