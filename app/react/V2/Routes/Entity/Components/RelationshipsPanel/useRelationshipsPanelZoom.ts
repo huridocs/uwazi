@@ -1,8 +1,7 @@
-import { useAtomValue } from 'jotai';
 import {
-  relationshipsPanelZoomAtom,
   type RelationshipsPanelZoom,
-} from './relationshipsPanelFiltersAtom.js';
+  useRelationshipsPanelFilters,
+} from '../EntityScopedProvider.js';
 
 const rowPaddingByZoom: Partial<Record<RelationshipsPanelZoom, string>> = {
   overview: '!py-1.5',
@@ -10,7 +9,7 @@ const rowPaddingByZoom: Partial<Record<RelationshipsPanelZoom, string>> = {
 };
 
 const useRelationshipsPanelZoom = () => {
-  const zoom = useAtomValue(relationshipsPanelZoomAtom);
+  const { zoom } = useRelationshipsPanelFilters();
 
   return {
     zoom,

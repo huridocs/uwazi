@@ -3,8 +3,7 @@ import { useRevalidator } from 'react-router';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
 import type { FileType } from '#V2/api/entities/types.js';
 import { saveTextReference } from '#V2/api/relationships/index.js';
-import { useRelationshipsActions } from './relationshipsAtom.js';
-import { useRelationshipsPanelEntity } from './useRelationshipsPanelEntity.js';
+import { useEntityScopedEntity, useRelationshipsActions } from '../EntityScopedProvider.js';
 import { refreshEntityRelationships } from './refreshEntityRelationships.js';
 
 type SaveReferenceData = {
@@ -16,7 +15,7 @@ type SaveReferenceData = {
 };
 
 const useRelationshipSave = (mainDocument?: FileType) => {
-  const entity = useRelationshipsPanelEntity();
+  const entity = useEntityScopedEntity();
   const { setCreateReferenceSelection } = useRelationshipsActions();
   const revalidator = useRevalidator();
   const document = mainDocument ?? entity?.documents?.[0];

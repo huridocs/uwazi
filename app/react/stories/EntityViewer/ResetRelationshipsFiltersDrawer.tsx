@@ -1,14 +1,13 @@
 import { useEffect } from 'react';
-import { useSetAtom } from 'jotai';
-import { relationshipsPanelFiltersDrawerOpenAtom } from '#V2/Routes/Entity/Components/RelationshipsPanel/relationshipsPanelFiltersAtom.js';
+import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/EntityScopedProvider.js';
 
 const ResetRelationshipsFiltersDrawer = () => {
-  const setFiltersOpen = useSetAtom(relationshipsPanelFiltersDrawerOpenAtom);
+  const { setFiltersDrawerOpen } = useRelationshipsPanelFilters();
 
   useEffect(() => {
-    setFiltersOpen(false);
-    return () => setFiltersOpen(false);
-  }, [setFiltersOpen]);
+    setFiltersDrawerOpen(false);
+    return () => setFiltersDrawerOpen(false);
+  }, [setFiltersDrawerOpen]);
 
   return null;
 };

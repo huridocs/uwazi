@@ -1,14 +1,10 @@
 import React from 'react';
-import { useAtomValue } from 'jotai';
 import { FilterDrawerButton } from '#V2/Components/UI/FilterDrawerButton.js';
-import {
-  relationshipsPanelGroupByAtom,
-  relationshipsPanelViewAtom,
-} from './relationshipsPanelFiltersAtom.js';
 import { RelationshipsGroupByControl } from './RelationshipsGroupByControl.js';
 import { RelationshipsSortControl } from './RelationshipsSortControl.js';
 import { RelationshipsViewControl } from './RelationshipsViewControl.js';
 import { RelationshipsZoomControl } from './RelationshipsZoomControl.js';
+import { useRelationshipsPanelFilters } from '../EntityScopedProvider.js';
 
 type RelationshipsPanelToolbarControlsProps = {
   activeFilterCount: number;
@@ -19,8 +15,7 @@ const RelationshipsPanelToolbarControls = ({
   activeFilterCount,
   onOpenFilters,
 }: RelationshipsPanelToolbarControlsProps) => {
-  const view = useAtomValue(relationshipsPanelViewAtom);
-  const groupBy = useAtomValue(relationshipsPanelGroupByAtom);
+  const { view, groupBy } = useRelationshipsPanelFilters();
   const zoomDisabled = view === 'graph';
 
   return (

@@ -1,17 +1,12 @@
 import React from 'react';
-import { useAtom, useSetAtom } from 'jotai';
 import { t, Translate } from '#app/I18N/index.js';
 import { DropdownListbox } from '#V2/Components/UI/DropdownListbox.js';
 import {
   groupingOptions,
   type RelationshipsPanelGroupBy,
 } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
-import {
-  relationshipsPanelGroupByAtom,
-  relationshipsPanelSubGroupByAtom,
-  setRelationshipsPanelGroupByAtom,
-} from './relationshipsPanelFiltersAtom.js';
 import { groupingOptionLabels } from './relationshipsPanelLabels.js';
+import { useRelationshipsPanelFilters } from '../EntityScopedProvider.js';
 
 type RelationshipsGroupByControlProps = {
   axis: 'primary' | 'secondary';
@@ -24,9 +19,7 @@ const RelationshipsGroupByControl = ({
   disabled = false,
   excludeOption,
 }: RelationshipsGroupByControlProps) => {
-  const [groupBy] = useAtom(relationshipsPanelGroupByAtom);
-  const [subGroupBy, setSubGroupBy] = useAtom(relationshipsPanelSubGroupByAtom);
-  const setGroupBy = useSetAtom(setRelationshipsPanelGroupByAtom);
+  const { groupBy, subGroupBy, setGroupBy, setSubGroupBy } = useRelationshipsPanelFilters();
   const value = axis === 'primary' ? groupBy : subGroupBy;
   const setValue = axis === 'primary' ? setGroupBy : setSubGroupBy;
   const visibleOptions = groupingOptions.filter(

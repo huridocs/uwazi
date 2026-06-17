@@ -1,15 +1,14 @@
 import React from 'react';
-import { useAtom } from 'jotai';
 import { t, Translate } from '#app/I18N/index.js';
 import { DropdownListbox } from '#V2/Components/UI/DropdownListbox.js';
 import type { RelationshipsPanelSort } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
-import { relationshipsPanelSortAtom } from './relationshipsPanelFiltersAtom.js';
 import { sortOptionLabels } from './relationshipsPanelLabels.js';
+import { useRelationshipsPanelFilters } from '../EntityScopedProvider.js';
 
 const sortOptionIds: RelationshipsPanelSort[] = ['none', 'appearance', 'asc', 'desc'];
 
 const RelationshipsSortControl = () => {
-  const [sortOrder, setSortOrder] = useAtom(relationshipsPanelSortAtom);
+  const { sort: sortOrder, setSort: setSortOrder } = useRelationshipsPanelFilters();
 
   return (
     <DropdownListbox

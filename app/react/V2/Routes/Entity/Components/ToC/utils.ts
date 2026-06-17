@@ -1,5 +1,18 @@
 import { TocSchema } from '#shared/types/commonTypes.js';
+import type { TextSelection } from '@huridocs/react-text-selection-handler';
 import type { ProcessedTocEntry } from './types.js';
+
+const convertTextSelectionToTocEntry = (selection: TextSelection): TocSchema => ({
+  label: selection.text?.trim() || '',
+  selectionRectangles: selection.selectionRectangles.map(rect => ({
+    top: rect.top,
+    left: rect.left,
+    width: rect.width,
+    height: rect.height,
+    page: rect.regionId,
+  })),
+  indentation: 0,
+});
 
 export const getPageNumber = (entry: TocSchema): number | null => {
   const page = entry.selectionRectangles?.find(rect => rect.page)?.page;
@@ -116,3 +129,5 @@ export const findItemsWithChildren = (normalizedToc: ProcessedTocEntry[]): numbe
       )
     )
     .map(item => item.index);
+
+export { convertTextSelectionToTocEntry };

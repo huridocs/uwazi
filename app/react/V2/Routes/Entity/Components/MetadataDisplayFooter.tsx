@@ -1,11 +1,10 @@
 import React from 'react';
-import { useAtom } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { Button } from '#V2/Components/UI/index.js';
-import { isEditingAtom } from '../atoms/isEditingAtom.js';
+import { useMetadataEditing } from './EntityScopedProvider.js';
 
 const MetadataDisplayFooter = () => {
-  const [isEditing, setIsEditing] = useAtom(isEditingAtom);
+  const { isEditing, setIsEditing } = useMetadataEditing();
 
   return (
     <div className="flex w-full flex-row items-center justify-between gap-3">

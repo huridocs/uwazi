@@ -1,10 +1,10 @@
 import { useCallback, useState } from 'react';
 import { useRevalidator } from 'react-router';
-import { useRelationshipsPanelEntity } from './useRelationshipsPanelEntity.js';
+import { useEntityScopedEntity } from '../EntityScopedProvider.js';
 import { deleteReferencesById, refreshEntityRelationships } from './refreshEntityRelationships.js';
 
 const useRelationshipBulkDelete = (selectedIds: Set<string>, onSuccess: () => void) => {
-  const entity = useRelationshipsPanelEntity();
+  const entity = useEntityScopedEntity();
   const [isDeleting, setIsDeleting] = useState(false);
   const revalidator = useRevalidator();
 

@@ -1,21 +1,14 @@
 import React from 'react';
-import { useAtom, useSetAtom } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import type { RelationshipsPanelStats } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
-import {
-  relationshipsPanelCollapseAllSignalAtom,
-  relationshipsPanelExpandAllSignalAtom,
-  relationshipsPanelGroupByAtom,
-} from './relationshipsPanelFiltersAtom.js';
+import { useRelationshipsPanelFilters } from '../EntityScopedProvider.js';
 
 type RelationshipsListInfoRowProps = {
   stats: RelationshipsPanelStats;
 };
 
 const RelationshipsListInfoRow = ({ stats }: RelationshipsListInfoRowProps) => {
-  const [groupBy] = useAtom(relationshipsPanelGroupByAtom);
-  const setExpandSignal = useSetAtom(relationshipsPanelExpandAllSignalAtom);
-  const setCollapseSignal = useSetAtom(relationshipsPanelCollapseAllSignalAtom);
+  const { groupBy, setExpandAllSignal, setCollapseAllSignal } = useRelationshipsPanelFilters();
   const groupingEnabled = groupBy !== 'none';
 
   return (
@@ -32,7 +25,7 @@ const RelationshipsListInfoRow = ({ stats }: RelationshipsListInfoRowProps) => {
         <button
           type="button"
           disabled={!groupingEnabled}
-          onClick={() => setCollapseSignal(signal => signal + 1)}
+          onClick={() => setCollapseAllSignal(signal => signal + 1)}
           className={`px-1 font-medium ${
             groupingEnabled
               ? 'cursor-pointer text-ink-secondary hover:text-ink'
@@ -44,7 +37,7 @@ const RelationshipsListInfoRow = ({ stats }: RelationshipsListInfoRowProps) => {
         <button
           type="button"
           disabled={!groupingEnabled}
-          onClick={() => setExpandSignal(signal => signal + 1)}
+          onClick={() => setExpandAllSignal(signal => signal + 1)}
           className={`px-1 font-medium ${
             groupingEnabled
               ? 'cursor-pointer text-ink-secondary hover:text-ink'

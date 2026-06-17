@@ -1,9 +1,8 @@
 import React from 'react';
-import { useAtom } from 'jotai';
 import { t, Translate } from '#app/I18N/index.js';
 import { QuerySearchBar } from '#V2/Components/UI/QuerySearchBar.js';
-import { relationshipsPanelSearchAtom } from './relationshipsPanelFiltersAtom.js';
 import { RelationshipsActiveFilterChips } from './RelationshipsActiveFilterChips.js';
+import { useRelationshipsPanelFilters } from '../EntityScopedProvider.js';
 
 const RelationshipsSearchTips = () => (
   <>
@@ -32,7 +31,7 @@ const RelationshipsSearchTips = () => (
 );
 
 const RelationshipsSearchBar = () => {
-  const [query, setQuery] = useAtom(relationshipsPanelSearchAtom);
+  const { search: query, setSearch: setQuery } = useRelationshipsPanelFilters();
 
   return (
     <QuerySearchBar

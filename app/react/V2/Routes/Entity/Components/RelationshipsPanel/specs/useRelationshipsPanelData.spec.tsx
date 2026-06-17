@@ -2,11 +2,9 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { createStore, Provider } from 'jotai';
 import { render, screen } from '@testing-library/react';
 import type { Entity } from '#V2/api/entities/types.js';
-import { relationshipsPanelEntityAtom } from '../relationshipsPanelDataAtoms.js';
-import { useRelationshipsPanelData } from '../useRelationshipsPanelData.js';
+import { EntityScopedProvider, useRelationshipsPanelData } from '../../EntityScopedProvider.js';
 
 const entityWithRelations = {
   _id: 'ent1',
@@ -45,26 +43,22 @@ const PanelDataProbe = () => {
 };
 
 describe('useRelationshipsPanelData', () => {
-  it('keeps markers after a panel consumer unmounts without clearing the entity atom', () => {
-    const store = createStore();
-    store.set(relationshipsPanelEntityAtom, entityWithRelations);
-
+  it('keeps markers after a panel consumer unmounts', () => {
     const { unmount } = render(
-      <Provider store={store}>
+      <EntityScopedProvider entity={entityWithRelations}>
         <PanelDataProbe />
-      </Provider>
+      </EntityScopedProvider>
     );
 
     expect(screen.getByText('has markers')).toBeInTheDocument();
     unmount();
 
     render(
-      <Provider store={store}>
+      <EntityScopedProvider entity={entityWithRelations}>
         <PanelDataProbe />
-      </Provider>
+      </EntityScopedProvider>
     );
 
     expect(screen.getByText('has markers')).toBeInTheDocument();
-    expect(store.get(relationshipsPanelEntityAtom)?.sharedId).toBe('shared1');
   });
 });

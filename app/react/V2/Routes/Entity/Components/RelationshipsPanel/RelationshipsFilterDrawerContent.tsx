@@ -1,23 +1,21 @@
 import React from 'react';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { ColorDot } from '#V2/Components/UI/ColorDot.js';
 import { FacetSection } from '#V2/Components/UI/FacetSection.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
-import { relationshipsPanelFacetCountsAtom } from './relationshipsPanelDataAtoms.js';
 import {
-  relationshipsPanelEntityTypeFiltersAtom,
-  relationshipsPanelRelTypeFiltersAtom,
-} from './relationshipsPanelFiltersAtom.js';
+  useRelationshipsPanelData,
+  useRelationshipsPanelFilters,
+} from '../EntityScopedProvider.js';
 
 const RelationshipsFilterDrawerContent = () => {
-  const [relTypeFilters, setRelTypeFilters] = useAtom(relationshipsPanelRelTypeFiltersAtom);
-  const [entityTypeFilters, setEntityTypeFilters] = useAtom(
-    relationshipsPanelEntityTypeFiltersAtom
-  );
+  const { relTypeFilters, setRelTypeFilters, entityTypeFilters, setEntityTypeFilters } =
+    useRelationshipsPanelFilters();
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const templates = useAtomValue(templatesAtom);
-  const { byRelType, byEntityType, total } = useAtomValue(relationshipsPanelFacetCountsAtom);
+  const { facetCounts } = useRelationshipsPanelData();
+  const { byRelType, byEntityType, total } = facetCounts;
 
   const relTypeName = (id: string) => relationshipTypes.find(type => type._id === id)?.name ?? id;
   const templateName = (id: string) => templates.find(template => template._id === id)?.name ?? id;

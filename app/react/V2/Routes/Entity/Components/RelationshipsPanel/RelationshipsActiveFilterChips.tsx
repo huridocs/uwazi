@@ -1,24 +1,23 @@
 import React from 'react';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { ActiveFilterChip } from '#V2/Components/UI/ActiveFilterChip.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
-import {
-  relationshipsPanelActiveClusterRefIdsAtom,
-  relationshipsPanelEntityTypeFiltersAtom,
-  relationshipsPanelRelTypeFiltersAtom,
-  relationshipsPanelSearchAtom,
-  relationshipsPanelSortAtom,
-} from './relationshipsPanelFiltersAtom.js';
+import { useRelationshipsPanelFilters } from '../EntityScopedProvider.js';
 
 const RelationshipsActiveFilterChips = () => {
-  const [search, setSearch] = useAtom(relationshipsPanelSearchAtom);
-  const [sort, setSort] = useAtom(relationshipsPanelSortAtom);
-  const [relTypeFilters, setRelTypeFilters] = useAtom(relationshipsPanelRelTypeFiltersAtom);
-  const [entityTypeFilters, setEntityTypeFilters] = useAtom(
-    relationshipsPanelEntityTypeFiltersAtom
-  );
-  const [cluster, setCluster] = useAtom(relationshipsPanelActiveClusterRefIdsAtom);
+  const {
+    search,
+    setSearch,
+    sort,
+    setSort,
+    relTypeFilters,
+    setRelTypeFilters,
+    entityTypeFilters,
+    setEntityTypeFilters,
+    activeClusterRefIds: cluster,
+    setActiveClusterRefIds: setCluster,
+  } = useRelationshipsPanelFilters();
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const templates = useAtomValue(templatesAtom);
 

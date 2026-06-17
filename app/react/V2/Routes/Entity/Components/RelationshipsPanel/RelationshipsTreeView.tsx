@@ -6,7 +6,7 @@ import { type RelationshipPanelRowHandlers } from './RelationshipPanelRow.js';
 import { RelationshipsEmptyView } from './RelationshipsEmptyView.js';
 import { RelationshipsGroupedSections } from './RelationshipsGroupedSections.js';
 import { RelationshipsPanelEntryList } from './RelationshipsPanelEntryList.js';
-import { useRelationshipsGroupBy } from './useRelationshipsGroupBy.js';
+import { useRelationshipsPanelFilters } from '../EntityScopedProvider.js';
 
 type RelationshipsTreeViewProps = RelationshipPanelRowHandlers & {
   markers: RelationshipMarker[];
@@ -22,7 +22,7 @@ const RelationshipsTreeView = ({
   onView,
   onDelete,
 }: RelationshipsTreeViewProps) => {
-  const { groupBy, subGroupBy } = useRelationshipsGroupBy();
+  const { groupBy, subGroupBy } = useRelationshipsPanelFilters();
   const rowProps = { selfSharedId, activeRelationshipId, onClick, onView, onDelete };
 
   if (markers.length === 0) {

@@ -1,19 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { PDF, type PDFControls } from '#V2/Components/PDFViewer/index.js';
 import { RelationshipsDisplay } from '#V2/Components/Relationships/index.js';
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { Entity, FileType } from '#V2/api/entities/types.js';
 import {
-  pdfController,
-  scrollToRelationshipPanelAtom,
-} from '#V2/Routes/Entity/Components/atoms.js';
+  useDocumentInteraction,
+  useRelationshipsPanelFilters,
+} from '#V2/Routes/Entity/Components/EntityScopedProvider.js';
 import { useRelationshipSelection } from '#V2/Routes/Entity/Components/useRelationshipSelection.js';
-import {
-  relationshipsPanelActiveClusterRefIdsAtom,
-  relationshipsPanelExpandForRefIdAtom,
-} from '#V2/Routes/Entity/Components/RelationshipsPanel/relationshipsPanelFiltersAtom.js';
 
 type RelationshipsSyncedDocumentViewProps = {
   entity: Entity;
@@ -26,14 +21,14 @@ const RelationshipsSyncedDocumentView = ({
   mainDocument,
   fileUrl = '/sample.pdf',
 }: RelationshipsSyncedDocumentViewProps) => {
-  const setPDFControls = useSetAtom(pdfController);
-  const mainPdfController = useAtomValue(pdfController);
+  const {
+    setPdfController: setPDFControls,
+    pdfController: mainPdfController,
+    setScrollToRelationshipPanel,
+  } = useDocumentInteraction();
   const { activeRelationshipId, selectRelationship } = useRelationshipSelection();
-  const setScrollToRelationshipPanel = useSetAtom(scrollToRelationshipPanelAtom);
-  const setExpandForRefId = useSetAtom(relationshipsPanelExpandForRefIdAtom);
-  const [activeClusterRefIds, setActiveClusterRefIds] = useAtom(
-    relationshipsPanelActiveClusterRefIdsAtom
-  );
+  const { activeClusterRefIds, setActiveClusterRefIds, setExpandForRefId } =
+    useRelationshipsPanelFilters();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageHeight, setPageHeight] = useState<number | undefined>();
   const [pdfScrollRoot, setPdfScrollRoot] = useState<HTMLDivElement | null>(null);

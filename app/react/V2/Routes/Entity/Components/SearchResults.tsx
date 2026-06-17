@@ -1,12 +1,11 @@
 import React from 'react';
-import { useSetAtom } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
-import { searchHintsModalAtom } from './atoms.js';
 import { SearchView } from './SearchView.js';
+import { useDocumentInteraction } from './EntityScopedProvider.js';
 
 const SearchResults = () => {
-  const openHints = useSetAtom(searchHintsModalAtom);
+  const { setSearchHintsModalOpen } = useDocumentInteraction();
 
   return (
     <Panel>
@@ -14,7 +13,7 @@ const SearchResults = () => {
         <SearchView />
       </Panel.Body>
       <Panel.Footer>
-        <button type="button" onClick={() => openHints(true)}>
+        <button type="button" onClick={() => setSearchHintsModalOpen(true)}>
           <Translate className="font-bold text-ink-secondary underline">Search Tips</Translate>
         </button>
       </Panel.Footer>

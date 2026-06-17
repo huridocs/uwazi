@@ -1,11 +1,11 @@
 import React from 'react';
-import { useAtom } from 'jotai';
 import { Button, Modal } from '#V2/Components/UI/index.js';
 import { Translate, t } from '#app/I18N/index.js';
-import { searchHintsModalAtom } from './atoms.js';
+import { useDocumentInteraction } from './EntityScopedProvider.js';
 
 const SearchHintsModal = () => {
-  const [showModal, setShowModal] = useAtom(searchHintsModalAtom);
+  const { searchHintsModalOpen: showModal, setSearchHintsModalOpen: setShowModal } =
+    useDocumentInteraction();
 
   return showModal ? (
     <Modal size="xl">

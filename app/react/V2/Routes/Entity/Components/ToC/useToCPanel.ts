@@ -1,6 +1,5 @@
 import { useEffect, useCallback } from 'react';
 import { useRevalidator } from 'react-router';
-import { useAtom, useAtomValue } from 'jotai';
 import { t } from '#app/I18N/index.js';
 import type { TocSchema } from '#shared/types/commonTypes.js';
 import { update as updateFile } from '#V2/api/files/index.js';
@@ -8,9 +7,13 @@ import type { FileType } from '#shared/types/fileType.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { type ProcessedTocEntry, sortTocEntries } from './ToC.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
-import { tocStateAtom, useToc, useTocActions } from './tocAtom.js';
+import {
+  useDocumentInteraction,
+  useEntityScopedContext,
+  useToc,
+  useTocActions,
+} from '../EntityScopedProvider.js';
 import { getPageNumber } from './utils.js';
-import { pdfController } from '../atoms.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 type UseToCPanelParams = {
@@ -33,8 +36,8 @@ const useToCPanel = ({ toc, file }: UseToCPanelParams) => {
     reset: resetToc,
   } = useTocActions();
 
-  const [tocUi, setTocUi] = useAtom(tocStateAtom);
-  const mainPdfController = useAtomValue(pdfController);
+  const { setTocState } = useEntityScopedContext();
+  const { pdfController: mainPdfController } = useDocumentInteraction();
 
   useEffect(() => {
     setToc(toc);
@@ -48,7 +51,7 @@ const useToCPanel = ({ toc, file }: UseToCPanelParams) => {
   );
 
   const handleStateChange = (expanded: boolean, collapsed: boolean) => {
-    setTocUi(current => ({ ...current, isAllExpanded: expanded, isAllCollapsed: collapsed }));
+    setTocState(current => ({ ...current, isAllExpanded: expanded, isAllCollapsed: collapsed }));
   };
 
   const handleToCEntryClick = useCallback(
@@ -71,7 +74,7 @@ const useToCPanel = ({ toc, file }: UseToCPanelParams) => {
       return;
     }
 
-    setTocUi(current => ({ ...current, isSaving: true }));
+    setTocState(current => ({ ...current, isSaving: true }));
     try {
       const sortedToc = sortTocEntries(tocState.toc);
       const updatedFile: FileType = {
@@ -93,7 +96,7 @@ const useToCPanel = ({ toc, file }: UseToCPanelParams) => {
     } catch (error) {
       notify('error', t('System', 'Failed to save table of contents', null, false));
     } finally {
-      setTocUi(current => ({ ...current, isSaving: false }));
+      setTocState(current => ({ ...current, isSaving: false }));
     }
   };
 
@@ -134,9 +137,9 @@ const useToCPanel = ({ toc, file }: UseToCPanelParams) => {
 
   return {
     tocState,
-    isAllExpanded: tocUi.isAllExpanded,
-    isAllCollapsed: tocUi.isAllCollapsed,
-    isSaving: tocUi.isSaving,
+    isAllExpanded: tocState.isAllExpanded,
+    isAllCollapsed: tocState.isAllCollapsed,
+    isSaving: tocState.isSaving,
     expandAll,
     collapseAll,
     toggleExpand,

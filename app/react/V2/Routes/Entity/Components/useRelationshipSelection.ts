@@ -1,20 +1,22 @@
 import { useCallback } from 'react';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { templatesAtom } from '#V2/atoms/index.js';
 import { relationshipToHighlight } from '#V2/Components/PDFViewer/index.js';
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
-import { activeRelationshipIdAtom, pdfController, scrollToRelationshipPanelAtom } from './atoms.js';
-import { relationshipsPanelExpandForRefIdAtom } from './RelationshipsPanel/relationshipsPanelFiltersAtom.js';
+import { useDocumentInteraction, useRelationshipsPanelFilters } from './EntityScopedProvider.js';
 
 type SelectOptions = {
   scrollPanel?: boolean;
 };
 
 const useRelationshipSelection = () => {
-  const [activeRelationshipId, setActiveRelationshipId] = useAtom(activeRelationshipIdAtom);
-  const [, setScrollToRelationshipPanel] = useAtom(scrollToRelationshipPanelAtom);
-  const [, setExpandForRefId] = useAtom(relationshipsPanelExpandForRefIdAtom);
-  const mainPdfController = useAtomValue(pdfController);
+  const {
+    activeRelationshipId,
+    setActiveRelationshipId,
+    setScrollToRelationshipPanel,
+    pdfController: mainPdfController,
+  } = useDocumentInteraction();
+  const { setExpandForRefId } = useRelationshipsPanelFilters();
   const templates = useAtomValue(templatesAtom);
 
   const colorOf = useCallback(

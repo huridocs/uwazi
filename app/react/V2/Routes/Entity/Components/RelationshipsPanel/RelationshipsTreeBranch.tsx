@@ -5,10 +5,9 @@ import React, {
   type ReactElement,
   type ReactNode,
 } from 'react';
-import { useAtomValue } from 'jotai';
 import { CollapsibleSectionHeader } from '#V2/Components/UI/CollapsibleSectionHeader.js';
-import { relationshipsPanelZoomAtom } from './relationshipsPanelFiltersAtom.js';
 import { useExpandCollapseSignals } from './useExpandCollapseSignals.js';
+import { useRelationshipsPanelFilters } from '../EntityScopedProvider.js';
 
 type TreeLine = 'only' | 'first' | 'middle' | 'last';
 
@@ -38,7 +37,7 @@ type RelationshipsTreeNodeProps = {
 };
 
 const RelationshipsTreeNode = ({ children, treeLine = 'only' }: RelationshipsTreeNodeProps) => {
-  const zoom = useAtomValue(relationshipsPanelZoomAtom);
+  const { zoom } = useRelationshipsPanelFilters();
   const showDot = zoom === 'overview';
 
   return (

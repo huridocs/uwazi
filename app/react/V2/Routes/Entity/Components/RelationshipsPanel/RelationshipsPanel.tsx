@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import type { FileType } from '#V2/api/entities/types.js';
@@ -14,17 +14,12 @@ import { RelationshipsListInfoRow } from './RelationshipsListInfoRow.js';
 import { RelationshipsPanelToolbarControls } from './RelationshipsPanelToolbarControls.js';
 import { RelationshipsSearchBar } from './RelationshipsSearchBar.js';
 import {
+  useEntityScopedContext,
   useRelationships,
-  relationshipsEditModeAtom,
-  selectedRelationshipIdsAtom,
-} from './relationshipsAtom.js';
-import {
-  relationshipsPanelActiveFilterCountAtom,
-  relationshipsPanelFiltersDrawerOpenAtom,
-  relationshipsPanelViewAtom,
-} from './relationshipsPanelFiltersAtom.js';
+  useRelationshipsPanelData,
+  useRelationshipsPanelFilters,
+} from '../EntityScopedProvider.js';
 import { useRelationshipSelection } from '../useRelationshipSelection.js';
-import { useRelationshipsPanelData } from './useRelationshipsPanelData.js';
 import { useGroupLabelContext } from './useGroupLabelContext.js';
 import { useRelationshipDelete } from './useRelationshipDelete.js';
 import { useRelationshipSave } from './useRelationshipSave.js';
@@ -41,12 +36,9 @@ const RelationshipsPanel = ({ mainDocument }: RelationshipsPanelProps) => {
   const { markers, stats, hasRelationships } = useRelationshipsPanelData();
   const groupContext = useGroupLabelContext();
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
-  const view = useAtomValue(relationshipsPanelViewAtom);
-  const activeFilterCount = useAtomValue(relationshipsPanelActiveFilterCountAtom);
-  const setFiltersOpen = useSetAtom(relationshipsPanelFiltersDrawerOpenAtom);
+  const { view, activeFilterCount, setFiltersDrawerOpen } = useRelationshipsPanelFilters();
   const { focusDocumentPanel, relationshipsOnMain } = useEntityTabNavigation();
-  const resetSelected = useSetAtom(selectedRelationshipIdsAtom);
-  const resetEditMode = useSetAtom(relationshipsEditModeAtom);
+  const { setSelectedRelationshipIds, setRelationshipsEditMode } = useEntityScopedContext();
 
   const {
     relationshipToDelete,
@@ -86,10 +78,10 @@ const RelationshipsPanel = ({ mainDocument }: RelationshipsPanelProps) => {
 
   useEffect(
     () => () => {
-      resetEditMode(false);
-      resetSelected(new Set());
+      setRelationshipsEditMode(false);
+      setSelectedRelationshipIds(new Set());
     },
-    [resetEditMode, resetSelected]
+    [setRelationshipsEditMode, setSelectedRelationshipIds]
   );
 
   if (createReferenceSelection) {
@@ -150,7 +142,7 @@ const RelationshipsPanel = ({ mainDocument }: RelationshipsPanelProps) => {
             <RelationshipsSearchBar />
             <RelationshipsPanelToolbarControls
               activeFilterCount={activeFilterCount}
-              onOpenFilters={() => setFiltersOpen(true)}
+              onOpenFilters={() => setFiltersDrawerOpen(true)}
             />
             {view !== 'graph' && <RelationshipsListInfoRow stats={stats} />}
           </div>

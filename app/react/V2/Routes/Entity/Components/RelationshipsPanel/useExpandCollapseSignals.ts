@@ -1,18 +1,16 @@
 import { useEffect, type Dispatch, type SetStateAction } from 'react';
-import { useAtom } from 'jotai';
-import {
-  relationshipsPanelCollapseAllSignalAtom,
-  relationshipsPanelExpandAllSignalAtom,
-  relationshipsPanelExpandForRefIdAtom,
-} from './relationshipsPanelFiltersAtom.js';
+import { useRelationshipsPanelFilters } from '../EntityScopedProvider.js';
 
 const useExpandCollapseSignals = (
   setExpanded: Dispatch<SetStateAction<boolean>>,
   markerIds: string[] = []
 ) => {
-  const [expandSignal] = useAtom(relationshipsPanelExpandAllSignalAtom);
-  const [collapseSignal] = useAtom(relationshipsPanelCollapseAllSignalAtom);
-  const [expandForRefId, setExpandForRefId] = useAtom(relationshipsPanelExpandForRefIdAtom);
+  const {
+    expandAllSignal: expandSignal,
+    collapseAllSignal: collapseSignal,
+    expandForRefId,
+    setExpandForRefId,
+  } = useRelationshipsPanelFilters();
 
   useEffect(() => {
     if (expandSignal > 0) setExpanded(true);

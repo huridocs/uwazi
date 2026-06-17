@@ -1,5 +1,4 @@
 import React from 'react';
-import { useAtom } from 'jotai';
 import { t } from '#app/I18N/index.js';
 import {
   CircleDotIcon,
@@ -8,9 +7,9 @@ import {
 } from '#V2/Components/CustomIcons/RelationshipsPanelIcons.js';
 import { SegmentedControl } from '#V2/Components/UI/SegmentedControl/index.js';
 import {
-  relationshipsPanelZoomAtom,
   type RelationshipsPanelZoom,
-} from './relationshipsPanelFiltersAtom.js';
+  useRelationshipsPanelFilters,
+} from '../EntityScopedProvider.js';
 
 const zoomOptions: {
   id: RelationshipsPanelZoom;
@@ -27,7 +26,7 @@ type RelationshipsZoomControlProps = {
 };
 
 const RelationshipsZoomControl = ({ disabled = false }: RelationshipsZoomControlProps) => {
-  const [zoom, setZoom] = useAtom(relationshipsPanelZoomAtom);
+  const { zoom, setZoom } = useRelationshipsPanelFilters();
 
   return (
     <SegmentedControl

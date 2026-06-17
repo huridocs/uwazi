@@ -1,16 +1,18 @@
 import React from 'react';
-import { useAtom, useAtomValue } from 'jotai';
 import { t } from '#app/I18N/index.js';
 import { checkboxInputClassName } from '#V2/Components/Forms/Checkbox.js';
-import { relationshipsEditModeAtom, selectedRelationshipIdsAtom } from './relationshipsAtom.js';
+import { useEntityScopedContext } from '../EntityScopedProvider.js';
 
 type RelationshipRowCheckboxProps = {
   relationshipId: string;
 };
 
 const RelationshipRowCheckbox = ({ relationshipId }: RelationshipRowCheckboxProps) => {
-  const editMode = useAtomValue(relationshipsEditModeAtom);
-  const [selected, setSelected] = useAtom(selectedRelationshipIdsAtom);
+  const {
+    relationshipsEditMode: editMode,
+    selectedRelationshipIds: selected,
+    setSelectedRelationshipIds: setSelected,
+  } = useEntityScopedContext();
 
   if (!editMode) {
     return null;

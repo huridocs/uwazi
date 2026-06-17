@@ -1,12 +1,10 @@
 import React, { useEffect, useRef } from 'react';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { EyeIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { t } from '#app/I18N/index.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import { directionOf } from '#V2/formatters/relationships/types.js';
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
-import { scrollToRelationshipPanelAtom } from '../atoms.js';
-import { relationshipsEditModeAtom } from './relationshipsAtom.js';
 import { DirectionGlyph } from './DirectionGlyph.js';
 import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
 import { ListCardRow } from '#V2/Components/UI/ListCardRow.js';
@@ -15,6 +13,7 @@ import { PageTag } from './PageTag.js';
 import { RelationshipRowCheckbox } from './RelationshipRowCheckbox.js';
 import { useRelationshipsPanelZoom } from './useRelationshipsPanelZoom.js';
 import { useRelationshipRowVisibility } from './useRelationshipRowVisibility.js';
+import { useDocumentInteraction, useEntityScopedContext } from '../EntityScopedProvider.js';
 
 type RelationshipRowProps = {
   marker: RelationshipMarker;
@@ -36,12 +35,10 @@ const RelationshipRow = ({
   onDelete,
 }: RelationshipRowProps) => {
   const rowRef = useRef<HTMLDivElement>(null);
-  const [scrollToRelationshipId, setScrollToRelationshipId] = useAtom(
-    scrollToRelationshipPanelAtom
-  );
+  const { scrollToRelationshipPanel, setScrollToRelationshipPanel } = useDocumentInteraction();
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const templates = useAtomValue(templatesAtom);
-  const editMode = useAtomValue(relationshipsEditModeAtom);
+  const { relationshipsEditMode: editMode } = useEntityScopedContext();
   const { compact, overview } = useRelationshipsPanelZoom();
   const { hideTargetPill, hideTemplateName, hideRelationType } = useRelationshipRowVisibility();
   const referenceText = marker.anchor?.text?.trim() ?? '';
@@ -56,10 +53,10 @@ const RelationshipRow = ({
   const direction = directionOf(marker.view, selfSharedId);
 
   useEffect(() => {
-    if (scrollToRelationshipId !== marker._id) return;
+    if (scrollToRelationshipPanel !== marker._id) return;
     rowRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    setScrollToRelationshipId(null);
-  }, [marker._id, scrollToRelationshipId, setScrollToRelationshipId]);
+    setScrollToRelationshipPanel(null);
+  }, [marker._id, scrollToRelationshipPanel, setScrollToRelationshipPanel]);
 
   if (overview) {
     return (

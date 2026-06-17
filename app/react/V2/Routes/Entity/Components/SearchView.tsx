@@ -7,10 +7,10 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { t, Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/index.js';
 import { SEARCH_PARAM } from '../urlParams.js';
-import { pdfController } from './atoms.js';
 import { LoaderResponse } from '../types.js';
 import { NoSearch, NoResults } from './BlankState.js';
 import { getFieldName, parseSnippetToNodes } from './searchUtils.js';
+import { useDocumentInteraction } from './EntityScopedProvider.js';
 
 type FormValues = {
   search: string;
@@ -21,7 +21,7 @@ const SearchView = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initial = new URLSearchParams(searchParams).get(SEARCH_PARAM) || '';
   const templates = useAtomValue(templatesAtom);
-  const mainPdfController = useAtomValue(pdfController);
+  const { pdfController: mainPdfController } = useDocumentInteraction();
 
   const template = useMemo(
     () => templates.find(temp => temp._id === entity?.template),

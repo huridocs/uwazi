@@ -1,5 +1,4 @@
 import React from 'react';
-import { useAtom } from 'jotai';
 import { t } from '#app/I18N/index.js';
 import {
   LayoutListIcon,
@@ -8,9 +7,9 @@ import {
 } from '#V2/Components/CustomIcons/RelationshipsPanelIcons.js';
 import { SegmentedControl } from '#V2/Components/UI/SegmentedControl/index.js';
 import {
-  relationshipsPanelViewAtom,
   type RelationshipsPanelView,
-} from './relationshipsPanelFiltersAtom.js';
+  useRelationshipsPanelFilters,
+} from '../EntityScopedProvider.js';
 
 const viewOptions: { id: RelationshipsPanelView; label: string; Icon: typeof LayoutListIcon }[] = [
   { id: 'list', label: 'List', Icon: LayoutListIcon },
@@ -19,7 +18,7 @@ const viewOptions: { id: RelationshipsPanelView; label: string; Icon: typeof Lay
 ];
 
 const RelationshipsViewControl = () => {
-  const [view, setView] = useAtom(relationshipsPanelViewAtom);
+  const { view, setView } = useRelationshipsPanelFilters();
 
   return (
     <SegmentedControl

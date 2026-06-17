@@ -1,5 +1,4 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { useAtomValue } from 'jotai';
 import { Translate, t } from '#app/I18N/index.js';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import {
@@ -12,7 +11,7 @@ import {
 } from '#V2/formatters/relationships/relationshipsPanelGraph.js';
 import type { GroupLabelContext } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
 import { RelationshipsEmptyView } from './RelationshipsEmptyView.js';
-import { relationshipsPanelGroupByAtom } from './relationshipsPanelFiltersAtom.js';
+import { useRelationshipsPanelFilters } from '../EntityScopedProvider.js';
 
 type RelationshipsGraphViewProps = {
   markers: RelationshipMarker[];
@@ -33,7 +32,7 @@ const RelationshipsGraphView = ({
   activeRelationshipId,
   onNodeClick,
 }: RelationshipsGraphViewProps) => {
-  const groupBy = useAtomValue(relationshipsPanelGroupByAtom);
+  const { groupBy } = useRelationshipsPanelFilters();
   const svgRef = useRef<SVGSVGElement>(null);
   const [transform, setTransform] = useState({ tx: 0, ty: 0, scale: 1 });
   const dragRef = useRef({ active: false, startX: 0, startY: 0, initTx: 0, initTy: 0 });

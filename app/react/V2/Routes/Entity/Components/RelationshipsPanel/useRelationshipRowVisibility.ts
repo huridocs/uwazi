@@ -1,8 +1,7 @@
-import { useAtomValue } from 'jotai';
-import { relationshipsPanelGroupByAtom } from './relationshipsPanelFiltersAtom.js';
+import { useRelationshipsPanelFilters } from '../EntityScopedProvider.js';
 
 const useRelationshipRowVisibility = () => {
-  const groupBy = useAtomValue(relationshipsPanelGroupByAtom);
+  const { groupBy } = useRelationshipsPanelFilters();
 
   return {
     hideTargetPill: groupBy === 'target-entity',

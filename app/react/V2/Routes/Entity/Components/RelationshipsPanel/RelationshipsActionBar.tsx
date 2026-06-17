@@ -1,18 +1,20 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useAtom } from 'jotai';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
 import { countEntityRelationships } from '#V2/formatters/index.js';
 import { useRelationshipSelection } from '../useRelationshipSelection.js';
-import { relationshipsEditModeAtom, selectedRelationshipIdsAtom } from './relationshipsAtom.js';
-import { useRelationshipsPanelEntity } from './useRelationshipsPanelEntity.js';
 import { useRelationshipBulkDelete } from './useRelationshipBulkDelete.js';
+import { useEntityScopedContext, useEntityScopedEntity } from '../EntityScopedProvider.js';
 
 const RelationshipsActionBar = () => {
-  const entity = useRelationshipsPanelEntity();
-  const [editMode, setEditMode] = useAtom(relationshipsEditModeAtom);
-  const [selected, setSelected] = useAtom(selectedRelationshipIdsAtom);
+  const entity = useEntityScopedEntity();
+  const {
+    relationshipsEditMode: editMode,
+    setRelationshipsEditMode: setEditMode,
+    selectedRelationshipIds: selected,
+    setSelectedRelationshipIds: setSelected,
+  } = useEntityScopedContext();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const { activeRelationshipId, clearRelationshipSelection } = useRelationshipSelection();
 

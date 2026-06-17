@@ -1,14 +1,14 @@
 import { useCallback, useState } from 'react';
 import { useRevalidator } from 'react-router';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
-import { useRelationshipsPanelEntity } from './useRelationshipsPanelEntity.js';
+import { useEntityScopedEntity } from '../EntityScopedProvider.js';
 import { deleteReferencesById, refreshEntityRelationships } from './refreshEntityRelationships.js';
 
 const useRelationshipDelete = (
   activeRelationshipId: string | null | undefined,
   clearRelationshipSelection: () => void
 ) => {
-  const entity = useRelationshipsPanelEntity();
+  const entity = useEntityScopedEntity();
   const [relationshipToDelete, setRelationshipToDelete] = useState<RelationshipMarker | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const revalidator = useRevalidator();

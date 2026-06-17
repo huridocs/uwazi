@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
 import { isClient } from '#app/utils/index.js';
 import type { PDFControls } from '#V2/Components/PDFViewer/index.js';
@@ -8,17 +8,13 @@ import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { settingsAtom, userAtom } from '#V2/atoms/index.js';
 import { PAGE_PARAM, SIDE_TAB_PARAM, VIEW_MODE_PARAM } from '../../urlParams.js';
-import { useTocActions, convertTextSelectionToTocEntry } from '../../Components/ToC/tocAtom.js';
-import { useRelationshipsActions } from '../../Components/RelationshipsPanel/relationshipsAtom.js';
+import { convertTextSelectionToTocEntry } from '../../Components/ToC/utils.js';
 import {
-  documentPdfSelectionAtom,
-  pdfController,
-  scrollToRelationshipPanelAtom,
-} from '../../Components/atoms.js';
-import {
-  relationshipsPanelActiveClusterRefIdsAtom,
-  relationshipsPanelExpandForRefIdAtom,
-} from '../../Components/RelationshipsPanel/relationshipsPanelFiltersAtom.js';
+  useDocumentInteraction,
+  useRelationshipsActions,
+  useRelationshipsPanelFilters,
+  useTocActions,
+} from '../../Components/EntityScopedProvider.js';
 import { useRelationshipSelection } from '../../Components/useRelationshipSelection.js';
 import { SIDE_TAB } from '../tabIds.js';
 import { useEntityTabNavigation } from './useEntityTabNavigation.js';
@@ -33,14 +29,15 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
   const user = useAtomValue(userAtom);
   const [userIsAdminOrEditor, setUserIsAdminOrEditor] = useState(false);
-  const mainPdfController = useAtomValue(pdfController);
-  const setPDFControlsAtom = useSetAtom(pdfController);
-  const [selectedText, setSelectedText] = useAtom(documentPdfSelectionAtom);
-  const setScrollToRelationshipPanel = useSetAtom(scrollToRelationshipPanelAtom);
-  const [activeClusterRefIds, setActiveClusterRefIds] = useAtom(
-    relationshipsPanelActiveClusterRefIdsAtom
-  );
-  const [, setExpandForRefId] = useAtom(relationshipsPanelExpandForRefIdAtom);
+  const {
+    pdfController: mainPdfController,
+    setPdfController,
+    documentPdfSelection: selectedText,
+    setDocumentPdfSelection: setSelectedText,
+    setScrollToRelationshipPanel,
+  } = useDocumentInteraction();
+  const { activeClusterRefIds, setActiveClusterRefIds, setExpandForRefId } =
+    useRelationshipsPanelFilters();
   const { activeRelationshipId, selectRelationship } = useRelationshipSelection();
   const { addEntry } = useTocActions();
   const { setCreateReferenceSelection } = useRelationshipsActions();
@@ -213,12 +210,12 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
   const onPdfReady = useCallback(
     (controls: PDFControls) => {
       const targetPage = initialPage.current || 1;
-      setPDFControlsAtom(controls);
+      setPdfController(controls);
       if (targetPage !== 1) {
         controls.goToPage(targetPage);
       }
     },
-    [setPDFControlsAtom]
+    [setPdfController]
   );
 
   const { filename, totalPages } = mainDocument || {

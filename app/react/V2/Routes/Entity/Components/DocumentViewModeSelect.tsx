@@ -1,16 +1,15 @@
 import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { useSearchParams } from 'react-router';
-import { useAtomValue } from 'jotai';
 import { t, Translate } from '#app/I18N/index.js';
 import { isClient } from '#app/utils/index.js';
 import { PAGE_PARAM, VIEW_MODE_PARAM } from '../urlParams.js';
-import { pdfController } from './atoms.js';
+import { useDocumentInteraction } from './EntityScopedProvider.js';
 
 const DocumentViewModeSelect = () => {
   const renderModeSelectId = useId();
   const [searchParams, setSearchParams] = useSearchParams();
-  const pdfControls = useAtomValue(pdfController);
+  const { pdfController: pdfControls } = useDocumentInteraction();
   const [hydrated, setHydrated] = useState(false);
   const initialPage = useRef(Number.parseInt(searchParams.get(PAGE_PARAM) || '1', 10));
 

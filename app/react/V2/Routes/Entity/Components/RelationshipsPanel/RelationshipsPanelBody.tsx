@@ -1,14 +1,12 @@
 import React from 'react';
-import { useAtomValue } from 'jotai';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import type { GroupLabelContext } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
 import { RelationshipsTreeView } from './RelationshipsTreeView.js';
 import { RelationshipsGraphView } from './RelationshipsGraphView.js';
-import { relationshipsPanelViewAtom } from './relationshipsPanelFiltersAtom.js';
 import { type RelationshipPanelRowHandlers } from './RelationshipPanelRow.js';
 import { RelationshipsPanelEntryList } from './RelationshipsPanelEntryList.js';
 import { RelationshipsGroupedSections } from './RelationshipsGroupedSections.js';
-import { useRelationshipsGroupBy } from './useRelationshipsGroupBy.js';
+import { useRelationshipsPanelFilters } from '../EntityScopedProvider.js';
 
 type RelationshipsPanelBodyProps = RelationshipPanelRowHandlers & {
   markers: RelationshipMarker[];
@@ -24,7 +22,7 @@ const RelationshipsListBody = ({
   markers: RelationshipMarker[];
   groupContext: GroupLabelContext;
 }) => {
-  const { groupBy, subGroupBy } = useRelationshipsGroupBy();
+  const { groupBy, subGroupBy } = useRelationshipsPanelFilters();
 
   if (groupBy === 'none') {
     return (
@@ -59,7 +57,7 @@ const RelationshipsPanelBody = ({
   onView,
   onDelete,
 }: RelationshipsPanelBodyProps) => {
-  const view = useAtomValue(relationshipsPanelViewAtom);
+  const { view } = useRelationshipsPanelFilters();
   const rowProps = { selfSharedId, activeRelationshipId, onClick, onView, onDelete };
 
   if (view === 'tree') {
