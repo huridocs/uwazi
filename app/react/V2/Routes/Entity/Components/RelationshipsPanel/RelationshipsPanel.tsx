@@ -39,7 +39,7 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
   const { createReferenceSelection, createReferenceMode } = useRelationships();
   const { activeRelationshipId, selectRelationship, clearRelationshipSelection } =
     useRelationshipSelection();
-  const { markers, stats, hasRelationships } = useRelationshipsPanelData(entity);
+  const { markers, stats, hasRelationships } = useRelationshipsPanelData();
   const groupContext = useGroupLabelContext(entity);
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const view = useAtomValue(relationshipsPanelViewAtom);
