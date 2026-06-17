@@ -12,6 +12,7 @@ const strokeSvg = (children: React.ReactNode, { className, ...props }: IconProps
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
+    // eslint-disable-next-line react/jsx-props-no-spreading -- passing props to svg
     {...props}
   >
     {children}

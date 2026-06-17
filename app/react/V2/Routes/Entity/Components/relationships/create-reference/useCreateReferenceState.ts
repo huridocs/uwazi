@@ -106,7 +106,7 @@ function useCreateReferenceState({
     setIsSearching(true);
     setHasSearched(true);
     const timeoutId = setTimeout(() => {
-      handleSearch(searchQuery).catch(() => {});
+      handleSearch(searchQuery).catch(() => undefined);
     }, 300);
     return () => clearTimeout(timeoutId);
   }, [searchQuery, handleSearch]);

@@ -45,7 +45,7 @@ const RelationshipsTreeNode = ({ children, treeLine = 'only' }: RelationshipsTre
       {showDot && (
         <span
           aria-hidden
-          className="absolute z-[1] h-[5px] w-[5px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-border"
+          className="absolute z-1 h-[5px] w-[5px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-border"
           style={{ left: 0, top: '1.125rem' }}
         />
       )}
@@ -65,6 +65,7 @@ type RelationshipsTreeBranchProps = {
   children: ReactNode;
 };
 
+// eslint-disable-next-line react/no-multi-comp
 const RelationshipsTreeBranch = ({
   title,
   color,
@@ -106,6 +107,7 @@ const RelationshipsTreeBranch = ({
             });
           }
           return (
+            // eslint-disable-next-line react/no-array-index-key
             <RelationshipsTreeNode key={index} treeLine={line}>
               {child}
             </RelationshipsTreeNode>

@@ -1,4 +1,5 @@
-/* eslint-disable import/no-default-export */
+/* eslint-disable max-lines */
+
 import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { TocSchema } from '#shared/types/commonTypes.js';

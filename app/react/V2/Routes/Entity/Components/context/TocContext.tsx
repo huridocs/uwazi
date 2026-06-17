@@ -14,15 +14,16 @@ const initialTocState: TocState = {
 };
 
 const expandedChildren = (toc: TocSchema[]) =>
-  findItemsWithChildren(normalizeToc(toc)).reduce<Record<number, boolean>>((expanded, index) => {
-    expanded[index] = true;
-    return expanded;
-  }, {});
+  findItemsWithChildren(normalizeToc(toc)).reduce<Record<number, boolean>>(
+    (expanded, index) => ({ ...expanded, [index]: true }),
+    {}
+  );
 
 const TocStateContext = createContext<TocState | null>(null);
-const TocActionsContext = createContext<{
+
+type TocActionsContextValue = {
   setTocState: React.Dispatch<React.SetStateAction<TocState>>;
-  addEntry:(entry: TocSchema) => void;
+  addEntry: (entry: TocSchema) => void;
   setToc: (toc: TocSchema[] | undefined) => void;
   expandAll: () => void;
   collapseAll: () => void;
@@ -31,7 +32,9 @@ const TocActionsContext = createContext<{
   deleteEntry: (index: number) => void;
   toggleExpand: (index: number) => void;
   reset: () => void;
-} | null>(null);
+};
+
+const TocActionsContext = createContext<TocActionsContextValue | null>(null);
 
 const TocProvider = ({ children }: { children: React.ReactNode }) => {
   const [tocState, setTocState] = useState(initialTocState);

@@ -43,21 +43,15 @@ const waitForRail = async (canvasElement: HTMLElement) => {
   return canvas;
 };
 
-const ClusterClick: Story = {
+const RailInteractions: Story = {
   ...Primary,
   play: async ({ canvasElement, args }) => {
     const canvas = await waitForRail(canvasElement);
+
     await userEvent.click(await canvas.findByRole('button', { name: '25' }));
     await expect(args.onClusterClick).toHaveBeenCalledOnce();
     await expect(canvas.getByTestId('cluster-subtree')).toBeInTheDocument();
-  },
-};
 
-const PointInClusterClick: Story = {
-  ...Primary,
-  play: async ({ canvasElement, args }) => {
-    const canvas = await waitForRail(canvasElement);
-    await userEvent.click(await canvas.findByRole('button', { name: '25' }));
     await userEvent.click(await canvas.findByRole('button', { name: 'Person 1' }));
     await expect(args.onPointClick).toHaveBeenCalledOnce();
     await expect(args.onPointClick).toHaveBeenCalledWith(
@@ -66,21 +60,15 @@ const PointInClusterClick: Story = {
       })
     );
     await expect(canvasElement.querySelector('div[data-highlight-key]')).not.toBeNull();
-  },
-};
 
-const StandalonePointClick: Story = {
-  ...Primary,
-  play: async ({ canvasElement, args }) => {
-    const canvas = await waitForRail(canvasElement);
     const standaloneMarkers = (await canvas.findAllByTestId('rail-marker')).filter(
       element =>
         !element.closest('[data-testid="rail-marker-cluster"]') &&
         element.textContent?.includes('Person 2')
     );
     await userEvent.click(standaloneMarkers[standaloneMarkers.length - 1]);
-    await expect(args.onPointClick).toHaveBeenCalledOnce();
-    await expect(args.onPointClick).toHaveBeenCalledWith(
+    await expect(args.onPointClick).toHaveBeenCalledTimes(2);
+    await expect(args.onPointClick).toHaveBeenLastCalledWith(
       expect.objectContaining({
         target: expect.objectContaining({ title: 'Person 2' }),
       })
@@ -99,4 +87,4 @@ const WithPanel: Story = {
 };
 
 export default meta;
-export { Basic, ClusterClick, PointInClusterClick, StandalonePointClick, Panel, WithPanel };
+export { Basic, RailInteractions, Panel, WithPanel };

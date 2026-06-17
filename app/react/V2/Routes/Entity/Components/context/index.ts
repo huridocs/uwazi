@@ -16,7 +16,6 @@ export {
   useRelationshipsPanelFilters,
 } from './RelationshipsPanelFiltersContext.js';
 export {
-  useDocumentInteraction,
   useDocumentPdf,
   useDocumentPdfActions,
   useDocumentRelationshipNav,

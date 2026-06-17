@@ -1,14 +1,12 @@
 import React, { useMemo } from 'react';
-import { Provider } from 'jotai';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import type { Entity } from '#V2/api/entities/types.js';
-import { EntityScopedProvider } from '#V2/Routes/Entity/Components/context/index.js';
 import {
   RelationshipsPanel,
   RelationshipsFiltersDrawer,
 } from '#V2/Routes/Entity/Components/relationships/index.js';
 import { apiEntity } from '../fixtures/referencesFixtures.js';
-import { createRelationshipsStoryStore } from './createRelationshipsStoryStore.js';
+import { RelationshipsStoryProvider } from './RelationshipsStoryProvider.js';
 import { ResetRelationshipsFiltersDrawer } from './ResetRelationshipsFiltersDrawer.js';
 
 type RelationshipsStoryShellProps = {
@@ -25,7 +23,6 @@ const RelationshipsStoryShell = ({
   children,
 }: RelationshipsStoryShellProps) => {
   const storyEntity = useMemo(() => structuredClone(entity), [entity]);
-  const store = useMemo(() => createRelationshipsStoryStore(locale), [locale]);
   const mainDocument = storyEntity.documents?.[0];
 
   const router = useMemo(
@@ -34,28 +31,26 @@ const RelationshipsStoryShell = ({
         {
           path: '*',
           element: (
-            <Provider store={store}>
-              <EntityScopedProvider entity={storyEntity}>
-                <ResetRelationshipsFiltersDrawer />
-                <div className={className}>
-                  <div
-                    dir="ltr"
-                    className="relative h-full overflow-hidden rounded-md border border-border-soft bg-paper"
-                  >
-                    {children ?? (
-                      <>
-                        <RelationshipsPanel mainDocument={mainDocument} />
-                        <RelationshipsFiltersDrawer />
-                      </>
-                    )}
-                  </div>
+            <RelationshipsStoryProvider locale={locale} entity={storyEntity}>
+              <ResetRelationshipsFiltersDrawer />
+              <div className={className}>
+                <div
+                  dir="ltr"
+                  className="relative h-full overflow-hidden rounded-md border border-border-soft bg-paper"
+                >
+                  {children ?? (
+                    <>
+                      <RelationshipsPanel mainDocument={mainDocument} />
+                      <RelationshipsFiltersDrawer />
+                    </>
+                  )}
                 </div>
-              </EntityScopedProvider>
-            </Provider>
+              </div>
+            </RelationshipsStoryProvider>
           ),
         },
       ]),
-    [children, className, mainDocument, store]
+    [children, className, locale, mainDocument, storyEntity]
   );
 
   return <RouterProvider router={router} />;

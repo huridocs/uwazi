@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { t, Translate } from '#app/I18N/index.js';
 import { QuerySearchBar } from '#V2/Components/UI/QuerySearchBar.js';

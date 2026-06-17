@@ -5,8 +5,10 @@ import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { Entity, FileType } from '#V2/api/entities/types.js';
 import {
-  useDocumentInteraction,
-  useRelationshipsPanelFilters,
+  useDocumentPdf,
+  useDocumentRelationshipNav,
+  useRelationshipsPanelFacetFilters,
+  useRelationshipsPanelUi,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useRelationshipSelection } from '#V2/Routes/Entity/Components/document/index.js';
 
@@ -21,14 +23,11 @@ const RelationshipsSyncedDocumentView = ({
   mainDocument,
   fileUrl = '/sample.pdf',
 }: RelationshipsSyncedDocumentViewProps) => {
-  const {
-    setPdfController: setPDFControls,
-    pdfController: mainPdfController,
-    setScrollToRelationshipPanel,
-  } = useDocumentInteraction();
+  const { setPdfController: setPDFControls, pdfController: mainPdfController } = useDocumentPdf();
+  const { setScrollToRelationshipPanel } = useDocumentRelationshipNav();
   const { activeRelationshipId, selectRelationship } = useRelationshipSelection();
-  const { activeClusterRefIds, setActiveClusterRefIds, setExpandForRefId } =
-    useRelationshipsPanelFilters();
+  const { activeClusterRefIds, setActiveClusterRefIds } = useRelationshipsPanelFacetFilters();
+  const { setExpandForRefId } = useRelationshipsPanelUi();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageHeight, setPageHeight] = useState<number | undefined>();
   const [pdfScrollRoot, setPdfScrollRoot] = useState<HTMLDivElement | null>(null);

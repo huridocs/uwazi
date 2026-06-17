@@ -1,3 +1,4 @@
+/// <reference types="cypress" />
 import React from 'react';
 import { mount } from 'cypress/react';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';

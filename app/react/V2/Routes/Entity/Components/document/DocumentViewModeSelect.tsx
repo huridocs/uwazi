@@ -44,7 +44,7 @@ const DocumentViewModeSelect = () => {
       </label>
       <select
         id={renderModeSelectId}
-        className={`appearance-none rounded-md border bg-warm py-1 pl-2 text-xs font-medium text-ink transition-colors hover:bg-parchment focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)] ${isRaw ? 'pr-6 min-w-[6.25rem]' : 'pr-6 w-[4.25rem]'}`}
+        className={`appearance-none rounded-md border bg-warm py-1 pl-2 text-xs font-medium text-ink transition-colors hover:bg-parchment focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)] ${isRaw ? 'pr-6 min-w-25' : 'pr-6 w-17'}`}
         value={isRaw ? 'raw' : 'normal'}
         onChange={onDisplayModeChange}
       >

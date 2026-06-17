@@ -15,10 +15,13 @@ describe('CreateReference', () => {
     cy.checkA11y(undefined, undefined, logA11yViolations);
   });
 
-  it('should render initial state with Cancel and Save buttons', () => {
-    mount(<Default />);
-    cy.contains('button', 'Cancel').should('be.visible');
-    cy.contains('button', 'Save').should('be.visible');
+  it('should render story variants', () => {
+    const variants = [Default, EmptyRelationshipTypes, LongSelection, TextMode];
+    variants.forEach(Story => {
+      mount(<Story />);
+      cy.contains('button', 'Cancel').should('be.visible');
+      cy.contains('button', 'Save').should('be.visible');
+    });
   });
 
   it('should call onCancel when Cancel is clicked', () => {
@@ -26,17 +29,6 @@ describe('CreateReference', () => {
     mount(<Default onCancel={onCancel} />);
     cy.contains('button', 'Cancel').click();
     cy.get('@onCancel').should('have.been.calledOnce');
-  });
-
-  it('should render when there are no relationship types', () => {
-    mount(<EmptyRelationshipTypes />);
-    cy.contains('button', 'Cancel').should('be.visible');
-  });
-
-  it('should render with long selection (panel loads)', () => {
-    mount(<LongSelection />);
-    cy.contains('button', 'Cancel').should('be.visible');
-    cy.contains('button', 'Save').should('be.visible');
   });
 
   it('should call onSave when in entity mode', () => {
@@ -162,11 +154,5 @@ describe('CreateReference', () => {
         expect(saveData.targetFileId).to.equal('file-text-1');
         expect(saveData.targetSelection).to.deep.equal(targetSelection);
       });
-  });
-
-  it('should render in text mode', () => {
-    mount(<TextMode />);
-    cy.contains('button', 'Cancel').should('be.visible');
-    cy.contains('button', 'Save').should('be.visible');
   });
 });

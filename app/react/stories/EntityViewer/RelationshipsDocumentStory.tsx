@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { BrowserRouter } from 'react-router';
-import { Provider } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { PDF, PDFControls, relationshipToHighlight } from '#V2/Components/PDFViewer/index.js';
 import { RelationshipsDisplay } from '#V2/Components/Relationships/index.js';
@@ -8,7 +7,7 @@ import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { Entity, FileType } from '#V2/api/entities/types.js';
 import { apiEntity, templates } from '../fixtures/referencesFixtures.js';
-import { createRelationshipsStoryStore } from './createRelationshipsStoryStore.js';
+import { RelationshipsStoryProvider } from './RelationshipsStoryProvider.js';
 
 type RelationshipsDocumentViewProps = {
   entity: Entity;
@@ -186,13 +185,12 @@ const RelationshipsDocumentStory = ({
   onPointClick,
   onClusterClick,
 }: RelationshipsDocumentStoryProps) => {
-  const store = createRelationshipsStoryStore(locale);
   const mainDocument = apiEntity.documents![0];
 
   return (
     <div className="h-screen max-h-200 bg-(--color-theme-surface-raised)">
       <BrowserRouter>
-        <Provider store={store}>
+        <RelationshipsStoryProvider locale={locale} entity={apiEntity}>
           <RelationshipsDocumentStoryBody
             fileUrl={fileUrl}
             activeRelationshipId={activeRelationshipId}
@@ -200,7 +198,7 @@ const RelationshipsDocumentStory = ({
             onClusterClick={onClusterClick}
             mainDocument={mainDocument}
           />
-        </Provider>
+        </RelationshipsStoryProvider>
       </BrowserRouter>
     </div>
   );

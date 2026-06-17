@@ -19,8 +19,6 @@ describe('relationshipToHighlight', () => {
 
     expect(relationshipToHighlight(anchor, '#000000')).toBeUndefined();
   });
-
-  // eslint-disable-next-line max-statements
   it('converts a text reference anchor into a Highlight object', () => {
     const anchor: TextReferencePointer = {
       type: 'textReference',
