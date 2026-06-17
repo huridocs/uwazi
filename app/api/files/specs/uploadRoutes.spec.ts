@@ -22,6 +22,7 @@ import { FileCreatedEvent } from '../events/FileCreatedEvent.js';
 import { files } from '../files.js';
 import uploadRoutes from '../routes.js';
 import { adminUser, collabUser, fixtures, importTemplate, templateId } from './fixtures.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -53,6 +54,7 @@ describe('upload routes', () => {
   beforeAll(async () => {
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     jest.spyOn(Date, 'now').mockReturnValue(1000);
+    jest.spyOn(EventEmitterFactory, 'default').mockReturnValue(EventEmitterFactory.forTesting());
     await testingEnvironment.setUp(fixtures);
   });
 
