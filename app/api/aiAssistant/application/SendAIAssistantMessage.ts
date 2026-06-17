@@ -1,9 +1,6 @@
 import type { AIAssistantPollScheduler } from './contracts/AIAssistantPollScheduler.js';
 import type { AIAssistantService } from '../domain/AIAssistantService.js';
-import type {
-  AIAssistantContextPayload,
-  UwaziCredentials,
-} from './contracts/AIAssistantContracts.js';
+import type { UwaziCredentials } from './contracts/AIAssistantContracts.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 
 type Input = {
@@ -11,7 +8,6 @@ type Input = {
   userId: string;
   sessionId: string;
   message: string;
-  context: AIAssistantContextPayload;
   credentials: UwaziCredentials;
   conversationJobId?: string;
 };
@@ -35,8 +31,6 @@ class SendAIAssistantMessage extends AbstractUseCase<Input, Output, Dependencies
 
     await this.deps.pollScheduler.schedulePoll(
       {
-        tenantName: input.tenantName,
-        userId: input.userId,
         sessionId: input.sessionId,
         jobId,
       },

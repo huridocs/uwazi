@@ -28,11 +28,7 @@ describe('AIAssistantPollRequestJob', () => {
     await testingEnvironment.tearDown();
   });
 
-  const userId = fixtures.users[0]._id!.toString();
-
   const params = {
-    tenantName: 'default',
-    userId,
     sessionId: 'session-1',
     jobId: 'job-42',
   };

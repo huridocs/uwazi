@@ -1,16 +1,13 @@
 import { emitToSession } from '#api/socketio/setupSockets.js';
 import {
-  UserAwareDispatchable,
-  UserAwareDispatchableParams,
-} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
-import {
+  Dispatchable,
   HeartbeatCallback,
   JobInfo,
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import type { AIAssistantPollScheduler } from '../../application/contracts/AIAssistantPollScheduler.js';
 import type { AIAssistantService } from '../../domain/AIAssistantService.js';
 
-type Params = UserAwareDispatchableParams & {
+type Params = {
   sessionId: string;
   jobId: string;
 };
@@ -23,19 +20,17 @@ type Dependencies = {
 const isLastRetry = (jobInfo?: JobInfo) =>
   Boolean(jobInfo && jobInfo.retryCount >= jobInfo.maxRetries);
 
-class AIAssistantPollRequestJob extends UserAwareDispatchable<Params> {
-  constructor(private dependencies: Dependencies) {
-    super();
-  }
+class AIAssistantPollRequestJob implements Dispatchable {
+  constructor(private deps: Dependencies) {}
 
-  async handle(_heartbeat: HeartbeatCallback, jobInfo?: JobInfo) {
+  async handleDispatch(_heartbeat: HeartbeatCallback, params: Params, jobInfo?: JobInfo) {
     let result;
     try {
-      result = await this.dependencies.aiAssistantService.getJobStatus(this.params.jobId);
+      result = await this.deps.aiAssistantService.getJobStatus(params.jobId);
     } catch (error) {
       if (isLastRetry(jobInfo)) {
-        emitToSession(this.params.sessionId, 'aiAssistant:error', {
-          jobId: this.params.jobId,
+        emitToSession(params.sessionId, 'aiAssistant:error', {
+          jobId: params.jobId,
           error:
             error instanceof Error
               ? error.message
@@ -46,29 +41,29 @@ class AIAssistantPollRequestJob extends UserAwareDispatchable<Params> {
     }
 
     if (result.status === 'completed') {
-      emitToSession(this.params.sessionId, 'aiAssistant:reply', {
-        jobId: this.params.jobId,
+      emitToSession(params.sessionId, 'aiAssistant:reply', {
+        jobId: params.jobId,
         message: result.message,
       });
       return;
     }
 
     if (result.status === 'error') {
-      emitToSession(this.params.sessionId, 'aiAssistant:error', {
-        jobId: this.params.jobId,
+      emitToSession(params.sessionId, 'aiAssistant:error', {
+        jobId: params.jobId,
         error: result.error,
       });
       return;
     }
 
     if (result.status === 'running') {
-      emitToSession(this.params.sessionId, 'aiAssistant:progress', {
-        jobId: this.params.jobId,
+      emitToSession(params.sessionId, 'aiAssistant:progress', {
+        jobId: params.jobId,
         progress: result.progress,
       });
     }
 
-    await this.dependencies.pollScheduler.schedulePoll(this.params);
+    await this.deps.pollScheduler.schedulePoll(params);
   }
 }
 

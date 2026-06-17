@@ -59,14 +59,6 @@ class SendAIAssistantMessageController extends AbstractController<SendMessageReq
       sessionId,
       message: dto.message,
       conversationJobId: dto.jobId,
-      context: {
-        mode: dto.context.mode,
-        chips: dto.context.chips.map(chip => ({
-          id: chip.id,
-          label: chip.label,
-          kind: chip.kind,
-        })),
-      },
       credentials,
     });
 

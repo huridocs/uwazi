@@ -20,7 +20,6 @@ describe('SendAIAssistantMessage', () => {
       userId: 'user-1',
       sessionId: 'session-1',
       message: 'Hello',
-      context: { mode: 'auto', chips: [] },
       credentials: {
         url: 'http://localhost',
         username: 'admin',
@@ -40,8 +39,6 @@ describe('SendAIAssistantMessage', () => {
     });
     expect(pollScheduler.schedulePoll).toHaveBeenCalledWith(
       {
-        tenantName: 'default',
-        userId: 'user-1',
         sessionId: 'session-1',
         jobId: 'job-42',
       },
@@ -67,7 +64,6 @@ describe('SendAIAssistantMessage', () => {
       sessionId: 'session-1',
       message: 'Follow up',
       conversationJobId: 'job-42',
-      context: { mode: 'this-document', chips: [] },
       credentials: {
         url: 'http://localhost',
         username: 'admin',
