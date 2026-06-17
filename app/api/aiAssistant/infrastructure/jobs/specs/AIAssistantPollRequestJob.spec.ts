@@ -17,16 +17,7 @@ jest.mock('#api/socketio/setupSockets.js', () => ({
   emitToSession: jest.fn(),
 }));
 
-jest.mock('#api/aiAssistant/infrastructure/AIAssistantCancellationRegistry.js', () => ({
-  AIAssistantCancellationRegistry: {
-    isCancelled: jest.fn().mockResolvedValue(false),
-  },
-}));
-
 const { emitToSession } = jest.requireMock('#api/socketio/setupSockets.js');
-const { AIAssistantCancellationRegistry } = jest.requireMock(
-  '#api/aiAssistant/infrastructure/AIAssistantCancellationRegistry.js'
-);
 
 describe('AIAssistantPollRequestJob', () => {
   beforeAll(async () => {
@@ -56,7 +47,6 @@ describe('AIAssistantPollRequestJob', () => {
   ) => {
     const pollScheduler: AIAssistantPollScheduler = overrides.pollScheduler ?? {
       schedulePoll: jest.fn(),
-      cancelPolls: jest.fn(),
     };
 
     const aiAssistantService: AIAssistantService =
@@ -64,7 +54,6 @@ describe('AIAssistantPollRequestJob', () => {
       ({
         submitMessage: jest.fn(),
         getJobStatus: jest.fn().mockResolvedValue({ status: 'pending' }),
-        cancelJob: jest.fn(),
       } as AIAssistantService);
 
     return new AIAssistantPollRequestJob({ aiAssistantService, pollScheduler });
@@ -72,7 +61,6 @@ describe('AIAssistantPollRequestJob', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    AIAssistantCancellationRegistry.isCancelled.mockResolvedValue(false);
   });
 
   it('should emit a reply and stop polling when the job is completed', async () => {
@@ -82,11 +70,9 @@ describe('AIAssistantPollRequestJob', () => {
         status: 'completed',
         message: 'Done',
       }),
-      cancelJob: jest.fn(),
     } as AIAssistantService;
     const pollScheduler: AIAssistantPollScheduler = {
       schedulePoll: jest.fn(),
-      cancelPolls: jest.fn(),
     };
 
     const job = createJob({ aiAssistantService, pollScheduler });
@@ -102,7 +88,6 @@ describe('AIAssistantPollRequestJob', () => {
   it('should emit progress and reschedule when the job is still running', async () => {
     const pollScheduler: AIAssistantPollScheduler = {
       schedulePoll: jest.fn(),
-      cancelPolls: jest.fn(),
     };
     const aiAssistantService = {
       submitMessage: jest.fn(),
@@ -110,7 +95,6 @@ describe('AIAssistantPollRequestJob', () => {
         status: 'running',
         progress: 'Working...',
       }),
-      cancelJob: jest.fn(),
     } as AIAssistantService;
 
     const job = createJob({ aiAssistantService, pollScheduler });
@@ -127,7 +111,6 @@ describe('AIAssistantPollRequestJob', () => {
     const aiAssistantService = {
       submitMessage: jest.fn(),
       getJobStatus: jest.fn().mockRejectedValue(new Error('Service unavailable')),
-      cancelJob: jest.fn(),
     } as AIAssistantService;
 
     const job = createJob({ aiAssistantService });
@@ -146,7 +129,6 @@ describe('AIAssistantPollRequestJob', () => {
     const aiAssistantService = {
       submitMessage: jest.fn(),
       getJobStatus: jest.fn().mockRejectedValue(new Error('Service unavailable')),
-      cancelJob: jest.fn(),
     } as AIAssistantService;
 
     const job = createJob({ aiAssistantService });
@@ -155,22 +137,6 @@ describe('AIAssistantPollRequestJob', () => {
       'Service unavailable'
     );
 
-    expect(emitToSession).not.toHaveBeenCalled();
-  });
-
-  it('should skip processing when the conversation was cancelled', async () => {
-    AIAssistantCancellationRegistry.isCancelled.mockResolvedValue(true);
-    const getJobStatus = jest.fn();
-    const aiAssistantService = {
-      submitMessage: jest.fn(),
-      getJobStatus,
-      cancelJob: jest.fn(),
-    } as AIAssistantService;
-
-    const job = createJob({ aiAssistantService });
-    await job.handleDispatch(jest.fn(), params, jobInfo);
-
-    expect(getJobStatus).not.toHaveBeenCalled();
     expect(emitToSession).not.toHaveBeenCalled();
   });
 });

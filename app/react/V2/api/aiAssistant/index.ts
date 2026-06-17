@@ -1,4 +1,3 @@
-export { cancelConversation } from './conversation.js';
 export { aiAssistantEvents } from './events.js';
 export type {
   AIAssistantErrorPayload,

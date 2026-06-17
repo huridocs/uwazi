@@ -35,11 +35,6 @@ app.post('/api/v1/jobs/:jobId', (req, res) => {
   });
 });
 
-app.delete('/api/v1/jobs/:jobId', (req, res) => {
-  jobs.delete(req.params.jobId);
-  res.status(204).send();
-});
-
 app.get('/api/v1/jobs/:jobId', (req, res) => {
   if (req.params.jobId === 'running-with-progress') {
     res.status(200).json({
@@ -182,34 +177,6 @@ describe('ExternalAIAssistantService', () => {
     expect(completed).toEqual({
       status: 'completed',
       message: 'Reply to: Follow-up message',
-    });
-  });
-
-  it('should cancel a job on DELETE /api/v1/jobs/:jobId', async () => {
-    const service = new ExternalAIAssistantService({
-      url: 'http://localhost:5054',
-      httpClient,
-    });
-
-    const { jobId } = await service.submitMessage({
-      message: 'Cancel me',
-      credentials: {
-        url: 'http://localhost:3000',
-        username: 'admin',
-        password: 'secret',
-      },
-    });
-
-    await service.cancelJob(jobId, {
-      url: 'http://localhost:3000',
-      username: 'admin',
-      password: 'secret',
-    });
-
-    const result = await service.getJobStatus(jobId);
-    expect(result).toEqual({
-      status: 'error',
-      error: 'AI Assistant request failed',
     });
   });
 

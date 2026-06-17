@@ -4,7 +4,7 @@ import type {
   AIAssistantContextPayload,
   UwaziCredentials,
 } from './contracts/AIAssistantContracts.js';
-import { formatAIAssistantMessage } from './formatAIAssistantMessage.js';
+import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 
 type Input = {
   tenantName: string;
@@ -25,17 +25,15 @@ type Dependencies = {
   pollScheduler: AIAssistantPollScheduler;
 };
 
-class SendAIAssistantMessage {
-  constructor(private dependencies: Dependencies) {}
-
+class SendAIAssistantMessage extends AbstractUseCase<Input, Output, Dependencies> {
   async execute(input: Input): Promise<Output> {
-    const { jobId } = await this.dependencies.aiAssistantService.submitMessage({
-      message: formatAIAssistantMessage(input.message, input.context),
+    const { jobId } = await this.deps.aiAssistantService.submitMessage({
+      message: input.message,
       credentials: input.credentials,
       jobId: input.conversationJobId,
     });
 
-    await this.dependencies.pollScheduler.schedulePoll(
+    await this.deps.pollScheduler.schedulePoll(
       {
         tenantName: input.tenantName,
         userId: input.userId,

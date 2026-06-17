@@ -9,7 +9,6 @@ import {
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import type { AIAssistantPollScheduler } from '../../application/contracts/AIAssistantPollScheduler.js';
 import type { AIAssistantService } from '../../domain/AIAssistantService.js';
-import { AIAssistantCancellationRegistry } from '../AIAssistantCancellationRegistry.js';
 
 type Params = UserAwareDispatchableParams & {
   sessionId: string;
@@ -30,10 +29,6 @@ class AIAssistantPollRequestJob extends UserAwareDispatchable<Params> {
   }
 
   async handle(_heartbeat: HeartbeatCallback, jobInfo?: JobInfo) {
-    if (await AIAssistantCancellationRegistry.isCancelled(this.tenantName, this.params.jobId)) {
-      return;
-    }
-
     let result;
     try {
       result = await this.dependencies.aiAssistantService.getJobStatus(this.params.jobId);
@@ -48,10 +43,6 @@ class AIAssistantPollRequestJob extends UserAwareDispatchable<Params> {
         });
       }
       throw error;
-    }
-
-    if (await AIAssistantCancellationRegistry.isCancelled(this.tenantName, this.params.jobId)) {
-      return;
     }
 
     if (result.status === 'completed') {

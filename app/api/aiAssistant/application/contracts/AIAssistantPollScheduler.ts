@@ -7,7 +7,6 @@ type AIAssistantPollJobParams = {
 
 interface AIAssistantPollScheduler {
   schedulePoll(params: AIAssistantPollJobParams, delayMs?: number): Promise<void>;
-  cancelPolls(tenantName: string, jobId: string): Promise<void>;
 }
 
 export type { AIAssistantPollJobParams, AIAssistantPollScheduler };

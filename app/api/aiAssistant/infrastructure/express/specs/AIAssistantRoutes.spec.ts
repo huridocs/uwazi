@@ -46,9 +46,6 @@ describe('AIAssistantRoutes', () => {
     jest.spyOn(AIAssistantFactory, 'createSendMessage').mockReturnValue({
       execute: jest.fn().mockResolvedValue({ jobId: 'job-123' }),
     } as any);
-    jest.spyOn(AIAssistantFactory, 'createCancelConversation').mockReturnValue({
-      execute: jest.fn().mockResolvedValue(undefined),
-    } as any);
     tenants.current().featureFlags!.aiAssistant = true;
   });
 
@@ -119,34 +116,6 @@ describe('AIAssistantRoutes', () => {
         userId: adminUser._id,
         sessionId: 'test-session',
         message: 'Summarise this case',
-        credentials: expect.objectContaining({
-          username: adminUser.username,
-          password: 'secret',
-          url: 'http://127.0.0.1',
-        }),
-      })
-    );
-  });
-
-  it('should return 204 when cancelling a conversation', async () => {
-    const execute = jest.fn().mockResolvedValue(undefined);
-    jest.spyOn(AIAssistantFactory, 'createCancelConversation').mockReturnValue({
-      execute,
-    } as any);
-
-    const response = await request(app)
-      .post('/api/aiAssistant/conversation/cancel')
-      .set('Cookie', 'connect.sid=test-session')
-      .send({
-        jobId: 'job-123',
-        password: 'secret',
-      });
-
-    expect(response.status).toBe(204);
-    expect(execute).toHaveBeenCalledWith(
-      expect.objectContaining({
-        tenantName: expect.any(String),
-        jobId: 'job-123',
         credentials: expect.objectContaining({
           username: adminUser.username,
           password: 'secret',

@@ -66,13 +66,6 @@ class ExternalAIAssistantService implements AIAssistantService {
 
     return { status: 'pending' };
   }
-
-  async cancelJob(jobId: string, credentials: SubmitMessageInput['credentials']): Promise<void> {
-    await this.dependencies.httpClient.delete({
-      url: `${this.dependencies.url}/api/v1/jobs/${jobId}`,
-      body: { credentials },
-    });
-  }
 }
 
 export { ExternalAIAssistantService };

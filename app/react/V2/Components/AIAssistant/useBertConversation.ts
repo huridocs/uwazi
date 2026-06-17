@@ -1,5 +1,4 @@
 import { useCallback, useRef, useState } from 'react';
-import { cancelConversation as cancelAIAssistantConversation } from '#V2/api/aiAssistant/conversation.js';
 import { sendMessage as sendAIAssistantMessage } from '#V2/api/aiAssistant/messages.js';
 import {
   getBertSessionPassword,
@@ -50,13 +49,13 @@ const useBertConversation = ({
   const isReplying = isThinking || streamingMessageId !== null;
   const needsPasswordUnlock = !mockReplies && !isPasswordUnlocked;
 
-  const matchesActiveJob = useCallback((jobId: string) => {
-    const activeJobId = pendingJobIdRef.current;
-    if (!activeJobId) {
+  const matchesCurrentConversation = useCallback((jobId: string) => {
+    const currentConversationId = conversationJobIdRef.current;
+    if (!currentConversationId) {
       return false;
     }
 
-    return String(jobId) === String(activeJobId);
+    return String(jobId) === String(currentConversationId);
   }, []);
 
   const unlockWithPassword = useCallback((password: string) => {
@@ -67,7 +66,7 @@ const useBertConversation = ({
 
   const handleAssistantReply = useCallback(
     (payload: { jobId: string; message: string }) => {
-      if (!matchesActiveJob(payload.jobId)) {
+      if (!matchesCurrentConversation(payload.jobId)) {
         return;
       }
 
@@ -86,23 +85,23 @@ const useBertConversation = ({
       setJobProgress(null);
       setStreamingMessageId(reply.id);
     },
-    [matchesActiveJob]
+    [matchesCurrentConversation]
   );
 
   const handleAssistantProgress = useCallback(
     (payload: { jobId: string; progress: string }) => {
-      if (!matchesActiveJob(payload.jobId)) {
+      if (!matchesCurrentConversation(payload.jobId)) {
         return;
       }
 
       setJobProgress(payload.progress);
     },
-    [matchesActiveJob]
+    [matchesCurrentConversation]
   );
 
   const handleAssistantError = useCallback(
     (payload: { jobId: string; error: string }) => {
-      if (!matchesActiveJob(payload.jobId)) {
+      if (!matchesCurrentConversation(payload.jobId)) {
         return;
       }
 
@@ -112,7 +111,7 @@ const useBertConversation = ({
       setIsThinking(false);
       setJobProgress(null);
     },
-    [matchesActiveJob]
+    [matchesCurrentConversation]
   );
 
   useAIAssistantSocket({
@@ -187,10 +186,7 @@ const useBertConversation = ({
     pendingJobIdRef.current = jobId;
   }, [contextChips, draftMessage, isReplying, mockReplies, sendMockReply]);
 
-  const clearChat = useCallback(async () => {
-    const jobId = conversationJobIdRef.current;
-    const password = passwordRef.current;
-
+  const clearChat = useCallback(() => {
     conversationJobIdRef.current = null;
     pendingJobIdRef.current = null;
     isThinkingRef.current = false;
@@ -200,11 +196,7 @@ const useBertConversation = ({
     setIsThinking(false);
     setJobProgress(null);
     setStreamingMessageId(null);
-
-    if (!mockReplies && jobId && password) {
-      await cancelAIAssistantConversation({ jobId, password });
-    }
-  }, [mockReplies]);
+  }, []);
 
   const finishStreaming = useCallback(() => {
     setStreamingMessageId(null);
