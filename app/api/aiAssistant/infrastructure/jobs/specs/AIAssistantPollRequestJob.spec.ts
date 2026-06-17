@@ -1,4 +1,4 @@
-import type { AIAssistantService } from '#api/aiAssistant/domain/AIAssistantService.js';
+import type { AIAssistantService } from '#api/aiAssistant/application/contracts/AIAssistantService.js';
 import type { AIAssistantPollScheduler } from '#api/aiAssistant/application/contracts/AIAssistantPollScheduler.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';

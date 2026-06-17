@@ -1,6 +1,6 @@
 import type { AIAssistantPollScheduler } from '../contracts/AIAssistantPollScheduler.js';
 import { SendAIAssistantMessage } from '../SendAIAssistantMessage.js';
-import type { AIAssistantService } from '../../domain/AIAssistantService.js';
+import type { AIAssistantService } from '../contracts/AIAssistantService.js';
 
 describe('SendAIAssistantMessage', () => {
   it('should submit the message and schedule the first poll', async () => {

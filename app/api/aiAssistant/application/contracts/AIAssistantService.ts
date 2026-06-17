@@ -2,7 +2,7 @@ import type {
   PollResult,
   SubmitMessageInput,
   SubmitMessageOutput,
-} from '../application/contracts/AIAssistantContracts.js';
+} from './AIAssistantContracts.js';
 
 interface AIAssistantService {
   submitMessage(input: SubmitMessageInput): Promise<SubmitMessageOutput>;

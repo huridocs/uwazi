@@ -5,7 +5,7 @@ import {
   JobInfo,
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import type { AIAssistantPollScheduler } from '../../application/contracts/AIAssistantPollScheduler.js';
-import type { AIAssistantService } from '../../domain/AIAssistantService.js';
+import type { AIAssistantService } from '../../application/contracts/AIAssistantService.js';
 
 type Params = {
   sessionId: string;

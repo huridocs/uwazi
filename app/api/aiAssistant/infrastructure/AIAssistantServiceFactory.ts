@@ -1,6 +1,6 @@
 import { tenants } from '#api/tenants/index.js';
 import { HttpClientFactory } from '#api/common.v2/infrastructure/HttpClientFactory.js';
-import type { AIAssistantService } from '../domain/AIAssistantService.js';
+import type { AIAssistantService } from '../application/contracts/AIAssistantService.js';
 import { ExternalAIAssistantService } from './ExternalAIAssistantService.js';
 
 class AIAssistantServiceFactory {

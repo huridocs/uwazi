@@ -1,5 +1,5 @@
 import { HttpClient } from '#api/common.v2/contracts/HttpClient.js';
-import type { AIAssistantService } from '../domain/AIAssistantService.js';
+import type { AIAssistantService } from '../application/contracts/AIAssistantService.js';
 import type {
   PollResult,
   SubmitMessageInput,

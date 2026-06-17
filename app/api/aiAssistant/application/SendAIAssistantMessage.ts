@@ -1,5 +1,5 @@
 import type { AIAssistantPollScheduler } from './contracts/AIAssistantPollScheduler.js';
-import type { AIAssistantService } from '../domain/AIAssistantService.js';
+import type { AIAssistantService } from './contracts/AIAssistantService.js';
 import type { UwaziCredentials } from './contracts/AIAssistantContracts.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 
