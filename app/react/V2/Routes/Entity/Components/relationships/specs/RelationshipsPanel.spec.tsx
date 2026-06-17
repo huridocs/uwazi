@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { defaultPdf, renderRelationshipsPanel } from './helpers/renderRelationshipsPanel.js';
 
@@ -65,6 +65,52 @@ describe('RelationshipsPanel', () => {
 
       expect(getSelectionState().getAttribute('data-active')).toBe('');
       expect(pdf.toggleHighlights).toHaveBeenLastCalledWith([]);
+    });
+  });
+
+  describe('filters', () => {
+    const searchInput = () => screen.getByRole('textbox', { name: /search relationships/i });
+    const filtersButton = () => screen.getByRole('button', { name: /^filters/i });
+
+    it('filters markers, shows an active chip, and updates the filter count', async () => {
+      const user = userEvent.setup();
+      renderRelationshipsPanel();
+
+      await user.type(searchInput(), 'alpha');
+
+      expect(screen.getByText('alpha snippet')).toBeInTheDocument();
+      expect(screen.queryByText('Other Entity')).not.toBeInTheDocument();
+      expect(screen.getByText('"alpha"')).toBeInTheDocument();
+      expect(filtersButton()).toHaveAttribute('aria-pressed', 'true');
+      expect(filtersButton()).toHaveTextContent('2');
+    });
+
+    it('clears search from the chip and restores all markers', async () => {
+      const user = userEvent.setup();
+      renderRelationshipsPanel();
+
+      await user.type(searchInput(), 'alpha');
+      const chip = screen.getByText('"alpha"').parentElement;
+      await user.click(within(chip!).getByRole('button', { name: 'Clear search' }));
+
+      expect(screen.getByText('alpha snippet')).toBeInTheDocument();
+      expect(screen.getByText('Other Entity')).toBeInTheDocument();
+      expect(screen.queryByText('"alpha"')).not.toBeInTheDocument();
+      expect(filtersButton()).toHaveAttribute('aria-pressed', 'true');
+      expect(filtersButton()).toHaveTextContent('1');
+    });
+
+    it('clears all filters from the drawer', async () => {
+      const user = userEvent.setup();
+      renderRelationshipsPanel({ withFiltersDrawer: true });
+
+      await user.type(searchInput(), 'alpha');
+      await user.click(filtersButton());
+      await user.click(screen.getByRole('button', { name: /clear all filters/i }));
+
+      expect(screen.getByText('alpha snippet')).toBeInTheDocument();
+      expect(screen.getByText('Other Entity')).toBeInTheDocument();
+      expect(filtersButton()).toHaveAttribute('aria-pressed', 'false');
     });
   });
 });

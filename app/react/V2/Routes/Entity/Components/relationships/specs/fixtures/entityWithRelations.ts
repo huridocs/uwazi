@@ -28,6 +28,25 @@ const entityWithRelations = {
       entity: 'target-entity',
       entityData: { title: 'Related Entity', template: 'template1' },
     },
+    {
+      template: 'relA',
+      _id: 'c3',
+      hub: 'h2',
+      file: 'f1',
+      entity: 'shared1',
+      entityData: { title: 'Source', template: 'template1' },
+      reference: {
+        text: 'beta snippet',
+        selectionRectangles: [{ top: 10, left: 0, width: 10, height: 10, page: '1' }],
+      },
+    },
+    {
+      template: null,
+      _id: 'c4',
+      hub: 'h2',
+      entity: 'other-entity',
+      entityData: { title: 'Other Entity', template: 'template1' },
+    },
   ],
 } as Entity;
 

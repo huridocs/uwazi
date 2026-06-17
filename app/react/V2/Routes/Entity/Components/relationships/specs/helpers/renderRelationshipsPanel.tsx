@@ -10,6 +10,7 @@ import {
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useRelationshipSelection } from '#V2/Routes/Entity/Components/document/index.js';
 import { RelationshipsPanel } from '../../panel/RelationshipsPanel.js';
+import { RelationshipsFiltersDrawer } from '../../filters/RelationshipsFiltersDrawer.js';
 import { entityWithRelations } from '../fixtures/entityWithRelations.js';
 
 type PdfMocks = {
@@ -21,6 +22,7 @@ type RenderRelationshipsPanelOptions = {
   focusDocumentOnSelect?: boolean;
   onFocusDocument?: jest.Mock;
   pdf?: PdfMocks;
+  withFiltersDrawer?: boolean;
 };
 
 const defaultPdf = (): PdfMocks => ({
@@ -52,6 +54,7 @@ const renderRelationshipsPanel = ({
   focusDocumentOnSelect = false,
   onFocusDocument = jest.fn(),
   pdf = defaultPdf(),
+  withFiltersDrawer = false,
 }: RenderRelationshipsPanelOptions = {}) => {
   const store = createStore();
   store.set(relationshipTypesAtom, [{ _id: 'relA', name: 'Related' }]);
@@ -68,6 +71,7 @@ const renderRelationshipsPanel = ({
               focusDocumentOnSelect={focusDocumentOnSelect}
               onFocusDocument={onFocusDocument}
             />
+            {withFiltersDrawer && <RelationshipsFiltersDrawer />}
             <SelectionState />
           </EntityScopedProvider>
         </Provider>
