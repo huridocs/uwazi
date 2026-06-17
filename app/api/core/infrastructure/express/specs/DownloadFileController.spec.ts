@@ -5,7 +5,7 @@ import { tenants } from '#api/tenants/index.js';
 import { ClientAbortedRequestError } from '#api/common.v2/errors/ClientAbortedRequestError.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { FileContents } from '#api/core/domain/files/FileContents.js';
-import { fileDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+import { FileDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -14,7 +14,7 @@ import { DownloadFileController } from '../DownloadFileController.js';
 
 type CreateSutProps = {
   filename?: string;
-  typesAllowed?: fileDBO['type'][];
+  typesAllowed?: FileDBO['type'][];
   requestAborted?: boolean;
   fileContents?: FileContents;
   fileExists?: boolean;

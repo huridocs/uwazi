@@ -10,7 +10,7 @@ import {
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
-import { fileDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+import { FileDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { tenants } from '#api/tenants/index.js';
 import { User } from '#api/users.v2/model/User.js';
 import { FilesDataSourceFactory } from '../factories/FilesDataSourceFactory.js';
@@ -31,11 +31,11 @@ const requestSchema = z.object({
 });
 
 type Deps = Dependencies & {
-  typesAllowed: fileDBO['type'][];
+  typesAllowed: FileDBO['type'][];
 };
 
 class DownloadFileController extends AbstractController {
-  private typesAllowed: fileDBO['type'][];
+  private typesAllowed: FileDBO['type'][];
 
   private fileStorage: FileStorage;
 
@@ -46,7 +46,7 @@ class DownloadFileController extends AbstractController {
     this.fileStorage = FileStorageFactory.default();
   }
 
-  static customHandler(typesAllowed: fileDBO['type'][]) {
+  static customHandler(typesAllowed: FileDBO['type'][]) {
     return async (request: Request, response: Response) =>
       new DownloadFileController({
         request,

@@ -3,7 +3,7 @@ import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { User } from '#api/users.v2/model/User.js';
 import { MongoDataSource, MongoDSOptions } from '../common/MongoDataSource.js';
-import { fileDBO } from '../files/schemas/filesTypes.js';
+import { FileDBO } from '../files/schemas/filesTypes.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 type GetWithFilesMatch = {
@@ -12,7 +12,7 @@ type GetWithFilesMatch = {
   published?: boolean;
 };
 
-type EntityWithFiles = EntityDBO & { documents: fileDBO[]; attachments: fileDBO[] };
+type EntityWithFiles = EntityDBO & { documents: FileDBO[]; attachments: FileDBO[] };
 
 class MongoEntitiesDAO extends MongoDataSource<EntityDBO> {
   protected collectionName = 'entities';
