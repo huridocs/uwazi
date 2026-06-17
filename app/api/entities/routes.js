@@ -2,7 +2,6 @@
 /* eslint-disable max-statements */
 import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
 import { uploadMiddleware } from '#api/files/index.js';
-import { search } from '#api/search/index.js';
 import { tenants } from '#api/tenants/index.js';
 import { withTransaction } from '#api/utils/withTransaction.js';
 import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
@@ -18,24 +17,11 @@ import { MultiUpdateEntityController } from '#api/core/infrastructure/express/en
 import { DeleteEntityController } from '#api/core/infrastructure/express/entity/DeleteEntityController.js';
 import { CreateEntityFromPDFController } from '#api/core/infrastructure/express/entity/CreateEntityFromPDFController.js';
 import needsAuthorization from '../auth/authMiddleware.js';
-import templates from '../core/v1_layer/templates/templates.js';
-import { thesauri } from '../thesauri/thesauri.js';
 import { parseQuery, validation } from '../utils/index.js';
 import date from '../utils/date.js';
 import entities from './entities.js';
 import { saveEntity } from './entitySavingManager.js';
 import { User } from '#api/users.v2/model/User.js';
-
-async function updateThesauriWithEntity(entity, req) {
-  const template = await templates.getById(entity.template);
-  const templateTransformed = await thesauri.templateToThesauri(
-    template,
-    req.language,
-    req.user,
-    await search.countPerTemplate(req.language)
-  );
-  req.sockets.emitToCurrentTenant('thesauriChange', templateTransformed);
-}
 
 function coerceValues(value, type, locale) {
   let dateSeconds = '';
@@ -117,8 +103,6 @@ export default app => {
           .getWithFiles({ language: req.language, sharedId: result.sharedId })
           .next();
 
-        await updateThesauriWithEntity(entityInTargetLanguage, req);
-
         const response = req.body.entity
           ? { entity: entityInTargetLanguage, errors: [] }
           : entityInTargetLanguage;
@@ -141,12 +125,11 @@ export default app => {
             socketEmiter: req.emitToSessionSocket,
             files: req.files,
           });
-          const { entity, errors } = saveResult;
-          await updateThesauriWithEntity(entity, req);
+          const { errors } = saveResult;
           if (errors.length) {
             await abort();
           }
-          return req.body.entity ? saveResult : entity;
+          return req.body.entity ? saveResult : saveResult.entity;
         }, 'POST /api/entities');
         res.json(result);
         req.emitToSessionSocket(
