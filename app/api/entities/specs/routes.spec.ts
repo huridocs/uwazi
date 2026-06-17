@@ -7,15 +7,12 @@ import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import * as entitySavingManager from '#api/entities/entitySavingManager.js';
 import routes from '#api/entities/routes.js';
-import templates from '#api/core/v1_layer/templates/index.js';
-import thesauri from '#api/thesauri/index.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import entities from '../entities.js';
 import fixtures, { templateId } from './fixtures.js';
-import { ObjectId } from 'mongodb';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -353,12 +350,6 @@ describe('entities routes', () => {
       jest
         .spyOn(entitySavingManager, 'saveEntity')
         .mockImplementation(async () => Promise.resolve({ entity: {}, errors: [] }));
-      jest
-        .spyOn(templates, 'getById')
-        .mockImplementation(async (_templateId: string | ObjectId) => Promise.resolve(null as any));
-      jest
-        .spyOn(thesauri, 'templateToThesauri')
-        .mockImplementation(async () => Promise.resolve({}));
 
       const entityToUpdate = { ...entityToSave, sharedId: 'existing123' };
 
@@ -385,6 +376,25 @@ describe('entities routes', () => {
           ]),
         })
       );
+    });
+
+    it('should return entity payload for legacy JSON update requests', async () => {
+      jest.restoreAllMocks();
+      const savedEntity = {
+        sharedId: 'existing123',
+        title: 'updated title',
+      };
+      jest.spyOn(entitySavingManager, 'saveEntity').mockResolvedValue({
+        entity: savedEntity as any,
+        errors: [],
+      });
+
+      const response: SuperTestResponse = await request(app)
+        .post('/api/entities')
+        .send({ ...entityToSave, sharedId: 'existing123', title: 'updated title' })
+        .expect(200);
+
+      expect(response.body).toMatchObject(savedEntity);
     });
 
     it('should run saveEntity process as a transaction', async () => {
