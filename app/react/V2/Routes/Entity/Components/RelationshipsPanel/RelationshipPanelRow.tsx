@@ -64,6 +64,8 @@ const RelationshipPanelRow = ({ entry, ...handlers }: RelationshipPanelRowProps)
       <CollapsibleRelationshipRow
         checkboxId={aggregate.markerIds[0] ?? ''}
         evidenceCount={aggregate.markerIds.length}
+        glyphDirection={glyphDirection}
+        relationshipTypeName={hideRelationType ? undefined : relationshipTypeName}
         header={
           hideTargetPill ? null : (
             <TemplatePill templateId={aggregate.targetTemplateId} label={aggregate.targetTitle} />
@@ -92,6 +94,9 @@ const RelationshipPanelRow = ({ entry, ...handlers }: RelationshipPanelRowProps)
       checkboxId={hub.markerIds[0] ?? ''}
       evidenceCount={hub.markerIds.length}
       headerWrap
+      isHub
+      memberCount={hub.members.length}
+      relationshipTypeName={hideRelationType ? undefined : relationshipTypeName}
       header={
         hideTargetPill ? null : (
           <>
@@ -107,16 +112,12 @@ const RelationshipPanelRow = ({ entry, ...handlers }: RelationshipPanelRowProps)
       }
       meta={
         <>
-          <span className="uppercase tracking-wide">
-            <Translate>hub</Translate>
-          </span>
           {!hideRelationType && relationshipTypeName && (
             <>
-              <span>·</span>
               <span className="capitalize">{relationshipTypeName}</span>
+              <span>·</span>
             </>
           )}
-          <span>·</span>
           <span>
             {hub.members.length} <Translate>parties</Translate>
           </span>

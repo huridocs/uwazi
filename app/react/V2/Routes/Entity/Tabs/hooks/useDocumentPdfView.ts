@@ -21,6 +21,7 @@ import {
 } from '../../Components/RelationshipsPanel/relationshipsPanelFiltersAtom.js';
 import { useRelationshipSelection } from '../../Components/useRelationshipSelection.js';
 import { SIDE_TAB } from '../tabIds.js';
+import { useEntityTabNavigation } from './useEntityTabNavigation.js';
 
 type UseDocumentPdfViewParams = {
   mainDocument: FileType;
@@ -78,11 +79,7 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
     [searchParams, setSearchParams]
   );
 
-  const openRelationshipsSideTab = useCallback(() => {
-    const next = new URLSearchParams(searchParams.toString());
-    next.set(SIDE_TAB_PARAM, SIDE_TAB.RELATIONSHIPS);
-    setSearchParams(next, { replace: true, preventScrollReset: true });
-  }, [searchParams, setSearchParams]);
+  const { focusRelationshipsPanel } = useEntityTabNavigation();
 
   const handleTextSelect = useCallback(
     (selection: TextSelection) => {
@@ -102,21 +99,17 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
   const handleConnectToParagraph = useCallback(
     (selection: TextSelection) => {
       setCreateReferenceSelection(selection, 'text');
-      const next = new URLSearchParams(searchParams.toString());
-      next.set(SIDE_TAB_PARAM, SIDE_TAB.RELATIONSHIPS);
-      setSearchParams(next, { replace: true });
+      focusRelationshipsPanel();
     },
-    [searchParams, setSearchParams, setCreateReferenceSelection]
+    [focusRelationshipsPanel, setCreateReferenceSelection]
   );
 
   const handleConnectToDocument = useCallback(
     (selection: TextSelection) => {
       setCreateReferenceSelection(selection, 'entity');
-      const next = new URLSearchParams(searchParams.toString());
-      next.set(SIDE_TAB_PARAM, SIDE_TAB.RELATIONSHIPS);
-      setSearchParams(next, { replace: true });
+      focusRelationshipsPanel();
     },
-    [searchParams, setSearchParams, setCreateReferenceSelection]
+    [focusRelationshipsPanel, setCreateReferenceSelection]
   );
 
   const handleAddToToC = useCallback(
@@ -138,10 +131,10 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
   const handleRailPointClick = useCallback(
     (marker: RelationshipMarker) => {
       if (!entity) return;
-      openRelationshipsSideTab();
+      focusRelationshipsPanel();
       selectRelationship(marker, { scrollPanel: true });
     },
-    [entity, openRelationshipsSideTab, selectRelationship]
+    [entity, focusRelationshipsPanel, selectRelationship]
   );
 
   const handleClusterClick = useCallback(
@@ -162,14 +155,14 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
       }
 
       setActiveClusterRefIds(ids);
-      openRelationshipsSideTab();
+      focusRelationshipsPanel();
       mainPdfController?.goToPage(clusterPage);
     },
     [
       activeClusterRefIds,
       entity,
+      focusRelationshipsPanel,
       mainPdfController,
-      openRelationshipsSideTab,
       setActiveClusterRefIds,
     ]
   );
@@ -183,11 +176,11 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
 
   const handleHighlightClick = useCallback(
     (relationshipId: string) => {
-      openRelationshipsSideTab();
+      focusRelationshipsPanel();
       setScrollToRelationshipPanel(relationshipId);
       setExpandForRefId(relationshipId);
     },
-    [openRelationshipsSideTab, setScrollToRelationshipPanel, setExpandForRefId]
+    [focusRelationshipsPanel, setExpandForRefId, setScrollToRelationshipPanel]
   );
 
   const handlePageNavigation = useCallback(

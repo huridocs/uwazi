@@ -28,6 +28,9 @@ const projectRelationshipsPanel = (entity: Entity): RelationshipsPanelProjection
   return { markers, stats: computeStats(markers) };
 };
 
+const countEntityRelationships = (entity: Entity): number =>
+  projectRelationshipsPanel(entity).markers.length;
+
 const markerHaystack = (marker: RelationshipMarker, relationshipTypeName: string): string =>
   `${marker.anchor?.text ?? ''} ${marker.target.title} ${relationshipTypeName}`.toLowerCase();
 
@@ -110,4 +113,10 @@ export type {
   RelationshipsPanelProjection,
   RelationshipsPanelFilterOptions,
 };
-export { projectRelationshipsPanel, filterAndSortMarkers, computeStats, compareAppearance };
+export {
+  projectRelationshipsPanel,
+  filterAndSortMarkers,
+  computeStats,
+  compareAppearance,
+  countEntityRelationships,
+};

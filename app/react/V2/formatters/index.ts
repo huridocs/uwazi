@@ -14,6 +14,7 @@ export {
   projectRelationshipsPanel,
   filterAndSortMarkers,
   computeStats,
+  countEntityRelationships,
 } from './relationships/relationshipsPanelProjection.js';
 export {
   groupingOptions,

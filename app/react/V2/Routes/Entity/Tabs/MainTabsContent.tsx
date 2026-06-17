@@ -4,7 +4,8 @@ import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { MAIN_TAB, type MainTabId } from './tabIds.js';
 import { DocumentTab } from './tabsContent/DocumentTab.js';
 import { MetadataTab } from './tabsContent/MetadataTab.js';
-import { RelationshipsTab } from './tabsContent/RelationshipsTab.js';
+import { RelationshipsPanel } from '../Components/RelationshipsPanel/RelationshipsPanel.js';
+import { RelationshipsFiltersDrawer } from '../Components/RelationshipsPanel/RelationshipsFiltersDrawer.js';
 import { FilesTab } from './tabsContent/FilesTab.js';
 
 type MainTabsContentProps = {
@@ -37,7 +38,11 @@ const MainTabsContent = ({
       content = <MetadataTab entity={entity} />;
       break;
     case MAIN_TAB.RELATIONSHIPS:
-      content = <RelationshipsTab />;
+      content = (
+        <div className="flex min-h-0 flex-1 flex-col px-3 pt-2">
+          <RelationshipsPanel entity={entity} mainDocument={mainDocument} />
+        </div>
+      );
       break;
     case MAIN_TAB.FILES:
       content = <FilesTab />;
@@ -56,6 +61,7 @@ const MainTabsContent = ({
       className="flex h-full min-h-0 w-full flex-col bg-warm"
     >
       {content}
+      {activeTabId === MAIN_TAB.RELATIONSHIPS && <RelationshipsFiltersDrawer />}
     </div>
   );
 };

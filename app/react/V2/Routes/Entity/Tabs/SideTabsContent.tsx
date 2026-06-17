@@ -5,7 +5,7 @@ import { SIDE_TAB, type SideTabId } from './tabIds.js';
 import { DocumentTab } from './tabsContent/DocumentTab.js';
 import { MetadataTab } from './tabsContent/MetadataTab.js';
 import { ToCTab } from './tabsContent/ToCTab.js';
-import { RelationshipsSideTab } from './tabsContent/RelationshipsSideTab.js';
+import { RelationshipsPanel } from '../Components/RelationshipsPanel/RelationshipsPanel.js';
 import { SearchTab } from './tabsContent/SearchTab.js';
 import { FilesSideTab } from './tabsContent/FilesSideTab.js';
 import { TranslationsTab } from './tabsContent/TranslationsTab.js';
@@ -50,7 +50,7 @@ const SideTabsContent = ({
       content = <ToCTab mainDocument={mainDocument} />;
       break;
     case SIDE_TAB.RELATIONSHIPS:
-      content = <RelationshipsSideTab entity={entity} mainDocument={mainDocument} />;
+      content = <RelationshipsPanel entity={entity} mainDocument={mainDocument} />;
       break;
     case SIDE_TAB.SEARCH:
       content = <SearchTab />;

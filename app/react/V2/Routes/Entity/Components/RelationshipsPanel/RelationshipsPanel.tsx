@@ -9,19 +9,26 @@ import { searchByTitle } from '#V2/api/entities/index.js';
 import { ConfirmationModal, BlankState } from '#V2/Components/UI/index.js';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { CreateReference } from './CreateReference.js';
-import { RelationshipsPanelToolbar } from './RelationshipsPanelToolbar.js';
 import { RelationshipsPanelBody } from './RelationshipsPanelBody.js';
+import { RelationshipsListInfoRow } from './RelationshipsListInfoRow.js';
+import { RelationshipsPanelToolbarControls } from './RelationshipsPanelToolbarControls.js';
+import { RelationshipsSearchBar } from './RelationshipsSearchBar.js';
 import {
   useRelationships,
   relationshipsEditModeAtom,
   selectedRelationshipIdsAtom,
 } from './relationshipsAtom.js';
-import { relationshipsPanelFiltersDrawerOpenAtom } from './relationshipsPanelFiltersAtom.js';
+import {
+  relationshipsPanelActiveFilterCountAtom,
+  relationshipsPanelFiltersDrawerOpenAtom,
+  relationshipsPanelViewAtom,
+} from './relationshipsPanelFiltersAtom.js';
 import { useRelationshipSelection } from '../useRelationshipSelection.js';
 import { useRelationshipsPanelData } from './useRelationshipsPanelData.js';
 import { useGroupLabelContext } from './useGroupLabelContext.js';
 import { useRelationshipDelete } from './useRelationshipDelete.js';
 import { useRelationshipSave } from './useRelationshipSave.js';
+import { useEntityTabNavigation } from '../../Tabs/hooks/useEntityTabNavigation.js';
 
 type RelationshipsPanelProps = {
   entity?: Entity;
@@ -35,9 +42,12 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
   const { markers, stats, hasRelationships } = useRelationshipsPanelData(entity);
   const groupContext = useGroupLabelContext(entity);
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
+  const view = useAtomValue(relationshipsPanelViewAtom);
+  const activeFilterCount = useAtomValue(relationshipsPanelActiveFilterCountAtom);
   const setFiltersOpen = useSetAtom(relationshipsPanelFiltersDrawerOpenAtom);
-  const resetEditMode = useSetAtom(relationshipsEditModeAtom);
+  const { focusDocumentPanel, relationshipsOnMain } = useEntityTabNavigation();
   const resetSelected = useSetAtom(selectedRelationshipIdsAtom);
+  const resetEditMode = useSetAtom(relationshipsEditModeAtom);
 
   const {
     relationshipToDelete,
@@ -60,8 +70,13 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
   );
 
   const handleRelationshipClick = useCallback(
-    (marker: RelationshipMarker) => selectRelationship(marker),
-    [selectRelationship]
+    (marker: RelationshipMarker) => {
+      if (relationshipsOnMain && marker.anchor?.selections?.[0]?.page) {
+        focusDocumentPanel();
+      }
+      selectRelationship(marker, { scrollPanel: true });
+    },
+    [focusDocumentPanel, relationshipsOnMain, selectRelationship]
   );
 
   const handleViewClick = useCallback(
@@ -80,14 +95,16 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
 
   if (createReferenceSelection) {
     return (
-      <CreateReference
-        selection={createReferenceSelection}
-        relationshipTypes={relationshipTypes}
-        searchFunction={lookup}
-        mode={createReferenceMode || 'text'}
-        onSave={handleSaveReference}
-        onCancel={handleCancelCreate}
-      />
+      <div className="flex h-full min-h-0 flex-col [&_.panel]:h-full [&_.panel]:border-0">
+        <CreateReference
+          selection={createReferenceSelection}
+          relationshipTypes={relationshipTypes}
+          searchFunction={lookup}
+          mode={createReferenceMode || 'text'}
+          onSave={handleSaveReference}
+          onCancel={handleCancelCreate}
+        />
+      </div>
     );
   }
 
@@ -127,10 +144,17 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
   };
 
   return (
-    <>
+    <div className="flex h-full min-h-0 flex-col [&_.panel]:h-full [&_.panel]:border-0">
       <Panel className="overflow-hidden">
         {hasRelationships && (
-          <RelationshipsPanelToolbar stats={stats} onOpenFilters={() => setFiltersOpen(true)} />
+          <div className="flex shrink-0 flex-col gap-2 border-b border-border/50 pb-2 pt-1">
+            <RelationshipsSearchBar />
+            <RelationshipsPanelToolbarControls
+              activeFilterCount={activeFilterCount}
+              onOpenFilters={() => setFiltersOpen(true)}
+            />
+            {view !== 'graph' && <RelationshipsListInfoRow stats={stats} />}
+          </div>
         )}
         <Panel.Body className="pr-1 pb-2">{renderBody()}</Panel.Body>
       </Panel>
@@ -150,7 +174,7 @@ const RelationshipsPanel = ({ entity, mainDocument }: RelationshipsPanelProps) =
           onCancelClick={handleCancelDelete}
         />
       )}
-    </>
+    </div>
   );
 };
 

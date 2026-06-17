@@ -6,7 +6,7 @@ import { Translate } from '#app/I18N/index.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
 import { deleteReference } from '#V2/api/relationships/index.js';
-import { formatRelationships } from '#V2/formatters/index.js';
+import { countEntityRelationships } from '#V2/formatters/index.js';
 import { useRelationshipSelection } from '../useRelationshipSelection.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { relationshipsEditModeAtom, selectedRelationshipIdsAtom } from './relationshipsAtom.js';
@@ -23,7 +23,7 @@ const RelationshipsActionBar = ({ entity }: RelationshipsActionBarProps) => {
   const revalidator = useRevalidator();
   const { activeRelationshipId, clearRelationshipSelection } = useRelationshipSelection();
 
-  const totalCount = useMemo(() => (entity ? formatRelationships(entity).length : 0), [entity]);
+  const totalCount = useMemo(() => (entity ? countEntityRelationships(entity) : 0), [entity]);
   const selectedCount = selected.size;
   const hasSelection = selectedCount > 0;
 

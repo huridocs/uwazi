@@ -40,7 +40,7 @@ const RelationshipRow = ({
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const templates = useAtomValue(templatesAtom);
   const editMode = useAtomValue(relationshipsEditModeAtom);
-  const { rowPadding, metaHidden, snippetLines } = useRelationshipsPanelZoom();
+  const { compact, overview } = useRelationshipsPanelZoom();
   const { hideTargetPill, hideTemplateName, hideRelationType } = useRelationshipRowVisibility();
   const referenceText = marker.anchor?.text?.trim() ?? '';
   const referencePage = marker.anchor?.selections?.[0]?.page;
@@ -53,21 +53,63 @@ const RelationshipRow = ({
   const direction = directionOf(marker.view, selfSharedId);
 
   useEffect(() => {
-    if (scrollToRelationshipId !== marker._id) {
-      return;
-    }
+    if (scrollToRelationshipId !== marker._id) return;
     rowRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     setScrollToRelationshipId(null);
   }, [marker._id, scrollToRelationshipId, setScrollToRelationshipId]);
 
+  if (overview) {
+    return (
+      <ListCardRow
+        ref={rowRef}
+        selected={Boolean(isSelected)}
+        onClick={onClick}
+        className="!py-1.5"
+      >
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-1.5">
+            <RelationshipRowCheckbox relationshipId={marker._id} />
+            {!hideTargetPill && (
+              <TemplatePill
+                templateId={marker.target.templateId}
+                label={marker.target.title || '-'}
+              />
+            )}
+          </div>
+          {referencePage !== undefined && <PageTag page={referencePage} onClick={onClick} />}
+        </div>
+      </ListCardRow>
+    );
+  }
+
+  if (compact) {
+    return (
+      <ListCardRow ref={rowRef} selected={Boolean(isSelected)} onClick={onClick} className="!py-2">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-1.5">
+            <RelationshipRowCheckbox relationshipId={marker._id} />
+            {!hideTargetPill && (
+              <TemplatePill
+                templateId={marker.target.templateId}
+                label={marker.target.title || '-'}
+              />
+            )}
+            <DirectionGlyph direction={direction} />
+            {!hideRelationType && relationshipTypeName && (
+              <span className="truncate text-[10px] capitalize text-ink-tertiary">
+                {relationshipTypeName}
+              </span>
+            )}
+          </div>
+          {referencePage !== undefined && <PageTag page={referencePage} onClick={onClick} />}
+        </div>
+      </ListCardRow>
+    );
+  }
+
   return (
-    <ListCardRow
-      ref={rowRef}
-      selected={Boolean(isSelected)}
-      onClick={onClick}
-      className={rowPadding}
-    >
-      <div className={`flex items-start justify-between gap-2 ${metaHidden ? 'mb-0' : 'mb-1.5'}`}>
+    <ListCardRow ref={rowRef} selected={Boolean(isSelected)} onClick={onClick}>
+      <div className="mb-1.5 flex items-start justify-between gap-2">
         <div className="flex min-w-0 items-center gap-1.5">
           <RelationshipRowCheckbox relationshipId={marker._id} />
           {!hideTargetPill && (
@@ -78,20 +120,14 @@ const RelationshipRow = ({
           )}
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
-          {templateName && !metaHidden && !hideTemplateName && (
+          {templateName && !hideTemplateName && (
             <span className="text-[10px] text-ink-tertiary">{templateName}</span>
           )}
           {referencePage !== undefined && <PageTag page={referencePage} onClick={onClick} />}
         </div>
       </div>
-      {referenceText && !metaHidden && (
-        <p
-          className={`text-xs leading-relaxed text-ink-secondary ${
-            snippetLines === 1 ? 'line-clamp-1' : 'line-clamp-2'
-          }`}
-        >
-          {referenceText}
-        </p>
+      {referenceText && (
+        <p className="line-clamp-2 text-xs leading-relaxed text-ink-secondary">{referenceText}</p>
       )}
       <div className="mt-1 flex items-center justify-between text-[10px] text-ink-tertiary">
         <span className="flex items-center gap-1">

@@ -190,7 +190,11 @@ const EntityView = ({ entity, mainDocument, pagePlaintext, searchResults }: Enti
                   pagePlaintext={pagePlaintext}
                 />
               </div>
-              <MainTabsFooters activeTabId={activeMainTab} mainDocument={mainDocument} />
+              <MainTabsFooters
+                activeTabId={activeMainTab}
+                entity={entity}
+                mainDocument={mainDocument}
+              />
             </div>
           </div>
         </PaneLayout.Pane>

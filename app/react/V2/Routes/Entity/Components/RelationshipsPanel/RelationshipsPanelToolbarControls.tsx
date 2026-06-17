@@ -21,7 +21,7 @@ const RelationshipsPanelToolbarControls = ({
 }: RelationshipsPanelToolbarControlsProps) => {
   const view = useAtomValue(relationshipsPanelViewAtom);
   const groupBy = useAtomValue(relationshipsPanelGroupByAtom);
-  const zoomDisabled = view === 'graph' || (view === 'list' && groupBy === 'none');
+  const zoomDisabled = view === 'graph';
 
   return (
     <div className="flex w-full flex-wrap items-center gap-x-2 gap-y-1.5">
