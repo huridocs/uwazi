@@ -264,6 +264,7 @@ function getFixturesFactory() {
         filename: filename || id,
         originalname: originalname || filename,
         propertySelections,
+        mimetype: type === 'document' ? 'application/pdf' : undefined,
       };
 
       if (status) {

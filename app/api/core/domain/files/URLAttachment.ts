@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { BaseFile, BaseFileProps } from './BaseFile.js';
-import { URLAttachmentDTO } from './domainTypes.js';
+import { FileUpdateInput, URLAttachmentDTO } from './domainTypes.js';
 
 type Props = BaseFileProps & { entity: string; url: string };
 
@@ -27,6 +27,10 @@ export class URLAttachment extends BaseFile<Props> {
     this.originalname = originalname;
     this.url = validated.url;
     this.entity = validated.entity;
+  }
+
+  override update(input: FileUpdateInput): this {
+    return this.clone({ url: input.url, originalname: input.originalname });
   }
 
   toDTO(): URLAttachmentDTO {

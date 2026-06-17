@@ -1,7 +1,7 @@
 import { z } from 'zod';
+import uniqBy from 'lodash/uniqBy.js';
 import { LanguageUtils } from '#shared/language/index.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { ObjectUtils } from '#api/common.v2/utils/Object.js';
+import { LanguageISO6391, PropertySelectionSchema } from '#shared/types/commonTypes.js';
 import { BaseFile, BaseFileProps } from './BaseFile.js';
 import { FileContents } from './FileContents.js';
 import { FullText, FileUpdateInput, PDFDocumentDTO, TableOfContent } from './domainTypes.js';
@@ -17,6 +17,7 @@ type Props = BaseFileProps & {
   generatedToc?: boolean;
   fullText?: FullTextLoader;
   toc?: TableOfContent[];
+  propertySelections?: PropertySelectionSchema[];
 };
 
 type ReadyProps = Props & {
@@ -51,9 +52,13 @@ const Schema = z
     }
   });
 
-const IMMUTABLE_PDF_KEYS = ['fullText', 'entity', 'totalPages'] as const satisfies ReadonlyArray<
-  keyof Props
->;
+const propertySelectionsHaveChanged = (
+  stored: PropertySelectionSchema[],
+  merged: PropertySelectionSchema[]
+): boolean => {
+  if (stored.length !== merged.length) return true;
+  return stored.some((s, i) => s.selection?.text !== merged[i].selection?.text);
+};
 
 export class PDFDocument extends BaseFile<Props> {
   readonly entity: string;
@@ -73,6 +78,8 @@ export class PDFDocument extends BaseFile<Props> {
   readonly generatedToc?: boolean;
 
   readonly toc?: TableOfContent[];
+
+  readonly propertySelections?: PropertySelectionSchema[];
 
   public fullText?: FullText;
 
@@ -97,6 +104,7 @@ export class PDFDocument extends BaseFile<Props> {
     this.totalPages = validated.totalPages;
     this.generatedToc = validated.generatedToc;
     this.toc = props.toc;
+    this.propertySelections = props.propertySelections;
 
     this.fullTextLoader = props.fullText;
     if (typeof props.fullText !== 'function') {
@@ -144,17 +152,26 @@ export class PDFDocument extends BaseFile<Props> {
   }
 
   override update(input: FileUpdateInput): this {
-    const sanitized = ObjectUtils.sanitize(
-      {
-        originalname: input.originalname,
-        language: input.language,
-        toc: input.toc,
-        generatedToc: input.generatedToc,
-      } as Partial<Props>,
-      IMMUTABLE_PDF_KEYS
-    );
+    let { propertySelections } = this;
 
-    const updated = this.clone(sanitized as Partial<Props>);
+    if (input.propertySelections) {
+      const merged = uniqBy(
+        input.propertySelections.concat(this.propertySelections || []),
+        'name'
+      ).filter(s => !s.deleteSelection);
+
+      if (propertySelectionsHaveChanged(this.propertySelections || [], merged)) {
+        propertySelections = merged;
+      }
+    }
+
+    const updated = this.clone({
+      originalname: input.originalname,
+      language: input.language,
+      toc: input.toc,
+      generatedToc: input.generatedToc,
+      propertySelections,
+    });
 
     if (this.language !== updated.language) {
       updated.languageChanged();
@@ -180,6 +197,9 @@ export class PDFDocument extends BaseFile<Props> {
         ...(this.fullText ? { fullText: this.fullText } : {}),
         generatedToc: this.generatedToc,
         ...(this.toc !== undefined ? { toc: this.toc } : {}),
+        ...(this.propertySelections !== undefined
+          ? { propertySelections: this.propertySelections }
+          : {}),
         type: 'document',
         status: 'ready',
       };
@@ -187,6 +207,9 @@ export class PDFDocument extends BaseFile<Props> {
     return {
       ...this.dtoBaseFields(),
       entity: this.entity,
+      ...(this.propertySelections !== undefined
+        ? { propertySelections: this.propertySelections }
+        : {}),
       status: this.status as 'processing' | 'failed',
       type: 'document',
     };

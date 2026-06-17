@@ -2,12 +2,11 @@ import { ClientSession, ObjectId } from 'mongodb';
 
 import entities from '#api/entities/index.js';
 import createError from '#api/utils/Error.js';
-import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { LanguageISO6391, PropertySchema } from '#shared/types/commonTypes.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
-import model from './templatesModel.js';
 import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
+import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 
 const getRelatedThesauri = async (template: TemplateSchema) => {
   const thesauriIds = (template.properties || [])
@@ -34,42 +33,63 @@ export default {
     );
   },
 
-  async get(query: any = {}) {
-    return model.get(query);
+  async get(ids?: string[]) {
+    const dao = TemplatesDAOFactory.default();
+    return dao.get(ids);
+  },
+
+  async getByNames(names: string[]) {
+    const dao = TemplatesDAOFactory.default();
+    return dao.getByNames(names);
+  },
+
+  async getByContent(contentId: string) {
+    const dao = TemplatesDAOFactory.default();
+    return dao.getByContent(contentId);
+  },
+
+  async getByContents(contentIds: string[]) {
+    const dao = TemplatesDAOFactory.default();
+    return dao.getByContents(contentIds);
+  },
+
+  async getByInheritedProperties(propertyIds: string[]) {
+    const dao = TemplatesDAOFactory.default();
+    return dao.getByInheritedProperties(propertyIds);
+  },
+
+  async getByEntityViewPage(pageId: string) {
+    const dao = TemplatesDAOFactory.default();
+    return dao.getByEntityViewPage(pageId);
+  },
+
+  async getByContentsOrUnrestrictedRelationship(contentIds: string[]) {
+    const dao = TemplatesDAOFactory.default();
+    return dao.getByContentsOrUnrestrictedRelationship(contentIds);
+  },
+
+  async getDefaultTemplate() {
+    const dao = TemplatesDAOFactory.default();
+    return dao.getDefaultTemplate();
+  },
+
+  async getAllIds() {
+    const dao = TemplatesDAOFactory.default();
+    return dao.getAllIds();
   },
 
   async getPropertyByName(propertyName: string): Promise<PropertySchema> {
-    const [property] = await this.getPropertiesByName([propertyName]);
+    const property = await TemplatesDAOFactory.default().getPropertyByName(propertyName);
+    if (!property) {
+      throw createError(`Properties not found: ${propertyName}`);
+    }
     return property;
   },
 
-  async getPropertiesByName(propertyNames: string[]): Promise<PropertySchema[]> {
-    const nameSet = new Set(propertyNames);
-    const templates = await this.get({
-      $or: [
-        { 'properties.name': { $in: propertyNames } },
-        { 'commonProperties.name': { $in: propertyNames } },
-      ],
-    });
-    const allProperties = templates
-      .map(template => [template.properties || [], template.commonProperties || []])
-      .flat()
-      .flat()
-      .filter(t => nameSet.has(t.name));
-    const propertiesByName = objectIndex(
-      allProperties,
-      p => p.name,
-      p => p
-    );
-    const missingProperties = propertyNames.filter(name => !propertiesByName[name]);
-    if (missingProperties.length > 0) {
-      throw createError(`Properties not found: ${missingProperties.join(', ')}`);
-    }
-    return Array.from(Object.values(propertiesByName));
-  },
-
   async getById(templateId: ObjectId | string) {
-    return model.getById(templateId, undefined);
+    const dao = TemplatesDAOFactory.default();
+    const result = await dao.get([templateId.toString()]);
+    return result[0] || null;
   },
 
   async delete(template: Partial<TemplateSchema>) {
@@ -81,11 +101,13 @@ export default {
   },
 
   async countByThesauri(thesauriId: string) {
-    return model.count({ 'properties.content': thesauriId });
+    const dao = TemplatesDAOFactory.default();
+    return dao.countByThesauri(thesauriId);
   },
 
   async findUsingRelationTypeInProp(relationTypeId: string, session?: ClientSession) {
-    return model.get({ 'properties.relationType': relationTypeId }, 'name', { session });
+    const dao = TemplatesDAOFactory.default();
+    return dao.findUsingRelationTypeInProp(relationTypeId, session);
   },
 
   getRelatedThesauri,

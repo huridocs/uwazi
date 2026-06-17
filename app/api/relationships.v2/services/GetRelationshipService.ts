@@ -74,9 +74,9 @@ class GetRelationshipService {
     const allowedRelationships = await this.authService.filterRelationships(relationships, 'read');
     const allowedSharedIds = Relationship.getSharedIds(allowedRelationships);
     const allowedEntities = await this.entitiesDS.getByIds([...allowedSharedIds]).all();
-    const allowedTemplates = await this.templatesDS
-      .getByIds(allowedEntities.map(entity => entity.template))
-      .all();
+    const allowedTemplates = await this.templatesDS.getByIds(
+      allowedEntities.map(entity => entity.template)
+    );
     const allowedRelTypes = await this.relationshipTypesDS
       .getByIds(allowedRelationships.map(relationship => relationship.type))
       .all();

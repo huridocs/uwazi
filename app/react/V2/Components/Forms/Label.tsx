@@ -18,7 +18,7 @@ const Label = ({ htmlFor, children, hasErrors, hideLabel }: LabelProps) => {
   return (
     <label
       htmlFor={htmlFor}
-      className={hideLabel ? 'sr-only' : 'mb-2 block text-sm font-medium'}
+      className={hideLabel ? 'sr-only' : 'mb-2 block'}
       style={hideLabel ? undefined : { color }}
     >
       {renderChild(children)}

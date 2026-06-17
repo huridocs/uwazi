@@ -186,7 +186,7 @@ class TwitterIntegration {
   };
 
   private getTemplateTweets = async (twitterIntegration: TwitterIntegrationSettingsType) => {
-    const templatesTweet = await templates.get({ name: twitterIntegration.tweetsTemplateName });
+    const templatesTweet = await templates.getByNames([twitterIntegration.tweetsTemplateName]);
 
     if (templatesTweet.length) {
       return templatesTweet[0];
@@ -231,9 +231,7 @@ class TwitterIntegration {
   };
 
   getHashtagsTemplate = async (twitterIntegration: TwitterIntegrationSettingsType) => {
-    const templatesHashtag = await templates.get({
-      name: twitterIntegration.hashtagsTemplateName,
-    });
+    const templatesHashtag = await templates.getByNames([twitterIntegration.hashtagsTemplateName]);
 
     if (templatesHashtag[0]) {
       return templatesHashtag[0];

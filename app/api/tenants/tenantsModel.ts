@@ -41,7 +41,6 @@ const mongoSchema = new mongoose.Schema({
     themeCustomization: Boolean,
     v2GetEntity: Boolean,
     v2Languages: Boolean,
-    v2UpdateFile: Boolean,
     newHeader: Boolean,
     postgresThesauri: Boolean,
     aiAssistant: Boolean,

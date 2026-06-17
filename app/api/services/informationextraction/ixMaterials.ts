@@ -16,7 +16,7 @@ import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationMod
 import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 import ixmodels from '#api/services/informationextraction/ixmodels.js';
 import { FileType } from '#shared/types/fileType.js';
-import templatesModel from '#api/core/v1_layer/templates/templates.js';
+import templatesService from '#api/core/v1_layer/templates/templates.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { EnforcedWithId, UwaziFilterQuery } from '#api/odm/index.js';
 import { Entity } from '#api/entities.v2/model/Entity.js';
@@ -128,7 +128,7 @@ async function getSegmentedFilesIds() {
 }
 
 async function getPropertyType(templates: ObjectIdSchema[], property: string) {
-  const template = await templatesModel.getById(templates[0]);
+  const template = await templatesService.getById(templates[0]);
 
   let type: PropertyTypeSchema | undefined = 'text';
   if (property !== 'title') {

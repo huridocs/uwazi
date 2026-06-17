@@ -10,7 +10,7 @@ export class ElasticEntityMapper {
   }
 
   async toElastic(entity: EntitySchema) {
-    const properties = await this.templateDS.getAllProperties().all();
+    const properties = await this.templateDS.getAllProperties();
     const metadata: { [propertyName: string]: any } = {};
 
     Object.entries(entity.metadata || {}).forEach(([propertyName, values]) => {

@@ -44,6 +44,15 @@ const fixtures: DBFixture = {
       originalname: 'protected.pdf',
       mimetype: 'application/pdf',
     }),
+    f.file('attach5', {
+      type: 'attachment',
+      entity: 'entity1',
+      originalname: 'url attachment',
+      url: 'http://example.com/image.png',
+      mimetype: 'image/png',
+      creationDate: 0,
+      size: 0,
+    }),
     ...f.processedDocument('doc1', {
       entity: 'entity1',
       language: 'en',
@@ -235,6 +244,55 @@ describe('UpdateFile', () => {
         originalname: 'both.pdf',
         toc,
       });
+    });
+  });
+
+  describe('URLAttachment', () => {
+    it('updated only mutable properties', async () => {
+      const fileBefore = await getDbFile('attach5');
+      await createSut().sut.execute({
+        fileId: f.idString('attach5'),
+        originalname: 'renamed url',
+        url: 'http://image-changed.com/changed.png',
+      });
+
+      const result = await getDbFile('attach5');
+
+      expect(result).toEqual({
+        ...fileBefore,
+        originalname: 'renamed url',
+        url: 'http://image-changed.com/changed.png',
+      });
+    });
+
+    it('ignores immutable properties', async () => {
+      const fileBefore = await getDbFile('attach5');
+
+      const toc = [
+        {
+          indentation: 0,
+          label: 'Chapter 1',
+          selectionRectangles: [
+            {
+              height: 100,
+              width: 100,
+              left: 0,
+              top: 0,
+            },
+          ],
+        },
+      ];
+
+      await createSut().sut.execute({
+        fileId: f.idString('attach5'),
+        language: 'es',
+        toc,
+        propertySelections: [],
+      });
+
+      const result = await getDbFile('attach5');
+
+      expect(result).toEqual(fileBefore);
     });
   });
 });
