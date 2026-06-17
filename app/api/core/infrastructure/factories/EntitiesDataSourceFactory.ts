@@ -1,7 +1,7 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
+import { MongoMultiLanguageEntityDataSource } from '#api/core/infrastructure/mongodb/entity/MongoMultiLanguageEntityDataSource.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 

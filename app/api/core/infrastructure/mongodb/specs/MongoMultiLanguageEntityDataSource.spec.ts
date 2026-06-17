@@ -9,7 +9,7 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { Template } from '#api/core/domain/template/Template.js';
-import { MongoMultiLanguageEntityDataSource } from '../MongoMultiLanguageEntityDataSource.js';
+import { MongoMultiLanguageEntityDataSource } from '../entity/MongoMultiLanguageEntityDataSource.js';
 import { search } from '#api/search/index.js';
 
 const factory = getFixturesFactory();

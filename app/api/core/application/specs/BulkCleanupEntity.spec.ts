@@ -9,7 +9,7 @@ import { BulkCleanupEntityUseCaseFactory } from '#api/core/infrastructure/factor
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
+import { MongoMultiLanguageEntityDataSource } from '#api/core/infrastructure/mongodb/entity/MongoMultiLanguageEntityDataSource.js';
 import { elastic } from '#api/search/index.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { FilesService } from '../FilesService.js';

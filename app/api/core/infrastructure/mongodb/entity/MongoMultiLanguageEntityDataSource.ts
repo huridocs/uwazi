@@ -14,9 +14,9 @@ import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/Temp
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { search } from '#api/search/index.js';
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
-import { Entity } from '../../core/domain/entity/Entity.js';
-import { MultiLanguageEntityDataSource } from '../contracts/MultiLanguageEntitiesDataSource.js';
-import { EntityDBO, EntityTemplateAggregation } from './schemas/EntityTypes.js';
+import { Entity } from '../../../domain/entity/Entity.js';
+import { MultiLanguageEntityDataSource } from '../../../../entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntityDBO, EntityTemplateAggregation } from '../../../../entities.v2/database/schemas/EntityTypes.js';
 
 type Deps = {
   db: Db;

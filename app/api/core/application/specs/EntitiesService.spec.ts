@@ -19,7 +19,7 @@ import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/M
 import { EventEmitter } from '#api/core/libs/eventEmitter/EventEmitter.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
+import { MongoMultiLanguageEntityDataSource } from '#api/core/infrastructure/mongodb/entity/MongoMultiLanguageEntityDataSource.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 import { EntityUpdatedEvent as LegacyEntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { EntitiesServiceDeps } from '../EntitiesService.js';
