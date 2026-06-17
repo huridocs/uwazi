@@ -6,16 +6,12 @@ import { RelationshipsMarkerList } from './RelationshipsMarkerList.js';
 import { RelationshipsTreeView } from './RelationshipsTreeView.js';
 import { RelationshipsGraphView } from './RelationshipsGraphView.js';
 import { relationshipsPanelViewAtom } from './relationshipsPanelFiltersAtom.js';
+import { type RelationshipPanelRowHandlers } from './RelationshipPanelRow.js';
 
-type RelationshipsPanelBodyProps = {
+type RelationshipsPanelBodyProps = RelationshipPanelRowHandlers & {
   markers: RelationshipMarker[];
   groupContext: GroupLabelContext;
-  selfSharedId: string;
   selfTitle: string;
-  activeRelationshipId?: string;
-  onClick: (marker: RelationshipMarker) => void;
-  onView: (marker: RelationshipMarker) => void;
-  onDelete: (marker: RelationshipMarker) => void;
 };
 
 const RelationshipsPanelBody = ({
@@ -29,19 +25,10 @@ const RelationshipsPanelBody = ({
   onDelete,
 }: RelationshipsPanelBodyProps) => {
   const view = useAtomValue(relationshipsPanelViewAtom);
+  const rowProps = { selfSharedId, activeRelationshipId, onClick, onView, onDelete };
 
   if (view === 'tree') {
-    return (
-      <RelationshipsTreeView
-        markers={markers}
-        groupContext={groupContext}
-        selfSharedId={selfSharedId}
-        activeRelationshipId={activeRelationshipId}
-        onClick={onClick}
-        onView={onView}
-        onDelete={onDelete}
-      />
-    );
+    return <RelationshipsTreeView markers={markers} groupContext={groupContext} {...rowProps} />;
   }
 
   if (view === 'graph') {
@@ -62,15 +49,7 @@ const RelationshipsPanelBody = ({
 
   return (
     <div className="py-3">
-      <RelationshipsMarkerList
-        markers={markers}
-        groupContext={groupContext}
-        selfSharedId={selfSharedId}
-        activeRelationshipId={activeRelationshipId}
-        onClick={onClick}
-        onView={onView}
-        onDelete={onDelete}
-      />
+      <RelationshipsMarkerList markers={markers} groupContext={groupContext} {...rowProps} />
     </div>
   );
 };
