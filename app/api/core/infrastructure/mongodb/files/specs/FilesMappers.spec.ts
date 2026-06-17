@@ -12,7 +12,7 @@ import { FileMappers } from '../FilesMappers.js';
 import {
   FileAttachmentDBO,
   ProcessingPDFDBO,
-  fileDBO,
+  FileDBO,
   ProcessedPDFDBO,
   ThumbnailDBO,
 } from '../schemas/filesTypes.js';
@@ -139,11 +139,11 @@ describe('FileMappers', () => {
       },
     });
 
-    const toModel = (dbo: fileDBO) =>
+    const toModel = (dbo: FileDBO) =>
       FileMappers.toModel(dbo, { contentLoader: fileStorage.getFile.bind(fileStorage) });
 
     it('should map to URLAttachment when type is attachment and url is present', () => {
-      const dbo: fileDBO = {
+      const dbo: FileDBO = {
         _id: new ObjectId(),
         originalname: 'original.pdf',
         filename: 'file.pdf',
@@ -172,7 +172,7 @@ describe('FileMappers', () => {
     });
 
     it('should map to Attachment when type is attachment and url is not present', () => {
-      const dbo: fileDBO = {
+      const dbo: FileDBO = {
         _id: new ObjectId(),
         originalname: 'original.pdf',
         filename: 'file.pdf',
@@ -199,7 +199,7 @@ describe('FileMappers', () => {
     });
 
     it('should map to CustomUpload when type is custom', () => {
-      const dbo: fileDBO = {
+      const dbo: FileDBO = {
         _id: new ObjectId(),
         originalname: 'original.pdf',
         filename: 'file.pdf',
@@ -221,7 +221,7 @@ describe('FileMappers', () => {
     });
 
     it('should map to Thumbnail when type is thumbnail', () => {
-      const dbo: fileDBO = {
+      const dbo: FileDBO = {
         _id: new ObjectId(),
         originalname: 'original.pdf',
         filename: 'file.pdf',
@@ -250,7 +250,7 @@ describe('FileMappers', () => {
     });
 
     it('should map to Document when type is document', () => {
-      const dbo: fileDBO = {
+      const dbo: FileDBO = {
         _id: new ObjectId(),
         originalname: 'original.pdf',
         filename: 'file.pdf',
@@ -279,7 +279,7 @@ describe('FileMappers', () => {
     });
 
     it('should map to ProcessingDocument when type is document and status ready', () => {
-      const dbo: fileDBO = {
+      const dbo: FileDBO = {
         _id: new ObjectId(),
         originalname: 'original.pdf',
         filename: 'file.pdf',
@@ -315,7 +315,7 @@ describe('FileMappers', () => {
     });
 
     it('should handle different types correctly', () => {
-      const documentDBO: fileDBO = {
+      const documentDBO: FileDBO = {
         _id: new ObjectId(),
         originalname: 'original.pdf',
         filename: 'file.pdf',
@@ -329,7 +329,7 @@ describe('FileMappers', () => {
         status: 'ready',
         generatedToc: false,
       };
-      const anotherDocumentDBO: fileDBO = {
+      const anotherDocumentDBO: FileDBO = {
         _id: new ObjectId(),
         originalname: 'original.pdf',
         filename: 'file.pdf',

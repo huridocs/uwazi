@@ -1,5 +1,6 @@
 import { Db } from 'mongodb';
 import { elastic } from '#api/search/index.js';
+import { PUBLIC_USER_ID } from '#api/users/publicUser.js';
 import { UserSchema } from '#shared/types/userType.js';
 
 type RoleCount = {
@@ -25,6 +26,36 @@ export class RetrieveStatsService {
 
   private readonly NO_FILES_SIZE = 0;
 
+  private static parseElasticSize(elasticBody: unknown) {
+    if (typeof elasticBody === 'string') {
+      // Plain text response (Elasticsearch 8.x behavior)
+      const sizeStr = elasticBody.trim();
+      return parseInt(sizeStr, 10);
+    }
+
+    if (
+      Array.isArray(elasticBody) &&
+      elasticBody[0] &&
+      typeof elasticBody[0] === 'object' &&
+      'store.size' in elasticBody[0]
+    ) {
+      // JSON response (Elasticsearch 7.x behavior)
+      return parseInt((elasticBody[0] as Record<string, string>)['store.size'], 10);
+    }
+
+    return 0;
+  }
+
+  private static async getElasticStorageSize() {
+    const elasticIndex = await elastic.cat.indices({
+      pretty: true,
+      bytes: 'b',
+      h: 'store.size',
+    });
+
+    return RetrieveStatsService.parseElasticSize(elasticIndex.body);
+  }
+
   private async calculateStorageStats() {
     const [filesSize] = await this.db
       .collection('files')
@@ -39,39 +70,13 @@ export class RetrieveStatsService {
       .toArray();
 
     const dbStats = await this.db.stats();
+    const baseSize = (filesSize?.totalSize || this.NO_FILES_SIZE) + dbStats.storageSize;
 
     try {
-      const elasticIndex = await elastic.cat.indices({
-        pretty: true,
-        bytes: 'b',
-        h: 'store.size',
-      });
-
-      let elasticSize = 0;
-
-      if (typeof elasticIndex.body === 'string') {
-        // Plain text response (Elasticsearch 8.x behavior)
-        const sizeStr = (elasticIndex.body as string).trim();
-        elasticSize = parseInt(sizeStr, 10);
-      } else if (
-        elasticIndex.body &&
-        Array.isArray(elasticIndex.body) &&
-        elasticIndex.body[0] &&
-        elasticIndex.body[0]['store.size']
-      ) {
-        // JSON response (Elasticsearch 7.x behavior)
-        elasticSize = parseInt(elasticIndex.body[0]['store.size'], 10);
-      } else {
-        elasticSize = 0;
-      }
-
-      return {
-        total: (filesSize?.totalSize || this.NO_FILES_SIZE) + elasticSize + dbStats.storageSize,
-      };
+      const elasticSize = await RetrieveStatsService.getElasticStorageSize();
+      return { total: baseSize + elasticSize };
     } catch (error) {
-      return {
-        total: (filesSize?.totalSize || this.NO_FILES_SIZE) + dbStats.storageSize,
-      };
+      return { total: baseSize };
     }
   }
 
@@ -88,15 +93,18 @@ export class RetrieveStatsService {
   private async calculateUserStats() {
     const users = await this.db
       .collection('users')
-      .aggregate<RoleCount>([{ $group: { _id: '$role', count: { $sum: 1 } } }])
+      .aggregate<RoleCount>([
+        { $match: { _id: { $ne: PUBLIC_USER_ID } } },
+        { $group: { _id: '$role', count: { $sum: 1 } } },
+      ])
       .toArray();
 
     return users.reduce(
-      (userStats, role) => {
-        userStats[role._id] = role.count;
-        userStats.total += role.count;
-        return userStats;
-      },
+      (userStats, role) => ({
+        ...userStats,
+        [role._id]: role.count,
+        total: userStats.total + role.count,
+      }),
       { total: 0, admin: 0, editor: 0, collaborator: 0 }
     );
   }

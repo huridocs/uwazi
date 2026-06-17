@@ -1,5 +1,5 @@
-import { BaseFile, FileContentLoader } from '#api/core/domain/files/BaseFile.js';
 import { ObjectId } from 'mongodb';
+import { BaseFile, FileContentLoader } from '#api/core/domain/files/BaseFile.js';
 import { FileAttachment } from '../../../domain/files/FileAttachment.js';
 import { CustomUpload } from '../../../domain/files/CustomUpload.js';
 import { PDFDocument } from '../../../domain/files/PDFDocument.js';
@@ -13,10 +13,10 @@ import {
   ThumbnailDBO,
   URLAttachmentDBO,
   CustomDBO,
-  fileDBO,
+  FileDBO,
 } from './schemas/filesTypes.js';
 
-function dboCommonFields(dbo: fileDBO) {
+function dboCommonFields(dbo: FileDBO) {
   return {
     id: dbo._id.toString(),
     originalname: dbo.originalname,
@@ -54,7 +54,6 @@ function pdfDocumentFromDBO(
     content: contentLoader({ type: dbo.type, filename: dbo.filename }),
     entity: dbo.entity,
     status: dbo.status ?? 'processing',
-    propertySelections: dbo.propertySelections,
   });
 }
 
@@ -111,24 +110,24 @@ function customUploadToDBO(file: CustomUpload): CustomDBO {
 }
 
 export const FileMappers = {
-  toModel(dbo: fileDBO, { contentLoader }: { contentLoader: FileContentLoader }) {
+  toModel(dbo: FileDBO, { contentLoader }: { contentLoader: FileContentLoader }) {
     switch (dbo.type) {
       case 'document':
-        return pdfDocumentFromDBO(dbo, contentLoader);
+        return pdfDocumentFromDBO(dbo as ProcessedPDFDBO | ProcessingPDFDBO, contentLoader);
       case 'attachment':
-        return dbo.url
-          ? urlAttachmentFromDBO(dbo)
+        return dbo?.url
+          ? urlAttachmentFromDBO(dbo as URLAttachmentDBO)
           : fileAttachmentFromDBO(dbo as FileAttachmentDBO, contentLoader);
       case 'custom':
-        return customUploadFromDBO(dbo, contentLoader);
+        return customUploadFromDBO(dbo as CustomDBO, contentLoader);
       case 'thumbnail':
-        return thumbnailFromDBO(dbo, contentLoader);
+        return thumbnailFromDBO(dbo as ThumbnailDBO, contentLoader);
       default:
         throw new Error('Unknown file type');
     }
   },
 
-  toDBO(file: BaseFile): fileDBO {
+  toDBO(file: BaseFile): FileDBO {
     if (file instanceof PDFDocument) return pdfDocumentToDBO(file);
     if (file instanceof FileAttachment) return fileAttachmentToDBO(file);
     if (file instanceof URLAttachment) return urlAttachmentToDBO(file);
