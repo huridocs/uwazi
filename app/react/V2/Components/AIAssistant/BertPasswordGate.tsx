@@ -1,0 +1,53 @@
+import React, { useState } from 'react';
+import { LockClosedIcon } from '@heroicons/react/24/outline';
+import { t, Translate } from '#app/I18N/index.js';
+import { Button } from '#V2/Components/UI/Button.js';
+
+type BertPasswordGateProps = {
+  onUnlock: (password: string) => void;
+};
+
+const BertPasswordGate = ({ onUnlock }: BertPasswordGateProps) => {
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!password.trim()) {
+      setError('Enter your Uwazi password to continue.');
+      return;
+    }
+    setError(null);
+    onUnlock(password);
+  };
+
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center px-6 py-10">
+      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-vellum text-ink-secondary">
+        <LockClosedIcon className="h-5 w-5" />
+      </div>
+      <h3 className="mt-4 text-base font-semibold text-ink">
+        <Translate>Confirm your password</Translate>
+      </h3>
+      <form onSubmit={handleSubmit} className="mt-6 w-full max-w-sm">
+        <label htmlFor="bert-password" className="sr-only">
+          {t('System', 'Password', null, false)}
+        </label>
+        <input
+          id="bert-password"
+          type="password"
+          autoComplete="current-password"
+          value={password}
+          onChange={event => setPassword(event.target.value)}
+          className="w-full rounded-lg border border-border bg-paper px-3 py-2 text-sm text-ink outline-none focus:border-primary-400"
+        />
+        {error ? <p className="mt-2 text-sm text-error-600">{error}</p> : null}
+        <Button type="submit" className="mt-4 w-full">
+          <Translate>Continue</Translate>
+        </Button>
+      </form>
+    </div>
+  );
+};
+
+export { BertPasswordGate };
