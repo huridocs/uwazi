@@ -140,7 +140,7 @@ export const decorators = [
         store.set(localeAtom, 'en');
         store.set(translationsAtom, []);
         return store;
-      }, []);
+      }, [mode, preset]);
 
       React.useEffect(() => {
         const root = rootRef.current;
@@ -166,7 +166,7 @@ export const decorators = [
           cancelAnimationFrame(frame);
           observer.disconnect();
         };
-      }, []);
+      }, [context.args, context.id, mode, preset]);
 
       return React.createElement(
         ReduxProvider,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount } from 'cypress/react';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
-import { RelationshipsStoryShell } from '#app/stories/EntityViewer/RelationshipsStoryShell.js';
+import { RelationshipsStoryShell } from '#app/stories/EntityViewer/relationshipsStoryShell.js';
 import {
   RelationshipsPanel,
   RelationshipsFiltersDrawer,

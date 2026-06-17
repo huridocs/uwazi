@@ -4,9 +4,8 @@ import { expect, fn, userEvent, within } from 'storybook/test';
 import {
   RelationshipsDocumentStory,
   type RelationshipsDocumentStoryProps,
-} from './RelationshipsDocumentStory.js';
-import { RelationshipsPanelStory } from './RelationshipsPanelStory.js';
-import { RelationshipsWithPanelStory } from './RelationshipsWithPanelStory.js';
+} from './relationshipsDocumentViews.js';
+import { RelationshipsStoryShell } from './relationshipsStoryShell.js';
 
 const meta: Meta<typeof RelationshipsDocumentStory> = {
   title: 'EntityViewer/RelationshipsDisplay',
@@ -77,12 +76,12 @@ const RailInteractions: Story = {
 };
 
 const Panel: Story = {
-  render: () => <RelationshipsPanelStory locale="en" />,
+  render: () => <RelationshipsStoryShell locale="en" />,
   parameters: { layout: 'fullscreen' },
 };
 
 const WithPanel: Story = {
-  render: () => <RelationshipsWithPanelStory locale="en" />,
+  render: () => <RelationshipsStoryShell locale="en" layout="split" />,
   parameters: { layout: 'fullscreen' },
 };
 

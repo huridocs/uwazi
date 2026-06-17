@@ -55,6 +55,8 @@ const renderSubGroups = (
         <RelationshipsPanelEntryList
           markers={subMarkers}
           groupContext={groupContext}
+          variant={variant}
+          // eslint-disable-next-line react/jsx-props-no-spreading
           {...rowProps}
         />
       );
@@ -114,6 +116,7 @@ const RelationshipsGroupedSections = ({
         <RelationshipsPanelEntryList
           markers={groupMarkersList}
           groupContext={groupContext}
+          variant={variant}
           {...rowProps}
         />
       ) : (
@@ -137,7 +140,6 @@ const RelationshipsGroupedSections = ({
     return (
       <RelationshipsTreeBranch
         key={key || 'all'}
-        connectHeader={false}
         title={title}
         color={color}
         count={count}

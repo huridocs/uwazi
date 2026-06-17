@@ -18,13 +18,13 @@ const buttonClass: Record<CollapsibleSectionHeaderVariant, string> = {
     'flex w-full min-w-0 cursor-pointer items-center gap-2 border-0 bg-transparent px-4 py-2.5 text-left transition-colors hover:bg-warm',
   group:
     'flex w-full min-w-0 items-center gap-2 border-0 bg-transparent px-3 py-2 text-left transition-colors hover:bg-warm',
-  tree: 'flex w-full min-w-0 cursor-pointer items-center gap-1.5 rounded border-0 bg-transparent px-2 py-1.5 text-left transition-colors hover:bg-warm/60',
+  tree: 'inline-flex max-w-full min-w-0 cursor-pointer items-center gap-1.5 rounded border-0 bg-transparent px-2 py-1.5 text-left transition-colors hover:bg-warm/60',
 };
 
 const titleClass: Record<CollapsibleSectionHeaderVariant, string> = {
   facet: 'min-w-0 flex-1 truncate text-left text-xs font-semibold text-ink-secondary',
   group: 'min-w-0 flex-1 truncate text-left text-sm font-medium text-ink',
-  tree: 'min-w-0 flex-1 truncate text-left text-sm font-medium text-ink',
+  tree: 'min-w-0 truncate text-left text-sm font-medium text-ink',
 };
 
 const countClass: Record<CollapsibleSectionHeaderVariant, string> = {

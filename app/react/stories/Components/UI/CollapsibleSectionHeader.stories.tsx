@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { ColorDot } from '#V2/Components/UI/ColorDot.js';
 import { CollapsibleSectionHeader } from '#V2/Components/UI/CollapsibleSectionHeader.js';
 import { FacetSection } from '#V2/Components/UI/FacetSection.js';
+import { RelationshipsPanelFiltersProvider } from '#V2/Routes/Entity/Components/context/RelationshipsPanelFiltersContext.js';
 import { RelationshipsTreeBranch } from '#V2/Routes/Entity/Components/relationships/index.js';
 
 const templateColors: Record<string, string> = {
@@ -69,26 +70,27 @@ const GroupedPreview = () => {
 };
 
 const TreePreview = () => (
-  <div className="max-w-md rounded-md bg-paper p-2">
-    <RelationshipsTreeBranch
-      connectHeader={false}
-      title="This document"
-      color={templateColors.document}
-      count={4}
-      markerIds={[]}
-    >
+  <RelationshipsPanelFiltersProvider>
+    <div className="max-w-md rounded-md bg-paper p-2">
       <RelationshipsTreeBranch
-        title="Person"
-        color={templateColors.person}
-        count={3}
+        title="This document"
+        color={templateColors.document}
+        count={4}
         markerIds={[]}
       >
-        <p className="py-1.5 pl-2 text-xs text-ink-secondary">Mexico</p>
-        <p className="py-1.5 pl-2 text-xs text-ink-secondary">Ana García</p>
+        <RelationshipsTreeBranch
+          title="Person"
+          color={templateColors.person}
+          count={3}
+          markerIds={[]}
+        >
+          <p className="py-1.5 pl-2 text-xs text-ink-secondary">Mexico</p>
+          <p className="py-1.5 pl-2 text-xs text-ink-secondary">Ana García</p>
+        </RelationshipsTreeBranch>
+        <p className="py-1.5 pl-2 text-xs text-ink-secondary">Country · Mexico</p>
       </RelationshipsTreeBranch>
-      <p className="py-1.5 pl-2 text-xs text-ink-secondary">Country · Mexico</p>
-    </RelationshipsTreeBranch>
-  </div>
+    </div>
+  </RelationshipsPanelFiltersProvider>
 );
 
 const meta: Meta = {
