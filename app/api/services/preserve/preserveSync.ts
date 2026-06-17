@@ -198,7 +198,7 @@ const saveEvidence =
 
       await transactionManager.run(async () => {
         await filesService.insert(attachments);
-        await entitiesService.insert(entity, {
+        await entitiesService.insert([entity], {
           tenantName: tenants.current().name,
           actorId: user?._id?.toString() || 'system',
           targetLanguage: defaultLanguage.key,

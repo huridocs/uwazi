@@ -3,6 +3,7 @@ import { Entity } from '#api/core/domain/entity/Entity.js';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
 import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { CsvImport } from '../../domain/CsvImport.js';
 import { CsvImportEntityNotFoundInTemplateError } from '../services/CsvImportRowProcessingError.js';
 import { BatchContext, BatchDeps, InsertContext } from './CsvImportEntitiesBatchTypes.js';
@@ -60,7 +61,7 @@ const createEntityForImportRow = async (params: {
   await params.deps.filesService.storeFiles(entityFiles);
 
   await params.deps.transactionManager.run(async () => {
-    await params.deps.entitiesService.insert(entity, params.insertContext);
+    await params.deps.entitiesService.insert([entity], params.insertContext);
     await params.deps.filesService.insert(entityFiles);
     await params.deps.csvImportsDS.update(params.updatedImport);
   });
@@ -105,9 +106,11 @@ const updateEntityForImportRow = async (params: {
   await params.deps.filesService.storeFiles(filesToInsert);
 
   await params.deps.transactionManager.run(async () => {
-    await params.deps.entitiesService.update(entity, {
+    await params.deps.entitiesService.update([entity], {
       actorId: params.insertContext.actorId,
+      actor: ExecutionContext.actor!,
       targetLanguage: params.insertContext.targetLanguage,
+      authorize: false,
     });
     await params.deps.filesService.insert(filesToInsert);
     await params.deps.csvImportsDS.update(params.updatedImport);
