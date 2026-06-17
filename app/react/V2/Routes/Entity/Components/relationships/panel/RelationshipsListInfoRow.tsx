@@ -1,14 +1,18 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import type { RelationshipsPanelStats } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
-import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/context/index.js';
+import {
+  useRelationshipsPanelLayout,
+  useRelationshipsPanelUi,
+} from '#V2/Routes/Entity/Components/context/index.js';
 
 type RelationshipsListInfoRowProps = {
   stats: RelationshipsPanelStats;
 };
 
 const RelationshipsListInfoRow = ({ stats }: RelationshipsListInfoRowProps) => {
-  const { groupBy, setExpandAllSignal, setCollapseAllSignal } = useRelationshipsPanelFilters();
+  const { groupBy } = useRelationshipsPanelLayout();
+  const { setExpandAllSignal, setCollapseAllSignal } = useRelationshipsPanelUi();
   const groupingEnabled = groupBy !== 'none';
 
   return (

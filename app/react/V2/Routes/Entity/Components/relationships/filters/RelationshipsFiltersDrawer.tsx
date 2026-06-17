@@ -2,11 +2,14 @@ import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { FiltersDrawer } from '#V2/Components/UI/index.js';
 import { RelationshipsFilterDrawerContent } from './RelationshipsFilterDrawerContent.js';
-import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/context/index.js';
+import {
+  useRelationshipsPanelFacetFilters,
+  useRelationshipsPanelUi,
+} from '#V2/Routes/Entity/Components/context/index.js';
 
 const RelationshipsFiltersDrawer = () => {
-  const { filtersDrawerOpen, setFiltersDrawerOpen, activeFilterCount, clearFilters } =
-    useRelationshipsPanelFilters();
+  const { activeFilterCount, clearFilters } = useRelationshipsPanelFacetFilters();
+  const { filtersDrawerOpen, setFiltersDrawerOpen } = useRelationshipsPanelUi();
 
   return (
     <FiltersDrawer

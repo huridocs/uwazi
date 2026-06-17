@@ -9,13 +9,13 @@ import {
 import { computeFacetCounts } from '#V2/formatters/relationships/relationshipsPanelFacets.js';
 import {
   useEntityScopedEntity,
-  useRelationshipsPanelFilters,
+  useRelationshipsPanelFilterInputs,
 } from '#V2/Routes/Entity/Components/context/index.js';
 
 const useRelationshipsPanelData = () => {
   const entity = useEntityScopedEntity();
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
-  const filters = useRelationshipsPanelFilters();
+  const filters = useRelationshipsPanelFilterInputs();
   const sourceMarkers = useMemo(() => projectRelationshipsPanel(entity).markers, [entity]);
   const relationshipTypeName = useCallback(
     (typeId: string) => relationshipTypes.find(type => type._id === typeId)?.name ?? '',

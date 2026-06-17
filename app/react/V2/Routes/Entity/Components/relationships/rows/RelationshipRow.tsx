@@ -14,8 +14,8 @@ import { RelationshipRowCheckbox } from './RelationshipRowCheckbox.js';
 import { useRelationshipsPanelZoom } from '../hooks/useRelationshipsPanelZoom.js';
 import { useRelationshipRowVisibility } from '../hooks/useRelationshipRowVisibility.js';
 import {
-  useDocumentInteraction,
-  useEntityScopedContext,
+  useDocumentRelationshipNav,
+  useRelationshipsSelectionState,
 } from '#V2/Routes/Entity/Components/context/index.js';
 
 type RelationshipRowProps = {
@@ -38,10 +38,10 @@ const RelationshipRow = ({
   onDelete,
 }: RelationshipRowProps) => {
   const rowRef = useRef<HTMLDivElement>(null);
-  const { scrollToRelationshipPanel, setScrollToRelationshipPanel } = useDocumentInteraction();
+  const { scrollToRelationshipPanel, setScrollToRelationshipPanel } = useDocumentRelationshipNav();
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const templates = useAtomValue(templatesAtom);
-  const { relationshipsEditMode: editMode } = useEntityScopedContext();
+  const { relationshipsEditMode: editMode } = useRelationshipsSelectionState();
   const { compact, overview } = useRelationshipsPanelZoom();
   const { hideTargetPill, hideTemplateName, hideRelationType } = useRelationshipRowVisibility();
   const referenceText = marker.anchor?.text?.trim() ?? '';

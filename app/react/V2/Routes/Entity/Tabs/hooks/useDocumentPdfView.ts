@@ -10,9 +10,11 @@ import { settingsAtom, userAtom } from '#V2/atoms/index.js';
 import { PAGE_PARAM, SIDE_TAB_PARAM, VIEW_MODE_PARAM } from '../../urlParams.js';
 import { convertTextSelectionToTocEntry } from '#V2/Routes/Entity/Components/ToC/index.js';
 import {
-  useDocumentInteraction,
+  useDocumentPdf,
+  useDocumentRelationshipNav,
   useRelationshipsActions,
-  useRelationshipsPanelFilters,
+  useRelationshipsPanelFacetFilters,
+  useRelationshipsPanelUi,
   useTocActions,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useRelationshipSelection } from '#V2/Routes/Entity/Components/document/index.js';
@@ -34,10 +36,10 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
     setPdfController,
     documentPdfSelection: selectedText,
     setDocumentPdfSelection: setSelectedText,
-    setScrollToRelationshipPanel,
-  } = useDocumentInteraction();
-  const { activeClusterRefIds, setActiveClusterRefIds, setExpandForRefId } =
-    useRelationshipsPanelFilters();
+  } = useDocumentPdf();
+  const { setScrollToRelationshipPanel } = useDocumentRelationshipNav();
+  const { activeClusterRefIds, setActiveClusterRefIds } = useRelationshipsPanelFacetFilters();
+  const { setExpandForRefId } = useRelationshipsPanelUi();
   const { activeRelationshipId, selectRelationship } = useRelationshipSelection();
   const { addEntry } = useTocActions();
   const { setCreateReferenceSelection } = useRelationshipsActions();

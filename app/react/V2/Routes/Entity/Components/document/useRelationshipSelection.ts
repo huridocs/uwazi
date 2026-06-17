@@ -4,8 +4,9 @@ import { templatesAtom } from '#V2/atoms/index.js';
 import { relationshipToHighlight } from '#V2/Components/PDFViewer/index.js';
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import {
-  useDocumentInteraction,
-  useRelationshipsPanelFilters,
+  useDocumentPdf,
+  useDocumentRelationshipNav,
+  useRelationshipsPanelUi,
 } from '#V2/Routes/Entity/Components/context/index.js';
 
 type SelectOptions = {
@@ -13,13 +14,10 @@ type SelectOptions = {
 };
 
 const useRelationshipSelection = () => {
-  const {
-    activeRelationshipId,
-    setActiveRelationshipId,
-    setScrollToRelationshipPanel,
-    pdfController: mainPdfController,
-  } = useDocumentInteraction();
-  const { setExpandForRefId } = useRelationshipsPanelFilters();
+  const { activeRelationshipId, setActiveRelationshipId, setScrollToRelationshipPanel } =
+    useDocumentRelationshipNav();
+  const { pdfController: mainPdfController } = useDocumentPdf();
+  const { setExpandForRefId } = useRelationshipsPanelUi();
   const templates = useAtomValue(templatesAtom);
 
   const colorOf = useCallback(

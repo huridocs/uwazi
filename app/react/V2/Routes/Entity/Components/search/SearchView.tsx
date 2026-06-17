@@ -10,7 +10,7 @@ import { SEARCH_PARAM } from '../../urlParams.js';
 import { LoaderResponse } from '../../types.js';
 import { NoSearch, NoResults } from './BlankState.js';
 import { getFieldName, parseSnippetToNodes } from './searchUtils.js';
-import { useDocumentInteraction } from '#V2/Routes/Entity/Components/context/index.js';
+import { useDocumentPdf } from '#V2/Routes/Entity/Components/context/index.js';
 
 type FormValues = {
   search: string;
@@ -21,7 +21,7 @@ const SearchView = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initial = new URLSearchParams(searchParams).get(SEARCH_PARAM) || '';
   const templates = useAtomValue(templatesAtom);
-  const { pdfController: mainPdfController } = useDocumentInteraction();
+  const { pdfController: mainPdfController } = useDocumentPdf();
 
   const template = useMemo(
     () => templates.find(temp => temp._id === entity?.template),

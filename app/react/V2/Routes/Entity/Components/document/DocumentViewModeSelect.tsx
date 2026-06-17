@@ -4,12 +4,12 @@ import { useSearchParams } from 'react-router';
 import { t, Translate } from '#app/I18N/index.js';
 import { isClient } from '#app/utils/index.js';
 import { PAGE_PARAM, VIEW_MODE_PARAM } from '../../urlParams.js';
-import { useDocumentInteraction } from '#V2/Routes/Entity/Components/context/index.js';
+import { useDocumentPdf } from '#V2/Routes/Entity/Components/context/index.js';
 
 const DocumentViewModeSelect = () => {
   const renderModeSelectId = useId();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { pdfController: pdfControls } = useDocumentInteraction();
+  const { pdfController: pdfControls } = useDocumentPdf();
   const [hydrated, setHydrated] = useState(false);
   const initialPage = useRef(Number.parseInt(searchParams.get(PAGE_PARAM) || '1', 10));
 

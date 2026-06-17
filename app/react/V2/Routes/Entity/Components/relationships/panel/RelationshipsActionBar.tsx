@@ -6,8 +6,8 @@ import { countEntityRelationships } from '#V2/formatters/index.js';
 import { useRelationshipSelection } from '#V2/Routes/Entity/Components/document/index.js';
 import { useRelationshipBulkDelete } from '../hooks/useRelationshipBulkDelete.js';
 import {
-  useEntityScopedContext,
   useEntityScopedEntity,
+  useRelationshipsSelection,
 } from '#V2/Routes/Entity/Components/context/index.js';
 
 const RelationshipsActionBar = () => {
@@ -17,7 +17,7 @@ const RelationshipsActionBar = () => {
     setRelationshipsEditMode: setEditMode,
     selectedRelationshipIds: selected,
     setSelectedRelationshipIds: setSelected,
-  } = useEntityScopedContext();
+  } = useRelationshipsSelection();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const { activeRelationshipId, clearRelationshipSelection } = useRelationshipSelection();
 

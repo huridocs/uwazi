@@ -99,7 +99,7 @@ describe('relationships panel filters', () => {
 
     act(() => {
       result.current.setSearch('witness');
-      result.current.setSort('title');
+      result.current.setSort('asc');
       result.current.setRelTypeFilters({ 'type-a': true });
       result.current.setActiveClusterRefIds(['ref-1']);
     });
@@ -112,7 +112,7 @@ describe('relationships panel filters', () => {
 
     act(() => {
       result.current.setSearch('witness');
-      result.current.setSort('title');
+      result.current.setSort('asc');
       result.current.clearFilters();
     });
 

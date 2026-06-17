@@ -6,7 +6,7 @@ import {
   type RelationshipsPanelGroupBy,
 } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
 import { groupingOptionLabels } from '../utils/relationshipsPanelLabels.js';
-import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/context/index.js';
+import { useRelationshipsPanelLayout } from '#V2/Routes/Entity/Components/context/index.js';
 
 type RelationshipsGroupByControlProps = {
   axis: 'primary' | 'secondary';
@@ -19,7 +19,7 @@ const RelationshipsGroupByControl = ({
   disabled = false,
   excludeOption,
 }: RelationshipsGroupByControlProps) => {
-  const { groupBy, subGroupBy, setGroupBy, setSubGroupBy } = useRelationshipsPanelFilters();
+  const { groupBy, subGroupBy, setGroupBy, setSubGroupBy } = useRelationshipsPanelLayout();
   const value = axis === 'primary' ? groupBy : subGroupBy;
   const setValue = axis === 'primary' ? setGroupBy : setSubGroupBy;
   const visibleOptions = groupingOptions.filter(

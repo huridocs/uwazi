@@ -2,7 +2,7 @@ import React from 'react';
 import { t, Translate } from '#app/I18N/index.js';
 import { QuerySearchBar } from '#V2/Components/UI/QuerySearchBar.js';
 import { RelationshipsActiveFilterChips } from './RelationshipsActiveFilterChips.js';
-import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/context/index.js';
+import { useRelationshipsPanelSearch } from '#V2/Routes/Entity/Components/context/index.js';
 
 const RelationshipsSearchTips = () => (
   <>
@@ -43,7 +43,7 @@ const RelationshipsSearchTips = () => (
 );
 
 const RelationshipsSearchBar = () => {
-  const { search: query, setSearch: setQuery } = useRelationshipsPanelFilters();
+  const { search: query, setSearch: setQuery } = useRelationshipsPanelSearch();
 
   return (
     <QuerySearchBar

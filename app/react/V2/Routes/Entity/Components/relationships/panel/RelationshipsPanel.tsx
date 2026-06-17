@@ -14,10 +14,12 @@ import { RelationshipsListInfoRow } from './RelationshipsListInfoRow.js';
 import { RelationshipsPanelToolbarControls } from './RelationshipsPanelToolbarControls.js';
 import { RelationshipsSearchBar } from '../filters/RelationshipsSearchBar.js';
 import {
-  useEntityScopedContext,
   useRelationships,
   useRelationshipsPanelData,
-  useRelationshipsPanelFilters,
+  useRelationshipsPanelFacetFilters,
+  useRelationshipsPanelLayout,
+  useRelationshipsPanelUi,
+  useRelationshipsSelectionActions,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useRelationshipSelection } from '#V2/Routes/Entity/Components/document/index.js';
 import { useGroupLabelContext } from '../hooks/useGroupLabelContext.js';
@@ -41,8 +43,11 @@ const RelationshipsPanel = ({
   const { markers, stats, hasRelationships } = useRelationshipsPanelData();
   const groupContext = useGroupLabelContext();
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
-  const { view, activeFilterCount, setFiltersDrawerOpen } = useRelationshipsPanelFilters();
-  const { setSelectedRelationshipIds, setRelationshipsEditMode } = useEntityScopedContext();
+  const { view } = useRelationshipsPanelLayout();
+  const { activeFilterCount } = useRelationshipsPanelFacetFilters();
+  const { setFiltersDrawerOpen } = useRelationshipsPanelUi();
+  const { setSelectedRelationshipIds, setRelationshipsEditMode } =
+    useRelationshipsSelectionActions();
 
   const {
     relationshipToDelete,

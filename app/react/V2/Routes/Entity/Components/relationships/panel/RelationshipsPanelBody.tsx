@@ -5,7 +5,7 @@ import { RelationshipsTreeView } from '../views/RelationshipsTreeView.js';
 import { RelationshipsGraphView } from '../views/RelationshipsGraphView.js';
 import { type RelationshipPanelRowHandlers } from '../rows/RelationshipPanelRow.js';
 import { RelationshipsMarkerListBody } from './RelationshipsMarkerListBody.js';
-import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/context/index.js';
+import { useRelationshipsPanelLayout } from '#V2/Routes/Entity/Components/context/index.js';
 
 type RelationshipsPanelBodyProps = RelationshipPanelRowHandlers & {
   markers: RelationshipMarker[];
@@ -23,7 +23,7 @@ const RelationshipsPanelBody = ({
   onView,
   onDelete,
 }: RelationshipsPanelBodyProps) => {
-  const { view } = useRelationshipsPanelFilters();
+  const { view } = useRelationshipsPanelLayout();
   const rowProps = { selfSharedId, activeRelationshipId, onClick, onView, onDelete };
 
   if (view === 'tree') {

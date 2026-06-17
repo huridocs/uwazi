@@ -1,6 +1,6 @@
 import {
   type RelationshipsPanelZoom,
-  useRelationshipsPanelFilters,
+  useRelationshipsPanelLayout,
 } from '#V2/Routes/Entity/Components/context/index.js';
 
 const rowPaddingByZoom: Partial<Record<RelationshipsPanelZoom, string>> = {
@@ -9,7 +9,7 @@ const rowPaddingByZoom: Partial<Record<RelationshipsPanelZoom, string>> = {
 };
 
 const useRelationshipsPanelZoom = () => {
-  const { zoom } = useRelationshipsPanelFilters();
+  const { zoom } = useRelationshipsPanelLayout();
 
   return {
     zoom,

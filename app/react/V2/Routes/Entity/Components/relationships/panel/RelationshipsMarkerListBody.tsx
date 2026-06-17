@@ -1,7 +1,7 @@
 import React from 'react';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import type { GroupLabelContext } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
-import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/context/index.js';
+import { useRelationshipsPanelLayout } from '#V2/Routes/Entity/Components/context/index.js';
 import { type RelationshipPanelRowHandlers } from '../rows/RelationshipPanelRow.js';
 import { RelationshipsGroupedSections } from './RelationshipsGroupedSections.js';
 import { RelationshipsPanelEntryList } from './RelationshipsPanelEntryList.js';
@@ -18,7 +18,7 @@ const RelationshipsMarkerListBody = ({
   variant,
   ...rowProps
 }: RelationshipsMarkerListBodyProps) => {
-  const { groupBy, subGroupBy } = useRelationshipsPanelFilters();
+  const { groupBy, subGroupBy } = useRelationshipsPanelLayout();
 
   if (groupBy === 'none') {
     return (

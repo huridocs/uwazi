@@ -1,5 +1,5 @@
 import { useEffect, type Dispatch, type SetStateAction } from 'react';
-import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/context/index.js';
+import { useRelationshipsPanelUi } from '#V2/Routes/Entity/Components/context/index.js';
 
 const useExpandCollapseSignals = (
   setExpanded: Dispatch<SetStateAction<boolean>>,
@@ -10,7 +10,7 @@ const useExpandCollapseSignals = (
     collapseAllSignal: collapseSignal,
     expandForRefId,
     setExpandForRefId,
-  } = useRelationshipsPanelFilters();
+  } = useRelationshipsPanelUi();
 
   useEffect(() => {
     if (expandSignal > 0) setExpanded(true);

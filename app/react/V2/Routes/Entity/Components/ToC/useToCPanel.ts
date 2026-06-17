@@ -8,10 +8,10 @@ import { FetchResponseError } from '#shared/JSONRequest.js';
 import { type ProcessedTocEntry, sortTocEntries } from './ToC.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import {
-  useDocumentInteraction,
-  useEntityScopedContext,
+  useDocumentPdf,
   useToc,
   useTocActions,
+  useTocStateActions,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { getPageNumber } from './utils.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
@@ -36,8 +36,8 @@ const useToCPanel = ({ toc, file }: UseToCPanelParams) => {
     reset: resetToc,
   } = useTocActions();
 
-  const { setTocState } = useEntityScopedContext();
-  const { pdfController: mainPdfController } = useDocumentInteraction();
+  const { setTocState } = useTocStateActions();
+  const { pdfController: mainPdfController } = useDocumentPdf();
 
   useEffect(() => {
     setToc(toc);

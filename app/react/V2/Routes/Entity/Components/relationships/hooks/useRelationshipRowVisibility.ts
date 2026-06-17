@@ -1,7 +1,7 @@
-import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/context/index.js';
+import { useRelationshipsPanelLayout } from '#V2/Routes/Entity/Components/context/index.js';
 
 const useRelationshipRowVisibility = () => {
-  const { groupBy } = useRelationshipsPanelFilters();
+  const { groupBy } = useRelationshipsPanelLayout();
 
   return {
     hideTargetPill: groupBy === 'target-entity',

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
-import { useDocumentInteraction } from '#V2/Routes/Entity/Components/context/index.js';
+import { useSearchHints } from '#V2/Routes/Entity/Components/context/index.js';
 import { EntityTabFooter } from '../EntityTabFooter.js';
 
 const SearchTabFooter = () => {
-  const { setSearchHintsModalOpen } = useDocumentInteraction();
+  const { setSearchHintsModalOpen } = useSearchHints();
 
   return (
     <EntityTabFooter>

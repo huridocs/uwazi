@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { CollapsibleSectionHeader } from '#V2/Components/UI/CollapsibleSectionHeader.js';
 import { useExpandCollapseSignals } from '../hooks/useExpandCollapseSignals.js';
-import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/context/index.js';
+import { useRelationshipsPanelLayout } from '#V2/Routes/Entity/Components/context/index.js';
 
 type TreeLine = 'only' | 'first' | 'middle' | 'last';
 
@@ -37,7 +37,7 @@ type RelationshipsTreeNodeProps = {
 };
 
 const RelationshipsTreeNode = ({ children, treeLine = 'only' }: RelationshipsTreeNodeProps) => {
-  const { zoom } = useRelationshipsPanelFilters();
+  const { zoom } = useRelationshipsPanelLayout();
   const showDot = zoom === 'overview';
 
   return (

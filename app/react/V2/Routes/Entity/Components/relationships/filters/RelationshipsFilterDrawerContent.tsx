@@ -6,12 +6,12 @@ import { FacetSection } from '#V2/Components/UI/FacetSection.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import {
   useRelationshipsPanelData,
-  useRelationshipsPanelFilters,
+  useRelationshipsPanelFacetFilters,
 } from '#V2/Routes/Entity/Components/context/index.js';
 
 const RelationshipsFilterDrawerContent = () => {
   const { relTypeFilters, setRelTypeFilters, entityTypeFilters, setEntityTypeFilters } =
-    useRelationshipsPanelFilters();
+    useRelationshipsPanelFacetFilters();
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const templates = useAtomValue(templatesAtom);
   const { facetCounts } = useRelationshipsPanelData();

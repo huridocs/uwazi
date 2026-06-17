@@ -8,7 +8,7 @@ import {
 import { SegmentedControl } from '#V2/Components/UI/SegmentedControl/index.js';
 import {
   type RelationshipsPanelZoom,
-  useRelationshipsPanelFilters,
+  useRelationshipsPanelLayout,
 } from '#V2/Routes/Entity/Components/context/index.js';
 
 const zoomOptions: {
@@ -26,7 +26,7 @@ type RelationshipsZoomControlProps = {
 };
 
 const RelationshipsZoomControl = ({ disabled = false }: RelationshipsZoomControlProps) => {
-  const { zoom, setZoom } = useRelationshipsPanelFilters();
+  const { zoom, setZoom } = useRelationshipsPanelLayout();
 
   return (
     <SegmentedControl

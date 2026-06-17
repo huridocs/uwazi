@@ -11,7 +11,7 @@ import {
 } from '#V2/formatters/relationships/relationshipsPanelGraph.js';
 import type { GroupLabelContext } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
 import { RelationshipsEmptyView } from '../panel/RelationshipsEmptyView.js';
-import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/context/index.js';
+import { useRelationshipsPanelLayout } from '#V2/Routes/Entity/Components/context/index.js';
 
 type RelationshipsGraphViewProps = {
   markers: RelationshipMarker[];
@@ -32,7 +32,7 @@ const RelationshipsGraphView = ({
   activeRelationshipId,
   onNodeClick,
 }: RelationshipsGraphViewProps) => {
-  const { groupBy } = useRelationshipsPanelFilters();
+  const { groupBy } = useRelationshipsPanelLayout();
   const svgRef = useRef<SVGSVGElement>(null);
   const [transform, setTransform] = useState({ tx: 0, ty: 0, scale: 1 });
   const dragRef = useRef({ active: false, startX: 0, startY: 0, initTx: 0, initTy: 0 });

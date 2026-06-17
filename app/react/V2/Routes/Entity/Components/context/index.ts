@@ -1,18 +1,28 @@
+export { EntityScopedProvider } from './EntityScopedProvider.js';
+export { useEntityScopedEntity } from './EntityContext.js';
+export { useRelationships, useRelationshipsActions } from './RelationshipsContext.js';
 export {
-  EntityScopedProvider,
-  useDocumentInteraction,
-  useEntityScopedContext,
-  useEntityScopedEntity,
-  useRelationships,
-  useRelationshipsActions,
+  useRelationshipsSelection,
+  useRelationshipsSelectionState,
+  useRelationshipsSelectionActions,
+} from './RelationshipsSelectionContext.js';
+export {
+  useRelationshipsPanelSearch,
+  useRelationshipsPanelSort,
+  useRelationshipsPanelLayout,
+  useRelationshipsPanelFacetFilters,
+  useRelationshipsPanelUi,
+  useRelationshipsPanelFilterInputs,
   useRelationshipsPanelFilters,
-  useMetadataEditing,
-  useToc,
-  useTocActions,
-} from './EntityScopedProvider.js';
+} from './RelationshipsPanelFiltersContext.js';
+export {
+  useDocumentInteraction,
+  useDocumentPdf,
+  useDocumentPdfActions,
+  useDocumentRelationshipNav,
+  useSearchHints,
+} from './DocumentInteractionContext.js';
+export { useToc, useTocActions, useTocStateActions } from './TocContext.js';
+export { useMetadataEditing } from './MetadataEditingContext.js';
+export type { ReferenceMode, RelationshipsPanelView, RelationshipsPanelZoom } from './types.js';
 export { useRelationshipsPanelData } from '../relationships/hooks/useRelationshipsPanelData.js';
-export type {
-  ReferenceMode,
-  RelationshipsPanelView,
-  RelationshipsPanelZoom,
-} from './EntityScopedProvider.js';

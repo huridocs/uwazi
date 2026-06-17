@@ -9,7 +9,8 @@ import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { templatesAtom } from '#V2/atoms/index.js';
 import {
   EntityScopedProvider,
-  useEntityScopedContext,
+  useDocumentPdfActions,
+  useDocumentRelationshipNav,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useRelationshipSelection } from '../useRelationshipSelection.js';
 
@@ -71,11 +72,12 @@ describe('useRelationshipSelection', () => {
 
   const useSelectionTestState = () => {
     const selection = useRelationshipSelection();
-    const context = useEntityScopedContext();
+    const nav = useDocumentRelationshipNav();
+    const { setPdfController } = useDocumentPdfActions();
     React.useEffect(() => {
-      context.setPdfController({ goToPage, toggleHighlights } as never);
-    }, [context.setPdfController]);
-    return { selection, context };
+      setPdfController({ goToPage, toggleHighlights } as never);
+    }, [setPdfController]);
+    return { selection, nav };
   };
 
   beforeEach(() => {
@@ -92,7 +94,7 @@ describe('useRelationshipSelection', () => {
       result.current.selection.selectRelationship(marker);
     });
 
-    expect(result.current.context.activeRelationshipId).toBe('ref-partner-0');
+    expect(result.current.selection.activeRelationshipId).toBe('ref-partner-0');
     expect(goToPage).toHaveBeenCalledWith(4);
     expect(toggleHighlights).toHaveBeenCalledTimes(1);
     expect(toggleHighlights.mock.calls[0][0][0][4][0].key).toBe('ref-partner-0');
@@ -105,7 +107,7 @@ describe('useRelationshipSelection', () => {
       result.current.selection.selectRelationship(marker, { scrollPanel: true });
     });
 
-    expect(result.current.context.scrollToRelationshipPanel).toBe('ref-partner-0');
+    expect(result.current.nav.scrollToRelationshipPanel).toBe('ref-partner-0');
   });
 
   it('clears selection when the same marker is selected again', () => {
@@ -119,7 +121,7 @@ describe('useRelationshipSelection', () => {
       result.current.selection.selectRelationship(marker);
     });
 
-    expect(result.current.context.activeRelationshipId).toBeNull();
+    expect(result.current.selection.activeRelationshipId).toBeNull();
     expect(toggleHighlights).toHaveBeenLastCalledWith([]);
   });
 
@@ -134,7 +136,7 @@ describe('useRelationshipSelection', () => {
       result.current.selection.clearRelationshipSelection();
     });
 
-    expect(result.current.context.activeRelationshipId).toBeNull();
+    expect(result.current.selection.activeRelationshipId).toBeNull();
     expect(toggleHighlights).toHaveBeenLastCalledWith([]);
   });
 });

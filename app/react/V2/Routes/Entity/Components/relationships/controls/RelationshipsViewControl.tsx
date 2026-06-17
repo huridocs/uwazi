@@ -8,7 +8,7 @@ import {
 import { SegmentedControl } from '#V2/Components/UI/SegmentedControl/index.js';
 import {
   type RelationshipsPanelView,
-  useRelationshipsPanelFilters,
+  useRelationshipsPanelLayout,
 } from '#V2/Routes/Entity/Components/context/index.js';
 
 const viewOptions: { id: RelationshipsPanelView; label: string; Icon: typeof LayoutListIcon }[] = [
@@ -18,7 +18,7 @@ const viewOptions: { id: RelationshipsPanelView; label: string; Icon: typeof Lay
 ];
 
 const RelationshipsViewControl = () => {
-  const { view, setView } = useRelationshipsPanelFilters();
+  const { view, setView } = useRelationshipsPanelLayout();
 
   return (
     <SegmentedControl
