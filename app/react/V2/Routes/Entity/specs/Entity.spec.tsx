@@ -86,8 +86,9 @@ describe('Entity view', () => {
 
     await checkEntityRendered();
 
-    expect(screen.getByTestId('mock-pdf')).toBeInTheDocument();
-    expect(screen.getByTestId('mock-pdf')).toHaveTextContent('/api/files/file.pdf');
+    const pdf = await screen.findByTestId('mock-pdf');
+    expect(pdf).toBeInTheDocument();
+    expect(pdf).toHaveTextContent('/api/files/file.pdf');
   });
 
   describe('OCR service', () => {

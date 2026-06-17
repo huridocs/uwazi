@@ -13,10 +13,7 @@ type MainTabsFootersProps = {
   mainDocument?: FileType;
 };
 
-const MainTabsFooters = ({
-  activeTabId: urlActiveTabId,
-  mainDocument,
-}: MainTabsFootersProps) => {
+const MainTabsFooters = ({ activeTabId: urlActiveTabId, mainDocument }: MainTabsFootersProps) => {
   const { activeTabId: atomActiveTabId } = useTabGroup('entity-main');
   const activeTabId = atomActiveTabId ?? urlActiveTabId;
 

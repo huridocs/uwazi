@@ -1,7 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useLoaderData, useSearchParams } from 'react-router';
-import { useSetAtom } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
 import { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
@@ -10,6 +9,7 @@ import {
   SearchHintsModal,
   MAIN_TAB_PARAM,
   SIDE_TAB_PARAM,
+  EntityScopedProvider,
   EntityFilesProvider,
   EntityMainPaneHeader,
   FilesDeleteConfirmationModal,
@@ -29,7 +29,6 @@ import {
   type SideTabId,
 } from './Tabs/index.js';
 import { getSideTabButtons } from './Tabs/sideTabSets.js';
-import { relationshipsPanelEntityAtom } from './Components/RelationshipsPanel/relationshipsPanelDataAtoms.js';
 import { LoaderResponse } from './types.js';
 
 type EntityViewProps = {
@@ -43,12 +42,6 @@ const EntityView = ({ entity, mainDocument, pagePlaintext, searchResults }: Enti
   const { focusedRow, primaryRows } = useEntityFiles();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearchResults = useRef(searchResults);
-  const setRelationshipsPanelEntity = useSetAtom(relationshipsPanelEntityAtom);
-
-  useEffect(() => {
-    setRelationshipsPanelEntity(entity);
-    return () => setRelationshipsPanelEntity(undefined);
-  }, [entity, setRelationshipsPanelEntity]);
 
   const hasMainDocument = Boolean(mainDocument?.filename);
   const filesCount = (entity.documents?.length || 0) + (entity.attachments?.length || 0);
@@ -234,7 +227,7 @@ const Entity = () => {
   }
 
   return (
-    <>
+    <EntityScopedProvider entity={entity}>
       <EntityFilesProvider entity={entity}>
         <EntityView
           entity={entity}
@@ -243,9 +236,8 @@ const Entity = () => {
           searchResults={searchResults}
         />
       </EntityFilesProvider>
-
       <SearchHintsModal />
-    </>
+    </EntityScopedProvider>
   );
 };
 
