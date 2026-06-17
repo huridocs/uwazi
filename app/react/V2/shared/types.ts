@@ -75,6 +75,7 @@ type ClientFeatureFlags = {
   v2CSVImport?: boolean;
   newHeader?: boolean;
   v2GetEntity?: boolean;
+  aiAssistant?: boolean;
 };
 
 type ClientProperty = Property & {
