@@ -5,7 +5,7 @@ import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource
 import { EntitiesService } from '#api/core/application/EntitiesService.js';
 import { FilesService } from '#api/core/application/FilesService.js';
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { MultiLanguageEntityDataSource } from '#api/core/application/contracts/MultiLanguageEntitiesDataSource.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { CsvImport } from '../../domain/CsvImport.js';

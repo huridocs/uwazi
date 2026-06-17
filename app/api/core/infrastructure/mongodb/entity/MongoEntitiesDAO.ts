@@ -1,5 +1,5 @@
 import { Db, FindCursor, ObjectId } from 'mongodb';
-import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
+import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { User } from '#api/users.v2/model/User.js';
 import { MongoDataSource, MongoDSOptions } from '../common/MongoDataSource.js';

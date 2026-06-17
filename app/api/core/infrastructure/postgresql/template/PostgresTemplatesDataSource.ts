@@ -8,7 +8,7 @@ import {
 } from '#api/core/domain/template/errors.js';
 import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty.js';
 import { Property } from '#api/core/domain/template/Property.js';
-import { RelationshipProperty } from '#api/core/domain/template/RelationshipProperty.js';
+import { RelationshipProperty } from '#api/relationships.v2/model/RelationshipProperty.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';

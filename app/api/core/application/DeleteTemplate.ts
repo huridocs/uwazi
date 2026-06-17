@@ -1,6 +1,5 @@
 import { ArrayUtils } from '#api/common.v2/utils/Array.js'; // Todo
-import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { MultiLanguageEntityDataSource } from '#api/core/application/contracts/MultiLanguageEntitiesDataSource.js';
 import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js'; // Todo
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js'; // Todo
 import { DefaultTemplateDeletionError, TemplateInUseError } from '../domain/template/errors.js';
@@ -19,7 +18,6 @@ type Output = Input;
 
 type Deps = {
   templatesDS: TemplatesDataSource;
-  entitiesDS: EntitiesDataSource;
   translationsDS: TranslationsDataSource;
   settingsDS: SettingsDataSource;
   multiLanguageEntitiesDS: MultiLanguageEntityDataSource;
@@ -36,7 +34,8 @@ class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
       throw new DefaultTemplateDeletionError();
     }
 
-    const hasEntities = await this.deps.entitiesDS.anyExistsForTemplate(templateToBeDeleted.id);
+    const hasEntities =
+      (await this.deps.multiLanguageEntitiesDS.countByTemplateId(templateToBeDeleted.id)) > 0;
 
     if (hasEntities) {
       throw new TemplateInUseError();

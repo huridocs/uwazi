@@ -20,7 +20,7 @@ import { GenerateIdProperty, GenerateIdPropertyProps } from './GenerateIdPropert
 import { SelectProperty, SelectPropertyProps } from './select/SelectProperty.js';
 import { MultiSelectProperty, MultiSelectPropertyProps } from './select/MultiSelectProperty.js';
 import { NestedProperty, NestedPropertyProps } from './NestedProperty.js';
-import { RelationshipPropertyProps } from './RelationshipProperty.js';
+import { RelationshipPropertyProps } from '#api/relationships.v2/model/RelationshipProperty.js';
 
 type CreateInput =
   | TextPropertyProps

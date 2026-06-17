@@ -4,7 +4,7 @@ import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { FilesService } from '#api/core/application/FilesService.js';
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { MultiLanguageEntityDataSource } from '#api/core/application/contracts/MultiLanguageEntitiesDataSource.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { CsvImport } from '../../domain/CsvImport.js';
 import { CsvImportRowErrorsDataSource } from '../contracts/CsvImportRowErrorsDataSource.js';

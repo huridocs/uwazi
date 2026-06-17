@@ -13,7 +13,8 @@ import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDa
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource.js';
 import { Entity, EntityMetadata, MetadataValue } from '../model/Entity.js';
 import { EntityMappers } from './EntityMapper.js';
-import { EntityDBO, EntityJoinTemplate } from './schemas/EntityTypes.js';
+import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
+import { EntityJoinTemplate } from './schemas/EntityTypes.js';
 
 export class MongoEntitiesDataSource
   extends MongoDataSource<EntityDBO>

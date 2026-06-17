@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { ObjectId } from 'mongodb';
-import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
+import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import { Entity, EntityIcon } from '#api/core/domain/entity/Entity.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { EntityTranslationProps } from '#api/core/domain/entity/EntityTranslation.js';

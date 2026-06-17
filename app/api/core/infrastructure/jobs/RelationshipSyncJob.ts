@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import relationships from '#api/relationships/index.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
+import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,

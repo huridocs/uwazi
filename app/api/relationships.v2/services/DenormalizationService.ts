@@ -2,7 +2,7 @@ import { TransactionManager } from '#api/core/application/contracts/TransactionM
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-import { RelationshipProperty } from '#api/core/domain/template/RelationshipProperty.js';
+import { RelationshipProperty } from '../model/RelationshipProperty.js';
 import { Entity } from '#api/entities.v2/model/Entity.js';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource.js';
 import { MatchQueryNode } from '../model/MatchQueryNode.js';

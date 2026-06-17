@@ -1,5 +1,5 @@
 import { FileDTO } from '#api/core/domain/files/domainTypes.js';
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { MultiLanguageEntityDataSource } from '#api/core/application/contracts/MultiLanguageEntitiesDataSource.js';
 import { createError } from '#api/utils/index.js';
 import { z } from 'zod';
 import { EntityPermissionChecker } from '../domain/entityAccessPolicy/EntityPermissionChecker.js';

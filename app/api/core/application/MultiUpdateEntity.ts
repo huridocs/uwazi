@@ -4,7 +4,7 @@ import {
   EntityPermissionChecker,
   Specification,
 } from '#api/core/domain/entityAccessPolicy/EntityPermissionChecker.js';
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { MultiLanguageEntityDataSource } from '#api/core/application/contracts/MultiLanguageEntitiesDataSource.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';

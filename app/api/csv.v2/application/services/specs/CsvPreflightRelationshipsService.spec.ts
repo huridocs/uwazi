@@ -1,7 +1,7 @@
 import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { MultiLanguageEntityDataSource } from '#api/core/application/contracts/MultiLanguageEntitiesDataSource.js';
 import {
   ANY_TEMPLATE_RELATIONSHIP_KEY,
   buildRelationshipAppliedValues,

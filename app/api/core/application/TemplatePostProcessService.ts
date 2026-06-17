@@ -1,5 +1,5 @@
 import { ArrayUtils } from '#api/common.v2/utils/Array.js'; // Todo
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { MultiLanguageEntityDataSource } from '#api/core/application/contracts/MultiLanguageEntitiesDataSource.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TemplateUpdatedEventContext } from '../domain/template/events/TemplateUpdatedEvent.js';
 import { TemplateDiff } from '../domain/template/TemplateDiff.js';

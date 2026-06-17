@@ -24,7 +24,7 @@ import { NestedProperty } from '#api/core/domain/template/NestedProperty.js';
 import { NumericProperty } from '#api/core/domain/template/NumericProperty.js';
 import { PreviewProperty } from '#api/core/domain/template/PreviewProperty.js';
 import { Property } from '#api/core/domain/template/Property.js';
-import { RelationshipProperty } from '#api/core/domain/template/RelationshipProperty.js';
+import { RelationshipProperty } from '#api/relationships.v2/model/RelationshipProperty.js';
 import { SelectProperty } from '#api/core/domain/template/select/SelectProperty.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { TextProperty } from '#api/core/domain/template/TextProperty.js';

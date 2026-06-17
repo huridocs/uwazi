@@ -1,19 +1,16 @@
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
-import {
-  MatchQueryNode,
-  TemplateRecordElement,
-} from '#api/relationships.v2/model/MatchQueryNode.js';
+import { MatchQueryNode, TemplateRecordElement } from '../../model/MatchQueryNode.js';
 import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
 import { RelationshipPropertyData } from '#shared/types/api.v2/templates.createTemplateRequest.js';
 import { createError } from '#api/utils/index.js';
-import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
+import { DenormalizationService } from '../../services/DenormalizationService.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { TemplatesDataSource } from '../../../application/contracts/TemplatesDataSource.js';
-import { QueryMapper } from '../../../infrastructure/mongodb/template/QueryMapper.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { QueryMapper } from '#api/core/infrastructure/mongodb/template/QueryMapper.js';
 import { TemplateInput, TemplateInputMappers } from './TemplateInputMappers.js';
-import { RelationshipProperty } from '../../../domain/template/RelationshipProperty.js';
+import { RelationshipProperty } from '../../model/RelationshipProperty.js';
 
 interface MatchQuery {
   templates: string[];

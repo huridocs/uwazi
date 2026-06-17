@@ -2,7 +2,7 @@ import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdG
 import { EntitySchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
 import { MetadataSchema } from '#shared/types/commonTypes.js';
 import { Entity } from '../model/Entity.js';
-import { EntityDBO } from './schemas/EntityTypes.js';
+import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 
 export const EntityMappers = {
   toModel(dbo: EntityDBO) {

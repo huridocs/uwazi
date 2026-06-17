@@ -5,7 +5,7 @@ import {
   TemplateDoesNotExistError,
 } from '#api/core/domain/template/errors.js';
 import { Property } from '../../domain/template/Property.js';
-import { RelationshipProperty } from '../../domain/template/RelationshipProperty.js';
+import { RelationshipProperty } from '#api/relationships.v2/model/RelationshipProperty.js';
 import { Template } from '../../domain/template/Template.js';
 import { V1RelationshipProperty } from '../../domain/template/V1RelationshipProperty.js';
 

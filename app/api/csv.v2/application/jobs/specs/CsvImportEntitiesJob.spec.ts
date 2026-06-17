@@ -16,7 +16,7 @@ import { RowErrorCode } from '../../../domain/CsvImportRowError.js';
 import { CsvImportEntitiesJob } from '../CsvImportEntitiesJob.js';
 import { CsvImportEntitiesJobFactory } from '../../../infrastructure/factories/CsvImportEntitiesJobFactory.js';
 import { cleanupCsvV2QueueJobsByImportIds } from '../../../specs/helpers/queueTestCleanup.js';
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { MultiLanguageEntityDataSource } from '#api/core/application/contracts/MultiLanguageEntitiesDataSource.js';
 
 const fixturesFactory = getFixturesFactory();
 

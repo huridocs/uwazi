@@ -1,6 +1,6 @@
 import { MatchQueryNode } from '#api/relationships.v2/model/MatchQueryNode.js';
 import { Template } from '#api/core/domain/template/Template.js';
-import { RelationshipProperty } from '#api/core/domain/template/RelationshipProperty.js';
+import { RelationshipProperty } from '#api/relationships.v2/model/RelationshipProperty.js';
 import { RelationshipsDataSource } from '#api/relationships.v2/contracts/RelationshipsDataSource.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { Entity, EntityMetadata } from '../model/Entity.js';

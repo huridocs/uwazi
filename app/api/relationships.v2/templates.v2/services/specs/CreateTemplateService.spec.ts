@@ -5,9 +5,9 @@ import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/templ
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntitiesDataSource.js';
-import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
-import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
-import { OnlineRelationshipPropertyUpdateStrategy } from '#api/relationships.v2/services/propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy.js';
+import { DenormalizationService } from '../../../services/DenormalizationService.js';
+import { MongoRelationshipsDataSource } from '../../../database/MongoRelationshipsDataSource.js';
+import { OnlineRelationshipPropertyUpdateStrategy } from '../../../services/propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy.js';
 import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { CreateTemplateService } from '../CreateTemplateService.js';
