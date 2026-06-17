@@ -3,9 +3,10 @@ import { SparklesIcon } from '@heroicons/react/24/outline';
 import { useSetAtom } from 'jotai';
 import { t, Translate } from '#app/I18N/index.js';
 import { useIsMobile } from '#app/V2/CustomHooks/useIsMobile.js';
+import { FeatureToggle } from '#V2/Components/UI/FeatureToggle.js';
 import { aiAssistantOpenAtom } from '#V2/atoms/aiAssistantOpenAtom.js';
 
-const AskBertButton = () => {
+const AskBertButtonView = () => {
   const setOpen = useSetAtom(aiAssistantOpenAtom);
   const isMobile = useIsMobile();
 
@@ -26,5 +27,11 @@ const AskBertButton = () => {
     </button>
   );
 };
+
+const AskBertButton = () => (
+  <FeatureToggle feature="aiAssistant">
+    <AskBertButtonView />
+  </FeatureToggle>
+);
 
 export { AskBertButton };

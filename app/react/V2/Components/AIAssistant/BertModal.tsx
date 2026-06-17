@@ -128,7 +128,7 @@ const BertModal = ({
   }
 
   return (
-    <Modal size="xxxl" id="bert-modal">
+    <Modal size="xxxl" id="bert-modal" ariaLabel="Bert">
       <Modal.Header className="!px-4 !py-3 shrink-0 items-center">
         <div className="flex min-w-0 items-center gap-2">
           <div className="flex items-center gap-1">

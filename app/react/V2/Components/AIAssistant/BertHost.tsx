@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAtom } from 'jotai';
+import { FeatureToggle } from '#V2/Components/UI/FeatureToggle.js';
 import { aiAssistantOpenAtom } from '#V2/atoms/aiAssistantOpenAtom.js';
 import { BertModal } from './BertModal.js';
 import { useBertShortcut } from './useBertShortcut.js';
@@ -14,7 +15,7 @@ type BertHostProps = {
   initialContextChips?: ContextChip[];
 };
 
-const BertHost = ({
+const BertHostView = ({
   mockReplies = false,
   replyScenario = 'normal',
   initialMessages = [],
@@ -34,6 +35,12 @@ const BertHost = ({
 
   return <BertModal open={open} onClose={() => setOpen(false)} {...bertState} />;
 };
+
+const BertHost = (props: BertHostProps) => (
+  <FeatureToggle feature="aiAssistant">
+    <BertHostView {...props} />
+  </FeatureToggle>
+);
 
 export { BertHost };
 export type { BertHostProps };
