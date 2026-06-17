@@ -7,7 +7,7 @@ import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import {
   useRelationshipsPanelData,
   useRelationshipsPanelFilters,
-} from '../../context/EntityScopedProvider.js';
+} from '#V2/Routes/Entity/Components/context/index.js';
 
 const RelationshipsFilterDrawerContent = () => {
   const { relTypeFilters, setRelTypeFilters, entityTypeFilters, setEntityTypeFilters } =

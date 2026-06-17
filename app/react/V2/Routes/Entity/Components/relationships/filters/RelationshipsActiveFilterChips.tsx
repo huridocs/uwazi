@@ -3,7 +3,7 @@ import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { ActiveFilterChip } from '#V2/Components/UI/ActiveFilterChip.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
-import { useRelationshipsPanelFilters } from '../../context/EntityScopedProvider.js';
+import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/context/index.js';
 
 const RelationshipsActiveFilterChips = () => {
   const {

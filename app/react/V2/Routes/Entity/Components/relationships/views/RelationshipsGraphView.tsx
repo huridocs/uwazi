@@ -11,7 +11,7 @@ import {
 } from '#V2/formatters/relationships/relationshipsPanelGraph.js';
 import type { GroupLabelContext } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
 import { RelationshipsEmptyView } from '../panel/RelationshipsEmptyView.js';
-import { useRelationshipsPanelFilters } from '../../context/EntityScopedProvider.js';
+import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/context/index.js';
 
 type RelationshipsGraphViewProps = {
   markers: RelationshipMarker[];

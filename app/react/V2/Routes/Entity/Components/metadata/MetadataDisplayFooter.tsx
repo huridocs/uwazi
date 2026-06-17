@@ -1,7 +1,7 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { Button } from '#V2/Components/UI/index.js';
-import { useMetadataEditing } from '../context/EntityScopedProvider.js';
+import { useMetadataEditing } from '#V2/Routes/Entity/Components/context/index.js';
 
 const MetadataDisplayFooter = () => {
   const { isEditing, setIsEditing } = useMetadataEditing();

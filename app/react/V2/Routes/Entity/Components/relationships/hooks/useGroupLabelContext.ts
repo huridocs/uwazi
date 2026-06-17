@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
-import { useEntityScopedEntity } from '../../context/EntityScopedProvider.js';
+import { useEntityScopedEntity } from '#V2/Routes/Entity/Components/context/index.js';
 
 const useGroupLabelContext = () => {
   const entity = useEntityScopedEntity();

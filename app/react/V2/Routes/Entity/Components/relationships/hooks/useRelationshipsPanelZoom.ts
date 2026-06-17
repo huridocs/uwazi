@@ -1,7 +1,7 @@
 import {
   type RelationshipsPanelZoom,
   useRelationshipsPanelFilters,
-} from '../../context/EntityScopedProvider.js';
+} from '#V2/Routes/Entity/Components/context/index.js';
 
 const rowPaddingByZoom: Partial<Record<RelationshipsPanelZoom, string>> = {
   overview: '!py-1.5',

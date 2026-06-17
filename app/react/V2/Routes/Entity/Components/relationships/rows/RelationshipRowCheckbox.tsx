@@ -1,7 +1,7 @@
 import React from 'react';
 import { t } from '#app/I18N/index.js';
 import { checkboxInputClassName } from '#V2/Components/Forms/Checkbox.js';
-import { useEntityScopedContext } from '../../context/EntityScopedProvider.js';
+import { useEntityScopedContext } from '#V2/Routes/Entity/Components/context/index.js';
 
 type RelationshipRowCheckboxProps = {
   relationshipId: string;

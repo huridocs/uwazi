@@ -6,7 +6,7 @@ import { saveTextReference } from '#V2/api/relationships/index.js';
 import {
   useEntityScopedEntity,
   useRelationshipsActions,
-} from '../../context/EntityScopedProvider.js';
+} from '#V2/Routes/Entity/Components/context/index.js';
 import { refreshEntityRelationships } from '../utils/refreshEntityRelationships.js';
 
 type SaveReferenceData = {

@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { TocSchema } from '#shared/types/commonTypes.js';
-import { ToC, type ProcessedTocEntry } from '#V2/Routes/Entity/Components/ToC/ToC.js';
-import { normalizeToc, findItemsWithChildren } from '#V2/Routes/Entity/Components/ToC/utils.js';
+import { ToC, type ProcessedTocEntry } from '#V2/Routes/Entity/Components/ToC/index.js';
+import { normalizeToc, findItemsWithChildren } from '#V2/Routes/Entity/Components/ToC/index.js';
 
 const meta: Meta<typeof ToC> = {
   title: 'EntityViewer/ToC',
@@ -12,7 +12,6 @@ const meta: Meta<typeof ToC> = {
     layout: 'padded',
   },
 };
-export default meta;
 
 type Story = StoryObj<typeof ToC>;
 
@@ -255,3 +254,4 @@ export const Simple = {
 export const Nested: Story = {
   render: () => <ToCWithControls toc={nestedToc} />,
 };
+export default meta;

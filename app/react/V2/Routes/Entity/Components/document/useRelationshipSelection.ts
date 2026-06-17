@@ -6,7 +6,7 @@ import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import {
   useDocumentInteraction,
   useRelationshipsPanelFilters,
-} from '../context/EntityScopedProvider.js';
+} from '#V2/Routes/Entity/Components/context/index.js';
 
 type SelectOptions = {
   scrollPanel?: boolean;

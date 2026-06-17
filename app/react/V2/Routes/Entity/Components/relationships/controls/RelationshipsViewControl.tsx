@@ -9,7 +9,7 @@ import { SegmentedControl } from '#V2/Components/UI/SegmentedControl/index.js';
 import {
   type RelationshipsPanelView,
   useRelationshipsPanelFilters,
-} from '../../context/EntityScopedProvider.js';
+} from '#V2/Routes/Entity/Components/context/index.js';
 
 const viewOptions: { id: RelationshipsPanelView; label: string; Icon: typeof LayoutListIcon }[] = [
   { id: 'list', label: 'List', Icon: LayoutListIcon },

@@ -3,12 +3,12 @@ import { PencilIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
 import { countEntityRelationships } from '#V2/formatters/index.js';
-import { useRelationshipSelection } from '../../document/useRelationshipSelection.js';
+import { useRelationshipSelection } from '#V2/Routes/Entity/Components/document/index.js';
 import { useRelationshipBulkDelete } from '../hooks/useRelationshipBulkDelete.js';
 import {
   useEntityScopedContext,
   useEntityScopedEntity,
-} from '../../context/EntityScopedProvider.js';
+} from '#V2/Routes/Entity/Components/context/index.js';
 
 const RelationshipsActionBar = () => {
   const entity = useEntityScopedEntity();

@@ -5,7 +5,7 @@ import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { ClientRelationshipType } from '#app/apiResponseTypes.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import { searchByTitle } from '#V2/api/entities/index.js';
-import { ReferenceMode } from '../../context/EntityScopedProvider.js';
+import { ReferenceMode } from '#V2/Routes/Entity/Components/context/index.js';
 import { useCreateReferenceState } from './useCreateReferenceState.js';
 import { SelectTargetStep } from './SelectTargetStep.js';
 import { SelectTextInTargetStep } from './SelectTextInTargetStep.js';

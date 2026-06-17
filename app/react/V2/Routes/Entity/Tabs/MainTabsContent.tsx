@@ -4,8 +4,10 @@ import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { MAIN_TAB, type MainTabId } from './tabIds.js';
 import { DocumentTab } from './tabsContent/DocumentTab.js';
 import { MetadataTab } from './tabsContent/MetadataTab.js';
-import { RelationshipsPanel } from '../Components/relationships/panel/RelationshipsPanel.js';
-import { RelationshipsFiltersDrawer } from '../Components/relationships/filters/RelationshipsFiltersDrawer.js';
+import {
+  RelationshipsPanel,
+  RelationshipsFiltersDrawer,
+} from '../Components/relationships/index.js';
 import { FilesTab } from './tabsContent/FilesTab.js';
 
 type MainTabsContentProps = {

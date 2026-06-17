@@ -9,7 +9,7 @@ import { SegmentedControl } from '#V2/Components/UI/SegmentedControl/index.js';
 import {
   type RelationshipsPanelZoom,
   useRelationshipsPanelFilters,
-} from '../../context/EntityScopedProvider.js';
+} from '#V2/Routes/Entity/Components/context/index.js';
 
 const zoomOptions: {
   id: RelationshipsPanelZoom;

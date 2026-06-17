@@ -2,7 +2,7 @@ import React from 'react';
 import { t, Translate } from '#app/I18N/index.js';
 import { QuerySearchBar } from '#V2/Components/UI/QuerySearchBar.js';
 import { RelationshipsActiveFilterChips } from './RelationshipsActiveFilterChips.js';
-import { useRelationshipsPanelFilters } from '../../context/EntityScopedProvider.js';
+import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/context/index.js';
 
 const RelationshipsSearchTips = () => (
   <>
@@ -14,7 +14,7 @@ const RelationshipsSearchTips = () => (
         <code className="font-mono text-[10px] text-ink">
           <Translate>AND OR NOT</Translate>
         </code>{' '}
-        — boolean
+        — <Translate>boolean</Translate>
       </li>
       <li>
         <code className="font-mono text-[10px] text-ink">

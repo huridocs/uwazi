@@ -6,7 +6,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { socket } from '#app/socket.js';
 import { TestRouterContext } from '#V2/testing/index.js';
 import * as files from '#V2/api/files/index.js';
-import { OCRButton } from '../Components/shared/OCRButton.js';
+import { OCRButton } from '../Components/shared/index.js';
 
 describe('OCRButton', () => {
   const file = { _id: 'file1', filename: 'file.pdf', language: 'en' };

@@ -1,7 +1,7 @@
 import React from 'react';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
 import { Entity } from '#V2/api/entities/types.js';
-import { DocumentViewModeSelect } from '../document/DocumentViewModeSelect.js';
+import { DocumentViewModeSelect } from '#V2/Routes/Entity/Components/document/index.js';
 
 type EntityMainPaneHeaderProps = {
   entity: Entity;

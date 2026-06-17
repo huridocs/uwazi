@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useRevalidator } from 'react-router';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
-import { useEntityScopedEntity } from '../../context/EntityScopedProvider.js';
+import { useEntityScopedEntity } from '#V2/Routes/Entity/Components/context/index.js';
 import {
   deleteReferencesById,
   refreshEntityRelationships,

@@ -10,7 +10,7 @@ import {
   EntityScopedProvider,
   useRelationships,
   useRelationshipsActions,
-} from '../../context/EntityScopedProvider.js';
+} from '#V2/Routes/Entity/Components/context/index.js';
 
 const selection: TextSelection = {
   text: 'Selected text',

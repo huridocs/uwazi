@@ -1,7 +1,7 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import type { RelationshipsPanelStats } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
-import { useRelationshipsPanelFilters } from '../../context/EntityScopedProvider.js';
+import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/context/index.js';
 
 type RelationshipsListInfoRowProps = {
   stats: RelationshipsPanelStats;

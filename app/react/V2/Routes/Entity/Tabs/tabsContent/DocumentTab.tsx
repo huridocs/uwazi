@@ -3,8 +3,7 @@ import { PDF } from '#V2/Components/PDFViewer/index.js';
 import { RelationshipsDisplay } from '#V2/Components/Relationships/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
-import { DocumentViewModeSelect } from '../../Components/document/DocumentViewModeSelect.js';
-import { PlainText } from '../../Components/document/PlainText.js';
+import { PlainText, DocumentViewModeSelect } from '#V2/Routes/Entity/Components/document/index.js';
 import { useDocumentPdfView } from '../hooks/useDocumentPdfView.js';
 
 type DocumentTabProps = {

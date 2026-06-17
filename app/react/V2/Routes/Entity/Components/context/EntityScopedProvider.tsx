@@ -14,8 +14,11 @@ import {
 } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
 import type { RelationshipsPanelGroupBy } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
 import { computeFacetCounts } from '#V2/formatters/relationships/relationshipsPanelFacets.js';
-import { sortTocEntries } from '../ToC/ToC.js';
-import { findItemsWithChildren, normalizeToc } from '../ToC/utils.js';
+import {
+  sortTocEntries,
+  findItemsWithChildren,
+  normalizeToc,
+} from '#V2/Routes/Entity/Components/ToC/index.js';
 
 type ReferenceMode = 'entity' | 'text';
 type RelationshipsPanelView = 'list' | 'tree' | 'graph';

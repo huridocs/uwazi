@@ -2,7 +2,7 @@ import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { SearchView } from './SearchView.js';
-import { useDocumentInteraction } from '../context/EntityScopedProvider.js';
+import { useDocumentInteraction } from '#V2/Routes/Entity/Components/context/index.js';
 
 const SearchResults = () => {
   const { setSearchHintsModalOpen } = useDocumentInteraction();

@@ -6,7 +6,7 @@ import { RelationshipsGraphView } from '../views/RelationshipsGraphView.js';
 import { type RelationshipPanelRowHandlers } from '../rows/RelationshipPanelRow.js';
 import { RelationshipsPanelEntryList } from '../panel/RelationshipsPanelEntryList.js';
 import { RelationshipsGroupedSections } from '../panel/RelationshipsGroupedSections.js';
-import { useRelationshipsPanelFilters } from '../../context/EntityScopedProvider.js';
+import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/context/index.js';
 
 type RelationshipsPanelBodyProps = RelationshipPanelRowHandlers & {
   markers: RelationshipMarker[];

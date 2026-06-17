@@ -6,7 +6,7 @@ import {
   type RelationshipsPanelGroupBy,
 } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
 import { groupingOptionLabels } from '../utils/relationshipsPanelLabels.js';
-import { useRelationshipsPanelFilters } from '../../context/EntityScopedProvider.js';
+import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/context/index.js';
 
 type RelationshipsGroupByControlProps = {
   axis: 'primary' | 'secondary';

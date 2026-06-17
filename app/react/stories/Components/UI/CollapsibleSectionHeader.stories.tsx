@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { ColorDot } from '#V2/Components/UI/ColorDot.js';
 import { CollapsibleSectionHeader } from '#V2/Components/UI/CollapsibleSectionHeader.js';
 import { FacetSection } from '#V2/Components/UI/FacetSection.js';
-import { RelationshipsTreeBranch } from '#V2/Routes/Entity/Components/relationships/views/RelationshipsTreeBranch.js';
+import { RelationshipsTreeBranch } from '#V2/Routes/Entity/Components/relationships/index.js';
 
 const templateColors: Record<string, string> = {
   person: '#f59e0b',

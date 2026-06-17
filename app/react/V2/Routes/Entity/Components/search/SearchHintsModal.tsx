@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Modal } from '#V2/Components/UI/index.js';
 import { Translate, t } from '#app/I18N/index.js';
-import { useDocumentInteraction } from '../context/EntityScopedProvider.js';
+import { useDocumentInteraction } from '#V2/Routes/Entity/Components/context/index.js';
 
 const SearchHintsModal = () => {
   const { searchHintsModalOpen: showModal, setSearchHintsModalOpen: setShowModal } =

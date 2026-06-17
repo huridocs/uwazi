@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { CollapsibleSectionHeader } from '#V2/Components/UI/CollapsibleSectionHeader.js';
 import { useExpandCollapseSignals } from '../hooks/useExpandCollapseSignals.js';
-import { useRelationshipsPanelFilters } from '../../context/EntityScopedProvider.js';
+import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/context/index.js';
 
 type TreeLine = 'only' | 'first' | 'middle' | 'last';
 

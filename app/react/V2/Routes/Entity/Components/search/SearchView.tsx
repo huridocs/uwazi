@@ -10,7 +10,7 @@ import { SEARCH_PARAM } from '../../urlParams.js';
 import { LoaderResponse } from '../../types.js';
 import { NoSearch, NoResults } from './BlankState.js';
 import { getFieldName, parseSnippetToNodes } from './searchUtils.js';
-import { useDocumentInteraction } from '../context/EntityScopedProvider.js';
+import { useDocumentInteraction } from '#V2/Routes/Entity/Components/context/index.js';
 
 type FormValues = {
   search: string;

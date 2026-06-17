@@ -18,8 +18,8 @@ import {
   useRelationships,
   useRelationshipsPanelData,
   useRelationshipsPanelFilters,
-} from '../../context/EntityScopedProvider.js';
-import { useRelationshipSelection } from '../../document/useRelationshipSelection.js';
+} from '#V2/Routes/Entity/Components/context/index.js';
+import { useRelationshipSelection } from '#V2/Routes/Entity/Components/document/index.js';
 import { useGroupLabelContext } from '../hooks/useGroupLabelContext.js';
 import { useRelationshipDelete } from '../hooks/useRelationshipDelete.js';
 import { useRelationshipSave } from '../hooks/useRelationshipSave.js';

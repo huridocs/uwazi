@@ -16,7 +16,7 @@ import { useRelationshipRowVisibility } from '../hooks/useRelationshipRowVisibil
 import {
   useDocumentInteraction,
   useEntityScopedContext,
-} from '../../context/EntityScopedProvider.js';
+} from '#V2/Routes/Entity/Components/context/index.js';
 
 type RelationshipRowProps = {
   marker: RelationshipMarker;

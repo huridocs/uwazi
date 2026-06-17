@@ -2,9 +2,11 @@ import React, { useMemo } from 'react';
 import { Provider } from 'jotai';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
-import { EntityScopedProvider } from '#V2/Routes/Entity/Components/context/EntityScopedProvider.js';
-import { RelationshipsPanel } from '#V2/Routes/Entity/Components/relationships/panel/RelationshipsPanel.js';
-import { RelationshipsFiltersDrawer } from '#V2/Routes/Entity/Components/relationships/filters/RelationshipsFiltersDrawer.js';
+import { EntityScopedProvider } from '#V2/Routes/Entity/Components/context/index.js';
+import {
+  RelationshipsPanel,
+  RelationshipsFiltersDrawer,
+} from '#V2/Routes/Entity/Components/relationships/index.js';
 import { apiEntity } from '../fixtures/referencesFixtures.js';
 import { createRelationshipsStoryStore } from './createRelationshipsStoryStore.js';
 import { RelationshipsSyncedDocumentView } from './RelationshipsSyncedDocumentView.js';

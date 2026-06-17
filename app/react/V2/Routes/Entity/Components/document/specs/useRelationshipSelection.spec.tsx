@@ -10,7 +10,7 @@ import { templatesAtom } from '#V2/atoms/index.js';
 import {
   EntityScopedProvider,
   useEntityScopedContext,
-} from '../../context/EntityScopedProvider.js';
+} from '#V2/Routes/Entity/Components/context/index.js';
 import { useRelationshipSelection } from '../useRelationshipSelection.js';
 
 const marker: RelationshipMarker = {

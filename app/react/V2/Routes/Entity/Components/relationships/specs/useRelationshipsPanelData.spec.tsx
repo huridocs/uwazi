@@ -7,7 +7,7 @@ import type { Entity } from '#V2/api/entities/types.js';
 import {
   EntityScopedProvider,
   useRelationshipsPanelData,
-} from '../../context/EntityScopedProvider.js';
+} from '#V2/Routes/Entity/Components/context/index.js';
 
 const entityWithRelations = {
   _id: 'ent1',

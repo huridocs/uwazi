@@ -6,7 +6,11 @@ import { act, renderHook } from '@testing-library/react';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
 import type { TocSchema } from '#shared/types/commonTypes.js';
 import type { Entity } from '#V2/api/entities/types.js';
-import { EntityScopedProvider, useToc, useTocActions } from '../../context/EntityScopedProvider.js';
+import {
+  EntityScopedProvider,
+  useToc,
+  useTocActions,
+} from '#V2/Routes/Entity/Components/context/index.js';
 import { convertTextSelectionToTocEntry } from '../utils.js';
 
 const entity = {

@@ -4,7 +4,7 @@ import { RelationshipsGroupByControl } from '../controls/RelationshipsGroupByCon
 import { RelationshipsSortControl } from '../controls/RelationshipsSortControl.js';
 import { RelationshipsViewControl } from '../controls/RelationshipsViewControl.js';
 import { RelationshipsZoomControl } from '../controls/RelationshipsZoomControl.js';
-import { useRelationshipsPanelFilters } from '../../context/EntityScopedProvider.js';
+import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/context/index.js';
 
 type RelationshipsPanelToolbarControlsProps = {
   activeFilterCount: number;
