@@ -11,7 +11,7 @@ const Dialog = () => {
   const CurrentStepFooter = AddExtractorSteps[step].Footer;
 
   return (
-    <Modal size="xxl">
+    <Modal size="xxl" ariaLabel="Paragraph extractor wizard">
       <Modal.Header>
         <div className="flex flex-col">
           <h1 className="text-lg font-semibold text-gray-900">{AddExtractorSteps[step].title()}</h1>

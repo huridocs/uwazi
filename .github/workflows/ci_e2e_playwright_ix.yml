@@ -5,7 +5,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  CYPRESS_IMAGE_NAME: ${{ github.repository }}-cypress-e2e
+  # GHCR package keeps the historical cypress-e2e name; image is the shared E2E runner.
+  E2E_RUNNER_IMAGE: ${{ github.repository }}-cypress-e2e
 
 permissions:
   contents: read

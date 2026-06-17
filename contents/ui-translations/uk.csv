@@ -5,6 +5,7 @@ Key,Ukrainian
 2FA,2FA
 2FA Enabled,2FA Увімкнено
 A default template cannot be deleted.,Шаблон за замовчуванням не можна видалити.
+A friendly hand for serious work — I'll act in the context shown above.,A friendly hand for serious work — I'll act in the context shown above.
 A generated ID will be the default title.,Згенерований ідентифікатор буде призначено заголовком за замовчуванням
 A source template must,Вихідний шаблон повинен
 A target template needs to have the following properties,Цільовий шаблон повинен мати такі властивості
@@ -106,6 +107,7 @@ Are you sure you want to delete this file?,"Ви впевнені, що хоче
 Are you sure you want to delete this item?,"Ви впевнені, що хочете видалити цей елемент?"
 Are you sure you want to delete this relationship? This action cannot be undone.,Are you sure you want to delete this relationship? This action cannot be undone.
 Are you sure?,Ти впевнений?
+Ask Bert,Ask Bert
 Attachment,Вкладення
 Attachment deleted,Вкладення видалено
 Attachment renamed,Вкладення перейменовано
@@ -124,6 +126,7 @@ Back to details,Back to details
 Back to search,Назад до пошуку
 Bad Request,Поганий запит
 Basic,Базовий
+Bert,Bert
 Bidirectional,Bidirectional
 Body,Основна частина
 Browse files to upload,Перегляньте файли для завантаження
@@ -196,6 +199,7 @@ Confirm deletion of,Підтвердити видалення
 Confirm deletion of entity,Підтвердити видалення сутності
 Confirm deletion of file,Підтвердити видалення файлу
 Confirm new password,Підтвердьте новий пароль
+Confirm your password,Confirm your password
 Connect to a paragraph,З'єднати з абзацом
 Connect to an entity,Підключіться до організації
 Connect to document,Connect to document
@@ -250,6 +254,7 @@ CSV import cancelled,CSV import cancelled
 CSV import completed,CSV import completed
 CSV import failed,CSV import failed
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
+Ctrl K,Ctrl K
 Current Value/Suggestion,Поточне значення/пропозиція
 Custom component error,"Помилка розмітки кастомного компонента: непідтримувані значення! Будь ласка, перевірте свою конфігурацію"
 Custom CSS,Персональні CSS
@@ -464,6 +469,7 @@ Header bar hover background,Header bar hover background
 Header bar text,Header bar text
 help,допомога
 here,тут.
+"Hi, I'm Bert.","Hi, I'm Bert."
 Hide,Hide
 Hide actions,Приховати дії
 Hide label,Приховати мітку
@@ -635,6 +641,7 @@ Navigate back,Повернутися назад
 Navigation menu tool tip part 1,"Якщо це внутрішня URL-адреса на цьому веб-сайті, обов'язково видаліть першу частину"
 Navigation menu tool tip part 2,"залишивши лише відносну URL-адресу, що починається з косої риски. Тобто. /деяка_адреса."
 New,Новий
+New conversation,New conversation
 New entity,Новий об'єкт
 New group,Нова група
 New language added,Додано нову мову
@@ -970,6 +977,7 @@ Site logo description,"Логотип відображається у верхн
 Site logo no images hint,"Поки немає файлів зображень у Користувацьких завантаженнях. Спочатку додайте зображення PNG, SVG або JPEG."
 Size,Розмір
 Skip to main content,Перейти до основного змісту
+Some tasks may take a while. Bert will reply when it's done.,Some tasks may take a while. Bert will reply when it's done.
 Something went wrong,Щось пішло не так
 Sort,Сортувати
 Sort ascending,Сортування за зростанням

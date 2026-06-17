@@ -58,6 +58,8 @@ import { PXCreateParagraphsFactory } from '#api/paragraphExtraction/infrastructu
 import { PXCreateParagraphsJob } from '#api/paragraphExtraction/infrastructure/PXCreateParagraphsJob.js';
 import { PXExtractionServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractionServiceFactory.js';
 import { PXExtractorsQueryServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory.js';
+import { AIAssistantFactory } from '#api/aiAssistant/infrastructure/AIAssistantFactory.js';
+import { AIAssistantPollRequestJob } from '#api/aiAssistant/infrastructure/jobs/AIAssistantPollRequestJob.js';
 import { PXExtractParagraphsFromEntityJob } from '#api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntityJob.js';
 import { CreateParagraphExtractionEntityStatusesJob } from '#api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
 import relationships from '#api/relationships/index.js';
@@ -117,6 +119,8 @@ export function registerJobs(register: Register) {
   register(CreateBlankStateSuggestionsJob, async () => new CreateBlankStateSuggestionsJob());
 
   register(PXExtractParagraphsFromEntityJob, async () => new PXExtractParagraphsFromEntityJob());
+
+  register(AIAssistantPollRequestJob, async () => AIAssistantFactory.createPollRequestJob());
 
   register(PXCreateParagraphsJob, async () => {
     const transactionManager = TransactionManagerFactory.default();
