@@ -19,9 +19,10 @@ interface ModalProps {
   children: string | React.ReactNode;
   size: modalSizeType;
   id?: string;
+  ariaLabel?: string;
 }
 
-const Modal = ({ children, size, id }: ModalProps) => {
+const Modal = ({ children, size, id, ariaLabel = 'Modal' }: ModalProps) => {
   const sizes = {
     sm: 'w-full max-w-sm min-w-0',
     md: 'w-full max-w-md min-w-0 sm:min-w-[24rem]',
@@ -37,7 +38,7 @@ const Modal = ({ children, size, id }: ModalProps) => {
       className={modalBackdropClass}
       data-testid="modal"
       role="dialog"
-      aria-label="Modal"
+      aria-label={ariaLabel}
       id={id}
     >
       <div className={`mx-auto max-h-[min(100dvh,100vh)] min-h-0 w-full ${sizes[size]}`}>
