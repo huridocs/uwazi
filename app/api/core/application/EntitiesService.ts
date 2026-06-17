@@ -47,6 +47,7 @@ type InsertContext = {
 type UpsertContext = {
   actorId: string;
   targetLanguage: LanguageISO6391;
+  authorize?: boolean;
 };
 
 type DeleteContext = {
