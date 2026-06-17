@@ -463,7 +463,9 @@ describe('files routes', () => {
           .send({ fileId: uploadId.toString() })
           .expect(200);
 
-        let [entity] = await entities.get({ sharedId: 'sharedId1' });
+        let [entity] = await testingEnvironment.runWithContext(async () =>
+          entities.get({ sharedId: 'sharedId1' })
+        );
         expect(entity.generatedToc).toBe(true);
 
         await request(app)
@@ -471,7 +473,9 @@ describe('files routes', () => {
           .send({ fileId: uploadId2.toString() })
           .expect(200);
 
-        [entity] = await entities.get({ sharedId: 'sharedId1' });
+        [entity] = await testingEnvironment.runWithContext(async () =>
+          entities.get({ sharedId: 'sharedId1' })
+        );
         expect(entity.generatedToc).toBe(false);
       });
     });
@@ -506,7 +510,9 @@ describe('files routes', () => {
         .expect(500);
 
       await appContext.run(async () => {
-        const myEntity = await entities.get({ title: 'my entity' });
+        const myEntity = await testingEnvironment.runWithContext(async () =>
+          entities.get({ title: 'my entity' })
+        );
         expect(myEntity.length).toBe(0);
       });
     });

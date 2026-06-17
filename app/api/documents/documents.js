@@ -1,6 +1,6 @@
 import { createError } from '#api/utils/index.js';
-import { files } from '#api/files/index.js';
 import entities from '../entities/index.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 
 const documents = {
   save(doc, params) {
@@ -9,7 +9,9 @@ const documents = {
   },
 
   async page(_id, page) {
-    const [document] = await files.get({ _id }, '+fullText');
+    const document = (
+      await FilesDAOFactory.default().getById(_id.toString(), { projection: { fullText: 1 } })
+    ).getData(null);
     if (!document || !document.fullText) {
       throw createError('document does not exists', 404);
     }
