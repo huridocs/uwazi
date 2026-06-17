@@ -128,6 +128,7 @@ Basic,Βασικό
 Bert,Bert
 Bidirectional,Bidirectional
 Body,Σώμα
+boolean,boolean
 Browse files to upload,Αναζήτηση αρχείων για μεταφόρτωση
 "by ids, methods, keywords, etc.","με αναγνωριστικά, μεθόδους, λέξεις-κλειδιά, κ.λπ."
 Can edit,Μπορεί να επεξεργαστεί
@@ -1262,4 +1263,3 @@ Zoom in,Μεγέθυνση
 Zoom in library view,Μεγέθυνση προβολής βιβλιοθήκης
 Zoom out,Σμίκρυνση
 Zoom out library view,Σμίκρυνση προβολής βιβλιοθήκης
-— boolean,— boolean

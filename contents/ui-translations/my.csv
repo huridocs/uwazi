@@ -128,6 +128,7 @@ Basic,Basic
 Bert,Bert
 Bidirectional,Bidirectional
 Body,စာကိုယ်
+boolean,boolean
 Browse files to upload,အပ်လုဒ်လုပ်ရန် ဖိုင်များကို ရှာဖွေပါ
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
 Can edit,တည်းဖြတ်နိုင်သည်
@@ -1261,4 +1262,3 @@ Zoom in,ချုံ့သည်
 Zoom in library view,စာကြည့်တိုက် မြင်ကွင်းကို ချုံ့သည်
 Zoom out,ချဲ့သည်
 Zoom out library view,စာကြည့်တိုက် မြင်ကွင်းကို ချဲ့သည်
-— boolean,— boolean

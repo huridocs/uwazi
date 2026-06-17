@@ -128,6 +128,7 @@ Basic,Базовий
 Bert,Bert
 Bidirectional,Bidirectional
 Body,Основна частина
+boolean,boolean
 Browse files to upload,Перегляньте файли для завантаження
 "by ids, methods, keywords, etc.","за ідентифікаторами, методами, ключовими словами тощо."
 Can edit,Може редагувати
@@ -1263,4 +1264,3 @@ Zoom in,Збільшити масштаб
 Zoom in library view,Збільшити масштаб перегляду бібліотеки
 Zoom out,Зменшити масштаб
 Zoom out library view,Зменшити масштаб перегляду бібліотеки
-— boolean,— boolean

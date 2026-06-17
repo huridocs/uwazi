@@ -128,6 +128,7 @@ Basic,Básico
 Bert,Bert
 Bidirectional,Bidireccional
 Body,Cuerpo
+boolean,boolean
 Browse files to upload,Explorar archivos para subir
 "by ids, methods, keywords, etc.","por ids, métodos, palabras clave, etc."
 Can edit,Puede editar
@@ -1258,4 +1259,3 @@ Zoom in,Aumentar zoom
 Zoom in library view,Aumentar zoom en la colección
 Zoom out,Reducir zoom
 Zoom out library view,Reducir zoom en la colección
-— boolean,— boolean

@@ -128,6 +128,7 @@ Basic,Basic
 Bert,Bert
 Bidirectional,Bidirectional
 Body,바디
+boolean,boolean
 Browse files to upload,업로드할 파일 탐색
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
 Can edit,편집 가능
@@ -1261,4 +1262,3 @@ Zoom in,확대
 Zoom in library view,라이브러리 뷰 확대
 Zoom out,축소
 Zoom out library view,라이브러리 뷰 축소
-— boolean,— boolean

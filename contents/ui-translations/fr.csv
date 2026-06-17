@@ -128,6 +128,7 @@ Basic,Basic
 Bert,Bert
 Bidirectional,Bidirectional
 Body,Corps
+boolean,boolean
 Browse files to upload,Parcourir les fichiers à télécharger
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
 Can edit,Peut éditer
@@ -1260,4 +1261,3 @@ Zoom in,Zoom avant
 Zoom in library view,Zoom avant sur la vue de la bibliothèque
 Zoom out,Zoom arrière
 Zoom out library view,Zoom arrière sur la vue de la bibliothèque
-— boolean,— boolean

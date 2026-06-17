@@ -128,6 +128,7 @@ Basic,Basic
 Bert,Bert
 Bidirectional,Bidirectional
 Body,يجب الاطلاع على السياق لتحديد الترجمة الأنسب
+boolean,boolean
 Browse files to upload,تصفح الملفات المراد تحميلها
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
 Can edit,إمكانية التحرير
@@ -1260,4 +1261,3 @@ Zoom in,تكبير
 Zoom in library view,تكبير في المعاينة المكتبية
 Zoom out,تصغير
 Zoom out library view,تصغير في المعاينة المكتبية
-— boolean,— boolean
