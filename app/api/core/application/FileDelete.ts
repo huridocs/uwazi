@@ -1,12 +1,13 @@
+import { z } from 'zod';
 import { FileDTO } from '#api/core/domain/files/domainTypes.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { createError } from '#api/utils/index.js';
-import { z } from 'zod';
 import { EntityPermissionChecker } from '../domain/entityAccessPolicy/EntityPermissionChecker.js';
 import { PDFDocument } from '../domain/files/PDFDocument.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { FilesDataSource } from './contracts/FilesDataSource.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
+import { EntitiesService } from './EntitiesService.js';
 import { FilesService } from './FilesService.js';
 
 type Output = FileDTO;
@@ -16,6 +17,7 @@ type Deps = {
   filesService: FilesService;
   entityPermissions: EntityPermissionChecker;
   entitiesDS: MultiLanguageEntityDataSource;
+  entitiesService: EntitiesService;
   settingsDS: SettingsDataSource;
 };
 
@@ -50,7 +52,10 @@ class FileDelete extends AbstractUseCase<Input, Output, Deps> {
 
         entity.setPreview(survivingThumbnails, await this.deps.settingsDS.getDefaultLanguageKey());
 
-        await this.deps.entitiesDS.update(entity);
+        await this.deps.entitiesService.update(entity, {
+          actorId: this.actorId,
+          targetLanguage: entity.languages[0],
+        });
       }
     });
 
@@ -59,3 +64,4 @@ class FileDelete extends AbstractUseCase<Input, Output, Deps> {
 }
 
 export { FileDelete };
+export type { Deps as DeleteFileDeps };
