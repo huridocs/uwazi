@@ -43,8 +43,9 @@ class DenormalizeThesaurusEntitiesUseCase extends AbstractUseCase<Input, Output,
         entity.setPropertyAssignmentsInAllLanguages(propertyAssignments);
       });
 
-      await this.deps.entitiesService.updateMultiple(withoutRelationships, {
+      await this.deps.entitiesService.update(withoutRelationships, {
         actorId: this.actorId,
+        actor: this.getActor(),
         targetLanguage: withoutRelationships[0]!.languages[0],
         authorize: false,
       });
@@ -61,8 +62,9 @@ class DenormalizeThesaurusEntitiesUseCase extends AbstractUseCase<Input, Output,
         entity.setPropertyAssignmentsInAllLanguages(propertyAssignments);
       });
 
-      await this.deps.entitiesService.updateMultiple(withRelationships, {
+      await this.deps.entitiesService.update(withRelationships, {
         actorId: this.actorId,
+        actor: this.getActor(),
         targetLanguage: withRelationships[0]!.languages[0],
         authorize: false,
       });

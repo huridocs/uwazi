@@ -52,8 +52,9 @@ class FileDelete extends AbstractUseCase<Input, Output, Deps> {
 
         entity.setPreview(survivingThumbnails, await this.deps.settingsDS.getDefaultLanguageKey());
 
-        await this.deps.entitiesService.update(entity, {
+        await this.deps.entitiesService.update([entity], {
           actorId: this.actorId,
+          actor: this.getActor(),
           targetLanguage: entity.languages[0],
         });
       }
