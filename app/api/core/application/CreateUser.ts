@@ -24,7 +24,6 @@ class CreateUser extends AbstractUseCase<Input, Output, Dependencies> {
       // throw new UserExistsError();
     }
 
-    // if it undefined it will do it's own thing
     user.initPassword(password);
 
     await this.transactionManager.run(async () => {
