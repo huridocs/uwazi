@@ -87,7 +87,7 @@ class PXCreateParagraphsBatch implements UseCase<PXCreateParagraphsBatchInput, O
           []
         );
 
-        entity.setPropertyAssignments(processedAssignments, paragraphData.language, true);
+        entity.setPropertyAssignments(processedAssignments, paragraphData.language);
       });
 
       entities.push(entity);
