@@ -945,6 +945,7 @@ const search = {
     });
   },
 
+  // eslint-disable-next-line max-params, max-statements
   async autocompleteAggregations(query, language, propertyName, _searchTerm, user) {
     const [templatesData, dictionaries] = await Promise.all([
       templatesFacade.get(),
@@ -966,13 +967,16 @@ const search = {
       throw new OperationalError(`Property ${propertyName} not found`);
     }
 
+    const newRelationshipsEnabled = await v2.checkFeatureEnabled();
+    const aggregationPath = getAggregatedIndexedPropertyPath(property, newRelationshipsEnabled);
+
     queryBuilder
       .resetAggregations()
-      .aggregations([{ ...property, name: `${propertyName}.value` }], dictionaries);
+      .aggregations([{ ...property, name: aggregationPath }], dictionaries);
 
     const body = queryBuilder.query();
 
-    const aggregation = body.aggregations.all.aggregations[`${propertyName}.value`];
+    const aggregation = body.aggregations.all.aggregations[aggregationPath];
 
     this.appendAutoCompleteFilters(property, searchTerm || '', aggregation);
 
