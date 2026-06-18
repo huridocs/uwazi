@@ -10,7 +10,7 @@ export type TemplateRow = {
   _id: string;
   name: string;
   properties: PropertySchema[];
-  commonProperties: PropertySchema[];
+  commonProperties: [PropertySchema, ...PropertySchema[]];
   color?: string;
   default: boolean;
   entityViewPage?: string;
@@ -24,7 +24,10 @@ export class PostgresTemplateMapper {
       _id: schema._id.toHexString(),
       name: schema.name,
       properties: schema.properties.map(p => ({ ...p, _id: p._id!.toString() })),
-      commonProperties: schema.commonProperties.map(p => ({ ...p, _id: p._id!.toString() })),
+      commonProperties: schema.commonProperties.map(p => ({ ...p, _id: p._id!.toString() })) as [
+        PropertySchema,
+        ...PropertySchema[],
+      ],
       color: schema.color,
       default: schema.default ?? false,
       entityViewPage: schema.entityViewPage,

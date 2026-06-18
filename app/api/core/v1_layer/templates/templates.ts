@@ -130,9 +130,9 @@ export default {
     return dao.countByThesauri(thesauriId);
   },
 
-  async findUsingRelationTypeInProp(relationTypeId: string, session?: ClientSession) {
+  async findUsingRelationTypeInProp(relationTypeId: string) {
     const dao = TemplatesDAOFactory.default();
-    const rows = await dao.findUsingRelationTypeInProp(relationTypeId, session);
+    const rows = await dao.findUsingRelationTypeInProp(relationTypeId);
     return rows.map(row => ({
       _id: typeof row._id === 'string' ? new ObjectId(row._id) : row._id,
       name: row.name,

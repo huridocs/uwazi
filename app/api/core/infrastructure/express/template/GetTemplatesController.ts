@@ -1,11 +1,9 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type RequestDto = void;
+import { TemplateSchema } from '#shared/types/templateType.js';
 
 type ResponseDto = {
-  rows: any[];
+  rows: TemplateSchema[];
 };
 
 class GetTemplatesController extends AbstractController {

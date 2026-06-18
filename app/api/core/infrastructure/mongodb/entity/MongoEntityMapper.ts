@@ -110,7 +110,10 @@ class MongoEntityMapper {
   }
 
   static toDomain(entityDbo: EntityDBO[], templateDbo: TemplateDBO | TemplateRow): Entity {
-    const template = MongoTemplateMapper.toDomain(templateDbo as any);
+    const template = MongoTemplateMapper.toDomain({
+      ...templateDbo,
+      _id: new ObjectId(templateDbo._id),
+    });
     const userId = entityDbo[0].user?.toHexString();
     const { sharedId, generatedToc } = entityDbo[0];
 

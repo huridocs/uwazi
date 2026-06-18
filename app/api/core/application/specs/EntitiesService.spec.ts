@@ -443,6 +443,7 @@ describe('EntitiesService', () => {
       const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
       const entitiesDS = TestUtils.mockClass<MongoEntitiesDataSource>({
         update: jest.fn(),
+        bulkUpdate: jest.fn(),
       });
       const { sut, transactionManager, eventBus, actor } = createSut({ eventEmitter, entitiesDS });
       await testingEnvironment.setFixtures({

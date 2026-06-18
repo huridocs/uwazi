@@ -1,4 +1,4 @@
-import { Db, ObjectId, ClientSession } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { TemplateDBO } from './DBOs/TemplateDBO.js';
@@ -77,11 +77,10 @@ class MongoTemplatesDAO extends MongoDataSource<TemplateDBO> {
   }
 
   async findUsingRelationTypeInProp(
-    relationTypeId: string,
-    session?: ClientSession
+    relationTypeId: string
   ): Promise<Pick<TemplateDBO, '_id' | 'name'>[]> {
     return this.getCollection()
-      .find({ 'properties.relationType': relationTypeId }, { projection: { name: 1 }, session })
+      .find({ 'properties.relationType': relationTypeId }, { projection: { name: 1 } })
       .toArray();
   }
 
@@ -154,7 +153,7 @@ class MongoTemplatesDAO extends MongoDataSource<TemplateDBO> {
           $elemMatch: {
             name: property.name,
             type: property.type,
-            _id: { $ne: new ObjectId(property._id!) },
+            _id: { $ne: new ObjectId(property._id) },
           },
         },
       },

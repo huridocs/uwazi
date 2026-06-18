@@ -139,8 +139,14 @@ export class MongoPXExtractorsDataSource
   ): PXExtractor {
     return new PXExtractor({
       id: dbo._id.toString(),
-      sourceTemplate: MongoTemplateMapper.toDomain(sourceTemplate as any),
-      targetTemplate: MongoTemplateMapper.toDomain(targetTemplate as any),
+      sourceTemplate: MongoTemplateMapper.toDomain({
+        ...sourceTemplate,
+        _id: new ObjectId(sourceTemplate._id),
+      }),
+      targetTemplate: MongoTemplateMapper.toDomain({
+        ...targetTemplate,
+        _id: new ObjectId(targetTemplate._id),
+      }),
       paragraphNumberPropertyId: dbo.paragraphNumberPropertyId.toString(),
       paragraphPropertyId: dbo.paragraphPropertyId.toString(),
       sourceRelationshipTypeId: dbo.sourceRelationshipTypeId.toString(),
