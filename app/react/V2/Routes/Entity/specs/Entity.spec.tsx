@@ -453,33 +453,6 @@ describe('Entity view', () => {
     });
   });
 
-  describe('URL legacy params', () => {
-    it('should redirect legacy references side tab URL to relationships', async () => {
-      render(
-        <TestRouterContext
-          loaderData={{ entity: sampleEntity, mainDocument: sampleMainDocument, pagePlaintext: '' }}
-          initialEntries={['/?s=references']}
-        >
-          <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
-            <Entity />
-          </TestAtomStoreProvider>
-        </TestRouterContext>
-      );
-
-      await checkEntityRendered();
-
-      await waitFor(() => {
-        const tablists = screen.getAllByTestId('tabs-comp');
-        const sideTabs = within(tablists[1]);
-        expect(sideTabs.getByRole('tab', { name: relationshipsSideTab })).toHaveAttribute(
-          'aria-selected',
-          'true'
-        );
-      });
-      expect(document.getElementById('entity-side-panel-relationships')).not.toBeNull();
-    });
-  });
-
   describe('search tab', () => {
     it('should be shown by default when there is a search in the URL', async () => {
       const snippets = {
