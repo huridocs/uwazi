@@ -15,7 +15,8 @@ const useRelationshipBulkDelete = (selectedIds: Set<string>, onSuccess: () => vo
     if (!entity?.sharedId || selectedIds.size === 0) return;
     setIsDeleting(true);
     try {
-      await deleteReferencesById([...selectedIds]);
+      const ids = [...selectedIds].map(String);
+      await deleteReferencesById(ids);
       onSuccess();
       await refreshEntityRelationships(entity.sharedId, revalidator);
     } finally {

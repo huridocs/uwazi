@@ -1,17 +1,16 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
-import { countEntityRelationships } from '#V2/formatters/index.js';
 import { useRelationshipSelection } from '#V2/Routes/Entity/Components/document/index.js';
 import { useRelationshipBulkDelete } from '../hooks/useRelationshipBulkDelete.js';
 import {
-  useEntityScopedEntity,
+  useRelationships,
   useRelationshipsSelection,
 } from '#V2/Routes/Entity/Components/context/index.js';
 
 const RelationshipsActionBar = () => {
-  const entity = useEntityScopedEntity();
+  const { relationships } = useRelationships();
   const {
     relationshipsEditMode: editMode,
     setRelationshipsEditMode: setEditMode,
@@ -21,7 +20,7 @@ const RelationshipsActionBar = () => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const { activeRelationshipId, clearRelationshipSelection } = useRelationshipSelection();
 
-  const totalCount = useMemo(() => (entity ? countEntityRelationships(entity) : 0), [entity]);
+  const totalCount = relationships.length;
   const selectedCount = selected.size;
   const hasSelection = selectedCount > 0;
 

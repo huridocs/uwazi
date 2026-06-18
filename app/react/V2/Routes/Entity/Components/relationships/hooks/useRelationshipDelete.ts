@@ -24,7 +24,8 @@ const useRelationshipDelete = (
     if (!relationshipToDelete?._id || !entity?.sharedId) return;
     setIsDeleting(true);
     try {
-      await deleteReferencesById([String(relationshipToDelete._id)]);
+      const relationshipId = String(relationshipToDelete._id);
+      await deleteReferencesById([relationshipId]);
       setRelationshipToDelete(null);
       if (activeRelationshipId === relationshipToDelete._id) clearRelationshipSelection();
       await refreshEntityRelationships(entity.sharedId, revalidator);

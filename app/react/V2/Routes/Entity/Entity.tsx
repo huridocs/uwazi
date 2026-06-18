@@ -97,7 +97,8 @@ const EntityView = ({ entity, mainDocument, pagePlaintext, searchResults }: Enti
   );
 
   const activeSideTab = useMemo<SideTabId | undefined>(() => {
-    const sideTab = searchParams.get(SIDE_TAB_PARAM);
+    const raw = searchParams.get(SIDE_TAB_PARAM);
+    const sideTab = raw === SIDE_TAB.REFERENCES ? SIDE_TAB.RELATIONSHIPS : raw;
 
     if (isValidSideTab(sideTab) && sideTabButtons.some(button => button.id === sideTab)) {
       return sideTab;
@@ -116,6 +117,12 @@ const EntityView = ({ entity, mainDocument, pagePlaintext, searchResults }: Enti
 
   useEffect(() => {
     const raw = searchParams.get(SIDE_TAB_PARAM);
+    if (raw === SIDE_TAB.REFERENCES) {
+      const next = new URLSearchParams(searchParams.toString());
+      next.set(SIDE_TAB_PARAM, SIDE_TAB.RELATIONSHIPS);
+      setSearchParams(next, { replace: true, preventScrollReset: true });
+      return;
+    }
     if (!raw || !isValidSideTab(raw)) return;
     if (sideTabButtons.some(button => button.id === raw)) return;
     const next = new URLSearchParams(searchParams.toString());
@@ -145,10 +152,11 @@ const EntityView = ({ entity, mainDocument, pagePlaintext, searchResults }: Enti
           filesSideTabs,
         });
         const rawS = next.get(SIDE_TAB_PARAM);
+        const normalizedS = rawS === SIDE_TAB.REFERENCES ? SIDE_TAB.RELATIONSHIPS : rawS;
         const sStillValid =
-          Boolean(rawS) &&
-          isValidSideTab(rawS) &&
-          nextSideButtons.some(button => button.id === rawS);
+          Boolean(normalizedS) &&
+          isValidSideTab(normalizedS) &&
+          nextSideButtons.some(button => button.id === normalizedS);
         if (!sStillValid) {
           next.delete(SIDE_TAB_PARAM);
         }

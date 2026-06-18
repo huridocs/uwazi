@@ -1,22 +1,27 @@
 import { useCallback, useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { relationshipTypesAtom } from '#V2/atoms/index.js';
+import { toMarker } from '#V2/Components/Relationships/types.js';
 import {
   computeStats,
   filterAndSortMarkers,
-  projectRelationshipsPanel,
 } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
 import { computeFacetCounts } from '#V2/formatters/relationships/relationshipsPanelFacets.js';
 import {
   useEntityScopedEntity,
+  useRelationships,
   useRelationshipsPanelFilterInputs,
 } from '#V2/Routes/Entity/Components/context/index.js';
 
 const useRelationshipsPanelData = () => {
   const entity = useEntityScopedEntity();
+  const { relationships } = useRelationships();
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const filters = useRelationshipsPanelFilterInputs();
-  const sourceMarkers = useMemo(() => projectRelationshipsPanel(entity).markers, [entity]);
+  const sourceMarkers = useMemo(
+    () => relationships.map(view => toMarker(view, entity.sharedId)),
+    [relationships, entity.sharedId]
+  );
   const relationshipTypeName = useCallback(
     (typeId: string) => relationshipTypes.find(type => type._id === typeId)?.name ?? '',
     [relationshipTypes]
