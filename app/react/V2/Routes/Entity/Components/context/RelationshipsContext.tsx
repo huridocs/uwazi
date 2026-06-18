@@ -1,11 +1,7 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { formatRelationships } from '#V2/formatters/relationships/formatRelationships.js';
-import type { RelationshipView } from '#V2/formatters/relationships/types.js';
-import { useEntityScopedEntity } from './EntityContext.js';
+import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import type { ReferenceMode, TextSelection } from './types.js';
 
 type RelationshipsState = {
-  relationships: RelationshipView[];
   createReferenceSelection: TextSelection | undefined;
   createReferenceMode: ReferenceMode | undefined;
 };
@@ -18,14 +14,8 @@ const RelationshipsStateContext = createContext<RelationshipsState | null>(null)
 const RelationshipsActionsContext = createContext<RelationshipsActions | null>(null);
 
 const RelationshipsProvider = ({ children }: { children: React.ReactNode }) => {
-  const entity = useEntityScopedEntity();
-  const [relationships, setRelationships] = useState(() => formatRelationships(entity));
   const [createReferenceSelection, setCreateReferenceSelectionState] = useState<TextSelection>();
   const [createReferenceMode, setCreateReferenceMode] = useState<ReferenceMode>();
-
-  useEffect(() => {
-    setRelationships(formatRelationships(entity));
-  }, [entity]);
 
   const setCreateReferenceSelection = useCallback(
     (selection: TextSelection | undefined, mode?: ReferenceMode) => {
@@ -36,8 +26,8 @@ const RelationshipsProvider = ({ children }: { children: React.ReactNode }) => {
   );
 
   const state = useMemo(
-    () => ({ relationships, createReferenceSelection, createReferenceMode }),
-    [relationships, createReferenceSelection, createReferenceMode]
+    () => ({ createReferenceSelection, createReferenceMode }),
+    [createReferenceSelection, createReferenceMode]
   );
 
   const actions = useMemo(() => ({ setCreateReferenceSelection }), [setCreateReferenceSelection]);

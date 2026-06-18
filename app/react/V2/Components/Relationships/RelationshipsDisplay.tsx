@@ -3,14 +3,14 @@ import { Square3Stack3DIcon, DocumentIcon } from '@heroicons/react/24/outline';
 import throttle from 'lodash/throttle.js';
 import { Translate } from '#app/I18N/index.js';
 import { Entity, FileType } from '#V2/api/entities/types.js';
-import { formatRelationships } from '#V2/formatters/index.js';
+import { projectRelationshipMarkers } from '#V2/formatters/index.js';
 import {
   splitMarkersByAnchor,
   groupRelationships,
   groupDocumentRelationships,
 } from './groupRelationships.js';
 import { FullMode, PageMode } from './Components/index.js';
-import { RelationshipMarker, toMarker } from './types.js';
+import { RelationshipMarker } from './types.js';
 
 const RAIL_LAYOUT = {
   insetTop: 8,
@@ -45,10 +45,7 @@ const RelationshipsDisplay = ({
   const markerLayerRef = useRef<HTMLDivElement>(null);
   const [markerLayerHeight, setMarkerLayerHeight] = useState(0);
 
-  const markers = useMemo<RelationshipMarker[]>(
-    () => formatRelationships(entity).map(view => toMarker(view, entity.sharedId)),
-    [entity]
-  );
+  const markers = useMemo<RelationshipMarker[]>(() => projectRelationshipMarkers(entity), [entity]);
 
   const anchoredMarkers = useMemo(() => splitMarkersByAnchor(markers).anchored, [markers]);
 

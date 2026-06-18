@@ -8,7 +8,7 @@ import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { settingsAtom, userAtom } from '#V2/atoms/index.js';
 import { useTabGroup } from '#V2/Components/UI/index.js';
-import { projectRelationshipsPanel } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
+import { projectRelationshipMarkers } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
 import { PAGE_PARAM, SIDE_TAB_PARAM, VIEW_MODE_PARAM } from '../../urlParams.js';
 import { convertTextSelectionToTocEntry } from '#V2/Routes/Entity/Components/ToC/index.js';
 import {
@@ -134,7 +134,7 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
   const findMarkerById = useCallback(
     (relationshipId: string): RelationshipMarker | undefined => {
       if (!entity) return undefined;
-      return projectRelationshipsPanel(entity).markers.find(
+      return projectRelationshipMarkers(entity).find(
         marker => marker._id === relationshipId
       );
     },

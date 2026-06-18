@@ -6,8 +6,7 @@ import { render } from '@testing-library/react';
 import { createStore, Provider } from 'jotai';
 import { apiEntity } from '#app/stories/fixtures/referencesFixtures.js';
 import { templatesAtom } from '#V2/atoms/index.js';
-import { formatRelationships } from '#V2/formatters/index.js';
-import { toMarker } from '../types.js';
+import { projectRelationshipMarkers } from '#V2/formatters/index.js';
 import {
   groupDocumentRelationships,
   groupRelationships,
@@ -19,7 +18,7 @@ describe('FullMode', () => {
   const store = createStore();
   store.set(templatesAtom, [{ _id: 'template3', color: '#2b8a3e', name: 'Person' }]);
 
-  const markers = formatRelationships(apiEntity).map(view => toMarker(view, apiEntity.sharedId));
+  const markers = projectRelationshipMarkers(apiEntity);
   const documentClusters = groupDocumentRelationships(
     groupRelationships(splitMarkersByAnchor(markers).anchored),
     22

@@ -11,6 +11,7 @@ export { formatEntityFiles } from './files/formatEntityFiles.js';
 export { getMainDocument } from './files/getMainDocument.js';
 export { formatRelationships } from './relationships/formatRelationships.js';
 export {
+  projectRelationshipMarkers,
   projectRelationshipsPanel,
   filterAndSortMarkers,
   computeStats,

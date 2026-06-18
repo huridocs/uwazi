@@ -4,13 +4,11 @@ import { Translate } from '#app/I18N/index.js';
 import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
 import { useRelationshipSelection } from '#V2/Routes/Entity/Components/document/index.js';
 import { useRelationshipBulkDelete } from '../hooks/useRelationshipBulkDelete.js';
-import {
-  useRelationships,
-  useRelationshipsSelection,
-} from '#V2/Routes/Entity/Components/context/index.js';
+import { useEntityRelationshipMarkers } from '../hooks/useEntityRelationshipMarkers.js';
+import { useRelationshipsSelection } from '#V2/Routes/Entity/Components/context/index.js';
 
 const RelationshipsActionBar = () => {
-  const { relationships } = useRelationships();
+  const sourceMarkers = useEntityRelationshipMarkers();
   const {
     relationshipsEditMode: editMode,
     setRelationshipsEditMode: setEditMode,
@@ -20,7 +18,7 @@ const RelationshipsActionBar = () => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const { activeRelationshipId, clearRelationshipSelection } = useRelationshipSelection();
 
-  const totalCount = relationships.length;
+  const totalCount = sourceMarkers.length;
   const selectedCount = selected.size;
   const hasSelection = selectedCount > 0;
 

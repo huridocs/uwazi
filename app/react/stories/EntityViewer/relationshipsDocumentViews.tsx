@@ -13,7 +13,7 @@ import {
   useRelationshipsPanelUi,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useRelationshipSelection } from '#V2/Routes/Entity/Components/document/index.js';
-import { projectRelationshipsPanel } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
+import { projectRelationshipMarkers } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
 import { apiEntity, templates } from '../fixtures/referencesFixtures.js';
 import { RelationshipsStoryProvider } from './RelationshipsStoryProvider.js';
 
@@ -196,9 +196,7 @@ const RelationshipsSyncedDocumentView = ({
 
   const handleHighlightClick = useCallback(
     (relationshipId: string) => {
-      const marker = projectRelationshipsPanel(entity).markers.find(
-        item => item._id === relationshipId
-      );
+      const marker = projectRelationshipMarkers(entity).find(item => item._id === relationshipId);
       if (marker) {
         selectRelationship(marker, { scrollPanel: true });
         return;

@@ -1,5 +1,4 @@
-import { Entity } from '#V2/api/entities/types.js';
-import { ConnectionSchema } from '#shared/types/connectionType.js';
+import { Entity, EntityRelation } from '#V2/api/entities/types.js';
 import { Pointer, RelationshipView, Selection } from './types.js';
 
 type Rectangle = { top: number; left: number; width: number; height: number; page: string };
@@ -14,7 +13,7 @@ const toSelections = (rectangles: readonly Rectangle[]): Selection[] =>
   }));
 
 const buildPointer = (
-  connection: ConnectionSchema,
+  connection: EntityRelation,
   entity: string,
   entityTitle: string,
   entityTemplateId: string
@@ -38,9 +37,7 @@ const buildPointer = (
 };
 
 const formatRelationships = (entity: Entity): RelationshipView[] => {
-  const relations = Object.values(
-    (entity as Record<string, unknown>).relations || []
-  ) as ConnectionSchema[];
+  const relations = entity.relations ?? [];
 
   const targets = relations.filter(r => r.entity !== entity.sharedId && r.entityData?.template);
 

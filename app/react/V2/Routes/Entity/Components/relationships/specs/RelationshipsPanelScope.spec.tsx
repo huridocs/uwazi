@@ -17,19 +17,14 @@ beforeAll(() => {
   Element.prototype.scrollIntoView = jest.fn();
 });
 
-const cloneEntityForSharedId = (entity: Entity, sharedId: string, _id: string): Entity => {
-  const source = entity as Entity & {
-    relations?: Array<{ entity?: string } & Record<string, unknown>>;
-  };
-  return {
-    ...source,
-    _id,
-    sharedId,
-    relations: source.relations?.map(relation =>
-      relation.entity === entity.sharedId ? { ...relation, entity: sharedId } : relation
-    ),
-  } as Entity;
-};
+const cloneEntityForSharedId = (entity: Entity, sharedId: string, _id: string): Entity => ({
+  ...entity,
+  _id,
+  sharedId,
+  relations: entity.relations?.map(relation =>
+    relation.entity === entity.sharedId ? { ...relation, entity: sharedId } : relation
+  ),
+});
 
 const entityWithRelationsB = cloneEntityForSharedId(entityWithRelations, 'shared2', 'ent2');
 

@@ -8,18 +8,13 @@ import {
   suppressResizeObserverLoop,
 } from '#V2/Components/Relationships/specs/relationshipsCyHelpers.js';
 
-const cloneStoryEntity = (sharedId: string): Entity => {
-  const source = apiEntity as Entity & {
-    relations: Array<{ entity?: string } & Record<string, unknown>>;
-  };
-  return {
-    ...structuredClone(source),
-    sharedId,
-    relations: source.relations.map(relation =>
-      relation.entity === apiEntity.sharedId ? { ...relation, entity: sharedId } : relation
-    ),
-  } as Entity;
-};
+const cloneStoryEntity = (sharedId: string): Entity => ({
+  ...apiEntity,
+  sharedId,
+  relations: apiEntity.relations?.map(relation =>
+    relation.entity === apiEntity.sharedId ? { ...relation, entity: sharedId } : relation
+  ),
+});
 
 describe('RelationshipsPanel entity scope', () => {
   before(() => {

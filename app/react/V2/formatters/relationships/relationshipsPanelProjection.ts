@@ -23,13 +23,16 @@ const computeStats = (markers: RelationshipMarker[]): RelationshipsPanelStats =>
   aggregates: new Set(markers.map(aggregateKey)).size,
 });
 
+const projectRelationshipMarkers = (entity: Entity): RelationshipMarker[] =>
+  formatRelationships(entity).map(view => toMarker(view, entity.sharedId));
+
 const projectRelationshipsPanel = (entity: Entity): RelationshipsPanelProjection => {
-  const markers = formatRelationships(entity).map(view => toMarker(view, entity.sharedId));
+  const markers = projectRelationshipMarkers(entity);
   return { markers, stats: computeStats(markers) };
 };
 
 const countEntityRelationships = (entity: Entity): number =>
-  projectRelationshipsPanel(entity).markers.length;
+  projectRelationshipMarkers(entity).length;
 
 const markerHaystack = (marker: RelationshipMarker, relationshipTypeName: string): string =>
   `${marker.anchor?.text ?? ''} ${marker.target.title} ${relationshipTypeName}`.toLowerCase();
@@ -114,6 +117,7 @@ export type {
   RelationshipsPanelFilterOptions,
 };
 export {
+  projectRelationshipMarkers,
   projectRelationshipsPanel,
   filterAndSortMarkers,
   computeStats,
