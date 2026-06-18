@@ -139,6 +139,45 @@ class MongoTemplatesDAO extends MongoDataSource<TemplateDBO> {
     const title: PropertyDescriptor = { name: 'title', type: 'text' };
     return [title, ...fromTemplates];
   }
+
+  async getReferencePropertyNames(): Promise<string[]> {
+    const result = await this.getCollection()
+      .aggregate([
+        { $unwind: '$properties' },
+        {
+          $match: {
+            'properties.type': { $in: ['select', 'multiselect', 'relationship'] },
+          },
+        },
+        {
+          $group: {
+            _id: '$properties.name',
+          },
+        },
+      ])
+      .toArray();
+
+    return result.map((doc: any) => doc._id);
+  }
+
+  async findTemplateIdsUsingThesaurus(thesaurusId: string): Promise<ObjectId[]> {
+    const directTemplates = await this.getCollection()
+      .find({ 'properties.content': thesaurusId })
+      .project({ _id: 1 })
+      .toArray();
+
+    const relatedTemplates = await this.getCollection()
+      .find({
+        'properties.type': 'relationship',
+        'properties.content': { $in: directTemplates.map(t => t._id.toString()) },
+      })
+      .project({ _id: 1 })
+      .toArray();
+
+    const allTemplates = [...directTemplates, ...relatedTemplates];
+
+    return Array.from(new Set(allTemplates.map(t => t._id)));
+  }
 }
 
 export { MongoTemplatesDAO };

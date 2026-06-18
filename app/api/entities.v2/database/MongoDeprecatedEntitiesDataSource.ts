@@ -11,10 +11,9 @@ import { MetadataSchema } from '#shared/types/commonTypes.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { DeprecatedEntitiesDataSource } from '../contracts/DeprecatedEntitiesDataSource.js';
-import { Entity, EntityMetadata, MetadataValue } from '../model/Entity.js';
+import { DeprecatedEntity, EntityMetadata, MetadataValue } from '../model/Entity.js';
 import { EntityMappers } from './EntityMapper.js';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
-import { EntityJoinTemplate } from './schemas/EntityTypes.js';
 
 export class MongoDeprecatedEntitiesDataSource
   extends MongoDataSource<EntityDBO>
@@ -38,7 +37,7 @@ export class MongoDeprecatedEntitiesDataSource
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async updateEntities_OnlyUpdateAndReindex(entity: Entity) {
+  async updateEntities_OnlyUpdateAndReindex(entity: DeprecatedEntity) {
     // This is using V1 model and custom reindex here
     // this is a hack and should be changed as soon as we finish AT
     const entityToModify = await entities.getById(entity._id);
@@ -53,7 +52,7 @@ export class MongoDeprecatedEntitiesDataSource
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async updateEntity(entity: Entity) {
+  async updateEntity(entity: DeprecatedEntity) {
     // This is using V1 so that it gets denormalized to speed up development
     // this is a hack and should be changed as soon as we finish AT
     const entityToModify = await entities.getById(entity._id);
@@ -98,17 +97,7 @@ export class MongoDeprecatedEntitiesDataSource
       sharedId: { $in: sharedIds },
     };
     if (language) match.language = language;
-    const cursor = this.getCollection().aggregate<EntityJoinTemplate>([
-      { $match: match },
-      {
-        $lookup: {
-          from: 'templates',
-          localField: 'template',
-          foreignField: '_id',
-          as: 'joinedTemplate',
-        },
-      },
-    ]);
+    const cursor = this.getCollection().find(match);
 
     return new MongoResultSet(cursor, async entity => EntityMappers.toModel(entity));
   }
@@ -159,7 +148,7 @@ export class MongoDeprecatedEntitiesDataSource
 
   // eslint-disable-next-line class-methods-use-this
   async updateMetadataValues(
-    id: Entity['_id'],
+    id: DeprecatedEntity['_id'],
     values: Record<string, { value: MetadataValue }[]>,
     title?: string
   ) {
@@ -182,7 +171,7 @@ export class MongoDeprecatedEntitiesDataSource
   }
 
   async updateObsoleteMetadataValues(
-    id: Entity['_id'],
+    id: DeprecatedEntity['_id'],
     values: Record<string, EntityMetadata[]>
   ): Promise<void> {
     const stream = this.createBulkStream();

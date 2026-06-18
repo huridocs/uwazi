@@ -1,4 +1,4 @@
-import { Entity } from '#api/entities.v2/model/Entity.js';
+import { DeprecatedEntity } from '#api/entities.v2/model/Entity.js';
 import { MatchQueryNode } from './MatchQueryNode.js';
 import { Relationship } from './Relationship.js';
 import { Property, PropertyUpdateInfo } from '#api/core/domain/template/Property.js';
@@ -39,15 +39,15 @@ class RelationshipProperty extends Property {
     return new MatchQueryNode({ templates: [this.template] }, this.query);
   }
 
-  buildQueryRootedInEntity(sharedId: Entity['sharedId']) {
+  buildQueryRootedInEntity(sharedId: DeprecatedEntity['sharedId']) {
     return MatchQueryNode.forEntity(sharedId, this.query);
   }
 
-  buildQueryInvertedFromRelationship(relationship: Relationship, entities: Entity[]) {
+  buildQueryInvertedFromRelationship(relationship: Relationship, entities: DeprecatedEntity[]) {
     return this.buildQueryRootedInTemplate().invertFromRelationship(relationship, entities);
   }
 
-  buildQueryInvertedFromEntity(entity: Entity) {
+  buildQueryInvertedFromEntity(entity: DeprecatedEntity) {
     return this.buildQueryRootedInTemplate().invertFromEntity(entity);
   }
 

@@ -10,6 +10,7 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { MongoEntitiesDataSource } from '../entity/MongoEntitiesDataSource.js';
+import { MongoTemplatesDAO } from '../template/MongoTemplatesDAO.js';
 import { search } from '#api/search/index.js';
 
 const factory = getFixturesFactory();
@@ -80,6 +81,7 @@ const createSut = () => {
   const sut = new MongoEntitiesDataSource({
     db,
     transactionManager,
+    templatesDAO: new MongoTemplatesDAO({ db, transactionManager }),
   });
 
   return { sut, transactionManager };

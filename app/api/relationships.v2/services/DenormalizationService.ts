@@ -3,7 +3,7 @@ import { DeprecatedEntitiesDataSource } from '#api/entities.v2/contracts/Depreca
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { RelationshipProperty } from '../model/RelationshipProperty.js';
-import { Entity } from '#api/entities.v2/model/Entity.js';
+import { DeprecatedEntity } from '#api/entities.v2/model/Entity.js';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource.js';
 import { MatchQueryNode } from '../model/MatchQueryNode.js';
 import { RelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/RelationshipPropertyUpdateStrategy.js';
@@ -48,7 +48,7 @@ export class DenormalizationService {
   private async getCandidateEntities(
     invertQueryCallback: (property: RelationshipProperty) => MatchQueryNode[],
     language: string,
-    relatedEntities: Entity[] = []
+    relatedEntities: DeprecatedEntity[] = []
   ) {
     const properties = await this.templatesDS.getAllRelationshipProperties();
     const entities: { sharedId: string; property: string }[] = [];

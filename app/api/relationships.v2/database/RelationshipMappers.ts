@@ -1,7 +1,7 @@
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 import { ObjectId } from 'mongodb';
 import { EntityMappers } from '#api/entities.v2/database/EntityMapper.js';
-import { Entity } from '#api/entities.v2/model/Entity.js';
+import { DeprecatedEntity } from '#api/entities.v2/model/Entity.js';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import { RelationshipDBOType } from './schemas/relationshipTypes.js';
 import {
@@ -106,7 +106,7 @@ export const RelationshipMappers = {
     };
   },
 
-  toGraphQueryResult(entityTraversal: EntityTraversal): Entity {
+  toGraphQueryResult(entityTraversal: EntityTraversal): DeprecatedEntity {
     if (entityTraversal.traversal) {
       return RelationshipMappers.toGraphQueryResult(entityTraversal.traversal.traversal);
     }

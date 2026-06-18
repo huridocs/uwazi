@@ -1,6 +1,6 @@
 import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
 import { DeprecatedEntitiesDataSource } from '#api/entities.v2/contracts/DeprecatedEntitiesDataSource.js';
-import { Entity } from '#api/entities.v2/model/Entity.js';
+import { DeprecatedEntity } from '#api/entities.v2/model/Entity.js';
 import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
 import { RelationshipType } from '#api/relationshiptypes.v2/model/RelationshipType.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
@@ -10,7 +10,7 @@ import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource.js
 import { Relationship, ReadableRelationship } from '../model/Relationship.js';
 
 const resolveNames = (
-  allowedEntities: Entity[],
+  allowedEntities: DeprecatedEntity[],
   allowedTemplates: Template[],
   allowedRelTypes: RelationshipType[],
   allowedRelationships: Relationship[]

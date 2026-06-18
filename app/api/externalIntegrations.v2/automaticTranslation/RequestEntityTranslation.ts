@@ -1,5 +1,5 @@
 import { getTenant } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { Entity } from '#api/entities.v2/model/Entity.js';
+import { DeprecatedEntity } from '#api/entities.v2/model/Entity.js';
 import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
@@ -46,7 +46,7 @@ export class RequestEntityTranslation {
 
   async execute(entityInputModel: EntityInputModel | unknown) {
     this.inputValidator.ensure(entityInputModel);
-    const entity = Entity.fromInputModel(entityInputModel);
+    const entity = DeprecatedEntity.fromInputModel(entityInputModel);
     const { atTemplateConfig, languagesTo, atConfig, languageFrom } = await this.getConfig(entity);
 
     if (
@@ -98,7 +98,7 @@ export class RequestEntityTranslation {
     );
   }
 
-  private async getConfig(entity: Entity) {
+  private async getConfig(entity: DeprecatedEntity) {
     const atConfig = await this.ATConfigDS.get();
     const atTemplateConfig = atConfig.templates.find(
       t => t.template === entity.template?.toString()

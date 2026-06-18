@@ -10,7 +10,7 @@ import {
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoEntityMapper } from '#api/core/infrastructure/mongodb/entity/MongoEntityMapper.js';
-import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
+import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { search } from '#api/search/index.js';
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
@@ -21,6 +21,7 @@ import { EntityDBO, EntityTemplateAggregation } from './EntityDBO.js';
 type Deps = {
   db: Db;
   transactionManager: MongoTransactionManager;
+  templatesDAO: MongoTemplatesDAO;
   options?: MongoDSOptions;
 };
 
@@ -32,8 +33,12 @@ export class MongoEntitiesDataSource
 
   private modifiedSharedIds = new Set<string>();
 
+  private templatesDAO: MongoTemplatesDAO;
+
   constructor(deps: Deps) {
     super(deps.db, deps.transactionManager, deps.options);
+
+    this.templatesDAO = deps.templatesDAO;
 
     this.transactionManager.onCommitted(async () => {
       await search.indexEntities({ sharedId: { $in: Array.from(this.modifiedSharedIds) } });
@@ -101,42 +106,11 @@ export class MongoEntitiesDataSource
   }
 
   private async getReferencePropertyNames(): Promise<string[]> {
-    const result = await this.getCollection('templates')
-      .aggregate([
-        { $unwind: '$properties' },
-        {
-          $match: {
-            'properties.type': { $in: ['select', 'multiselect', 'relationship'] },
-          },
-        },
-        {
-          $group: {
-            _id: '$properties.name',
-          },
-        },
-      ])
-      .toArray();
-
-    return result.map((doc: any) => doc._id);
+    return this.templatesDAO.getReferencePropertyNames();
   }
 
   private async findTemplatesUsingThesaurus(thesaurusId: string) {
-    const directTemplates = await this.getCollection<TemplateDBO>('templates')
-      .find({ 'properties.content': thesaurusId })
-      .project({ _id: 1 })
-      .toArray();
-
-    const relatedTemplates = await this.getCollection<TemplateDBO>('templates')
-      .find({
-        'properties.type': 'relationship',
-        'properties.content': { $in: directTemplates.map(t => t._id.toString()) },
-      })
-      .project({ _id: 1 })
-      .toArray();
-
-    const allTemplates = [...directTemplates, ...relatedTemplates];
-
-    return Array.from(new Set(allTemplates.map(t => t._id)));
+    return this.templatesDAO.findTemplateIdsUsingThesaurus(thesaurusId);
   }
 
   async getSharedIdsUsingThesaurus(thesaurusId: string) {
@@ -406,37 +380,30 @@ export class MongoEntitiesDataSource
   }
 
   private async getByQuery(query: Filter<EntityDBO>) {
+    const templateIds = await this.getCollection().distinct('template', query);
+    const templateIdStrings = templateIds.map(id => id.toHexString());
+    const templateDBOs = await this.templatesDAO.get(templateIdStrings);
+    const templateMap = new Map(templateDBOs.map(t => [t._id.toHexString(), t]));
+
     const aggregation = [
       { $match: query },
       {
         $group: {
           _id: '$sharedId',
-          template: { $first: '$template' },
+          templateId: { $first: '$template' },
           entities: { $push: '$$ROOT' },
-        },
-      },
-      {
-        $lookup: {
-          from: 'templates',
-          localField: 'template',
-          foreignField: '_id',
-          as: 'templateData',
-        },
-      },
-      { $unwind: '$templateData' },
-      {
-        $project: {
-          _id: 0,
-          template: '$templateData',
-          entities: 1,
         },
       },
     ];
 
     const cursor = this.getCollection().aggregate<EntityTemplateAggregation>(aggregation);
 
-    return new MongoResultSet<EntityTemplateAggregation, Entity>(cursor, ({ template, entities }) =>
-      MongoEntityMapper.toDomain(entities, template)
+    return new MongoResultSet<EntityTemplateAggregation, Entity>(
+      cursor,
+      ({ templateId, entities }) => {
+        const templateDBO = templateMap.get(templateId.toHexString())!;
+        return MongoEntityMapper.toDomain(entities, templateDBO);
+      }
     );
   }
 

@@ -1,5 +1,4 @@
 import { ObjectId } from 'mongodb';
-import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
 import { PermissionSchema } from '#shared/types/permissionType.js';
 
 type IconDBO = {
@@ -30,6 +29,6 @@ export interface EntityDBO {
 }
 
 export type EntityTemplateAggregation = {
-  template: TemplateDBO;
+  templateId: ObjectId;
   entities: EntityDBO[];
 };
