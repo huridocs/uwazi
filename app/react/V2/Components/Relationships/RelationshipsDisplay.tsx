@@ -49,14 +49,22 @@ const RelationshipsDisplay = ({
 
   const anchoredMarkers = useMemo(() => splitMarkersByAnchor(markers).anchored, [markers]);
 
-  const relationshipGroups = useMemo(
-    () => groupRelationships(anchoredMarkers, { trackHeight: markerLayerHeight, pageHeight }),
-    [anchoredMarkers, markerLayerHeight, pageHeight]
+  const fullRelationshipGroups = useMemo(
+    () => groupRelationships(anchoredMarkers, { trackHeight: markerLayerHeight }),
+    [anchoredMarkers, markerLayerHeight]
   );
 
+  const pageRelationshipGroups = useMemo(() => {
+    const onPage =
+      currentPage === undefined
+        ? anchoredMarkers
+        : anchoredMarkers.filter(marker => marker.anchor?.selections?.[0]?.page === currentPage);
+    return groupRelationships(onPage, { trackHeight: markerLayerHeight, pageHeight });
+  }, [anchoredMarkers, markerLayerHeight, pageHeight, currentPage]);
+
   const documentClusters = useMemo(
-    () => groupDocumentRelationships(relationshipGroups, document.totalPages ?? 1),
-    [document.totalPages, relationshipGroups]
+    () => groupDocumentRelationships(fullRelationshipGroups, document.totalPages ?? 1),
+    [document.totalPages, fullRelationshipGroups]
   );
 
   useEffect(() => {
@@ -128,7 +136,6 @@ const RelationshipsDisplay = ({
               document={document}
               markerLayerHeight={markerLayerHeight}
               documentClusters={documentClusters}
-              pageHeight={pageHeight}
               activeRelationshipId={activeRelationshipId}
               onPointClick={onPointClick}
               onClusterClick={onClusterClick}
@@ -136,7 +143,8 @@ const RelationshipsDisplay = ({
           ) : (
             <PageMode
               markerLayerHeight={markerLayerHeight}
-              relationshipGroups={relationshipGroups}
+              relationshipGroups={pageRelationshipGroups}
+              allRelationshipGroups={fullRelationshipGroups}
               currentPage={currentPage}
               pageHeight={pageHeight}
               activeRelationshipId={activeRelationshipId}

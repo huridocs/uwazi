@@ -9,7 +9,6 @@ import { RelationshipMarker } from '../types.js';
 type FullModeProps = {
   document: FileType;
   markerLayerHeight: number;
-  pageHeight?: number;
   activeRelationshipId?: string | null;
   onPointClick?: (marker: RelationshipMarker) => void;
   onMoreClick?: (markers: RelationshipMarker[]) => void;
@@ -27,7 +26,6 @@ const getMarkerTop = (marker: RelationshipMarker): number => {
 const FullMode = ({
   document,
   markerLayerHeight,
-  pageHeight,
   activeRelationshipId = null,
   onPointClick,
   onMoreClick,
@@ -53,7 +51,6 @@ const FullMode = ({
           top,
           totalPages: documentPages,
           markerSize,
-          pageHeight,
         });
         return { key, element, position };
       }) ?? [];
@@ -61,7 +58,7 @@ const FullMode = ({
     return items
       .sort((a, b) => a.position - b.position)
       .map((item, index) => ({ ...item, stackOrder: index + 1 }));
-  }, [documentClusters, documentPages, markerLayerHeight, pageHeight]);
+  }, [documentClusters, documentPages, markerLayerHeight]);
 
   return markers.map(({ key, element, position, stackOrder }) => {
     if (element.type === 'cluster') {

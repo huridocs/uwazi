@@ -13,6 +13,7 @@ type PageModeProps = {
   markerLayerHeight: number;
   onPointClick?: (marker: RelationshipMarker) => void;
   relationshipGroups?: RelationshipGroup[];
+  allRelationshipGroups?: RelationshipGroup[];
   activeRelationshipId?: string | null;
   onMoreClick?: (markers: RelationshipMarker[]) => void;
   currentPage?: number;
@@ -29,6 +30,7 @@ const PageMode = ({
   markerLayerHeight,
   onPointClick,
   relationshipGroups,
+  allRelationshipGroups,
   activeRelationshipId = null,
   onMoreClick,
   currentPage,
@@ -41,23 +43,19 @@ const PageMode = ({
   const colorOf = (marker: RelationshipMarker): string =>
     templates.find(template => template._id === marker.target.templateId)?.color ?? DEFAULT_COLOR;
 
-  const pageClusters = useMemo(
-    () =>
-      currentPage === undefined
-        ? relationshipGroups
-        : relationshipGroups?.filter(group => Number(group.page) === currentPage),
-    [currentPage, relationshipGroups]
-  );
+  const pageClusters = relationshipGroups;
+
+  const groupsForCounts = allRelationshipGroups ?? relationshipGroups;
 
   const { previousPageCount, nextPageCount, previousColors, nextColors } = useMemo(() => {
-    if (currentPage === undefined || !relationshipGroups?.length) {
+    if (currentPage === undefined || !groupsForCounts?.length) {
       return { previousPageCount: 0, nextPageCount: 0, previousColors: [], nextColors: [] };
     }
 
     const beforeColors: string[] = [];
     const afterColors: string[] = [];
 
-    const counts = relationshipGroups.reduce(
+    const counts = groupsForCounts.reduce(
       (acc, group) => {
         const page = Number(group.page);
         getGroupMarkers(group).forEach(marker => {
@@ -77,7 +75,7 @@ const PageMode = ({
 
     return { ...counts, previousColors: beforeColors, nextColors: afterColors };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, relationshipGroups, templates]);
+  }, [currentPage, groupsForCounts, templates]);
 
   const hasPreviousCount = hasCurrentPage && previousPageCount > 0;
   const hasNextCount = hasCurrentPage && nextPageCount > 0;
