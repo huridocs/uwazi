@@ -18,13 +18,11 @@ const createSut = () => {
   return testingEnvironment.runWithContext(
     () => {
       const fs = FilesServiceFactory.default({ fileStorage, eventBus });
-      jest.spyOn(fs, 'storeFiles').mockResolvedValue();
-      jest.spyOn(fs, 'insert').mockResolvedValue();
       jest.spyOn(fs, 'delete');
 
       const sut = UpdateEntityUseCaseFactory.default({ fileService: fs });
 
-      return { sut, fileService: fs };
+      return { sut, fileStorage };
     },
     { factories: { eventEmitter: () => EventEmitterFactory.default() } }
   );
@@ -551,8 +549,37 @@ describe('UpdateEntityUseCase', () => {
   });
 
   describe('When Files gets uploaded', () => {
+    it('should properly create url attachments', async () => {
+      const { sut, fileStorage } = createSut();
+
+      await sut.execute({
+        language: 'en',
+        sharedId: 'required_entity',
+        propertyAssignments: [],
+        uploadedFiles: [
+          InputFile.createUrlAttachment({
+            originalname: 'example attachment',
+            url: 'https://example.com/external-file.pdf',
+          }),
+        ],
+      });
+
+      const files = await getAllFiles('required_entity');
+
+      expect(fileStorage.storeFile).not.toHaveBeenCalled();
+
+      expect(files).toMatchObject([
+        {
+          entity: 'required_entity',
+          originalname: 'example attachment',
+          url: 'https://example.com/external-file.pdf',
+          type: 'attachment',
+        },
+      ]);
+    });
+
     it('should add files', async () => {
-      const { sut, fileService } = createSut();
+      const { sut, fileStorage } = createSut();
 
       await sut.execute({
         language: 'en',
@@ -603,16 +630,22 @@ describe('UpdateEntityUseCase', () => {
         ],
       });
 
-      expect(fileService.storeFiles).toHaveBeenCalledWith([
-        expect.objectContaining({ originalname: 'primary_1.pdf' }),
-        expect.objectContaining({ originalname: 'primary_2.pdf' }),
-        expect.objectContaining({ originalname: 'attachment_1.png' }),
-      ]);
+      expect(fileStorage.storeFile).toHaveBeenCalledWith(
+        expect.objectContaining({ originalname: 'primary_1.pdf' })
+      );
+      expect(fileStorage.storeFile).toHaveBeenCalledWith(
+        expect.objectContaining({ originalname: 'primary_2.pdf' })
+      );
+      expect(fileStorage.storeFile).toHaveBeenCalledWith(
+        expect.objectContaining({ originalname: 'attachment_1.png' })
+      );
 
-      expect(fileService.insert).toHaveBeenCalledWith([
-        expect.objectContaining({ originalname: 'primary_1.pdf' }),
-        expect.objectContaining({ originalname: 'primary_2.pdf' }),
-        expect.objectContaining({ originalname: 'attachment_1.png' }),
+      const files = await getAllFiles('entity1');
+
+      expect(files).toMatchObject([
+        { originalname: 'primary_1.pdf' },
+        { originalname: 'primary_2.pdf' },
+        { originalname: 'attachment_1.png' },
       ]);
     });
 

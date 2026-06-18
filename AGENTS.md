@@ -17,6 +17,7 @@ Backend is in `app/api`
 
 - **Install:** `yarn install`
 - **Test:** `yarn test app/api`
+- **Suggested Jest invocation for targeted test runs:** `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest <path-or-pattern> -w=4`
 - **Run:** `yarn hot`
 - **Translations CSV update:** never edit translation keys manually in CSV files; run `yarn update-translations-csv` instead.
 
@@ -84,7 +85,7 @@ Explains main backend core artifacts: purpose, practices, and testing approaches
 - **Defaults**: Use shared `ExecutionContext` dependencies (including actor/tenant) by default.
 - **Testing**: Use `testingEnvironment.runWithContext(() => Factory.default())` instead of mocking.
 - **Examples**: api/core/infrastructure/factories/DeleteTemplateUseCaseFactory.ts, api/core/infrastructure/factories/EntitiesServiceFactory.ts
-  
+
 #### UseCases
 
 - **Purpose**: Entry points to the application, orchestrating full application flows.

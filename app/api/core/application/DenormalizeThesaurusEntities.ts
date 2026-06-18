@@ -2,6 +2,7 @@ import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesData
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
+import { EntitiesService } from './EntitiesService.js';
 
 type Input = {
   thesaurusId: string;
@@ -12,6 +13,7 @@ type Output = void;
 
 type Deps = {
   entitiesDS: EntitiesDataSource;
+  entitiesService: EntitiesService;
   propertyAssignmentCreatorServiceStrategy: PropertyAssignmentCreatorServiceStrategy;
 };
 
@@ -41,7 +43,12 @@ class DenormalizeThesaurusEntitiesUseCase extends AbstractUseCase<Input, Output,
         entity.setPropertyAssignmentsInAllLanguages(propertyAssignments);
       });
 
-      await this.deps.entitiesDS.bulkUpdate(withoutRelationships);
+      await this.deps.entitiesService.update(withoutRelationships, {
+        actorId: this.actorId,
+        actor: this.getActor(),
+        targetLanguage: withoutRelationships[0]!.languages[0],
+        authorize: false,
+      });
 
       await ArrayUtils.sequentialFor(withRelationships, async entity => {
         const propertyAssignments =
@@ -55,7 +62,12 @@ class DenormalizeThesaurusEntitiesUseCase extends AbstractUseCase<Input, Output,
         entity.setPropertyAssignmentsInAllLanguages(propertyAssignments);
       });
 
-      await this.deps.entitiesDS.bulkUpdate(withRelationships);
+      await this.deps.entitiesService.update(withRelationships, {
+        actorId: this.actorId,
+        actor: this.getActor(),
+        targetLanguage: withRelationships[0]!.languages[0],
+        authorize: false,
+      });
     });
   }
 }

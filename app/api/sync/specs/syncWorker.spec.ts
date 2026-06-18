@@ -257,6 +257,7 @@ describe('syncWorker', () => {
               entity: 'newDoc1SharedId',
               filename: 'test2.txt',
               type: 'attachment',
+              __v: 0,
             },
             {
               _id: expect.anything(),
@@ -264,6 +265,7 @@ describe('syncWorker', () => {
               entity: 'newDoc1SharedId',
               filename: `${newDoc1.toString()}.jpg`,
               type: 'attachment',
+              __v: 0,
             },
           ],
         },
@@ -286,6 +288,7 @@ describe('syncWorker', () => {
               entity: 'entitytest.txt',
               filename: 'test.txt',
               type: 'attachment',
+              __v: 0,
             },
           ],
         },

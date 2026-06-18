@@ -4,6 +4,7 @@ Key,Spanish
 2FA,2FA
 2FA Enabled,2FA Enabled
 A default template cannot be deleted.,A default template cannot be deleted.
+A friendly hand for serious work — I'll act in the context shown above.,A friendly hand for serious work — I'll act in the context shown above.
 A generated ID will be the default title.,El ID autogenerado será el título por defecto
 A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
@@ -102,6 +103,7 @@ Are you sure you want to delete this file?,Estás seguro que quieres eliminar es
 Are you sure you want to delete this item?,Estás seguro que quieres eliminar este elemento?
 Are you sure you want to delete this reference? This action cannot be undone.,Are you sure you want to delete this reference? This action cannot be undone.
 Are you sure?,Estás seguro?
+Ask Bert,Ask Bert
 Attachment,Archivo
 Attachment deleted,Archivo adjunto eliminado
 Attachment renamed,Archivo adjunto renombrado
@@ -120,6 +122,7 @@ Back to details,Back to details
 Back to search,Volver a la búsqueda
 Bad Request,Petición incorrecta
 Basic,Básico
+Bert,Bert
 Body,Cuerpo
 Browse files to upload,Explorar archivos para subir
 "by ids, methods, keywords, etc.","por ids, métodos, palabras clave, etc."
@@ -185,6 +188,7 @@ Confirm deletion of,Confirmar la eliminación de
 Confirm deletion of entity,Confirmar eliminación de entidad
 Confirm deletion of file,Confirmar eliminación de archivo
 Confirm new password,Confirmar nueva contraseña
+Confirm your password,Confirm your password
 Connect to a paragraph,Conectar a un párrafo
 Connect to an entity,Connect to an entity
 Connect to document,Connect to document
@@ -239,6 +243,7 @@ CSV import cancelled,CSV import cancelled
 CSV import completed,CSV import completed
 CSV import failed,CSV import failed
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
+Ctrl K,Ctrl K
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,Error en el componente de marcado personalizado: valores no soportados! Por favor revisa tu configuración
 Custom CSS,CSS personalizado
@@ -450,6 +455,7 @@ Header bar hover background,Header bar hover background
 Header bar text,Header bar text
 help,ayuda
 here,aquí
+"Hi, I'm Bert.","Hi, I'm Bert."
 Hide,Hide
 Hide actions,Ocultar acciones
 Hide label,Ocultar etiqueta
@@ -619,6 +625,7 @@ Navigate back,Navegar hacia atrás
 Navigation menu tool tip part 1,"Si utilizas una URL interna de este sitio web, asegúrate de eliminar la primera parte."
 Navigation menu tool tip part 2,dejando solo una URL relativa que comienza con una barra inclinada. Es decir. /algun_url.
 New,New
+New conversation,New conversation
 New entity,Nueva entidad
 New group,Grupo nuevo
 New language added,Nuevo idioma añadido
@@ -940,6 +947,7 @@ Site logo description,"El logotipo aparece en la barra superior junto al nombre 
 Site logo no images hint,"Aún no hay archivos de imagen en Subidas personalizadas. Añade primero imágenes PNG, SVG o JPEG allí."
 Size,Tamaño
 Skip to main content,Skip to main content
+Some tasks may take a while. Bert will reply when it's done.,Some tasks may take a while. Bert will reply when it's done.
 Something went wrong,Algo salió mal
 Sort,Ordenar
 Sort ascending,Orden ascendente

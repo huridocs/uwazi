@@ -5,6 +5,7 @@ import { Readable } from 'stream';
 import { files, storage } from '#api/files/index.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import settings from '#api/settings/settings.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import request from '#shared/JSONRequest.js';
 import * as sockets from '#api/socketio/setupSockets.js';
@@ -311,7 +312,10 @@ describe('OcrManager', () => {
 
     it('should catch an unexpected error while processing the response and log it', async () => {
       const error = new Error('some error');
-      jest.spyOn(files, 'get').mockReturnValueOnce(Promise.reject(error));
+      const mockGetByFilename = jest.fn().mockRejectedValue(error);
+      jest.spyOn(FilesDAOFactory, 'default').mockReturnValueOnce({
+        getByFilename: mockGetByFilename,
+      } as any);
       await mocks.taskManagerMock.trigger(mockedMessageFromRedis);
       expect(handleError.handleError).toHaveBeenCalledWith(error);
     });
