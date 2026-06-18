@@ -9,9 +9,14 @@ const documents = {
   },
 
   async page(_id, page) {
+    if (!_id) {
+      throw createError('document does not exists', 404);
+    }
+
     const document = (
-      await FilesDAOFactory.default().getById(_id.toString(), { projection: { fullText: 1 } })
+      await FilesDAOFactory.default().getById(_id.toString(), { withFullText: true })
     ).getData(null);
+
     if (!document || !document.fullText) {
       throw createError('document does not exists', 404);
     }
