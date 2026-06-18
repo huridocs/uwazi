@@ -14,7 +14,7 @@ import { triggerScroll } from './functions/helpers.js';
 import { clearSnippets, tryHighlightAndScroll } from './functions/handleSnippets.js';
 import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
 import { waitForElement } from './functions/waitForElement.js';
-import { PDFJS, CMAP_URL, EventBus, PDFDocumentProxy } from './pdfjs.js';
+import { PDFJS, CMAP_URL, WASM_URL, EventBus, PDFDocumentProxy } from './pdfjs.js';
 import { useContainerWidth } from './hooks/useContainerWidth.js';
 import { PDFPage } from './PDFPage.js';
 import { BlankState, ProgressBar } from '../UI/index.js';
@@ -216,6 +216,7 @@ const PDF = ({
       url: fileUrl,
       cMapUrl: CMAP_URL,
       cMapPacked: true,
+      wasmUrl: WASM_URL,
       isEvalSupported: false,
     });
 

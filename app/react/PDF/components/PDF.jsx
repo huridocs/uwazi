@@ -7,7 +7,7 @@ import { Translate } from '#app/I18N/index.js';
 import { PDFPage } from '#app/PDF/index.js';
 import { BlankState } from '#app/V2/Components/UI/index.js';
 import { selectionHandlers } from '#V2/Components/PDFViewer/index.js';
-import { PDFJS, CMAP_URL } from '#V2/Components/PDFViewer/pdfjs.js';
+import { PDFJS, CMAP_URL, WASM_URL } from '#V2/Components/PDFViewer/pdfjs.js';
 import { isClient } from '../../utils/index.js';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import { reportErrorToSentry } from '#app/V2/shared/errorUtils.js';
@@ -114,6 +114,7 @@ class PDF extends Component {
         url: file,
         cMapUrl: CMAP_URL,
         cMapPacked,
+        wasmUrl: WASM_URL,
         isEvalSupported: false,
       })
         .promise.then(pdf => {

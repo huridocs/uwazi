@@ -13,6 +13,7 @@ jest.mock('#V2/Components/PDFViewer/pdfjs.js', () => ({
   PDFJS: { getDocument: jest.fn() },
   EventBus: function () {},
   CMAP_URL: '/legacy_character_maps/',
+  WASM_URL: '/pdfjs_wasm/',
 }));
 
 // eslint-disable-next-line max-statements
@@ -50,6 +51,7 @@ describe('PDF', () => {
       expect(PDFJS.getDocument).toHaveBeenCalledWith({
         cMapPacked: true,
         cMapUrl: legacyCharacterMapUrl,
+        wasmUrl: '/pdfjs_wasm/',
         isEvalSupported: false,
         url: props.file,
       });
