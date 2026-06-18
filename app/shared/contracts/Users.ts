@@ -17,9 +17,9 @@ type NewUser = Omit<User, '_id'> & { password?: string };
 
 type NewGroup = Omit<Group, '_id'>;
 
-type PostUserCreateRequests = NewUser; // this needs admin password to validate but we are not sending it plainly in the request
+type UserCreateRequests = NewUser;
 
-type PostUserCreateResponse = User;
+type CreateUserResponse = { user: User };
 
 type PostGroupCreateRequest = NewGroup;
 
@@ -39,4 +39,4 @@ type GetUserByIdResponse = {
   data: User;
 };
 
-export type { GetUserByIdRequest, GetUserByIdResponse, GetUsersRequest, GetUsersResponse };
+export type { CreateUserResponse };

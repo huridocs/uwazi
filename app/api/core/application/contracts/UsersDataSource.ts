@@ -1,8 +1,8 @@
 import { User } from '#api/core/domain/user/User.js';
 
 interface UsersDataSource {
-  //create
-  //delete
+  insert(user: User): Promise<void>;
+  userExists(user: User): Promise<Boolean>;
   //update
 }
 

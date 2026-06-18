@@ -1,6 +1,12 @@
 import type { Application } from 'express';
-import needsAuthorization from '#api/auth/authMiddleware.js';
+import { validatePasswordMiddleWare, needsAuthorization } from '#api/auth/index.js';
+import { CreateUserController } from './CreateUserController.js';
 
 export const userRoutes = (app: Application) => {
-  // app.get('/api/users', needsAuthorization(), GetUserByIdController.createHandler());
+  app.post(
+    '/api/users/new',
+    needsAuthorization(),
+    validatePasswordMiddleWare,
+    CreateUserController.createHandler()
+  );
 };

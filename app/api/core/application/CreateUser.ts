@@ -1,33 +1,27 @@
-import { z } from 'zod';
+import { User } from '../domain/user/User.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
-import { MongoUsersDataSource } from '../infrastructure/mongodb/user/MongoUsersDataSource.js';
+import { CreateUserDTO, UserCreateSchema } from './contracts/UserCreateSchema.js';
+import { UsersDataSource } from './contracts/UsersDataSource.js';
 
-const InputSchema = z.object({
-  username: z.string(),
-  email: z.string().email(),
-  password: z.string().optional(),
-});
+type Input = CreateUserDTO;
 
-type Input = z.infer<typeof InputSchema>;
+type Output = User;
 
-type Output = User; //domain
+type Dependencies = { usersDS: UsersDataSource };
 
-type Deps = { usersDS: MongoUsersDataSource };
-
-class CreateUser extends AbstractUseCase<Input, Output, Deps> {
-  static InputSchema = InputSchema;
+class CreateUser extends AbstractUseCase<Input, Output, Dependencies> {
+  static InputSchema = UserCreateSchema;
 
   async execute(input: Input): Promise<Output> {
     const { password, ...userData } = input;
 
-    //MODEL SHOULD NOT TAKE PASSWORD IN THE CONSTRUCTOR
-    const user = new User(userData);
+    const user = new User({ _id: this.idGenerator.generate(), ...userData });
 
-    const userExists = this.deps.usersDS.userExists(user);
+    const userExists = await this.deps.usersDS.userExists(user);
 
     if (userExists) {
       // this is likely a domain error
-      throw new UserExistsError();
+      // throw new UserExistsError();
     }
 
     // if it undefined it will do it's own thing
@@ -35,18 +29,18 @@ class CreateUser extends AbstractUseCase<Input, Output, Deps> {
 
     await this.transactionManager.run(async () => {
       //the insert will update groups
-      this.deps.usersDS.insert(user);
+      await this.deps.usersDS.insert(user);
     });
 
     //this service is from a new model for the passwordrecoveries
-    this.deps.services.sendRecoveryEmail(user);
+    // this.deps.services.sendRecoveryEmail(user);
 
     return user;
   }
 }
 
 export { CreateUser };
-export type { Input };
+export type { Input, Dependencies };
 
 // async newUser(user, domain) {
 //   const [userNameMatch, emailMatch] = await Promise.all([
