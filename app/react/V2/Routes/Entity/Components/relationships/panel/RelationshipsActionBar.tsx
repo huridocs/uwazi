@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
-import { useRelationshipSelection } from '#V2/Routes/Entity/Components/document/index.js';
+import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 import { useRelationshipBulkDelete } from '../hooks/useRelationshipBulkDelete.js';
 import { useEntityRelationshipMarkers } from '../hooks/useEntityRelationshipMarkers.js';
 import { useRelationshipsSelection } from '#V2/Routes/Entity/Components/context/index.js';
@@ -16,7 +16,7 @@ const RelationshipsActionBar = () => {
     setSelectedRelationshipIds: setSelected,
   } = useRelationshipsSelection();
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const { activeRelationshipId, clearRelationshipSelection } = useRelationshipSelection();
+  const { activeRelationshipId, clearRelationshipSelection } = useActiveRelationshipHighlight();
 
   const totalCount = sourceMarkers.length;
   const selectedCount = selected.size;

@@ -12,7 +12,7 @@ import {
   useRelationshipsPanelFacetFilters,
   useRelationshipsPanelUi,
 } from '#V2/Routes/Entity/Components/context/index.js';
-import { useRelationshipSelection } from '#V2/Routes/Entity/Components/document/index.js';
+import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 import { projectRelationshipMarkers } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
 import { apiEntity, templates } from '../fixtures/referencesFixtures.js';
 import { RelationshipsStoryProvider } from './RelationshipsStoryProvider.js';
@@ -155,7 +155,7 @@ const RelationshipsSyncedDocumentView = ({
   const { setPdfController: setPDFControls, pdfController: mainPdfController } = useDocumentPdf();
   const { setScrollToRelationshipPanel } = useDocumentRelationshipNav();
   const { activeRelationshipId, selectRelationship, clearRelationshipSelection } =
-    useRelationshipSelection();
+    useActiveRelationshipHighlight();
   const { activeClusterRefIds, setActiveClusterRefIds } = useRelationshipsPanelFacetFilters();
   const { setExpandForRefId } = useRelationshipsPanelUi();
   const [currentPage, setCurrentPage] = useState(1);

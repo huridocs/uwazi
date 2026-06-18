@@ -1,4 +1,4 @@
-import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
+import { RelationshipMarker, firstPageOf } from '#V2/Components/Relationships/types.js';
 import { directionOf, type RelationshipDirection } from './types.js';
 
 type RelationshipAggregate = {
@@ -14,9 +14,6 @@ type RelationshipAggregate = {
 
 const aggregateKey = (marker: RelationshipMarker): string =>
   `${marker.target.sharedId}::${marker.view.type}`;
-
-const firstPageOf = (marker: RelationshipMarker): number | undefined =>
-  marker.anchor?.selections[0]?.page;
 
 const deriveAggregates = (
   markers: RelationshipMarker[],

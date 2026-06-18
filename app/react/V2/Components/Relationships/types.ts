@@ -26,5 +26,8 @@ const toMarker = (view: RelationshipView, selfSharedId: string): RelationshipMar
   };
 };
 
+const firstPageOf = (marker: RelationshipMarker): number | undefined =>
+  marker.anchor?.selections[0]?.page;
+
 export type { RelationshipMarker };
-export { toMarker };
+export { toMarker, firstPageOf };

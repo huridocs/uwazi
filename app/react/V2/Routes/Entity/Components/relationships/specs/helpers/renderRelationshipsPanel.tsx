@@ -9,7 +9,7 @@ import {
   useDocumentPdfActions,
   useDocumentRelationshipNav,
 } from '#V2/Routes/Entity/Components/context/index.js';
-import { useRelationshipSelection } from '#V2/Routes/Entity/Components/document/index.js';
+import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 import { RelationshipsPanel } from '../../panel/RelationshipsPanel.js';
 import { RelationshipsFiltersDrawer } from '../../filters/RelationshipsFiltersDrawer.js';
 import { entityWithRelations } from '../fixtures/entityWithRelations.js';
@@ -41,7 +41,7 @@ const PdfControllerSetup = ({ pdf }: { pdf: PdfMocks }) => {
 };
 
 const SelectionState = () => {
-  const { activeRelationshipId } = useRelationshipSelection();
+  const { activeRelationshipId } = useActiveRelationshipHighlight();
   const { scrollToRelationshipPanel } = useDocumentRelationshipNav();
   return (
     <div

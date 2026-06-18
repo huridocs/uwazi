@@ -13,7 +13,7 @@ type SelectOptions = {
   scrollPanel?: boolean;
 };
 
-const useRelationshipSelection = () => {
+const useActiveRelationshipHighlight = () => {
   const { activeRelationshipId, setActiveRelationshipId, setScrollToRelationshipPanel } =
     useDocumentRelationshipNav();
   const { pdfController: mainPdfController } = useDocumentPdf();
@@ -69,4 +69,4 @@ const useRelationshipSelection = () => {
   return { activeRelationshipId, selectRelationship, clearRelationshipSelection };
 };
 
-export { useRelationshipSelection };
+export { useActiveRelationshipHighlight };

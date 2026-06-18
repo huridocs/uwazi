@@ -19,7 +19,7 @@ import {
   useRelationshipsPanelUi,
   useTocActions,
 } from '#V2/Routes/Entity/Components/context/index.js';
-import { useRelationshipSelection } from '#V2/Routes/Entity/Components/document/index.js';
+import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 import { SIDE_TAB } from '../tabIds.js';
 import { useEntityTabNavigation } from './useEntityTabNavigation.js';
 
@@ -43,7 +43,7 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
   const { activeClusterRefIds, setActiveClusterRefIds } = useRelationshipsPanelFacetFilters();
   const { setExpandForRefId } = useRelationshipsPanelUi();
   const { activeRelationshipId, selectRelationship, clearRelationshipSelection } =
-    useRelationshipSelection();
+    useActiveRelationshipHighlight();
   const { addEntry } = useTocActions();
   const { setCreateReferenceSelection } = useRelationshipsActions();
 
@@ -134,9 +134,7 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
   const findMarkerById = useCallback(
     (relationshipId: string): RelationshipMarker | undefined => {
       if (!entity) return undefined;
-      return projectRelationshipMarkers(entity).find(
-        marker => marker._id === relationshipId
-      );
+      return projectRelationshipMarkers(entity).find(marker => marker._id === relationshipId);
     },
     [entity]
   );

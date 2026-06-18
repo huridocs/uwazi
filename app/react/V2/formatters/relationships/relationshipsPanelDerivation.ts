@@ -1,4 +1,4 @@
-import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
+import { RelationshipMarker, firstPageOf } from '#V2/Components/Relationships/types.js';
 import { compareAppearance } from './relationshipsPanelProjection.js';
 import {
   aggregateKey,
@@ -25,9 +25,6 @@ type PanelListEntry =
   | { kind: 'reference'; marker: RelationshipMarker }
   | { kind: 'aggregate'; aggregate: RelationshipAggregate; markers: RelationshipMarker[] }
   | { kind: 'hub'; hub: RelationshipHub; markers: RelationshipMarker[] };
-
-const firstPageOf = (marker: RelationshipMarker): number | undefined =>
-  marker.anchor?.selections[0]?.page;
 
 const compareEntries = (a: PanelListEntry, b: PanelListEntry): number => {
   const markerOf = (entry: PanelListEntry) =>

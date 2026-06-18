@@ -21,7 +21,7 @@ import {
   useRelationshipsPanelUi,
   useRelationshipsSelectionActions,
 } from '#V2/Routes/Entity/Components/context/index.js';
-import { useRelationshipSelection } from '#V2/Routes/Entity/Components/document/index.js';
+import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 import { useGroupLabelContext } from '../hooks/useGroupLabelContext.js';
 import { useRelationshipDelete } from '../hooks/useRelationshipDelete.js';
 import { useRelationshipSave } from '../hooks/useRelationshipSave.js';
@@ -39,7 +39,7 @@ const RelationshipsPanel = ({
 }: RelationshipsPanelProps) => {
   const { createReferenceSelection, createReferenceMode } = useRelationships();
   const { activeRelationshipId, selectRelationship, clearRelationshipSelection } =
-    useRelationshipSelection();
+    useActiveRelationshipHighlight();
   const { markers, stats, hasRelationships } = useRelationshipsPanelData();
   const groupContext = useGroupLabelContext();
   const relationshipTypes = useAtomValue(relationshipTypesAtom);

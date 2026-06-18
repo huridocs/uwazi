@@ -1,5 +1,5 @@
 import { Entity } from '#V2/api/entities/types.js';
-import { RelationshipMarker, toMarker } from '#V2/Components/Relationships/types.js';
+import { RelationshipMarker, firstPageOf, toMarker } from '#V2/Components/Relationships/types.js';
 import { formatRelationships } from './formatRelationships.js';
 import { buildMatcher } from './relationshipsPanelSearchQuery.js';
 import { aggregateKey } from './relationshipsPanelAggregates.js';
@@ -42,8 +42,8 @@ const compareAppearance = (a: RelationshipMarker, b: RelationshipMarker): number
   const rankDiff = anchorRank(a) - anchorRank(b);
   if (rankDiff !== 0) return rankDiff;
 
-  const pageA = a.anchor?.selections?.[0]?.page ?? 0;
-  const pageB = b.anchor?.selections?.[0]?.page ?? 0;
+  const pageA = firstPageOf(a) ?? 0;
+  const pageB = firstPageOf(b) ?? 0;
   if (pageA !== pageB) return pageA - pageB;
   const topA = a.anchor?.selections?.[0]?.top ?? 0;
   const topB = b.anchor?.selections?.[0]?.top ?? 0;
