@@ -46,7 +46,9 @@ const webpackPort = Number(process.env.WEBPACK_PORT || 8080);
       const normalizedPath = filePath.replace(/\\/g, '/');
       return normalizedPath.endsWith('.css') ||
         normalizedPath.includes('webpack-assets.json') ||
-        normalizedPath.includes('/CSS/');
+        normalizedPath.includes('/CSS/') ||
+        normalizedPath.includes('/pdfjs_wasm/') ||
+        normalizedPath.includes('/legacy_character_maps/');
     },
   });
 
