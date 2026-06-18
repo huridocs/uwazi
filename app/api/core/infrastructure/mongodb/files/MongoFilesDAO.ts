@@ -14,6 +14,12 @@ type Deps = {
 
 const defaultProjection: Document = { fullText: 0 };
 
+function resolveProjection(options?: GetFileOptions): Document | undefined {
+  if (options?.projection) return options.projection;
+  if (options?.withFullText) return {};
+  return defaultProjection;
+}
+
 class MongoFilesDAO extends MongoDataSource<FileDBO> {
   protected collectionName = 'files';
 
@@ -25,7 +31,7 @@ class MongoFilesDAO extends MongoDataSource<FileDBO> {
     id: string,
     options?: GetFileOptions<T>
   ): Promise<ResultType<T, FileNotFound>> {
-    const projection = options?.projection ?? defaultProjection;
+    const projection = resolveProjection(options);
 
     const dbo = await this.getCollection().findOne({ _id: new ObjectId(id) }, { projection });
     if (!dbo) {
@@ -39,7 +45,7 @@ class MongoFilesDAO extends MongoDataSource<FileDBO> {
     filename: string,
     options?: GetFileOptions<T>
   ): Promise<ResultType<T, FileNotFound>> {
-    const projection = options?.projection ?? defaultProjection;
+    const projection = resolveProjection(options);
 
     const dbo = await this.getCollection().findOne({ filename }, { projection });
     if (!dbo) {
@@ -59,7 +65,7 @@ class MongoFilesDAO extends MongoDataSource<FileDBO> {
     }
 
     const findOptions: FindOptions = {};
-    findOptions.projection = options?.projection ?? defaultProjection;
+    findOptions.projection = resolveProjection(options);
     if (options?.sort) findOptions.sort = options.sort;
     if (options?.limit) findOptions.limit = options.limit;
 
@@ -71,7 +77,7 @@ class MongoFilesDAO extends MongoDataSource<FileDBO> {
     options?: ListFileOptions<T>
   ): Promise<T[]> {
     const findOptions: FindOptions = {};
-    findOptions.projection = options?.projection ?? defaultProjection;
+    findOptions.projection = resolveProjection(options);
     if (options?.sort) findOptions.sort = options.sort;
     if (options?.limit) findOptions.limit = options.limit;
 
@@ -81,7 +87,7 @@ class MongoFilesDAO extends MongoDataSource<FileDBO> {
   async getNextDocumentWithoutToc<T extends FileDBO = FileDBO>(
     options?: GetFileOptions<T>
   ): Promise<ResultType<T, FileNotFound>> {
-    const projection = options?.projection ?? defaultProjection;
+    const projection = resolveProjection(options);
     const dbos = await this.getCollection()
       .find(
         { type: 'document', filename: { $exists: true }, 'toc.0': { $exists: false } },
@@ -112,7 +118,7 @@ class MongoFilesDAO extends MongoDataSource<FileDBO> {
     }
 
     const findOptions: FindOptions = {};
-    findOptions.projection = options?.projection ?? defaultProjection;
+    findOptions.projection = resolveProjection(options);
     if (options?.sort) findOptions.sort = options.sort;
     if (options?.limit) findOptions.limit = options.limit;
 

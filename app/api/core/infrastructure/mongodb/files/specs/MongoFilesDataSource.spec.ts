@@ -141,6 +141,11 @@ describe('MongoFilesDataSource', () => {
       const processed = all.find(file => file.filename === 'processed1');
       //@ts-ignore
       expect(processed.fullText).toBe(undefined);
+      expect(processed).toMatchObject({
+        filename: 'processed1',
+        entity: 'entity1',
+        mimetype: 'application/pdf',
+      });
     });
   });
   describe('getProcessingById', () => {
@@ -153,6 +158,12 @@ describe('MongoFilesDataSource', () => {
         await ds.getProcessingById(f.idString('processingDocument'))
       ).getDataOrThrow();
       expect(processed).toBeInstanceOf(PDFDocument);
+      expect(processed).toMatchObject({
+        id: f.idString('processingDocument'),
+        filename: 'processingDocument',
+        entity: 'entity3',
+        status: 'processing',
+      });
     });
   });
 
@@ -162,9 +173,9 @@ describe('MongoFilesDataSource', () => {
       const files = await ds.getByEntitiesIds(['entity2', 'entity3']).all();
 
       expect(files).toMatchObject([
-        { filename: 'file2' },
-        { filename: 'file3' },
-        { filename: 'processingDocument' },
+        { filename: 'file2', entity: 'entity2' },
+        { filename: 'file3', entity: 'entity3' },
+        { filename: 'processingDocument', entity: 'entity3', status: 'processing' },
       ]);
       const processed = (
         await ds.getProcessingById(f.idString('processingDocument'))
@@ -391,6 +402,8 @@ describe('MongoFilesDataSource', () => {
 
       const documentsForEntity = await ds.getProcessedDocsForEntity('entity1').all();
       expect(documentsForEntity.length).toBe(5);
+      expect(documentsForEntity.every(d => d.entity === 'entity1')).toBe(true);
+      expect(documentsForEntity.every(d => d.status === 'ready')).toBe(true);
     });
 
     it('should not return fullText', async () => {
@@ -400,6 +413,11 @@ describe('MongoFilesDataSource', () => {
       const processed = documentsForEntity.find(file => file.filename === 'processed1');
       //@ts-ignore
       expect(processed.fullText).toBe(undefined);
+      expect(processed).toMatchObject({
+        filename: 'processed1',
+        entity: 'entity1',
+        status: 'ready',
+      });
     });
 
     it('should allow fetching documents only in specific languages', async () => {
@@ -410,8 +428,11 @@ describe('MongoFilesDataSource', () => {
         .all();
 
       expect(documentsForEntity.length).toBe(2);
-      expect(documentsForEntity[0].filename).toBe('file4');
-      expect(documentsForEntity[1].filename).toBe('file6');
+      const filenames = documentsForEntity.map(d => d.filename);
+      expect(filenames).toEqual(expect.arrayContaining(['file4', 'file6']));
+      documentsForEntity.forEach(d => {
+        expect(d).toMatchObject({ entity: 'entity1', status: 'ready' });
+      });
     });
   });
 
@@ -420,6 +441,12 @@ describe('MongoFilesDataSource', () => {
       const { ds } = createDs();
       const doc = (await ds.getByFilename('file2')).getData();
       expect(doc).toBeInstanceOf(PDFDocument);
+      expect(doc).toMatchObject({
+        id: f.idString('file2'),
+        filename: 'file2',
+        entity: 'entity2',
+        mimetype: 'application/pdf',
+      });
     });
 
     it('should return FileNotFound when restricting filetype', async () => {
@@ -432,11 +459,22 @@ describe('MongoFilesDataSource', () => {
       const { ds } = createDs();
       const doc = (await ds.getByFilename('file3', ['document', 'attachment'])).getData();
       expect(doc).toBeInstanceOf(PDFDocument);
+      expect(doc).toMatchObject({
+        id: f.idString('file3'),
+        filename: 'file3',
+        entity: 'entity3',
+      });
     });
     it('should return URLAttachment properly (with nullFileContents)', async () => {
       const { ds } = createDs();
       const doc = (await ds.getByFilename('url_attachment')).getData();
       expect(doc).toBeInstanceOf(URLAttachment);
+      expect(doc).toMatchObject({
+        id: f.idString('url_attachment'),
+        filename: 'url_attachment',
+        entity: 'entity1',
+        mimetype: 'text/html',
+      });
     });
 
     it('should not load fullText by default', async () => {
@@ -444,6 +482,12 @@ describe('MongoFilesDataSource', () => {
       const doc = (await ds.getByFilename('processed1')).getData();
       //@ts-ignore
       expect(doc?.fullText).toBeUndefined();
+      expect(doc).toMatchObject({
+        id: f.idString('processed1'),
+        filename: 'processed1',
+        entity: 'entity1',
+        mimetype: 'application/pdf',
+      });
     });
   });
 
@@ -452,6 +496,13 @@ describe('MongoFilesDataSource', () => {
       const { ds } = createDs();
       const doc = (await ds.getById(f.idString('processed1'))).getData();
       expect(doc).toBeInstanceOf(PDFDocument);
+      expect(doc).toMatchObject({
+        id: f.idString('processed1'),
+        filename: 'processed1',
+        entity: 'entity1',
+        mimetype: 'application/pdf',
+        status: 'ready',
+      });
     });
 
     it('should not load fullText by default', async () => {
@@ -459,12 +510,24 @@ describe('MongoFilesDataSource', () => {
       const doc = (await ds.getById(f.idString('processed1'))).getData();
       //@ts-ignore
       expect(doc?.fullText).toBeUndefined();
+      expect(doc).toMatchObject({
+        id: f.idString('processed1'),
+        filename: 'processed1',
+        entity: 'entity1',
+        mimetype: 'application/pdf',
+      });
     });
 
     it('should return URLAttachment properly (with nullFileContents)', async () => {
       const { ds } = createDs();
       const doc = (await ds.getById(f.idString('url_attachment'))).getData();
       expect(doc).toBeInstanceOf(URLAttachment);
+      expect(doc).toMatchObject({
+        id: f.idString('url_attachment'),
+        filename: 'url_attachment',
+        entity: 'entity1',
+        mimetype: 'text/html',
+      });
     });
   });
 
@@ -476,8 +539,15 @@ describe('MongoFilesDataSource', () => {
         (await ds.getById(f.idString('processed2'))).getDataOrThrow() as PDFDocument,
       ];
       const thumbnails = await ds.getThumbnails(processed.map(p => p.entity)).all();
+      expect(thumbnails.length).toBe(2);
       expect(thumbnails[0]).toBeInstanceOf(Thumbnail);
       expect(thumbnails[1]).toBeInstanceOf(Thumbnail);
+      thumbnails.forEach(t => {
+        expect(t).toMatchObject({
+          entity: 'entity1',
+          type: 'thumbnail',
+        });
+      });
     });
   });
 
