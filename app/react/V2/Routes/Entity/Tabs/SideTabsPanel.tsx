@@ -1,10 +1,11 @@
 import React, { useMemo } from 'react';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { getSideTabButtons, type FilesSideTabsOptions } from './sideTabSets.js';
-import type { MainTabId, SideTabId } from './tabIds.js';
+import { SIDE_TAB, type MainTabId, type SideTabId } from './tabIds.js';
 import { TabsSideButtons } from './TabsSideButtons.js';
 import { SideTabsContent } from './SideTabsContent.js';
 import { SideTabsFooters } from './SideTabsFooters.js';
+import { RelationshipsFiltersDrawer } from '../Components/relationships/index.js';
 
 type SideTabsPanelProps = {
   activeMainTab: MainTabId;
@@ -37,7 +38,7 @@ const SideTabsPanel = ({
   );
 
   return (
-    <div className="flex h-full min-h-0 min-w-0 w-full flex-col gap-3 border-l border-border-soft">
+    <div className="relative flex h-full min-h-0 min-w-0 w-full flex-col gap-3 overflow-hidden border-l border-border-soft">
       <div className="shrink-0 px-3 pt-2.5">
         <TabsSideButtons
           buttons={sideButtons}
@@ -56,6 +57,7 @@ const SideTabsPanel = ({
         </div>
         <SideTabsFooters activeTabId={activeSideTab} mainDocument={mainDocument} />
       </div>
+      {activeSideTab === SIDE_TAB.RELATIONSHIPS && <RelationshipsFiltersDrawer />}
     </div>
   );
 };
