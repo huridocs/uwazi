@@ -7,8 +7,8 @@ import { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.js';
 import { MetadataDisplayFooter } from '#app/V2/Routes/Entity/Components/index.js';
 import { MetadataEditingProvider } from '#V2/Routes/Entity/Components/context/MetadataEditingContext.js';
 import { localeAtom, settingsAtom, templatesAtom, translationsAtom } from '#V2/atoms/index.js';
-import { apiEntity, templates } from '../fixtures/MetadataDisplayFixtures.js';
 import { Entity, MetadataSchema } from '#V2/api/entities/types.js';
+import { apiEntity, templates } from '../fixtures/MetadataDisplayFixtures.js';
 
 const MetadataDisplayComponent = ({
   entity,

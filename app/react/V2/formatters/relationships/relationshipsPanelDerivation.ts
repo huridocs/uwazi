@@ -35,6 +35,23 @@ const compareEntries = (a: PanelListEntry, b: PanelListEntry): number => {
   return compareAppearance(left, right);
 };
 
+const upsertHubMember = (
+  members: Map<string, RelationshipHubMember>,
+  marker: RelationshipMarker
+): void => {
+  const existing = members.get(marker.target.sharedId);
+  if (existing) {
+    existing.markerIds.push(marker._id);
+    return;
+  }
+  members.set(marker.target.sharedId, {
+    sharedId: marker.target.sharedId,
+    title: marker.target.title,
+    templateId: marker.target.templateId,
+    markerIds: [marker._id],
+  });
+};
+
 const deriveHub = (hubId: string, markers: RelationshipMarker[]): RelationshipHub => {
   const members = new Map<string, RelationshipHubMember>();
   let firstPage: number | undefined;
@@ -44,18 +61,7 @@ const deriveHub = (hubId: string, markers: RelationshipMarker[]): RelationshipHu
     markerIds.push(marker._id);
     const page = firstPageOf(marker);
     if (page !== undefined && (firstPage === undefined || page < firstPage)) firstPage = page;
-
-    const member = members.get(marker.target.sharedId);
-    if (member) {
-      member.markerIds.push(marker._id);
-    } else {
-      members.set(marker.target.sharedId, {
-        sharedId: marker.target.sharedId,
-        title: marker.target.title,
-        templateId: marker.target.templateId,
-        markerIds: [marker._id],
-      });
-    }
+    upsertHubMember(members, marker);
   }
 
   return {
@@ -67,10 +73,7 @@ const deriveHub = (hubId: string, markers: RelationshipMarker[]): RelationshipHu
   };
 };
 
-const buildPanelListEntries = (
-  markers: RelationshipMarker[],
-  selfSharedId: string
-): PanelListEntry[] => {
+const groupMarkersByHub = (markers: RelationshipMarker[]) => {
   const byHub = new Map<string, RelationshipMarker[]>();
   for (const marker of markers) {
     const hubId = marker.view.hub;
@@ -78,50 +81,71 @@ const buildPanelListEntries = (
     list.push(marker);
     byHub.set(hubId, list);
   }
+  return byHub;
+};
 
-  const naryHubIds = new Set(
+const getNaryHubIds = (byHub: Map<string, RelationshipMarker[]>) =>
+  new Set(
     Array.from(byHub.entries())
       .filter(([, hubMarkers]) => hubMarkers.length >= 2)
       .map(([hubId]) => hubId)
   );
 
+const splitHubEntries = (byHub: Map<string, RelationshipMarker[]>, naryHubIds: Set<string>) => {
   const hubEntries: PanelListEntry[] = [];
   const remaining: RelationshipMarker[] = [];
-
   for (const [hubId, hubMarkers] of byHub.entries()) {
     if (naryHubIds.has(hubId)) {
-      hubEntries.push({
-        kind: 'hub',
-        hub: deriveHub(hubId, hubMarkers),
-        markers: hubMarkers,
-      });
+      hubEntries.push({ kind: 'hub', hub: deriveHub(hubId, hubMarkers), markers: hubMarkers });
     } else {
       remaining.push(...hubMarkers);
     }
   }
+  return { hubEntries, remaining };
+};
 
-  const aggregates = deriveAggregates(remaining, selfSharedId);
+const groupMarkersByAggregateKey = (markers: RelationshipMarker[]) => {
   const grouped = new Map<string, RelationshipMarker[]>();
-  for (const marker of remaining) {
+  for (const marker of markers) {
     const key = aggregateKey(marker);
     const list = grouped.get(key) ?? [];
     list.push(marker);
     grouped.set(key, list);
   }
+  return grouped;
+};
 
+const toOtherEntry = (
+  key: string,
+  groupMarkers: RelationshipMarker[],
+  aggregates: Map<string, RelationshipAggregate>
+): PanelListEntry | undefined => {
+  if (groupMarkers.length > 1) {
+    const aggregate = aggregates.get(key);
+    return aggregate ? { kind: 'aggregate', aggregate, markers: groupMarkers } : undefined;
+  }
+  const marker = groupMarkers[0];
+  return marker ? { kind: 'reference', marker } : undefined;
+};
+
+const buildOtherEntries = (remaining: RelationshipMarker[], selfSharedId: string) => {
+  const aggregates = deriveAggregates(remaining, selfSharedId);
+  const grouped = groupMarkersByAggregateKey(remaining);
   const otherEntries: PanelListEntry[] = [];
   for (const [key, groupMarkers] of grouped.entries()) {
-    if (groupMarkers.length > 1) {
-      const aggregate = aggregates.get(key);
-      if (aggregate) {
-        otherEntries.push({ kind: 'aggregate', aggregate, markers: groupMarkers });
-      }
-    } else {
-      const marker = groupMarkers[0];
-      if (marker) otherEntries.push({ kind: 'reference', marker });
-    }
+    const entry = toOtherEntry(key, groupMarkers, aggregates);
+    if (entry) otherEntries.push(entry);
   }
+  return otherEntries;
+};
 
+const buildPanelListEntries = (
+  markers: RelationshipMarker[],
+  selfSharedId: string
+): PanelListEntry[] => {
+  const byHub = groupMarkersByHub(markers);
+  const { hubEntries, remaining } = splitHubEntries(byHub, getNaryHubIds(byHub));
+  const otherEntries = buildOtherEntries(remaining, selfSharedId);
   return [...hubEntries, ...otherEntries].sort(compareEntries);
 };
 

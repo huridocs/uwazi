@@ -27,6 +27,7 @@ const RelationshipsMarkerListBody = ({
         variant={variant}
         markers={markers}
         groupContext={groupContext}
+        // eslint-disable-next-line react/jsx-props-no-spreading
         {...rowProps}
       />
     );
@@ -39,6 +40,7 @@ const RelationshipsMarkerListBody = ({
       groupBy={groupBy}
       subGroupBy={subGroupBy}
       variant={variant}
+      // eslint-disable-next-line react/jsx-props-no-spreading
       {...rowProps}
     />
   );

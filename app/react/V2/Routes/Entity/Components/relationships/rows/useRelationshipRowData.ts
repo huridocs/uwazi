@@ -7,6 +7,7 @@ import {
   useDocumentRelationshipNav,
   useRelationshipsSelectionState,
 } from '#V2/Routes/Entity/Components/context/index.js';
+import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
 import { useRelationshipRowVisibility } from '../hooks/useRelationshipRowVisibility.js';
 
 const useRelationshipRowData = (
@@ -33,7 +34,7 @@ const useRelationshipRowData = (
 
   useEffect(() => {
     if (scrollToRelationshipPanel !== marker._id) return;
-    rowRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    scrollIntoView(rowRef.current, { behavior: 'smooth', block: 'center' });
     setScrollToRelationshipPanel(null);
   }, [marker._id, scrollToRelationshipPanel, setScrollToRelationshipPanel]);
 

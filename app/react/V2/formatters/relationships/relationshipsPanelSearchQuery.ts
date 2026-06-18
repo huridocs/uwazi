@@ -10,40 +10,48 @@ type Token =
   | { k: 'rp' }
   | { k: 'term'; v: string; exact: boolean };
 
+const isWhitespace = (c: string) => c === ' ' || c === '\t' || c === '\n';
+
+const readQuotedTerm = (q: string, i: number, tokens: Token[]): number => {
+  const end = q.indexOf('"', i + 1);
+  const stop = end === -1 ? q.length : end;
+  tokens.push({ k: 'term', v: q.slice(i + 1, stop), exact: true });
+  return stop + 1;
+};
+
+const readWord = (q: string, i: number, tokens: Token[]): number => {
+  let j = i;
+  while (j < q.length && !/[\s()"]/.test(q[j] ?? '')) j += 1;
+  const raw = q.slice(i, j);
+  const up = raw.toUpperCase();
+  if (up === 'AND' || up === 'OR' || up === 'NOT') tokens.push({ k: 'op', v: up });
+  else if (raw.length > 0) tokens.push({ k: 'term', v: raw, exact: false });
+  return j;
+};
+
+const advanceToken = (q: string, i: number, tokens: Token[]): number => {
+  const c = q[i] ?? '';
+  if (isWhitespace(c)) return i + 1;
+  if (c === '(') {
+    tokens.push({ k: 'lp' });
+    return i + 1;
+  }
+  if (c === ')') {
+    tokens.push({ k: 'rp' });
+    return i + 1;
+  }
+  if (c === '"') return readQuotedTerm(q, i, tokens);
+  return readWord(q, i, tokens);
+};
+
 const tokenize = (q: string): Token[] => {
   const tokens: Token[] = [];
   let i = 0;
-  while (i < q.length) {
-    const c = q[i];
-    if (c === ' ' || c === '\t' || c === '\n') {
-      i += 1;
-    } else if (c === '(') {
-      tokens.push({ k: 'lp' });
-      i += 1;
-    } else if (c === ')') {
-      tokens.push({ k: 'rp' });
-      i += 1;
-    } else if (c === '"') {
-      const end = q.indexOf('"', i + 1);
-      const stop = end === -1 ? q.length : end;
-      tokens.push({ k: 'term', v: q.slice(i + 1, stop), exact: true });
-      i = stop + 1;
-    } else {
-      let j = i;
-      while (j < q.length && !/[\s()"]/.test(q[j] ?? '')) j += 1;
-      const raw = q.slice(i, j);
-      const up = raw.toUpperCase();
-      if (up === 'AND' || up === 'OR' || up === 'NOT') {
-        tokens.push({ k: 'op', v: up });
-      } else if (raw.length > 0) {
-        tokens.push({ k: 'term', v: raw, exact: false });
-      }
-      i = j;
-    }
-  }
+  while (i < q.length) i = advanceToken(q, i, tokens);
   return tokens;
 };
 
+const shouldEndAnd = (p: Token | undefined) => !p || p.k === 'rp' || (p.k === 'op' && p.v === 'OR');
 const parse = (tokens: Token[]): Node | null => {
   let pos = 0;
   const peek = () => tokens[pos];
@@ -54,15 +62,17 @@ const parse = (tokens: Token[]): Node | null => {
   };
 
   /* eslint-disable @typescript-eslint/no-use-before-define -- mutual recursion */
+  function parseGrouped(): Node | null {
+    eat();
+    const inner = parseOr();
+    if (peek()?.k === 'rp') eat();
+    return inner;
+  }
+
   function parseAtom(): Node | null {
     const p = peek();
     if (!p) return null;
-    if (p.k === 'lp') {
-      eat();
-      const inner = parseOr();
-      if (peek()?.k === 'rp') eat();
-      return inner;
-    }
+    if (p.k === 'lp') return parseGrouped();
     if (p.k === 'term') {
       eat();
       return { t: 'term', value: p.v, exact: p.exact };
@@ -83,18 +93,21 @@ const parse = (tokens: Token[]): Node | null => {
     return parseAtom();
   }
 
+  function mergeAnd(left: Node): Node {
+    const p = peek();
+    if (shouldEndAnd(p)) return left;
+    if (p?.k === 'op' && p.v === 'AND') eat();
+    const right = parseNot();
+    return right ? { t: 'and', left, right } : left;
+  }
+
   function parseAnd(): Node | null {
     let left = parseNot();
     if (!left) return null;
     while (pos < tokens.length) {
-      const p = peek();
-      if (!p) break;
-      if (p.k === 'rp') break;
-      if (p.k === 'op' && p.v === 'OR') break;
-      if (p.k === 'op' && p.v === 'AND') eat();
-      const right = parseNot();
-      if (!right) break;
-      left = { t: 'and', left, right };
+      const next = mergeAnd(left);
+      if (next === left) break;
+      left = next;
     }
     return left;
   }

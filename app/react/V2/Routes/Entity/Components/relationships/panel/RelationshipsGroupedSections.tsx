@@ -37,14 +37,23 @@ const renderGroupLabel = (
   />
 );
 
-const renderSubGroups = (
-  parentKey: string,
-  groupMarkersList: RelationshipMarker[],
-  subGroupBy: RelationshipsPanelGroupBy,
-  groupContext: GroupLabelContext,
-  rowProps: RelationshipPanelRowHandlers,
-  variant: 'list' | 'tree'
-) => {
+type SubGroupRenderParams = {
+  parentKey: string;
+  groupMarkersList: RelationshipMarker[];
+  subGroupBy: RelationshipsPanelGroupBy;
+  groupContext: GroupLabelContext;
+  rowProps: RelationshipPanelRowHandlers;
+  variant: 'list' | 'tree';
+};
+
+const renderSubGroups = ({
+  parentKey,
+  groupMarkersList,
+  subGroupBy,
+  groupContext,
+  rowProps,
+  variant,
+}: SubGroupRenderParams) => {
   const subGroups = groupMarkers(groupMarkersList, subGroupBy, groupContext).map(
     ([subKey, subMarkers]) => {
       const title = renderGroupLabel(subKey, subGroupBy, groupContext, subMarkers);
@@ -117,10 +126,18 @@ const RelationshipsGroupedSections = ({
           markers={groupMarkersList}
           groupContext={groupContext}
           variant={variant}
+          // eslint-disable-next-line react/jsx-props-no-spreading -- rowProps is passed to the component
           {...rowProps}
         />
       ) : (
-        renderSubGroups(key, groupMarkersList, subGroupBy, groupContext, rowProps, variant)
+        renderSubGroups({
+          parentKey: key,
+          groupMarkersList,
+          subGroupBy,
+          groupContext,
+          rowProps,
+          variant,
+        })
       );
 
     if (variant === 'list') {

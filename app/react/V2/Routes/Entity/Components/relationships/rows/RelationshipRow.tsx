@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { useRelationshipsPanelLayout } from '#V2/Routes/Entity/Components/context/index.js';

@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import type { GroupLabelContext } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
@@ -35,7 +36,6 @@ const RelationshipsPanelBody = ({
       <RelationshipsGraphView
         markers={markers}
         groupContext={groupContext}
-        selfSharedId={selfSharedId}
         selfTitle={selfTitle}
         activeRelationshipId={activeRelationshipId}
         onNodeClick={markerId => {

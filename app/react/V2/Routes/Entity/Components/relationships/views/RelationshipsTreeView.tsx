@@ -35,6 +35,7 @@ const RelationshipsTreeView = ({
       variant="tree"
       markers={markers}
       groupContext={groupContext}
+      // eslint-disable-next-line react/jsx-props-no-spreading
       {...rowProps}
     />
   );

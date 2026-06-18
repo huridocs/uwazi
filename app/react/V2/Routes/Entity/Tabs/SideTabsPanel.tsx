@@ -55,7 +55,7 @@ const SideTabsPanel = ({
             pagePlaintext={pagePlaintext}
           />
         </div>
-        <SideTabsFooters activeTabId={activeSideTab} entity={entity} mainDocument={mainDocument} />
+        <SideTabsFooters activeTabId={activeSideTab} mainDocument={mainDocument} />
       </div>
       {activeSideTab === SIDE_TAB.RELATIONSHIPS && <RelationshipsFiltersDrawer />}
     </div>

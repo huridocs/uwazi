@@ -40,6 +40,7 @@ const PdfControllerSetup = ({ pdf }: { pdf: PdfMocks }) => {
   return null;
 };
 
+// eslint-disable-next-line react/no-multi-comp
 const SelectionState = () => {
   const { activeRelationshipId } = useActiveRelationshipHighlight();
   const { scrollToRelationshipPanel } = useDocumentRelationshipNav();

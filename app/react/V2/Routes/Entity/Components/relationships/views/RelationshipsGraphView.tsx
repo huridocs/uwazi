@@ -16,7 +16,6 @@ import { useRelationshipsPanelLayout } from '#V2/Routes/Entity/Components/contex
 type RelationshipsGraphViewProps = {
   markers: RelationshipMarker[];
   groupContext: GroupLabelContext;
-  selfSharedId: string;
   selfTitle: string;
   activeRelationshipId?: string;
   onNodeClick: (markerId: string) => void;
@@ -27,7 +26,6 @@ const STEP = 0.25;
 const RelationshipsGraphView = ({
   markers,
   groupContext,
-  selfSharedId,
   selfTitle,
   activeRelationshipId,
   onNodeClick,
@@ -38,8 +36,8 @@ const RelationshipsGraphView = ({
   const dragRef = useRef({ active: false, startX: 0, startY: 0, initTx: 0, initTy: 0 });
 
   const { spokes, nodes } = useMemo(
-    () => buildGraphLayout(markers, selfSharedId, groupBy, groupContext, activeRelationshipId),
-    [markers, selfSharedId, groupBy, groupContext, activeRelationshipId]
+    () => buildGraphLayout(markers, groupBy, groupContext, activeRelationshipId),
+    [markers, groupBy, groupContext, activeRelationshipId]
   );
 
   if (nodes.length === 0) {

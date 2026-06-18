@@ -36,49 +36,49 @@ const buildPointer = (
   return { ...base, type: 'entity' };
 };
 
+const buildRelationshipView = (
+  entity: Entity,
+  relations: EntityRelation[],
+  target: EntityRelation
+): RelationshipView | undefined => {
+  const targetTemplateId = target.entityData?.template;
+  if (!targetTemplateId) return undefined;
+
+  const source = relations.find(rel => rel.hub === target.hub && rel.entity === entity.sharedId);
+  if (!source?._id || !source.hub) return undefined;
+
+  const from = buildPointer(
+    source,
+    source.entity ?? entity.sharedId,
+    source.entityData?.title ?? entity.title,
+    source.entityData?.template ? String(source.entityData.template) : entity.template
+  );
+  const to = buildPointer(
+    target,
+    target.entity ?? '',
+    target.entityData?.title ?? '',
+    String(targetTemplateId)
+  );
+  const relationType = source.template ?? target.template;
+
+  return {
+    _id: String(target._id),
+    hub: String(source.hub),
+    type: relationType ? String(relationType) : '',
+    from,
+    to,
+    relationTypeOnSelf: Boolean(source.template),
+  };
+};
+
 const formatRelationships = (entity: Entity): RelationshipView[] => {
   const relations = entity.relations ?? [];
-
   const targets = relations.filter(r => r.entity !== entity.sharedId && r.entityData?.template);
 
-  return targets.reduce<RelationshipView[]>((acc, target) => {
-    const targetTemplateId = target.entityData?.template;
-    if (!targetTemplateId) {
-      return acc;
-    }
-
-    const source = relations.find(rel => rel.hub === target.hub && rel.entity === entity.sharedId);
-
-    if (!source?._id || !source.hub) {
-      return acc;
-    }
-
-    const from = buildPointer(
-      source,
-      source.entity ?? entity.sharedId,
-      source.entityData?.title ?? entity.title,
-      source.entityData?.template ? String(source.entityData.template) : entity.template
-    );
-    const to = buildPointer(
-      target,
-      target.entity ?? '',
-      target.entityData?.title ?? '',
-      String(targetTemplateId)
-    );
-
-    const relationType = source.template ?? target.template;
-
-    acc.push({
-      _id: String(target._id),
-      hub: String(source.hub),
-      type: relationType ? String(relationType) : '',
-      from,
-      to,
-      relationTypeOnSelf: Boolean(source.template),
-    });
-
-    return acc;
-  }, []);
+  return targets.flatMap(target => {
+    const view = buildRelationshipView(entity, relations, target);
+    return view ? [view] : [];
+  });
 };
 
 export { formatRelationships };

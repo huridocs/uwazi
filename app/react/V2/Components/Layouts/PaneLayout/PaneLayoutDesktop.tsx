@@ -1,5 +1,6 @@
 import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { captureException } from '@sentry/react';
+import { t } from '#app/I18N/index.js';
 import { isClient } from '#app/utils/index.js';
 import { PaneLayoutProps } from './types.js';
 
@@ -146,7 +147,7 @@ const PaneLayoutDesktop = ({
     return () => observer.disconnect();
   }, []);
 
-  const onMouseDown = (event: React.MouseEvent<HTMLDivElement>, index: number) => {
+  const onMouseDown = (event: React.MouseEvent<HTMLButtonElement>, index: number) => {
     const onMouseUp = () => {
       draggingIndex.current = null;
       document.removeEventListener('mousemove', handleResize);
@@ -159,7 +160,7 @@ const PaneLayoutDesktop = ({
     document.addEventListener('mouseup', onMouseUp);
   };
 
-  const onTouchStart = (event: React.TouchEvent<HTMLDivElement>, index: number) => {
+  const onTouchStart = (event: React.TouchEvent<HTMLButtonElement>, index: number) => {
     const onTouchEnd = () => {
       draggingIndex.current = null;
       document.removeEventListener('touchmove', handleResize);
@@ -187,12 +188,12 @@ const PaneLayoutDesktop = ({
           </section>
 
           {index < children.length - 1 && (
-            <div
-              role="separator"
-              aria-orientation="vertical"
+            <button
+              type="button"
+              aria-label={t('System', 'Resize panels', null, false)}
               onMouseDown={event => onMouseDown(event, index)}
               onTouchStart={event => onTouchStart(event, index)}
-              className="w-1 shrink-0 cursor-col-resize self-stretch bg-transparent touch-none transition-colors hover:bg-[color-mix(in_srgb,var(--color-theme-action-primary)_30%,transparent)]"
+              className="w-1 shrink-0 cursor-col-resize self-stretch border-0 bg-transparent p-0 touch-none transition-colors hover:bg-[color-mix(in_srgb,var(--color-theme-action-primary)_30%,transparent)]"
             />
           )}
         </Fragment>

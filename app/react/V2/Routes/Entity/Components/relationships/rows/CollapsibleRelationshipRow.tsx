@@ -1,7 +1,6 @@
 import React, { Children, useState, type ReactNode } from 'react';
 import { ChevronDownIcon, LinkIcon } from '@heroicons/react/24/outline';
-import { Translate } from '#app/I18N/index.js';
-import { t } from '#app/I18N/index.js';
+import { Translate, t } from '#app/I18N/index.js';
 import { ListCardRow } from '#V2/Components/UI/ListCardRow.js';
 import type { RelationshipsPanelZoom } from '#V2/Routes/Entity/Components/context/index.js';
 import { useRelationshipsPanelLayout } from '#V2/Routes/Entity/Components/context/index.js';
@@ -10,25 +9,6 @@ import { DirectionGlyph } from './DirectionGlyph.js';
 import { useRelationshipRowVisibility } from '../hooks/useRelationshipRowVisibility.js';
 
 type Direction = 'incoming' | 'outgoing' | 'both';
-
-type EvidenceCountButtonProps = {
-  count: number;
-  expanded: boolean;
-  onClick: (event: React.MouseEvent) => void;
-};
-
-const EvidenceCountButton = ({ count, expanded, onClick }: EvidenceCountButtonProps) => (
-  <button
-    type="button"
-    onClick={onClick}
-    aria-label={t('System', `${count} evidence references`, null, false)}
-    aria-expanded={expanded}
-    className="flex h-5 shrink-0 items-center gap-1 rounded bg-warm px-1.5 text-[10px] font-medium tabular-nums text-ink-tertiary transition-colors hover:bg-parchment hover:text-ink-secondary"
-  >
-    <LinkIcon className="h-2.5 w-2.5" />
-    {count}
-  </button>
-);
 
 type CollapsibleRelationshipRowProps = {
   checkboxId: string;
@@ -153,14 +133,19 @@ const CollapsibleRelationshipRow = ({
     />
   );
   const evidenceButton = (
-    <EvidenceCountButton
-      count={evidenceCount}
-      expanded={expanded}
+    <button
+      type="button"
       onClick={event => {
         event.stopPropagation();
         toggle();
       }}
-    />
+      aria-label={t('System', `${evidenceCount} evidence references`, null, false)}
+      aria-expanded={expanded}
+      className="flex h-5 shrink-0 items-center gap-1 rounded bg-warm px-1.5 text-[10px] font-medium tabular-nums text-ink-tertiary transition-colors hover:bg-parchment hover:text-ink-secondary"
+    >
+      <LinkIcon className="h-2.5 w-2.5" />
+      {evidenceCount}
+    </button>
   );
   const hubBadge = isHub ? (
     <span className="text-[10px] uppercase tracking-wide text-ink-tertiary">

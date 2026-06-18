@@ -1,10 +1,11 @@
-import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import React, { createContext, useContext } from 'react';
 import type {
   RelationshipsPanelGroupBy,
   RelationshipsPanelSort,
   RelationshipsPanelView,
   RelationshipsPanelZoom,
 } from './types.js';
+import { useRelationshipsPanelFilterSlices } from './useRelationshipsPanelFilterSlices.js';
 
 type SearchSlice = { search: string; setSearch: React.Dispatch<React.SetStateAction<string>> };
 type SortSlice = {
@@ -49,77 +50,8 @@ const FacetFiltersContext = createContext<FacetFiltersSlice | null>(null);
 const UiContext = createContext<UiSlice | null>(null);
 
 const RelationshipsPanelFiltersProvider = ({ children }: { children: React.ReactNode }) => {
-  const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<RelationshipsPanelSort>('appearance');
-  const [groupBy, setGroupByState] = useState<RelationshipsPanelGroupBy>('none');
-  const [subGroupBy, setSubGroupBy] = useState<RelationshipsPanelGroupBy>('none');
-  const [view, setView] = useState<RelationshipsPanelView>('list');
-  const [zoom, setZoom] = useState<RelationshipsPanelZoom>('detail');
-  const [relTypeFilters, setRelTypeFilters] = useState<Record<string, boolean>>({});
-  const [entityTypeFilters, setEntityTypeFilters] = useState<Record<string, boolean>>({});
-  const [activeClusterRefIds, setActiveClusterRefIds] = useState<string[] | null>(null);
-  const [expandAllSignal, setExpandAllSignal] = useState(0);
-  const [collapseAllSignal, setCollapseAllSignal] = useState(0);
-  const [filtersDrawerOpen, setFiltersDrawerOpen] = useState(false);
-  const [expandForRefId, setExpandForRefId] = useState<string | null>(null);
-
-  const setGroupBy = useCallback((nextGroupBy: RelationshipsPanelGroupBy) => {
-    setGroupByState(nextGroupBy);
-    setSubGroupBy(current =>
-      nextGroupBy !== 'none' && current === nextGroupBy ? 'none' : current
-    );
-  }, []);
-
-  const clearFilters = useCallback(() => {
-    setRelTypeFilters({});
-    setEntityTypeFilters({});
-    setSearch('');
-    setSort('none');
-    setActiveClusterRefIds(null);
-  }, []);
-
-  const activeFilterCount = useMemo(() => {
-    let count = 0;
-    if (search.trim()) count += 1;
-    if (sort !== 'none') count += 1;
-    count += Object.values(relTypeFilters).filter(Boolean).length;
-    count += Object.values(entityTypeFilters).filter(Boolean).length;
-    if (activeClusterRefIds) count += 1;
-    return count;
-  }, [search, sort, relTypeFilters, entityTypeFilters, activeClusterRefIds]);
-
-  const searchSlice = useMemo(() => ({ search, setSearch }), [search]);
-  const sortSlice = useMemo(() => ({ sort, setSort }), [sort]);
-  const layoutSlice = useMemo(
-    () => ({ view, zoom, groupBy, subGroupBy, setView, setZoom, setGroupBy, setSubGroupBy }),
-    [view, zoom, groupBy, subGroupBy, setGroupBy]
-  );
-  const facetSlice = useMemo(
-    () => ({
-      relTypeFilters,
-      entityTypeFilters,
-      activeClusterRefIds,
-      setRelTypeFilters,
-      setEntityTypeFilters,
-      setActiveClusterRefIds,
-      clearFilters,
-      activeFilterCount,
-    }),
-    [relTypeFilters, entityTypeFilters, activeClusterRefIds, clearFilters, activeFilterCount]
-  );
-  const uiSlice = useMemo(
-    () => ({
-      expandAllSignal,
-      collapseAllSignal,
-      filtersDrawerOpen,
-      expandForRefId,
-      setExpandAllSignal,
-      setCollapseAllSignal,
-      setFiltersDrawerOpen,
-      setExpandForRefId,
-    }),
-    [expandAllSignal, collapseAllSignal, filtersDrawerOpen, expandForRefId]
-  );
+  const { searchSlice, sortSlice, layoutSlice, facetSlice, uiSlice } =
+    useRelationshipsPanelFilterSlices();
 
   return (
     <SearchContext.Provider value={searchSlice}>

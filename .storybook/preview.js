@@ -140,6 +140,7 @@ export const decorators = [
         store.set(localeAtom, 'en');
         store.set(translationsAtom, []);
         return store;
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- required for state management
       }, [mode, preset]);
 
       React.useEffect(() => {
@@ -166,6 +167,7 @@ export const decorators = [
           cancelAnimationFrame(frame);
           observer.disconnect();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- required for state management
       }, [context.args, context.id, mode, preset]);
 
       return React.createElement(

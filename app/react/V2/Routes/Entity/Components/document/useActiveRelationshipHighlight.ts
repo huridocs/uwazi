@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from '#V2/atoms/index.js';
-import { relationshipToHighlight } from '#V2/Components/PDFViewer/index.js';
+import { PDFControls, relationshipToHighlight } from '#V2/Components/PDFViewer/index.js';
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import {
   useDocumentPdf,
@@ -11,6 +11,21 @@ import {
 
 type SelectOptions = {
   scrollPanel?: boolean;
+};
+
+const clearRelationshipPdfHighlights = (pdfController: PDFControls | null) => {
+  pdfController?.toggleHighlights([]);
+};
+
+const syncPdfWithMarker = (
+  marker: RelationshipMarker,
+  colorOf: (marker: RelationshipMarker) => string,
+  pdfController: PDFControls | null
+) => {
+  const page = marker.anchor?.selections?.[0]?.page;
+  const highlight = relationshipToHighlight(marker.anchor, colorOf(marker), marker._id);
+  if (page) pdfController?.goToPage(page);
+  pdfController?.toggleHighlights(highlight ? [highlight] : []);
 };
 
 const useActiveRelationshipHighlight = () => {
@@ -30,7 +45,7 @@ const useActiveRelationshipHighlight = () => {
     (marker: RelationshipMarker, options?: SelectOptions) => {
       if (marker._id === activeRelationshipId) {
         setActiveRelationshipId(null);
-        mainPdfController?.toggleHighlights([]);
+        clearRelationshipPdfHighlights(mainPdfController);
         return;
       }
 
@@ -39,17 +54,7 @@ const useActiveRelationshipHighlight = () => {
         setScrollToRelationshipPanel(marker._id);
         setExpandForRefId(marker._id);
       }
-
-      const page = marker.anchor?.selections?.[0]?.page;
-      const highlight = relationshipToHighlight(marker.anchor, colorOf(marker), marker._id);
-      if (page) {
-        mainPdfController?.goToPage(page);
-      }
-      if (highlight) {
-        mainPdfController?.toggleHighlights([highlight]);
-      } else {
-        mainPdfController?.toggleHighlights([]);
-      }
+      syncPdfWithMarker(marker, colorOf, mainPdfController);
     },
     [
       activeRelationshipId,
@@ -63,7 +68,7 @@ const useActiveRelationshipHighlight = () => {
 
   const clearRelationshipSelection = useCallback(() => {
     setActiveRelationshipId(null);
-    mainPdfController?.toggleHighlights([]);
+    clearRelationshipPdfHighlights(mainPdfController);
   }, [mainPdfController, setActiveRelationshipId]);
 
   return { activeRelationshipId, selectRelationship, clearRelationshipSelection };

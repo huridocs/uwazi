@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTabGroup } from '#V2/Components/UI/index.js';
-import type { Entity, FileType } from '#V2/api/entities/types.js';
+import type { FileType } from '#V2/api/entities/types.js';
 import { SIDE_TAB, type SideTabId } from './tabIds.js';
 import { DocumentTabFooter } from './footers/DocumentTabFooter.js';
 import { MetadataTabFooter } from './footers/MetadataTabFooter.js';
@@ -12,7 +12,6 @@ import { TranslationsTabFooter } from './footers/TranslationsTabFooter.js';
 
 type SideTabsFootersProps = {
   activeTabId?: SideTabId;
-  entity: Entity;
   mainDocument?: FileType;
 };
 

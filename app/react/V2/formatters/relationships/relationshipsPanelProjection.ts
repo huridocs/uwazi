@@ -64,50 +64,60 @@ const activeFacetIds = (filters: Record<string, boolean> | undefined): string[] 
     .filter(([, active]) => active)
     .map(([id]) => id);
 
+const filterByIds = (
+  markers: RelationshipMarker[],
+  ids: string[],
+  getId: (marker: RelationshipMarker) => string
+): RelationshipMarker[] => {
+  if (!ids.length) return markers;
+  const allowed = new Set(ids);
+  return markers.filter(marker => allowed.has(getId(marker)));
+};
+
+const filterByCluster = (
+  markers: RelationshipMarker[],
+  clusterIds: string[] | null | undefined
+): RelationshipMarker[] => {
+  if (!clusterIds?.length) return markers;
+  const cluster = new Set(clusterIds);
+  return markers.filter(marker => cluster.has(marker._id));
+};
+
+const filterBySearch = (
+  markers: RelationshipMarker[],
+  searchQuery: string,
+  relationshipTypeName: (typeId: string) => string
+): RelationshipMarker[] => {
+  const matcher = buildMatcher(searchQuery);
+  if (!matcher) return markers;
+  return markers.filter(marker =>
+    matcher(markerHaystack(marker, relationshipTypeName(marker.view.type)))
+  );
+};
+
+const sortRelationshipMarkers = (
+  markers: RelationshipMarker[],
+  sortOrder: RelationshipsPanelSort
+): RelationshipMarker[] => {
+  if (sortOrder === 'none') return markers;
+  if (sortOrder === 'appearance') return [...markers].sort(compareAppearance);
+  const dir = sortOrder === 'asc' ? 1 : -1;
+  return [...markers].sort((a, b) => a.target.title.localeCompare(b.target.title) * dir);
+};
+
 const filterAndSortMarkers = (
   markers: RelationshipMarker[],
   options: RelationshipsPanelFilterOptions
 ): RelationshipMarker[] => {
-  let result = markers;
-
-  const clusterIds = options.activeClusterRefIds;
-  if (clusterIds?.length) {
-    const cluster = new Set(clusterIds);
-    result = result.filter(marker => cluster.has(marker._id));
-  }
-
-  const relTypes = activeFacetIds(options.relTypeFilters);
-  if (relTypes.length) {
-    const allowed = new Set(relTypes);
-    result = result.filter(marker => allowed.has(marker.view.type));
-  }
-
-  const entityTypes = activeFacetIds(options.entityTypeFilters);
-  if (entityTypes.length) {
-    const allowed = new Set(entityTypes);
-    result = result.filter(marker => {
-      const templateId = marker.target.templateId || 'unknown';
-      return allowed.has(templateId);
-    });
-  }
-
-  const matcher = buildMatcher(options.searchQuery);
-  if (matcher) {
-    result = result.filter(marker =>
-      matcher(markerHaystack(marker, options.relationshipTypeName(marker.view.type)))
-    );
-  }
-
-  if (options.sortOrder === 'none') {
-    return result;
-  }
-
-  if (options.sortOrder === 'appearance') {
-    return [...result].sort(compareAppearance);
-  }
-
-  const dir = options.sortOrder === 'asc' ? 1 : -1;
-  return [...result].sort((a, b) => a.target.title.localeCompare(b.target.title) * dir);
+  let result = filterByCluster(markers, options.activeClusterRefIds);
+  result = filterByIds(result, activeFacetIds(options.relTypeFilters), marker => marker.view.type);
+  result = filterByIds(
+    result,
+    activeFacetIds(options.entityTypeFilters),
+    marker => marker.target.templateId || 'unknown'
+  );
+  result = filterBySearch(result, options.searchQuery, options.relationshipTypeName);
+  return sortRelationshipMarkers(result, options.sortOrder);
 };
 
 export type {

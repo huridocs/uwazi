@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { BrowserRouter } from 'react-router';
 import { Translate } from '#app/I18N/index.js';
@@ -263,7 +264,7 @@ const RelationshipsDocumentStory = ({
     <div className="h-screen max-h-200 bg-(--color-theme-surface-raised)">
       <BrowserRouter>
         <RelationshipsStoryProvider locale={locale} entity={apiEntity}>
-          <div className="flex h-full w-full flex-col gap-(--spacing-theme-3) p-4 text-ink">
+          <div className="flex h-full w-full flex-col gap-3 p-4 text-ink">
             <div>
               <Translate>Relationships</Translate>
               <p>

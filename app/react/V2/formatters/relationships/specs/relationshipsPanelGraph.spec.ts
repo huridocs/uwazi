@@ -27,7 +27,6 @@ describe('relationshipsPanelGraph', () => {
   it('builds graph nodes from markers', () => {
     const { nodes, spokes } = buildGraphLayout(
       [marker('1', 'a'), marker('2', 'b')],
-      'self1',
       'none',
       context
     );

@@ -15,6 +15,39 @@ type RelationshipAggregate = {
 const aggregateKey = (marker: RelationshipMarker): string =>
   `${marker.target.sharedId}::${marker.view.type}`;
 
+const mergeIntoAggregate = (
+  existing: RelationshipAggregate,
+  marker: RelationshipMarker,
+  direction: RelationshipDirection,
+  page: number | undefined
+): RelationshipAggregate => ({
+  ...existing,
+  markerIds: [...existing.markerIds, marker._id],
+  directions: existing.directions.includes(direction)
+    ? existing.directions
+    : [...existing.directions, direction],
+  firstPage:
+    page !== undefined && (existing.firstPage === undefined || page < existing.firstPage)
+      ? page
+      : existing.firstPage,
+});
+
+const createAggregate = (
+  marker: RelationshipMarker,
+  key: string,
+  direction: RelationshipDirection,
+  page: number | undefined
+): RelationshipAggregate => ({
+  id: key,
+  targetSharedId: marker.target.sharedId,
+  targetTitle: marker.target.title,
+  targetTemplateId: marker.target.templateId,
+  relationType: marker.view.type,
+  directions: [direction],
+  firstPage: page,
+  markerIds: [marker._id],
+});
+
 const deriveAggregates = (
   markers: RelationshipMarker[],
   selfSharedId: string
@@ -25,24 +58,8 @@ const deriveAggregates = (
     const direction = directionOf(marker.view, selfSharedId);
     const page = firstPageOf(marker);
     const existing = map.get(key);
-    if (existing) {
-      existing.markerIds.push(marker._id);
-      if (!existing.directions.includes(direction)) existing.directions.push(direction);
-      if (page !== undefined && (existing.firstPage === undefined || page < existing.firstPage)) {
-        existing.firstPage = page;
-      }
-    } else {
-      map.set(key, {
-        id: key,
-        targetSharedId: marker.target.sharedId,
-        targetTitle: marker.target.title,
-        targetTemplateId: marker.target.templateId,
-        relationType: marker.view.type,
-        directions: [direction],
-        firstPage: page,
-        markerIds: [marker._id],
-      });
-    }
+    if (existing) map.set(key, mergeIntoAggregate(existing, marker, direction, page));
+    else map.set(key, createAggregate(marker, key, direction, page));
   }
   return map;
 };
