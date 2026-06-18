@@ -275,9 +275,5 @@ const RelationshipsDocumentStory = ({
   );
 };
 
-export {
-  RelationshipsDocumentStory,
-  RelationshipsDocumentView,
-  RelationshipsSyncedDocumentView,
-};
+export { RelationshipsDocumentStory, RelationshipsDocumentView, RelationshipsSyncedDocumentView };
 export type { RelationshipsDocumentStoryProps };

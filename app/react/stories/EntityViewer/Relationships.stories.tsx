@@ -38,20 +38,22 @@ const Basic: Story = {
 
 const waitForRail = async (canvasElement: HTMLElement) => {
   const canvas = within(canvasElement);
-  await canvas.findByTestId('rail-marker-cluster', {}, { timeout: 20000 });
-  return canvas;
+  const documentView = await canvas.findByTestId('document-container', {}, { timeout: 20000 });
+  const rail = within(documentView);
+  await rail.findByRole('button', { name: '25' }, { timeout: 20000 });
+  return rail;
 };
 
 const RailInteractions: Story = {
   ...Primary,
   play: async ({ canvasElement, args }) => {
-    const canvas = await waitForRail(canvasElement);
+    const rail = await waitForRail(canvasElement);
 
-    await userEvent.click(await canvas.findByRole('button', { name: '25' }));
+    await userEvent.click(await rail.findByRole('button', { name: '25' }));
     await expect(args.onClusterClick).toHaveBeenCalledOnce();
-    await expect(canvas.getByTestId('cluster-subtree')).toBeInTheDocument();
+    await expect(rail.getByTestId('cluster-subtree')).toBeInTheDocument();
 
-    await userEvent.click(await canvas.findByRole('button', { name: 'Person 1' }));
+    await userEvent.click(await rail.findByRole('button', { name: 'Person 1' }));
     await expect(args.onPointClick).toHaveBeenCalledOnce();
     await expect(args.onPointClick).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -60,7 +62,7 @@ const RailInteractions: Story = {
     );
     await expect(canvasElement.querySelector('div[data-highlight-key]')).not.toBeNull();
 
-    const standaloneMarkers = (await canvas.findAllByTestId('rail-marker')).filter(
+    const standaloneMarkers = (await rail.findAllByTestId('rail-marker')).filter(
       element =>
         !element.closest('[data-testid="rail-marker-cluster"]') &&
         element.textContent?.includes('Person 2')

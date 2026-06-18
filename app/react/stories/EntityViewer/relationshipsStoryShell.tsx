@@ -41,10 +41,7 @@ const SideTabsStub = () => (
 );
 
 const PanelContent = ({ mainDocument }: { mainDocument: FileType }) => (
-  <>
-    <RelationshipsPanel mainDocument={mainDocument} />
-    <RelationshipsFiltersDrawer />
-  </>
+  <RelationshipsPanel mainDocument={mainDocument} />
 );
 
 const RelationshipsStoryShell = ({
@@ -91,6 +88,7 @@ const RelationshipsStoryShell = ({
                           <div className="min-h-0 flex-1 overflow-hidden px-3 pt-2.5">
                             {children ?? <PanelContent mainDocument={mainDocument!} />}
                           </div>
+                          <RelationshipsFiltersDrawer />
                         </div>
                       </PaneLayout.Pane>
                     </PaneLayout>
@@ -100,7 +98,12 @@ const RelationshipsStoryShell = ({
                     dir="ltr"
                     className="relative h-full overflow-hidden rounded-md border border-border-soft bg-paper"
                   >
-                    {children ?? <PanelContent mainDocument={mainDocument!} />}
+                    {children ?? (
+                      <>
+                        <PanelContent mainDocument={mainDocument!} />
+                        <RelationshipsFiltersDrawer />
+                      </>
+                    )}
                   </div>
                 )}
               </div>
