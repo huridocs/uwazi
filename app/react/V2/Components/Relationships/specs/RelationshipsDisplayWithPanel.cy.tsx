@@ -1,6 +1,7 @@
 import {
   mountWithPanelStory,
   openMainCluster,
+  clickPerson1InMainCluster,
   prepareRelationshipsViewport,
   suppressResizeObserverLoop,
 } from './relationshipsCyHelpers.js';
@@ -83,9 +84,7 @@ describe('RelationshipsDisplay WithPanel', () => {
   describe('document sync', () => {
     it('marks the selected reference on the rail when clicked from a cluster', () => {
       openMainCluster();
-      cy.contains('[data-testid="rail-marker-cluster"]', '25').within(() => {
-        cy.contains('button', 'Person 1').click({ force: true });
-      });
+      clickPerson1InMainCluster();
       cy.get('[data-testid="relationships-rail"] [data-marker-id]')
         .filter(':contains("Person 1")')
         .first()

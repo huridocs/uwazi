@@ -57,6 +57,12 @@ const openMainCluster = () => {
     .click({ force: true });
 };
 
+const clickPerson1InMainCluster = () => {
+  cy.contains('[data-testid="rail-marker-cluster"]', '25').within(() => {
+    cy.contains('button', 'Person 1').click({ force: true });
+  });
+};
+
 const clickStandalonePerson2 = () => {
   cy.get('[data-testid="relationships-rail"] [data-testid="rail-marker"]')
     .filter((_index, element) => !element.closest('[data-testid="rail-marker-cluster"]'))
@@ -73,5 +79,6 @@ export {
   mountBasicStory,
   mountWithPanelStory,
   openMainCluster,
+  clickPerson1InMainCluster,
   clickStandalonePerson2,
 };

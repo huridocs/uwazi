@@ -7,6 +7,7 @@ import {
   Basic,
   mountBasicStory,
   openMainCluster,
+  clickPerson1InMainCluster,
   clickStandalonePerson2,
   prepareRelationshipsViewport,
   resetBasicStoryArgs,
@@ -126,9 +127,7 @@ describe('References Display', () => {
 
       it('clicks on a point inside a cluster and shows the reference', () => {
         openMainCluster();
-        cy.contains('[data-testid="rail-marker-cluster"]', '25').within(() => {
-          cy.contains('button', 'Person 1').click({ force: true });
-        });
+        clickPerson1InMainCluster();
         cy.get('div[data-highlight-key]', { timeout: 20000 }).should('exist');
       });
 
@@ -298,9 +297,7 @@ describe('References Display', () => {
       mountBasicStory();
 
       openMainCluster();
-      cy.contains('[data-testid="rail-marker-cluster"]', '25').within(() => {
-        cy.contains('button', 'Person 1').click({ force: true });
-      });
+      clickPerson1InMainCluster();
 
       cy.get('@onPointClick').should('have.been.calledOnce');
       cy.get('@onPointClick').its('firstCall.args.0.target.title').should('eq', 'Person 1');
