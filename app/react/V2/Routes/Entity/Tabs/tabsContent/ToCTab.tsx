@@ -1,7 +1,6 @@
 import React from 'react';
 import type { FileType } from '#V2/api/entities/types.js';
-import { ToCView } from '../../Components/ToC/ToCView.js';
-import { useToCPanel } from '../../Components/ToC/useToCPanel.js';
+import { ToCView, useToCPanel } from '#V2/Routes/Entity/Components/ToC/index.js';
 
 type ToCTabProps = {
   mainDocument?: FileType;

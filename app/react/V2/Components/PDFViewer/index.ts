@@ -12,4 +12,4 @@ const PDF = loadable(
 export type { Snippet, PDFControls } from './PDF.js';
 export { PDF, selectionHandlers };
 export { calculateScaling } from './functions/calculateScaling.js';
-export { referenceToHighlight } from './functions/ReferenceToHighlight.js';
+export { relationshipToHighlight } from './functions/RelationshipToHighlight.js';

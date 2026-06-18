@@ -5,8 +5,7 @@ import { SIDE_TAB, type SideTabId } from './tabIds.js';
 import { DocumentTab } from './tabsContent/DocumentTab.js';
 import { MetadataTab } from './tabsContent/MetadataTab.js';
 import { ToCTab } from './tabsContent/ToCTab.js';
-import { ReferencesTab } from './tabsContent/ReferencesTab.js';
-import { RelationshipsSideTab } from './tabsContent/RelationshipsSideTab.js';
+import { RelationshipsPanel } from '../Components/relationships/index.js';
 import { SearchTab } from './tabsContent/SearchTab.js';
 import { FilesSideTab } from './tabsContent/FilesSideTab.js';
 import { TranslationsTab } from './tabsContent/TranslationsTab.js';
@@ -36,6 +35,7 @@ const SideTabsContent = ({
       if (mainDocument?.filename) {
         content = (
           <DocumentTab
+            entity={entity}
             mainDocument={mainDocument}
             pagePlaintext={pagePlaintext}
             showViewModeSelect
@@ -49,11 +49,8 @@ const SideTabsContent = ({
     case SIDE_TAB.TOC:
       content = <ToCTab mainDocument={mainDocument} />;
       break;
-    case SIDE_TAB.REFERENCES:
-      content = <ReferencesTab entity={entity} mainDocument={mainDocument} />;
-      break;
     case SIDE_TAB.RELATIONSHIPS:
-      content = <RelationshipsSideTab />;
+      content = <RelationshipsPanel mainDocument={mainDocument} />;
       break;
     case SIDE_TAB.SEARCH:
       content = <SearchTab />;
