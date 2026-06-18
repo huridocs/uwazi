@@ -1,7 +1,6 @@
-import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
 import { MongoDataSource } from '../common/MongoDataSource.js';
-import { FileDBO } from '../files/schemas/filesTypes.js';
-import { UserDBO } from './MongoUsersDataSource.js';
+
+import { UserDBO } from './UserDBO.js';
 
 class MongoUsersDAO extends MongoDataSource<UserDBO> {
   protected collectionName: string = 'users';

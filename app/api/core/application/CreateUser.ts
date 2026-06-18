@@ -1,3 +1,5 @@
+import { randomBytes } from 'node:crypto';
+import { encryptPassword } from '#api/auth/encryptPassword.js';
 import { User } from '../domain/user/User.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { CreateUserDTO, UserCreateSchema } from './contracts/UserCreateSchema.js';
@@ -24,7 +26,9 @@ class CreateUser extends AbstractUseCase<Input, Output, Dependencies> {
       // throw new UserExistsError();
     }
 
-    user.initPassword(password);
+    const rawPassword = password ?? randomBytes(32).toString('hex');
+    const encryptedPassword = await encryptPassword(rawPassword);
+    await user.setPassword(encryptedPassword);
 
     await this.transactionManager.run(async () => {
       //the insert will update groups

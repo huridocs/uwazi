@@ -1,5 +1,3 @@
-import { randomUUID } from 'node:crypto';
-
 type UserRole = 'admin' | 'editor' | 'collaborator';
 
 type UserGroup = {
@@ -63,8 +61,8 @@ class User {
     return this._id === '__anonymous__';
   }
 
-  initPassword(providedPassword?: string) {
-    this.password = providedPassword ?? randomUUID();
+  setPassword(password: string) {
+    this.password = password;
   }
 }
 

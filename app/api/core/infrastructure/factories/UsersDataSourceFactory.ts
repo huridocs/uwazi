@@ -12,8 +12,11 @@ type Overrides = {
 class UsersDataSourceFactory {
   static default(overrides?: Overrides): UsersDataSource {
     const db = getConnection();
-    const transactionManager = (overrides?.transactionManager ??
-      ExecutionContext.transactionManager) as MongoTransactionManager;
+    const transactionManager = (
+      overrides?.transactionManager
+        ? overrides?.transactionManager
+        : ExecutionContext.transactionManager
+    ) as MongoTransactionManager;
 
     return new MongoUsersDataSource(db, transactionManager);
   }
