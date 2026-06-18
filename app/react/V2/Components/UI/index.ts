@@ -29,6 +29,30 @@ export { ConfirmNavigationModal } from './ConfirmNavigationModal.js';
 export { Truncate } from './Truncate.js';
 export { VerticalDrawer } from './VerticalDrawer.js';
 export { BlankState } from './BlankState.js';
+export { ActiveFilterChip } from './ActiveFilterChip.js';
+export {
+  SegmentedControl,
+  SegmentedControlItem,
+  SegmentedControlRoot,
+} from './SegmentedControl/index.js';
+export type {
+  SegmentedControlProps,
+  SegmentedOption,
+  SegmentedControlItemProps,
+  SegmentedControlRootProps,
+} from './SegmentedControl/index.js';
+export { DropdownListbox } from './DropdownListbox.js';
+export { ListCardRow } from './ListCardRow.js';
+export { FacetSection } from './FacetSection.js';
+export { FiltersDrawer } from './FiltersDrawer.js';
+export { FilterDrawerButton } from './FilterDrawerButton.js';
+export type { FilterDrawerButtonProps } from './FilterDrawerButton.js';
+export { QuerySearchBar } from './QuerySearchBar.js';
+export type { QuerySearchBarProps } from './QuerySearchBar.js';
+export { ColorDot } from './ColorDot.js';
+export { TemplatePill } from './TemplatePill.js';
+export { CollapsibleSectionHeader } from './CollapsibleSectionHeader.js';
+export { IconButton } from './IconButton.js';
 
 export type { PillColor } from './Pill.js';
 export type { TableProps, TableRow } from './Table/index.js';

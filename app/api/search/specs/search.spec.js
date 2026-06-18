@@ -1250,6 +1250,26 @@ describe('search', () => {
       expect(count).toBe(1);
     });
 
+    it('should return inherited values for inherited relationship properties', async () => {
+      const query = {
+        types: [ids.template1],
+        filters: {},
+      };
+
+      const { options } = await autocompleteAggregations(
+        query,
+        'en',
+        'relationshipcountryselect',
+        '',
+        editorUser
+      );
+
+      expect(options.map(option => option.value).sort()).toEqual(['EgyptID', 'SpainID']);
+      expect(options.map(option => option.label)).not.toEqual(
+        expect.arrayContaining(['metadata1', 'metadata3'])
+      );
+    });
+
     it('should limit the options', async () => {
       const query = {
         types: [ids.templateMetadata1, ids.templateMetadata2],

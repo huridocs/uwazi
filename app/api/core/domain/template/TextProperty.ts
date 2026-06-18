@@ -1,5 +1,5 @@
-import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { z } from 'zod';
+import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { PropertyTypeInvalidTypeError } from './errors.js';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty.js';
 import { PropertyTypeEnum } from './PropertyType.js';
@@ -57,11 +57,8 @@ class TextProperty extends FilterableProperty {
     };
   }
 
-  validatePropertyAssignment(
-    { value }: PropertyAssignment<TextPropertyValue>,
-    shouldValidateForRequired = false
-  ): void {
-    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
+  validatePropertyAssignment({ value }: PropertyAssignment<TextPropertyValue>): void {
+    createSchema(this.required).parse(value);
   }
 }
 

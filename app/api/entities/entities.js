@@ -13,6 +13,7 @@ import ID from '#shared/uniqueID.js';
 
 import { ATSolveVersionConflict } from '#api/externalIntegrations.v2/automaticTranslation/utils/ATSolveVersionConflict.js';
 import settings from '../settings/index.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize.js';
 import model from './entitiesModel.js';
 import { EntityCreatedEvent } from './events/EntityCreatedEvent.js';
@@ -283,10 +284,9 @@ function sanitize(doc, template) {
 
 const withDocuments = async (entities, documentsFullText) => {
   const sharedIds = entities.map(entity => entity.sharedId);
-  const allFiles = await files.get(
-    { entity: { $in: sharedIds } },
-    documentsFullText ? '+fullText ' : ' '
-  );
+  const allFiles = await FilesDAOFactory.default().getByEntitySharedIds(sharedIds, {
+    projection: documentsFullText ? {} : { fullText: 0 },
+  });
   const idFileMap = new Map();
   allFiles.forEach(file => {
     if (idFileMap.has(file.entity)) {

@@ -4,10 +4,12 @@ Key,Burmese
 2FA,2FA
 2FA Enabled,2FA Enabled
 A default template cannot be deleted.,A default template cannot be deleted.
+A friendly hand for serious work — I'll act in the context shown above.,A friendly hand for serious work — I'll act in the context shown above.
 A generated ID will be the default title.,ထုတ်ပေးသည့် ID သည် ပုံသေမူလ ခေါင်းစဉ် ဖြစ်ပါမည်။
 A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,အီးမေးလ် လိုအပ်သည်
+A → Z,A → Z
 Accept,လက်ခံမည်
 Accepted suggestion on entity,Accepted suggestion on entity
 Accepting suggestions,Accepting suggestions
@@ -92,16 +94,20 @@ An error has occurred while uninstalling a language:,An error has occurred while
 An error occurred,An error occurred
 Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
+AND OR NOT,AND OR NOT
 Any entity,Any entity
+Appearance,Appearance
 Apply,Apply
 Are you sure you want to continue?,Are you sure you want to continue?
+Are you sure you want to delete,Are you sure you want to delete
 Are you sure you want to delete this attachment?,Are you sure you want to delete this attachment?
 Are you sure you want to delete this connection?,Are you sure you want to delete this connection?
 Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
 Are you sure you want to delete this file?,Are you sure you want to delete this file?
 Are you sure you want to delete this item?,Are you sure you want to delete this item?
-Are you sure you want to delete this reference? This action cannot be undone.,Are you sure you want to delete this reference? This action cannot be undone.
+Are you sure you want to delete this relationship? This action cannot be undone.,Are you sure you want to delete this relationship? This action cannot be undone.
 Are you sure?,Are you sure?
+Ask Bert,Ask Bert
 Attachment,Attachment
 Attachment deleted,Attachment deleted
 Attachment renamed,Attachment renamed
@@ -120,7 +126,10 @@ Back to details,Back to details
 Back to search,ရှာဖွေမှုသို့ ပြန်သွားရန်
 Bad Request,Bad Request
 Basic,Basic
+Bert,Bert
+Bidirectional,Bidirectional
 Body,စာကိုယ်
+boolean,boolean
 Browse files to upload,အပ်လုဒ်လုပ်ရန် ဖိုင်များကို ရှာဖွေပါ
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
 Can edit,တည်းဖြတ်နိုင်သည်
@@ -156,9 +165,11 @@ Chrome header,Chrome header
 Clear,Clear
 Clear all,Clear all
 Clear All,Clear All
+Clear all filters,Clear all filters
 Clear coordinates,ကိုဩဒိနိတ်များကို ရှင်းလင်းရန်
 Clear Filters,စစ်ထုတ်မှုများကို ရှင်းလင်းရန်
 Clear PDF selection,Clear PDF selection
+Clear search,Clear search
 Click,Click
 Click here,ဒီမှာ နှိပ်ပါ
 Click to fill,ဖြည့်ရန် နှိပ်ပါ
@@ -187,6 +198,7 @@ Confirm deletion of,Confirm deletion of
 Confirm deletion of entity,Confirm deletion of entity
 Confirm deletion of file,Confirm deletion of file
 Confirm new password,စကားဝှက်အသစ်ကို အတည်ပြုပါ
+Confirm your password,Confirm your password
 Connect to a paragraph,စာပိုဒ်နှင့် ချိတ်ဆက်ရန်
 Connect to an entity,Connect to an entity
 Connect to document,Connect to document
@@ -241,6 +253,7 @@ CSV import cancelled,CSV import cancelled
 CSV import completed,CSV import completed
 CSV import failed,CSV import failed
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
+Ctrl K,Ctrl K
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,စိတ်ကြိုက် အစိတ်အပိုင်း ချွတ်ယွင်းချက်
 Custom CSS,စိတ်ကြိုက် CSS
@@ -272,7 +285,8 @@ DELETE,ဖျက်ရန်
 Delete entities and documents,Delete entities and documents
 Delete file,Delete file
 Delete language,ဘာသာစကား ဖျက်ရန်
-Delete reference,Delete reference
+Delete relationship,Delete relationship
+Delete relationships,Delete relationships
 Delete?,Delete?
 Deleted attachment,Deleted attachment
 Deleted custom file,Deleted custom file
@@ -290,6 +304,7 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,ဖော်ပြချက်
 Deselect all,Deselect all
+Direction,Direction
 Disable,Disable
 Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
@@ -367,6 +382,7 @@ Error loading your image,Error loading your image
 Error saving template.,Error saving template.
 Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
+exact phrase,exact phrase
 Expand all,Expand all
 Expand All,Expand All
 Export CSV,CSV တင်ပို့ရန်
@@ -426,6 +442,7 @@ Forms and email configuration,ပုံစံများနှင့် အီ�
 From,From
 From all suggestions,From all suggestions
 From previous step,From previous step
+From selection,From selection
 Full mode,Full mode
 Full width,Full width
 General,ယေဘုယျ
@@ -439,6 +456,8 @@ Google Analytics,Google Analytics
 Google Analytics ID,Google Analytics ID
 Google Maps,Google Maps
 Group,Group
+Group by:,Group by:
+group expressions,group expressions
 Group Options,Group Options
 Group saved,Group saved
 Group updated,Group updated
@@ -452,6 +471,7 @@ Header bar hover background,Header bar hover background
 Header bar text,Header bar text
 help,အကူအညီ
 here,here
+"Hi, I'm Bert.","Hi, I'm Bert."
 Hide,Hide
 Hide actions,Hide actions
 Hide label,Hide label
@@ -459,6 +479,7 @@ Hide restricted relationships from public,Hide restricted relationships from pub
 Hide toolbar,Hide toolbar
 HTML,HTML
 https://yourdomain,https://yourdomain
+hub,hub
 hubs,ဟတ်ဘ်များ
 Hybrid,Hybrid
 Icon,အိုင်ကွန်
@@ -488,6 +509,7 @@ Importing data in progress,ဒေတာ ထည့်သွင်းဆဲ
 in,၌
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,In OCR queue
+Incoming,Incoming
 Indexing entities may take a few minutes,ဖြည့်သွင်းချက်များကို အညွှန်းတပ်ခြင်းသည် မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်
 Info,အချက်အလက်
 Information extraction training,Information extraction training
@@ -586,6 +608,7 @@ marked for training,marked for training
 Marked for training + all labeled entries,Marked for training + all labeled entries
 Marked for training only,Marked for training only
 Match,Match
+match verbatim,match verbatim
 Matching,Matching
 matching,matching
 Matomo,Matomo
@@ -621,6 +644,7 @@ Navigate back,Navigate back
 Navigation menu tool tip part 1,"If it is an internal URL within this website, be sure to delete the first part"
 Navigation menu tool tip part 2,leaving only a relative URL starting with a slash character. Ie. /some_url.
 New,New
+New conversation,New conversation
 New entity,ထည့်သွင်းချက်အသစ်
 New group,New group
 New language added,ဘာသာစကားအသစ် ထည့်ပြီး
@@ -650,12 +674,15 @@ No label,No label
 No notifications or active tasks.,No notifications or active tasks.
 No options,No options
 No options found,ရွေးချယ်စရာ မရှိပါ
+No page,No page
 No property,ထူးခြားချက် မရှိပါ
 No References,ကိုးကားချက် မရှိပါ
 No References description,References are parts of this document related with other documents and entities.
 No relationship types available,No relationship types available
 No Relationships,ဆက်နွှယ်မှု မရှိပါ
 No Relationships description,Relationships are bonds between entities.
+No relationships found,No relationships found
+No relationships to graph,No relationships to graph
 No releases yet,No releases yet
 No results found,No results found
 No table of contents,မာတိကာ မရှိပါ
@@ -672,6 +699,7 @@ No Value,တန်ဖိုးမရှိပါ
 Non processed,Non processed
 Non-labeled,Non-labeled
 Non-latin characters support,Non-latin characters support
+None,None
 Normal view,ပုံမှန် မြင်ကွင်း
 Not already been use as source template in another extractor,Not already been use as source template in another extractor
 Not already been use as target template,Not already been use as target template
@@ -691,6 +719,7 @@ OCR PDF,OCR PDF
 of,၏
 Ok,အိုကေ
 OK,အိုကေ
+one character,one character
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection."
@@ -711,6 +740,8 @@ Other,အခြား
 other,အခြား
 Other users will be affected by this action!,Other users will be affected by this action!
 Others,Others
+Outgoing,Outgoing
+p.,p.
 Page,စာမျက်နှာ
 Page not found,Page not found
 Page published successfully.,Page published successfully.
@@ -722,6 +753,7 @@ Paragraph Extractor added,Paragraph Extractor added
 Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
 Paragraphs deleted,Paragraphs deleted
+parties,parties
 Password,စကားဝှက်
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -749,6 +781,7 @@ Preserve Extension,Preserve Extension
 Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
 Press enter to add,ထည့်ရန် enter ကို နှိပ်ပါ
 Preview,ကြိုကြည့်ရန်
+Preview entity,Preview entity
 Previous,ယခင်
 Primary button,Primary button
 Primary document,Primary document
@@ -808,6 +841,7 @@ Receiving email description,"If you have a contact form, this is the email addre
 Recommended,Recommended
 Reference,Reference
 References,ကိုးကားချက်များ
+references,references
 Reject,ငြင်းပယ်ရန်
 Related entities created,Related entities created
 Relation type,Relation type
@@ -821,6 +855,7 @@ Relationship types,ဆက်နွှယ်မှု အမျိုးအစာ
 relationships,ဆက်နွှယ်မှုများ
 Relationships,ဆက်နွှယ်မှုများ
 Relationships saved,Relationships saved
+relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,RelationType သိမ်းဆည်းပြီး
 Release message,Release message
 remaining files,remaining files
@@ -844,6 +879,7 @@ Reset default translation,Reset default translation
 Reset language,Reset language
 Reset Password,စကားဝှက် ပြန်လည်သတ်မှတ်ရန်
 Reset passwords,Reset passwords
+Resize panels,Resize panels
 Restore,Restore
 Restore previous version,Restore previous version
 Restricted,ကန့်သတ်ထားသည်
@@ -855,6 +891,7 @@ Reviewed,သုံးသပ်ပြီး
 Role,အခန်းကဏ္ဍ
 Route,လမ်းကြောင်း
 Row,Row
+Row density,Row density
 Rows failed,Rows failed
 Rows processed,Rows processed
 Sample,နမူနာ
@@ -869,12 +906,15 @@ Saving...,Saving...
 Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,ရှာဖွေရန်
+"Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
 Search item,အိုင်တမ် ရှာရန်
 Search related entities or documents,သက်ဆိုင်ရာ ဖြည့်သွင်းချက် သို့မဟုတ် စာရွက်စာတမ်းများကို ရှာရန်
+Search relationships,Search relationships
 Search relevance,ရှာဖွေမှု ဆီလျော်ခြင်း
 Search text,ရှာဖွေမှု စာသား
 Search text description,Type something in the search box to get some results.
 Search Tips,ရှာဖွေမှု အကြံပြုချက်များ
+Search tips,Search tips
 Search Tips: boolean,ရှာဖွေမှု အကြံပြုချက်များ- မှန်မှားဒေတာ
 Search Tips: exact term,ရှာဖွေမှု အကြံပြုချက်များ- တိကျသော အသုံးအနှုံး
 Search Tips: one char wildcard,ရှာဖွေမှု အကြံပြုချက်များ- စာလုံးတစ်ခု ပါဝင်ခြင်း
@@ -892,6 +932,7 @@ Select an existing image,Select an existing image
 Select favicon image,Select favicon image
 Select files on your device,သင့်စက်ပေါ်ရှိ ဖိုင်များကို ရွေးချယ်ရန်
 Select from computer,Select from computer
+Select relationship,Select relationship
 Select relationship type,ဆက်နွှယ်မှု အမျိုးအစား ရွေးချယ်ရန်
 Select site logo image,Select site logo image
 Select target paragraph,ပစ်မှတ်ထား စာပိုဒ်ကို ရွေးချယ်ရန်
@@ -942,18 +983,24 @@ Site logo description,"The logo appears in the top bar next to your collection n
 Site logo no images hint,"No image files from Custom Uploads yet. Add PNG, SVG, or JPEG images there first."
 Size,အရွယ်အစား
 Skip to main content,Skip to main content
+Some tasks may take a while. Bert will reply when it's done.,Some tasks may take a while. Bert will reply when it's done.
 Something went wrong,တစ်ခုခု မှားသွားသည်
 Sort,အမျိုးအစားခွဲရန်
 Sort ascending,Sort ascending
 Sort by,ဤသို့ အမျိုးအစားခွဲရန်
 Sort descending,Sort descending
+Sort order,Sort order
+Sort:,Sort:
 sorted by,ဤသို့ အမျိုးအစားခွဲထားသည်
 Source,Source
+Source entity,Source entity
+Source page,Source page
 Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
 Source's role in the relationship Source-Target.,Source's role in the relationship Source-Target.
 Stage,Stage
+stat*,stat*
 State,State
 Statistics,Statistics
 Stats & Filters,Stats & Filters
@@ -984,6 +1031,8 @@ Table of Contents,မာတိကာ
 Table of contents,မာတိကာ
 Table of contents saved successfully,Table of contents saved successfully
 Table view,ဇယားမြင်ကွင်း
+Target entity,Target entity
+Target entity type,Target entity type
 Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
@@ -1022,6 +1071,7 @@ Theme instance file invalid,Theme instance file invalid
 Theme logotype,Theme logotype
 Theme presets,Theme presets
 Theme preview,Theme preview
+Then by:,Then by:
 There are no pages enabled for entity view,ဖြည့်သွင်းချက် မြင်ကွင်းအတွက် ဖွင့်ထားသော စာမျက်နှာများ မရှိပါ
 There are no untranslated terms,There are no untranslated terms
 Thesauri,ဝေါဟာရပဒေသာကျမ်းများ
@@ -1118,6 +1168,8 @@ Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
 Uninstalling language,Uninstalling language
+Unknown entity,Unknown entity
+Unknown template,Unknown template
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,Unsupported OCR language
@@ -1188,11 +1240,13 @@ We can't find the page you're looking for.,We can't find the page you're looking
 Welcome to Uwazi,Uwazi မှ ကြိုဆိုပါသည်
 "Well, this is awkward...",အင်း၊ ဒါက ထူးဆန်းပါတယ်...
 Whitelisted templates,Whitelisted templates
+wildcard,wildcard
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
 will be updated with the same value.,တူညီသော တန်ဖိုးဖြင့် အပ်ဒိတ်လုပ်ပါမည်။
 Will show the entire media inside the container.,Will show the entire media inside the container.
 with,ဖြင့်
 With great power comes great responsibility!,လုပ်ပိုင်ခွင့်ကြီးလျှင် တာဝန်ပိုကြီးသည်!
+wom?n,wom?n
 x less,x လျော့
 x more,x ပို
 Year,နှစ်
@@ -1210,6 +1264,7 @@ You should activate this feature for enhanced account security,အကောင�
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
 You won't be able to save an entity if this property is empty.,You won't be able to save an entity if this property is empty.
 Your account's security is enhanced with two-factor authentication.,Your account's security is enhanced with two-factor authentication.
+Z → A,Z → A
 Zoom in,ချုံ့သည်
 Zoom in library view,စာကြည့်တိုက် မြင်ကွင်းကို ချုံ့သည်
 Zoom out,ချဲ့သည်

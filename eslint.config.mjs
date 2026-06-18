@@ -367,9 +367,11 @@ export default defineConfig([
     },
   },
   {
-    files: ['app/react/stories/*.stories.tsx'],
+    files: ['**/*.stories.{js,jsx,ts,tsx}', 'app/react/stories/**/*.{js,jsx,ts,tsx}'],
 
     rules: {
+      'import/no-default-export': 'off',
+      'react/jsx-props-no-spreading': 'off',
       'react/no-multi-comp': 'off',
     },
   },
