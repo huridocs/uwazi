@@ -19,6 +19,18 @@ jest.mock('#V2/Components/PDFViewer', () => ({
   PDF: ({ fileUrl }: any) => <div data-testid="mock-pdf">PDF: {fileUrl}</div>,
 }));
 
+class ResizeObserverMock {
+  observe = jest.fn();
+
+  unobserve = jest.fn();
+
+  disconnect = jest.fn();
+
+  constructor(_callback: ResizeObserverCallback) {}
+}
+
+global.ResizeObserver = ResizeObserverMock as typeof ResizeObserver;
+
 const sampleEntity: Partial<EntityType> = {
   _id: 'ent1',
   sharedId: 'shared1',
@@ -40,6 +52,9 @@ const checkEntityRendered = async () => {
   const titleElements = await screen.findAllByText('Sample Entity');
   expect(titleElements.length).toBeGreaterThan(0);
 };
+
+const relationshipsSideTab = /^Relationships/;
+const relationshipsMainTab = /^Relationships/;
 
 describe('Entity view', () => {
   afterEach(() => {
@@ -71,8 +86,9 @@ describe('Entity view', () => {
 
     await checkEntityRendered();
 
-    expect(screen.getByTestId('mock-pdf')).toBeInTheDocument();
-    expect(screen.getByTestId('mock-pdf')).toHaveTextContent('/api/files/file.pdf');
+    const pdf = await screen.findByTestId('mock-pdf');
+    expect(pdf).toBeInTheDocument();
+    expect(pdf).toHaveTextContent('/api/files/file.pdf');
   });
 
   describe('OCR service', () => {
@@ -160,7 +176,7 @@ describe('Entity view', () => {
         'true'
       );
       expect(mainTabs.getByRole('tab', { name: 'Metadata' })).toBeInTheDocument();
-      expect(mainTabs.getByRole('tab', { name: 'Relationships' })).toBeInTheDocument();
+      expect(mainTabs.getByRole('tab', { name: relationshipsMainTab })).toBeInTheDocument();
       expect(mainTabs.getByRole('tab', { name: /Files/ })).toBeInTheDocument();
     });
 
@@ -182,7 +198,9 @@ describe('Entity view', () => {
       const sideTabs = within(tablists[1]);
 
       expect(sideTabs.getByRole('tab', { name: 'Metadata' })).toBeInTheDocument();
-      expect(sideTabs.getByRole('tab', { name: 'Relationships' })).toBeInTheDocument();
+      expect(sideTabs.getByRole('tab', { name: 'ToC' })).toBeInTheDocument();
+      expect(sideTabs.getByRole('tab', { name: relationshipsSideTab })).toBeInTheDocument();
+      expect(sideTabs.getByRole('tab', { name: 'Search' })).toBeInTheDocument();
     });
 
     it('should update the side tabs when switching main tabs', async () => {
@@ -190,7 +208,7 @@ describe('Entity view', () => {
       const mainTabs = within(tablists[0]);
 
       const metadataMainTab = mainTabs.getByRole('tab', { name: 'Metadata' });
-      const relsMainTab = mainTabs.getByRole('tab', { name: 'Relationships' });
+      const relsMainTab = mainTabs.getByRole('tab', { name: relationshipsMainTab });
 
       fireEvent.click(metadataMainTab);
 
@@ -201,7 +219,7 @@ describe('Entity view', () => {
         expect(sideTabs.queryByRole('tab', { name: 'Metadata' })).not.toBeInTheDocument();
         expect(sideTabs.queryByRole('tab', { name: 'ToC' })).not.toBeInTheDocument();
         expect(sideTabs.queryByRole('tab', { name: 'References' })).not.toBeInTheDocument();
-        expect(sideTabs.getByRole('tab', { name: 'Relationships' })).toBeInTheDocument();
+        expect(sideTabs.getByRole('tab', { name: relationshipsSideTab })).toBeInTheDocument();
         expect(sideTabs.getByRole('tab', { name: 'Search' })).toBeInTheDocument();
       });
 
@@ -210,8 +228,11 @@ describe('Entity view', () => {
       await waitFor(() => {
         tablists = screen.getAllByTestId('tabs-comp');
         const sideTabs = within(tablists[1]);
+        expect(sideTabs.getByRole('tab', { name: 'Document' })).toBeInTheDocument();
         expect(sideTabs.getByRole('tab', { name: 'Metadata' })).toBeInTheDocument();
-        expect(sideTabs.queryByRole('tab', { name: 'Relationships' })).not.toBeInTheDocument();
+        expect(sideTabs.getByRole('tab', { name: 'ToC' })).toBeInTheDocument();
+        expect(sideTabs.getByRole('tab', { name: 'Search' })).toBeInTheDocument();
+        expect(sideTabs.queryByRole('tab', { name: relationshipsSideTab })).not.toBeInTheDocument();
       });
     });
 
@@ -253,11 +274,11 @@ describe('Entity view', () => {
       let mainTabs = within(tablists[0]);
       let sideTabs = within(tablists[1]);
 
-      const relsSideTab = sideTabs.getByRole('tab', { name: 'Relationships' });
+      const relsSideTab = sideTabs.getByRole('tab', { name: relationshipsSideTab });
       fireEvent.click(relsSideTab);
 
       await waitFor(() => {
-        expect(sideTabs.getByRole('tab', { name: 'Relationships' })).toHaveAttribute(
+        expect(sideTabs.getByRole('tab', { name: relationshipsSideTab })).toHaveAttribute(
           'aria-selected',
           'true'
         );
@@ -276,7 +297,7 @@ describe('Entity view', () => {
           'true'
         );
 
-        expect(sideTabs.getByRole('tab', { name: 'Relationships' })).toHaveAttribute(
+        expect(sideTabs.getByRole('tab', { name: relationshipsSideTab })).toHaveAttribute(
           'aria-selected',
           'true'
         );
