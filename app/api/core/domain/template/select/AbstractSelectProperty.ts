@@ -73,13 +73,8 @@ class AbstractSelectProperty extends FilterableProperty {
     };
   }
 
-  validatePropertyAssignment(
-    propertyAssignment: SelectPropertyAssignment,
-    shouldValidateForRequired = false
-  ): void {
-    createSchema(shouldValidateForRequired ? this.required : false, this.type).parse(
-      propertyAssignment
-    );
+  validatePropertyAssignment(propertyAssignment: SelectPropertyAssignment): void {
+    createSchema(this.required, this.type).parse(propertyAssignment);
   }
 }
 

@@ -14,7 +14,7 @@ import { triggerScroll } from './functions/helpers.js';
 import { clearSnippets, tryHighlightAndScroll } from './functions/handleSnippets.js';
 import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
 import { waitForElement } from './functions/waitForElement.js';
-import { PDFJS, CMAP_URL, EventBus, PDFDocumentProxy } from './pdfjs.js';
+import { PDFJS, CMAP_URL, WASM_URL, EventBus, PDFDocumentProxy } from './pdfjs.js';
 import { useContainerWidth } from './hooks/useContainerWidth.js';
 import { PDFPage } from './PDFPage.js';
 import { BlankState, ProgressBar } from '../UI/index.js';
@@ -42,7 +42,9 @@ interface PDFProps {
   onScaleChange?: (scale: number) => void;
   onPageChange?: (pageNumber: number) => void;
   onPdfReady?: (controls: PDFControls, maxPages: number) => void;
+  onHighlightClick?: (relationshipId: string) => void;
   size?: { height?: string; width?: string };
+  scrollRoot?: Element | null;
   className?: string;
 }
 
@@ -55,7 +57,9 @@ const PDF = ({
   onScaleChange,
   onPageChange,
   onPdfReady,
+  onHighlightClick,
   size,
+  scrollRoot,
   className,
 }: PDFProps) => {
   const pageRefsMap = useRef<{ [key: number]: HTMLDivElement | null }>({});
@@ -63,7 +67,9 @@ const PDF = ({
   const snippetAnimationFrameIdRef = useRef<number>(0);
   const pdfContainerRef = useRef<HTMLDivElement | null>(null);
   const isReady = useRef(false);
-  const intersectionObserverRef = useRef<IntersectionObserver | null>();
+  const [intersectionObserver, setIntersectionObserver] = useState<IntersectionObserver | null>(
+    null
+  );
   const [currentScale, setCurrentScale] = useState(1);
   const [pdf, setPDF] = useState<PDFDocumentProxy>();
   const [error, setError] = useState<React.ReactNode>();
@@ -216,6 +222,7 @@ const PDF = ({
       url: fileUrl,
       cMapUrl: CMAP_URL,
       cMapPacked: true,
+      wasmUrl: WASM_URL,
       isEvalSupported: false,
     });
 
@@ -271,16 +278,19 @@ const PDF = ({
       });
     };
 
-    intersectionObserverRef.current = new IntersectionObserver(observerHandler, {
-      root: null,
+    const observer = new IntersectionObserver(observerHandler, {
+      root: scrollRoot ?? null,
       rootMargin: '500px 0px 500px 0px',
       threshold: [0.1, CHANGE_PAGE_THRESHOLD],
     });
 
+    setIntersectionObserver(observer);
+
     return () => {
-      intersectionObserverRef.current?.disconnect();
+      observer.disconnect();
+      setIntersectionObserver(null);
     };
-  }, [pdfEventBus]);
+  }, [pdfEventBus, scrollRoot]);
 
   useEffect(() => {
     const readyHandler = ({ pageNumber }: { pageNumber: number }) => {
@@ -386,8 +396,9 @@ const PDF = ({
                         pdf={pdf}
                         page={number}
                         eventBus={pdfEventBus}
-                        intersectionObserver={intersectionObserverRef.current}
+                        intersectionObserver={intersectionObserver}
                         highlights={pageHighlights}
+                        onHighlightClick={onHighlightClick}
                         containerWidth={containerWidth}
                         onScaleChange={handleScaleChange}
                       />

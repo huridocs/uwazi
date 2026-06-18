@@ -64,7 +64,7 @@ class MultiUpdateEntity extends AbstractUseCase<Input, Output, Deps> {
       }
 
       if (propertyAssignments.length > 0) {
-        entity.setPropertyAssignments(propertyAssignments, targetLanguage);
+        entity.setPropertyAssignments(propertyAssignments, targetLanguage, true);
       }
     }
 

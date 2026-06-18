@@ -147,7 +147,7 @@ const buildReferences = () => {
   ) => {
     const relations = createReference({
       id,
-      sourceEntitySharedId: 'ifk5lld93u',
+      sourceEntitySharedId: 'entity1',
       sourceFileId: FILE_ID,
       targetEntityData,
       relationTemplate: PERSON_RELATION_TEMPLATE,
