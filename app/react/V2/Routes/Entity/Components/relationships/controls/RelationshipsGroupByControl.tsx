@@ -5,7 +5,7 @@ import {
   groupingOptions,
   type RelationshipsPanelGroupBy,
 } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
-import { groupingOptionLabels } from '../utils/relationshipsPanelLabels.js';
+import { groupingOptionLabel } from '../utils/relationshipsPanelLabels.js';
 import { useRelationshipsPanelLayout } from '#V2/Routes/Entity/Components/context/index.js';
 
 type RelationshipsGroupByControlProps = {
@@ -42,7 +42,7 @@ const RelationshipsGroupByControl = ({
       onChange={setValue}
       options={visibleOptions.map(option => ({
         id: option.id,
-        label: <Translate>{groupingOptionLabels[option.id]}</Translate>,
+        label: groupingOptionLabel(option.id),
       }))}
     />
   );

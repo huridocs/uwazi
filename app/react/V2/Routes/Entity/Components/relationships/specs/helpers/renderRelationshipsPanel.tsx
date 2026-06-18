@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { createStore, Provider } from 'jotai';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { render } from '@testing-library/react';
+import type { Entity } from '#V2/api/entities/types.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import {
   EntityScopedProvider,
@@ -19,6 +20,7 @@ type PdfMocks = {
 };
 
 type RenderRelationshipsPanelOptions = {
+  entity?: Entity;
   focusDocumentOnSelect?: boolean;
   onFocusDocument?: jest.Mock;
   pdf?: PdfMocks;
@@ -51,6 +53,7 @@ const SelectionState = () => {
 };
 
 const renderRelationshipsPanel = ({
+  entity = entityWithRelations,
   focusDocumentOnSelect = false,
   onFocusDocument = jest.fn(),
   pdf = defaultPdf(),
@@ -65,7 +68,7 @@ const renderRelationshipsPanel = ({
       path: '/',
       element: (
         <Provider store={store}>
-          <EntityScopedProvider entity={entityWithRelations}>
+          <EntityScopedProvider key={entity.sharedId} entity={entity}>
             <PdfControllerSetup pdf={pdf} />
             <RelationshipsPanel
               focusDocumentOnSelect={focusDocumentOnSelect}
@@ -87,3 +90,4 @@ const renderRelationshipsPanel = ({
 };
 
 export { renderRelationshipsPanel, defaultPdf };
+export type { RenderRelationshipsPanelOptions };

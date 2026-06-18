@@ -13,6 +13,7 @@ import {
   useRelationshipsPanelUi,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useRelationshipSelection } from '#V2/Routes/Entity/Components/document/index.js';
+import { projectRelationshipsPanel } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
 import { apiEntity, templates } from '../fixtures/referencesFixtures.js';
 import { RelationshipsStoryProvider } from './RelationshipsStoryProvider.js';
 
@@ -153,7 +154,8 @@ const RelationshipsSyncedDocumentView = ({
 }: RelationshipsSyncedDocumentViewProps) => {
   const { setPdfController: setPDFControls, pdfController: mainPdfController } = useDocumentPdf();
   const { setScrollToRelationshipPanel } = useDocumentRelationshipNav();
-  const { activeRelationshipId, selectRelationship } = useRelationshipSelection();
+  const { activeRelationshipId, selectRelationship, clearRelationshipSelection } =
+    useRelationshipSelection();
   const { activeClusterRefIds, setActiveClusterRefIds } = useRelationshipsPanelFacetFilters();
   const { setExpandForRefId } = useRelationshipsPanelUi();
   const [currentPage, setCurrentPage] = useState(1);
@@ -182,13 +184,29 @@ const RelationshipsSyncedDocumentView = ({
 
       if (isSameCluster) {
         setActiveClusterRefIds(null);
+        clearRelationshipSelection();
         return;
       }
 
       setActiveClusterRefIds(ids);
       mainPdfController?.goToPage(clusterPage);
     },
-    [activeClusterRefIds, mainPdfController, setActiveClusterRefIds]
+    [activeClusterRefIds, clearRelationshipSelection, mainPdfController, setActiveClusterRefIds]
+  );
+
+  const handleHighlightClick = useCallback(
+    (relationshipId: string) => {
+      const marker = projectRelationshipsPanel(entity).markers.find(
+        item => item._id === relationshipId
+      );
+      if (marker) {
+        selectRelationship(marker, { scrollPanel: true });
+        return;
+      }
+      setScrollToRelationshipPanel(relationshipId);
+      setExpandForRefId(relationshipId);
+    },
+    [entity, selectRelationship, setExpandForRefId, setScrollToRelationshipPanel]
   );
 
   return (
@@ -207,10 +225,7 @@ const RelationshipsSyncedDocumentView = ({
           scrollRoot={pdfScrollRoot}
           onPdfReady={setPDFControls}
           onPageChange={setCurrentPage}
-          onHighlightClick={relationshipId => {
-            setScrollToRelationshipPanel(relationshipId);
-            setExpandForRefId(relationshipId);
-          }}
+          onHighlightClick={handleHighlightClick}
         />
       </div>
       {!isMobile && (

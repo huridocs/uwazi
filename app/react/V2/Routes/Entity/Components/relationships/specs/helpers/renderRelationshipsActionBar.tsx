@@ -29,7 +29,7 @@ const renderRelationshipsActionBar = () => {
       path: '/',
       element: (
         <Provider store={store}>
-          <EntityScopedProvider entity={entityWithRelations}>
+          <EntityScopedProvider key={entityWithRelations.sharedId} entity={entityWithRelations}>
             <PdfControllerSetup />
             <RelationshipsPanel />
             <RelationshipsActionBar />

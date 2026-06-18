@@ -7,6 +7,8 @@ import type { PDFControls } from '#V2/Components/PDFViewer/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { settingsAtom, userAtom } from '#V2/atoms/index.js';
+import { useTabGroup } from '#V2/Components/UI/index.js';
+import { projectRelationshipsPanel } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
 import { PAGE_PARAM, SIDE_TAB_PARAM, VIEW_MODE_PARAM } from '../../urlParams.js';
 import { convertTextSelectionToTocEntry } from '#V2/Routes/Entity/Components/ToC/index.js';
 import {
@@ -40,7 +42,8 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
   const { setScrollToRelationshipPanel } = useDocumentRelationshipNav();
   const { activeClusterRefIds, setActiveClusterRefIds } = useRelationshipsPanelFacetFilters();
   const { setExpandForRefId } = useRelationshipsPanelUi();
-  const { activeRelationshipId, selectRelationship } = useRelationshipSelection();
+  const { activeRelationshipId, selectRelationship, clearRelationshipSelection } =
+    useRelationshipSelection();
   const { addEntry } = useTocActions();
   const { setCreateReferenceSelection } = useRelationshipsActions();
 
@@ -79,6 +82,7 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
   );
 
   const { focusRelationshipsPanel } = useEntityTabNavigation();
+  const { selectTab: selectSideTab } = useTabGroup('entity-side');
 
   const handleTextSelect = useCallback(
     (selection: TextSelection) => {
@@ -113,19 +117,29 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
 
   const handleAddToToC = useCallback(
     (selection: TextSelection) => {
-      // Selection is already in scale=1 (normalized) from PDF onSelect
       const tocEntry = convertTextSelectionToTocEntry(selection);
       addEntry(tocEntry);
+      selectSideTab(SIDE_TAB.TOC);
       const next = new URLSearchParams(searchParams.toString());
       next.set(SIDE_TAB_PARAM, SIDE_TAB.TOC);
       setSearchParams(next, { replace: true });
     },
-    [addEntry, searchParams, setSearchParams]
+    [addEntry, searchParams, selectSideTab, setSearchParams]
   );
 
   const handleRemove = useCallback((_selection: TextSelection) => {
     // TODO: Implement remove functionality
   }, []);
+
+  const findMarkerById = useCallback(
+    (relationshipId: string): RelationshipMarker | undefined => {
+      if (!entity) return undefined;
+      return projectRelationshipsPanel(entity).markers.find(
+        marker => marker._id === relationshipId
+      );
+    },
+    [entity]
+  );
 
   const handleRailPointClick = useCallback(
     (marker: RelationshipMarker) => {
@@ -150,6 +164,7 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
 
       if (isSameCluster) {
         setActiveClusterRefIds(null);
+        clearRelationshipSelection();
         return;
       }
 
@@ -159,6 +174,7 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
     },
     [
       activeClusterRefIds,
+      clearRelationshipSelection,
       entity,
       focusRelationshipsPanel,
       mainPdfController,
@@ -175,11 +191,23 @@ const useDocumentPdfView = ({ mainDocument, entity }: UseDocumentPdfViewParams) 
 
   const handleHighlightClick = useCallback(
     (relationshipId: string) => {
+      const marker = findMarkerById(relationshipId);
+      if (marker) {
+        focusRelationshipsPanel();
+        selectRelationship(marker, { scrollPanel: true });
+        return;
+      }
       focusRelationshipsPanel();
       setScrollToRelationshipPanel(relationshipId);
       setExpandForRefId(relationshipId);
     },
-    [focusRelationshipsPanel, setExpandForRefId, setScrollToRelationshipPanel]
+    [
+      findMarkerById,
+      focusRelationshipsPanel,
+      selectRelationship,
+      setExpandForRefId,
+      setScrollToRelationshipPanel,
+    ]
   );
 
   const handlePageNavigation = useCallback(

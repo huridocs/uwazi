@@ -37,7 +37,9 @@ const RelationshipsStoryProvider = ({
 
   return (
     <Provider store={store}>
-      <EntityScopedProvider entity={entity}>{children}</EntityScopedProvider>
+      <EntityScopedProvider key={entity.sharedId} entity={entity}>
+        {children}
+      </EntityScopedProvider>
     </Provider>
   );
 };

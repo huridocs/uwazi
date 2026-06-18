@@ -8,6 +8,7 @@ import {
   useRelationshipsPanelSearch,
   useRelationshipsPanelSort,
 } from '#V2/Routes/Entity/Components/context/index.js';
+import { sortOptionLabel } from '../utils/relationshipsPanelLabels.js';
 
 const RelationshipsActiveFilterChips = () => {
   const { search, setSearch } = useRelationshipsPanelSearch();
@@ -55,14 +56,14 @@ const RelationshipsActiveFilterChips = () => {
       )}
       {sort === 'asc' && (
         <ActiveFilterChip
-          label="A → Z"
+          label={sortOptionLabel('asc')}
           onRemove={() => setSort('none')}
           removeAriaLabel="Clear sort"
         />
       )}
       {sort === 'desc' && (
         <ActiveFilterChip
-          label="Z → A"
+          label={sortOptionLabel('desc')}
           onRemove={() => setSort('none')}
           removeAriaLabel="Clear sort"
         />

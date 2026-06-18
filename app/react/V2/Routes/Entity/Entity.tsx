@@ -1,6 +1,8 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useSetAtom } from 'jotai';
 import { useLoaderData, useSearchParams } from 'react-router';
+import { tabGroupsAtom } from '#V2/Components/UI/Tabs/tabsAtoms.js';
 import { Translate } from '#app/I18N/index.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
 import { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
@@ -41,7 +43,18 @@ type EntityViewProps = {
 const EntityView = ({ entity, mainDocument, pagePlaintext, searchResults }: EntityViewProps) => {
   const { focusedRow, primaryRows } = useEntityFiles();
   const [searchParams, setSearchParams] = useSearchParams();
+  const setTabGroups = useSetAtom(tabGroupsAtom);
   const initialSearchResults = useRef(searchResults);
+  const previousSharedId = useRef(entity.sharedId);
+
+  useEffect(() => {
+    if (previousSharedId.current === entity.sharedId) return;
+    previousSharedId.current = entity.sharedId;
+    setTabGroups(prev => {
+      const { 'entity-main': _main, 'entity-side': _side, ...rest } = prev;
+      return rest;
+    });
+  }, [entity.sharedId, setTabGroups]);
 
   const hasMainDocument = Boolean(mainDocument?.filename);
   const filesCount = (entity.documents?.length || 0) + (entity.attachments?.length || 0);
@@ -227,7 +240,7 @@ const Entity = () => {
   }
 
   return (
-    <EntityScopedProvider entity={entity}>
+    <EntityScopedProvider key={entity.sharedId} entity={entity}>
       <EntityFilesProvider entity={entity}>
         <EntityView
           entity={entity}

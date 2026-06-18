@@ -13,7 +13,6 @@ export {
   useRelationshipsPanelFacetFilters,
   useRelationshipsPanelUi,
   useRelationshipsPanelFilterInputs,
-  useRelationshipsPanelFilters,
 } from './RelationshipsPanelFiltersContext.js';
 export {
   useDocumentPdf,

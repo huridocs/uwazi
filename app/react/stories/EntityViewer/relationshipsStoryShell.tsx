@@ -6,7 +6,7 @@ import {
   RelationshipsPanel,
   RelationshipsFiltersDrawer,
 } from '#V2/Routes/Entity/Components/relationships/index.js';
-import { useRelationshipsPanelFilters } from '#V2/Routes/Entity/Components/context/index.js';
+import { useRelationshipsPanelUi } from '#V2/Routes/Entity/Components/context/index.js';
 import { apiEntity } from '../fixtures/referencesFixtures.js';
 import { RelationshipsStoryProvider } from './RelationshipsStoryProvider.js';
 import { RelationshipsSyncedDocumentView } from './relationshipsDocumentViews.js';
@@ -21,7 +21,7 @@ type RelationshipsStoryShellProps = {
 };
 
 const ResetFiltersDrawer = () => {
-  const { setFiltersDrawerOpen } = useRelationshipsPanelFilters();
+  const { setFiltersDrawerOpen } = useRelationshipsPanelUi();
 
   useEffect(() => {
     setFiltersDrawerOpen(false);
