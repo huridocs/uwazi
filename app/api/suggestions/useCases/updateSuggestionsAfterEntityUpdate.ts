@@ -2,10 +2,13 @@ import { UseCase } from '#api/core/libs/UseCase.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { IXServices } from '#api/services/informationextraction/IXServices.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
-import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
 import { PipelineBuilder } from '../queryBuilder.js';
 import { IXSuggestionsModel } from '../IXSuggestionsModel.js';
 import { SuggestionFactory } from '../suggestionFactory.js';
+import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
+
+// Temporary union type during Mongo -> Postgres migration
+type TemplatesDAO = Awaited<ReturnType<typeof TemplatesDAOFactory.default>>;
 
 type Input = {
   entities: EntitySchema[];
@@ -16,9 +19,9 @@ type Output = void;
 class UpdateSuggestionsAfterEntityUpdate implements UseCase<Input, Output> {
   private pipeline: PipelineBuilder;
 
-  private templatesDAO: MongoTemplatesDAO;
+  private templatesDAO: TemplatesDAO;
 
-  constructor(templatesDAO: MongoTemplatesDAO) {
+  constructor(templatesDAO: TemplatesDAO) {
     this.pipeline = new PipelineBuilder();
     this.templatesDAO = templatesDAO;
   }
@@ -43,7 +46,7 @@ class UpdateSuggestionsAfterEntityUpdate implements UseCase<Input, Output> {
 
     const templateIds = [...new Set(suggestions.map((s: any) => s.entityTemplate))];
     const templateDBOs = await this.templatesDAO.get(templateIds);
-    const templateMap = new Map(templateDBOs.map(t => [t._id.toHexString(), t]));
+    const templateMap = new Map(templateDBOs.map(t => [t._id.toString(), t]));
 
     const updatedSuggestions: IXSuggestionType[] = [];
 
@@ -51,7 +54,7 @@ class UpdateSuggestionsAfterEntityUpdate implements UseCase<Input, Output> {
       const { extractor, entityTemplate, ...suggestion } = _suggestion;
       const template = templateMap.get(entityTemplate);
       if (!template) return;
-      const targetProperty = IXServices.extractTargetProperty(extractor, template);
+      const targetProperty = IXServices.extractTargetProperty(extractor, template as any);
       const entity = entities.find(
         e => e.language === suggestion.language && e.sharedId === suggestion.entityId
       );

@@ -3,6 +3,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoDeprecatedEntitiesDataSource } from '#api/entities.v2/database/MongoDeprecatedEntitiesDataSource.js';
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
+import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
 import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
 import testingDB from '#api/utils/testing_db.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -143,6 +144,7 @@ function buildService() {
       const templateDataSource = new MongoTemplatesDataSource({
         db: getConnection(),
         transactionManager,
+        dao: new MongoTemplatesDAO({ db: getConnection(), transactionManager }),
       });
       const entityDataSource = new MongoDeprecatedEntitiesDataSource(
         getConnection(),

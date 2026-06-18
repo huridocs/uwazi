@@ -26,6 +26,7 @@ import { MongoTemplatesDAO } from './MongoTemplatesDAO.js';
 type MongoTemplatesDataSourceDeps = {
   db: Db;
   transactionManager: MongoTransactionManager;
+  dao: MongoTemplatesDAO;
   options?: MongoDSOptions;
 };
 
@@ -42,10 +43,7 @@ export class MongoTemplatesDataSource
   constructor(deps: MongoTemplatesDataSourceDeps) {
     super(deps.db, deps.transactionManager, deps.options);
 
-    this.dao = new MongoTemplatesDAO({
-      db: deps.db,
-      transactionManager: deps.transactionManager,
-    });
+    this.dao = deps.dao;
 
     this.transactionManager.onCommitted(async () => {
       const templates = [...this.templatesMutated.values()];
@@ -59,7 +57,7 @@ export class MongoTemplatesDataSource
   async updateMapping(template: Template, reset = false) {
     if (reset) {
       await resetIndex();
-      return updateMapping(await this.getCollection().find({}).toArray());
+      return updateMapping(await this.dao.get());
     }
     return updateMapping([MongoTemplateMapper.toSchema(template)]);
   }
@@ -247,10 +245,7 @@ export class MongoTemplatesDataSource
   }
 
   async getTemplatesIdsHavingProperty(propertyName: string): Promise<string[]> {
-    const templates = await this.getCollection()
-      .find({ 'properties.name': propertyName }, { projection: { _id: 1 } })
-      .toArray();
-    return templates.map(template => MongoIdHandler.mapToApp(template._id));
+    return this.dao.getTemplatesIdsHavingProperty(propertyName);
   }
 
   async getAllTemplatesIds(): Promise<string[]> {
@@ -321,31 +316,16 @@ export class MongoTemplatesDataSource
   }
 
   async isPropertyUnique(property: Property): Promise<boolean> {
-    const count = await this.getCollection().countDocuments(
-      {
-        properties: {
-          $elemMatch: {
-            name: property.name,
-            type: property.type,
-            _id: { $ne: ObjectId.createFromHexString(property.id) },
-          },
-        },
-      },
-      { limit: 1 }
-    );
-
-    return count === 0;
+    return this.dao.isPropertyUnique({
+      _id: property.id,
+      name: property.name,
+      type: property.type,
+      label: property.label,
+    });
   }
 
   async isTemplateUnique(template: Template): Promise<boolean> {
-    const count = await this.getCollection().countDocuments(
-      {
-        name: template.name,
-      },
-      { limit: 1 }
-    );
-
-    return count === 0;
+    return this.dao.isTemplateUnique(template.name, template.id);
   }
 
   async getTemplatesByPropertyName(property: Property): Promise<Template[]> {
@@ -374,17 +354,12 @@ export class MongoTemplatesDataSource
   }
 
   async countByThesauri(thesaurusId: string): Promise<number> {
-    return this.getCollection().countDocuments({ 'properties.content': thesaurusId }, { limit: 1 });
+    return this.dao.countByThesauri(thesaurusId);
   }
 
   async findTemplatesReferencing(templateId: string): Promise<Template[]> {
-    const schemas = await this.getCollection()
-      .find({
-        'properties.content': templateId,
-      })
-      .toArray();
-
-    return schemas.map(MongoTemplateMapper.toDomain);
+    const templates = await this.dao.findTemplatesReferencing(templateId);
+    return templates.map(MongoTemplateMapper.toDomain);
   }
 
   async delete(templateId: string): Promise<void> {

@@ -10,18 +10,21 @@ import {
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoEntityMapper } from '#api/core/infrastructure/mongodb/entity/MongoEntityMapper.js';
-import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { search } from '#api/search/index.js';
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
 import { Entity } from '../../../domain/entity/Entity.js';
 import { EntitiesDataSource } from '../../../application/contracts/EntitiesDataSource.js';
 import { EntityDBO, EntityTemplateAggregation } from './EntityDBO.js';
+import { TemplatesDAOFactory } from '../../factories/TemplatesDAOFactory.js';
+
+// Temporary union type during Mongo -> Postgres migration
+type TemplatesDAO = Awaited<ReturnType<typeof TemplatesDAOFactory.default>>;
 
 type Deps = {
   db: Db;
   transactionManager: MongoTransactionManager;
-  templatesDAO: MongoTemplatesDAO;
+  templatesDAO: TemplatesDAO;
   options?: MongoDSOptions;
 };
 
@@ -33,7 +36,7 @@ export class MongoEntitiesDataSource
 
   private modifiedSharedIds = new Set<string>();
 
-  private templatesDAO: MongoTemplatesDAO;
+  private templatesDAO: TemplatesDAO;
 
   constructor(deps: Deps) {
     super(deps.db, deps.transactionManager, deps.options);
@@ -383,7 +386,7 @@ export class MongoEntitiesDataSource
     const templateIds = await this.getCollection().distinct('template', query);
     const templateIdStrings = templateIds.map(id => id.toHexString());
     const templateDBOs = await this.templatesDAO.get(templateIdStrings);
-    const templateMap = new Map(templateDBOs.map(t => [t._id.toHexString(), t]));
+    const templateMap = new Map(templateDBOs.map(t => [t._id.toString(), t]));
 
     const aggregation = [
       { $match: query },

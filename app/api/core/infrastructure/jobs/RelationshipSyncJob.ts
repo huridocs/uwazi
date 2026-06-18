@@ -9,7 +9,7 @@ import {
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { EntityNotFoundError } from '#api/core/application/errors.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
-import { TemplateDBO } from '../mongodb/template/DBOs/TemplateDBO.js';
+import { TemplatesDAOFactory } from '../factories/TemplatesDAOFactory.js';
 
 type Params = UserAwareDispatchableParams & {
   templateId: string;
@@ -29,9 +29,9 @@ class RelationshipSyncJob extends UserAwareDispatchable<Params> {
   protected async handle(): Promise<void> {
     const db = getConnection();
 
-    const template = await db
-      .collection<TemplateDBO>('templates')
-      .findOne({ _id: ObjectId.createFromHexString(this.params.templateId) });
+    const dao = TemplatesDAOFactory.default();
+    const templates = await dao.get([this.params.templateId]);
+    const template = templates[0] || null;
 
     const entity = await db.collection<EntityDBO>('entities').findOne({
       sharedId: this.params.sharedId,

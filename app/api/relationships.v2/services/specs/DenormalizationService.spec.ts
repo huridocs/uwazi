@@ -4,6 +4,7 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { MongoDeprecatedEntitiesDataSource } from '#api/entities.v2/database/MongoDeprecatedEntitiesDataSource.js';
 import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
+import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
@@ -344,6 +345,7 @@ beforeEach(async () => {
   const templatesDataSource = new MongoTemplatesDataSource({
     db,
     transactionManager,
+    dao: new MongoTemplatesDAO({ db, transactionManager }),
   });
   const entitiesDataSource = new MongoDeprecatedEntitiesDataSource(
     db,

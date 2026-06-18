@@ -14,8 +14,7 @@ import { ContextType } from '#shared/translationSchema.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
 import { settingsModel } from './settingsModel.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
+import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 
 const DEFAULT_MAP_STARTING_POINT: LatLonSchema[] = [{ lon: 6, lat: 46 }];
 
@@ -160,11 +159,11 @@ export default {
     const result = await settingsModel.save({ ...settings, _id: currentSettings._id });
 
     if (!currentSettings.newNameGeneration && settings.newNameGeneration) {
-      const db = getConnection();
-      const templatesCol = db.collection<TemplateDBO>('templates');
+      const dao = TemplatesDAOFactory.default();
+      const templates = await dao.get();
       const defaultLanguage = currentSettings?.languages?.find(l => l.default)?.key!;
 
-      await ArrayUtils.sequentialFor(await templatesCol.find().toArray(), async template => {
+      await ArrayUtils.sequentialFor(templates, async (template: any) => {
         await TemplateFacade.update({ ...template, reindex: false }, defaultLanguage);
       });
     }

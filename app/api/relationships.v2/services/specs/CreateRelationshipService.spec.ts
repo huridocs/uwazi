@@ -10,6 +10,7 @@ import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/Mon
 import { MongoRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource.js';
 import { MissingRelationshipTypeError } from '#api/relationshiptypes.v2/errors/relationshipTypeErrors.js';
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
+import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
@@ -56,6 +57,7 @@ const createService = () => {
       new MongoTemplatesDataSource({
         db: connection,
         transactionManager,
+        dao: new MongoTemplatesDAO({ db: connection, transactionManager }),
       }),
       settingsDS,
       transactionManager

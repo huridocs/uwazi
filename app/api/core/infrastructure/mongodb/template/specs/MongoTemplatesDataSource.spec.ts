@@ -74,12 +74,16 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
+import { MongoTemplatesDAO } from '../MongoTemplatesDAO.js';
+
 const createSut = () => {
   const db = getConnection();
   const transactionManager = TransactionManagerFactory.default();
+  const dao = new MongoTemplatesDAO({ db, transactionManager });
   const sut = new MongoTemplatesDataSource({
     db,
     transactionManager,
+    dao,
   });
 
   return { sut, transactionManager };

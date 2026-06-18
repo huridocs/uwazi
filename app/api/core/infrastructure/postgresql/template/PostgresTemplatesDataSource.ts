@@ -25,6 +25,7 @@ type Deps = {
   tenantId: string;
   mongoDb: Db;
   transactionManager: TransactionManager;
+  dao: PostgresTemplatesDAO;
 };
 
 export class PostgresTemplatesDataSource extends PostgresDataSource implements TemplatesDataSource {
@@ -43,11 +44,7 @@ export class PostgresTemplatesDataSource extends PostgresDataSource implements T
       sync: { syncDb: deps.mongoDb, syncNamespace: 'templates' },
     });
 
-    this.dao = new PostgresTemplatesDAO({
-      connection: deps.connection,
-      tenantId: deps.tenantId,
-      mongoDb: deps.mongoDb,
-    });
+    this.dao = deps.dao;
 
     this.transactionManager = deps.transactionManager;
 

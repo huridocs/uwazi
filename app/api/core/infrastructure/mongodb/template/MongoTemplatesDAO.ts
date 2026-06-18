@@ -140,6 +140,45 @@ class MongoTemplatesDAO extends MongoDataSource<TemplateDBO> {
     return [title, ...fromTemplates];
   }
 
+  async getTemplatesIdsHavingProperty(propertyName: string): Promise<string[]> {
+    const templates = await this.getCollection()
+      .find({ 'properties.name': propertyName }, { projection: { _id: 1 } })
+      .toArray();
+    return templates.map(template => template._id.toString());
+  }
+
+  async isPropertyUnique(property: PropertySchema): Promise<boolean> {
+    const count = await this.getCollection().countDocuments(
+      {
+        properties: {
+          $elemMatch: {
+            name: property.name,
+            type: property.type,
+            _id: { $ne: new ObjectId(property._id!) },
+          },
+        },
+      },
+      { limit: 1 }
+    );
+
+    return count === 0;
+  }
+
+  async isTemplateUnique(name: string, excludingId?: string): Promise<boolean> {
+    const filter: any = { name };
+    if (excludingId) {
+      filter._id = { $ne: new ObjectId(excludingId) };
+    }
+
+    const count = await this.getCollection().countDocuments(filter, { limit: 1 });
+
+    return count === 0;
+  }
+
+  async findTemplatesReferencing(templateId: string): Promise<TemplateDBO[]> {
+    return this.getCollection().find({ 'properties.content': templateId }).toArray();
+  }
+
   async getReferencePropertyNames(): Promise<string[]> {
     const result = await this.getCollection()
       .aggregate([

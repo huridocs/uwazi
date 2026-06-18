@@ -5,7 +5,10 @@ import { PostgresConnectionFactory } from '#api/core/infrastructure/factories/Po
 import { PostgresTemplatesDataSource } from '#api/core/infrastructure/postgresql/template/PostgresTemplatesDataSource.js';
 import { MongoTemplatesDataSource } from '../mongodb/template/MongoTemplatesDataSource.js';
 import { CachedMongoTemplatesDataSource } from '../mongodb/template/CachedMongoTemplatesDataSource.js';
+import { MongoTemplatesDAO } from '../mongodb/template/MongoTemplatesDAO.js';
+import { PostgresTemplatesDAO } from '#api/core/infrastructure/postgresql/template/PostgresTemplatesDAO.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { TemplatesDAOFactory } from './TemplatesDAOFactory.js';
 
 type Overrides = Partial<
   Omit<ConstructorParameters<typeof MongoTemplatesDataSource>[0], 'transactionManager'>
@@ -22,17 +25,21 @@ export class TemplatesDataSourceFactory {
     const { transactionManager: _ignored, ...restOverrides } = overrides ?? {};
 
     if (tenant.featureFlags?.postgresTemplates) {
+      const dao = TemplatesDAOFactory.default() as PostgresTemplatesDAO;
       return new PostgresTemplatesDataSource({
         connection: PostgresConnectionFactory.connectionConfig(),
         tenantId: tenant.name,
         mongoDb: db,
         transactionManager: mongoTM,
+        dao,
       });
     }
 
+    const dao = TemplatesDAOFactory.default() as MongoTemplatesDAO;
     return new MongoTemplatesDataSource({
       db,
       transactionManager: mongoTM,
+      dao,
       ...restOverrides,
     });
   }
@@ -45,17 +52,21 @@ export class TemplatesDataSourceFactory {
     const { transactionManager: _ignored, ...restOverrides } = overrides ?? {};
 
     if (tenant.featureFlags?.postgresTemplates) {
+      const dao = TemplatesDAOFactory.default() as PostgresTemplatesDAO;
       return new PostgresTemplatesDataSource({
         connection: PostgresConnectionFactory.connectionConfig(),
         tenantId: tenant.name,
         mongoDb: db,
         transactionManager: mongoTM,
+        dao,
       });
     }
 
+    const dao = TemplatesDAOFactory.default() as MongoTemplatesDAO;
     return new CachedMongoTemplatesDataSource({
       db,
       transactionManager: mongoTM,
+      dao,
       ...restOverrides,
     });
   }

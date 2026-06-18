@@ -296,7 +296,7 @@ export class MongoTemplateMapper {
   }
 
   static toDomain(schema: TemplateDBO): Template {
-    const templateId = schema._id.toHexString();
+    const templateId = schema._id.toString();
 
     const template = new Template(
       templateId,

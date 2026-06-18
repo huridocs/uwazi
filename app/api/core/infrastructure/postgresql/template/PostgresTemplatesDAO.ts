@@ -1,5 +1,5 @@
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
-import { Db } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import { PostgresConnectionConfig } from '#api/core/infrastructure/postgresql/common/PostgresTable.js';
 import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
@@ -106,6 +106,57 @@ class PostgresTemplatesDAO extends PostgresDataSource {
     return rows
       .flatMap(row => [...(row.properties || []), ...(row.commonProperties || [])])
       .find(p => p.name === name);
+  }
+
+  async getTemplatesIdsHavingProperty(propertyName: string): Promise<string[]> {
+    const rows = await this.get();
+    return rows
+      .filter(row => (row.properties || []).some(p => p.name === propertyName))
+      .map(row => row._id);
+  }
+
+  async isPropertyUnique(property: PropertySchema): Promise<boolean> {
+    const rows = await this.get();
+    return !rows.some(
+      row =>
+        row._id !== property._id &&
+        (row.properties || []).some(
+          p =>
+            p._id?.toString() !== property._id &&
+            p.name === property.name &&
+            p.type === property.type
+        )
+    );
+  }
+
+  async isTemplateUnique(name: string, excludingId?: string): Promise<boolean> {
+    const rows = await this.get();
+    return !rows.some(row => row._id !== excludingId && row.name === name);
+  }
+
+  async findTemplatesReferencing(templateId: string): Promise<TemplateRow[]> {
+    const rows = await this.get();
+    return rows.filter(row => (row.properties || []).some(p => p.content === templateId));
+  }
+
+  async getReferencePropertyNames(): Promise<string[]> {
+    const rows = await this.get();
+    const names = new Set<string>();
+    rows.forEach(row => {
+      (row.properties || []).forEach(p => {
+        if (['select', 'multiselect', 'relationship'].includes(p.type)) {
+          names.add(p.name);
+        }
+      });
+    });
+    return [...names];
+  }
+
+  async findTemplateIdsUsingThesaurus(thesaurusId: string): Promise<ObjectId[]> {
+    const directTemplates = await this.getByContent(thesaurusId);
+    const relatedTemplates = await this.getByContents(directTemplates.map(t => t._id.toString()));
+    const allTemplates = [...directTemplates, ...relatedTemplates];
+    return Array.from(new Set(allTemplates.map(t => new ObjectId(t._id))));
   }
 
   async getAllFilterableProperties(): Promise<PropertyDescriptor[]> {

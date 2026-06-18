@@ -2,6 +2,7 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 import { MongoRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource.js';
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
+import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { MongoDeprecatedEntitiesDataSource } from '#api/entities.v2/database/MongoDeprecatedEntitiesDataSource.js';
@@ -47,6 +48,7 @@ function setUpService() {
   const templatesDS = new MongoTemplatesDataSource({
     db: connection,
     transactionManager,
+    dao: new MongoTemplatesDAO({ db: connection, transactionManager }),
   });
   const relTypeDS = new MongoRelationshipTypesDataSource(connection, transactionManager);
   const settingsDS = testingEnvironment.runWithContext(() => SettingsDataSourceFactory.default(), {

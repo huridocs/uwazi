@@ -3,8 +3,8 @@ import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common
 import { Db, ObjectId } from 'mongodb';
 
 import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
-import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
 import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
+import { TemplateRow } from '#api/core/infrastructure/postgresql/template/PostgresTemplateMapper.js';
 import { PXExtractor } from '../domain/PXExtractor.js';
 import {
   ExistsInput,
@@ -15,6 +15,10 @@ import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService.js'
 import { PXValidationError } from '../domain/PXValidationError.js';
 import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource.js';
 import { MongoPXExtractorDBO } from './MongoPXExtractorDBO.js';
+import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
+
+// Temporary union type during Mongo -> Postgres migration
+type TemplatesDAO = Awaited<ReturnType<typeof TemplatesDAOFactory.default>>;
 
 export const mongoPXExtractorsCollection = 'px_extractors';
 
@@ -24,13 +28,13 @@ export class MongoPXExtractorsDataSource
 {
   private extractorsQueryService: PXExtractorsQueryService;
 
-  private templatesDAO: MongoTemplatesDAO;
+  private templatesDAO: TemplatesDAO;
 
   constructor(
     db: Db,
     transactionManager: MongoTransactionManager,
     extractorsQueryService: PXExtractorsQueryService,
-    templatesDAO: MongoTemplatesDAO
+    templatesDAO: TemplatesDAO
   ) {
     super(db, transactionManager);
     this.extractorsQueryService = extractorsQueryService;
@@ -61,13 +65,13 @@ export class MongoPXExtractorsDataSource
     if (!extractor) return undefined;
 
     const templateIds = [extractor.sourceTemplateId, extractor.targetTemplateId].map(id =>
-      id.toHexString()
+      id.toString()
     );
     const templateDBOs = await this.templatesDAO.get(templateIds);
-    const templateMap = new Map(templateDBOs.map(t => [t._id.toHexString(), t]));
+    const templateMap = new Map(templateDBOs.map(t => [t._id.toString(), t]));
 
-    const sourceTemplate = templateMap.get(extractor.sourceTemplateId.toHexString());
-    const targetTemplate = templateMap.get(extractor.targetTemplateId.toHexString());
+    const sourceTemplate = templateMap.get(extractor.sourceTemplateId.toString());
+    const targetTemplate = templateMap.get(extractor.targetTemplateId.toString());
 
     if (!sourceTemplate || !targetTemplate) return undefined;
 
@@ -130,13 +134,13 @@ export class MongoPXExtractorsDataSource
 
   static toDomain(
     dbo: MongoPXExtractorDBO,
-    sourceTemplate: TemplateDBO,
-    targetTemplate: TemplateDBO
+    sourceTemplate: TemplateDBO | TemplateRow,
+    targetTemplate: TemplateDBO | TemplateRow
   ): PXExtractor {
     return new PXExtractor({
       id: dbo._id.toString(),
-      sourceTemplate: MongoTemplateMapper.toDomain(sourceTemplate),
-      targetTemplate: MongoTemplateMapper.toDomain(targetTemplate),
+      sourceTemplate: MongoTemplateMapper.toDomain(sourceTemplate as any),
+      targetTemplate: MongoTemplateMapper.toDomain(targetTemplate as any),
       paragraphNumberPropertyId: dbo.paragraphNumberPropertyId.toString(),
       paragraphPropertyId: dbo.paragraphPropertyId.toString(),
       sourceRelationshipTypeId: dbo.sourceRelationshipTypeId.toString(),

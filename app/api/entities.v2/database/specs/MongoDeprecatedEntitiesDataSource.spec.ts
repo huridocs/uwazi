@@ -1,3 +1,4 @@
+import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { partialImplementation } from '#api/common.v2/testing/partialImplementation.js';
 import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
@@ -160,6 +161,7 @@ describe('Relationship fields caching strategy', () => {
         new MongoTemplatesDataSource({
           db,
           transactionManager,
+          dao: new MongoTemplatesDAO({ db, transactionManager }),
         }),
         settingsDsMock,
         transactionManager
@@ -206,6 +208,7 @@ describe('Relationship fields caching strategy', () => {
         new MongoTemplatesDataSource({
           db,
           transactionManager,
+          dao: new MongoTemplatesDAO({ db, transactionManager }),
         }),
         settingsDsMock,
         transactionManager
@@ -281,6 +284,7 @@ describe('Relationship fields caching strategy', () => {
         new MongoTemplatesDataSource({
           db,
           transactionManager: tm,
+          dao: new MongoTemplatesDAO({ db, transactionManager: tm }),
         }),
         settingsDsMock,
         tm
@@ -392,6 +396,7 @@ describe('When checking for the existence of entities', () => {
         new MongoTemplatesDataSource({
           db,
           transactionManager,
+          dao: new MongoTemplatesDAO({ db, transactionManager }),
         }),
         partialImplementation<MongoSettingsDataSource>({
           async getLanguageKeys() {
@@ -414,6 +419,7 @@ it('should return the sharedIds of the entities that have a particular id within
     new MongoTemplatesDataSource({
       db,
       transactionManager,
+      dao: new MongoTemplatesDAO({ db, transactionManager }),
     }),
     partialImplementation<MongoSettingsDataSource>({
       async getLanguageKeys() {
@@ -438,6 +444,7 @@ it('should update the denormalizations value in all related entities', async () 
     new MongoTemplatesDataSource({
       db,
       transactionManager,
+      dao: new MongoTemplatesDAO({ db, transactionManager }),
     }),
     partialImplementation<MongoSettingsDataSource>({
       async getLanguageKeys() {
@@ -519,6 +526,7 @@ it('should return records containing the obsoleteMetadata', async () => {
     new MongoTemplatesDataSource({
       db,
       transactionManager,
+      dao: new MongoTemplatesDAO({ db, transactionManager }),
     }),
     partialImplementation<MongoSettingsDataSource>({
       async getLanguageKeys() {

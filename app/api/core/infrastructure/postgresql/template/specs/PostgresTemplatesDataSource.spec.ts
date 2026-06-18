@@ -7,6 +7,7 @@ import { testingPG } from '#api/utils/testing_pg.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
 import { PostgresTemplatesDataSource } from '../PostgresTemplatesDataSource.js';
+import { PostgresTemplatesDAO } from '../PostgresTemplatesDAO.js';
 
 const factory = getFixturesFactory();
 
@@ -19,13 +20,23 @@ describe('PostgresTemplatesDataSource', () => {
     await testingEnvironment.tearDown();
   });
 
-  const createDS = () =>
-    new PostgresTemplatesDataSource({
+  const createDS = () => {
+    const db = getConnection();
+    const transactionManager = TransactionManagerFactory.default();
+    const tenantId = tenants.current().name;
+    const dao = new PostgresTemplatesDAO({
       connection: PostgresConnectionFactory.connectionConfig(),
-      tenantId: tenants.current().name,
-      mongoDb: getConnection(),
-      transactionManager: TransactionManagerFactory.default(),
+      tenantId,
+      mongoDb: db,
     });
+    return new PostgresTemplatesDataSource({
+      connection: PostgresConnectionFactory.connectionConfig(),
+      tenantId,
+      mongoDb: db,
+      transactionManager,
+      dao,
+    });
+  };
 
   beforeEach(async () => {
     await testingPG.clear(['templates']);
