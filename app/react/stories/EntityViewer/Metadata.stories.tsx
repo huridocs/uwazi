@@ -5,6 +5,7 @@ import { createStore, Provider } from 'jotai';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.js';
 import { MetadataDisplayFooter } from '#app/V2/Routes/Entity/Components/index.js';
+import { MetadataEditingProvider } from '#V2/Routes/Entity/Components/context/MetadataEditingContext.js';
 import { localeAtom, settingsAtom, templatesAtom, translationsAtom } from '#V2/atoms/index.js';
 import { apiEntity, templates } from '../fixtures/MetadataDisplayFixtures.js';
 import { Entity, MetadataSchema } from '#V2/api/entities/types.js';
@@ -86,14 +87,16 @@ const MetadataDisplayComponent = ({
     <div className="tw-content">
       <BrowserRouter>
         <Provider store={store}>
-          <Panel>
-            <Panel.Body>
-              <MetadataDisplay entity={storyReadyEntity} />
-            </Panel.Body>
-            <Panel.Footer>
-              <MetadataDisplayFooter />
-            </Panel.Footer>
-          </Panel>
+          <MetadataEditingProvider>
+            <Panel>
+              <Panel.Body>
+                <MetadataDisplay entity={storyReadyEntity} />
+              </Panel.Body>
+              <Panel.Footer>
+                <MetadataDisplayFooter />
+              </Panel.Footer>
+            </Panel>
+          </MetadataEditingProvider>
         </Provider>
       </BrowserRouter>
     </div>
