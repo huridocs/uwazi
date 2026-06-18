@@ -96,6 +96,7 @@ Analytics,Αναλυτικά στοιχεία
 Analytics description,"Αν θέλετε να παρακολουθείτε αναλυτικά στοιχεία σχετικά με τις επισκέψεις στη συλλογή σας, το Uwazi υποστηρίζει τόσο το Google Analytics όσο και το Matomo."
 AND OR NOT,AND OR NOT
 Any entity,Οποιαδήποτε οντότητα
+Appearance,Appearance
 Apply,Εφαρμογή
 Are you sure you want to continue?,Θέλετε σίγουρα να συνεχίσετε;
 Are you sure you want to delete,Are you sure you want to delete
@@ -304,6 +305,7 @@ Deleted user group,Διαγράφηκε ομάδα χρηστών
 Deletion success,Επιτυχία διαγραφής
 Description,Περιγραφή
 Deselect all,Deselect all
+Direction,Direction
 Disable,Απενεργοποίηση
 Disable highlights,Απενεργοποίηση επισημάνσεων
 Disabled 2FA,Απενεργοποιημένο 2FA
@@ -698,6 +700,7 @@ No Value,Χωρίς τιμή
 Non processed,Μη επεξεργασμένο
 Non-labeled,Χωρίς ετικέτα
 Non-latin characters support,Non-latin characters support
+None,None
 Normal view,Κανονική προβολή
 Not already been use as source template in another extractor,Δεν έχει ήδη χρησιμοποιηθεί ως πρότυπο πηγής σε άλλο εξαγωγέα
 Not already been use as target template,Δεν έχει ήδη χρησιμοποιηθεί ως πρότυπο στόχου
@@ -990,6 +993,8 @@ Sort order,Sort order
 Sort:,Sort:
 sorted by,Ταξινόμηση κατά
 Source,Πηγή
+Source entity,Source entity
+Source page,Source page
 Source relationship type,Τύπος σχέσης πηγής
 Source template,Πρότυπο πηγής
 Source Template,Πρότυπο πηγής
@@ -1026,6 +1031,7 @@ Table of Contents,Πίνακας περιεχομένων
 Table of contents,Πίνακας περιεχομένων
 Table of contents saved successfully,Table of contents saved successfully
 Table view,Προβολή πίνακα
+Target entity,Target entity
 Target entity type,Target entity type
 Target relationship type,Τύπος σχέσης στόχου
 Target Template,Πρότυπο στόχου

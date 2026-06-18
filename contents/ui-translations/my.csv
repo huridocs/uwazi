@@ -96,6 +96,7 @@ Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 AND OR NOT,AND OR NOT
 Any entity,Any entity
+Appearance,Appearance
 Apply,Apply
 Are you sure you want to continue?,Are you sure you want to continue?
 Are you sure you want to delete,Are you sure you want to delete
@@ -303,6 +304,7 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,ဖော်ပြချက်
 Deselect all,Deselect all
+Direction,Direction
 Disable,Disable
 Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
@@ -697,6 +699,7 @@ No Value,တန်ဖိုးမရှိပါ
 Non processed,Non processed
 Non-labeled,Non-labeled
 Non-latin characters support,Non-latin characters support
+None,None
 Normal view,ပုံမှန် မြင်ကွင်း
 Not already been use as source template in another extractor,Not already been use as source template in another extractor
 Not already been use as target template,Not already been use as target template
@@ -989,6 +992,8 @@ Sort order,Sort order
 Sort:,Sort:
 sorted by,ဤသို့ အမျိုးအစားခွဲထားသည်
 Source,Source
+Source entity,Source entity
+Source page,Source page
 Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
@@ -1025,6 +1030,7 @@ Table of Contents,မာတိကာ
 Table of contents,မာတိကာ
 Table of contents saved successfully,Table of contents saved successfully
 Table view,ဇယားမြင်ကွင်း
+Target entity,Target entity
 Target entity type,Target entity type
 Target relationship type,Target relationship type
 Target Template,Target Template

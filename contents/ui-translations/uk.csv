@@ -96,6 +96,7 @@ Analytics,Аналітика
 Analytics description,"Якщо ви хочете відстежувати аналітику, пов'язану з відвідуваннями вашої колекції, Uwazi підтримує як Google Analytics, так і Matomo."
 AND OR NOT,AND OR NOT
 Any entity,Будь-який суб'єкт
+Appearance,Appearance
 Apply,Подати заявку
 Are you sure you want to continue?,"Ви впевнені, що хочете продовжувати?"
 Are you sure you want to delete,Are you sure you want to delete
@@ -305,6 +306,7 @@ Deleted user group,Видалена група користувачів
 Deletion success,Успішність видалення
 Description,Опис
 Deselect all,Deselect all
+Direction,Direction
 Disable,Вимкнути
 Disable highlights,Вимкнути підсвічування
 Disabled 2FA,Відключений 2FA
@@ -699,6 +701,7 @@ No Value,Немає значення
 Non processed,Не оброблений
 Non-labeled,Без маркування
 Non-latin characters support,Non-latin characters support
+None,None
 Normal view,Нормальний вигляд
 Not already been use as source template in another extractor,Не використовувався як вихідний шаблон в іншому екстракторі
 Not already been use as target template,Ще не використовувався як цільовий шаблон
@@ -991,6 +994,8 @@ Sort order,Sort order
 Sort:,Sort:
 sorted by,відсортовано за
 Source,Джерело
+Source entity,Source entity
+Source page,Source page
 Source relationship type,Тип вихідного відношення
 Source template,Вихідний шаблон
 Source Template,Вихідний шаблон
@@ -1027,6 +1032,7 @@ Table of Contents,Зміст
 Table of contents,Зміст
 Table of contents saved successfully,Table of contents saved successfully
 Table view,Табличний вигляд
+Target entity,Target entity
 Target entity type,Target entity type
 Target relationship type,Тип цільового зв'язку
 Target Template,Шаблон цілі

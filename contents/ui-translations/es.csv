@@ -96,6 +96,7 @@ Analytics,Analytics
 Analytics description,"Si quieres dar seguimiento a las analíticas relacionadas con las visitas a tu colección, Uwazi soporta analíticas tanto de Google como de Matomo"
 AND OR NOT,AND OR NOT
 Any entity,Any entity
+Appearance,Appearance
 Apply,Apply
 Are you sure you want to continue?,Estás seguro que quieres continuar?
 Are you sure you want to delete,Estás seguro que quieres eliminar
@@ -301,6 +302,7 @@ Deleted user group,Grupo de usuarios eliminado
 Deletion success,Eliminación exitosa
 Description,Descripción
 Deselect all,Deselect all
+Direction,Direction
 Disable,Disable
 Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
@@ -695,6 +697,7 @@ No Value,Sin valor
 Non processed,No procesados
 Non-labeled,Non-labeled
 Non-latin characters support,Soporte de caracteres no latinos
+None,None
 Normal view,Vista normal
 Not already been use as source template in another extractor,Not already been use as source template in another extractor
 Not already been use as target template,Not already been use as target template
@@ -987,6 +990,8 @@ Sort order,Ordenamiento
 Sort:,Ordenar:
 sorted by,ordenado por
 Source,Source
+Source entity,Source entity
+Source page,Source page
 Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
@@ -1023,6 +1028,7 @@ Table of Contents,Tabla de Contenidos
 Table of contents,Tabla de Contenidos
 Table of contents saved successfully,Table of contents saved successfully
 Table view,Vista de Tabla
+Target entity,Target entity
 Target entity type,Target entity type
 Target relationship type,Target relationship type
 Target Template,Target Template
