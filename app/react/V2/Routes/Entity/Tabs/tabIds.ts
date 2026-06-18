@@ -9,7 +9,6 @@ const SIDE_TAB = {
   DOCUMENT: 'document',
   METADATA: 'metadata',
   TOC: 'toc',
-  REFERENCES: 'references',
   RELATIONSHIPS: 'relationships',
   SEARCH: 'search',
   FILE: 'file',

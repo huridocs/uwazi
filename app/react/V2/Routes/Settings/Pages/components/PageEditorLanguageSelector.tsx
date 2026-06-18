@@ -1,44 +1,38 @@
 import React from 'react';
+import { SegmentedControl } from '#V2/Components/UI/SegmentedControl/index.js';
+import type { PageEditorLanguage } from '../pageEditorForm.js';
 
-export type PageEditorLanguage = {
-  key: string;
-  label?: string;
-  default?: boolean;
-};
-
-type Props = {
+type PageEditorLanguageSelectorProps = {
   languages: PageEditorLanguage[];
   activeLanguage: string;
   onChange: (key: string) => void;
 };
 
-const pillClass = (active: boolean) =>
-  [
-    'px-3 py-1 text-xs font-semibold uppercase rounded-md transition-colors',
-    active ? 'bg-vellum text-ink' : 'bg-warm text-ink-tertiary hover:text-ink-secondary',
-  ].join(' ');
-
-const PageEditorLanguageSelector = ({ languages, activeLanguage, onChange }: Props) => {
+const PageEditorLanguageSelector = ({
+  languages,
+  activeLanguage,
+  onChange,
+}: PageEditorLanguageSelectorProps) => {
   if (languages.length === 0) {
     return null;
   }
 
   return (
     <div
-      className="flex shrink-0 flex-wrap items-center justify-end gap-1"
+      className="flex shrink-0 flex-wrap items-center justify-end"
       data-testid="page-editor-language-selector"
     >
-      {languages.map(lang => (
-        <button
-          key={lang.key}
-          type="button"
-          className={pillClass(lang.key === activeLanguage)}
-          onClick={() => onChange(lang.key)}
-          aria-pressed={lang.key === activeLanguage}
-        >
-          {lang.key.toUpperCase()}
-        </button>
-      ))}
+      <SegmentedControl
+        value={activeLanguage}
+        onChange={onChange}
+        ariaLabel="Page language"
+        showLabels
+        options={languages.map(lang => ({
+          id: lang.key,
+          title: lang.label ?? lang.key,
+          label: lang.key.toUpperCase(),
+        }))}
+      />
     </div>
   );
 };
