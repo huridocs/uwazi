@@ -102,23 +102,34 @@ describe('MongoFilesDAO', () => {
       });
     });
 
-    it('includes fullText when projection includes fullText', async () => {
+    it('includes fullText when withFullText is true', async () => {
       const sut = createSut();
       const result = await sut.getById<ProcessedPDFDBO>(
         factory.id('doc_with_fulltext').toString(),
-        {
-          projection: { fullText: 1 },
-        }
+        { withFullText: true }
       );
       expect(result.isOk()).toBe(true);
-      expect(result.getDataOrThrow().fullText).toEqual({ 1: 'page one content' });
+      const dbo = result.getDataOrThrow();
+      expect(dbo.fullText).toEqual({ 1: 'page one content' });
+      expect(dbo).toMatchObject({
+        filename: 'doc_with_fulltext',
+        entity: 'entity_1',
+        type: 'document',
+        status: 'ready',
+      });
     });
 
     it('excludes fullText field by default', async () => {
       const sut = createSut();
       const result = await sut.getById(factory.id('doc_with_fulltext').toString());
       expect(result.isOk()).toBe(true);
-      expect(result.getDataOrThrow()).not.toHaveProperty('fullText');
+      const dbo = result.getDataOrThrow();
+      expect(dbo).not.toHaveProperty('fullText');
+      expect(dbo).toMatchObject({
+        filename: 'doc_with_fulltext',
+        entity: 'entity_1',
+        type: 'document',
+      });
     });
 
     it('excludes fullText when projection explicitly excludes it', async () => {
@@ -126,6 +137,25 @@ describe('MongoFilesDAO', () => {
       const result = await sut.getById<ProcessedPDFDBO>(
         factory.id('doc_with_fulltext').toString(),
         {
+          projection: { fullText: 0 },
+        }
+      );
+      expect(result.isOk()).toBe(true);
+      const dbo = result.getDataOrThrow();
+      expect(dbo).not.toHaveProperty('fullText');
+      expect(dbo).toMatchObject({
+        filename: 'doc_with_fulltext',
+        entity: 'entity_1',
+        type: 'document',
+      });
+    });
+
+    it('explicit projection takes precedence over withFullText', async () => {
+      const sut = createSut();
+      const result = await sut.getById<ProcessedPDFDBO>(
+        factory.id('doc_with_fulltext').toString(),
+        {
+          withFullText: true,
           projection: { fullText: 0 },
         }
       );
@@ -176,16 +206,29 @@ describe('MongoFilesDAO', () => {
       const sut = createSut();
       const result = await sut.getByFilename('doc_with_fulltext');
       expect(result.isOk()).toBe(true);
-      expect(result.getDataOrThrow()).not.toHaveProperty('fullText');
+      const dbo = result.getDataOrThrow();
+      expect(dbo).not.toHaveProperty('fullText');
+      expect(dbo).toMatchObject({
+        filename: 'doc_with_fulltext',
+        entity: 'entity_1',
+        type: 'document',
+      });
     });
 
-    it('includes fullText when projection includes fullText', async () => {
+    it('includes fullText when withFullText is true', async () => {
       const sut = createSut();
       const result = await sut.getByFilename<ProcessedPDFDBO>('doc_with_fulltext', {
-        projection: { fullText: 1 },
+        withFullText: true,
       });
       expect(result.isOk()).toBe(true);
-      expect(result.getDataOrThrow().fullText).toEqual({ 1: 'page one content' });
+      const dbo = result.getDataOrThrow();
+      expect(dbo.fullText).toEqual({ 1: 'page one content' });
+      expect(dbo).toMatchObject({
+        filename: 'doc_with_fulltext',
+        entity: 'entity_1',
+        type: 'document',
+        status: 'ready',
+      });
     });
 
     it('returns Result.fail with FileNotFound when filename does not exist', async () => {
@@ -266,6 +309,11 @@ describe('MongoFilesDAO', () => {
       const docWithFullText = files.find(f => f.filename === 'doc_with_fulltext');
       expect(docWithFullText).toBeDefined();
       expect(docWithFullText).not.toHaveProperty('fullText');
+      expect(docWithFullText).toMatchObject({
+        filename: 'doc_with_fulltext',
+        entity: 'entity_1',
+        type: 'document',
+      });
     });
   });
 
@@ -320,15 +368,26 @@ describe('MongoFilesDAO', () => {
       files.forEach(file => {
         expect(file).not.toHaveProperty('fullText');
       });
+      const docWithFullText = files.find(f => f.filename === 'doc_with_fulltext');
+      expect(docWithFullText).toMatchObject({
+        filename: 'doc_with_fulltext',
+        entity: 'entity_1',
+        type: 'document',
+      });
     });
 
-    it('includes fullText when projection includes fullText', async () => {
+    it('includes fullText when withFullText is true', async () => {
       const sut = createSut();
       const files = await sut.getByEntitySharedIds<ProcessedPDFDBO>(['entity_1'], {
-        projection: { fullText: 1, filename: 1 },
+        withFullText: true,
       });
       const docWithFullText = files.find(f => f.filename === 'doc_with_fulltext');
       expect(docWithFullText?.fullText).toEqual({ 1: 'page one content' });
+      expect(docWithFullText).toMatchObject({
+        filename: 'doc_with_fulltext',
+        entity: 'entity_1',
+        type: 'document',
+      });
     });
 
     it('returns empty array when no sharedIds match', async () => {
@@ -344,6 +403,11 @@ describe('MongoFilesDAO', () => {
       const files = await sut.getByQuery({ filename: 'doc_with_fulltext' });
       expect(files).toHaveLength(1);
       expect(files[0]).not.toHaveProperty('fullText');
+      expect(files[0]).toMatchObject({
+        filename: 'doc_with_fulltext',
+        entity: 'entity_1',
+        type: 'document',
+      });
     });
 
     it('returns matching files for a simple equality query', async () => {
@@ -389,6 +453,22 @@ describe('MongoFilesDAO', () => {
       for (let i = 1; i < files.length; i++) {
         expect(files[i - 1]._id.toString() >= files[i]._id.toString()).toBe(true);
       }
+    });
+
+    it('includes fullText when withFullText is true', async () => {
+      const sut = createSut();
+      const files = await sut.getByQuery<ProcessedPDFDBO>(
+        { filename: 'doc_with_fulltext' },
+        { withFullText: true }
+      );
+      expect(files).toHaveLength(1);
+      expect(files[0].fullText).toEqual({ 1: 'page one content' });
+      expect(files[0]).toMatchObject({
+        filename: 'doc_with_fulltext',
+        entity: 'entity_1',
+        type: 'document',
+        status: 'ready',
+      });
     });
 
     it('applies limit when provided', async () => {
