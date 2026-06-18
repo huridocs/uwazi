@@ -1,4 +1,4 @@
-import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
+import { DeprecatedEntitiesDataSource } from '#api/entities.v2/contracts/DeprecatedEntitiesDataSource.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { Entity } from '#api/entities.v2/model/Entity.js';
@@ -10,7 +10,7 @@ export class SaveEntityTranslations {
 
   private logger: Logger;
 
-  private entitiesDS: EntitiesDataSource;
+  private entitiesDS: DeprecatedEntitiesDataSource;
 
   private templatesDS: TemplatesDataSource;
 
@@ -18,7 +18,7 @@ export class SaveEntityTranslations {
 
   constructor(
     templatesDS: TemplatesDataSource,
-    entitiesDS: EntitiesDataSource,
+    entitiesDS: DeprecatedEntitiesDataSource,
     validator: Validator<TranslationResult>,
     logger: Logger
   ) {

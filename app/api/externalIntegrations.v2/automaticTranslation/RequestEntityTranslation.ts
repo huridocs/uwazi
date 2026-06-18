@@ -3,7 +3,7 @@ import { Entity } from '#api/entities.v2/model/Entity.js';
 import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
-import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
+import { DeprecatedEntitiesDataSource } from '#api/entities.v2/contracts/DeprecatedEntitiesDataSource.js';
 import { ATConfigDataSource } from './contracts/ATConfigDataSource.js';
 import { Validator } from './infrastructure/Validator.js';
 
@@ -23,7 +23,7 @@ export class RequestEntityTranslation {
 
   private ATConfigDS: ATConfigDataSource;
 
-  private entitiesDS: EntitiesDataSource;
+  private entitiesDS: DeprecatedEntitiesDataSource;
 
   private inputValidator: Validator<EntityInputModel>;
 
@@ -33,7 +33,7 @@ export class RequestEntityTranslation {
   constructor(
     taskManager: TaskManager<ATTaskMessage>,
     ATConfigDS: ATConfigDataSource,
-    entitiesDS: EntitiesDataSource,
+    entitiesDS: DeprecatedEntitiesDataSource,
     inputValidator: Validator<EntityInputModel>,
     logger: Logger
   ) {

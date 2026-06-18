@@ -4,7 +4,7 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
-import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntitiesDataSource.js';
+import { MongoDeprecatedEntitiesDataSource } from '#api/entities.v2/database/MongoDeprecatedEntitiesDataSource.js';
 import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
 import { MongoRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource.js';
 import { User } from '#api/users.v2/model/User.js';
@@ -61,7 +61,7 @@ const createService = (_user?: User) => {
     new MongoPermissionsDataSource(connection, transactionManager),
     user
   );
-  const entitiesDS = new MongoEntitiesDataSource(
+  const entitiesDS = new MongoDeprecatedEntitiesDataSource(
     connection,
     templatesDS,
     settingsDS,

@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import { Db } from 'mongodb';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntitiesDataSource.js';
+import { MongoDeprecatedEntitiesDataSource } from '#api/entities.v2/database/MongoDeprecatedEntitiesDataSource.js';
 import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
@@ -345,7 +345,7 @@ beforeEach(async () => {
     db,
     transactionManager,
   });
-  const entitiesDataSource = new MongoEntitiesDataSource(
+  const entitiesDataSource = new MongoDeprecatedEntitiesDataSource(
     db,
     templatesDataSource,
     SettingsDataSourceFactory.default({ transactionManager }),

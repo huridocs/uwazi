@@ -1,4 +1,4 @@
-import { MultiLanguageEntityDataSource } from '#api/core/application/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 import { EntityUpdatedEvent as LegacyEntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
@@ -29,7 +29,7 @@ type CreateInput = {
 type Deps = {
   templatesDS: TemplatesDataSource;
   settingsDS: SettingsDataSource;
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   eventBus: EventsBus;
   transactionManager: TransactionManager;
   dispatcher: Dispatcher;

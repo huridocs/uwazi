@@ -2,8 +2,8 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { RelationshipProperty } from '#api/relationships.v2/model/RelationshipProperty.js';
 import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
 import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
-import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
-import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
+import { DeprecatedEntitiesDataSource } from '#api/entities.v2/contracts/DeprecatedEntitiesDataSource.js';
+import { DefaultDeprecatedEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
 import { DefaultRelationshipDataSource } from '#api/relationships.v2/database/data_source_defaults.js';
 import { MatchQueryNode } from '#api/relationships.v2/model/MatchQueryNode.js';
 import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
@@ -79,7 +79,7 @@ interface DefinitionsToUpdate {
 }
 
 const determineRelationships = async (
-  entitiesDataSource: EntitiesDataSource,
+  entitiesDataSource: DeprecatedEntitiesDataSource,
   values: string[],
   entity: EntitySchema,
   query: MatchQueryNode
@@ -98,7 +98,9 @@ const ignoreNewRelationshipsMetadata = async (
 ): Promise<DefinitionsToUpdate> => {
   const newRelationships: RelationshipDefinition[] = [];
   const removedRelationships: RelationshipDefinition[] = [];
-  const entitiesDataSource = DefaultEntitiesDataSource(TransactionManagerFactory.default());
+  const entitiesDataSource = DefaultDeprecatedEntitiesDataSource(
+    TransactionManagerFactory.default()
+  );
   if (await newRelationshipsEnabled()) {
     const templateModel = MongoTemplateMapper.toDomain(template as TemplateDBO);
     await Promise.all(

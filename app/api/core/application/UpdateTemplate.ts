@@ -1,4 +1,4 @@
-import { MultiLanguageEntityDataSource } from '#api/core/application/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js'; // Todo
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
@@ -22,7 +22,7 @@ type Output = Template;
 type Deps = {
   templatesDS: TemplatesDataSource;
   thesauriDS: ThesauriDataSource;
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   translationService: TranslationService;
   settingsDS: SettingsDataSource;
   relationshipTypesDS: RelationshipTypesDataSource;

@@ -1,5 +1,5 @@
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
+import { DeprecatedEntitiesDataSource } from '#api/entities.v2/contracts/DeprecatedEntitiesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { RelationshipProperty } from '../model/RelationshipProperty.js';
@@ -15,7 +15,7 @@ interface IndexEntitiesCallback {
 export class DenormalizationService {
   private relationshipsDS: RelationshipsDataSource;
 
-  private entitiesDS: EntitiesDataSource;
+  private entitiesDS: DeprecatedEntitiesDataSource;
 
   private templatesDS: TemplatesDataSource;
 
@@ -29,7 +29,7 @@ export class DenormalizationService {
 
   constructor(
     relationshipsDS: RelationshipsDataSource,
-    entitiesDS: EntitiesDataSource,
+    entitiesDS: DeprecatedEntitiesDataSource,
     templatesDS: TemplatesDataSource,
     settingsDS: SettingsDataSource,
     transactionManager: TransactionManager,

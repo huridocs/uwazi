@@ -15,7 +15,7 @@ import { Result, ResultType } from '#api/core/libs/Result.js';
 import { search } from '#api/search/index.js';
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
 import { Entity } from '../../../domain/entity/Entity.js';
-import { MultiLanguageEntityDataSource } from '../../../application/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesDataSource } from '../../../application/contracts/EntitiesDataSource.js';
 import { EntityDBO, EntityTemplateAggregation } from './EntityDBO.js';
 
 type Deps = {
@@ -24,9 +24,9 @@ type Deps = {
   options?: MongoDSOptions;
 };
 
-export class MongoMultiLanguageEntityDataSource
+export class MongoEntitiesDataSource
   extends MongoDataSource<EntityDBO>
-  implements MultiLanguageEntityDataSource
+  implements EntitiesDataSource
 {
   protected collectionName = 'entities';
 

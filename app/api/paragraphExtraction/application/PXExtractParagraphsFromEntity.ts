@@ -14,7 +14,7 @@ import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
 import { FileContents } from '#api/core/domain/files/FileContents.js';
 import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
-import { MultiLanguageEntityDataSource } from '#api/core/application/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { EntitiesService } from '#api/core/application/EntitiesService.js';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
 import { PXExtractionKey } from '../domain/PXExtractionKey.js';
@@ -33,7 +33,7 @@ type Output = void;
 
 type Deps = {
   extractorsDS: PXExtractorsDataSource;
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   filesDS: FilesDataSource;
   settingsDS: SettingsDataSource;
   extractionService: PXExtractionService;

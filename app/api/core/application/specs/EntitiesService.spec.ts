@@ -19,7 +19,7 @@ import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/M
 import { EventEmitter } from '#api/core/libs/eventEmitter/EventEmitter.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { MongoMultiLanguageEntityDataSource } from '#api/core/infrastructure/mongodb/entity/MongoMultiLanguageEntityDataSource.js';
+import { MongoEntitiesDataSource } from '#api/core/infrastructure/mongodb/entity/MongoEntitiesDataSource.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 import { EntityUpdatedEvent as LegacyEntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { EntitiesServiceDeps } from '../EntitiesService.js';
@@ -440,7 +440,7 @@ describe('EntitiesService', () => {
   describe('when upserting an Entity', () => {
     it('should not call data source and event emitter if it has not changed', async () => {
       const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
-      const entitiesDS = TestUtils.mockClass<MongoMultiLanguageEntityDataSource>({
+      const entitiesDS = TestUtils.mockClass<MongoEntitiesDataSource>({
         update: jest.fn(),
       });
       const { sut, transactionManager, eventBus } = createSut({ eventEmitter, entitiesDS });

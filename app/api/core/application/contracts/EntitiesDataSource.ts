@@ -5,7 +5,7 @@ import { ResultType } from '#api/core/libs/Result.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
 import { EntityNotFoundError } from '#api/core/application/errors.js';
 
-export interface MultiLanguageEntityDataSource {
+export interface EntitiesDataSource {
   bulkUpdateDeprecated(entitiesToSave: Entity[], properties: Property[]): Promise<void>;
   bulkUpdate(entities: Entity[]): Promise<void>;
   update(entity: Entity): Promise<void>;

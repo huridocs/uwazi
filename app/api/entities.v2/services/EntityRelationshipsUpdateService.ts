@@ -4,17 +4,17 @@ import { RelationshipProperty } from '#api/relationships.v2/model/RelationshipPr
 import { RelationshipsDataSource } from '#api/relationships.v2/contracts/RelationshipsDataSource.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { Entity, EntityMetadata } from '../model/Entity.js';
-import { EntitiesDataSource } from '../contracts/EntitiesDataSource.js';
+import { DeprecatedEntitiesDataSource } from '../contracts/DeprecatedEntitiesDataSource.js';
 
 export class EntityRelationshipsUpdateService {
-  private entitiesDataSource: EntitiesDataSource;
+  private entitiesDataSource: DeprecatedEntitiesDataSource;
 
   private templatesDataSource: TemplatesDataSource;
 
   private relationshipsDataSource: RelationshipsDataSource;
 
   constructor(
-    entitiesDataSource: EntitiesDataSource,
+    entitiesDataSource: DeprecatedEntitiesDataSource,
     templatesDataSource: TemplatesDataSource,
     relatioshipsDataSource: RelationshipsDataSource
   ) {

@@ -1,6 +1,6 @@
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { MultiLanguageEntityDataSource } from '#api/core/application/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import {
   HeartbeatCallback,
   JobInfo,
@@ -16,7 +16,7 @@ type Params = {
 
 type JobDependencies = {
   filesDS: FilesDataSource;
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   settingsDS: SettingsDataSource;
   transactionManager: TransactionManager;
 };

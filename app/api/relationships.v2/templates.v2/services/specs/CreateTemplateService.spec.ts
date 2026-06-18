@@ -4,7 +4,7 @@ import { MongoRelationshipTypesDataSource } from '#api/relationshiptypes.v2/data
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntitiesDataSource.js';
+import { MongoDeprecatedEntitiesDataSource } from '#api/entities.v2/database/MongoDeprecatedEntitiesDataSource.js';
 import { DenormalizationService } from '../../../services/DenormalizationService.js';
 import { MongoRelationshipsDataSource } from '../../../database/MongoRelationshipsDataSource.js';
 import { OnlineRelationshipPropertyUpdateStrategy } from '../../../services/propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy.js';
@@ -52,7 +52,7 @@ function setUpService() {
   const settingsDS = testingEnvironment.runWithContext(() => SettingsDataSourceFactory.default(), {
     factories: { transactionManager: () => transactionManager },
   });
-  const entityDS = new MongoEntitiesDataSource(
+  const entityDS = new MongoDeprecatedEntitiesDataSource(
     connection,
     templatesDS,
     settingsDS,

@@ -1,5 +1,5 @@
 import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
-import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
+import { DeprecatedEntitiesDataSource } from '#api/entities.v2/contracts/DeprecatedEntitiesDataSource.js';
 import { Entity } from '#api/entities.v2/model/Entity.js';
 import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
 import { RelationshipType } from '#api/relationshiptypes.v2/model/RelationshipType.js';
@@ -49,7 +49,7 @@ class GetRelationshipService {
 
   private authService: AuthorizationService;
 
-  private entitiesDS: EntitiesDataSource;
+  private entitiesDS: DeprecatedEntitiesDataSource;
 
   private templatesDS: TemplatesDataSource;
 
@@ -58,7 +58,7 @@ class GetRelationshipService {
   constructor(
     relationshipsDS: RelationshipsDataSource,
     authService: AuthorizationService,
-    entitiesDS: EntitiesDataSource,
+    entitiesDS: DeprecatedEntitiesDataSource,
     templatesDS: TemplatesDataSource,
     relationshipTypesDS: RelationshipTypesDataSource
   ) {

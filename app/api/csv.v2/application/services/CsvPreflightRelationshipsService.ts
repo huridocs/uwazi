@@ -1,6 +1,6 @@
 import { Template } from '#api/core/domain/template/Template.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
-import { MultiLanguageEntityDataSource } from '#api/core/application/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource.js';
 import {
   CsvImportRelationshipValue,
@@ -21,7 +21,7 @@ type CollectTitlesParams = {
   onProgress: (info: { processedRows: number; totalRows: number }) => void;
 };
 type CreateMissingEntitiesParams = {
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   titlesByTemplate: Map<string, Set<string>>;
   chunkSize: number;
   totalTemplates: number;
@@ -35,7 +35,7 @@ type CreateMissingEntitiesParams = {
   shouldContinue?: () => Promise<boolean>;
 };
 type BuildAppliedValuesParams = {
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   importId: string;
   titlesByTemplate: Map<string, Set<string>>;
   chunkSize: number;
@@ -125,7 +125,7 @@ const buildMissingTitles = (titles: string[], known: Set<string>) =>
   titles.filter(title => !known.has(title));
 
 const collectKnownTitles = async (params: {
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   templateId: string;
   titles: string[];
   chunkSize: number;
@@ -145,7 +145,7 @@ const collectKnownTitles = async (params: {
 };
 
 const fetchRelationshipMatches = async (params: {
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   templateId: string;
   chunk: string[];
 }) => {

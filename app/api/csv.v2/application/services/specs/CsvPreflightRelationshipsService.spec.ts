@@ -1,7 +1,7 @@
 import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { MultiLanguageEntityDataSource } from '#api/core/application/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import {
   ANY_TEMPLATE_RELATIONSHIP_KEY,
   buildRelationshipAppliedValues,
@@ -39,7 +39,7 @@ describe('CsvPreflightRelationshipsService', () => {
   });
 
   it('should build applied values with ambiguous and not-found candidates', async () => {
-    const entitiesDS = TestUtils.mockClass<MultiLanguageEntityDataSource>({
+    const entitiesDS = TestUtils.mockClass<EntitiesDataSource>({
       getSharedIdsByTemplateAndTitles: jest.fn().mockResolvedValue([
         { title: 'Duplicate', sharedId: 'shared-1' },
         { title: 'Duplicate', sharedId: 'shared-2' },
@@ -47,7 +47,7 @@ describe('CsvPreflightRelationshipsService', () => {
       getSharedIdsByTitles: jest
         .fn()
         .mockResolvedValue([{ title: 'FoundAny', sharedId: 'shared-3', templateId: 'tpl-any' }]),
-    }) as unknown as MultiLanguageEntityDataSource;
+    }) as unknown as EntitiesDataSource;
 
     const docs = await buildRelationshipAppliedValues({
       entitiesDS,

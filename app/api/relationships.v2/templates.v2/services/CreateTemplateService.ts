@@ -1,5 +1,5 @@
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
-import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
+import { DeprecatedEntitiesDataSource } from '#api/entities.v2/contracts/DeprecatedEntitiesDataSource.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { MatchQueryNode, TemplateRecordElement } from '../../model/MatchQueryNode.js';
 import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
@@ -98,7 +98,7 @@ export class CreateTemplateService {
 
   private relTypesDataSource: RelationshipTypesDataSource;
 
-  private entitiesDataSource: EntitiesDataSource;
+  private entitiesDataSource: DeprecatedEntitiesDataSource;
 
   private denormalizationService: DenormalizationService;
 
@@ -107,7 +107,7 @@ export class CreateTemplateService {
   constructor(
     templatesDataSource: TemplatesDataSource,
     relTypesDataSource: RelationshipTypesDataSource,
-    entitiesDataSource: EntitiesDataSource,
+    entitiesDataSource: DeprecatedEntitiesDataSource,
     denormalizationService: DenormalizationService,
     transactionManager: TransactionManager
   ) {

@@ -10,15 +10,15 @@ import { Db, ObjectId } from 'mongodb';
 import { MetadataSchema } from '#shared/types/commonTypes.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-import { EntitiesDataSource } from '../contracts/EntitiesDataSource.js';
+import { DeprecatedEntitiesDataSource } from '../contracts/DeprecatedEntitiesDataSource.js';
 import { Entity, EntityMetadata, MetadataValue } from '../model/Entity.js';
 import { EntityMappers } from './EntityMapper.js';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import { EntityJoinTemplate } from './schemas/EntityTypes.js';
 
-export class MongoEntitiesDataSource
+export class MongoDeprecatedEntitiesDataSource
   extends MongoDataSource<EntityDBO>
-  implements EntitiesDataSource
+  implements DeprecatedEntitiesDataSource
 {
   protected collectionName = 'entities';
 
@@ -75,7 +75,7 @@ export class MongoEntitiesDataSource
   }
 
   async markMetadataAsChanged(
-    propData: Parameters<EntitiesDataSource['markMetadataAsChanged']>[0]
+    propData: Parameters<DeprecatedEntitiesDataSource['markMetadataAsChanged']>[0]
   ) {
     const stream = this.createBulkStream();
     for (let i = 0; i < propData.length; i += 1) {

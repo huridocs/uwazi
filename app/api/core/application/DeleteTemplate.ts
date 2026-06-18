@@ -1,5 +1,5 @@
 import { ArrayUtils } from '#api/common.v2/utils/Array.js'; // Todo
-import { MultiLanguageEntityDataSource } from '#api/core/application/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js'; // Todo
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js'; // Todo
 import { DefaultTemplateDeletionError, TemplateInUseError } from '../domain/template/errors.js';
@@ -20,7 +20,7 @@ type Deps = {
   templatesDS: TemplatesDataSource;
   translationsDS: TranslationsDataSource;
   settingsDS: SettingsDataSource;
-  multiLanguageEntitiesDS: MultiLanguageEntityDataSource;
+  multiLanguageEntitiesDS: EntitiesDataSource;
 };
 
 class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {

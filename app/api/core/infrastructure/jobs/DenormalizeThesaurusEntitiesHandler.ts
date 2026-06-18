@@ -7,7 +7,7 @@ import {
   UserAwareDispatchableParams,
 } from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { MultiLanguageEntityDataSource } from '#api/core/application/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { DenormalizeThesaurusEntitiesChunkHandler } from './DenormalizeThesaurusEntitiesChunkHandler.js';
 
@@ -16,7 +16,7 @@ type Params = {
 } & UserAwareDispatchableParams;
 
 type JobDependencies = {
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   jobsDispatcher: JobsDispatcher;
 };
 

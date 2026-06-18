@@ -3,7 +3,7 @@ import { AuthorizationService } from '#api/authorization.v2/services/Authorizati
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 import { partialImplementation } from '#api/common.v2/testing/partialImplementation.js';
-import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntitiesDataSource.js';
+import { MongoDeprecatedEntitiesDataSource } from '#api/entities.v2/database/MongoDeprecatedEntitiesDataSource.js';
 import { MissingEntityError } from '#api/entities.v2/errors/entityErrors.js';
 import { MongoFilesDataSource } from '#api/core/infrastructure/mongodb/files/MongoFilesDataSource.js';
 import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
@@ -51,7 +51,7 @@ const createService = () => {
   return new CreateRelationshipService(
     new MongoRelationshipsDataSource(connection, transactionManager),
     new MongoRelationshipTypesDataSource(connection, transactionManager),
-    new MongoEntitiesDataSource(
+    new MongoDeprecatedEntitiesDataSource(
       connection,
       new MongoTemplatesDataSource({
         db: connection,

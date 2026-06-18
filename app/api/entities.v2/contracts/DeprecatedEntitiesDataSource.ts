@@ -5,7 +5,7 @@ type MarkAsChangedCriteria = { template: string } | { sharedId: string };
 type MarkAsChangedData = { property: string } | { properties: string[] };
 export type MarkAsChangedItems = MarkAsChangedCriteria & MarkAsChangedData;
 
-export interface EntitiesDataSource {
+export interface DeprecatedEntitiesDataSource {
   updateEntities_OnlyUpdateAndReindex(entity: Entity): Promise<void>;
   updateEntity(entity: Entity): Promise<void>;
   updateObsoleteMetadataValues(

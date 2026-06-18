@@ -9,7 +9,7 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { Template } from '#api/core/domain/template/Template.js';
-import { MongoMultiLanguageEntityDataSource } from '../entity/MongoMultiLanguageEntityDataSource.js';
+import { MongoEntitiesDataSource } from '../entity/MongoEntitiesDataSource.js';
 import { search } from '#api/search/index.js';
 
 const factory = getFixturesFactory();
@@ -77,7 +77,7 @@ const createSut = () => {
   const db = getConnection();
   const transactionManager = TransactionManagerFactory.default();
 
-  const sut = new MongoMultiLanguageEntityDataSource({
+  const sut = new MongoEntitiesDataSource({
     db,
     transactionManager,
   });
@@ -85,7 +85,7 @@ const createSut = () => {
   return { sut, transactionManager };
 };
 
-describe('MongoMultiLanguageEntityDataSource', () => {
+describe('MongoEntitiesDataSource', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({}, true);
   });
