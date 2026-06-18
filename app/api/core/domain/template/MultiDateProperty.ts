@@ -50,11 +50,8 @@ class MultiDateProperty extends FilterableProperty {
     };
   }
 
-  validatePropertyAssignment(
-    { value }: PropertyAssignment<DateEntry>,
-    shouldValidateForRequired = false
-  ): void {
-    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
+  validatePropertyAssignment({ value }: PropertyAssignment<DateEntry>): void {
+    createSchema(this.required).parse(value);
   }
 }
 
