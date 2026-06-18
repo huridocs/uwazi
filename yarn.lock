@@ -19631,15 +19631,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"multer@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "multer@npm:2.1.1"
+"multer@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "multer@npm:2.2.0"
   dependencies:
     append-field: "npm:^1.0.0"
     busboy: "npm:^1.6.0"
     concat-stream: "npm:^2.0.0"
     type-is: "npm:^1.6.18"
-  checksum: 10c0/2ec4e02833b20f403cfb879d4b64d2a9070d902b9deae7aef18a6faadb707d7665385456cf540aa8a6dadfe3d4c5fc8e0e7b0675b94e1077048b1125426deee6
+  checksum: 10c0/7aa366d89042427347b6ab8e4a203405d7fe942e4a3095648a14526fcf3691d98ffc2da62abf85d8aca0a341f828168eb197b33cfdcfcce29d6ef593a5625591
   languageName: node
   linkType: hard
 
@@ -19949,10 +19949,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:^8.0.10":
-  version: 8.0.10
-  resolution: "nodemailer@npm:8.0.10"
-  checksum: 10c0/b96fd2ea7146de58141219061e094509fd0f19aac5ac86ac35d9ce9c479dbf6c12b143fa7e7050a1be539a3542eb59520c33aabf5a119c8d28fc7d151bde329f
+"nodemailer@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "nodemailer@npm:9.0.1"
+  checksum: 10c0/4213f01aa211127c1ce33243c5e45e7f831601a933d03fa864cd827b1bd5ea2782cb4b43722bee7028cbc193733d9802dad1120fe67181448eb0b7de52218a37
   languageName: node
   linkType: hard
 
@@ -26307,10 +26307,10 @@ __metadata:
     monaco-editor-webpack-plugin: "npm:^7.1.1"
     mongodb: "npm:6.13.0"
     mongoose: "npm:8.10.0"
-    multer: "npm:^2.1.1"
+    multer: "npm:^2.2.0"
     node-polyfill-webpack-plugin: "npm:^4.1.0"
     node-uuid: "npm:^1.4.7"
-    nodemailer: "npm:^8.0.10"
+    nodemailer: "npm:^9.0.1"
     nodemon: "npm:^3.1.14"
     nprogress: "npm:^0.2.0"
     otplib: "npm:^11.0.1"
