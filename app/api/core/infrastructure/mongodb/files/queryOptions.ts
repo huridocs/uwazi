@@ -5,6 +5,7 @@ type FileProjection<T = FileDBO> = Partial<Record<keyof T, 0 | 1>>;
 
 interface GetFileOptions<T = FileDBO> {
   projection?: FileProjection<T>;
+  withFullText?: boolean;
 }
 
 interface ListFileOptions<T = FileDBO> extends GetFileOptions<T> {
