@@ -46,6 +46,7 @@ type EventBusType = typeof EventBus.prototype;
 const PDFJS = pdfjs;
 const { PixelsPerInch } = pdfjs;
 const CMAP_URL = '/legacy_character_maps/';
+const WASM_URL = '/pdfjs_wasm/';
 
 export type { PDFDocumentProxy, PDFEventMap, EventBusType };
-export { PDFJS, PDFJSViewer, EventBus, CMAP_URL, PixelsPerInch };
+export { PDFJS, PDFJSViewer, EventBus, CMAP_URL, WASM_URL, PixelsPerInch };
