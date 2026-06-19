@@ -316,6 +316,39 @@ describe('LookupMultiSelect (React Testing Library)', () => {
     expect(screen.queryByText('300')).not.toBeInTheDocument();
   });
 
+  it('should update displayed labels when props.options labels change with same value/results', async () => {
+    const lookup = jest.fn(async () => ({
+      options: [{ label: 'Colombia', value: 'country-colombia', results: 1 }],
+      count: 1,
+    }));
+
+    const { rerender } = render(
+      <LookupMultiSelect
+        options={[{ label: 'Colombia', value: 'country-colombia', results: 1 }]}
+        lookup={lookup}
+        value={[]}
+        onChange={jest.fn()}
+      />
+    );
+
+    await waitFor(() => expect(lookup).toHaveBeenCalledWith(''));
+    expect(screen.getByLabelText('Colombia')).toBeInTheDocument();
+
+    rerender(
+      <LookupMultiSelect
+        options={[{ label: 'Colombia Edited', value: 'country-colombia', results: 1 }]}
+        lookup={lookup}
+        value={[]}
+        onChange={jest.fn()}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Colombia Edited')).toBeInTheDocument();
+    });
+    expect(screen.queryByLabelText('Colombia')).not.toBeInTheDocument();
+  });
+
   it('should not render a search bar if lookup returns 5 or fewer options', async () => {
     const initialOptions = Array.from({ length: 5 }, (_, i) => ({
       label: `Option${i + 1}`,

@@ -1,6 +1,5 @@
 import { useEffect, useCallback } from 'react';
 import { useRevalidator } from 'react-router';
-import { useAtom, useAtomValue } from 'jotai';
 import { t } from '#app/I18N/index.js';
 import type { TocSchema } from '#shared/types/commonTypes.js';
 import { update as updateFile } from '#V2/api/files/index.js';
@@ -8,9 +7,13 @@ import type { FileType } from '#shared/types/fileType.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { type ProcessedTocEntry, sortTocEntries } from './ToC.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
-import { tocStateAtom, useToc, useTocActions } from './tocAtom.js';
+import {
+  useDocumentPdf,
+  useToc,
+  useTocActions,
+  useTocStateActions,
+} from '#V2/Routes/Entity/Components/context/index.js';
 import { getPageNumber } from './utils.js';
-import { pdfController } from '../atoms.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 type UseToCPanelParams = {
@@ -18,24 +21,51 @@ type UseToCPanelParams = {
   file?: FileType;
 };
 
-const useToCPanel = ({ toc, file }: UseToCPanelParams) => {
-  const revalidator = useRevalidator();
-  const { notify } = useRequestStatus();
-  const tocState = useToc();
-  const {
-    setToc,
-    expandAll,
-    collapseAll,
-    setEditMode,
-    updateEntry,
-    deleteEntry,
-    toggleExpand,
-    reset: resetToc,
-  } = useTocActions();
+type SaveTocParams = {
+  file: FileType;
+  toc: TocSchema[];
+  revalidate: () => Promise<void>;
+  onError: () => void;
+  onSuccess: () => void;
+};
 
-  const [tocUi, setTocUi] = useAtom(tocStateAtom);
-  const mainPdfController = useAtomValue(pdfController);
+type ToCPanelHandlersParams = {
+  toc?: TocSchema[];
+  file?: FileType;
+  tocState: ReturnType<typeof useToc>;
+  setToc: ReturnType<typeof useTocActions>['setToc'];
+  setEditMode: ReturnType<typeof useTocActions>['setEditMode'];
+  updateEntry: ReturnType<typeof useTocActions>['updateEntry'];
+  deleteEntry: ReturnType<typeof useTocActions>['deleteEntry'];
+  setTocState: ReturnType<typeof useTocStateActions>['setTocState'];
+  mainPdfController: ReturnType<typeof useDocumentPdf>['pdfController'];
+  revalidate: () => Promise<void>;
+  notify: ReturnType<typeof useRequestStatus>['notify'];
+};
 
+const saveToc = async ({ file, toc, revalidate, onError, onSuccess }: SaveTocParams) => {
+  const result = await updateFile({
+    ...file,
+    toc: sortTocEntries(toc),
+  });
+
+  if (result instanceof FetchResponseError || result instanceof Error) {
+    onError();
+    return;
+  }
+
+  if (file.entity) {
+    entityLoaderCache.invalidateEntity(file.entity);
+  }
+  await revalidate();
+  onSuccess();
+};
+
+const useToCSync = (
+  toc: TocSchema[] | undefined,
+  setToc: ReturnType<typeof useTocActions>['setToc'],
+  resetToc: ReturnType<typeof useTocActions>['reset']
+) => {
   useEffect(() => {
     setToc(toc);
   }, [toc, setToc]);
@@ -46,9 +76,23 @@ const useToCPanel = ({ toc, file }: UseToCPanelParams) => {
     },
     [resetToc]
   );
+};
 
+const useToCPanelHandlers = ({
+  toc,
+  file,
+  tocState,
+  setToc,
+  setEditMode,
+  updateEntry,
+  deleteEntry,
+  setTocState,
+  mainPdfController,
+  revalidate,
+  notify,
+}: ToCPanelHandlersParams) => {
   const handleStateChange = (expanded: boolean, collapsed: boolean) => {
-    setTocUi(current => ({ ...current, isAllExpanded: expanded, isAllCollapsed: collapsed }));
+    setTocState(current => ({ ...current, isAllExpanded: expanded, isAllCollapsed: collapsed }));
   };
 
   const handleToCEntryClick = useCallback(
@@ -66,34 +110,30 @@ const useToCPanel = ({ toc, file }: UseToCPanelParams) => {
   };
 
   const handleSave = async () => {
-    if (!file || !file._id || !tocState.toc) {
+    if (!file?._id || !tocState.toc) {
       setEditMode(false);
       return;
     }
 
-    setTocUi(current => ({ ...current, isSaving: true }));
-    try {
-      const sortedToc = sortTocEntries(tocState.toc);
-      const updatedFile: FileType = {
-        ...file,
-        toc: sortedToc,
-      };
-      const result = await updateFile(updatedFile);
-
-      if (result instanceof FetchResponseError || result instanceof Error) {
-        notify('error', t('System', 'Failed to save table of contents', null, false));
-      } else {
-        if (file.entity) {
-          entityLoaderCache.invalidateEntity(file.entity);
-        }
-        await revalidator.revalidate();
-        notify('success', t('System', 'Table of contents saved successfully', null, false));
-        setEditMode(false);
-      }
-    } catch (error) {
+    const saveError = () =>
       notify('error', t('System', 'Failed to save table of contents', null, false));
+
+    setTocState(current => ({ ...current, isSaving: true }));
+    try {
+      await saveToc({
+        file,
+        toc: tocState.toc,
+        revalidate,
+        onError: saveError,
+        onSuccess: () => {
+          notify('success', t('System', 'Table of contents saved successfully', null, false));
+          setEditMode(false);
+        },
+      });
+    } catch {
+      saveError();
     } finally {
-      setTocUi(current => ({ ...current, isSaving: false }));
+      setTocState(current => ({ ...current, isSaving: false }));
     }
   };
 
@@ -133,13 +173,6 @@ const useToCPanel = ({ toc, file }: UseToCPanelParams) => {
   );
 
   return {
-    tocState,
-    isAllExpanded: tocUi.isAllExpanded,
-    isAllCollapsed: tocUi.isAllCollapsed,
-    isSaving: tocUi.isSaving,
-    expandAll,
-    collapseAll,
-    toggleExpand,
     handleStateChange,
     handleToCEntryClick,
     handleEdit,
@@ -148,6 +181,51 @@ const useToCPanel = ({ toc, file }: UseToCPanelParams) => {
     handleIndentationChange,
     handleDelete,
     handleLabelChange,
+  };
+};
+
+const useToCPanel = ({ toc, file }: UseToCPanelParams) => {
+  const revalidator = useRevalidator();
+  const { notify } = useRequestStatus();
+  const tocState = useToc();
+  const {
+    setToc,
+    expandAll,
+    collapseAll,
+    setEditMode,
+    updateEntry,
+    deleteEntry,
+    toggleExpand,
+    reset: resetToc,
+  } = useTocActions();
+  const { setTocState } = useTocStateActions();
+  const { pdfController: mainPdfController } = useDocumentPdf();
+
+  useToCSync(toc, setToc, resetToc);
+
+  const handlers = useToCPanelHandlers({
+    toc,
+    file,
+    tocState,
+    setToc,
+    setEditMode,
+    updateEntry,
+    deleteEntry,
+    setTocState,
+    mainPdfController,
+    revalidate: async () => revalidator.revalidate(),
+    notify,
+  });
+
+  return {
+    tocState,
+    isAllExpanded: tocState.isAllExpanded,
+    isAllCollapsed: tocState.isAllCollapsed,
+    isSaving: tocState.isSaving,
+    expandAll,
+    collapseAll,
+    toggleExpand,
+    ...handlers,
   };
 };
 

@@ -48,7 +48,7 @@ class CreateEntityFromPDFUseCase extends AbstractUseCase<Input, Output, Deps> {
     await this.deps.filesService.storeFiles([document]);
 
     await this.transactionManager.run(async () => {
-      await this.deps.entitiesService.insert(entity, {
+      await this.deps.entitiesService.insert([entity], {
         actorId: this.actorId,
         tenantName: this.tenant.name,
         targetLanguage: this.targetLanguage,

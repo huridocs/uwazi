@@ -37,6 +37,7 @@ jest.mock('../pdfjs.ts', () => ({
     getDocument: (...args: any[]) => mockGetDocument(...args),
   },
   CMAP_URL: '/legacy_character_maps/',
+  WASM_URL: '/pdfjs_wasm/',
   EventBus: mockEventBus,
   PixelsPerInch: { PDF_TO_CSS_UNITS: 1 },
 }));
@@ -103,6 +104,7 @@ describe('PDF', () => {
       url: '/file.pdf',
       cMapUrl: '/legacy_character_maps/',
       cMapPacked: true,
+      wasmUrl: '/pdfjs_wasm/',
       isEvalSupported: false,
     });
 

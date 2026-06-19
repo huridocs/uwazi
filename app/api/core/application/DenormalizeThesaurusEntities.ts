@@ -2,6 +2,8 @@ import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiL
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
+import { EntitiesService } from './EntitiesService.js';
+import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 
 type Input = {
   thesaurusId: string;
@@ -12,7 +14,9 @@ type Output = void;
 
 type Deps = {
   entitiesDS: MultiLanguageEntityDataSource;
+  entitiesService: EntitiesService;
   propertyAssignmentCreatorServiceStrategy: PropertyAssignmentCreatorServiceStrategy;
+  settingsDS: SettingsDataSource;
 };
 
 class DenormalizeThesaurusEntitiesUseCase extends AbstractUseCase<Input, Output, Deps> {
@@ -24,6 +28,8 @@ class DenormalizeThesaurusEntitiesUseCase extends AbstractUseCase<Input, Output,
     if (entities.length === 0) {
       return;
     }
+
+    const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
 
     const [withRelationships, withoutRelationships] = ArrayUtils.splitInTwo(
       entities,
@@ -41,7 +47,12 @@ class DenormalizeThesaurusEntitiesUseCase extends AbstractUseCase<Input, Output,
         entity.setPropertyAssignmentsInAllLanguages(propertyAssignments);
       });
 
-      await this.deps.entitiesDS.bulkUpdate(withoutRelationships);
+      await this.deps.entitiesService.update(withoutRelationships, {
+        actorId: this.actorId,
+        actor: this.getActor(),
+        targetLanguage: defaultLanguage,
+        authorize: false,
+      });
 
       await ArrayUtils.sequentialFor(withRelationships, async entity => {
         const propertyAssignments =
@@ -55,7 +66,12 @@ class DenormalizeThesaurusEntitiesUseCase extends AbstractUseCase<Input, Output,
         entity.setPropertyAssignmentsInAllLanguages(propertyAssignments);
       });
 
-      await this.deps.entitiesDS.bulkUpdate(withRelationships);
+      await this.deps.entitiesService.update(withRelationships, {
+        actorId: this.actorId,
+        actor: this.getActor(),
+        targetLanguage: defaultLanguage,
+        authorize: false,
+      });
     });
   }
 }

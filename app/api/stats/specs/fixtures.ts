@@ -1,4 +1,5 @@
 import { testingDB, DBFixture } from '#api/utils/testing_db.js';
+import { PUBLIC_USER_ID } from '#api/users/publicUser.js';
 
 const entity1en = testingDB.id();
 const entity2en = testingDB.id();
@@ -28,6 +29,13 @@ export const fixtures: DBFixture = {
       password: 'pass',
       username: 'collaborator',
       email: 'collaborator@email.com',
+      role: 'collaborator',
+    },
+    {
+      _id: PUBLIC_USER_ID,
+      password: 'pass',
+      username: 'PublicUser',
+      email: 'public@uwazi.local',
       role: 'collaborator',
     },
   ],

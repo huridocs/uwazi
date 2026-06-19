@@ -20,8 +20,23 @@ function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
   return value !== null && value !== undefined;
 }
 
-const aggregationOptionsSignature = (options: Option[], optionsValue: string) =>
-  options.map(option => `${option[optionsValue]}:${option.results ?? ''}`).join('\0');
+const optionSignature = (option: Option, optionsValue: string, optionsLabel: string): string => {
+  const nestedOptionsSignature = Array.isArray(option.options)
+    ? option.options
+        .map(nestedOption => optionSignature(nestedOption, optionsValue, optionsLabel))
+        .join('\u0001')
+    : '';
+
+  return `${option[optionsValue] ?? ''}:${option[optionsLabel] ?? ''}:${
+    option.results ?? ''
+  }:${nestedOptionsSignature}`;
+};
+
+const aggregationOptionsSignature = (
+  options: Option[],
+  optionsValue: string,
+  optionsLabel: string
+) => options.map(option => optionSignature(option, optionsValue, optionsLabel)).join('\0');
 
 export const debounceTime = 200;
 
@@ -71,8 +86,16 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
 
   async componentDidUpdate(prevProps: LookupMultiSelectProps) {
     const optionsChanged =
-      aggregationOptionsSignature(prevProps.options, prevProps.optionsValue) !==
-      aggregationOptionsSignature(this.props.options, this.props.optionsValue);
+      aggregationOptionsSignature(
+        prevProps.options,
+        prevProps.optionsValue,
+        prevProps.optionsLabel
+      ) !==
+      aggregationOptionsSignature(
+        this.props.options,
+        this.props.optionsValue,
+        this.props.optionsLabel
+      );
     const lookupChanged = prevProps.lookup !== this.props.lookup;
 
     if (!optionsChanged && !lookupChanged) {

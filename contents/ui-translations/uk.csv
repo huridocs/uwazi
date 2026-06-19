@@ -4,10 +4,12 @@ Key,Ukrainian
 2FA,2FA
 2FA Enabled,2FA Увімкнено
 A default template cannot be deleted.,Шаблон за замовчуванням не можна видалити.
+A friendly hand for serious work — I'll act in the context shown above.,A friendly hand for serious work — I'll act in the context shown above.
 A generated ID will be the default title.,Згенерований ідентифікатор буде призначено заголовком за замовчуванням
 A source template must,Вихідний шаблон повинен
 A target template needs to have the following properties,Цільовий шаблон повинен мати такі властивості
 A valid email is required,Потрібна дійсна електронна адреса
+A → Z,A → Z
 Accept,Прийняти
 Accepted suggestion on entity,Прийнято пропозицію щодо організації
 Accepting suggestions,Прийняття пропозицій
@@ -92,16 +94,20 @@ An error has occurred while uninstalling a language:,An error has occurred while
 An error occurred,Виникла помилка
 Analytics,Аналітика
 Analytics description,"Якщо ви хочете відстежувати аналітику, пов'язану з відвідуваннями вашої колекції, Uwazi підтримує як Google Analytics, так і Matomo."
+AND OR NOT,AND OR NOT
 Any entity,Будь-який суб'єкт
+Appearance,Appearance
 Apply,Подати заявку
 Are you sure you want to continue?,"Ви впевнені, що хочете продовжувати?"
+Are you sure you want to delete,Are you sure you want to delete
 Are you sure you want to delete this attachment?,"Ви впевнені, що хочете видалити цей вкладення?"
 Are you sure you want to delete this connection?,"Ви впевнені, що хочете видалити це з'єднання?"
 Are you sure you want to delete this entity?,"Ви впевнені, що хочете видалити цю сутність?"
 Are you sure you want to delete this file?,"Ви впевнені, що хочете видалити цей файл?"
 Are you sure you want to delete this item?,"Ви впевнені, що хочете видалити цей елемент?"
-Are you sure you want to delete this reference? This action cannot be undone.,Are you sure you want to delete this reference? This action cannot be undone.
+Are you sure you want to delete this relationship? This action cannot be undone.,Are you sure you want to delete this relationship? This action cannot be undone.
 Are you sure?,Ти впевнений?
+Ask Bert,Ask Bert
 Attachment,Вкладення
 Attachment deleted,Вкладення видалено
 Attachment renamed,Вкладення перейменовано
@@ -120,7 +126,10 @@ Back to details,Back to details
 Back to search,Назад до пошуку
 Bad Request,Поганий запит
 Basic,Базовий
+Bert,Bert
+Bidirectional,Bidirectional
 Body,Основна частина
+boolean,boolean
 Browse files to upload,Перегляньте файли для завантаження
 "by ids, methods, keywords, etc.","за ідентифікаторами, методами, ключовими словами тощо."
 Can edit,Може редагувати
@@ -158,9 +167,11 @@ Chrome header,Chrome header
 Clear,Чисто
 Clear all,Зачистити все.
 Clear All,Очистити все.
+Clear all filters,Clear all filters
 Clear coordinates,Очистити координати
 Clear Filters,Очистити фільтри
 Clear PDF selection,Очистити вибір PDF
+Clear search,Clear search
 Click,Клац!
 Click here,Натисніть сюди
 Click to fill,"Натисніть, щоб заповнити"
@@ -189,6 +200,7 @@ Confirm deletion of,Підтвердити видалення
 Confirm deletion of entity,Підтвердити видалення сутності
 Confirm deletion of file,Підтвердити видалення файлу
 Confirm new password,Підтвердьте новий пароль
+Confirm your password,Confirm your password
 Connect to a paragraph,З'єднати з абзацом
 Connect to an entity,Підключіться до організації
 Connect to document,Connect to document
@@ -243,6 +255,7 @@ CSV import cancelled,CSV import cancelled
 CSV import completed,CSV import completed
 CSV import failed,CSV import failed
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
+Ctrl K,Ctrl K
 Current Value/Suggestion,Поточне значення/пропозиція
 Custom component error,"Помилка розмітки кастомного компонента: непідтримувані значення! Будь ласка, перевірте свою конфігурацію"
 Custom CSS,Персональні CSS
@@ -274,7 +287,8 @@ DELETE,Видалити
 Delete entities and documents,Видалити документи та об'єкти
 Delete file,Видалити файл
 Delete language,Видалити мову
-Delete reference,Delete reference
+Delete relationship,Delete relationship
+Delete relationships,Delete relationships
 Delete?,Delete?
 Deleted attachment,Видалено вкладення
 Deleted custom file,Видалено користувацький файл
@@ -292,6 +306,7 @@ Deleted user group,Видалена група користувачів
 Deletion success,Успішність видалення
 Description,Опис
 Deselect all,Deselect all
+Direction,Direction
 Disable,Вимкнути
 Disable highlights,Вимкнути підсвічування
 Disabled 2FA,Відключений 2FA
@@ -369,6 +384,7 @@ Error loading your image,Помилка завантаження зображе�
 Error saving template.,Шаблон збереження помилок.
 Error setting default template,Помилка встановлення шаблону за замовчуванням
 Error updating thesauri.,Помилка оновлення тезаурусів.
+exact phrase,exact phrase
 Expand all,Розгорнути все
 Expand All,Expand All
 Export CSV,Експортувати CSV
@@ -428,6 +444,7 @@ Forms and email configuration,Налаштування форм та елект�
 From,Від
 From all suggestions,З усіх пропозицій
 From previous step,З попереднього кроку
+From selection,From selection
 Full mode,Full mode
 Full width,Повна ширина
 General,Загальний
@@ -441,6 +458,8 @@ Google Analytics,Google Аналітики
 Google Analytics ID,ID Google Аналітики
 Google Maps,Карти Google
 Group,Групи
+Group by:,Group by:
+group expressions,group expressions
 Group Options,Параметри групи
 Group saved,Групу збережено
 Group updated,Групу оновлено
@@ -454,6 +473,7 @@ Header bar hover background,Header bar hover background
 Header bar text,Header bar text
 help,допомога
 here,тут.
+"Hi, I'm Bert.","Hi, I'm Bert."
 Hide,Hide
 Hide actions,Приховати дії
 Hide label,Приховати мітку
@@ -461,6 +481,7 @@ Hide restricted relationships from public,Hide restricted relationships from pub
 Hide toolbar,Приховати панель інструментів
 HTML,HTML
 https://yourdomain,https://вашдомен
+hub,hub
 hubs,хаби
 Hybrid,Гібридний
 Icon,Символ
@@ -490,6 +511,7 @@ Importing data in progress,Імпортування даних під час в�
 in,в
 "In a group, either all relationships must have a hub or none of them.","У групі або всі відносини повинні мати центр, або жоден з них."
 In OCR queue,У черзі на оптичне розпізнавання символів
+Incoming,Incoming
 Indexing entities may take a few minutes,Індексація об'єктів може тривати декілька хвилин
 Info,Інформація
 Information extraction training,Тренінг з вилучення інформації
@@ -588,6 +610,7 @@ marked for training,позначені для навчання
 Marked for training + all labeled entries,Позначено для навчання + всі позначені записи
 Marked for training only,Позначено тільки для навчання
 Match,Матч
+match verbatim,match verbatim
 Matching,Відповідність
 matching,відповідність
 Matomo,Матомо.
@@ -623,6 +646,7 @@ Navigate back,Повернутися назад
 Navigation menu tool tip part 1,"Якщо це внутрішня URL-адреса на цьому веб-сайті, обов'язково видаліть першу частину"
 Navigation menu tool tip part 2,"залишивши лише відносну URL-адресу, що починається з косої риски. Тобто. /деяка_адреса."
 New,Новий
+New conversation,New conversation
 New entity,Новий об'єкт
 New group,Нова група
 New language added,Додано нову мову
@@ -652,12 +676,15 @@ No label,Без етикетки
 No notifications or active tasks.,No notifications or active tasks.
 No options,Без варіантів
 No options found,Варіантів не знайдено
+No page,No page
 No property,Товар не має цієї властивості
 No References,Немає посилань
 No References description,"Посилання - це частини цього документа, пов'язані з іншими документами та об'єктами."
 No relationship types available,No relationship types available
 No Relationships,Немає взаємозв'язків
 No Relationships description,Відносини - це зв'язки між суб'єктами.
+No relationships found,No relationships found
+No relationships to graph,No relationships to graph
 No releases yet,No releases yet
 No results found,No results found
 No table of contents,Немає змісту
@@ -674,6 +701,7 @@ No Value,Немає значення
 Non processed,Не оброблений
 Non-labeled,Без маркування
 Non-latin characters support,Non-latin characters support
+None,None
 Normal view,Нормальний вигляд
 Not already been use as source template in another extractor,Не використовувався як вихідний шаблон в іншому екстракторі
 Not already been use as target template,Ще не використовувався як цільовий шаблон
@@ -693,6 +721,7 @@ OCR PDF,Оптичне розпізнавання символів PDF
 of,з
 Ok,Гаразд
 OK,ГАРАЗД.
+one character,one character
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Доступні лише шаблони, які не використовуються як джерело в інших екстракторах і не
                 вибрані як ціль у цьому екстракторі, доступні для вибору."
@@ -713,6 +742,8 @@ Other,Інший
 other,Інший
 Other users will be affected by this action!,Ця дія вплине на інших користувачів!
 Others,Інші
+Outgoing,Outgoing
+p.,p.
 Page,Сторінка
 Page not found,Сторінку не знайдено
 Page published successfully.,Page published successfully.
@@ -724,6 +755,7 @@ Paragraph Extractor added,Додано екстрактор абзаців
 Paragraph text extraction property (rich text),Властивість вилучення тексту абзацу (розширений текст)
 Paragraphs,Абзаци
 Paragraphs deleted,Абзаци вилучено
+parties,parties
 Password,Пароль
 Password + 2fa,Пароль + 2fa
 Password changed success,Успішно змінено пароль
@@ -751,6 +783,7 @@ Preserve Extension,Зберегти розширення
 Preserve Setup Description,"Якщо ви знаєте свій Uwazi URL і TOKEN, перейдіть за посиланням нижче і заповніть необхідну інформацію."
 Press enter to add,"Натисніть Enter, щоб додати"
 Preview,Попередній перегляд
+Preview entity,Preview entity
 Previous,Попередній
 Primary button,Primary button
 Primary document,Primary document
@@ -810,6 +843,7 @@ Receiving email description,"Якщо у вас є контактна форма
 Recommended,Recommended
 Reference,Посилання
 References,Посилання
+references,references
 Reject,Відхилити
 Related entities created,Related entities created
 Relation type,Тип відношення
@@ -823,6 +857,7 @@ Relationship types,Тип взаємозв'язку
 relationships,Взаємозв'язки
 Relationships,Взаємозв'язки
 Relationships saved,Відносини збережені
+relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,Тип взаємозв'язку збережено
 Release message,Release message
 remaining files,решта файлів
@@ -846,6 +881,7 @@ Reset default translation,Скинути переклад за замовчув�
 Reset language,Скинути мову
 Reset Password,Скинути пароль
 Reset passwords,Скидання паролів
+Resize panels,Resize panels
 Restore,Restore
 Restore previous version,Restore previous version
 Restricted,Для обмеженого кола осіб
@@ -857,6 +893,7 @@ Reviewed,Переглянуто
 Role,Роль
 Route,Маршрут
 Row,Гребіть!
+Row density,Row density
 Rows failed,Rows failed
 Rows processed,Rows processed
 Sample,Зразок
@@ -871,12 +908,15 @@ Saving...,Saving...
 Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,Шукати
+"Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
 Search item,Шукати предмет
 Search related entities or documents,Шукати взаємопов'язані об'єкти та документи
+Search relationships,Search relationships
 Search relevance,Релевантність пошуку
 Search text,Пошук за текстом
 Search text description,"Введіть щось у вікні пошуку, щоб отримати результати."
 Search Tips,Пошук порад
+Search tips,Search tips
 Search Tips: boolean,"AND, OR і NOT для логічного пошуку. Тобто ""статус І жінки НЕ Нікарагуа"" знайде все, що містить обидва слова ""статус"" і ""жінки"", і обов'язково не містить слова ""Нікарагуа""."
 Search Tips: exact term,"Точна відповідність терміну, взявши рядок пошуку в лапки. Наприклад, ""Коста-Ріка"" дасть інші результати, ніж ""Коста-Ріка без лапок""."
 Search Tips: one char wildcard,"? для одного символу підстановки. Тобто: ""198?"" буде відповідати 1980-1989 рокам, а також 198a, 198b і т.д."
@@ -894,6 +934,7 @@ Select an existing image,Select an existing image
 Select favicon image,Вибрати зображення фавікону
 Select files on your device,Вибрати файли на вашому пристрої
 Select from computer,Виберіть з комп'ютера
+Select relationship,Select relationship
 Select relationship type,Виберіть тип взаємозв'язків
 Select site logo image,Вибрати зображення логотипу сайту
 Select target paragraph,Виберіть цільовий абзац
@@ -944,18 +985,24 @@ Site logo description,"Логотип відображається у верхн
 Site logo no images hint,"Поки немає файлів зображень у Користувацьких завантаженнях. Спочатку додайте зображення PNG, SVG або JPEG."
 Size,Розмір
 Skip to main content,Перейти до основного змісту
+Some tasks may take a while. Bert will reply when it's done.,Some tasks may take a while. Bert will reply when it's done.
 Something went wrong,Щось пішло не так
 Sort,Сортувати
 Sort ascending,Сортування за зростанням
 Sort by,Сортувати за
 Sort descending,Сортування за спаданням
+Sort order,Sort order
+Sort:,Sort:
 sorted by,відсортовано за
 Source,Джерело
+Source entity,Source entity
+Source page,Source page
 Source relationship type,Тип вихідного відношення
 Source template,Вихідний шаблон
 Source Template,Вихідний шаблон
 Source's role in the relationship Source-Target.,Роль джерела у відносинах Джерело-Ціль.
 Stage,Stage
+stat*,stat*
 State,Держава
 Statistics,Статистика
 Stats & Filters,Статистика та фільтри
@@ -986,6 +1033,8 @@ Table of Contents,Зміст
 Table of contents,Зміст
 Table of contents saved successfully,Table of contents saved successfully
 Table view,Табличний вигляд
+Target entity,Target entity
+Target entity type,Target entity type
 Target relationship type,Тип цільового зв'язку
 Target Template,Шаблон цілі
 Target template,Шаблон цілі
@@ -1024,6 +1073,7 @@ Theme instance file invalid,Theme instance file invalid
 Theme logotype,Theme logotype
 Theme presets,Theme presets
 Theme preview,Theme preview
+Then by:,Then by:
 There are no pages enabled for entity view,"Немає сторінок з можливостями, які надаються для перегляду об'єкта"
 There are no untranslated terms,Немає неперекладених термінів
 Thesauri,Предметний покажчик
@@ -1120,6 +1170,8 @@ Unexpected error,Неочікувана помилка
 Uninstall,Видалити
 Uninstall language,Видалити мову
 Uninstalling language,Uninstalling language
+Unknown entity,Unknown entity
+Unknown template,Unknown template
 Unlink,Роз'єднати зв'язок.
 Unlock account,Розблокувати обліковий запис
 Unsupported OCR language,Непідтримувана мова оптичного розпізнавання символів
@@ -1190,11 +1242,13 @@ We can't find the page you're looking for.,"Ми не можемо знайти 
 Welcome to Uwazi,Ласкаво просимо до Uwazi
 "Well, this is awkward...","Що ж, це незручно..."
 Whitelisted templates,Шаблони білого списку
+wildcard,wildcard
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Намагатиметься заповнити контейнер, використовуючи всю його ширину. У картках, ймовірно, відбудеться обрізання."
 will be updated with the same value.,оновлюватиметься з цим же значенням
 Will show the entire media inside the container.,Покаже всі носії всередині контейнера.
 with,з
 With great power comes great responsibility!,З великою силою приходить велика відповідальність!
+wom?n,wom?n
 x less,менше
 x more,більше
 Year,Рік
@@ -1212,6 +1266,7 @@ You should activate this feature for enhanced account security,Ви маєте �
 You should activate this feature for enhanced account security.,Вам слід активувати цю функцію для посилення безпеки акаунта.
 You won't be able to save an entity if this property is empty.,"Ви не зможете зберегти сутність, якщо ця властивість порожня."
 Your account's security is enhanced with two-factor authentication.,Безпека вашого облікового запису посилюється завдяки двофакторній автентифікації.
+Z → A,Z → A
 Zoom in,Збільшити масштаб
 Zoom in library view,Збільшити масштаб перегляду бібліотеки
 Zoom out,Зменшити масштаб
