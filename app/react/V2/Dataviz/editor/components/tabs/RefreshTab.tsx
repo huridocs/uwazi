@@ -22,17 +22,19 @@ const REFRESH_OPTIONS: {
   {
     value: 'live',
     label: 'Live (always up to date)',
-    description: 'Data is fetched when the visualization is loaded.',
+    description: 'Data is fetched from your collection each time the visualization is loaded.',
   },
   {
     value: 'snapshot_manual',
     label: 'Snapshot (manual)',
-    description: 'Stored data is updated only when you refresh the snapshot.',
+    description:
+      'Uses a saved copy of your data. Refresh when your collection has new or updated entries.',
   },
   {
     value: 'snapshot_scheduled',
     label: 'Snapshot (scheduled)',
-    description: 'Data is pre-calculated on a schedule.',
+    description:
+      'Uses a saved copy that is updated on a schedule. You can also refresh manually after adding data.',
   },
 ];
 
@@ -99,7 +101,7 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
         lastRefreshedAt: updated.refresh.lastRefreshedAt,
         nextScheduledAt: updated.refresh.nextScheduledAt,
       });
-      notify('success', t('System', 'Snapshot refreshed.', null, false));
+      notify('success', t('System', 'Visualization data updated from your collection.', null, false));
     } catch {
       notify('error', t('System', 'An error occurred', null, false));
     } finally {
@@ -159,6 +161,18 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
 
                 {showSnapshotActions && (
                   <div className="flex flex-col gap-2 border-t border-border-soft pt-3 pl-7">
+                    {option.value === 'snapshot_manual' && (
+                      <p className="text-xs text-ink-secondary">
+                        Re-runs the query against your current collection. Use this after importing
+                        or editing entities—not when changing chart settings (save handles that).
+                      </p>
+                    )}
+                    {option.value === 'snapshot_scheduled' && (
+                      <p className="text-xs text-ink-secondary">
+                        Refresh manually when you have added data and cannot wait for the next
+                        scheduled run.
+                      </p>
+                    )}
                     <Button
                       type="button"
                       variant="secondary"
@@ -167,9 +181,9 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
                       disabled={!canRefreshSnapshot || refreshing || recentlyRefreshed}
                     >
                       {refreshing ? (
-                        <Translate>Refreshing…</Translate>
+                        <Translate>Updating…</Translate>
                       ) : (
-                        <Translate>Refresh now</Translate>
+                        <Translate>Update from collection</Translate>
                       )}
                     </Button>
                     {!canRefreshSnapshot && (
@@ -179,13 +193,13 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
                     )}
                     {canRefreshSnapshot && recentlyRefreshed && (
                       <p className="text-xs text-ink-muted">
-                        Snapshot was updated recently. You can refresh again in a few seconds.
+                        Data was updated recently. You can refresh again in a few seconds.
                       </p>
                     )}
 
                     {refresh.lastRefreshedAt && (
                       <p className="text-xs text-ink-muted">
-                        Last refreshed: {formatRefreshedAt(refresh.lastRefreshedAt)}
+                        Last updated from collection: {formatRefreshedAt(refresh.lastRefreshedAt)}
                       </p>
                     )}
                   </div>

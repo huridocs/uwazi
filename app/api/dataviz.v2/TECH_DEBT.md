@@ -9,5 +9,6 @@
 ## Public embed constraints
 
 - The public embed path (`GET /api/public/dataviz/:id/data`) never executes live queries; it reads `dataviz_snapshots` only.
-- **Save (create/update) persists a snapshot** when query/chart/appearance/manual data change, so embeds work after a successful save without a separate Refresh click.
+- **Save (create/update) persists a snapshot** when the visualization definition changes (query, chart, appearance, manual data), so embeds work after a successful save without a separate Refresh click.
+- **Manual refresh** re-runs the query against the current collection when underlying data has changed (new or updated entities). It is not the primary path for definition changes—save handles those.
 - **503** is returned when no snapshot exists (e.g. deleted), when save/snapshot generation failed, or while a manual refresh is in progress (`processing.active`).
