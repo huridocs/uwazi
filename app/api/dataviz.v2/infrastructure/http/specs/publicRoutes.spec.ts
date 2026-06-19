@@ -8,7 +8,10 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { DatavizDataSourceFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizDataSourceFactory.js';
-import { DatavizSchedulerService } from '#api/dataviz.v2/infrastructure/services/DatavizSchedulerService.js';
+import { DatavizSnapshotsDataSourceFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizSnapshotsDataSourceFactory.js';
+import { DatavizQueryExecutorFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizQueryExecutorFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import type { DatavizScheduler } from '#api/dataviz.v2/application/contracts/DatavizScheduler.js';
 import { MANUAL_DATA_EXAMPLE } from '#shared/dataviz/manualData.js';
 import { CreateDatavizUseCase } from '#api/dataviz.v2/application/useCases/CreateDataviz.js';
 import datavizRoutes from '../routes.js';
@@ -37,7 +40,10 @@ const createManualDataviz = async () =>
         transactionManager,
         idGenerator: IdGeneratorFactory.default(),
         datavizDS: DatavizDataSourceFactory.default(),
-        scheduler: { cancelPending: jest.fn(), schedule: jest.fn() } as unknown as DatavizSchedulerService,
+        snapshotsDS: DatavizSnapshotsDataSourceFactory.default(),
+        queryExecutor: DatavizQueryExecutorFactory.default(),
+        templatesDS: TemplatesDataSourceFactory.default(),
+        scheduler: { cancelPending: jest.fn(), schedule: jest.fn() } satisfies DatavizScheduler,
       },
       { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant }
     );
@@ -122,12 +128,15 @@ describe('public dataviz embed routes', () => {
           transactionManager,
           idGenerator: IdGeneratorFactory.default(),
           datavizDS: DatavizDataSourceFactory.default(),
-          scheduler: { cancelPending: jest.fn(), schedule: jest.fn() } as unknown as DatavizSchedulerService,
+          snapshotsDS: DatavizSnapshotsDataSourceFactory.default(),
+          queryExecutor: DatavizQueryExecutorFactory.default(),
+          templatesDS: TemplatesDataSourceFactory.default(),
+          scheduler: { cancelPending: jest.fn(), schedule: jest.fn() } satisfies DatavizScheduler,
         },
         { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant }
       );
 
-      return create.execute({
+      const created = await create.execute({
         name: 'Query without snapshot',
         query: {
           sources: [{ templateId: '507f1f77bcf86cd799439011' }],
@@ -138,6 +147,9 @@ describe('public dataviz embed routes', () => {
         appearance: { colorMode: 'theme' },
         refresh: { refreshMode: 'live' },
       });
+
+      await DatavizSnapshotsDataSourceFactory.default().deleteByDatavizId(created.id);
+      return created;
     });
 
     const response = await request(app)

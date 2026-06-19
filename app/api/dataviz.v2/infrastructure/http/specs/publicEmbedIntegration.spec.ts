@@ -119,7 +119,7 @@ describe('public dataviz embed integration', () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should create a query chart, refresh snapshot, and return embed payload', async () => {
+  it('should create a query chart, persist snapshot on save, and return embed payload', async () => {
     const createResponse = await request(app)
       .post('/api/dataviz')
       .send(scatterQueryChart)
@@ -128,8 +128,7 @@ describe('public dataviz embed integration', () => {
     const datavizId = createResponse.body.id as string;
     expect(datavizId).toBeDefined();
     expect(createResponse.body.chart.type).toBe('scatter');
-
-    await request(app).post(`/api/dataviz/${datavizId}/refresh`).expect(200);
+    expect(createResponse.body.refresh.lastRefreshedAt).toBeDefined();
 
     const embedResponse = await request(app)
       .get(`/api/public/dataviz/${datavizId}/data`)
@@ -152,13 +151,20 @@ describe('public dataviz embed integration', () => {
     expect(breakdownValues.every((item: { value: number }) => item.value > 0)).toBe(true);
   });
 
-  it('should return 503 when query chart has no snapshot yet', async () => {
+  it('should return 503 when query chart snapshot was removed', async () => {
     const createResponse = await request(app)
       .post('/api/dataviz')
       .send({ ...scatterQueryChart, name: 'Scatter without snapshot' })
       .expect(200);
 
     const datavizId = createResponse.body.id as string;
+
+    await testingEnvironment.runWithContext(async () => {
+      const snapshotsDS = (
+        await import('#api/dataviz.v2/infrastructure/factories/DatavizSnapshotsDataSourceFactory.js')
+      ).DatavizSnapshotsDataSourceFactory.default();
+      await snapshotsDS.deleteByDatavizId(datavizId);
+    });
 
     const embedResponse = await request(app)
       .get(`/api/public/dataviz/${datavizId}/data`)

@@ -2,13 +2,17 @@ import { computeQueryHash } from '#shared/dataviz/computeQueryHash.js';
 import type { DatavizDefinition } from '#shared/types/datavizSchema.js';
 import { DatavizSnapshotsDataSource } from '#api/dataviz.v2/application/contracts/DatavizSnapshotsDataSource.js';
 import { DatavizDataSource } from '#api/dataviz.v2/application/contracts/DatavizDataSource.js';
+import { DatavizQueryExecutor } from '#api/dataviz.v2/application/contracts/DatavizQueryExecutor.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { Dataviz } from '#api/dataviz.v2/domain/Dataviz.js';
 import { DatavizNotFoundError } from '#api/dataviz.v2/domain/errors.js';
 import { isManualDataSource } from '#shared/dataviz/manualData.js';
 import { validateLiveRefreshAllowed } from '#api/dataviz.v2/domain/validators/validateLiveRefreshAllowed.js';
-import { DatavizSchedulerService } from '#api/dataviz.v2/infrastructure/services/DatavizSchedulerService.js';
+import type { DatavizScheduler } from '#api/dataviz.v2/application/contracts/DatavizScheduler.js';
 import { normalizeDatavizRefresh } from '#shared/dataviz/normalizeDatavizRefresh.js';
+import type { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { persistDatavizSnapshot } from '#api/dataviz.v2/application/services/persistDatavizSnapshot.js';
+import { shouldPersistSnapshotOnSave } from '#api/dataviz.v2/application/services/shouldPersistSnapshotOnSave.js';
 
 type Input = DatavizDefinition;
 
@@ -17,7 +21,9 @@ type Output = Dataviz;
 type Deps = {
   datavizDS: DatavizDataSource;
   snapshotsDS: DatavizSnapshotsDataSource;
-  scheduler: DatavizSchedulerService;
+  queryExecutor: DatavizQueryExecutor;
+  templatesDS: TemplatesDataSource;
+  scheduler: DatavizScheduler;
 };
 
 class UpdateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
@@ -55,22 +61,32 @@ class UpdateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
     const queryChanged = computeQueryHash(existing.query) !== computeQueryHash(dataviz.query);
     const refreshChanged =
       JSON.stringify(existing.refresh) !== JSON.stringify(dataviz.refresh);
+    const snapshotChanged = shouldPersistSnapshotOnSave(existing, dataviz);
 
-    await this.transactionManager.run(async () => {
-      await this.deps.datavizDS.update(dataviz);
+    let saved = dataviz;
 
-      if (queryChanged) {
-        await this.deps.snapshotsDS.deleteByDatavizId(dataviz.id);
-      }
-    });
-
-    await this.deps.scheduler.cancelPending(dataviz.id);
-
-    if (dataviz.isScheduled) {
-      await this.deps.scheduler.schedule(dataviz, this.getActor(), queryChanged || refreshChanged);
+    if (snapshotChanged) {
+      ({ dataviz: saved } = await persistDatavizSnapshot(dataviz, this.getActor(), {
+        datavizDS: this.deps.datavizDS,
+        snapshotsDS: this.deps.snapshotsDS,
+        queryExecutor: this.deps.queryExecutor,
+        templatesDS: this.deps.templatesDS,
+        transactionManager: this.transactionManager,
+      }, 'update'));
+    } else {
+      await this.transactionManager.run(async () => {
+        await this.deps.datavizDS.update(dataviz);
+      });
     }
 
-    return dataviz;
+    await this.deps.scheduler.cancelPending(saved.id);
+
+    if (saved.isScheduled) {
+      const runImmediately = !snapshotChanged && (queryChanged || refreshChanged);
+      await this.deps.scheduler.schedule(saved, this.getActor(), runImmediately);
+    }
+
+    return saved;
   }
 }
 

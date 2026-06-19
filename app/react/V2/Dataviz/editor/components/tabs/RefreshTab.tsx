@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { t, Translate } from '#app/I18N/index.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import { Select } from '#V2/Components/Forms/Select.js';
@@ -44,6 +44,15 @@ const SCHEDULED_REFRESH_DEFAULTS: Partial<DatavizDefinition['refresh']> = {
   cronTimezone: 'UTC',
 };
 
+const SNAPSHOT_REFRESH_COOLDOWN_MS = 10_000;
+
+const isSnapshotRecentlyRefreshed = (lastRefreshedAt?: string): boolean => {
+  if (!lastRefreshedAt) {
+    return false;
+  }
+  return Date.now() - new Date(lastRefreshedAt).getTime() < SNAPSHOT_REFRESH_COOLDOWN_MS;
+};
+
 const formatRefreshedAt = (value?: string) => {
   if (!value) return null;
   return new Date(value).toLocaleString();
@@ -53,11 +62,32 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
   const api = useDatavizApi();
   const { notify } = useRequestStatus();
   const [refreshing, setRefreshing] = useState(false);
+  const [cooldownTick, setCooldownTick] = useState(0);
   const { refresh } = definition;
   const canRefreshSnapshot = isPersistedId(definition.id);
+  void cooldownTick;
+  const recentlyRefreshed = isSnapshotRecentlyRefreshed(refresh.lastRefreshedAt);
+
+  useEffect(() => {
+    if (!refresh.lastRefreshedAt) {
+      return undefined;
+    }
+
+    const elapsed = Date.now() - new Date(refresh.lastRefreshedAt).getTime();
+    const remaining = SNAPSHOT_REFRESH_COOLDOWN_MS - elapsed;
+    if (remaining <= 0) {
+      return undefined;
+    }
+
+    const timer = window.setTimeout(() => {
+      setCooldownTick(value => value + 1);
+    }, remaining);
+
+    return () => window.clearTimeout(timer);
+  }, [refresh.lastRefreshedAt, cooldownTick]);
 
   const handleRefreshNow = async () => {
-    if (!canRefreshSnapshot || refreshing) {
+    if (!canRefreshSnapshot || refreshing || recentlyRefreshed) {
       return;
     }
 
@@ -134,7 +164,7 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
                       variant="secondary"
                       size="small"
                       onClick={handleRefreshNow}
-                      disabled={!canRefreshSnapshot || refreshing}
+                      disabled={!canRefreshSnapshot || refreshing || recentlyRefreshed}
                     >
                       {refreshing ? (
                         <Translate>Refreshing…</Translate>
@@ -145,6 +175,11 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
                     {!canRefreshSnapshot && (
                       <p className="text-xs text-amber-700">
                         Save the visualization before refreshing.
+                      </p>
+                    )}
+                    {canRefreshSnapshot && recentlyRefreshed && (
+                      <p className="text-xs text-ink-muted">
+                        Snapshot was updated recently. You can refresh again in a few seconds.
                       </p>
                     )}
 

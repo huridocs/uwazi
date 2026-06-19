@@ -8,4 +8,6 @@
 
 ## Public embed constraints
 
-- Charts with `refreshMode: live` and no snapshot return **503** on `GET /api/public/dataviz/:id/data`. Admins should refresh or switch to snapshot mode before external embedding.
+- The public embed path (`GET /api/public/dataviz/:id/data`) never executes live queries; it reads `dataviz_snapshots` only.
+- **Save (create/update) persists a snapshot** when query/chart/appearance/manual data change, so embeds work after a successful save without a separate Refresh click.
+- **503** is returned when no snapshot exists (e.g. deleted), when save/snapshot generation failed, or while a manual refresh is in progress (`processing.active`).

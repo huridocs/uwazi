@@ -4,7 +4,10 @@ import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { DatavizDataSourceFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizDataSourceFactory.js';
 import { DatavizSnapshotsDataSourceFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizSnapshotsDataSourceFactory.js';
-import { DatavizSchedulerService } from '#api/dataviz.v2/infrastructure/services/DatavizSchedulerService.js';
+import { DatavizQueryExecutorFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizQueryExecutorFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { MANUAL_DATA_EXAMPLE } from '#shared/dataviz/manualData.js';
+import type { DatavizScheduler } from '#api/dataviz.v2/application/contracts/DatavizScheduler.js';
 import { CreateDatavizUseCase } from '../useCases/CreateDataviz.js';
 import { DeleteDatavizUseCase } from '../useCases/DeleteDataviz.js';
 
@@ -28,17 +31,22 @@ describe('DeleteDatavizUseCase', () => {
           transactionManager,
           idGenerator: IdGeneratorFactory.default(),
           datavizDS: DatavizDataSourceFactory.default(),
-          scheduler: createScheduler as unknown as DatavizSchedulerService,
+          snapshotsDS: DatavizSnapshotsDataSourceFactory.default(),
+          queryExecutor: DatavizQueryExecutorFactory.default(),
+          templatesDS: TemplatesDataSourceFactory.default(),
+          scheduler: createScheduler,
         },
         { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant }
       );
       return createUseCase.execute({
         name: 'To delete',
+        dataSource: 'manual',
         query: {
-          sources: [{ templateId: '507f1f77bcf86cd799439011' }],
-          dimensions: [{ property: 'color', propertyType: 'select' }],
-          measures: [{ aggregation: 'count' }],
+          sources: [],
+          dimensions: [],
+          measures: [{ aggregation: 'count', countMode: 'all' }],
         },
+        manualData: MANUAL_DATA_EXAMPLE,
         chart: { type: 'pie' },
         appearance: { colorMode: 'from_data' },
         refresh: { refreshMode: 'snapshot_manual' },
@@ -52,7 +60,7 @@ describe('DeleteDatavizUseCase', () => {
           transactionManager,
           datavizDS: DatavizDataSourceFactory.default(),
           snapshotsDS: DatavizSnapshotsDataSourceFactory.default(),
-          scheduler: deleteScheduler as unknown as DatavizSchedulerService,
+          scheduler: deleteScheduler,
         },
         { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant }
       );

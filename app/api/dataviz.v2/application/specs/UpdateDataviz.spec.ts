@@ -2,11 +2,29 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { DatavizDataSourceFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizDataSourceFactory.js';
 import { DatavizSnapshotsDataSourceFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizSnapshotsDataSourceFactory.js';
-import { DatavizSchedulerService } from '#api/dataviz.v2/infrastructure/services/DatavizSchedulerService.js';
+import { DatavizQueryExecutorFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizQueryExecutorFactory.js';
+import type { DatavizScheduler } from '#api/dataviz.v2/application/contracts/DatavizScheduler.js';
+import type { DatavizQueryExecutor } from '#api/dataviz.v2/application/contracts/DatavizQueryExecutor.js';
 import { CreateDatavizUseCase } from '../useCases/CreateDataviz.js';
 import { UpdateDatavizUseCase } from '../useCases/UpdateDataviz.js';
+
+const mockSnapshotData = {
+  datavizId: 'pending',
+  generatedAt: new Date().toISOString(),
+  stale: false,
+  meta: { totalEntities: 2, truncated: false },
+  series: [{ id: 'main', label: 'Series', points: [{ key: 'a', label: 'A', value: 2 }] }],
+};
+
+const createMockQueryExecutor = (): DatavizQueryExecutor => ({
+  execute: jest.fn().mockImplementation(async (_query, context) => ({
+    ...mockSnapshotData,
+    datavizId: context.datavizId ?? 'pending',
+  })),
+});
 
 const baseInput = {
   name: 'Cars by color',
@@ -20,7 +38,7 @@ const baseInput = {
   refresh: { refreshMode: 'snapshot_scheduled' as const, schedule: 'daily' as const },
 };
 
-const createSchedulerMock = () => ({
+const createSchedulerMock = (): DatavizScheduler => ({
   cancelPending: jest.fn(),
   schedule: jest.fn(),
 });
@@ -35,7 +53,8 @@ describe('UpdateDatavizUseCase', () => {
   });
 
   it('should cancel and reschedule jobs when query changes', async () => {
-    const scheduler = createSchedulerMock();
+    const createScheduler = createSchedulerMock();
+    const queryExecutor = createMockQueryExecutor();
 
     const created = await testingEnvironment.runWithContext(async () => {
       const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
@@ -44,7 +63,10 @@ describe('UpdateDatavizUseCase', () => {
           transactionManager,
           idGenerator: IdGeneratorFactory.default(),
           datavizDS: DatavizDataSourceFactory.default(),
-          scheduler: scheduler as unknown as DatavizSchedulerService,
+          snapshotsDS: DatavizSnapshotsDataSourceFactory.default(),
+          queryExecutor,
+          templatesDS: TemplatesDataSourceFactory.default(),
+          scheduler: createScheduler,
         },
         { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant }
       );
@@ -59,7 +81,9 @@ describe('UpdateDatavizUseCase', () => {
           transactionManager,
           datavizDS: DatavizDataSourceFactory.default(),
           snapshotsDS: DatavizSnapshotsDataSourceFactory.default(),
-          scheduler: updateScheduler as unknown as DatavizSchedulerService,
+          queryExecutor,
+          templatesDS: TemplatesDataSourceFactory.default(),
+          scheduler: updateScheduler,
         },
         { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant }
       );
@@ -74,6 +98,7 @@ describe('UpdateDatavizUseCase', () => {
     });
 
     expect(updateScheduler.cancelPending).toHaveBeenCalledWith(created.id);
-    expect(updateScheduler.schedule).toHaveBeenCalled();
+    expect(updateScheduler.schedule).toHaveBeenCalledWith(expect.anything(), expect.anything(), false);
+    expect(queryExecutor.execute).toHaveBeenCalledTimes(2);
   });
 });

@@ -8,15 +8,32 @@ import settings from '#api/settings/settings.js';
 import { User } from '#api/users.v2/model/User.js';
 import { DatavizDataSourceFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizDataSourceFactory.js';
 import { DatavizSnapshotsDataSourceFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizSnapshotsDataSourceFactory.js';
-import { DatavizSchedulerService } from '#api/dataviz.v2/infrastructure/services/DatavizSchedulerService.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import type { DatavizScheduler } from '#api/dataviz.v2/application/contracts/DatavizScheduler.js';
 import { MANUAL_DATA_EXAMPLE } from '#shared/dataviz/manualData.js';
 import {
   DatavizProcessingError,
   DatavizSnapshotUnavailableError,
   DatavizUnauthorizedError,
 } from '#api/dataviz.v2/domain/errors.js';
+import type { DatavizQueryExecutor } from '#api/dataviz.v2/application/contracts/DatavizQueryExecutor.js';
 import { CreateDatavizUseCase } from '../useCases/CreateDataviz.js';
 import { GetPublicDatavizEmbedUseCase } from '../useCases/GetPublicDatavizEmbed.js';
+
+const mockSnapshotData = {
+  datavizId: 'pending',
+  generatedAt: new Date().toISOString(),
+  stale: false,
+  meta: { totalEntities: 2, truncated: false },
+  series: [{ id: 'main', label: 'Series', points: [{ key: 'a', label: 'A', value: 2 }] }],
+};
+
+const createMockQueryExecutor = (): DatavizQueryExecutor => ({
+  execute: jest.fn().mockImplementation(async (_query, context) => ({
+    ...mockSnapshotData,
+    datavizId: context.datavizId ?? 'pending',
+  })),
+});
 
 const fixtures: DBFixture = {
   settings: [
@@ -27,7 +44,7 @@ const fixtures: DBFixture = {
   ],
 };
 
-const createSut = () =>
+const createSut = (queryExecutor = createMockQueryExecutor()) =>
   testingEnvironment.runWithContext(() => {
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
     return {
@@ -36,7 +53,10 @@ const createSut = () =>
           transactionManager,
           idGenerator: IdGeneratorFactory.default(),
           datavizDS: DatavizDataSourceFactory.default(),
-          scheduler: { cancelPending: jest.fn(), schedule: jest.fn() } as unknown as DatavizSchedulerService,
+          snapshotsDS: DatavizSnapshotsDataSourceFactory.default(),
+          queryExecutor,
+          templatesDS: TemplatesDataSourceFactory.default(),
+          scheduler: { cancelPending: jest.fn(), schedule: jest.fn() } satisfies DatavizScheduler,
         },
         { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant }
       ),
@@ -56,6 +76,7 @@ const createSut = () =>
           }),
       }),
       datavizDS: DatavizDataSourceFactory.default(),
+      snapshotsDS: DatavizSnapshotsDataSourceFactory.default(),
     };
   });
 
@@ -166,11 +187,11 @@ describe('GetPublicDatavizEmbedUseCase', () => {
   });
 
   it('should reject live query charts without a snapshot on the public path', async () => {
-    const { create, getPublicEmbed } = createSut();
+    const { create, getPublicEmbed, snapshotsDS } = createSut();
     const dataviz = await create.execute({
       name: 'Live without snapshot',
       query: {
-        sources: [{ templateId: 'missing' }],
+        sources: [{ templateId: '507f1f77bcf86cd799439011' }],
         dimensions: [{ property: 'title', propertyType: 'text' }],
         measures: [{ aggregation: 'count', countMode: 'all' }],
       },
@@ -178,6 +199,8 @@ describe('GetPublicDatavizEmbedUseCase', () => {
       appearance: { colorMode: 'theme' },
       refresh: { refreshMode: 'live' },
     });
+
+    await snapshotsDS.deleteByDatavizId(dataviz.id);
 
     await expect(getPublicEmbed().execute({ id: dataviz.id })).rejects.toThrow(
       DatavizSnapshotUnavailableError
@@ -185,11 +208,11 @@ describe('GetPublicDatavizEmbedUseCase', () => {
   });
 
   it('should serve snapshot data for live charts on the public path without executing queries', async () => {
-    const { create } = createSut();
+    const { create, getPublicEmbed } = createSut();
     const dataviz = await create.execute({
       name: 'Live with snapshot',
       query: {
-        sources: [{ templateId: 'missing' }],
+        sources: [{ templateId: '507f1f77bcf86cd799439011' }],
         dimensions: [{ property: 'title', propertyType: 'text' }],
         measures: [{ aggregation: 'count', countMode: 'all' }],
       },
@@ -198,47 +221,9 @@ describe('GetPublicDatavizEmbedUseCase', () => {
       refresh: { refreshMode: 'live' },
     });
 
-    const payload = await testingEnvironment.runWithContext(async () => {
-      const datavizDS = DatavizDataSourceFactory.default();
-      const persisted = (await datavizDS.getById(dataviz.id)).getDataOrThrow();
-      const snapshotsDS = DatavizSnapshotsDataSourceFactory.default();
-      await snapshotsDS.upsert({
-        datavizId: dataviz.id,
-        queryHash: persisted.queryHash,
-        payload: {
-          data: {
-            datavizId: dataviz.id,
-            generatedAt: new Date().toISOString(),
-            stale: false,
-            meta: { totalEntities: 42, truncated: false },
-            series: [
-              {
-                id: 'main',
-                label: 'Series',
-                points: [{ key: 'snapshot', label: 'Snapshot only', value: 42 }],
-              },
-            ],
-          },
-          chart: persisted.chart,
-          appearance: persisted.appearance,
-        },
-        generatedAt: new Date(),
-      });
+    const payload = await getPublicEmbed().execute({ id: dataviz.id });
 
-      const useCase = new GetPublicDatavizEmbedUseCase(
-        {
-          datavizDS,
-          snapshotsDS,
-          settingsDS: SettingsDataSourceFactory.default({
-            transactionManager: ExecutionContext.transactionManager as MongoTransactionManager,
-          }),
-        },
-        { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant, targetLanguage: 'en' }
-      );
-
-      return useCase.execute({ id: dataviz.id });
-    });
-
-    expect(payload.data.series[0].points[0].label).toBe('Snapshot only');
+    expect(payload.data.series).toHaveLength(1);
+    expect(payload.chart.type).toBe('pie');
   });
 });

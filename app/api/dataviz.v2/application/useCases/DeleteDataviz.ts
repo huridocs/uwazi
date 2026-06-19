@@ -1,7 +1,7 @@
 import { DatavizDataSource } from '#api/dataviz.v2/application/contracts/DatavizDataSource.js';
 import { DatavizSnapshotsDataSource } from '#api/dataviz.v2/application/contracts/DatavizSnapshotsDataSource.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
-import { DatavizSchedulerService } from '#api/dataviz.v2/infrastructure/services/DatavizSchedulerService.js';
+import type { DatavizScheduler } from '#api/dataviz.v2/application/contracts/DatavizScheduler.js';
 
 type Input = { id: string };
 
@@ -10,7 +10,7 @@ type Output = { id: string };
 type Deps = {
   datavizDS: DatavizDataSource;
   snapshotsDS: DatavizSnapshotsDataSource;
-  scheduler: DatavizSchedulerService;
+  scheduler: DatavizScheduler;
 };
 
 class DeleteDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {

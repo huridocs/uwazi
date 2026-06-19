@@ -7,7 +7,7 @@ import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGenerat
 import { DatavizDataSourceFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizDataSourceFactory.js';
 import { DatavizSnapshotsDataSourceFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizSnapshotsDataSourceFactory.js';
 import { DatavizQueryExecutorFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizQueryExecutorFactory.js';
-import { DatavizSchedulerService } from '#api/dataviz.v2/infrastructure/services/DatavizSchedulerService.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { DATAVIZ_DRAFT_ID } from '#shared/types/datavizSchema.js';
 import { MANUAL_DATA_EXAMPLE } from '#shared/dataviz/manualData.js';
 import { CreateDatavizUseCase } from '../useCases/CreateDataviz.js';
@@ -72,7 +72,10 @@ const createSut = () =>
           transactionManager,
           idGenerator: IdGeneratorFactory.default(),
           datavizDS: DatavizDataSourceFactory.default(),
-          scheduler: { cancelPending: jest.fn(), schedule: jest.fn() } as unknown as DatavizSchedulerService,
+          snapshotsDS: DatavizSnapshotsDataSourceFactory.default(),
+          queryExecutor: DatavizQueryExecutorFactory.default(),
+          templatesDS: TemplatesDataSourceFactory.default(),
+          scheduler: { cancelPending: jest.fn(), schedule: jest.fn() },
         },
         { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant, targetLanguage: 'en' }
       ),

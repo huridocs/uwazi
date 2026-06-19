@@ -1,3 +1,4 @@
+import type { DatavizScheduler } from '#api/dataviz.v2/application/contracts/DatavizScheduler.js';
 import { Dataviz } from '#api/dataviz.v2/domain/Dataviz.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { User } from '#api/users.v2/model/User.js';
@@ -9,7 +10,7 @@ type Deps = {
   tenantName: string;
 };
 
-class DatavizSchedulerService {
+class DatavizSchedulerService implements DatavizScheduler {
   constructor(private deps: Deps) {}
 
   async cancelPending(datavizId: string): Promise<void> {
