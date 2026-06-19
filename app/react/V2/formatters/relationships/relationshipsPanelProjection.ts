@@ -1,8 +1,8 @@
 import { Entity } from '#V2/api/entities/types.js';
 import { RelationshipMarker, firstPageOf, toMarker } from '#V2/Components/Relationships/types.js';
 import { formatRelationships } from './formatRelationships.js';
+import { buildPanelListEntries } from './relationshipsPanelDerivation.js';
 import { buildMatcher } from './relationshipsPanelSearchQuery.js';
-import { aggregateKey } from './relationshipsPanelAggregates.js';
 
 type RelationshipsPanelSort = 'none' | 'appearance' | 'asc' | 'desc';
 
@@ -17,10 +17,13 @@ type RelationshipsPanelProjection = {
   stats: RelationshipsPanelStats;
 };
 
-const computeStats = (markers: RelationshipMarker[]): RelationshipsPanelStats => ({
-  references: markers.filter(marker => marker.anchor).length,
+const computeStats = (
+  markers: RelationshipMarker[],
+  selfSharedId: string
+): RelationshipsPanelStats => ({
+  references: markers.length,
   entities: new Set(markers.map(marker => marker.target.sharedId)).size,
-  aggregates: new Set(markers.map(aggregateKey)).size,
+  aggregates: buildPanelListEntries(markers, selfSharedId).length,
 });
 
 const projectRelationshipMarkers = (entity: Entity): RelationshipMarker[] =>
@@ -28,7 +31,7 @@ const projectRelationshipMarkers = (entity: Entity): RelationshipMarker[] =>
 
 const projectRelationshipsPanel = (entity: Entity): RelationshipsPanelProjection => {
   const markers = projectRelationshipMarkers(entity);
-  return { markers, stats: computeStats(markers) };
+  return { markers, stats: computeStats(markers, entity.sharedId) };
 };
 
 const countEntityRelationships = (entity: Entity): number =>

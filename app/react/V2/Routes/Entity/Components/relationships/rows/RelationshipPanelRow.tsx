@@ -8,6 +8,7 @@ import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
 import { RelationshipRow } from '../rows/RelationshipRow.js';
 import { CollapsibleRelationshipRow } from './CollapsibleRelationshipRow.js';
 import { useRelationshipRowVisibility } from '../hooks/useRelationshipRowVisibility.js';
+import { RelationshipsTreeNode, getTreeLine } from '../views/RelationshipsTreeBranch.js';
 
 type RelationshipPanelRowHandlers = {
   selfSharedId: string;
@@ -22,23 +23,30 @@ type RelationshipPanelRowProps = RelationshipPanelRowHandlers & {
   groupContext: GroupLabelContext;
 };
 
+const anchoredEvidenceCount = (markers: RelationshipMarker[]): number =>
+  markers.filter(marker => marker.anchor).length;
+
 const renderNestedRows = (
   markers: RelationshipMarker[],
   handlers: RelationshipPanelRowHandlers,
   groupContext: GroupLabelContext
-) =>
-  markers.map((marker, index) => (
-    <RelationshipRow
-      key={marker._id || `nested-${index}`}
-      marker={marker}
-      selfSharedId={handlers.selfSharedId}
-      relationshipTypeName={groupContext.relationshipTypeName(marker.view.type)}
-      isSelected={handlers.activeRelationshipId === marker._id}
-      onClick={() => handlers.onClick(marker)}
-      onView={() => handlers.onView(marker)}
-      onDelete={() => handlers.onDelete(marker)}
-    />
+) => {
+  const anchored = markers.filter(marker => marker.anchor);
+  return anchored.map((marker, index) => (
+    <RelationshipsTreeNode key={marker._id} treeLine={getTreeLine(index, anchored.length)}>
+      <RelationshipRow
+        nested
+        marker={marker}
+        selfSharedId={handlers.selfSharedId}
+        relationshipTypeName={groupContext.relationshipTypeName(marker.view.type)}
+        isSelected={handlers.activeRelationshipId === marker._id}
+        onClick={() => handlers.onClick(marker)}
+        onView={() => handlers.onView(marker)}
+        onDelete={() => handlers.onDelete(marker)}
+      />
+    </RelationshipsTreeNode>
   ));
+};
 
 const RelationshipPanelRow = ({ entry, groupContext, ...handlers }: RelationshipPanelRowProps) => {
   const { hideTargetPill, hideRelationType } = useRelationshipRowVisibility();
@@ -66,21 +74,22 @@ const RelationshipPanelRow = ({ entry, groupContext, ...handlers }: Relationship
     return (
       <CollapsibleRelationshipRow
         checkboxId={aggregate.markerIds[0] ?? ''}
-        evidenceCount={aggregate.markerIds.length}
+        evidenceCount={anchoredEvidenceCount(markers) || aggregate.markerIds.length}
         glyphDirection={glyphDirection}
         relationshipTypeName={hideRelationType ? undefined : relationshipTypeName}
-        header={
-          hideTargetPill ? null : (
-            <TemplatePill templateId={aggregate.targetTemplateId} label={aggregate.targetTitle} />
-          )
-        }
+        targetTemplateId={aggregate.targetTemplateId}
+        entityTitle={hideTargetPill ? undefined : aggregate.targetTitle}
+        templateName={groupContext.templateName(aggregate.targetTemplateId)}
+        header={null}
         meta={
-          <>
-            <DirectionGlyph direction={glyphDirection} />
-            {!hideRelationType && relationshipTypeName && (
-              <span className="capitalize">{relationshipTypeName}</span>
-            )}
-          </>
+          glyphDirection || (!hideRelationType && relationshipTypeName) ? (
+            <>
+              <DirectionGlyph direction={glyphDirection} />
+              {!hideRelationType && relationshipTypeName && (
+                <span className="capitalize">{relationshipTypeName}</span>
+              )}
+            </>
+          ) : undefined
         }
       >
         {renderNestedRows(markers, handlers, groupContext)}
@@ -94,36 +103,36 @@ const RelationshipPanelRow = ({ entry, groupContext, ...handlers }: Relationship
   return (
     <CollapsibleRelationshipRow
       checkboxId={hub.markerIds[0] ?? ''}
-      evidenceCount={hub.markerIds.length}
+      evidenceCount={anchoredEvidenceCount(markers) || hub.markerIds.length}
       headerWrap
       isHub
       memberCount={hub.members.length}
       relationshipTypeName={hideRelationType ? undefined : relationshipTypeName}
       header={
-        hideTargetPill ? null : (
-          <>
-            {hub.members.map(member => (
-              <TemplatePill
-                key={member.sharedId}
-                templateId={member.templateId}
-                label={member.title}
-              />
-            ))}
-          </>
-        )
+        <>
+          {hub.members.map(member => (
+            <TemplatePill
+              key={member.sharedId}
+              templateId={member.templateId}
+              label={member.title}
+            />
+          ))}
+        </>
       }
       meta={
-        <>
-          {!hideRelationType && relationshipTypeName && (
-            <>
-              <span className="capitalize">{relationshipTypeName}</span>
-              <span>·</span>
-            </>
-          )}
+        hideRelationType ? (
           <span>
             {hub.members.length} <Translate>parties</Translate>
           </span>
-        </>
+        ) : (
+          <>
+            <span className="capitalize">{relationshipTypeName}</span>
+            <span>·</span>
+            <span>
+              {hub.members.length} <Translate>parties</Translate>
+            </span>
+          </>
+        )
       }
     >
       {renderNestedRows(markers, handlers, groupContext)}

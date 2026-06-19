@@ -1,7 +1,9 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import {
+  buildFlatPanelListEntries,
   buildPanelListEntries,
+  buildTreePanelListEntries,
   panelEntryKey,
 } from '#V2/formatters/relationships/relationshipsPanelDerivation.js';
 import type { GroupLabelContext } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
@@ -10,19 +12,19 @@ import {
   RelationshipPanelRow,
   type RelationshipPanelRowHandlers,
 } from '../rows/RelationshipPanelRow.js';
-import { RelationshipsTreeNode, getTreeLine } from '../views/RelationshipsTreeBranch.js';
 
 type RelationshipsPanelEntryListProps = RelationshipPanelRowHandlers & {
   markers: RelationshipMarker[];
   groupContext: GroupLabelContext;
   bordered?: boolean;
   variant?: 'list' | 'tree';
+  flat?: boolean;
 };
 
 const panelEntryCount = (markers: RelationshipMarker[], selfSharedId: string): number =>
   buildPanelListEntries(markers, selfSharedId).length;
 
-const RelationshipsPanelEntryList = ({
+const renderPanelEntryRows = ({
   markers,
   groupContext,
   selfSharedId,
@@ -30,28 +32,35 @@ const RelationshipsPanelEntryList = ({
   onClick,
   onView,
   onDelete,
-  bordered = false,
+  flat = false,
   variant = 'list',
-}: RelationshipsPanelEntryListProps) => {
-  const entries = buildPanelListEntries(markers, selfSharedId);
+}: RelationshipsPanelEntryListProps): React.ReactNode[] => {
+  let entries;
+  if (flat) {
+    entries = buildFlatPanelListEntries(markers);
+  } else if (variant === 'tree') {
+    entries = buildTreePanelListEntries(markers, selfSharedId);
+  } else {
+    entries = buildPanelListEntries(markers, selfSharedId);
+  }
   const rowProps = { selfSharedId, activeRelationshipId, onClick, onView, onDelete };
 
-  const content = entries.map((entry, index) => {
-    const row = <RelationshipPanelRow entry={entry} groupContext={groupContext} {...rowProps} />;
+  return entries.map(entry => (
+    <RelationshipPanelRow
+      key={panelEntryKey(entry)}
+      entry={entry}
+      groupContext={groupContext}
+      {...rowProps}
+    />
+  ));
+};
 
-    if (variant === 'tree') {
-      return (
-        <RelationshipsTreeNode
-          key={panelEntryKey(entry)}
-          treeLine={getTreeLine(index, entries.length)}
-        >
-          {row}
-        </RelationshipsTreeNode>
-      );
-    }
-
-    return <React.Fragment key={panelEntryKey(entry)}>{row}</React.Fragment>;
-  });
+const RelationshipsPanelEntryList = ({
+  bordered = false,
+  variant = 'list',
+  ...props
+}: RelationshipsPanelEntryListProps) => {
+  const content = renderPanelEntryRows({ bordered, variant, ...props });
 
   if (bordered) {
     return (
@@ -59,11 +68,7 @@ const RelationshipsPanelEntryList = ({
     );
   }
 
-  if (variant === 'tree') {
-    return <div className="py-3">{content}</div>;
-  }
-
   return <>{content}</>;
 };
 
-export { panelEntryCount, RelationshipsPanelEntryList };
+export { panelEntryCount, renderPanelEntryRows, RelationshipsPanelEntryList };

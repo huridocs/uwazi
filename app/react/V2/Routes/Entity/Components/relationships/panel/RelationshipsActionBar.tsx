@@ -1,11 +1,15 @@
 import React, { useCallback, useState } from 'react';
-import { PencilIcon } from '@heroicons/react/24/outline';
+import { PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
 import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
+import {
+  useRelationshipsActions,
+  useRelationshipsSelection,
+} from '#V2/Routes/Entity/Components/context/index.js';
+import { useEntityTabNavigation } from '#V2/Routes/Entity/Tabs/hooks/useEntityTabNavigation.js';
 import { useRelationshipBulkDelete } from '../hooks/useRelationshipBulkDelete.js';
 import { useEntityRelationshipMarkers } from '../hooks/useEntityRelationshipMarkers.js';
-import { useRelationshipsSelection } from '#V2/Routes/Entity/Components/context/index.js';
 
 const RelationshipsActionBar = () => {
   const sourceMarkers = useEntityRelationshipMarkers();
@@ -15,6 +19,8 @@ const RelationshipsActionBar = () => {
     selectedRelationshipIds: selected,
     setSelectedRelationshipIds: setSelected,
   } = useRelationshipsSelection();
+  const { openCreateRelationship } = useRelationshipsActions();
+  const { focusRelationshipsPanel } = useEntityTabNavigation();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const { activeRelationshipId, clearRelationshipSelection } = useActiveRelationshipHighlight();
 
@@ -47,6 +53,11 @@ const RelationshipsActionBar = () => {
     await deleteSelected();
   }, [deleteSelected]);
 
+  const handleCreate = useCallback(() => {
+    openCreateRelationship(undefined);
+    focusRelationshipsPanel();
+  }, [focusRelationshipsPanel, openCreateRelationship]);
+
   return (
     <>
       <div className="flex w-full items-center justify-between gap-2">
@@ -61,7 +72,15 @@ const RelationshipsActionBar = () => {
             <Translate>Edit</Translate>
           </Button>
         ) : (
-          <span />
+          <Button
+            variant="secondary"
+            size="small"
+            className="inline-flex items-center gap-1.5"
+            onClick={handleCreate}
+          >
+            <PlusIcon className="h-3 w-3" />
+            <Translate>Create relationship</Translate>
+          </Button>
         )}
         {editMode && (
           <div className="flex items-center gap-2">

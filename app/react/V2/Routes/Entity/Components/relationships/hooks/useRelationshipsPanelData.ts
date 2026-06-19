@@ -6,10 +6,14 @@ import {
   filterAndSortMarkers,
 } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
 import { computeFacetCounts } from '#V2/formatters/relationships/relationshipsPanelFacets.js';
-import { useRelationshipsPanelFilterInputs } from '#V2/Routes/Entity/Components/context/index.js';
+import {
+  useEntityScopedEntity,
+  useRelationshipsPanelFilterInputs,
+} from '#V2/Routes/Entity/Components/context/index.js';
 import { useEntityRelationshipMarkers } from './useEntityRelationshipMarkers.js';
 
 const useRelationshipsPanelData = () => {
+  const entity = useEntityScopedEntity();
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const filters = useRelationshipsPanelFilterInputs();
   const sourceMarkers = useEntityRelationshipMarkers();
@@ -37,7 +41,7 @@ const useRelationshipsPanelData = () => {
       sourceMarkers,
     ]
   );
-  const stats = useMemo(() => computeStats(markers), [markers]);
+  const stats = useMemo(() => computeStats(markers, entity.sharedId), [entity.sharedId, markers]);
   const facetCounts = useMemo(() => computeFacetCounts(sourceMarkers), [sourceMarkers]);
 
   return {

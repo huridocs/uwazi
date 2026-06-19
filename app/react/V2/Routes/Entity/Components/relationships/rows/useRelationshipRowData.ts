@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useAtomValue } from 'jotai';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
-import { directionOf } from '#V2/formatters/relationships/types.js';
+import { directionOf, counterpartAnchorOf } from '#V2/formatters/relationships/types.js';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import {
   useDocumentRelationshipNav,
@@ -21,7 +21,7 @@ const useRelationshipRowData = (
   const templates = useAtomValue(templatesAtom);
   const { relationshipsEditMode: editMode } = useRelationshipsSelectionState();
   const { hideTargetPill, hideTemplateName, hideRelationType } = useRelationshipRowVisibility();
-  const referenceText = marker.anchor?.text?.trim() ?? '';
+  const referenceText = counterpartAnchorOf(marker.view, selfSharedId)?.text?.trim() ?? '';
   const referencePage = marker.anchor?.selections?.[0]?.page;
   const templateName =
     templates.find(template => template._id === marker.target.templateId)?.name ?? '';
