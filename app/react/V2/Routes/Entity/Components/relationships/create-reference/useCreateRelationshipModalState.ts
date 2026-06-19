@@ -81,14 +81,6 @@ function useCreateRelationshipModalState({
     setHasSearched(true);
   }, []);
 
-  const filterSearchResults = useCallback(
-    (result: Entity[] | undefined) =>
-      isTextAnchored && result
-        ? result.filter(entity => getEntityPdfFiles(entity).length > 0)
-        : (result ?? []),
-    [isTextAnchored]
-  );
-
   const reset = useCallback(() => {
     setStep('entity');
     clearSearchState();
@@ -107,14 +99,14 @@ function useCreateRelationshipModalState({
       setSearchActive();
       try {
         const [result] = await searchFunction(searchString);
-        setSearchResults(filterSearchResults(result));
+        setSearchResults(result ?? []);
       } catch {
         setSearchResults([]);
       } finally {
         setIsSearching(false);
       }
     },
-    [filterSearchResults, searchFunction, setSearchActive, setSearchIdle]
+    [searchFunction, setSearchActive, setSearchIdle]
   );
 
   useEffect(() => {

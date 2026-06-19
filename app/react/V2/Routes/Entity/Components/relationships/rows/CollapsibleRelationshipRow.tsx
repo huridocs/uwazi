@@ -137,7 +137,6 @@ const compactHeader = (ctx: HeaderContext) => {
 };
 
 const detailHeader = (ctx: HeaderContext) => {
-  if (ctx.hideTargetPill && !ctx.isHub) return null;
   if (ctx.hideTargetPill) return fallbackLabel(ctx);
   return resolveHeader(ctx);
 };

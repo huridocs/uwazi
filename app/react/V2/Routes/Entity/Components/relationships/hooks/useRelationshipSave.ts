@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useRevalidator } from 'react-router';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
 import type { FileType } from '#V2/api/entities/types.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
 import { saveTextReference } from '#V2/api/relationships/index.js';
 import {
   useEntityScopedEntity,
@@ -28,13 +29,13 @@ const useRelationshipSave = (mainDocument?: FileType) => {
   const document = mainDocument ?? entity?.documents?.[0];
 
   const handleSaveReference = useCallback(
-    async (data: SaveReferenceData) => {
-      if (!entity || !document?._id) return;
+    async (data: SaveReferenceData): Promise<boolean> => {
+      if (!entity || !document?._id) return false;
 
       const sourceSelection =
         data.selection ?? createWholeDocumentSelection(data.sourcePage ?? '1');
 
-      await saveTextReference({
+      const result = await saveTextReference({
         sourceEntitySharedId: entity.sharedId,
         sourceFileId: String(document._id),
         sourceSelection,
@@ -44,9 +45,12 @@ const useRelationshipSave = (mainDocument?: FileType) => {
         ...(data.targetSelection && { targetSelection: data.targetSelection }),
       });
 
+      if (result instanceof FetchResponseError) return false;
+
       clearFilters();
       closeCreateRelationship();
       await refreshEntityRelationships(entity.sharedId, revalidator);
+      return true;
     },
     [clearFilters, closeCreateRelationship, document, entity, revalidator]
   );

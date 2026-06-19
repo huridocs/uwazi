@@ -113,7 +113,7 @@ const CreateRelationshipModal = ({ mainDocument }: CreateRelationshipModalProps)
   const handleCreate = useCallback(async () => {
     if (!selectedEntity?.sharedId || !selectedRelationshipType || !entity) return;
     setIsSaving(true);
-    await handleSaveReference({
+    const saved = await handleSaveReference({
       selection: createReferenceSelection,
       targetEntityId: selectedEntity.sharedId,
       relationshipType: selectedRelationshipType,
@@ -122,13 +122,21 @@ const CreateRelationshipModal = ({ mainDocument }: CreateRelationshipModalProps)
       ...(targetSelection && { targetSelection }),
     });
     setIsSaving(false);
+    if (!saved) {
+      notify(
+        t('System', 'Error', null, false),
+        'error',
+        t('System', 'An error occurred', null, false)
+      );
+      return;
+    }
     notify(t('System', 'Relationship created', null, false), 'success', selectedEntity.title);
-    handleClose();
+    reset();
   }, [
     createReferenceSelection,
     entity,
-    handleClose,
     handleSaveReference,
+    reset,
     searchParams,
     selectedEntity,
     selectedFile,

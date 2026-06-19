@@ -21,7 +21,10 @@ const useRelationshipRowData = (
   const templates = useAtomValue(templatesAtom);
   const { relationshipsEditMode: editMode } = useRelationshipsSelectionState();
   const { hideTargetPill, hideTemplateName, hideRelationType } = useRelationshipRowVisibility();
-  const referenceText = counterpartAnchorOf(marker.view, selfSharedId)?.text?.trim() ?? '';
+  const referenceText =
+    counterpartAnchorOf(marker.view, selfSharedId)?.text?.trim() ??
+    marker.anchor?.text?.trim() ??
+    '';
   const referencePage = marker.anchor?.selections?.[0]?.page;
   const templateName =
     templates.find(template => template._id === marker.target.templateId)?.name ?? '';

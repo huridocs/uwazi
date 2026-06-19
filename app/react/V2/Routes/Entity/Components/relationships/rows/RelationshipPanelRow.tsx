@@ -74,7 +74,7 @@ const RelationshipPanelRow = ({ entry, groupContext, ...handlers }: Relationship
     return (
       <CollapsibleRelationshipRow
         checkboxId={aggregate.markerIds[0] ?? ''}
-        evidenceCount={anchoredEvidenceCount(markers) || aggregate.markerIds.length}
+        evidenceCount={anchoredEvidenceCount(markers)}
         glyphDirection={glyphDirection}
         relationshipTypeName={hideRelationType ? undefined : relationshipTypeName}
         targetTemplateId={aggregate.targetTemplateId}
@@ -103,7 +103,7 @@ const RelationshipPanelRow = ({ entry, groupContext, ...handlers }: Relationship
   return (
     <CollapsibleRelationshipRow
       checkboxId={hub.markerIds[0] ?? ''}
-      evidenceCount={anchoredEvidenceCount(markers) || hub.markerIds.length}
+      evidenceCount={anchoredEvidenceCount(markers)}
       headerWrap
       isHub
       memberCount={hub.members.length}
