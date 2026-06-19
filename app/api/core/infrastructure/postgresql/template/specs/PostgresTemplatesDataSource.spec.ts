@@ -173,7 +173,7 @@ describe('PostgresTemplatesDataSource', () => {
     });
 
     // Fire 5 parallel increments
-    const promises = Array.from({ length: 5 }, () =>
+    const promises = Array.from({ length: 5 }, async () =>
       ds.incrementProcessingTracking(template._id.toHexString())
     );
     const results = await Promise.all(promises);
@@ -203,7 +203,7 @@ describe('PostgresTemplatesDataSource', () => {
     });
 
     // Fire 5 parallel calls adding 3 jobs each
-    const promises = Array.from({ length: 5 }, () =>
+    const promises = Array.from({ length: 5 }, async () =>
       ds.addJobsToProcessingCount(template._id.toHexString(), 3)
     );
     await Promise.all(promises);

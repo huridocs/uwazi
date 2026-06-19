@@ -64,12 +64,12 @@ export class PostgresTable {
    *     [this.table.tableName, id, this.table.tenantId]
    *   );
    */
-  raw<TResult = unknown>(sql: string, bindings?: unknown): Promise<Knex.Raw<TResult>> {
+  async raw<TResult = unknown>(sql: string, bindings?: unknown): Promise<Knex.Raw<TResult>> {
     const hasTenantFilter = /["']?tenant_id["']?\s*=\s*\?/i.test(sql);
     if (!hasTenantFilter) {
       throw new Error(
-        `PostgresTable.raw() call is missing a tenant_id filter. ` +
-          `SQL must include "tenant_id = ?" to prevent cross-tenant data leakage.`
+        'PostgresTable.raw() call is missing a tenant_id filter. ' +
+          'SQL must include "tenant_id = ?" to prevent cross-tenant data leakage.'
       );
     }
     return this.knex.raw(sql, bindings as any) as Promise<Knex.Raw<TResult>>;

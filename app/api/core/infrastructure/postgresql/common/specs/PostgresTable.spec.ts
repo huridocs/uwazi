@@ -565,7 +565,7 @@ describe('PostgresTable', () => {
       const table = createTable('tenant-a');
       await table.insert({ _id: 'raw-1', name: 'before', values: jsonVal([]) });
 
-      await table.raw(`UPDATE "thesauri" SET name = ? WHERE "_id" = ? AND "tenant_id" = ?`, [
+      await table.raw('UPDATE "thesauri" SET name = ? WHERE "_id" = ? AND "tenant_id" = ?', [
         'after',
         'raw-1',
         'tenant-a',
@@ -578,9 +578,9 @@ describe('PostgresTable', () => {
     it('should throw when tenant_id filter is missing', async () => {
       const table = createTable('tenant-a');
 
-      expect(() =>
-        table.raw(`UPDATE "thesauri" SET name = 'x' WHERE "_id" = ?`, ['raw-2'])
-      ).toThrow('missing a tenant_id filter');
+      await expect(async () =>
+        table.raw('UPDATE "thesauri" SET name = "x" WHERE "_id" = ?', ['raw-2'])
+      ).rejects.toThrow('missing a tenant_id filter');
     });
 
     it('should enforce tenant_id — cannot affect rows from other tenants via raw', async () => {
@@ -591,7 +591,7 @@ describe('PostgresTable', () => {
       await tableB.insert({ _id: 'protected-raw', name: 'other', values: jsonVal([]) });
 
       await tableB.raw(
-        `UPDATE "thesauri" SET name = 'hacked' WHERE "_id" = ? AND "tenant_id" = ?`,
+        'UPDATE "thesauri" SET name = \'hacked\' WHERE "_id" = ? AND "tenant_id" = ?',
         ['protected-raw', 'tenant-b']
       );
 
