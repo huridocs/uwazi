@@ -11,7 +11,8 @@ import {
   TemplateUpdatedEvent,
 } from '../../../domain/template/events/TemplateUpdatedEvent.js';
 import templates from '../templates.js';
-import fixtures, {
+import {
+  fixtures,
   factory,
   swapTemplate,
   templateToBeEditedId,
@@ -48,7 +49,7 @@ describe('templates', () => {
       await testingEnvironment.runWithContext(async () => {
         await templates.save(toSave, 'en');
       });
-      const [edited] = await templates.get(templateToBeEditedId);
+      const [edited] = await templates.get([templateToBeEditedId.toString()]);
       expect(edited.name).toBe('changed name');
     });
 
@@ -156,7 +157,9 @@ describe('templates', () => {
 
     it('should update translations when name of the template changes', async () => {
       const { _id, ...newTemplate } = factory.template('new template', []);
-      const testTemplate = await updateTemplate(newTemplate);
+      const testTemplate = await testingEnvironment.runWithContext(async () =>
+        updateTemplate(newTemplate)
+      );
 
       testTemplate.name = 'changed name';
       await testingEnvironment.runWithContext(async () => updateTemplate(testTemplate));
@@ -195,7 +198,9 @@ describe('templates', () => {
         { name: 'label_1', label: 'label 1', type: 'text' },
         { name: 'label_2', label: 'label 2', type: 'text' },
       ]);
-      const template1 = await updateTemplate(newTemplate);
+      const template1 = await testingEnvironment.runWithContext(async () =>
+        updateTemplate(newTemplate)
+      );
       let dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
         .getAll()
         .all();

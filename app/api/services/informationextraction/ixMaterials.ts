@@ -1,9 +1,10 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 /* eslint-disable max-classes-per-file */
-/* eslint-disable camelcase */
+
+import { ObjectId } from 'mongodb';
 import {
-  ExtractedMetadataSchema,
+  PropertySelectionSchema,
   LanguageISO6391,
   ObjectIdSchema,
   PropertyTypeSchema,
@@ -15,7 +16,7 @@ import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationMod
 import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 import ixmodels from '#api/services/informationextraction/ixmodels.js';
 import { FileType } from '#shared/types/fileType.js';
-import templatesModel from '#api/core/v1_layer/templates/templates.js';
+import templatesService from '#api/core/v1_layer/templates/templates.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { EnforcedWithId, UwaziFilterQuery } from '#api/odm/index.js';
 import { Entity } from '#api/entities.v2/model/Entity.js';
@@ -23,7 +24,6 @@ import { IXModelType } from '#shared/types/IXModelType.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { PipelineBuilder } from '#api/suggestions/queryBuilder.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
-import { ObjectId } from 'mongodb';
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import { Extractors } from './ixextractors.js';
 import { IXServices } from './IXServices.js';
@@ -65,7 +65,7 @@ interface FileWithAggregation {
   segmentation: SegmentationType;
   entity: string;
   language: string;
-  extractedMetadata: ExtractedMetadataSchema[];
+  propertySelections: PropertySelectionSchema[];
   propertyType: PropertyTypeSchema;
   propertyValue?: PropertyValue;
   useForTraining?: boolean;
@@ -81,7 +81,7 @@ type FileEnforcedNotUndefined = {
 };
 
 const selectProperties: Set<string> = new Set([propertyTypes.select, propertyTypes.multiselect]);
-const propertiesWithoutExtractedMetadata: Set<string> = new Set([
+const propertiesWithoutPropertySelections: Set<string> = new Set([
   ...Array.from(selectProperties),
   propertyTypes.relationship,
 ]);
@@ -92,8 +92,8 @@ const multiValuedProperties: Set<string> = new Set([
 
 const propertyTypeIsSelectOrMultiSelect = (type: string) => selectProperties.has(type);
 
-const propertyTypeIsWithoutExtractedMetadata = (type: string) =>
-  propertiesWithoutExtractedMetadata.has(type);
+const propertyTypeIsWithoutPropertySelections = (type: string) =>
+  propertiesWithoutPropertySelections.has(type);
 
 const propertyTypeIsMultiValued = (type: string) => multiValuedProperties.has(type);
 
@@ -113,7 +113,7 @@ async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefi
   return files.map(file => ({
     _id: file._id,
     language: file.language,
-    extractedMetadata: file.extractedMetadata ? file.extractedMetadata : [],
+    propertySelections: file.propertySelections ? file.propertySelections : [],
     entity: file.entity,
     segmentation: segmentationDictionary[file.filename ? file.filename : 'no value'],
     propertyType: file.propertyType,
@@ -128,7 +128,7 @@ async function getSegmentedFilesIds() {
 }
 
 async function getPropertyType(templates: ObjectIdSchema[], property: string) {
-  const template = await templatesModel.getById(templates[0]);
+  const template = await templatesService.getById(templates[0]);
 
   let type: PropertyTypeSchema | undefined = 'text';
   if (property !== 'title') {
@@ -330,9 +330,9 @@ async function getFilesForTraining(extractor: IXExtractorType) {
         { $match: { status: 'ready' } },
         {
           $project: {
-            extractedMetadata: {
+            propertySelections: {
               $filter: {
-                input: '$extractedMetadata',
+                input: '$propertySelections',
                 as: 'item',
                 cond: { $eq: ['$$item.name', extractor.property] },
               },
@@ -355,7 +355,7 @@ async function getFilesForTraining(extractor: IXExtractorType) {
       as: 'segmentation',
       pipeline: [
         { $match: { status: 'ready' } },
-        { $project: { extractedMetadata: 1, filename: 1, xmlname: 1, segmentation: 1 } },
+        { $project: { propertySelections: 1, filename: 1, xmlname: 1, segmentation: 1 } },
       ],
     },
   });
@@ -370,7 +370,7 @@ async function getFilesForTraining(extractor: IXExtractorType) {
     callback: (item: {
       _id: ObjectId;
       language: LanguageISO6391;
-      extractedMetadata: any;
+      propertySelections: any;
       entity: string;
       segmentation: any;
       propertyValue: any;
@@ -381,7 +381,7 @@ async function getFilesForTraining(extractor: IXExtractorType) {
       async ({ fileId, language, file, entityId, entityLanguage, segmentation, currentValue }) => {
         const propertyValue = deriveTrainingPropertyValue(targetProperty.type, {
           currentValue,
-          selectionText: file?.extractedMetadata?.[0]?.selection?.text,
+          selectionText: file?.propertySelections?.[0]?.selection?.text,
           entityValues: entityLanguage.metadata?.map(({ value, label }: any) => ({
             value,
             label,
@@ -390,7 +390,7 @@ async function getFilesForTraining(extractor: IXExtractorType) {
         const parsed = {
           _id: fileId,
           language,
-          extractedMetadata: file?.extractedMetadata || [],
+          propertySelections: file?.propertySelections || [],
           entity: entityId,
           segmentation,
           propertyValue,
@@ -646,7 +646,7 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: numbe
 
   const filesToProcess = await filesModel.get(
     filesQuery,
-    'extractedMetadata entity language filename'
+    'propertySelections entity language filename'
   );
 
   const filesWithAggregation = await getFilesWithAggregations(
@@ -668,7 +668,7 @@ export {
   getSegmentedFilesIds,
   getPropertyType,
   propertyTypeIsSelectOrMultiSelect,
-  propertyTypeIsWithoutExtractedMetadata,
+  propertyTypeIsWithoutPropertySelections,
   propertyTypeIsMultiValued,
   NoLabeledEntities,
   NoSegmentedFiles,

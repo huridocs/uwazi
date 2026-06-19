@@ -23,8 +23,6 @@ import * as idGenerator from '#shared/IDGenerator.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import templates from '../templates.js';
-import { MongoSlotsBootstrapper } from '#api/core/infrastructure/elasticSearch/entities/MongoSlotsBootstrapper.js';
-import { MongoSlotsDAOFactory } from '#api/core/infrastructure/factories/MongoSlotsDAOFactory.js';
 
 const f = getFixturesFactory();
 
@@ -101,22 +99,17 @@ const elasticIndex = 'templates_denorm_flow';
 describe('Templates Update', () => {
   async function setUpFixtures(_fixtures: DBFixture) {
     await testingEnvironment.setUp(_fixtures, elasticIndex);
-    await Promise.all(
-      (_fixtures.entities || []).map(async e => entities.save(e, { language: 'en', user: {} }))
-    );
+    await testingEnvironment.runWithContext(async () => {
+      await Promise.all(
+        (_fixtures.entities || []).map(async e => entities.save(e, { language: 'en', user: {} }))
+      );
+    });
 
     testingTenants.mockCurrentTenant({
       name: testingDB.dbName,
       dbName: testingDB.dbName,
       indexName: elasticIndex,
     });
-
-    if (testingTenants.current().featureFlags?.v2ElasticSearch) {
-      await new MongoSlotsBootstrapper({
-        database: getConnection(),
-        slotsDAO: MongoSlotsDAOFactory.default(),
-      }).reset();
-    }
   }
   const fixtures: DBFixture = {
     settings: [

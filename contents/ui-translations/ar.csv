@@ -4,10 +4,12 @@ Key,Arabic
 2FA,2FA
 2FA Enabled,2FA Enabled
 A default template cannot be deleted.,A default template cannot be deleted.
+A friendly hand for serious work — I'll act in the context shown above.,A friendly hand for serious work — I'll act in the context shown above.
 A generated ID will be the default title.,سيكون معرف تم إنشاؤه العنوان.
 A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,البريد الإلكتروني مطلوب
+A → Z,A → Z
 Accept,قبول
 Accepted suggestion on entity,Accepted suggestion on entity
 Accepting suggestions,Accepting suggestions
@@ -28,6 +30,7 @@ Activity Log,سجل النشاطات
 Add,ضف
 Add / remove favorite,إضافة/ إزالة المفضلة
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
+Add as,Add as
 Add date,إضافة تاريخ
 Add entities / documents,إضافة كيانات (أو إدخالات)/ مستندات
 Add entity type,Add entity type
@@ -55,6 +58,7 @@ Add to all languages,إضافة إلى جميع اللغات
 Add to table of contents,أضف إلى جدول المحتويات
 Add to ToC,Add to ToC
 Add to training set,Add to training set
+Add translation,Add translation
 Add user,إضافة مستخدم
 add value,add value
 Add/delete users and assign roles,إضافة / حذف المستخدمين وتعيين الأدوار
@@ -90,16 +94,20 @@ An error has occurred while uninstalling a language:,An error has occurred while
 An error occurred,An error occurred
 Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
+AND OR NOT,AND OR NOT
 Any entity,Any entity
+Appearance,Appearance
 Apply,Apply
 Are you sure you want to continue?,Are you sure you want to continue?
+Are you sure you want to delete,Are you sure you want to delete
 Are you sure you want to delete this attachment?,Are you sure you want to delete this attachment?
 Are you sure you want to delete this connection?,Are you sure you want to delete this connection?
 Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
 Are you sure you want to delete this file?,Are you sure you want to delete this file?
 Are you sure you want to delete this item?,Are you sure you want to delete this item?
-Are you sure you want to delete this reference? This action cannot be undone.,Are you sure you want to delete this reference? This action cannot be undone.
+Are you sure you want to delete this relationship? This action cannot be undone.,Are you sure you want to delete this relationship? This action cannot be undone.
 Are you sure?,Are you sure?
+Ask Bert,Ask Bert
 Attachment,Attachment
 Attachment deleted,Attachment deleted
 Attachment renamed,Attachment renamed
@@ -114,10 +122,14 @@ Automatically generated,منشأ تلقائياً
 Available default translation,Available default translation
 Back,عودة
 Back to,العودة إلى
+Back to details,Back to details
 Back to search,العودة إلى البحث
 Bad Request,Bad Request
 Basic,Basic
+Bert,Bert
+Bidirectional,Bidirectional
 Body,يجب الاطلاع على السياق لتحديد الترجمة الأنسب
+boolean,boolean
 Browse files to upload,تصفح الملفات المراد تحميلها
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
 Can edit,إمكانية التحرير
@@ -152,9 +164,11 @@ Chrome header,Chrome header
 Clear,Clear
 Clear all,Clear all
 Clear All,Clear All
+Clear all filters,Clear all filters
 Clear coordinates,مسح الإحداثيات
 Clear Filters,مسح عوامل التصفية
 Clear PDF selection,Clear PDF selection
+Clear search,Clear search
 Click,Click
 Click here,انقر هنا
 Click to fill,انقر للتعبئة
@@ -183,6 +197,7 @@ Confirm deletion of,Confirm deletion of
 Confirm deletion of entity,Confirm deletion of entity
 Confirm deletion of file,Confirm deletion of file
 Confirm new password,تأكيد كلمة المرور الجديدة
+Confirm your password,Confirm your password
 Connect to a paragraph,الاتصال بفقرة
 Connect to an entity,Connect to an entity
 Connect to document,Connect to document
@@ -237,6 +252,7 @@ CSV import cancelled,CSV import cancelled
 CSV import completed,CSV import completed
 CSV import failed,CSV import failed
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
+Ctrl K,Ctrl K
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,خطأ في المكون المخصص
 Custom CSS,CSS تنسيق
@@ -268,7 +284,8 @@ DELETE,حذف
 Delete entities and documents,Delete entities and documents
 Delete file,مسح الملف
 Delete language,حذف اللغة
-Delete reference,Delete reference
+Delete relationship,Delete relationship
+Delete relationships,Delete relationships
 Delete?,Delete?
 Deleted attachment,Deleted attachment
 Deleted custom file,Deleted custom file
@@ -285,6 +302,8 @@ Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,وصف
+Deselect all,Deselect all
+Direction,Direction
 Disable,Disable
 Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
@@ -347,6 +366,7 @@ Entities,الكيانات
 entities,الكيانات
 Entities across all languages,Entities across all languages
 Entities created,Entities created
+Entities updated,Entities updated
 Entity,كيان
 Entity creation stage completed.,Entity creation stage completed.
 Entity deleted,Entity deleted
@@ -361,6 +381,7 @@ Error loading your image,Error loading your image
 Error saving template.,Error saving template.
 Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
+exact phrase,exact phrase
 Expand all,Expand all
 Expand All,Expand All
 Export CSV,تصدير ملف القيم المفصولة بفواصل
@@ -387,8 +408,10 @@ Favicon no images hint,Favicon no images hint
 FEATURED,FEATURED
 File,ملف
 File deleted,File deleted
+File details,File details
 File extraction completed successfully.,File extraction completed successfully.
 File name,File name
+File preview unavailable,File preview unavailable
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -418,6 +441,7 @@ Forms and email configuration,تكوين النماذج والبريد الإل�
 From,From
 From all suggestions,From all suggestions
 From previous step,From previous step
+From selection,From selection
 Full mode,Full mode
 Full width,Full width
 General,عام
@@ -431,6 +455,8 @@ Google Analytics,Google Analytics
 Google Analytics ID,معرف Google Analytics
 Google Maps,خرائط جوجل
 Group,Group
+Group by:,Group by:
+group expressions,group expressions
 Group Options,Group Options
 Group saved,Group saved
 Group updated,Group updated
@@ -444,6 +470,7 @@ Header bar hover background,Header bar hover background
 Header bar text,Header bar text
 help,مساعدة
 here,here
+"Hi, I'm Bert.","Hi, I'm Bert."
 Hide,Hide
 Hide actions,Hide actions
 Hide label,إخفاء التسمية
@@ -451,6 +478,7 @@ Hide restricted relationships from public,Hide restricted relationships from pub
 Hide toolbar,Hide toolbar
 HTML,HTML
 https://yourdomain,https://yourdomain
+hub,hub
 hubs,محاور
 Hybrid,هجين
 Icon,أيقونة
@@ -480,6 +508,7 @@ Importing data in progress,جاري استيراد البيانات
 in,في
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,جاري التعرف الضوئي علي الحروف
+Incoming,Incoming
 Indexing entities may take a few minutes,قد تستغرق فهرسة الكيانات (الإدخالات) بضع دقائق
 Info,معلومات
 Information extraction training,Information extraction training
@@ -578,6 +607,7 @@ marked for training,marked for training
 Marked for training + all labeled entries,Marked for training + all labeled entries
 Marked for training only,Marked for training only
 Match,Match
+match verbatim,match verbatim
 Matching,Matching
 matching,matching
 Matomo,Matomo
@@ -594,6 +624,7 @@ mismatched passwords,Passwords don't match
 mismatching,mismatching
 Mixed access,وصول مختلط
 ML TOC,ML TOC
+Modified,Modified
 Month,شهر
 Months,Months
 more options.,مزيد من الخيارات
@@ -612,6 +643,7 @@ Navigate back,Navigate back
 Navigation menu tool tip part 1,"If it is an internal URL within this website, be sure to delete the first part"
 Navigation menu tool tip part 2,leaving only a relative URL starting with a slash character. Ie. /some_url.
 New,New
+New conversation,New conversation
 New entity,كيان جديد
 New group,New group
 New language added,أضيفت لغة جديدة
@@ -641,12 +673,15 @@ No label,No label
 No notifications or active tasks.,No notifications or active tasks.
 No options,No options
 No options found,لم يتم العثور على خيارات
+No page,No page
 No property,هذه الخاصية غير متوفرة
 No References,لا مرجع
 No References description,المراجع هي اجزاء من الوثيقة التي لها علاقة بوثائق وكيانات أخرى
 No relationship types available,No relationship types available
 No Relationships,لا توجد علاقات
 No Relationships description,العلاقات هي الروابط بين الكيانات
+No relationships found,No relationships found
+No relationships to graph,No relationships to graph
 No releases yet,No releases yet
 No results found,No results found
 No table of contents,لا يوجد جدول المحتويات
@@ -663,6 +698,7 @@ No Value,لا قيمة
 Non processed,Non processed
 Non-labeled,Non-labeled
 Non-latin characters support,Non-latin characters support
+None,None
 Normal view,معاينة عادية
 Not already been use as source template in another extractor,Not already been use as source template in another extractor
 Not already been use as target template,Not already been use as target template
@@ -682,6 +718,7 @@ OCR PDF,تشغيل خاصية الOCR على الPDF
 of,من
 Ok,موافق
 OK,موافق
+one character,one character
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection."
@@ -691,6 +728,7 @@ OK,موافق
 "Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Open,Open
 Open group,Open group
+Open link,Open link
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,افتح تطبيق المصادقة الثنائية في جهازك
 Options,Options
@@ -701,6 +739,8 @@ Other,آخر
 other,آخر
 Other users will be affected by this action!,Other users will be affected by this action!
 Others,Others
+Outgoing,Outgoing
+p.,p.
 Page,صفحة
 Page not found,لم يتم العثور على الصفحة
 Page published successfully.,Page published successfully.
@@ -712,6 +752,7 @@ Paragraph Extractor added,Paragraph Extractor added
 Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
 Paragraphs deleted,Paragraphs deleted
+parties,parties
 Password,كلمه المرور
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -739,8 +780,10 @@ Preserve Extension,Preserve Extension
 Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
 Press enter to add,اضغط على مفتاح الإدخال لإضافة
 Preview,معاينة
+Preview entity,Preview entity
 Previous,سابق
 Primary button,Primary button
+Primary document,Primary document
 Primary Documents,المستندات الأولية
 Priority sorting,تصنيف حسب الأولوية
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
@@ -797,6 +840,7 @@ Receiving email description,"If you have a contact form, this is the email addre
 Recommended,Recommended
 Reference,Reference
 References,مراجع
+references,مراجع
 Reject,رفض
 Related entities created,Related entities created
 Relation type,Relation type
@@ -810,6 +854,7 @@ Relationship types,أنواع العلاقات
 relationships,العلاقات
 Relationships,العلاقات
 Relationships saved,Relationships saved
+relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,تم حفظ نوع العلاقة
 Release message,Release message
 remaining files,remaining files
@@ -833,6 +878,7 @@ Reset default translation,Reset default translation
 Reset language,Reset language
 Reset Password,إعادة تعيين كلمة المرور
 Reset passwords,Reset passwords
+Resize panels,Resize panels
 Restore,Restore
 Restore previous version,Restore previous version
 Restricted,مُقَيَّد
@@ -844,6 +890,7 @@ Reviewed,تمت مراجعته
 Role,دور
 Route,مسار
 Row,Row
+Row density,Row density
 Rows failed,Rows failed
 Rows processed,Rows processed
 Sample,عينة
@@ -858,12 +905,15 @@ Saving...,Saving...
 Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,ابحث
+"Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
 Search item,البحث عن بند
 Search related entities or documents,البحث عن الكيانات أو المستندات ذات الصلة
+Search relationships,Search relationships
 Search relevance,ملائمة البحث
 Search text,بحث النص
 Search text description,اكتب نص في خانة البحث لتظهر بعض النتائج
 Search Tips,نصائح البحث
+Search tips,Search tips
 Search Tips: boolean,نصائح البحث: Boolean
 Search Tips: exact term,نصائح البحث: المصطلح الدقيق
 Search Tips: one char wildcard,نصائح البحث: واحد char wildcard
@@ -875,11 +925,13 @@ Secret keys,Secret keys
 Security,Security
 Select,Select
 Select & Search,Select & Search
+Select a file,Select a file
 Select all,اختار الكل
 Select an existing image,Select an existing image
 Select favicon image,Select favicon image
 Select files on your device,اختر الملفات في جهازك
 Select from computer,Select from computer
+Select relationship,Select relationship
 Select relationship type,اختر نوع العلاقة
 Select site logo image,Select site logo image
 Select target paragraph,اختر الفقرة المستهدفة
@@ -930,18 +982,24 @@ Site logo description,"The logo appears in the top bar next to your collection n
 Site logo no images hint,"No image files from Custom Uploads yet. Add PNG, SVG, or JPEG images there first."
 Size,حجم
 Skip to main content,Skip to main content
+Some tasks may take a while. Bert will reply when it's done.,Some tasks may take a while. Bert will reply when it's done.
 Something went wrong,حدث خطأ ما
 Sort,تصنيف
 Sort ascending,Sort ascending
 Sort by,ترتيب حسب
 Sort descending,Sort descending
+Sort order,Sort order
+Sort:,Sort:
 sorted by,مرتبة حسب
 Source,Source
+Source entity,Source entity
+Source page,Source page
 Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
 Source's role in the relationship Source-Target.,Source's role in the relationship Source-Target.
 Stage,Stage
+stat*,stat*
 State,State
 Statistics,Statistics
 Stats & Filters,Stats & Filters
@@ -961,6 +1019,7 @@ Suggestions,اقتراحات
 suggestions,suggestions
 Suggestions sent,Suggestions sent
 Suggestions updated,Suggestions updated
+Supporting file,Supporting file
 Supporting files,ملفات الدعم
 Synced template,Synced template
 Synced Template,Synced Template
@@ -971,6 +1030,8 @@ Table of Contents,جدول المحتويات
 Table of contents,جدول المحتويات
 Table of contents saved successfully,Table of contents saved successfully
 Table view,معاينة الجدول
+Target entity,Target entity
+Target entity type,Target entity type
 Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
@@ -1009,6 +1070,7 @@ Theme instance file invalid,Theme instance file invalid
 Theme logotype,Theme logotype
 Theme presets,Theme presets
 Theme preview,Theme preview
+Then by:,Then by:
 There are no pages enabled for entity view,لا توجد صفحات ممكنة لمعاينة الكيان (الإدخال)
 There are no untranslated terms,There are no untranslated terms
 Thesauri,قائمة المفردات
@@ -1105,9 +1167,12 @@ Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
 Uninstalling language,Uninstalling language
+Unknown entity,Unknown entity
+Unknown template,Unknown template
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,لغة الOCR غير مدعومة
+Untitled,Untitled
 Untranslated Terms,Untranslated Terms
 Update,تحديث
 UPDATE,تحديث
@@ -1174,11 +1239,13 @@ We can't find the page you're looking for.,We can't find the page you're looking
 Welcome to Uwazi,مرحباً بكم في أوازي
 "Well, this is awkward...",إنه لأمر محرج...
 Whitelisted templates,Whitelisted templates
+wildcard,wildcard
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
 will be updated with the same value.,سيحدث بالقيمة نفسها
 Will show the entire media inside the container.,Will show the entire media inside the container.
 with,مع
 With great power comes great responsibility!,كلما ازدادت القوة، ازدادت معها المسؤولية!
+wom?n,wom?n
 x less,X أقل
 x more,X أكثر
 Year,سنة
@@ -1196,6 +1263,7 @@ You should activate this feature for enhanced account security,يجب عليك �
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
 You won't be able to save an entity if this property is empty.,You won't be able to save an entity if this property is empty.
 Your account's security is enhanced with two-factor authentication.,Your account's security is enhanced with two-factor authentication.
+Z → A,Z → A
 Zoom in,تكبير
 Zoom in library view,تكبير في المعاينة المكتبية
 Zoom out,تصغير

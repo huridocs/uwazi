@@ -96,7 +96,6 @@ const gracefullShutdown = () => {
       (async () => {
         try {
           await elasticClient.close();
-          await ElasticSearchClientFactory.getInstance().close();
           process.stdout.write('Disconnected from Elasticsearch\r\n');
         } catch (e) {
           // ignore

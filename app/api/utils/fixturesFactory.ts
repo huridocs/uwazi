@@ -13,7 +13,7 @@ import {
   MetadataSchema,
   PropertyValueSchema,
   MetadataObjectSchema,
-  ExtractedMetadataSchema,
+  PropertySelectionSchema,
 } from '#shared/types/commonTypes.js';
 import { UpdateLog } from '#api/updatelogs/index.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
@@ -179,11 +179,11 @@ function getFixturesFactory() {
       });
     },
 
-    fileExtractedMetadata: (
+    filePropertySelection: (
       propertyName: string,
       text: string,
       rectangles = [{ top: 0, left: 0, width: 0, height: 0, page: '1' }]
-    ): ExtractedMetadataSchema => ({
+    ): PropertySelectionSchema => ({
       name: propertyName,
       selection: {
         text,
@@ -253,7 +253,7 @@ function getFixturesFactory() {
       filename?: string | undefined,
       language: string = 'en',
       originalname: string | undefined = undefined,
-      extractedMetadata: ExtractedMetadataSchema[] = [],
+      propertySelections: PropertySelectionSchema[] = [],
       status: FileType['status'] = undefined
     ): WithId<FileType> => {
       const file: WithId<FileType> = {
@@ -263,7 +263,8 @@ function getFixturesFactory() {
         type,
         filename: filename || id,
         originalname: originalname || filename,
-        extractedMetadata,
+        propertySelections,
+        mimetype: type === 'document' ? 'application/pdf' : undefined,
       };
 
       if (status) {

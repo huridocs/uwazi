@@ -1,10 +1,11 @@
+import type { Application } from 'express';
+import qs from 'qs';
+import request from 'supertest';
+
 import { searchRoutes } from '#api/search.v2/routes.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
-import type { Application } from 'express';
-import qs from 'qs';
-import request from 'supertest';
 
 import entities from '#api/entities/index.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
@@ -15,11 +16,13 @@ describe('searchSnippets', () => {
   const app: Application = setUpApp(searchRoutes);
 
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixturesSnippetsSearch, 'entities.v2.snippets_search');
-    await entities.save(await entities.getById({ _id: entity2enId.toString() }), {
-      user: {},
-      language: 'en',
-    });
+    await testingEnvironment.setUp(fixturesSnippetsSearch, true);
+    await testingEnvironment.runWithContext(async () =>
+      entities.save(await entities.getById({ _id: entity2enId.toString() }), {
+        user: {},
+        language: 'en',
+      })
+    );
     await elasticTesting.refresh();
   });
 

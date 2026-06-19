@@ -2,7 +2,8 @@
 import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DeleteTemplateUseCaseFactory } from '#api/core/infrastructure/factories/DeleteTemplateUseCaseFactory.js';
-import fixtures, {
+import {
+  fixtures,
   createEntitiesInAllLanguages,
   templateToBeDeleted,
   templateToBeEditedId,
@@ -69,16 +70,17 @@ describe('DeleteTemplateUseCase', () => {
   it('should delete properties of other templates using this template as select/relationship', async () => {
     await createSut().execute({ templateId: templateToBeDeleted.toString() });
 
-    const [template1] = await templates.get({ name: 'thesauri template' });
+    const allTemplates = await testingEnvironment.db.getAllFrom('templates');
+    const template1 = allTemplates.find(t => t.name === 'thesauri template');
 
     expect(template1?.properties?.length).toBe(1);
     expect(template1?.properties?.[0]?.label).toBe('select');
 
-    const [template2] = await templates.get({ name: 'thesauri template 2' });
+    const template2 = allTemplates.find(t => t.name === 'thesauri template 2');
     expect(template2?.properties?.length).toBe(1);
     expect(template2?.properties?.[0]?.label).toBe('select2');
 
-    const [template3] = await templates.get({ name: 'thesauri template 3' });
+    const template3 = allTemplates.find(t => t.name === 'thesauri template 3');
     expect(template3?.properties?.length).toBe(2);
     expect(template3?.properties?.[0]?.label).toBe('text');
     expect(template3?.properties?.[1]?.label).toBe('text2');

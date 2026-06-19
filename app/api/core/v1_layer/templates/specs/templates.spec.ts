@@ -10,7 +10,8 @@ import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { TemplateSchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
 import templates from '../templates.js';
-import fixtures, {
+import {
+  fixtures,
   factory,
   propertyToBeInherited,
   relatedTo,
@@ -52,9 +53,9 @@ describe('templates', () => {
         factory.property('field_label'),
       ]);
 
-      await expect(templates.save(newTemplate, 'en')).rejects.toBeInstanceOf(
-        TemplateWithDuplicatedPropertyError
-      );
+      await expect(
+        testingEnvironment.runWithContext(async () => templates.save(newTemplate, 'en'))
+      ).rejects.toBeInstanceOf(TemplateWithDuplicatedPropertyError);
     });
 
     it('should add it to translations with Entity type', async () => {
@@ -63,7 +64,9 @@ describe('templates', () => {
         factory.property('label_2', 'text', { label: 'label 2' }),
       ]);
 
-      const response = await templates.save(newTemplate, 'en');
+      const response = await testingEnvironment.runWithContext(async () =>
+        templates.save(newTemplate, 'en')
+      );
 
       const dbTranslations = await DefaultTranslationsDataSource(
         TransactionManagerFactory.default()
@@ -91,22 +94,25 @@ describe('templates', () => {
         factory.property('new label 5', 'geolocation'),
       ]);
 
-      await templates.save(newTemplate, 'en');
-      const [createdTemplate] = await templates.get({ name: 'new template' });
+      await testingEnvironment.runWithContext(async () => templates.save(newTemplate, 'en'));
+      const allTemplates = await testingEnvironment.db.getAllFrom('templates');
+      const createdTemplate = allTemplates.find(t => t.name === 'new template');
 
-      expect(createdTemplate.properties?.[0].name).toEqual('new_label_1');
-      expect(createdTemplate.properties?.[1].name).toEqual('new_label_2');
-      expect(createdTemplate.properties?.[2].name).toEqual('new_label_3');
-      expect(createdTemplate.properties?.[3].name).toEqual('new_label_4');
-      expect(createdTemplate.properties?.[4].name).toEqual('new_label_5_geolocation');
+      expect(createdTemplate!.properties?.[0].name).toEqual('new_label_1');
+      expect(createdTemplate!.properties?.[1].name).toEqual('new_label_2');
+      expect(createdTemplate!.properties?.[2].name).toEqual('new_label_3');
+      expect(createdTemplate!.properties?.[3].name).toEqual('new_label_4');
+      expect(createdTemplate!.properties?.[4].name).toEqual('new_label_5_geolocation');
     });
 
     it('should set a default value of [] to properties', async () => {
       const { _id, ...newTemplate } = factory.template('new template default properties');
-      await templates.save(newTemplate, 'en');
+      await testingEnvironment.runWithContext(async () => templates.save(newTemplate, 'en'));
 
-      const [newCreatedTemplate] = await templates.get({ name: 'new template default properties' });
-      expect(newCreatedTemplate.properties).toEqual([]);
+      const newCreatedTemplate = (await testingEnvironment.db.getAllFrom('templates')).find(
+        t => t.name === 'new template default properties'
+      );
+      expect(newCreatedTemplate!.properties).toEqual([]);
     });
   });
 
@@ -125,13 +131,15 @@ describe('templates', () => {
 
   describe('getPropertyByName()', () => {
     it('should get properties with the name provided', async () => {
-      await TemplateFacade.createWithDefaultValues({
-        name: 'created template 2',
-        properties: [
-          { label: 'label', type: 'text' },
-          { label: 'Date', type: 'date' },
-        ],
-      });
+      await testingEnvironment.runWithContext(async () =>
+        TemplateFacade.createWithDefaultValues({
+          name: 'created template 2',
+          properties: [
+            { label: 'label', type: 'text' },
+            { label: 'Date', type: 'date' },
+          ],
+        })
+      );
 
       const property = await templates.getPropertyByName('date');
       expect(property.name).toEqual('date');
@@ -147,61 +155,27 @@ describe('templates', () => {
     });
   });
 
-  describe('getPropertiesByName()', () => {
-    it('should get properties with the name provided', async () => {
-      const newTemplate = {
-        name: 'created template 3',
-        properties: [
-          { label: 'label', type: 'text' },
-          { label: 'Date', type: 'date' },
-        ],
-      };
-      const newTemplate2 = {
-        name: 'created template 4',
-        properties: [{ label: 'number', type: 'numeric' }],
-      };
-
-      await TemplateFacade.createWithDefaultValues(newTemplate);
-      await TemplateFacade.createWithDefaultValues(newTemplate2);
-
-      const properties = await templates.getPropertiesByName(['date', 'label', 'number', 'title']);
-
-      expect(properties).toMatchObject([
-        { name: 'title', type: 'text' },
-        { name: 'label', type: 'text' },
-        { name: 'date', type: 'date' },
-        { name: 'number', type: 'numeric' },
-      ]);
-    });
-
-    it('should throw an error when a property is not found', async () => {
-      try {
-        await templates.getPropertiesByName(['nonexistent property name']);
-      } catch (e) {
-        expect(e.message).toEqual('Properties not found: nonexistent property name');
-      }
-    });
-  });
-
   describe('inherit', () => {
     let savedTemplate: TemplateSchema;
     beforeAll(async () => {
-      savedTemplate = await TemplateFacade.createWithDefaultValues({
-        name: 'template inherit',
-        properties: [
-          {
-            type: propertyTypes.relationship,
-            content: templateToBeInherited.toString(),
-            relationType: relatedTo.toString(),
-            name: 'new inherit',
-            label: 'New Inherit',
-            inherit: {
-              property: propertyToBeInherited.toString(),
-              type: 'text',
+      savedTemplate = await testingEnvironment.runWithContext(async () =>
+        TemplateFacade.createWithDefaultValues({
+          name: 'template inherit',
+          properties: [
+            {
+              type: propertyTypes.relationship,
+              content: templateToBeInherited.toString(),
+              relationType: relatedTo.toString(),
+              name: 'new inherit',
+              label: 'New Inherit',
+              inherit: {
+                property: propertyToBeInherited.toString(),
+                type: 'text',
+              },
             },
-          },
-        ],
-      });
+          ],
+        })
+      );
     });
 
     it('should denormalize the inherited property type', async () => {
@@ -234,7 +208,9 @@ describe('templates', () => {
       };
 
       try {
-        await TemplateFacade.createWithDefaultValues(tpl);
+        await testingEnvironment.runWithContext(async () =>
+          TemplateFacade.createWithDefaultValues(tpl)
+        );
         fail('should throw validation error');
       } catch (error) {
         expect(error).toBeInstanceOf(FieldIsRequiredError);

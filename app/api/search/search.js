@@ -4,7 +4,6 @@ import _ from 'lodash';
 import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 import translations from '#api/i18n/translations.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import dictionariesModel from '#api/thesauri/dictionariesModel.js';
 import userGroups from '#api/usergroups/userGroups.js';
 import usersModel from '#api/users/users.js';
 import { createError } from '#api/utils/index.js';
@@ -17,7 +16,7 @@ import { filterOptions } from '#shared/optionsUtils.js';
 import { checkWritePermissions } from '#shared/permissionsUtils.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { UserRole } from '#shared/types/userSchema.js';
-import templatesModel from '../core/v1_layer/templates/index.js';
+import templatesFacade from '../core/v1_layer/templates/index.js';
 import entitiesModel from '../entities/entitiesModel.js';
 import thesauri from '../thesauri/index.js';
 import documentQueryBuilder from './documentQueryBuilder.js';
@@ -804,11 +803,11 @@ const buildQuery = async (query, language, user, resources) => {
 const search = {
   // eslint-disable-next-line max-statements
   async search(query, language, user) {
-    const resources = await Promise.all([templatesModel.get(), dictionariesModel.get()]);
-    const [templates, dictionaries] = resources;
+    const resources = await Promise.all([templatesFacade.get(), thesauri.dictionaries()]);
+    const [templatesData, dictionaries] = resources;
     const queryBuilder = await buildQuery(query, language, user, resources);
     if (query.geolocation) {
-      searchGeolocation(queryBuilder, templates);
+      searchGeolocation(queryBuilder, templatesData);
     }
 
     if (query.aggregatePermissionsByLevel) {
@@ -834,7 +833,7 @@ const search = {
       .then(async response => {
         const processed = await processResponse(
           response,
-          templates,
+          templatesData,
           dictionaries,
           language,
           query.filters
@@ -857,13 +856,13 @@ const search = {
   },
 
   async searchSnippets(searchTerm, sharedId, language, user) {
-    const templates = await templatesModel.get();
+    const templatesData = await templatesFacade.get();
 
     const searchTextType = searchTerm
       ? await searchTypeFromSearchTermValidity(searchTerm)
       : 'query_string';
     const searchFields = propertiesHelper
-      .textFields(templates)
+      .textFields(templatesData)
       .map(prop => `metadata.${prop.name}.value`)
       .concat(['title', 'fullText']);
     const query = documentQueryBuilder()
@@ -946,34 +945,38 @@ const search = {
     });
   },
 
+  // eslint-disable-next-line max-params, max-statements
   async autocompleteAggregations(query, language, propertyName, _searchTerm, user) {
-    const [templates, dictionaries] = await Promise.all([
-      templatesModel.get(),
-      dictionariesModel.get(),
+    const [templatesData, dictionaries] = await Promise.all([
+      templatesFacade.get(),
+      thesauri.dictionaries(),
     ]);
 
     const searchTerm = _searchTerm || '';
 
     const queryBuilder = await buildQuery({ ...query, limit: 0 }, language, user, [
-      templates,
+      templatesData,
       dictionaries,
     ]);
 
     const property = propertiesHelper
-      .allUniqueProperties(templates)
+      .allUniqueProperties(templatesData)
       .find(p => p.name === propertyName);
 
     if (!property) {
       throw new OperationalError(`Property ${propertyName} not found`);
     }
 
+    const newRelationshipsEnabled = await v2.checkFeatureEnabled();
+    const aggregationPath = getAggregatedIndexedPropertyPath(property, newRelationshipsEnabled);
+
     queryBuilder
       .resetAggregations()
-      .aggregations([{ ...property, name: `${propertyName}.value` }], dictionaries);
+      .aggregations([{ ...property, name: aggregationPath }], dictionaries);
 
     const body = queryBuilder.query();
 
-    const aggregation = body.aggregations.all.aggregations[`${propertyName}.value`];
+    const aggregation = body.aggregations.all.aggregations[aggregationPath];
 
     this.appendAutoCompleteFilters(property, searchTerm || '', aggregation);
 
@@ -983,7 +986,7 @@ const search = {
 
     const sanitizedAggregations = await _sanitizeAggregations(
       response.body.aggregations.all,
-      templates,
+      templatesData,
       dictionaries,
       language,
       preloadOptionsSearch()
@@ -1047,8 +1050,8 @@ const search = {
   },
 
   async updateTemplatesMapping() {
-    const templates = await templatesModel.get();
-    return updateMapping(templates);
+    const templatesData = await templatesFacade.get();
+    return updateMapping(templatesData);
   },
 
   async countPerTemplate(language) {

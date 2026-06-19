@@ -253,6 +253,77 @@ describe('PDFDocument', () => {
     });
   });
 
+  describe('update() with propertySelections', () => {
+    it('merges new selections with existing, deduplicates by name', () => {
+      const file = FileBuilder.processedDocument(f.idString('doc'), {
+        propertySelections: [{ name: 'title', selection: { text: 'old' } }],
+      });
+      const updated = file.update({
+        propertySelections: [
+          { name: 'title', selection: { text: 'new' } },
+          { name: 'date', selection: { text: '2024' } },
+        ],
+      });
+      expect(updated.propertySelections).toEqual([
+        { name: 'title', selection: { text: 'new' } },
+        { name: 'date', selection: { text: '2024' } },
+      ]);
+    });
+
+    it('filters out deleteSelection: true entries', () => {
+      const file = FileBuilder.processedDocument(f.idString('doc'), {
+        propertySelections: [{ name: 'keep' }, { name: 'remove' }],
+      });
+      const updated = file.update({
+        propertySelections: [{ name: 'remove', deleteSelection: true }],
+      });
+      expect(updated.propertySelections).toEqual([{ name: 'keep' }]);
+    });
+
+    it('returns same instance when nothing changed (hasChanged === false)', () => {
+      const file = FileBuilder.processedDocument(f.idString('doc'), {
+        propertySelections: [{ name: 'title', selection: { text: 'same' } }],
+      });
+      const updated = file.update({
+        propertySelections: [{ name: 'title', selection: { text: 'same' } }],
+      });
+      expect(updated.hasChanged).toBe(false);
+    });
+
+    it('returns different instance when selections changed (hasChanged === true)', () => {
+      const file = FileBuilder.processedDocument(f.idString('doc'), {
+        propertySelections: [{ name: 'title', selection: { text: 'old' } }],
+      });
+      const updated = file.update({
+        propertySelections: [{ name: 'title', selection: { text: 'new' } }],
+      });
+      expect(updated.hasChanged).toBe(true);
+    });
+
+    it('works when propertySelections was undefined', () => {
+      const file = FileBuilder.processedDocument(f.idString('doc'));
+      const updated = file.update({
+        propertySelections: [{ name: 'title', selection: { text: 'new' } }],
+      });
+      expect(updated.propertySelections).toEqual([{ name: 'title', selection: { text: 'new' } }]);
+    });
+
+    it('can update other fields alongside propertySelections', () => {
+      const file = FileBuilder.processedDocument(f.idString('doc'), {
+        originalname: 'old.pdf',
+        propertySelections: [{ name: 'title', selection: { text: 'existing' } }],
+      });
+      const updated = file.update({
+        originalname: 'renamed.pdf',
+        propertySelections: [{ name: 'title', selection: { text: 'updated' } }],
+      });
+      expect(updated.originalname).toBe('renamed.pdf');
+      expect(updated.propertySelections).toEqual([
+        { name: 'title', selection: { text: 'updated' } },
+      ]);
+    });
+  });
+
   describe('toDTO (processing/failed)', () => {
     it('includes all base and specialized properties', () => {
       const id = f.idString('doc');

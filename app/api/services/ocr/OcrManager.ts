@@ -1,11 +1,16 @@
+/* eslint-disable max-statements */
+import { ObjectId } from 'mongodb';
+import { Readable } from 'stream';
+import urljoin from 'url-join';
 import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
-import { files, storage } from '#api/files/index.js';
+import { storage } from '#api/files/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import relationships from '#api/relationships/relationships.js';
 import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
@@ -15,12 +20,9 @@ import { tenants } from '#api/tenants/tenantContext.js';
 import users from '#api/users/users.js';
 import createError from '#api/utils/Error.js';
 import { handleError } from '#api/utils/handleError.js';
-import { ObjectId } from 'mongodb';
 import request from '#shared/JSONRequest.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { FileType } from '#shared/types/fileType.js';
-import { Readable } from 'stream';
-import urljoin from 'url-join';
 import { EnforcedWithId } from '../../odm/model.js';
 import { OcrRecord, OcrStatus } from './ocrModel.js';
 import {
@@ -148,7 +150,14 @@ const processFiles = async (
 
     const resultFile = await saveResultFile(message, originalFile);
 
-    await files.save({ _id: originalFile._id, type: 'attachment' });
+    const filesService = FilesServiceFactory.default(
+      {},
+      {
+        userId: permissionsContext.getUserInContext()?._id?.toString(),
+        tenantName: tenants.current().name,
+      }
+    );
+    await filesService.demoteToAttachment(originalFile._id.toHexString());
 
     await markReady(record, resultFile as EnforcedWithId<FileType>);
     await relationships.swapTextReferencesFile(
@@ -173,7 +182,9 @@ const handleOcrError = async (
 const processResults = async (message: ResultsMessage): Promise<void> => {
   await tenants.run(async () => {
     try {
-      const [originalFile] = await files.get({ filename: message.params!.filename });
+      const originalFile = (
+        await FilesDAOFactory.default().getByFilename(message.params!.filename)
+      ).getDataOrThrow();
       const [record] = await getForSourceFile(originalFile);
 
       if (!record) return;

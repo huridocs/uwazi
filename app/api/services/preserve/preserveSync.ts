@@ -1,6 +1,5 @@
 /* eslint-disable max-statements */
 import mimetypes from 'mime-types';
-import { ObjectId } from 'mongodb';
 import path from 'path';
 import qs from 'qs';
 import { Readable } from 'stream';
@@ -23,26 +22,14 @@ import { EnforcedWithId } from '#api/odm/index.js';
 import settings from '#api/settings/index.js';
 import { tenants } from '#api/tenants/index.js';
 import thesauri from '#api/thesauri/index.js';
-import dictionariesModel from '#api/thesauri/dictionariesModel.js';
 import users from '#api/users/users.js';
 import { newThesauriId } from '#api/utils/templateUtils.js';
 import request from '#shared/JSONRequest.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
-import { ObjectIdSchema } from '#shared/types/commonTypes.js';
+
 import { PreserveConfig } from '#shared/types/settingsType.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { preserveSyncModel } from './preserveSyncModel.js';
-
-const thesauriValueId = async (thesauriId: ObjectIdSchema, valueLabel: string) => {
-  const [value] = await dictionariesModel.db.aggregate([
-    { $match: { _id: new ObjectId(thesauriId) } },
-    { $unwind: '$values' },
-    { $match: { 'values.label': valueLabel } },
-    { $replaceRoot: { newRoot: '$values' } },
-  ]);
-
-  return value?.id;
-};
 
 const getSourceThesauriId = async (template: EnforcedWithId<TemplateSchema> | null) =>
   (template?.properties || []).find(
@@ -60,15 +47,16 @@ const extractSource = async (
   }
 
   const { hostname } = new URL(evidence.attributes.url);
-  let valueId = await thesauriValueId(sourceProperty.content || '', hostname);
   const contentThesauri = await thesauri.getById(sourceProperty.content);
+  let valueId = contentThesauri?.values?.find(v => v.label === hostname)?.id;
 
   if (!valueId && contentThesauri) {
     valueId = newThesauriId();
-    await dictionariesModel.db.updateOne(
-      { _id: sourceProperty.content },
-      { $push: { values: { label: hostname, id: valueId } } }
-    );
+    await thesauri.save({
+      _id: contentThesauri._id,
+      name: contentThesauri.name,
+      values: [...(contentThesauri.values || []), { label: hostname, id: valueId }],
+    });
   }
 
   return valueId ? { source: [{ value: valueId }] } : {};
@@ -210,7 +198,7 @@ const saveEvidence =
 
       await transactionManager.run(async () => {
         await filesService.insert(attachments);
-        await entitiesService.insert(entity, {
+        await entitiesService.insert([entity], {
           tenantName: tenants.current().name,
           actorId: user?._id?.toString() || 'system',
           targetLanguage: defaultLanguage.key,

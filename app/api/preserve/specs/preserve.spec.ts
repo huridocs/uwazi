@@ -28,7 +28,7 @@ describe('Preserve', () => {
   describe('setup()', () => {
     describe('pass', () => {
       it('should create a thesauri, template and a config when no config is found.', async () => {
-        await Preserve.setup('en', user);
+        await testingEnvironment.runWithContext(async () => Preserve.setup('en', user));
         const savedSettings: any = await settings.get({});
         const configs: PreserveConfig['config'] = savedSettings.features.preserve.config;
         const config = configs.find(conf => conf.user!.toString() === user._id.toString());
@@ -48,14 +48,16 @@ describe('Preserve', () => {
           },
         ]);
         const thesauriId = template?.properties?.find(prop => prop.type === 'select')?.content;
-        const thesaurus = await thesauri.getById(thesauriId);
+        const thesaurus = await testingEnvironment.runWithContext(async () =>
+          thesauri.getById(thesauriId)
+        );
         expect(thesaurus?.name).toBe('Preserve');
       });
 
       it('should not create template if another configs exists in the DB', async () => {
-        const savedTemplates = await templates.get({});
-        await Preserve.setup('en', { _id: userId2 });
-        const templatesAfterSetup = await templates.get({});
+        const savedTemplates = await templates.get();
+        await testingEnvironment.runWithContext(async () => Preserve.setup('en', { _id: userId2 }));
+        const templatesAfterSetup = await templates.get();
         expect(savedTemplates.length).toEqual(templatesAfterSetup.length);
         const savedSettings: any = await settings.get({});
         const savedConfigs = savedSettings.features.preserve.config;

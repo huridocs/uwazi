@@ -15,6 +15,7 @@ import {
   MongoEntitiesDAO,
 } from '../infrastructure/mongodb/entity/MongoEntitiesDAO.js';
 import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { FileDTO } from '../domain/files/domainTypes.js';
 import { GetEntityResponseDTO, RelationDTO } from './GetEntityResponseDTO.js';
 import { EntityNotFoundError } from '../domain/entity/errors.js';
 import { AccessLevel } from '../domain/entityAccessPolicy/AccessLevel.js';
@@ -75,8 +76,8 @@ class EntitiesQueryService {
 
     const response: GetEntityResponseDTO = {
       ...entity,
-      documents: entity.documents.map(doc => ({ ...doc, _id: doc._id.toString() })),
-      attachments: entity.attachments.map(doc => ({ ...doc, _id: doc._id.toString() })),
+      documents: entity.documents.map(doc => ({ ...doc, _id: doc._id.toString() }) as FileDTO),
+      attachments: entity.attachments.map(doc => ({ ...doc, _id: doc._id.toString() }) as FileDTO),
       ...(includeRelationships && { relations: filteredRelations }),
     };
 
@@ -135,7 +136,7 @@ class EntitiesQueryService {
     entityDBOs: EntityDBO[]
   ): Promise<Map<string, Set<string>>> {
     const templateIds = [...new Set(entityDBOs.map(e => e.template.toString()))];
-    const templates = await this.deps.templatesDS.getByIds(templateIds).all();
+    const templates = await this.deps.templatesDS.getByIds(templateIds);
 
     this.validateAllTemplatesLoaded(templates, templateIds);
 

@@ -1,4 +1,5 @@
-import { files, storage } from '#api/files/index.js';
+import { storage } from '#api/files/index.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { prettifyError } from '#api/utils/handleError.js';
 import { legacyLogger } from '#api/log/index.js';
 import request from '#shared/JSONRequest.js';
@@ -9,6 +10,9 @@ import { tenants } from '#api/tenants/index.js';
 import settings from '#api/settings/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 const fakeTocEntry = (label: string): TocSchema => ({
   selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
@@ -16,9 +20,17 @@ const fakeTocEntry = (label: string): TocSchema => ({
   label,
 });
 
-const saveToc = async (file: FileType, toc: TocSchema[]) => {
-  await files.save({ ...file, toc, generatedToc: true });
-  const [entity] = await entities.get({ sharedId: file.entity }, {});
+const saveToc = async (_file: FileType, toc: TocSchema[]) => {
+  const existingFile = (
+    await FilesDataSourceFactory.default().getById(_file._id!.toString())
+  ).getDataOrThrow();
+
+  await ExecutionContext.transactionManager.run(async () =>
+    FilesServiceFactory.default().bulkUpsert([existingFile.update({ toc, generatedToc: true })])
+  );
+
+  const [entity] = await entities.get({ sharedId: _file.entity }, {});
+
   await entities.save(
     {
       ...entity,
@@ -65,15 +77,7 @@ const tocService = {
   },
 
   async processNext(url: string) {
-    const [nextFile] = await files.get(
-      {
-        type: 'document',
-        filename: { $exists: true },
-        'toc.0': { $exists: false },
-      },
-      '',
-      { sort: { _id: 1 }, limit: 1 }
-    );
+    const nextFile = (await FilesDAOFactory.default().getNextDocumentWithoutToc()).getData(null);
 
     if (nextFile && nextFile.filename) {
       try {

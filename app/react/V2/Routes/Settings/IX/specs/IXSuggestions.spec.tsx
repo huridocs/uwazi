@@ -23,7 +23,7 @@ jest.mock('#V2/api/files', () => ({
     {
       _id: 'file1',
       filename: 'test.pdf',
-      extractedMetadata: [
+      propertySelections: [
         {
           name: 'propertyName',
           selection: {

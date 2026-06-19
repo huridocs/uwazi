@@ -1,7 +1,9 @@
+/* eslint-disable max-lines */
 import { Db, ObjectId } from 'mongodb';
 
 import { LanguageUtils } from '#shared/language/index.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { LanguageISO6393 } from '#shared/language/languageISO639_3.js';
 
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
@@ -12,9 +14,8 @@ import {
   MongoDSOptions,
 } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
-import { Result } from '#api/core/libs/Result.js';
+import { Result, ResultType } from '#api/core/libs/Result.js';
 import { search } from '#api/search/index.js';
-import { FullTextIndexerService } from '#api/core/infrastructure/elasticSearch/entities/FullTextIndexerService.js';
 import { FileStorage } from '../../../application/contracts/FileStorage.js';
 import {
   FilesDataSource,
@@ -22,40 +23,33 @@ import {
 } from '../../../application/contracts/FilesDataSource.js';
 import { FileNotFound, ProcessingFileNotFound } from '../../../domain/files/errors.js';
 import { FileMappers } from './FilesMappers.js';
-import { fileDBO } from './schemas/filesTypes.js';
+import { FileDBO } from './schemas/filesTypes.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 type GetDocumentsForEntityQuery = {
   entity: string;
   type: 'document';
-  language?: { $in: string[] };
+  language?: { $in: LanguageISO6393[] };
   status: 'ready';
 };
 
-export type MongoFilesDataSourceOptions = MongoDSOptions & {
-  fullTextIndexer: FullTextIndexerService;
-};
+type MongoFilesDataSourceOptions = MongoDSOptions;
 
-export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements FilesDataSource {
+export class MongoFilesDataSource extends MongoDataSource<FileDBO> implements FilesDataSource {
   protected collectionName = 'files';
 
   protected filesToReindex = new Set<BaseFile>();
 
-  private fileToDelete = new Map<string, BaseFile>();
-
   protected fileStorage: FileStorage;
-
-  private fullTextIndexer: FullTextIndexerService;
 
   constructor(
     db: Db,
     transactionManager: TransactionManager,
     fileStorage: FileStorage,
-    options: MongoFilesDataSourceOptions
+    options: MongoFilesDataSourceOptions = {}
   ) {
     super(db, transactionManager, options);
     this.fileStorage = fileStorage;
-    this.fullTextIndexer = options.fullTextIndexer;
     transactionManager.onCommitted(async () => {
       const files = Array.from(this.filesToReindex);
       if (!files.length) return;
@@ -64,26 +58,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
         { sharedId: { $in: files.filter(f => f.isEntityFile()).map(f => f.entity) } },
         files.some(f => f instanceof PDFDocument && f.isReady()) ? '+fullText' : undefined
       );
-
-      const processedPDFs = files
-        .filter((f): f is PDFDocument => f instanceof PDFDocument && f.languageHasChanged)
-        .map(f => FileMappers.toDBO(f));
-
-      await this.fullTextIndexer.sync(processedPDFs.map(f => f._id));
-
       this.filesToReindex = new Set<BaseFile>();
-    });
-
-    transactionManager.onCommitted(async () => {
-      const files = Array.from(this.fileToDelete.values());
-
-      const pdfFilenames = files
-        .filter((f): f is PDFDocument => f instanceof PDFDocument)
-        .map(f => f.filename);
-
-      await this.fullTextIndexer.remove(pdfFilenames);
-
-      this.fileToDelete.clear();
     });
   }
 
@@ -103,7 +78,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     this.setFilesToReindex(files);
   }
 
-  private toModel(dbo: fileDBO) {
+  private toModel(dbo: FileDBO) {
     return FileMappers.toModel(dbo, {
       contentLoader: this.fileStorage.getFile.bind(this.fileStorage),
     });
@@ -118,7 +93,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
   }
 
   getByEntitiesIds(entitySharedIds: string[]): ResultSet<BaseFile> {
-    return new MongoResultSet<fileDBO, BaseFile>(
+    return new MongoResultSet<FileDBO, BaseFile>(
       this.getCollection().find({
         type: { $ne: 'thumbnail' },
         entity: { $in: entitySharedIds },
@@ -128,7 +103,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
   }
 
   getThumbnails(entitySharedIds: string[]): ResultSet<Thumbnail> {
-    return new MongoResultSet<fileDBO, Thumbnail>(
+    return new MongoResultSet<FileDBO, Thumbnail>(
       this.getCollection().find({
         entity: { $in: entitySharedIds },
         type: 'thumbnail',
@@ -138,7 +113,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
   }
 
   getThumbnailsByLanguage(language: LanguageISO6391): ResultSet<Thumbnail> {
-    return new MongoResultSet<fileDBO, Thumbnail>(
+    return new MongoResultSet<FileDBO, Thumbnail>(
       this.getCollection().find({
         type: 'thumbnail',
         language: LanguageUtils.fromISO639_1(language).ISO639_3,
@@ -149,7 +124,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
 
   getThumbnailsForProcessedPDFs(documentIds: string[]): ResultSet<Thumbnail> {
     const filenames = documentIds.map(id => `${id}.jpg`);
-    return new MongoResultSet<fileDBO, Thumbnail>(
+    return new MongoResultSet<FileDBO, Thumbnail>(
       this.getCollection().find({
         filename: { $in: filenames },
         type: 'thumbnail',
@@ -185,8 +160,6 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
   async delete(files: BaseFile[]) {
     await this.getCollection().deleteMany({ _id: { $in: files.map(f => new ObjectId(f.id)) } });
     this.setFilesToReindex(files);
-
-    files.forEach(file => this.fileToDelete.set(file.id, file));
   }
 
   async bulkCreate(files: [BaseFile, ...BaseFile[]]): Promise<void> {
@@ -194,17 +167,22 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     this.setFilesToReindex(files);
   }
 
-  async deleteExtractedMetadata(entityPropertyNames: string[], entitySharedIds: string[]) {
+  async replaceFile(file: BaseFile): Promise<void> {
+    await this.getCollection().replaceOne({ _id: new ObjectId(file.id) }, FileMappers.toDBO(file));
+    this.setFilesToReindex([file]);
+  }
+
+  async deletePropertySelections(entityPropertyNames: string[], entitySharedIds: string[]) {
     await this.getCollection().updateMany(
       {
         entity: { $in: entitySharedIds },
-        extractedMetadata: { $exists: true, $ne: [] },
+        propertySelections: { $exists: true, $ne: [] },
       },
-      { $pull: { extractedMetadata: { name: { $in: entityPropertyNames } } } }
+      { $pull: { propertySelections: { name: { $in: entityPropertyNames } } } }
     );
   }
 
-  async renameExtractedMetadata(
+  async renamePropertySelections(
     renamedPropertyNames: { [previousName: string]: string },
     entitySharedIds: string[]
   ) {
@@ -216,9 +194,9 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     const pipeline = [
       {
         $set: {
-          extractedMetadata: {
+          propertySelections: {
             $map: {
-              input: '$extractedMetadata',
+              input: '$propertySelections',
               as: 'item',
               in: {
                 $mergeObjects: [
@@ -240,7 +218,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     ];
     await this.getCollection().updateMany(
       {
-        'extractedMetadata.name': { $in: Object.keys(renamedPropertyNames) },
+        'propertySelections.name': { $in: Object.keys(renamedPropertyNames) },
         entity: { $in: entitySharedIds },
       },
       pipeline
@@ -264,21 +242,21 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
           langauges.push(language);
         }
         return langauges;
-      }, [] as string[]);
+      }, [] as LanguageISO6393[]);
 
       if (inLanguages.length) {
         query.language = { $in: inLanguages };
       }
     }
 
-    return new MongoResultSet<fileDBO, PDFDocument>(
+    return new MongoResultSet<FileDBO, PDFDocument>(
       this.getCollection().find(query, { projection: { fullText: 0 } }),
       dbo => this.toModel(dbo) as PDFDocument
     );
   }
 
   getAll() {
-    return new MongoResultSet<fileDBO, BaseFile>(
+    return new MongoResultSet<FileDBO, BaseFile>(
       this.getCollection().find({}, { projection: { fullText: 0 } }),
       dbo => this.toModel(dbo)
     );
@@ -295,7 +273,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     return foundFiles === files.length;
   }
 
-  async getByFilename(filename: string, allowedTypes?: fileDBO['type'][]) {
+  async getByFilename(filename: string, allowedTypes?: FileDBO['type'][]) {
     const dbo = await this.getCollection().findOne(
       {
         filename,
@@ -310,7 +288,9 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     return Result.ok(this.toModel(dbo));
   }
 
-  async getById(id: string) {
+  async getById<ReturnedFile extends BaseFile = BaseFile>(
+    id: string
+  ): Promise<ResultType<ReturnedFile, FileNotFound>> {
     const dbo = await this.getCollection().findOne(
       { _id: new ObjectId(id) },
       { projection: { fullText: 0 } }
@@ -319,6 +299,16 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       return Result.fail(new FileNotFound(`file with id: ${id} not found`));
     }
 
-    return Result.ok(this.toModel(dbo));
+    return Result.ok(this.toModel(dbo) as unknown as ReturnedFile);
+  }
+
+  async getByIds(ids: string[]): Promise<BaseFile[]> {
+    const objectIds = ids.map(id => new ObjectId(id));
+    const dbos = await this.getCollection()
+      .find({ _id: { $in: objectIds } }, { projection: { fullText: 0 } })
+      .toArray();
+    return dbos.map(dbo => this.toModel(dbo));
   }
 }
+
+export type { MongoFilesDataSourceOptions };

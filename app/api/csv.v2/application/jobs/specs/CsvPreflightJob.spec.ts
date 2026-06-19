@@ -1,6 +1,8 @@
 /* eslint-disable max-statements, max-classes-per-file */
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDataSource.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
@@ -68,6 +70,7 @@ const buildUseCase = () => {
   const { useCase, csvImportsDS, rowsDS, thesauriValuesDS } = CsvPreflightJobFactory.build({
     transactionManager,
     jobsDispatcher,
+    thesauriDS: new MongoThesauriDataSource(getConnection(), transactionManager),
   });
   return {
     useCase,

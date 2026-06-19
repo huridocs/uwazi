@@ -53,11 +53,8 @@ class MarkdownProperty extends FilterableProperty {
     };
   }
 
-  validatePropertyAssignment(
-    { value }: PropertyAssignment<MarkdownEntry>,
-    shouldValidateForRequired = false
-  ): void {
-    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
+  validatePropertyAssignment({ value }: PropertyAssignment<MarkdownEntry>): void {
+    createSchema(this.required).parse(value);
   }
 }
 

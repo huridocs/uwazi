@@ -1,3 +1,4 @@
+import fetchMock from 'fetch-mock';
 import { testingDB } from '#api/utils/testing_db.js';
 import * as filesApi from '#api/files/filesystem.js';
 import { storage, files } from '#api/files/index.js';
@@ -11,11 +12,9 @@ import {
   fixturesTenantWithoutTwitter,
 } from '#api/services/twitterintegration/specs/fixtures.js';
 import EntitiesModel from '#api/entities/entitiesModel.js';
-import templates from '#api/core/v1_layer/templates/templates.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { tenants } from '#api/tenants/index.js';
-import fetchMock from 'fetch-mock';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
@@ -87,41 +86,49 @@ describe('TwitterIntegration', () => {
   it('should create templates if they do not exist', async () => {
     await testingDB.setupFixturesAndContext(fixturesOneTenant, tenantName);
 
-    await twitterIntegration.processResults({
-      tenant: tenantName,
-      task: 'get-hashtag',
-      params: ONE_TWEET_PARAMS,
-    });
+    await testingEnvironment.runWithContext(async () =>
+      twitterIntegration.processResults({
+        tenant: tenantName,
+        task: 'get-hashtag',
+        params: ONE_TWEET_PARAMS,
+      })
+    );
 
-    const [hashtagTemplate] = await templates.get({ name: 'Hashtags' });
-    const [tweetsTemplate] = await templates.get({ name: 'Tweets' });
-    expect(hashtagTemplate.name).toBe('Hashtags');
-    expect(tweetsTemplate.name).toBe('Tweets');
+    const allTemplates = await testingEnvironment.db.getAllFrom('templates');
+    const hashtagTemplate = allTemplates.find(t => t.name === 'Hashtags');
+    const tweetsTemplate = allTemplates.find(t => t.name === 'Tweets');
+    expect(hashtagTemplate!.name).toBe('Hashtags');
+    expect(tweetsTemplate!.name).toBe('Tweets');
   });
 
   it('should create other templates if they do not exist', async () => {
     await testingDB.setupFixturesAndContext(fixturesOtherTenant, tenantName);
 
-    await twitterIntegration.processResults({
-      tenant: tenantName,
-      task: 'get-hashtag',
-      params: ONE_TWEET_PARAMS,
-    });
+    await testingEnvironment.runWithContext(async () =>
+      twitterIntegration.processResults({
+        tenant: tenantName,
+        task: 'get-hashtag',
+        params: ONE_TWEET_PARAMS,
+      })
+    );
 
-    const [hashtagTemplate] = await templates.get({ name: 'OtherHashtags' });
-    const [tweetsTemplate] = await templates.get({ name: 'OtherTweets' });
-    expect(hashtagTemplate.name).toBe('OtherHashtags');
-    expect(tweetsTemplate.name).toBe('OtherTweets');
+    const allTemplates = await testingEnvironment.db.getAllFrom('templates');
+    const hashtagTemplate = allTemplates.find(t => t.name === 'OtherHashtags');
+    const tweetsTemplate = allTemplates.find(t => t.name === 'OtherTweets');
+    expect(hashtagTemplate!.name).toBe('OtherHashtags');
+    expect(tweetsTemplate!.name).toBe('OtherTweets');
   });
 
   it('should store one tweet', async () => {
     await testingDB.setupFixturesAndContext(fixturesOneTenant, tenantName);
 
-    await twitterIntegration.processResults({
-      tenant: tenantName,
-      task: 'get-hashtag',
-      params: ONE_TWEET_PARAMS,
-    });
+    await testingEnvironment.runWithContext(async () =>
+      twitterIntegration.processResults({
+        tenant: tenantName,
+        task: 'get-hashtag',
+        params: ONE_TWEET_PARAMS,
+      })
+    );
 
     const tweetsEntities = await EntitiesModel.getUnrestricted({ title: 'tweet title' });
 
@@ -141,17 +148,21 @@ describe('TwitterIntegration', () => {
   it('should store the hashtags', async () => {
     await testingDB.setupFixturesAndContext(fixturesOneTenant, tenantName);
 
-    await twitterIntegration.processResults({
-      tenant: tenantName,
-      task: 'get-hashtag',
-      params: ONE_TWEET_PARAMS,
-    });
+    await testingEnvironment.runWithContext(async () =>
+      twitterIntegration.processResults({
+        tenant: tenantName,
+        task: 'get-hashtag',
+        params: ONE_TWEET_PARAMS,
+      })
+    );
 
-    await twitterIntegration.processResults({
-      tenant: tenantName,
-      task: 'get-hashtag',
-      params: ONE_TWEET_PARAMS,
-    });
+    await testingEnvironment.runWithContext(async () =>
+      twitterIntegration.processResults({
+        tenant: tenantName,
+        task: 'get-hashtag',
+        params: ONE_TWEET_PARAMS,
+      })
+    );
 
     const hashtagsEntities = await EntitiesModel.getUnrestricted({
       $or: [{ title: '#other_hashtag_example' }, { title: '#hashtag_example' }],
@@ -191,11 +202,13 @@ describe('TwitterIntegration', () => {
       images_urls: ['https://image.is'],
     };
 
-    await twitterIntegration.processResults({
-      tenant: tenantName,
-      task: 'get-hashtag',
-      params: imageParams,
-    });
+    await testingEnvironment.runWithContext(async () =>
+      twitterIntegration.processResults({
+        tenant: tenantName,
+        task: 'get-hashtag',
+        params: imageParams,
+      })
+    );
 
     const fileDocuments = await files.get();
     const tweetsEntities = await EntitiesModel.getUnrestricted({ title: ONE_TWEET_PARAMS.title });

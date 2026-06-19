@@ -17,12 +17,10 @@ import { Settings as SettingsType } from '#shared/types/settingsType.js';
 import { Entity } from '../../core/domain/entity/Entity.js';
 import { MultiLanguageEntityDataSource } from '../contracts/MultiLanguageEntitiesDataSource.js';
 import { EntityDBO, EntityTemplateAggregation } from './schemas/EntityTypes.js';
-import { EntityIndexerService } from '#api/core/infrastructure/elasticSearch/entities/EntityIndexerService.js';
 
 type Deps = {
   db: Db;
   transactionManager: MongoTransactionManager;
-  entityIndexerService: EntityIndexerService;
   options?: MongoDSOptions;
 };
 
@@ -34,31 +32,11 @@ export class MongoMultiLanguageEntityDataSource
 
   private modifiedSharedIds = new Set<string>();
 
-  private mutatedEntities = new Map<string, EntityDBO>();
-
-  private deletedEntities = new Set<string>();
-
-  private entityIndexerService: EntityIndexerService;
-
   constructor(deps: Deps) {
     super(deps.db, deps.transactionManager, deps.options);
 
-    this.entityIndexerService = deps.entityIndexerService;
-
     this.transactionManager.onCommitted(async () => {
       await search.indexEntities({ sharedId: { $in: Array.from(this.modifiedSharedIds) } });
-    });
-
-    this.transactionManager.onCommitted(async () => {
-      const entities = [...this.mutatedEntities.values()];
-      this.mutatedEntities.clear();
-      return this.entityIndexerService.sync(entities.map(e => e.sharedId));
-    });
-
-    this.transactionManager.onCommitted(async () => {
-      const entities = [...this.deletedEntities.values()];
-      this.deletedEntities.clear();
-      return this.entityIndexerService.remove(entities);
     });
   }
 
@@ -70,6 +48,14 @@ export class MongoMultiLanguageEntityDataSource
     }
 
     return Result.ok(entity);
+  }
+
+  async existsByIdAndTemplateId(id: string, templateId: string): Promise<boolean> {
+    const entity = await this.getCollection().findOne(
+      { sharedId: id, template: new ObjectId(templateId) },
+      { projection: { _id: 1 } }
+    );
+    return Boolean(entity);
   }
 
   async update(entity: Entity): Promise<void> {
@@ -89,7 +75,6 @@ export class MongoMultiLanguageEntityDataSource
     );
 
     this.modifiedSharedIds.add(entity.sharedId);
-    dbos.forEach(dbo => this.mutatedEntities.set(dbo._id.toString(), dbo));
   }
 
   async bulkUpdate(entities: Entity[]): Promise<void> {
@@ -113,7 +98,6 @@ export class MongoMultiLanguageEntityDataSource
     }
 
     entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
-    allDbos.forEach(dbo => this.mutatedEntities.set(dbo._id.toString(), dbo));
   }
 
   private async getReferencePropertyNames(): Promise<string[]> {
@@ -300,18 +284,11 @@ export class MongoMultiLanguageEntityDataSource
     affectedSharedIds.forEach(id => this.modifiedSharedIds.add(id));
 
     await this.updateMetadataReferences(affectedSharedIds, deletedSharedIds);
-
-    const updatedDocs = await this.getCollection()
-      .find({ sharedId: { $in: affectedSharedIds } })
-      .toArray();
-    updatedDocs.forEach(dbo => this.mutatedEntities.set(dbo._id.toString(), dbo));
   }
 
   async bulkDelete(sharedIds: string[]): Promise<void> {
     await this.getCollection().deleteMany({ sharedId: { $in: sharedIds } });
     await search.bulkDeleteBySharedId(sharedIds);
-
-    sharedIds.forEach(id => this.deletedEntities.add(id));
   }
 
   async getAllBySharedId(sharedIds: string[]): Promise<ResultType<Entity[], Error>> {
@@ -330,10 +307,6 @@ export class MongoMultiLanguageEntityDataSource
       { $set: { editDate: Date.now() } }
     );
     sharedIds.forEach(id => this.modifiedSharedIds.add(id));
-    const updatedDocs = await this.getCollection()
-      .find({ sharedId: { $in: sharedIds } })
-      .toArray();
-    updatedDocs.forEach(dbo => this.mutatedEntities.set(dbo._id.toString(), dbo));
   }
 
   async deleteMetadataProperties(propertyNames: string[], sharedIds: string[]): Promise<void> {
@@ -344,10 +317,6 @@ export class MongoMultiLanguageEntityDataSource
       }
     );
     sharedIds.forEach(id => this.modifiedSharedIds.add(id));
-    const updatedDocs = await this.getCollection()
-      .find({ sharedId: { $in: sharedIds } })
-      .toArray();
-    updatedDocs.forEach(dbo => this.mutatedEntities.set(dbo._id.toString(), dbo));
   }
 
   async renameMetadataProperties(
@@ -366,10 +335,6 @@ export class MongoMultiLanguageEntityDataSource
       }
     );
     sharedIds.forEach(id => this.modifiedSharedIds.add(id));
-    const updatedDocs = await this.getCollection()
-      .find({ sharedId: { $in: sharedIds } })
-      .toArray();
-    updatedDocs.forEach(dbo => this.mutatedEntities.set(dbo._id.toString(), dbo));
   }
 
   async bulkUpdateDeprecated(entitiesToSave: Entity[], properties: Property[] = []) {
@@ -397,10 +362,6 @@ export class MongoMultiLanguageEntityDataSource
     );
     const sharedIds = entitiesToSave.map(e => e.sharedId);
     sharedIds.forEach(id => this.modifiedSharedIds.add(id));
-    const updatedDocs = await this.getCollection()
-      .find({ sharedId: { $in: sharedIds } })
-      .toArray();
-    updatedDocs.forEach(dbo => this.mutatedEntities.set(dbo._id.toString(), dbo));
   }
 
   async countByTemplateId(templateId: string): Promise<number> {
@@ -485,7 +446,6 @@ export class MongoMultiLanguageEntityDataSource
     await this.getCollection().insertMany(dbos, { ignoreUndefined: true });
 
     this.modifiedSharedIds.add(entity.sharedId);
-    dbos.forEach(dbo => this.mutatedEntities.set(dbo._id.toString(), dbo));
   }
 
   async bulkInsert(entities: Entity[]): Promise<void> {
@@ -498,6 +458,5 @@ export class MongoMultiLanguageEntityDataSource
     await this.getCollection().insertMany(allDbos, { ignoreUndefined: true, ordered: false });
 
     entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
-    allDbos.forEach(dbo => this.mutatedEntities.set(dbo._id.toString(), dbo));
   }
 }

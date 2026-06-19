@@ -26,10 +26,16 @@ type CsvImportPropertyValidationErrorParams = {
   cause?: unknown;
 };
 
+type CsvImportEntityNotFoundInTemplateErrorParams = {
+  sharedId: string;
+  templateId: string;
+};
+
 export type {
   RelationshipResolutionReason,
   CsvImportFileNotFoundErrorParams,
   CsvImportRelationshipResolutionErrorParams,
   CsvRelationshipUnresolvedToken,
   CsvImportPropertyValidationErrorParams,
+  CsvImportEntityNotFoundInTemplateErrorParams,
 };

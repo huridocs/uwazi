@@ -1,10 +1,10 @@
+import { z } from 'zod';
 import {
   Property,
   PropertyProps,
   Context,
   CreatePropertyAssignmentInput,
 } from '#api/core/domain/template/Property.js';
-import { z } from 'zod';
 import { PropertyTypeInvalidTypeError } from './errors.js';
 import { PropertyTypeEnum } from './PropertyType.js';
 import { LinkEntry, PropertyAssignment } from './PropertyValue.js';
@@ -43,10 +43,6 @@ class LinkProperty extends Property {
     return true;
   }
 
-  private shouldValidateForRequired(shouldValidateForRequired?: boolean): boolean {
-    return shouldValidateForRequired ? this.required : false;
-  }
-
   createPropertyAssignment(
     { value }: CreatePropertyAssignmentInput<LinkEntry>,
     shouldValidateForRequired = false
@@ -54,9 +50,7 @@ class LinkProperty extends Property {
     let parsed = value.filter(v => v?.value?.url?.trim()?.length);
 
     if (shouldValidateForRequired) {
-      parsed = createSchema(this.shouldValidateForRequired(shouldValidateForRequired)).parse(
-        parsed
-      );
+      parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(parsed);
     }
 
     return {
@@ -67,13 +61,8 @@ class LinkProperty extends Property {
     };
   }
 
-  validatePropertyAssignment(
-    { value }: PropertyAssignment<LinkEntry>,
-    shouldValidateForRequired = false
-  ): void {
-    if (this.shouldValidateForRequired(shouldValidateForRequired)) {
-      createSchema(this.shouldValidateForRequired(shouldValidateForRequired)).parse(value);
-    }
+  validatePropertyAssignment({ value }: PropertyAssignment<LinkEntry>): void {
+    createSchema(this.required).parse(value);
   }
 }
 

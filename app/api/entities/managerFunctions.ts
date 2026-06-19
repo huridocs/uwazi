@@ -13,6 +13,7 @@ import { MetadataObjectSchema } from '#shared/types/commonTypes.js';
 import { EntityWithFilesSchema } from '#shared/types/entityType.js';
 import { TypeOfFile } from '#shared/types/fileSchema.js';
 import { FileAttachment } from './entitySavingManager.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 
 const prepareNewFiles = async (
   entity: EntityWithFilesSchema,
@@ -124,9 +125,12 @@ const processFiles = async (
   );
 
   if (entity._id && (entity.attachments || entity.documents)) {
-    const entityFiles: WithId<FileType>[] = await filesAPI.get(
-      { entity: entity.sharedId, type: { $in: [TypeOfFile.attachment, TypeOfFile.document] } },
-      '_id, originalname, type'
+    const entityFiles: WithId<FileType>[] = await FilesDAOFactory.default().getByEntity(
+      entity.sharedId!,
+      {
+        types: [TypeOfFile.attachment, TypeOfFile.document],
+        projection: { _id: 1, originalname: 1, type: 1 },
+      }
     );
 
     await updateDeletedFiles(entityFiles, entity, TypeOfFile.attachment);

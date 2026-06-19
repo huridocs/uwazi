@@ -1,5 +1,5 @@
-import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { z } from 'zod';
+import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { PropertyTypeInvalidTypeError } from './errors.js';
 import { AbstractImageProperty, AbstractImagePropertyProps } from './AbstractImageProperty.js';
 import { PropertyTypeEnum } from './PropertyType.js';
@@ -74,13 +74,8 @@ class ImageProperty extends AbstractImageProperty {
     };
   }
 
-  validatePropertyAssignment(
-    { value }: PropertyAssignment<ImageEntry>,
-    shouldValidateForRequired = false
-  ): void {
-    createSchema(shouldValidateForRequired ? this.required : false, this.isFromURL(value)).parse(
-      value
-    );
+  validatePropertyAssignment({ value }: PropertyAssignment<ImageEntry>): void {
+    createSchema(this.required, this.isFromURL(value)).parse(value);
   }
 }
 

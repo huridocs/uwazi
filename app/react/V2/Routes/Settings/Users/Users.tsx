@@ -74,8 +74,9 @@ const Users = () => {
 
         <SettingsContent.Body>
           <Tabs
+            groupId="settings-users"
             tabListClassName="md:w-2/3 w-full"
-            initialTabId={activeTab}
+            activeTabId={activeTab}
             onTabSelected={tab => {
               setActiveTab(tab as ActiveTab);
               setSelectedUsers([]);

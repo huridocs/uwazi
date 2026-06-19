@@ -77,7 +77,7 @@ const validateTemplatesInLeaves = async (
   const templatesInLeaves = query.getTemplatesInLeaves().map(expandAllTemplates(allTemplatesIds));
 
   const templatesHavingProperty = new Set(
-    await templatesDS.getTemplatesIdsHavingProperty(denormalizedProperty).all()
+    await templatesDS.getTemplatesIdsHavingProperty(denormalizedProperty)
   );
 
   templatesInLeaves.forEach(record => {
@@ -124,7 +124,7 @@ export class CreateTemplateService {
   private async validateQuery(query: MatchQueryNode, denormalizedProperty?: string) {
     const errors: ValidationError['errors'] = [];
 
-    const allTemplatesIds = await this.templatesDataSource.getAllTemplatesIds().all();
+    const allTemplatesIds = await this.templatesDataSource.getAllTemplatesIds();
     validateTemplateExistence(query, errors, allTemplatesIds);
     await validateRelTypeExistence(query, errors, this.relTypesDataSource);
     flushErrors(errors);
@@ -206,12 +206,12 @@ export class CreateTemplateService {
   }
 
   async templateIsUsedInQueries(templateId: string) {
-    const relProps = this.templatesDataSource.getAllRelationshipProperties();
+    const relProps = await this.templatesDataSource.getAllRelationshipProperties();
     return relProps.some(property => property.queryUsesTemplate(templateId));
   }
 
   async relationTypeIsUsedInQueries(typeId: string) {
-    const relProps = this.templatesDataSource.getAllRelationshipProperties();
+    const relProps = await this.templatesDataSource.getAllRelationshipProperties();
     return relProps.some(property => property.queryUsesRelationType(typeId));
   }
 }

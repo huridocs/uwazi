@@ -87,7 +87,7 @@ describe('metadataExtractionActions', () => {
     beforeEach(() => {
       entityDocument = Immutable.fromJS({
         _id: 'fileId',
-        extractedMetadata: [
+        propertySelections: [
           {
             name: 'title',
             selection: {},
@@ -108,7 +108,7 @@ describe('metadataExtractionActions', () => {
 
       expect(actions.setIn).toHaveBeenCalledWith('viewer/doc', 'defaultDoc', {
         _id: 'fileId',
-        extractedMetadata: [{ name: 'property', propertyID: '1', selection: {} }],
+        propertySelections: [{ name: 'property', propertyID: '1', selection: {} }],
       });
 
       expect(actions.updateIn).toHaveBeenCalledWith(

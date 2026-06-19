@@ -1,5 +1,5 @@
 import { Entity, EntityIcon } from '#api/core/domain/entity/Entity.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { LanguageISO6391, PropertySelectionSchema } from '#shared/types/commonTypes.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
@@ -23,6 +23,10 @@ type Input = {
   templateId?: string;
   uploadedFiles?: InputFile[];
   files?: { id: string; originalname: string }[];
+  propertySelections?: {
+    fileId: string;
+    selections: PropertySelectionSchema[];
+  };
 };
 
 type Output = Entity;
@@ -77,7 +81,15 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
         const update = input.files!.find(file => file.id === keptFile.id);
         if (!update) return;
 
-        updatedFiles.push(keptFile.update({ originalname: update.originalname }));
+        const newProps: { originalname: string; propertySelections?: PropertySelectionSchema[] } = {
+          originalname: update.originalname,
+        };
+
+        if (keptFile.id === input.propertySelections?.fileId) {
+          newProps.propertySelections = input.propertySelections.selections;
+        }
+
+        updatedFiles.push(keptFile.update(newProps));
       });
     }
 
@@ -96,8 +108,9 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     await this.deps.fileService.storeFiles(filesCreated);
 
     await this.transactionManager.run(async () => {
-      await this.deps.entitiesService.update(entity, {
+      await this.deps.entitiesService.update([entity], {
         actorId: this.actorId,
+        actor: this.getActor(),
         targetLanguage: input.language,
       });
       await this.deps.fileService.insert(filesCreated);

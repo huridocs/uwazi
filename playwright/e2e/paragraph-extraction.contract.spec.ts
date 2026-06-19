@@ -23,9 +23,13 @@ test('paragraph extraction lifecycle', async ({ page }) => {
 
   await test.step('Enable paragraph extraction feature flag and login', async () => {
     await page.addInitScript(() => {
+      const featureFlags = (
+        window as typeof window & { __featureFlags__?: { paragraphExtraction?: boolean } }
+      ).__featureFlags__;
       (
-        window as typeof window & { __featureFlags__?: { paragraphExtraction: boolean } }
+        window as typeof window & { __featureFlags__?: { paragraphExtraction?: boolean } }
       ).__featureFlags__ = {
+        ...featureFlags,
         paragraphExtraction: true,
       };
     });
@@ -52,14 +56,22 @@ test('paragraph extraction lifecycle', async ({ page }) => {
 
   await test.step('Create paragraph extractor from UI wizard', async () => {
     await page.getByRole('button', { name: 'Add extractor' }).click();
-    await expect(page.getByRole('heading', { name: 'Target template' })).toBeVisible();
-    const targetModal = page.getByRole('dialog', { name: 'Modal' });
-    await targetModal.getByRole('textbox', { name: 'search-multiselect' }).fill(targetTemplateName);
+    const targetModal = page
+      .getByRole('dialog', { name: 'Paragraph extractor wizard' })
+      .filter({ has: page.getByRole('heading', { name: 'Target template' }) });
+    await expect(targetModal).toBeVisible();
+    const targetSearch = targetModal.locator('#search-multiselect');
+    await expect(targetSearch).toBeVisible();
+    await targetSearch.fill(targetTemplateName);
     await targetModal.getByRole('button', { name: 'Select' }).first().click();
     await page.getByRole('button', { name: 'Next' }).click();
-    await expect(page.getByRole('heading', { name: 'Source template' })).toBeVisible();
-    const sourceModal = page.getByRole('dialog', { name: 'Modal' });
-    await sourceModal.getByRole('textbox', { name: 'search-multiselect' }).fill(sourceTemplateName);
+    const sourceModal = page
+      .getByRole('dialog', { name: 'Paragraph extractor wizard' })
+      .filter({ has: page.getByRole('heading', { name: 'Source template' }) });
+    await expect(sourceModal).toBeVisible();
+    const sourceSearch = sourceModal.locator('#search-multiselect');
+    await expect(sourceSearch).toBeVisible();
+    await sourceSearch.fill(sourceTemplateName);
     await sourceModal
       .getByRole('button', { name: 'Select' })
       .filter({ hasText: sourceTemplateName })

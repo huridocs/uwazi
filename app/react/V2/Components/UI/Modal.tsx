@@ -19,9 +19,10 @@ interface ModalProps {
   children: string | React.ReactNode;
   size: modalSizeType;
   id?: string;
+  ariaLabel?: string;
 }
 
-const Modal = ({ children, size, id }: ModalProps) => {
+const Modal = ({ children, size, id, ariaLabel = 'Modal' }: ModalProps) => {
   const sizes = {
     sm: 'w-full max-w-sm min-w-0',
     md: 'w-full max-w-md min-w-0 sm:min-w-[24rem]',
@@ -37,7 +38,7 @@ const Modal = ({ children, size, id }: ModalProps) => {
       className={modalBackdropClass}
       data-testid="modal"
       role="dialog"
-      aria-label="Modal"
+      aria-label={ariaLabel}
       id={id}
     >
       <div className={`mx-auto max-h-[min(100dvh,100vh)] min-h-0 w-full ${sizes[size]}`}>
@@ -60,7 +61,7 @@ const modalHeaderShell =
 Modal.Header = ({ children, className }: ModalChildrenProps) => (
   <div
     className={`${className} ${modalHeaderShell} ${
-      children ? 'border-b p-5' : 'p-2'
+      children ? 'border-b px-5 py-3' : 'p-2'
     } ${modalBorderClass}`}
   >
     {children}
@@ -69,7 +70,7 @@ Modal.Header = ({ children, className }: ModalChildrenProps) => (
 
 Modal.Body = ({ children, className }: ModalChildrenProps) => (
   <div
-    className={`h-full overflow-y-auto p-6 md:max-h-[70vh] ${modalSurfaceClass} ${className}`}
+    className={`h-full overflow-y-auto px-5 py-3 md:max-h-[70vh] ${modalSurfaceClass} ${className}`}
     data-testid="modal-body"
   >
     {children}
@@ -80,8 +81,8 @@ Modal.Footer = ({ children, className }: ModalChildrenProps) => (
   <div
     className={
       className
-        ? `rounded-b border-t p-6 ${modalBorderClass} ${modalSurfaceClass} ${className}`
-        : `flex justify-end gap-x-2 rounded-b border-t p-6 ${modalBorderClass} ${modalSurfaceClass}`
+        ? `rounded-b border-t px-5 py-3 ${modalBorderClass} ${modalSurfaceClass} ${className}`
+        : `flex justify-end gap-x-2 rounded-b border-t px-5 py-3 ${modalBorderClass} ${modalSurfaceClass}`
     }
   >
     {children}

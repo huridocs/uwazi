@@ -11,7 +11,6 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { MongoMultiLanguageEntityDataSource } from '../MongoMultiLanguageEntityDataSource.js';
 import { search } from '#api/search/index.js';
-import { EntityIndexerServiceFactory } from '#api/core/infrastructure/factories/EntityIndexerServiceFactory.js';
 
 const factory = getFixturesFactory();
 const fixtures = {
@@ -77,15 +76,13 @@ const createEntity = (languages: string[], template: Template, userId?: string) 
 const createSut = () => {
   const db = getConnection();
   const transactionManager = TransactionManagerFactory.default();
-  const entityIndexerService = EntityIndexerServiceFactory.forTests();
 
   const sut = new MongoMultiLanguageEntityDataSource({
     db,
     transactionManager,
-    entityIndexerService,
   });
 
-  return { sut, entityIndexerService, transactionManager };
+  return { sut, transactionManager };
 };
 
 describe('MongoMultiLanguageEntityDataSource', () => {
@@ -334,6 +331,31 @@ describe('MongoMultiLanguageEntityDataSource', () => {
     });
   });
 
+  describe('existsByIdAndTemplateId', () => {
+    it('should return true only when sharedId belongs to the given template', async () => {
+      const { sut } = createSut();
+
+      const templateId = new ObjectId().toString();
+      const otherTemplateId = new ObjectId().toString();
+      const template = createTemplateWithId(templateId);
+      const otherTemplate = createTemplateWithId(otherTemplateId);
+
+      const targetEntity = createEntity(['en'], template);
+      const otherEntity = createEntity(['en'], otherTemplate);
+      await sut.bulkInsert([targetEntity, otherEntity]);
+
+      await expect(sut.existsByIdAndTemplateId(targetEntity.sharedId, templateId)).resolves.toBe(
+        true
+      );
+      await expect(
+        sut.existsByIdAndTemplateId(targetEntity.sharedId, otherTemplateId)
+      ).resolves.toBe(false);
+      await expect(sut.existsByIdAndTemplateId('missing-shared-id', templateId)).resolves.toBe(
+        false
+      );
+    });
+  });
+
   describe('indexing on transaction commit', () => {
     let searchIndexSpy: jest.SpyInstance;
 
@@ -344,199 +366,6 @@ describe('MongoMultiLanguageEntityDataSource', () => {
     afterEach(() => {
       searchIndexSpy.mockRestore();
     });
-
-    it('indexes created entity DBOs on commit', async () => {
-      const { sut, entityIndexerService, transactionManager } = createSut();
-      const template = createSampleTemplate();
-      const entity = createEntity(['en', 'es'], template);
-
-      await sut.create(entity);
-      await transactionManager.executeOnCommitHandlers(undefined);
-
-      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.sync).toHaveBeenCalledWith(
-        expect.arrayContaining([entity.sharedId])
-      );
-    });
-
-    it('indexes bulk inserted entity DBOs on commit', async () => {
-      const { sut, entityIndexerService, transactionManager } = createSut();
-      const template = createSampleTemplate();
-      const entity1 = createEntity(['en'], template);
-      const entity2 = createEntity(['en', 'es'], template);
-
-      await sut.bulkInsert([entity1, entity2]);
-      await transactionManager.executeOnCommitHandlers(undefined);
-
-      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.sync).toHaveBeenCalledWith(
-        expect.arrayContaining([entity1.sharedId, entity2.sharedId])
-      );
-    });
-
-    it('indexes updated entity DBOs on commit', async () => {
-      const { sut, entityIndexerService, transactionManager } = createSut();
-      const template = createSampleTemplate();
-      const entity = createEntity(['en', 'es'], template);
-
-      await sut.update(entity);
-      await transactionManager.executeOnCommitHandlers(undefined);
-
-      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.sync).toHaveBeenCalledWith(
-        expect.arrayContaining([entity.sharedId])
-      );
-    });
-
-    it('indexes bulk updated entity DBOs on commit', async () => {
-      const { sut, entityIndexerService, transactionManager } = createSut();
-      const template = createSampleTemplate();
-      const entity1 = createEntity(['en'], template);
-      const entity2 = createEntity(['en', 'es'], template);
-
-      await sut.bulkUpdate([entity1, entity2]);
-      await transactionManager.executeOnCommitHandlers(undefined);
-
-      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.sync).toHaveBeenCalledWith(
-        expect.arrayContaining([entity1.sharedId, entity2.sharedId])
-      );
-    });
-
-    it('indexes entities with deleted metadata properties on commit', async () => {
-      const template = createSampleTemplate();
-      const entity = createEntity(['en', 'es'], template);
-
-      const { sut: setupSut, transactionManager: setupTm } = createSut();
-      await setupSut.bulkInsert([entity]);
-      await setupTm.executeOnCommitHandlers(undefined);
-
-      const { sut, entityIndexerService, transactionManager } = createSut();
-      await sut.deleteMetadataProperties(['text'], [entity.sharedId]);
-      await transactionManager.executeOnCommitHandlers(undefined);
-
-      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.sync).toHaveBeenCalledWith(
-        expect.arrayContaining([entity.sharedId])
-      );
-    });
-
-    it('indexes entities with renamed metadata properties on commit', async () => {
-      const template = createSampleTemplate();
-      const entity = createEntity(['en', 'es'], template);
-
-      const { sut: setupSut, transactionManager: setupTm } = createSut();
-      await setupSut.bulkInsert([entity]);
-      await setupTm.executeOnCommitHandlers(undefined);
-
-      const { sut, entityIndexerService, transactionManager } = createSut();
-      await sut.renameMetadataProperties({ text: 'newText' }, [entity.sharedId]);
-      await transactionManager.executeOnCommitHandlers(undefined);
-
-      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.sync).toHaveBeenCalledWith(
-        expect.arrayContaining([entity.sharedId])
-      );
-    });
-
-    it('updates editDate and indexes entities via touchEntitiesBySharedIds on commit', async () => {
-      const template = createSampleTemplate();
-      const entity = createEntity(['en', 'es'], template);
-
-      const { sut: setupSut, transactionManager: setupTm } = createSut();
-      await setupSut.bulkInsert([entity]);
-      await setupTm.executeOnCommitHandlers(undefined);
-
-      const before = Date.now();
-      const { sut, entityIndexerService, transactionManager } = createSut();
-      await sut.touchEntitiesBySharedIds([entity.sharedId]);
-      await transactionManager.executeOnCommitHandlers(undefined);
-
-      const updatedDocs = await testingEnvironment.db
-        .getCollection('entities')!
-        .find({ sharedId: entity.sharedId })
-        .toArray();
-
-      expect(updatedDocs).toHaveLength(2);
-      updatedDocs.forEach(doc => {
-        expect(doc.editDate).toBeGreaterThanOrEqual(before);
-      });
-
-      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.sync).toHaveBeenCalledWith(
-        expect.arrayContaining([entity.sharedId])
-      );
-    });
-
-    it('indexes affected entities after deleting references on commit', async () => {
-      const selectTemplate = factory.template('SelectTemplate', [
-        factory.property('ref_prop', 'select'),
-      ]);
-      const targetSharedId = 'target-shared-id';
-      const affectedSharedId = factory.idString('affected-entity');
-
-      await testingEnvironment.db.getCollection('templates')!.insertOne(selectTemplate);
-      await testingEnvironment.db.getCollection('entities')!.insertOne({
-        _id: new ObjectId(),
-        sharedId: affectedSharedId,
-        language: 'en',
-        template: selectTemplate._id,
-        title: 'Affected Entity',
-        metadata: { ref_prop: [{ value: targetSharedId }] },
-        obsoleteMetadata: [],
-        published: true,
-        creationDate: Date.now(),
-        editDate: Date.now(),
-        permissions: [],
-      });
-
-      const { sut, entityIndexerService, transactionManager } = createSut();
-      await sut.deleteReferencesToSharedIds([targetSharedId]);
-      await transactionManager.executeOnCommitHandlers(undefined);
-
-      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.sync).toHaveBeenCalledWith(
-        expect.arrayContaining([affectedSharedId])
-      );
-    });
-
-    it('indexes entities via bulkUpdateDeprecated on commit', async () => {
-      const template = createSampleTemplate();
-      const entity = createEntity(['en', 'es'], template);
-
-      const { sut: setupSut, transactionManager: setupTm } = createSut();
-      await setupSut.bulkInsert([entity]);
-      await setupTm.executeOnCommitHandlers(undefined);
-
-      const { sut, entityIndexerService, transactionManager } = createSut();
-      await sut.bulkUpdateDeprecated([entity]);
-      await transactionManager.executeOnCommitHandlers(undefined);
-
-      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.sync).toHaveBeenCalledWith(
-        expect.arrayContaining([entity.sharedId])
-      );
-    });
-
-    it('deletes indexed entities on bulk delete commit', async () => {
-      const template = createSampleTemplate();
-      const entity1 = createEntity(['en'], template);
-      const entity2 = createEntity(['en', 'es'], template);
-
-      const { sut: setupSut, transactionManager: setupTm } = createSut();
-      await setupSut.bulkInsert([entity1, entity2]);
-      await setupTm.executeOnCommitHandlers(undefined);
-
-      const { sut, entityIndexerService, transactionManager } = createSut();
-      await sut.bulkDelete([entity1.sharedId, entity2.sharedId]);
-      await transactionManager.executeOnCommitHandlers(undefined);
-
-      expect(entityIndexerService.remove).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.remove).toHaveBeenCalledWith(
-        expect.arrayContaining([entity1.sharedId, entity2.sharedId])
-      );
-    });
-
     it('calls search.bulkDeleteBySharedId during bulkDelete (legacy ES infra)', async () => {
       const bulkDeleteBySharedIdSpy = jest
         .spyOn(search, 'bulkDeleteBySharedId')

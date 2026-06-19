@@ -319,7 +319,12 @@ const PageEditor = () => {
               <Translate>Loading</Translate>
             </p>
           ) : (
-            <Tabs unmountTabs={false} tabListClassName="md:w-2/3 w-full" className="min-h-0 flex-1">
+            <Tabs
+              groupId="settings-page-editor"
+              unmountTabs={false}
+              tabListClassName="md:w-2/3 w-full"
+              className="min-h-0 flex-1"
+            >
               <Tabs.Tab id="Configuration" label={<Translate>Configuration</Translate>}>
                 <form className="pb-6">
                   <input className="hidden" {...register('sharedId')} />

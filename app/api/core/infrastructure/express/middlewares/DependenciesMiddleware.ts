@@ -6,7 +6,6 @@ import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
-import { ElasticSearchClientFactory } from '../../elasticSearch/ElasticSearchClientFactory.js';
 import { User } from '#api/users.v2/model/User.js';
 
 const dependenciesContextMiddleware = (
@@ -14,10 +13,6 @@ const dependenciesContextMiddleware = (
   _response: Response,
   next: NextFunction
 ) => {
-  if (!/^\/(api|files|assets)(\/|$)/i.test(request.path)) {
-    return next();
-  }
-
   const tenant = tenants.current();
   const actor = User.createFrom(request.user);
 
@@ -31,8 +26,6 @@ const dependenciesContextMiddleware = (
         eventEmitter: EventEmitterFactory.default,
         idGenerator: IdGeneratorFactory.default,
         logger: LoggerFactory.default,
-        elasticClient: ElasticSearchClientFactory.tenantAware,
-        authorizedEntityESClient: ElasticSearchClientFactory.authorizedEntityClient,
       },
     },
     next

@@ -102,5 +102,19 @@ describe('URLAttachment', () => {
       expect(updated.hasChanged).toBe(true);
       expect(updated.previousVersion?.originalname).toBe('original.pdf');
     });
+
+    it('should change url', () => {
+      const file = FileBuilder.urlAttachment(f.idString('att'), {
+        originalname: 'original.pdf',
+        entity: 'sharedId1',
+        url: 'https://example.com/doc.pdf',
+      });
+      const updated = file.update({ url: 'http://changed.com' });
+
+      expect(updated).toBeInstanceOf(URLAttachment);
+      expect(updated.toDTO()).toEqual({ ...file.toDTO(), url: 'http://changed.com' });
+      expect(updated.hasChanged).toBe(true);
+      expect(updated.previousVersion?.url).toBe('https://example.com/doc.pdf');
+    });
   });
 });
