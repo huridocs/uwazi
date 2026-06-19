@@ -17,6 +17,8 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
   //   secret: { type: String, select: false },
   // }
 
+  //this would be use by a controller that get's the users
+  //for queries we don't use usecases?
   async getUsersWithGroups() {
     //cleanup of password and other private fields goes here
     // aggregate users and usergroups
