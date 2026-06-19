@@ -11,9 +11,10 @@ export const TemplateMigrationConfig: MigrationConfig = {
       name: doc.name,
       properties: JSON.stringify(doc.properties ?? []),
       commonProperties: JSON.stringify(doc.commonProperties ?? []),
-      color: doc.color ?? null,
       default: doc.default ?? false,
-      entityViewPage: doc.entityViewPage ?? null,
+      color: doc.color ?? null,
+      ...(doc.color ? { color: doc.color } : {}),
+      ...(doc.entityViewPage ? { entityViewPage: doc.entityViewPage } : {}),
       processing: doc.processing ? JSON.stringify(doc.processing) : null,
     };
   },

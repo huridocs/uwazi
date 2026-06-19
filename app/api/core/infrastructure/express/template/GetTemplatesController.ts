@@ -11,7 +11,9 @@ class GetTemplatesController extends AbstractController {
     const dao = TemplatesDAOFactory.default();
     const templates = await dao.get();
 
-    const response: ResponseDto = { rows: templates };
+    const response: ResponseDto = {
+      rows: templates.map(template => ({ ...template, _id: template._id.toString() })),
+    };
 
     this.response.json(response);
   }

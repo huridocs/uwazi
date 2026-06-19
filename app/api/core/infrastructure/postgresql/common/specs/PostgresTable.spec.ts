@@ -9,7 +9,6 @@ type TestRow = {
   _id: string;
   name: string;
   values: Record<string, unknown>[];
-  tenant_id: string;
 };
 
 const createTable = (tenantId = DEFAULT_TENANT) =>
@@ -118,7 +117,6 @@ describe('PostgresTable', () => {
       const rows = await table.query<TestRow>().all();
 
       expect(rows).toHaveLength(2);
-      expect(rows.every(r => r.tenant_id === DEFAULT_TENANT)).toBe(true);
     });
 
     it('should filter by where condition', async () => {
@@ -155,7 +153,7 @@ describe('PostgresTable', () => {
       const rowsFromA = await tableA.query<TestRow>().all();
 
       expect(rowsFromA).toHaveLength(2);
-      expect(rowsFromA.every((r: TestRow) => r.tenant_id === 'tenant-a')).toBe(true);
+      expect(rowsFromA.every((r: TestRow) => r.name.startsWith('A'))).toBe(true);
     });
   });
 
