@@ -1,22 +1,13 @@
-import { testingTenants } from '#api/utils/testingTenants.js';
-import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { TemplateWithDuplicatedNameOnTheSystemError } from '#api/core/domain/template/errors.js';
-import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDataSource.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+import { CreateTemplateUseCaseFactory } from '#api/core/infrastructure/factories/CreateTemplateUseCaseFactory.js';
 import { LegacyTranslationService } from '#api/core/infrastructure/mongodb/template/LegacyTemplatesTranslationService.js';
-import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
-import { LegacyPageServiceFactory } from '#api/pages.v2/infrastructure/factories/LegacyPageServiceFactory.js';
-import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
-import { CreateTemplateUseCase } from '../CreateTemplate.js';
 
 type TestConfig = {
   name: string;
@@ -48,24 +39,8 @@ type CreateProps = {
 const createSut = (props?: CreateProps, postgresTemplates = false) =>
   testingEnvironment.runWithContext(
     () => {
-      const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
-      const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
-      const idGenerator = IdGeneratorFactory.default();
-      const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
-      const translationService = props?.translationService ?? new LegacyTranslationService();
-      const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
-      const pageService = LegacyPageServiceFactory.default({ transactionManager });
-
-      const sut = new CreateTemplateUseCase({
-        templatesDS,
-        idGenerator,
-        thesauriDS:
-          props?.thesauriDS ?? new MongoThesauriDataSource(getConnection(), transactionManager),
-        settingsDS,
-        translationService,
-        relationshipTypesDS,
-        transactionManager,
-        pageService,
+      const sut = CreateTemplateUseCaseFactory.default({
+        ...(props?.translationService ? { translationService: props.translationService } : {}),
       });
 
       return { sut };

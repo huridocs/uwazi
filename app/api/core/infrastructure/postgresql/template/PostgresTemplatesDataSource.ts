@@ -8,12 +8,10 @@ import {
 } from '#api/core/domain/template/errors.js';
 import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty.js';
 import { Property } from '#api/core/domain/template/Property.js';
-import { RelationshipProperty } from '#api/relationships.v2/model/RelationshipProperty.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { PostgresConnectionConfig } from '#api/core/infrastructure/postgresql/common/PostgresTable.js';
-import { mapPropertyQuery } from '#api/core/infrastructure/mongodb/template/QueryMapper.js';
 import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
 import { resetIndex, updateMapping } from '#api/search/entitiesIndex.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
@@ -82,25 +80,6 @@ export class PostgresTemplatesDataSource extends PostgresDataSource implements T
         traverse: match.traverse ? this.mapQueryFromStrings(match.traverse) : undefined,
       })),
     }));
-  }
-
-  async getAllRelationshipProperties(): Promise<RelationshipProperty[]> {
-    const rows = await this.dao.get();
-    return rows.flatMap(row =>
-      (row.properties || [])
-        .filter(p => p.type === 'newRelationship')
-        .map(
-          p =>
-            new RelationshipProperty(
-              p._id!.toString(),
-              p.name,
-              p.label,
-              mapPropertyQuery(this.mapQueryFromStrings(p.query || [])),
-              row._id,
-              p.denormalizedProperty
-            )
-        )
-    );
   }
 
   async getGeneratedIdPropertiesByIds(ids?: string[]): Promise<GenerateIdProperty[]> {

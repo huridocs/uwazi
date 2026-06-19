@@ -356,7 +356,6 @@ beforeEach(async () => {
   service = new DenormalizationService(
     relationshipsDataSource,
     entitiesDataSource,
-    templatesDataSource,
     SettingsDataSourceFactory.default({ transactionManager }),
     transactionManager,
     indexMock,

@@ -4,7 +4,6 @@ import {
   MongoDataSource,
   MongoDSOptions,
 } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import {
   DefaultTemplateNotFoundError,
@@ -14,13 +13,11 @@ import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { resetIndex, updateMapping } from '#api/search/entitiesIndex.js';
 import { Property } from '../../../domain/template/Property.js';
-import { RelationshipProperty } from '#api/relationships.v2/model/RelationshipProperty.js';
 import { Template } from '../../../domain/template/Template.js';
 import { TemplatesDataSource } from '../../../application/contracts/TemplatesDataSource.js';
 import { V1RelationshipProperty } from '../../../domain/template/V1RelationshipProperty.js';
 import { TemplateDBO } from './DBOs/TemplateDBO.js';
 import { MongoTemplateMapper, MongoTemplatePropertyMapper } from './MongoTemplateMapper.js';
-import { mapPropertyQuery } from './QueryMapper.js';
 import { MongoTemplatesDAO } from './MongoTemplatesDAO.js';
 
 type MongoTemplatesDataSourceDeps = {
@@ -65,41 +62,6 @@ export class MongoTemplatesDataSource
   async getAll(): Promise<Template[]> {
     const templates = await this.dao.get();
     return templates.map(MongoTemplateMapper.toDomain);
-  }
-
-  async getAllRelationshipProperties(): Promise<RelationshipProperty[]> {
-    const cursor = this.getCollection().aggregate([
-      {
-        $match: {
-          'properties.type': 'newRelationship',
-        },
-      },
-      { $unwind: '$properties' },
-      {
-        $match: {
-          'properties.type': 'newRelationship',
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          properties: 1,
-        },
-      },
-    ]);
-
-    const dbos = await cursor.toArray();
-    return dbos.map(
-      template =>
-        new RelationshipProperty(
-          template.properties._id,
-          template.properties.name,
-          template.properties.label,
-          mapPropertyQuery(template.properties.query),
-          MongoIdHandler.mapToApp(template._id),
-          template.properties.denormalizedProperty
-        )
-    );
   }
 
   async getGeneratedIdPropertiesByIds(propertyIds: string[]): Promise<GenerateIdProperty[]> {

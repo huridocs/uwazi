@@ -1,7 +1,6 @@
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { DeprecatedEntitiesDataSource } from '#api/entities.v2/contracts/DeprecatedEntitiesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { RelationshipProperty } from '../model/RelationshipProperty.js';
 import { DeprecatedEntity } from '#api/entities.v2/model/Entity.js';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource.js';
@@ -17,8 +16,6 @@ export class DenormalizationService {
 
   private entitiesDS: DeprecatedEntitiesDataSource;
 
-  private templatesDS: TemplatesDataSource;
-
   private settingsDS: SettingsDataSource;
 
   private transactionManager: TransactionManager;
@@ -30,7 +27,6 @@ export class DenormalizationService {
   constructor(
     relationshipsDS: RelationshipsDataSource,
     entitiesDS: DeprecatedEntitiesDataSource,
-    templatesDS: TemplatesDataSource,
     settingsDS: SettingsDataSource,
     transactionManager: TransactionManager,
     indexEntitiesCallback: IndexEntitiesCallback,
@@ -38,7 +34,6 @@ export class DenormalizationService {
   ) {
     this.relationshipsDS = relationshipsDS;
     this.entitiesDS = entitiesDS;
-    this.templatesDS = templatesDS;
     this.settingsDS = settingsDS;
     this.transactionManager = transactionManager;
     this.indexEntities = indexEntitiesCallback;
@@ -50,7 +45,9 @@ export class DenormalizationService {
     language: string,
     relatedEntities: DeprecatedEntity[] = []
   ) {
-    const properties = await this.templatesDS.getAllRelationshipProperties();
+    // this method was removed from templatesDS since its only used here and this module is deprecated and not used
+    // const properties = await this.templatesDS.getAllRelationshipProperties();
+    const properties: RelationshipProperty[] = [];
     const entities: { sharedId: string; property: string }[] = [];
     await Promise.all(
       properties.map(async property => {
@@ -150,7 +147,9 @@ export class DenormalizationService {
   }
 
   private async updateDenormalizedMetadataDirectly(changedEntityIds: string[], language: string) {
-    const relationshipProperties = await this.templatesDS.getAllRelationshipProperties();
+    // this method was removed from templatesDS since its only used here and this module is deprecated and not used
+    // const relationshipProperties = await this.templatesDataSource.getAllRelationshipProperties();
+    const relationshipProperties: RelationshipProperty[] = [];
     const relationshipPropertyNames = relationshipProperties.map(property => property.name);
 
     await this.entitiesDS.getByIds(changedEntityIds, language).forEach(async entity => {

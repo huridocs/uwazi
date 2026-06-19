@@ -203,12 +203,16 @@ export class CreateTemplateService {
   }
 
   async templateIsUsedInQueries(templateId: string) {
-    const relProps = await this.templatesDataSource.getAllRelationshipProperties();
+    // this method was removed from templatesDS since its only used here and this module is deprecated and not used
+    // const relProps = await this.templatesDataSource.getAllRelationshipProperties();
+    const relProps: RelationshipProperty[] = [];
     return relProps.some(property => property.queryUsesTemplate(templateId));
   }
 
   async relationTypeIsUsedInQueries(typeId: string) {
-    const relProps = await this.templatesDataSource.getAllRelationshipProperties();
+    // this method was removed from templatesDS since its only used here and this module is deprecated and not used
+    // const relProps = await this.templatesDataSource.getAllRelationshipProperties();
+    const relProps: RelationshipProperty[] = [];
     return relProps.some(property => property.queryUsesRelationType(typeId));
   }
 }

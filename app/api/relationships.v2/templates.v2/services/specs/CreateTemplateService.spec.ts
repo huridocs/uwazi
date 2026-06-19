@@ -64,7 +64,6 @@ function setUpService() {
   const denormalizationService = new DenormalizationService(
     relationshipsDS,
     entityDS,
-    templatesDS,
     settingsDS,
     transactionManager,
     async () => {},

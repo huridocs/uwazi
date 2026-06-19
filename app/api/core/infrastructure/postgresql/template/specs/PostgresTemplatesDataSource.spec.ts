@@ -99,40 +99,6 @@ describe('PostgresTemplatesDataSource', () => {
     expect(found[0].name).toBe('referencing');
   });
 
-  it('should get all relationship properties', async () => {
-    const ds = createDS();
-
-    const withNewRel = factory.template('newRel', [
-      {
-        ...factory.property('rel1', 'newRelationship'),
-        query: [
-          {
-            direction: 'out',
-            types: [factory.idString('type1')],
-            match: [{ templates: [factory.idString('targetTemplate')] }],
-          },
-        ],
-      },
-    ]);
-
-    await testingPG.setFixtures({
-      templates: [
-        {
-          _id: withNewRel._id.toHexString(),
-          name: withNewRel.name,
-          properties: withNewRel.properties,
-          commonProperties: withNewRel.commonProperties,
-          default: false,
-        },
-      ],
-    });
-
-    const relProps = await ds.getAllRelationshipProperties();
-    expect(relProps).toHaveLength(1);
-    expect(relProps[0].name).toBe('rel1');
-    expect(relProps[0].query).toHaveLength(1);
-  });
-
   it('should get all text properties', async () => {
     const ds = createDS();
 

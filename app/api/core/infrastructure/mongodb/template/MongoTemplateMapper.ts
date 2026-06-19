@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 /* eslint-disable max-classes-per-file */
+import { ObjectId } from 'mongodb';
 import {
   AbstractImageProperty,
   ImageStyle,
@@ -24,16 +25,12 @@ import { NestedProperty } from '#api/core/domain/template/NestedProperty.js';
 import { NumericProperty } from '#api/core/domain/template/NumericProperty.js';
 import { PreviewProperty } from '#api/core/domain/template/PreviewProperty.js';
 import { Property } from '#api/core/domain/template/Property.js';
-import { RelationshipProperty } from '#api/relationships.v2/model/RelationshipProperty.js';
 import { SelectProperty } from '#api/core/domain/template/select/SelectProperty.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { TextProperty } from '#api/core/domain/template/TextProperty.js';
 import { TitleProperty } from '#api/core/domain/template/TitleProperty.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
-import { mapPropertyQuery } from '#api/core/infrastructure/mongodb/template/QueryMapper.js';
-import { ObjectId } from 'mongodb';
 import { PropertySchema } from '#shared/types/commonTypes.js';
-import { TraverseQueryDBO } from './DBOs/RelationshipsQueryDBO.js';
 import { TemplateDBO } from './DBOs/TemplateDBO.js';
 
 export class CommonPropertyMapper {
@@ -259,16 +256,6 @@ export class MongoTemplatePropertyMapper {
           content: schema.content,
           inherit: schema.inherit as any,
         });
-
-      case 'newRelationship':
-        return new RelationshipProperty(
-          baseProps.id,
-          baseProps.name,
-          baseProps.label,
-          mapPropertyQuery(schema.query as TraverseQueryDBO[]),
-          template,
-          schema.denormalizedProperty
-        );
 
       default:
         throw new Error(

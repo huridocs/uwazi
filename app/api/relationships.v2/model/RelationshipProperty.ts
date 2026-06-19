@@ -2,11 +2,11 @@ import { DeprecatedEntity } from '#api/entities.v2/model/Entity.js';
 import { MatchQueryNode } from './MatchQueryNode.js';
 import { Relationship } from './Relationship.js';
 import { Property, PropertyUpdateInfo } from '#api/core/domain/template/Property.js';
-import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+
 import { FilterablePropertyProps } from '#api/core/domain/template/FilterableProperty.js';
 
 type Props = {
-  type?: PropertyTypeEnum.NewRelationship;
+  type?: 'newRelationship';
   query: MatchQueryNode['traversals'];
   denormalizedProperty?: string;
 } & Omit<FilterablePropertyProps, 'type'>;

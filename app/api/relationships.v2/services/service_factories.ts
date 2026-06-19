@@ -94,7 +94,6 @@ const createUpdateStrategy = async (
 const DenormalizationService = async (transactionManager: MongoTransactionManager) => {
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const entitiesDS = DefaultDeprecatedEntitiesDataSource(transactionManager);
-  const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
   const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
 
   const newRelationshipsSettings = await settingsDS.getNewRelationshipsConfiguration();
@@ -102,7 +101,6 @@ const DenormalizationService = async (transactionManager: MongoTransactionManage
   const service = new GenericDenormalizationService(
     relationshipsDS,
     entitiesDS,
-    templatesDS,
     settingsDS,
     transactionManager,
     indexEntitiesCallback,

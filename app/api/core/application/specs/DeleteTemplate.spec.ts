@@ -1,34 +1,23 @@
-/* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
-import { testingTenants } from '#api/utils/testingTenants.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { TemplateInUseError } from '#api/core/domain/template/errors.js';
+import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateDeletedEvent.js';
 import { DeleteTemplateUseCaseFactory } from '#api/core/infrastructure/factories/DeleteTemplateUseCaseFactory.js';
+import { spyOnEmit } from '#api/core/libs/eventsbus/eventTesting.js';
+import templates from '#api/core/v1_layer/templates/index.js';
 import {
-  fixtures,
   createEntitiesInAllLanguages,
+  fixtures,
   templateToBeDeleted,
   templateToBeEditedId,
   thesaurusTemplate2Id,
   thesaurusTemplate3Id,
   thesaurusTemplateId,
 } from '#api/core/v1_layer/templates/specs/fixtures/fixtures.js';
-import templates from '#api/core/v1_layer/templates/index.js';
-import db from '#api/utils/testing_db.js';
 import documents from '#api/documents/index.js';
-import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateDeletedEvent.js';
-import { spyOnEmit } from '#api/core/libs/eventsbus/eventTesting.js';
-import { TemplateInUseError } from '#api/core/domain/template/errors.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
-import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
-import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
-import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
-import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
-import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
-import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import db from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 
 type TestConfig = {
   name: string;
@@ -72,30 +61,6 @@ describe('DeleteTemplateUseCase', () => {
   describe.each(testConfigs)('$name', ({ postgresTemplates, getTemplates }) => {
     const createSut = () =>
       testingEnvironment.runWithContext(() => DeleteTemplateUseCaseFactory.default(), {
-        factories: {
-          jobsDispatcher: () => {
-            const tm = ExecutionContext.transactionManager as MongoTransactionManager;
-            const templatesDS = TemplatesDataSourceFactory.default({ transactionManager: tm });
-            const multiLanguageEntitiesDS = EntitiesDataSourceFactory.default({
-              transactionManager: tm,
-            });
-            const filesDS = FilesDataSourceFactory.default();
-            const relationshipsV1DS = new MongoRelationshipsV1DataSource(getConnection(), tm);
-            return new SyncDispatcherForTests({
-              TemplatePostProcessEntitiesJob: async () =>
-                new TemplatePostProcessEntitiesJob({
-                  useCase: new TemplateUpdateDenormalizeEntitiesBatch({
-                    entitiesDS: multiLanguageEntitiesDS,
-                    relationshipsV1DS,
-                    templatesDS,
-                    transactionManager: tm,
-                    filesDS,
-                  }),
-                  templatesDS,
-                }),
-            });
-          },
-        },
         ...(postgresTemplates
           ? {
               tenant: {

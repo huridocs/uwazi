@@ -5,7 +5,6 @@ import {
   TemplateDoesNotExistError,
 } from '#api/core/domain/template/errors.js';
 import { Property } from '../../domain/template/Property.js';
-import { RelationshipProperty } from '#api/relationships.v2/model/RelationshipProperty.js';
 import { Template } from '../../domain/template/Template.js';
 import { V1RelationshipProperty } from '../../domain/template/V1RelationshipProperty.js';
 
@@ -13,7 +12,6 @@ export interface TemplatesDataSource {
   updateMapping(template: Template, reset?: boolean): Promise<void>;
   getAll(): Promise<Template[]>;
   getAllTemplatesIds(): Promise<string[]>;
-  getAllRelationshipProperties(): Promise<RelationshipProperty[]>;
   getV1RelationshipPropertiesByIds(ids?: string[]): Promise<V1RelationshipProperty[]>;
   getGeneratedIdPropertiesByIds(ids?: string[]): Promise<GenerateIdProperty[]>;
   getAllProperties(): Promise<Property[]>;
