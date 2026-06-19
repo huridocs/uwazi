@@ -108,14 +108,6 @@ export class MongoEntitiesDataSource
     entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
   }
 
-  private async getReferencePropertyNames(): Promise<string[]> {
-    return this.templatesDAO.getReferencePropertyNames();
-  }
-
-  private async findTemplatesUsingThesaurus(thesaurusId: string) {
-    return this.templatesDAO.findTemplateIdsUsingThesaurus(thesaurusId);
-  }
-
   async getSharedIdsUsingThesaurus(thesaurusId: string) {
     const settings = await this.getCollection<SettingsType>('settings').findOne();
     const defaultLanguage = settings?.languages?.find(l => l.default)?.key;
@@ -124,7 +116,7 @@ export class MongoEntitiesDataSource
       throw new Error('Default language not found in settings when trying to delete references');
     }
 
-    const uniqueTemplateIds = await this.findTemplatesUsingThesaurus(thesaurusId);
+    const uniqueTemplateIds = await this.templatesDAO.findTemplateIdsUsingThesaurus(thesaurusId);
 
     const entities = await this.getCollection()
       .aggregate([
@@ -252,7 +244,7 @@ export class MongoEntitiesDataSource
   async deleteReferencesToSharedIds(deletedSharedIds: string[]): Promise<void> {
     if (deletedSharedIds.length === 0) return;
 
-    const propertyNames = await this.getReferencePropertyNames();
+    const propertyNames = await this.templatesDAO.getReferencePropertyNames();
     if (propertyNames.length === 0) return;
 
     const affectedSharedIds = await this.findAffectedSharedIds(deletedSharedIds, propertyNames);

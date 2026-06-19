@@ -559,4 +559,44 @@ describe('PostgresTable', () => {
       expect(names).toEqual(['group-a-1', 'group-a-2']);
     });
   });
+
+  describe('raw', () => {
+    it('should execute raw SQL with tenant_id filter', async () => {
+      const table = createTable('tenant-a');
+      await table.insert({ _id: 'raw-1', name: 'before', values: jsonVal([]) });
+
+      await table.raw(`UPDATE "thesauri" SET name = ? WHERE "_id" = ? AND "tenant_id" = ?`, [
+        'after',
+        'raw-1',
+        'tenant-a',
+      ]);
+
+      const row = await table.query<TestRow>().where({ _id: 'raw-1' }).first();
+      expect(row!.name).toBe('after');
+    });
+
+    it('should throw when tenant_id filter is missing', async () => {
+      const table = createTable('tenant-a');
+
+      expect(() =>
+        table.raw(`UPDATE "thesauri" SET name = 'x' WHERE "_id" = ?`, ['raw-2'])
+      ).toThrow('missing a tenant_id filter');
+    });
+
+    it('should enforce tenant_id — cannot affect rows from other tenants via raw', async () => {
+      const tableA = createTable('tenant-a');
+      const tableB = createTable('tenant-b');
+
+      await tableA.insert({ _id: 'protected-raw', name: 'keep me', values: jsonVal([]) });
+      await tableB.insert({ _id: 'protected-raw', name: 'other', values: jsonVal([]) });
+
+      await tableB.raw(
+        `UPDATE "thesauri" SET name = 'hacked' WHERE "_id" = ? AND "tenant_id" = ?`,
+        ['protected-raw', 'tenant-b']
+      );
+
+      const rowA = await tableA.query<TestRow>().where({ _id: 'protected-raw' }).first();
+      expect(rowA!.name).toBe('keep me');
+    });
+  });
 });

@@ -204,41 +204,41 @@ export class PostgresTemplatesDataSource extends PostgresDataSource implements T
   }
 
   async incrementProcessingTracking(id: Template['id']) {
-    const rows = await this.dao.get([id]);
-    const row = rows[0];
-    if (!row) {
-      return { total: 1, completed: 0 };
-    }
+    const result = await this.table.raw<{
+      rows: { processing: { active?: boolean; totalJobs?: number; completedJobs?: number } }[];
+    }>(
+      `UPDATE ?? SET processing = jsonb_set(
+        COALESCE(processing, '{"active":false,"totalJobs":0,"completedJobs":0}'::jsonb),
+        '{completedJobs}',
+        ((COALESCE(processing->>'completedJobs', '0')::int + 1)::text)::jsonb
+      )
+      WHERE "_id" = ? AND "tenant_id" = ?
+      RETURNING processing`,
+      [this.table.tableName, id, this.table.tenantId]
+    );
 
-    const processing = row.processing || { active: false, totalJobs: 0, completedJobs: 0 };
-    const completedJobs = (processing.completedJobs || 0) + 1;
-
-    await this.table
-      .query()
-      .where({ _id: id })
-      .update({ processing: JSON.stringify({ ...processing, completedJobs }) });
+    const processing = result.rows[0]?.processing || {
+      active: false,
+      totalJobs: 0,
+      completedJobs: 0,
+    };
 
     return {
       total: processing.totalJobs || 1,
-      completed: completedJobs,
+      completed: processing.completedJobs || 0,
     };
   }
 
   async addJobsToProcessingCount(templateId: string, totalJobs: number) {
-    const rows = await this.dao.get([templateId]);
-    const row = rows[0];
-    const processing = row?.processing || { active: false, totalJobs: 0, completedJobs: 0 };
-
-    await this.table
-      .query()
-      .where({ _id: templateId })
-      .update({
-        processing: JSON.stringify({
-          ...processing,
-          active: true,
-          totalJobs: (processing.totalJobs || 0) + totalJobs,
-        }),
-      });
+    await this.table.raw(
+      `UPDATE ?? SET processing = jsonb_set(
+        COALESCE(processing, '{"active":false,"totalJobs":0,"completedJobs":0}'::jsonb),
+        '{totalJobs}',
+        ((COALESCE(processing->>'totalJobs', '0')::int + ?)::text)::jsonb
+      ) || '{"active":true}'::jsonb
+      WHERE "_id" = ? AND "tenant_id" = ?`,
+      [this.table.tableName, totalJobs, templateId, this.table.tenantId]
+    );
   }
 
   async completeProcessing(templateId: string) {

@@ -154,4 +154,64 @@ describe('PostgresTemplatesDataSource', () => {
 
     expect(await ds.isTemplateUnique(uniqueTemplate2)).toBe(true);
   });
+
+  it('should atomically increment completedJobs under concurrent calls', async () => {
+    const ds = createDS();
+    const template = factory.template('concurrent', [factory.property('text1', 'text')]);
+
+    await testingPG.setFixtures({
+      templates: [
+        {
+          _id: template._id.toHexString(),
+          name: template.name,
+          properties: template.properties,
+          commonProperties: template.commonProperties,
+          default: false,
+          processing: { active: true, totalJobs: 10, completedJobs: 0 },
+        },
+      ],
+    });
+
+    // Fire 5 parallel increments
+    const promises = Array.from({ length: 5 }, () =>
+      ds.incrementProcessingTracking(template._id.toHexString())
+    );
+    const results = await Promise.all(promises);
+
+    // Final count must be exactly 5
+    const finalRow = await ds.getById(template._id.toHexString());
+    expect(finalRow.getData()!.processing!.completedJobs).toBe(5);
+
+    // Each returned total should be 10
+    results.forEach(r => expect(r.total).toBe(10));
+  });
+
+  it('should atomically add jobs to processing count under concurrent calls', async () => {
+    const ds = createDS();
+    const template = factory.template('concurrent-add', [factory.property('text1', 'text')]);
+
+    await testingPG.setFixtures({
+      templates: [
+        {
+          _id: template._id.toHexString(),
+          name: template.name,
+          properties: template.properties,
+          commonProperties: template.commonProperties,
+          default: false,
+        },
+      ],
+    });
+
+    // Fire 5 parallel calls adding 3 jobs each
+    const promises = Array.from({ length: 5 }, () =>
+      ds.addJobsToProcessingCount(template._id.toHexString(), 3)
+    );
+    await Promise.all(promises);
+
+    const finalRow = await ds.getById(template._id.toHexString());
+    const processing = finalRow.getData()!.processing!;
+
+    expect(processing.totalJobs).toBe(15); // 5 * 3
+    expect(processing.active).toBe(true);
+  });
 });

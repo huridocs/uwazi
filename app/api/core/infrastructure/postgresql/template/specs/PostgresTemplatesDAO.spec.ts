@@ -28,7 +28,7 @@ describe('PostgresTemplatesDAO', () => {
     await testingPG.clear(['templates']);
   });
 
-  it('should insert and retrieve templates', async () => {
+  it('should retrieve templates', async () => {
     const dao = createDao();
 
     const template1 = factory.template('template1', [factory.property('text1', 'text')]);
