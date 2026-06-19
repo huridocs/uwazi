@@ -160,6 +160,7 @@ Character support revert warning,"After selecting this option, you will not be a
 Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
 Checking which images fit the requirements,Checking which images fit the requirements...
 Choose,Choose
+Choose relation type,Choose relation type
 Choose which data to use for training,Choose which data to use for training
 Chrome header,Chrome header
 Clear,Clear
@@ -201,8 +202,7 @@ Confirm new password,ยืนยันรหัสผ่านใหม่
 Confirm your password,Confirm your password
 Connect to a paragraph,เชื่อมต่อย่อหน้า
 Connect to an entity,Connect to an entity
-Connect to document,Connect to document
-Connect to paragraph,Connect to paragraph
+Connect to entity,Connect to entity
 Connected to server,Connected to server
 Connection type,ประเภทการเชื่อมต่อ
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
@@ -219,6 +219,7 @@ Copy link,คัดลอกลิงค์
 Copy properties to this entity from,คัดลอกคุณสมบัติไปยังรายการนี้ จาก
 Copy to clipboard,Copy to clipboard
 Could not be processed,Could not be processed
+Could not create entity,Could not create entity
 Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
 Could not reach server. Please try again later.,Could not reach server. Please try again later.
 Create,สร้าง
@@ -231,7 +232,9 @@ Create Entity,สร้างรายการ
 Create Extractor,Create Extractor
 Create group,สร้างกลุ่ม
 Create new entities and upload documents,Create new entities and upload documents
+Create new entity from selection,Create new entity from selection
 Create Reference,Create Reference
+Create relationship,Create relationship
 Create relationship types,Create relationship types
 Create relationships and references,Create relationships and references
 Create table of contents,Create table of contents
@@ -373,6 +376,7 @@ Entity creation stage completed.,Entity creation stage completed.
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
+Entity type,Entity type
 Entity types,ประเภทรายการ
 Entity updated,Entity updated
 Error,ข้อผิดพลาด
@@ -443,6 +447,7 @@ From,From
 From all suggestions,From all suggestions
 From previous step,From previous step
 From selection,From selection
+From:,From:
 Full mode,Full mode
 Full width,Full width
 General,ข้อมูลทั่วไป
@@ -773,6 +778,7 @@ Plain text,ข้อความธรรมดา
 Please contact an admin for details.,กรุณาติดต่อผู้ดูแลระบบเพื่อดูรายละเอียดเพิ่มเติม
 Please type in,Please type in
 Please type in letters and numbers from the image to start the export.,กรุณาพิมพ์ตัวอักษรและตัวเลขจากภาพเพื่อเริ่มการส่งออก
+Pre-filled from your selection. Edit as needed.,Pre-filled from your selection. Edit as needed.
 Preflight scan completed.,Preflight scan completed.
 Preparing required relationships.,Preparing required relationships.
 Preparing required thesauri values.,Preparing required thesauri values.
@@ -846,6 +852,7 @@ Reject,ปฏิเสธ
 Related entities created,Related entities created
 Relation type,Relation type
 Relationship,ความสัมพันธ์
+Relationship created,Relationship created
 Relationship Type,Relationship Type
 Relationship type,Relationship type
 Relationship type created successfully.,Relationship type created successfully.
@@ -907,6 +914,7 @@ Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,ค้นหา
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
+Search entities...,Search entities...
 Search item,ค้นหารายการ
 Search related entities or documents,ค้นหารายการหรือเอกสารที่เกี่ยวข้อง
 Search relationships,Search relationships
@@ -926,6 +934,7 @@ Secret keys,Secret keys
 Security,Security
 Select,Select
 Select & Search,Select & Search
+Select a document to connect to a specific paragraph,Select a document to connect to a specific paragraph
 Select a file,Select a file
 Select all,เลือกทั้งหมด
 Select an existing image,Select an existing image
@@ -935,7 +944,10 @@ Select from computer,Select from computer
 Select relationship,Select relationship
 Select relationship type,เลือกประเภทความสัมพันธ์
 Select site logo image,Select site logo image
+Select target document,Select target document
+Select target entity,Select target entity
 Select target paragraph,เลือกย่อหน้าที่ต้องการ
+Select text in target document,Select text in target document
 Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
 Select the template with the source documents.,Select the template with the source documents.
 Select...,เลือก...
@@ -1037,6 +1049,7 @@ Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
 Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
+Target:,Target:
 Tasks,Tasks
 Template,แม่แบบ
 Template changes are being applied to all related entities.,Template changes are being applied to all related entities.

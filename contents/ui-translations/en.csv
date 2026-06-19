@@ -162,6 +162,7 @@ Character support revert warning,"After selecting this option, you will not be a
 Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
 Checking which images fit the requirements,Checking which images fit the requirements...
 Choose,Choose
+Choose relation type,Choose relation type
 Choose which data to use for training,Choose which data to use for training
 Chrome header,Chrome header
 Clear,Clear
@@ -203,8 +204,7 @@ Confirm new password,Confirm new password
 Confirm your password,Confirm your password
 Connect to a paragraph,Connect to a paragraph
 Connect to an entity,Connect to an entity
-Connect to document,Connect to document
-Connect to paragraph,Connect to paragraph
+Connect to entity,Connect to entity
 Connected to server,Connected to server
 Connection type,Connection type
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
@@ -221,6 +221,7 @@ Copy link,Copy link
 Copy properties to this entity from,Copy properties to this entity from
 Copy to clipboard,Copy to clipboard
 Could not be processed,Could not be processed
+Could not create entity,Could not create entity
 Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
 Could not reach server. Please try again later.,Could not reach server. Please try again later.
 Create,Create
@@ -233,7 +234,9 @@ Create Entity,Create Entity
 Create Extractor,Create Extractor
 Create group,Create group
 Create new entities and upload documents,Create new entities and upload documents
+Create new entity from selection,Create new entity from selection
 Create Reference,Create Reference
+Create relationship,Create relationship
 Create relationship types,Create relationship types
 Create relationships and references,Create relationships and references
 Create table of contents,Create table of contents
@@ -375,6 +378,7 @@ Entity creation stage completed.,Entity creation stage completed.
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
+Entity type,Entity type
 Entity types,Entity types
 Entity updated,Entity updated
 Error,Error
@@ -445,6 +449,7 @@ From,From
 From all suggestions,From all suggestions
 From previous step,From previous step
 From selection,From selection
+From:,From:
 Full mode,Full mode
 Full width,Full width
 General,General
@@ -775,6 +780,7 @@ Plain text,Plain text
 Please contact an admin for details.,Please contact an admin for details.
 Please type in,Please type in
 Please type in letters and numbers from the image to start the export.,Please type in letters and numbers from the image to start the export.
+Pre-filled from your selection. Edit as needed.,Pre-filled from your selection. Edit as needed.
 Preflight scan completed.,Preflight scan completed.
 Preparing required relationships.,Preparing required relationships.
 Preparing required thesauri values.,Preparing required thesauri values.
@@ -848,6 +854,7 @@ Reject,Reject
 Related entities created,Related entities created
 Relation type,Relation type
 Relationship,Relationship
+Relationship created,Relationship created
 Relationship Type,Relationship Type
 Relationship type,Relationship type
 Relationship type created successfully.,Relationship type created successfully.
@@ -909,6 +916,7 @@ Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,Search
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
+Search entities...,Search entities...
 Search item,Search item
 Search related entities or documents,Search related entities or documents
 Search relationships,Search relationships
@@ -928,6 +936,7 @@ Secret keys,Secret keys
 Security,Security
 Select,Select
 Select & Search,Select & Search
+Select a document to connect to a specific paragraph,Select a document to connect to a specific paragraph
 Select a file,Select a file
 Select all,Select all
 Select an existing image,Select an existing image
@@ -937,7 +946,10 @@ Select from computer,Select from computer
 Select relationship,Select relationship
 Select relationship type,Select relationship type
 Select site logo image,Select site logo image
+Select target document,Select target document
+Select target entity,Select target entity
 Select target paragraph,Select target paragraph
+Select text in target document,Select text in target document
 Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
 Select the template with the source documents.,Select the template with the source documents.
 Select...,Select...
@@ -1039,6 +1051,7 @@ Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
 Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
+Target:,Target:
 Tasks,Tasks
 Template,Template
 Template changes are being applied to all related entities.,Template changes are being applied to all related entities.
