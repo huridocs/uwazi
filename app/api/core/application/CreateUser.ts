@@ -26,6 +26,7 @@ class CreateUser extends AbstractUseCase<Input, Output, Dependencies> {
       // throw new UserExistsError();
     }
 
+    //hashing here?
     const rawPassword = password ?? randomBytes(32).toString('hex');
     const encryptedPassword = await encryptPassword(rawPassword);
     await user.setPassword(encryptedPassword);
