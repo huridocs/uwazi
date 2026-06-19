@@ -10,7 +10,6 @@ import {
   DatavizSnapshotUnavailableError,
 } from '#api/dataviz.v2/domain/errors.js';
 import type { DatavizSnapshotsDataSource } from '#api/dataviz.v2/application/contracts/DatavizSnapshotsDataSource.js';
-import { resolveSnapshotRenderPayload } from './buildRenderSnapshot.js';
 
 type Input = {
   dataviz: Dataviz;
@@ -51,7 +50,7 @@ const resolveDatavizRenderSnapshot = async (
   }
 
   const snapshot = snapshotResult.getData();
-  const renderPayload = resolveSnapshotRenderPayload(snapshot, dataviz);
+  const renderPayload = snapshot.payload;
   const stale = snapshot.queryHash !== dataviz.queryHash;
 
   const data = filterDataForDisplay(

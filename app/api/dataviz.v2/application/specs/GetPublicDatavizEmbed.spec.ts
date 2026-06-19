@@ -206,17 +206,21 @@ describe('GetPublicDatavizEmbedUseCase', () => {
         datavizId: dataviz.id,
         queryHash: persisted.queryHash,
         payload: {
-          datavizId: dataviz.id,
-          generatedAt: new Date().toISOString(),
-          stale: false,
-          meta: { totalEntities: 42, truncated: false },
-          series: [
-            {
-              id: 'main',
-              label: 'Series',
-              points: [{ key: 'snapshot', label: 'Snapshot only', value: 42 }],
-            },
-          ],
+          data: {
+            datavizId: dataviz.id,
+            generatedAt: new Date().toISOString(),
+            stale: false,
+            meta: { totalEntities: 42, truncated: false },
+            series: [
+              {
+                id: 'main',
+                label: 'Series',
+                points: [{ key: 'snapshot', label: 'Snapshot only', value: 42 }],
+              },
+            ],
+          },
+          chart: persisted.chart,
+          appearance: persisted.appearance,
         },
         generatedAt: new Date(),
       });

@@ -1,4 +1,3 @@
-import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import type { DatavizDataDTO, DatavizQuery } from '#shared/types/datavizSchema.js';
 import { DATAVIZ_DRAFT_ID } from '#shared/types/datavizSchema.js';
 import { buildManualDataDTO, isManualDataSource } from '#shared/dataviz/manualData.js';
@@ -14,10 +13,6 @@ import type { DatavizDataSource } from '#api/dataviz.v2/application/contracts/Da
 import type { DatavizQueryExecutor } from '#api/dataviz.v2/application/contracts/DatavizQueryExecutor.js';
 import type { DatavizSnapshotsDataSource } from '#api/dataviz.v2/application/contracts/DatavizSnapshotsDataSource.js';
 import type { DatavizSnapshot } from '#api/dataviz.v2/application/contracts/DatavizSnapshotsDataSource.js';
-import {
-  isLegacySnapshotPayload,
-  resolveSnapshotRenderPayload,
-} from './buildRenderSnapshot.js';
 
 export type ResolveDatavizDataMode = 'authoring' | 'render';
 
@@ -37,13 +32,11 @@ type ResolveInput = {
   draftQuery?: DatavizQuery;
   options: ResolveDatavizDataOptions;
   actor: User;
-  language: LanguageISO6391;
 };
 
 const extractSnapshotData = (snapshot: DatavizSnapshot, dataviz: Dataviz): DatavizDataDTO => {
-  const payload = resolveSnapshotRenderPayload(snapshot, dataviz);
   const stale = snapshot.queryHash !== dataviz.queryHash;
-  return { ...payload.data, stale };
+  return { ...snapshot.payload.data, stale };
 };
 
 const tryReadSnapshot = async (
@@ -68,7 +61,7 @@ const resolveDatavizData = async (
   input: ResolveInput,
   deps: ResolveDatavizDataDeps
 ): Promise<DatavizDataDTO> => {
-  const { id, dataviz, draftQuery, options, actor, language } = input;
+  const { id, dataviz, draftQuery, options, actor } = input;
   const isPreview = Boolean(draftQuery);
 
   if (dataviz.processing?.active && !isPreview) {
@@ -98,7 +91,6 @@ const resolveDatavizData = async (
 
   return deps.queryExecutor.execute(query, {
     actor,
-    language,
     datavizId: id,
     appearance: dataviz.appearance,
   });
@@ -127,4 +119,4 @@ const loadDatavizForData = async (
   return datavizResult.getData();
 };
 
-export { resolveDatavizData, loadDatavizForData, isLegacySnapshotPayload };
+export { resolveDatavizData, loadDatavizForData };

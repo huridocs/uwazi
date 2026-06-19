@@ -82,7 +82,7 @@ const createSut = () =>
           snapshotsDS: DatavizSnapshotsDataSourceFactory.default(),
           queryExecutor: DatavizQueryExecutorFactory.default(),
         },
-        { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant, targetLanguage: 'en' }
+        { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant }
       ),
     };
   });

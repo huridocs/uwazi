@@ -13,7 +13,6 @@ import {
   buildRenderSnapshot,
   templateIdsFromQuery,
 } from '#api/dataviz.v2/application/services/buildRenderSnapshot.js';
-import { isLegacySnapshotPayload } from '#api/dataviz.v2/application/services/resolveDatavizData.js';
 
 type Input = { datavizId: string };
 
@@ -48,7 +47,6 @@ class RefreshDatavizSnapshotUseCase extends AbstractUseCase<Input, Output, Deps>
 
       const dto = await this.deps.queryExecutor.execute(dataviz.query, {
         actor: this.getActor(),
-        language: this.resolveTargetLanguage(dataviz.query.language),
         datavizId,
         appearance: dataviz.appearance,
       });
@@ -92,8 +90,7 @@ class RefreshDatavizSnapshotUseCase extends AbstractUseCase<Input, Output, Deps>
 
       await this.deps.datavizDS.update(updated);
 
-      const payload = snapshot.payload;
-      return isLegacySnapshotPayload(payload) ? payload : payload.data;
+      return snapshot.payload.data;
     } catch (error) {
       await this.deps.datavizDS.setProcessing(datavizId, { active: false });
       throw error;

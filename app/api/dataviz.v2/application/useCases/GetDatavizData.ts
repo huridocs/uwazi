@@ -32,7 +32,6 @@ class GetDatavizDataUseCase extends AbstractUseCase<Input, Output, Deps> {
       validateQueryStructure(query);
       return this.deps.queryExecutor.execute(query, {
         actor: this.getActor(),
-        language: this.resolveTargetLanguage(query.language),
         datavizId: id,
       });
     }
@@ -44,7 +43,6 @@ class GetDatavizDataUseCase extends AbstractUseCase<Input, Output, Deps> {
         draftQuery,
         options: { mode: 'authoring' },
         actor: this.getActor(),
-        language: this.resolveTargetLanguage(dataviz.query.language),
       },
       this.deps
     );

@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import { Dataviz } from '#api/dataviz.v2/domain/Dataviz.js';
 import { DatavizNotFoundError } from '#api/dataviz.v2/domain/errors.js';
 import type { DatavizSnapshot } from '#api/dataviz.v2/application/contracts/DatavizSnapshotsDataSource.js';
-import type { DatavizSnapshotPayload } from '#api/dataviz.v2/application/contracts/DatavizSnapshotsDataSource.js';
+import type { DatavizSnapshotRenderPayload } from '#shared/types/datavizSchema.js';
 import type { DatavizDBO, DatavizSnapshotDBO } from './DatavizDBO.js';
 
 class DatavizMapper {
@@ -55,7 +55,7 @@ class DatavizMapper {
     return {
       datavizId: dbo.datavizId.toHexString(),
       queryHash: dbo.queryHash,
-      payload: dbo.payload as DatavizSnapshotPayload,
+      payload: dbo.payload as DatavizSnapshotRenderPayload,
       generatedAt: new Date(dbo.generatedAt),
     };
   }

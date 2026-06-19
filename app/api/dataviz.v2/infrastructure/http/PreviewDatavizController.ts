@@ -8,7 +8,7 @@ type PreviewBody = {
 
 class PreviewDatavizController extends DatavizController<PreviewBody> {
   protected async handle(): Promise<void> {
-    const useCase = GetDatavizDataUseCaseFactory.default({ targetLanguage: this.language });
+    const useCase = GetDatavizDataUseCaseFactory.default();
     const data = await useCase.execute({
       id: this.request.params.id!,
       draftQuery: this.request.body?.query,

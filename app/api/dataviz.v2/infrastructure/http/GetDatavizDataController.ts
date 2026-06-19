@@ -3,7 +3,7 @@ import { GetDatavizDataUseCaseFactory } from '../factories/GetDatavizDataUseCase
 
 class GetDatavizDataController extends DatavizController {
   protected async handle(): Promise<void> {
-    const useCase = GetDatavizDataUseCaseFactory.default({ targetLanguage: this.language });
+    const useCase = GetDatavizDataUseCaseFactory.default();
     const data = await useCase.execute({ id: this.request.params.id! });
     this.response.json(data);
   }

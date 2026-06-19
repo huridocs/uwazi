@@ -197,7 +197,7 @@ describe('MongoDatavizQueryExecutor', () => {
         measures: [{ aggregation: 'count' }],
         language: 'en',
       },
-      { actor: admin, language: 'en', datavizId: 'test' }
+      { actor: admin, datavizId: 'test' }
     );
 
     expect(dto.series[0]?.points).toEqual(
@@ -226,7 +226,7 @@ describe('MongoDatavizQueryExecutor', () => {
         measures: [{ aggregation: 'count' }],
         language: 'en',
       },
-      { actor: admin, language: 'en', datavizId: 'test-rel-label' }
+      { actor: admin, datavizId: 'test-rel-label' }
     );
 
     expect(dto.series[0]?.points).toEqual(
@@ -255,7 +255,7 @@ describe('MongoDatavizQueryExecutor', () => {
         measures: [{ aggregation: 'count' }],
         language: 'en',
       },
-      { actor: admin, language: 'en', datavizId: 'test-include-missing' }
+      { actor: admin, datavizId: 'test-include-missing' }
     );
 
     expect(dto.series[0]?.points).toEqual(
@@ -286,7 +286,7 @@ describe('MongoDatavizQueryExecutor', () => {
         measures: [{ aggregation: 'count' }],
         language: 'en',
       },
-      { actor: admin, language: 'en', datavizId: 'test-rel-inherited' }
+      { actor: admin, datavizId: 'test-rel-inherited' }
     );
 
     expect(dto.series[0]?.points).toEqual(
@@ -322,7 +322,7 @@ describe('MongoDatavizQueryExecutor', () => {
         measures: [{ aggregation: 'count' }],
         language: 'en',
       },
-      { actor: admin, language: 'en', datavizId: 'test-two-dims' }
+      { actor: admin, datavizId: 'test-two-dims' }
     );
 
     const mujer = dto.series[0]?.points.find(p => p.label === 'Mujer');
@@ -345,7 +345,7 @@ describe('MongoDatavizQueryExecutor', () => {
         measures: [{ aggregation: 'count' }],
         language: 'en',
       },
-      { actor: admin, language: 'en', datavizId: 'test-date-year' }
+      { actor: admin, datavizId: 'test-date-year' }
     );
 
     expect(dto.series[0]?.points).toEqual(
@@ -367,7 +367,7 @@ describe('MongoDatavizQueryExecutor', () => {
         measures: [{ aggregation: 'count', countMode: 'all' }],
         language: 'en',
       },
-      { actor: admin, language: 'en', datavizId: 'test-metric-count' }
+      { actor: admin, datavizId: 'test-metric-count' }
     );
 
     expect(dto.series).toHaveLength(1);

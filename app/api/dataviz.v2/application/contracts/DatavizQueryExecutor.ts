@@ -3,7 +3,6 @@ import { User } from '#api/users.v2/model/User.js';
 
 export type DatavizQueryContext = {
   actor: User;
-  language: string;
   datavizId?: string;
   appearance?: DatavizAppearance;
   timeoutMs?: number;

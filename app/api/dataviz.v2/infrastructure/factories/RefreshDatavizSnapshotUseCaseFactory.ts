@@ -1,4 +1,3 @@
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { RefreshDatavizSnapshotUseCase } from '#api/dataviz.v2/application/useCases/RefreshDatavizSnapshot.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
@@ -9,7 +8,7 @@ import { DatavizQueryExecutorFactory } from './DatavizQueryExecutorFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 
 class RefreshDatavizSnapshotUseCaseFactory {
-  static default(overrides?: { targetLanguage?: LanguageISO6391 }) {
+  static default() {
     const { tenant, actor } = ExecutionContext;
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
 
@@ -21,7 +20,7 @@ class RefreshDatavizSnapshotUseCaseFactory {
         queryExecutor: DatavizQueryExecutorFactory.default(),
         templatesDS: TemplatesDataSourceFactory.default(),
       },
-      { actor, tenant, targetLanguage: overrides?.targetLanguage }
+      { actor, tenant }
     );
   }
 }

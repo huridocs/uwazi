@@ -3,9 +3,7 @@ import { RefreshDatavizSnapshotUseCaseFactory } from '../factories/RefreshDatavi
 
 class RefreshDatavizSnapshotController extends DatavizController {
   protected async handle(): Promise<void> {
-    const useCase = RefreshDatavizSnapshotUseCaseFactory.default({
-      targetLanguage: this.language,
-    });
+    const useCase = RefreshDatavizSnapshotUseCaseFactory.default();
     const data = await useCase.execute({ datavizId: this.request.params.id! });
     this.response.json(data);
   }

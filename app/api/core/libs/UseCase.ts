@@ -63,10 +63,6 @@ abstract class AbstractUseCase<
     return this.context.targetLanguage;
   }
 
-  protected resolveTargetLanguage(fallback?: LanguageISO6391): LanguageISO6391 {
-    return this.context?.targetLanguage ?? fallback ?? 'en';
-  }
-
   protected get actorId() {
     if (!this.context?.actor) {
       throw new Error(`Actor was not found. ${JSON.stringify(this.context)}`);

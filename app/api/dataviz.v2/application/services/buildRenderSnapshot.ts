@@ -46,22 +46,6 @@ export const buildRenderSnapshot = (
   generatedAt: new Date(),
 });
 
-export const isLegacySnapshotPayload = (
-  payload: DatavizSnapshot['payload']
-): payload is DatavizDataDTO => Array.isArray((payload as DatavizDataDTO).series);
-
-export const resolveSnapshotRenderPayload = (
-  snapshot: DatavizSnapshot,
-  dataviz: Dataviz
-): DatavizSnapshotRenderPayload => {
-  if (isLegacySnapshotPayload(snapshot.payload)) {
-    const templatesById: Record<string, { color?: string; name?: string }> = {};
-    return buildRenderSnapshotPayload(dataviz, snapshot.payload, templatesById);
-  }
-
-  return snapshot.payload;
-};
-
 export const templateIdsFromQuery = (query: DatavizQuery): string[] => [
   ...new Set(query.sources.map(source => source.templateId).filter(Boolean)),
 ];
