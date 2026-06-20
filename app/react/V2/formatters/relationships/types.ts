@@ -69,6 +69,12 @@ const counterpartAnchorOf = (
   return isTextReference(counterpart) ? counterpart : undefined;
 };
 
+const pdfAnchorOf = (
+  relationship: RelationshipView,
+  selfSharedId: string
+): TextReferencePointer | undefined =>
+  anchorOf(relationship, selfSharedId) ?? counterpartAnchorOf(relationship, selfSharedId);
+
 type RelationshipDirection = 'incoming' | 'outgoing' | 'both';
 
 const directionOf = (
@@ -93,4 +99,12 @@ export type {
   RelationshipView,
   RelationshipDirection,
 };
-export { isTextReference, selfPointer, targetPointer, anchorOf, counterpartAnchorOf, directionOf };
+export {
+  isTextReference,
+  selfPointer,
+  targetPointer,
+  anchorOf,
+  counterpartAnchorOf,
+  pdfAnchorOf,
+  directionOf,
+};

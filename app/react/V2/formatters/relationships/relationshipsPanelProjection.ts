@@ -1,5 +1,6 @@
 import { Entity } from '#V2/api/entities/types.js';
 import { RelationshipMarker, firstPageOf, toMarker } from '#V2/Components/Relationships/types.js';
+import { counterpartAnchorOf } from './types.js';
 import { formatRelationships } from './formatRelationships.js';
 import { buildPanelListEntries } from './relationshipsPanelDerivation.js';
 import { buildMatcher } from './relationshipsPanelSearchQuery.js';
@@ -37,8 +38,15 @@ const projectRelationshipsPanel = (entity: Entity): RelationshipsPanelProjection
 const countEntityRelationships = (entity: Entity): number =>
   projectRelationshipMarkers(entity).length;
 
-const markerHaystack = (marker: RelationshipMarker, relationshipTypeName: string): string =>
-  `${marker.anchor?.text ?? ''} ${marker.target.title} ${relationshipTypeName}`.toLowerCase();
+const markerHaystack = (
+  marker: RelationshipMarker,
+  relationshipTypeName: string,
+  selfSharedId: string
+): string => {
+  const counterpartText = counterpartAnchorOf(marker.view, selfSharedId)?.text ?? '';
+  const selfText = marker.anchor?.text ?? '';
+  return `${counterpartText} ${selfText} ${marker.target.title} ${relationshipTypeName}`.toLowerCase();
+};
 
 const compareAppearance = (a: RelationshipMarker, b: RelationshipMarker): number => {
   const anchorRank = (marker: RelationshipMarker) => (marker.anchor ? 0 : 1);
@@ -56,6 +64,7 @@ const compareAppearance = (a: RelationshipMarker, b: RelationshipMarker): number
 type RelationshipsPanelFilterOptions = {
   searchQuery: string;
   sortOrder: RelationshipsPanelSort;
+  selfSharedId: string;
   relationshipTypeName: (typeId: string) => string;
   relTypeFilters?: Record<string, boolean>;
   entityTypeFilters?: Record<string, boolean>;
@@ -89,12 +98,13 @@ const filterByCluster = (
 const filterBySearch = (
   markers: RelationshipMarker[],
   searchQuery: string,
+  selfSharedId: string,
   relationshipTypeName: (typeId: string) => string
 ): RelationshipMarker[] => {
   const matcher = buildMatcher(searchQuery);
   if (!matcher) return markers;
   return markers.filter(marker =>
-    matcher(markerHaystack(marker, relationshipTypeName(marker.view.type)))
+    matcher(markerHaystack(marker, relationshipTypeName(marker.view.type), selfSharedId))
   );
 };
 
@@ -119,7 +129,12 @@ const filterAndSortMarkers = (
     activeFacetIds(options.entityTypeFilters),
     marker => marker.target.templateId || 'unknown'
   );
-  result = filterBySearch(result, options.searchQuery, options.relationshipTypeName);
+  result = filterBySearch(
+    result,
+    options.searchQuery,
+    options.selfSharedId,
+    options.relationshipTypeName
+  );
   return sortRelationshipMarkers(result, options.sortOrder);
 };
 

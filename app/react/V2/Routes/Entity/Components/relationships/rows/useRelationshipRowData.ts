@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useAtomValue } from 'jotai';
 import type { ClientRelationshipType, Template } from '#app/apiResponseTypes.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
-import { directionOf, counterpartAnchorOf } from '#V2/formatters/relationships/types.js';
+import { anchorOf, counterpartAnchorOf, directionOf } from '#V2/formatters/relationships/types.js';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import {
   useDocumentRelationshipNav,
@@ -15,11 +15,12 @@ const relationshipReferenceDisplay = (
   marker: RelationshipMarker,
   selfSharedId: string
 ): { referenceText: string; referencePage: number | undefined } => {
+  const selfAnchor = anchorOf(marker.view, selfSharedId);
   const counterpartAnchor = counterpartAnchorOf(marker.view, selfSharedId);
+  const selfText = selfAnchor?.text?.trim() ?? '';
   const counterpartText = counterpartAnchor?.text?.trim() ?? '';
-  const selfText = marker.anchor?.text?.trim() ?? '';
-  const referenceText = counterpartText || selfText;
-  const referencePage = counterpartText ? undefined : marker.anchor?.selections?.[0]?.page;
+  const referenceText = selfText || counterpartText;
+  const referencePage = selfText ? selfAnchor?.selections?.[0]?.page : undefined;
   return { referenceText, referencePage };
 };
 

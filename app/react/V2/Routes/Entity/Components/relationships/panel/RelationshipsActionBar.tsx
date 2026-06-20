@@ -4,6 +4,7 @@ import { Translate } from '#app/I18N/index.js';
 import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
 import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 import {
+  useDocumentPdf,
   useRelationshipsActions,
   useRelationshipsSelection,
 } from '#V2/Routes/Entity/Components/context/index.js';
@@ -20,6 +21,7 @@ const RelationshipsActionBar = () => {
     setSelectedRelationshipIds: setSelected,
   } = useRelationshipsSelection();
   const { openCreateRelationship } = useRelationshipsActions();
+  const { documentPdfSelection } = useDocumentPdf();
   const { focusRelationshipsPanel } = useEntityTabNavigation();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const { activeRelationshipId, clearRelationshipSelection } = useActiveRelationshipHighlight();
@@ -54,9 +56,9 @@ const RelationshipsActionBar = () => {
   }, [deleteSelected]);
 
   const handleCreate = useCallback(() => {
-    openCreateRelationship(undefined);
+    openCreateRelationship(documentPdfSelection);
     focusRelationshipsPanel();
-  }, [focusRelationshipsPanel, openCreateRelationship]);
+  }, [documentPdfSelection, focusRelationshipsPanel, openCreateRelationship]);
 
   return (
     <>

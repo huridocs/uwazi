@@ -25,6 +25,7 @@ type RelationshipRowDetailProps = RelationshipRowBaseProps & {
 
 const RelationshipRowNestedEvidence = ({
   rowRef,
+  marker,
   referenceText,
   referencePage,
   editMode,
@@ -34,18 +35,21 @@ const RelationshipRowNestedEvidence = ({
   onDelete,
 }: Pick<
   RelationshipRowBaseProps,
-  'rowRef' | 'referenceText' | 'referencePage' | 'isSelected' | 'onClick'
+  'rowRef' | 'marker' | 'referenceText' | 'referencePage' | 'isSelected' | 'onClick'
 > &
   Pick<RelationshipRowDetailProps, 'editMode' | 'onView' | 'onDelete'>) => (
   <ListCardRow ref={rowRef} selected={Boolean(isSelected)} onClick={onClick} className="py-1.5!">
     <div className="flex items-start justify-between gap-2 rounded bg-warm/50 px-2 py-1.5">
-      {referenceText ? (
-        <p className="line-clamp-2 min-w-0 flex-1 text-xs leading-relaxed text-ink-secondary italic">
-          {referenceText}
-        </p>
-      ) : (
-        <span className="min-w-0 flex-1" />
-      )}
+      <div className="flex min-w-0 flex-1 items-start gap-1.5">
+        <RelationshipRowCheckbox relationshipId={marker._id} />
+        {referenceText ? (
+          <p className="line-clamp-2 min-w-0 flex-1 text-xs leading-relaxed text-ink-secondary italic">
+            {referenceText}
+          </p>
+        ) : (
+          <span className="min-w-0 flex-1" />
+        )}
+      </div>
       <div className="flex shrink-0 items-center gap-0.5">
         {referencePage !== undefined && <PageTag page={referencePage} onClick={onClick} />}
         {!editMode && onView && (
@@ -153,6 +157,7 @@ const RelationshipRowDetail = ({
     return (
       <RelationshipRowNestedEvidence
         rowRef={rowRef}
+        marker={marker}
         referenceText={referenceText}
         referencePage={referencePage}
         editMode={editMode}

@@ -26,11 +26,13 @@ const useRelationshipsPanelData = () => {
       filterAndSortMarkers(sourceMarkers, {
         searchQuery: filters.search,
         sortOrder: filters.sort,
+        selfSharedId: entity.sharedId,
         relationshipTypeName,
         relTypeFilters: filters.relTypeFilters,
         entityTypeFilters: filters.entityTypeFilters,
         activeClusterRefIds: filters.activeClusterRefIds,
       }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       filters.activeClusterRefIds,
       filters.entityTypeFilters,

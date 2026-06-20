@@ -15,9 +15,9 @@ describe('RelationshipsPanel', () => {
   it('renders relationship rows from the entity', () => {
     renderRelationshipsPanel();
 
-    expect(screen.getByText('target quoted text')).toBeInTheDocument();
+    expect(screen.getByText('alpha snippet')).toBeInTheDocument();
     expect(screen.getByText('Related Entity')).toBeInTheDocument();
-    expect(screen.queryByText('alpha snippet')).not.toBeInTheDocument();
+    expect(screen.queryByText('target quoted text')).not.toBeInTheDocument();
   });
 
   describe('navigation', () => {
@@ -92,7 +92,7 @@ describe('RelationshipsPanel', () => {
 
       await user.type(searchInput(), 'alpha');
 
-      expect(screen.getByText('target quoted text')).toBeInTheDocument();
+      expect(screen.getByText('alpha snippet')).toBeInTheDocument();
       expect(screen.queryByText('Other Entity')).not.toBeInTheDocument();
       expect(screen.getByText('"alpha"')).toBeInTheDocument();
       expect(filtersButton()).toHaveAttribute('aria-pressed', 'true');
@@ -107,7 +107,7 @@ describe('RelationshipsPanel', () => {
       const chip = screen.getByText('"alpha"').parentElement;
       await user.click(within(chip!).getByRole('button', { name: 'Clear search' }));
 
-      expect(screen.getByText('target quoted text')).toBeInTheDocument();
+      expect(screen.getByText('alpha snippet')).toBeInTheDocument();
       expect(screen.getByText('Other Entity')).toBeInTheDocument();
       expect(screen.queryByText('"alpha"')).not.toBeInTheDocument();
       expect(filtersButton()).toHaveAttribute('aria-pressed', 'true');
@@ -122,7 +122,7 @@ describe('RelationshipsPanel', () => {
       await user.click(filtersButton());
       await user.click(screen.getByRole('button', { name: /clear all filters/i }));
 
-      expect(screen.getByText('target quoted text')).toBeInTheDocument();
+      expect(screen.getByText('alpha snippet')).toBeInTheDocument();
       expect(screen.getByText('Other Entity')).toBeInTheDocument();
       expect(filtersButton()).toHaveAttribute('aria-pressed', 'false');
     });

@@ -66,6 +66,7 @@ describe('relationshipsPanelProjection', () => {
     const filtered = filterAndSortMarkers(markers, {
       searchQuery: 'alpha',
       sortOrder: 'none',
+      selfSharedId: 'self1',
       relationshipTypeName: () => '',
     });
     expect(filtered).toHaveLength(1);
@@ -77,6 +78,7 @@ describe('relationshipsPanelProjection', () => {
     const sorted = filterAndSortMarkers(markers, {
       searchQuery: '',
       sortOrder: 'appearance',
+      selfSharedId: 'self1',
       relationshipTypeName: () => '',
     });
     expect(sorted[0]?.anchor?.selections?.[0]?.page).toBe(1);
@@ -107,6 +109,7 @@ describe('relationshipsPanelProjection', () => {
     const sorted = filterAndSortMarkers(markers, {
       searchQuery: '',
       sortOrder: 'appearance',
+      selfSharedId: 'self1',
       relationshipTypeName: () => '',
     });
     const firstUnanchored = sorted.findIndex(marker => !marker.anchor);
@@ -152,6 +155,7 @@ describe('relationshipsPanelProjection', () => {
     const filtered = filterAndSortMarkers(markers, {
       searchQuery: '',
       sortOrder: 'none',
+      selfSharedId: 'self1',
       relationshipTypeName: id => (id === 'relA' ? 'Type A' : 'Type B'),
       relTypeFilters: { relA: true },
     });
@@ -164,6 +168,7 @@ describe('relationshipsPanelProjection', () => {
     const filtered = filterAndSortMarkers(markers, {
       searchQuery: '',
       sortOrder: 'none',
+      selfSharedId: 'self1',
       relationshipTypeName: () => '',
       activeClusterRefIds: [markers[0]?._id ?? ''],
     });
@@ -175,6 +180,7 @@ describe('relationshipsPanelProjection', () => {
     const filtered = filterAndSortMarkers(markers, {
       searchQuery: 'alpha NOT beta',
       sortOrder: 'none',
+      selfSharedId: 'self1',
       relationshipTypeName: () => '',
     });
     expect(filtered).toHaveLength(1);

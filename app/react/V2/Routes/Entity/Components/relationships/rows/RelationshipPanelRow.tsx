@@ -68,6 +68,8 @@ const RelationshipPanelRow = ({ entry, groupContext, ...handlers }: Relationship
     const glyphDirection =
       aggregate.directions.length > 1 ? 'both' : (aggregate.directions[0] ?? 'outgoing');
 
+    const soleMarker = markers.length === 1 ? markers[0] : undefined;
+
     return (
       <CollapsibleRelationshipRow
         checkboxId={aggregate.markerIds[0] ?? ''}
@@ -77,6 +79,7 @@ const RelationshipPanelRow = ({ entry, groupContext, ...handlers }: Relationship
         targetTemplateId={aggregate.targetTemplateId}
         entityTitle={hideTargetPill ? undefined : aggregate.targetTitle}
         templateName={groupContext.templateName(aggregate.targetTemplateId)}
+        onHeaderClick={soleMarker ? () => handlers.onClick(soleMarker) : undefined}
         header={null}
         meta={
           glyphDirection || (!hideRelationType && relationshipTypeName) ? (
