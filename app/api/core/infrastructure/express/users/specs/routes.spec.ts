@@ -1,9 +1,12 @@
 import type { Application, NextFunction, Request, Response } from 'express';
 import request from 'supertest';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
+import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { tenants } from '#api/tenants/tenantContext.js';
 import { userRoutes } from '../routes.js';
-import { DispatcherAdapter } from '../../../jobs/DispatcherAdapter.js';
 import { fixtures, existingUserId } from './fixtures.js';
 
 jest.mock(
@@ -29,83 +32,105 @@ const app: Application = setUpApp(
   }
 );
 
-describe('POST /api/users/new', () => {
-  beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures);
-    jest.spyOn(DispatcherAdapter.prototype, 'configureRecoveryPassword').mockResolvedValue();
-  });
+describe('users', () => {
+  // eslint-disable-next-line max-statements
+  describe('POST /api/users/new', () => {
+    let namespace: string;
+    let newUserId: ObjectIdSchema | undefined;
 
-  afterAll(async () => testingEnvironment.tearDown());
-
-  it('should create a user and return 201 with the created user withouth the password', async () => {
-    const response = await request(app)
-      .post('/api/users/new')
-      .send({ username: 'newguy', role: 'editor', email: 'new@test.com', password: 'Secret123' });
-
-    expect(response.status).toBe(201);
-    expect(response.body.user).toMatchObject({
-      username: 'newguy',
-      role: 'editor',
-      email: 'new@test.com',
+    beforeAll(async () => {
+      await testingEnvironment.setUp(fixtures);
+      testingTenants.changeCurrentTenant({ domain: 'uwazi' });
+      namespace = tenants.current().name;
     });
-    expect(response.body.user.password).not.toBeDefined();
 
-    const users = await testingEnvironment.db.getAllFrom('users');
-    const createdUser = users.find(user => user.username === 'newguy');
-    expect(createdUser).toMatchObject({
-      username: 'newguy',
-      role: 'editor',
-      email: 'new@test.com',
+    afterAll(async () => {
+      await testingEnvironment.tearDown();
     });
-    expect(createdUser?.password).toBe('hush hush super secret');
-  });
 
-  it('should return 422 when body is empty', async () => {
-    const response = await request(app).post('/api/users/new').send({});
-    expect(response.status).toBe(422);
-  });
+    it('should create a user and return 201 with the created user withouth the password', async () => {
+      const response = await request(app)
+        .post('/api/users/new')
+        .send({ username: 'newguy', role: 'editor', email: 'new@test.com', password: 'Secret123' });
 
-  it('should return 422 for invalid email', async () => {
-    const response = await request(app)
-      .post('/api/users/new')
-      .send({ username: 'test', role: 'editor', email: 'notanemail' });
-    expect(response.status).toBe(422);
-  });
+      expect(response.status).toBe(201);
+      expect(response.body.user).toMatchObject({
+        username: 'newguy',
+        role: 'editor',
+        email: 'new@test.com',
+      });
+      expect(response.body.user.password).not.toBeDefined();
+      expect(response.body.user._id).toBeDefined();
 
-  it('should return 422 for invalid role', async () => {
-    const response = await request(app)
-      .post('/api/users/new')
-      .send({ username: 'test', role: 'superadmin', email: 'test@test.com' });
-    expect(response.status).toBe(422);
-  });
+      const users = await testingEnvironment.db.getAllFrom('users');
+      const createdUser = users.find(user => user.username === 'newguy');
+      expect(createdUser).toMatchObject({
+        username: 'newguy',
+        role: 'editor',
+        email: 'new@test.com',
+      });
+      expect(createdUser?.password).toBe('hush hush super secret');
+      newUserId = createdUser?._id;
+    });
 
-  it('should return 400 when username already exists', async () => {
-    const response = await request(app)
-      .post('/api/users/new')
-      .send({ username: 'existinguser', role: 'editor', email: 'other@test.com' });
-    expect(response.status).toBe(400);
-    expect(response.body.error).toBe('The username "existinguser" already exists');
-  });
+    it('should create a job for the notification email for the new user', async () => {
+      const job = await getSharedConnection()
+        .collection('jobs')
+        .findOne({ name: 'ConfigureRecoveryPasswordHandler', namespace });
+      expect(job).toBeDefined();
+      expect(job?.params).toMatchObject({
+        userId: newUserId?.toString(),
+        domain: 'http://uwazi',
+      });
+    });
 
-  it('should return 400 when email already exists', async () => {
-    const response = await request(app)
-      .post('/api/users/new')
-      .send({ username: 'otheruser', role: 'editor', email: 'existing@test.com' });
-    expect(response.status).toBe(400);
-    expect(response.body.error).toContain('The email "existing@test.com" already exists');
-  });
+    it('should return 422 when body is empty', async () => {
+      const response = await request(app).post('/api/users/new').send({});
+      expect(response.status).toBe(422);
+    });
 
-  it('should allow creating a user without a password', async () => {
-    const response = await request(app)
-      .post('/api/users/new')
-      .send({ username: 'nopassword', role: 'admin', email: 'nopassword@test.com' });
-    expect(response.status).toBe(201);
-    const users = await testingEnvironment.db.getAllFrom('users');
-    const createdUser = users.find(user => user.username === 'nopassword');
-    expect(createdUser).toMatchObject({
-      username: 'nopassword',
-      role: 'admin',
-      email: 'nopassword@test.com',
+    it('should return 422 for invalid email', async () => {
+      const response = await request(app)
+        .post('/api/users/new')
+        .send({ username: 'test', role: 'editor', email: 'notanemail' });
+      expect(response.status).toBe(422);
+    });
+
+    it('should return 422 for invalid role', async () => {
+      const response = await request(app)
+        .post('/api/users/new')
+        .send({ username: 'test', role: 'superadmin', email: 'test@test.com' });
+      expect(response.status).toBe(422);
+    });
+
+    it('should return 400 when username already exists', async () => {
+      const response = await request(app)
+        .post('/api/users/new')
+        .send({ username: 'existinguser', role: 'editor', email: 'other@test.com' });
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe('The username "existinguser" already exists');
+    });
+
+    it('should return 400 when email already exists', async () => {
+      const response = await request(app)
+        .post('/api/users/new')
+        .send({ username: 'otheruser', role: 'editor', email: 'existing@test.com' });
+      expect(response.status).toBe(400);
+      expect(response.body.error).toContain('The email "existing@test.com" already exists');
+    });
+
+    it('should allow creating a user without a password', async () => {
+      const response = await request(app)
+        .post('/api/users/new')
+        .send({ username: 'nopassword', role: 'admin', email: 'nopassword@test.com' });
+      expect(response.status).toBe(201);
+      const users = await testingEnvironment.db.getAllFrom('users');
+      const createdUser = users.find(user => user.username === 'nopassword');
+      expect(createdUser).toMatchObject({
+        username: 'nopassword',
+        role: 'admin',
+        email: 'nopassword@test.com',
+      });
     });
   });
 });
