@@ -11,7 +11,7 @@ class CreateUserController extends AbstractController<CreateUserDTO> {
   protected async handle(): Promise<void> {
     const newUser = UserCreateSchema.parse(this.request.body);
     const useCase = CreateUserUseCaseFactory.default();
-    const user = await useCase.execute({
+    const { password, ...user } = await useCase.execute({
       user: newUser,
       domain: `${this.request.protocol}://${ExecutionContext.tenant.domain}`,
     });

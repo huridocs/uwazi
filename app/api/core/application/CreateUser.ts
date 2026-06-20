@@ -47,7 +47,5 @@ class CreateUser extends AbstractUseCase<Input, Output, Dependencies> {
   }
 }
 
-// test the useCase as an integration test. How would I do a backend e2e from the route?
-
 export { CreateUser };
 export type { Input, Dependencies };
