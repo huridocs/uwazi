@@ -2,8 +2,8 @@ import { User } from '#api/core/domain/user/User.js';
 
 interface UsersDataSource {
   insert(user: User): Promise<void>;
-  userExists(user: User): Promise<Boolean>;
-  //update
+  checkUniqueUsername(user: User): Promise<Boolean>;
+  checkUniqueEmail(user: User): Promise<Boolean>;
 }
 
 export type { UsersDataSource };

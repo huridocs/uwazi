@@ -9,8 +9,6 @@ export class MongoUsersMapper {
       username: user.username,
       role: user.role,
       email: user.email,
-      using2fa: user.using2fa,
-      secret: user.secret,
       password: user.password,
     };
   }
@@ -21,8 +19,6 @@ export class MongoUsersMapper {
       username: dbo.username,
       role: dbo.role as 'admin' | 'editor' | 'collaborator',
       email: dbo.email,
-      using2fa: dbo.using2fa,
-      secret: dbo.secret,
     });
 
     user.password = dbo.password ?? null;

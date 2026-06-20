@@ -16,9 +16,13 @@ class MongoUsersDataSource extends MongoDataSource<UserDBO> implements UsersData
     super(db, transactionManager, options);
   }
 
-  // email cannot repeat!
-  async userExists(user: User): Promise<Boolean> {
+  async checkUniqueUsername(user: User): Promise<Boolean> {
     const userInDb = await this.getCollection<UserDBO>().findOne({ username: user.username });
+    return Boolean(userInDb);
+  }
+
+  async checkUniqueEmail(user: User): Promise<Boolean> {
+    const userInDb = await this.getCollection<UserDBO>().findOne({ email: user.email });
     return Boolean(userInDb);
   }
 

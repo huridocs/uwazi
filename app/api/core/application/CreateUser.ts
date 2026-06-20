@@ -4,6 +4,7 @@ import { User } from '../domain/user/User.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { CreateUserDTO, UserCreateSchema } from './contracts/UserCreateSchema.js';
 import { UsersDataSource } from './contracts/UsersDataSource.js';
+import { EmailInUse, UsernameExists } from '../domain/user/errors.js';
 
 type Input = { user: CreateUserDTO; domain: string };
 
@@ -19,21 +20,22 @@ class CreateUser extends AbstractUseCase<Input, Output, Dependencies> {
 
     const user = new User({ _id: this.idGenerator.generate(), ...userData });
 
-    const userExists = await this.deps.usersDS.userExists(user);
+    const usernameExists = await this.deps.usersDS.checkUniqueUsername(user);
+    const emailInUse = await this.deps.usersDS.checkUniqueEmail(user);
 
-    if (userExists) {
-      // this is likely a domain error
-      // throw new UserExistsError();
+    if (usernameExists) {
+      throw new UsernameExists(user.username);
     }
 
-    // in the future (eg: implementing user update) this moves to a
-    // value object.
+    if (emailInUse) {
+      throw new EmailInUse(user.email);
+    }
+
     const rawPassword = password ?? randomBytes(32).toString('hex');
     const encryptedPassword = await encryptPassword(rawPassword);
-    await user.setPassword(encryptedPassword);
+    user.setPassword(encryptedPassword);
 
     await this.transactionManager.run(async () => {
-      //the insert will update groups
       await this.deps.usersDS.insert(user);
       await this.dispatcher.configureRecoveryPassword({
         userId: user._id,
