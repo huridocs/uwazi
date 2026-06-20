@@ -2,9 +2,9 @@ import { useCallback } from 'react';
 import { useRevalidator } from 'react-router';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
 import type { FileType } from '#V2/api/entities/types.js';
-import { FetchResponseError } from '#shared/JSONRequest.js';
 import { saveTextReference } from '#V2/api/relationships/index.js';
 import {
+  useDocumentPdfActions,
   useEntityScopedEntity,
   useRelationshipsActions,
   useRelationshipsPanelFacetFilters,
@@ -24,6 +24,7 @@ type SaveReferenceData = {
 const useRelationshipSave = (mainDocument?: FileType) => {
   const entity = useEntityScopedEntity();
   const { closeCreateRelationship } = useRelationshipsActions();
+  const { setDocumentPdfSelection } = useDocumentPdfActions();
   const { clearFilters } = useRelationshipsPanelFacetFilters();
   const revalidator = useRevalidator();
   const document = mainDocument ?? entity?.documents?.[0];
@@ -45,14 +46,15 @@ const useRelationshipSave = (mainDocument?: FileType) => {
         ...(data.targetSelection && { targetSelection: data.targetSelection }),
       });
 
-      if (result instanceof FetchResponseError) return false;
+      if (result instanceof Error) return false;
 
       clearFilters();
       closeCreateRelationship();
+      setDocumentPdfSelection(undefined);
       await refreshEntityRelationships(entity.sharedId, revalidator);
       return true;
     },
-    [clearFilters, closeCreateRelationship, document, entity, revalidator]
+    [clearFilters, closeCreateRelationship, document, entity, revalidator, setDocumentPdfSelection]
   );
 
   const handleCancelCreate = useCallback(() => {

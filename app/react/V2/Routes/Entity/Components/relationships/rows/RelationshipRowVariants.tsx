@@ -27,12 +27,16 @@ const RelationshipRowNestedEvidence = ({
   rowRef,
   referenceText,
   referencePage,
+  editMode,
   isSelected,
   onClick,
+  onView,
+  onDelete,
 }: Pick<
   RelationshipRowBaseProps,
   'rowRef' | 'referenceText' | 'referencePage' | 'isSelected' | 'onClick'
->) => (
+> &
+  Pick<RelationshipRowDetailProps, 'editMode' | 'onView' | 'onDelete'>) => (
   <ListCardRow ref={rowRef} selected={Boolean(isSelected)} onClick={onClick} className="py-1.5!">
     <div className="flex items-start justify-between gap-2 rounded bg-warm/50 px-2 py-1.5">
       {referenceText ? (
@@ -42,11 +46,35 @@ const RelationshipRowNestedEvidence = ({
       ) : (
         <span className="min-w-0 flex-1" />
       )}
-      {referencePage !== undefined && (
-        <span className="shrink-0">
-          <PageTag page={referencePage} onClick={onClick} />
-        </span>
-      )}
+      <div className="flex shrink-0 items-center gap-0.5">
+        {referencePage !== undefined && <PageTag page={referencePage} onClick={onClick} />}
+        {!editMode && onView && (
+          <IconButton
+            variant="ghost"
+            showOnGroupHover
+            aria-label={t('System', 'Preview entity', null, false)}
+            onClick={e => {
+              e.stopPropagation();
+              onView();
+            }}
+          >
+            <EyeIcon className="h-3 w-3" />
+          </IconButton>
+        )}
+        {!editMode && onDelete && (
+          <IconButton
+            variant="danger"
+            showOnGroupHover
+            aria-label={t('System', 'Delete relationship', null, false)}
+            onClick={e => {
+              e.stopPropagation();
+              onDelete();
+            }}
+          >
+            <TrashIcon className="h-3 w-3" />
+          </IconButton>
+        )}
+      </div>
     </div>
   </ListCardRow>
 );
@@ -127,8 +155,11 @@ const RelationshipRowDetail = ({
         rowRef={rowRef}
         referenceText={referenceText}
         referencePage={referencePage}
+        editMode={editMode}
         isSelected={isSelected}
         onClick={onClick}
+        onView={onView}
+        onDelete={onDelete}
       />
     );
   }

@@ -23,17 +23,15 @@ type RelationshipPanelRowProps = RelationshipPanelRowHandlers & {
   groupContext: GroupLabelContext;
 };
 
-const anchoredEvidenceCount = (markers: RelationshipMarker[]): number =>
-  markers.filter(marker => marker.anchor).length;
+const nestedEvidenceCount = (markers: RelationshipMarker[]): number => markers.length;
 
 const renderNestedRows = (
   markers: RelationshipMarker[],
   handlers: RelationshipPanelRowHandlers,
   groupContext: GroupLabelContext
-) => {
-  const anchored = markers.filter(marker => marker.anchor);
-  return anchored.map((marker, index) => (
-    <RelationshipsTreeNode key={marker._id} treeLine={getTreeLine(index, anchored.length)}>
+) =>
+  markers.map((marker, index) => (
+    <RelationshipsTreeNode key={marker._id} treeLine={getTreeLine(index, markers.length)}>
       <RelationshipRow
         nested
         marker={marker}
@@ -46,7 +44,6 @@ const renderNestedRows = (
       />
     </RelationshipsTreeNode>
   ));
-};
 
 const RelationshipPanelRow = ({ entry, groupContext, ...handlers }: RelationshipPanelRowProps) => {
   const { hideTargetPill, hideRelationType } = useRelationshipRowVisibility();
@@ -74,7 +71,7 @@ const RelationshipPanelRow = ({ entry, groupContext, ...handlers }: Relationship
     return (
       <CollapsibleRelationshipRow
         checkboxId={aggregate.markerIds[0] ?? ''}
-        evidenceCount={anchoredEvidenceCount(markers)}
+        evidenceCount={nestedEvidenceCount(markers)}
         glyphDirection={glyphDirection}
         relationshipTypeName={hideRelationType ? undefined : relationshipTypeName}
         targetTemplateId={aggregate.targetTemplateId}
@@ -103,7 +100,7 @@ const RelationshipPanelRow = ({ entry, groupContext, ...handlers }: Relationship
   return (
     <CollapsibleRelationshipRow
       checkboxId={hub.markerIds[0] ?? ''}
-      evidenceCount={anchoredEvidenceCount(markers)}
+      evidenceCount={nestedEvidenceCount(markers)}
       headerWrap
       isHub
       memberCount={hub.members.length}

@@ -25,7 +25,6 @@ const RelationshipsMarkerListBody = ({
       <RelationshipsPanelEntryList
         bordered={variant === 'list'}
         variant={variant}
-        flat={variant === 'list'}
         markers={markers}
         groupContext={groupContext}
         // eslint-disable-next-line react/jsx-props-no-spreading

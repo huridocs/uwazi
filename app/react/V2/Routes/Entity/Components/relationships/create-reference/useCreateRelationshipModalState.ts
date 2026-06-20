@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
 import { t } from '#app/I18N/index.js';
 import type { ClientRelationshipType, Template } from '#app/apiResponseTypes.js';
@@ -6,6 +6,7 @@ import { searchByTitle } from '#V2/api/entities/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import type { FileType } from '#shared/types/fileType.js';
 import { getEntityPdfFiles } from './getEntityPdfFiles.js';
+import { runEntitySearch } from './runEntitySearch.js';
 import type { CreateRelationshipStep } from './createRelationshipModalTypes.js';
 
 type UseCreateRelationshipModalStateParams = {
@@ -57,12 +58,19 @@ function useCreateRelationshipModalState({
     return groups;
   }, [searchResults]);
 
+  const searchGeneration = useRef(0);
+
+  const invalidateSearch = useCallback(() => {
+    searchGeneration.current += 1;
+  }, []);
+
   const clearSearchState = useCallback(() => {
+    invalidateSearch();
     setSearchQuery('');
     setSearchResults([]);
     setHasSearched(false);
     setIsSearching(false);
-  }, []);
+  }, [invalidateSearch]);
 
   const clearTargetState = useCallback(() => {
     setSelectedEntity(undefined);
@@ -71,10 +79,11 @@ function useCreateRelationshipModalState({
   }, []);
 
   const setSearchIdle = useCallback(() => {
+    invalidateSearch();
     setSearchResults([]);
     setHasSearched(false);
     setIsSearching(false);
-  }, []);
+  }, [invalidateSearch]);
 
   const setSearchActive = useCallback(() => {
     setIsSearching(true);
@@ -96,17 +105,19 @@ function useCreateRelationshipModalState({
         setSearchIdle();
         return;
       }
+      invalidateSearch();
+      const generation = searchGeneration.current;
       setSearchActive();
-      try {
-        const [result] = await searchFunction(searchString);
-        setSearchResults(result ?? []);
-      } catch {
-        setSearchResults([]);
-      } finally {
-        setIsSearching(false);
-      }
+      await runEntitySearch({
+        searchString,
+        generation,
+        searchGeneration,
+        searchFunction,
+        setSearchResults,
+        setIsSearching,
+      });
     },
-    [searchFunction, setSearchActive, setSearchIdle]
+    [invalidateSearch, searchFunction, setSearchActive, setSearchIdle]
   );
 
   useEffect(() => {

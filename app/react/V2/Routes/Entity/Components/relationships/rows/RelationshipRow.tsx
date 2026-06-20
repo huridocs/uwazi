@@ -1,9 +1,8 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
-import { counterpartAnchorOf } from '#V2/formatters/relationships/types.js';
 import { useRelationshipsPanelLayout } from '#V2/Routes/Entity/Components/context/index.js';
-import { useRelationshipRowData } from './useRelationshipRowData.js';
+import { useRelationshipRowData, relationshipReferenceDisplay } from './useRelationshipRowData.js';
 import {
   RelationshipRowCompact,
   RelationshipRowDetail,
@@ -33,12 +32,11 @@ const RelationshipRow = ({
 }: RelationshipRowProps) => {
   const { zoom } = useRelationshipsPanelLayout();
   const rowData = useRelationshipRowData(marker, selfSharedId, relationshipTypeName);
-  const counterpartText = counterpartAnchorOf(marker.view, selfSharedId)?.text?.trim() ?? '';
-  const sourceText = marker.anchor?.text?.trim() ?? '';
+  const nestedReference = relationshipReferenceDisplay(marker, selfSharedId);
   const baseProps = {
     ...rowData,
-    referenceText: nested ? counterpartText || sourceText : rowData.referenceText,
-    referencePage: nested ? marker.anchor?.selections?.[0]?.page : rowData.referencePage,
+    referenceText: nested ? nestedReference.referenceText : rowData.referenceText,
+    referencePage: nested ? nestedReference.referencePage : rowData.referencePage,
     isSelected,
     onClick,
   };

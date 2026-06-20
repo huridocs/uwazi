@@ -113,25 +113,28 @@ const CreateRelationshipModal = ({ mainDocument }: CreateRelationshipModalProps)
   const handleCreate = useCallback(async () => {
     if (!selectedEntity?.sharedId || !selectedRelationshipType || !entity) return;
     setIsSaving(true);
-    const saved = await handleSaveReference({
-      selection: createReferenceSelection,
-      targetEntityId: selectedEntity.sharedId,
-      relationshipType: selectedRelationshipType,
-      sourcePage: searchParams.get(PAGE_PARAM) ?? '1',
-      ...(selectedFile && { targetFileId: String(selectedFile._id) }),
-      ...(targetSelection && { targetSelection }),
-    });
-    setIsSaving(false);
-    if (!saved) {
-      notify(
-        t('System', 'Error', null, false),
-        'error',
-        t('System', 'An error occurred', null, false)
-      );
-      return;
+    try {
+      const saved = await handleSaveReference({
+        selection: createReferenceSelection,
+        targetEntityId: selectedEntity.sharedId,
+        relationshipType: selectedRelationshipType,
+        sourcePage: searchParams.get(PAGE_PARAM) ?? '1',
+        ...(selectedFile && { targetFileId: String(selectedFile._id) }),
+        ...(targetSelection && { targetSelection }),
+      });
+      if (!saved) {
+        notify(
+          t('System', 'Error', null, false),
+          'error',
+          t('System', 'An error occurred', null, false)
+        );
+        return;
+      }
+      notify(t('System', 'Relationship created', null, false), 'success', selectedEntity.title);
+      reset();
+    } finally {
+      setIsSaving(false);
     }
-    notify(t('System', 'Relationship created', null, false), 'success', selectedEntity.title);
-    reset();
   }, [
     createReferenceSelection,
     entity,
