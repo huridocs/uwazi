@@ -1,7 +1,7 @@
 import React from 'react';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { FeatureToggle } from '#V2/Components/UI/FeatureToggle.js';
-import { aiAssistantOpenAtom } from '#V2/atoms/aiAssistantOpenAtom.js';
+import { aiAssistantOpenAtom, userAtom } from '#V2/atoms/index.js';
 import { BertModal } from './BertModal.js';
 import { useBertShortcut } from './useBertShortcut.js';
 import { useBertState } from './useBertState.js';
@@ -36,11 +36,19 @@ const BertHostView = ({
   return <BertModal open={open} onClose={() => setOpen(false)} {...bertState} />;
 };
 
-const BertHost = (props: BertHostProps) => (
-  <FeatureToggle feature="aiAssistant">
-    <BertHostView {...props} />
-  </FeatureToggle>
-);
+const BertHost = (props: BertHostProps) => {
+  const user = useAtomValue(userAtom);
+
+  if (!user?._id) {
+    return null;
+  }
+
+  return (
+    <FeatureToggle feature="aiAssistant">
+      <BertHostView {...props} />
+    </FeatureToggle>
+  );
+};
 
 export { BertHost };
 export type { BertHostProps };

@@ -255,8 +255,8 @@ const Collection = () => {
                     <Translate className="text-sm font-medium text-ink">Public instance</Translate>
                   }
                   tip={tips.publicSharing}
-                  register={register}
-                  defaultChecked={formData.private}
+                  watch={watch}
+                  setValue={setValue}
                 />
                 {isClient && window.__featureFlags__?.v2GetEntity && (
                   <CollectionOptionToggle
@@ -267,8 +267,8 @@ const Collection = () => {
                       </Translate>
                     }
                     tip={tips.filterUnauthorizedRelated}
-                    register={register}
-                    defaultChecked={formData.filterUnauthorizedRelated}
+                    watch={watch}
+                    setValue={setValue}
                   />
                 )}
                 <CollectionOptionToggle
@@ -279,15 +279,15 @@ const Collection = () => {
                     </Translate>
                   }
                   tip={tips.cookiePolicy}
-                  register={register}
-                  defaultChecked={formData.cookiepolicy}
+                  watch={watch}
+                  setValue={setValue}
                 />
                 <CollectionOptionToggle
                   valueKey="allowcustomJS"
                   label={<Translate className="text-sm font-medium text-ink">Global JS</Translate>}
                   tip={tips.globalJS}
-                  register={register}
-                  defaultChecked={formData.allowcustomJS}
+                  watch={watch}
+                  setValue={setValue}
                 />
                 {!settings.newNameGeneration && (
                   <CollectionOptionToggle
@@ -298,8 +298,8 @@ const Collection = () => {
                       </Translate>
                     }
                     tip={tips.characterSupport}
-                    register={register}
-                    defaultChecked={formData.newNameGeneration}
+                    watch={watch}
+                    setValue={setValue}
                   />
                 )}
               </div>
@@ -342,8 +342,8 @@ const Collection = () => {
                     </Translate>
                   }
                   tip={tips.ocrTrigger}
-                  register={register}
-                  defaultChecked={formData.ocrServiceEnabled}
+                  watch={watch}
+                  setValue={setValue}
                 />
               </Card>
             )}
@@ -384,8 +384,8 @@ const Collection = () => {
                     </Translate>
                   }
                   tip={tips.openPublicForm}
-                  register={register}
-                  defaultChecked={formData.openPublicEndpoint}
+                  watch={watch}
+                  setValue={setValue}
                 />
                 <div className="sm:col-span-2">
                   <MultiSelect
