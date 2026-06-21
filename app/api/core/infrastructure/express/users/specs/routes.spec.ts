@@ -70,10 +70,13 @@ describe('users', () => {
         email: 'new@test.com',
       });
       expect(createdUser?.password).toBe('hush hush super secret');
-      newUserId = createdUser?._id;
     });
 
     it('should create a job for the notification email for the new user', async () => {
+      const users = await testingEnvironment.db.getAllFrom('users');
+      const createdUser = users.find(user => user.username === 'newguy');
+      newUserId = createdUser?._id;
+
       const job = await getSharedConnection()
         .collection('jobs')
         .findOne({ name: 'ConfigureRecoveryPasswordHandler', namespace });
@@ -83,6 +86,53 @@ describe('users', () => {
         domain: 'http://uwazi',
         newUser: true,
       });
+    });
+
+    it('should create a new user and add them to the selected groups', async () => {
+      const response = await request(app)
+        .post('/api/users/new')
+        .send({
+          username: 'guy in group',
+          role: 'admin',
+          email: 'grouped@test.com',
+          password: 'Secret123',
+          groups: [
+            { _id: '1', name: 'Researchers' },
+            { _id: '3', name: 'Investigators' },
+          ],
+        });
+
+      expect(response.status).toBe(201);
+      expect(response.body.user).toMatchObject({
+        username: 'newguy',
+        role: 'editor',
+        email: 'new@test.com',
+      });
+      newUserId = response.body.user._id;
+
+      const groups = await testingEnvironment.db.getAllFrom('usergroups');
+      expect(groups).toMatchObject([
+        {
+          _id: '1',
+          name: 'Researchers',
+          members: [
+            {
+              refId: existingUserId,
+            },
+            { refId: newUserId },
+          ],
+        },
+        {
+          _id: '2',
+          name: 'Journalists',
+          members: [],
+        },
+        {
+          _id: '3',
+          name: 'Investigators',
+          members: [{ refId: newUserId }],
+        },
+      ]);
     });
 
     it('should return 422 when body is empty', async () => {

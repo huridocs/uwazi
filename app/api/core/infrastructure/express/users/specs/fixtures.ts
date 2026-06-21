@@ -19,6 +19,27 @@ const fixtures: DBFixture = {
       languages: [{ key: 'en', label: 'English', default: true }],
     },
   ],
+  usergroups: [
+    {
+      _id: '1',
+      name: 'Researchers',
+      members: [
+        {
+          refId: existingUserId,
+        },
+      ],
+    },
+    {
+      _id: '2',
+      name: 'Journalists',
+      members: [],
+    },
+    {
+      _id: '3',
+      name: 'Investigators',
+      members: [],
+    },
+  ],
 };
 
 export { fixtures, existingUserId };
