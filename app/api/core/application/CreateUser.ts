@@ -40,6 +40,7 @@ class CreateUser extends AbstractUseCase<Input, Output, Dependencies> {
       await this.dispatcher.configureRecoveryPassword({
         userId: user._id,
         domain: input.domain,
+        newUser: true,
       });
     });
 

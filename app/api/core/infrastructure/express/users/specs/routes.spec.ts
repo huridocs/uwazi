@@ -81,6 +81,7 @@ describe('users', () => {
       expect(job?.params).toMatchObject({
         userId: newUserId?.toString(),
         domain: 'http://uwazi',
+        newUser: true,
       });
     });
 

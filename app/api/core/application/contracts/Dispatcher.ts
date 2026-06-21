@@ -51,6 +51,7 @@ type DeleteLanguageEntitiesParams = {
 type ConfigureRecoveryPasswordHandlerParms = {
   domain: string;
   userId: string;
+  newUser?: boolean;
 };
 
 interface Dispatcher {
