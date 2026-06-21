@@ -3,7 +3,6 @@
 import { createError } from '#api/utils/index.js';
 import mailer from '#api/utils/mailer.js';
 import db from '#api/utils/testing_db.js';
-import * as random from '#shared/uniqueID.js';
 import { comparePasswords, encryptPassword } from '#api/auth/encryptPassword.js';
 import * as usersUtils from '#api/auth2fa/usersUtils.js';
 import { settingsModel } from '#api/settings/settingsModel.js';
