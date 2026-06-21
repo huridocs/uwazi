@@ -27,7 +27,7 @@ import syncRoutes from '#api/sync/routes.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { tenants } from '#api/tenants/index.js';
 import thesauri from '#api/thesauri/index.js';
-import users from '#api/users/users.js';
+import { encryptPassword } from '#api/auth/encryptPassword.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
@@ -83,23 +83,29 @@ async function applyFixtures(
 
   await tenants.run(async () => {
     await elasticTesting.reindex();
-    await users.newUser({
-      username: 'user',
-      password: 'password',
-      role: 'admin',
-      email: 'user@testing',
-    });
   }, 'target1');
 
   await tenants.run(async () => {
     await elasticTesting.reindex();
-    await users.newUser({
-      username: 'user2',
-      password: 'password2',
-      role: 'admin',
-      email: 'user2@testing',
-    });
   }, 'target2');
+
+  const encryptedPassword1 = await encryptPassword('password');
+  await target1db?.collection('users').insertOne({
+    _id: new ObjectId(),
+    username: 'user',
+    password: encryptedPassword1,
+    role: 'admin',
+    email: 'user@testing',
+  });
+
+  const encryptedPassword2 = await encryptPassword('password2');
+  await target2db?.collection('users').insertOne({
+    _id: new ObjectId(),
+    username: 'user2',
+    password: encryptedPassword2,
+    role: 'admin',
+    email: 'user2@testing',
+  });
 
   return { host1db, host2db, target1db, target2db };
 }
