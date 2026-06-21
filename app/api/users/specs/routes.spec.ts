@@ -116,35 +116,6 @@ describe('users routes', () => {
       });
     });
 
-    describe('/users/new', () => {
-      it('should call users newUser with the body', async () => {
-        jest
-          .spyOn(users, 'newUser')
-          .mockImplementation(async () => Promise.resolve({} as WithId<User> & { __v: number }));
-        const response = await request(app).post('/api/users/new').send(userToUpdate);
-
-        expect(response.status).toBe(200);
-        expect(users.newUser).toHaveBeenCalledWith(
-          userToUpdate,
-          expect.stringContaining('http://127.0.0.1')
-        );
-      });
-
-      describe('validation', () => {
-        it.each(invalidUserProperties)(
-          'should invalidate if there is an invalid property',
-          async ({ field, value, instancePath, keyword }) => {
-            // @ts-ignore
-            const invalidUser = { ...userToUpdate, [field]: value };
-            const response = await request(app).post('/api/users/new').send(invalidUser);
-            expect(response.status).toBe(400);
-            expect(response.body.errors[0].instancePath).toEqual(instancePath);
-            expect(response.body.errors[0].keyword).toEqual(keyword);
-          }
-        );
-      });
-    });
-
     describe('/users/unlock', () => {
       let unlockMock: jest.SpyInstance;
 

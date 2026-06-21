@@ -2,7 +2,6 @@
 import SHA256 from 'crypto-js/sha256.js';
 
 import { createError } from '#api/utils/index.js';
-import random from '#shared/uniqueID.js';
 import { encryptPassword, comparePasswords } from '#api/auth/encryptPassword.js';
 import * as usersUtils from '#api/auth2fa/usersUtils.js';
 import {
@@ -197,32 +196,6 @@ export default {
     }
 
     return updatedUser;
-  },
-
-  async newUser(user, domain) {
-    const [userNameMatch, emailMatch] = await Promise.all([
-      model.get({ username: user.username }),
-      model.get({ email: user.email }),
-    ]);
-    if (user.username && user.username.includes(' ')) {
-      return Promise.reject(createError('Usernames can not contain spaces.', 400));
-    }
-    if (userNameMatch.length || emailMatch.length) {
-      const message = userNameMatch.length ? 'Username already exists' : 'Email already exists';
-      return Promise.reject(createError(message, 409));
-    }
-    const password = user.password ? user.password : random();
-    const _user = await model.save({
-      ...user,
-      password: await encryptPassword(password),
-      using2fa: undefined,
-      secret: undefined,
-    });
-    if (user.groups && user.groups.length > 0) {
-      await updateUserMemberships(_user, user.groups);
-    }
-    await this.recoverPassword(user.email, domain, { newUser: true });
-    return _user;
   },
 
   async get(query, select) {

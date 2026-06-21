@@ -26,7 +26,6 @@ class MongoUsersDataSource extends MongoDataSource<UserDBO> implements UsersData
     return Boolean(userInDb);
   }
 
-  // here we need to update the groups with the user if it has any
   async insert(user: User): Promise<void> {
     await this.getCollection<UserDBO>().insertOne(MongoUsersMapper.toDBO(user));
   }

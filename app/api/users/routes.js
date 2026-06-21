@@ -28,25 +28,6 @@ export default app => {
     }
   );
 
-  // app.post(
-  //   '/api/users/new',
-  //   needsAuthorization(),
-  //   validatePasswordMiddleWare,
-  //   validation.validateRequest({
-  //     type: 'object',
-  //     properties: {
-  //       body: userSchema,
-  //     },
-  //     required: ['body'],
-  //   }),
-  //   (req, res, next) => {
-  //     users
-  //       .newUser(req.body, getDomain(req))
-  //       .then(response => res.json(response))
-  //       .catch(next);
-  //   }
-  // );
-
   app.post(
     '/api/users/unlock',
     needsAuthorization(),
