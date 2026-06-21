@@ -26,7 +26,9 @@ const CollectionOptionToggle = ({
       <ToggleButton
         checked={checked}
         onToggle={() => setValue(valueKey, !checked, { shouldDirty: true })}
-      />
+      >
+        {null}
+      </ToggleButton>
       {label}
       <Tooltip content={tip} placement="right">
         <QuestionMarkCircleIcon className="h-5 w-5 text-ink-muted" />
