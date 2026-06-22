@@ -15,8 +15,8 @@ export class PostgresFilesMapper {
       originalname: row.originalname,
       filename: row.filename,
       mimetype: row.mimetype,
-      size: row.size,
-      creationDate: row.creation_date,
+      size: Number(row.size),
+      creationDate: Number(row.creation_date),
     };
   }
 
@@ -29,7 +29,7 @@ export class PostgresFilesMapper {
             entity: row.entity!,
             status: 'ready',
             language: LanguageUtils.fromISO639_3(row.language!).ISO639_1,
-            totalPages: row.total_pages!,
+            totalPages: Number(row.total_pages!),
             generatedToc: row.generated_toc ?? false,
             toc: row.toc ?? undefined,
             propertySelections: row.property_selections ?? undefined,
