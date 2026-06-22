@@ -53,10 +53,10 @@ describe(`caselaw Banjul Charter rail (${CASELAW_SHARED_ID})`, () => {
     );
     expect(page8to10Cluster).toBeDefined();
     expect(page8to10Cluster?.references).toHaveLength(26);
-    expect(page8to10Cluster?.references.some(marker => marker._id === 'caselaw-p10-r0')).toBe(
-      true
-    );
-    expect(page8to10Cluster?.references.filter(marker => marker._id.startsWith('caselaw-p9-'))).toHaveLength(5);
+    expect(page8to10Cluster?.references.some(marker => marker._id === 'caselaw-p10-r0')).toBe(true);
+    expect(
+      page8to10Cluster?.references.filter(marker => marker._id.startsWith('caselaw-p9-'))
+    ).toHaveLength(5);
   });
 
   it('keeps the page-12 cluster of five separate from the page-8–10 cluster', () => {
@@ -71,7 +71,9 @@ describe(`caselaw Banjul Charter rail (${CASELAW_SHARED_ID})`, () => {
 
     expect(page8to10?.references).toHaveLength(26);
     expect(page12Cluster).toBeDefined();
-    expect(page12Cluster?.references.filter(marker => marker._id.startsWith('caselaw-p12-'))).toHaveLength(5);
+    expect(
+      page12Cluster?.references.filter(marker => marker._id.startsWith('caselaw-p12-'))
+    ).toHaveLength(5);
   });
 
   it('stacks later overlapping markers above earlier clusters on the rail', () => {
