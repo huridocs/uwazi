@@ -26,6 +26,8 @@ const DOCUMENT_MULTIPAGE_MIN_REFS_PER_PAGE = 2;
 const DOCUMENT_CLUSTER_RATIO = 0.03;
 // Minimum document-level merge window (in pages) when multi-page clustering is enabled.
 const DOCUMENT_CLUSTER_MIN_PAGES = 1;
+// Cap merged cluster size so dense adjacent pages stay separate on the rail.
+const DOCUMENT_CLUSTER_MERGE_MAX_REFS = 50;
 
 const getGroupReferences = (group: RelationshipGroup): RelationshipMarker[] =>
   group.type === 'cluster' ? group.references : [group.reference];
@@ -85,6 +87,13 @@ const collapseToSingleGroupPerPage = (positionedGroups: PositionedGroup[]): Posi
 const countGrouped = (groups: RelationshipGroups): number =>
   groups.reduce((count, group) => count + getGroupReferences(group).length, 0);
 
+const countClusterReferences = (cluster: PositionedGroup[]): number =>
+  cluster.reduce((count, item) => count + getGroupReferences(item.group).length, 0);
+
+const canMergeIntoCluster = (cluster: PositionedGroup[], current: PositionedGroup): boolean =>
+  countClusterReferences(cluster) + getGroupReferences(current.group).length <=
+  DOCUMENT_CLUSTER_MERGE_MAX_REFS;
+
 const shouldAllowMultiPageClustering = (groups: RelationshipGroups, safePages: number): boolean => {
   const refsPerPage = countGrouped(groups) / safePages;
   return (
@@ -117,27 +126,30 @@ const groupDocumentRelationships = (
 
   const thresholdPages = allowMultiPageClustering
     ? Math.max(DOCUMENT_CLUSTER_MIN_PAGES, Math.ceil(safePages * DOCUMENT_CLUSTER_RATIO))
-    : 0;
+    : DOCUMENT_CLUSTER_MIN_PAGES;
 
   const finalState = perPageGroupsOnly.slice(1).reduce(
     (state, current) => {
-      if (current.page <= state.clusterStartPage + thresholdPages) {
+      if (
+        current.page <= state.clusterEndPage + thresholdPages &&
+        canMergeIntoCluster(state.cluster, current)
+      ) {
         return {
           grouped: state.grouped,
           cluster: [...state.cluster, current],
-          clusterStartPage: state.clusterStartPage,
+          clusterEndPage: current.page,
         };
       }
       return {
         grouped: appendDocumentCluster(state.grouped, state.cluster),
         cluster: [current],
-        clusterStartPage: current.page,
+        clusterEndPage: current.page,
       };
     },
     {
       grouped: [] as DocumentRelationshipGroups,
       cluster: [perPageGroupsOnly[0]],
-      clusterStartPage: perPageGroupsOnly[0].page,
+      clusterEndPage: perPageGroupsOnly[0].page,
     }
   );
 

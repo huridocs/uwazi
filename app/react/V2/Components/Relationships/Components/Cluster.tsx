@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAnimateToPosition } from '../hooks/useAnimateToPosition.js';
 import { computeClusterOuterSize } from '../computeMarkerY.js';
-import { RAIL_MARKER_SIZE, RAIL_MARKER_SPACING } from '../markerMetrics.js';
+import { RAIL_MARKER_SIZE, RAIL_MARKER_SPACING, railMarkerZIndex } from '../markerMetrics.js';
 import { RelationshipMarker } from '../types.js';
 import { Point } from './Point.js';
 import { ShowMoreButton } from './ShowMoreButton.js';
@@ -23,7 +23,6 @@ const BRANCH_LEN = 16;
 const STEM_LEN = 12;
 const TRUNK_X = RAIL_MARKER_SIZE + PAD + BRANCH_LEN;
 const SVG_WIDTH = TRUNK_X + STEM_LEN;
-const CLUSTER_STACK_BOOST = 500;
 const LINE_STROKE = 'var(--color-theme-text-secondary)';
 const LINE_OPACITY = 0.4;
 
@@ -51,7 +50,7 @@ const Cluster = ({
   const pointsHeight = (rowCount - 1) * RAIL_MARKER_SPACING + RAIL_MARKER_SIZE;
   const stemMidY = pointsHeight / 2;
   const treeTopOffset = outerSize / 2 - stemMidY;
-  const zIndex = clusterIsOpen ? stackOrder + 1500 : stackOrder + CLUSTER_STACK_BOOST;
+  const zIndex = railMarkerZIndex(stackOrder, clusterIsOpen ? 'cluster-open' : 'cluster');
 
   return (
     <div

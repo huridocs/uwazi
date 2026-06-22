@@ -25,13 +25,18 @@ describe('FullMode', () => {
   );
 
   it('marks the active standalone relationship', () => {
+    const activeMarker = markers.find(marker => marker._id === 'ref-partner-33');
+    const soloClusters = activeMarker
+      ? [{ type: 'single' as const, page: 1, references: [activeMarker], startPage: 1, endPage: 1 }]
+      : documentClusters;
+
     render(
       <Provider store={store}>
         <div className="relative h-200">
           <FullMode
             document={apiEntity.documents![0]}
             markerLayerHeight={800}
-            documentClusters={documentClusters}
+            documentClusters={soloClusters}
             activeRelationshipId="ref-partner-33"
           />
         </div>

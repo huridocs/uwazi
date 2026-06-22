@@ -4,7 +4,7 @@ import { useAnimateToPosition } from '../hooks/useAnimateToPosition.js';
 import { RelationshipMarker } from '../types.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { Tooltip } from '#V2/Components/UI/index.js';
-import { RAIL_MARKER_ACTIVE_SIZE, RAIL_MARKER_SIZE } from '../markerMetrics.js';
+import { RAIL_MARKER_ACTIVE_SIZE, RAIL_MARKER_SIZE, railMarkerZIndex } from '../markerMetrics.js';
 
 type PointProps = {
   position: number;
@@ -33,7 +33,10 @@ const Point = ({ position, stackOrder = 1, marker, onClick, isActive = false }: 
       data-testid="rail-marker"
       data-marker-id={marker._id}
       className="pointer-events-auto absolute cursor-pointer [transition-property:top] duration-500 ease-out"
-      style={{ top: `${animatedPosition}px`, zIndex: isActive ? stackOrder + 50 : stackOrder }}
+      style={{
+        top: `${animatedPosition}px`,
+        zIndex: railMarkerZIndex(stackOrder, isActive ? 'point-active' : 'point'),
+      }}
       onClick={() => {
         onClick(marker);
       }}
