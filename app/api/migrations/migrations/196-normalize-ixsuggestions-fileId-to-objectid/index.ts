@@ -2,6 +2,15 @@
 import { Db } from 'mongodb';
 
 const OBJECT_ID_HEX_REGEX = '^[a-fA-F0-9]{24}$';
+const MALFORMED_SUGGESTION_FILTER = {
+  $or: [
+    { entityId: { $exists: false } },
+    { extractorId: { $exists: false } },
+    { fileId: { $exists: false } },
+    { language: { $exists: false } },
+    { propertyName: { $exists: false } },
+  ],
+};
 
 export default {
   delta: 196,
@@ -14,6 +23,10 @@ export default {
 
   async up(db: Db) {
     process.stdout.write(`${this.name}...\r\n`);
+
+    const cleanupResult = await db
+      .collection('ixsuggestions')
+      .deleteMany(MALFORMED_SUGGESTION_FILTER);
 
     const result = await db
       .collection('ixsuggestions')
@@ -32,7 +45,8 @@ export default {
       ]);
 
     process.stdout.write(
-      `${this.name}: scanned ${result.matchedCount} suggestion(s), modified ${result.modifiedCount}.\r\n`
+      `${this.name}: removed ${cleanupResult.deletedCount} malformed suggestion(s), ` +
+        `scanned ${result.matchedCount} suggestion(s), modified ${result.modifiedCount}.\r\n`
     );
   },
 };

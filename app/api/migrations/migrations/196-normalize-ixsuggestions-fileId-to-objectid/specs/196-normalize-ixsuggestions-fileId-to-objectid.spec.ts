@@ -38,13 +38,19 @@ describe('normalize ixsuggestions.fileId to ObjectId migration', () => {
 
     const alreadyObjectId = await getSuggestion(ids.suggestionB);
     const invalidString = await getSuggestion(ids.suggestionC);
-    const missingFileId = await getSuggestion(ids.suggestionD);
 
     expect(alreadyObjectId?.fileId).toBeInstanceOf(ObjectId);
     expect((alreadyObjectId?.fileId as ObjectId).toString()).toBe(ids.fileB.toString());
 
     expect(invalidString?.fileId).toBe('not-an-objectid');
-    expect(missingFileId?.fileId).toBeUndefined();
+  });
+
+  it('should remove malformed suggestions missing required fields', async () => {
+    await migration.up(testingDB.mongodb!);
+
+    const missingFileId = await getSuggestion(ids.suggestionD);
+
+    expect(missingFileId).toBeNull();
   });
 
   it('should be idempotent', async () => {
@@ -59,5 +65,6 @@ describe('normalize ixsuggestions.fileId to ObjectId migration', () => {
     expect((converted?.fileId as ObjectId).toString()).toBe(ids.fileA.toString());
     expect(alreadyObjectId?.fileId).toBeInstanceOf(ObjectId);
     expect(invalidString?.fileId).toBe('not-an-objectid');
+    expect(await getSuggestion(ids.suggestionD)).toBeNull();
   });
 });
