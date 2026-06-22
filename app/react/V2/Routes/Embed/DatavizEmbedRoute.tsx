@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { useAtomValue } from 'jotai';
-import { localeAtom, settingsAtom, userAtom } from '#V2/atoms/index.js';
-import { canUseExternalEmbed } from '#shared/embed/canUseExternalEmbed.js';
+import { localeAtom, settingsAtom } from '#V2/atoms/index.js';
 import type { DatavizEmbedPayload } from '#shared/types/datavizSchema.js';
 import { DatavizEmbed } from '#V2/Dataviz/embed/DatavizEmbed.js';
 import { DatavizLoadingIndicator } from '#V2/Dataviz/components/DatavizLoadingIndicator.js';
@@ -25,10 +24,7 @@ const readInitialPayload = (): DatavizEmbedPayload | null => {
 const DatavizEmbedRoute = () => {
   const { id } = useParams();
   const settings = useAtomValue(settingsAtom);
-  const user = useAtomValue(userAtom);
   const locale = useAtomValue(localeAtom);
-  const externalEmbedAllowed = canUseExternalEmbed({ private: settings.private });
-  const isAuthenticated = Boolean(user?._id);
 
   const [payload, setPayload] = useState<DatavizEmbedPayload | null>(readInitialPayload);
   const [loading, setLoading] = useState(() => !readInitialPayload());
@@ -53,7 +49,11 @@ const DatavizEmbedRoute = () => {
 
       if (result instanceof FetchResponseError) {
         setPayload(null);
-        setError(result.message || 'Unable to load visualization');
+        if (settings.private && result.status === 401) {
+          setError('This visualization is not available for public embedding.');
+        } else {
+          setError(result.message || 'Unable to load visualization');
+        }
         setLoading(false);
         return;
       }
@@ -67,20 +67,10 @@ const DatavizEmbedRoute = () => {
     return () => {
       cancelled = true;
     };
-  }, [id, locale, payload]);
+  }, [id, locale, payload, settings.private]);
 
   if (!id) {
     return null;
-  }
-
-  if (!externalEmbedAllowed && !isAuthenticated) {
-    return (
-      <div className="flex min-h-screen items-center justify-center p-6">
-        <p className="text-sm text-ink-secondary">
-          Embedding is not available on private instances.
-        </p>
-      </div>
-    );
   }
 
   if (loading) {

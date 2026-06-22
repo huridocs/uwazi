@@ -16,7 +16,7 @@ const InfoTab = ({ definition, onChange }: InfoTabProps) => (
       value={definition.name}
       onChange={e => onChange({ name: e.target.value })}
     />
-    <DatavizInfoPanel definition={definition} />
+    <DatavizInfoPanel definition={definition} onChange={onChange} />
   </div>
 );
 

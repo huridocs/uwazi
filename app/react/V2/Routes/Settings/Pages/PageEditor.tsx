@@ -155,6 +155,7 @@ const PageEditor = () => {
   const markdownSupport = watch('markdownSupport') === true;
   const showMarkdownDeprecation = !!watch('sharedId') && markdownSupport;
   const entityView = watch('entityView') === true;
+  const embedPublic = watch('embedPublic') === true;
   const pageSharedId = watch('sharedId') || page.sharedId;
   const showPageUrlPreviews = !entityView && !!pageSharedId;
   const isDirty = !!Object.keys(dirtyFields).length;
@@ -376,7 +377,15 @@ const PageEditor = () => {
                       </Link>
                     )}
 
-                    {pageSharedId && <PageEmbedPanel sharedId={pageSharedId} />}
+                    {pageSharedId && (
+                      <PageEmbedPanel
+                        sharedId={pageSharedId}
+                        embedPublic={embedPublic}
+                        onEmbedPublicChange={value =>
+                          setValue('embedPublic', value, { shouldDirty: true })
+                        }
+                      />
+                    )}
 
                     <div className="flex flex-wrap gap-2 pt-2">
                       <Button

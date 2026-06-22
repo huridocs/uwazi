@@ -155,6 +155,8 @@ export type DatavizDefinition = {
   appearance: DatavizAppearance;
   refresh: DatavizRefreshPolicy;
   processing?: DatavizProcessing;
+  /** When true, anonymous users can load the public embed API on private instances. */
+  embedPublic?: boolean;
   createdAt?: string;
   updatedAt?: string;
 };

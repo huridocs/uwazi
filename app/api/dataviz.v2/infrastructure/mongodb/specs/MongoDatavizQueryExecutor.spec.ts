@@ -8,6 +8,8 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { User } from '#api/users.v2/model/User.js';
 import { CachedTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
+import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
 import { MongoDatavizQueryExecutor } from '../MongoDatavizQueryExecutor.js';
 
 const createExecutor = () =>
@@ -16,6 +18,8 @@ const createExecutor = () =>
     return new MongoDatavizQueryExecutor(getConnection(), tm, {
       settingsDS: SettingsDataSourceFactory.cached({ transactionManager: tm }),
       translationsDS: CachedTranslationsDataSource(tm),
+      templatesDAO: TemplatesDAOFactory.default(),
+      thesauriDAO: ThesauriDAOFactory.default(),
     });
   });
 

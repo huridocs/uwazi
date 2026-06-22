@@ -19,6 +19,7 @@ class DatavizMapper {
       appearance: dataviz.appearance,
       refresh: dataviz.refresh,
       processing: dataviz.processing,
+      embedPublic: dataviz.embedPublic,
       createdAt: dataviz.createdAt?.getTime() ?? now,
       updatedAt: now,
     };
@@ -36,6 +37,7 @@ class DatavizMapper {
       appearance: dbo.appearance,
       refresh: dbo.refresh,
       processing: dbo.processing,
+      embedPublic: dbo.embedPublic,
       createdAt: new Date(dbo.createdAt).toISOString(),
       updatedAt: new Date(dbo.updatedAt).toISOString(),
     });

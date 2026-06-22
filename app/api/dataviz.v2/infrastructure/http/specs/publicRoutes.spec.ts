@@ -14,6 +14,7 @@ import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/T
 import type { DatavizScheduler } from '#api/dataviz.v2/application/contracts/DatavizScheduler.js';
 import { MANUAL_DATA_EXAMPLE } from '#shared/dataviz/manualData.js';
 import { CreateDatavizUseCase } from '#api/dataviz.v2/application/useCases/CreateDataviz.js';
+import { UpdateDatavizUseCase } from '#api/dataviz.v2/application/useCases/UpdateDataviz.js';
 import datavizRoutes from '../routes.js';
 
 jest.mock(
@@ -97,6 +98,37 @@ describe('public dataviz embed routes', () => {
       .expect(401);
 
     expect(response.body.error).toBe('Unauthorized');
+
+    await settings.save({ ...current, private: false });
+  });
+
+  it('should allow anonymous access when embedPublic is enabled on a private instance', async () => {
+    const current = await settings.get();
+    await settings.save({ ...current, private: true });
+
+    await testingEnvironment.runWithContext(async () => {
+      const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+      const update = new UpdateDatavizUseCase(
+        {
+          transactionManager,
+          datavizDS: DatavizDataSourceFactory.default(),
+          snapshotsDS: DatavizSnapshotsDataSourceFactory.default(),
+          queryExecutor: DatavizQueryExecutorFactory.default(),
+          templatesDS: TemplatesDataSourceFactory.default(),
+          scheduler: { cancelPending: jest.fn(), schedule: jest.fn() } satisfies DatavizScheduler,
+        },
+        { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant }
+      );
+      const existing = await DatavizDataSourceFactory.default().getById(datavizId);
+      await update.execute({ ...existing.getDataOrThrow().toDefinition(), embedPublic: true });
+    });
+
+    const response = await request(app)
+      .get(`/api/public/dataviz/${datavizId}/data`)
+      .query({ locale: 'en' })
+      .expect(200);
+
+    expect(response.body.data.series[0].points[0].label).toBe('Category A');
 
     await settings.save({ ...current, private: false });
   });

@@ -15,6 +15,7 @@ export interface PageEditorPayload {
   creationDate?: number;
   entityView?: boolean;
   markdownSupport?: boolean;
+  embedPublic?: boolean;
   locales: {
     [k: string]:
       | {
@@ -66,5 +67,6 @@ export interface PageType {
   };
   entityView?: boolean;
   markdownSupport?: boolean;
+  embedPublic?: boolean;
   __v?: number;
 }

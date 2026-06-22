@@ -20,6 +20,7 @@ export type DatavizDBO = {
   appearance: DatavizAppearance;
   refresh: DatavizRefreshPolicy;
   processing?: DatavizProcessing;
+  embedPublic?: boolean;
   createdAt: number;
   updatedAt: number;
 };

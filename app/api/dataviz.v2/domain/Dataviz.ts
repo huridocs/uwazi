@@ -25,6 +25,7 @@ type Props = {
   appearance: DatavizAppearance;
   refresh: DatavizRefreshPolicy;
   processing?: DatavizProcessing;
+  embedPublic?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
   /** Skip invariant checks when rehydrating persisted documents (validation runs on save). */
@@ -52,6 +53,8 @@ class Dataviz {
 
   readonly processing?: DatavizProcessing;
 
+  readonly embedPublic: boolean;
+
   readonly createdAt?: Date;
 
   readonly updatedAt?: Date;
@@ -67,6 +70,7 @@ class Dataviz {
     this.appearance = props.appearance;
     this.refresh = props.refresh;
     this.processing = props.processing;
+    this.embedPublic = props.embedPublic ?? false;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
     if (!props.skipValidation) {
@@ -123,6 +127,7 @@ class Dataviz {
       appearance: this.appearance,
       refresh: this.refresh,
       processing: this.processing,
+      embedPublic: this.embedPublic,
       createdAt: this.createdAt?.toISOString(),
       updatedAt: this.updatedAt?.toISOString(),
     };
@@ -140,6 +145,7 @@ class Dataviz {
       appearance: this.appearance,
       refresh: this.refresh,
       processing: this.processing,
+      embedPublic: this.embedPublic,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
     };
@@ -157,6 +163,7 @@ class Dataviz {
       appearance: definition.appearance,
       refresh: definition.refresh,
       processing: definition.processing,
+      embedPublic: definition.embedPublic,
       createdAt: definition.createdAt ? new Date(definition.createdAt) : undefined,
       updatedAt: definition.updatedAt ? new Date(definition.updatedAt) : undefined,
       skipValidation: true,

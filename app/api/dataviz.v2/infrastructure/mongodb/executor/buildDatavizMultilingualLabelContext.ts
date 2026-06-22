@@ -1,19 +1,44 @@
-import type { Db } from 'mongodb';
-import { ObjectId } from 'mongodb';
+import type { ObjectId } from 'mongodb';
 import type { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import type { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
 import { TranslationCollection } from '#api/i18n.v2/model/TranslationCollection.js';
 import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import type { LocalizedLabels } from '#shared/types/datavizSchema.js';
 import type { DatavizQuery, DimensionSpec } from '#shared/types/datavizSchema.js';
 import { TEMPLATE_DIMENSION_PROPERTY } from '#shared/types/datavizSchema.js';
-import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
+import type { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
 import {
   buildMissingBucketLabels,
   type DatavizMultilingualLabelContext,
 } from './DatavizMultilingualLabelResolver.js';
-import { loadEntityTitleLabels } from './loadEntityTitleLabels.js';
 
 type ThesaurusValue = { id: string; label: string; values?: ThesaurusValue[] };
+
+type ThesaurusReadRow = {
+  _id: ObjectId | string;
+  name: string;
+  values: ThesaurusValue[];
+};
+
+export type TemplatesReadDAO = {
+  get(ids?: string[]): Promise<TemplateDBO[]>;
+};
+
+export type ThesauriReadDAO = {
+  get(ids?: string[]): Promise<ThesaurusReadRow[]>;
+};
+
+export type DatavizLabelContextDeps = {
+  settingsDS: SettingsDataSource;
+  templatesDAO: TemplatesReadDAO;
+  thesauriDAO: ThesauriReadDAO;
+  translationsDS: TranslationsDataSource;
+};
+
+const templateIdFromDBO = (template: TemplateDBO): string => template._id.toHexString();
+
+const thesaurusIdFromRow = (row: ThesaurusReadRow): string =>
+  typeof row._id === 'string' ? row._id : row._id.toHexString();
 
 const flattenThesaurusValues = (values: ThesaurusValue[]): Map<string, string> => {
   const map = new Map<string, string>();
@@ -31,20 +56,20 @@ const flattenThesaurusValues = (values: ThesaurusValue[]): Map<string, string> =
   return map;
 };
 
-const loadTemplateNames = async (db: Db, query: DatavizQuery): Promise<Map<string, string>> => {
+const loadTemplateNames = async (
+  templatesDAO: TemplatesReadDAO,
+  query: DatavizQuery
+): Promise<Map<string, string>> => {
   const ids = [
     ...query.sources.map(source => source.templateId),
     ...(query.dimensions.some(dimension => dimension.property === TEMPLATE_DIMENSION_PROPERTY)
       ? query.sources.map(source => source.templateId)
       : []),
   ];
-  const uniqueIds = [...new Set(ids)].map(id => ObjectId.createFromHexString(id));
-  const templates = await db
-    .collection<TemplateDBO>('templates')
-    .find({ _id: { $in: uniqueIds } })
-    .toArray();
+  const uniqueIds = [...new Set(ids)];
+  const templates = await templatesDAO.get(uniqueIds);
 
-  return new Map(templates.map(template => [template._id.toHexString(), template.name]));
+  return new Map(templates.map(template => [templateIdFromDBO(template), template.name]));
 };
 
 const loadTemplateTranslations = async (
@@ -64,7 +89,8 @@ const loadTemplateTranslations = async (
 };
 
 const loadPropertyThesaurus = async (
-  db: Db,
+  templatesDAO: TemplatesReadDAO,
+  thesauriDAO: ThesauriReadDAO,
   translationsDS: TranslationsDataSource,
   query: DatavizQuery
 ): Promise<Map<string, { valueLabels: Map<string, string>; translations: TranslationCollection }>> => {
@@ -84,27 +110,21 @@ const loadPropertyThesaurus = async (
     return new Map();
   }
 
-  const sourceTemplateIds = query.sources.map(source => ObjectId.createFromHexString(source.templateId));
-  const sourceTemplates = await db
-    .collection<TemplateDBO>('templates')
-    .find({ _id: { $in: sourceTemplateIds } })
-    .toArray();
+  const sourceTemplateIds = query.sources.map(source => source.templateId);
+  const sourceTemplates = await templatesDAO.get(sourceTemplateIds);
 
-  const relatedTemplateIds = new Set<ObjectId>();
+  const relatedTemplateIds = new Set<string>();
   sourceTemplates.forEach(template => {
     template.properties?.forEach(prop => {
       if (prop.content && (prop.type === 'relationship' || prop.type === 'newRelationship')) {
-        relatedTemplateIds.add(ObjectId.createFromHexString(prop.content));
+        relatedTemplateIds.add(prop.content);
       }
     });
   });
 
-  const allTemplateIds = [...sourceTemplateIds, ...relatedTemplateIds];
-  const templates = await db
-    .collection<TemplateDBO>('templates')
-    .find({ _id: { $in: allTemplateIds } })
-    .toArray();
-  const templatesById = new Map(templates.map(template => [template._id.toHexString(), template]));
+  const allTemplateIds = [...new Set([...sourceTemplateIds, ...relatedTemplateIds])];
+  const templates = await templatesDAO.get(allTemplateIds);
+  const templatesById = new Map(templates.map(template => [templateIdFromDBO(template), template]));
 
   const thesaurusIds = new Set<string>();
   const propertyToThesaurus = new Map<string, string>();
@@ -150,14 +170,11 @@ const loadPropertyThesaurus = async (
     return new Map();
   }
 
-  const dictionaries = await db
-    .collection<{ _id: ObjectId; values: ThesaurusValue[] }>('dictionaries')
-    .find({ _id: { $in: [...thesaurusIds].map(id => ObjectId.createFromHexString(id)) } })
-    .toArray();
+  const thesauri = await thesauriDAO.get([...thesaurusIds]);
 
   const thesaurusValueLabels = new Map<string, Map<string, string>>();
-  dictionaries.forEach(dict => {
-    thesaurusValueLabels.set(dict._id.toHexString(), flattenThesaurusValues(dict.values ?? []));
+  thesauri.forEach(row => {
+    thesaurusValueLabels.set(thesaurusIdFromRow(row), flattenThesaurusValues(row.values ?? []));
   });
 
   const thesaurusTranslations = new Map<string, TranslationCollection>();
@@ -180,7 +197,7 @@ const loadPropertyThesaurus = async (
   return result;
 };
 
-const relatedEntityProperties = (dimensions: DimensionSpec[]): Set<string> =>
+export const relatedEntityProperties = (dimensions: DimensionSpec[]): Set<string> =>
   new Set(
     dimensions
       .filter(dimension => dimension.relationshipMode === 'related_entity')
@@ -188,26 +205,24 @@ const relatedEntityProperties = (dimensions: DimensionSpec[]): Set<string> =>
   );
 
 export const buildDatavizMultilingualLabelContext = async (params: {
-  db: Db;
   query: DatavizQuery;
-  settingsDS: SettingsDataSource;
-  translationsDS: TranslationsDataSource;
-  bucketKeys: string[];
+  entityTitles: Map<string, LocalizedLabels>;
+  deps: DatavizLabelContextDeps;
 }): Promise<DatavizMultilingualLabelContext> => {
-  const { db, query, settingsDS, translationsDS, bucketKeys } = params;
+  const { query, entityTitles, deps } = params;
+  const { settingsDS, templatesDAO, thesauriDAO, translationsDS } = deps;
 
   const languages = await settingsDS.getLanguageKeys();
   const defaultLanguage = await settingsDS.getDefaultLanguageKey();
-  const templateNames = await loadTemplateNames(db, query);
+  const templateNames = await loadTemplateNames(templatesDAO, query);
   const templateIds = [...new Set(query.sources.map(source => source.templateId))];
   const templateTranslations = await loadTemplateTranslations(translationsDS, templateIds);
-  const propertyThesaurus = await loadPropertyThesaurus(db, translationsDS, query);
-  const relatedEntityDims = relatedEntityProperties(query.dimensions);
-
-  const entityTitles =
-    relatedEntityDims.size > 0
-      ? await loadEntityTitleLabels(db, bucketKeys, languages as LanguageISO6391[])
-      : new Map();
+  const propertyThesaurus = await loadPropertyThesaurus(
+    templatesDAO,
+    thesauriDAO,
+    translationsDS,
+    query
+  );
 
   return {
     languages: languages as LanguageISO6391[],
@@ -215,7 +230,7 @@ export const buildDatavizMultilingualLabelContext = async (params: {
     templateNames,
     templateTranslations,
     propertyThesaurus,
-    relatedEntityProperties: relatedEntityDims,
+    relatedEntityProperties: relatedEntityProperties(query.dimensions),
     entityTitles,
     missingBucketLabels: buildMissingBucketLabels(languages as LanguageISO6391[]),
   };

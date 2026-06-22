@@ -3,8 +3,6 @@ import {
   DatavizQueryContext,
   DatavizQueryExecutor,
 } from '#api/dataviz.v2/application/contracts/DatavizQueryExecutor.js';
-import type { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import type { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
 import { DatavizQueryTimeoutError } from '#api/dataviz.v2/domain/errors.js';
 import { validateQueryStructure } from '#api/dataviz.v2/domain/validators/validateExecutableDatavizQuery.js';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
@@ -29,17 +27,16 @@ import {
   RawBucket,
 } from './executor/DatavizResultNormalizer.js';
 import { collectBucketKeysFromRawBuckets } from './executor/collectBucketKeys.js';
-import { buildDatavizMultilingualLabelContext } from './executor/buildDatavizMultilingualLabelContext.js';
+import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { buildDatavizMultilingualLabelContext, relatedEntityProperties, type DatavizLabelContextDeps } from './executor/buildDatavizMultilingualLabelContext.js';
+import { loadEntityTitleLabels } from './executor/loadEntityTitleLabels.js';
 import {
   createMultilingualLabelResolver,
   pickDefaultLocalizedLabel,
   resolveSeriesLocalizedLabels,
 } from './executor/DatavizMultilingualLabelResolver.js';
 
-type MongoDatavizQueryExecutorDeps = {
-  settingsDS: SettingsDataSource;
-  translationsDS: TranslationsDataSource;
-};
+type MongoDatavizQueryExecutorDeps = DatavizLabelContextDeps;
 
 class MongoDatavizQueryExecutor
   extends MongoDataSource<EntityDBO>
@@ -47,9 +44,7 @@ class MongoDatavizQueryExecutor
 {
   protected collectionName = 'entities';
 
-  private settingsDS: SettingsDataSource;
-
-  private translationsDS: TranslationsDataSource;
+  private labelContextDeps: DatavizLabelContextDeps;
 
   constructor(
     db: Db,
@@ -57,15 +52,38 @@ class MongoDatavizQueryExecutor
     deps: MongoDatavizQueryExecutorDeps
   ) {
     super(db, transactionManager, { useSyncedCollection: false });
-    this.settingsDS = deps.settingsDS;
-    this.translationsDS = deps.translationsDS;
+    this.labelContextDeps = deps;
+  }
+
+  private async resolveEntityTitles(
+    query: DatavizQuery,
+    bucketKeys: Iterable<string>
+  ) {
+    if (relatedEntityProperties(query.dimensions).size === 0) {
+      return new Map();
+    }
+
+    const languages = await this.labelContextDeps.settingsDS.getLanguageKeys();
+    return loadEntityTitleLabels(
+      this.db,
+      [...bucketKeys],
+      languages as LanguageISO6391[]
+    );
+  }
+
+  private async buildLabelContext(query: DatavizQuery, bucketKeys: Iterable<string>) {
+    return buildDatavizMultilingualLabelContext({
+      query,
+      entityTitles: await this.resolveEntityTitles(query, bucketKeys),
+      deps: this.labelContextDeps,
+    });
   }
 
   async execute(query: DatavizQuery, context: DatavizQueryContext) {
     validateQueryStructure(query);
 
     const start = Date.now();
-    const defaultLanguage = await this.settingsDS.getDefaultLanguageKey();
+    const defaultLanguage = await this.labelContextDeps.settingsDS.getDefaultLanguageKey();
     const timeoutMs = context.timeoutMs ?? REFRESH_LIVE_TIMEOUT_MS;
 
     if (query.dimensions.length === 0) {
@@ -98,13 +116,7 @@ class MongoDatavizQueryExecutor
 
     const allBuckets = bucketSets.flat();
     const bucketKeys = collectBucketKeysFromRawBuckets(allBuckets);
-    const labelContext = await buildDatavizMultilingualLabelContext({
-      db: this.db,
-      query,
-      settingsDS: this.settingsDS,
-      translationsDS: this.translationsDS,
-      bucketKeys,
-    });
+    const labelContext = await this.buildLabelContext(query, bucketKeys);
     const resolveLabel = createMultilingualLabelResolver(labelContext);
 
     const templateCountById = new Map<string, number>();
@@ -190,13 +202,7 @@ class MongoDatavizQueryExecutor
       counts.push(count);
     }
 
-    const labelContext = await buildDatavizMultilingualLabelContext({
-      db: this.db,
-      query,
-      settingsDS: this.settingsDS,
-      translationsDS: this.translationsDS,
-      bucketKeys: new Set(),
-    });
+    const labelContext = await this.buildLabelContext(query, []);
 
     const templateCountById = new Map<string, number>();
     query.sources.forEach(source => {

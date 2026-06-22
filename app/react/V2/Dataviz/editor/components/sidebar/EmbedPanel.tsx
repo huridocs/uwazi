@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
+import { Translate } from '#app/I18N/index.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { canUseExternalEmbed } from '#shared/embed/canUseExternalEmbed.js';
-import { CopyValueInput } from '#V2/Components/UI/CopyValueInput.js';
+import { CopyValueInput, ToggleButton } from '#V2/Components/UI/index.js';
 import { isPersistedId } from '#V2/Dataviz/api/httpDatavizApi.js';
 import {
   buildExternalDatavizEmbedUrl,
@@ -12,12 +13,15 @@ import {
 
 type EmbedPanelProps = {
   id: string;
+  embedPublic?: boolean;
+  onEmbedPublicChange?: (value: boolean) => void;
 };
 
-const EmbedPanel = ({ id }: EmbedPanelProps) => {
+const EmbedPanel = ({ id, embedPublic = false, onEmbedPublicChange }: EmbedPanelProps) => {
   const settings = useAtomValue(settingsAtom);
+  const isPrivateInstance = Boolean(settings.private);
   const defaultLocale = settings.languages?.find(language => language.default)?.key ?? 'en';
-  const externalEmbedAllowed = canUseExternalEmbed({ private: settings.private });
+  const externalEmbedAllowed = canUseExternalEmbed({ private: settings.private }, embedPublic);
   const persisted = isPersistedId(id);
 
   const pageSnippet = useMemo(() => (persisted ? buildPageEmbedSnippet(id) : ''), [id, persisted]);
@@ -52,8 +56,19 @@ const EmbedPanel = ({ id }: EmbedPanelProps) => {
         <CopyValueInput id="dataviz-page-embed" label="Page embed code" value={pageSnippet} />
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-3">
         <p className="text-sm font-medium text-ink">External embed</p>
+        {isPrivateInstance && onEmbedPublicChange && (
+          <ToggleButton
+            checked={embedPublic}
+            onToggle={() => onEmbedPublicChange(!embedPublic)}
+            size="small"
+          >
+            <span className="text-sm text-ink">
+              <Translate>Allow public embedding without login</Translate>
+            </span>
+          </ToggleButton>
+        )}
         {externalEmbedAllowed ? (
           <>
             <p className="text-xs text-ink-secondary">
@@ -67,7 +82,9 @@ const EmbedPanel = ({ id }: EmbedPanelProps) => {
           </>
         ) : (
           <p className="text-sm text-ink-secondary">
-            External embedding is disabled on private instances.
+            <Translate>
+              Enable public embedding to use this chart in external sites on private instances.
+            </Translate>
           </p>
         )}
       </div>

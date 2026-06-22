@@ -161,6 +161,7 @@ export const PageSchema = {
     },
     entityView: { type: 'boolean' },
     markdownSupport: { type: 'boolean' },
+    embedPublic: { type: 'boolean' },
     __v: { type: 'number' },
   },
 };
@@ -179,6 +180,7 @@ export const PageEditorSchema = {
     creationDate: { type: 'number' },
     entityView: { type: 'boolean' },
     markdownSupport: { type: 'boolean' },
+    embedPublic: { type: 'boolean' },
     locales: {
       type: 'object',
       minProperties: 1,

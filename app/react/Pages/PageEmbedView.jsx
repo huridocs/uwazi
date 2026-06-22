@@ -11,7 +11,7 @@ import { PagesAPI } from './PagesAPI.js';
 class PageEmbedViewComponent extends RouteHandler {
   static async requestState(requestParams) {
     try {
-      const rawPage = await PagesAPI.getById(requestParams);
+      const rawPage = await PagesAPI.getPublicById(requestParams);
       if (rawPage.entityView) {
         return [actions.set('page/error', new Error(ENTITY_VIEW_EMBED_ERROR))];
       }
@@ -20,7 +20,7 @@ class PageEmbedViewComponent extends RouteHandler {
         requestParams,
         {},
         {},
-        { contentMode: 'published' }
+        { contentMode: 'published', publicEmbed: true }
       );
 
       const forbiddenTag = findForbiddenPageEmbedTag(pageView.metadata?.content ?? '');

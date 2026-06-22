@@ -137,6 +137,33 @@ describe('GetPublicDatavizEmbedUseCase', () => {
     await settings.save({ ...current, private: false });
   });
 
+  it('should allow anonymous access on private instances when embedPublic is enabled', async () => {
+    const { create, getPublicEmbed } = createSut();
+    const dataviz = await create.execute({
+      name: 'Public embed on private instance',
+      dataSource: 'manual',
+      query: {
+        sources: [],
+        dimensions: [],
+        measures: [{ aggregation: 'count', countMode: 'all' }],
+      },
+      manualData: MANUAL_DATA_EXAMPLE,
+      chart: { type: 'pie' },
+      appearance: { colorMode: 'theme' },
+      refresh: { refreshMode: 'live' },
+      embedPublic: true,
+    });
+
+    const current = await settings.get();
+    await settings.save({ ...current, private: true });
+
+    const payload = await getPublicEmbed(User.createFrom(null)).execute({ id: dataviz.id });
+
+    expect(payload.data.series[0].points[0].label).toBe('Category A');
+
+    await settings.save({ ...current, private: false });
+  });
+
   it('should allow authenticated users on private instances', async () => {
     const { create, getPublicEmbed } = createSut();
     const dataviz = await create.execute({

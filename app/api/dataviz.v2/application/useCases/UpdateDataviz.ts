@@ -54,6 +54,7 @@ class UpdateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
       appearance: input.appearance,
       refresh: normalizeDatavizRefresh(input.refresh),
       processing: existing.processing,
+      embedPublic: input.embedPublic ?? existing.embedPublic,
       createdAt: existing.createdAt,
       updatedAt: new Date(),
     });

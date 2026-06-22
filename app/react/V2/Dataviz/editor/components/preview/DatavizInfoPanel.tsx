@@ -4,10 +4,15 @@ import { EmbedPanel } from '../sidebar/EmbedPanel.js';
 
 type DatavizInfoPanelProps = {
   definition: DatavizDefinition;
+  onChange: (patch: Partial<DatavizDefinition>) => void;
 };
 
-const DatavizInfoPanel = ({ definition }: DatavizInfoPanelProps) => (
-  <EmbedPanel id={definition.id} />
+const DatavizInfoPanel = ({ definition, onChange }: DatavizInfoPanelProps) => (
+  <EmbedPanel
+    id={definition.id}
+    embedPublic={definition.embedPublic}
+    onEmbedPublicChange={value => onChange({ embedPublic: value })}
+  />
 );
 
 export { DatavizInfoPanel };

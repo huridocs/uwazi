@@ -4,6 +4,8 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoDatavizQueryExecutor } from '../mongodb/MongoDatavizQueryExecutor.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
+import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
 
 class DatavizQueryExecutorFactory {
   static default() {
@@ -12,6 +14,8 @@ class DatavizQueryExecutorFactory {
     return new MongoDatavizQueryExecutor(getConnection(), transactionManager, {
       settingsDS: SettingsDataSourceFactory.cached({ transactionManager }),
       translationsDS: CachedTranslationsDataSource(transactionManager),
+      templatesDAO: TemplatesDAOFactory.default(),
+      thesauriDAO: ThesauriDAOFactory.default(),
     });
   }
 }

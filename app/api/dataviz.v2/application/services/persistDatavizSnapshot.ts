@@ -49,6 +49,7 @@ const withSnapshotRefreshMetadata = (dataviz: Dataviz): Dataviz => {
     appearance: dataviz.appearance,
     refresh,
     processing: { active: false },
+    embedPublic: dataviz.embedPublic,
     createdAt: dataviz.createdAt,
     updatedAt: new Date(),
     skipValidation: true,

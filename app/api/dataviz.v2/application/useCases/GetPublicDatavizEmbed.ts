@@ -21,9 +21,6 @@ type Deps = {
 class GetPublicDatavizEmbedUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute({ id }: Input): Promise<Output> {
     const settings = await this.deps.settingsDS.get();
-    if (settings.private && this.getActor().isAnonymous()) {
-      throw new DatavizUnauthorizedError();
-    }
 
     const datavizResult = await this.deps.datavizDS.getById(id);
     if (datavizResult.isError()) {
@@ -31,6 +28,10 @@ class GetPublicDatavizEmbedUseCase extends AbstractUseCase<Input, Output, Deps> 
     }
 
     const dataviz = datavizResult.getData();
+    if (settings.private && this.getActor().isAnonymous() && !dataviz.embedPublic) {
+      throw new DatavizUnauthorizedError();
+    }
+
     const defaultLocale =
       settings.languages?.find(language => language.default)?.key ?? this.targetLanguage;
 

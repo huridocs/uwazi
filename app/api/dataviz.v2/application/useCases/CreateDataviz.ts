@@ -46,6 +46,7 @@ class CreateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
       chart: input.chart,
       appearance: input.appearance,
       refresh: normalizeDatavizRefresh(input.refresh),
+      embedPublic: input.embedPublic,
       createdAt: new Date(),
       updatedAt: new Date(),
     });

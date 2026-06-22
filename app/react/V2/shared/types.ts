@@ -62,6 +62,7 @@ type Page = {
   releasesByLocale?: Record<string, PageRelease[]>;
   entityView?: boolean;
   markdownSupport?: boolean;
+  embedPublic?: boolean;
 };
 
 enum ItemTypes {
