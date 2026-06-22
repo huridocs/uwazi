@@ -99,9 +99,9 @@ export class PXEntityStatusManager {
 
     if (entityStatus) {
       const documentsInInstalledLanguages = (
-        await this.dependencies.filesDS
-          .getProcessedDocsForEntity(entity.sharedId!, { languages: installedLanguages })
-          .all()
+        await this.dependencies.filesDS.getProcessedDocsForEntity(entity.sharedId!, {
+          languages: installedLanguages,
+        })
       ).reduce(
         (acc, file) => {
           const existingDocument = acc[file.language!];

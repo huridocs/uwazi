@@ -31,7 +31,7 @@ export class EntityPreviewBatchHandler extends V1CompatTenantDispatchable<Params
 
     await this.deps.transactionManager.run(async () => {
       const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
-      const allThumbnails = await this.deps.filesDS.getThumbnails(sharedIds).all();
+      const allThumbnails = await this.deps.filesDS.getThumbnails(sharedIds);
       const entities = (await this.deps.entitiesDS.getAllBySharedId(sharedIds)).getDataOrThrow();
 
       const thumbnailsByEntity = allThumbnails.reduce<Map<string, typeof allThumbnails>>(

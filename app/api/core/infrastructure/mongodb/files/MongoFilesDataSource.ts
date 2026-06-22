@@ -5,7 +5,6 @@ import { LanguageUtils } from '#shared/language/index.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { LanguageISO6393 } from '#shared/language/languageISO639_3.js';
 
-import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
 import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
 import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
@@ -13,7 +12,6 @@ import {
   MongoDataSource,
   MongoDSOptions,
 } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { search } from '#api/search/index.js';
 import { FileStorage } from '../../../application/contracts/FileStorage.js';
@@ -92,45 +90,49 @@ export class MongoFilesDataSource extends MongoDataSource<FileDBO> implements Fi
     });
   }
 
-  getByEntitiesIds(entitySharedIds: string[]): ResultSet<BaseFile> {
-    return new MongoResultSet<FileDBO, BaseFile>(
-      this.getCollection().find({
+  async getByEntitiesIds(entitySharedIds: string[]): Promise<BaseFile[]> {
+    const dbos = await this.getCollection()
+      .find({
         type: { $ne: 'thumbnail' },
         entity: { $in: entitySharedIds },
-      }),
-      dbo => this.toModel(dbo)
-    );
+      })
+      .toArray();
+    const mapped = await Promise.all(dbos.map(async dbo => this.toModel(dbo)));
+    return mapped;
   }
 
-  getThumbnails(entitySharedIds: string[]): ResultSet<Thumbnail> {
-    return new MongoResultSet<FileDBO, Thumbnail>(
-      this.getCollection().find({
+  async getThumbnails(entitySharedIds: string[]): Promise<Thumbnail[]> {
+    const dbos = await this.getCollection()
+      .find({
         entity: { $in: entitySharedIds },
         type: 'thumbnail',
-      }),
-      dbo => this.toModel(dbo) as Thumbnail
-    );
+      })
+      .toArray();
+    const mapped = await Promise.all(dbos.map(async dbo => this.toModel(dbo)));
+    return mapped as Thumbnail[];
   }
 
-  getThumbnailsByLanguage(language: LanguageISO6391): ResultSet<Thumbnail> {
-    return new MongoResultSet<FileDBO, Thumbnail>(
-      this.getCollection().find({
+  async getThumbnailsByLanguage(language: LanguageISO6391): Promise<Thumbnail[]> {
+    const dbos = await this.getCollection()
+      .find({
         type: 'thumbnail',
         language: LanguageUtils.fromISO639_1(language).ISO639_3,
-      }),
-      dbo => this.toModel(dbo) as Thumbnail
-    );
+      })
+      .toArray();
+    const mapped = await Promise.all(dbos.map(async dbo => this.toModel(dbo)));
+    return mapped as Thumbnail[];
   }
 
-  getThumbnailsForProcessedPDFs(documentIds: string[]): ResultSet<Thumbnail> {
+  async getThumbnailsForProcessedPDFs(documentIds: string[]): Promise<Thumbnail[]> {
     const filenames = documentIds.map(id => `${id}.jpg`);
-    return new MongoResultSet<FileDBO, Thumbnail>(
-      this.getCollection().find({
+    const dbos = await this.getCollection()
+      .find({
         filename: { $in: filenames },
         type: 'thumbnail',
-      }),
-      dbo => this.toModel(dbo) as Thumbnail
-    );
+      })
+      .toArray();
+    const mapped = await Promise.all(dbos.map(async dbo => this.toModel(dbo)));
+    return mapped as Thumbnail[];
   }
 
   async getProcessingById(fileId: string) {
@@ -225,10 +227,10 @@ export class MongoFilesDataSource extends MongoDataSource<FileDBO> implements Fi
     );
   }
 
-  getProcessedDocsForEntity(
+  async getProcessedDocsForEntity(
     entitySharedId: string,
     options?: GetDocumentsForEntityOptions
-  ): ResultSet<PDFDocument> {
+  ): Promise<PDFDocument[]> {
     const query: GetDocumentsForEntityQuery = {
       entity: entitySharedId,
       type: 'document',
@@ -249,17 +251,19 @@ export class MongoFilesDataSource extends MongoDataSource<FileDBO> implements Fi
       }
     }
 
-    return new MongoResultSet<FileDBO, PDFDocument>(
-      this.getCollection().find(query, { projection: { fullText: 0 } }),
-      dbo => this.toModel(dbo) as PDFDocument
-    );
+    const dbos = await this.getCollection()
+      .find(query, { projection: { fullText: 0 } })
+      .toArray();
+    const mapped = await Promise.all(dbos.map(async dbo => this.toModel(dbo)));
+    return mapped as PDFDocument[];
   }
 
-  getAll() {
-    return new MongoResultSet<FileDBO, BaseFile>(
-      this.getCollection().find({}, { projection: { fullText: 0 } }),
-      dbo => this.toModel(dbo)
-    );
+  async getAll(): Promise<BaseFile[]> {
+    const dbos = await this.getCollection()
+      .find({}, { projection: { fullText: 0 } })
+      .toArray();
+    const mapped = await Promise.all(dbos.map(async dbo => this.toModel(dbo)));
+    return mapped;
   }
 
   async filesExistForEntities(files: { entity: string; _id: string }[]) {

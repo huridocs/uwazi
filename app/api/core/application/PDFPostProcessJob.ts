@@ -54,7 +54,7 @@ export class PDFPostProcessJob extends AbstractUseCase<Input, Output, Deps, [boo
         const entity = (await this.deps.entitiesDS.getById(processingPDF.entity)).getDataOrThrow();
 
         entity.setPreview(
-          await this.deps.filesDS.getThumbnails([entity.sharedId]).all(),
+          await this.deps.filesDS.getThumbnails([entity.sharedId]),
           await this.deps.settingsDS.getDefaultLanguageKey()
         );
 
