@@ -97,8 +97,10 @@ describe('Relationships context', () => {
     cy.wait('@searchEntities');
     cy.contains('Entity with PDF').click();
     cy.contains('Text document').click();
-    cy.contains('related to').click();
-    cy.contains('button', 'Continue').click();
+    cy.get('[data-testid="modal"]').within(() => {
+      cy.contains('button', 'related to').click();
+      cy.contains('button', 'Continue').click();
+    });
 
     const targetSelection = {
       text: 'Target selected text',
