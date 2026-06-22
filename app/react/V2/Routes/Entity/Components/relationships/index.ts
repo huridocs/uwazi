@@ -2,6 +2,7 @@ export {
   RelationshipsPanel,
   RelationshipRow,
   CreateReference,
+  CreateRelationshipModal,
   useRelationships,
   useRelationshipsActions,
 } from './panel/index.js';

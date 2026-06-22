@@ -3,7 +3,11 @@ import { PDF } from '#V2/Components/PDFViewer/index.js';
 import { RelationshipsDisplay } from '#V2/Components/Relationships/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
-import { PlainText, DocumentViewModeSelect } from '#V2/Routes/Entity/Components/document/index.js';
+import {
+  PlainText,
+  DocumentViewModeSelect,
+  DocumentSelectionFloatingMenu,
+} from '#V2/Routes/Entity/Components/document/index.js';
 import { useDocumentPdfView } from '../hooks/useDocumentPdfView.js';
 
 type DocumentTabProps = {
@@ -26,6 +30,10 @@ const DocumentTab = ({
     activeRelationshipId,
     handleTextSelect,
     handleTextDeselect,
+    handleCreateRelationship,
+    handleAddToToC,
+    selectedText,
+    userIsAdminOrEditor,
     handlePageChange,
     handleHighlightClick,
     handleRailPointClick,
@@ -104,6 +112,13 @@ const DocumentTab = ({
             onClusterClick={handleClusterClick}
           />
         )}
+        {selectedText && userIsAdminOrEditor && !isRaw ? (
+          <DocumentSelectionFloatingMenu
+            selection={selectedText}
+            onCreateRelationship={() => handleCreateRelationship(selectedText)}
+            onAddToToC={() => handleAddToToC(selectedText)}
+          />
+        ) : null}
       </div>
       <div
         className={`min-h-0 flex-1 overflow-auto rounded-md bg-warm ${isRaw ? 'block' : 'hidden'}`}
