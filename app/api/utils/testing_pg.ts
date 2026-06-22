@@ -17,6 +17,11 @@ const THESAURUS_SQL = readFileSync(
   'utf-8'
 );
 
+const FILES_SQL = readFileSync(
+  path.join(__dirname, '../core/infrastructure/postgresql/schema/files.sql'),
+  'utf-8'
+);
+
 /** Open a one-off admin client connected to the postgres maintenance DB. */
 const adminClient = () =>
   new pg.Client({
@@ -93,11 +98,12 @@ const testingPG = {
     PostgresConnectionFactory.setConfig(this.config);
 
     await pool.query(THESAURUS_SQL);
+    await pool.query(FILES_SQL);
 
     return pool;
   },
 
-  async clear(tables: string[] = ['thesauri']): Promise<void> {
+  async clear(tables: string[] = ['thesauri', 'files']): Promise<void> {
     if (!pool) throw new Error('testingPG not connected');
     for (const table of tables) {
       //eslint-disable-next-line no-await-in-loop
