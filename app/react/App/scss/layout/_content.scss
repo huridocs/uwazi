@@ -81,6 +81,53 @@
 
 .content-header-entity {
   z-index: 4;
+
+  .content-header-title {
+    container-type: inline-size;
+    gap: 8px;
+    padding: 10px 12px;
+    height: auto;
+    min-height: materials.$header-height;
+    line-height: 1.25;
+
+    @media (min-width: 1024px) {
+      padding: 0 15px;
+      line-height: materials.$header-height;
+    }
+
+    .item-icon {
+      margin-right: 0;
+      flex-shrink: 0;
+    }
+
+    h1 {
+      min-width: 0;
+    }
+
+    .btn-color {
+      flex-shrink: 0;
+      margin-left: 0;
+      white-space: nowrap;
+      box-sizing: border-box;
+      font-size: typography.$f-size-sm;
+      padding: 2px 10px;
+      line-height: 1.35;
+
+      @container (min-width: 841px) {
+        min-inline-size: 5rem;
+        padding: 3px 12px;
+        text-align: center;
+      }
+
+      @container (max-width: 840px) {
+        font-size: typography.$f-size-xs;
+        min-inline-size: 3.25rem;
+        padding: 2px 6px;
+        line-height: 1.25;
+        text-align: center;
+      }
+    }
+  }
 }
 
 @media (min-width: 1024px) {
