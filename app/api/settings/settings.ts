@@ -15,6 +15,7 @@ import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
 import { settingsModel } from './settingsModel.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
+import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
 
 const DEFAULT_MAP_STARTING_POINT: LatLonSchema[] = [{ lon: 6, lat: 46 }];
 
@@ -160,7 +161,7 @@ export default {
 
     if (!currentSettings.newNameGeneration && settings.newNameGeneration) {
       const dao = TemplatesDAOFactory.default();
-      const templates = await dao.get();
+      const templates = (await dao.get()) as TemplateDBO[];
       const defaultLanguage = currentSettings?.languages?.find(l => l.default)?.key!;
 
       await ArrayUtils.sequentialFor(templates, async (template: any) => {
