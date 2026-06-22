@@ -37,7 +37,10 @@ describe('groupDocumentRelationships', () => {
 
   it('extends clusters from the last merged page, not the cluster start page', () => {
     const groups = [
-      singlePageGroup(8, Array.from({ length: 20 }, (_, index) => `p8-${index}`)),
+      singlePageGroup(
+        8,
+        Array.from({ length: 20 }, (_, index) => `p8-${index}`)
+      ),
       singlePageGroup(9, ['a', 'b', 'c', 'd', 'e']),
       singlePageGroup(10, ['solo']),
     ];
