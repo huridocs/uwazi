@@ -40,7 +40,6 @@ import { serverSideRender } from './react/server.js';
 import { setupQueueWorker } from './setupQueueWorker.js';
 import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
 import { embedFrameHeaders } from './api/middleware/embedFrameHeaders.js';
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

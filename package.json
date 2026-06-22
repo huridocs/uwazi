@@ -70,7 +70,7 @@
     "ix-config": "node --no-experimental-fetch scripts/bash.js ./database/ix_config.sh",
     "dump-db": "node --no-experimental-fetch scripts/bash.js ./database/dump_db.sh",
     "restore-db": "node --no-experimental-fetch scripts/bash.js ./database/restore_db.sh",
-    "fixtures": "node --no-experimental-fetch scripts/bash.js ./uwazi-fixtures/restore.development.sh",
+    "fixtures": "node --no-experimental-fetch scripts/bash.js ./uwazi-fixtures/restore.sh",
     "add-migration": "./node_modules/.bin/plop --plopfile ./app/api/migrations/plopfile.js migration",
     "migrate": "node ./scripts/runner.js ./scripts/migrate.js",
     "migrate-and-reindex": "node ./scripts/runner.js ./scripts/migrate_and_reindex.js",

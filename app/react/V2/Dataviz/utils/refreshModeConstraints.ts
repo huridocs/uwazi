@@ -40,25 +40,9 @@ export const getRefreshModeConstraints = (
 ): RefreshModeConstraints & { messages: string[] } => {
   const base = getSharedRefreshModeConstraints(input);
 
-  if (!input.previewMeta && !input.previewError && input.query.sources.length > 0) {
-    // keep structural-only when no preview
-  }
-
-  const reasons = [...base.reasons];
-  if (
-    input.previewError &&
-    !reasons.includes('PREVIEW_ERROR') &&
-    !reasons.includes('QUERY_TIMEOUT')
-  ) {
-    reasons.push('PREVIEW_ERROR');
-  }
-
-  const uniqueReasons = [...new Set(reasons)];
-
   return {
-    liveAllowed: uniqueReasons.length === 0,
-    reasons: uniqueReasons,
-    messages: uniqueReasons.map(reason => REASON_MESSAGES[reason]),
+    ...base,
+    messages: base.reasons.map(reason => REASON_MESSAGES[reason]),
   };
 };
 
