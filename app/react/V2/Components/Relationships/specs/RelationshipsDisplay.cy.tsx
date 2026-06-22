@@ -3,6 +3,7 @@ import React from 'react';
 import { mount } from 'cypress/react';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
+import { RelationshipMarker } from '../types.js';
 import {
   Basic,
   mountBasicStory,
@@ -289,7 +290,7 @@ describe('References Display', () => {
         cy.get('@onClusterClick').its('firstCall.args.0').should('have.length', count);
         cy.get('@onClusterClick')
           .its('firstCall.args.0')
-          .then(markers => {
+          .then((markers: RelationshipMarker[]) => {
             expect(markers.some(marker => marker.anchor?.selections?.[0]?.page === 8)).to.equal(
               true
             );
