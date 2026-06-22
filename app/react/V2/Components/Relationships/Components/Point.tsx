@@ -32,6 +32,7 @@ const Point = ({ position, stackOrder = 1, marker, onClick, isActive = false }: 
       type="button"
       data-testid="rail-marker"
       data-marker-id={marker._id}
+      data-stack-order={stackOrder}
       className="pointer-events-auto absolute cursor-pointer [transition-property:top] duration-500 ease-out"
       style={{
         top: `${animatedPosition}px`,

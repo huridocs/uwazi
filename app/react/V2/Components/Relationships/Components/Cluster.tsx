@@ -55,6 +55,7 @@ const Cluster = ({
   return (
     <div
       data-testid="rail-marker-cluster"
+      data-stack-order={stackOrder}
       className="pointer-events-auto absolute [transition-property:top] duration-500 ease-out"
       style={{ top: `${animatedPosition}px`, zIndex }}
     >

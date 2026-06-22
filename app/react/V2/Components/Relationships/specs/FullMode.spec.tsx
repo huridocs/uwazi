@@ -47,4 +47,27 @@ describe('FullMode', () => {
     expect(marker).not.toBeNull();
     expect(marker?.querySelector('[data-testid="rail-marker-dot"]')).toHaveStyle({ width: '14px' });
   });
+
+  it('exposes stack order on document clusters', () => {
+    render(
+      <Provider store={store}>
+        <div className="relative h-200">
+          <FullMode
+            document={apiEntity.documents![0]}
+            markerLayerHeight={800}
+            documentClusters={documentClusters}
+          />
+        </div>
+      </Provider>
+    );
+
+    const clusters = document.querySelectorAll('[data-testid="rail-marker-cluster"]');
+    expect(clusters.length).toBeGreaterThan(1);
+    clusters.forEach(cluster => {
+      expect(cluster.getAttribute('data-stack-order')).not.toBeNull();
+      expect(Number.parseInt(cluster.getAttribute('data-stack-order') ?? '', 10)).toBeGreaterThan(
+        0
+      );
+    });
+  });
 });
