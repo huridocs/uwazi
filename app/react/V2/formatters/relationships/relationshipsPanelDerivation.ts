@@ -118,9 +118,10 @@ const groupMarkersByAggregateKey = (markers: RelationshipMarker[]) => {
 const toOtherEntry = (
   key: string,
   groupMarkers: RelationshipMarker[],
-  aggregates: Map<string, RelationshipAggregate>
+  aggregates: Map<string, RelationshipAggregate>,
+  collapseSingles: boolean
 ): PanelListEntry | undefined => {
-  if (groupMarkers.length > 1) {
+  if (groupMarkers.length > 1 || collapseSingles) {
     const aggregate = aggregates.get(key);
     return aggregate ? { kind: 'aggregate', aggregate, markers: groupMarkers } : undefined;
   }
@@ -128,26 +129,44 @@ const toOtherEntry = (
   return marker ? { kind: 'reference', marker } : undefined;
 };
 
-const buildOtherEntries = (remaining: RelationshipMarker[], selfSharedId: string) => {
+const buildOtherEntries = (
+  remaining: RelationshipMarker[],
+  selfSharedId: string,
+  collapseSingles: boolean
+) => {
   const aggregates = deriveAggregates(remaining, selfSharedId);
   const grouped = groupMarkersByAggregateKey(remaining);
   const otherEntries: PanelListEntry[] = [];
   for (const [key, groupMarkers] of grouped.entries()) {
-    const entry = toOtherEntry(key, groupMarkers, aggregates);
+    const entry = toOtherEntry(key, groupMarkers, aggregates, collapseSingles);
     if (entry) otherEntries.push(entry);
   }
   return otherEntries;
 };
 
+const buildFlatPanelListEntries = (markers: RelationshipMarker[]): PanelListEntry[] =>
+  markers.map(marker => ({ kind: 'reference', marker }));
+
+type BuildPanelListEntriesOptions = {
+  collapseSingles?: boolean;
+};
+
 const buildPanelListEntries = (
   markers: RelationshipMarker[],
-  selfSharedId: string
+  selfSharedId: string,
+  options: BuildPanelListEntriesOptions = {}
 ): PanelListEntry[] => {
+  const collapseSingles = options.collapseSingles ?? false;
   const byHub = groupMarkersByHub(markers);
   const { hubEntries, remaining } = splitHubEntries(byHub, getNaryHubIds(byHub));
-  const otherEntries = buildOtherEntries(remaining, selfSharedId);
+  const otherEntries = buildOtherEntries(remaining, selfSharedId, collapseSingles);
   return [...hubEntries, ...otherEntries].sort(compareEntries);
 };
+
+const buildTreePanelListEntries = (
+  markers: RelationshipMarker[],
+  selfSharedId: string
+): PanelListEntry[] => buildPanelListEntries(markers, selfSharedId, { collapseSingles: true });
 
 const panelEntryKey = (entry: PanelListEntry): string => {
   if (entry.kind === 'reference') return entry.marker._id;
@@ -156,4 +175,10 @@ const panelEntryKey = (entry: PanelListEntry): string => {
 };
 
 export type { RelationshipAggregate, RelationshipHub, RelationshipHubMember, PanelListEntry };
-export { buildPanelListEntries, deriveHub, panelEntryKey };
+export {
+  buildFlatPanelListEntries,
+  buildPanelListEntries,
+  buildTreePanelListEntries,
+  deriveHub,
+  panelEntryKey,
+};

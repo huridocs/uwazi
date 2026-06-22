@@ -18,7 +18,7 @@ const buttonClass: Record<CollapsibleSectionHeaderVariant, string> = {
     'flex w-full min-w-0 cursor-pointer items-center gap-2 border-0 bg-transparent px-4 py-2.5 text-left transition-colors hover:bg-warm',
   group:
     'flex w-full min-w-0 items-center gap-2 border-0 bg-transparent px-3 py-2 text-left transition-colors hover:bg-warm',
-  tree: 'inline-flex max-w-full min-w-0 cursor-pointer items-center gap-1.5 rounded border-0 bg-transparent px-2 py-1.5 text-left transition-colors hover:bg-warm/60',
+  tree: 'flex w-full min-w-0 cursor-pointer items-center gap-1.5 rounded border-0 bg-transparent px-2 py-1.5 text-left transition-colors hover:bg-warm/60',
 };
 
 const titleClass: Record<CollapsibleSectionHeaderVariant, string> = {
@@ -64,7 +64,11 @@ const CollapsibleSectionHeader = ({
     )}
     {color && <ColorDot color={color} size="md" />}
     <span className={titleClass[variant]}>{title}</span>
-    {count !== undefined && count !== null && <span className={countClass[variant]}>{count}</span>}
+    {count !== undefined && count !== null && (
+      <span className={`${countClass[variant]}${variant === 'tree' ? ' ml-auto' : ''}`}>
+        {count}
+      </span>
+    )}
   </button>
 );
 

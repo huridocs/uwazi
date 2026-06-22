@@ -161,6 +161,7 @@ Character support revert warning,"Μετά την ενεργοποίηση αυ�
 Check to make this instance public (non-logged in users can see public documents and entities),Ενεργοποιήστε αυτή την επιλογή για να κάνετε αυτή την εγκατάσταση δημόσια (οι μη συνδεδεμένοι χρήστες μπορούν να δουν δημόσια έγγραφα και οντότητες)
 Checking which images fit the requirements,Checking which images fit the requirements...
 Choose,Choose
+Choose relation type,Choose relation type
 Choose which data to use for training,Επιλέξτε ποια δεδομένα θα χρησιμοποιήσετε για την εκπαίδευση
 Chrome header,Chrome header
 Clear,Εκκαθάριση
@@ -202,8 +203,7 @@ Confirm new password,Επιβεβαίωση νέου κωδικού πρόσβα
 Confirm your password,Confirm your password
 Connect to a paragraph,Σύνδεση με παράγραφο
 Connect to an entity,Σύνδεση με οντότητα
-Connect to document,Connect to document
-Connect to paragraph,Connect to paragraph
+Connect to entity,Connect to entity
 Connected to server,Connected to server
 Connection type,Τύπος σύνδεσης
 Contact email description,Εδώ μπορείτε να ρυθμίσετε το email επικοινωνίας και το email που εμφανίζεται όταν το Uwazi στέλνει ειδοποίηση σε χρήστη
@@ -220,6 +220,7 @@ Copy link,Αντιγραφή συνδέσμου
 Copy properties to this entity from,Αντιγραφή ιδιοτήτων σε αυτή την οντότητα από
 Copy to clipboard,Αντιγραφή στο πρόχειρο
 Could not be processed,Δεν ήταν δυνατή η επεξεργασία
+Could not create entity,Could not create entity
 Could not detect the area for the selected text,Δεν εντοπίστηκε η περιοχή του επιλεγμένου κειμένου. Επιλέξτε ξανά.
 Could not reach server. Please try again later.,Δεν ήταν δυνατή η πρόσβαση στο διακομιστή. Προσπαθήστε ξανά αργότερα.
 Create,Δημιουργία
@@ -232,7 +233,9 @@ Create Entity,Δημιουργία οντότητας
 Create Extractor,Δημιουργία εξαγωγέα
 Create group,Δημιουργία ομάδας
 Create new entities and upload documents,Δημιουργία νέων οντοτήτων και μεταφόρτωση εγγράφων
+Create new entity from selection,Create new entity from selection
 Create Reference,Δημιουργία αναφοράς
+Create relationship,Create relationship
 Create relationship types,Δημιουργία τύπων σχέσεων
 Create relationships and references,Δημιουργία σχέσεων και αναφορών
 Create table of contents,Δημιουργία πίνακα περιεχομένων
@@ -374,6 +377,7 @@ Entity creation stage completed.,Entity creation stage completed.
 Entity deleted,Η οντότητα διαγράφηκε
 Entity Page,Σελίδα οντότητας
 Entity saved,Η οντότητα αποθηκεύτηκε
+Entity type,Entity type
 Entity types,Τύποι οντοτήτων
 Entity updated,Η οντότητα ενημερώθηκε
 Error,Σφάλμα
@@ -444,6 +448,7 @@ From,Από
 From all suggestions,Από όλες τις προτάσεις
 From previous step,Από το προηγούμενο βήμα
 From selection,From selection
+From:,From:
 Full mode,Full mode
 Full width,Πλήρες πλάτος
 General,Γενικά
@@ -774,6 +779,7 @@ Plain text,Απλό κείμενο
 Please contact an admin for details.,Επικοινωνήστε με έναν διαχειριστή για λεπτομέρειες.
 Please type in,Πληκτρολογήστε
 Please type in letters and numbers from the image to start the export.,Πληκτρολογήστε γράμματα και αριθμούς από την εικόνα για να ξεκινήσει η εξαγωγή.
+Pre-filled from your selection. Edit as needed.,Pre-filled from your selection. Edit as needed.
 Preflight scan completed.,Preflight scan completed.
 Preparing required relationships.,Preparing required relationships.
 Preparing required thesauri values.,Preparing required thesauri values.
@@ -847,6 +853,7 @@ Reject,Απόρριψη
 Related entities created,Related entities created
 Relation type,Τύπος σχέσης
 Relationship,Σχέση
+Relationship created,Relationship created
 Relationship Type,Τύπος σχέσης
 Relationship type,Τύπος σχέσης
 Relationship type created successfully.,Ο τύπος σχέσης δημιουργήθηκε με επιτυχία.
@@ -908,6 +915,7 @@ Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,Αναζήτηση
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
+Search entities...,Search entities...
 Search item,Αναζήτηση στοιχείου
 Search related entities or documents,Αναζήτηση σχετικών οντοτήτων ή εγγράφων
 Search relationships,Search relationships
@@ -927,6 +935,7 @@ Secret keys,Μυστικά κλειδιά
 Security,Ασφάλεια
 Select,Επιλογή
 Select & Search,Επιλογή & Αναζήτηση
+Select a document to connect to a specific paragraph,Select a document to connect to a specific paragraph
 Select a file,Select a file
 Select all,Επιλογή όλων
 Select an existing image,Select an existing image
@@ -936,7 +945,10 @@ Select from computer,Επιλογή από τον υπολογιστή
 Select relationship,Select relationship
 Select relationship type,Επιλογή τύπου σχέσης
 Select site logo image,Επιλογή εικόνας λογότυπου ιστότοπου
+Select target document,Select target document
+Select target entity,Select target entity
 Select target paragraph,Επιλογή παράγραφου-στόχου
+Select text in target document,Select text in target document
 Select the template to store the extracted paragraphs.,Επιλέξτε το πρότυπο για την αποθήκευση των εξαγόμενων παραγράφων
 Select the template with the source documents.,Επιλέξτε το πρότυπο με τα έγγραφα προέλευσης.
 Select...,Επιλέξτε...
@@ -1038,6 +1050,7 @@ Target relationship type,Τύπος σχέσης στόχου
 Target Template,Πρότυπο στόχου
 Target template,Πρότυπο στόχου
 Target's role in the relationship Source-Target.,Ο ρόλος του στόχου στη σχέση πηγή-στόχος.
+Target:,Target:
 Tasks,Tasks
 Template,Πρότυπο
 Template changes are being applied to all related entities.,Οι αλλαγές προτύπων εφαρμόζονται σε όλες τις σχετικές οντότητες.

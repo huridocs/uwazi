@@ -29,6 +29,15 @@ describe('RelationshipsActionBar', () => {
     expect(screen.queryAllByRole('checkbox')).toHaveLength(0);
   });
 
+  it('shows create relationship in edit mode', async () => {
+    const user = userEvent.setup();
+    renderRelationshipsActionBar();
+
+    await user.click(screen.getByRole('button', { name: /edit/i }));
+
+    expect(screen.getByRole('button', { name: /create relationship/i })).toBeInTheDocument();
+  });
+
   it('shows delete controls when a relationship is selected in edit mode', async () => {
     const user = userEvent.setup();
     renderRelationshipsActionBar();

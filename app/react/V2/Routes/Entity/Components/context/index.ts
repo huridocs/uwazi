@@ -1,5 +1,5 @@
 export { EntityScopedProvider } from './EntityScopedProvider.js';
-export { useEntityScopedEntity } from './EntityContext.js';
+export { useEntityScopedEntity, useEntityContext } from './EntityContext.js';
 export { useRelationships, useRelationshipsActions } from './RelationshipsContext.js';
 export {
   useRelationshipsSelection,

@@ -157,7 +157,8 @@ Character support process warning,"Este proceso podría demorar varios minutos y
 Character support revert warning,"Después de seleccionar esta opción, no podrás volver a usar los nombres de propiedad heredada. Si no tienes problemas con los nombres de las propiedades de tu plantilla, recomendamos no marcar esta opción."
 Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
 Checking which images fit the requirements,Checking which images fit the requirements...
-Choose,Choose
+Choose,Seleccionar
+Choose relation type,Seleccionar tipo de relación
 Choose which data to use for training,Choose which data to use for training
 Chrome header,Chrome header
 Clear,Limpiar
@@ -199,8 +200,7 @@ Confirm new password,Confirmar nueva contraseña
 Confirm your password,Confirm your password
 Connect to a paragraph,Conectar a un párrafo
 Connect to an entity,Connect to an entity
-Connect to document,Connect to document
-Connect to paragraph,Connect to paragraph
+Connect to entity,Conectar a entidad
 Connected to server,Connected to server
 Connection type,Tipo de relación
 Contact email description,Aquí puedes configurar el correo electrónico de contacto y el que aparece cuando Uwazi envía una notificación a un usuario
@@ -217,6 +217,7 @@ Copy link,Copiar enlace
 Copy properties to this entity from,Copiar las propiedades a esta entidad desde
 Copy to clipboard,Copy to clipboard
 Could not be processed,El proceso no ha sido posible
+Could not create entity,No se pudo crear la entidad
 Could not detect the area for the selected text,"No se pudo detectar el área para el texto seleccionado, por favor intenta seleccionar nuevamente."
 Could not reach server. Please try again later.,No se puede conectar con el servidor. Por favor intenta después.
 Create,Crear
@@ -229,7 +230,9 @@ Create Entity,Crear entidad
 Create Extractor,Create Extractor
 Create group,Crear grupo
 Create new entities and upload documents,Crear nuevas entidades y subir documentos
+Create new entity from selection,Crear nueva entidad desde selección
 Create Reference,Crear Referencia
+Create relationship,Crear relación
 Create relationship types,Crear tipos de relación
 Create relationships and references,Crear relaciones y referencias
 Create table of contents,Crear tabla de contenidos
@@ -371,6 +374,7 @@ Entity creation stage completed.,Entity creation stage completed.
 Entity deleted,Entidad eliminada
 Entity Page,Página entidad
 Entity saved,Entidad grabada
+Entity type,Tipo de entidad
 Entity types,Tipos de entidades
 Entity updated,Entidad actualizada
 Error,Error
@@ -441,6 +445,7 @@ From,From
 From all suggestions,From all suggestions
 From previous step,From previous step
 From selection,From selection
+From:,Desde:
 Full mode,Full mode
 Full width,Ancho completo
 General,General
@@ -771,6 +776,7 @@ Plain text,Texto sin formato
 Please contact an admin for details.,"Por favor, contacta con un administrador para más detalles."
 Please type in,Por favor digite
 Please type in letters and numbers from the image to start the export.,"Por favor, teclea los caracteres de la imagen para iniciar la exportación."
+Pre-filled from your selection. Edit as needed.,Precargado desde la selección. Edita según sea necesario.
 Preflight scan completed.,Preflight scan completed.
 Preparing required relationships.,Preparing required relationships.
 Preparing required thesauri values.,Preparing required thesauri values.
@@ -844,8 +850,9 @@ Reject,Rechazar
 Related entities created,Related entities created
 Relation type,Tipo de relación
 Relationship,Relación
+Relationship created,Relación creada
 Relationship Type,Tipo de relación
-Relationship type,Relationship type
+Relationship type,Tipo de relación
 Relationship type created successfully.,Tipo de relación creado exitosamente.
 Relationship type name,Nombre de tipo de relación
 Relationship type name already exists,El nombre de la relación ya existe
@@ -905,6 +912,7 @@ Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,Buscar
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
+Search entities...,Buscar entidades...
 Search item,Buscar elemento
 Search related entities or documents,Buscar entidades o documentos relacionados
 Search relationships,Buscar relaciones
@@ -924,16 +932,20 @@ Secret keys,Secret keys
 Security,Security
 Select,Seleccionar
 Select & Search,Select & Search
+Select a document to connect to a specific paragraph,Seleccionar un documento para conectar a un párrafo específico
 Select a file,Select a file
 Select all,Seleccionar todo
-Select an existing image,Select an existing image
+Select an existing image,Seleccionar una imagen existente
 Select favicon image,Seleccionar imagen del favicon
 Select files on your device,Seleccionar archivos de tu dispositivo
 Select from computer,Seleccionar desde la computadora
 Select relationship,Seleccionar relación
 Select relationship type,Seleccionar tipo de relación
 Select site logo image,Seleccionar imagen del logotipo del sitio
+Select target document,Seleccionar documento de destino
+Select target entity,Seleccionar entidad de destino
 Select target paragraph,Seleccionar párrafo de destino
+Select text in target document,Seleccionar texto en documento de destino
 Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
 Select the template with the source documents.,Select the template with the source documents.
 Select...,Seleccionar
@@ -1035,6 +1047,7 @@ Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
 Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
+Target:,Destino:
 Tasks,Tasks
 Template,Plantilla
 Template changes are being applied to all related entities.,Template changes are being applied to all related entities.
