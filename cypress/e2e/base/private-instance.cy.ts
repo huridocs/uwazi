@@ -23,10 +23,8 @@ describe('Private instance', () => {
     cy.contains('a', 'Settings').realClick();
     cy.contains('a', 'Collection').realClick();
     cy.contains('div', 'Public instance').within(() => {
-      cy.get('input[type="checkbox"]').check({ force: true });
-      cy.get('input[type="checkbox"]').should('be.checked');
-      cy.get('[data-testid="enable-button-checkbox"] > div').realHover();
-      cy.contains('div', 'Disable');
+      cy.get('[data-testid="toggle"]').check({ force: true });
+      cy.get('[data-testid="toggle"]').should('be.checked');
     });
     cy.contains('button', 'Save').realClick();
     cy.contains('div', 'Settings updated.');

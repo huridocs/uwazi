@@ -1,5 +1,8 @@
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
-import { buildPanelListEntries } from '../relationshipsPanelDerivation.js';
+import {
+  buildFlatPanelListEntries,
+  buildPanelListEntries,
+} from '../relationshipsPanelDerivation.js';
 
 const marker = (
   id: string,
@@ -50,5 +53,20 @@ describe('relationshipsPanelDerivation', () => {
       expect(entries[0].hub.members).toHaveLength(2);
       expect(entries[0].markers).toHaveLength(2);
     }
+  });
+
+  it('builds one reference entry per marker in flat mode', () => {
+    const markers = [marker('1', 'hub-a', 'target1'), marker('2', 'hub-a', 'target2')];
+    const entries = buildFlatPanelListEntries(markers);
+    expect(entries).toHaveLength(2);
+    expect(entries.every(entry => entry.kind === 'reference')).toBe(true);
+  });
+
+  it('collapses single markers into aggregate entries for tree view', () => {
+    const entries = buildPanelListEntries([marker('1', 'h1', 'target1')], 'self1', {
+      collapseSingles: true,
+    });
+    expect(entries).toHaveLength(1);
+    expect(entries[0]?.kind).toBe('aggregate');
   });
 });

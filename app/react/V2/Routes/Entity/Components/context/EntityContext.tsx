@@ -8,14 +8,21 @@ type EntityContextValue = {
 
 const EntityContext = createContext<EntityContextValue | null>(null);
 
-const EntityProvider = ({ entity, children }: { entity: Entity; children: React.ReactNode }) => {
-  const [currentEntity, setEntity] = useState(entity);
+const EntityProvider = ({
+  entity: loaderEntity,
+  children,
+}: {
+  entity: Entity;
+  children: React.ReactNode;
+}) => {
+  const [entityOverride, setEntity] = useState<Entity>();
+  const entity = entityOverride ?? loaderEntity;
 
   useEffect(() => {
-    setEntity(entity);
-  }, [entity]);
+    setEntity(undefined);
+  }, [loaderEntity]);
 
-  const value = useMemo(() => ({ entity: currentEntity, setEntity }), [currentEntity]);
+  const value = useMemo(() => ({ entity, setEntity }), [entity]);
 
   return <EntityContext.Provider value={value}>{children}</EntityContext.Provider>;
 };
