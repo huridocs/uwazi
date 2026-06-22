@@ -77,6 +77,8 @@ const useActiveRelationshipHighlight = () => {
     [
       activeRelationshipId,
       colorOf,
+      pdfControllerRef,
+      selectedMarkerRef,
       setActiveRelationshipId,
       setScrollToRelationshipPanel,
       setExpandForRefId,
@@ -87,13 +89,13 @@ const useActiveRelationshipHighlight = () => {
     selectedMarkerRef.current = null;
     setActiveRelationshipId(null);
     clearRelationshipPdfHighlights(pdfControllerRef.current);
-  }, [setActiveRelationshipId]);
+  }, [pdfControllerRef, selectedMarkerRef, setActiveRelationshipId]);
 
   useEffect(() => {
     const marker = selectedMarkerRef.current;
     if (!marker || !mainPdfController) return;
     syncPdfWithMarker(marker, colorOf, mainPdfController);
-  }, [mainPdfController, colorOf]);
+  }, [mainPdfController, colorOf, selectedMarkerRef]);
 
   return { activeRelationshipId, selectRelationship, clearRelationshipSelection };
 };
