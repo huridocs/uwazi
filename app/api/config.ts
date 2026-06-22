@@ -135,6 +135,7 @@ export const config = {
       v2CSVImport: FEATURE_FLAG_V2_CSV_IMPORT === 'true' || false,
       v2GetEntity: false,
       v2Languages: false,
+      postgresFiles: false,
       postgresThesauri: false,
       newHeader: NEW_HEADER === 'true' || false,
       aiAssistant: FEATURE_FLAG_AI_ASSISTANT === 'true' || false,
