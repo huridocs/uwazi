@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import { CollapsibleSectionHeader } from '#V2/Components/UI/CollapsibleSectionHeader.js';
 import { useExpandCollapseSignals } from '../hooks/useExpandCollapseSignals.js';
-import { useRelationshipsPanelLayout } from '#V2/Routes/Entity/Components/context/index.js';
 
 type TreeLine = 'only' | 'first' | 'middle' | 'last';
 
@@ -36,23 +35,23 @@ type RelationshipsTreeNodeProps = {
   treeLine?: TreeLine;
 };
 
-const RelationshipsTreeNode = ({ children, treeLine = 'only' }: RelationshipsTreeNodeProps) => {
-  const { zoom } = useRelationshipsPanelLayout();
-  const showDot = zoom === 'overview';
+const treeConnectorDotClass =
+  'pointer-events-none absolute z-[2] size-[5px] -translate-x-1/2 -translate-y-1/2 rounded-full';
 
-  return (
-    <div className={`${treeNodeBaseClass} ${treeLineBeforeClass[treeLine]}`}>
-      {showDot && (
-        <span
-          aria-hidden
-          className="absolute z-1 h-[5px] w-[5px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-border"
-          style={{ left: 0, top: '1.125rem' }}
-        />
-      )}
-      {children}
-    </div>
-  );
-};
+const RelationshipsTreeNode = ({ children, treeLine = 'only' }: RelationshipsTreeNodeProps) => (
+  <div className={`${treeNodeBaseClass} ${treeLineBeforeClass[treeLine]}`}>
+    <span
+      aria-hidden
+      className={treeConnectorDotClass}
+      style={{
+        left: 0,
+        top: '1.125rem',
+        backgroundColor: 'var(--color-theme-border-soft, #d1d5db)',
+      }}
+    />
+    {children}
+  </div>
+);
 
 type RelationshipsTreeBranchProps = {
   title: ReactNode;

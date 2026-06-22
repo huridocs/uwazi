@@ -151,4 +151,21 @@ const searchByTitle = async (
   }
 };
 
-export { getById, update, coerceValue, formatter, getBySharedId, searchByTitle };
+const create = async (
+  { title, template }: { title: string; template: string },
+  headers?: IncomingHttpHeaders
+): Promise<ApiResponse<Entity | undefined, FetchResponseError>> => {
+  try {
+    const requestParams = new RequestParams({ title, template }, headers);
+    const { json: response } = await api.post('entities', requestParams);
+    const entity =
+      response && typeof response === 'object' && 'entity' in response
+        ? (response.entity as Entity)
+        : (response as Entity);
+    return [entity, undefined];
+  } catch (e) {
+    return [undefined, e];
+  }
+};
+
+export { getById, update, create, coerceValue, formatter, getBySharedId, searchByTitle };

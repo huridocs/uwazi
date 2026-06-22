@@ -116,17 +116,18 @@ const Collection = () => {
   });
 
   const submit = async (data: ClientSettings) => {
-    if (!isUndefined(data.newNameGeneration) && !data.newNameGeneration) {
-      delete data.newNameGeneration;
+    const payload = { ...data };
+    if (!isUndefined(payload.newNameGeneration) && !payload.newNameGeneration) {
+      delete payload.newNameGeneration;
     }
     if (themeCustomization) {
-      const lightLogo = data.themeAssets?.siteLogo?.light?.trim();
-      const lightFavicon = data.themeAssets?.favicon?.light?.trim();
-      if (lightLogo) data.site_logo = lightLogo;
-      if (lightFavicon) data.favicon = lightFavicon;
+      const lightLogo = payload.themeAssets?.siteLogo?.light?.trim();
+      const lightFavicon = payload.themeAssets?.favicon?.light?.trim();
+      if (lightLogo) payload.site_logo = lightLogo;
+      if (lightFavicon) payload.favicon = lightFavicon;
     }
-    data.private = !data.private;
-    const { themeCustomization: _, ...rest } = data as SettingsWithThemeFlag;
+    payload.private = !payload.private;
+    const { themeCustomization: _, ...rest } = payload as SettingsWithThemeFlag;
     const [response, error] = await SettingsAPI.save(rest);
     if (error) {
       notify(
@@ -255,8 +256,8 @@ const Collection = () => {
                     <Translate className="text-sm font-medium text-ink">Public instance</Translate>
                   }
                   tip={tips.publicSharing}
-                  register={register}
-                  defaultChecked={formData.private}
+                  watch={watch}
+                  setValue={setValue}
                 />
                 {isClient && window.__featureFlags__?.v2GetEntity && (
                   <CollectionOptionToggle
@@ -267,8 +268,8 @@ const Collection = () => {
                       </Translate>
                     }
                     tip={tips.filterUnauthorizedRelated}
-                    register={register}
-                    defaultChecked={formData.filterUnauthorizedRelated}
+                    watch={watch}
+                    setValue={setValue}
                   />
                 )}
                 <CollectionOptionToggle
@@ -279,15 +280,15 @@ const Collection = () => {
                     </Translate>
                   }
                   tip={tips.cookiePolicy}
-                  register={register}
-                  defaultChecked={formData.cookiepolicy}
+                  watch={watch}
+                  setValue={setValue}
                 />
                 <CollectionOptionToggle
                   valueKey="allowcustomJS"
                   label={<Translate className="text-sm font-medium text-ink">Global JS</Translate>}
                   tip={tips.globalJS}
-                  register={register}
-                  defaultChecked={formData.allowcustomJS}
+                  watch={watch}
+                  setValue={setValue}
                 />
                 {!settings.newNameGeneration && (
                   <CollectionOptionToggle
@@ -298,8 +299,8 @@ const Collection = () => {
                       </Translate>
                     }
                     tip={tips.characterSupport}
-                    register={register}
-                    defaultChecked={formData.newNameGeneration}
+                    watch={watch}
+                    setValue={setValue}
                   />
                 )}
               </div>
@@ -342,8 +343,8 @@ const Collection = () => {
                     </Translate>
                   }
                   tip={tips.ocrTrigger}
-                  register={register}
-                  defaultChecked={formData.ocrServiceEnabled}
+                  watch={watch}
+                  setValue={setValue}
                 />
               </Card>
             )}
@@ -384,8 +385,8 @@ const Collection = () => {
                     </Translate>
                   }
                   tip={tips.openPublicForm}
-                  register={register}
-                  defaultChecked={formData.openPublicEndpoint}
+                  watch={watch}
+                  setValue={setValue}
                 />
                 <div className="sm:col-span-2">
                   <MultiSelect

@@ -1,7 +1,7 @@
 {
   "packageManager": "yarn@4.13.0",
   "name": "uwazi",
-  "version": "1.229.0-rc376",
+  "version": "1.229.0-rc378",
   "type": "module",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
@@ -108,7 +108,7 @@
     "ws": "8.18.0",
     "body-parser": "^1.20.4",
     "cross-spawn": "^7.0.5",
-    "form-data": "^4.0.4",
+    "form-data": "^4.0.6",
     "fast-xml-parser": "^5.3.6",
     "@types/express": "4.17.25",
     "@types/express-serve-static-core": "4.17.33",
@@ -134,8 +134,8 @@
     "@loadable/component": "^5.16.7",
     "@popperjs/core": "^2.11.8",
     "@sentry/node": "10.52.0",
-    "@sentry/node-core": "10.53.1",
-    "@sentry/profiling-node": "10.53.1",
+    "@sentry/node-core": "10.58.0",
+    "@sentry/profiling-node": "10.58.0",
     "@sentry/react": "10.52.0",
     "@smithy/node-http-handler": "^4.4.15",
     "@socket.io/redis-adapter": "7.2.0",
