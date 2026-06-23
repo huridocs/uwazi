@@ -650,7 +650,7 @@ const fixtures: DBFixture = {
   ],
   dictionaries: [
     { _id: thesauriId1, name: 'options' },
-    { _id: thesauriId2, name: 'options' },
+    { _id: thesauriId2, name: 'options 2' },
   ],
   files: [
     {

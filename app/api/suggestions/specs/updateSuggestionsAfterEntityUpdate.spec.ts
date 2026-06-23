@@ -1,6 +1,9 @@
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import {
   Input,
   UpdateSuggestionsAfterEntityUpdate,
@@ -168,7 +171,11 @@ const fixtures: DBFixture = {
 };
 
 const createSut = () => {
-  const sut = new UpdateSuggestionsAfterEntityUpdate();
+  const db = getConnection();
+  const tm = TransactionManagerFactory.default();
+  const sut = new UpdateSuggestionsAfterEntityUpdate(
+    new MongoTemplatesDAO({ db, transactionManager: tm })
+  );
 
   return {
     sut,

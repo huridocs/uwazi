@@ -17,6 +17,7 @@ describe('RelationshipsPanel', () => {
 
     expect(screen.getByText('alpha snippet')).toBeInTheDocument();
     expect(screen.getByText('Related Entity')).toBeInTheDocument();
+    expect(screen.queryByText('target quoted text')).not.toBeInTheDocument();
   });
 
   describe('navigation', () => {
@@ -24,7 +25,7 @@ describe('RelationshipsPanel', () => {
       const user = userEvent.setup();
       const { onFocusDocument } = renderRelationshipsPanel({ focusDocumentOnSelect: true });
 
-      await user.click(screen.getByText('alpha snippet'));
+      await user.click(screen.getByText('Related Entity'));
 
       expect(onFocusDocument).toHaveBeenCalledTimes(1);
     });
@@ -34,7 +35,7 @@ describe('RelationshipsPanel', () => {
       const onFocusDocument = jest.fn();
       renderRelationshipsPanel({ focusDocumentOnSelect: false, onFocusDocument });
 
-      await user.click(screen.getByText('alpha snippet'));
+      await user.click(screen.getByText('Related Entity'));
 
       expect(onFocusDocument).not.toHaveBeenCalled();
     });
@@ -46,7 +47,7 @@ describe('RelationshipsPanel', () => {
       const pdf = defaultPdf();
       renderRelationshipsPanel({ pdf });
 
-      await user.click(screen.getByText('alpha snippet'));
+      await user.click(screen.getByText('Related Entity'));
 
       expect(pdf.goToPage).toHaveBeenCalledWith(2);
       expect(pdf.toggleHighlights).toHaveBeenCalledTimes(1);
@@ -58,13 +59,26 @@ describe('RelationshipsPanel', () => {
       const pdf = defaultPdf();
       renderRelationshipsPanel({ pdf });
 
-      await user.click(screen.getByText('alpha snippet'));
+      await user.click(screen.getByText('Related Entity'));
       expect(getSelectionState().getAttribute('data-active')).not.toBe('');
 
-      await user.click(screen.getByText('alpha snippet'));
+      await user.click(screen.getByText('Related Entity'));
 
       expect(getSelectionState().getAttribute('data-active')).toBe('');
       expect(pdf.toggleHighlights).toHaveBeenLastCalledWith([]);
+    });
+  });
+
+  describe('tree view', () => {
+    it('renders one aggregate row per entity and relationship type when groupBy is none', async () => {
+      const user = userEvent.setup();
+      renderRelationshipsPanel();
+
+      await user.click(screen.getByRole('radio', { name: 'Tree' }));
+
+      expect(screen.getByRole('button', { name: 'Collapse all' })).toBeDisabled();
+      expect(screen.getAllByText('Related Entity').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('Other Entity').length).toBeGreaterThanOrEqual(1);
     });
   });
 

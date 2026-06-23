@@ -1,4 +1,4 @@
-import { EntityDBO } from '../../entities.v2/database/schemas/EntityTypes.js';
+import { EntityDBO } from '../infrastructure/mongodb/entity/EntityDBO.js';
 import { FileDTO } from '../domain/files/domainTypes.js';
 
 export type RelationDTO = {

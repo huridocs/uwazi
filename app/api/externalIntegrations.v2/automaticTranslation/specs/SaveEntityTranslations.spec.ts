@@ -1,5 +1,5 @@
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
+import { DefaultDeprecatedEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -35,7 +35,7 @@ describe('SaveEntityTranslations', () => {
     mockLogger = createMockLogger();
     saveEntityTranslations = new SaveEntityTranslations(
       TemplatesDataSourceFactory.default({ transactionManager }),
-      DefaultEntitiesDataSource(transactionManager),
+      DefaultDeprecatedEntitiesDataSource(transactionManager),
       new Validator<TranslationResult>(translationResultSchema),
       mockLogger
     );

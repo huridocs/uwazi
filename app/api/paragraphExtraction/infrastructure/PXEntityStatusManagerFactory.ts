@@ -3,7 +3,7 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 
-import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
+import { DefaultDeprecatedEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory.js';
 import { PXEntityStatusManager } from '../application/PXEntityStatusManager.js';
 import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory.js';
@@ -28,7 +28,7 @@ export class PXEntityStatusManagerFactory {
     });
 
     const filesDS = FilesDataSourceFactory.default({ transactionManager: mongoTransactionManager });
-    const entitiesDS = DefaultEntitiesDataSource(mongoTransactionManager);
+    const entitiesDS = DefaultDeprecatedEntitiesDataSource(mongoTransactionManager);
 
     return new PXEntityStatusManager({
       entitiesStatusDS,

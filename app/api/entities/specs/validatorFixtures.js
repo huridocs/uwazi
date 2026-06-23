@@ -61,53 +61,6 @@ export default {
         { _id: db.id(), name: 'relationship2', type: 'relationship', content: simpleTemplateId },
         {
           _id: db.id(),
-          name: 'newRelationship',
-          type: 'newRelationship',
-          query: [
-            {
-              types: [db.id()],
-              direction: 'out',
-              match: [
-                {
-                  templates: [simpleTemplateId],
-                  traverse: [],
-                },
-              ],
-            },
-          ],
-          targetTemplates: [simpleTemplateId],
-        },
-        {
-          _id: db.id(),
-          name: 'newRelationship2',
-          type: 'newRelationship',
-          query: [
-            {
-              types: [db.id()],
-              direction: 'out',
-              match: [
-                {
-                  templates: [],
-                  traverse: [
-                    {
-                      types: [db.id()],
-                      direction: 'out',
-                      match: [
-                        {
-                          templates: [simpleTemplateId],
-                          traverse: [],
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-          targetTemplates: false,
-        },
-        {
-          _id: db.id(),
           name: 'media',
           type: 'media',
         },

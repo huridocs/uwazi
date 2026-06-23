@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import type { Entity, FileType } from '#V2/api/entities/types.js';
+import type { Entity } from '#V2/api/entities/types.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
 import {
   RelationshipsPanel,
@@ -40,9 +40,7 @@ const SideTabsStub = () => (
   </div>
 );
 
-const PanelContent = ({ mainDocument }: { mainDocument: FileType }) => (
-  <RelationshipsPanel mainDocument={mainDocument} />
-);
+const PanelContent = () => <RelationshipsPanel />;
 
 const RelationshipsStoryShell = ({
   locale,
@@ -86,7 +84,7 @@ const RelationshipsStoryShell = ({
                             <SideTabsStub />
                           </div>
                           <div className="min-h-0 flex-1 overflow-hidden px-3 pt-2.5">
-                            {children ?? <PanelContent mainDocument={mainDocument!} />}
+                            {children ?? <PanelContent />}
                           </div>
                           <RelationshipsFiltersDrawer />
                         </div>
@@ -100,7 +98,7 @@ const RelationshipsStoryShell = ({
                   >
                     {children ?? (
                       <>
-                        <PanelContent mainDocument={mainDocument!} />
+                        <PanelContent />
                         <RelationshipsFiltersDrawer />
                       </>
                     )}

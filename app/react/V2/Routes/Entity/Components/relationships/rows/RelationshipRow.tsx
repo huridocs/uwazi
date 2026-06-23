@@ -2,7 +2,7 @@
 import React from 'react';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { useRelationshipsPanelLayout } from '#V2/Routes/Entity/Components/context/index.js';
-import { useRelationshipRowData } from './useRelationshipRowData.js';
+import { useRelationshipRowData, relationshipReferenceDisplay } from './useRelationshipRowData.js';
 import {
   RelationshipRowCompact,
   RelationshipRowDetail,
@@ -14,6 +14,7 @@ type RelationshipRowProps = {
   selfSharedId: string;
   relationshipTypeName?: string;
   isSelected?: boolean;
+  nested?: boolean;
   onClick?: () => void;
   onView?: () => void;
   onDelete?: () => void;
@@ -24,13 +25,28 @@ const RelationshipRow = ({
   selfSharedId,
   relationshipTypeName,
   isSelected,
+  nested = false,
   onClick,
   onView,
   onDelete,
 }: RelationshipRowProps) => {
   const { zoom } = useRelationshipsPanelLayout();
   const rowData = useRelationshipRowData(marker, selfSharedId, relationshipTypeName);
-  const baseProps = { ...rowData, isSelected, onClick };
+  const nestedReference = relationshipReferenceDisplay(marker, selfSharedId);
+  const baseProps = {
+    ...rowData,
+    referenceText: nested ? nestedReference.referenceText : rowData.referenceText,
+    referencePage: nested ? nestedReference.referencePage : rowData.referencePage,
+    isSelected,
+    onClick,
+  };
+
+  if (nested) {
+    if (zoom === 'overview') {
+      return <RelationshipRowOverview {...baseProps} />;
+    }
+    return <RelationshipRowDetail {...baseProps} nested onView={onView} onDelete={onDelete} />;
+  }
 
   if (zoom === 'overview') return <RelationshipRowOverview {...baseProps} />;
   if (zoom === 'compact') return <RelationshipRowCompact {...baseProps} />;

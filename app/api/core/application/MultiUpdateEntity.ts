@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { Entity } from '#api/core/domain/entity/Entity.js';
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
@@ -26,7 +26,7 @@ type Input = z.infer<typeof InputSchema> & {
 type Output = Entity[];
 
 type Deps = {
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   entitiesService: EntitiesService;
   templatesDS: TemplatesDataSource;
   propertyAssignmentCreatorServiceStrategy: PropertyAssignmentCreatorServiceStrategy;

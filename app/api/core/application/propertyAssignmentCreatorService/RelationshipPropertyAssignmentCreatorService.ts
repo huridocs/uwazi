@@ -1,6 +1,6 @@
 import { PropertyAssignment, RelationshipEntry } from '#api/core/domain/template/PropertyValue.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import {
   RelationshipPropertyDoesNotExistError,
@@ -16,7 +16,7 @@ import {
 
 type Deps = {
   settingsDS: SettingsDataSource;
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
 };
 
 export class RelationshipPropertyAssignmentCreatorService extends AbstractPropertyAssignmentCreatorService {

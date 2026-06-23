@@ -1,5 +1,5 @@
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { Entity } from '#api/entities.v2/model/Entity.js';
+import { DeprecatedEntity } from '#api/entities.v2/model/Entity.js';
 import { entityInputDataSchema } from '#api/entities.v2/types/EntityInputDataSchema.js';
 import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
@@ -17,12 +17,12 @@ const entityV1ToEntityModel = (entity: EntitySchema) => {
   // eslint-disable-next-line no-param-reassign
   entity.template = entity.template?.toString();
   if (inputModelValidator.validate(entity)) {
-    return Entity.fromInputModel(entity);
+    return DeprecatedEntity.fromInputModel(entity);
   }
   throw inputModelValidator.getErrors()[0];
 };
 
-const entityToEntitySchema = (entity: Entity): EntitySchema => {
+const entityToEntitySchema = (entity: DeprecatedEntity): EntitySchema => {
   const result = { ...entity } as EntitySchema;
   delete result.obsoleteMetadata;
   return result;

@@ -116,17 +116,18 @@ const Collection = () => {
   });
 
   const submit = async (data: ClientSettings) => {
-    if (!isUndefined(data.newNameGeneration) && !data.newNameGeneration) {
-      delete data.newNameGeneration;
+    const payload = { ...data };
+    if (!isUndefined(payload.newNameGeneration) && !payload.newNameGeneration) {
+      delete payload.newNameGeneration;
     }
     if (themeCustomization) {
-      const lightLogo = data.themeAssets?.siteLogo?.light?.trim();
-      const lightFavicon = data.themeAssets?.favicon?.light?.trim();
-      if (lightLogo) data.site_logo = lightLogo;
-      if (lightFavicon) data.favicon = lightFavicon;
+      const lightLogo = payload.themeAssets?.siteLogo?.light?.trim();
+      const lightFavicon = payload.themeAssets?.favicon?.light?.trim();
+      if (lightLogo) payload.site_logo = lightLogo;
+      if (lightFavicon) payload.favicon = lightFavicon;
     }
-    data.private = !data.private;
-    const { themeCustomization: _, ...rest } = data as SettingsWithThemeFlag;
+    payload.private = !payload.private;
+    const { themeCustomization: _, ...rest } = payload as SettingsWithThemeFlag;
     const [response, error] = await SettingsAPI.save(rest);
     if (error) {
       notify(

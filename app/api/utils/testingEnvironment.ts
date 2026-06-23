@@ -157,9 +157,23 @@ const testingEnvironment = {
       const pgThesauri = fixtures.dictionaries.map((dict: any) => ({
         _id: dict._id.toString(),
         name: dict.name,
-        values: dict.values,
+        values: dict.values ?? [],
       }));
       await testingPG.setFixtures({ thesauri: pgThesauri });
+    }
+
+    if (this.pgEnabled && fixtures?.templates?.length) {
+      const pgTemplates = fixtures.templates.map((t: any) => ({
+        _id: t._id.toString(),
+        name: t.name,
+        properties: t.properties ?? [],
+        commonProperties: t.commonProperties ?? [],
+        color: t.color ?? null,
+        default: t.default ?? false,
+        entityViewPage: t.entityViewPage ?? null,
+        processing: t.processing ?? null,
+      }));
+      await testingPG.setFixtures({ templates: pgTemplates });
     }
   },
 
