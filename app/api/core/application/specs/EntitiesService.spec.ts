@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
@@ -48,23 +49,45 @@ const fixtures: DBFixture = {
   ],
 };
 
-const createSut = (deps?: Partial<EntitiesServiceDeps>) =>
-  testingEnvironment.runWithContext(() => {
-    const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
-    const eventEmitter = TestUtils.mockClass<EventEmitter>({
-      emit: jest.fn().mockResolvedValue(undefined),
-    });
-    const dispatcher = TestUtils.mockClass<Dispatcher>({
-      syncRelationships: jest.fn().mockResolvedValue(undefined),
-      cleanupEntities: jest.fn().mockResolvedValue(undefined),
-      postProcessPDFs: jest.fn().mockResolvedValue(undefined),
-      deleteFilesFromStorage: jest.fn().mockResolvedValue(undefined),
-      postProcessTemplateEntities: jest
-        .fn()
-        .mockImplementation(async (callback: (dispatch: jest.Mock) => Promise<void>) => {
-          await callback(jest.fn());
-        }),
-    });
+type TestConfig = {
+  name: string;
+  postgresTemplates: boolean;
+};
+
+const testConfigs: TestConfig[] = [
+  { name: 'Mongo', postgresTemplates: false },
+  { name: 'Postgres', postgresTemplates: true },
+];
+
+const createMockDeps = () => ({
+  eventBus: TestUtils.mockClass<EventsBus>({ emit: jest.fn() }),
+  eventEmitter: TestUtils.mockClass<EventEmitter>({
+    emit: jest.fn().mockResolvedValue(undefined),
+  }),
+  dispatcher: TestUtils.mockClass<Dispatcher>({
+    syncRelationships: jest.fn().mockResolvedValue(undefined),
+    cleanupEntities: jest.fn().mockResolvedValue(undefined),
+    postProcessPDFs: jest.fn().mockResolvedValue(undefined),
+    deleteFilesFromStorage: jest.fn().mockResolvedValue(undefined),
+    postProcessTemplateEntities: jest
+      .fn()
+      .mockImplementation(async (callback: (dispatch: jest.Mock) => Promise<void>) => {
+        await callback(jest.fn());
+      }),
+  }),
+});
+
+const createSut = (deps?: Partial<EntitiesServiceDeps>, postgresTemplates = false) => {
+  const contextOverrides: any = {};
+  if (postgresTemplates) {
+    contextOverrides.tenant = {
+      ...testingTenants.current(),
+      featureFlags: { postgresTemplates: true },
+    };
+  }
+
+  return testingEnvironment.runWithContext(() => {
+    const { eventBus, eventEmitter, dispatcher } = createMockDeps();
     return {
       sut: EntitiesServiceFactory.default({
         eventBus,
@@ -78,7 +101,8 @@ const createSut = (deps?: Partial<EntitiesServiceDeps>) =>
       eventBus,
       eventEmitter,
     };
-  });
+  }, contextOverrides);
+};
 
 const createSampleTemplate = () =>
   TemplateBuilder.aTemplate({ id: new ObjectId().toString() })
@@ -124,7 +148,7 @@ describe('EntitiesService', () => {
 
   beforeAll(async () => {
     jest.spyOn(search, 'indexEntities').mockResolvedValue(undefined);
-    await testingEnvironment.setUp({});
+    await testingEnvironment.setUp({}, { postgres: true });
   });
 
   beforeEach(async () => {
@@ -135,318 +159,380 @@ describe('EntitiesService', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe('when inserting an Entity', () => {
-    it('should emit an EntityCreatedEvent', async () => {
-      const { sut, eventBus, transactionManager } = createSut();
-      const entity = createEntitySample();
+  describe.each(testConfigs)('$name', ({ postgresTemplates }) => {
+    describe('when inserting an Entity', () => {
+      it('should emit an EntityCreatedEvent', async () => {
+        const { sut, eventBus, transactionManager } = createSut(undefined, postgresTemplates);
+        const entity = createEntitySample();
 
-      await transactionManager.run(async () => {
-        await sut.insert([entity], {
-          targetLanguage: 'en',
-          actorId: 'actorId',
-          tenantName: 'tenantName',
+        await transactionManager.run(async () => {
+          await sut.insert([entity], {
+            targetLanguage: 'en',
+            actorId: 'actorId',
+            tenantName: 'tenantName',
+          });
         });
+
+        const [entityCreated] = await testingEnvironment.db.getAllFrom('entities');
+
+        expect(entityCreated.sharedId).toEqual(entity.sharedId);
+
+        expect(eventBus.emit).toHaveBeenCalledWith(
+          new EntityCreatedEvent({
+            entities: MongoEntityMapper.toDBO(entity) as any,
+            targetLanguageKey: 'en',
+          })
+        );
       });
 
-      const [entityCreated] = await testingEnvironment.db.getAllFrom('entities');
+      it('should emit an EntityCreatedEvent inside onCommit handler', async () => {
+        const { sut, transactionManager, eventBus } = createSut(undefined, postgresTemplates);
+        const entity = createEntitySample();
+        let emitCalledDuringTransaction = false;
 
-      expect(entityCreated.sharedId).toEqual(entity.sharedId);
-
-      expect(eventBus.emit).toHaveBeenCalledWith(
-        new EntityCreatedEvent({
-          entities: MongoEntityMapper.toDBO(entity) as any,
-          targetLanguageKey: 'en',
-        })
-      );
-    });
-
-    it('should emit an EntityCreatedEvent inside onCommit handler', async () => {
-      const { sut, transactionManager, eventBus } = createSut();
-      const entity = createEntitySample();
-      let emitCalledDuringTransaction = false;
-
-      await transactionManager.run(async () => {
-        await sut.insert([entity], {
-          targetLanguage: 'en',
-          actorId: 'actorId',
-          tenantName: 'tenantName',
+        await transactionManager.run(async () => {
+          await sut.insert([entity], {
+            targetLanguage: 'en',
+            actorId: 'actorId',
+            tenantName: 'tenantName',
+          });
+          emitCalledDuringTransaction = (eventBus.emit as any).mock.calls.length > 0;
         });
-        emitCalledDuringTransaction = (eventBus.emit as any).mock.calls.length > 0;
+
+        expect(emitCalledDuringTransaction).toBe(false);
+        expect(eventBus.emit).toHaveBeenCalled();
       });
 
-      expect(emitCalledDuringTransaction).toBe(false);
-      expect(eventBus.emit).toHaveBeenCalled();
-    });
+      it('should provision grant access to the entity', async () => {
+        const { sut, transactionManager } = createSut(undefined, postgresTemplates);
+        const entity = createEntitySample();
 
-    it('should provision grant access to the entity', async () => {
-      const { sut, transactionManager } = createSut();
-      const entity = createEntitySample();
+        await transactionManager.run(async () =>
+          sut.insert([entity], {
+            targetLanguage: 'en',
+            actorId: 'actorId',
+            tenantName: 'tenantName',
+          })
+        );
 
-      await transactionManager.run(async () =>
-        sut.insert([entity], {
-          targetLanguage: 'en',
-          actorId: 'actorId',
-          tenantName: 'tenantName',
-        })
-      );
+        const entityCreated = await testingEnvironment.db
+          .getCollection('entities')
+          ?.findOne({ sharedId: entity.sharedId });
 
-      const entityCreated = await testingEnvironment.db
-        .getCollection('entities')
-        ?.findOne({ sharedId: entity.sharedId });
-
-      expect(entityCreated).toMatchObject({
-        language: 'en',
-        sharedId: entity.sharedId,
-        permissions: [{ refId: 'actorId', type: GrantType.User, level: AccessLevel.Write }],
-        published: false,
-      });
-    });
-
-    it('should dispatch a RelationshipSyncJob', async () => {
-      const { sut, dispatcher, transactionManager } = createSut();
-      const entity = createEntitySample();
-
-      await transactionManager.run(async () => {
-        await sut.insert([entity], {
-          targetLanguage: 'en',
-          actorId: 'actorId',
-          tenantName: 'tenantName',
-        });
-      });
-
-      expect(dispatcher.syncRelationships).toHaveBeenCalledWith([
-        {
+        expect(entityCreated).toMatchObject({
+          language: 'en',
           sharedId: entity.sharedId,
-          targetLanguage: 'en',
-          templateId: entity.template.id,
-          tenantName: 'tenantName',
-          userId: 'actorId',
-        },
-      ]);
-    });
-  });
-
-  describe('when bulk inserting Entities', () => {
-    it('should insert multiple entities into the database', async () => {
-      const { sut, transactionManager } = createSut();
-      const entity1 = createEntitySample();
-      const entity2 = createEntitySample();
-      const entity3 = createEntitySample();
-
-      await transactionManager.run(async () =>
-        sut.insert([entity1, entity2, entity3], {
-          actorId: 'actorId',
-          tenantName: 'tenantName',
-          targetLanguage: 'en',
-        })
-      );
-
-      const entitiesCreated = await testingEnvironment.db.getAllFrom('entities');
-
-      expect(entitiesCreated.length).toBe(3);
-
-      const sharedIds = entitiesCreated.map(e => e.sharedId);
-      expect(sharedIds).toContain(entity1.sharedId);
-      expect(sharedIds).toContain(entity2.sharedId);
-      expect(sharedIds).toContain(entity3.sharedId);
-    });
-
-    it('should dispatch RelationshipSyncJob for each entity with correct context', async () => {
-      const { sut, dispatcher, transactionManager } = createSut();
-      const entity1 = createEntitySample();
-      const entity2 = createEntitySample();
-      const entity3 = createEntitySample();
-
-      await transactionManager.run(async () => {
-        await sut.insert([entity1, entity2, entity3], {
-          targetLanguage: 'en',
-          actorId: 'testActor',
-          tenantName: 'testTenant',
-        });
-      });
-
-      expect(dispatcher.syncRelationships).toHaveBeenCalledTimes(1);
-      expect(dispatcher.syncRelationships).toHaveBeenCalledWith([
-        {
-          sharedId: entity1.sharedId,
-          targetLanguage: 'en',
-          templateId: entity1.template.id,
-          tenantName: 'testTenant',
-          userId: 'testActor',
-        },
-        {
-          sharedId: entity2.sharedId,
-          targetLanguage: 'en',
-          templateId: entity2.template.id,
-          tenantName: 'testTenant',
-          userId: 'testActor',
-        },
-        {
-          sharedId: entity3.sharedId,
-          targetLanguage: 'en',
-          templateId: entity3.template.id,
-          tenantName: 'testTenant',
-          userId: 'testActor',
-        },
-      ]);
-    });
-
-    it('should emit EntityCreatedEvent for each entity on commit', async () => {
-      const { sut, eventBus, transactionManager } = createSut();
-      const entity1 = createEntitySample();
-      const entity2 = createEntitySample();
-
-      await transactionManager.run(async () => {
-        await sut.insert([entity1, entity2], {
-          targetLanguage: 'en',
-          actorId: 'actorId',
-          tenantName: 'tenantName',
-        });
-      });
-
-      expect(eventBus.emit).toHaveBeenCalledTimes(2);
-
-      expect(eventBus.emit).toHaveBeenCalledWith(
-        new EntityCreatedEvent({
-          entities: MongoEntityMapper.toDBO(entity1) as any,
-          targetLanguageKey: 'en',
-        })
-      );
-
-      expect(eventBus.emit).toHaveBeenCalledWith(
-        new EntityCreatedEvent({
-          entities: MongoEntityMapper.toDBO(entity2) as any,
-          targetLanguageKey: 'en',
-        })
-      );
-    });
-
-    it('should NOT emit events before transaction commit', async () => {
-      const { sut, eventBus, transactionManager } = createSut();
-      const entity1 = createEntitySample();
-      const entity2 = createEntitySample();
-      let emitCalledDuringTransaction = false;
-
-      await transactionManager.run(async () => {
-        await sut.insert([entity1, entity2], {
-          targetLanguage: 'en',
-          actorId: 'actorId',
-          tenantName: 'tenantName',
-        });
-        emitCalledDuringTransaction = (eventBus.emit as any).mock.calls.length > 0;
-      });
-
-      expect(emitCalledDuringTransaction).toBe(false);
-      expect(eventBus.emit).toHaveBeenCalledTimes(2);
-    });
-
-    it('should provision access to all entities', async () => {
-      const { sut, transactionManager } = createSut();
-      const entity1 = createEntitySample();
-      const entity2 = createEntitySample();
-      const entity3 = createEntitySample();
-
-      await transactionManager.run(async () =>
-        sut.insert([entity1, entity2, entity3], {
-          actorId: 'actorId',
-          tenantName: 'tenantName',
-          targetLanguage: 'en',
-        })
-      );
-
-      const entitiesCreated = await testingEnvironment.db.getAllFrom('entities');
-
-      expect(entitiesCreated).toMatchObject([
-        {
-          language: 'en',
-          sharedId: entity1.sharedId,
           permissions: [{ refId: 'actorId', type: GrantType.User, level: AccessLevel.Write }],
           published: false,
-        },
-        {
-          language: 'en',
-          sharedId: entity2.sharedId,
-          permissions: [{ refId: 'actorId', type: GrantType.User, level: AccessLevel.Write }],
-          published: false,
-        },
-        {
-          sharedId: entity3.sharedId,
-          permissions: [{ refId: 'actorId', type: GrantType.User, level: AccessLevel.Write }],
-          published: false,
-        },
-      ]);
-    });
-
-    it('should handle empty array gracefully', async () => {
-      const { sut, dispatcher, eventBus, transactionManager } = createSut();
-
-      await transactionManager.run(async () => {
-        await sut.insert([], {
-          targetLanguage: 'en',
-          actorId: 'actorId',
-          tenantName: 'tenantName',
         });
       });
 
-      const entitiesCreated = await testingEnvironment.db.getAllFrom('entities');
-      expect(entitiesCreated.length).toBe(0);
+      it('should dispatch a RelationshipSyncJob', async () => {
+        const { sut, dispatcher, transactionManager } = createSut(undefined, postgresTemplates);
+        const entity = createEntitySample();
 
-      expect(dispatcher.syncRelationships).not.toHaveBeenCalled();
-      expect(eventBus.emit).not.toHaveBeenCalled();
-    });
-  });
+        await transactionManager.run(async () => {
+          await sut.insert([entity], {
+            targetLanguage: 'en',
+            actorId: 'actorId',
+            tenantName: 'tenantName',
+          });
+        });
 
-  describe('when creating an Entity', () => {
-    it('should create an entity', async () => {
-      const { sut } = createSut();
-      const template = await getTemplate(factory.id('Document'));
-
-      const expectedEntity = Entity.create({
-        template,
-        languages: ['en', 'es'],
-        userId: 'user1',
-        icon: { id: 'iconId', type: 'image/png', label: 'Icon Label' },
+        expect(dispatcher.syncRelationships).toHaveBeenCalledWith([
+          {
+            sharedId: entity.sharedId,
+            targetLanguage: 'en',
+            templateId: entity.template.id,
+            tenantName: 'tenantName',
+            userId: 'actorId',
+          },
+        ]);
       });
-
-      const entity = await sut.create({
-        templateId: factory.id('Document').toHexString(),
-        userId: 'user1',
-        icon: { id: 'iconId', type: 'image/png', label: 'Icon Label' },
-      });
-
-      expect(entity.template.id).toEqual(expectedEntity.template.id);
-      expect(entity.languages).toEqual(expectedEntity.languages);
-      expect(entity.icon).toEqual(expectedEntity.icon);
-      expect(entity.userId).toEqual(expectedEntity.userId);
     });
 
-    it('should use default template when none is provided', async () => {
-      const { sut } = createSut();
-      const template = await getTemplate(factory.id('Document'));
+    describe('when bulk inserting Entities', () => {
+      it('should insert multiple entities into the database', async () => {
+        const { sut, transactionManager } = createSut(undefined, postgresTemplates);
+        const entity1 = createEntitySample();
+        const entity2 = createEntitySample();
+        const entity3 = createEntitySample();
 
-      const expectedEntity = Entity.create({
-        template,
-        languages: ['en', 'es'],
+        await transactionManager.run(async () =>
+          sut.insert([entity1, entity2, entity3], {
+            actorId: 'actorId',
+            tenantName: 'tenantName',
+            targetLanguage: 'en',
+          })
+        );
+
+        const entitiesCreated = await testingEnvironment.db.getAllFrom('entities');
+
+        expect(entitiesCreated.length).toBe(3);
+
+        const sharedIds = entitiesCreated.map(e => e.sharedId);
+        expect(sharedIds).toContain(entity1.sharedId);
+        expect(sharedIds).toContain(entity2.sharedId);
+        expect(sharedIds).toContain(entity3.sharedId);
       });
 
-      const entity = await sut.create({});
+      it('should dispatch RelationshipSyncJob for each entity with correct context', async () => {
+        const { sut, dispatcher, transactionManager } = createSut(undefined, postgresTemplates);
+        const entity1 = createEntitySample();
+        const entity2 = createEntitySample();
+        const entity3 = createEntitySample();
 
-      expect(entity.template.id).toEqual(expectedEntity.template.id);
-      expect(entity.languages).toEqual(expectedEntity.languages);
-      expect(entity.icon).toEqual(expectedEntity.icon);
-      expect(entity.userId).toEqual(expectedEntity.userId);
+        await transactionManager.run(async () => {
+          await sut.insert([entity1, entity2, entity3], {
+            targetLanguage: 'en',
+            actorId: 'testActor',
+            tenantName: 'testTenant',
+          });
+        });
+
+        expect(dispatcher.syncRelationships).toHaveBeenCalledTimes(1);
+        expect(dispatcher.syncRelationships).toHaveBeenCalledWith([
+          {
+            sharedId: entity1.sharedId,
+            targetLanguage: 'en',
+            templateId: entity1.template.id,
+            tenantName: 'testTenant',
+            userId: 'testActor',
+          },
+          {
+            sharedId: entity2.sharedId,
+            targetLanguage: 'en',
+            templateId: entity2.template.id,
+            tenantName: 'testTenant',
+            userId: 'testActor',
+          },
+          {
+            sharedId: entity3.sharedId,
+            targetLanguage: 'en',
+            templateId: entity3.template.id,
+            tenantName: 'testTenant',
+            userId: 'testActor',
+          },
+        ]);
+      });
+
+      it('should emit EntityCreatedEvent for each entity on commit', async () => {
+        const { sut, eventBus, transactionManager } = createSut(undefined, postgresTemplates);
+        const entity1 = createEntitySample();
+        const entity2 = createEntitySample();
+
+        await transactionManager.run(async () => {
+          await sut.insert([entity1, entity2], {
+            targetLanguage: 'en',
+            actorId: 'actorId',
+            tenantName: 'tenantName',
+          });
+        });
+
+        expect(eventBus.emit).toHaveBeenCalledTimes(2);
+
+        expect(eventBus.emit).toHaveBeenCalledWith(
+          new EntityCreatedEvent({
+            entities: MongoEntityMapper.toDBO(entity1) as any,
+            targetLanguageKey: 'en',
+          })
+        );
+
+        expect(eventBus.emit).toHaveBeenCalledWith(
+          new EntityCreatedEvent({
+            entities: MongoEntityMapper.toDBO(entity2) as any,
+            targetLanguageKey: 'en',
+          })
+        );
+      });
+
+      it('should NOT emit events before transaction commit', async () => {
+        const { sut, eventBus, transactionManager } = createSut(undefined, postgresTemplates);
+        const entity1 = createEntitySample();
+        const entity2 = createEntitySample();
+        let emitCalledDuringTransaction = false;
+
+        await transactionManager.run(async () => {
+          await sut.insert([entity1, entity2], {
+            targetLanguage: 'en',
+            actorId: 'actorId',
+            tenantName: 'tenantName',
+          });
+          emitCalledDuringTransaction = (eventBus.emit as any).mock.calls.length > 0;
+        });
+
+        expect(emitCalledDuringTransaction).toBe(false);
+        expect(eventBus.emit).toHaveBeenCalledTimes(2);
+      });
+
+      it('should provision access to all entities', async () => {
+        const { sut, transactionManager } = createSut(undefined, postgresTemplates);
+        const entity1 = createEntitySample();
+        const entity2 = createEntitySample();
+        const entity3 = createEntitySample();
+
+        await transactionManager.run(async () =>
+          sut.insert([entity1, entity2, entity3], {
+            actorId: 'actorId',
+            tenantName: 'tenantName',
+            targetLanguage: 'en',
+          })
+        );
+
+        const entitiesCreated = await testingEnvironment.db.getAllFrom('entities');
+
+        expect(entitiesCreated).toMatchObject([
+          {
+            language: 'en',
+            sharedId: entity1.sharedId,
+            permissions: [{ refId: 'actorId', type: GrantType.User, level: AccessLevel.Write }],
+            published: false,
+          },
+          {
+            language: 'en',
+            sharedId: entity2.sharedId,
+            permissions: [{ refId: 'actorId', type: GrantType.User, level: AccessLevel.Write }],
+            published: false,
+          },
+          {
+            sharedId: entity3.sharedId,
+            permissions: [{ refId: 'actorId', type: GrantType.User, level: AccessLevel.Write }],
+            published: false,
+          },
+        ]);
+      });
+
+      it('should handle empty array gracefully', async () => {
+        const { sut, dispatcher, eventBus, transactionManager } = createSut(
+          undefined,
+          postgresTemplates
+        );
+
+        await transactionManager.run(async () => {
+          await sut.insert([], {
+            targetLanguage: 'en',
+            actorId: 'actorId',
+            tenantName: 'tenantName',
+          });
+        });
+
+        const entitiesCreated = await testingEnvironment.db.getAllFrom('entities');
+        expect(entitiesCreated.length).toBe(0);
+
+        expect(dispatcher.syncRelationships).not.toHaveBeenCalled();
+        expect(eventBus.emit).not.toHaveBeenCalled();
+      });
     });
-  });
 
-  describe('when upserting an Entity', () => {
-    it('should not call data source and event emitter if it has not changed', async () => {
-      const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
-      const entitiesDS = TestUtils.mockClass<MongoEntitiesDataSource>({
-        update: jest.fn(),
-        bulkUpdate: jest.fn(),
+    describe('when creating an Entity', () => {
+      it('should create an entity', async () => {
+        const { sut } = createSut(undefined, postgresTemplates);
+        const template = await getTemplate(factory.id('Document'));
+
+        const expectedEntity = Entity.create({
+          template,
+          languages: ['en', 'es'],
+          userId: 'user1',
+          icon: { id: 'iconId', type: 'image/png', label: 'Icon Label' },
+        });
+
+        const entity = await sut.create({
+          templateId: factory.id('Document').toHexString(),
+          userId: 'user1',
+          icon: { id: 'iconId', type: 'image/png', label: 'Icon Label' },
+        });
+
+        expect(entity.template.id).toEqual(expectedEntity.template.id);
+        expect(entity.languages).toEqual(expectedEntity.languages);
+        expect(entity.icon).toEqual(expectedEntity.icon);
+        expect(entity.userId).toEqual(expectedEntity.userId);
       });
-      const { sut, transactionManager, eventBus, actor } = createSut({ eventEmitter, entitiesDS });
-      await testingEnvironment.setFixtures({
+
+      it('should use default template when none is provided', async () => {
+        const { sut } = createSut(undefined, postgresTemplates);
+        const template = await getTemplate(factory.id('Document'));
+
+        const expectedEntity = Entity.create({
+          template,
+          languages: ['en', 'es'],
+        });
+
+        const entity = await sut.create({});
+
+        expect(entity.template.id).toEqual(expectedEntity.template.id);
+        expect(entity.languages).toEqual(expectedEntity.languages);
+        expect(entity.icon).toEqual(expectedEntity.icon);
+        expect(entity.userId).toEqual(expectedEntity.userId);
+      });
+    });
+
+    describe('when upserting an Entity', () => {
+      it('should not call data source and event emitter if it has not changed', async () => {
+        const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
+        const entitiesDS = TestUtils.mockClass<MongoEntitiesDataSource>({
+          update: jest.fn(),
+          bulkUpdate: jest.fn(),
+        });
+        const { sut, transactionManager, eventBus, actor } = createSut(
+          { eventEmitter, entitiesDS },
+          postgresTemplates
+        );
+        await testingEnvironment.setFixtures({
+          ...fixtures,
+          entities: [
+            ...factory.entityInMultipleLanguages(
+              ['en', 'es'],
+              'entity-1',
+              'Document',
+              { text: [{ value: 'Entity 1 original text' }], numeric: [{ value: 10 }] },
+              {
+                title: 'Entity 1 original title',
+                icon: { _id: 'icon-original-1', type: 'image', label: 'Original Icon 1' },
+                obsoleteMetadata: [],
+              }
+            ),
+          ],
+        });
+
+        const [entity] = await loadEntities(['entity-1']);
+
+        await transactionManager.run(async () =>
+          sut.update([entity], {
+            actorId: 'actorId',
+            targetLanguage: 'en',
+            actor,
+            authorize: false,
+          })
+        );
+
+        expect(entitiesDS.bulkUpdate).not.toHaveBeenCalled();
+        expect(eventEmitter.emit).not.toHaveBeenCalled();
+
+        entity.update({ icon: { id: 'icon-123', type: 'image', label: 'Icon Label' } });
+
+        await transactionManager.run(async () =>
+          sut.update([entity], {
+            actorId: 'actorId',
+            targetLanguage: 'en',
+            actor,
+            authorize: false,
+          })
+        );
+
+        expect(entitiesDS.bulkUpdate).toHaveBeenCalled();
+        expect(eventEmitter.emit).toHaveBeenCalled();
+        expect(eventBus.emit).toHaveBeenCalledWith(
+          new LegacyEntityUpdatedEvent({
+            before: MongoEntityMapper.toDBO(entity.previousVersion) as any,
+            after: MongoEntityMapper.toDBO(entity) as any,
+            targetLanguageKey: 'en',
+          })
+        );
+      });
+    });
+
+    describe('when updating multiple entities', () => {
+      const updateMultipleFixtures: DBFixture = {
         ...fixtures,
         entities: [
           ...factory.entityInMultipleLanguages(
@@ -460,327 +546,288 @@ describe('EntitiesService', () => {
               obsoleteMetadata: [],
             }
           ),
+          ...factory.entityInMultipleLanguages(
+            ['en', 'es'],
+            'entity-2',
+            'Document',
+            { text: [{ value: 'Entity 2 original text' }], numeric: [{ value: 20 }] },
+            {
+              title: 'Entity 2 original title',
+              icon: { _id: 'icon-original-2', type: 'image', label: 'Original Icon 2' },
+              obsoleteMetadata: [],
+            }
+          ),
         ],
-      });
+      };
 
-      const [entity] = await loadEntities(['entity-1']);
+      beforeEach(async () => testingEnvironment.setFixtures(updateMultipleFixtures));
 
-      await transactionManager.run(async () =>
-        sut.update([entity], {
-          actorId: 'actorId',
-          targetLanguage: 'en',
-          actor,
-          authorize: false,
-        })
-      );
+      it('should persist changes for all changed entities in the database', async () => {
+        const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
+        const { sut, transactionManager, actor } = createSut({ eventEmitter }, postgresTemplates);
+        const template = await getTemplate(factory.id('Document'));
 
-      expect(entitiesDS.bulkUpdate).not.toHaveBeenCalled();
-      expect(eventEmitter.emit).not.toHaveBeenCalled();
+        const entities = await loadEntities(['entity-1', 'entity-2']);
+        const entity1 = entities.find(e => e.sharedId === 'entity-1')!;
+        const entity2 = entities.find(e => e.sharedId === 'entity-2')!;
 
-      entity.update({ icon: { id: 'icon-123', type: 'image', label: 'Icon Label' } });
+        entity1.update({ icon: { id: 'icon-updated-1', type: 'image', label: 'Updated Icon 1' } });
+        entity1.setPropertyAssignmentsInAllLanguages([
+          template.createPropertyAssignment('title', {
+            value: [{ value: 'Entity 1 updated title' }],
+          }),
+          template.createPropertyAssignment('text', {
+            value: [{ value: 'Entity 1 updated text' }],
+          }),
+          template.createPropertyAssignment('numeric', { value: [{ value: 11 }] }),
+        ]);
 
-      await transactionManager.run(async () =>
-        sut.update([entity], {
-          actorId: 'actorId',
-          targetLanguage: 'en',
-          actor,
-          authorize: false,
-        })
-      );
+        entity2.update({ icon: { id: 'icon-updated-2', type: 'image', label: 'Updated Icon 2' } });
+        entity2.setPropertyAssignmentsInAllLanguages([
+          template.createPropertyAssignment('title', {
+            value: [{ value: 'Entity 2 updated title' }],
+          }),
+          template.createPropertyAssignment('text', {
+            value: [{ value: 'Entity 2 updated text' }],
+          }),
+          template.createPropertyAssignment('numeric', { value: [{ value: 22 }] }),
+        ]);
 
-      expect(entitiesDS.bulkUpdate).toHaveBeenCalled();
-      expect(eventEmitter.emit).toHaveBeenCalled();
-      expect(eventBus.emit).toHaveBeenCalledWith(
-        new LegacyEntityUpdatedEvent({
-          before: MongoEntityMapper.toDBO(entity.previousVersion) as any,
-          after: MongoEntityMapper.toDBO(entity) as any,
-          targetLanguageKey: 'en',
-        })
-      );
-    });
-  });
-
-  describe('when updating multiple entities', () => {
-    const updateMultipleFixtures: DBFixture = {
-      ...fixtures,
-      entities: [
-        ...factory.entityInMultipleLanguages(
-          ['en', 'es'],
-          'entity-1',
-          'Document',
-          { text: [{ value: 'Entity 1 original text' }], numeric: [{ value: 10 }] },
-          {
-            title: 'Entity 1 original title',
-            icon: { _id: 'icon-original-1', type: 'image', label: 'Original Icon 1' },
-            obsoleteMetadata: [],
-          }
-        ),
-        ...factory.entityInMultipleLanguages(
-          ['en', 'es'],
-          'entity-2',
-          'Document',
-          { text: [{ value: 'Entity 2 original text' }], numeric: [{ value: 20 }] },
-          {
-            title: 'Entity 2 original title',
-            icon: { _id: 'icon-original-2', type: 'image', label: 'Original Icon 2' },
-            obsoleteMetadata: [],
-          }
-        ),
-      ],
-    };
-
-    beforeEach(async () => testingEnvironment.setFixtures(updateMultipleFixtures));
-
-    it('should persist changes for all changed entities in the database', async () => {
-      const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
-      const { sut, transactionManager, actor } = createSut({ eventEmitter });
-      const template = await getTemplate(factory.id('Document'));
-
-      const entities = await loadEntities(['entity-1', 'entity-2']);
-      const entity1 = entities.find(e => e.sharedId === 'entity-1')!;
-      const entity2 = entities.find(e => e.sharedId === 'entity-2')!;
-
-      entity1.update({ icon: { id: 'icon-updated-1', type: 'image', label: 'Updated Icon 1' } });
-      entity1.setPropertyAssignmentsInAllLanguages([
-        template.createPropertyAssignment('title', {
-          value: [{ value: 'Entity 1 updated title' }],
-        }),
-        template.createPropertyAssignment('text', { value: [{ value: 'Entity 1 updated text' }] }),
-        template.createPropertyAssignment('numeric', { value: [{ value: 11 }] }),
-      ]);
-
-      entity2.update({ icon: { id: 'icon-updated-2', type: 'image', label: 'Updated Icon 2' } });
-      entity2.setPropertyAssignmentsInAllLanguages([
-        template.createPropertyAssignment('title', {
-          value: [{ value: 'Entity 2 updated title' }],
-        }),
-        template.createPropertyAssignment('text', { value: [{ value: 'Entity 2 updated text' }] }),
-        template.createPropertyAssignment('numeric', { value: [{ value: 22 }] }),
-      ]);
-
-      await transactionManager.run(async () => {
-        await sut.update([entity1, entity2], {
-          actorId: 'actorId',
-          targetLanguage: 'en',
-          actor: actor!,
-          authorize: false,
-        });
-      });
-
-      const allDocs = await testingEnvironment.db.getAllFrom('entities');
-
-      expect(allDocs.filter(d => d.sharedId === 'entity-1')).toHaveLength(2);
-      allDocs
-        .filter(d => d.sharedId === 'entity-1')
-        .forEach(doc => {
-          expect(doc.icon).toMatchObject({
-            _id: 'icon-updated-1',
-            type: 'image',
-            label: 'Updated Icon 1',
+        await transactionManager.run(async () => {
+          await sut.update([entity1, entity2], {
+            actorId: 'actorId',
+            targetLanguage: 'en',
+            actor: actor!,
+            authorize: false,
           });
-          expect(doc.title).toBe('Entity 1 updated title');
-          expect(doc.metadata.text).toEqual([{ value: 'Entity 1 updated text' }]);
-          expect(doc.metadata.numeric).toEqual([{ value: 11 }]);
         });
 
-      expect(allDocs.filter(d => d.sharedId === 'entity-2')).toHaveLength(2);
-      allDocs
-        .filter(d => d.sharedId === 'entity-2')
-        .forEach(doc => {
-          expect(doc.icon).toMatchObject({
-            _id: 'icon-updated-2',
-            type: 'image',
-            label: 'Updated Icon 2',
+        const allDocs = await testingEnvironment.db.getAllFrom('entities');
+
+        expect(allDocs.filter(d => d.sharedId === 'entity-1')).toHaveLength(2);
+        allDocs
+          .filter(d => d.sharedId === 'entity-1')
+          .forEach(doc => {
+            expect(doc.icon).toMatchObject({
+              _id: 'icon-updated-1',
+              type: 'image',
+              label: 'Updated Icon 1',
+            });
+            expect(doc.title).toBe('Entity 1 updated title');
+            expect(doc.metadata.text).toEqual([{ value: 'Entity 1 updated text' }]);
+            expect(doc.metadata.numeric).toEqual([{ value: 11 }]);
           });
-          expect(doc.title).toBe('Entity 2 updated title');
-          expect(doc.metadata.text).toEqual([{ value: 'Entity 2 updated text' }]);
-          expect(doc.metadata.numeric).toEqual([{ value: 22 }]);
+
+        expect(allDocs.filter(d => d.sharedId === 'entity-2')).toHaveLength(2);
+        allDocs
+          .filter(d => d.sharedId === 'entity-2')
+          .forEach(doc => {
+            expect(doc.icon).toMatchObject({
+              _id: 'icon-updated-2',
+              type: 'image',
+              label: 'Updated Icon 2',
+            });
+            expect(doc.title).toBe('Entity 2 updated title');
+            expect(doc.metadata.text).toEqual([{ value: 'Entity 2 updated text' }]);
+            expect(doc.metadata.numeric).toEqual([{ value: 22 }]);
+          });
+      });
+
+      it('should skip entities that have not changed and only update the changed ones', async () => {
+        const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
+        const { sut, transactionManager, actor } = createSut({ eventEmitter }, postgresTemplates);
+        const template = await getTemplate(factory.id('Document'));
+
+        const entities = await loadEntities(['entity-1', 'entity-2']);
+        const entity1 = entities.find(e => e.sharedId === 'entity-1')!;
+        const entity2 = entities.find(e => e.sharedId === 'entity-2')!;
+
+        // Only mutate entity-1; entity-2 is loaded fresh and has hasChanged === false
+        entity1.update({ icon: { id: 'icon-updated-1', type: 'image', label: 'Updated Icon 1' } });
+        entity1.setPropertyAssignmentsInAllLanguages([
+          template.createPropertyAssignment('title', {
+            value: [{ value: 'Entity 1 updated title' }],
+          }),
+          template.createPropertyAssignment('text', {
+            value: [{ value: 'Entity 1 updated text' }],
+          }),
+          template.createPropertyAssignment('numeric', { value: [{ value: 99 }] }),
+        ]);
+
+        await transactionManager.run(async () => {
+          await sut.update([entity1, entity2], {
+            actorId: 'actorId',
+            targetLanguage: 'en',
+            actor: actor!,
+            authorize: false,
+          });
         });
-    });
 
-    it('should skip entities that have not changed and only update the changed ones', async () => {
-      const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
-      const { sut, transactionManager, actor } = createSut({ eventEmitter });
-      const template = await getTemplate(factory.id('Document'));
+        const allDocs = await testingEnvironment.db.getAllFrom('entities');
 
-      const entities = await loadEntities(['entity-1', 'entity-2']);
-      const entity1 = entities.find(e => e.sharedId === 'entity-1')!;
-      const entity2 = entities.find(e => e.sharedId === 'entity-2')!;
+        allDocs
+          .filter(d => d.sharedId === 'entity-1')
+          .forEach(doc => {
+            expect(doc.icon).toMatchObject({ _id: 'icon-updated-1' });
+            expect(doc.title).toBe('Entity 1 updated title');
+            expect(doc.metadata.text).toEqual([{ value: 'Entity 1 updated text' }]);
+            expect(doc.metadata.numeric).toEqual([{ value: 99 }]);
+          });
 
-      // Only mutate entity-1; entity-2 is loaded fresh and has hasChanged === false
-      entity1.update({ icon: { id: 'icon-updated-1', type: 'image', label: 'Updated Icon 1' } });
-      entity1.setPropertyAssignmentsInAllLanguages([
-        template.createPropertyAssignment('title', {
-          value: [{ value: 'Entity 1 updated title' }],
-        }),
-        template.createPropertyAssignment('text', { value: [{ value: 'Entity 1 updated text' }] }),
-        template.createPropertyAssignment('numeric', { value: [{ value: 99 }] }),
-      ]);
+        allDocs
+          .filter(d => d.sharedId === 'entity-2')
+          .forEach(doc => {
+            expect(doc.icon).toMatchObject({ _id: 'icon-original-2' });
+            expect(doc.title).toBe('Entity 2 original title');
+            expect(doc.metadata.text).toEqual([{ value: 'Entity 2 original text' }]);
+            expect(doc.metadata.numeric).toEqual([{ value: 20 }]);
+          });
+      });
 
-      await transactionManager.run(async () => {
-        await sut.update([entity1, entity2], {
-          actorId: 'actorId',
+      it('should emit an EntityUpdatedEvent with correct before/after payload for each changed entity', async () => {
+        const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
+        const { sut, transactionManager, eventBus, actor } = createSut(
+          { eventEmitter },
+          postgresTemplates
+        );
+        const template = await getTemplate(factory.id('Document'));
+
+        const entities = await loadEntities(['entity-1', 'entity-2']);
+        const entity1 = entities.find(e => e.sharedId === 'entity-1')!;
+        const entity2 = entities.find(e => e.sharedId === 'entity-2')!;
+
+        entity1.update({ icon: { id: 'icon-after-1', type: 'image', label: 'After Icon 1' } });
+        entity1.setPropertyAssignmentsInAllLanguages([
+          template.createPropertyAssignment('title', { value: [{ value: 'Title after 1' }] }),
+          template.createPropertyAssignment('text', { value: [{ value: 'Text after 1' }] }),
+          template.createPropertyAssignment('numeric', { value: [{ value: 11 }] }),
+        ]);
+
+        entity2.update({ icon: { id: 'icon-after-2', type: 'image', label: 'After Icon 2' } });
+        entity2.setPropertyAssignmentsInAllLanguages([
+          template.createPropertyAssignment('title', { value: [{ value: 'Title after 2' }] }),
+          template.createPropertyAssignment('text', { value: [{ value: 'Text after 2' }] }),
+          template.createPropertyAssignment('numeric', { value: [{ value: 22 }] }),
+        ]);
+
+        const expectedEvent1 = EntityUpdatedEvent.create({
+          entity: entity1,
+          userId: 'actorId',
           targetLanguage: 'en',
-          actor: actor!,
-          authorize: false,
         });
-      });
-
-      const allDocs = await testingEnvironment.db.getAllFrom('entities');
-
-      allDocs
-        .filter(d => d.sharedId === 'entity-1')
-        .forEach(doc => {
-          expect(doc.icon).toMatchObject({ _id: 'icon-updated-1' });
-          expect(doc.title).toBe('Entity 1 updated title');
-          expect(doc.metadata.text).toEqual([{ value: 'Entity 1 updated text' }]);
-          expect(doc.metadata.numeric).toEqual([{ value: 99 }]);
-        });
-
-      allDocs
-        .filter(d => d.sharedId === 'entity-2')
-        .forEach(doc => {
-          expect(doc.icon).toMatchObject({ _id: 'icon-original-2' });
-          expect(doc.title).toBe('Entity 2 original title');
-          expect(doc.metadata.text).toEqual([{ value: 'Entity 2 original text' }]);
-          expect(doc.metadata.numeric).toEqual([{ value: 20 }]);
-        });
-    });
-
-    it('should emit an EntityUpdatedEvent with correct before/after payload for each changed entity', async () => {
-      const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
-      const { sut, transactionManager, eventBus, actor } = createSut({ eventEmitter });
-      const template = await getTemplate(factory.id('Document'));
-
-      const entities = await loadEntities(['entity-1', 'entity-2']);
-      const entity1 = entities.find(e => e.sharedId === 'entity-1')!;
-      const entity2 = entities.find(e => e.sharedId === 'entity-2')!;
-
-      entity1.update({ icon: { id: 'icon-after-1', type: 'image', label: 'After Icon 1' } });
-      entity1.setPropertyAssignmentsInAllLanguages([
-        template.createPropertyAssignment('title', { value: [{ value: 'Title after 1' }] }),
-        template.createPropertyAssignment('text', { value: [{ value: 'Text after 1' }] }),
-        template.createPropertyAssignment('numeric', { value: [{ value: 11 }] }),
-      ]);
-
-      entity2.update({ icon: { id: 'icon-after-2', type: 'image', label: 'After Icon 2' } });
-      entity2.setPropertyAssignmentsInAllLanguages([
-        template.createPropertyAssignment('title', { value: [{ value: 'Title after 2' }] }),
-        template.createPropertyAssignment('text', { value: [{ value: 'Text after 2' }] }),
-        template.createPropertyAssignment('numeric', { value: [{ value: 22 }] }),
-      ]);
-
-      const expectedEvent1 = EntityUpdatedEvent.create({
-        entity: entity1,
-        userId: 'actorId',
-        targetLanguage: 'en',
-      });
-      const expectedEvent2 = EntityUpdatedEvent.create({
-        entity: entity2,
-        userId: 'actorId',
-        targetLanguage: 'en',
-      });
-
-      await transactionManager.run(async () => {
-        await sut.update([entity1, entity2], {
-          actorId: 'actorId',
+        const expectedEvent2 = EntityUpdatedEvent.create({
+          entity: entity2,
+          userId: 'actorId',
           targetLanguage: 'en',
-          actor: actor!,
-          authorize: false,
         });
+
+        await transactionManager.run(async () => {
+          await sut.update([entity1, entity2], {
+            actorId: 'actorId',
+            targetLanguage: 'en',
+            actor: actor!,
+            authorize: false,
+          });
+        });
+
+        expect(eventEmitter.emit).toHaveBeenCalledTimes(2);
+        expect(eventEmitter.emit).toHaveBeenCalledWith(expectedEvent1);
+        expect(eventEmitter.emit).toHaveBeenCalledWith(expectedEvent2);
+
+        expect(eventBus.emit).toHaveBeenCalledTimes(2);
+        expect(eventBus.emit).toHaveBeenCalledWith(
+          new LegacyEntityUpdatedEvent({
+            before: MongoEntityMapper.toDBO(entity1.previousVersion) as any,
+            after: MongoEntityMapper.toDBO(entity1) as any,
+            targetLanguageKey: 'en',
+          })
+        );
+        expect(eventBus.emit).toHaveBeenCalledWith(
+          new LegacyEntityUpdatedEvent({
+            before: MongoEntityMapper.toDBO(entity2.previousVersion) as any,
+            after: MongoEntityMapper.toDBO(entity2) as any,
+            targetLanguageKey: 'en',
+          })
+        );
       });
 
-      expect(eventEmitter.emit).toHaveBeenCalledTimes(2);
-      expect(eventEmitter.emit).toHaveBeenCalledWith(expectedEvent1);
-      expect(eventEmitter.emit).toHaveBeenCalledWith(expectedEvent2);
+      it('should not update the database or emit events when no entity has changed', async () => {
+        const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
+        const { sut, transactionManager, eventBus, actor } = createSut(
+          { eventEmitter },
+          postgresTemplates
+        );
 
-      expect(eventBus.emit).toHaveBeenCalledTimes(2);
-      expect(eventBus.emit).toHaveBeenCalledWith(
-        new LegacyEntityUpdatedEvent({
-          before: MongoEntityMapper.toDBO(entity1.previousVersion) as any,
-          after: MongoEntityMapper.toDBO(entity1) as any,
-          targetLanguageKey: 'en',
-        })
-      );
-      expect(eventBus.emit).toHaveBeenCalledWith(
-        new LegacyEntityUpdatedEvent({
-          before: MongoEntityMapper.toDBO(entity2.previousVersion) as any,
-          after: MongoEntityMapper.toDBO(entity2) as any,
-          targetLanguageKey: 'en',
-        })
-      );
-    });
+        const entities = await loadEntities(['entity-1', 'entity-2']);
 
-    it('should not update the database or emit events when no entity has changed', async () => {
-      const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
-      const { sut, transactionManager, eventBus, actor } = createSut({ eventEmitter });
-
-      const entities = await loadEntities(['entity-1', 'entity-2']);
-
-      await transactionManager.run(async () => {
-        await sut.update(entities, {
-          actorId: 'actorId',
-          targetLanguage: 'en',
-          actor: actor!,
-          authorize: false,
+        await transactionManager.run(async () => {
+          await sut.update(entities, {
+            actorId: 'actorId',
+            targetLanguage: 'en',
+            actor: actor!,
+            authorize: false,
+          });
         });
+
+        const allDocs = await testingEnvironment.db.getAllFrom('entities');
+
+        allDocs
+          .filter(d => d.sharedId === 'entity-1')
+          .forEach(doc => {
+            expect(doc.icon).toMatchObject({ _id: 'icon-original-1' });
+            expect(doc.title).toBe('Entity 1 original title');
+            expect(doc.metadata.text).toEqual([{ value: 'Entity 1 original text' }]);
+            expect(doc.metadata.numeric).toEqual([{ value: 10 }]);
+          });
+
+        allDocs
+          .filter(d => d.sharedId === 'entity-2')
+          .forEach(doc => {
+            expect(doc.icon).toMatchObject({ _id: 'icon-original-2' });
+            expect(doc.title).toBe('Entity 2 original title');
+            expect(doc.metadata.text).toEqual([{ value: 'Entity 2 original text' }]);
+            expect(doc.metadata.numeric).toEqual([{ value: 20 }]);
+          });
+
+        expect(eventEmitter.emit).not.toHaveBeenCalled();
+        expect(eventBus.emit).not.toHaveBeenCalled();
       });
 
-      const allDocs = await testingEnvironment.db.getAllFrom('entities');
+      it('should do nothing when passed an empty array', async () => {
+        const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
+        const { sut, transactionManager, eventBus, actor } = createSut(
+          { eventEmitter },
+          postgresTemplates
+        );
 
-      allDocs
-        .filter(d => d.sharedId === 'entity-1')
-        .forEach(doc => {
-          expect(doc.icon).toMatchObject({ _id: 'icon-original-1' });
-          expect(doc.title).toBe('Entity 1 original title');
-          expect(doc.metadata.text).toEqual([{ value: 'Entity 1 original text' }]);
-          expect(doc.metadata.numeric).toEqual([{ value: 10 }]);
+        await transactionManager.run(async () => {
+          await sut.update([], {
+            actorId: 'actorId',
+            targetLanguage: 'en',
+            actor: actor!,
+            authorize: false,
+          });
         });
 
-      allDocs
-        .filter(d => d.sharedId === 'entity-2')
-        .forEach(doc => {
-          expect(doc.icon).toMatchObject({ _id: 'icon-original-2' });
-          expect(doc.title).toBe('Entity 2 original title');
-          expect(doc.metadata.text).toEqual([{ value: 'Entity 2 original text' }]);
-          expect(doc.metadata.numeric).toEqual([{ value: 20 }]);
-        });
-
-      expect(eventEmitter.emit).not.toHaveBeenCalled();
-      expect(eventBus.emit).not.toHaveBeenCalled();
-    });
-
-    it('should do nothing when passed an empty array', async () => {
-      const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
-      const { sut, transactionManager, eventBus, actor } = createSut({ eventEmitter });
-
-      await transactionManager.run(async () => {
-        await sut.update([], {
-          actorId: 'actorId',
-          targetLanguage: 'en',
-          actor: actor!,
-          authorize: false,
-        });
+        const allDocs = await testingEnvironment.db.getAllFrom('entities');
+        expect(allDocs.filter(d => d.sharedId === 'entity-1')).toHaveLength(2);
+        expect(allDocs.filter(d => d.sharedId === 'entity-2')).toHaveLength(2);
+        expect(eventEmitter.emit).not.toHaveBeenCalled();
+        expect(eventBus.emit).not.toHaveBeenCalled();
       });
 
-      const allDocs = await testingEnvironment.db.getAllFrom('entities');
-      expect(allDocs.filter(d => d.sharedId === 'entity-1')).toHaveLength(2);
-      expect(allDocs.filter(d => d.sharedId === 'entity-2')).toHaveLength(2);
-      expect(eventEmitter.emit).not.toHaveBeenCalled();
-      expect(eventBus.emit).not.toHaveBeenCalled();
-    });
+      it('should throw when called outside a transaction', async () => {
+        const { sut, actor } = createSut(undefined, postgresTemplates);
 
-    it('should throw when called outside a transaction', async () => {
-      const { sut, actor } = createSut();
-
-      await expect(
-        sut.update([], {
-          actorId: 'actorId',
-          targetLanguage: 'en',
-          actor: actor!,
-          authorize: false,
-        })
-      ).rejects.toThrow('This operation must be called within a transaction');
+        await expect(
+          sut.update([], {
+            actorId: 'actorId',
+            targetLanguage: 'en',
+            actor: actor!,
+            authorize: false,
+          })
+        ).rejects.toThrow('This operation must be called within a transaction');
+      });
     });
   });
 });
