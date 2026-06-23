@@ -45,12 +45,16 @@ describe('renderDatavizEmbedHtml', () => {
   });
 
   it('should render echarts charts with precomputed option and bootstrap', () => {
-    const html = renderDatavizEmbedHtml({ payload: manualBarPayload, language: 'en' });
+    const html = renderDatavizEmbedHtml({
+      payload: manualBarPayload,
+      language: 'en',
+      embedScriptUrl: 'http://localhost:8080/dataviz-embed.js',
+    });
 
     expect(html).toContain('__DATAVIZ_CHART_OPTION__');
     expect(html).toContain('Embed Category A');
     expect(html).toContain('echarts.min.js');
-    expect(html).toContain('/dataviz-embed.js');
+    expect(html).toContain('http://localhost:8080/dataviz-embed.js');
     expect(html).not.toContain('main.js');
   });
 });

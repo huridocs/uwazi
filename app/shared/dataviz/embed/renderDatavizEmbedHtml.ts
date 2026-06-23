@@ -61,7 +61,11 @@ const renderMetricHtml = (payload: DatavizEmbedPayload): string => {
   return `<div class="metric"${style ? ` style="${style}"` : ''}><div class="metric-value">${escapeHtml(String(value.toLocaleString()))}</div><div class="metric-label">${escapeHtml(String(label))}</div></div>`;
 };
 
-const renderEchartsBody = (payload: DatavizEmbedPayload, option: EChartsOption): string => {
+const renderEchartsBody = (
+  payload: DatavizEmbedPayload,
+  option: EChartsOption,
+  embedScriptUrl: string
+): string => {
   const stale = payload.data.stale
     ? '<p class="stale">Data may be outdated.</p>'
     : '';
@@ -69,7 +73,7 @@ const renderEchartsBody = (payload: DatavizEmbedPayload, option: EChartsOption):
   const scripts = `
     <script>window.__DATAVIZ_CHART_OPTION__ = ${serialize(option, { isJSON: true })};</script>
     <script src="${ECHARTS_CDN}" crossorigin="anonymous"></script>
-    <script src="/dataviz-embed.js"></script>
+    <script src="${embedScriptUrl}"></script>
   `;
 
   return `${stale}<div id="dataviz-embed-root" style="height:${height}px"></div>${scripts}`;
@@ -78,9 +82,14 @@ const renderEchartsBody = (payload: DatavizEmbedPayload, option: EChartsOption):
 type RenderDatavizEmbedHtmlInput = {
   payload: DatavizEmbedPayload;
   language: string;
+  embedScriptUrl?: string;
 };
 
-const renderDatavizEmbedHtml = ({ payload, language }: RenderDatavizEmbedHtmlInput): string => {
+const renderDatavizEmbedHtml = ({
+  payload,
+  language,
+  embedScriptUrl = '/dataviz-embed.js',
+}: RenderDatavizEmbedHtmlInput): string => {
   const chartType = payload.chart.type;
   let body: string;
 
@@ -94,7 +103,7 @@ const renderDatavizEmbedHtml = ({ payload, language }: RenderDatavizEmbedHtmlInp
       body =
         '<p class="error">This chart type cannot display the current data.</p>';
     } else {
-      body = renderEchartsBody(payload, option);
+      body = renderEchartsBody(payload, option, embedScriptUrl);
     }
   }
 
