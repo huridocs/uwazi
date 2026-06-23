@@ -48,7 +48,7 @@ type DeleteLanguageEntitiesParams = {
   language: LanguageISO6391;
 };
 
-type ConfigureRecoveryPasswordHandlerParms = {
+type ConfigureRecoveryPasswordHandlerParams = {
   domain: string;
   userId: string;
   newUser?: boolean;
@@ -65,7 +65,7 @@ interface Dispatcher {
   denormalizeThesaurus(params: DenormalizeThesaurusParams): Promise<void>;
   cloneLanguageEntities(params: CloneLanguageEntitiesParams): Promise<void>;
   deleteLanguageEntities(params: DeleteLanguageEntitiesParams): Promise<void>;
-  configureRecoveryPassword(params: ConfigureRecoveryPasswordHandlerParms): Promise<void>;
+  configureRecoveryPassword(params: ConfigureRecoveryPasswordHandlerParams): Promise<void>;
 }
 
 export type {
@@ -77,5 +77,4 @@ export type {
   DenormalizeThesaurusParams,
   CloneLanguageEntitiesParams,
   DeleteLanguageEntitiesParams,
-  ConfigureRecoveryPasswordHandlerParms,
 };
