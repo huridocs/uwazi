@@ -239,6 +239,7 @@ Create relationship,Create relationship
 Create relationship types,Δημιουργία τύπων σχέσεων
 Create relationships and references,Δημιουργία σχέσεων και αναφορών
 Create table of contents,Δημιουργία πίνακα περιεχομένων
+Created,Created
 Created entity,Δημιουργήθηκε οντότητα
 Created entity coming from a public form,Δημιουργήθηκε οντότητα από δημόσια φόρμα
 Created page,Δημιουργήθηκε σελίδα
@@ -734,6 +735,7 @@ one character,one character
                 και μία αριθμητική ιδιότητα είναι διαθέσιμα για επιλογή."
 "Only the extractor will be deleted, all created entities will remain on the library.","Μόνο ο εξαγωγέας θα διαγραφεί, όλες οι δημιουργημένες οντότητες θα παραμείνουν στη βιβλιοθήκη."
 Open,Άνοιγμα
+Open entity,Open entity
 Open group,Άνοιγμα ομάδας
 Open link,Open link
 Open PDF,Άνοιγμα PDF
@@ -849,6 +851,7 @@ Recommended,Recommended
 Reference,Αναφορά
 References,Αναφορές
 references,Αναφορές
+References in document,References in document
 Reject,Απόρριψη
 Related entities created,Related entities created
 Relation type,Τύπος σχέσης

@@ -235,6 +235,7 @@ Create relationship,Create relationship
 Create relationship types,Create relationship types
 Create relationships and references,Create relationships and references
 Create table of contents,Create table of contents
+Created,Created
 Created entity,Created entity
 Created entity coming from a public form,Created entity coming from a public form
 Created page,Created page
@@ -730,6 +731,7 @@ one character,one character
                 available for selection."
 "Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Open,Open
+Open entity,Open entity
 Open group,Open group
 Open link,Open link
 Open PDF,Open PDF
@@ -845,6 +847,7 @@ Recommended,Recommended
 Reference,Reference
 References,Ссылки
 references,references
+References in document,References in document
 Reject,Отклонить
 Related entities created,Related entities created
 Relation type,Relation type

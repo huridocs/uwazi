@@ -240,6 +240,7 @@ Create relationship,Create relationship
 Create relationship types,Створення типів зв'язків
 Create relationships and references,Створюйте зв'язки та посилання
 Create table of contents,Створити зміст
+Created,Created
 Created entity,Створена сутність
 Created entity coming from a public form,Створений суб'єкт з публічної форми
 Created page,Створена сторінка
@@ -735,6 +736,7 @@ one character,one character
                 доступні для вибору."
 "Only the extractor will be deleted, all created entities will remain on the library.","Буде видалено лише розпакувальник, всі створені сутності залишаться у бібліотеці."
 Open,Відкрито
+Open entity,Open entity
 Open group,Відкрита група
 Open link,Open link
 Open PDF,Відкрити PDF
@@ -850,6 +852,7 @@ Recommended,Recommended
 Reference,Посилання
 References,Посилання
 references,references
+References in document,References in document
 Reject,Відхилити
 Related entities created,Related entities created
 Relation type,Тип відношення

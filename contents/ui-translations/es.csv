@@ -236,6 +236,7 @@ Create relationship,Crear relación
 Create relationship types,Crear tipos de relación
 Create relationships and references,Crear relaciones y referencias
 Create table of contents,Crear tabla de contenidos
+Created,Creado
 Created entity,Entidad creada
 Created entity coming from a public form,Entidad creada desde un formulario público
 Created page,Página creada
@@ -731,6 +732,7 @@ one character,one character
                 available for selection."
 "Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Open,Open
+Open entity,Abrir entidad
 Open group,Open group
 Open link,Open link
 Open PDF,Open PDF
@@ -846,6 +848,7 @@ Recommended,Recommended
 Reference,Reference
 References,Referencias
 references,referencias
+References in document,Referencias en el documento
 Reject,Rechazar
 Related entities created,Related entities created
 Relation type,Tipo de relación
