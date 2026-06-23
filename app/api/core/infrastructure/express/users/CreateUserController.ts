@@ -12,7 +12,14 @@ class CreateUserController extends AbstractController<CreateUserRequest> {
       user: newUser,
       domain: `${this.request.protocol}://${ExecutionContext.tenant.domain}`,
     });
-    const response: CreateUserResponse = { user };
+    const response: CreateUserResponse = {
+      user: {
+        _id: user._id,
+        username: user.username,
+        role: user.role,
+        email: user.email,
+      },
+    };
     this.response.status(201).json(response);
   }
 }

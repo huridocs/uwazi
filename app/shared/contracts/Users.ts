@@ -17,6 +17,6 @@ type NewUser = Omit<User, '_id'> & { password?: string };
 
 type CreateUserRequest = NewUser;
 
-type CreateUserResponse = { user: User };
+type CreateUserResponse = { user: Pick<User, '_id' | 'email' | 'role' | 'username'> };
 
 export type { CreateUserResponse, CreateUserRequest };
