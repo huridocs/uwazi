@@ -40,7 +40,7 @@ class CreateUser extends AbstractUseCase<Input, Output, Dependencies> {
     await this.transactionManager.run(async () => {
       await this.deps.usersDS.insert(user);
       await this.deps.usergroupsDS.updateUserGroups(user);
-      await this.dispatcher.configureRecoveryPassword({
+      await this.dispatcher.sendWelcomeEmail({
         userId: user._id,
         domain: input.domain,
       });

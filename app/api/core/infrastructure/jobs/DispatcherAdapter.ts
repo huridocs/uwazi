@@ -72,7 +72,7 @@ class DispatcherAdapter implements Dispatcher {
     await this.jobsDispatcher.dispatch(DeleteLanguageEntitiesJob, params);
   }
 
-  async configureRecoveryPassword(params: SendWelcomeEmailHandlerParams): Promise<void> {
+  async sendWelcomeEmail(params: SendWelcomeEmailHandlerParams): Promise<void> {
     await this.jobsDispatcher.dispatch(SendWelcomeEmailHandler, params);
   }
 }
