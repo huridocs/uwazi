@@ -1,28 +1,26 @@
 import React from 'react';
 import { mount } from 'cypress/react';
 import { RelationshipsStoryShell } from '#app/stories/EntityViewer/relationshipsStoryShell.js';
+import {
+  overlayTargetEntity,
+  overlayTemplates,
+} from '#app/stories/fixtures/entityOverlayFixtures.js';
+import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
 import { RelationshipsPanel } from '#V2/Routes/Entity/Components/relationships/index.js';
 
-const person1Entity = {
-  _id: '6a0c5e0584b3eaec97612df6',
-  sharedId: 'a2pe98qmqb',
-  language: 'en',
-  template: 'template2',
-  title: 'Person 1',
-  creationDate: 1779195397083,
-  editDate: 1779195397083,
-  user: 'user1',
-  icon: { _id: '', type: 'Empty', label: '' },
-  metadata: { dob: [{ value: 1777593600 }], gender: [{ value: 'f7c5ffa9', label: 'Male' }] },
-  published: true,
-  documents: [],
-  attachments: [],
+const openOverlay = () => {
+  cy.contains('Person 1').click();
+  cy.get('[aria-label="Preview entity"]').first().click({ force: true });
+  cy.get('[data-testid="entity-overlay"]').should('be.visible');
+  cy.get('[data-testid="entity-overlay"]').contains('Metadata').should('be.visible');
 };
 
 describe('Entity overlay', () => {
   beforeEach(() => {
+    entityLoaderCache.invalidateEntity(overlayTargetEntity.sharedId);
+
     cy.intercept('GET', '/api/entities*', {
-      body: { rows: [person1Entity] },
+      body: { rows: [overlayTargetEntity] },
     }).as('getOverlayEntity');
 
     cy.window().then(win => {
@@ -30,17 +28,14 @@ describe('Entity overlay', () => {
     });
 
     mount(
-      <RelationshipsStoryShell locale="en">
+      <RelationshipsStoryShell locale="en" storyTemplates={overlayTemplates}>
         <RelationshipsPanel />
       </RelationshipsStoryShell>
     );
   });
 
   it('opens an in-panel preview instead of a new tab', () => {
-    cy.contains('Person 1').click();
-    cy.get('[aria-label="Preview entity"]').first().click({ force: true });
-    cy.wait('@getOverlayEntity');
-    cy.get('[data-testid="entity-overlay"]').should('be.visible');
+    openOverlay();
     cy.get('[data-testid="entity-overlay"]').within(() => {
       cy.contains('Person 1').should('be.visible');
       cy.contains('Metadata').should('be.visible');
@@ -50,11 +45,54 @@ describe('Entity overlay', () => {
     cy.get('@windowOpen').should('not.have.been.called');
   });
 
-  it('closes via the Close button', () => {
-    cy.contains('Person 1').click();
-    cy.get('[aria-label="Preview entity"]').first().click({ force: true });
-    cy.get('[data-testid="entity-overlay"]').should('be.visible');
+  it('shows metadata and properties', () => {
+    openOverlay();
+    cy.get('[data-testid="entity-overlay"]').within(() => {
+      cy.contains('Person').should('be.visible');
+      cy.contains('Properties').should('be.visible');
+      cy.contains('Gender').should('be.visible');
+      cy.contains('Male').should('be.visible');
+      cy.contains('Date of birth').should('be.visible');
+    });
+  });
+
+  it('links Open entity to the entity page', () => {
+    openOverlay();
+    cy.get('[data-testid="entity-overlay"]')
+      .contains('Open entity')
+      .should('have.attr', 'href', '/en/entityv2/a2pe98qmqb');
+  });
+
+  it('closes via the footer Close button', () => {
+    openOverlay();
+    cy.get('[data-testid="entity-overlay"]').contains('button', 'Close').click();
+    cy.get('[data-testid="entity-overlay"]').should('not.exist');
+  });
+
+  it('closes via the header close button', () => {
+    openOverlay();
     cy.get('[data-testid="entity-overlay"]').find('button[aria-label="Close"]').click();
+    cy.get('[data-testid="entity-overlay"]').should('not.exist');
+  });
+
+  it('closes via Escape', () => {
+    openOverlay();
+    cy.get('body').type('{esc}');
+    cy.get('[data-testid="entity-overlay"]').should('not.exist');
+  });
+
+  it('uses an opaque panel background', () => {
+    openOverlay();
+    cy.get('[data-testid="entity-overlay"]').should($panel => {
+      const { backgroundColor } = window.getComputedStyle($panel[0]);
+      expect(backgroundColor).not.to.equal('rgba(0, 0, 0, 0)');
+      expect(backgroundColor).not.to.equal('transparent');
+    });
+  });
+
+  it('closes via backdrop click', () => {
+    openOverlay();
+    cy.get('[data-testid="entity-overlay-backdrop"]').click({ force: true });
     cy.get('[data-testid="entity-overlay"]').should('not.exist');
   });
 });

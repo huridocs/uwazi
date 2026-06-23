@@ -11,6 +11,10 @@ import {
 import { EntityOverlayContent } from './EntityOverlayContent.js';
 import { useOverlayEntity } from './useOverlayEntity.js';
 
+const overlaySurfaceStyle = {
+  backgroundColor: 'var(--color-theme-surface-raised, var(--color-theme-bg-surface, #ffffff))',
+};
+
 const EntityOverlay = () => {
   const { target, closeEntityOverlay } = useEntityOverlay();
   const selfEntity = useEntityScopedEntity();
@@ -57,6 +61,7 @@ const EntityOverlay = () => {
   return (
     <>
       <div
+        data-testid="entity-overlay-backdrop"
         className="absolute inset-0 z-20 transition-opacity duration-200"
         style={{
           backgroundColor: 'color-mix(in srgb, var(--text-primary) 15%, transparent)',
@@ -66,8 +71,9 @@ const EntityOverlay = () => {
       <div
         ref={panelRef}
         data-testid="entity-overlay"
-        className="absolute top-0 right-0 bottom-0 z-21 flex flex-col bg-paper transition-transform duration-250 ease-out"
+        className="absolute top-0 right-0 bottom-0 z-21 flex flex-col bg-(--color-theme-surface-raised) transition-transform duration-250 ease-out"
         style={{
+          ...overlaySurfaceStyle,
           width: 'calc(100% - 12px)',
           borderLeft: '1px solid var(--border-primary)',
           boxShadow: '-4px 0 16px rgba(0,0,0,0.08)',

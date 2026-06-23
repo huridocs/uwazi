@@ -8,6 +8,7 @@ import {
 } from '#V2/Routes/Entity/Components/relationships/index.js';
 import { EntityOverlay } from '#V2/Routes/Entity/Components/relationships/overlay/EntityOverlay.js';
 import { useRelationshipsPanelUi } from '#V2/Routes/Entity/Components/context/index.js';
+import type { ClientTemplateSchema } from '#V2/shared/types.js';
 import { apiEntity } from '../fixtures/referencesFixtures.js';
 import { RelationshipsStoryProvider } from './RelationshipsStoryProvider.js';
 import { RelationshipsSyncedDocumentView } from './relationshipsDocumentViews.js';
@@ -18,6 +19,7 @@ type RelationshipsStoryShellProps = {
   locale: 'en' | 'es';
   layout?: RelationshipsStoryLayout;
   entity?: Entity;
+  storyTemplates?: ClientTemplateSchema[];
   children?: React.ReactNode;
 };
 
@@ -47,6 +49,7 @@ const RelationshipsStoryShell = ({
   locale,
   layout = 'panel',
   entity = apiEntity,
+  storyTemplates,
   children,
 }: RelationshipsStoryShellProps) => {
   const storyEntity = useMemo(() => structuredClone(entity), [entity]);
@@ -62,7 +65,11 @@ const RelationshipsStoryShell = ({
         {
           path: '*',
           element: (
-            <RelationshipsStoryProvider locale={locale} entity={storyEntity}>
+            <RelationshipsStoryProvider
+              locale={locale}
+              entity={storyEntity}
+              storyTemplates={storyTemplates}
+            >
               <ResetFiltersDrawer />
               <div className={shellClass}>
                 {layout === 'split' ? (
@@ -112,7 +119,7 @@ const RelationshipsStoryShell = ({
           ),
         },
       ]),
-    [children, layout, locale, mainDocument, shellClass, storyEntity]
+    [children, layout, locale, mainDocument, shellClass, storyEntity, storyTemplates]
   );
 
   return <RouterProvider router={router} />;
