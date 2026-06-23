@@ -1,20 +1,14 @@
 import React, { useCallback, useEffect } from 'react';
-import { useAtomValue } from 'jotai';
 import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
-import type { FileType } from '#V2/api/entities/types.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
-import { relationshipTypesAtom } from '#V2/atoms/index.js';
-import { searchByTitle } from '#V2/api/entities/index.js';
 import { ConfirmationModal, BlankState } from '#V2/Components/UI/index.js';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
-import { CreateReference } from '../create-reference/CreateReference.js';
 import { RelationshipsPanelBody } from './RelationshipsPanelBody.js';
 import { RelationshipsListInfoRow } from './RelationshipsListInfoRow.js';
 import { RelationshipsPanelToolbarControls } from './RelationshipsPanelToolbarControls.js';
 import { RelationshipsSearchBar } from '../filters/RelationshipsSearchBar.js';
 import {
-  useRelationships,
   useRelationshipsPanelData,
   useRelationshipsPanelFacetFilters,
   useRelationshipsPanelLayout,
@@ -24,25 +18,20 @@ import {
 import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 import { useGroupLabelContext } from '../hooks/useGroupLabelContext.js';
 import { useRelationshipDelete } from '../hooks/useRelationshipDelete.js';
-import { useRelationshipSave } from '../hooks/useRelationshipSave.js';
 
 type RelationshipsPanelProps = {
-  mainDocument?: FileType;
   focusDocumentOnSelect?: boolean;
   onFocusDocument?: () => void;
 };
 
 const RelationshipsPanel = ({
-  mainDocument,
   focusDocumentOnSelect = false,
   onFocusDocument,
 }: RelationshipsPanelProps) => {
-  const { createReferenceSelection, createReferenceMode } = useRelationships();
   const { activeRelationshipId, selectRelationship, clearRelationshipSelection } =
     useActiveRelationshipHighlight();
   const { markers, stats, hasRelationships } = useRelationshipsPanelData();
   const groupContext = useGroupLabelContext();
-  const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const { view } = useRelationshipsPanelLayout();
   const { activeFilterCount } = useRelationshipsPanelFacetFilters();
   const { setFiltersDrawerOpen } = useRelationshipsPanelUi();
@@ -56,18 +45,6 @@ const RelationshipsPanel = ({
     handleConfirmDelete,
     handleCancelDelete,
   } = useRelationshipDelete(activeRelationshipId, clearRelationshipSelection);
-
-  const { handleSaveReference, handleCancelCreate } = useRelationshipSave(mainDocument);
-
-  const lookup = useCallback(
-    async (searchString: string) =>
-      searchByTitle({
-        title: searchString,
-        fields: ['title', 'template', 'creationDate', 'sharedId'],
-        includeFiles: true,
-      }),
-    []
-  );
 
   const handleRelationshipClick = useCallback(
     (marker: RelationshipMarker) => {
@@ -92,21 +69,6 @@ const RelationshipsPanel = ({
     },
     [setRelationshipsEditMode, setSelectedRelationshipIds]
   );
-
-  if (createReferenceSelection) {
-    return (
-      <div className="flex h-full min-h-0 flex-col [&_.panel]:h-full [&_.panel]:border-0">
-        <CreateReference
-          selection={createReferenceSelection}
-          relationshipTypes={relationshipTypes}
-          searchFunction={lookup}
-          mode={createReferenceMode || 'text'}
-          onSave={handleSaveReference}
-          onCancel={handleCancelCreate}
-        />
-      </div>
-    );
-  }
 
   const renderBody = () => {
     if (!hasRelationships) {

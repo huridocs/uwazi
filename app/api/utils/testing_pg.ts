@@ -1,5 +1,5 @@
 // eslint-disable-next-line node/no-restricted-import
-import { readFileSync } from 'fs';
+import { readdirSync, readFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import pg from 'pg';
@@ -12,15 +12,11 @@ import { destroyKnexConnections } from '#api/core/infrastructure/postgresql/comm
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const THESAURUS_SQL = readFileSync(
-  path.join(__dirname, '../core/infrastructure/postgresql/schema/thesaurus.sql'),
-  'utf-8'
-);
-
-const FILES_SQL = readFileSync(
-  path.join(__dirname, '../core/infrastructure/postgresql/schema/files.sql'),
-  'utf-8'
-);
+const SCHEMA_DIR = path.join(__dirname, '../core/infrastructure/postgresql/schema');
+const SCHEMA_SQL = readdirSync(SCHEMA_DIR)
+  .filter(f => f.endsWith('.sql'))
+  .map(f => readFileSync(path.join(SCHEMA_DIR, f), 'utf-8'))
+  .join('\n');
 
 /** Open a one-off admin client connected to the postgres maintenance DB. */
 const adminClient = () =>
@@ -97,13 +93,12 @@ const testingPG = {
      */
     PostgresConnectionFactory.setConfig(this.config);
 
-    await pool.query(THESAURUS_SQL);
-    await pool.query(FILES_SQL);
+    await pool.query(SCHEMA_SQL);
 
     return pool;
   },
 
-  async clear(tables: string[] = ['thesauri', 'files']): Promise<void> {
+  async clear(tables: string[] = ['thesauri', 'templates', 'files']): Promise<void> {
     if (!pool) throw new Error('testingPG not connected');
     for (const table of tables) {
       //eslint-disable-next-line no-await-in-loop

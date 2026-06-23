@@ -3,7 +3,7 @@ import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { ProcessingFileFailed } from '#api/core/domain/files/errors.js';
 import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { FileIsNotAPDF } from '../infrastructure/services/PDFService.js';
 import { EventsBus } from '../libs/eventsbus/index.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
@@ -23,7 +23,7 @@ type Deps = {
   fileStorage: FileStorage;
   pdfService: PDFService;
   filesService: FilesService;
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   settingsDS: SettingsDataSource;
 };
 

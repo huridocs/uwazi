@@ -51,15 +51,60 @@ const mountWithPanelStory = () => {
   cy.get('[aria-label="Search relationships"]', { timeout: 20000 }).should('be.visible');
 };
 
+const parseClusterCount = (cluster: Element): number => {
+  const text = cluster.querySelector('button')?.textContent?.trim() ?? '0';
+  return Number.parseInt(text, 10);
+};
+
+const getMainClusterCount = (): Cypress.Chainable<number> =>
+  cy.get('[data-testid="rail-marker-cluster"]').then($clusters => {
+    const counts = [...$clusters].map(cluster => parseClusterCount(cluster));
+    return Math.max(...counts);
+  });
+
+const getMarkerZIndex = (element: HTMLElement): number => {
+  const inline = Number.parseInt(element.style.zIndex, 10);
+  if (!Number.isNaN(inline)) {
+    return inline;
+  }
+
+  let node: HTMLElement | null = element;
+
+  while (node) {
+    const parsed = Number.parseInt(window.getComputedStyle(node).zIndex, 10);
+    if (!Number.isNaN(parsed)) {
+      return parsed;
+    }
+    node = node.parentElement;
+  }
+
+  return 0;
+};
+
+const getMarkerLayerOrder = (element: HTMLElement): number => {
+  const stackOrder = element.getAttribute('data-stack-order');
+  if (stackOrder !== null) {
+    const parsed = Number.parseInt(stackOrder, 10);
+    if (!Number.isNaN(parsed)) {
+      return parsed;
+    }
+  }
+  return getMarkerZIndex(element);
+};
+
 const openMainCluster = () => {
-  cy.get('[data-testid="rail-marker-cluster"]')
-    .contains('button', '25', { timeout: 20000 })
-    .click({ force: true });
+  getMainClusterCount().then(count => {
+    cy.get('[data-testid="rail-marker-cluster"]')
+      .contains('button', String(count), { timeout: 20000 })
+      .click({ force: true });
+  });
 };
 
 const clickPerson1InMainCluster = () => {
-  cy.contains('[data-testid="rail-marker-cluster"]', '25').within(() => {
-    cy.contains('button', 'Person 1').click({ force: true });
+  getMainClusterCount().then(count => {
+    cy.contains('[data-testid="rail-marker-cluster"]', String(count)).within(() => {
+      cy.contains('button', 'Person 1').click({ force: true });
+    });
   });
 };
 
@@ -78,6 +123,9 @@ export {
   resetBasicStoryArgs,
   mountBasicStory,
   mountWithPanelStory,
+  getMainClusterCount,
+  getMarkerZIndex,
+  getMarkerLayerOrder,
   openMainCluster,
   clickPerson1InMainCluster,
   clickStandalonePerson2,

@@ -23,7 +23,7 @@ type Icon = {
   type: string;
 };
 
-export class Entity {
+export class DeprecatedEntity {
   readonly _id: string;
 
   readonly sharedId: string;
@@ -61,7 +61,7 @@ export class Entity {
   }
 
   static fromInputModel(inputModel: EntityInputModel) {
-    return new Entity(
+    return new DeprecatedEntity(
       inputModel._id,
       inputModel.sharedId,
       inputModel.language,

@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import { ArrayUtils } from '#api/common.v2/utils/Array.js'; // Todo
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
@@ -31,7 +31,7 @@ type Input = {
 type Output = any;
 
 type Dependencies = {
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   relationshipsV1DS: MongoRelationshipsV1DataSource;
   templatesDS: TemplatesDataSource;
   filesDS: FilesDataSource;

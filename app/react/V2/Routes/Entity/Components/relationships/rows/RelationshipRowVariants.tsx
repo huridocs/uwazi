@@ -20,7 +20,68 @@ type RelationshipRowBaseProps = RowData & {
 type RelationshipRowDetailProps = RelationshipRowBaseProps & {
   onView?: () => void;
   onDelete?: () => void;
+  nested?: boolean;
 };
+
+const RelationshipRowNestedEvidence = ({
+  rowRef,
+  marker,
+  referenceText,
+  referencePage,
+  editMode,
+  isSelected,
+  onClick,
+  onView,
+  onDelete,
+}: Pick<
+  RelationshipRowBaseProps,
+  'rowRef' | 'marker' | 'referenceText' | 'referencePage' | 'isSelected' | 'onClick'
+> &
+  Pick<RelationshipRowDetailProps, 'editMode' | 'onView' | 'onDelete'>) => (
+  <ListCardRow ref={rowRef} selected={Boolean(isSelected)} onClick={onClick} className="py-1.5!">
+    <div className="flex items-start justify-between gap-2 rounded bg-warm/50 px-2 py-1.5">
+      <div className="flex min-w-0 flex-1 items-start gap-1.5">
+        <RelationshipRowCheckbox relationshipId={marker._id} />
+        {referenceText ? (
+          <p className="line-clamp-2 min-w-0 flex-1 text-xs leading-relaxed text-ink-secondary italic">
+            {referenceText}
+          </p>
+        ) : (
+          <span className="min-w-0 flex-1" />
+        )}
+      </div>
+      <div className="flex shrink-0 items-center gap-0.5">
+        {referencePage !== undefined && <PageTag page={referencePage} onClick={onClick} />}
+        {!editMode && onView && (
+          <IconButton
+            variant="ghost"
+            showOnGroupHover
+            aria-label={t('System', 'Preview entity', null, false)}
+            onClick={e => {
+              e.stopPropagation();
+              onView();
+            }}
+          >
+            <EyeIcon className="h-3 w-3" />
+          </IconButton>
+        )}
+        {!editMode && onDelete && (
+          <IconButton
+            variant="danger"
+            showOnGroupHover
+            aria-label={t('System', 'Delete relationship', null, false)}
+            onClick={e => {
+              e.stopPropagation();
+              onDelete();
+            }}
+          >
+            <TrashIcon className="h-3 w-3" />
+          </IconButton>
+        )}
+      </div>
+    </div>
+  </ListCardRow>
+);
 
 const TargetPill = ({ marker, hideTargetPill }: Pick<RowData, 'marker' | 'hideTargetPill'>) =>
   hideTargetPill ? null : (
@@ -90,60 +151,84 @@ const RelationshipRowDetail = ({
   onClick,
   onView,
   onDelete,
-}: RelationshipRowDetailProps) => (
-  <ListCardRow ref={rowRef} selected={Boolean(isSelected)} onClick={onClick}>
-    <div className="mb-1.5 flex items-start justify-between gap-2">
-      <div className="flex min-w-0 items-center gap-1.5">
-        <RelationshipRowCheckbox relationshipId={marker._id} />
-        <TargetPill marker={marker} hideTargetPill={hideTargetPill} />
-      </div>
-      <div className="flex shrink-0 items-center gap-1.5">
-        {templateName && !hideTemplateName && (
-          <span className="text-[10px] text-ink-tertiary">{templateName}</span>
-        )}
-        {referencePage !== undefined && <PageTag page={referencePage} onClick={onClick} />}
-      </div>
-    </div>
-    {referenceText && (
-      <p className="line-clamp-2 text-xs leading-relaxed text-ink-secondary">{referenceText}</p>
-    )}
-    <div className="mt-1 flex items-center justify-between text-[10px] text-ink-tertiary">
-      <span className="flex items-center gap-1">
-        <DirectionGlyph direction={direction} />
-        {!hideRelationType && relationshipTypeName && (
-          <span className="capitalize">{relationshipTypeName}</span>
-        )}
-      </span>
-      <div className="flex items-center gap-0.5">
-        {!editMode && onView && (
-          <IconButton
-            variant="ghost"
-            showOnGroupHover
-            aria-label={t('System', 'Preview entity', null, false)}
-            onClick={e => {
-              e.stopPropagation();
-              onView();
-            }}
-          >
-            <EyeIcon className="h-3 w-3" />
-          </IconButton>
-        )}
-        {!editMode && onDelete && (
-          <IconButton
-            variant="danger"
-            showOnGroupHover
-            aria-label={t('System', 'Delete relationship', null, false)}
-            onClick={e => {
-              e.stopPropagation();
-              onDelete();
-            }}
-          >
-            <TrashIcon className="h-3 w-3" />
-          </IconButton>
-        )}
-      </div>
-    </div>
-  </ListCardRow>
-);
+  nested = false,
+}: RelationshipRowDetailProps) => {
+  if (nested) {
+    return (
+      <RelationshipRowNestedEvidence
+        rowRef={rowRef}
+        marker={marker}
+        referenceText={referenceText}
+        referencePage={referencePage}
+        editMode={editMode}
+        isSelected={isSelected}
+        onClick={onClick}
+        onView={onView}
+        onDelete={onDelete}
+      />
+    );
+  }
 
-export { RelationshipRowOverview, RelationshipRowCompact, RelationshipRowDetail };
+  return (
+    <ListCardRow ref={rowRef} selected={Boolean(isSelected)} onClick={onClick}>
+      <div className="mb-1.5 flex items-start justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-1.5">
+          <RelationshipRowCheckbox relationshipId={marker._id} />
+          <TargetPill marker={marker} hideTargetPill={hideTargetPill} />
+        </div>
+        <div className="flex shrink-0 items-center gap-1.5">
+          {templateName && !hideTemplateName && (
+            <span className="text-[10px] text-ink-tertiary">{templateName}</span>
+          )}
+          {referencePage !== undefined && <PageTag page={referencePage} onClick={onClick} />}
+        </div>
+      </div>
+      {referenceText && (
+        <p className="line-clamp-2 text-xs leading-relaxed text-ink-secondary">{referenceText}</p>
+      )}
+      <div className="mt-1 flex items-center justify-between text-[10px] text-ink-tertiary">
+        <span className="flex items-center gap-1">
+          <DirectionGlyph direction={direction} />
+          {!hideRelationType && relationshipTypeName && (
+            <span className="capitalize">{relationshipTypeName}</span>
+          )}
+        </span>
+        <div className="flex items-center gap-0.5">
+          {!editMode && onView && (
+            <IconButton
+              variant="ghost"
+              showOnGroupHover
+              aria-label={t('System', 'Preview entity', null, false)}
+              onClick={e => {
+                e.stopPropagation();
+                onView();
+              }}
+            >
+              <EyeIcon className="h-3 w-3" />
+            </IconButton>
+          )}
+          {!editMode && onDelete && (
+            <IconButton
+              variant="danger"
+              showOnGroupHover
+              aria-label={t('System', 'Delete relationship', null, false)}
+              onClick={e => {
+                e.stopPropagation();
+                onDelete();
+              }}
+            >
+              <TrashIcon className="h-3 w-3" />
+            </IconButton>
+          )}
+        </div>
+      </div>
+    </ListCardRow>
+  );
+};
+
+export {
+  RelationshipRowOverview,
+  RelationshipRowCompact,
+  RelationshipRowDetail,
+  RelationshipRowNestedEvidence,
+};

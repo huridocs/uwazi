@@ -29,6 +29,7 @@ type Tenant = {
     v2Languages?: boolean;
     postgresThesauri?: boolean;
     postgresFiles?: boolean;
+    postgresTemplates?: boolean;
     aiAssistant?: boolean;
     aiAssistantServiceUrl?: string;
   };
