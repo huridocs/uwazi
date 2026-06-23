@@ -58,6 +58,36 @@ describe('templates', () => {
       ).rejects.toBeInstanceOf(TemplateWithDuplicatedPropertyError);
     });
 
+    it('should not allow two properties with same name and different compatible types', async () => {
+      const { _id, ...newTemplate } = factory.template('newTemplate', [
+        factory.property('country', 'select', {
+          content: thesauriId1.toString(),
+        }),
+        factory.property('country', 'multiselect', {
+          content: thesauriId1.toString(),
+        }),
+      ]);
+
+      await expect(
+        testingEnvironment.runWithContext(async () => templates.save(newTemplate, 'en'))
+      ).rejects.toBeInstanceOf(TemplateWithDuplicatedPropertyError);
+    });
+
+    it('should not allow labels that sanitize to the same name with different compatible types', async () => {
+      const { _id, ...newTemplate } = factory.template('newTemplate', [
+        factory.property('country', 'select', {
+          content: thesauriId1.toString(),
+        }),
+        factory.property('(country', 'multiselect', {
+          content: thesauriId1.toString(),
+        }),
+      ]);
+
+      await expect(
+        testingEnvironment.runWithContext(async () => templates.save(newTemplate, 'en'))
+      ).rejects.toBeInstanceOf(TemplateWithDuplicatedPropertyError);
+    });
+
     it('should add it to translations with Entity type', async () => {
       const { _id, ...newTemplate } = factory.template('created template', [
         factory.property('label_1', 'text', { label: 'label 1' }),
