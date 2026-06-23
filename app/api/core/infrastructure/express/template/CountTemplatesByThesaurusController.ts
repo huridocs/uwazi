@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { ThesaurusNotFoundError } from '#api/core/domain/thesaurus/errors.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
-import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory';
+import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
 
 const RequestSchema = z.object({
   _id: z.string({ message: 'You should provide an Id' }),
