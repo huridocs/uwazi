@@ -5,9 +5,37 @@ import {
   MultiselectList,
   MultiselectListOption,
   SearchSelect,
+  type SearchSelectGroup,
+  type SearchSelectOption,
 } from '#V2/Components/Forms/index.js';
 import { defaultSearch } from '#V2/Components/Forms/MultiselectList/MultiselectList.js';
-import { multiselectOptionsToSearchSelect } from './metadataSelectUtils.js';
+
+const toSearchSelectOptions = (options: MultiselectListOption[]) => {
+  const searchOptions: SearchSelectOption[] = [];
+  const searchGroups: SearchSelectGroup[] = [];
+
+  options.forEach(option => {
+    if (option.items?.length) {
+      searchGroups.push({
+        label: typeof option.label === 'string' ? option.label : option.searchLabel,
+        options: option.items.map(child => ({
+          value: child.value,
+          searchLabel: child.searchLabel,
+          label: child.label,
+        })),
+      });
+      return;
+    }
+
+    searchOptions.push({
+      value: option.value,
+      searchLabel: option.searchLabel,
+      label: option.label,
+    });
+  });
+
+  return { options: searchOptions, groups: searchGroups };
+};
 
 type BaseSelectFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
@@ -36,7 +64,7 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
 }: BaseSelectFieldProps<TFormValues>) => {
   const { control } = useFormContext<TFormValues>();
   const [optionsState, setOptionsState] = useState<MultiselectListOption[]>(options);
-  const searchSelectOptions = useMemo(() => multiselectOptionsToSearchSelect(options), [options]);
+  const searchSelectOptions = useMemo(() => toSearchSelectOptions(options), [options]);
 
   useEffect(() => {
     setOptionsState(options);

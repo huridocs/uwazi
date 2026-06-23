@@ -2,11 +2,6 @@ import React, { CSSProperties, useEffect, useId, useMemo, useRef, useState } fro
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/20/solid';
 import { Translate } from '#app/I18N/index.js';
 import { Label } from './Label.js';
-import {
-  filterSearchSelectOptions,
-  flattenSearchSelectOptions,
-  groupSearchSelectOptions,
-} from './searchSelectUtils.js';
 
 type SearchSelectOption = {
   value: string;
@@ -35,6 +30,47 @@ type SearchSelectProps = {
   groups?: SearchSelectGroup[];
 };
 
+const normalizeSearch = (text: string) =>
+  text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '');
+
+const flattenOptions = (options: SearchSelectOption[] = [], groups: SearchSelectGroup[] = []) => [
+  ...options,
+  ...groups.flatMap(group =>
+    group.options.map(option => ({
+      ...option,
+      group: group.label,
+    }))
+  ),
+];
+
+const filterOptions = (options: SearchSelectOption[], search: string) => {
+  if (!search) {
+    return options;
+  }
+
+  const normalizedSearch = normalizeSearch(search);
+  return options.filter(option => normalizeSearch(option.searchLabel).includes(normalizedSearch));
+};
+
+const groupOptions = (options: SearchSelectOption[]) => {
+  const groups = new Map<string, SearchSelectOption[]>();
+
+  options.forEach(option => {
+    const groupLabel = option.group ?? '';
+    const current = groups.get(groupLabel) ?? [];
+    current.push(option);
+    groups.set(groupLabel, current);
+  });
+
+  return Array.from(groups.entries()).map(([label, groupOptionsList]) => ({
+    label,
+    options: groupOptionsList,
+  }));
+};
+
 const SearchSelect = ({
   id,
   label,
@@ -55,22 +91,18 @@ const SearchSelect = ({
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const allOptions = useMemo(() => flattenSearchSelectOptions(options, groups), [groups, options]);
-
+  const allOptions = useMemo(() => flattenOptions(options, groups), [groups, options]);
   const selectedOption = allOptions.find(option => option.value === value);
   const hasSelection = Boolean(value && selectedOption);
   const showClosedSelection = hasSelection && !isOpen;
   const showClearButton = hasSelection && !disabled;
 
   const filteredOptions = useMemo(
-    () => filterSearchSelectOptions(allOptions, searchTerm),
+    () => filterOptions(allOptions, searchTerm),
     [allOptions, searchTerm]
   );
 
-  const groupedOptions = useMemo(
-    () => groupSearchSelectOptions(filteredOptions),
-    [filteredOptions]
-  );
+  const groupedOptions = useMemo(() => groupOptions(filteredOptions), [filteredOptions]);
 
   const showError = Boolean(hasErrors);
   let backgroundColor = 'var(--color-theme-control-bg)';

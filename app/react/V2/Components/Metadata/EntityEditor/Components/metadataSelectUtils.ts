@@ -1,33 +1,5 @@
 import { MultiselectListOption } from '#V2/Components/Forms/index.js';
-import type { SearchSelectGroup, SearchSelectOption } from '#V2/Components/Forms/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
-
-const multiselectOptionsToSearchSelect = (options: MultiselectListOption[]) => {
-  const searchOptions: SearchSelectOption[] = [];
-  const searchGroups: SearchSelectGroup[] = [];
-
-  options.forEach(option => {
-    if (option.items?.length) {
-      searchGroups.push({
-        label: typeof option.label === 'string' ? option.label : option.searchLabel,
-        options: option.items.map(child => ({
-          value: child.value,
-          searchLabel: child.searchLabel,
-          label: child.label,
-        })),
-      });
-      return;
-    }
-
-    searchOptions.push({
-      value: option.value,
-      searchLabel: option.searchLabel,
-      label: option.label,
-    });
-  });
-
-  return { options: searchOptions, groups: searchGroups };
-};
 
 const getMetadataSelectedValues = (value: unknown): string[] => {
   if (!Array.isArray(value)) {
@@ -65,4 +37,4 @@ const getOptionInfo = (selectedValue: string, options: MultiselectListOption[]) 
   return { label: undefined, parent: undefined };
 };
 
-export { getMetadataSelectedValues, getOptionInfo, multiselectOptionsToSearchSelect };
+export { getMetadataSelectedValues, getOptionInfo };

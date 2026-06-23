@@ -24,13 +24,13 @@ import {
   RelationshipField,
   MarkdownField,
 } from './Components/index.js';
+import { EMPTY_ICON, hasEntityIcon, type EntityIcon } from './Components/IconField.js';
 import { MultiselectListOption } from '../../Forms/index.js';
 import {
   formatMetadataForForm,
   type FormMetadataProperty,
 } from './functions/formatMetadataForForm.js';
 import { toMetadataObjectSchema } from './functions/toMetadataObjectSchema.js';
-import { EMPTY_ICON, hasEntityIcon, type EntityIcon } from './functions/iconSelectUtils.js';
 
 type EditEntityFormValues = {
   title: Entity['title'];
