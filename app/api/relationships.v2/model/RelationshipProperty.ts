@@ -1,12 +1,12 @@
-import { Entity } from '#api/entities.v2/model/Entity.js';
-import { MatchQueryNode } from '#api/relationships.v2/model/MatchQueryNode.js';
-import { Relationship } from '#api/relationships.v2/model/Relationship.js';
-import { Property, PropertyUpdateInfo } from './Property.js';
-import { PropertyTypeEnum } from './PropertyType.js';
-import { FilterablePropertyProps } from './FilterableProperty.js';
+import { DeprecatedEntity } from '#api/entities.v2/model/Entity.js';
+import { MatchQueryNode } from './MatchQueryNode.js';
+import { Relationship } from './Relationship.js';
+import { Property, PropertyUpdateInfo } from '#api/core/domain/template/Property.js';
+
+import { FilterablePropertyProps } from '#api/core/domain/template/FilterableProperty.js';
 
 type Props = {
-  type?: PropertyTypeEnum.NewRelationship;
+  type?: 'newRelationship';
   query: MatchQueryNode['traversals'];
   denormalizedProperty?: string;
 } & Omit<FilterablePropertyProps, 'type'>;
@@ -39,15 +39,15 @@ class RelationshipProperty extends Property {
     return new MatchQueryNode({ templates: [this.template] }, this.query);
   }
 
-  buildQueryRootedInEntity(sharedId: Entity['sharedId']) {
+  buildQueryRootedInEntity(sharedId: DeprecatedEntity['sharedId']) {
     return MatchQueryNode.forEntity(sharedId, this.query);
   }
 
-  buildQueryInvertedFromRelationship(relationship: Relationship, entities: Entity[]) {
+  buildQueryInvertedFromRelationship(relationship: Relationship, entities: DeprecatedEntity[]) {
     return this.buildQueryRootedInTemplate().invertFromRelationship(relationship, entities);
   }
 
-  buildQueryInvertedFromEntity(entity: Entity) {
+  buildQueryInvertedFromEntity(entity: DeprecatedEntity) {
     return this.buildQueryRootedInTemplate().invertFromEntity(entity);
   }
 

@@ -3,13 +3,14 @@ import { AuthorizationService } from '#api/authorization.v2/services/Authorizati
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 import { partialImplementation } from '#api/common.v2/testing/partialImplementation.js';
-import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntitiesDataSource.js';
+import { MongoDeprecatedEntitiesDataSource } from '#api/entities.v2/database/MongoDeprecatedEntitiesDataSource.js';
 import { MissingEntityError } from '#api/entities.v2/errors/entityErrors.js';
 import { MongoFilesDataSource } from '#api/core/infrastructure/mongodb/files/MongoFilesDataSource.js';
 import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
 import { MongoRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource.js';
 import { MissingRelationshipTypeError } from '#api/relationshiptypes.v2/errors/relationshipTypeErrors.js';
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
+import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
@@ -51,11 +52,12 @@ const createService = () => {
   return new CreateRelationshipService(
     new MongoRelationshipsDataSource(connection, transactionManager),
     new MongoRelationshipTypesDataSource(connection, transactionManager),
-    new MongoEntitiesDataSource(
+    new MongoDeprecatedEntitiesDataSource(
       connection,
       new MongoTemplatesDataSource({
         db: connection,
         transactionManager,
+        dao: new MongoTemplatesDAO({ db: connection, transactionManager }),
       }),
       settingsDS,
       transactionManager

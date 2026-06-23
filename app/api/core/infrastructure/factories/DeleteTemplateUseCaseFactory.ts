@@ -3,7 +3,6 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
@@ -17,14 +16,12 @@ class DeleteTemplateUseCaseFactory {
     const templatesDS = TemplatesDataSourceFactory.default();
     const settingsDS = SettingsDataSourceFactory.default();
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
-    const entitiesDS = DefaultEntitiesDataSource(transactionManager);
     const multiLanguageEntitiesDS = EntitiesDataSourceFactory.default();
 
     return new DeleteTemplateUseCase(
       {
         eventBus,
         transactionManager,
-        entitiesDS,
         templatesDS,
         settingsDS,
         translationsDS,

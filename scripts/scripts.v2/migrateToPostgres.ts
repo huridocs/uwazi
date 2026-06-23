@@ -9,10 +9,12 @@ import {
 } from '#api/core/infrastructure/postgresql/migrations/MigrateCollectionToPostgres.js';
 import { destroyKnexConnections } from '#api/core/infrastructure/postgresql/common/PostgresTable.js';
 import { PostgresConnectionFactory } from '#api/core/infrastructure/factories/PostgresConnectionFactory.js';
+import { TemplateMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/TemplateMigrationConfig.js';
 import { ThesaurusMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/ThesaurusMigrationConfig.js';
 
 const COLLECTIONS: Record<string, MigrationConfig> = {
   thesauri: ThesaurusMigrationConfig,
+  templates: TemplateMigrationConfig,
 };
 
 function log(message: string) {
@@ -33,7 +35,7 @@ const argv = yargs(hideBin(process.argv))
   .option('collection', {
     alias: 'c',
     type: 'string',
-    describe: 'Collection to migrate (thesauri)',
+    describe: 'Collection to migrate (thesauri|templates)',
   })
   .option('all', {
     alias: 'a',

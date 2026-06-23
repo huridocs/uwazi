@@ -1,9 +1,8 @@
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
+import { DeprecatedEntitiesDataSource } from '#api/entities.v2/contracts/DeprecatedEntitiesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-import { RelationshipProperty } from '#api/core/domain/template/RelationshipProperty.js';
-import { Entity } from '#api/entities.v2/model/Entity.js';
+import { RelationshipProperty } from '../model/RelationshipProperty.js';
+import { DeprecatedEntity } from '#api/entities.v2/model/Entity.js';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource.js';
 import { MatchQueryNode } from '../model/MatchQueryNode.js';
 import { RelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/RelationshipPropertyUpdateStrategy.js';
@@ -15,9 +14,7 @@ interface IndexEntitiesCallback {
 export class DenormalizationService {
   private relationshipsDS: RelationshipsDataSource;
 
-  private entitiesDS: EntitiesDataSource;
-
-  private templatesDS: TemplatesDataSource;
+  private entitiesDS: DeprecatedEntitiesDataSource;
 
   private settingsDS: SettingsDataSource;
 
@@ -29,8 +26,7 @@ export class DenormalizationService {
 
   constructor(
     relationshipsDS: RelationshipsDataSource,
-    entitiesDS: EntitiesDataSource,
-    templatesDS: TemplatesDataSource,
+    entitiesDS: DeprecatedEntitiesDataSource,
     settingsDS: SettingsDataSource,
     transactionManager: TransactionManager,
     indexEntitiesCallback: IndexEntitiesCallback,
@@ -38,7 +34,6 @@ export class DenormalizationService {
   ) {
     this.relationshipsDS = relationshipsDS;
     this.entitiesDS = entitiesDS;
-    this.templatesDS = templatesDS;
     this.settingsDS = settingsDS;
     this.transactionManager = transactionManager;
     this.indexEntities = indexEntitiesCallback;
@@ -48,9 +43,11 @@ export class DenormalizationService {
   private async getCandidateEntities(
     invertQueryCallback: (property: RelationshipProperty) => MatchQueryNode[],
     language: string,
-    relatedEntities: Entity[] = []
+    relatedEntities: DeprecatedEntity[] = []
   ) {
-    const properties = await this.templatesDS.getAllRelationshipProperties();
+    // this method was removed from templatesDS since its only used here and this module is deprecated and not used
+    // const properties = await this.templatesDS.getAllRelationshipProperties();
+    const properties: RelationshipProperty[] = [];
     const entities: { sharedId: string; property: string }[] = [];
     await Promise.all(
       properties.map(async property => {
@@ -150,7 +147,9 @@ export class DenormalizationService {
   }
 
   private async updateDenormalizedMetadataDirectly(changedEntityIds: string[], language: string) {
-    const relationshipProperties = await this.templatesDS.getAllRelationshipProperties();
+    // this method was removed from templatesDS since its only used here and this module is deprecated and not used
+    // const relationshipProperties = await this.templatesDataSource.getAllRelationshipProperties();
+    const relationshipProperties: RelationshipProperty[] = [];
     const relationshipPropertyNames = relationshipProperties.map(property => property.name);
 
     await this.entitiesDS.getByIds(changedEntityIds, language).forEach(async entity => {

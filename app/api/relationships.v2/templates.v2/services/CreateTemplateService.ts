@@ -1,19 +1,16 @@
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
-import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
+import { DeprecatedEntitiesDataSource } from '#api/entities.v2/contracts/DeprecatedEntitiesDataSource.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
-import {
-  MatchQueryNode,
-  TemplateRecordElement,
-} from '#api/relationships.v2/model/MatchQueryNode.js';
+import { MatchQueryNode, TemplateRecordElement } from '../../model/MatchQueryNode.js';
 import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
 import { RelationshipPropertyData } from '#shared/types/api.v2/templates.createTemplateRequest.js';
 import { createError } from '#api/utils/index.js';
-import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
+import { DenormalizationService } from '../../services/DenormalizationService.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { TemplatesDataSource } from '../../../application/contracts/TemplatesDataSource.js';
-import { QueryMapper } from '../../../infrastructure/mongodb/template/QueryMapper.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { QueryMapper } from '#api/core/infrastructure/mongodb/template/QueryMapper.js';
 import { TemplateInput, TemplateInputMappers } from './TemplateInputMappers.js';
-import { RelationshipProperty } from '../../../domain/template/RelationshipProperty.js';
+import { RelationshipProperty } from '../../model/RelationshipProperty.js';
 
 interface MatchQuery {
   templates: string[];
@@ -101,7 +98,7 @@ export class CreateTemplateService {
 
   private relTypesDataSource: RelationshipTypesDataSource;
 
-  private entitiesDataSource: EntitiesDataSource;
+  private entitiesDataSource: DeprecatedEntitiesDataSource;
 
   private denormalizationService: DenormalizationService;
 
@@ -110,7 +107,7 @@ export class CreateTemplateService {
   constructor(
     templatesDataSource: TemplatesDataSource,
     relTypesDataSource: RelationshipTypesDataSource,
-    entitiesDataSource: EntitiesDataSource,
+    entitiesDataSource: DeprecatedEntitiesDataSource,
     denormalizationService: DenormalizationService,
     transactionManager: TransactionManager
   ) {
@@ -206,12 +203,16 @@ export class CreateTemplateService {
   }
 
   async templateIsUsedInQueries(templateId: string) {
-    const relProps = await this.templatesDataSource.getAllRelationshipProperties();
+    // this method was removed from templatesDS since its only used here and this module is deprecated and not used
+    // const relProps = await this.templatesDataSource.getAllRelationshipProperties();
+    const relProps: RelationshipProperty[] = [];
     return relProps.some(property => property.queryUsesTemplate(templateId));
   }
 
   async relationTypeIsUsedInQueries(typeId: string) {
-    const relProps = await this.templatesDataSource.getAllRelationshipProperties();
+    // this method was removed from templatesDS since its only used here and this module is deprecated and not used
+    // const relProps = await this.templatesDataSource.getAllRelationshipProperties();
+    const relProps: RelationshipProperty[] = [];
     return relProps.some(property => property.queryUsesRelationType(typeId));
   }
 }

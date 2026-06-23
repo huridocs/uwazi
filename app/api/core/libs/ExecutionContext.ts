@@ -1,5 +1,5 @@
 import { AsyncLocalStorage } from 'async_hooks';
-import { Tenant } from '#api/tenants/tenantContext.js';
+import { Tenant, tenants } from '#api/tenants/tenantContext.js';
 import { User } from '#api/users.v2/model/User.js';
 import { TransactionManager } from '../application/contracts/TransactionManager.js';
 import { JobsDispatcher } from './queue/application/contracts/JobsDispatcher.js';
@@ -70,6 +70,16 @@ class ExecutionContext extends AsyncLocalStorage<Context> {
       throw new Error('ExecutionContext: tenant is not set');
     }
     return store.tenant;
+  }
+
+  /**
+   * Temporary compatibility bridge while legacy code paths are still being
+   * migrated from tenants.current() to ExecutionContext.tenant.
+   * Once all callers run inside an ExecutionContext, this helper can be removed
+   * and factories should use ExecutionContext.tenant directly.
+   */
+  get currentTenant(): Tenant {
+    return this.getStore()?.tenant ?? tenants.current();
   }
 
   get actor(): User | undefined {
