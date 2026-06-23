@@ -9,6 +9,7 @@ import {
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { RelationshipsActionBar } from '../../panel/RelationshipsActionBar.js';
 import { RelationshipsPanel } from '../../panel/RelationshipsPanel.js';
+import { CreateRelationshipModal } from '../../create-reference/CreateRelationshipModal.js';
 import { entityWithRelations } from '../fixtures/entityWithRelations.js';
 
 const PdfControllerSetup = () => {
@@ -33,6 +34,7 @@ const renderRelationshipsActionBar = () => {
             <PdfControllerSetup />
             <RelationshipsPanel />
             <RelationshipsActionBar />
+            <CreateRelationshipModal />
           </EntityScopedProvider>
         </Provider>
       ),

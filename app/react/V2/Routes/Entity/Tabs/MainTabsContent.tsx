@@ -45,7 +45,6 @@ const MainTabsContent = ({
       content = (
         <div className="flex min-h-0 flex-1 flex-col px-3 pt-2">
           <RelationshipsPanel
-            mainDocument={mainDocument}
             focusDocumentOnSelect={relationshipsOnMain}
             onFocusDocument={focusDocumentPanel}
           />

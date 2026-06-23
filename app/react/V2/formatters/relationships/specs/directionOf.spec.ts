@@ -1,4 +1,4 @@
-import { directionOf, type RelationshipView } from '../types.js';
+import { anchorOf, counterpartAnchorOf, directionOf, type RelationshipView } from '../types.js';
 
 const outgoingView: RelationshipView = {
   _id: 'out',
@@ -97,5 +97,38 @@ describe('directionOf', () => {
     };
 
     expect(directionOf(entityLevel, 'self')).toBe('incoming');
+  });
+});
+
+describe('anchorOf', () => {
+  it('returns the self-side text reference', () => {
+    expect(anchorOf(outgoingView, 'self')?.text).toBe('quoted');
+  });
+
+  it('returns undefined when the self side is entity-level', () => {
+    expect(anchorOf(incomingView, 'self')).toBeUndefined();
+  });
+});
+
+describe('counterpartAnchorOf', () => {
+  it('returns the target-side text reference', () => {
+    const view: RelationshipView = {
+      ...outgoingView,
+      to: {
+        type: 'textReference',
+        entity: 'target',
+        entityTitle: 'Target',
+        entityTemplateId: 't2',
+        file: 'f2',
+        text: 'target passage',
+        selections: [{ page: 4, top: 0, left: 0, width: 1, height: 1 }],
+      },
+    };
+
+    expect(counterpartAnchorOf(view, 'self')?.text).toBe('target passage');
+  });
+
+  it('returns undefined when the target side is entity-level', () => {
+    expect(counterpartAnchorOf(outgoingView, 'self')).toBeUndefined();
   });
 });

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router';
 import { useAtomValue } from 'jotai';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
@@ -22,7 +22,7 @@ function useDocumentPdfTextHandlers() {
   const { documentPdfSelection: selectedText, setDocumentPdfSelection: setSelectedText } =
     useDocumentPdf();
   const { addEntry } = useTocActions();
-  const { setCreateReferenceSelection } = useRelationshipsActions();
+  const { openCreateRelationship } = useRelationshipsActions();
   const { focusRelationshipsPanel } = useEntityTabNavigation();
   const { selectTab: selectSideTab } = useTabGroup('entity-side');
 
@@ -52,20 +52,12 @@ function useDocumentPdfTextHandlers() {
     setSelectedText(undefined);
   }, [setSelectedText]);
 
-  const handleConnectToParagraph = useCallback(
+  const handleCreateRelationship = useCallback(
     (selection: TextSelection) => {
-      setCreateReferenceSelection(selection, 'text');
+      openCreateRelationship(selection);
       focusRelationshipsPanel();
     },
-    [focusRelationshipsPanel, setCreateReferenceSelection]
-  );
-
-  const handleConnectToDocument = useCallback(
-    (selection: TextSelection) => {
-      setCreateReferenceSelection(selection, 'entity');
-      focusRelationshipsPanel();
-    },
-    [focusRelationshipsPanel, setCreateReferenceSelection]
+    [focusRelationshipsPanel, openCreateRelationship]
   );
 
   const handleAddToToC = useCallback(
@@ -80,20 +72,14 @@ function useDocumentPdfTextHandlers() {
     [addEntry, searchParams, selectSideTab, setSearchParams]
   );
 
-  const handleRemove = useCallback((_selection: TextSelection) => {
-    // TODO: Implement remove functionality
-  }, []);
-
   return {
     selectedText,
     userIsAdminOrEditor,
     ocrServiceEnabled,
     handleTextSelect,
     handleTextDeselect,
-    handleConnectToParagraph,
-    handleConnectToDocument,
+    handleCreateRelationship,
     handleAddToToC,
-    handleRemove,
   };
 }
 

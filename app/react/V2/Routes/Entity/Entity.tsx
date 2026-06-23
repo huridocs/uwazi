@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { useLoaderData } from 'react-router';
 import { Translate } from '#app/I18N/index.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
-import { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
+import { FileType } from '#V2/api/entities/types.js';
 import { SnippetsSearchResponse } from '#V2/api/types.js';
 import {
   SearchHintsModal,
@@ -13,7 +13,9 @@ import {
   FilesDeleteConfirmationModal,
   AddFileModal,
   useEntityFiles,
+  useEntityScopedEntity,
 } from './Components/index.js';
+import { CreateRelationshipModal } from './Components/relationships/create-reference/CreateRelationshipModal.js';
 import {
   TabsMainButtons,
   MainTabsContent,
@@ -25,13 +27,13 @@ import { useEntityViewTabs } from './Tabs/hooks/useEntityViewTabs.js';
 import { LoaderResponse } from './types.js';
 
 type EntityViewProps = {
-  entity: EntityType;
   mainDocument?: FileType;
   pagePlaintext?: string;
   searchResults?: SnippetsSearchResponse;
 };
 
-const EntityView = ({ entity, mainDocument, pagePlaintext, searchResults }: EntityViewProps) => {
+const EntityView = ({ mainDocument, pagePlaintext, searchResults }: EntityViewProps) => {
+  const entity = useEntityScopedEntity();
   const { focusedRow, primaryRows } = useEntityFiles();
   const hasMainDocument = Boolean(mainDocument?.filename);
   const filesCount = (entity.documents?.length || 0) + (entity.attachments?.length || 0);
@@ -117,13 +119,13 @@ const Entity = () => {
     <EntityScopedProvider key={entity.sharedId} entity={entity}>
       <EntityFilesProvider entity={entity}>
         <EntityView
-          entity={entity}
           mainDocument={mainDocument}
           pagePlaintext={pagePlaintext}
           searchResults={searchResults}
         />
       </EntityFilesProvider>
       <SearchHintsModal />
+      <CreateRelationshipModal mainDocument={mainDocument} />
     </EntityScopedProvider>
   );
 };

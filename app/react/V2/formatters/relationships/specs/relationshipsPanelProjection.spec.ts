@@ -66,6 +66,7 @@ describe('relationshipsPanelProjection', () => {
     const filtered = filterAndSortMarkers(markers, {
       searchQuery: 'alpha',
       sortOrder: 'none',
+      selfSharedId: 'self1',
       relationshipTypeName: () => '',
     });
     expect(filtered).toHaveLength(1);
@@ -77,6 +78,7 @@ describe('relationshipsPanelProjection', () => {
     const sorted = filterAndSortMarkers(markers, {
       searchQuery: '',
       sortOrder: 'appearance',
+      selfSharedId: 'self1',
       relationshipTypeName: () => '',
     });
     expect(sorted[0]?.anchor?.selections?.[0]?.page).toBe(1);
@@ -107,6 +109,7 @@ describe('relationshipsPanelProjection', () => {
     const sorted = filterAndSortMarkers(markers, {
       searchQuery: '',
       sortOrder: 'appearance',
+      selfSharedId: 'self1',
       relationshipTypeName: () => '',
     });
     const firstUnanchored = sorted.findIndex(marker => !marker.anchor);
@@ -116,14 +119,14 @@ describe('relationshipsPanelProjection', () => {
 
   it('computes stats for a marker subset', () => {
     const { markers } = projectRelationshipsPanel(entity);
-    expect(computeStats(markers.slice(0, 1))).toEqual({
+    expect(computeStats(markers.slice(0, 1), 'self1')).toEqual({
       references: 1,
       entities: 1,
       aggregates: 1,
     });
   });
 
-  it('counts text-anchored markers as references', () => {
+  it('counts all filtered markers as references', () => {
     const withEntityLevel = {
       ...entity,
       relations: [
@@ -144,7 +147,7 @@ describe('relationshipsPanelProjection', () => {
       ],
     } as Entity;
     const { stats } = projectRelationshipsPanel(withEntityLevel);
-    expect(stats).toEqual({ references: 2, entities: 2, aggregates: 3 });
+    expect(stats).toEqual({ references: 3, entities: 2, aggregates: 3 });
   });
 
   it('filters markers by relation type facet', () => {
@@ -152,6 +155,7 @@ describe('relationshipsPanelProjection', () => {
     const filtered = filterAndSortMarkers(markers, {
       searchQuery: '',
       sortOrder: 'none',
+      selfSharedId: 'self1',
       relationshipTypeName: id => (id === 'relA' ? 'Type A' : 'Type B'),
       relTypeFilters: { relA: true },
     });
@@ -164,6 +168,7 @@ describe('relationshipsPanelProjection', () => {
     const filtered = filterAndSortMarkers(markers, {
       searchQuery: '',
       sortOrder: 'none',
+      selfSharedId: 'self1',
       relationshipTypeName: () => '',
       activeClusterRefIds: [markers[0]?._id ?? ''],
     });
@@ -175,6 +180,7 @@ describe('relationshipsPanelProjection', () => {
     const filtered = filterAndSortMarkers(markers, {
       searchQuery: 'alpha NOT beta',
       sortOrder: 'none',
+      selfSharedId: 'self1',
       relationshipTypeName: () => '',
     });
     expect(filtered).toHaveLength(1);
