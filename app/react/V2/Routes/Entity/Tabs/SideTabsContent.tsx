@@ -50,7 +50,7 @@ const SideTabsContent = ({
       content = <ToCTab mainDocument={mainDocument} />;
       break;
     case SIDE_TAB.RELATIONSHIPS:
-      content = <RelationshipsPanel mainDocument={mainDocument} />;
+      content = <RelationshipsPanel />;
       break;
     case SIDE_TAB.SEARCH:
       content = <SearchTab />;

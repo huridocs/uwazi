@@ -5,6 +5,10 @@ import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { PipelineBuilder } from '../queryBuilder.js';
 import { IXSuggestionsModel } from '../IXSuggestionsModel.js';
 import { SuggestionFactory } from '../suggestionFactory.js';
+import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
+
+// Temporary union type during Mongo -> Postgres migration
+type TemplatesDAO = Awaited<ReturnType<typeof TemplatesDAOFactory.default>>;
 
 type Input = {
   entities: EntitySchema[];
@@ -15,8 +19,11 @@ type Output = void;
 class UpdateSuggestionsAfterEntityUpdate implements UseCase<Input, Output> {
   private pipeline: PipelineBuilder;
 
-  constructor() {
+  private templatesDAO: TemplatesDAO;
+
+  constructor(templatesDAO: TemplatesDAO) {
     this.pipeline = new PipelineBuilder();
+    this.templatesDAO = templatesDAO;
   }
 
   async execute({ entities }: Input): Promise<void> {
@@ -35,36 +42,19 @@ class UpdateSuggestionsAfterEntityUpdate implements UseCase<Input, Output> {
       $unwind: '$extractor',
     });
 
-    this.pipeline.add({
-      $lookup: {
-        from: 'templates',
-        as: 'template',
-        let: {
-          templateIdStr: '$entityTemplate',
-        },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $eq: ['$_id', { $toObjectId: '$$templateIdStr' }],
-              },
-            },
-          },
-        ],
-      },
-    });
-
-    this.pipeline.add({
-      $unwind: '$template',
-    });
-
     const suggestions = await IXSuggestionsModel.db.aggregate(this.pipeline.build());
+
+    const templateIds = [...new Set(suggestions.map((s: any) => s.entityTemplate))];
+    const templateDBOs = await this.templatesDAO.get(templateIds);
+    const templateMap = new Map(templateDBOs.map(t => [t._id.toString(), t]));
 
     const updatedSuggestions: IXSuggestionType[] = [];
 
     suggestions.forEach(_suggestion => {
-      const { template, extractor, ...suggestion } = _suggestion;
-      const targetProperty = IXServices.extractTargetProperty(extractor, template);
+      const { extractor, entityTemplate, ...suggestion } = _suggestion;
+      const template = templateMap.get(entityTemplate);
+      if (!template) return;
+      const targetProperty = IXServices.extractTargetProperty(extractor, template as any);
       const entity = entities.find(
         e => e.language === suggestion.language && e.sharedId === suggestion.entityId
       );

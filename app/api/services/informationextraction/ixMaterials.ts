@@ -19,7 +19,7 @@ import { FileType } from '#shared/types/fileType.js';
 import templatesService from '#api/core/v1_layer/templates/templates.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { EnforcedWithId, UwaziFilterQuery } from '#api/odm/index.js';
-import { Entity } from '#api/entities.v2/model/Entity.js';
+import { DeprecatedEntity } from '#api/entities.v2/model/Entity.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { PipelineBuilder } from '#api/suggestions/queryBuilder.js';
@@ -147,7 +147,7 @@ function entityForTrainingQuery(
   templates: ObjectIdSchema[],
   toProperty: string,
   fromProperty?: string
-): UwaziFilterQuery<Entity> {
+): UwaziFilterQuery<DeprecatedEntity> {
   const query: UwaziFilterQuery<any> = { template: { $in: templates } };
 
   if (fromProperty) {

@@ -3,6 +3,7 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
+import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
 import { GenerateAutomaticTranslationsCofig } from '../GenerateAutomaticTranslationConfig.js';
 import { MongoATConfigDataSource } from '../infrastructure/MongoATConfigDataSource.js';
 import { GenerateATConfigError } from '../errors/generateATErrors.js';
@@ -87,6 +88,10 @@ describe('GenerateAutomaticTranslationConfig', () => {
       new MongoTemplatesDataSource({
         db: getConnection(),
         transactionManager: TransactionManagerFactory.default(),
+        dao: new MongoTemplatesDAO({
+          db: getConnection(),
+          transactionManager: TransactionManagerFactory.default(),
+        }),
       }),
       new Validator<SemanticConfig>(semanticConfigSchema)
     );

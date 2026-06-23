@@ -2,12 +2,13 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 import { MongoRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource.js';
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
+import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntitiesDataSource.js';
-import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
-import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
-import { OnlineRelationshipPropertyUpdateStrategy } from '#api/relationships.v2/services/propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy.js';
+import { MongoDeprecatedEntitiesDataSource } from '#api/entities.v2/database/MongoDeprecatedEntitiesDataSource.js';
+import { DenormalizationService } from '../../../services/DenormalizationService.js';
+import { MongoRelationshipsDataSource } from '../../../database/MongoRelationshipsDataSource.js';
+import { OnlineRelationshipPropertyUpdateStrategy } from '../../../services/propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy.js';
 import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { CreateTemplateService } from '../CreateTemplateService.js';
@@ -47,12 +48,13 @@ function setUpService() {
   const templatesDS = new MongoTemplatesDataSource({
     db: connection,
     transactionManager,
+    dao: new MongoTemplatesDAO({ db: connection, transactionManager }),
   });
   const relTypeDS = new MongoRelationshipTypesDataSource(connection, transactionManager);
   const settingsDS = testingEnvironment.runWithContext(() => SettingsDataSourceFactory.default(), {
     factories: { transactionManager: () => transactionManager },
   });
-  const entityDS = new MongoEntitiesDataSource(
+  const entityDS = new MongoDeprecatedEntitiesDataSource(
     connection,
     templatesDS,
     settingsDS,
@@ -62,7 +64,6 @@ function setUpService() {
   const denormalizationService = new DenormalizationService(
     relationshipsDS,
     entityDS,
-    templatesDS,
     settingsDS,
     transactionManager,
     async () => {},

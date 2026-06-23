@@ -10,30 +10,38 @@ import {
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoEntityMapper } from '#api/core/infrastructure/mongodb/entity/MongoEntityMapper.js';
-import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { search } from '#api/search/index.js';
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
-import { Entity } from '../../core/domain/entity/Entity.js';
-import { MultiLanguageEntityDataSource } from '../contracts/MultiLanguageEntitiesDataSource.js';
-import { EntityDBO, EntityTemplateAggregation } from './schemas/EntityTypes.js';
+import { Entity } from '../../../domain/entity/Entity.js';
+import { EntitiesDataSource } from '../../../application/contracts/EntitiesDataSource.js';
+import { EntityDBO, EntityTemplateAggregation } from './EntityDBO.js';
+import { TemplatesDAOFactory } from '../../factories/TemplatesDAOFactory.js';
+
+// Temporary union type during Mongo -> Postgres migration
+type TemplatesDAO = Awaited<ReturnType<typeof TemplatesDAOFactory.default>>;
 
 type Deps = {
   db: Db;
   transactionManager: MongoTransactionManager;
+  templatesDAO: TemplatesDAO;
   options?: MongoDSOptions;
 };
 
-export class MongoMultiLanguageEntityDataSource
+export class MongoEntitiesDataSource
   extends MongoDataSource<EntityDBO>
-  implements MultiLanguageEntityDataSource
+  implements EntitiesDataSource
 {
   protected collectionName = 'entities';
 
   private modifiedSharedIds = new Set<string>();
 
+  private templatesDAO: TemplatesDAO;
+
   constructor(deps: Deps) {
     super(deps.db, deps.transactionManager, deps.options);
+
+    this.templatesDAO = deps.templatesDAO;
 
     this.transactionManager.onCommitted(async () => {
       await search.indexEntities({ sharedId: { $in: Array.from(this.modifiedSharedIds) } });
@@ -100,45 +108,6 @@ export class MongoMultiLanguageEntityDataSource
     entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
   }
 
-  private async getReferencePropertyNames(): Promise<string[]> {
-    const result = await this.getCollection('templates')
-      .aggregate([
-        { $unwind: '$properties' },
-        {
-          $match: {
-            'properties.type': { $in: ['select', 'multiselect', 'relationship'] },
-          },
-        },
-        {
-          $group: {
-            _id: '$properties.name',
-          },
-        },
-      ])
-      .toArray();
-
-    return result.map((doc: any) => doc._id);
-  }
-
-  private async findTemplatesUsingThesaurus(thesaurusId: string) {
-    const directTemplates = await this.getCollection<TemplateDBO>('templates')
-      .find({ 'properties.content': thesaurusId })
-      .project({ _id: 1 })
-      .toArray();
-
-    const relatedTemplates = await this.getCollection<TemplateDBO>('templates')
-      .find({
-        'properties.type': 'relationship',
-        'properties.content': { $in: directTemplates.map(t => t._id.toString()) },
-      })
-      .project({ _id: 1 })
-      .toArray();
-
-    const allTemplates = [...directTemplates, ...relatedTemplates];
-
-    return Array.from(new Set(allTemplates.map(t => t._id)));
-  }
-
   async getSharedIdsUsingThesaurus(thesaurusId: string) {
     const settings = await this.getCollection<SettingsType>('settings').findOne();
     const defaultLanguage = settings?.languages?.find(l => l.default)?.key;
@@ -147,7 +116,7 @@ export class MongoMultiLanguageEntityDataSource
       throw new Error('Default language not found in settings when trying to delete references');
     }
 
-    const uniqueTemplateIds = await this.findTemplatesUsingThesaurus(thesaurusId);
+    const uniqueTemplateIds = await this.templatesDAO.findTemplateIdsUsingThesaurus(thesaurusId);
 
     const entities = await this.getCollection()
       .aggregate([
@@ -275,7 +244,7 @@ export class MongoMultiLanguageEntityDataSource
   async deleteReferencesToSharedIds(deletedSharedIds: string[]): Promise<void> {
     if (deletedSharedIds.length === 0) return;
 
-    const propertyNames = await this.getReferencePropertyNames();
+    const propertyNames = await this.templatesDAO.getReferencePropertyNames();
     if (propertyNames.length === 0) return;
 
     const affectedSharedIds = await this.findAffectedSharedIds(deletedSharedIds, propertyNames);
@@ -406,37 +375,30 @@ export class MongoMultiLanguageEntityDataSource
   }
 
   private async getByQuery(query: Filter<EntityDBO>) {
+    const templateIds = await this.getCollection().distinct('template', query);
+    const templateIdStrings = templateIds.map(id => id.toHexString());
+    const templateDBOs = await this.templatesDAO.get(templateIdStrings);
+    const templateMap = new Map(templateDBOs.map(t => [t._id.toString(), t]));
+
     const aggregation = [
       { $match: query },
       {
         $group: {
           _id: '$sharedId',
-          template: { $first: '$template' },
+          templateId: { $first: '$template' },
           entities: { $push: '$$ROOT' },
-        },
-      },
-      {
-        $lookup: {
-          from: 'templates',
-          localField: 'template',
-          foreignField: '_id',
-          as: 'templateData',
-        },
-      },
-      { $unwind: '$templateData' },
-      {
-        $project: {
-          _id: 0,
-          template: '$templateData',
-          entities: 1,
         },
       },
     ];
 
     const cursor = this.getCollection().aggregate<EntityTemplateAggregation>(aggregation);
 
-    return new MongoResultSet<EntityTemplateAggregation, Entity>(cursor, ({ template, entities }) =>
-      MongoEntityMapper.toDomain(entities, template)
+    return new MongoResultSet<EntityTemplateAggregation, Entity>(
+      cursor,
+      ({ templateId, entities }) => {
+        const templateDBO = templateMap.get(templateId.toHexString())!;
+        return MongoEntityMapper.toDomain(entities, templateDBO);
+      }
     );
   }
 

@@ -162,6 +162,7 @@ Character support revert warning,"Вибравши цю опцію, ви не з
 Check to make this instance public (non-logged in users can see public documents and entities),"Установіть прапорець, щоб зробити цей екземпляр загальнодоступним (неавторизовані користувачі можуть бачити загальнодоступні документи та сутності)"
 Checking which images fit the requirements,Checking which images fit the requirements...
 Choose,Choose
+Choose relation type,Choose relation type
 Choose which data to use for training,"Виберіть, які дані використовувати для навчання"
 Chrome header,Chrome header
 Clear,Чисто
@@ -203,8 +204,7 @@ Confirm new password,Підтвердьте новий пароль
 Confirm your password,Confirm your password
 Connect to a paragraph,З'єднати з абзацом
 Connect to an entity,Підключіться до організації
-Connect to document,Connect to document
-Connect to paragraph,Connect to paragraph
+Connect to entity,Connect to entity
 Connected to server,Connected to server
 Connection type,Тип зв'язку
 Contact email description,"Тут ви можете налаштувати контактний email та email, який з'являється, коли Uwazi надсилає сповіщення користувачеві"
@@ -221,6 +221,7 @@ Copy link,Скопіювати посилання
 Copy properties to this entity from,Скопіювати властивості до цього об'єкта з
 Copy to clipboard,Скопіювати в буфер обміну
 Could not be processed,Не вдалось обробити
+Could not create entity,Could not create entity
 Could not detect the area for the selected text,"Не вдалося виявити область для виділеного тексту, спробуйте виділити ще раз."
 Could not reach server. Please try again later.,"Не вдалося зв'язатися з сервером. Будь ласка, спробуйте ще раз пізніше."
 Create,Створити
@@ -233,7 +234,9 @@ Create Entity,Створити об'єкт
 Create Extractor,Створити витягач
 Create group,Створити групу
 Create new entities and upload documents,Створюйте нові організації та завантажуйте документи
+Create new entity from selection,Create new entity from selection
 Create Reference,Створити посилання
+Create relationship,Create relationship
 Create relationship types,Створення типів зв'язків
 Create relationships and references,Створюйте зв'язки та посилання
 Create table of contents,Створити зміст
@@ -375,6 +378,7 @@ Entity creation stage completed.,Entity creation stage completed.
 Entity deleted,Сутність видалено
 Entity Page,Сторінка сутності
 Entity saved,Об'єкт збережено
+Entity type,Entity type
 Entity types,Типи об'єктів
 Entity updated,Сутність оновлено
 Error,Помилка
@@ -445,6 +449,7 @@ From,Від
 From all suggestions,З усіх пропозицій
 From previous step,З попереднього кроку
 From selection,From selection
+From:,From:
 Full mode,Full mode
 Full width,Повна ширина
 General,Загальний
@@ -775,6 +780,7 @@ Plain text,Звичайний текст
 Please contact an admin for details.,"Будь ласка, зв'яжіться з адміністратором, щоб з'ясувати деталі."
 Please type in,"Будь ласка, введіть"
 Please type in letters and numbers from the image to start the export.,"Будь ласка, введіть літери та цифри з зображення, щоб розпочати експорт."
+Pre-filled from your selection. Edit as needed.,Pre-filled from your selection. Edit as needed.
 Preflight scan completed.,Preflight scan completed.
 Preparing required relationships.,Preparing required relationships.
 Preparing required thesauri values.,Preparing required thesauri values.
@@ -848,6 +854,7 @@ Reject,Відхилити
 Related entities created,Related entities created
 Relation type,Тип відношення
 Relationship,Взаємозв'язок
+Relationship created,Relationship created
 Relationship Type,Тип взаємозв'язків
 Relationship type,Тип зв'язку
 Relationship type created successfully.,Тип зв'язку створено успішно.
@@ -909,6 +916,7 @@ Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,Шукати
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
+Search entities...,Search entities...
 Search item,Шукати предмет
 Search related entities or documents,Шукати взаємопов'язані об'єкти та документи
 Search relationships,Search relationships
@@ -928,6 +936,7 @@ Secret keys,Секретні ключі
 Security,Безпека
 Select,Виберіть
 Select & Search,Вибір та пошук
+Select a document to connect to a specific paragraph,Select a document to connect to a specific paragraph
 Select a file,Select a file
 Select all,Вибрати все
 Select an existing image,Select an existing image
@@ -937,7 +946,10 @@ Select from computer,Виберіть з комп'ютера
 Select relationship,Select relationship
 Select relationship type,Виберіть тип взаємозв'язків
 Select site logo image,Вибрати зображення логотипу сайту
+Select target document,Select target document
+Select target entity,Select target entity
 Select target paragraph,Виберіть цільовий абзац
+Select text in target document,Select text in target document
 Select the template to store the extracted paragraphs.,Виберіть шаблон для збереження вилучених абзаців.
 Select the template with the source documents.,Виберіть шаблон з вихідними документами.
 Select...,Вибрати...
@@ -1039,6 +1051,7 @@ Target relationship type,Тип цільового зв'язку
 Target Template,Шаблон цілі
 Target template,Шаблон цілі
 Target's role in the relationship Source-Target.,Роль мішені у відносинах Джерело-Ціль.
+Target:,Target:
 Tasks,Tasks
 Template,Шаблон
 Template changes are being applied to all related entities.,Зміни шаблону застосовуються до всіх пов'язаних сутностей.

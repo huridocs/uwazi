@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { FileDTO } from '#api/core/domain/files/domainTypes.js';
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { createError } from '#api/utils/index.js';
 import { EntityPermissionChecker } from '../domain/entityAccessPolicy/EntityPermissionChecker.js';
 import { PDFDocument } from '../domain/files/PDFDocument.js';
@@ -16,7 +16,7 @@ type Deps = {
   filesDS: FilesDataSource;
   filesService: FilesService;
   entityPermissions: EntityPermissionChecker;
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   entitiesService: EntitiesService;
   settingsDS: SettingsDataSource;
 };

@@ -25,8 +25,13 @@ const entityWithRelations = {
       template: null,
       _id: 'c2',
       hub: 'h1',
+      file: 'f-target',
       entity: 'target-entity',
       entityData: { title: 'Related Entity', template: 'template1' },
+      reference: {
+        text: 'target quoted text',
+        selectionRectangles: [{ top: 20, left: 0, width: 10, height: 10, page: '3' }],
+      },
     },
     {
       template: 'relA',
