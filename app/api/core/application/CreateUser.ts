@@ -5,12 +5,13 @@ import { AbstractUseCase } from '../libs/UseCase.js';
 import { CreateUserDTO, UserCreateSchema } from './contracts/UserCreateSchema.js';
 import { UsersDataSource } from './contracts/UsersDataSource.js';
 import { EmailInUse, UsernameExists } from '../domain/user/errors.js';
+import { UsergroupsDataSource } from './contracts/UsergroupsDataSource.js';
 
 type Input = { user: CreateUserDTO; domain: string };
 
 type Output = User;
 
-type Dependencies = { usersDS: UsersDataSource };
+type Dependencies = { usersDS: UsersDataSource; usergroupsDS: UsergroupsDataSource };
 
 class CreateUser extends AbstractUseCase<Input, Output, Dependencies> {
   static InputSchema = UserCreateSchema;
@@ -37,6 +38,7 @@ class CreateUser extends AbstractUseCase<Input, Output, Dependencies> {
 
     await this.transactionManager.run(async () => {
       await this.deps.usersDS.insert(user);
+      await this.deps.usergroupsDS.updateUserGroups(user);
       await this.dispatcher.configureRecoveryPassword({
         userId: user._id,
         domain: input.domain,

@@ -1,18 +1,10 @@
-import { ObjectId } from 'mongodb';
-import { DBFixture } from '#api/utils/testing_db.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { UserRole } from '#shared/types/userSchema.js';
 
-const existingUserId = new ObjectId();
+const f = getFixturesFactory();
 
-const existingUser = {
-  _id: existingUserId,
-  username: 'existinguser',
-  role: UserRole.EDITOR,
-  email: 'existing@test.com',
-};
-
-const fixtures: DBFixture = {
-  users: [existingUser],
+const fixtures = {
+  users: [f.user('existinguser', UserRole.EDITOR, 'existing@test.com')],
   settings: [
     {
       site_name: 'Uwazi',
@@ -20,26 +12,10 @@ const fixtures: DBFixture = {
     },
   ],
   usergroups: [
-    {
-      _id: '1',
-      name: 'Researchers',
-      members: [
-        {
-          refId: existingUserId,
-        },
-      ],
-    },
-    {
-      _id: '2',
-      name: 'Journalists',
-      members: [],
-    },
-    {
-      _id: '3',
-      name: 'Investigators',
-      members: [],
-    },
+    f.usergroup('Researchers', [{ refId: f.id('existinguser') }]),
+    f.usergroup('Journalists', []),
+    f.usergroup('Investigators', []),
   ],
 };
 
-export { fixtures, existingUserId };
+export { fixtures, f };

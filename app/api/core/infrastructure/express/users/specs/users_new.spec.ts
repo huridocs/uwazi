@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import type { Application, NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
@@ -7,13 +8,12 @@ import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/get
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { userRoutes } from '../routes.js';
-import { fixtures, existingUserId } from './fixtures.js';
+import { fixtures, f } from './fixtures.js';
 
 jest.mock('../../../../../auth/encryptPassword.ts', () => ({
   encryptPassword: async () => Promise.resolve('hush hush super secret'),
 }));
 
-//check if this is needed
 jest.mock('../../../../../auth/validatePasswordMiddleWare.ts', () => ({
   validatePasswordMiddleWare: (_req: Request, _res: Response, next: NextFunction) => next(),
 }));
@@ -21,7 +21,7 @@ jest.mock('../../../../../auth/validatePasswordMiddleWare.ts', () => ({
 const app: Application = setUpApp(
   userRoutes,
   (req: Request, _res: Response, next: NextFunction) => {
-    req.user = { _id: existingUserId.toHexString(), role: 'admin', username: 'admin' };
+    req.user = { _id: f.idString('admin'), role: 'admin', username: 'admin' };
     next();
   }
 );
@@ -90,40 +90,40 @@ describe('POST /api/users/new', () => {
         email: 'grouped@test.com',
         password: 'Secret123',
         groups: [
-          { _id: '1', name: 'Researchers' },
-          { _id: '3', name: 'Investigators' },
+          { _id: f.id('Researchers'), name: 'Researchers' },
+          { _id: f.id('Investigators'), name: 'Investigators' },
         ],
       });
 
     expect(response.status).toBe(201);
     expect(response.body.user).toMatchObject({
-      username: 'newguy',
-      role: 'editor',
-      email: 'new@test.com',
+      username: 'guy in group',
+      role: 'admin',
+      email: 'grouped@test.com',
     });
     newUserId = response.body.user._id;
 
     const groups = await testingEnvironment.db.getAllFrom('usergroups');
     expect(groups).toMatchObject([
       {
-        _id: '1',
+        _id: f.id('Researchers'),
         name: 'Researchers',
         members: [
           {
-            refId: existingUserId,
+            refId: f.id('existinguser'),
           },
-          { refId: newUserId },
+          { refId: new ObjectId(newUserId) },
         ],
       },
       {
-        _id: '2',
+        _id: f.id('Journalists'),
         name: 'Journalists',
         members: [],
       },
       {
-        _id: '3',
+        _id: f.id('Investigators'),
         name: 'Investigators',
-        members: [{ refId: newUserId }],
+        members: [{ refId: new ObjectId(newUserId) }],
       },
     ]);
   });

@@ -5,10 +5,13 @@ import {
 } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { User } from '#api/core/domain/user/User.js';
-import { UsersGroupsDataSource } from '#api/core/application/contracts/UsersGroupsDataSource.js';
+import { UsergroupsDataSource } from '#api/core/application/contracts/UsergroupsDataSource.js';
 import { UserGroupDBO } from './UserGroupDBO.js';
 
-class MongoGroupsDataSource extends MongoDataSource<UserGroupDBO> implements UsersGroupsDataSource {
+class MongoUsergroupsDataSource
+  extends MongoDataSource<UserGroupDBO>
+  implements UsergroupsDataSource
+{
   protected collectionName = 'usergroups';
 
   constructor(db: Db, transactionManager: TransactionManager, options?: MongoDSOptions) {
@@ -45,4 +48,4 @@ class MongoGroupsDataSource extends MongoDataSource<UserGroupDBO> implements Use
   }
 }
 
-export { MongoGroupsDataSource };
+export { MongoUsergroupsDataSource };

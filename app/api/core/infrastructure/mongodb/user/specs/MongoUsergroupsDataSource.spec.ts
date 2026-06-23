@@ -4,7 +4,7 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { UserRole } from '#shared/types/userSchema.js';
-import { MongoGroupsDataSource } from '../MongoGroupsDataSource.js';
+import { MongoUsergroupsDataSource } from '../MongoUsergroupsDataSource.js';
 
 const f = getFixturesFactory();
 
@@ -19,7 +19,7 @@ const fixtures = {
 
 const createDs = () => {
   const transactionManager = TransactionManagerFactory.default();
-  const ds = new MongoGroupsDataSource(getConnection(), transactionManager);
+  const ds = new MongoUsergroupsDataSource(getConnection(), transactionManager);
   return { ds, transactionManager };
 };
 
