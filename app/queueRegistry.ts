@@ -73,7 +73,7 @@ import { AcceptSuggestionsFactory } from '#api/suggestions/infrastructure/Accept
 import { AcceptSuggestionsJob } from '#api/suggestions/jobs/AcceptSuggestionsJob.js';
 import { CreateBlankStateSuggestionsJob } from '#api/suggestions/jobs/CreateBlankStateSuggestionsJob.js';
 import { tenants } from '#api/tenants/tenantContext.js';
-import { ConfigureRecoveryPasswordHandler } from '#api/core/infrastructure/jobs/ConfigureRecoveryPasswordHandler .js';
+import { SendWelcomeEmailHandler } from '#api/core/infrastructure/jobs/SendWelcomeEmailHandler.js';
 
 type Register = <T extends Dispatchable>(
   dispatchable: DispatchableClass<T>,
@@ -317,5 +317,5 @@ export function registerJobs(register: Register) {
 
   register(DeleteLanguagePagesListener.asJob(), async () => new DeleteLanguagePagesListener({}));
 
-  register(ConfigureRecoveryPasswordHandler, async () => new ConfigureRecoveryPasswordHandler());
+  register(SendWelcomeEmailHandler, async () => new SendWelcomeEmailHandler());
 }

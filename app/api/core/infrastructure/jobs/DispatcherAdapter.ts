@@ -18,9 +18,9 @@ import { PDFPostProcessJobHandler } from './PDFPostProcessJobHandler.js';
 import { RelationshipSyncJob } from './RelationshipSyncJob.js';
 import { TemplatePostProcessEntitiesJob } from './TemplatePostProcessEntitiesJob.js';
 import {
-  ConfigureRecoveryPasswordHandler,
-  ConfigureRecoveryPasswordHandlerParams,
-} from './ConfigureRecoveryPasswordHandler .js';
+  SendWelcomeEmailHandler,
+  SendWelcomeEmailHandlerParams,
+} from './SendWelcomeEmailHandler.js';
 
 class DispatcherAdapter implements Dispatcher {
   constructor(private jobsDispatcher: JobsDispatcher) {}
@@ -72,8 +72,8 @@ class DispatcherAdapter implements Dispatcher {
     await this.jobsDispatcher.dispatch(DeleteLanguageEntitiesJob, params);
   }
 
-  async configureRecoveryPassword(params: ConfigureRecoveryPasswordHandlerParams): Promise<void> {
-    await this.jobsDispatcher.dispatch(ConfigureRecoveryPasswordHandler, params);
+  async configureRecoveryPassword(params: SendWelcomeEmailHandlerParams): Promise<void> {
+    await this.jobsDispatcher.dispatch(SendWelcomeEmailHandler, params);
   }
 }
 

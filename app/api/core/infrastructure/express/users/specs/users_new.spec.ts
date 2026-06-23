@@ -72,12 +72,11 @@ describe('POST /api/users/new', () => {
 
     const job = await getSharedConnection()
       .collection('jobs')
-      .findOne({ name: 'ConfigureRecoveryPasswordHandler', namespace });
+      .findOne({ name: 'SendWelcomeEmailHandler', namespace });
     expect(job).toBeDefined();
     expect(job?.params).toMatchObject({
       userId: newUserId?.toString(),
       domain: 'http://uwazi',
-      newUser: true,
     });
   });
 
