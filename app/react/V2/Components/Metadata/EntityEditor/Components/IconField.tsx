@@ -2,7 +2,7 @@ import React from 'react';
 import { Controller, FieldValues, useFormContext } from 'react-hook-form';
 import { iconNames } from '#UI/Icon/library.js';
 import { CountryList } from '#app/UI/index.js';
-import { Icon } from '#UI/Icon/Icon.jsx';
+import { Icon } from '#UI/Icon/Icon.js';
 import { Translate } from '#app/I18N/index.js';
 import { CountryFlag } from '#V2/Components/CustomIcons/CoutryFlags.js';
 import { Checkbox, SearchSelect } from '#V2/Components/Forms/index.js';
