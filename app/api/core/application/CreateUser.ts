@@ -1,7 +1,6 @@
-import { randomBytes } from 'node:crypto';
 import { z } from 'zod';
-import { encryptPassword } from '#api/auth/encryptPassword.js';
 import { User } from '../domain/user/User.js';
+import { EncryptedPassword } from '../domain/user/EncryptedPassword.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { UsersDataSource } from './contracts/UsersDataSource.js';
 import { UsergroupsDataSource } from './contracts/UsergroupsDataSource.js';
@@ -36,9 +35,7 @@ class CreateUser extends AbstractUseCase<Input, Output, Dependencies> {
     const emailResult = await this.deps.usersDS.checkUniqueEmail(user);
     emailResult.getDataOrThrow();
 
-    const rawPassword = password ?? randomBytes(32).toString('hex');
-    const encryptedPassword = await encryptPassword(rawPassword);
-    user.setPassword(encryptedPassword);
+    user.setPassword(await EncryptedPassword.create(password));
 
     await this.transactionManager.run(async () => {
       await this.deps.usersDS.insert(user);

@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { User } from '#api/core/domain/user/User.js';
+import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
 import { UserDBO } from './UserDBO.js';
 
 export class MongoUsersMapper {
@@ -9,7 +10,7 @@ export class MongoUsersMapper {
       username: user.username,
       role: user.role,
       email: user.email,
-      password: user.password,
+      password: user.password?.getValue() ?? null,
     };
   }
 
@@ -21,7 +22,9 @@ export class MongoUsersMapper {
       email: dbo.email,
     });
 
-    user.password = dbo.password ?? null;
+    if (dbo.password) {
+      user.setPassword(EncryptedPassword.fromHash(dbo.password));
+    }
 
     return user;
   }

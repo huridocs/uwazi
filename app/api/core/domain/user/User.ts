@@ -1,3 +1,5 @@
+import { EncryptedPassword } from './EncryptedPassword.js';
+
 type UserRole = 'admin' | 'editor' | 'collaborator';
 
 type UserGroup = {
@@ -10,7 +12,6 @@ type UserProps = {
   username: string;
   role: UserRole;
   email: string;
-  password?: string;
   groups?: UserGroup[];
 };
 
@@ -25,7 +26,7 @@ class User {
 
   readonly groups: UserGroup[];
 
-  password: string | null;
+  password: EncryptedPassword | null;
 
   constructor(props: UserProps) {
     this._id = props._id;
@@ -36,7 +37,7 @@ class User {
     this.password = null;
   }
 
-  setPassword(password: string) {
+  setPassword(password: EncryptedPassword) {
     this.password = password;
   }
 }
