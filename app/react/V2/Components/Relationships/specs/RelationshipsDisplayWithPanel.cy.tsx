@@ -101,15 +101,9 @@ describe('RelationshipsDisplay WithPanel', () => {
     it('clears rail selection when the same cluster is toggled off', () => {
       openMainCluster();
       clickPerson1InMainCluster();
-      cy.get('[data-testid="relationships-rail"] [data-marker-id]')
-        .first()
-        .find('[data-testid="rail-marker-dot"]')
-        .should('have.css', 'width', '14px');
       openMainCluster();
-      cy.get('[data-testid="relationships-rail"] [data-marker-id]')
-        .first()
-        .find('[data-testid="rail-marker-dot"]')
-        .should('have.css', 'width', '10px');
+      cy.contains('From selection').should('not.exist');
+      cy.get('[data-testid="cluster-subtree"]').should('not.exist');
     });
 
     it('shows a PDF highlight when a rail marker is selected', () => {

@@ -1,36 +1,42 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
-import type { ReferenceMode, TextSelection } from './types.js';
+import type { TextSelection } from './types.js';
 
 type RelationshipsState = {
   createReferenceSelection: TextSelection | undefined;
-  createReferenceMode: ReferenceMode | undefined;
+  createRelationshipModalOpen: boolean;
 };
 
 type RelationshipsActions = {
-  setCreateReferenceSelection: (selection: TextSelection | undefined, mode?: ReferenceMode) => void;
+  openCreateRelationship: (selection?: TextSelection) => void;
+  closeCreateRelationship: () => void;
 };
 
 const RelationshipsStateContext = createContext<RelationshipsState | null>(null);
 const RelationshipsActionsContext = createContext<RelationshipsActions | null>(null);
 
 const RelationshipsProvider = ({ children }: { children: React.ReactNode }) => {
-  const [createReferenceSelection, setCreateReferenceSelectionState] = useState<TextSelection>();
-  const [createReferenceMode, setCreateReferenceMode] = useState<ReferenceMode>();
+  const [createReferenceSelection, setCreateReferenceSelection] = useState<TextSelection>();
+  const [createRelationshipModalOpen, setCreateRelationshipModalOpen] = useState(false);
 
-  const setCreateReferenceSelection = useCallback(
-    (selection: TextSelection | undefined, mode?: ReferenceMode) => {
-      setCreateReferenceSelectionState(selection);
-      setCreateReferenceMode(mode);
-    },
-    []
-  );
+  const openCreateRelationship = useCallback((selection?: TextSelection) => {
+    setCreateReferenceSelection(selection);
+    setCreateRelationshipModalOpen(true);
+  }, []);
+
+  const closeCreateRelationship = useCallback(() => {
+    setCreateRelationshipModalOpen(false);
+    setCreateReferenceSelection(undefined);
+  }, []);
 
   const state = useMemo(
-    () => ({ createReferenceSelection, createReferenceMode }),
-    [createReferenceSelection, createReferenceMode]
+    () => ({ createReferenceSelection, createRelationshipModalOpen }),
+    [createReferenceSelection, createRelationshipModalOpen]
   );
 
-  const actions = useMemo(() => ({ setCreateReferenceSelection }), [setCreateReferenceSelection]);
+  const actions = useMemo(
+    () => ({ openCreateRelationship, closeCreateRelationship }),
+    [openCreateRelationship, closeCreateRelationship]
+  );
 
   return (
     <RelationshipsActionsContext.Provider value={actions}>

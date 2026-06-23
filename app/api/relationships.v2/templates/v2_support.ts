@@ -1,11 +1,11 @@
 import { WithId } from '#api/odm/index.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { validateCreateNewRelationshipProperty } from '#api/core/v1_layer/templates.v2/routes/validators/createNewRelationshipProperty.js';
-import { CreateTemplateService } from '#api/core/v1_layer/templates.v2/services/service_factories.js';
+import { validateCreateNewRelationshipProperty } from '../templates.v2/routes/validators/createNewRelationshipProperty.js';
+import { CreateTemplateService } from '../templates.v2/services/service_factories.js';
 import { ensure } from '#shared/tsUtils.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import templates from './templates.js';
+import templates from '#api/core/v1_layer/templates/templates.js';
 
 const processNewRelationshipProperties = async (template: TemplateSchema) => {
   const transactionManager = TransactionManagerFactory.default();

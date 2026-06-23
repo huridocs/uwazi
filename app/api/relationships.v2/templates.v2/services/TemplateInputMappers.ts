@@ -1,16 +1,16 @@
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 import { MongoTemplatePropertyMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
-import { MatchQueryNode } from '#api/relationships.v2/model/MatchQueryNode.js';
-import { TraversalQueryNode } from '#api/relationships.v2/model/TraversalQueryNode.js';
+import { MatchQueryNode } from '../../model/MatchQueryNode.js';
+import { TraversalQueryNode } from '../../model/TraversalQueryNode.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { MatchQuery, TraverseQuery } from '#shared/types/api.v2/templates.createTemplateRequest.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
-import { CommonProperty } from '../../../domain/template/CommonProperty.js';
-import { Property } from '../../../domain/template/Property.js';
-import { RelationshipProperty } from '../../../domain/template/RelationshipProperty.js';
-import { Template } from '../../../domain/template/Template.js';
-import { V1RelationshipProperty } from '../../../domain/template/V1RelationshipProperty.js';
+import { CommonProperty } from '#api/core/domain/template/CommonProperty.js';
+import { Property } from '#api/core/domain/template/Property.js';
+import { RelationshipProperty } from '../../model/RelationshipProperty.js';
+import { Template } from '#api/core/domain/template/Template.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 
 const BuildQuery = {
   traverse: (query: TraverseQuery): TraversalQueryNode =>

@@ -61,6 +61,14 @@ const anchorOf = (
   return isTextReference(self) ? self : undefined;
 };
 
+const counterpartAnchorOf = (
+  relationship: RelationshipView,
+  selfSharedId: string
+): TextReferencePointer | undefined => {
+  const counterpart = targetPointer(relationship, selfSharedId);
+  return isTextReference(counterpart) ? counterpart : undefined;
+};
+
 type RelationshipDirection = 'incoming' | 'outgoing' | 'both';
 
 const directionOf = (
@@ -85,4 +93,4 @@ export type {
   RelationshipView,
   RelationshipDirection,
 };
-export { isTextReference, selfPointer, targetPointer, anchorOf, directionOf };
+export { isTextReference, selfPointer, targetPointer, anchorOf, counterpartAnchorOf, directionOf };

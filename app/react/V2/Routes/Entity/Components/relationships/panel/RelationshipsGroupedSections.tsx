@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import {
@@ -10,6 +11,7 @@ import { RelationshipGroupedCard } from '../rows/RelationshipGroupedCard.js';
 import { RelationshipsGroupLabel } from '../rows/RelationshipsGroupLabel.js';
 import {
   panelEntryCount,
+  renderPanelEntryRows,
   RelationshipsPanelEntryList,
 } from '../panel/RelationshipsPanelEntryList.js';
 import { type RelationshipPanelRowHandlers } from '../rows/RelationshipPanelRow.js';
@@ -37,6 +39,31 @@ const renderGroupLabel = (
   />
 );
 
+const renderPanelEntries = (
+  markersList: RelationshipMarker[],
+  groupContext: GroupLabelContext,
+  variant: 'list' | 'tree',
+  rowProps: RelationshipPanelRowHandlers
+) => {
+  if (variant === 'tree') {
+    return renderPanelEntryRows({
+      markers: markersList,
+      groupContext,
+      variant,
+      ...rowProps,
+    });
+  }
+
+  return (
+    <RelationshipsPanelEntryList
+      markers={markersList}
+      groupContext={groupContext}
+      variant={variant}
+      {...rowProps}
+    />
+  );
+};
+
 type SubGroupRenderParams = {
   parentKey: string;
   groupMarkersList: RelationshipMarker[];
@@ -60,15 +87,7 @@ const renderSubGroups = ({
       const color = getGroupColor(subKey, subGroupBy, groupContext, subMarkers);
       const count = panelEntryCount(subMarkers, rowProps.selfSharedId);
       const markerIds = subMarkers.map(marker => marker._id);
-      const entries = (
-        <RelationshipsPanelEntryList
-          markers={subMarkers}
-          groupContext={groupContext}
-          variant={variant}
-          // eslint-disable-next-line react/jsx-props-no-spreading
-          {...rowProps}
-        />
-      );
+      const entries = renderPanelEntries(subMarkers, groupContext, variant, rowProps);
 
       if (variant === 'list') {
         return (
@@ -121,24 +140,16 @@ const RelationshipsGroupedSections = ({
     const count = panelEntryCount(groupMarkersList, rowProps.selfSharedId);
     const markerIds = groupMarkersList.map(marker => marker._id);
     const content =
-      subGroupBy === 'none' ? (
-        <RelationshipsPanelEntryList
-          markers={groupMarkersList}
-          groupContext={groupContext}
-          variant={variant}
-          // eslint-disable-next-line react/jsx-props-no-spreading -- rowProps is passed to the component
-          {...rowProps}
-        />
-      ) : (
-        renderSubGroups({
-          parentKey: key,
-          groupMarkersList,
-          subGroupBy,
-          groupContext,
-          rowProps,
-          variant,
-        })
-      );
+      subGroupBy === 'none'
+        ? renderPanelEntries(groupMarkersList, groupContext, variant, rowProps)
+        : renderSubGroups({
+            parentKey: key,
+            groupMarkersList,
+            subGroupBy,
+            groupContext,
+            rowProps,
+            variant,
+          });
 
     if (variant === 'list') {
       return (

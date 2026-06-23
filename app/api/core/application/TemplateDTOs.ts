@@ -1,9 +1,29 @@
 import { z } from 'zod';
 import { PropertyTypeEnum } from '../domain/template/PropertyType.js';
 
+const CorePropertyTypeSchema = z.union([
+  z.literal(PropertyTypeEnum.Date),
+  z.literal(PropertyTypeEnum.DateRange),
+  z.literal(PropertyTypeEnum.Geolocation),
+  z.literal(PropertyTypeEnum.Image),
+  z.literal(PropertyTypeEnum.Link),
+  z.literal(PropertyTypeEnum.Markdown),
+  z.literal(PropertyTypeEnum.Media),
+  z.literal(PropertyTypeEnum.MultiDate),
+  z.literal(PropertyTypeEnum.MultiDateRange),
+  z.literal(PropertyTypeEnum.MultiSelect),
+  z.literal(PropertyTypeEnum.Nested),
+  z.literal(PropertyTypeEnum.Numeric),
+  z.literal(PropertyTypeEnum.Preview),
+  z.literal(PropertyTypeEnum.Relationship),
+  z.literal(PropertyTypeEnum.Select),
+  z.literal(PropertyTypeEnum.Text),
+  z.literal(PropertyTypeEnum.GeneratedId),
+]);
+
 const BasePropertySchema = z.object({
   label: z.string(),
-  type: z.nativeEnum(PropertyTypeEnum),
+  type: CorePropertyTypeSchema,
   prioritySorting: z.boolean().optional(),
   generatedId: z.boolean().optional(),
   content: z.string().optional().nullable(),
@@ -11,7 +31,7 @@ const BasePropertySchema = z.object({
   inherit: z
     .object({
       property: z.string(),
-      type: z.nativeEnum(PropertyTypeEnum),
+      type: CorePropertyTypeSchema,
     })
     .optional()
     .or(z.literal(''))
@@ -33,7 +53,7 @@ const BasePropertySchema = z.object({
 
 const BaseCommonPropertySchema = z.object({
   label: z.string(),
-  type: z.nativeEnum(PropertyTypeEnum),
+  type: CorePropertyTypeSchema,
   name: z.string(),
   isCommonProperty: z.literal(true).optional(),
 

@@ -5,7 +5,6 @@ import { PostgresDataSource } from '../PostgresDataSource.js';
 type TestRow = {
   _id: string;
   name: string;
-  tenant_id: string;
 };
 
 class TestDataSource extends PostgresDataSource {
@@ -130,11 +129,11 @@ describe('PostgresDataSource', () => {
 
       const aRows = await dsA.getAll();
       expect(aRows).toHaveLength(2);
-      expect(aRows.every((r: TestRow) => r.tenant_id === 'tenant-a')).toBe(true);
+      expect(aRows.every((r: TestRow) => r.name.startsWith('A'))).toBe(true);
 
       const bRows = await dsB.getAll();
       expect(bRows).toHaveLength(1);
-      expect(bRows[0].tenant_id).toBe('tenant-b');
+      expect(bRows[0].name).toBe('B1');
     });
   });
 });

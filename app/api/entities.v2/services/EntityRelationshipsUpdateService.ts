@@ -1,20 +1,20 @@
 import { MatchQueryNode } from '#api/relationships.v2/model/MatchQueryNode.js';
 import { Template } from '#api/core/domain/template/Template.js';
-import { RelationshipProperty } from '#api/core/domain/template/RelationshipProperty.js';
+import { RelationshipProperty } from '#api/relationships.v2/model/RelationshipProperty.js';
 import { RelationshipsDataSource } from '#api/relationships.v2/contracts/RelationshipsDataSource.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-import { Entity, EntityMetadata } from '../model/Entity.js';
-import { EntitiesDataSource } from '../contracts/EntitiesDataSource.js';
+import { DeprecatedEntity, EntityMetadata } from '../model/Entity.js';
+import { DeprecatedEntitiesDataSource } from '../contracts/DeprecatedEntitiesDataSource.js';
 
 export class EntityRelationshipsUpdateService {
-  private entitiesDataSource: EntitiesDataSource;
+  private entitiesDataSource: DeprecatedEntitiesDataSource;
 
   private templatesDataSource: TemplatesDataSource;
 
   private relationshipsDataSource: RelationshipsDataSource;
 
   constructor(
-    entitiesDataSource: EntitiesDataSource,
+    entitiesDataSource: DeprecatedEntitiesDataSource,
     templatesDataSource: TemplatesDataSource,
     relatioshipsDataSource: RelationshipsDataSource
   ) {
@@ -23,7 +23,10 @@ export class EntityRelationshipsUpdateService {
     this.relationshipsDataSource = relatioshipsDataSource;
   }
 
-  private async buildInheritedInformation(property: RelationshipProperty, entity: Entity) {
+  private async buildInheritedInformation(
+    property: RelationshipProperty,
+    entity: DeprecatedEntity
+  ) {
     if (property.denormalizedProperty) {
       const denormalizedProperty = await this.templatesDataSource.getPropertyByName(
         property.denormalizedProperty
@@ -39,7 +42,7 @@ export class EntityRelationshipsUpdateService {
 
   private async transformToDenormalizedData(
     property: RelationshipProperty,
-    queryResult: Entity[]
+    queryResult: DeprecatedEntity[]
   ): Promise<EntityMetadata[]> {
     return Promise.all(
       queryResult.map(async entity => ({
