@@ -15,11 +15,16 @@ const fixtures: DBFixture = {
   templates: [template1, template2, defaultTemplate],
 };
 
+import { MongoTemplatesDAO } from '../MongoTemplatesDAO.js';
+
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
+  const db = getConnection();
+  const dao = new MongoTemplatesDAO({ db, transactionManager });
   const sut = new CachedMongoTemplatesDataSource({
-    db: getConnection(),
+    db,
     transactionManager,
+    dao,
   });
 
   return { sut, transactionManager };

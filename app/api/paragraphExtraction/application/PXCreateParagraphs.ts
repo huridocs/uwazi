@@ -9,7 +9,7 @@ import relationshipsDS from '#api/relationships/index.js';
 
 import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
 import { ParagraphOutput } from '../domain/PXExtractionService.js';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource.js';
@@ -29,7 +29,7 @@ type Dependencies = {
   extractorsDS: PXExtractorsDataSource;
   entitiesStatusDS: PXEntitiesStatusDataSource;
   entitiesService: EntitiesService;
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   propertyAssignmentStrategy: PropertyAssignmentCreatorServiceStrategy;
   transactionManager: TransactionManager;
 };

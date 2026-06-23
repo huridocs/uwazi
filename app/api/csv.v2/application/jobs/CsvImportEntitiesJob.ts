@@ -8,7 +8,7 @@ import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { FilesService } from '#api/core/application/FilesService.js';
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource.js';
@@ -38,7 +38,7 @@ type Deps = {
   templatesDS: TemplatesDataSource;
   settingsDS: SettingsDataSource;
   entitiesService: EntitiesService;
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   filesDS: FilesDataSource;
   mapper: CsvEntitiesImportMapper;
   transactionManager: TransactionManager;

@@ -1,4 +1,4 @@
-import { Db, ObjectId, ClientSession } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { TemplateDBO } from './DBOs/TemplateDBO.js';
@@ -77,11 +77,10 @@ class MongoTemplatesDAO extends MongoDataSource<TemplateDBO> {
   }
 
   async findUsingRelationTypeInProp(
-    relationTypeId: string,
-    session?: ClientSession
+    relationTypeId: string
   ): Promise<Pick<TemplateDBO, '_id' | 'name'>[]> {
     return this.getCollection()
-      .find({ 'properties.relationType': relationTypeId }, { projection: { name: 1 }, session })
+      .find({ 'properties.relationType': relationTypeId }, { projection: { name: 1 } })
       .toArray();
   }
 
@@ -138,6 +137,84 @@ class MongoTemplatesDAO extends MongoDataSource<TemplateDBO> {
 
     const title: PropertyDescriptor = { name: 'title', type: 'text' };
     return [title, ...fromTemplates];
+  }
+
+  async getTemplatesIdsHavingProperty(propertyName: string): Promise<string[]> {
+    const templates = await this.getCollection()
+      .find({ 'properties.name': propertyName }, { projection: { _id: 1 } })
+      .toArray();
+    return templates.map(template => template._id.toString());
+  }
+
+  async isPropertyUnique(property: PropertySchema): Promise<boolean> {
+    const count = await this.getCollection().countDocuments(
+      {
+        properties: {
+          $elemMatch: {
+            name: property.name,
+            type: property.type,
+            _id: { $ne: new ObjectId(property._id) },
+          },
+        },
+      },
+      { limit: 1 }
+    );
+
+    return count === 0;
+  }
+
+  async isTemplateUnique(name: string, excludingId?: string): Promise<boolean> {
+    const filter: any = { name };
+    if (excludingId) {
+      filter._id = { $ne: new ObjectId(excludingId) };
+    }
+
+    const count = await this.getCollection().countDocuments(filter, { limit: 1 });
+
+    return count === 0;
+  }
+
+  async findTemplatesReferencing(templateId: string): Promise<TemplateDBO[]> {
+    return this.getCollection().find({ 'properties.content': templateId }).toArray();
+  }
+
+  async getReferencePropertyNames(): Promise<string[]> {
+    const result = await this.getCollection()
+      .aggregate([
+        { $unwind: '$properties' },
+        {
+          $match: {
+            'properties.type': { $in: ['select', 'multiselect', 'relationship'] },
+          },
+        },
+        {
+          $group: {
+            _id: '$properties.name',
+          },
+        },
+      ])
+      .toArray();
+
+    return result.map((doc: any) => doc._id);
+  }
+
+  async findTemplateIdsUsingThesaurus(thesaurusId: string): Promise<ObjectId[]> {
+    const directTemplates = await this.getCollection()
+      .find({ 'properties.content': thesaurusId })
+      .project({ _id: 1 })
+      .toArray();
+
+    const relatedTemplates = await this.getCollection()
+      .find({
+        'properties.type': 'relationship',
+        'properties.content': { $in: directTemplates.map(t => t._id.toString()) },
+      })
+      .project({ _id: 1 })
+      .toArray();
+
+    const allTemplates = [...directTemplates, ...relatedTemplates];
+
+    return Array.from(new Set(allTemplates.map(t => t._id)));
   }
 }
 

@@ -83,12 +83,20 @@ export class PostgresQueryBuilder<TRow> {
     return this;
   }
 
+  private stripTenantId(row: Record<string, unknown>): Record<string, unknown> {
+    const { tenant_id: _, ...rest } = row;
+    return rest;
+  }
+
   async first(): Promise<TRow | undefined> {
-    return this.qb.first() as Promise<TRow | undefined>;
+    const row = await this.qb.first();
+    if (!row) return undefined;
+    return this.stripTenantId(row) as TRow;
   }
 
   async all(): Promise<TRow[]> {
-    return this.qb as Promise<TRow[]>;
+    const rows = (await this.qb) as Record<string, unknown>[];
+    return rows.map(r => this.stripTenantId(r)) as TRow[];
   }
 
   async count(): Promise<number> {
