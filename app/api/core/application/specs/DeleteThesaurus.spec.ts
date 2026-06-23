@@ -6,6 +6,7 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
+import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
@@ -133,6 +134,7 @@ describe('DeleteThesaurusUseCase', () => {
           const templatesDS = new MongoTemplatesDataSource({
             db: getConnection(),
             transactionManager,
+            dao: new MongoTemplatesDAO({ db: getConnection(), transactionManager }),
           });
 
           const sut = new DeleteThesaurusUseCase(

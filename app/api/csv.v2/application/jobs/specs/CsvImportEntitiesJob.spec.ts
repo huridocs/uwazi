@@ -16,7 +16,7 @@ import { RowErrorCode } from '../../../domain/CsvImportRowError.js';
 import { CsvImportEntitiesJob } from '../CsvImportEntitiesJob.js';
 import { CsvImportEntitiesJobFactory } from '../../../infrastructure/factories/CsvImportEntitiesJobFactory.js';
 import { cleanupCsvV2QueueJobsByImportIds } from '../../../specs/helpers/queueTestCleanup.js';
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -161,10 +161,7 @@ const expectImportState = (updatedImport: {
   expect(updatedImport.failure ?? undefined).toBeUndefined();
 };
 
-const fetchEntitiesByTemplate = async (
-  entitiesDS: MultiLanguageEntityDataSource,
-  templateId: string
-) => {
+const fetchEntitiesByTemplate = async (entitiesDS: EntitiesDataSource, templateId: string) => {
   const result = await entitiesDS.getEntitiesByTemplateId(templateId);
   return result.all();
 };

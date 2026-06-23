@@ -6,28 +6,28 @@ import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common
 import entities from '#api/entities/entities.js';
 import v1EntitiesModel from '#api/entities/entitiesModel.js';
 import { search } from '#api/search/index.js';
-import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { Db, ObjectId } from 'mongodb';
 import { MetadataSchema } from '#shared/types/commonTypes.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { EntitiesDataSource } from '../contracts/EntitiesDataSource.js';
-import { Entity, EntityMetadata, MetadataValue } from '../model/Entity.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { DeprecatedEntitiesDataSource } from '../contracts/DeprecatedEntitiesDataSource.js';
+import { DeprecatedEntity, EntityMetadata, MetadataValue } from '../model/Entity.js';
 import { EntityMappers } from './EntityMapper.js';
-import { EntityDBO, EntityJoinTemplate } from './schemas/EntityTypes.js';
+import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 
-export class MongoEntitiesDataSource
+export class MongoDeprecatedEntitiesDataSource
   extends MongoDataSource<EntityDBO>
-  implements EntitiesDataSource
+  implements DeprecatedEntitiesDataSource
 {
   protected collectionName = 'entities';
 
   private settingsDS: SettingsDataSource;
 
-  protected templatesDS: MongoTemplatesDataSource;
+  protected templatesDS: TemplatesDataSource;
 
   constructor(
     db: Db,
-    templatesDS: MongoTemplatesDataSource,
+    templatesDS: TemplatesDataSource,
     settingsDS: SettingsDataSource,
     transactionManager: MongoTransactionManager
   ) {
@@ -37,7 +37,7 @@ export class MongoEntitiesDataSource
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async updateEntities_OnlyUpdateAndReindex(entity: Entity) {
+  async updateEntities_OnlyUpdateAndReindex(entity: DeprecatedEntity) {
     // This is using V1 model and custom reindex here
     // this is a hack and should be changed as soon as we finish AT
     const entityToModify = await entities.getById(entity._id);
@@ -52,7 +52,7 @@ export class MongoEntitiesDataSource
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async updateEntity(entity: Entity) {
+  async updateEntity(entity: DeprecatedEntity) {
     // This is using V1 so that it gets denormalized to speed up development
     // this is a hack and should be changed as soon as we finish AT
     const entityToModify = await entities.getById(entity._id);
@@ -74,7 +74,7 @@ export class MongoEntitiesDataSource
   }
 
   async markMetadataAsChanged(
-    propData: Parameters<EntitiesDataSource['markMetadataAsChanged']>[0]
+    propData: Parameters<DeprecatedEntitiesDataSource['markMetadataAsChanged']>[0]
   ) {
     const stream = this.createBulkStream();
     for (let i = 0; i < propData.length; i += 1) {
@@ -97,17 +97,7 @@ export class MongoEntitiesDataSource
       sharedId: { $in: sharedIds },
     };
     if (language) match.language = language;
-    const cursor = this.getCollection().aggregate<EntityJoinTemplate>([
-      { $match: match },
-      {
-        $lookup: {
-          from: 'templates',
-          localField: 'template',
-          foreignField: '_id',
-          as: 'joinedTemplate',
-        },
-      },
-    ]);
+    const cursor = this.getCollection().find(match);
 
     return new MongoResultSet(cursor, async entity => EntityMappers.toModel(entity));
   }
@@ -158,7 +148,7 @@ export class MongoEntitiesDataSource
 
   // eslint-disable-next-line class-methods-use-this
   async updateMetadataValues(
-    id: Entity['_id'],
+    id: DeprecatedEntity['_id'],
     values: Record<string, { value: MetadataValue }[]>,
     title?: string
   ) {
@@ -181,7 +171,7 @@ export class MongoEntitiesDataSource
   }
 
   async updateObsoleteMetadataValues(
-    id: Entity['_id'],
+    id: DeprecatedEntity['_id'],
     values: Record<string, EntityMetadata[]>
   ): Promise<void> {
     const stream = this.createBulkStream();
