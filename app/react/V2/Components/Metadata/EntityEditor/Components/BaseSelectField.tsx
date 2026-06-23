@@ -1,7 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
-import { MultiselectList, MultiselectListOption, SearchSelect } from '#V2/Components/Forms/index.js';
+import {
+  MultiselectList,
+  MultiselectListOption,
+  SearchSelect,
+} from '#V2/Components/Forms/index.js';
 import { defaultSearch } from '#V2/Components/Forms/MultiselectList/MultiselectList.js';
 import { multiselectOptionsToSearchSelect } from './metadataSelectUtils.js';
 

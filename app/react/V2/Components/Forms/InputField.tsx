@@ -56,8 +56,7 @@ const InputField = React.forwardRef(
     const showError = Boolean(hasErrors || errorMessage);
 
     const hasValue = value !== undefined && value !== null && value !== '';
-    const showClearButton =
-      Boolean(clearFieldAction) && (clearable ?? (hasValue || !icon));
+    const showClearButton = Boolean(clearFieldAction) && (clearable ?? (hasValue || !icon));
     const showIcon = icon && (!clearFieldAction || !(clearable ?? hasValue));
     let backgroundColor = 'var(--color-theme-control-bg)';
     let textColor = 'var(--color-theme-control-text)';

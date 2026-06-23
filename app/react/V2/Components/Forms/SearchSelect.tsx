@@ -55,10 +55,7 @@ const SearchSelect = ({
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const allOptions = useMemo(
-    () => flattenSearchSelectOptions(options, groups),
-    [groups, options]
-  );
+  const allOptions = useMemo(() => flattenSearchSelectOptions(options, groups), [groups, options]);
 
   const selectedOption = allOptions.find(option => option.value === value);
   const hasSelection = Boolean(value && selectedOption);

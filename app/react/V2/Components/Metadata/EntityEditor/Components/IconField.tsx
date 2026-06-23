@@ -3,7 +3,11 @@ import { Controller, FieldValues, useFormContext } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
 import { Checkbox, SearchSelect } from '#V2/Components/Forms/index.js';
 import { iconSelectGroups } from '../functions/iconSelectOptions.js';
-import { iconFromSelection, selectionFromIcon, type EntityIcon } from '../functions/iconSelectUtils.js';
+import {
+  iconFromSelection,
+  selectionFromIcon,
+  type EntityIcon,
+} from '../functions/iconSelectUtils.js';
 
 type IconFieldFormValues = FieldValues & {
   showIcon: boolean;
