@@ -5,17 +5,17 @@ CREATE TABLE IF NOT EXISTS files (
   "filename"            TEXT NOT NULL,
   "mimetype"            TEXT NOT NULL,
   "size"                INTEGER NOT NULL DEFAULT 0,
-  "creation_date"       BIGINT NOT NULL DEFAULT 0,
+  "creationDate"       BIGINT NOT NULL DEFAULT 0,
   "type"                TEXT NOT NULL,
   "entity"              TEXT,
   "status"              TEXT,
-  "total_pages"         INTEGER,
+  "totalPages"         INTEGER,
   "language"            TEXT,
-  "generated_toc"       BOOLEAN,
+  "generatedToc"       BOOLEAN,
   "url"                 TEXT,
   "toc"                 JSONB,
-  "property_selections" JSONB,
-  "full_text"           JSONB,
+  "propertySelections" JSONB,
+  "fullText"           JSONB,
   PRIMARY KEY ("_id", "tenant_id")
 );
 

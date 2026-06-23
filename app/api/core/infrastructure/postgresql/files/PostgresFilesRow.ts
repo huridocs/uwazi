@@ -9,17 +9,17 @@ type FilesRow = {
   filename: string;
   mimetype: string;
   size: number;
-  creation_date: number;
+  creationDate: number;
   type: 'custom' | 'document' | 'thumbnail' | 'attachment';
   entity: string | null;
   status: 'processing' | 'failed' | 'ready' | null;
-  total_pages: number | null;
+  totalPages: number | null;
   language: LanguageISO6393 | null;
-  generated_toc: boolean | null;
+  generatedToc: boolean | null;
   url: string | null;
   toc: TableOfContent[] | null;
-  property_selections: PropertySelectionSchema[] | null;
-  full_text: Record<string, string> | null;
+  propertySelections: PropertySelectionSchema[] | null;
+  fullText: Record<string, string> | null;
 };
 
 export type { FilesRow };

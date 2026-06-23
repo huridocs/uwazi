@@ -28,16 +28,16 @@ describe('PostgresFilesMapper', () => {
         filename: 'doc.pdf',
         mimetype: 'application/pdf',
         size: 1024,
-        creation_date: 1234567890,
+        creationDate: 1234567890,
         type: 'document',
         entity: 'e1',
         status: 'ready',
-        total_pages: 10,
+        totalPages: 10,
         language: 'eng',
-        generated_toc: true,
+        generatedToc: true,
         toc: null,
-        property_selections: null,
-        full_text: null,
+        propertySelections: null,
+        fullText: null,
         url: null,
       });
     });
@@ -55,9 +55,9 @@ describe('PostgresFilesMapper', () => {
         type: 'document',
         entity: 'e2',
         status: 'processing',
-        total_pages: null,
+        totalPages: null,
         language: null,
-        generated_toc: null,
+        generatedToc: null,
       });
     });
 
@@ -138,20 +138,6 @@ describe('PostgresFilesMapper', () => {
       });
     });
 
-    it('should use snake_case keys', () => {
-      const doc = FileBuilder.processedDocument('doc-1');
-      const row = PostgresFilesMapper.toDBO(doc);
-
-      const keys = Object.keys(row);
-      expect(keys).toContain('creation_date');
-      expect(keys).toContain('total_pages');
-      expect(keys).toContain('property_selections');
-      expect(keys).toContain('full_text');
-      expect(keys).toContain('generated_toc');
-      expect(keys).not.toContain('creationDate');
-      expect(keys).not.toContain('totalPages');
-    });
-
     it('should store _id as string (no ObjectId conversion)', () => {
       const doc = FileBuilder.document('abc-123');
       const row = PostgresFilesMapper.toDBO(doc);
@@ -170,17 +156,17 @@ describe('PostgresFilesMapper', () => {
         filename: 'doc.pdf',
         mimetype: 'application/pdf',
         size: 1024,
-        creation_date: 1000,
+        creationDate: 1000,
         type: 'document',
         entity: 'e1',
         status: 'ready',
-        total_pages: 5,
+        totalPages: 5,
         language: 'eng',
-        generated_toc: false,
+        generatedToc: false,
         url: null,
         toc: null,
-        property_selections: null,
-        full_text: null,
+        propertySelections: null,
+        fullText: null,
       };
 
       const doc = PostgresFilesMapper.toDomain(row, contentLoader) as PDFDocument;
@@ -202,17 +188,17 @@ describe('PostgresFilesMapper', () => {
         filename: 'thumb.jpg',
         mimetype: 'image/jpeg',
         size: 3072,
-        creation_date: 1000,
+        creationDate: 1000,
         type: 'thumbnail',
         entity: 'e1',
         status: null,
-        total_pages: null,
+        totalPages: null,
         language: 'spa',
-        generated_toc: null,
+        generatedToc: null,
         url: null,
         toc: null,
-        property_selections: null,
-        full_text: null,
+        propertySelections: null,
+        fullText: null,
       };
 
       const thumb = PostgresFilesMapper.toDomain(row, contentLoader) as Thumbnail;
@@ -229,17 +215,17 @@ describe('PostgresFilesMapper', () => {
         filename: 'doc.pdf',
         mimetype: 'application/pdf',
         size: 1024,
-        creation_date: 1000,
+        creationDate: 1000,
         type: 'document',
         entity: 'e2',
         status: 'processing',
-        total_pages: null,
+        totalPages: null,
         language: null,
-        generated_toc: null,
+        generatedToc: null,
         url: null,
         toc: null,
-        property_selections: null,
-        full_text: null,
+        propertySelections: null,
+        fullText: null,
       };
 
       const doc = PostgresFilesMapper.toDomain(row, contentLoader) as PDFDocument;
@@ -258,17 +244,17 @@ describe('PostgresFilesMapper', () => {
         filename: 'file.pdf',
         mimetype: 'application/pdf',
         size: 2048,
-        creation_date: 1000,
+        creationDate: 1000,
         type: 'attachment',
         entity: 'e1',
         status: null,
-        total_pages: null,
+        totalPages: null,
         language: null,
-        generated_toc: null,
+        generatedToc: null,
         url: null,
         toc: null,
-        property_selections: null,
-        full_text: null,
+        propertySelections: null,
+        fullText: null,
       };
 
       const att = PostgresFilesMapper.toDomain(row, contentLoader) as FileAttachment;
@@ -286,17 +272,17 @@ describe('PostgresFilesMapper', () => {
         filename: 'url-doc.pdf',
         mimetype: 'application/pdf',
         size: 1024,
-        creation_date: 1000,
+        creationDate: 1000,
         type: 'attachment',
         entity: 'e1',
         status: null,
-        total_pages: null,
+        totalPages: null,
         language: null,
-        generated_toc: null,
+        generatedToc: null,
         url: 'https://example.com/doc.pdf',
         toc: null,
-        property_selections: null,
-        full_text: null,
+        propertySelections: null,
+        fullText: null,
       };
 
       const att = PostgresFilesMapper.toDomain(row, contentLoader) as URLAttachment;
@@ -314,17 +300,17 @@ describe('PostgresFilesMapper', () => {
         filename: 'thumb.jpg',
         mimetype: 'image/jpeg',
         size: 3072,
-        creation_date: 1000,
+        creationDate: 1000,
         type: 'thumbnail',
         entity: 'e1',
         status: null,
-        total_pages: null,
+        totalPages: null,
         language: 'eng',
-        generated_toc: null,
+        generatedToc: null,
         url: null,
         toc: null,
-        property_selections: null,
-        full_text: null,
+        propertySelections: null,
+        fullText: null,
       };
 
       const thumb = PostgresFilesMapper.toDomain(row, contentLoader) as Thumbnail;
@@ -343,17 +329,17 @@ describe('PostgresFilesMapper', () => {
         filename: 'custom.jpg',
         mimetype: 'image/jpeg',
         size: 3072,
-        creation_date: 1000,
+        creationDate: 1000,
         type: 'custom',
         entity: null,
         status: null,
-        total_pages: null,
+        totalPages: null,
         language: null,
-        generated_toc: null,
+        generatedToc: null,
         url: null,
         toc: null,
-        property_selections: null,
-        full_text: null,
+        propertySelections: null,
+        fullText: null,
       };
 
       const custom = PostgresFilesMapper.toDomain(row, contentLoader) as CustomUpload;
@@ -374,17 +360,17 @@ describe('PostgresFilesMapper', () => {
         filename: 'doc.pdf',
         mimetype: 'application/pdf',
         size: 1024,
-        creation_date: 1000,
+        creationDate: 1000,
         type: 'document',
         entity: 'e1',
         status: 'ready',
-        total_pages: 5,
+        totalPages: 5,
         language: 'eng',
-        generated_toc: true,
+        generatedToc: true,
         url: null,
         toc,
-        property_selections: propertySelections,
-        full_text: fullText,
+        propertySelections,
+        fullText,
       };
 
       const doc = PostgresFilesMapper.toDomain(row, contentLoader) as PDFDocument;
@@ -402,17 +388,17 @@ describe('PostgresFilesMapper', () => {
         filename: 'doc.pdf',
         mimetype: 'application/pdf',
         size: 1024,
-        creation_date: 1000,
+        creationDate: 1000,
         type: 'document',
         entity: 'e1',
         status: 'ready',
-        total_pages: 5,
+        totalPages: 5,
         language: 'eng',
-        generated_toc: false,
+        generatedToc: false,
         url: null,
         toc: null,
-        property_selections: null,
-        full_text: null,
+        propertySelections: null,
+        fullText: null,
       };
 
       const doc = PostgresFilesMapper.toDomain(row, contentLoader) as PDFDocument;

@@ -16,7 +16,7 @@ export class PostgresFilesMapper {
       filename: row.filename,
       mimetype: row.mimetype,
       size: Number(row.size),
-      creationDate: Number(row.creation_date),
+      creationDate: Number(row.creationDate),
     };
   }
 
@@ -29,11 +29,11 @@ export class PostgresFilesMapper {
             entity: row.entity!,
             status: 'ready',
             language: LanguageUtils.fromISO639_3(row.language!).ISO639_1,
-            totalPages: Number(row.total_pages!),
-            generatedToc: row.generated_toc ?? false,
+            totalPages: Number(row.totalPages!),
+            generatedToc: row.generatedToc ?? false,
             toc: row.toc ?? undefined,
-            propertySelections: row.property_selections ?? undefined,
-            fullText: row.full_text ?? undefined,
+            propertySelections: row.propertySelections ?? undefined,
+            fullText: row.fullText ?? undefined,
             content: contentLoader({ type: 'document', filename: row.filename }),
           });
         }
@@ -41,7 +41,7 @@ export class PostgresFilesMapper {
           ...this.baseFields(row),
           entity: row.entity!,
           status: row.status ?? 'processing',
-          propertySelections: row.property_selections ?? undefined,
+          propertySelections: row.propertySelections ?? undefined,
           content: contentLoader({ type: 'document', filename: row.filename }),
         });
       }
@@ -85,17 +85,17 @@ export class PostgresFilesMapper {
       filename: dto.filename,
       mimetype: dto.mimetype,
       size: dto.size,
-      creation_date: dto.creationDate,
+      creationDate: dto.creationDate,
       type: dto.type,
       entity: null,
       status: null,
-      total_pages: null,
+      totalPages: null,
       language: null,
-      generated_toc: null,
+      generatedToc: null,
       url: null,
       toc: null,
-      property_selections: null,
-      full_text: null,
+      propertySelections: null,
+      fullText: null,
     };
 
     switch (dto.type) {
@@ -103,14 +103,14 @@ export class PostgresFilesMapper {
         base.entity = dto.entity;
         base.status = dto.status;
         if (dto.status === 'ready') {
-          base.total_pages = dto.totalPages;
+          base.totalPages = dto.totalPages;
           base.language = dto.language;
-          base.generated_toc = dto.generatedToc;
+          base.generatedToc = dto.generatedToc;
           base.toc = dto.toc ?? null;
-          base.full_text = dto.fullText ?? null;
-          base.property_selections = dto.propertySelections ?? null;
+          base.fullText = dto.fullText ?? null;
+          base.propertySelections = dto.propertySelections ?? null;
         } else {
-          base.property_selections = dto.propertySelections ?? null;
+          base.propertySelections = dto.propertySelections ?? null;
         }
         break;
       case 'attachment':

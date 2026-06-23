@@ -100,8 +100,14 @@ const thesaurusNestedValues = (rootValue: string, children: Array<string>) => {
   return { id: rootValue, label: rootValue, values: nestedValues };
 };
 
-function getFixturesFactory() {
+type FixturesFactoryConfig = {
+  convertIdToString?: boolean;
+  tenantId?: string;
+};
+
+function getFixturesFactory(config?: FixturesFactoryConfig) {
   const idMapper = getIdMapper();
+  const { convertIdToString = false, tenantId } = config || {};
 
   return Object.freeze({
     id: idMapper,
@@ -229,6 +235,20 @@ function getFixturesFactory() {
             'Please pass a valid ISO639_1 Language to Factory.file, the factory will replace with the appropriate DB ISO639_3'
           );
         }
+      }
+
+      if (convertIdToString) {
+        return {
+          _id: id,
+          tenant_id: tenantId,
+          filename: id,
+          originalname: id,
+          mimetype: 'application/pdf',
+          size: 1024,
+          creationDate: 1000,
+          ...extra,
+          ...fileLanguage,
+        } as unknown as WithId<FileType>;
       }
 
       return {
