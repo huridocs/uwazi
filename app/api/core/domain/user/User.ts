@@ -42,4 +42,5 @@ class User {
   }
 }
 
+export type { UserRole };
 export { User };

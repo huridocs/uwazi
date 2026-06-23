@@ -1,9 +1,10 @@
 import { ObjectId } from 'mongodb';
+import { UserRole } from '#api/core/domain/user/User.js';
 
 interface UserDBO {
   _id: ObjectId;
   username: string;
-  role: string;
+  role: UserRole;
   email: string;
   password?: string | null;
   using2fa?: boolean;
