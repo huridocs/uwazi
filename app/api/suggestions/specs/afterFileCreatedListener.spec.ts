@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
@@ -58,6 +59,29 @@ describe('AfterFileUpdatedListener', () => {
       await eventBus.emit(new FileUpdatedEvent({ before, after }));
 
       expect(createBlankSuggestionsFromDocument.execute).toHaveBeenCalledWith({ file: after });
+    });
+
+    it('should cast string file _id to ObjectId before creating blank suggestions', async () => {
+      const { createBlankSuggestionsFromDocument, eventBus } = createSut();
+      const before = factory.document('document_1', {
+        entity: 'entity_1',
+        status: 'processing',
+      });
+
+      const after = {
+        ...factory.document('document_1', {
+          entity: 'entity_1',
+          language: 'en',
+          status: 'ready',
+        }),
+        _id: factory.idString('document_1'),
+      };
+
+      await eventBus.emit(new FileUpdatedEvent({ before, after }));
+
+      expect(createBlankSuggestionsFromDocument.execute).toHaveBeenCalledWith({
+        file: expect.objectContaining({ _id: expect.any(ObjectId) }),
+      });
     });
 
     it('should not call CreateBlankSuggestionsFromDocument for Files different from Documents', async () => {
