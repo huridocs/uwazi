@@ -4,7 +4,6 @@ import { encryptPassword } from '#api/auth/encryptPassword.js';
 import { User } from '../domain/user/User.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { UsersDataSource } from './contracts/UsersDataSource.js';
-import { EmailInUse, UsernameExists } from '../domain/user/errors.js';
 import { UsergroupsDataSource } from './contracts/UsergroupsDataSource.js';
 
 const UserCreateSchema = z.object({
@@ -31,16 +30,11 @@ class CreateUser extends AbstractUseCase<Input, Output, Dependencies> {
 
     const user = new User({ _id: this.idGenerator.generate(), ...userData });
 
-    const usernameExists = await this.deps.usersDS.checkUniqueUsername(user);
-    const emailInUse = await this.deps.usersDS.checkUniqueEmail(user);
+    const usernameResult = await this.deps.usersDS.checkUniqueUsername(user);
+    usernameResult.getDataOrThrow();
 
-    if (usernameExists) {
-      throw new UsernameExists(user.username);
-    }
-
-    if (emailInUse) {
-      throw new EmailInUse(user.email);
-    }
+    const emailResult = await this.deps.usersDS.checkUniqueEmail(user);
+    emailResult.getDataOrThrow();
 
     const rawPassword = password ?? randomBytes(32).toString('hex');
     const encryptedPassword = await encryptPassword(rawPassword);

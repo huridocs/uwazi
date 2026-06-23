@@ -6,6 +6,8 @@ import {
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { UsersDataSource } from '#api/core/application/contracts/UsersDataSource.js';
 import { User } from '#api/core/domain/user/User.js';
+import { EmailInUse, UsernameExists } from '#api/core/domain/user/errors.js';
+import { Result } from '#api/core/libs/Result.js';
 import { UserDBO } from './UserDBO.js';
 import { MongoUsersMapper } from './MongoUsersMapper.js';
 
@@ -16,14 +18,20 @@ class MongoUsersDataSource extends MongoDataSource<UserDBO> implements UsersData
     super(db, transactionManager, options);
   }
 
-  async checkUniqueUsername(user: User): Promise<Boolean> {
+  async checkUniqueUsername(user: User) {
     const userInDb = await this.getCollection<UserDBO>().findOne({ username: user.username });
-    return Boolean(userInDb);
+    if (userInDb) {
+      return Result.fail(new UsernameExists(user.username));
+    }
+    return Result.ok(true);
   }
 
-  async checkUniqueEmail(user: User): Promise<Boolean> {
+  async checkUniqueEmail(user: User) {
     const userInDb = await this.getCollection<UserDBO>().findOne({ email: user.email });
-    return Boolean(userInDb);
+    if (userInDb) {
+      return Result.fail(new EmailInUse(user.email));
+    }
+    return Result.ok(true);
   }
 
   async insert(user: User): Promise<void> {
