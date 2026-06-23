@@ -1,9 +1,10 @@
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
 import { UserRole } from '#shared/types/userSchema.js';
 
 const f = getFixturesFactory();
 
-const fixtures = {
+const fixtures: DBFixture = {
   users: [f.user('existinguser', UserRole.EDITOR, 'existing@test.com')],
   settings: [
     {
