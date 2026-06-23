@@ -19,11 +19,9 @@ interface InputFieldProps {
   preText?: string | React.ReactNode;
   name?: string;
   clearFieldAction?: () => void;
-  clearable?: boolean;
   icon?: React.ReactNode;
   onChange?: ChangeEventHandler<HTMLInputElement>;
   onSelect?: ChangeEventHandler<HTMLInputElement>;
-  onFocus?: ChangeEventHandler<HTMLInputElement>;
   onBlur?: ChangeEventHandler<HTMLInputElement>;
 }
 
@@ -44,11 +42,9 @@ const InputField = React.forwardRef(
       autoComplete = 'on',
       name = '',
       clearFieldAction,
-      clearable,
       icon,
       onChange = () => {},
       onSelect = () => {},
-      onFocus = () => {},
       onBlur = () => {},
     }: InputFieldProps,
     ref: Ref<HTMLInputElement>
@@ -56,8 +52,8 @@ const InputField = React.forwardRef(
     const showError = Boolean(hasErrors || errorMessage);
 
     const hasValue = value !== undefined && value !== null && value !== '';
-    const showClearButton = Boolean(clearFieldAction) && (clearable ?? (hasValue || !icon));
-    const showIcon = icon && (!clearFieldAction || !(clearable ?? hasValue));
+    const showClearButton = Boolean(clearFieldAction) && (hasValue || !icon);
+    const showIcon = icon && (!clearFieldAction || !hasValue);
     let backgroundColor = 'var(--color-theme-control-bg)';
     let textColor = 'var(--color-theme-control-text)';
 
@@ -109,7 +105,6 @@ const InputField = React.forwardRef(
             id={id}
             onSelect={onSelect}
             onChange={onChange}
-            onFocus={onFocus}
             onBlur={onBlur}
             name={name}
             ref={ref}
