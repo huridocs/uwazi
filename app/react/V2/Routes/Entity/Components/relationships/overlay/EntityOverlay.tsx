@@ -52,30 +52,26 @@ const EntityOverlay = () => {
     };
   }, [closeEntityOverlay, isOpen]);
 
+  if (!isOpen) return null;
+
   return (
     <>
       <div
         className="absolute inset-0 z-20 transition-opacity duration-200"
         style={{
           backgroundColor: 'color-mix(in srgb, var(--text-primary) 15%, transparent)',
-          opacity: isOpen ? 1 : 0,
-          pointerEvents: isOpen ? 'auto' : 'none',
         }}
         onClick={closeEntityOverlay}
-        aria-hidden={!isOpen}
       />
       <div
         ref={panelRef}
         data-testid="entity-overlay"
-        className="absolute top-0 right-0 bottom-0 z-21 flex flex-col bg-paper transition-transform duration-250 ease-out"
+        className="absolute top-0 right-0 bottom-0 z-[21] flex flex-col bg-paper transition-transform duration-250 ease-out"
         style={{
           width: 'calc(100% - 12px)',
-          transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
           borderLeft: '1px solid var(--border-primary)',
-          boxShadow: isOpen ? '-4px 0 16px rgba(0,0,0,0.08)' : 'none',
-          pointerEvents: isOpen ? 'auto' : 'none',
+          boxShadow: '-4px 0 16px rgba(0,0,0,0.08)',
         }}
-        aria-hidden={!isOpen}
       >
         <div
           className="flex shrink-0 items-center justify-between px-4 py-3"
@@ -107,7 +103,7 @@ const EntityOverlay = () => {
             <Translate>NO DATA AVAILABLE</Translate>
           </div>
         )}
-        {entity && !loading && isOpen && (
+        {entity && !loading && (
           <EntityOverlayContent
             entity={entity}
             referenceMarkers={referenceMarkers}

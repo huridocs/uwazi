@@ -53,8 +53,8 @@ describe('Entity overlay', () => {
   it('closes via the Close button', () => {
     cy.contains('Person 1').click();
     cy.get('[aria-label="Preview entity"]').first().click({ force: true });
-    cy.get('[data-testid="entity-overlay"]').should('have.attr', 'aria-hidden', 'false');
+    cy.get('[data-testid="entity-overlay"]').should('be.visible');
     cy.get('[data-testid="entity-overlay"]').find('button[aria-label="Close"]').click();
-    cy.get('[data-testid="entity-overlay"]').should('have.attr', 'aria-hidden', 'true');
+    cy.get('[data-testid="entity-overlay"]').should('not.exist');
   });
 });
