@@ -152,6 +152,50 @@ const fixtures: DBFixture = {
       generatedToc: false,
       fullText: { 1: 'page one', 2: 'page two' },
     }),
+    // deletePropertySelections
+    factory.document('del-prop-doc', {
+      entity: 'prop-e',
+      status: 'ready',
+      propertySelections: [{ name: 'propA' }, { name: 'propB' }],
+    }),
+    factory.document('del-prop-other', {
+      entity: 'prop-e',
+      status: 'ready',
+      propertySelections: [{ name: 'propA' }],
+      // @ts-expect-error tenant_id is a PG column not in FileType
+      tenant_id: 'other-tenant',
+    }),
+    factory.document('del-prop-null', {
+      entity: 'prop-e',
+      status: 'ready',
+    }),
+    factory.document('del-prop-empty', {
+      entity: 'prop-e',
+      status: 'ready',
+      propertySelections: [],
+    }),
+    // renamePropertySelections
+    factory.document('ren-prop-doc', {
+      entity: 'rename-e',
+      status: 'ready',
+      propertySelections: [{ name: 'oldA' }, { name: 'oldB' }],
+    }),
+    factory.document('ren-prop-other', {
+      entity: 'rename-e',
+      status: 'ready',
+      propertySelections: [{ name: 'oldA' }],
+      // @ts-expect-error tenant_id is a PG column not in FileType
+      tenant_id: 'other-tenant',
+    }),
+    factory.document('ren-prop-null', {
+      entity: 'rename-e',
+      status: 'ready',
+    }),
+    factory.document('ren-prop-empty', {
+      entity: 'rename-e',
+      status: 'ready',
+      propertySelections: [],
+    }),
   ],
 };
 
@@ -889,6 +933,115 @@ describe('PostgresFilesDataSource', () => {
       ]);
 
       expect(result).toBe(false);
+    });
+  });
+
+  describe('deletePropertySelections', () => {
+    it('should remove matching property selections', async () => {
+      const { sut } = createSut();
+      await sut.deletePropertySelections(['propA'], ['prop-e']);
+      const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
+      const row = rows.find(r => r._id === 'del-prop-doc');
+      expect(row!.propertySelections).toEqual([{ name: 'propB' }]);
+    });
+
+    it('should remove all matching names when multiple match', async () => {
+      const { sut } = createSut();
+      await sut.deletePropertySelections(['propA', 'propB'], ['prop-e']);
+      const row = (await testingPG.getAllFrom<Record<string, unknown>>('files')).find(
+        r => r._id === 'del-prop-doc'
+      );
+      expect(row!.propertySelections).toEqual([]);
+    });
+
+    it('should no-op when entity is not in list', async () => {
+      const { sut } = createSut();
+      await sut.deletePropertySelections(['propA'], ['other-e']);
+      const row = (await testingPG.getAllFrom<Record<string, unknown>>('files')).find(
+        r => r._id === 'del-prop-doc'
+      );
+      expect(row!.propertySelections).toEqual([{ name: 'propA' }, { name: 'propB' }]);
+    });
+
+    it('should no-op when propertySelections is null', async () => {
+      const { sut } = createSut();
+      await sut.deletePropertySelections(['propA'], ['prop-e']);
+      const row = (await testingPG.getAllFrom<Record<string, unknown>>('files')).find(
+        r => r._id === 'del-prop-null'
+      );
+      expect(row!.propertySelections).toBeNull();
+    });
+
+    it('should no-op when propertySelections is empty array', async () => {
+      const { sut } = createSut();
+      await sut.deletePropertySelections(['propA'], ['prop-e']);
+      const row = (await testingPG.getAllFrom<Record<string, unknown>>('files')).find(
+        r => r._id === 'del-prop-empty'
+      );
+      expect(row!.propertySelections).toEqual([]);
+    });
+
+    it('should not affect rows from another tenant', async () => {
+      const { sut } = createSut();
+      await sut.deletePropertySelections(['propA'], ['prop-e']);
+      const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
+      const otherRow = rows.find(r => r._id === 'del-prop-other');
+      expect(otherRow!.propertySelections).toEqual([{ name: 'propA' }]);
+    });
+  });
+
+  describe('renamePropertySelections', () => {
+    it('should rename matching property names', async () => {
+      const { sut } = createSut();
+      await sut.renamePropertySelections({ oldA: 'newA' }, ['rename-e']);
+      const row = (await testingPG.getAllFrom<Record<string, unknown>>('files')).find(
+        r => r._id === 'ren-prop-doc'
+      );
+      expect(row!.propertySelections).toEqual([{ name: 'newA' }, { name: 'oldB' }]);
+    });
+
+    it('should rename multiple properties at once', async () => {
+      const { sut } = createSut();
+      await sut.renamePropertySelections({ oldA: 'newA', oldB: 'newB' }, ['rename-e']);
+      const row = (await testingPG.getAllFrom<Record<string, unknown>>('files')).find(
+        r => r._id === 'ren-prop-doc'
+      );
+      expect(row!.propertySelections).toEqual([{ name: 'newA' }, { name: 'newB' }]);
+    });
+
+    it('should no-op when entity is not in list', async () => {
+      const { sut } = createSut();
+      await sut.renamePropertySelections({ oldA: 'newA' }, ['other-e']);
+      const row = (await testingPG.getAllFrom<Record<string, unknown>>('files')).find(
+        r => r._id === 'ren-prop-doc'
+      );
+      expect(row!.propertySelections).toEqual([{ name: 'oldA' }, { name: 'oldB' }]);
+    });
+
+    it('should no-op when propertySelections is null', async () => {
+      const { sut } = createSut();
+      await sut.renamePropertySelections({ oldA: 'newA' }, ['rename-e']);
+      const row = (await testingPG.getAllFrom<Record<string, unknown>>('files')).find(
+        r => r._id === 'ren-prop-null'
+      );
+      expect(row!.propertySelections).toBeNull();
+    });
+
+    it('should no-op when propertySelections is empty array', async () => {
+      const { sut } = createSut();
+      await sut.renamePropertySelections({ oldA: 'newA' }, ['rename-e']);
+      const row = (await testingPG.getAllFrom<Record<string, unknown>>('files')).find(
+        r => r._id === 'ren-prop-empty'
+      );
+      expect(row!.propertySelections).toEqual([]);
+    });
+
+    it('should not affect rows from another tenant', async () => {
+      const { sut } = createSut();
+      await sut.renamePropertySelections({ oldA: 'newA' }, ['rename-e']);
+      const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
+      const otherRow = rows.find(r => r._id === 'ren-prop-other');
+      expect(otherRow!.propertySelections).toEqual([{ name: 'oldA' }]);
     });
   });
 });

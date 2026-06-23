@@ -17,6 +17,15 @@ export class PostgresQueryBuilder<TRow> {
     return this;
   }
 
+  whereAny(conditions: Record<string, unknown>[]): this {
+    this.qb = this.qb.where(knex =>
+      conditions.forEach((condition, i) =>
+        i === 0 ? knex.where(condition) : knex.orWhere(condition)
+      )
+    );
+    return this;
+  }
+
   whereNot(column: string, value: unknown): this {
     this.qb = this.qb.whereNot(column, value as Knex.Value);
     return this;

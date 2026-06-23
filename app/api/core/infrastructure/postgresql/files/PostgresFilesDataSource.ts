@@ -80,8 +80,6 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
     });
   }
 
-  // ---- Write methods ----
-
   async create(file: BaseFile): Promise<void> {
     await this.table.insert(PostgresFilesMapper.toDBO(file));
     this.setFilesToReindex([file]);
@@ -119,8 +117,6 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
       .delete();
     this.setFilesToReindex(files);
   }
-
-  // ---- Single-result query methods ----
 
   async getById<T extends BaseFile = BaseFile>(id: string): Promise<ResultType<T, FileNotFound>> {
     const row = await this.table
@@ -174,18 +170,13 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
     return Result.ok(this.toDomain(row) as PDFDocument);
   }
 
-  // ---- Collection query methods ----
-
   async filesExistForEntities(files: { entity: string; _id: string }[]): Promise<boolean> {
     if (!files.length) return true;
-    for (const file of files) {
-      const count = await this.table
-        .query<FilesRow>()
-        .where({ _id: file._id, entity: file.entity })
-        .count();
-      if (count === 0) return false;
-    }
-    return true;
+    const count = await this.table
+      .query()
+      .whereAny(files.map(f => ({ _id: f._id, entity: f.entity })))
+      .count();
+    return count === files.length;
   }
 
   async getAll(): Promise<BaseFile[]> {
@@ -255,19 +246,47 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
     return rows.map(row => this.toDomain(row) as Thumbnail);
   }
 
-  // ---- Deferred methods ----
-
   async deletePropertySelections(
-    _entityPropertyNames: string[],
-    _entitySharedIds: string[]
+    entityPropertyNames: string[],
+    entitySharedIds: string[]
   ): Promise<void> {
-    throw new Error('Not implemented');
+    if (!entityPropertyNames.length || !entitySharedIds.length) return;
+
+    const propPlaceholders = entityPropertyNames.map(() => '?').join(', ');
+    const entityPlaceholders = entitySharedIds.map(() => '?').join(', ');
+
+    const bindings: unknown[] = [this.table.tableName];
+    entityPropertyNames.forEach(name => bindings.push(name));
+    entitySharedIds.forEach(id => bindings.push(id));
+    bindings.push(this.table.tenantId);
+
+    await this.table.raw(
+      // eslint-disable-next-line max-len
+      `UPDATE ?? SET "propertySelections" = (SELECT COALESCE(jsonb_agg(elem), '[]'::jsonb) FROM jsonb_array_elements("propertySelections") elem WHERE NOT (elem->>'name' IN (${propPlaceholders}))) WHERE "entity" IN (${entityPlaceholders}) AND "tenant_id" = ? AND jsonb_array_length("propertySelections") > 0`,
+      bindings
+    );
   }
 
   async renamePropertySelections(
-    _renamedPropertyNames: { [previousName: string]: string },
-    _entitySharedIds: string[]
+    renamedPropertyNames: { [previousName: string]: string },
+    entitySharedIds: string[]
   ): Promise<void> {
-    throw new Error('Not implemented');
+    const entries = Object.entries(renamedPropertyNames);
+    if (!entries.length || !entitySharedIds.length) return;
+
+    const cases: string[] = [];
+    const bindings: unknown[] = [this.table.tableName];
+    entries.forEach(([oldName, newName]) => {
+      cases.push("WHEN elem->>'name' = ? THEN jsonb_set(elem, '{name}', to_jsonb(?::text))");
+      bindings.push(oldName, newName);
+    });
+    const entityPlaceholders = entitySharedIds.map(() => '?').join(', ');
+    entitySharedIds.forEach(id => bindings.push(id));
+    bindings.push(this.table.tenantId);
+
+    await this.table.raw(
+      `UPDATE ?? SET "propertySelections" = (SELECT COALESCE(jsonb_agg(CASE ${cases.join(' ')} ELSE elem END), '[]'::jsonb) FROM jsonb_array_elements("propertySelections") elem) WHERE "entity" IN (${entityPlaceholders}) AND "tenant_id" = ? AND jsonb_array_length("propertySelections") > 0`,
+      bindings
+    );
   }
 }
