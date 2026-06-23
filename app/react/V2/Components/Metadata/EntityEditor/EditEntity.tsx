@@ -11,6 +11,7 @@ import { resolvePropertyMetadataValues } from '#V2/formatters/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import {
   TextField,
+  IconField,
   SelectField,
   TemplateField,
   MultiselectField,
@@ -29,10 +30,13 @@ import {
   type FormMetadataProperty,
 } from './functions/formatMetadataForForm.js';
 import { toMetadataObjectSchema } from './functions/toMetadataObjectSchema.js';
+import { EMPTY_ICON, hasEntityIcon, type EntityIcon } from './functions/iconSelectUtils.js';
 
 type EditEntityFormValues = {
   title: Entity['title'];
   template: Entity['template'];
+  showIcon: boolean;
+  icon: EntityIcon;
   metadata: Record<string, MetadataValue[]>;
 };
 
@@ -112,6 +116,8 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
     defaultValues: {
       title: entity?.title || '',
       template: entity?.template || '',
+      showIcon: hasEntityIcon(entity?.icon),
+      icon: entity?.icon ?? EMPTY_ICON,
       metadata: formatMetadataForForm(
         templates
           .find(template => template._id === entity?.template)
@@ -171,6 +177,7 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
         ...entity,
         title: values.title || entity.title,
         template: values.template || entity.template,
+        icon: (values.showIcon ? values.icon : EMPTY_ICON) as Entity['icon'],
         metadata: formatMetadataForEntity(values.metadata, metadataProperties),
       });
     }
@@ -192,6 +199,8 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
           disabled={disabled}
           type="text"
         />
+
+        <IconField disabled={disabled} />
 
         <TemplateField<EditEntityFormValues>
           context="System"
