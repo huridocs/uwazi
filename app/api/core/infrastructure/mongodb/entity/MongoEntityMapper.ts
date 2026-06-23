@@ -1,12 +1,13 @@
 /* eslint-disable max-classes-per-file */
 import { ObjectId } from 'mongodb';
-import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
+import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import { Entity, EntityIcon } from '#api/core/domain/entity/Entity.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { EntityTranslationProps } from '#api/core/domain/entity/EntityTranslation.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
 import { TemplateDBO } from '../template/DBOs/TemplateDBO.js';
+import { TemplateRow } from '#api/core/infrastructure/postgresql/template/PostgresTemplateMapper.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
 import { MongoTemplateMapper } from '../template/MongoTemplateMapper.js';
 import { MongoRelationshipMetadataMapper } from './MongoRelationshipMetadataMapper.js';
@@ -108,8 +109,11 @@ class MongoEntityMapper {
     }));
   }
 
-  static toDomain(entityDbo: EntityDBO[], templateDbo: TemplateDBO): Entity {
-    const template = MongoTemplateMapper.toDomain(templateDbo);
+  static toDomain(entityDbo: EntityDBO[], templateDbo: TemplateDBO | TemplateRow): Entity {
+    const template = MongoTemplateMapper.toDomain({
+      ...templateDbo,
+      _id: new ObjectId(templateDbo._id),
+    });
     const userId = entityDbo[0].user?.toHexString();
     const { sharedId, generatedToc } = entityDbo[0];
 

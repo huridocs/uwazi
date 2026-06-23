@@ -646,11 +646,12 @@ const fixtures: DBFixture = {
       _id: db.id(),
       site_name: 'Uwazi',
       languages,
+      newNameGeneration: true,
     },
   ],
   dictionaries: [
     { _id: thesauriId1, name: 'options' },
-    { _id: thesauriId2, name: 'options' },
+    { _id: thesauriId2, name: 'options 2' },
   ],
   files: [
     {

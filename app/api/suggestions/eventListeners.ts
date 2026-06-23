@@ -11,6 +11,7 @@ import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 import { Suggestions } from './suggestions.js';
 import { AfterFileUpdatedListener } from './listeners/afterFileCreatedListener.js';
 import { CreateBlankSuggestionsFromDocument } from './useCases/createBlankSuggestionsFromDocument.js';
@@ -31,7 +32,9 @@ const registerEventListeners = (eventsBus: EventsBus) => {
       transactionManager: TransactionManagerFactory.default(),
     }),
     logger: LoggerFactory.default(),
-    updateSuggestionsAfterEntityUpdate: new UpdateSuggestionsAfterEntityUpdate(),
+    updateSuggestionsAfterEntityUpdate: new UpdateSuggestionsAfterEntityUpdate(
+      TemplatesDAOFactory.default()
+    ),
     processSuggestionsAfterTemplateChanged: new ProcessSuggestionsAfterTemplateChanged(),
   })).start();
 

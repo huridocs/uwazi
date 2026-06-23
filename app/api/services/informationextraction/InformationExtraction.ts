@@ -585,6 +585,10 @@ class InformationExtraction {
           fileId: segmentation.fileID,
         });
 
+        if (!originalSuggestion) {
+          return Promise.resolve();
+        }
+
         const currentSuggestion = await this.appendSuggestionModelData(
           extractor,
           originalSuggestion

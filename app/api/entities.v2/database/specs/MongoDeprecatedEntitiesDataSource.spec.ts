@@ -1,3 +1,4 @@
+import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { partialImplementation } from '#api/common.v2/testing/partialImplementation.js';
 import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
@@ -8,7 +9,7 @@ import testingDB from '#api/utils/testing_db.js';
 import { MetadataSchema } from '#shared/types/commonTypes.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { MongoEntitiesDataSource } from '../MongoEntitiesDataSource.js';
+import { MongoDeprecatedEntitiesDataSource } from '../MongoDeprecatedEntitiesDataSource.js';
 
 const factory = getFixturesFactory();
 
@@ -155,11 +156,12 @@ describe('Relationship fields caching strategy', () => {
       const settingsDsMock = partialImplementation<MongoSettingsDataSource>({});
       const db = getConnection();
       const transactionManager = TransactionManagerFactory.default();
-      const ds = new MongoEntitiesDataSource(
+      const ds = new MongoDeprecatedEntitiesDataSource(
         db,
         new MongoTemplatesDataSource({
           db,
           transactionManager,
+          dao: new MongoTemplatesDAO({ db, transactionManager }),
         }),
         settingsDsMock,
         transactionManager
@@ -201,11 +203,12 @@ describe('Relationship fields caching strategy', () => {
       const settingsDsMock = partialImplementation<MongoSettingsDataSource>({});
       const db = getConnection();
       const transactionManager = TransactionManagerFactory.default();
-      const ds = new MongoEntitiesDataSource(
+      const ds = new MongoDeprecatedEntitiesDataSource(
         db,
         new MongoTemplatesDataSource({
           db,
           transactionManager,
+          dao: new MongoTemplatesDAO({ db, transactionManager }),
         }),
         settingsDsMock,
         transactionManager
@@ -276,11 +279,12 @@ describe('Relationship fields caching strategy', () => {
       const settingsDsMock = partialImplementation<MongoSettingsDataSource>({});
       const db = getConnection();
       const tm = TransactionManagerFactory.default();
-      const ds = new MongoEntitiesDataSource(
+      const ds = new MongoDeprecatedEntitiesDataSource(
         db,
         new MongoTemplatesDataSource({
           db,
           transactionManager: tm,
+          dao: new MongoTemplatesDAO({ db, transactionManager: tm }),
         }),
         settingsDsMock,
         tm
@@ -387,11 +391,12 @@ describe('When checking for the existence of entities', () => {
     async ({ ids, expected }) => {
       const db = getConnection();
       const transactionManager = TransactionManagerFactory.default();
-      const ds = new MongoEntitiesDataSource(
+      const ds = new MongoDeprecatedEntitiesDataSource(
         db,
         new MongoTemplatesDataSource({
           db,
           transactionManager,
+          dao: new MongoTemplatesDAO({ db, transactionManager }),
         }),
         partialImplementation<MongoSettingsDataSource>({
           async getLanguageKeys() {
@@ -409,11 +414,12 @@ describe('When checking for the existence of entities', () => {
 it('should return the sharedIds of the entities that have a particular id within their denormalized values in a metatata prop', async () => {
   const db = getConnection();
   const transactionManager = TransactionManagerFactory.default();
-  const ds = new MongoEntitiesDataSource(
+  const ds = new MongoDeprecatedEntitiesDataSource(
     db,
     new MongoTemplatesDataSource({
       db,
       transactionManager,
+      dao: new MongoTemplatesDAO({ db, transactionManager }),
     }),
     partialImplementation<MongoSettingsDataSource>({
       async getLanguageKeys() {
@@ -433,11 +439,12 @@ it('should return the sharedIds of the entities that have a particular id within
 it('should update the denormalizations value in all related entities', async () => {
   const db = getConnection();
   const transactionManager = TransactionManagerFactory.default();
-  const ds = new MongoEntitiesDataSource(
+  const ds = new MongoDeprecatedEntitiesDataSource(
     db,
     new MongoTemplatesDataSource({
       db,
       transactionManager,
+      dao: new MongoTemplatesDAO({ db, transactionManager }),
     }),
     partialImplementation<MongoSettingsDataSource>({
       async getLanguageKeys() {
@@ -514,11 +521,12 @@ it('should update the denormalizations value in all related entities', async () 
 it('should return records containing the obsoleteMetadata', async () => {
   const db = getConnection();
   const transactionManager = TransactionManagerFactory.default();
-  const ds = new MongoEntitiesDataSource(
+  const ds = new MongoDeprecatedEntitiesDataSource(
     db,
     new MongoTemplatesDataSource({
       db,
       transactionManager,
+      dao: new MongoTemplatesDAO({ db, transactionManager }),
     }),
     partialImplementation<MongoSettingsDataSource>({
       async getLanguageKeys() {
