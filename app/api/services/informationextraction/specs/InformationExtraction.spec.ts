@@ -1,6 +1,6 @@
 /* eslint-disable global-require */
 /* eslint-disable max-statements */
-/* eslint-disable max-lines */
+
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 
@@ -1918,6 +1918,42 @@ describe('InformationExtraction', () => {
       });
       expect(suggestions.length).toBe(1);
       expect(suggestions[0].language).toBe('en');
+    });
+
+    it('should skip PDF results when original suggestion is missing', async () => {
+      const orphanSuggestionText = 'should_not_create_malformed_suggestion';
+
+      setIXServiceResults([
+        {
+          text: orphanSuggestionText,
+          xml_file_name: 'documentA.xml',
+          segment_text: 'segment_for_missing_original',
+        },
+      ]);
+
+      await IXSuggestionsModel.delete({
+        extractorId: factory.id('prop1extractor'),
+        entityId: 'A1',
+        fileId: factory.id('F1'),
+      });
+
+      await informationExtraction.processResults({
+        params: { id: factory.id('prop1extractor').toString() },
+        tenant: 'tenant1',
+        task: 'suggestions',
+        success: true,
+        data_url: 'http://localhost:1234/suggestions_results',
+      });
+
+      const malformedSuggestions = await testingDB
+        .mongodb!.collection('ixsuggestions')
+        .find({
+          suggestedValue: orphanSuggestionText,
+          extractorId: { $exists: false },
+        })
+        .toArray();
+
+      expect(malformedSuggestions).toHaveLength(0);
     });
 
     it('should store failed suggestions', async () => {
