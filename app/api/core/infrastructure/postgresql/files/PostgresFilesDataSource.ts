@@ -1,6 +1,5 @@
 /* eslint-disable max-lines */
-import { PostgresConnectionConfig } from '../common/PostgresTable.js';
-import { PostgresDataSource } from '../common/PostgresDataSource.js';
+import { PostgresDataSource, PostgresDataSourceDeps } from '../common/PostgresDataSource.js';
 import { FileStorage } from '../../../application/contracts/FileStorage.js';
 import { TransactionManager } from '../../../application/contracts/TransactionManager.js';
 import { MongoTransactionManager } from '../../mongodb/common/MongoTransactionManager.js';
@@ -17,6 +16,11 @@ import { FileNotFound, ProcessingFileNotFound } from '../../../domain/files/erro
 import { search } from '#api/search/index.js';
 import { PostgresFilesMapper } from './PostgresFilesMapper.js';
 import type { FilesRow } from './PostgresFilesRow.js';
+
+type Deps = {
+  transactionManager: TransactionManager;
+  fileStorage: FileStorage;
+} & PostgresDataSourceDeps;
 
 export class PostgresFilesDataSource extends PostgresDataSource implements FilesDataSource {
   protected tableName = 'files';
@@ -46,16 +50,9 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
 
   private filesToReindex = new Set<BaseFile>();
 
-  constructor(deps: {
-    connection: PostgresConnectionConfig;
-    tenantId: string;
-    transactionManager: TransactionManager;
-    fileStorage: FileStorage;
-  }) {
-    super({
-      connection: deps.connection,
-      tenantId: deps.tenantId,
-    });
+  constructor(deps: Deps) {
+    super(deps);
+
     this.transactionManager = deps.transactionManager as MongoTransactionManager;
     this.fileStorage = deps.fileStorage;
 

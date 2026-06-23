@@ -161,7 +161,6 @@ describe('PostgresFilesDataSource', () => {
   });
 
   beforeEach(async () => {
-    await testingEnvironment.setUp({});
     await testingPG.clear(['files']);
     await testingPG.setFixtures(fixtures);
   });

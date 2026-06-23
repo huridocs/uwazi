@@ -7,7 +7,13 @@ type SyncOptions = {
   syncNamespace: string;
 };
 
-export abstract class PostgresDataSource {
+type Deps = {
+  connection: PostgresConnectionConfig;
+  tenantId: string;
+  sync?: SyncOptions;
+};
+
+abstract class PostgresDataSource {
   protected abstract tableName: string;
 
   private _connection: PostgresConnectionConfig;
@@ -18,15 +24,7 @@ export abstract class PostgresDataSource {
 
   private _table: PostgresTable | null = null;
 
-  constructor({
-    connection,
-    tenantId,
-    sync,
-  }: {
-    connection: PostgresConnectionConfig;
-    tenantId: string;
-    sync?: SyncOptions;
-  }) {
+  constructor({ connection, tenantId, sync }: Deps) {
     this._connection = connection;
     this._tenantId = tenantId;
     if (sync) {
@@ -51,3 +49,6 @@ export abstract class PostgresDataSource {
     return this._table;
   }
 }
+
+export { PostgresDataSource };
+export type { Deps as PostgresDataSourceDeps };
