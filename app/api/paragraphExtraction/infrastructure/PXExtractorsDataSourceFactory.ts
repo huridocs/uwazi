@@ -2,6 +2,7 @@ import { Db } from 'mongodb';
 
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoPXExtractorsDataSource } from './MongoPXExtractorsDataSource.js';
@@ -27,10 +28,13 @@ export class PXExtractorsDataSourceFactory {
         transactionManager: mongoTransactionManager,
       });
 
+    const templatesDAO = TemplatesDAOFactory.default();
+
     return new MongoPXExtractorsDataSource(
       connection,
       mongoTransactionManager,
-      extractorsQueryService
+      extractorsQueryService,
+      templatesDAO
     );
   }
 }
