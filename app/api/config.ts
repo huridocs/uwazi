@@ -127,7 +127,7 @@ export const config = {
       s3Storage: defaultTenantS3Storage,
       esReplicas: 0,
       deactivateTestJob: false,
-      paragraphExtraction: FEATURE_FLAG_PARAGRAPH_EXTRACTION === 'true' || false,
+      paragraphExtraction: FEATURE_FLAG_PARAGRAPH_EXTRACTION === 'true' || true,
       fileCacheHeaders: FEATURE_FLAG_FILE_CACHE_HEADERS === 'true' || false,
       themeCustomization: FEATURE_FLAG_THEME_CUSTOMIZATION === 'true' || false,
       testing: DEV_FLAG_TESTING === 'true' || false,

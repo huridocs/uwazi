@@ -1,5 +1,6 @@
 export { InputField } from './InputField.js';
 export { Select } from './Select.js';
+export { SearchSelect } from './SearchSelect.js';
 export { MultiSelect } from './MultiSelect.js';
 export { RadioSelect } from './RadioSelect.js';
 export { Label } from './Label.js';
@@ -15,6 +16,7 @@ export { Textarea } from './Textarea.js';
 export type { RadioProps } from './RadioSelect.js';
 export type { MultiSelectProps } from './MultiSelect.js';
 export type { SelectProps, OptionSchema } from './Select.js';
+export type { SearchSelectOption, SearchSelectGroup, SearchSelectProps } from './SearchSelect.js';
 export type { MultiselectListOption } from './MultiselectList/MultiselectList.js';
 export type { TextareaProps } from './Textarea.js';
 export type { InputColorPickerProps } from './InputColorPicker.js';
