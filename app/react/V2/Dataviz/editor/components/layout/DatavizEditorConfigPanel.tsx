@@ -97,8 +97,8 @@ const DatavizEditorConfigPanel = ({
     <aside className="flex h-full min-h-0 w-[32rem] shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-paper">
       <Tabs
         unmountTabs={false}
-        domIdPrefix="dataviz-config"
-        initialTabId={activeTab}
+        groupId="dataviz-config"
+        activeTabId={activeTab}
         onTabSelected={tabId => onTabChange(tabId as EditorTabId)}
         tabListAriaLabel="Dataviz editor"
         tabListClassName="!mx-3 !mt-3 !mb-0"

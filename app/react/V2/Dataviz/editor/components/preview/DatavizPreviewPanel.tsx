@@ -239,8 +239,8 @@ const DatavizPreviewPanel = ({
       </span>
       <Tabs
         unmountTabs={false}
-        domIdPrefix="dataviz-preview"
-        initialTabId={activeTab}
+        groupId="dataviz-preview"
+        activeTabId={activeTab}
         onTabSelected={tabId => onTabChange(tabId as PreviewTabId)}
         tabListAriaLabel="Dataviz preview"
         tabListClassName="!mx-3 !mt-3 !mb-0 !mr-28"

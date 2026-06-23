@@ -9,10 +9,6 @@ const PagesAPI = {
     return api.get('page', requestParams).then(response => response.json);
   },
 
-  getPublicById(requestParams) {
-    return api.get('public/page', requestParams).then(response => response.json);
-  },
-
   save(requestParams) {
     return api.post('pages', requestParams).then(response => response.json);
   },

@@ -87,12 +87,11 @@ const getPageAssets = async (
   requestParams: RequestParams,
   additionalDatasets?: {},
   localDatasets?: {},
-  options?: { contentMode?: 'draft' | 'published'; publicEmbed?: boolean }
+  options?: { contentMode?: 'draft' | 'published' }
 ) => {
   const contentMode = options?.contentMode ?? 'published';
   const pageParams = requestParams;
-  const fetchPage = options?.publicEmbed ? PagesAPI.getPublicById : PagesAPI.getById;
-  const rawPage = await fetchPage(pageParams);
+  const rawPage = await PagesAPI.getById(pageParams);
   const mode = contentMode === 'draft' ? 'draft' : 'published';
   const page = resolvePageForClient(rawPage, mode);
   const metadata = page.metadata ?? { content: '', script: '', css: '' };

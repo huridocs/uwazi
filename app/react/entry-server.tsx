@@ -45,9 +45,7 @@ import { create as createReduxStore } from './store.js';
 import { ProtectedRoute } from './ProtectedRoute.js';
 import { isMobileDevice } from '../shared/detectDevice.js';
 import { loadIcons } from '#UI/Icon/library.js';
-import { resolveEmbedLocale } from '#shared/embed/resolveEmbedLocale.js';
-import { getPublicEmbedData } from '#V2/api/dataviz/index.js';
-import type { DatavizEmbedPayload } from '#shared/types/datavizSchema.js';
+import type { ClientFeatureFlags } from '#V2/shared/types.js';
 
 loadIcons();
 
@@ -220,49 +218,6 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   return { reduxStore, atomStoreData: storeData.atomStoreData };
 };
 
-const DATAVIZ_EMBED_PATH = /^\/embed\/dataviz\/([^/]+)\/?$/;
-
-const parseDatavizEmbedId = (path: string): string | undefined => {
-  const match = path.match(DATAVIZ_EMBED_PATH);
-  return match?.[1];
-};
-
-const prepareMinimalDatavizEmbedStores = async (
-  req: ExpressRequest,
-  settings: ClientSettings,
-  language?: string
-) => {
-  const locale = I18NUtils.getLocale(language, settings.languages, req.cookies);
-  api.locale(locale);
-  const userAgent = req.get('user-agent') || '';
-  const userApiResponse = req.user || {};
-  const themeCustomization = tenants.current().featureFlags?.themeCustomization ?? false;
-  const settingsWithFlag = { ...settings, themeCustomization };
-
-  const storeData = convertObjectIdsToStrings({
-    reduxData: {
-      user: userApiResponse,
-      settings: {
-        collection: { ...settingsWithFlag, links: settingsWithFlag.links || [] },
-      },
-    },
-    atomStoreData: {
-      locale,
-      settings: settingsWithFlag,
-      user: userApiResponse,
-      isMobile: isMobileDevice(userAgent),
-      translations: [],
-    },
-  });
-
-  const reduxStore = createReduxStore({
-    ...storeData.reduxData,
-    locale,
-  } as unknown as IStore);
-
-  return { reduxStore, atomStoreData: storeData.atomStoreData };
-};
-
 const setReduxState = async (
   req: ExpressRequest,
   reduxState: IStore,
@@ -382,6 +337,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   };
 
   const routes = getRoutes(settings, req.user && req.user._id, headers, indexComponents);
+
   const matched = matchRoutes(routes, req.path);
 
   if (matched === null) {
@@ -412,20 +368,9 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const pathPossibleLanguage = lastRouteMatched?.pathname.split('/')[1] || '';
 
   const languageKeys = (settings?.languages?.map(lang => lang.key) as string[]) || [];
-  const isEmbedPath = req.path.startsWith('/embed/');
-  const datavizEmbedId = isEmbedPath ? parseDatavizEmbedId(req.path) : undefined;
-  const isDatavizEmbed = Boolean(datavizEmbedId);
-  const language = isEmbedPath
-    ? resolveEmbedLocale({
-        localeQuery: req.query.locale as string | string[] | undefined,
-        contentLanguage: req.get('content-language'),
-        cookieLocale: req.cookies?.locale,
-        acceptLanguage: req.get('accept-language'),
-        languages: settings.languages ?? [],
-      })
-    : languageKeys.includes(pathPossibleLanguage)
-      ? pathPossibleLanguage
-      : req.language;
+  const language = languageKeys.includes(pathPossibleLanguage)
+    ? pathPossibleLanguage
+    : req.language;
 
   const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
   const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();
@@ -450,34 +395,11 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     return;
   }
 
-  let datavizEmbedPayload: DatavizEmbedPayload | undefined;
-  let datavizEmbedError: FetchResponseError | undefined;
-  if (isDatavizEmbed && datavizEmbedId) {
-    const embedResult = await getPublicEmbedData(datavizEmbedId, language, {
-      Cookie: `connect.sid=${req.cookies['connect.sid']}`,
-      'Content-Language': language,
-      tenant: req.get('tenant'),
-    });
-    if (embedResult instanceof FetchResponseError) {
-      datavizEmbedError = embedResult;
-    } else {
-      datavizEmbedPayload = embedResult;
-    }
-  }
-
-  const { reduxState, atomStore, atomStoreData } = isDatavizEmbed
-    ? await (async () => {
-        const { reduxStore, atomStoreData: minimalAtomStoreData } =
-          await prepareMinimalDatavizEmbedStores(req, settingsWithFeatureFlags, language);
-        const atomStore = getStore();
-        hydrateAtomStore(minimalAtomStoreData as any, atomStore);
-        return {
-          reduxState: reduxStore.getState(),
-          atomStore,
-          atomStoreData: minimalAtomStoreData,
-        };
-      })()
-    : await prepareStoreData(req, settingsWithFeatureFlags, language);
+  const { reduxState, atomStore, atomStoreData } = await prepareStoreData(
+    req,
+    settingsWithFeatureFlags,
+    language
+  );
 
   if (req.aborted) {
     logSSRAborted(req, 'Route data', ssrStart, routeName);
@@ -493,10 +415,10 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const { initialStore, initialState, loadingError } = await setReduxState(
     req,
     reduxState,
-    isDatavizEmbed ? null : matched
+    matched
   );
 
-  const resolvedLoadingError = datavizEmbedError ?? loadingError;
+  const resolvedLoadingError = loadingError;
 
   const pageCssRaw = initialState.page?.pageView?.toJS?.()?.metadata?.css;
   const documentHeadPageCss =
@@ -535,12 +457,11 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       content={componentHtml}
       head={Helmet.rewind()}
       user={req.user}
-      reduxData={isDatavizEmbed ? undefined : initialState}
+      reduxData={initialState}
       documentHeadPageCss={documentHeadPageCss}
       assets={assets}
       loadingError={resolvedLoadingError || ssrError}
       featureFlags={clientFeatureFlags}
-      datavizEmbedPayload={datavizEmbedPayload}
       atomStoreData={{ ...atomStoreData, ...(globalMatomo && { globalMatomo }), ciMatomoActive }}
     />
   );

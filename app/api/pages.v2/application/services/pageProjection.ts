@@ -35,7 +35,6 @@ export const pageToClient = (
     creationDate: page.creationDate,
     entityView: page.entityView,
     markdownSupport: page.markdownSupport,
-    embedPublic: page.embedPublic,
     draft: locale.draft as PageDraft,
     releases: clientReleases,
     metadata: {
@@ -53,9 +52,6 @@ export const applyClientToPage = (page: Page, client: PageType, language: string
   }
   if (client.markdownSupport !== undefined) {
     page.markdownSupport = client.markdownSupport;
-  }
-  if (client.embedPublic !== undefined) {
-    page.embedPublic = client.embedPublic;
   }
 
   const draft = client.draft ?? {
@@ -126,7 +122,6 @@ export const pageToEditorClient = (
     creationDate: page.creationDate,
     entityView: page.entityView,
     markdownSupport: page.markdownSupport,
-    embedPublic: page.embedPublic,
     locales,
     releasesByLocale,
   };
@@ -143,9 +138,6 @@ export const applyEditorClientToPage = (
   }
   if (client.markdownSupport !== undefined) {
     page.markdownSupport = client.markdownSupport;
-  }
-  if (client.embedPublic !== undefined) {
-    page.embedPublic = client.embedPublic;
   }
 
   const clientLocales = client.locales ?? {};

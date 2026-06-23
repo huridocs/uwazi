@@ -115,6 +115,9 @@ test('dataviz embed renders in a page and external iframe route', async ({ page,
     await page.context().clearCookies();
     const response = await request.get(`/embed/dataviz/${datavizId}?locale=en`);
     expect(response.status()).toBe(200);
-    await expect(response.text()).toContain('Embed Category A');
+    const html = await response.text();
+    await expect(html).toContain('Embed Category A');
+    await expect(html).toContain('__DATAVIZ_CHART_OPTION__');
+    expect(html).not.toContain('main.js');
   });
 });

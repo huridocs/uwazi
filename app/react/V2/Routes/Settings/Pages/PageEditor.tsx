@@ -34,7 +34,6 @@ import { MarkdownDeprecationBanner } from './components/PageEditorComponents.js'
 import { PageReleaseModal } from './components/PageReleaseModal.js';
 import { PageRestoreModal, type PageRestoreReleaseRow } from './components/PageRestoreModal.js';
 import { PageEditorLanguageSelector } from './components/PageEditorLanguageSelector.js';
-import { PageEmbedPanel } from './components/PageEmbedPanel.js';
 import {
   PageEditorCssPanel,
   PageEditorHtmlPanel,
@@ -155,7 +154,6 @@ const PageEditor = () => {
   const markdownSupport = watch('markdownSupport') === true;
   const showMarkdownDeprecation = !!watch('sharedId') && markdownSupport;
   const entityView = watch('entityView') === true;
-  const embedPublic = watch('embedPublic') === true;
   const pageSharedId = watch('sharedId') || page.sharedId;
   const showPageUrlPreviews = !entityView && !!pageSharedId;
   const isDirty = !!Object.keys(dirtyFields).length;
@@ -375,16 +373,6 @@ const PageEditor = () => {
                           </Translate>
                         </div>
                       </Link>
-                    )}
-
-                    {pageSharedId && (
-                      <PageEmbedPanel
-                        sharedId={pageSharedId}
-                        embedPublic={embedPublic}
-                        onEmbedPublicChange={value =>
-                          setValue('embedPublic', value, { shouldDirty: true })
-                        }
-                      />
                     )}
 
                     <div className="flex flex-wrap gap-2 pt-2">

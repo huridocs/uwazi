@@ -59,7 +59,6 @@ class SavePageUseCase extends AbstractUseCase<Input, Output, Deps> {
       } else {
         page.entityView = clientPage.entityView ?? page.entityView;
         page.markdownSupport = clientPage.markdownSupport ?? page.markdownSupport;
-        page.embedPublic = clientPage.embedPublic ?? page.embedPublic;
         applyClientToPage(page, clientPage, lang);
       }
       await this.transactionManager.run(async () => {
@@ -98,7 +97,6 @@ class SavePageUseCase extends AbstractUseCase<Input, Output, Deps> {
       title: defaultTitle || 'New page',
       entityView: clientPage.entityView,
       markdownSupport: clientPage.markdownSupport === true,
-      embedPublic: clientPage.embedPublic,
     });
 
     if (useEditorPayload) {

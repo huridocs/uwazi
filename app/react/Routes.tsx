@@ -97,9 +97,6 @@ import {
   UploadStatus,
   uploadStatusLoader,
 } from './V2/Routes/Settings/CSVUpload/index.js';
-import { DatavizEmbedRoute } from '#V2/Routes/Embed/DatavizEmbedRoute.js';
-import { PageEmbedRoute } from '#V2/Routes/Embed/PageEmbedRoute.js';
-
 const deconstructSearchQuery = (query?: string) => {
   if (!query) return '';
   if (query.startsWith('?q=')) return decodeURI(query.substring(1).split('=')[1]);
@@ -443,10 +440,6 @@ const getRoutes = (
     >
       {layout}
       {languageKeys.map(langKey => languageLayout(langKey, layout))}
-      <Route path="embed">
-        <Route path="dataviz/:id" element={<DatavizEmbedRoute />} />
-        <Route path="page/:sharedId" element={<PageEmbedRoute />} />
-      </Route>
       <Route path="*" element={<GeneralError />} />
     </Route>
   );

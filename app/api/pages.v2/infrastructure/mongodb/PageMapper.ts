@@ -43,7 +43,6 @@ export class PageMapper {
       creationDate: dbo.creationDate ?? Date.now(),
       entityView: dbo.entityView ?? false,
       markdownSupport: dbo.markdownSupport ?? false,
-      embedPublic: dbo.embedPublic ?? false,
       locales,
     });
   }
@@ -63,7 +62,6 @@ export class PageMapper {
       creationDate: page.creationDate,
       entityView: page.entityView,
       markdownSupport: page.markdownSupport,
-      embedPublic: page.embedPublic,
       locales,
     };
   }

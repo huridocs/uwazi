@@ -172,9 +172,6 @@ const headTag = (head, CSS, reduxData, documentHeadPageCss) => {
 class Root extends Component {
   renderInitialData() {
     let innerHtml = '';
-    if (this.props.datavizEmbedPayload) {
-      innerHtml += `window.__datavizEmbedPayload__ = ${serialize(this.props.datavizEmbedPayload, { isJSON: true })};`;
-    }
     if (this.props.reduxData) {
       innerHtml += `window.__reduxData__ = ${serialize(this.props.reduxData, { isJSON: true })};`;
     }
@@ -242,7 +239,6 @@ Root.propTypes = {
   reduxData: PropTypes.object,
   /** Custom page CSS for first paint (set by SSR from route data, not read from reduxData here). */
   documentHeadPageCss: PropTypes.string,
-  datavizEmbedPayload: PropTypes.object,
   head: PropTypes.object,
   content: PropTypes.string,
   language: PropTypes.string,

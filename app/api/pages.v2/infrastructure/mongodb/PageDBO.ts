@@ -17,7 +17,6 @@ export type PageDBO = {
   creationDate?: number;
   entityView?: boolean;
   markdownSupport?: boolean;
-  embedPublic?: boolean;
   locales?: Record<string, PageLocaleDBO>;
 };
 

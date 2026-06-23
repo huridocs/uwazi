@@ -63,7 +63,6 @@ export const buildPageEditorFormValues = (page: Page, languages: PageEditorLangu
     sharedId: page.sharedId,
     entityView: page.entityView ?? false,
     markdownSupport: page.markdownSupport === true,
-    embedPublic: page.embedPublic ?? false,
     locales: buildInitialLocales(languages, page, isNewPage),
   };
 };
@@ -74,7 +73,6 @@ export const buildEditorSavePayload = (data: Page): Page => {
     sharedId: data.sharedId,
     entityView: data.entityView,
     markdownSupport: data.markdownSupport,
-    embedPublic: data.embedPublic,
     locales: {},
   };
 

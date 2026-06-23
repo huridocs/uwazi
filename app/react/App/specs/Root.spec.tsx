@@ -83,13 +83,5 @@ describe('Root component', () => {
 
       expect(component.find(`#${PAGE_STYLE_ELEMENT_ID}`)).toHaveLength(0);
     });
-
-    it('should render with default favicon when reduxData is undefined (dataviz embed SSR)', () => {
-      const component = shallow(
-        <html lang="en">{headTag(dummyHelmet, [], undefined, undefined)}</html>
-      );
-
-      expect(component.find({ rel: 'shortcut icon' }).props().href).toBe('/public/favicon.ico');
-    });
   });
 });

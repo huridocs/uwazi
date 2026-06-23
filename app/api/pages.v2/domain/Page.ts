@@ -29,7 +29,6 @@ export type PageProps = {
   creationDate: number;
   entityView: boolean;
   markdownSupport: boolean;
-  embedPublic?: boolean;
   locales: Record<string, PageLocaleData>;
 };
 
@@ -55,8 +54,6 @@ export class Page {
 
   markdownSupport: boolean;
 
-  embedPublic: boolean;
-
   private locales: Record<string, PageLocaleData>;
 
   constructor(props: PageProps) {
@@ -65,7 +62,6 @@ export class Page {
     this.creationDate = props.creationDate;
     this.entityView = props.entityView ?? false;
     this.markdownSupport = props.markdownSupport ?? false;
-    this.embedPublic = props.embedPublic ?? false;
     this.locales = { ...props.locales };
   }
 
@@ -184,7 +180,6 @@ export class Page {
     title: string;
     entityView?: boolean;
     markdownSupport?: boolean;
-    embedPublic?: boolean;
   }): Page {
     const locales = params.languageKeys.reduce<Record<string, PageLocaleData>>((acc, lang) => {
       acc[lang] = Page.createEmptyLocale(params.title);
@@ -197,7 +192,6 @@ export class Page {
       creationDate: params.creationDate,
       entityView: params.entityView ?? false,
       markdownSupport: params.markdownSupport ?? false,
-      embedPublic: params.embedPublic ?? false,
       locales,
     });
   }

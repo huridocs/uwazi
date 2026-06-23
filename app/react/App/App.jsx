@@ -30,7 +30,6 @@ const App = ({ customParams }) => {
   const location = useLocation();
   const params = useParams();
   const sharedId = params.sharedId || customParams?.sharedId;
-  const isEmbedRoute = location.pathname.startsWith('/embed/');
 
   const possibleLanguages = useMemo(
     () => settings.languages?.map(l => l.key) || [],
@@ -63,21 +62,11 @@ const App = ({ customParams }) => {
       {/* eslint-disable-next-line react/jsx-props-no-spreading */}
       <Confirm {...confirmOptions} />
       <Outlet />
-      {!isEmbedRoute && <GoogleAnalytics />}
-      {!isEmbedRoute && <Matomo />}
-      {!isEmbedRoute && <CleanInsights />}
+      <GoogleAnalytics />
+      <Matomo />
+      <CleanInsights />
     </AppMainContext.Provider>
   );
-
-  if (isEmbedRoute) {
-    return (
-      <div id="app" className={appClassName}>
-        <main id="main" className="app-content">
-          <ThemeProvider style={{ width: '100%', minHeight: '100vh' }}>{appMainTree}</ThemeProvider>
-        </main>
-      </div>
-    );
-  }
 
   return (
     <div id="app" className={appClassName}>
