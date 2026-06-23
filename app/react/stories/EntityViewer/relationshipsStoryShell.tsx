@@ -6,6 +6,7 @@ import {
   RelationshipsPanel,
   RelationshipsFiltersDrawer,
 } from '#V2/Routes/Entity/Components/relationships/index.js';
+import { EntityOverlay } from '#V2/Routes/Entity/Components/relationships/overlay/EntityOverlay.js';
 import { useRelationshipsPanelUi } from '#V2/Routes/Entity/Components/context/index.js';
 import { apiEntity } from '../fixtures/referencesFixtures.js';
 import { RelationshipsStoryProvider } from './RelationshipsStoryProvider.js';
@@ -80,6 +81,7 @@ const RelationshipsStoryShell = ({
                           dir="ltr"
                           className="relative flex h-full min-h-0 flex-col gap-3 overflow-hidden border-l border-border-soft"
                         >
+                          <EntityOverlay />
                           <div className="shrink-0 px-3 pt-2.5">
                             <SideTabsStub />
                           </div>
@@ -96,6 +98,7 @@ const RelationshipsStoryShell = ({
                     dir="ltr"
                     className="relative h-full overflow-hidden rounded-md border border-border-soft bg-paper"
                   >
+                    <EntityOverlay />
                     {children ?? (
                       <>
                         <PanelContent />

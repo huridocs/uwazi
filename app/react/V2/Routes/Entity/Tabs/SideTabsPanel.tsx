@@ -6,6 +6,7 @@ import { TabsSideButtons } from './TabsSideButtons.js';
 import { SideTabsContent } from './SideTabsContent.js';
 import { SideTabsFooters } from './SideTabsFooters.js';
 import { RelationshipsFiltersDrawer } from '../Components/relationships/index.js';
+import { EntityOverlay } from '../Components/relationships/overlay/EntityOverlay.js';
 
 type SideTabsPanelProps = {
   activeMainTab: MainTabId;
@@ -39,6 +40,7 @@ const SideTabsPanel = ({
 
   return (
     <div className="relative flex h-full min-h-0 min-w-0 w-full flex-col gap-3 overflow-hidden border-l border-border-soft">
+      <EntityOverlay />
       <div className="shrink-0 px-3 pt-2.5">
         <TabsSideButtons
           buttons={sideButtons}

@@ -1,0 +1,144 @@
+import React, { useEffect, useMemo, useRef } from 'react';
+import { useAtomValue } from 'jotai';
+import { XMarkIcon } from '@heroicons/react/24/outline';
+import { I18NLinkV2, Translate } from '#app/I18N/index.js';
+import { templatesAtom } from '#V2/atoms/templatesAtom.js';
+import {
+  useEntityOverlay,
+  useEntityScopedEntity,
+  useEntityRelationshipMarkers,
+} from '#V2/Routes/Entity/Components/context/index.js';
+import { EntityOverlayContent } from './EntityOverlayContent.js';
+import { useOverlayEntity } from './useOverlayEntity.js';
+
+const EntityOverlay = () => {
+  const { target, closeEntityOverlay } = useEntityOverlay();
+  const selfEntity = useEntityScopedEntity();
+  const sourceMarkers = useEntityRelationshipMarkers();
+  const templates = useAtomValue(templatesAtom);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const { entity, loading, error } = useOverlayEntity(target?.sharedId ?? null);
+
+  const referenceMarkers = useMemo(
+    () =>
+      target ? sourceMarkers.filter(marker => marker.target.sharedId === target.sharedId) : [],
+    [sourceMarkers, target]
+  );
+
+  const isOpen = target !== null;
+  const title = entity?.title ?? target?.title ?? '';
+  const templateColor =
+    templates.find(template => template._id === (entity?.template ?? target?.templateId))?.color ??
+    '#6B7280';
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const onPointerDown = (event: PointerEvent) => {
+      const panel = panelRef.current;
+      if (!panel || panel.contains(event.target as Node)) return;
+      closeEntityOverlay();
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') closeEntityOverlay();
+    };
+    const timer = window.setTimeout(() => {
+      document.addEventListener('pointerdown', onPointerDown);
+      document.addEventListener('keydown', onKeyDown);
+    }, 0);
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [closeEntityOverlay, isOpen]);
+
+  return (
+    <>
+      <div
+        className="absolute inset-0 z-20 transition-opacity duration-200"
+        style={{
+          backgroundColor: 'color-mix(in srgb, var(--text-primary) 15%, transparent)',
+          opacity: isOpen ? 1 : 0,
+          pointerEvents: isOpen ? 'auto' : 'none',
+        }}
+        onClick={closeEntityOverlay}
+        aria-hidden={!isOpen}
+      />
+      <div
+        ref={panelRef}
+        data-testid="entity-overlay"
+        className="absolute top-0 right-0 bottom-0 z-21 flex flex-col bg-paper transition-transform duration-250 ease-out"
+        style={{
+          width: 'calc(100% - 12px)',
+          transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
+          borderLeft: '1px solid var(--border-primary)',
+          boxShadow: isOpen ? '-4px 0 16px rgba(0,0,0,0.08)' : 'none',
+          pointerEvents: isOpen ? 'auto' : 'none',
+        }}
+        aria-hidden={!isOpen}
+      >
+        <div
+          className="flex shrink-0 items-center justify-between px-4 py-3"
+          style={{ borderBottom: '1px solid var(--border-primary)' }}
+        >
+          <div className="flex min-w-0 items-center gap-2">
+            <div
+              className="h-2 w-2 shrink-0 rounded-[2px]"
+              style={{ backgroundColor: templateColor }}
+            />
+            <span className="truncate text-sm font-semibold text-ink">{title}</span>
+          </div>
+          <button
+            type="button"
+            onClick={closeEntityOverlay}
+            className="shrink-0 rounded-md p-1.5 text-ink-muted transition-colors hover:bg-warm hover:text-ink"
+            aria-label="Close"
+          >
+            <XMarkIcon className="h-4 w-4" />
+          </button>
+        </div>
+        {loading && (
+          <div className="flex flex-1 items-center justify-center p-4 text-sm text-ink-tertiary">
+            <Translate>Loading</Translate>
+          </div>
+        )}
+        {error && !loading && (
+          <div className="flex flex-1 items-center justify-center p-4 text-sm text-ink-tertiary">
+            <Translate>NO DATA AVAILABLE</Translate>
+          </div>
+        )}
+        {entity && !loading && isOpen && (
+          <EntityOverlayContent
+            entity={entity}
+            referenceMarkers={referenceMarkers}
+            selfSharedId={selfEntity.sharedId}
+          />
+        )}
+        <div
+          className="flex h-12 shrink-0 items-center justify-between px-3"
+          style={{ borderTop: '1px solid var(--border-primary)' }}
+        >
+          <button
+            type="button"
+            onClick={closeEntityOverlay}
+            className="cursor-pointer rounded-md bg-warm px-3 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink"
+          >
+            <Translate>Close</Translate>
+          </button>
+          {target && (
+            <I18NLinkV2
+              to={`entityv2/${target.sharedId}`}
+              onClick={closeEntityOverlay}
+              className="cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium text-white transition-colors"
+              style={{ backgroundColor: 'var(--text-primary)' }}
+            >
+              <Translate>Open entity</Translate>
+            </I18NLinkV2>
+          )}
+        </div>
+      </div>
+    </>
+  );
+};
+
+export { EntityOverlay };
