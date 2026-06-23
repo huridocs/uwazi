@@ -27,13 +27,13 @@ const EntityOverlayReferences = ({ markers, selfSharedId }: EntityOverlayReferen
   );
 
   return (
-    <section className="space-y-2">
+    <section className="flex flex-col gap-3">
       <h4 className="text-[10px] font-semibold uppercase tracking-wider text-ink-tertiary">
         <Translate>References in document</Translate>
       </h4>
       <div>
         {rows.map(({ marker, referenceText, referencePage, relationshipTypeName }) => (
-          <div key={marker._id} className="border-b border-border/50 px-3 py-2.5">
+          <div key={marker._id} className="border-b border-border/50 px-3 py-2.5 last:border-b-0">
             {referencePage !== undefined && (
               <div className="mb-1.5 flex items-start justify-end gap-2">
                 <PageTag page={referencePage} />

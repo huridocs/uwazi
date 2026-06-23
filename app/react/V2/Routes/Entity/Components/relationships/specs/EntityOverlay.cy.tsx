@@ -43,6 +43,7 @@ describe('Entity overlay', () => {
     cy.get('[data-testid="entity-overlay"]').should('be.visible');
     cy.get('[data-testid="entity-overlay"]').within(() => {
       cy.contains('Person 1').should('be.visible');
+      cy.contains('Metadata').should('be.visible');
       cy.contains('References in document').should('be.visible');
       cy.contains('Open entity').should('be.visible');
     });
