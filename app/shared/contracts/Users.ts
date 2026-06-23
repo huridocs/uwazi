@@ -15,8 +15,8 @@ type User = {
 
 type NewUser = Omit<User, '_id'> & { password?: string };
 
-type UserCreateRequests = NewUser;
+type CreateUserRequest = NewUser;
 
 type CreateUserResponse = { user: User };
 
-export type { CreateUserResponse, UserCreateRequests };
+export type { CreateUserResponse, CreateUserRequest };

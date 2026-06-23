@@ -1,11 +1,21 @@
 import { randomBytes } from 'node:crypto';
+import { z } from 'zod';
 import { encryptPassword } from '#api/auth/encryptPassword.js';
 import { User } from '../domain/user/User.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
-import { CreateUserDTO, UserCreateSchema } from './contracts/UserCreateSchema.js';
 import { UsersDataSource } from './contracts/UsersDataSource.js';
 import { EmailInUse, UsernameExists } from '../domain/user/errors.js';
 import { UsergroupsDataSource } from './contracts/UsergroupsDataSource.js';
+
+const UserCreateSchema = z.object({
+  username: z.string().trim(),
+  role: z.enum(['admin', 'editor', 'collaborator']),
+  email: z.string().email(),
+  groups: z.array(z.object({ _id: z.string(), name: z.string() })).optional(),
+  password: z.string().optional(),
+});
+
+type CreateUserDTO = z.infer<typeof UserCreateSchema>;
 
 type Input = { user: CreateUserDTO; domain: string };
 
@@ -50,5 +60,5 @@ class CreateUser extends AbstractUseCase<Input, Output, Dependencies> {
   }
 }
 
-export { CreateUser };
-export type { Input, Dependencies };
+export { CreateUser, UserCreateSchema };
+export type { Input, Dependencies, CreateUserDTO };
