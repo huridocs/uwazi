@@ -5,6 +5,11 @@ import { composeStories } from '@storybook/react';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import * as stories from '#app/stories/EntityViewer/EditEntity.stories.js';
 
+const selectSearchSelectOption = (fieldId: string, optionLabel: string) => {
+  cy.get(`[id="${fieldId}"]`).click();
+  cy.contains('[role="option"]', optionLabel).click();
+};
+
 describe('Entity edit', () => {
   const { Basic } = composeStories(stories);
 
@@ -19,7 +24,7 @@ describe('Entity edit', () => {
 
     it('should display current template and title', () => {
       cy.get('input[id="title"]').should('have.value', 'Title of the entity');
-      cy.get('input[id="template1"]').should('be.checked');
+      cy.get('[id="template"]').should('contain', 'Documents');
     });
 
     [
@@ -86,14 +91,11 @@ describe('Entity edit', () => {
       });
     });
 
+    it('should check the selected value in Single select field', () => {
+      cy.get('[id="metadata.status_selection"]').should('contain', 'Second event');
+    });
+
     [
-      {
-        field: 'Single select',
-        values: [
-          { id: 'thes2.2', checked: true },
-          { id: 'thes2.3', checked: false },
-        ],
-      },
       {
         field: 'Multiple selector',
         values: [
@@ -144,24 +146,23 @@ describe('Entity edit', () => {
         );
       });
       it('should update the fields when selecting other template', () => {
-        cy.get('input[id="template2"]').click();
+        selectSearchSelectOption('template', 'Event Report');
         cy.get('textarea[id="metadata.report.0.value"]').should('exist');
       });
 
       it('should select the original template when deselecting selected template', () => {
-        cy.get('input[id="template1"]').should('be.checked');
-        cy.get('input[id="template2"]').click();
+        cy.get('[id="template"]').should('contain', 'Documents');
+        selectSearchSelectOption('template', 'Event Report');
         cy.get('textarea[id="metadata.report.0.value"]').should('exist');
-        cy.get('input[id="template2"]').click();
-        cy.get('input[id="template1"]').should('be.checked');
+        selectSearchSelectOption('template', 'Documents');
         cy.get('textarea[id="metadata.report.0.value"]').should('not.exist');
         cy.contains('label', 'A basic simple text');
       });
 
       it('should restore original metadata when switching back to original template', () => {
-        cy.get('input[id="template2"]').click();
+        selectSearchSelectOption('template', 'Event Report');
         cy.get('textarea[id="metadata.report.0.value"]').should('exist');
-        cy.get('input[id="template1"]').click();
+        selectSearchSelectOption('template', 'Documents');
         cy.get('input[name="metadata.location_on_map.0.value[lat]"]').should(
           'have.value',
           '40.7128'
