@@ -27,7 +27,9 @@ const EntityOverlayContent = ({
 
   return (
     <div className="flex flex-1 flex-col gap-5 overflow-auto p-4 pb-8">
-      <TemplatePill templateId={entity.template} size="md" />
+      <div className="w-fit shrink-0">
+        <TemplatePill templateId={entity.template} size="md" />
+      </div>
       <EntityOverlayMetadataSummary
         entity={entity}
         entityTemplate={entityTemplate}

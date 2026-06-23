@@ -66,7 +66,7 @@ const EntityOverlay = () => {
       <div
         ref={panelRef}
         data-testid="entity-overlay"
-        className="absolute top-0 right-0 bottom-0 z-[21] flex flex-col bg-paper transition-transform duration-250 ease-out"
+        className="absolute top-0 right-0 bottom-0 z-21 flex flex-col bg-paper transition-transform duration-250 ease-out"
         style={{
           width: 'calc(100% - 12px)',
           borderLeft: '1px solid var(--border-primary)',
