@@ -1,0 +1,102 @@
+import testingDB from '#api/utils/testing_db.js';
+import type { DBFixture } from '#api/utils/testing_db.js';
+
+const ids = {
+  extractor: testingDB.id(),
+  fileA: testingDB.id(),
+  fileB: testingDB.id(),
+  suggestionA: testingDB.id(),
+  suggestionB: testingDB.id(),
+  suggestionC: testingDB.id(),
+  suggestionD: testingDB.id(),
+};
+
+const fixtures: DBFixture = {
+  ixsuggestions: [
+    {
+      _id: ids.suggestionA,
+      extractorId: ids.extractor,
+      entityId: 'entityA',
+      entityTemplate: testingDB.id().toString(),
+      fileId: ids.fileA.toString(),
+      propertyName: 'title',
+      suggestedValue: '',
+      language: 'en',
+      status: 'ready' as const,
+      date: null,
+      state: {
+        labeled: false,
+        withValue: false,
+        withSuggestion: false,
+        hasContext: false,
+        processing: false,
+        obsolete: false,
+        error: false,
+      },
+    },
+    {
+      _id: ids.suggestionB,
+      extractorId: ids.extractor,
+      entityId: 'entityB',
+      entityTemplate: testingDB.id().toString(),
+      fileId: ids.fileB,
+      propertyName: 'title',
+      suggestedValue: '',
+      language: 'en',
+      status: 'ready' as const,
+      date: null,
+      state: {
+        labeled: false,
+        withValue: false,
+        withSuggestion: false,
+        hasContext: false,
+        processing: false,
+        obsolete: false,
+        error: false,
+      },
+    },
+    {
+      _id: ids.suggestionC,
+      extractorId: ids.extractor,
+      entityId: 'entityC',
+      entityTemplate: testingDB.id().toString(),
+      fileId: 'not-an-objectid',
+      propertyName: 'title',
+      suggestedValue: '',
+      language: 'en',
+      status: 'ready' as const,
+      date: null,
+      state: {
+        labeled: false,
+        withValue: false,
+        withSuggestion: false,
+        hasContext: false,
+        processing: false,
+        obsolete: false,
+        error: false,
+      },
+    },
+    {
+      _id: ids.suggestionD,
+      extractorId: ids.extractor,
+      entityId: 'entityD',
+      entityTemplate: testingDB.id().toString(),
+      propertyName: 'title',
+      suggestedValue: '',
+      language: 'en',
+      status: 'ready' as const,
+      date: null,
+      state: {
+        labeled: false,
+        withValue: false,
+        withSuggestion: false,
+        hasContext: false,
+        processing: false,
+        obsolete: false,
+        error: false,
+      },
+    },
+  ],
+};
+
+export { fixtures, ids };
