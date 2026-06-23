@@ -250,7 +250,7 @@ const SearchSelect = ({
         >
           {filteredOptions.length === 0 && (
             <li className="px-3 py-2 text-sm text-(--color-theme-control-text-muted)">
-              No results
+              <Translate>No results found</Translate>
             </li>
           )}
 
