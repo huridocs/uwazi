@@ -3,7 +3,6 @@ import type { TocSchema } from '#shared/types/commonTypes.js';
 import type { RelationshipsPanelGroupBy } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
 import type { RelationshipsPanelSort } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
 
-type ReferenceMode = 'entity' | 'text';
 type RelationshipsPanelView = 'list' | 'tree' | 'graph';
 type RelationshipsPanelZoom = 'detail' | 'compact' | 'overview';
 
@@ -17,7 +16,6 @@ type TocState = {
 };
 
 export type {
-  ReferenceMode,
   RelationshipsPanelView,
   RelationshipsPanelZoom,
   RelationshipsPanelSort,

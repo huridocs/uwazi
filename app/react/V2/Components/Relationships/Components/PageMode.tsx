@@ -123,6 +123,7 @@ const PageMode = ({
             <Cluster
               key={key}
               position={position}
+              markerLayerHeight={markerLayerHeight}
               stackOrder={stackOrder}
               references={element.references}
               activePointId={activeRelationshipId}

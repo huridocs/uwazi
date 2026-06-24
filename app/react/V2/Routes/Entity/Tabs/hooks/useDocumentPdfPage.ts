@@ -49,6 +49,7 @@ function useDocumentPdfPage({
       if (isRaw) {
         updatePageParam(targetPage);
       } else if (mainPdfController) {
+        updatePageParam(targetPage);
         mainPdfController.goToPage(targetPage);
       } else {
         updatePageParam(targetPage);

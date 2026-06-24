@@ -16,9 +16,15 @@ const accentRgba = (hex: string, alpha: number): string => {
 type TemplatePillProps = {
   templateId: string;
   label?: ReactNode;
+  size?: 'sm' | 'md';
 };
 
-const TemplatePill = ({ templateId, label }: TemplatePillProps) => {
+const pillSizeClasses = {
+  sm: 'px-2 py-0.5 text-xs',
+  md: 'px-2.5 py-1 text-sm',
+} as const;
+
+const TemplatePill = ({ templateId, label, size = 'sm' }: TemplatePillProps) => {
   const templates = useAtomValue(templatesAtom);
   const settings = useAtomValue(settingsAtom);
   const themeMode = useAtomValue(effectiveThemeModeAtom);
@@ -52,14 +58,14 @@ const TemplatePill = ({ templateId, label }: TemplatePillProps) => {
   return (
     <span
       title={title}
-      className="inline-flex min-w-0 max-w-full items-center gap-1.5 whitespace-nowrap rounded-md px-2 py-0.5 text-xs font-medium"
+      className={`inline-flex min-w-0 max-w-full items-center gap-1.5 whitespace-nowrap rounded-md font-medium ${pillSizeClasses[size]}`}
       style={{
         backgroundColor: background,
         color: foreground,
         border: `1px solid ${accentRgba(accentHex, 0.25)}`,
       }}
     >
-      <ColorDot color={accentHex} />
+      <ColorDot color={accentHex} size={size === 'md' ? 'md' : 'sm'} />
       <span className="truncate">{displayLabel}</span>
     </span>
   );
