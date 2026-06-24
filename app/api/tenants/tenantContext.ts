@@ -1,3 +1,4 @@
+import { hostname } from 'os';
 import { config } from '#api/config.js';
 import { handleError } from '#api/utils/index.js';
 import { appContext } from '#api/utils/AppContext.js';
@@ -106,11 +107,20 @@ class Tenants {
   }
 
   add(tenant: DBTenant) {
-    this.tenants[tenant.name] = {
+    const merged: Tenant = {
       ...this.defaultTenant,
       ...tenant,
       featureFlags: { ...this.defaultTenant.featureFlags, ...tenant.featureFlags },
     };
+
+    if (tenant.name === config.defaultTenant.name && process.env.DATABASE_NAME) {
+      merged.dbName = process.env.DATABASE_NAME;
+      merged.indexName = process.env.INDEX_NAME || process.env.DATABASE_NAME;
+      merged.domain =
+        process.env.DEFAULT_TENANT_DOMAIN || `${hostname()}:${process.env.PORT || config.PORT}`;
+    }
+
+    this.tenants[tenant.name] = merged;
   }
 
   getTenantsForFeatureFlag(featureFlag: TenantFeatureFlags) {

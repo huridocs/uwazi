@@ -25,6 +25,45 @@ describe('tenantsContext', () => {
         });
       }, 'test-tenant');
     });
+
+    it('should keep DATABASE_NAME env for the default tenant', () => {
+      const previousDatabaseName = process.env.DATABASE_NAME;
+      const previousIndexName = process.env.INDEX_NAME;
+      const previousPort = process.env.PORT;
+
+      process.env.DATABASE_NAME = 'uwazi_development_3000';
+      process.env.INDEX_NAME = 'uwazi_development_3000';
+      process.env.PORT = '3000';
+
+      tenants.add({
+        name: config.defaultTenant.name,
+        dbName: 'uwazi_development_3002',
+        indexName: 'uwazi_development_3002',
+        domain: 'stale-host:3002',
+      });
+
+      expect(tenants.tenants[config.defaultTenant.name]).toMatchObject({
+        dbName: 'uwazi_development_3000',
+        indexName: 'uwazi_development_3000',
+        domain: expect.stringContaining(':3000'),
+      });
+
+      if (previousDatabaseName === undefined) {
+        delete process.env.DATABASE_NAME;
+      } else {
+        process.env.DATABASE_NAME = previousDatabaseName;
+      }
+      if (previousIndexName === undefined) {
+        delete process.env.INDEX_NAME;
+      } else {
+        process.env.INDEX_NAME = previousIndexName;
+      }
+      if (previousPort === undefined) {
+        delete process.env.PORT;
+      } else {
+        process.env.PORT = previousPort;
+      }
+    });
   });
 
   describe('updateTenants', () => {
