@@ -1,9 +1,54 @@
-import { computeClusterSubtreeLayout } from '../Components/Cluster.js';
+/**
+ * @jest-environment jsdom
+ */
+import React from 'react';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { createStore, Provider } from 'jotai';
+import { templatesAtom } from '#V2/atoms/index.js';
+import { computeClusterSubtreeLayout, Cluster } from '../Components/Cluster.js';
 import { RAIL_MARKER_SIZE, RAIL_MARKER_SPACING } from '../markerMetrics.js';
+import type { RelationshipMarker } from '../types.js';
+
+const marker = (index: number): RelationshipMarker => ({
+  _id: `ref-${index}`,
+  view: {
+    _id: `ref-${index}`,
+    hub: 'hub-1',
+    type: 'rel-type',
+    from: {
+      type: 'textReference',
+      entity: 'self',
+      entityTitle: 'Self',
+      entityTemplateId: 'template1',
+      file: 'file1',
+      text: `Reference ${index}`,
+      selections: [{ page: 1, top: index * 10, left: 0, width: 10, height: 10 }],
+    },
+    to: {
+      type: 'entity',
+      entity: `target-${index}`,
+      entityTitle: `Target ${index}`,
+      entityTemplateId: 'template3',
+    },
+    relationTypeOnSelf: false,
+  },
+  target: { sharedId: `target-${index}`, title: `Target ${index}`, templateId: 'template3' },
+  anchor: {
+    type: 'textReference',
+    entity: 'self',
+    entityTitle: 'Self',
+    entityTemplateId: 'template1',
+    file: 'file1',
+    text: `Reference ${index}`,
+    selections: [{ page: 1, top: index * 10, left: 0, width: 10, height: 10 }],
+  },
+});
 
 describe('Cluster', () => {
   const rowCount = 11;
   const height = (rowCount - 1) * RAIL_MARKER_SPACING + RAIL_MARKER_SIZE;
+  const store = createStore();
+  store.set(templatesAtom, [{ _id: 'template3', color: '#2b8a3e', name: 'Person' }]);
 
   it('centers the subtree when there is enough space', () => {
     const layout = computeClusterSubtreeLayout({
@@ -39,5 +84,27 @@ describe('Cluster', () => {
 
     expect(layout.topOffset).toBe(720 - height - 706);
     expect(layout.stemY).toBe(height - RAIL_MARKER_SIZE / 2);
+  });
+
+  it('shows up to eighteen points and sends the full cluster from the overflow button', () => {
+    const references = Array.from({ length: 20 }, (_, index) => marker(index));
+    const onMoreClick = jest.fn();
+
+    render(
+      <Provider store={store}>
+        <Cluster
+          position={100}
+          markerLayerHeight={800}
+          references={references}
+          isOpen
+          onPointClick={() => undefined}
+          onMoreClick={onMoreClick}
+        />
+      </Provider>
+    );
+
+    expect(document.querySelectorAll('[data-marker-id]')).toHaveLength(18);
+    fireEvent.click(screen.getByRole('button', { name: /Show more/ }));
+    expect(onMoreClick).toHaveBeenCalledWith(references);
   });
 });

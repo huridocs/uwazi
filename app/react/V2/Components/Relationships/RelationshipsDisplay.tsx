@@ -29,6 +29,7 @@ type RelationshipsDisplayProps = {
   activeRelationshipId?: string | null;
   onPointClick?: (marker: RelationshipMarker) => void;
   onClusterClick?: (markers: RelationshipMarker[]) => void;
+  onMoreClick?: (markers: RelationshipMarker[]) => void;
 };
 
 const RelationshipsDisplay = ({
@@ -40,6 +41,7 @@ const RelationshipsDisplay = ({
   activeRelationshipId = null,
   onPointClick,
   onClusterClick,
+  onMoreClick,
 }: RelationshipsDisplayProps) => {
   const [fullMode, setFullMode] = useState(true);
   const markerLayerRef = useRef<HTMLDivElement>(null);
@@ -139,6 +141,7 @@ const RelationshipsDisplay = ({
               activeRelationshipId={activeRelationshipId}
               onPointClick={onPointClick}
               onClusterClick={onClusterClick}
+              onMoreClick={onMoreClick}
             />
           ) : (
             <PageMode
@@ -149,6 +152,7 @@ const RelationshipsDisplay = ({
               pageHeight={pageHeight}
               activeRelationshipId={activeRelationshipId}
               onPointClick={onPointClick}
+              onMoreClick={onMoreClick}
             />
           )}
         </div>

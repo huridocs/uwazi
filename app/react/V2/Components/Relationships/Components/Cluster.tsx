@@ -26,6 +26,7 @@ const TRUNK_X = RAIL_MARKER_SIZE + PAD + BRANCH_LEN;
 const SVG_WIDTH = TRUNK_X + STEM_LEN;
 const LINE_STROKE = 'var(--color-theme-text-secondary)';
 const LINE_OPACITY = 0.4;
+const MAX_VISIBLE_POINTS = 18;
 
 type ClusterSubtreeLayoutInput = {
   position: number;
@@ -80,8 +81,8 @@ const Cluster = ({
   const animatedPosition = useAnimateToPosition(position);
   const [internalIsOpen, setInternalIsOpen] = useState(false);
 
-  const points = references.slice(0, 10);
-  const extraPoints = references.slice(10);
+  const points = references.slice(0, MAX_VISIBLE_POINTS);
+  const extraPoints = references.slice(MAX_VISIBLE_POINTS);
 
   const clusterIsOpen = isOpen ?? internalIsOpen;
   const outerSize = computeClusterOuterSize(references.length);
@@ -190,7 +191,7 @@ const Cluster = ({
             {extraPoints.length > 0 && (
               <ShowMoreButton
                 position={points.length * RAIL_MARKER_SPACING}
-                references={extraPoints}
+                references={references}
                 onClick={onMoreClick}
               />
             )}

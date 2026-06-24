@@ -82,6 +82,25 @@ function useDocumentPdfRelationshipHandlers({
     ]
   );
 
+  const handleClusterMoreClick = useCallback(
+    (markers: RelationshipMarker[]) => {
+      if (!entity || markers.length === 0) return;
+      const clusterPage = markers[0]?.anchor?.selections?.[0]?.page;
+      const ids = getMarkerRefIds(markers);
+      setActiveClusterRefIds(ids);
+      clearRelationshipSelection();
+      focusRelationshipsPanel();
+      if (clusterPage) mainPdfController?.goToPage(clusterPage);
+    },
+    [
+      clearRelationshipSelection,
+      entity,
+      focusRelationshipsPanel,
+      mainPdfController,
+      setActiveClusterRefIds,
+    ]
+  );
+
   const handleHighlightClick = useCallback(
     (relationshipId: string) => {
       const marker = findMarkerById(relationshipId);
@@ -107,6 +126,7 @@ function useDocumentPdfRelationshipHandlers({
     activeRelationshipId,
     handleRailPointClick,
     handleClusterClick,
+    handleClusterMoreClick,
     handleHighlightClick,
   };
 }
