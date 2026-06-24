@@ -1,8 +1,10 @@
 import React from 'react';
+import { DateTime } from 'luxon';
 import { mount } from 'cypress/react';
 import { RelationshipsStoryShell } from '#app/stories/EntityViewer/relationshipsStoryShell.js';
 import {
   overlayTargetEntity,
+  overlayTargetSharedId,
   overlayTemplates,
 } from '#app/stories/fixtures/entityOverlayFixtures.js';
 import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
@@ -46,6 +48,10 @@ describe('Entity preview overlay', () => {
   });
 
   it('shows the related entity metadata and template properties', () => {
+    const formattedDob = DateTime.fromSeconds(1777593600, { zone: 'utc' })
+      .setLocale('en')
+      .toLocaleString(DateTime.DATE_MED);
+
     openOverlay();
     cy.get('[data-testid="entity-overlay"]').within(() => {
       cy.contains('Person').should('be.visible');
@@ -53,6 +59,29 @@ describe('Entity preview overlay', () => {
       cy.contains('Gender').should('be.visible');
       cy.contains('Male').should('be.visible');
       cy.contains('Date of birth').should('be.visible');
+      cy.contains(formattedDob).should('be.visible');
+    });
+  });
+
+  it('announces the preview as an accessible dialog', () => {
+    openOverlay();
+    cy.get('[data-testid="entity-overlay"]')
+      .should('have.attr', 'role', 'dialog')
+      .and('have.attr', 'aria-modal', 'true')
+      .and('have.attr', 'aria-labelledby');
+  });
+
+  it('merges overlay metadata without dropping cached relationships', () => {
+    const cachedEntity = { ...overlayTargetEntity, relations: [] };
+    entityLoaderCache.setEntity(overlayTargetSharedId, 'en', cachedEntity);
+
+    openOverlay();
+
+    cy.window().then(() => {
+      const cached = entityLoaderCache.getEntity(overlayTargetSharedId, 'en', {
+        requireRelationships: true,
+      });
+      expect(cached).to.have.property('relations');
     });
   });
 

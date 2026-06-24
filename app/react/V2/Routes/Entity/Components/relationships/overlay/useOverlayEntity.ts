@@ -5,6 +5,9 @@ import { getBySharedId } from '#V2/api/entities/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { entityLoaderCache } from '../../../EntityLoaderCache.js';
 
+// Overlay shares EntityLoaderCache with the route loader (`${sharedId}:${locale}`).
+// Any cached entity satisfies preview; partial fetches merge metadata without dropping relations.
+
 type OverlayEntityState = {
   entity: Entity | undefined;
   loading: boolean;

@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { I18NLinkV2, Translate } from '#app/I18N/index.js';
+import { I18NLinkV2, t, Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
+import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.js';
 import {
   useEntityOverlay,
   useEntityScopedEntity,
@@ -21,6 +22,8 @@ const EntityOverlay = () => {
   const sourceMarkers = useEntityRelationshipMarkers();
   const templates = useAtomValue(templatesAtom);
   const panelRef = useRef<HTMLDivElement>(null);
+  const titleId = useId();
+  const [entered, setEntered] = useState(false);
   const { entity, loading, error } = useOverlayEntity(target?.sharedId ?? null);
 
   const referenceMarkers = useMemo(
@@ -34,6 +37,15 @@ const EntityOverlay = () => {
   const templateColor =
     templates.find(template => template._id === (entity?.template ?? target?.templateId))?.color ??
     '#6B7280';
+
+  useEffect(() => {
+    if (!isOpen) {
+      setEntered(false);
+      return undefined;
+    }
+    const frame = window.requestAnimationFrame(() => setEntered(true));
+    return () => window.cancelAnimationFrame(frame);
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return undefined;
@@ -71,7 +83,11 @@ const EntityOverlay = () => {
       <div
         ref={panelRef}
         data-testid="entity-overlay"
-        className="absolute top-0 right-0 bottom-0 z-21 flex flex-col bg-(--color-theme-surface-raised) transition-transform duration-250 ease-out"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        tabIndex={-1}
+        className={`absolute top-0 right-0 bottom-0 z-21 flex flex-col bg-(--color-theme-surface-raised) transition-transform duration-250 ease-out ${entered ? 'translate-x-0' : 'translate-x-full'}`}
         style={{
           ...overlaySurfaceStyle,
           width: 'calc(100% - 12px)',
@@ -88,33 +104,44 @@ const EntityOverlay = () => {
               className="h-2 w-2 shrink-0 rounded-[2px]"
               style={{ backgroundColor: templateColor }}
             />
-            <span className="truncate text-sm font-semibold text-ink">{title}</span>
+            <span id={titleId} className="truncate text-sm font-semibold text-ink">
+              {title}
+            </span>
           </div>
           <button
             type="button"
             onClick={closeEntityOverlay}
             className="shrink-0 rounded-md p-1.5 text-ink-muted transition-colors hover:bg-warm hover:text-ink"
-            aria-label="Close"
+            aria-label={t('System', 'Close', null, false)}
           >
             <XMarkIcon className="h-4 w-4" />
           </button>
         </div>
         {loading && (
-          <div className="flex flex-1 items-center justify-center p-4 text-sm text-ink-tertiary">
+          <div
+            aria-live="polite"
+            aria-busy="true"
+            className="flex flex-1 items-center justify-center p-4 text-sm text-ink-tertiary"
+          >
             <Translate>Loading</Translate>
           </div>
         )}
         {error && !loading && (
-          <div className="flex flex-1 items-center justify-center p-4 text-sm text-ink-tertiary">
+          <div
+            aria-live="polite"
+            className="flex flex-1 items-center justify-center p-4 text-sm text-ink-tertiary"
+          >
             <Translate>NO DATA AVAILABLE</Translate>
           </div>
         )}
         {entity && !loading && (
-          <EntityOverlayContent
-            entity={entity}
-            referenceMarkers={referenceMarkers}
-            selfSharedId={selfEntity.sharedId}
-          />
+          <ErrorBoundary>
+            <EntityOverlayContent
+              entity={entity}
+              referenceMarkers={referenceMarkers}
+              selfSharedId={selfEntity.sharedId}
+            />
+          </ErrorBoundary>
         )}
         <div
           className="flex h-12 shrink-0 items-center justify-between px-3"

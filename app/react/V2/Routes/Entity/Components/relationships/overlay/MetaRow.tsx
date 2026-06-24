@@ -3,7 +3,7 @@ import React, { type ComponentType, type SVGProps } from 'react';
 type MetaRowProps = {
   icon: ComponentType<SVGProps<SVGSVGElement>>;
   label: React.ReactNode;
-  value: string;
+  value: React.ReactNode;
 };
 
 const MetaRow = ({ icon: Icon, label, value }: MetaRowProps) => (

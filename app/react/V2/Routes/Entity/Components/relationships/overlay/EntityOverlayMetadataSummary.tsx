@@ -42,7 +42,11 @@ const EntityOverlayMetadataSummary = ({
       <MetaRow
         icon={LinkIcon}
         label={<Translate>References</Translate>}
-        value={`${referenceCount} in this document`}
+        value={
+          <>
+            {referenceCount} <Translate>in this document</Translate>
+          </>
+        }
       />
     </EntityOverlaySection>
   );
