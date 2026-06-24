@@ -17,6 +17,18 @@ describe('Cluster', () => {
     expect(layout.stemY).toBe(height / 2);
   });
 
+  it('connects to the first point when the subtree reaches the top edge', () => {
+    const layout = computeClusterSubtreeLayout({
+      position: 0,
+      markerLayerHeight: 720,
+      outerSize: 28,
+      rowCount,
+    });
+
+    expect(layout.topOffset).toBe(0);
+    expect(layout.stemY).toBe(RAIL_MARKER_SIZE / 2);
+  });
+
   it('connects to the last point when the subtree reaches the bottom edge', () => {
     const layout = computeClusterSubtreeLayout({
       position: 706,

@@ -46,14 +46,21 @@ const computeClusterSubtreeLayout = ({
   const height = (rowCount - 1) * RAIL_MARKER_SPACING + RAIL_MARKER_SIZE;
   const rootY = outerSize / 2;
   const preferredTop = position + rootY - height / 2;
-  const top =
-    markerLayerHeight === undefined
-      ? preferredTop
-      : clamp(preferredTop, 0, Math.max(0, markerLayerHeight - height));
+  const maxTop = Math.max(0, (markerLayerHeight ?? height) - height);
+  const top = markerLayerHeight === undefined ? preferredTop : clamp(preferredTop, 0, maxTop);
+  let stemY = position + rootY - top;
+
+  if (markerLayerHeight !== undefined && preferredTop < 0) {
+    stemY = RAIL_MARKER_SIZE / 2;
+  }
+
+  if (markerLayerHeight !== undefined && preferredTop > maxTop) {
+    stemY = height - RAIL_MARKER_SIZE / 2;
+  }
 
   return {
     height,
-    stemY: clamp(position + rootY - top, RAIL_MARKER_SIZE / 2, height - RAIL_MARKER_SIZE / 2),
+    stemY: clamp(stemY, RAIL_MARKER_SIZE / 2, height - RAIL_MARKER_SIZE / 2),
     topOffset: top - position,
   };
 };
