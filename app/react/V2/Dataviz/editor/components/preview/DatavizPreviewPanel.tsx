@@ -50,6 +50,28 @@ const PreviewTabContent = ({
   const isMetricChart = definition.chart.type === 'metric';
   const canRenderChart = isListChart || isMetricChart || chartOption !== null;
 
+  const renderChartPreview = () => {
+    if (isListChart) {
+      return <DatavizListView data={displayData!} />;
+    }
+    if (isMetricChart) {
+      return <DatavizMetricView data={displayData!} appearance={definition.appearance} />;
+    }
+    return (
+      <>
+        <DatavizChartView
+          option={chartOption}
+          height={displayData!.series.length > 1 ? 360 : 320}
+        />
+        <DataSummaryTable data={displayData!} />
+      </>
+    );
+  };
+
+  const emptyPreviewMessage = isManual
+    ? 'Enter valid manual data JSON to see a preview.'
+    : 'Configure data source and dimension to see a preview.';
+
   return (
     <div className="flex flex-col gap-4 p-4">
       {loading && <DatavizLoadingIndicator centered />}
@@ -57,21 +79,7 @@ const PreviewTabContent = ({
       {!loading && !error && displayData && (
         <>
           {canRenderChart ? (
-            <>
-              {isListChart ? (
-                <DatavizListView data={displayData} />
-              ) : isMetricChart ? (
-                <DatavizMetricView data={displayData} appearance={definition.appearance} />
-              ) : (
-                <>
-                  <DatavizChartView
-                    option={chartOption}
-                    height={displayData.series.length > 1 ? 360 : 320}
-                  />
-                  <DataSummaryTable data={displayData} />
-                </>
-              )}
-            </>
+            renderChartPreview()
           ) : (
             <p className="text-sm text-ink-secondary">
               This chart type cannot display the current data. Pick a supported type in the Chart
@@ -87,11 +95,7 @@ const PreviewTabContent = ({
         </>
       )}
       {!loading && !error && !data && (
-        <p className="text-sm text-ink-secondary">
-          {isManual
-            ? 'Enter valid manual data JSON to see a preview.'
-            : 'Configure data source and dimension to see a preview.'}
-        </p>
+        <p className="text-sm text-ink-secondary">{emptyPreviewMessage}</p>
       )}
     </div>
   );
@@ -142,7 +146,14 @@ const DatavizPreviewPanel = ({
             measures: definition.query.measures,
           })
         : null,
-    [data, definition.chart, definition.query.dimensions, definition.query.measures, locale, defaultLocale]
+    [
+      data,
+      definition.chart,
+      definition.query.dimensions,
+      definition.query.measures,
+      locale,
+      defaultLocale,
+    ]
   );
 
   const chartOption = useMemo(() => {
@@ -165,12 +176,15 @@ const DatavizPreviewPanel = ({
 
   const isManual = isManualDataSource(definition.dataSource);
   const usesEcharts = isEchartsChartType(definition.chart.type);
-  const refreshLabel =
-    definition.refresh.refreshMode === 'live'
-      ? 'Live'
-      : definition.refresh.refreshMode === 'snapshot_manual'
-        ? 'Manual snapshot'
-        : 'Scheduled';
+  const refreshLabel = (() => {
+    if (definition.refresh.refreshMode === 'live') {
+      return 'Live';
+    }
+    if (definition.refresh.refreshMode === 'snapshot_manual') {
+      return 'Manual snapshot';
+    }
+    return 'Scheduled';
+  })();
 
   const tabElements = useMemo(() => {
     const tabs = [

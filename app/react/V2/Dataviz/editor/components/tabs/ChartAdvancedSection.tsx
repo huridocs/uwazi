@@ -25,7 +25,8 @@ const ChartAdvancedSection = ({
   const templates = useAtomValue(templatesAtom);
   const locale = useAtomValue(localeAtom);
   const settings = useAtomValue(settingsAtom);
-  const defaultLocale = settings.languages?.find(language => language.default)?.key ?? locale ?? 'en';
+  const defaultLocale =
+    settings.languages?.find(language => language.default)?.key ?? locale ?? 'en';
   const [parseError, setParseError] = useState<string | null>(null);
   const [editorValue, setEditorValue] = useState(() =>
     stringifyOverrides(definition.chart.echartsOverrides)
@@ -93,7 +94,11 @@ const ChartAdvancedSection = ({
         <CodeEditor language="json" intialValue={editorValue} onChange={handleEditorChange} />
       </div>
       {parseError && <p className="text-xs text-red-600">{parseError}</p>}
-      <JsonCopyPanel title="Echarts configuration" value={resolvedOption} emptyMessage="No configuration" />
+      <JsonCopyPanel
+        title="Echarts configuration"
+        value={resolvedOption}
+        emptyMessage="No configuration"
+      />
     </section>
   );
 };

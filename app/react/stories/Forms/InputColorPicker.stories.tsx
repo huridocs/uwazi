@@ -41,7 +41,7 @@ const Primary: Story = {
     <div className="tw-content p-4">
       <InteractiveWrapper
         initialValue={args.value}
-        label={args.label}
+        label={typeof args.label === 'string' ? args.label : undefined}
         disabled={args.disabled}
       />
     </div>

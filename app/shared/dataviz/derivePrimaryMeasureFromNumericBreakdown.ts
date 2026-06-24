@@ -13,7 +13,12 @@ const SEQUENTIAL_DIMENSION_TYPES = new Set([
   'numeric',
 ]);
 
-const VALUE_MEASURE_AGGREGATIONS = new Set<MeasureSpec['aggregation']>(['sum', 'avg', 'min', 'max']);
+const VALUE_MEASURE_AGGREGATIONS = new Set<MeasureSpec['aggregation']>([
+  'sum',
+  'avg',
+  'min',
+  'max',
+]);
 
 const PRIMARY_MEASURE_CHART_TYPES = new Set<DatavizChartConfig['type']>([
   'line',
@@ -26,7 +31,9 @@ const isNumericCrossTabQuery = (dimensions: DimensionSpec[]): boolean => {
   const secondary = dimensions[1];
   return (
     dimensions.length >= 2 &&
-    Boolean(dimensions[0]?.propertyType && SEQUENTIAL_DIMENSION_TYPES.has(dimensions[0].propertyType)) &&
+    Boolean(
+      dimensions[0]?.propertyType && SEQUENTIAL_DIMENSION_TYPES.has(dimensions[0].propertyType)
+    ) &&
     secondary?.propertyType === 'numeric'
   );
 };
@@ -45,8 +52,9 @@ const aggregateNumericBreakdown = (
 ): number => {
   const cells = breakdown
     .map(item => ({ numericKey: toNumericKey(item.key), weight: item.value }))
-    .filter((item): item is { numericKey: number; weight: number } =>
-      item.numericKey !== undefined && item.weight > 0
+    .filter(
+      (item): item is { numericKey: number; weight: number } =>
+        item.numericKey !== undefined && item.weight > 0
     );
 
   if (!cells.length) {
@@ -61,10 +69,7 @@ const aggregateNumericBreakdown = (
     return Math.min(...cells.map(item => item.numericKey));
   }
 
-  const weightedTotal = cells.reduce(
-    (sum, item) => sum + item.numericKey * item.weight,
-    0
-  );
+  const weightedTotal = cells.reduce((sum, item) => sum + item.numericKey * item.weight, 0);
   const totalWeight = cells.reduce((sum, item) => sum + item.weight, 0);
 
   if (totalWeight <= 0) {

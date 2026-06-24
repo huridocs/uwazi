@@ -42,7 +42,7 @@ const useDatavizPreview = (definition: DatavizDefinition) => {
     [id, query, isManual, manualData]
   );
 
-  const fetchPreview = (currentRequest: number, input: PreviewFetchInput) => {
+  const fetchPreview = async (currentRequest: number, input: PreviewFetchInput) => {
     const startedAt = performance.now();
 
     return api
@@ -69,7 +69,8 @@ const useDatavizPreview = (definition: DatavizDefinition) => {
 
   useEffect(() => {
     if (isManual) {
-      const currentRequest = ++requestId.current;
+      requestId.current += 1;
+      const currentRequest = requestId.current;
       setState(prev => ({ ...prev, loading: true, error: null }));
 
       const timer = setTimeout(() => {
@@ -100,11 +101,12 @@ const useDatavizPreview = (definition: DatavizDefinition) => {
       return undefined;
     }
 
-    const currentRequest = ++requestId.current;
+    requestId.current += 1;
+    const currentRequest = requestId.current;
     setState(prev => ({ ...prev, loading: true, error: null }));
 
     const timer = setTimeout(() => {
-      fetchPreview(currentRequest, fetchInputRef.current);
+      fetchPreview(currentRequest, fetchInputRef.current).catch(() => undefined);
     }, PREVIEW_DEBOUNCE_MS);
 
     return () => clearTimeout(timer);
@@ -134,9 +136,10 @@ const useDatavizPreview = (definition: DatavizDefinition) => {
       return;
     }
 
-    const currentRequest = ++requestId.current;
+    requestId.current += 1;
+    const currentRequest = requestId.current;
     setState(prev => ({ ...prev, loading: true, error: null }));
-    fetchPreview(currentRequest, { id, query });
+    fetchPreview(currentRequest, { id, query }).catch(() => undefined);
   };
 
   return { ...state, refresh };

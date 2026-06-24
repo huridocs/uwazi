@@ -43,12 +43,7 @@ const DataSourcesList = ({ sources, onChange }: DataSourcesListProps) => {
       <Button type="button" variant="secondary" size="small" onClick={() => setShowModal(true)}>
         + Add data source
       </Button>
-      {showModal && (
-        <AddDataSourceModal
-          onAdd={addSource}
-          onClose={() => setShowModal(false)}
-        />
-      )}
+      {showModal && <AddDataSourceModal onAdd={addSource} onClose={() => setShowModal(false)} />}
     </section>
   );
 };

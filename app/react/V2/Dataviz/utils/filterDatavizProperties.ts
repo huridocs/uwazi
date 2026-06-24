@@ -15,8 +15,7 @@ const EXCLUDED_PROPERTY_TYPES = new Set([
   'nested',
 ]);
 
-export const isDatavizPropertyType = (type: string): boolean =>
-  !EXCLUDED_PROPERTY_TYPES.has(type);
+export const isDatavizPropertyType = (type: string): boolean => !EXCLUDED_PROPERTY_TYPES.has(type);
 
 const isDimensionPropertyEnabled = (property: ClientPropertySchema): boolean => {
   if (!isDatavizPropertyType(property.type)) {

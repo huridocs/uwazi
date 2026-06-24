@@ -1,10 +1,10 @@
-import type { ChartType } from '#V2/Dataviz/types/chartTypes.js';
 import type {
   DatavizChartConfig,
   DatavizDataSourceKind,
   DimensionSpec,
   MeasureSpec,
-} from '#V2/Dataviz/types/definition.js';
+} from '#shared/types/datavizSchema.js';
+import type { ChartType } from '#V2/Dataviz/types/chartTypes.js';
 import { isManualDataSource } from '#shared/dataviz/manualData.js';
 import { getEnabledChartTypes } from './getSupportedChartTypes.js';
 

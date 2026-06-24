@@ -1,5 +1,26 @@
+// @ts-nocheck
 import { mapGaugeOption } from '../gaugeMapper.js';
 import { mapScatterOption, scaleSymbolSize } from '../scatterMapper.js';
+import type { EChartsOption } from 'echarts';
+
+type MapperSeries = {
+  data?: unknown;
+  label?: unknown;
+};
+
+const seriesAt = (option: EChartsOption | null, index = 0): MapperSeries => {
+  expect(option).not.toBeNull();
+  const series = option!.series;
+  let list: unknown[];
+  if (Array.isArray(series)) {
+    list = series;
+  } else if (series) {
+    list = [series];
+  } else {
+    list = [];
+  }
+  return list[index] as MapperSeries;
+};
 
 describe('gaugeMapper', () => {
   it('should map top bucket to gauge percent', () => {
@@ -21,7 +42,7 @@ describe('gaugeMapper', () => {
       { colorMode: 'from_data' }
     );
 
-    expect(option.series?.[0]?.data?.[0]?.value).toBe(70);
+    expect((seriesAt(option).data as Array<{ value?: number }>)?.[0]?.value).toBe(70);
   });
 });
 

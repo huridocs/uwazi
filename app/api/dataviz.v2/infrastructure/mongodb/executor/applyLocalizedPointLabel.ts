@@ -15,6 +15,9 @@ export const applyLocalizedPointLabels = (
   const labels: LocalizedLabels = {};
 
   Object.entries(resolved).forEach(([language, text]) => {
+    if (text === undefined) {
+      return;
+    }
     labels[language] = datavizBucketLabel(
       key,
       text,

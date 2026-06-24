@@ -151,7 +151,7 @@ export const mapHeatmapOption = (
 
   return {
     backgroundColor: appearance.themeColors?.background ?? 'transparent',
-    tooltip: chart.showTooltip
+    tooltip: (chart.showTooltip
       ? {
           position: 'top',
           formatter: (params: { value?: [number, number, number] }) => {
@@ -161,7 +161,7 @@ export const mapHeatmapOption = (
             return `${yLabel} / ${xLabel}<br/>${value}`;
           },
         }
-      : undefined,
+      : undefined) as EChartsOption['tooltip'],
     grid: {
       left: 80,
       right: 40,
@@ -204,16 +204,23 @@ export const mapHeatmapOption = (
           },
         },
       },
-    ],
-  };
+    ] as EChartsOption['series'],
+  } as EChartsOption;
 };
 
 export const finalizeHeatmapOption = (
   base: EChartsOption,
   merged: EChartsOption
 ): EChartsOption => {
-  const baseSeries = (base.series as EChartsOption['series']) ?? [];
-  const mergedSeries = (merged.series as EChartsOption['series']) ?? baseSeries;
+  const toSeriesArray = (series: EChartsOption['series'] | undefined) => {
+    if (!series) {
+      return [];
+    }
+    return Array.isArray(series) ? series : [series];
+  };
+
+  const baseSeries = toSeriesArray(base.series);
+  const mergedSeries = toSeriesArray(merged.series ?? base.series);
 
   return {
     ...merged,
@@ -228,8 +235,8 @@ export const finalizeHeatmapOption = (
       return {
         ...series,
         visualMapIndex: 0,
-        data: baseItem.data ?? series.data,
+        data: 'data' in baseItem ? baseItem.data : series.data,
       };
-    }),
+    }) as EChartsOption['series'],
   };
 };

@@ -51,13 +51,18 @@ class CreateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
       updatedAt: new Date(),
     });
 
-    const { dataviz: saved } = await persistDatavizSnapshot(dataviz, this.getActor(), {
-      datavizDS: this.deps.datavizDS,
-      snapshotsDS: this.deps.snapshotsDS,
-      queryExecutor: this.deps.queryExecutor,
-      templatesDS: this.deps.templatesDS,
-      transactionManager: this.transactionManager,
-    }, 'create');
+    const { dataviz: saved } = await persistDatavizSnapshot(
+      dataviz,
+      this.getActor(),
+      {
+        datavizDS: this.deps.datavizDS,
+        snapshotsDS: this.deps.snapshotsDS,
+        queryExecutor: this.deps.queryExecutor,
+        templatesDS: this.deps.templatesDS,
+        transactionManager: this.transactionManager,
+      },
+      'create'
+    );
 
     if (saved.isScheduled) {
       await this.deps.scheduler.schedule(saved, this.getActor(), false);

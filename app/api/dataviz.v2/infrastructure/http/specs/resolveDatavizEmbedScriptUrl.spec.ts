@@ -1,5 +1,9 @@
+// eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
-import { resolveDatavizEmbedScriptUrl, webpackDevScriptUrl } from '../resolveDatavizEmbedScriptUrl.js';
+import {
+  resolveDatavizEmbedScriptUrl,
+  webpackDevScriptUrl,
+} from '../resolveDatavizEmbedScriptUrl.js';
 
 describe('resolveDatavizEmbedScriptUrl', () => {
   const originalHot = process.env.HOT;
@@ -40,7 +44,7 @@ describe('resolveDatavizEmbedScriptUrl', () => {
   });
 
   it('should fall back to /dataviz-embed.js when not in HOT mode and assets are missing', () => {
-    process.env.HOT = '';
+    delete process.env.HOT;
     jest.spyOn(fs, 'readFileSync').mockImplementation(() => {
       throw new Error('missing');
     });
@@ -49,10 +53,10 @@ describe('resolveDatavizEmbedScriptUrl', () => {
   });
 
   it('should read the hashed script path from webpack-assets.json when not in HOT mode', () => {
-    process.env.HOT = '';
-    jest.spyOn(fs, 'readFileSync').mockReturnValue(
-      JSON.stringify({ 'dataviz-embed': { js: '/dataviz-embed.abc123.js' } })
-    );
+    delete process.env.HOT;
+    jest
+      .spyOn(fs, 'readFileSync')
+      .mockReturnValue(JSON.stringify({ 'dataviz-embed': { js: '/dataviz-embed.abc123.js' } }));
 
     expect(resolveDatavizEmbedScriptUrl()).toBe('/dataviz-embed.abc123.js');
   });

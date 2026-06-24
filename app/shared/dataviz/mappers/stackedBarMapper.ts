@@ -1,9 +1,13 @@
+import type { CallbackDataParams } from 'echarts/types/dist/shared.js';
 import type { EChartsOption } from 'echarts';
 import type { DatavizChartConfig } from '#shared/types/datavizSchema.js';
 import type { DatavizAppearance } from '#shared/types/datavizSchema.js';
 import type { DataPoint, DatavizDataDTO } from '#shared/types/datavizSchema.js';
 import { buildCompareChartLegend } from '#shared/dataviz/rendering/compareChartLayout.js';
-import { resolveSeriesColors, type ResolveColorContext } from '#shared/dataviz/utils/resolveColors.js';
+import {
+  resolveSeriesColors,
+  type ResolveColorContext,
+} from '#shared/dataviz/utils/resolveColors.js';
 
 type StackedBarMapperContext = ResolveColorContext;
 
@@ -70,16 +74,26 @@ export const mapStackedBarOption = (
       ? {
           show: true,
           position: 'inside' as const,
-          formatter: (params: { value?: number | string }) => {
+          formatter: (params: CallbackDataParams) => {
             const value = params.value;
             if (value === '-') {
               return '';
             }
-            return String(value);
+            return String(value ?? '');
           },
         }
       : undefined,
   }));
+
+  const resolveGridBottom = () => {
+    if (rotateLabels) {
+      return 72;
+    }
+    if (chart.showLegend === false) {
+      return 40;
+    }
+    return 64;
+  };
 
   return {
     backgroundColor: appearance.themeColors?.background ?? 'transparent',
@@ -90,7 +104,7 @@ export const mapStackedBarOption = (
       left: 40,
       right: 20,
       top: 30,
-      bottom: rotateLabels ? 72 : chart.showLegend === false ? 40 : 64,
+      bottom: resolveGridBottom(),
       containLabel: true,
     },
     xAxis: {
@@ -107,6 +121,6 @@ export const mapStackedBarOption = (
       type: 'value',
       axisLabel: { color: appearance.themeColors?.foreground },
     },
-    series: echartsSeries,
+    series: echartsSeries as EChartsOption['series'],
   };
 };

@@ -53,8 +53,9 @@ const resolveTemplateLabels = (
   const canonical = ctx.templateNames.get(templateId) ?? templateId;
   const translations = ctx.templateTranslations.get(templateId);
 
-  return fillLanguages(ctx.languages, language =>
-    translations?.getTranslation(language, canonical, canonical) ?? canonical
+  return fillLanguages(
+    ctx.languages,
+    language => translations?.getTranslation(language, canonical, canonical) ?? canonical
   );
 };
 
@@ -133,7 +134,10 @@ const resolveEntityTitleLabels = (
 ): LocalizedLabels => {
   const stored = ctx.entityTitles.get(sharedId);
   if (stored) {
-    return fillLanguages(ctx.languages, language => stored[language] ?? stored[ctx.defaultLanguage] ?? sharedId);
+    return fillLanguages(
+      ctx.languages,
+      language => stored[language] ?? stored[ctx.defaultLanguage] ?? sharedId
+    );
   }
 
   return fillLanguages(ctx.languages, () => sharedId);

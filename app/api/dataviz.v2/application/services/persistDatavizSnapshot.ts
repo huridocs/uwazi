@@ -33,9 +33,7 @@ const withSnapshotRefreshMetadata = (dataviz: Dataviz): Dataviz => {
   const refresh = {
     ...dataviz.refresh,
     lastRefreshedAt: new Date().toISOString(),
-    ...(dataviz.isScheduled
-      ? { nextScheduledAt: computeNextScheduledAtIso(dataviz.refresh) }
-      : {}),
+    ...(dataviz.isScheduled ? { nextScheduledAt: computeNextScheduledAtIso(dataviz.refresh) } : {}),
   };
 
   return new Dataviz({

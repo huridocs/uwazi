@@ -48,10 +48,9 @@ const GaugeChart = loadable(
   { resolveComponent: m => m.GaugeChart }
 );
 
-const Dataviz = loadable(
-  () => import(/* webpackChunkName: "LazyLoadDataviz" */ './Dataviz.tsx'),
-  { resolveComponent: m => m.Dataviz }
-);
+const Dataviz = loadable(() => import(/* webpackChunkName: "LazyLoadDataviz" */ './Dataviz.tsx'), {
+  resolveComponent: m => m.Dataviz,
+});
 
 export {
   MarkdownMedia,

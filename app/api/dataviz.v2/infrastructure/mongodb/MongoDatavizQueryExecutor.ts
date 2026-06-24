@@ -8,11 +8,8 @@ import { validateQueryStructure } from '#api/dataviz.v2/domain/validators/valida
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import type { DatavizQuery, DimensionSpec } from '#shared/types/datavizSchema.js';
-import {
-  DATAVIZ_MAX_BUCKETS,
-  REFRESH_LIVE_TIMEOUT_MS,
-} from '#shared/types/datavizSchema.js';
-import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
+import { DATAVIZ_MAX_BUCKETS, REFRESH_LIVE_TIMEOUT_MS } from '#shared/types/datavizSchema.js';
+import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import { buildPermissionMatch } from './executor/buildPermissionMatch.js';
 import { buildFilterMatch, filtersForSource } from './executor/buildFilterMatch.js';
 import { appendDimensionUnwindStages } from './executor/appendDimensionUnwindStages.js';
@@ -28,7 +25,11 @@ import {
 } from './executor/DatavizResultNormalizer.js';
 import { collectBucketKeysFromRawBuckets } from './executor/collectBucketKeys.js';
 import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { buildDatavizMultilingualLabelContext, relatedEntityProperties, type DatavizLabelContextDeps } from './executor/buildDatavizMultilingualLabelContext.js';
+import {
+  buildDatavizMultilingualLabelContext,
+  relatedEntityProperties,
+  type DatavizLabelContextDeps,
+} from './executor/buildDatavizMultilingualLabelContext.js';
 import { loadEntityTitleLabels } from './executor/loadEntityTitleLabels.js';
 import {
   createMultilingualLabelResolver,
@@ -38,10 +39,7 @@ import {
 
 type MongoDatavizQueryExecutorDeps = DatavizLabelContextDeps;
 
-class MongoDatavizQueryExecutor
-  extends MongoDataSource<EntityDBO>
-  implements DatavizQueryExecutor
-{
+class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements DatavizQueryExecutor {
   protected collectionName = 'entities';
 
   private labelContextDeps: DatavizLabelContextDeps;
@@ -55,20 +53,13 @@ class MongoDatavizQueryExecutor
     this.labelContextDeps = deps;
   }
 
-  private async resolveEntityTitles(
-    query: DatavizQuery,
-    bucketKeys: Iterable<string>
-  ) {
+  private async resolveEntityTitles(query: DatavizQuery, bucketKeys: Iterable<string>) {
     if (relatedEntityProperties(query.dimensions).size === 0) {
       return new Map();
     }
 
     const languages = await this.labelContextDeps.settingsDS.getLanguageKeys();
-    return loadEntityTitleLabels(
-      this.db,
-      [...bucketKeys],
-      languages as LanguageISO6391[]
-    );
+    return loadEntityTitleLabels(this.db, [...bucketKeys], languages as LanguageISO6391[]);
   }
 
   private async buildLabelContext(query: DatavizQuery, bucketKeys: Iterable<string>) {
@@ -98,6 +89,8 @@ class MongoDatavizQueryExecutor
     const sourceIds: string[] = [];
 
     for (const [sourceIndex, source] of query.sources.entries()) {
+      // Sequential aggregation keeps per-source timeout accounting predictable.
+      // eslint-disable-next-line no-await-in-loop
       const buckets = await this.aggregateSource({
         query,
         source,
@@ -121,10 +114,7 @@ class MongoDatavizQueryExecutor
 
     const templateCountById = new Map<string, number>();
     query.sources.forEach(source => {
-      templateCountById.set(
-        source.templateId,
-        (templateCountById.get(source.templateId) ?? 0) + 1
-      );
+      templateCountById.set(source.templateId, (templateCountById.get(source.templateId) ?? 0) + 1);
     });
 
     const sourceLocalizedLabels = query.sources.map(source =>
@@ -139,8 +129,7 @@ class MongoDatavizQueryExecutor
       pickDefaultLocalizedLabel(labels, labelContext.defaultLanguage, 'Series')
     );
 
-    const joinType =
-      query.join?.type ?? (query.sources.length > 1 ? 'compare' : undefined);
+    const joinType = query.join?.type ?? (query.sources.length > 1 ? 'compare' : undefined);
 
     if (query.sources.length > 1 && joinType === 'compare') {
       return normalizeCompareSeries({
@@ -190,6 +179,7 @@ class MongoDatavizQueryExecutor
     const counts: number[] = [];
 
     for (const [sourceIndex, source] of query.sources.entries()) {
+      // eslint-disable-next-line no-await-in-loop
       const count = await this.countSourceEntities({
         query,
         source,
@@ -206,10 +196,7 @@ class MongoDatavizQueryExecutor
 
     const templateCountById = new Map<string, number>();
     query.sources.forEach(source => {
-      templateCountById.set(
-        source.templateId,
-        (templateCountById.get(source.templateId) ?? 0) + 1
-      );
+      templateCountById.set(source.templateId, (templateCountById.get(source.templateId) ?? 0) + 1);
     });
 
     const sourceLocalizedLabels = query.sources.map(source =>
@@ -223,9 +210,7 @@ class MongoDatavizQueryExecutor
     const sourceLabels = sourceLocalizedLabels.map(labels =>
       pickDefaultLocalizedLabel(labels, labelContext.defaultLanguage, 'Total')
     );
-    const sourceIds = query.sources.map(
-      source => source.alias ?? source.templateId
-    );
+    const sourceIds = query.sources.map(source => source.alias ?? source.templateId);
 
     return normalizeMetricCount({
       counts,

@@ -51,8 +51,17 @@ export const formatValueAxisTick = (value: number): string => {
 export const buildValueAxis = (
   options: ValueAxisOptions = {}
 ): Extract<NonNullable<EChartsOption['xAxis']>, { type?: string }> => {
-  const { axisLabelColor, name, nameGap, nameLocation, nameRotate, min, max, scale = false, formatTick } =
-    options;
+  const {
+    axisLabelColor,
+    name,
+    nameGap,
+    nameLocation,
+    nameRotate,
+    min,
+    max,
+    scale = false,
+    formatTick,
+  } = options;
 
   return {
     type: 'value',

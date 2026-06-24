@@ -145,5 +145,5 @@ export const usesTemplateSeriesColors = (
 ): boolean =>
   appearance.colorMode === 'template' &&
   Boolean(
-    sources && sources.length > 1 || primaryDimensionProperty === TEMPLATE_DIMENSION_PROPERTY
+    (sources && sources.length > 1) || primaryDimensionProperty === TEMPLATE_DIMENSION_PROPERTY
   );

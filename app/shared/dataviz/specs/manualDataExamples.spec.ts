@@ -1,4 +1,7 @@
-import { getManualExampleForChartType, MANUAL_EXAMPLE_BY_CHART_TYPE } from '../manualDataExamples.js';
+import {
+  getManualExampleForChartType,
+  MANUAL_EXAMPLE_BY_CHART_TYPE,
+} from '../manualDataExamples.js';
 import { EDITOR_CHART_TYPES } from '#V2/Dataviz/types/chartTypes.js';
 
 describe('manualDataExamples', () => {

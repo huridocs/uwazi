@@ -3,7 +3,10 @@ import type { DatavizChartConfig } from '#shared/types/datavizSchema.js';
 import type { DatavizAppearance } from '#shared/types/datavizSchema.js';
 import type { DatavizDataDTO } from '#shared/types/datavizSchema.js';
 import { chartTextStyle } from '#shared/dataviz/rendering/chartTheme.js';
-import { resolveSeriesColors, type ResolveColorContext } from '#shared/dataviz/utils/resolveColors.js';
+import {
+  resolveSeriesColors,
+  type ResolveColorContext,
+} from '#shared/dataviz/utils/resolveColors.js';
 
 type PieMapperContext = ResolveColorContext;
 
@@ -61,19 +64,19 @@ export const mapPieOption = (
   let chartData = series.points.map(p => ({ name: p.label, value: p.value }));
   chartData = applyMaxSlices(chartData, maxSlices, othersLabel);
 
-  const colors = resolveSeriesColors(
-    series.points.slice(0, chartData.length),
-    appearance,
-    context
-  );
+  const colors = resolveSeriesColors(series.points.slice(0, chartData.length), appearance, context);
 
   const labelFormat = chart.pieOptions?.labelFormat ?? 'percentage';
-  const formatter =
-    labelFormat === 'value'
-      ? '{b}: {c}'
-      : labelFormat === 'both'
-        ? '{b}: {c} ({d}%)'
-        : '{b}: {d}%';
+  const resolvePieLabelFormatter = () => {
+    if (labelFormat === 'value') {
+      return '{b}: {c}';
+    }
+    if (labelFormat === 'both') {
+      return '{b}: {c} ({d}%)';
+    }
+    return '{b}: {d}%';
+  };
+  const formatter = resolvePieLabelFormatter();
   const legendNames = chartData.map(item => item.name);
   const showLegend = chart.showLegend ?? true;
   const labelColor = chartTextStyle(appearance).color;
@@ -81,9 +84,7 @@ export const mapPieOption = (
   return {
     backgroundColor: appearance.themeColors?.background ?? 'transparent',
     color: colors,
-    tooltip: chart.showTooltip
-      ? { trigger: 'item', formatter: '{b}: {c} ({d}%)' }
-      : undefined,
+    tooltip: chart.showTooltip ? { trigger: 'item', formatter: '{b}: {c} ({d}%)' } : undefined,
     legend: buildPieLegend(legendNames, appearance, showLegend),
     series: [
       {

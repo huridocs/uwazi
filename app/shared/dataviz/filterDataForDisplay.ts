@@ -1,4 +1,10 @@
-import type { DataPoint, DatavizChartConfig, DatavizDataDTO, DimensionSpec, MeasureSpec } from '#shared/types/datavizSchema.js';
+import type {
+  DataPoint,
+  DatavizChartConfig,
+  DatavizDataDTO,
+  DimensionSpec,
+  MeasureSpec,
+} from '#shared/types/datavizSchema.js';
 import { projectDatavizLabelsForLocale } from '#shared/dataviz/projectDatavizLabelsForLocale.js';
 import {
   DATAVIZ_MISSING_BUCKET_KEY,
@@ -40,7 +46,9 @@ const filterPoints = (points: DataPoint[], chart: DatavizChartConfig): DataPoint
       const value = breakdown.reduce((sum, item) => sum + item.value, 0);
       return { ...point, breakdown, value };
     })
-    .filter(point => !point.breakdown || point.breakdown.length > 0 || shouldIncludePoint(point, chart));
+    .filter(
+      point => !point.breakdown || point.breakdown.length > 0 || shouldIncludePoint(point, chart)
+    );
 
 const filterDataForDisplay = (
   data: DatavizDataDTO,
@@ -49,11 +57,7 @@ const filterDataForDisplay = (
 ): DatavizDataDTO => {
   const localized =
     options.locale && options.locale.length > 0
-      ? projectDatavizLabelsForLocale(
-          data,
-          options.locale,
-          options.defaultLocale ?? options.locale
-        )
+      ? projectDatavizLabelsForLocale(data, options.locale, options.defaultLocale ?? options.locale)
       : data;
   const labeled = formatDatavizDataLabels(localized, chart.missingValueLabel);
   const derivePrimaryMeasure = shouldDerivePrimaryMeasureFromNumericBreakdown(

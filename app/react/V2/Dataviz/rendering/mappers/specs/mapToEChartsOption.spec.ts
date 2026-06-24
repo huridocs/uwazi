@@ -22,25 +22,15 @@ describe('mapToEChartsOption', () => {
   it('should map bar and pie for simple categorical manual data', () => {
     const appearance = { colorMode: 'theme' as const };
 
-    expect(
-      mapToEChartsOption(simpleManualData, { type: 'bar' }, appearance)
-    ).not.toBeNull();
-    expect(
-      mapToEChartsOption(simpleManualData, { type: 'pie' }, appearance)
-    ).not.toBeNull();
+    expect(mapToEChartsOption(simpleManualData, { type: 'bar' }, appearance)).not.toBeNull();
+    expect(mapToEChartsOption(simpleManualData, { type: 'pie' }, appearance)).not.toBeNull();
   });
 
   it('should return null for cross-tab charts without breakdown data', () => {
     const appearance = { colorMode: 'theme' as const };
 
-    expect(
-      mapToEChartsOption(simpleManualData, { type: 'stacked_bar' }, appearance)
-    ).toBeNull();
-    expect(
-      mapToEChartsOption(simpleManualData, { type: 'heatmap' }, appearance)
-    ).toBeNull();
-    expect(
-      mapToEChartsOption(simpleManualData, { type: 'scatter' }, appearance)
-    ).toBeNull();
+    expect(mapToEChartsOption(simpleManualData, { type: 'stacked_bar' }, appearance)).toBeNull();
+    expect(mapToEChartsOption(simpleManualData, { type: 'heatmap' }, appearance)).toBeNull();
+    expect(mapToEChartsOption(simpleManualData, { type: 'scatter' }, appearance)).toBeNull();
   });
 });

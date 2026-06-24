@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
+import type { ClientTemplateSchema } from '#app/istore.js';
 import { Select } from '#V2/Components/Forms/Select.js';
 import { InputField } from '#V2/Components/Forms/InputField.js';
 import { Pill } from '#V2/Components/UI/Pill.js';
@@ -95,11 +96,13 @@ const DimensionSection = ({
   const templates = useAtomValue(templatesAtom);
   const multiSource = sources.length > 1;
   const activeSource =
-    sources.find(s => s.alias === dimension?.sourceAlias) || sources.find(s => s.templateId) || sources[0];
+    sources.find(s => s.alias === dimension?.sourceAlias) ||
+    sources.find(s => s.templateId) ||
+    sources[0];
   const template = templates.find(t => t._id === activeSource?.templateId);
 
   const availableProperties = useMemo(
-    () => getSharedDimensionProperties(sources, templates),
+    () => getSharedDimensionProperties(sources, templates as ClientTemplateSchema[]),
     [sources, templates]
   );
 
@@ -122,19 +125,19 @@ const DimensionSection = ({
         template?.properties?.find(p => p.name === dimension?.property);
 
   const showNumericAggregation =
-    Boolean(dimension) &&
+    dimension != null &&
     dimension.property !== TEMPLATE_DIMENSION_PROPERTY &&
     isNumericPropertyType(dimension.propertyType) &&
     Boolean(onMeasureChange);
 
   const showDateInterval =
-    Boolean(dimension) &&
+    dimension != null &&
     dimension.property !== TEMPLATE_DIMENSION_PROPERTY &&
     isDateLikePropertyType(dimension.propertyType);
 
   const numericAggregationValue =
     showNumericAggregation && isMeasureOwnedByDimension(dimension!, measure)
-      ? measure?.aggregation ?? 'count'
+      ? (measure?.aggregation ?? 'count')
       : 'count';
 
   const handlePropertyChange = (propertyName: string) => {
@@ -168,10 +171,7 @@ const DimensionSection = ({
       return;
     }
     onMeasureChange(
-      buildMeasureForNumericDimension(
-        dimension,
-        aggregationId as MeasureSpec['aggregation']
-      )
+      buildMeasureForNumericDimension(dimension, aggregationId as MeasureSpec['aggregation'])
     );
   };
 
@@ -201,9 +201,7 @@ const DimensionSection = ({
         options={propertyOptions}
         onChange={e => handlePropertyChange(e.target.value)}
       />
-      {selectedProperty && (
-        <Pill color="blue">{selectedProperty.type}</Pill>
-      )}
+      {selectedProperty && <Pill color="blue">{selectedProperty.type}</Pill>}
       {showNumericAggregation && (
         <Select
           id={`${idPrefix}-aggregation`}
@@ -228,9 +226,7 @@ const DimensionSection = ({
           label="Max buckets"
           type="number"
           value={String(dimension.maxBuckets ?? 10)}
-          onChange={e =>
-            onChange({ ...dimension, maxBuckets: Number(e.target.value) || 10 })
-          }
+          onChange={e => onChange({ ...dimension, maxBuckets: Number(e.target.value) || 10 })}
         />
       )}
     </section>

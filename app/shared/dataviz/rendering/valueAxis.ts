@@ -1,4 +1,3 @@
-import type { EChartsOption } from 'echarts';
 import { formatDatavizNumericLabel } from '#shared/dataviz/formatDimensionKeyLabel.js';
 
 type ValueAxisOptions = {
@@ -48,11 +47,34 @@ export const formatValueAxisTick = (value: number): string => {
   return formatDatavizNumericLabel(value);
 };
 
-export const buildValueAxis = (
-  options: ValueAxisOptions = {}
-): Extract<NonNullable<EChartsOption['xAxis']>, { type?: string }> => {
-  const { axisLabelColor, name, nameGap, nameLocation, nameRotate, min, max, scale = false, formatTick } =
-    options;
+type BuiltValueAxis = {
+  type: 'value';
+  scale?: boolean;
+  min?: number;
+  max?: number;
+  name?: string;
+  nameGap?: number;
+  nameLocation?: 'start' | 'middle' | 'end';
+  nameRotate?: number;
+  nameTextStyle?: { color?: string };
+  axisLabel?: {
+    color?: string;
+    formatter?: (value: number) => string;
+  };
+};
+
+export const buildValueAxis = (options: ValueAxisOptions = {}): BuiltValueAxis => {
+  const {
+    axisLabelColor,
+    name,
+    nameGap,
+    nameLocation,
+    nameRotate,
+    min,
+    max,
+    scale = false,
+    formatTick,
+  } = options;
 
   return {
     type: 'value',

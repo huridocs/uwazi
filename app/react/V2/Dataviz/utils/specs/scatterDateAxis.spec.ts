@@ -44,10 +44,7 @@ describe('scatterDateAxis helpers', () => {
 
 describe('resolveScatterDateDimensionPatch', () => {
   it('should switch year date buckets to day precision for scatter', () => {
-    const patch = resolveScatterDateDimensionPatch(
-      [yearDimension, numericDimension],
-      'scatter'
-    );
+    const patch = resolveScatterDateDimensionPatch([yearDimension, numericDimension], 'scatter');
 
     expect(patch?.[0]).toEqual(
       expect.objectContaining({
@@ -64,10 +61,7 @@ describe('resolveScatterDateDimensionPatch', () => {
 
   it('should not patch when date is already daily', () => {
     expect(
-      resolveScatterDateDimensionPatch(
-        [{ ...yearDimension, dateInterval: 'day' }],
-        'scatter'
-      )
+      resolveScatterDateDimensionPatch([{ ...yearDimension, dateInterval: 'day' }], 'scatter')
     ).toBeNull();
   });
 

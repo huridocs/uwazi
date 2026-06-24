@@ -1,21 +1,13 @@
 import type { DataPoint, DataSeries, DatavizDataDTO } from '#shared/types/datavizSchema.js';
 import { resolveLocalizedLabel } from './resolveLocalizedLabel.js';
 
-const projectPoint = (
-  point: DataPoint,
-  locale: string,
-  defaultLocale: string
-): DataPoint => ({
+const projectPoint = (point: DataPoint, locale: string, defaultLocale: string): DataPoint => ({
   ...point,
   label: resolveLocalizedLabel(point, locale, defaultLocale),
   breakdown: point.breakdown?.map(item => projectPoint(item, locale, defaultLocale)),
 });
 
-const projectSeries = (
-  series: DataSeries,
-  locale: string,
-  defaultLocale: string
-): DataSeries => ({
+const projectSeries = (series: DataSeries, locale: string, defaultLocale: string): DataSeries => ({
   ...series,
   label: resolveLocalizedLabel(series, locale, defaultLocale),
   points: series.points.map(point => projectPoint(point, locale, defaultLocale)),

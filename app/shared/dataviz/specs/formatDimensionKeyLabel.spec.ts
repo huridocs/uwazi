@@ -47,9 +47,9 @@ describe('formatDimensionKeyLabel', () => {
       from: 1651536000,
       to: 1651708799,
     });
-    expect(
-      formatDatavizDimensionKeyLabel(serialized, { propertyType: 'multidaterange' })
-    ).toBe('May 3, 2022 ~ May 4, 2022');
+    expect(formatDatavizDimensionKeyLabel(serialized, { propertyType: 'multidaterange' })).toBe(
+      'May 3, 2022 ~ May 4, 2022'
+    );
   });
 
   it('should format date ranges using the Uwazi tilde separator', () => {
@@ -59,9 +59,9 @@ describe('formatDimensionKeyLabel', () => {
   });
 
   it('should compare numeric bucket keys in ascending order', () => {
-    expect(
-      [2005, 1999, 2003, 2025].sort((a, b) => compareDatavizBucketKeys(a, b))
-    ).toEqual([1999, 2003, 2005, 2025]);
+    expect([2005, 1999, 2003, 2025].sort((a, b) => compareDatavizBucketKeys(a, b))).toEqual([
+      1999, 2003, 2005, 2025,
+    ]);
   });
 
   it('should format numeric bucket keys without floating-point noise', () => {

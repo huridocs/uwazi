@@ -7,7 +7,6 @@ import { DatavizSnapshotsDataSourceFactory } from '#api/dataviz.v2/infrastructur
 import { DatavizQueryExecutorFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizQueryExecutorFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { MANUAL_DATA_EXAMPLE } from '#shared/dataviz/manualData.js';
-import type { DatavizScheduler } from '#api/dataviz.v2/application/contracts/DatavizScheduler.js';
 import { CreateDatavizUseCase } from '../useCases/CreateDataviz.js';
 import { DeleteDatavizUseCase } from '../useCases/DeleteDataviz.js';
 
@@ -69,7 +68,7 @@ describe('DeleteDatavizUseCase', () => {
 
     expect(deleteScheduler.cancelPending).toHaveBeenCalledWith(created.id);
 
-    const result = await testingEnvironment.runWithContext(() =>
+    const result = await testingEnvironment.runWithContext(async () =>
       DatavizDataSourceFactory.default().getById(created.id)
     );
     expect(result.isError()).toBe(true);

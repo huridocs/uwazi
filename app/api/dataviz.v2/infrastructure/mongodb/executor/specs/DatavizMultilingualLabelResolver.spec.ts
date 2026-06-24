@@ -35,9 +35,7 @@ const buildContext = (
     ],
   ]),
   relatedEntityProperties: new Set(['garage']),
-  entityTitles: new Map([
-    ['owner-1', { en: 'Alice', es: 'Alicia' }],
-  ]),
+  entityTitles: new Map([['owner-1', { en: 'Alice', es: 'Alicia' }]]),
   missingBucketLabels: buildMissingBucketLabels(['en', 'es']),
   ...overrides,
 });

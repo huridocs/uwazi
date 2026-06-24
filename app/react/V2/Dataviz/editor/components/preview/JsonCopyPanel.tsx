@@ -7,13 +7,10 @@ type JsonCopyPanelProps = {
   emptyMessage?: string;
 };
 
-const JsonCopyPanel = ({
-  title,
-  value,
-  emptyMessage = 'No data loaded',
-}: JsonCopyPanelProps) => {
+const JsonCopyPanel = ({ title, value, emptyMessage = 'No data loaded' }: JsonCopyPanelProps) => {
   const [copied, setCopied] = useState(false);
-  const text = value === null || value === undefined ? emptyMessage : JSON.stringify(value, null, 2);
+  const text =
+    value === null || value === undefined ? emptyMessage : JSON.stringify(value, null, 2);
 
   const copyToClipboard = async () => {
     if (value === null || value === undefined) {

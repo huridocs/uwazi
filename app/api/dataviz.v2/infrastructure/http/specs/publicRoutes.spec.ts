@@ -93,9 +93,7 @@ describe('public dataviz embed routes', () => {
     const current = await settings.get();
     await settings.save({ ...current, private: true });
 
-    const response = await request(app)
-      .get(`/api/public/dataviz/${datavizId}/data`)
-      .expect(401);
+    const response = await request(app).get(`/api/public/dataviz/${datavizId}/data`).expect(401);
 
     expect(response.body.error).toBe('Unauthorized');
 

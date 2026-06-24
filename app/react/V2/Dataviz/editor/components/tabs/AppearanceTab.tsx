@@ -69,16 +69,14 @@ const AppearanceTab = ({ definition, previewData, onPatchAppearance }: Appearanc
             colors instead.
           </p>
         )}
-        {appearance.colorMode === 'template' && (
-          <TemplateColorHint sources={query.sources} />
-        )}
+        {appearance.colorMode === 'template' && <TemplateColorHint sources={query.sources} />}
         {(appearance.colorMode === 'template' || appearance.colorMode === 'from_data') &&
           !isTemplateDimension && (
-          <p className="text-xs text-amber-700">
-            Template colors apply when comparing data sources or when the dimension is entity type.
-            Otherwise the chart palette is used as fallback.
-          </p>
-        )}
+            <p className="text-xs text-amber-700">
+              Template colors apply when comparing data sources or when the dimension is entity
+              type. Otherwise the chart palette is used as fallback.
+            </p>
+          )}
         {appearance.colorMode === 'custom' && supportsCustom && (
           <CustomValueColorMapEditor
             targets={customTargets}

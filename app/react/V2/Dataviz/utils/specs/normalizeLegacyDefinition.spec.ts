@@ -1,4 +1,5 @@
 import { normalizeLegacyDefinition } from '../normalizeLegacyDefinition.js';
+import type { DimensionSpec } from '#shared/types/datavizSchema.js';
 
 describe('normalizeLegacyDefinition', () => {
   it('should migrate includeMissing from dimensions to chart.showMissingValues', () => {
@@ -12,7 +13,7 @@ describe('normalizeLegacyDefinition', () => {
             property: 'sexo',
             propertyType: 'select',
             includeMissing: true,
-          },
+          } as DimensionSpec & { includeMissing?: boolean },
         ],
         measures: [{ aggregation: 'count' }],
       },

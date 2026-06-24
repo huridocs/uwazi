@@ -6,6 +6,7 @@ import { MongoDatavizQueryExecutor } from '../mongodb/MongoDatavizQueryExecutor.
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
+import type { TemplatesReadDAO } from '../mongodb/executor/buildDatavizMultilingualLabelContext.js';
 
 class DatavizQueryExecutorFactory {
   static default() {
@@ -14,7 +15,7 @@ class DatavizQueryExecutorFactory {
     return new MongoDatavizQueryExecutor(getConnection(), transactionManager, {
       settingsDS: SettingsDataSourceFactory.cached({ transactionManager }),
       translationsDS: CachedTranslationsDataSource(transactionManager),
-      templatesDAO: TemplatesDAOFactory.default(),
+      templatesDAO: TemplatesDAOFactory.default() as TemplatesReadDAO,
       thesauriDAO: ThesauriDAOFactory.default(),
     });
   }

@@ -29,15 +29,14 @@ type RawBucket = {
 
 type LabelResolver = MultilingualLabelResolver;
 
-const sortPoints = (
-  points: DataPoint[],
-  sort?: DimensionSpec['sort']
-): DataPoint[] => {
+const sortPoints = (points: DataPoint[], sort?: DimensionSpec['sort']): DataPoint[] => {
   const copy = [...points];
   if (sort === 'key_asc') {
     copy.sort((a, b) => compareDatavizBucketKeys(a.key, b.key));
   } else if (sort === 'label_asc') {
-    copy.sort((a, b) => String(a.label).localeCompare(String(b.label), undefined, { numeric: true }));
+    copy.sort((a, b) =>
+      String(a.label).localeCompare(String(b.label), undefined, { numeric: true })
+    );
   } else {
     copy.sort((a, b) => b.value - a.value);
   }
@@ -340,14 +339,8 @@ export const normalizeMetricCount = (params: {
   datavizId: string;
   queryDurationMs: number;
 }): DatavizDataDTO => {
-  const {
-    counts,
-    sourceIds,
-    sourceLabels,
-    sourceLocalizedLabels,
-    datavizId,
-    queryDurationMs,
-  } = params;
+  const { counts, sourceIds, sourceLabels, sourceLocalizedLabels, datavizId, queryDurationMs } =
+    params;
 
   const joinType = counts.length > 1 ? 'compare' : 'single';
   const totalEntities = counts.reduce((sum, count) => sum + count, 0);

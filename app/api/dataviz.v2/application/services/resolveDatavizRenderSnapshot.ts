@@ -53,16 +53,12 @@ const resolveDatavizRenderSnapshot = async (
   const renderPayload = snapshot.payload;
   const stale = snapshot.queryHash !== dataviz.queryHash;
 
-  const data = filterDataForDisplay(
-    { ...renderPayload.data, stale },
-    renderPayload.chart,
-    {
-      locale,
-      defaultLocale,
-      dimensions: dataviz.query.dimensions,
-      measures: dataviz.query.measures,
-    }
-  );
+  const data = filterDataForDisplay({ ...renderPayload.data, stale }, renderPayload.chart, {
+    locale,
+    defaultLocale,
+    dimensions: dataviz.query.dimensions,
+    measures: dataviz.query.measures,
+  });
 
   return {
     data,
@@ -73,7 +69,9 @@ const resolveDatavizRenderSnapshot = async (
 
 const loadDatavizOrThrow = async (
   id: string,
-  datavizDS: { getById: (id: string) => Promise<{ isError: () => boolean; getData: () => Dataviz }> }
+  datavizDS: {
+    getById: (id: string) => Promise<{ isError: () => boolean; getData: () => Dataviz }>;
+  }
 ): Promise<Dataviz> => {
   const result = await datavizDS.getById(id);
   if (result.isError()) {

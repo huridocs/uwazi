@@ -36,7 +36,9 @@ class DatavizSchedulerService implements DatavizScheduler {
     }
 
     const lockedUntil = computeNextLockedUntil(dataviz.refresh);
-    await this.deps.jobsDispatcher.dispatch(DatavizScheduledRefreshJobToken, params, { lockedUntil });
+    await this.deps.jobsDispatcher.dispatch(DatavizScheduledRefreshJobToken, params, {
+      lockedUntil,
+    });
   }
 }
 

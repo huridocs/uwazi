@@ -12,7 +12,10 @@ import { TEMPLATE_DIMENSION_PROPERTY } from '#V2/Dataviz/types/definition.js';
 import type { DatavizDataDTO, DatavizDefinition } from '#V2/Dataviz/types/index.js';
 import type { DatavizApi, DatavizApiOptions } from './contracts.js';
 
-const delay = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
+const delay = async (ms: number) =>
+  new Promise<void>(resolve => {
+    setTimeout(resolve, ms);
+  });
 
 const definitions = new Map<string, DatavizDefinition>([
   [DATAVIZ_CARS_BY_COLOR_ID, createDefaultDatavizDefinition()],
@@ -47,10 +50,7 @@ const applyFilterDemo = (dto: DatavizDataDTO, definition: DatavizDefinition): Da
   return { ...dto, meta: { ...dto.meta, appliedFilters: filters } };
 };
 
-const resolveDataForQuery = (
-  id: string,
-  query: DatavizDefinition['query']
-): DatavizDataDTO => {
+const resolveDataForQuery = (id: string, query: DatavizDefinition['query']): DatavizDataDTO => {
   const dimension = query.dimensions[0];
   const base = {
     datavizId: id,

@@ -2,7 +2,6 @@ import type {
   DataPoint,
   DataSeries,
   DatavizAppearance,
-  DatavizChartConfig,
   DatavizSource,
 } from '#shared/types/datavizSchema.js';
 import { TEMPLATE_DIMENSION_PROPERTY } from '#shared/types/datavizSchema.js';
@@ -96,15 +95,13 @@ const bakeSeriesLabels = (
       s => s.alias === item.id || s.alias === item.label || s.templateId === item.id
     );
     const templateName = source ? templatesById[source.templateId]?.name : undefined;
-    if (!templateName) {
+    if (!source || !templateName) {
       return item;
     }
 
     const sameTemplateCount = sources.filter(s => s.templateId === source.templateId).length;
     const label =
-      sameTemplateCount > 1 && source.alias
-        ? `${templateName} (${source.alias})`
-        : templateName;
+      sameTemplateCount > 1 && source.alias ? `${templateName} (${source.alias})` : templateName;
 
     return { ...item, label };
   });

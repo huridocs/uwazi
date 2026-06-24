@@ -93,7 +93,9 @@ const loadPropertyThesaurus = async (
   thesauriDAO: ThesauriReadDAO,
   translationsDS: TranslationsDataSource,
   query: DatavizQuery
-): Promise<Map<string, { valueLabels: Map<string, string>; translations: TranslationCollection }>> => {
+): Promise<
+  Map<string, { valueLabels: Map<string, string>; translations: TranslationCollection }>
+> => {
   const propertyNames = query.dimensions
     .filter(dimension => dimension.property !== TEMPLATE_DIMENSION_PROPERTY)
     .filter(
@@ -185,7 +187,10 @@ const loadPropertyThesaurus = async (
     })
   );
 
-  const result = new Map<string, { valueLabels: Map<string, string>; translations: TranslationCollection }>();
+  const result = new Map<
+    string,
+    { valueLabels: Map<string, string>; translations: TranslationCollection }
+  >();
   propertyToThesaurus.forEach((thesaurusId, propertyName) => {
     const valueLabels = thesaurusValueLabels.get(thesaurusId);
     const translations = thesaurusTranslations.get(thesaurusId);

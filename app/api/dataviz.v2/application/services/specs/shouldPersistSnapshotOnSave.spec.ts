@@ -20,7 +20,9 @@ describe('shouldPersistSnapshotOnSave', () => {
   it('returns true when query changes', () => {
     const existing = baseDataviz();
     const updated = new Dataviz({
-      ...existing.toDefinition(),
+      ...(({ createdAt: _createdAt, updatedAt: _updatedAt, ...definition }) => definition)(
+        existing.toDefinition()
+      ),
       query: {
         ...existing.query,
         dimensions: [{ property: 'brand', propertyType: 'select' }],
@@ -34,7 +36,9 @@ describe('shouldPersistSnapshotOnSave', () => {
   it('returns false when only name changes', () => {
     const existing = baseDataviz();
     const updated = new Dataviz({
-      ...existing.toDefinition(),
+      ...(({ createdAt: _createdAt, updatedAt: _updatedAt, ...definition }) => definition)(
+        existing.toDefinition()
+      ),
       name: 'Renamed chart',
       skipValidation: true,
     });
@@ -45,7 +49,9 @@ describe('shouldPersistSnapshotOnSave', () => {
   it('returns true when chart config changes', () => {
     const existing = baseDataviz();
     const updated = new Dataviz({
-      ...existing.toDefinition(),
+      ...(({ createdAt: _createdAt, updatedAt: _updatedAt, ...definition }) => definition)(
+        existing.toDefinition()
+      ),
       chart: { type: 'bar' },
       skipValidation: true,
     });

@@ -39,6 +39,9 @@ const collectBreakdownTargets = (points: DataPoint[]): CustomColorTarget[] => {
   return Array.from(seriesMap.values());
 };
 
+const hasBreakdownTargets = (data: DatavizDataDTO): boolean =>
+  collectBreakdownTargets(data.series[0]?.points ?? []).length > 0;
+
 export const getCustomColorTargetKind = (
   chartType: ChartType,
   data: DatavizDataDTO | null | undefined
@@ -65,9 +68,6 @@ export const getCustomColorTargetKind = (
 
   return 'bucket';
 };
-
-const hasBreakdownTargets = (data: DatavizDataDTO): boolean =>
-  collectBreakdownTargets(data.series[0]?.points ?? []).length > 0;
 
 export const supportsCustomColorMode = (
   chartType: ChartType,
@@ -103,10 +103,7 @@ export const getCustomColorTargets = (
   }));
 };
 
-export const CUSTOM_COLOR_TARGET_HINTS: Record<
-  Exclude<CustomColorTargetKind, 'none'>,
-  string
-> = {
+export const CUSTOM_COLOR_TARGET_HINTS: Record<Exclude<CustomColorTargetKind, 'none'>, string> = {
   series: 'Override the color of each data series (line or bar group).',
   bucket: 'Override the color of each category or slice.',
   stacked_series: 'Override the color of each stack segment or heatmap column.',

@@ -57,10 +57,8 @@ export class DatavizUnauthorizedError extends DatavizError {
 
 export class DatavizSnapshotUnavailableError extends DatavizError {
   constructor(datavizId: string) {
-    super(
-      'DATAVIZ_SNAPSHOT_UNAVAILABLE',
-      `No snapshot available for public embed: ${datavizId}`,
-      { datavizId }
-    );
+    super('DATAVIZ_SNAPSHOT_UNAVAILABLE', `No snapshot available for public embed: ${datavizId}`, {
+      datavizId,
+    });
   }
 }

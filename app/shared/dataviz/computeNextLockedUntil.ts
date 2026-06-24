@@ -13,7 +13,9 @@ const nextRunInTimezone = (
   from: DateTime
 ): DateTime => {
   const { hours, minutes } = parseScheduleTime(scheduleTime);
-  let candidate = from.setZone(timezone).set({ hour: hours, minute: minutes, second: 0, millisecond: 0 });
+  let candidate = from
+    .setZone(timezone)
+    .set({ hour: hours, minute: minutes, second: 0, millisecond: 0 });
 
   if (candidate <= from) {
     if (schedule === 'daily') {

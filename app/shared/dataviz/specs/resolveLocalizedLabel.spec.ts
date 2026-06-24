@@ -12,9 +12,7 @@ describe('resolveLocalizedLabel', () => {
   });
 
   it('should fall back to default locale then legacy label', () => {
-    expect(
-      resolveLocalizedLabel({ label: 'Red', labels: { en: 'Red' } }, 'es', 'en')
-    ).toBe('Red');
+    expect(resolveLocalizedLabel({ label: 'Red', labels: { en: 'Red' } }, 'es', 'en')).toBe('Red');
 
     expect(resolveLocalizedLabel({ label: 'Red' }, 'es', 'en')).toBe('Red');
   });

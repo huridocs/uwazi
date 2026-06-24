@@ -1,8 +1,4 @@
-import type {
-  DatavizDataDTO,
-  DatavizDefinition,
-  DatavizQuery,
-} from '#V2/Dataviz/types/index.js';
+import type { DatavizDataDTO, DatavizDefinition, DatavizQuery } from '#V2/Dataviz/types/index.js';
 
 export type DatavizPreviewInput = {
   id: string;

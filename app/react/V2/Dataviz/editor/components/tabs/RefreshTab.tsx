@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { t, Translate } from '#app/I18N/index.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import { Select } from '#V2/Components/Forms/Select.js';
@@ -10,7 +10,7 @@ import type { RefreshModeConstraints } from '#V2/Dataviz/utils/refreshModeConstr
 
 type RefreshTabProps = {
   definition: DatavizDefinition;
-  constraints: RefreshModeConstraints;
+  constraints: RefreshModeConstraints & { messages: string[] };
   onPatchRefresh: (patch: Partial<DatavizDefinition['refresh']>) => void;
 };
 
@@ -60,6 +60,16 @@ const formatRefreshedAt = (value?: string) => {
   return new Date(value).toLocaleString();
 };
 
+const refreshOptionClassName = (isDisabled: boolean, isSelected: boolean) => {
+  if (isDisabled) {
+    return 'border-border bg-vellum opacity-60';
+  }
+  if (isSelected) {
+    return 'border-ink bg-warm';
+  }
+  return 'border-border';
+};
+
 const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps) => {
   const api = useDatavizApi();
   const { notify } = useRequestStatus();
@@ -67,8 +77,10 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
   const [cooldownTick, setCooldownTick] = useState(0);
   const { refresh } = definition;
   const canRefreshSnapshot = isPersistedId(definition.id);
-  void cooldownTick;
-  const recentlyRefreshed = isSnapshotRecentlyRefreshed(refresh.lastRefreshedAt);
+  const recentlyRefreshed = useMemo(
+    () => isSnapshotRecentlyRefreshed(refresh.lastRefreshedAt),
+    [refresh.lastRefreshedAt, cooldownTick]
+  );
 
   useEffect(() => {
     if (!refresh.lastRefreshedAt) {
@@ -101,7 +113,10 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
         lastRefreshedAt: updated.refresh.lastRefreshedAt,
         nextScheduledAt: updated.refresh.nextScheduledAt,
       });
-      notify('success', t('System', 'Visualization data updated from your collection.', null, false));
+      notify(
+        'success',
+        t('System', 'Visualization data updated from your collection.', null, false)
+      );
     } catch {
       notify('error', t('System', 'An error occurred', null, false));
     } finally {
@@ -122,13 +137,7 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
           return (
             <div key={option.value} className="flex flex-col gap-1">
               <div
-                className={`flex flex-col gap-3 rounded-lg border p-3 ${
-                  isDisabled
-                    ? 'border-border bg-vellum opacity-60'
-                    : isSelected
-                      ? 'border-ink bg-warm'
-                      : 'border-border'
-                }`}
+                className={`flex flex-col gap-3 rounded-lg border p-3 ${refreshOptionClassName(isDisabled, isSelected)}`}
               >
                 <label
                   className={`flex gap-3 ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}

@@ -1,7 +1,7 @@
 import { DatavizController } from './DatavizController.js';
 import { GetPublicDatavizEmbedUseCaseFactory } from '../factories/GetPublicDatavizEmbedUseCaseFactory.js';
 import { renderDatavizEmbedHtml } from '#shared/dataviz/embed/renderDatavizEmbedHtml.js';
-import { resolveDatavizEmbedScriptUrl } from '#shared/dataviz/embed/resolveDatavizEmbedScriptUrl.js';
+import { resolveDatavizEmbedScriptUrl } from './resolveDatavizEmbedScriptUrl.js';
 import { mapDatavizEmbedHtmlErrors } from './mapDatavizEmbedHtmlErrors.js';
 
 class DatavizEmbedHtmlController extends DatavizController {

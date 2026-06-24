@@ -439,7 +439,10 @@ export const createMultiSourceDefinition = (): DatavizDefinition => ({
     limit: 50,
   },
   chart: { type: 'bar', showLegend: true, showTooltip: true, showLabels: true },
-  appearance: { colorMode: 'template', themeColors: { background: '#ffffff', foreground: '#1a1a1a' } },
+  appearance: {
+    colorMode: 'template',
+    themeColors: { background: '#ffffff', foreground: '#1a1a1a' },
+  },
 });
 
 export const createWithFiltersDefinition = (): DatavizDefinition => ({

@@ -4,7 +4,6 @@ import { DATAVIZ_DRAFT_ID, type DatavizDefinition } from '#shared/types/datavizS
 const createDraftDatavizInput = (options?: { templateId?: string }): DatavizCreateInput => ({
   name: 'Untitled visualization',
   description: '',
-  status: 'draft',
   query: {
     sources: options?.templateId ? [{ templateId: options.templateId }] : [],
     dimensions: [],

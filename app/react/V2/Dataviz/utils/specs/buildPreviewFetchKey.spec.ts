@@ -11,7 +11,15 @@ describe('buildPreviewFetchKey', () => {
     const keyA = buildPreviewFetchKey('dv_1', baseQuery);
     const keyB = buildPreviewFetchKey('dv_1', {
       ...baseQuery,
-      filters: [{ property: 'year', operator: 'gte' as const, value: 2020 }],
+      filters: [
+        {
+          id: 'year-filter',
+          property: 'year',
+          propertyType: 'numeric',
+          operator: 'gte' as const,
+          value: 2020,
+        },
+      ],
     });
 
     expect(keyA).not.toBe(keyB);
@@ -24,8 +32,6 @@ describe('buildPreviewFetchKey', () => {
       measures: [{ aggregation: 'count' as const, countMode: 'all' as const }],
     };
 
-    expect(buildPreviewFetchKey('dv_1', query)).toBe(
-      buildPreviewFetchKey('dv_1', { ...query })
-    );
+    expect(buildPreviewFetchKey('dv_1', query)).toBe(buildPreviewFetchKey('dv_1', { ...query }));
   });
 });

@@ -1,5 +1,8 @@
 import type { ClientPropertySchema } from '#app/istore.js';
-import { getSharedDimensionProperties, propertiesMatchForDataviz } from '../getSharedDimensionProperties.js';
+import {
+  getSharedDimensionProperties,
+  propertiesMatchForDataviz,
+} from '../getSharedDimensionProperties.js';
 
 const select = (name: string, content: string): ClientPropertySchema => ({
   name,

@@ -1,6 +1,12 @@
 import { mixHexColor } from '#V2/Dataviz/utils/mixHexColor.js';
 import { resolveHeatmapCellIntensity } from '#V2/Dataviz/utils/resolveHeatmapCellIntensity.js';
 import { mapHeatmapOption } from '../heatmapMapper.js';
+import type { EChartsOption } from 'echarts';
+
+const requireOption = (option: EChartsOption | null): EChartsOption => {
+  expect(option).not.toBeNull();
+  return option!;
+};
 
 const twoDimensionalData = {
   datavizId: '1',
@@ -51,10 +57,12 @@ const isGrayscale = (hex: string) => {
 
 describe('heatmapMapper', () => {
   it('should paint cells from palette colors with a hidden visualMap stub', () => {
-    const option = mapHeatmapOption(
-      twoDimensionalData,
-      { type: 'heatmap', showLabels: true },
-      { colorMode: 'theme' }
+    const option = requireOption(
+      mapHeatmapOption(
+        twoDimensionalData,
+        { type: 'heatmap', showLabels: true },
+        { colorMode: 'theme' }
+      )
     );
 
     expect(option.visualMap).toMatchObject({
@@ -75,16 +83,18 @@ describe('heatmapMapper', () => {
   });
 
   it('should apply custom column colors with per-cell visualMap opt-out', () => {
-    const option = mapHeatmapOption(
-      twoDimensionalData,
-      { type: 'heatmap' },
-      {
-        colorMode: 'custom',
-        valueColorMap: {
-          bear: '#111111',
-          wolf: '#00aa55',
-        },
-      }
+    const option = requireOption(
+      mapHeatmapOption(
+        twoDimensionalData,
+        { type: 'heatmap' },
+        {
+          colorMode: 'custom',
+          valueColorMap: {
+            bear: '#111111',
+            wolf: '#00aa55',
+          },
+        }
+      )
     );
 
     const series = option.series as Array<{
@@ -92,37 +102,35 @@ describe('heatmapMapper', () => {
     }>;
 
     const colors = series[0]?.data.map(item => item.itemStyle?.color).filter(Boolean) as string[];
-    expect(colors[0]).toBe(
-      mixHexColor('#FFFFFF', '#111111', resolveHeatmapCellIntensity(2, 2))
-    );
-    expect(colors[1]).toBe(
-      mixHexColor('#FFFFFF', '#00aa55', resolveHeatmapCellIntensity(1, 2))
-    );
+    expect(colors[0]).toBe(mixHexColor('#FFFFFF', '#111111', resolveHeatmapCellIntensity(2, 2)));
+    expect(colors[1]).toBe(mixHexColor('#FFFFFF', '#00aa55', resolveHeatmapCellIntensity(1, 2)));
   });
 
   it('should render zero-value cells when excludeZero is disabled', () => {
-    const option = mapHeatmapOption(
-      {
-        ...twoDimensionalData,
-        series: [
-          {
-            ...twoDimensionalData.series[0]!,
-            points: [
-              {
-                key: 'cl',
-                label: 'Chile',
-                value: 1,
-                breakdown: [
-                  { key: 'bear', label: 'Bear', value: 1 },
-                  { key: 'wolf', label: 'Wolf', value: 0 },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-      { type: 'heatmap', excludeZero: false, showLabels: true },
-      { colorMode: 'theme' }
+    const option = requireOption(
+      mapHeatmapOption(
+        {
+          ...twoDimensionalData,
+          series: [
+            {
+              ...twoDimensionalData.series[0]!,
+              points: [
+                {
+                  key: 'cl',
+                  label: 'Chile',
+                  value: 1,
+                  breakdown: [
+                    { key: 'bear', label: 'Bear', value: 1 },
+                    { key: 'wolf', label: 'Wolf', value: 0 },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        { type: 'heatmap', excludeZero: false, showLabels: true },
+        { colorMode: 'theme' }
+      )
     );
 
     const series = option.series as Array<{ data: Array<{ value: number[] }> }>;
@@ -131,28 +139,30 @@ describe('heatmapMapper', () => {
   });
 
   it('should omit zero-value cells when excludeZero is enabled', () => {
-    const option = mapHeatmapOption(
-      {
-        ...twoDimensionalData,
-        series: [
-          {
-            ...twoDimensionalData.series[0]!,
-            points: [
-              {
-                key: 'cl',
-                label: 'Chile',
-                value: 1,
-                breakdown: [
-                  { key: 'bear', label: 'Bear', value: 1 },
-                  { key: 'wolf', label: 'Wolf', value: 0 },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-      { type: 'heatmap', excludeZero: true },
-      { colorMode: 'theme' }
+    const option = requireOption(
+      mapHeatmapOption(
+        {
+          ...twoDimensionalData,
+          series: [
+            {
+              ...twoDimensionalData.series[0]!,
+              points: [
+                {
+                  key: 'cl',
+                  label: 'Chile',
+                  value: 1,
+                  breakdown: [
+                    { key: 'bear', label: 'Bear', value: 1 },
+                    { key: 'wolf', label: 'Wolf', value: 0 },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        { type: 'heatmap', excludeZero: true },
+        { colorMode: 'theme' }
+      )
     );
 
     const series = option.series as Array<{ data: Array<{ value: number[] }> }>;
@@ -161,22 +171,24 @@ describe('heatmapMapper', () => {
   });
 
   it('should return null when points have no breakdown', () => {
-    const option = mapHeatmapOption(
-      {
-        ...twoDimensionalData,
-        series: [
-          {
-            id: 'main',
-            label: 'Series',
-            points: [
-              { key: 'a', label: 'Category A', value: 10 },
-              { key: 'b', label: 'Category B', value: 25 },
-            ],
-          },
-        ],
-      },
-      { type: 'heatmap' },
-      { colorMode: 'theme' }
+    const option = requireOption(
+      mapHeatmapOption(
+        {
+          ...twoDimensionalData,
+          series: [
+            {
+              id: 'main',
+              label: 'Series',
+              points: [
+                { key: 'a', label: 'Category A', value: 10 },
+                { key: 'b', label: 'Category B', value: 25 },
+              ],
+            },
+          ],
+        },
+        { type: 'heatmap' },
+        { colorMode: 'theme' }
+      )
     );
 
     expect(option).toBeNull();

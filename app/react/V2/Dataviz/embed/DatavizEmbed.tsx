@@ -22,9 +22,7 @@ const DatavizEmbed = ({ payload, height }: DatavizEmbedProps) => {
 
   if (!canRenderChart) {
     return (
-      <p className="text-sm text-ink-secondary">
-        This chart type cannot display the current data.
-      </p>
+      <p className="text-sm text-ink-secondary">This chart type cannot display the current data.</p>
     );
   }
 

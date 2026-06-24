@@ -5,6 +5,9 @@ const manualListPayload: DatavizEmbedPayload = {
   chart: { type: 'list', showTooltip: true, showLabels: true },
   appearance: { colorMode: 'from_data' },
   data: {
+    datavizId: 'dv-embed-list',
+    generatedAt: '2026-01-01T00:00:00.000Z',
+    stale: false,
     series: [
       {
         id: 'main',
@@ -15,7 +18,7 @@ const manualListPayload: DatavizEmbedPayload = {
         ],
       },
     ],
-    meta: { totalEntities: 20 },
+    meta: { totalEntities: 20, truncated: false },
   },
 };
 
@@ -23,6 +26,9 @@ const manualBarPayload: DatavizEmbedPayload = {
   chart: { type: 'bar', showTooltip: true, showLabels: true },
   appearance: { colorMode: 'from_data' },
   data: {
+    datavizId: 'dv-embed-list',
+    generatedAt: '2026-01-01T00:00:00.000Z',
+    stale: false,
     series: [
       {
         id: 'main',
@@ -30,7 +36,7 @@ const manualBarPayload: DatavizEmbedPayload = {
         points: [{ key: 'a', label: 'Embed Category A', value: 12 }],
       },
     ],
-    meta: { totalEntities: 12 },
+    meta: { totalEntities: 12, truncated: false },
   },
 };
 

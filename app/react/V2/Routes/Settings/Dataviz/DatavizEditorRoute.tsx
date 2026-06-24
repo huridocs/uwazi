@@ -44,13 +44,13 @@ const DatavizEditorRoute = () => {
   const handleDelete = async () => {
     setConfirmDelete(false);
     if (!isPersistedId(initialDefinition.id)) {
-      navigate('/settings/dataviz');
+      await navigate('/settings/dataviz');
       return;
     }
     try {
       await api.deleteDefinition(initialDefinition.id);
       notify('success', t('System', 'Deleted successfully.', null, false));
-      navigate('/settings/dataviz');
+      await navigate('/settings/dataviz');
     } catch {
       notify('error', t('System', 'An error occurred', null, false));
     }

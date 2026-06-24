@@ -1,6 +1,7 @@
-import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs';
 
 const webpackDevScriptUrl = (): string => {
   const webpackPort = process.env.WEBPACK_PORT || 8080;
@@ -13,7 +14,7 @@ const webpackDevScriptUrl = (): string => {
 
 const distAssetsPath = (): string => {
   const moduleDir = path.dirname(fileURLToPath(import.meta.url));
-  return path.resolve(moduleDir, '../../../../dist/webpack-assets.json');
+  return path.resolve(moduleDir, '../../../../../dist/webpack-assets.json');
 };
 
 const readHashedScriptFromAssets = (): string | undefined => {

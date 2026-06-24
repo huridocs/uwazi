@@ -1,5 +1,3 @@
-import type { DatavizDataMeta } from '#V2/Dataviz/types/data.js';
-import type { DatavizQuery } from '#V2/Dataviz/types/definition.js';
 import {
   getRefreshModeConstraints as getSharedRefreshModeConstraints,
   type RefreshModeBlockReason,
@@ -23,8 +21,7 @@ export {
 };
 
 const REASON_MESSAGES: Record<RefreshModeBlockReason, string> = {
-  RELATIONSHIP_JOIN:
-    'Live refresh is not available for relationship joins between templates.',
+  RELATIONSHIP_JOIN: 'Live refresh is not available for relationship joins between templates.',
   MULTI_SOURCE: 'Live refresh is not available when multiple data sources are combined.',
   MULTI_DIMENSION: 'Live refresh is not available for charts with two dimensions.',
   HIGH_ENTITY_COUNT: `Live refresh is not available for more than ${REFRESH_LIVE_MAX_ENTITIES.toLocaleString()} entities.`,

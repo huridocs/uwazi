@@ -16,7 +16,7 @@ type DatavizEditorConfigPanelProps = {
   previewData?: DatavizDataDTO | null;
   previewLoading?: boolean;
   previewError?: string | null;
-  refreshConstraints: RefreshModeConstraints;
+  refreshConstraints: RefreshModeConstraints & { messages: string[] };
   onTabChange: (tab: EditorTabId) => void;
   onPatch: (patch: Partial<DatavizDefinition>) => void;
   onPatchQuery: (patch: Partial<DatavizDefinition['query']>) => void;
@@ -53,11 +53,7 @@ const DatavizEditorConfigPanel = ({
         />
       </Tabs.Tab>,
       <Tabs.Tab key="chart" id="chart" label="Chart">
-        <ChartTab
-          definition={definition}
-          onPatchChart={onPatchChart}
-          onPatchQuery={onPatchQuery}
-        />
+        <ChartTab definition={definition} onPatchChart={onPatchChart} onPatchQuery={onPatchQuery} />
       </Tabs.Tab>,
       <Tabs.Tab key="appearance" id="appearance" label="Appearance">
         <AppearanceTab

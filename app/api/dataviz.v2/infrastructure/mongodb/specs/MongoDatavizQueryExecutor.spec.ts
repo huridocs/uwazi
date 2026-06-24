@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
@@ -10,6 +9,7 @@ import { CachedTranslationsDataSource } from '#api/i18n.v2/database/data_source_
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
+import type { TemplatesReadDAO } from '../executor/buildDatavizMultilingualLabelContext.js';
 import { MongoDatavizQueryExecutor } from '../MongoDatavizQueryExecutor.js';
 
 const createExecutor = () =>
@@ -18,7 +18,7 @@ const createExecutor = () =>
     return new MongoDatavizQueryExecutor(getConnection(), tm, {
       settingsDS: SettingsDataSourceFactory.cached({ transactionManager: tm }),
       translationsDS: CachedTranslationsDataSource(tm),
-      templatesDAO: TemplatesDAOFactory.default(),
+      templatesDAO: TemplatesDAOFactory.default() as TemplatesReadDAO,
       thesauriDAO: ThesauriDAOFactory.default(),
     });
   });
@@ -205,9 +205,7 @@ describe('MongoDatavizQueryExecutor', () => {
     );
 
     expect(dto.series[0]?.points).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ key: colorId, label: 'Red', value: 12 }),
-      ])
+      expect.arrayContaining([expect.objectContaining({ key: colorId, label: 'Red', value: 12 })])
     );
     expect(dto.meta.totalEntities).toBe(12);
   });
@@ -345,7 +343,9 @@ describe('MongoDatavizQueryExecutor', () => {
     const dto = await executor.execute(
       {
         sources: [{ templateId: templateId.toString() }],
-        dimensions: [{ property: 'registered_on', propertyType: 'date', bucketStrategy: 'date_histogram' }],
+        dimensions: [
+          { property: 'registered_on', propertyType: 'date', bucketStrategy: 'date_histogram' },
+        ],
         measures: [{ aggregation: 'count' }],
         language: 'en',
       },

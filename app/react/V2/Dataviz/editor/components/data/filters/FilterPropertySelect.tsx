@@ -15,10 +15,10 @@ type FilterPropertySelectProps = {
 const FilterPropertySelect = ({ filter, sources, onChange }: FilterPropertySelectProps) => {
   const templates = useAtomValue(templatesAtom);
   const options = useMemo(() => {
-    const props = getFilterableProperties(templates, sources);
+    const filterableProperties = getFilterableProperties(templates, sources);
     return [
       { value: '', label: 'Select property…' },
-      ...props.map(p => ({
+      ...filterableProperties.map(p => ({
         value: `${p.sourceAlias || ''}::${p.propertyName}`,
         label:
           sources.length > 1
@@ -34,8 +34,8 @@ const FilterPropertySelect = ({ filter, sources, onChange }: FilterPropertySelec
       return;
     }
     const [sourceAlias, propertyName] = composite.split('::');
-    const props = getFilterableProperties(templates, sources);
-    const match = props.find(
+    const filterableProperties = getFilterableProperties(templates, sources);
+    const match = filterableProperties.find(
       p => p.propertyName === propertyName && (p.sourceAlias || '') === (sourceAlias || '')
     );
     if (!match) return;
@@ -53,9 +53,7 @@ const FilterPropertySelect = ({ filter, sources, onChange }: FilterPropertySelec
     });
   };
 
-  const currentValue = filter.property
-    ? `${filter.sourceAlias || ''}::${filter.property}`
-    : '';
+  const currentValue = filter.property ? `${filter.sourceAlias || ''}::${filter.property}` : '';
 
   return (
     <Select

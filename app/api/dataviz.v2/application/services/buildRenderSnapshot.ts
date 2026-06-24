@@ -1,6 +1,4 @@
 import type {
-  DatavizChartConfig,
-  DatavizAppearance,
   DatavizDataDTO,
   DatavizQuery,
   DatavizSnapshotRenderPayload,

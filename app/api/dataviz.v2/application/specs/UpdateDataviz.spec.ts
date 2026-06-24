@@ -5,7 +5,6 @@ import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGenerat
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { DatavizDataSourceFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizDataSourceFactory.js';
 import { DatavizSnapshotsDataSourceFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizSnapshotsDataSourceFactory.js';
-import { DatavizQueryExecutorFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizQueryExecutorFactory.js';
 import type { DatavizScheduler } from '#api/dataviz.v2/application/contracts/DatavizScheduler.js';
 import type { DatavizQueryExecutor } from '#api/dataviz.v2/application/contracts/DatavizQueryExecutor.js';
 import { CreateDatavizUseCase } from '../useCases/CreateDataviz.js';
@@ -98,7 +97,11 @@ describe('UpdateDatavizUseCase', () => {
     });
 
     expect(updateScheduler.cancelPending).toHaveBeenCalledWith(created.id);
-    expect(updateScheduler.schedule).toHaveBeenCalledWith(expect.anything(), expect.anything(), false);
+    expect(updateScheduler.schedule).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+      false
+    );
     expect(queryExecutor.execute).toHaveBeenCalledTimes(2);
   });
 });

@@ -6,8 +6,6 @@ type DataInspectorProps = {
   data: DatavizDataDTO | null;
 };
 
-const DataInspector = ({ data }: DataInspectorProps) => (
-  <JsonCopyPanel title="Data" value={data} />
-);
+const DataInspector = ({ data }: DataInspectorProps) => <JsonCopyPanel title="Data" value={data} />;
 
 export { DataInspector };

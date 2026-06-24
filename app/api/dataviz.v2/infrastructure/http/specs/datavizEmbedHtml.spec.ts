@@ -84,7 +84,7 @@ describe('GET /embed/dataviz/:id HTML', () => {
     const response = await request(app).get(`/embed/dataviz/${datavizId}?locale=en`);
 
     expect(response.status).toBe(200);
-    expect(response.headers['content-type']).toMatch(/html/);
+    expect(String(response.headers['content-type']).includes('html')).toBe(true);
     expect(response.text).toContain('__DATAVIZ_CHART_OPTION__');
     expect(response.text).toContain('echarts.min.js');
     expect(response.text).toContain('dataviz-embed');

@@ -24,18 +24,19 @@ const DataSummaryTable = ({ data }: DataSummaryTableProps) => {
           </thead>
           <tbody>
             {points.flatMap(point =>
-              (point.breakdown?.length ? point.breakdown : [{ key: '-', label: '—', value: point.value }]).map(
-                item => (
-                  <tr
-                    key={`${String(point.key)}-${String(item.key)}`}
-                    className="border-b border-border-soft"
-                  >
-                    <td className="py-2 pr-4 text-ink">{point.label}</td>
-                    <td className="py-2 pr-4 text-ink-secondary">{item.label}</td>
-                    <td className="py-2 text-right text-ink">{item.value}</td>
-                  </tr>
-                )
-              )
+              (point.breakdown?.length
+                ? point.breakdown
+                : [{ key: '-', label: '—', value: point.value }]
+              ).map(item => (
+                <tr
+                  key={`${String(point.key)}-${String(item.key)}`}
+                  className="border-b border-border-soft"
+                >
+                  <td className="py-2 pr-4 text-ink">{point.label}</td>
+                  <td className="py-2 pr-4 text-ink-secondary">{item.label}</td>
+                  <td className="py-2 text-right text-ink">{item.value}</td>
+                </tr>
+              ))
             )}
           </tbody>
         </table>

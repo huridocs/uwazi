@@ -98,7 +98,9 @@ export const mapBarOption = (
           value,
           itemStyle: { color: colors[i] },
         })),
-        label: chart.showLabels ? { show: true, position: isHorizontal ? 'right' : 'top' } : undefined,
+        label: chart.showLabels
+          ? { show: true, position: isHorizontal ? 'right' : 'top' }
+          : undefined,
       },
     ],
   };

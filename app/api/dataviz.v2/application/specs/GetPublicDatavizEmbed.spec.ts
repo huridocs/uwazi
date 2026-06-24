@@ -61,14 +61,14 @@ const createSut = (queryExecutor = createMockQueryExecutor()) =>
         { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant }
       ),
       getPublicEmbed: (actor = ExecutionContext.actor) => ({
-        execute: (input: { id: string }) =>
-          testingEnvironment.runWithContext(() => {
-            const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+        execute: async (input: { id: string }) =>
+          testingEnvironment.runWithContext(async () => {
+            const tm = ExecutionContext.transactionManager as MongoTransactionManager;
             const useCase = new GetPublicDatavizEmbedUseCase(
               {
                 datavizDS: DatavizDataSourceFactory.default(),
                 snapshotsDS: DatavizSnapshotsDataSourceFactory.default(),
-                settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
+                settingsDS: SettingsDataSourceFactory.default({ transactionManager: tm }),
               },
               { actor, tenant: ExecutionContext.tenant, targetLanguage: 'en' }
             );
@@ -130,9 +130,9 @@ describe('GetPublicDatavizEmbedUseCase', () => {
     const current = await settings.get();
     await settings.save({ ...current, private: true });
 
-    await expect(
-      getPublicEmbed(User.createFrom(null)).execute({ id: dataviz.id })
-    ).rejects.toThrow(DatavizUnauthorizedError);
+    await expect(getPublicEmbed(User.createFrom(null)).execute({ id: dataviz.id })).rejects.toThrow(
+      DatavizUnauthorizedError
+    );
 
     await settings.save({ ...current, private: false });
   });
@@ -183,9 +183,11 @@ describe('GetPublicDatavizEmbedUseCase', () => {
     const current = await settings.get();
     await settings.save({ ...current, private: true });
 
-    const payload = await getPublicEmbed(User.createFrom({ _id: 'admin1', role: 'admin' })).execute({
-      id: dataviz.id,
-    });
+    const payload = await getPublicEmbed(User.createFrom({ _id: 'admin1', role: 'admin' })).execute(
+      {
+        id: dataviz.id,
+      }
+    );
 
     expect(payload.data.series).toHaveLength(1);
 
@@ -208,9 +210,14 @@ describe('GetPublicDatavizEmbedUseCase', () => {
       refresh: { refreshMode: 'live' },
     });
 
-    await datavizDS.setProcessing(dataviz.id, { active: true, startedAt: new Date().toISOString() });
+    await datavizDS.setProcessing(dataviz.id, {
+      active: true,
+      startedAt: new Date().toISOString(),
+    });
 
-    await expect(getPublicEmbed().execute({ id: dataviz.id })).rejects.toThrow(DatavizProcessingError);
+    await expect(getPublicEmbed().execute({ id: dataviz.id })).rejects.toThrow(
+      DatavizProcessingError
+    );
   });
 
   it('should reject live query charts without a snapshot on the public path', async () => {
@@ -219,7 +226,7 @@ describe('GetPublicDatavizEmbedUseCase', () => {
       name: 'Live without snapshot',
       query: {
         sources: [{ templateId: '507f1f77bcf86cd799439011' }],
-        dimensions: [{ property: 'title', propertyType: 'text' }],
+        dimensions: [{ property: 'title', propertyType: 'select' }],
         measures: [{ aggregation: 'count', countMode: 'all' }],
       },
       chart: { type: 'pie' },
@@ -240,7 +247,7 @@ describe('GetPublicDatavizEmbedUseCase', () => {
       name: 'Live with snapshot',
       query: {
         sources: [{ templateId: '507f1f77bcf86cd799439011' }],
-        dimensions: [{ property: 'title', propertyType: 'text' }],
+        dimensions: [{ property: 'title', propertyType: 'select' }],
         measures: [{ aggregation: 'count', countMode: 'all' }],
       },
       chart: { type: 'pie' },

@@ -8,17 +8,20 @@ import * as datavizAPI from '#V2/api/dataviz/index.js';
 import { Button, ConfirmationModal, Table } from '#app/V2/Components/UI/index.js';
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import type { DatavizDefinition } from '#shared/types/datavizSchema.js';
-import { CHART_TYPE_LABELS } from '#V2/Dataviz/types/chartTypes.js';
-import { isManualDataSource } from '#shared/dataviz/manualData.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import {
+  ActionCell,
+  ActionHeader,
+  ChartHeader,
+  ChartTypeCell,
+  NameHeader,
+  RefreshHeader,
+  RefreshModeCell,
+  UpdatedAtCell,
+  UpdatedHeader,
+} from './components/TableComponents.js';
 type DatavizRow = DatavizDefinition & { rowId: string };
-
-const REFRESH_MODE_LABELS: Record<DatavizDefinition['refresh']['refreshMode'], string> = {
-  live: 'Live',
-  snapshot_manual: 'Snapshot (manual)',
-  snapshot_scheduled: 'Snapshot (scheduled)',
-};
 
 const datavizListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -32,11 +35,6 @@ const datavizListLoader =
 
 const columnHelper = createColumnHelper<DatavizRow>();
 
-const formatDate = (value?: string) => {
-  if (!value) return '—';
-  return new Date(value).toLocaleString();
-};
-
 const DatavizList = () => {
   const rows = useLoaderData() as DatavizRow[];
   const [selected, setSelected] = useState<DatavizRow[]>([]);
@@ -46,7 +44,7 @@ const DatavizList = () => {
 
   const deleteSelected = async () => {
     setShowModal(false);
-    const results = await Promise.all(selected.map(row => datavizAPI.remove(row.id)));
+    const results = await Promise.all(selected.map(async row => datavizAPI.remove(row.id)));
     const hasErrors = results.some(res => res instanceof FetchResponseError);
     if (hasErrors) {
       notify('error', t('System', 'An error occurred', null, false));
@@ -59,41 +57,30 @@ const DatavizList = () => {
 
   const columns = [
     columnHelper.accessor('name', {
-      header: () => <Translate>Name</Translate>,
+      header: NameHeader,
       meta: { headerClassName: 'w-2/6' },
     }),
     columnHelper.accessor('chart.type', {
       id: 'chartType',
-      header: () => <Translate>Chart</Translate>,
-      cell: ({ getValue }) => CHART_TYPE_LABELS[getValue()] ?? getValue(),
+      header: ChartHeader,
+      cell: ChartTypeCell,
       meta: { headerClassName: 'w-1/6' },
     }),
     columnHelper.accessor('refresh.refreshMode', {
       id: 'refreshMode',
-      header: () => <Translate>Refresh</Translate>,
-      cell: ({ row, getValue }) =>
-        isManualDataSource(row.original.dataSource) ? (
-          <Translate>Manual data</Translate>
-        ) : (
-          REFRESH_MODE_LABELS[getValue()] ?? getValue()
-        ),
+      header: RefreshHeader,
+      cell: RefreshModeCell,
       meta: { headerClassName: 'w-1/6' },
     }),
     columnHelper.accessor('updatedAt', {
-      header: () => <Translate>Last updated</Translate>,
-      cell: ({ getValue }) => formatDate(getValue()),
+      header: UpdatedHeader,
+      cell: UpdatedAtCell,
       meta: { headerClassName: 'w-1/6' },
     }),
     columnHelper.display({
       id: 'actions',
-      header: () => <Translate>Action</Translate>,
-      cell: ({ row }) => (
-        <I18NLink to={`/settings/dataviz/edit/${row.original.id}`}>
-          <Button variant="ghost" className="leading-4">
-            <Translate>Edit</Translate>
-          </Button>
-        </I18NLink>
-      ),
+      header: ActionHeader,
+      cell: ActionCell,
       enableSorting: false,
       meta: { headerClassName: 'w-0 text-right', contentClassName: 'text-right' },
     }),

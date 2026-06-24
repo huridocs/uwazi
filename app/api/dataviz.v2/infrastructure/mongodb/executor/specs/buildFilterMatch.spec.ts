@@ -1,9 +1,5 @@
 import type { DatavizFilter, DatavizSource } from '#shared/types/datavizSchema.js';
-import {
-  buildFilterMatch,
-  filterAppliesToSource,
-  filtersForSource,
-} from '../buildFilterMatch.js';
+import { buildFilterMatch, filterAppliesToSource, filtersForSource } from '../buildFilterMatch.js';
 
 describe('buildFilterMatch source scoping', () => {
   const hombresSource: DatavizSource = {
@@ -53,8 +49,12 @@ describe('buildFilterMatch source scoping', () => {
   });
 
   it('should build match only with scoped filters', () => {
-    const hombreMatch = buildFilterMatch(filtersForSource([hombreFilter, mujerFilter], hombresSource, 0));
-    const mujerMatch = buildFilterMatch(filtersForSource([hombreFilter, mujerFilter], mujeresSource, 1));
+    const hombreMatch = buildFilterMatch(
+      filtersForSource([hombreFilter, mujerFilter], hombresSource, 0)
+    );
+    const mujerMatch = buildFilterMatch(
+      filtersForSource([hombreFilter, mujerFilter], mujeresSource, 1)
+    );
 
     expect(hombreMatch).toEqual([{ 'metadata.sexo.value': 'hombre-id' }]);
     expect(mujerMatch).toEqual([{ 'metadata.sexo.value': 'mujer-id' }]);

@@ -8,15 +8,22 @@ import { getSupportedChartTypes } from '#V2/Dataviz/utils/getSupportedChartTypes
 import { isManualDataSource } from '#shared/dataviz/manualData.js';
 import { resolveScatterDateDimensionPatch } from '#V2/Dataviz/utils/scatterDateAxis.js';
 import type { DatavizDefinition } from '#V2/Dataviz/types/definition.js';
-import {
-  CHART_TYPE_ICONS,
-  DEFAULT_CHART_TYPE_ICON,
-} from '../chartIcons/chartTypeIcons.js';
+import { CHART_TYPE_ICONS, DEFAULT_CHART_TYPE_ICON } from '../chartIcons/chartTypeIcons.js';
 
 type ChartTabProps = {
   definition: DatavizDefinition;
   onPatchChart: (patch: Partial<DatavizDefinition['chart']>) => void;
   onPatchQuery?: (patch: Partial<DatavizDefinition['query']>) => void;
+};
+
+const chartTypeButtonClassName = (selected: boolean, enabled: boolean) => {
+  if (selected) {
+    return 'border-ink bg-warm text-ink';
+  }
+  if (enabled) {
+    return 'border-border hover:bg-vellum text-ink';
+  }
+  return 'border-border-soft text-ink-muted cursor-not-allowed opacity-50';
 };
 
 const ChartTab = ({ definition, onPatchChart, onPatchQuery }: ChartTabProps) => {
@@ -69,13 +76,7 @@ const ChartTab = ({ definition, onPatchChart, onPatchQuery }: ChartTabProps) => 
                     onPatchQuery({ dimensions: dimensionPatch });
                   }
                 }}
-                className={`flex flex-col items-center gap-1 rounded-lg border p-3 text-xs ${
-                  selected
-                    ? 'border-ink bg-warm text-ink'
-                    : item.enabled
-                      ? 'border-border hover:bg-vellum text-ink'
-                      : 'border-border-soft text-ink-muted cursor-not-allowed opacity-50'
-                }`}
+                className={`flex flex-col items-center gap-1 rounded-lg border p-3 text-xs ${chartTypeButtonClassName(selected, item.enabled)}`}
               >
                 <Icon className="h-6 w-6" />
                 <span>{CHART_TYPE_LABELS[item.type]}</span>
@@ -95,8 +96,8 @@ const ChartTab = ({ definition, onPatchChart, onPatchQuery }: ChartTabProps) => 
         )}
         {!hasTypeSpecificOptions && chart.type !== 'metric' && chart.type !== 'list' && (
           <p className="text-xs text-ink-secondary">
-            This chart type has no extra options. Select another chart type above if you need legend,
-            labels, or data filters.
+            This chart type has no extra options. Select another chart type above if you need
+            legend, labels, or data filters.
           </p>
         )}
         {chart.type === 'list' && (

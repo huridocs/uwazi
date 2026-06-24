@@ -66,11 +66,18 @@ const FilterValueInput = ({ filter, sources, onChange }: FilterValueInputProps) 
   }
 
   if (filter.operator === 'gte' || filter.operator === 'lte') {
+    let inputType: 'date' | 'number' | 'text' = 'text';
+    if (filter.propertyType === 'date') {
+      inputType = 'date';
+    } else if (filter.propertyType === 'numeric') {
+      inputType = 'number';
+    }
+
     return (
       <InputField
         id={`filter-bound-${filter.id}`}
         label={filter.operator === 'gte' ? 'From' : 'Up to'}
-        type={filter.propertyType === 'date' ? 'date' : filter.propertyType === 'numeric' ? 'number' : 'text'}
+        type={inputType}
         value={filter.operator === 'gte' ? filter.from || '' : filter.to || ''}
         onChange={e =>
           onChange(filter.operator === 'gte' ? { from: e.target.value } : { to: e.target.value })

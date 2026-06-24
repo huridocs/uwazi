@@ -1,6 +1,9 @@
 import React from 'react';
 import { InputColorPicker } from '#V2/Components/Forms/InputColorPicker.js';
-import type { CustomColorTarget, CustomColorTargetKind } from '#V2/Dataviz/utils/getCustomColorTargets.js';
+import type {
+  CustomColorTarget,
+  CustomColorTargetKind,
+} from '#V2/Dataviz/utils/getCustomColorTargets.js';
 
 const EMPTY_MESSAGES: Partial<Record<CustomColorTargetKind, string>> = {
   series: 'Load a preview to map colors to each data series.',

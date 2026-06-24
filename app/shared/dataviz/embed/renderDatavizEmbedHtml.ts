@@ -14,7 +14,8 @@ const BASE_STYLES = `
   th, td { border-bottom: 1px solid #e8e4dc; padding: 8px 12px; text-align: left; }
   th { color: #6b6560; font-weight: 500; }
   td.num, th.num { text-align: right; }
-  .metric { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; border: 1px solid #e8e4dc; border-radius: 8px; }
+  .metric { display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 32px; border: 1px solid #e8e4dc; border-radius: 8px; }
   .metric-value { font-size: 3rem; font-weight: 600; font-variant-numeric: tabular-nums; }
   .metric-label { margin-top: 8px; font-size: 14px; color: #6b6560; }
   .error { color: #b91c1c; font-size: 14px; }
@@ -22,11 +23,7 @@ const BASE_STYLES = `
 `;
 
 const escapeHtml = (value: string): string =>
-  value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+  value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 const renderListHtml = (payload: DatavizEmbedPayload): string => {
   const points = payload.data.series[0]?.points ?? [];
@@ -66,9 +63,7 @@ const renderEchartsBody = (
   option: EChartsOption,
   embedScriptUrl: string
 ): string => {
-  const stale = payload.data.stale
-    ? '<p class="stale">Data may be outdated.</p>'
-    : '';
+  const stale = payload.data.stale ? '<p class="stale">Data may be outdated.</p>' : '';
   const height = payload.data.series.length > 1 ? 360 : 320;
   const scripts = `
     <script>window.__DATAVIZ_CHART_OPTION__ = ${serialize(option, { isJSON: true })};</script>
@@ -100,8 +95,7 @@ const renderDatavizEmbedHtml = ({
   } else {
     const option = mapToEChartsOption(payload.data, payload.chart, payload.appearance);
     if (!option) {
-      body =
-        '<p class="error">This chart type cannot display the current data.</p>';
+      body = '<p class="error">This chart type cannot display the current data.</p>';
     } else {
       body = renderEchartsBody(payload, option, embedScriptUrl);
     }

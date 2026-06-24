@@ -60,20 +60,24 @@ class UpdateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
     });
 
     const queryChanged = computeQueryHash(existing.query) !== computeQueryHash(dataviz.query);
-    const refreshChanged =
-      JSON.stringify(existing.refresh) !== JSON.stringify(dataviz.refresh);
+    const refreshChanged = JSON.stringify(existing.refresh) !== JSON.stringify(dataviz.refresh);
     const snapshotChanged = shouldPersistSnapshotOnSave(existing, dataviz);
 
     let saved = dataviz;
 
     if (snapshotChanged) {
-      ({ dataviz: saved } = await persistDatavizSnapshot(dataviz, this.getActor(), {
-        datavizDS: this.deps.datavizDS,
-        snapshotsDS: this.deps.snapshotsDS,
-        queryExecutor: this.deps.queryExecutor,
-        templatesDS: this.deps.templatesDS,
-        transactionManager: this.transactionManager,
-      }, 'update'));
+      ({ dataviz: saved } = await persistDatavizSnapshot(
+        dataviz,
+        this.getActor(),
+        {
+          datavizDS: this.deps.datavizDS,
+          snapshotsDS: this.deps.snapshotsDS,
+          queryExecutor: this.deps.queryExecutor,
+          templatesDS: this.deps.templatesDS,
+          transactionManager: this.transactionManager,
+        },
+        'update'
+      ));
     } else {
       await this.transactionManager.run(async () => {
         await this.deps.datavizDS.update(dataviz);

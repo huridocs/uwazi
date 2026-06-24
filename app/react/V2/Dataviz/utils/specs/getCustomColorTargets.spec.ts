@@ -63,7 +63,11 @@ describe('getCustomColorTargets', () => {
 
     const targets = getCustomColorTargets('pie', carsByColorDto);
     expect(targets).toHaveLength(6);
-    expect(targets[0]).toMatchObject({ key: 'color_black', label: 'Black', defaultColor: '#1a1a1a' });
+    expect(targets[0]).toMatchObject({
+      key: 'color_black',
+      label: 'Black',
+      defaultColor: '#1a1a1a',
+    });
   });
 
   it('should use stacked segment targets for stacked bar charts', () => {

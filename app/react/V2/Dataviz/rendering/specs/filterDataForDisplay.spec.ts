@@ -43,7 +43,9 @@ describe('filterDataForDisplay', () => {
             id: 'main',
             label: 'Red',
             labels: { en: 'Red', es: 'Rojo' },
-            points: [{ key: 'color-id', label: 'Red', labels: { en: 'Red', es: 'Rojo' }, value: 2 }],
+            points: [
+              { key: 'color-id', label: 'Red', labels: { en: 'Red', es: 'Rojo' }, value: 2 },
+            ],
           },
         ],
       },
@@ -158,7 +160,10 @@ describe('filterDataForDisplay', () => {
     };
 
     const scatterFiltered = filterDataForDisplay(crossTabData, { type: 'scatter' });
-    const heatmapFiltered = filterDataForDisplay(crossTabData, { type: 'heatmap', excludeZero: false });
+    const heatmapFiltered = filterDataForDisplay(crossTabData, {
+      type: 'heatmap',
+      excludeZero: false,
+    });
 
     expect(scatterFiltered.series[0]?.points[0]?.breakdown).toEqual([
       { key: 1, label: '1', value: 1 },

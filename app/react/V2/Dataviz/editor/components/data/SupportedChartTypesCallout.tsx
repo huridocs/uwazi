@@ -3,7 +3,11 @@ import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import { CHART_TYPE_LABELS } from '#V2/Dataviz/types/chartTypes.js';
 import { isManualDataSource } from '#shared/dataviz/manualData.js';
 import { getSupportedChartTypes } from '#V2/Dataviz/utils/getSupportedChartTypes.js';
-import type { DatavizDataSourceKind, DimensionSpec, MeasureSpec } from '#V2/Dataviz/types/definition.js';
+import type {
+  DatavizDataSourceKind,
+  DimensionSpec,
+  MeasureSpec,
+} from '#V2/Dataviz/types/definition.js';
 
 type SupportedChartTypesCalloutProps = {
   dimensions: DimensionSpec[];
@@ -39,7 +43,9 @@ const SupportedChartTypesCallout = ({
     return (
       <div className="flex gap-2 rounded-lg border border-border bg-vellum p-3 text-sm text-ink-secondary">
         <InformationCircleIcon className="h-5 w-5 shrink-0" />
-        <span>Select a dimension to see supported chart types, or use Metric for a total count.</span>
+        <span>
+          Select a dimension to see supported chart types, or use Metric for a total count.
+        </span>
       </div>
     );
   }

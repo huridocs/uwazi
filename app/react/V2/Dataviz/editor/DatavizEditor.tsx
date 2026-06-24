@@ -65,7 +65,7 @@ const DatavizEditor = ({ initialDefinition, onDeleteRequest }: DatavizEditorProp
       const saved = await api.saveDefinition(definition);
       replace(saved);
       if (isFirstSave) {
-        navigate(`/settings/dataviz/edit/${saved.id}`, { replace: true });
+        await navigate(`/settings/dataviz/edit/${saved.id}`, { replace: true });
       }
       notify('success', t('System', 'Saved successfully.', null, false));
     } catch {
@@ -80,7 +80,9 @@ const DatavizEditor = ({ initialDefinition, onDeleteRequest }: DatavizEditorProp
       onDeleteRequest();
       return;
     }
-    void api.deleteDefinition(definition.id);
+    api.deleteDefinition(definition.id).catch(() => {
+      notify('error', t('System', 'An error occurred', null, false));
+    });
   };
 
   return (

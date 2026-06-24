@@ -41,7 +41,12 @@ const useDatavizEmbedData = (id: string): UseDatavizEmbedDataResult => {
       setLoading(false);
     };
 
-    load();
+    load().catch(() => {
+      if (!cancelled) {
+        setError('Unable to load visualization');
+        setLoading(false);
+      }
+    });
 
     return () => {
       cancelled = true;

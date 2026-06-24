@@ -22,10 +22,9 @@ export const getFilterableProperties = (
     const template = templates.find(t => t._id === source.templateId);
     if (!template) return;
 
-    const props = [
-      ...(template.commonProperties || []),
-      ...(template.properties || []),
-    ].filter(p => FILTERABLE_TYPES.has(p.type));
+    const props = [...(template.commonProperties || []), ...(template.properties || [])].filter(p =>
+      FILTERABLE_TYPES.has(p.type)
+    );
 
     props.forEach(prop => {
       options.push({

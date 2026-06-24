@@ -135,7 +135,7 @@ describe('heatmap rendering integration', () => {
           visualMapIndex: 0,
           data: [],
         },
-      ],
+      ] as NonNullable<typeof base>['series'],
     });
 
     expect(merged.visualMap).toMatchObject({

@@ -1,6 +1,11 @@
 import { EDITOR_CHART_TYPES, type ChartType } from '#V2/Dataviz/types/chartTypes.js';
 import type { DimensionSpec, MeasureSpec } from '#V2/Dataviz/types/definition.js';
-import { isCategoricalDimension, isNumericCrossTabQuery, isSequentialDimension, isTwoDimensionalQuery } from './twoDimensionalQuery.js';
+import {
+  isCategoricalDimension,
+  isNumericCrossTabQuery,
+  isSequentialDimension,
+  isTwoDimensionalQuery,
+} from './twoDimensionalQuery.js';
 
 export type ChartTypeAvailability = {
   type: ChartType;
@@ -20,8 +25,7 @@ const hasDimension = (dimensions: DimensionSpec[]) => dimensions.length > 0;
 const dimensionType = (dimensions: DimensionSpec[]): DimensionSpec['propertyType'] | undefined =>
   dimensions[0]?.propertyType;
 
-const isCountMeasure = (measures: MeasureSpec[]) =>
-  measures.some(m => m.aggregation === 'count');
+const isCountMeasure = (measures: MeasureSpec[]) => measures.some(m => m.aggregation === 'count');
 
 const isSumMeasure = (measures: MeasureSpec[]) =>
   measures.some(m => ['sum', 'avg', 'min', 'max'].includes(m.aggregation));
@@ -120,7 +124,11 @@ export const getSupportedChartTypes = (
   return [
     avail('pie', Boolean(hasDim && categorical && count), 'Requires select dimension + count'),
     avail('donut', Boolean(hasDim && categorical && count), 'Requires select dimension + count'),
-    avail('bar', Boolean(hasDim && (categorical || dateDim || numericDim) && count), 'Requires dimension + count'),
+    avail(
+      'bar',
+      Boolean(hasDim && (categorical || dateDim || numericDim) && count),
+      'Requires dimension + count'
+    ),
     avail(
       'horizontal_bar',
       Boolean(hasDim && categorical && count),
@@ -135,11 +143,7 @@ export const getSupportedChartTypes = (
       'Requires date or numeric dimension'
     ),
     avail('area', Boolean(hasDim && sequentialDim && count), 'Requires date or numeric dimension'),
-    avail(
-      'stacked_bar',
-      false,
-      'Add a second categorical dimension (e.g. sex split by country)'
-    ),
+    avail('stacked_bar', false, 'Add a second categorical dimension (e.g. sex split by country)'),
     avail('heatmap', false, 'Add a second categorical dimension'),
     avail('scatter', Boolean(numericDim && sum), 'Requires numeric dimension'),
   ];

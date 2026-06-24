@@ -13,13 +13,23 @@ declare global {
 
 const usesEmbedLocaleResolution = (path: string) => /^\/api\/public\/dataviz\//.test(path);
 
+const parseLocaleQuery = (locale: Request['query']['locale']): string | string[] | undefined => {
+  if (typeof locale === 'string') {
+    return locale;
+  }
+  if (Array.isArray(locale)) {
+    return locale.filter((value): value is string => typeof value === 'string');
+  }
+  return undefined;
+};
+
 export default async (req: Request, _res: Response, next: NextFunction) => {
   try {
     const { languages = [] } = await settings.get();
 
     if (usesEmbedLocaleResolution(req.path)) {
       req.language = resolveEmbedLocale({
-        localeQuery: req.query.locale,
+        localeQuery: parseLocaleQuery(req.query.locale),
         contentLanguage: req.get('content-language'),
         cookieLocale: req.cookies?.locale,
         acceptLanguage: req.get('accept-language'),

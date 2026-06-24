@@ -318,5 +318,7 @@ export function registerJobs(register: Register) {
 
   register(DeleteLanguagePagesListener.asJob(), async () => new DeleteLanguagePagesListener({}));
 
-  register(DatavizScheduledRefreshJob, DatavizScheduledRefreshJobFactory.default);
+  register(DatavizScheduledRefreshJob, async namespace =>
+    DatavizScheduledRefreshJobFactory.default(namespace)
+  );
 }

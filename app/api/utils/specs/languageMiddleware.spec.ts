@@ -95,7 +95,7 @@ describe('languageMiddleware', () => {
       const current = await settings.get();
       await settings.save({
         ...current,
-        languages: [...current.languages, { key: 'pt', label: 'Portuguese' }],
+        languages: [...(current.languages ?? []), { key: 'pt', label: 'Portuguese' }],
       });
 
       req = createRequest({

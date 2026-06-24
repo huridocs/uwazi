@@ -17,17 +17,18 @@ export default (app: Application) => {
   app.get('/api/dataviz', needsAuthorization(), ListDatavizController.createHandler());
   app.post('/api/dataviz', needsAuthorization(['admin']), CreateDatavizController.createHandler());
   app.get('/api/dataviz/:id', needsAuthorization(), GetDatavizDefinitionController.createHandler());
-  app.put('/api/dataviz/:id', needsAuthorization(['admin']), UpdateDatavizController.createHandler());
+  app.put(
+    '/api/dataviz/:id',
+    needsAuthorization(['admin']),
+    UpdateDatavizController.createHandler()
+  );
   app.delete(
     '/api/dataviz/:id',
     needsAuthorization(['admin']),
     DeleteDatavizController.createHandler()
   );
   app.get('/api/dataviz/:id/data', needsAuthorization(), GetDatavizDataController.createHandler());
-  app.get(
-    '/api/public/dataviz/:id/data',
-    PublicGetDatavizEmbedController.createHandler()
-  );
+  app.get('/api/public/dataviz/:id/data', PublicGetDatavizEmbedController.createHandler());
   app.post(
     '/api/dataviz/:id/refresh',
     needsAuthorization(['admin']),

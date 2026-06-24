@@ -11,8 +11,5 @@ export const buildExternalDatavizEmbedUrl = (
   return locale ? `${base}?locale=${locale}` : base;
 };
 
-export const buildExternalDatavizIframeSnippet = (
-  url: string,
-  height = 400
-): string =>
+export const buildExternalDatavizIframeSnippet = (url: string, height = 400): string =>
   `<iframe src="${url}" width="100%" height="${height}" frameborder="0" loading="lazy"></iframe>`;

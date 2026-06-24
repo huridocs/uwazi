@@ -4,7 +4,10 @@ import type { DataPoint } from '#shared/types/datavizSchema.js';
 import type { DatavizChartConfig } from '#shared/types/datavizSchema.js';
 import type { DatavizAppearance } from '#shared/types/datavizSchema.js';
 import type { DatavizDataDTO } from '#shared/types/datavizSchema.js';
-import { resolveSeriesColors, type ResolveColorContext } from '#shared/dataviz/utils/resolveColors.js';
+import {
+  resolveSeriesColors,
+  type ResolveColorContext,
+} from '#shared/dataviz/utils/resolveColors.js';
 import {
   buildValueAxis,
   computePaddedAxisBounds,
@@ -17,9 +20,7 @@ import {
   resolveScatterDateAxisMode,
   scatterDateKeyToAxisValue,
 } from '#shared/dataviz/utils/scatterDateAxis.js';
-import {
-  resolveDimensionAxisLabel,
-} from '#shared/dataviz/utils/resolveDimensionAxisLabel.js';
+import { resolveDimensionAxisLabel } from '#shared/dataviz/utils/resolveDimensionAxisLabel.js';
 
 type ScatterMapperContext = ResolveColorContext & {
   dimensions?: DimensionSpec[];
@@ -197,7 +198,8 @@ export const mapScatterOption = (
   const xValues = scatterData.map(point => point.value[0]);
   const yValues = scatterData.map(point => point.value[1]);
   const dateAxisMode = resolveScatterDateAxisMode(series.points.map(point => point.key));
-  const xBounds = dateAxisMode === 'year' ? computeYearAxisBounds(xValues) : computePaddedAxisBounds(xValues);
+  const xBounds =
+    dateAxisMode === 'year' ? computeYearAxisBounds(xValues) : computePaddedAxisBounds(xValues);
   const yBounds = useNumericCrossTab
     ? computePaddedAxisBounds(yValues)
     : { min: 0, max: undefined };
@@ -228,12 +230,13 @@ export const mapScatterOption = (
 
   return {
     backgroundColor: appearance.themeColors?.background ?? 'transparent',
-    tooltip: chart.showTooltip
+    tooltip: (chart.showTooltip
       ? {
           trigger: 'item',
-          formatter: formatScatterTooltip,
+          formatter: (params: CallbackDataParams | CallbackDataParams[]) =>
+            formatScatterTooltip(Array.isArray(params) ? params[0]! : params),
         }
-      : undefined,
+      : undefined) as EChartsOption['tooltip'],
     grid: {
       left: yAxisName ? 72 : 56,
       right: 20,

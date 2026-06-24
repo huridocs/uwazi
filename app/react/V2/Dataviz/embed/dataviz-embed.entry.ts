@@ -7,7 +7,13 @@ declare global {
 const initDatavizEmbed = () => {
   const root = document.getElementById('dataviz-embed-root');
   const option = window.__DATAVIZ_CHART_OPTION__;
-  const echartsGlobal = (window as Window & { echarts?: { init: (el: HTMLElement) => { setOption: (o: unknown) => void; resize: () => void } } }).echarts;
+  const echartsGlobal = (
+    window as Window & {
+      echarts?: {
+        init: (el: HTMLElement) => { setOption: (o: unknown) => void; resize: () => void };
+      };
+    }
+  ).echarts;
 
   if (!root || !option || !echartsGlobal) {
     return;

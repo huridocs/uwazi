@@ -28,7 +28,10 @@ const isDimensionPropertyTypeEnabled = (type?: string): boolean =>
 const getDefaultDimensionSort = (
   propertyType?: PropertyTypeForDataviz
 ): NonNullable<DimensionSpec['sort']> => {
-  if (propertyType && (isNumericPropertyType(propertyType) || isDateLikePropertyType(propertyType))) {
+  if (
+    propertyType &&
+    (isNumericPropertyType(propertyType) || isDateLikePropertyType(propertyType))
+  ) {
     return 'key_asc';
   }
   return 'count_desc';

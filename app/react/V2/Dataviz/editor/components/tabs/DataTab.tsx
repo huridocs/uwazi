@@ -6,6 +6,7 @@ import type {
   DimensionSpec,
   MeasureSpec,
 } from '#V2/Dataviz/types/definition.js';
+import type { ClientTemplateSchema } from '#app/istore.js';
 import { templatesAtom } from '#V2/atoms/index.js';
 import { isManualDataSource, MANUAL_DATA_EXAMPLE } from '#shared/dataviz/manualData.js';
 import { isTwoDimensionalQuery } from '#V2/Dataviz/utils/twoDimensionalQuery.js';
@@ -104,31 +105,38 @@ const DataTab = ({ definition, onPatch, onPatchQuery, onPatchChart }: DataTabPro
         sources.length !== query.sources.length ||
         sources.some((source, index) => source.templateId !== query.sources[index]?.templateId);
 
-      const templateNameById = new Map(
-        templates.filter(t => t._id).map(t => [t._id!, t.name])
-      );
+      const templateNameById = new Map(templates.filter(t => t._id).map(t => [t._id!, t.name]));
       const nextSources = structureChanged
         ? ensureSourceAliases(sources, templateNameById)
         : sources;
       const nextDimensions = sanitizeDimensionsForSources(
         query.dimensions,
         nextSources,
-        templates
+        templates as ClientTemplateSchema[]
       );
+
+      let join: DatavizDefinition['query']['join'];
+      if (nextSources.length > 1) {
+        join = query.join?.type === 'union' ? { type: 'union' } : { type: 'compare' };
+      } else {
+        join = undefined;
+      }
 
       onPatchQuery({
         sources: nextSources,
         dimensions: nextDimensions,
-        join:
-          nextSources.length > 1
-            ? query.join?.type === 'union'
-              ? { type: 'union' }
-              : { type: 'compare' }
-            : undefined,
+        join,
       });
       syncChartWithQuery(nextDimensions, query.measures);
     },
-    [onPatchQuery, query.dimensions, query.join?.type, query.measures, syncChartWithQuery, templates]
+    [
+      onPatchQuery,
+      query.dimensions,
+      query.join?.type,
+      query.measures,
+      syncChartWithQuery,
+      templates,
+    ]
   );
 
   const isMultiSource = query.sources.length > 1;
@@ -137,7 +145,11 @@ const DataTab = ({ definition, onPatch, onPatchQuery, onPatchChart }: DataTabPro
     if (isManual) {
       return;
     }
-    const sanitized = sanitizeDimensionsForSources(query.dimensions, query.sources, templates);
+    const sanitized = sanitizeDimensionsForSources(
+      query.dimensions,
+      query.sources,
+      templates as ClientTemplateSchema[]
+    );
     const changed =
       sanitized.length !== query.dimensions.length ||
       JSON.stringify(sanitized) !== JSON.stringify(query.dimensions);
@@ -207,15 +219,18 @@ const DataTab = ({ definition, onPatch, onPatchQuery, onPatchChart }: DataTabPro
           )}
           {!isMultiSource && isTwoDimensionalQuery(query.dimensions) && (
             <p className="text-xs text-ink-secondary">
-              Two categorical dimensions enable stacked bar charts (e.g. country with sex breakdown).
+              Two categorical dimensions enable stacked bar charts (e.g. country with sex
+              breakdown).
             </p>
           )}
-          {!isMultiSource && query.dimensions.length >= 2 && query.dimensions[1]?.propertyType === 'numeric' && (
-            <p className="text-xs text-ink-secondary">
-              Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
-              measure over the primary dimension (e.g. max engine size per registration date).
-            </p>
-          )}
+          {!isMultiSource &&
+            query.dimensions.length >= 2 &&
+            query.dimensions[1]?.propertyType === 'numeric' && (
+              <p className="text-xs text-ink-secondary">
+                Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
+                measure over the primary dimension (e.g. max engine size per registration date).
+              </p>
+            )}
           <SupportedChartTypesCallout
             dimensions={query.dimensions}
             measures={query.measures}

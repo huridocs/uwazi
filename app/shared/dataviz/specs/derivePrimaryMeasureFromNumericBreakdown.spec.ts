@@ -45,27 +45,21 @@ describe('derivePrimaryMeasureFromNumericBreakdown', () => {
 
   it('should only derive for line-like charts with value measures on numeric cross-tab', () => {
     expect(
-      shouldDerivePrimaryMeasureFromNumericBreakdown(
-        { type: 'line' },
-        dimensions,
-        [{ aggregation: 'max' }]
-      )
+      shouldDerivePrimaryMeasureFromNumericBreakdown({ type: 'line' }, dimensions, [
+        { aggregation: 'max' },
+      ])
     ).toBe(true);
 
     expect(
-      shouldDerivePrimaryMeasureFromNumericBreakdown(
-        { type: 'scatter' },
-        dimensions,
-        [{ aggregation: 'max' }]
-      )
+      shouldDerivePrimaryMeasureFromNumericBreakdown({ type: 'scatter' }, dimensions, [
+        { aggregation: 'max' },
+      ])
     ).toBe(false);
 
     expect(
-      shouldDerivePrimaryMeasureFromNumericBreakdown(
-        { type: 'line' },
-        dimensions,
-        [{ aggregation: 'count' }]
-      )
+      shouldDerivePrimaryMeasureFromNumericBreakdown({ type: 'line' }, dimensions, [
+        { aggregation: 'count' },
+      ])
     ).toBe(false);
   });
 });

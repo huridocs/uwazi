@@ -21,11 +21,10 @@ class MongoDatavizSnapshotsDataSource
 
   async upsert(snapshot: DatavizSnapshot): Promise<void> {
     const dbo = DatavizMapper.snapshotToDBO(snapshot);
-    await this.getCollection().replaceOne(
-      { datavizId: dbo.datavizId },
-      dbo,
-      { upsert: true, ignoreUndefined: true }
-    );
+    await this.getCollection().replaceOne({ datavizId: dbo.datavizId }, dbo, {
+      upsert: true,
+      ignoreUndefined: true,
+    });
   }
 
   async getByDatavizId(datavizId: string) {

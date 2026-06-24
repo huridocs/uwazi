@@ -1,8 +1,11 @@
 import { IncomingHttpHeaders } from 'http';
 import { api } from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import type { DatavizDefinition } from '#shared/types/datavizSchema.js';
-import type { DatavizEmbedPayload, DatavizPublicEmbedDTO } from '#shared/types/datavizSchema.js';
+import type {
+  DatavizDefinition,
+  DatavizDataDTO,
+  DatavizEmbedPayload,
+} from '#shared/types/datavizSchema.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
 export type DatavizCreateInput = Omit<DatavizDefinition, 'id' | 'createdAt' | 'updatedAt'>;
@@ -72,10 +75,7 @@ const preview = async (
   headers?: IncomingHttpHeaders
 ): Promise<DatavizDataDTO | FetchResponseError> => {
   try {
-    const response = await api.post(
-      `dataviz/${id}/preview`,
-      new RequestParams({ query }, headers)
-    );
+    const response = await api.post(`dataviz/${id}/preview`, new RequestParams({ query }, headers));
     return response.json;
   } catch (e) {
     return e;
