@@ -20,6 +20,7 @@ type RelationshipsStoryShellProps = {
   layout?: RelationshipsStoryLayout;
   entity?: Entity;
   storyTemplates?: ClientTemplateSchema[];
+  preloadEntities?: Entity[];
   children?: React.ReactNode;
 };
 
@@ -50,6 +51,7 @@ const RelationshipsStoryShell = ({
   layout = 'panel',
   entity = apiEntity,
   storyTemplates,
+  preloadEntities,
   children,
 }: RelationshipsStoryShellProps) => {
   const storyEntity = useMemo(() => structuredClone(entity), [entity]);
@@ -69,6 +71,7 @@ const RelationshipsStoryShell = ({
               locale={locale}
               entity={storyEntity}
               storyTemplates={storyTemplates}
+              preloadEntities={preloadEntities}
             >
               <ResetFiltersDrawer />
               <div className={shellClass}>
@@ -119,7 +122,16 @@ const RelationshipsStoryShell = ({
           ),
         },
       ]),
-    [children, layout, locale, mainDocument, shellClass, storyEntity, storyTemplates]
+    [
+      children,
+      layout,
+      locale,
+      mainDocument,
+      preloadEntities,
+      shellClass,
+      storyEntity,
+      storyTemplates,
+    ]
   );
 
   return <RouterProvider router={router} />;

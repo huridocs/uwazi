@@ -70,6 +70,12 @@ describe('RelationshipPanelRow', () => {
     expect(groups).toHaveLength(2);
   });
 
+  it('keeps different pages separate when reference text is empty', () => {
+    const groups = groupNestedEvidence([marker('1', '', 2, '1'), marker('2', '', 3, '1')], 'self');
+
+    expect(groups).toHaveLength(2);
+  });
+
   it('shows the target title when nested evidence has no reference text', () => {
     const store = createStore();
     store.set(templatesAtom, [{ _id: 'template3', color: '#0e9f6e', name: 'Court Case' }]);

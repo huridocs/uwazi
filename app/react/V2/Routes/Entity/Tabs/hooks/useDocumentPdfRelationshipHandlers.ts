@@ -61,6 +61,12 @@ function useDocumentPdfRelationshipHandlers({
     setSearch('');
   }, [setActiveClusterRefIds, setEntityTypeFilters, setRelTypeFilters, setSearch]);
 
+  const clearFacetFilters = useCallback(() => {
+    setRelTypeFilters({});
+    setEntityTypeFilters({});
+    setSearch('');
+  }, [setEntityTypeFilters, setRelTypeFilters, setSearch]);
+
   const isMarkerDisplayed = useCallback(
     (marker: RelationshipMarker): boolean =>
       filterAndSortMarkers([marker], {
@@ -121,12 +127,14 @@ function useDocumentPdfRelationshipHandlers({
       if (!entity || markers.length === 0) return;
       const clusterPage = markers[0]?.anchor?.selections?.[0]?.page;
       const ids = getMarkerRefIds(markers);
+      clearFacetFilters();
       setActiveClusterRefIds(ids);
       clearRelationshipSelection();
       focusRelationshipsPanel();
       if (clusterPage) mainPdfController?.goToPage(clusterPage);
     },
     [
+      clearFacetFilters,
       clearRelationshipSelection,
       entity,
       focusRelationshipsPanel,

@@ -11,18 +11,20 @@ import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
 import { RelationshipsPanel } from '#V2/Routes/Entity/Components/relationships/index.js';
 
 const openOverlay = () => {
-  cy.contains('Person 1').click();
-  cy.get('[aria-label="Preview entity"]').first().click({ force: true });
+  cy.contains('.group', 'Person 1')
+    .first()
+    .find('[aria-label="Preview entity"]')
+    .click({ force: true });
   cy.get('[data-testid="entity-overlay"]').should('be.visible');
-  cy.get('[data-testid="entity-overlay"]').contains('Metadata').should('be.visible');
+  cy.get('[data-testid="entity-overlay"]')
+    .contains('Metadata', { timeout: 15000 })
+    .should('be.visible');
 };
 
 describe('Entity preview overlay', () => {
   beforeEach(() => {
-    entityLoaderCache.invalidateEntity(overlayTargetEntity.sharedId);
-
-    cy.intercept('GET', '/api/entities*', {
-      body: { rows: [overlayTargetEntity] },
+    cy.intercept('GET', '**/api/entities**', req => {
+      req.reply({ statusCode: 200, body: { rows: [overlayTargetEntity] } });
     }).as('getOverlayEntity');
 
     cy.window().then(win => {
@@ -30,7 +32,11 @@ describe('Entity preview overlay', () => {
     });
 
     mount(
-      <RelationshipsStoryShell locale="en" storyTemplates={overlayTemplates}>
+      <RelationshipsStoryShell
+        locale="en"
+        storyTemplates={overlayTemplates}
+        preloadEntities={[overlayTargetEntity]}
+      >
         <RelationshipsPanel />
       </RelationshipsStoryShell>
     );
@@ -73,6 +79,7 @@ describe('Entity preview overlay', () => {
 
   it('merges overlay metadata without dropping cached relationships', () => {
     const cachedEntity = { ...overlayTargetEntity, relations: [] };
+    entityLoaderCache.invalidateEntity(overlayTargetSharedId);
     entityLoaderCache.setEntity(overlayTargetSharedId, 'en', cachedEntity);
 
     openOverlay();

@@ -32,8 +32,9 @@ type NestedEvidenceGroup = {
 const nestedEvidenceCount = (markers: RelationshipMarker[]): number => markers.length;
 
 const nestedEvidenceKey = (marker: RelationshipMarker, selfSharedId: string): string => {
-  const { referenceText, referencePage } = relationshipReferenceDisplay(marker, selfSharedId);
-  return [marker.target.sharedId, referencePage ?? '', referenceText].join('\u0000');
+  const { referenceText } = relationshipReferenceDisplay(marker, selfSharedId);
+  const page = marker.anchor?.selections?.[0]?.page ?? '';
+  return [marker.target.sharedId, page, referenceText].join('\u0000');
 };
 
 const groupNestedEvidence = (
