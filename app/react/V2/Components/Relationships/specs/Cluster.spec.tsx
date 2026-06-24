@@ -90,7 +90,7 @@ describe('Cluster', () => {
     expect(layout.stemY).toBe(height - RAIL_MARKER_SIZE / 2);
   });
 
-  it('shows up to eighteen points and sends hidden grouped points from the overflow button', () => {
+  it('shows up to eighteen points and sends the full cluster from the overflow button', () => {
     const references = Array.from({ length: 20 }, (_, index) => marker(index));
     const onMoreClick = jest.fn();
 
@@ -109,7 +109,7 @@ describe('Cluster', () => {
 
     expect(document.querySelectorAll('[data-marker-id]')).toHaveLength(18);
     fireEvent.click(screen.getByRole('button', { name: /Show more/ }));
-    expect(onMoreClick).toHaveBeenCalledWith(references.slice(18));
+    expect(onMoreClick).toHaveBeenCalledWith(references);
   });
 
   it('deduplicates repeated rail points and shows their represented count', () => {

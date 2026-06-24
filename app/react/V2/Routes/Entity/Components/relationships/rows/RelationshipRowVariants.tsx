@@ -136,7 +136,8 @@ const RelationshipRowDetail = ({
       {referenceText && (
         <ExpandableText
           text={referenceText}
-          textClassName="min-w-0 text-xs leading-relaxed text-ink-secondary"
+          quoted
+          textClassName="min-w-0 text-xs italic leading-relaxed text-ink-secondary"
         />
       )}
       <div className="mt-1 flex items-center justify-between text-[10px] text-ink-tertiary">

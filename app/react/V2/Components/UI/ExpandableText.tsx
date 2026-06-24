@@ -4,6 +4,7 @@ import { Translate } from '#app/I18N/index.js';
 type ExpandableTextProps = {
   text: string;
   minLength?: number;
+  quoted?: boolean;
   textClassName?: string;
   className?: string;
   fadeClassName?: string;
@@ -13,6 +14,7 @@ type ExpandableTextProps = {
 const ExpandableText = ({
   text,
   minLength = 180,
+  quoted = false,
   textClassName = '',
   className = '',
   fadeClassName = 'from-warm/95',
@@ -23,7 +25,9 @@ const ExpandableText = ({
 
   return (
     <div className={`relative min-w-0 ${className}`}>
-      <p className={`${expanded ? '' : 'line-clamp-2'} ${textClassName}`}>{text}</p>
+      <p className={`${expanded ? '' : 'line-clamp-2'} ${textClassName}`}>
+        {quoted ? `\u201c${text}\u201d` : text}
+      </p>
       {expandable && !expanded && (
         <div
           className={`pointer-events-none absolute inset-x-0 bottom-0 h-5 bg-linear-to-t ${fadeClassName} to-transparent`}

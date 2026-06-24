@@ -2,11 +2,14 @@ import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import type { PanelListEntry } from '#V2/formatters/relationships/relationshipsPanelDerivation.js';
 import type { GroupLabelContext } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
-import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
+import {
+  markerEvidenceKey,
+  markerReferenceText,
+  type RelationshipMarker,
+} from '#V2/Components/Relationships/types.js';
 import { DirectionGlyph } from './DirectionGlyph.js';
 import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
 import { RelationshipRow } from '../rows/RelationshipRow.js';
-import { relationshipReferenceDisplay } from './useRelationshipRowData.js';
 import { CollapsibleRelationshipRow } from './CollapsibleRelationshipRow.js';
 import { useRelationshipRowVisibility } from '../hooks/useRelationshipRowVisibility.js';
 import { RelationshipsTreeNode, getTreeLine } from '../views/RelationshipsTreeBranch.js';
@@ -16,7 +19,7 @@ type RelationshipPanelRowHandlers = {
   activeRelationshipId?: string;
   onClick: (marker: RelationshipMarker) => void;
   onView: (marker: RelationshipMarker) => void;
-  onDelete: (marker: RelationshipMarker) => void;
+  onDelete: (marker: RelationshipMarker, relationshipIds?: string[]) => void;
 };
 
 type RelationshipPanelRowProps = RelationshipPanelRowHandlers & {
@@ -31,19 +34,10 @@ type NestedEvidenceGroup = {
 
 const nestedEvidenceCount = (markers: RelationshipMarker[]): number => markers.length;
 
-const nestedEvidenceKey = (marker: RelationshipMarker, selfSharedId: string): string => {
-  const { referenceText } = relationshipReferenceDisplay(marker, selfSharedId);
-  const page = marker.anchor?.selections?.[0]?.page ?? '';
-  return [marker.target.sharedId, page, referenceText].join('\u0000');
-};
-
-const groupNestedEvidence = (
-  markers: RelationshipMarker[],
-  selfSharedId: string
-): NestedEvidenceGroup[] => {
+const groupNestedEvidence = (markers: RelationshipMarker[]): NestedEvidenceGroup[] => {
   const grouped = new Map<string, NestedEvidenceGroup>();
   markers.forEach(marker => {
-    const key = nestedEvidenceKey(marker, selfSharedId);
+    const key = markerEvidenceKey(marker);
     const group = grouped.get(key);
     if (group) {
       group.markers.push(marker);
@@ -59,7 +53,7 @@ const renderNestedRows = (
   handlers: RelationshipPanelRowHandlers,
   groupContext: GroupLabelContext
 ) => {
-  const groups = groupNestedEvidence(markers, handlers.selfSharedId);
+  const groups = groupNestedEvidence(markers.filter(marker => markerReferenceText(marker)));
   return groups.map(({ marker, markers: representedMarkers }, index) => {
     const representedIds = representedMarkers.map(representedMarker => representedMarker._id);
     return (
@@ -77,7 +71,7 @@ const renderNestedRows = (
           representedCount={representedMarkers.length}
           onClick={() => handlers.onClick(marker)}
           onView={() => handlers.onView(marker)}
-          onDelete={() => handlers.onDelete(marker)}
+          onDelete={() => handlers.onDelete(marker, representedIds)}
         />
       </RelationshipsTreeNode>
     );

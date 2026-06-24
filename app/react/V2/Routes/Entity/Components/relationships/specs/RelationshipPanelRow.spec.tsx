@@ -47,14 +47,11 @@ const marker = (id: string, text: string, page: number, targetId = id): Relation
 
 describe('RelationshipPanelRow', () => {
   it('groups nested evidence by visible reference text and page', () => {
-    const groups = groupNestedEvidence(
-      [
-        marker('1', 'Same text', 2, '1'),
-        marker('2', 'Same text', 2, '1'),
-        marker('3', 'Same text', 3, '1'),
-      ],
-      'self'
-    );
+    const groups = groupNestedEvidence([
+      marker('1', 'Same text', 2, '1'),
+      marker('2', 'Same text', 2, '1'),
+      marker('3', 'Same text', 3, '1'),
+    ]);
 
     expect(groups).toHaveLength(2);
     expect(groups[0]?.markers).toHaveLength(2);
@@ -62,16 +59,13 @@ describe('RelationshipPanelRow', () => {
   });
 
   it('keeps different targets in separate nested evidence groups', () => {
-    const groups = groupNestedEvidence(
-      [marker('1', 'Same text', 2), marker('2', 'Same text', 2)],
-      'self'
-    );
+    const groups = groupNestedEvidence([marker('1', 'Same text', 2), marker('2', 'Same text', 2)]);
 
     expect(groups).toHaveLength(2);
   });
 
   it('keeps different pages separate when reference text is empty', () => {
-    const groups = groupNestedEvidence([marker('1', '', 2, '1'), marker('2', '', 3, '1')], 'self');
+    const groups = groupNestedEvidence([marker('1', '', 2, '1'), marker('2', '', 3, '1')]);
 
     expect(groups).toHaveLength(2);
   });

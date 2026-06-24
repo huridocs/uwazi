@@ -43,6 +43,7 @@ const RelationshipRowNestedEvidence = ({
         {referenceText ? (
           <ExpandableText
             text={referenceText}
+            quoted
             className="flex-1"
             textClassName="min-w-0 flex-1 text-xs leading-relaxed text-ink-secondary italic"
           />

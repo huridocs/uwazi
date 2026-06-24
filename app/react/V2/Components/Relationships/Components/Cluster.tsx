@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAnimateToPosition } from '../hooks/useAnimateToPosition.js';
 import { computeClusterOuterSize } from '../computeMarkerY.js';
 import { RAIL_MARKER_SIZE, RAIL_MARKER_SPACING, railMarkerZIndex } from '../markerMetrics.js';
-import { RelationshipMarker } from '../types.js';
+import { RelationshipMarker, markerEvidenceKey } from '../types.js';
 import { Point } from './Point.js';
 import { ShowMoreButton } from './ShowMoreButton.js';
 
@@ -43,20 +43,10 @@ type ClusterPointGroup = {
 const clamp = (value: number, min: number, max: number): number =>
   Math.min(Math.max(value, min), max);
 
-const clusterPointKey = (marker: RelationshipMarker): string => {
-  const selection = marker.anchor?.selections?.[0];
-  return [
-    marker.target.sharedId,
-    marker.target.title,
-    marker.anchor?.text?.trim() ?? '',
-    selection?.page ?? '',
-  ].join('\u0000');
-};
-
 const groupClusterPoints = (references: RelationshipMarker[]): ClusterPointGroup[] => {
   const grouped = new Map<string, ClusterPointGroup>();
   references.forEach(marker => {
-    const key = clusterPointKey(marker);
+    const key = markerEvidenceKey(marker);
     const group = grouped.get(key);
     if (group) {
       group.markers.push(marker);
@@ -66,9 +56,6 @@ const groupClusterPoints = (references: RelationshipMarker[]): ClusterPointGroup
   });
   return Array.from(grouped.values());
 };
-
-const groupMarkers = (groups: ClusterPointGroup[]): RelationshipMarker[] =>
-  groups.flatMap(group => group.markers);
 
 const computeClusterSubtreeLayout = ({
   position,
@@ -116,7 +103,6 @@ const Cluster = ({
   const pointGroups = groupClusterPoints(references);
   const points = pointGroups.slice(0, MAX_VISIBLE_POINTS);
   const extraPoints = pointGroups.slice(MAX_VISIBLE_POINTS);
-  const extraMarkers = groupMarkers(extraPoints);
 
   const clusterIsOpen = isOpen ?? internalIsOpen;
   const outerSize = computeClusterOuterSize(references.length);
@@ -226,7 +212,7 @@ const Cluster = ({
             {extraPoints.length > 0 && (
               <ShowMoreButton
                 position={points.length * RAIL_MARKER_SPACING}
-                references={extraMarkers}
+                references={references}
                 onClick={onMoreClick}
               />
             )}
