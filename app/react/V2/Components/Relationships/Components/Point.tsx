@@ -4,6 +4,7 @@ import { useAnimateToPosition } from '../hooks/useAnimateToPosition.js';
 import { RelationshipMarker } from '../types.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { PortalTooltip } from '#V2/Components/UI/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { RAIL_MARKER_ACTIVE_SIZE, RAIL_MARKER_SIZE, railMarkerZIndex } from '../markerMetrics.js';
 
 type PointProps = {
@@ -73,7 +74,8 @@ const Point = ({
           />
           {representedCount > 1 && (
             <span className="absolute left-2 top-1/2 rounded bg-parchment px-0.5 text-[8px] font-semibold leading-3 text-ink-tertiary">
-              x{representedCount}
+              <Translate>x</Translate>
+              {representedCount}
             </span>
           )}
         </span>

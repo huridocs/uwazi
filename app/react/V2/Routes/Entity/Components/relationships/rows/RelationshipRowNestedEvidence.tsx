@@ -1,6 +1,6 @@
 import React from 'react';
 import { EyeIcon, TrashIcon } from '@heroicons/react/24/outline';
-import { t } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { ListCardRow } from '#V2/Components/UI/ListCardRow.js';
 import { IconButton } from '#V2/Components/UI/IconButton.js';
 import { ExpandableText } from '#V2/Components/UI/ExpandableText.js';
@@ -54,7 +54,8 @@ const RelationshipRowNestedEvidence = ({
             aria-label={t('System', `${representedCount} matching references`, null, false)}
             className="rounded bg-parchment px-1 text-[10px] font-medium tabular-nums text-ink-tertiary"
           >
-            x{representedCount}
+            <Translate>x</Translate>
+            {representedCount}
           </span>
         )}
         {referencePage !== undefined && <PageTag page={referencePage} onClick={onClick} />}
