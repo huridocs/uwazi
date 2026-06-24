@@ -5,13 +5,20 @@ import { UserDBO } from './UserDBO.js';
 
 export class MongoUsersMapper {
   static toDBO(user: User): UserDBO {
-    return {
+    const dbo: UserDBO = {
       _id: ObjectId.createFromHexString(user._id),
       username: user.username,
       role: user.role,
       email: user.email,
-      password: user.password?.getValue() ?? null,
     };
+
+    if (user.password === undefined) {
+      return dbo;
+    }
+
+    dbo.password = user.password?.getValue() ?? null;
+
+    return dbo;
   }
 
   static toDomain(dbo: UserDBO): User {

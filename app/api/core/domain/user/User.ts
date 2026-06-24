@@ -26,7 +26,7 @@ class User {
 
   readonly groups: UserGroup[];
 
-  password: EncryptedPassword | null;
+  password?: EncryptedPassword | null;
 
   constructor(props: UserProps) {
     this._id = props._id;
@@ -34,7 +34,6 @@ class User {
     this.role = props.role;
     this.email = props.email;
     this.groups = props.groups ?? [];
-    this.password = null;
   }
 
   setPassword(password: EncryptedPassword) {
