@@ -1,27 +1,12 @@
-import { DateTime } from 'luxon';
 import type { MetadataProperty } from '#V2/formatters/types.js';
+import type { DisplayContext } from './displayContext.js';
+import { formatMetadataTimestamp } from './formatMetadataTimestamp.js';
+import { formatMetadataSelectValue } from './formatMetadataSelectValue.js';
 
-const normalizeTimestamp = (timestamp: number) =>
-  timestamp > 9999999999 ? Math.floor(timestamp / 1000) : timestamp;
-
-const formatTimestamp = (timestamp: number, locale: string) => {
-  const luxonDate = DateTime.fromSeconds(normalizeTimestamp(timestamp), { zone: 'utc' }).setLocale(
-    locale
-  );
-  return luxonDate.isValid ? luxonDate.toLocaleString(DateTime.DATE_MED) : '';
-};
-
-const formatSelectValue = (
-  value: Extract<MetadataProperty, { type: 'select' }>['values'][number]
-) => {
-  const base = value.label || value.value;
-  if (value.parent?.label) {
-    return `${value.parent.label}: ${base}`;
-  }
-  return base;
-};
-
-const formatMetadataDisplayValue = (property: MetadataProperty, locale: string): string => {
+const formatMetadataDisplayValue = (
+  property: MetadataProperty,
+  context: DisplayContext
+): string => {
   switch (property.type) {
     case 'text':
     case 'generatedid':
@@ -34,7 +19,9 @@ const formatMetadataDisplayValue = (property: MetadataProperty, locale: string):
     case 'date':
     case 'multidate':
       return property.values
-        .map(value => (typeof value.value === 'number' ? formatTimestamp(value.value, locale) : ''))
+        .map(value =>
+          typeof value.value === 'number' ? formatMetadataTimestamp(value.value, context) : ''
+        )
         .filter(Boolean)
         .join(', ');
     case 'daterange':
@@ -42,9 +29,13 @@ const formatMetadataDisplayValue = (property: MetadataProperty, locale: string):
       return property.values
         .map(value => {
           const from =
-            typeof value.value.from === 'number' ? formatTimestamp(value.value.from, locale) : '';
+            typeof value.value.from === 'number'
+              ? formatMetadataTimestamp(value.value.from, context)
+              : '';
           const to =
-            typeof value.value.to === 'number' ? formatTimestamp(value.value.to, locale) : '';
+            typeof value.value.to === 'number'
+              ? formatMetadataTimestamp(value.value.to, context)
+              : '';
           if (from && to) return `${from} ~ ${to}`;
           return from || to;
         })
@@ -52,7 +43,7 @@ const formatMetadataDisplayValue = (property: MetadataProperty, locale: string):
         .join(', ');
     case 'select':
     case 'multiselect':
-      return property.values.map(formatSelectValue).filter(Boolean).join(', ');
+      return property.values.map(formatMetadataSelectValue).filter(Boolean).join(', ');
     case 'link':
       return property.values
         .map(value => value.label || value.value)
@@ -61,7 +52,7 @@ const formatMetadataDisplayValue = (property: MetadataProperty, locale: string):
     case 'relationship':
       if (property.mode === 'inherited') {
         return property.values
-          .map(value => formatMetadataDisplayValue(value, locale))
+          .map(value => formatMetadataDisplayValue(value, context))
           .filter(Boolean)
           .join(', ');
       }
@@ -93,4 +84,4 @@ const formatMetadataDisplayValue = (property: MetadataProperty, locale: string):
   }
 };
 
-export { formatMetadataDisplayValue, formatTimestamp };
+export { formatMetadataDisplayValue };
