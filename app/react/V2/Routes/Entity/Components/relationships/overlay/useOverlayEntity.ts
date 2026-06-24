@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { localeAtom } from '#V2/atoms/index.js';
 import { getBySharedId } from '#V2/api/entities/index.js';
@@ -98,16 +98,22 @@ const entityMatchesRequest = (
 ): entity is Entity =>
   Boolean(entity && sharedId && entity.sharedId === sharedId && entity.language === language);
 
+const useIsomorphicLayoutEffect = typeof document !== 'undefined' ? useLayoutEffect : useEffect;
+
 const useOverlayEntity = (sharedId: string | null): OverlayEntityState => {
   const language = useAtomValue(localeAtom);
   const [entity, setEntity] = useState<Entity | undefined>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
-  useLayoutEffect(
-    () => loadOverlayEntity(sharedId, language, { setEntity, setLoading, setError }),
-    [language, sharedId]
-  );
+  useIsomorphicLayoutEffect(() => {
+    const cancelLoad = loadOverlayEntity(sharedId, language, {
+      setEntity,
+      setLoading,
+      setError,
+    });
+    return cancelLoad;
+  }, [language, sharedId]);
 
   const resolvedEntity = entityMatchesRequest(entity, sharedId, language) ? entity : undefined;
   const isResolving =

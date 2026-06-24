@@ -7,12 +7,22 @@ import { createStore, Provider } from 'jotai';
 import { localeAtom } from '#V2/atoms/index.js';
 import * as entityApi from '#V2/api/entities/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
+import type { ApiResponse } from '#V2/api/ApiResponse.js';
 import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
 import { useOverlayEntity } from '../useOverlayEntity.js';
 
 jest.mock('#V2/api/entities/index.js');
 
 const sharedId = 'a1';
+type EntityApiResponse = ApiResponse<Entity[] | undefined>;
+
+class Deferred<T> {
+  resolve!: (value: T) => void;
+
+  promise = new Promise<T>(resolve => {
+    this.resolve = resolve;
+  });
+}
 
 const entityForLanguage = (language: string, title: string): Entity => ({
   _id: `${sharedId}-${language}`,
@@ -78,5 +88,45 @@ describe('useOverlayEntity', () => {
       language: 'es',
       omitRelationships: true,
     });
+  });
+
+  it('ignores stale responses after the language changes', async () => {
+    const englishResponse = new Deferred<EntityApiResponse>();
+    const spanishResponse = new Deferred<EntityApiResponse>();
+    const store = createStore();
+    store.set(localeAtom, 'en');
+
+    jest.spyOn(entityApi, 'getBySharedId').mockImplementation(async ({ language }) => {
+      if (language === 'en') {
+        return englishResponse.promise;
+      }
+      return spanishResponse.promise;
+    });
+
+    render(
+      <Provider store={store}>
+        <OverlayEntityView sharedId={sharedId} />
+      </Provider>
+    );
+
+    act(() => {
+      store.set(localeAtom, 'es');
+    });
+
+    await act(async () => {
+      spanishResponse.resolve([[entityForLanguage('es', 'Metadata en Español')]]);
+      await spanishResponse.promise;
+    });
+
+    expect(screen.getByText('Metadata en Español')).toBeVisible();
+
+    await act(async () => {
+      englishResponse.resolve([[entityForLanguage('en', 'Late English metadata')]]);
+      await englishResponse.promise;
+    });
+
+    expect(screen.getByText('Metadata en Español')).toBeVisible();
+    expect(screen.queryByText('Late English metadata')).not.toBeInTheDocument();
+    expect(screen.queryByText('Loading')).not.toBeInTheDocument();
   });
 });
