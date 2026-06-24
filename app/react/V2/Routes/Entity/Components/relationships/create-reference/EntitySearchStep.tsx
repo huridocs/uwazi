@@ -33,6 +33,7 @@ const EntitySearchStep = ({
       <InputField
         id="create-relationship-search"
         type="search"
+        label={t('System', 'Search entities...', null, false)}
         placeholder={t('System', 'Search entities...', null, false)}
         value={searchQuery}
         onChange={event => setSearchQuery(event.target.value)}
