@@ -16,6 +16,7 @@ type RowData = ReturnType<typeof useRelationshipRowData>;
 
 type RelationshipRowBaseProps = RowData & {
   isSelected?: boolean;
+  representedIds: string[];
   onClick?: () => void;
 };
 
@@ -34,6 +35,7 @@ const TargetPill = ({ marker, hideTargetPill }: Pick<RowData, 'marker' | 'hideTa
 const RelationshipRowOverview = ({
   rowRef,
   marker,
+  representedIds,
   hideTargetPill,
   referencePage,
   isSelected,
@@ -42,7 +44,7 @@ const RelationshipRowOverview = ({
   <ListCardRow ref={rowRef} selected={Boolean(isSelected)} onClick={onClick} className="py-1.5!">
     <div className="flex items-center justify-between gap-2">
       <div className="flex min-w-0 items-center gap-1.5">
-        <RelationshipRowCheckbox relationshipId={marker._id} />
+        <RelationshipRowCheckbox relationshipIds={representedIds} />
         <TargetPill marker={marker} hideTargetPill={hideTargetPill} />
       </div>
       {referencePage !== undefined && <PageTag page={referencePage} onClick={onClick} />}
@@ -53,6 +55,7 @@ const RelationshipRowOverview = ({
 const RelationshipRowCompact = ({
   rowRef,
   marker,
+  representedIds,
   hideTargetPill,
   hideRelationType,
   relationshipTypeName,
@@ -64,7 +67,7 @@ const RelationshipRowCompact = ({
   <ListCardRow ref={rowRef} selected={Boolean(isSelected)} onClick={onClick} className="py-2!">
     <div className="flex items-center justify-between gap-2">
       <div className="flex min-w-0 items-center gap-1.5">
-        <RelationshipRowCheckbox relationshipId={marker._id} />
+        <RelationshipRowCheckbox relationshipIds={representedIds} />
         <TargetPill marker={marker} hideTargetPill={hideTargetPill} />
         <DirectionGlyph direction={direction} />
         {!hideRelationType && relationshipTypeName && (
@@ -81,6 +84,7 @@ const RelationshipRowCompact = ({
 const RelationshipRowDetail = ({
   rowRef,
   marker,
+  representedIds,
   hideTargetPill,
   hideTemplateName,
   hideRelationType,
@@ -106,6 +110,7 @@ const RelationshipRowDetail = ({
         referencePage={referencePage}
         editMode={editMode}
         isSelected={isSelected}
+        representedIds={representedIds}
         representedCount={representedCount}
         onClick={onClick}
         onView={onView}
@@ -118,7 +123,7 @@ const RelationshipRowDetail = ({
     <ListCardRow ref={rowRef} selected={Boolean(isSelected)} onClick={onClick}>
       <div className="mb-1.5 flex items-start justify-between gap-2">
         <div className="flex min-w-0 items-center gap-1.5">
-          <RelationshipRowCheckbox relationshipId={marker._id} />
+          <RelationshipRowCheckbox relationshipIds={representedIds} />
           <TargetPill marker={marker} hideTargetPill={hideTargetPill} />
         </div>
         <div className="flex shrink-0 items-center gap-1.5">

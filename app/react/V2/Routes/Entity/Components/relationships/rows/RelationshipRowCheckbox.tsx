@@ -4,10 +4,10 @@ import { checkboxInputClassName } from '#V2/Components/Forms/Checkbox.js';
 import { useRelationshipsSelection } from '#V2/Routes/Entity/Components/context/index.js';
 
 type RelationshipRowCheckboxProps = {
-  relationshipId: string;
+  relationshipIds: string[];
 };
 
-const RelationshipRowCheckbox = ({ relationshipId }: RelationshipRowCheckboxProps) => {
+const RelationshipRowCheckbox = ({ relationshipIds }: RelationshipRowCheckboxProps) => {
   const {
     relationshipsEditMode: editMode,
     selectedRelationshipIds: selected,
@@ -18,7 +18,8 @@ const RelationshipRowCheckbox = ({ relationshipId }: RelationshipRowCheckboxProp
     return null;
   }
 
-  const checked = selected.has(relationshipId);
+  const checked =
+    relationshipIds.length > 0 && relationshipIds.every(relationshipId => selected.has(relationshipId));
 
   return (
     <span className="flex shrink-0 items-center" onClick={e => e.stopPropagation()}>
@@ -29,11 +30,9 @@ const RelationshipRowCheckbox = ({ relationshipId }: RelationshipRowCheckboxProp
         onChange={() => {
           setSelected(prev => {
             const next = new Set(prev);
-            if (checked) {
-              next.delete(relationshipId);
-            } else {
-              next.add(relationshipId);
-            }
+            relationshipIds.forEach(relationshipId =>
+              checked ? next.delete(relationshipId) : next.add(relationshipId)
+            );
             return next;
           });
         }}

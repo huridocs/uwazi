@@ -26,14 +26,14 @@ type RelationshipPanelRowProps = RelationshipPanelRowHandlers & {
 
 type NestedEvidenceGroup = {
   marker: RelationshipMarker;
-  count: number;
+  markers: RelationshipMarker[];
 };
 
 const nestedEvidenceCount = (markers: RelationshipMarker[]): number => markers.length;
 
 const nestedEvidenceKey = (marker: RelationshipMarker, selfSharedId: string): string => {
   const { referenceText, referencePage } = relationshipReferenceDisplay(marker, selfSharedId);
-  return [referencePage ?? '', referenceText].join('\u0000');
+  return [marker.target.sharedId, referencePage ?? '', referenceText].join('\u0000');
 };
 
 const groupNestedEvidence = (
@@ -45,10 +45,10 @@ const groupNestedEvidence = (
     const key = nestedEvidenceKey(marker, selfSharedId);
     const group = grouped.get(key);
     if (group) {
-      group.count += 1;
+      group.markers.push(marker);
       return;
     }
-    grouped.set(key, { marker, count: 1 });
+    grouped.set(key, { marker, markers: [marker] });
   });
   return Array.from(grouped.values());
 };
@@ -59,21 +59,28 @@ const renderNestedRows = (
   groupContext: GroupLabelContext
 ) => {
   const groups = groupNestedEvidence(markers, handlers.selfSharedId);
-  return groups.map(({ marker, count }, index) => (
-    <RelationshipsTreeNode key={marker._id} treeLine={getTreeLine(index, groups.length)}>
-      <RelationshipRow
-        nested
-        marker={marker}
-        selfSharedId={handlers.selfSharedId}
-        relationshipTypeName={groupContext.relationshipTypeName(marker.view.type)}
-        isSelected={handlers.activeRelationshipId === marker._id}
-        representedCount={count}
-        onClick={() => handlers.onClick(marker)}
-        onView={() => handlers.onView(marker)}
-        onDelete={() => handlers.onDelete(marker)}
-      />
-    </RelationshipsTreeNode>
-  ));
+  return groups.map(({ marker, markers: representedMarkers }, index) => {
+    const representedIds = representedMarkers.map(representedMarker => representedMarker._id);
+    return (
+      <RelationshipsTreeNode key={marker._id} treeLine={getTreeLine(index, groups.length)}>
+        <RelationshipRow
+          nested
+          marker={marker}
+          selfSharedId={handlers.selfSharedId}
+          relationshipTypeName={groupContext.relationshipTypeName(marker.view.type)}
+          isSelected={
+            !!handlers.activeRelationshipId &&
+            representedIds.includes(handlers.activeRelationshipId)
+          }
+          representedIds={representedIds}
+          representedCount={representedMarkers.length}
+          onClick={() => handlers.onClick(marker)}
+          onView={() => handlers.onView(marker)}
+          onDelete={() => handlers.onDelete(marker)}
+        />
+      </RelationshipsTreeNode>
+    );
+  });
 };
 
 const RelationshipPanelRow = ({ entry, groupContext, ...handlers }: RelationshipPanelRowProps) => {
@@ -103,7 +110,7 @@ const RelationshipPanelRow = ({ entry, groupContext, ...handlers }: Relationship
 
     return (
       <CollapsibleRelationshipRow
-        checkboxId={aggregate.markerIds[0] ?? ''}
+        checkboxIds={aggregate.markerIds}
         evidenceCount={nestedEvidenceCount(markers)}
         glyphDirection={glyphDirection}
         relationshipTypeName={hideRelationType ? undefined : relationshipTypeName}
@@ -133,7 +140,7 @@ const RelationshipPanelRow = ({ entry, groupContext, ...handlers }: Relationship
 
   return (
     <CollapsibleRelationshipRow
-      checkboxId={hub.markerIds[0] ?? ''}
+      checkboxIds={hub.markerIds}
       evidenceCount={nestedEvidenceCount(markers)}
       headerWrap
       isHub

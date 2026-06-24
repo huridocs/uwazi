@@ -1,4 +1,4 @@
-import React, { useId, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 type PortalTooltipPlacement = 'top' | 'right' | 'bottom' | 'left';
@@ -48,11 +48,22 @@ const PortalTooltip = ({
   const tooltipId = useId();
   const [position, setPosition] = useState<TooltipPosition | null>(null);
 
-  const show = () => {
+  const updatePosition = useCallback(() => {
     const rect = triggerRef.current?.getBoundingClientRect();
     if (rect) setPosition(getPosition(rect, placement));
-  };
+  }, [placement]);
+  const show = updatePosition;
   const hide = () => setPosition(null);
+
+  useEffect(() => {
+    if (!position) return undefined;
+    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('resize', updatePosition);
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
+    };
+  }, [position, updatePosition]);
 
   const tooltipClassName = [
     'pointer-events-none fixed z-50 max-w-72 rounded-md border border-border/70',

@@ -15,6 +15,7 @@ type RelationshipRowProps = {
   relationshipTypeName?: string;
   isSelected?: boolean;
   nested?: boolean;
+  representedIds?: string[];
   representedCount?: number;
   onClick?: () => void;
   onView?: () => void;
@@ -27,19 +28,22 @@ const RelationshipRow = ({
   relationshipTypeName,
   isSelected,
   nested = false,
+  representedIds,
   representedCount,
   onClick,
   onView,
   onDelete,
 }: RelationshipRowProps) => {
   const { zoom } = useRelationshipsPanelLayout();
-  const rowData = useRelationshipRowData(marker, selfSharedId, relationshipTypeName);
+  const ids = React.useMemo(() => representedIds ?? [marker._id], [marker._id, representedIds]);
+  const rowData = useRelationshipRowData(marker, selfSharedId, relationshipTypeName, ids);
   const nestedReference = relationshipReferenceDisplay(marker, selfSharedId);
   const baseProps = {
     ...rowData,
     referenceText: nested ? nestedReference.referenceText : rowData.referenceText,
     referencePage: nested ? nestedReference.referencePage : rowData.referencePage,
     isSelected,
+    representedIds: ids,
     representedCount,
     onClick,
   };

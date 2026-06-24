@@ -1,7 +1,7 @@
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { groupNestedEvidence } from '../rows/RelationshipPanelRow.js';
 
-const marker = (id: string, text: string, page: number): RelationshipMarker => ({
+const marker = (id: string, text: string, page: number, targetId = id): RelationshipMarker => ({
   _id: id,
   view: {
     _id: id,
@@ -18,13 +18,13 @@ const marker = (id: string, text: string, page: number): RelationshipMarker => (
     },
     to: {
       type: 'entity',
-      entity: `target-${id}`,
-      entityTitle: `Target ${id}`,
+      entity: `target-${targetId}`,
+      entityTitle: `Target ${targetId}`,
       entityTemplateId: 'template3',
     },
     relationTypeOnSelf: false,
   },
-  target: { sharedId: `target-${id}`, title: `Target ${id}`, templateId: 'template3' },
+  target: { sharedId: `target-${targetId}`, title: `Target ${targetId}`, templateId: 'template3' },
   anchor: {
     type: 'textReference',
     entity: 'self',
@@ -39,12 +39,25 @@ const marker = (id: string, text: string, page: number): RelationshipMarker => (
 describe('RelationshipPanelRow', () => {
   it('groups nested evidence by visible reference text and page', () => {
     const groups = groupNestedEvidence(
-      [marker('1', 'Same text', 2), marker('2', 'Same text', 2), marker('3', 'Same text', 3)],
+      [
+        marker('1', 'Same text', 2, '1'),
+        marker('2', 'Same text', 2, '1'),
+        marker('3', 'Same text', 3, '1'),
+      ],
       'self'
     );
 
     expect(groups).toHaveLength(2);
-    expect(groups[0]?.count).toBe(2);
-    expect(groups[1]?.count).toBe(1);
+    expect(groups[0]?.markers).toHaveLength(2);
+    expect(groups[1]?.markers).toHaveLength(1);
+  });
+
+  it('keeps different targets in separate nested evidence groups', () => {
+    const groups = groupNestedEvidence(
+      [marker('1', 'Same text', 2), marker('2', 'Same text', 2)],
+      'self'
+    );
+
+    expect(groups).toHaveLength(2);
   });
 });

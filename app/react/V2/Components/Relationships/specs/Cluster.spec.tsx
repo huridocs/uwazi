@@ -90,7 +90,7 @@ describe('Cluster', () => {
     expect(layout.stemY).toBe(height - RAIL_MARKER_SIZE / 2);
   });
 
-  it('shows up to eighteen points and sends the full cluster from the overflow button', () => {
+  it('shows up to eighteen points and sends hidden grouped points from the overflow button', () => {
     const references = Array.from({ length: 20 }, (_, index) => marker(index));
     const onMoreClick = jest.fn();
 
@@ -109,7 +109,7 @@ describe('Cluster', () => {
 
     expect(document.querySelectorAll('[data-marker-id]')).toHaveLength(18);
     fireEvent.click(screen.getByRole('button', { name: /Show more/ }));
-    expect(onMoreClick).toHaveBeenCalledWith(references);
+    expect(onMoreClick).toHaveBeenCalledWith(references.slice(18));
   });
 
   it('deduplicates repeated rail points and shows their represented count', () => {
@@ -130,5 +130,25 @@ describe('Cluster', () => {
 
     expect(document.querySelectorAll('[data-marker-id]')).toHaveLength(1);
     expect(screen.getByText('x3')).toBeVisible();
+  });
+
+  it('marks a grouped point active when any represented marker is active', () => {
+    const references = [marker(1, 1), marker(2, 1)];
+
+    render(
+      <Provider store={store}>
+        <Cluster
+          position={100}
+          markerLayerHeight={800}
+          references={references}
+          activePointId="ref-2"
+          isOpen
+          onPointClick={() => undefined}
+          onMoreClick={() => undefined}
+        />
+      </Provider>
+    );
+
+    expect(screen.getByTestId('rail-marker-dot')).toHaveStyle({ opacity: '1' });
   });
 });

@@ -37,7 +37,7 @@ type ClusterSubtreeLayoutInput = {
 
 type ClusterPointGroup = {
   marker: RelationshipMarker;
-  count: number;
+  markers: RelationshipMarker[];
 };
 
 const clamp = (value: number, min: number, max: number): number =>
@@ -59,13 +59,16 @@ const groupClusterPoints = (references: RelationshipMarker[]): ClusterPointGroup
     const key = clusterPointKey(marker);
     const group = grouped.get(key);
     if (group) {
-      group.count += 1;
+      group.markers.push(marker);
       return;
     }
-    grouped.set(key, { marker, count: 1 });
+    grouped.set(key, { marker, markers: [marker] });
   });
   return Array.from(grouped.values());
 };
+
+const groupMarkers = (groups: ClusterPointGroup[]): RelationshipMarker[] =>
+  groups.flatMap(group => group.markers);
 
 const computeClusterSubtreeLayout = ({
   position,
@@ -113,6 +116,7 @@ const Cluster = ({
   const pointGroups = groupClusterPoints(references);
   const points = pointGroups.slice(0, MAX_VISIBLE_POINTS);
   const extraPoints = pointGroups.slice(MAX_VISIBLE_POINTS);
+  const extraMarkers = groupMarkers(extraPoints);
 
   const clusterIsOpen = isOpen ?? internalIsOpen;
   const outerSize = computeClusterOuterSize(references.length);
@@ -209,20 +213,20 @@ const Cluster = ({
             className="absolute inset-0 pointer-events-auto"
             style={{ width: RAIL_MARKER_SIZE + PAD, left: 0 }}
           >
-            {points.map(({ marker, count }, index) => (
+            {points.map(({ marker, markers }, index) => (
               <Point
                 key={marker._id || `cluster-point-${index}`}
                 position={index * RAIL_MARKER_SPACING}
                 marker={marker}
                 onClick={onPointClick}
-                isActive={activePointId === marker._id}
-                representedCount={count}
+                isActive={markers.some(pointMarker => pointMarker._id === activePointId)}
+                representedCount={markers.length}
               />
             ))}
             {extraPoints.length > 0 && (
               <ShowMoreButton
                 position={points.length * RAIL_MARKER_SPACING}
-                references={references}
+                references={extraMarkers}
                 onClick={onMoreClick}
               />
             )}

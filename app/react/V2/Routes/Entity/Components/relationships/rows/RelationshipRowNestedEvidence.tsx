@@ -15,6 +15,7 @@ type RelationshipRowNestedEvidenceProps = Pick<
   'rowRef' | 'marker' | 'referenceText' | 'referencePage' | 'editMode'
 > & {
   isSelected?: boolean;
+  representedIds: string[];
   representedCount?: number;
   onClick?: () => void;
   onView?: () => void;
@@ -28,6 +29,7 @@ const RelationshipRowNestedEvidence = ({
   referencePage,
   editMode,
   isSelected,
+  representedIds,
   representedCount = 1,
   onClick,
   onView,
@@ -36,7 +38,7 @@ const RelationshipRowNestedEvidence = ({
   <ListCardRow ref={rowRef} selected={Boolean(isSelected)} onClick={onClick} className="py-1.5!">
     <div className="flex items-start justify-between gap-2 rounded bg-warm/50 px-2 py-1.5">
       <div className="flex min-w-0 flex-1 items-start gap-1.5">
-        <RelationshipRowCheckbox relationshipId={marker._id} />
+        <RelationshipRowCheckbox relationshipIds={representedIds} />
         {referenceText ? (
           <ExpandableText
             text={referenceText}
