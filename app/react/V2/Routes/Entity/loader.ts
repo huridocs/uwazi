@@ -30,7 +30,9 @@ const entityLoader =
       return undefined;
     }
 
-    let entity = entityLoaderCache.getEntity(entitySharedId, language);
+    let entity = entityLoaderCache.getEntity(entitySharedId, language, {
+      requireRelationships: true,
+    });
     let mainDocument = entityLoaderCache.getMainDocument(entitySharedId, language);
     let pagePlaintext: string | undefined = '';
     let searchResults: SnippetsSearchResponse | undefined;
@@ -49,7 +51,7 @@ const entityLoader =
         entity = undefined;
       } else {
         [entity] = fetchedEntity;
-        entityLoaderCache.setEntity(entitySharedId, language, entity!);
+        entityLoaderCache.setEntity(entitySharedId, language, entity);
       }
     }
 

@@ -171,7 +171,7 @@
 }
 
 @utility bg-paper {
-  background-color: var(--color-theme-surface-raised, var(--color-theme-bg-surface));
+  background-color: var(--color-theme-surface-raised, var(--color-theme-bg-surface, #ffffff));
 }
 
 @utility min-w-56 {

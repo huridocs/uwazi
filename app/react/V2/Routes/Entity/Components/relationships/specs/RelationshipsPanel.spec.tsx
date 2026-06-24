@@ -11,8 +11,8 @@ beforeAll(() => {
 
 const getSelectionState = () => screen.getByTestId('selection-state');
 
-describe('RelationshipsPanel', () => {
-  it('renders relationship rows from the entity', () => {
+describe('Relationships panel', () => {
+  it('lists the relationships connected to the current entity', () => {
     renderRelationshipsPanel();
 
     expect(screen.getByText('alpha snippet')).toBeInTheDocument();
@@ -20,8 +20,8 @@ describe('RelationshipsPanel', () => {
     expect(screen.queryByText('target quoted text')).not.toBeInTheDocument();
   });
 
-  describe('navigation', () => {
-    it('focuses the document panel when a text reference row is selected on main', async () => {
+  describe('document navigation', () => {
+    it('switches to the document when a text reference is selected', async () => {
       const user = userEvent.setup();
       const { onFocusDocument } = renderRelationshipsPanel({ focusDocumentOnSelect: true });
 
@@ -30,7 +30,7 @@ describe('RelationshipsPanel', () => {
       expect(onFocusDocument).toHaveBeenCalledTimes(1);
     });
 
-    it('does not focus the document panel when focusDocumentOnSelect is disabled', async () => {
+    it('stays on the relationships tab when document navigation is disabled', async () => {
       const user = userEvent.setup();
       const onFocusDocument = jest.fn();
       renderRelationshipsPanel({ focusDocumentOnSelect: false, onFocusDocument });
@@ -41,8 +41,8 @@ describe('RelationshipsPanel', () => {
     });
   });
 
-  describe('selection', () => {
-    it('navigates the PDF and highlights when a text reference row is selected', async () => {
+  describe('reference highlighting', () => {
+    it('jumps to the quoted page and highlights the source text', async () => {
       const user = userEvent.setup();
       const pdf = defaultPdf();
       renderRelationshipsPanel({ pdf });
@@ -54,7 +54,7 @@ describe('RelationshipsPanel', () => {
       expect(getSelectionState().getAttribute('data-active')).not.toBe('');
     });
 
-    it('clears selection when the same row is toggled', async () => {
+    it('clears the highlight when the same reference is selected again', async () => {
       const user = userEvent.setup();
       const pdf = defaultPdf();
       renderRelationshipsPanel({ pdf });
@@ -70,7 +70,7 @@ describe('RelationshipsPanel', () => {
   });
 
   describe('tree view', () => {
-    it('renders one aggregate row per entity and relationship type when groupBy is none', async () => {
+    it('groups relationships by target entity when tree view is selected', async () => {
       const user = userEvent.setup();
       renderRelationshipsPanel();
 
@@ -86,7 +86,7 @@ describe('RelationshipsPanel', () => {
     const searchInput = () => screen.getByRole('textbox', { name: /search relationships/i });
     const filtersButton = () => screen.getByRole('button', { name: /^filters/i });
 
-    it('filters markers, shows an active chip, and updates the filter count', async () => {
+    it('narrows the list to matching relationships and shows the active search', async () => {
       const user = userEvent.setup();
       renderRelationshipsPanel();
 
@@ -99,7 +99,7 @@ describe('RelationshipsPanel', () => {
       expect(filtersButton()).toHaveTextContent('2');
     });
 
-    it('clears search from the chip and restores all markers', async () => {
+    it('restores the full list when the search chip is cleared', async () => {
       const user = userEvent.setup();
       renderRelationshipsPanel();
 
@@ -114,7 +114,7 @@ describe('RelationshipsPanel', () => {
       expect(filtersButton()).toHaveTextContent('1');
     });
 
-    it('clears all filters from the drawer', async () => {
+    it('restores the full list when all filters are cleared', async () => {
       const user = userEvent.setup();
       renderRelationshipsPanel({ withFiltersDrawer: true });
 
