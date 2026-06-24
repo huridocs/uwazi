@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import { createError } from '#api/utils/index.js';
 import mailer from '#api/utils/mailer.js';
@@ -77,6 +76,7 @@ describe('Users', () => {
       expect(membership1).not.toBeUndefined();
       expect(membership2).not.toBeUndefined();
     };
+
     it('should update the membership of the saved user', async () => {
       currentUser = { _id: 'user2', role: 'admin' };
       const userToUpdate = {
@@ -86,6 +86,7 @@ describe('Users', () => {
       const updatedUser = await users.save(userToUpdate, currentUser);
       await assertUserMembership(updatedUser);
     });
+
     it('should remove all groups if user has not any', async () => {
       currentUser = { _id: 'user2', role: 'admin' };
       const userToUpdate = {
