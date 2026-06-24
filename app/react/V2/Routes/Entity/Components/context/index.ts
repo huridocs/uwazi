@@ -23,6 +23,6 @@ export {
 export { useToc, useTocActions, useTocStateActions } from './TocContext.js';
 export { useMetadataEditing } from './MetadataEditingContext.js';
 export { useEntityOverlay } from './EntityOverlayContext.js';
-export type { ReferenceMode, RelationshipsPanelView, RelationshipsPanelZoom } from './types.js';
+export type { RelationshipsPanelView, RelationshipsPanelZoom } from './types.js';
 export { useRelationshipsPanelData } from '../relationships/hooks/useRelationshipsPanelData.js';
 export { useEntityRelationshipMarkers } from '../relationships/hooks/useEntityRelationshipMarkers.js';
