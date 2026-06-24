@@ -37,6 +37,7 @@ const RequestStatus = () => {
     isPanelOpen,
     notifications,
     togglePanel,
+    openPanel,
     isLoading,
   } = useRequestStatus();
 
@@ -137,7 +138,7 @@ const RequestStatus = () => {
           </div>
         )}
         {flash && (
-          <div className="absolute inset-y-0 end-4 z-10 flex items-stretch justify-end">
+          <div className="absolute inset-y-0 inset-e-4 z-10 flex items-stretch justify-end">
             <NotificationFlash
               key={flash.id}
               title={flash.title}
@@ -145,7 +146,7 @@ const RequestStatus = () => {
               phase={flash.phase}
               color={contrastColor}
               barBackground={barBackground}
-              onOpenPanel={togglePanel}
+              onOpenPanel={openPanel}
               controlsId={PANEL_ID}
               isPanelExpanded={isPanelOpen}
             />

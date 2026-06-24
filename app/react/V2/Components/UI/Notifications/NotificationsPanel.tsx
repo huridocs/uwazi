@@ -1,100 +1,140 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { HandThumbUpIcon } from '@heroicons/react/24/outline';
+import React, { useMemo, useState } from 'react';
+import { CheckIcon } from '@heroicons/react/24/outline';
 import { Sidepanel } from '#V2/Components/UI/Sidepanel.js';
 import { Button } from '#V2/Components/UI/Button.js';
-import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import {
+  type NotificationType,
+  type StatusNotification,
+  useRequestStatus,
+} from '#V2/atoms/requestStatusAtom.js';
 import { NotificationItem } from './NotificationItem.js';
 import { TaskItem } from './TaskItem.js';
+import { EmptyState } from './EmptyState.js';
+import { FilterPill } from './FilterPill.js';
+import { SectionLabel } from './SectionLabel.js';
 import { Translate } from '#app/I18N/index.js';
 
-const EmptyState = () => (
-  <div className="flex flex-col items-center justify-center py-1 text-center text-ink-muted">
-    <HandThumbUpIcon className="h-6 w-6" />
-    <p className="font-semibold text-lg">
-      <Translate>All clear</Translate>
-    </p>
-    <p className="mt-1">
-      <Translate>No notifications or active tasks.</Translate>
-    </p>
-  </div>
-);
+type Filter = 'all' | 'unread';
+type Bucket = 'new' | 'today' | 'earlier';
+
+const bucketOrder: Bucket[] = ['new', 'today', 'earlier'];
+const severityRank: Record<NotificationType, number> = {
+  error: 3,
+  warning: 2,
+  info: 1,
+  success: 0,
+};
+
+const getBucket = (
+  notification: StatusNotification,
+  isUnread: boolean,
+  todayStart: number
+): Bucket => {
+  if (isUnread) return 'new';
+  return notification.timestamp.getTime() >= todayStart ? 'today' : 'earlier';
+};
 
 const NotificationsPanel = () => {
   const {
     isPanelOpen,
     notifications,
+    unreadNotificationIds,
+    unreadNotificationCount,
     tasks,
-    togglePanel,
+    closePanel,
     removeNotification,
+    markNotificationRead,
+    markAllNotificationsRead,
     removeTask,
     clearAll,
   } = useRequestStatus();
 
-  const isEmpty = notifications.length === 0 && tasks.length === 0;
   const hasClearable = notifications.length > 0 || tasks.some(t => t.status !== 'running');
+  const [filter, setFilter] = useState<Filter>('all');
+  const unreadIds = useMemo(() => new Set(unreadNotificationIds), [unreadNotificationIds]);
+  const todayStart = useMemo(() => {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    return start.getTime();
+  }, []);
+  const groupedNotifications = useMemo(() => {
+    const groups: Record<Bucket, StatusNotification[]> = { new: [], today: [], earlier: [] };
+    notifications
+      .filter(notification => filter === 'all' || unreadIds.has(notification.id))
+      .forEach(notification => {
+        groups[getBucket(notification, unreadIds.has(notification.id), todayStart)].push(
+          notification
+        );
+      });
+    groups.new.sort(
+      (a, b) =>
+        severityRank[b.type] - severityRank[a.type] || b.timestamp.getTime() - a.timestamp.getTime()
+    );
+    groups.today.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+    groups.earlier.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+    return groups;
+  }, [filter, notifications, todayStart, unreadIds]);
   const orderedNotifications = useMemo(
-    () =>
-      [...notifications].sort(
-        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-      ),
-    [notifications]
+    () => bucketOrder.flatMap(bucket => groupedNotifications[bucket]),
+    [groupedNotifications]
   );
-  const [activeNotificationIndex, setActiveNotificationIndex] = useState(0);
-  const notificationRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const hasVisibleNotifications = orderedNotifications.length > 0;
 
-  useEffect(() => {
-    if (orderedNotifications.length === 0) {
-      setActiveNotificationIndex(0);
-      return;
-    }
-
-    setActiveNotificationIndex(current => Math.min(current, orderedNotifications.length - 1));
-  }, [orderedNotifications.length]);
-
-  useEffect(() => {
-    if (!isPanelOpen || orderedNotifications.length === 0) return;
-
-    const frameId = requestAnimationFrame(() => {
-      notificationRefs.current[activeNotificationIndex]?.focus();
-    });
-
-    return () => cancelAnimationFrame(frameId);
-  }, [activeNotificationIndex, isPanelOpen, orderedNotifications.length]);
-
-  const focusNotification = (direction: 'next' | 'prev', currentIndex: number) => {
-    if (orderedNotifications.length === 0) return;
-
-    const lastIndex = orderedNotifications.length - 1;
-    let nextIndex = currentIndex;
-
-    if (direction === 'next') {
-      nextIndex = currentIndex >= lastIndex ? 0 : currentIndex + 1;
-    } else {
-      nextIndex = currentIndex <= 0 ? lastIndex : currentIndex - 1;
-    }
-
-    setActiveNotificationIndex(nextIndex);
-  };
+  const title = (
+    <span className="flex items-center gap-2">
+      <Translate className="capitalize">Notifications</Translate>
+      {unreadNotificationCount > 0 && (
+        <span className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-(--color-theme-accent-supporting) px-1.5 text-[11px] font-bold tabular-nums text-parchment">
+          {unreadNotificationCount}
+        </span>
+      )}
+    </span>
+  );
 
   return (
     <div data-testid="notifications-panel" className="tw-content">
       <Sidepanel
         isOpen={isPanelOpen}
-        closeSidepanelFunction={togglePanel}
-        title={<Translate className="capitalize">Notifications</Translate>}
+        closeSidepanelFunction={closePanel}
+        title={title}
         size="medium"
         withOverlay
         panelId="notifications-panel-dialog"
       >
-        <Sidepanel.Body className="flex flex-col gap-4 overflow-y-auto">
-          {isEmpty && <EmptyState />}
+        <Sidepanel.Body className="flex flex-col overflow-y-auto bg-warm p-0!">
+          <div className="shrink-0 border-b border-border bg-paper px-4 pb-2.5">
+            <div className="flex items-center gap-1">
+              <FilterPill
+                active={filter === 'all'}
+                onClick={() => setFilter('all')}
+                label={<Translate>All</Translate>}
+                count={notifications.length}
+              />
+              <FilterPill
+                active={filter === 'unread'}
+                onClick={() => setFilter('unread')}
+                label={<Translate>Unread</Translate>}
+                count={unreadNotificationCount}
+              />
+              {unreadNotificationCount > 0 && (
+                <button
+                  type="button"
+                  onClick={markAllNotificationsRead}
+                  className="ml-auto flex h-7 items-center gap-1 rounded-md px-2 text-[12px] font-medium text-ink-secondary transition-colors hover:bg-warm"
+                >
+                  <CheckIcon className="h-3.5 w-3.5" aria-hidden="true" />
+                  <Translate>Mark all read</Translate>
+                </button>
+              )}
+            </div>
+          </div>
 
           {tasks.length > 0 && (
             <section>
-              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-tertiary">
-                <Translate>Tasks</Translate>
-              </h2>
-              <ul className="flex flex-col gap-2">
+              <SectionLabel>
+                <Translate>Tasks</Translate> · {tasks.length}
+              </SectionLabel>
+              <ul className="space-y-2 px-3 pb-3">
                 {tasks.map(task => (
                   <li key={task.id}>
                     <TaskItem task={task} onRemove={removeTask} />
@@ -104,38 +144,42 @@ const NotificationsPanel = () => {
             </section>
           )}
 
-          {notifications.length > 0 && (
-            <section>
-              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-tertiary">
-                <Translate>Notifications</Translate>
-              </h2>
-              <ul className="flex flex-col gap-2">
-                {orderedNotifications.map((notification, index) => (
-                  <li key={notification.id}>
-                    <NotificationItem
-                      notification={notification}
-                      onDismiss={removeNotification}
-                      tabIndex={index === activeNotificationIndex ? 0 : -1}
-                      itemRef={element => {
-                        notificationRefs.current[index] = element;
-                      }}
-                      onArrowNavigate={direction => focusNotification(direction, index)}
-                    />
-                  </li>
-                ))}
-              </ul>
-            </section>
+          {!hasVisibleNotifications && <EmptyState filter={filter} />}
+
+          {bucketOrder.map(bucket =>
+            groupedNotifications[bucket].length === 0 ? null : (
+              <section key={bucket}>
+                <SectionLabel>
+                  {bucket === 'new' && <Translate>New</Translate>}
+                  {bucket === 'today' && <Translate>Today</Translate>}
+                  {bucket === 'earlier' && <Translate>Earlier</Translate>}
+                </SectionLabel>
+                <ul className="space-y-2 px-3 pb-3">
+                  {groupedNotifications[bucket].map(notification => (
+                    <li key={notification.id}>
+                      <NotificationItem
+                        notification={notification}
+                        isUnread={unreadIds.has(notification.id)}
+                        onDismiss={removeNotification}
+                        onRead={markNotificationRead}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )
           )}
         </Sidepanel.Body>
-        {hasClearable && (
-          <Sidepanel.Footer className="border-t p-4 border-t-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)]">
-            <Button variant="secondary" onClick={clearAll} className="w-full">
-              <span className="flex items-center justify-center gap-1.5">
-                <Translate>Clear</Translate>
-              </span>
-            </Button>
-          </Sidepanel.Footer>
-        )}
+        <Sidepanel.Footer className="border-t border-t-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] p-3">
+          <Button
+            variant="secondary"
+            onClick={clearAll}
+            className="w-full"
+            disabled={!hasClearable}
+          >
+            <Translate>Clear all</Translate>
+          </Button>
+        </Sidepanel.Footer>
       </Sidepanel>
     </div>
   );
