@@ -33,7 +33,7 @@ describe('POST /api/users/new', () => {
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
-    testingTenants.changeCurrentTenant({ domain: 'uwazi' });
+    testingTenants.changeCurrentTenant({ domain: 'uwazi', featureFlags: { v2CreateUser: true } });
     namespace = tenants.current().name;
   });
 
