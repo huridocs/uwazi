@@ -8,9 +8,16 @@ import { DomainError } from '#api/core/domain/error/DomainError.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { UserSchema } from '#shared/types/userType.js';
 import userRoutes from '../routes.js';
+import { userRoutes as v2UserRoutes } from '#api/core/infrastructure/express/users/routes.js';
 import users from '../users.js';
 import { User } from '../usersModel.js';
 import { PUBLIC_USER_ID } from '../publicUser.js';
+
+const combinedRoutes = (app: any) => {
+  userRoutes(app);
+  // This is were the new user/new route is defined.
+  v2UserRoutes(app);
+};
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -65,7 +72,7 @@ describe('users routes', () => {
   function getUser() {
     return currentUser;
   }
-  const app = setUpApp(userRoutes, (req: Request, _res: Response, next: NextFunction) => {
+  const app = setUpApp(combinedRoutes, (req: Request, _res: Response, next: NextFunction) => {
     (req as any).user = getUser();
     next();
   });
