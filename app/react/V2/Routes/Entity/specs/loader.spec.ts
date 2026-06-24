@@ -27,7 +27,11 @@ describe('Entity loader with cache integration', () => {
       sharedId: 'shared1',
       title: 'Test Entity',
       language: 'en',
+      template: 'template1',
+      creationDate: 1,
+      user: 'user1',
       documents: [{ _id: 'doc1', filename: 'test.pdf' }],
+      relations: [],
     };
 
     jest.spyOn(entityApi, 'getBySharedId').mockResolvedValue([[mockEntity as Entity]]);
@@ -65,6 +69,19 @@ describe('Entity loader with cache integration', () => {
       await loadEntity('http://localhost/entity/shared1');
 
       expect(entityApi.getBySharedId).toHaveBeenCalledTimes(1);
+    });
+
+    it('should refetch when cache only has a partial entity', async () => {
+      const partialEntity = { ...(mockEntity as Entity) };
+      delete (partialEntity as { relations?: Entity['relations'] }).relations;
+      entityLoaderCache.setEntity('shared1', 'en', partialEntity);
+
+      await loadEntity('http://localhost/entity/shared1', 'en');
+
+      expect(entityApi.getBySharedId).toHaveBeenCalledTimes(1);
+      expect(
+        entityLoaderCache.getEntity('shared1', 'en', { requireRelationships: true })?.relations
+      ).toEqual([]);
     });
   });
 

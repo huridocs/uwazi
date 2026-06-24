@@ -237,6 +237,7 @@ Create relationship,Create relationship
 Create relationship types,Create relationship types
 Create relationships and references,Create relationships and references
 Create table of contents,Create table of contents
+Created,Created
 Created entity,Created entity
 Created entity coming from a public form,Created entity coming from a public form
 Created page,Created page
@@ -513,6 +514,7 @@ Importing data in progress,جاري استيراد البيانات
 in,في
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,جاري التعرف الضوئي علي الحروف
+in this document,in this document
 Incoming,Incoming
 Indexing entities may take a few minutes,قد تستغرق فهرسة الكيانات (الإدخالات) بضع دقائق
 Info,معلومات
@@ -682,7 +684,6 @@ No page,No page
 No property,هذه الخاصية غير متوفرة
 No References,لا مرجع
 No References description,المراجع هي اجزاء من الوثيقة التي لها علاقة بوثائق وكيانات أخرى
-No relationship types available,No relationship types available
 No Relationships,لا توجد علاقات
 No Relationships description,العلاقات هي الروابط بين الكيانات
 No relationships found,No relationships found
@@ -732,6 +733,7 @@ one character,one character
                 available for selection."
 "Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Open,Open
+Open entity,Open entity
 Open group,Open group
 Open link,Open link
 Open PDF,Open PDF
@@ -847,6 +849,7 @@ Recommended,Recommended
 Reference,Reference
 References,مراجع
 references,مراجع
+References in document,References in document
 Reject,رفض
 Related entities created,Related entities created
 Relation type,Relation type
@@ -1163,7 +1166,6 @@ Translations,الترجمات
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully
 Translations saved,تم حفظ الترجمات
-Try adjusting your search terms or check for typos,Try adjusting your search terms or check for typos
 Turn off inline translation,Turn off inline translation
 Two-Factor Authentication,Two-Factor Authentication
 Two-factor authentication enabled,Two-factor authentication enabled

@@ -2,6 +2,17 @@ import { SnippetsSearchResponse } from '#V2/api/types.js';
 import { Entity, FileType } from '#V2/api/entities/types.js';
 import { isClient } from '#app/utils/index.js';
 
+type EntityCacheOptions = {
+  requireRelationships?: boolean;
+};
+
+const entityIncludesRelationships = (entity: Entity): boolean => 'relations' in entity;
+
+const mergeEntityCacheEntry = (existing: Entity, incoming: Entity): Entity =>
+  entityIncludesRelationships(existing)
+    ? { ...existing, ...incoming, relations: existing.relations }
+    : incoming;
+
 interface CachedItem<T> {
   data: T;
   timestamp: number;
@@ -51,6 +62,9 @@ const invalidateByPrefix = <T>(cache: Map<string, CachedItem<T>>, prefix: string
 };
 
 class EntityLoaderCache {
+  // Shared entity cache keyed by `${sharedId}:${language}` (5-minute TTL).
+  // Loader and overlay read the same entry; loader requires `relations`, overlay does not.
+  // Full fetches replace the entry; partial fetches merge metadata without dropping relations.
   private entityCache = new Map<string, CachedItem<Entity>>();
 
   private mainDocumentCache = new Map<string, CachedItem<FileType>>();
@@ -75,21 +89,40 @@ class EntityLoaderCache {
     searchResults: 20,
   };
 
-  getEntity(sharedId: string, language: string): Entity | undefined {
+  getEntity(
+    sharedId: string,
+    language: string,
+    { requireRelationships = false }: EntityCacheOptions = {}
+  ): Entity | undefined {
     if (this.isSSR) {
       return undefined;
     }
 
     const key = `${sharedId}:${language}`;
+    const entity = getCachedItem(this.entityCache, key, this.ttls.entity);
 
-    return getCachedItem(this.entityCache, key, this.ttls.entity);
+    if (!entity?._id) {
+      return undefined;
+    }
+
+    if (requireRelationships && !entityIncludesRelationships(entity)) {
+      return undefined;
+    }
+
+    return entity;
   }
 
   setEntity(sharedId: string, language: string, data: Entity): void {
-    if (!this.isSSR) {
-      const key = `${sharedId}:${language}`;
-      setCachedItem(this.entityCache, key, data, this.limits.entity);
+    if (this.isSSR || !data._id) {
+      return;
     }
+
+    const key = `${sharedId}:${language}`;
+    const existing = getCachedItem(this.entityCache, key, this.ttls.entity);
+    const next =
+      entityIncludesRelationships(data) || !existing ? data : mergeEntityCacheEntry(existing, data);
+
+    setCachedItem(this.entityCache, key, next, this.limits.entity);
   }
 
   invalidateEntity(sharedId: string): void {
@@ -172,3 +205,5 @@ class EntityLoaderCache {
 }
 
 export const entityLoaderCache = new EntityLoaderCache();
+export { entityIncludesRelationships };
+export type { EntityCacheOptions };
