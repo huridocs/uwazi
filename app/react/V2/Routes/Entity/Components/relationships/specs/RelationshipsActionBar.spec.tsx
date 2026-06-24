@@ -9,8 +9,8 @@ beforeAll(() => {
   Element.prototype.scrollIntoView = jest.fn();
 });
 
-describe('RelationshipsActionBar', () => {
-  it('enters edit mode with row checkboxes and exits on cancel', async () => {
+describe('Relationships action bar', () => {
+  it('lets the user select relationships for bulk actions and cancel editing', async () => {
     const user = userEvent.setup();
     renderRelationshipsActionBar();
 
@@ -29,7 +29,7 @@ describe('RelationshipsActionBar', () => {
     expect(screen.queryAllByRole('checkbox')).toHaveLength(0);
   });
 
-  it('shows create relationship in edit mode', async () => {
+  it('offers to create a relationship while editing', async () => {
     const user = userEvent.setup();
     renderRelationshipsActionBar();
 
@@ -38,7 +38,7 @@ describe('RelationshipsActionBar', () => {
     expect(screen.getByRole('button', { name: /create relationship/i })).toBeInTheDocument();
   });
 
-  it('shows delete controls when a relationship is selected in edit mode', async () => {
+  it('offers to delete selected relationships while editing', async () => {
     const user = userEvent.setup();
     renderRelationshipsActionBar();
 

@@ -89,14 +89,14 @@ const searchEntity = (query: string) => {
   cy.wait('@searchEntities');
 };
 
-describe('CreateRelationshipModal', () => {
+describe('Create relationship dialog', () => {
   beforeEach(() => {
     cy.intercept('POST', '**/relationships/bulk*', { statusCode: 200, body: {} }).as(
       'saveRelationship'
     );
   });
 
-  it('opens with selection context', () => {
+  it('shows the quoted source text when opened from a document selection', () => {
     mountCreateRelationshipModal({ withSelection: true });
     openModal();
     cy.contains('Select target entity').should('be.visible');
@@ -104,21 +104,21 @@ describe('CreateRelationshipModal', () => {
     cy.contains('Selected text for relationship').should('be.visible');
   });
 
-  it('opens entity search without selection context', () => {
+  it('lets the user pick a target entity when opened without a source selection', () => {
     mountCreateRelationshipModal({ withSelection: false });
     openModal();
     cy.get('#create-relationship-search').should('be.visible');
     cy.contains('From:').should('not.exist');
   });
 
-  it('closes via the header close button', () => {
+  it('can be cancelled from the dialog header', () => {
     mountCreateRelationshipModal();
     openModal();
     cy.get('[aria-label="Close modal"]').click();
     cy.get('[data-testid="modal"]').should('not.exist');
   });
 
-  it('closes without hiding the relationships panel', () => {
+  it('returns to the relationships list after the user cancels', () => {
     mountCreateRelationshipModal({ withPanel: true });
     cy.contains('Person 1').should('be.visible');
     openModal();
@@ -127,7 +127,7 @@ describe('CreateRelationshipModal', () => {
     cy.contains('Person 1').should('be.visible');
   });
 
-  it('opens the new entity step from search', () => {
+  it('prefills a new entity title from the selected document text', () => {
     mountCreateRelationshipModal({ withSelection: true });
     openModal();
     cy.contains('Create new entity from selection').click();
@@ -136,7 +136,7 @@ describe('CreateRelationshipModal', () => {
     cy.contains('Create entity').should('be.visible');
   });
 
-  it('creates an entity-level relationship', () => {
+  it('connects two entities with a chosen relationship type', () => {
     mountCreateRelationshipModal({ withSelection: false });
     openModal();
     searchEntity('Simple');
@@ -148,7 +148,7 @@ describe('CreateRelationshipModal', () => {
     cy.get('[data-testid="modal"]').should('not.exist');
   });
 
-  it('creates a text reference with target document selection', () => {
+  it('connects quoted text in the source and target documents', () => {
     mountCreateRelationshipModal({ withSelection: true });
     openModal();
     searchEntity('Entity');

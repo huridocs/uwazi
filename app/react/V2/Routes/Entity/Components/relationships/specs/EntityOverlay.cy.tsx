@@ -15,7 +15,7 @@ const openOverlay = () => {
   cy.get('[data-testid="entity-overlay"]').contains('Metadata').should('be.visible');
 };
 
-describe('Entity overlay', () => {
+describe('Entity preview overlay', () => {
   beforeEach(() => {
     entityLoaderCache.invalidateEntity(overlayTargetEntity.sharedId);
 
@@ -34,7 +34,7 @@ describe('Entity overlay', () => {
     );
   });
 
-  it('opens an in-panel preview instead of a new tab', () => {
+  it('previews a related entity inside the relationships panel', () => {
     openOverlay();
     cy.get('[data-testid="entity-overlay"]').within(() => {
       cy.contains('Person 1').should('be.visible');
@@ -45,7 +45,7 @@ describe('Entity overlay', () => {
     cy.get('@windowOpen').should('not.have.been.called');
   });
 
-  it('shows metadata and properties', () => {
+  it('shows the related entity metadata and template properties', () => {
     openOverlay();
     cy.get('[data-testid="entity-overlay"]').within(() => {
       cy.contains('Person').should('be.visible');
@@ -56,32 +56,32 @@ describe('Entity overlay', () => {
     });
   });
 
-  it('links Open entity to the entity page', () => {
+  it('offers a link to open the full entity page', () => {
     openOverlay();
     cy.get('[data-testid="entity-overlay"]')
       .contains('Open entity')
       .should('have.attr', 'href', '/en/entityv2/a2pe98qmqb');
   });
 
-  it('closes via the footer Close button', () => {
+  it('can be dismissed from the footer', () => {
     openOverlay();
     cy.get('[data-testid="entity-overlay"]').contains('button', 'Close').click();
     cy.get('[data-testid="entity-overlay"]').should('not.exist');
   });
 
-  it('closes via the header close button', () => {
+  it('can be dismissed from the header', () => {
     openOverlay();
     cy.get('[data-testid="entity-overlay"]').find('button[aria-label="Close"]').click();
     cy.get('[data-testid="entity-overlay"]').should('not.exist');
   });
 
-  it('closes via Escape', () => {
+  it('can be dismissed with the Escape key', () => {
     openOverlay();
     cy.get('body').type('{esc}');
     cy.get('[data-testid="entity-overlay"]').should('not.exist');
   });
 
-  it('uses an opaque panel background', () => {
+  it('obscures the relationships list while open', () => {
     openOverlay();
     cy.get('[data-testid="entity-overlay"]').should($panel => {
       const { backgroundColor } = window.getComputedStyle($panel[0]);
@@ -90,7 +90,7 @@ describe('Entity overlay', () => {
     });
   });
 
-  it('closes via backdrop click', () => {
+  it('can be dismissed by clicking outside the preview', () => {
     openOverlay();
     cy.get('[data-testid="entity-overlay-backdrop"]').click({ force: true });
     cy.get('[data-testid="entity-overlay"]').should('not.exist');
