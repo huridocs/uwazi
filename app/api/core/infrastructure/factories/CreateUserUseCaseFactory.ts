@@ -1,4 +1,4 @@
-import { CreateUser, Dependencies } from '#api/core/application/CreateUser.js';
+import { CreateUser, CreateUserDependencies } from '#api/core/application/CreateUser.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
@@ -7,7 +7,7 @@ import { UsergroupsDataSourceFactory } from './UsergroupsDataSourceFactory.js';
 import { UsersDataSourceFactory } from './UsersDataSourceFactory.js';
 
 export class CreateUserUseCaseFactory {
-  static default(overrides?: Partial<Dependencies>) {
+  static default(overrides?: Partial<CreateUserDependencies>) {
     const useCase = new CreateUser({
       usersDS: UsersDataSourceFactory.default(),
       usergroupsDS: UsergroupsDataSourceFactory.default(),

@@ -5,35 +5,30 @@ import { AbstractUseCase } from '../libs/UseCase.js';
 import { UsersDataSource } from './contracts/UsersDataSource.js';
 import { UsergroupsDataSource } from './contracts/UsergroupsDataSource.js';
 
-const UserCreateSchema = z.object({
+const CreateUserInputSchema = z.object({
   username: z.string().trim(),
   role: z.enum(['admin', 'editor', 'collaborator']),
   email: z.string().email(),
   groups: z.array(z.object({ _id: z.string(), name: z.string() })).optional(),
   password: z.string().optional(),
+  domain: z.string(),
 });
 
-type CreateUserDTO = z.infer<typeof UserCreateSchema>;
-
-type Input = { user: CreateUserDTO; domain: string };
+type Input = z.infer<typeof CreateUserInputSchema>;
 
 type Output = User;
 
-type Dependencies = { usersDS: UsersDataSource; usergroupsDS: UsergroupsDataSource };
+type Deps = { usersDS: UsersDataSource; usergroupsDS: UsergroupsDataSource };
 
-class CreateUser extends AbstractUseCase<Input, Output, Dependencies> {
-  static InputSchema = UserCreateSchema;
-
+class CreateUser extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
-    const { password, ...userData } = input.user;
+    const { password, domain, ...userData } = input;
 
     const user = new User({ _id: this.idGenerator.generate(), ...userData });
 
-    const usernameResult = await this.deps.usersDS.checkUniqueUsername(user);
-    usernameResult.getDataOrThrow();
+    (await this.deps.usersDS.checkUniqueUsername(user)).getDataOrThrow();
 
-    const emailResult = await this.deps.usersDS.checkUniqueEmail(user);
-    emailResult.getDataOrThrow();
+    (await this.deps.usersDS.checkUniqueEmail(user)).getDataOrThrow();
 
     user.setPassword(await EncryptedPassword.create(password));
 
@@ -50,5 +45,5 @@ class CreateUser extends AbstractUseCase<Input, Output, Dependencies> {
   }
 }
 
-export { CreateUser, UserCreateSchema };
-export type { Input, Dependencies, CreateUserDTO };
+export { CreateUser, CreateUserInputSchema };
+export type { Deps as CreateUserDependencies };

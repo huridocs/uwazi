@@ -1,8 +1,8 @@
-/* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import { createError } from '#api/utils/index.js';
 import mailer from '#api/utils/mailer.js';
 import db from '#api/utils/testing_db.js';
+import * as random from '#shared/uniqueID.js';
 import { comparePasswords, encryptPassword } from '#api/auth/encryptPassword.js';
 import * as usersUtils from '#api/auth2fa/usersUtils.js';
 import { settingsModel } from '#api/settings/settingsModel.js';
@@ -149,6 +149,121 @@ describe('Users', () => {
         } catch (error) {
           expect(error).toEqual(createError('Can not change your own role', 403));
         }
+      });
+    });
+
+    describe('newUser', () => {
+      const domain = 'http://localhost';
+
+      beforeEach(() => {
+        jest.spyOn(users, 'recoverPassword').mockImplementation(async () => Promise.resolve());
+        jest.spyOn(random, 'default').mockReturnValue('mypass');
+      });
+
+      it('should do the recover password process (as a new user)', async () => {
+        await users.newUser(
+          {
+            username: 'spidey',
+            email: 'peter@parker.com',
+            password: 'mypass',
+            role: 'editor',
+          },
+          domain
+        );
+        const [user] = await users.get({ username: 'spidey' });
+        expect(user.username).toBe('spidey');
+        expect(users.recoverPassword).toHaveBeenCalledWith('peter@parker.com', domain, {
+          newUser: true,
+        });
+      });
+
+      it('should create a random password when none is provided', async () => {
+        await users.newUser(
+          {
+            username: 'someone',
+            email: 'someone@mailer.com',
+            role: 'admin',
+          },
+          domain
+        );
+
+        expect(random.default).toHaveBeenCalled();
+        const [user] = await users.get({ username: 'someone' }, '+password');
+        expect(await comparePasswords('mypass', user.password)).toBe(true);
+      });
+
+      it('should not allow repeat username', async () => {
+        try {
+          await users.newUser(
+            { username: 'username', email: 'peter@parker.com', role: 'editor' },
+            currentUser,
+            domain
+          );
+          throw new Error('should throw an error');
+        } catch (error) {
+          expect(error).toEqual(createError('Username already exists', 409));
+        }
+      });
+
+      it('should not allow repeat email', async () => {
+        try {
+          await users.newUser(
+            { username: 'spidey', email: 'test@email.com', role: 'editor' },
+            currentUser,
+            domain
+          );
+          throw new Error('should throw an error');
+        } catch (error) {
+          expect(error).toEqual(createError('Email already exists', 409));
+        }
+      });
+
+      it('should not allow sending two-step verification data on creation', async () => {
+        await users.newUser(
+          {
+            username: 'without2fa',
+            email: 'another@email.com',
+            password: 'mypass',
+            role: 'editor',
+            using2fa: true,
+            secret: 'UNAUTHORIZED SECRET',
+          },
+          currentUser,
+          domain
+        );
+
+        const [createdUser] = await usersModel.get({ username: 'without2fa' }, '+secret');
+        expect(createdUser.using2fa).toBe(false);
+        expect(createdUser.secret).toBeUndefined();
+      });
+
+      it('should add the new user to the specified userGroups', async () => {
+        const createdUser = await users.newUser(
+          {
+            username: 'spidey',
+            email: 'peter@parker.com',
+            password: 'mypass',
+            role: 'editor',
+            groups: [{ _id: group1Id.toString() }, { _id: group2Id.toString() }],
+          },
+          domain
+        );
+
+        await assertUserMembership(createdUser);
+      });
+
+      it('should not allow spaces in username', async () => {
+        const userdata = {
+          username: 'Peter Parker',
+          email: 'peter@parker.com',
+          password: 'mypass',
+          role: 'editor',
+          groups: [],
+        };
+        await expect(users.newUser(userdata, domain)).rejects.toMatchObject({
+          code: 400,
+          message: 'Usernames can not contain spaces.',
+        });
       });
     });
   });
@@ -485,6 +600,49 @@ describe('Users', () => {
           'This link will be valid for 24 hours.',
       };
       expect(mailer.send).toHaveBeenCalledWith(expectedMailOptions);
+    });
+
+    it('should personalize the mail if recover password process is part of a newly created user', async () => {
+      const key = unlockCode.generateUnlockCode();
+      const settings = await settingsModel.get();
+
+      const newUser = await users.newUser(
+        { username: 'spidey', email: 'peter@parker.com', password: 'mypass', role: 'editor' },
+        'http://localhost'
+      );
+      const newUserId = newUser._id.toString();
+      const response = await users.recoverPassword('peter@parker.com', 'http://localhost', {
+        newUser: true,
+      });
+      expect(response).toBe('OK');
+      const recoverPasswordDb = await passwordRecoveriesModel.get({ key });
+      expect(recoverPasswordDb[0].user.toString()).toBe(newUserId);
+      const emailSender = mailer.createSenderDetails(settings[0]);
+      const expectedMailOptions = {
+        from: emailSender,
+        to: 'peter@parker.com',
+        subject: 'Welcome to Uwazi instance',
+        text: `To set your password click on the following link:\ndomain/setpassword/${key}`,
+      };
+
+      expect(mailer.send.mock.calls[0][0].from).toBe(expectedMailOptions.from);
+      expect(mailer.send.mock.calls[0][0].to).toBe(expectedMailOptions.to);
+      expect(mailer.send.mock.calls[0][0].subject).toBe(expectedMailOptions.subject);
+      expect(mailer.send.mock.calls[0][0].text).toContain('administrators');
+      expect(mailer.send.mock.calls[0][0].text).toContain('Uwazi instance');
+      expect(mailer.send.mock.calls[0][0].text).toContain('spidey');
+      expect(mailer.send.mock.calls[0][0].text).toContain(
+        `http://localhost/setpassword/${key}?createAccount=true`
+      );
+      expect(mailer.send.mock.calls[0][0].html).toContain('administrators');
+      expect(mailer.send.mock.calls[0][0].html).toContain('Uwazi instance');
+      expect(mailer.send.mock.calls[0][0].html).toContain('<b>spidey</b></p>');
+      expect(mailer.send.mock.calls[0][0].html).toContain(
+        '<a href="https://www.uwazi.io">https://www.uwazi.io</a>'
+      );
+      expect(mailer.send.mock.calls[0][0].html).toContain(
+        `<a href="http://localhost/setpassword/${key}?createAccount=true">http://localhost/setpassword/${key}?createAccount=true</a>`
+      );
     });
 
     describe('when something fails with the mailer', () => {
