@@ -129,7 +129,7 @@ describe('Cluster', () => {
     );
 
     expect(document.querySelectorAll('[data-marker-id]')).toHaveLength(1);
-    expect(screen.getByText('x3')).toBeVisible();
+    expect(screen.getByLabelText('3 matching references')).toBeVisible();
   });
 
   it('marks a grouped point active when any represented marker is active', () => {
