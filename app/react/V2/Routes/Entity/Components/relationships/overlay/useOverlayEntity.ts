@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { localeAtom } from '#V2/atoms/index.js';
 import { getBySharedId } from '#V2/api/entities/index.js';
@@ -32,8 +32,6 @@ function fetchOverlayEntity(
   setters: OverlayEntitySetters
 ): () => void {
   let cancelled = false;
-  setters.setLoading(true);
-  setters.setError(false);
 
   getBySharedId({ sharedId, language, omitRelationships: true })
     .then(([rows, fetchError]) => {
@@ -61,6 +59,25 @@ function fetchOverlayEntity(
   };
 }
 
+function loadOverlayEntityForSharedId(
+  sharedId: string,
+  language: string,
+  setters: OverlayEntitySetters
+): (() => void) | undefined {
+  setters.setEntity(undefined);
+  setters.setLoading(true);
+  setters.setError(false);
+
+  const cached = entityLoaderCache.getEntity(sharedId, language);
+  if (cached) {
+    setters.setEntity(cached);
+    setters.setLoading(false);
+    return undefined;
+  }
+
+  return fetchOverlayEntity(sharedId, language, setters);
+}
+
 function loadOverlayEntity(
   sharedId: string | null,
   language: string,
@@ -71,16 +88,15 @@ function loadOverlayEntity(
     return undefined;
   }
 
-  const cached = entityLoaderCache.getEntity(sharedId, language);
-  if (cached) {
-    setters.setEntity(cached);
-    setters.setLoading(false);
-    setters.setError(false);
-    return undefined;
-  }
-
-  return fetchOverlayEntity(sharedId, language, setters);
+  return loadOverlayEntityForSharedId(sharedId, language, setters);
 }
+
+const entityMatchesRequest = (
+  entity: Entity | undefined,
+  sharedId: string | null,
+  language: string
+): entity is Entity =>
+  Boolean(entity && sharedId && entity.sharedId === sharedId && entity.language === language);
 
 const useOverlayEntity = (sharedId: string | null): OverlayEntityState => {
   const language = useAtomValue(localeAtom);
@@ -88,12 +104,20 @@ const useOverlayEntity = (sharedId: string | null): OverlayEntityState => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
-  useEffect(
+  useLayoutEffect(
     () => loadOverlayEntity(sharedId, language, { setEntity, setLoading, setError }),
     [language, sharedId]
   );
 
-  return { entity, loading, error };
+  const resolvedEntity = entityMatchesRequest(entity, sharedId, language) ? entity : undefined;
+  const isResolving =
+    Boolean(sharedId) && !resolvedEntity && !error && (loading || entity !== undefined);
+
+  return {
+    entity: resolvedEntity,
+    loading: Boolean(sharedId) && (loading || isResolving),
+    error,
+  };
 };
 
 export { useOverlayEntity };
