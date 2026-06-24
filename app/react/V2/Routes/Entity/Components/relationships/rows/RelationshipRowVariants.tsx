@@ -36,7 +36,6 @@ const RelationshipRowOverview = ({
   rowRef,
   marker,
   representedIds,
-  hideTargetPill,
   referencePage,
   isSelected,
   onClick,
@@ -45,7 +44,7 @@ const RelationshipRowOverview = ({
     <div className="flex items-center justify-between gap-2">
       <div className="flex min-w-0 items-center gap-1.5">
         <RelationshipRowCheckbox relationshipIds={representedIds} />
-        <TargetPill marker={marker} hideTargetPill={hideTargetPill} />
+        <TargetPill marker={marker} hideTargetPill={false} />
       </div>
       {referencePage !== undefined && <PageTag page={referencePage} onClick={onClick} />}
     </div>
@@ -56,7 +55,6 @@ const RelationshipRowCompact = ({
   rowRef,
   marker,
   representedIds,
-  hideTargetPill,
   hideRelationType,
   relationshipTypeName,
   direction,
@@ -68,7 +66,7 @@ const RelationshipRowCompact = ({
     <div className="flex items-center justify-between gap-2">
       <div className="flex min-w-0 items-center gap-1.5">
         <RelationshipRowCheckbox relationshipIds={representedIds} />
-        <TargetPill marker={marker} hideTargetPill={hideTargetPill} />
+        <TargetPill marker={marker} hideTargetPill={false} />
         <DirectionGlyph direction={direction} />
         {!hideRelationType && relationshipTypeName && (
           <span className="truncate text-[10px] capitalize text-ink-tertiary">
@@ -107,6 +105,7 @@ const RelationshipRowDetail = ({
         rowRef={rowRef}
         referenceText={referenceText}
         referencePage={referencePage}
+        marker={marker}
         editMode={editMode}
         isSelected={isSelected}
         representedIds={representedIds}

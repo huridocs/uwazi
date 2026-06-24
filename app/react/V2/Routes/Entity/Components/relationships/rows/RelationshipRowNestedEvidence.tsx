@@ -4,6 +4,7 @@ import { t, Translate } from '#app/I18N/index.js';
 import { ListCardRow } from '#V2/Components/UI/ListCardRow.js';
 import { IconButton } from '#V2/Components/UI/IconButton.js';
 import { ExpandableText } from '#V2/Components/UI/ExpandableText.js';
+import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
 import { PageTag } from './PageTag.js';
 import { RelationshipRowCheckbox } from './RelationshipRowCheckbox.js';
 import { useRelationshipRowData } from './useRelationshipRowData.js';
@@ -12,7 +13,7 @@ type RowData = ReturnType<typeof useRelationshipRowData>;
 
 type RelationshipRowNestedEvidenceProps = Pick<
   RowData,
-  'rowRef' | 'referenceText' | 'referencePage' | 'editMode'
+  'rowRef' | 'marker' | 'referenceText' | 'referencePage' | 'editMode'
 > & {
   isSelected?: boolean;
   representedIds: string[];
@@ -24,6 +25,7 @@ type RelationshipRowNestedEvidenceProps = Pick<
 
 const RelationshipRowNestedEvidence = ({
   rowRef,
+  marker,
   referenceText,
   referencePage,
   editMode,
@@ -45,7 +47,7 @@ const RelationshipRowNestedEvidence = ({
             textClassName="min-w-0 flex-1 text-xs leading-relaxed text-ink-secondary italic"
           />
         ) : (
-          <span className="min-w-0 flex-1" />
+          <TemplatePill templateId={marker.target.templateId} label={marker.target.title || '-'} />
         )}
       </div>
       <div className="flex shrink-0 items-center gap-0.5">

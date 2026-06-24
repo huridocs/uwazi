@@ -1,5 +1,14 @@
+/**
+ * @jest-environment jsdom
+ */
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import { createStore, Provider } from 'jotai';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
+import { templatesAtom } from '#V2/atoms/index.js';
+import { RelationshipsSelectionProvider } from '../../context/RelationshipsSelectionContext.js';
 import { groupNestedEvidence } from '../rows/RelationshipPanelRow.js';
+import { RelationshipRowNestedEvidence } from '../rows/RelationshipRowNestedEvidence.js';
 
 const marker = (id: string, text: string, page: number, targetId = id): RelationshipMarker => ({
   _id: id,
@@ -59,5 +68,28 @@ describe('RelationshipPanelRow', () => {
     );
 
     expect(groups).toHaveLength(2);
+  });
+
+  it('shows the target title when nested evidence has no reference text', () => {
+    const store = createStore();
+    store.set(templatesAtom, [{ _id: 'template3', color: '#0e9f6e', name: 'Court Case' }]);
+    const emptyTextMarker = marker('1', '', 2, '1');
+
+    render(
+      <Provider store={store}>
+        <RelationshipsSelectionProvider>
+          <RelationshipRowNestedEvidence
+            rowRef={React.createRef<HTMLDivElement>()}
+            marker={emptyTextMarker}
+            referenceText=""
+            referencePage={2}
+            editMode={false}
+            representedIds={[emptyTextMarker._id]}
+          />
+        </RelationshipsSelectionProvider>
+      </Provider>
+    );
+
+    expect(screen.getByText('Target 1')).toBeInTheDocument();
   });
 });

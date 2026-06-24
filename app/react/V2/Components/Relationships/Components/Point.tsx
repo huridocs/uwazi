@@ -35,29 +35,32 @@ const Point = ({
   );
   const color = targetTemplate?.color || '#000000';
   const dotSize = isActive ? RAIL_MARKER_ACTIVE_SIZE : RAIL_MARKER_SIZE;
+  const activeOffset = (dotSize - RAIL_MARKER_SIZE) / 2;
 
   return (
-    <button
-      type="button"
-      data-testid="rail-marker"
-      data-marker-id={marker._id}
-      data-stack-order={stackOrder}
-      className="pointer-events-auto absolute cursor-pointer [transition-property:top] duration-500 ease-out"
-      style={{
-        top: `${animatedPosition}px`,
-        zIndex: railMarkerZIndex(stackOrder, isActive ? 'point-active' : 'point'),
-      }}
-      onClick={() => {
-        onClick(marker);
-      }}
-    >
-      <span no-translate="true" className="sr-only">
-        {marker.target.title}
-      </span>
-      <PortalTooltip content={marker.target.title} placement="left">
+    <PortalTooltip content={marker.target.title} placement="left">
+      <button
+        type="button"
+        data-testid="rail-marker"
+        data-marker-id={marker._id}
+        data-stack-order={stackOrder}
+        className="pointer-events-auto absolute cursor-pointer [transition-property:top] duration-500 ease-out"
+        style={{
+          top: `${animatedPosition - activeOffset}px`,
+          width: dotSize,
+          height: dotSize,
+          zIndex: railMarkerZIndex(stackOrder, isActive ? 'point-active' : 'point'),
+        }}
+        onClick={() => {
+          onClick(marker);
+        }}
+      >
+        <span no-translate="true" className="sr-only">
+          {marker.target.title}
+        </span>
         <span
-          className="flex items-center justify-center"
-          style={{ width: RAIL_MARKER_SIZE, height: RAIL_MARKER_SIZE }}
+          className="relative flex items-center justify-center"
+          style={{ width: dotSize, height: dotSize }}
         >
           <span
             data-testid="rail-marker-dot"
@@ -82,8 +85,8 @@ const Point = ({
             </span>
           )}
         </span>
-      </PortalTooltip>
-    </button>
+      </button>
+    </PortalTooltip>
   );
 };
 

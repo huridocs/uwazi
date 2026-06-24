@@ -24,18 +24,11 @@ const getPosition = (rect: DOMRect, placement: PortalTooltipPlacement): TooltipP
   return { top: rect.top - GAP, left: rect.left + rect.width / 2 };
 };
 
-const placementClass: Record<PortalTooltipPlacement, string> = {
-  left: '-translate-x-full -translate-y-1/2',
-  right: '-translate-y-1/2',
-  top: '-translate-x-1/2 -translate-y-full',
-  bottom: '-translate-x-1/2',
-};
-
-const arrowClass: Record<PortalTooltipPlacement, string> = {
-  left: 'right-[-4px] top-1/2 -translate-y-1/2',
-  right: 'left-[-4px] top-1/2 -translate-y-1/2',
-  top: 'bottom-[-4px] left-1/2 -translate-x-1/2',
-  bottom: 'top-[-4px] left-1/2 -translate-x-1/2',
+const placementTransform: Record<PortalTooltipPlacement, string> = {
+  left: 'translate(-100%, -50%)',
+  right: 'translateY(-50%)',
+  top: 'translate(-50%, -100%)',
+  bottom: 'translateX(-50%)',
 };
 
 const PortalTooltip = ({
@@ -65,13 +58,7 @@ const PortalTooltip = ({
     };
   }, [position, updatePosition]);
 
-  const tooltipClassName = [
-    'pointer-events-none fixed z-50 max-w-72 rounded-md border border-border/70',
-    'bg-(--color-theme-surface-raised) px-2.5 py-2 text-xs leading-snug',
-    'text-ink-secondary shadow-lg',
-    placementClass[placement],
-    className,
-  ].join(' ');
+  const tooltipClassName = className;
 
   const trigger = React.cloneElement(children, {
     ref: triggerRef,
@@ -79,7 +66,10 @@ const PortalTooltip = ({
     onBlur: hide,
     onFocus: show,
     onMouseEnter: show,
+    onMouseOver: show,
     onMouseLeave: hide,
+    onPointerEnter: show,
+    onPointerLeave: hide,
   });
 
   return (
@@ -91,12 +81,36 @@ const PortalTooltip = ({
             id={tooltipId}
             role="tooltip"
             className={tooltipClassName}
-            style={{ top: position.top, left: position.left }}
+            style={{
+              top: position.top,
+              left: position.left,
+              backgroundColor: 'var(--color-theme-text-primary, #111827)',
+              borderRadius: 6,
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+              color: 'var(--color-theme-bg-surface, #fff)',
+              fontSize: 10,
+              fontWeight: 500,
+              lineHeight: 1.25,
+              padding: '4px 8px',
+              position: 'fixed',
+              pointerEvents: 'none',
+              width: 'max-content',
+              maxWidth: '18rem',
+              zIndex: 50,
+              transform: placementTransform[placement],
+            }}
           >
-            <div className="line-clamp-2 wrap-break-word">{content}</div>
-            <span
-              className={`absolute h-2 w-2 rotate-45 border-border/70 bg-(--color-theme-surface-raised) ${arrowClass[placement]}`}
-            />
+            <div
+              style={{
+                display: '-webkit-box',
+                overflow: 'hidden',
+                overflowWrap: 'break-word',
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: 2,
+              }}
+            >
+              {content}
+            </div>
           </div>,
           document.body
         )}
