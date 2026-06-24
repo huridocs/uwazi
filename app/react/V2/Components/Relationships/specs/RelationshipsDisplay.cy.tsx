@@ -165,10 +165,7 @@ describe('References Display', () => {
             const showMoreCount = $markers
               .first()
               .closest('[data-testid="cluster-subtree"]')
-              .find('button')
-              .filter(
-                (_index, element) => element.textContent?.includes('Show more') ?? false
-              ).length;
+              .find('[data-testid="rail-show-more"]').length;
             const rowCount = $markers.length + showMoreCount;
             cy.get('[data-testid="cluster-subtree-svg"] line').should('have.length', rowCount + 2);
           });
