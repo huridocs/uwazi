@@ -9,7 +9,7 @@ import { computeClusterSubtreeLayout, Cluster } from '../Components/Cluster.js';
 import { RAIL_MARKER_SIZE, RAIL_MARKER_SPACING } from '../markerMetrics.js';
 import type { RelationshipMarker } from '../types.js';
 
-const marker = (index: number): RelationshipMarker => ({
+const marker = (index: number, valueIndex = index): RelationshipMarker => ({
   _id: `ref-${index}`,
   view: {
     _id: `ref-${index}`,
@@ -21,26 +21,30 @@ const marker = (index: number): RelationshipMarker => ({
       entityTitle: 'Self',
       entityTemplateId: 'template1',
       file: 'file1',
-      text: `Reference ${index}`,
-      selections: [{ page: 1, top: index * 10, left: 0, width: 10, height: 10 }],
+      text: `Reference ${valueIndex}`,
+      selections: [{ page: 1, top: valueIndex * 10, left: 0, width: 10, height: 10 }],
     },
     to: {
       type: 'entity',
-      entity: `target-${index}`,
-      entityTitle: `Target ${index}`,
+      entity: `target-${valueIndex}`,
+      entityTitle: `Target ${valueIndex}`,
       entityTemplateId: 'template3',
     },
     relationTypeOnSelf: false,
   },
-  target: { sharedId: `target-${index}`, title: `Target ${index}`, templateId: 'template3' },
+  target: {
+    sharedId: `target-${valueIndex}`,
+    title: `Target ${valueIndex}`,
+    templateId: 'template3',
+  },
   anchor: {
     type: 'textReference',
     entity: 'self',
     entityTitle: 'Self',
     entityTemplateId: 'template1',
     file: 'file1',
-    text: `Reference ${index}`,
-    selections: [{ page: 1, top: index * 10, left: 0, width: 10, height: 10 }],
+    text: `Reference ${valueIndex}`,
+    selections: [{ page: 1, top: valueIndex * 10, left: 0, width: 10, height: 10 }],
   },
 });
 
@@ -106,5 +110,25 @@ describe('Cluster', () => {
     expect(document.querySelectorAll('[data-marker-id]')).toHaveLength(18);
     fireEvent.click(screen.getByRole('button', { name: /Show more/ }));
     expect(onMoreClick).toHaveBeenCalledWith(references);
+  });
+
+  it('deduplicates repeated rail points and shows their represented count', () => {
+    const references = [marker(1, 1), marker(2, 1), marker(3, 1)];
+
+    render(
+      <Provider store={store}>
+        <Cluster
+          position={100}
+          markerLayerHeight={800}
+          references={references}
+          isOpen
+          onPointClick={() => undefined}
+          onMoreClick={() => undefined}
+        />
+      </Provider>
+    );
+
+    expect(document.querySelectorAll('[data-marker-id]')).toHaveLength(1);
+    expect(screen.getByText('x3')).toBeVisible();
   });
 });

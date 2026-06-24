@@ -15,6 +15,7 @@ type RelationshipRowProps = {
   relationshipTypeName?: string;
   isSelected?: boolean;
   nested?: boolean;
+  representedCount?: number;
   onClick?: () => void;
   onView?: () => void;
   onDelete?: () => void;
@@ -26,6 +27,7 @@ const RelationshipRow = ({
   relationshipTypeName,
   isSelected,
   nested = false,
+  representedCount,
   onClick,
   onView,
   onDelete,
@@ -38,6 +40,7 @@ const RelationshipRow = ({
     referenceText: nested ? nestedReference.referenceText : rowData.referenceText,
     referencePage: nested ? nestedReference.referencePage : rowData.referencePage,
     isSelected,
+    representedCount,
     onClick,
   };
 

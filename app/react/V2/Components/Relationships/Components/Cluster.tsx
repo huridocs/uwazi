@@ -35,8 +35,37 @@ type ClusterSubtreeLayoutInput = {
   rowCount: number;
 };
 
+type ClusterPointGroup = {
+  marker: RelationshipMarker;
+  count: number;
+};
+
 const clamp = (value: number, min: number, max: number): number =>
   Math.min(Math.max(value, min), max);
+
+const clusterPointKey = (marker: RelationshipMarker): string => {
+  const selection = marker.anchor?.selections?.[0];
+  return [
+    marker.target.sharedId,
+    marker.target.title,
+    marker.anchor?.text?.trim() ?? '',
+    selection?.page ?? '',
+  ].join('\u0000');
+};
+
+const groupClusterPoints = (references: RelationshipMarker[]): ClusterPointGroup[] => {
+  const grouped = new Map<string, ClusterPointGroup>();
+  references.forEach(marker => {
+    const key = clusterPointKey(marker);
+    const group = grouped.get(key);
+    if (group) {
+      group.count += 1;
+      return;
+    }
+    grouped.set(key, { marker, count: 1 });
+  });
+  return Array.from(grouped.values());
+};
 
 const computeClusterSubtreeLayout = ({
   position,
@@ -81,8 +110,9 @@ const Cluster = ({
   const animatedPosition = useAnimateToPosition(position);
   const [internalIsOpen, setInternalIsOpen] = useState(false);
 
-  const points = references.slice(0, MAX_VISIBLE_POINTS);
-  const extraPoints = references.slice(MAX_VISIBLE_POINTS);
+  const pointGroups = groupClusterPoints(references);
+  const points = pointGroups.slice(0, MAX_VISIBLE_POINTS);
+  const extraPoints = pointGroups.slice(MAX_VISIBLE_POINTS);
 
   const clusterIsOpen = isOpen ?? internalIsOpen;
   const outerSize = computeClusterOuterSize(references.length);
@@ -179,13 +209,14 @@ const Cluster = ({
             className="absolute inset-0 pointer-events-auto"
             style={{ width: RAIL_MARKER_SIZE + PAD, left: 0 }}
           >
-            {points.map((marker, index) => (
+            {points.map(({ marker, count }, index) => (
               <Point
                 key={marker._id || `cluster-point-${index}`}
                 position={index * RAIL_MARKER_SPACING}
                 marker={marker}
                 onClick={onPointClick}
                 isActive={activePointId === marker._id}
+                representedCount={count}
               />
             ))}
             {extraPoints.length > 0 && (

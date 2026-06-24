@@ -3,7 +3,7 @@ import { useAtomValue } from 'jotai';
 import { useAnimateToPosition } from '../hooks/useAnimateToPosition.js';
 import { RelationshipMarker } from '../types.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
-import { Tooltip } from '#V2/Components/UI/index.js';
+import { PortalTooltip } from '#V2/Components/UI/index.js';
 import { RAIL_MARKER_ACTIVE_SIZE, RAIL_MARKER_SIZE, railMarkerZIndex } from '../markerMetrics.js';
 
 type PointProps = {
@@ -12,12 +12,20 @@ type PointProps = {
   marker: RelationshipMarker;
   onClick: (marker: RelationshipMarker) => void;
   isActive?: boolean;
+  representedCount?: number;
 };
 
 const activeMarkerShadow = (color: string): string =>
   `0 0 0 2px var(--color-theme-surface-raised), 0 0 0 4.5px ${color}99`;
 
-const Point = ({ position, stackOrder = 1, marker, onClick, isActive = false }: PointProps) => {
+const Point = ({
+  position,
+  stackOrder = 1,
+  marker,
+  onClick,
+  isActive = false,
+  representedCount = 1,
+}: PointProps) => {
   const animatedPosition = useAnimateToPosition(position);
   const templates = useAtomValue(templatesAtom);
   const targetTemplate = useMemo(
@@ -45,7 +53,7 @@ const Point = ({ position, stackOrder = 1, marker, onClick, isActive = false }: 
       <span no-translate="true" className="sr-only">
         {marker.target.title}
       </span>
-      <Tooltip content={marker.target.title} placement="left">
+      <PortalTooltip content={marker.target.title} placement="left">
         <span
           className="flex items-center justify-center"
           style={{ width: RAIL_MARKER_SIZE, height: RAIL_MARKER_SIZE }}
@@ -63,8 +71,13 @@ const Point = ({ position, stackOrder = 1, marker, onClick, isActive = false }: 
               boxShadow: isActive ? activeMarkerShadow(color) : 'none',
             }}
           />
+          {representedCount > 1 && (
+            <span className="absolute left-2 top-1/2 rounded bg-parchment px-0.5 text-[8px] font-semibold leading-3 text-ink-tertiary">
+              x{representedCount}
+            </span>
+          )}
         </span>
-      </Tooltip>
+      </PortalTooltip>
     </button>
   );
 };
