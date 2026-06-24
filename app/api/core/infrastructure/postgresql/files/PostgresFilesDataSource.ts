@@ -25,6 +25,8 @@ type Deps = {
 export class PostgresFilesDataSource extends PostgresDataSource implements FilesDataSource {
   protected tableName = 'files';
 
+  protected jsonbColumns = ['toc', 'propertySelections', 'fullText'];
+
   private static readonly COLUMNS_WITHOUT_FULL_TEXT = [
     '_id',
     'tenant_id',
@@ -91,7 +93,7 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
   }
 
   async update(file: BaseFile): Promise<void> {
-    const row = PostgresFilesMapper.toDBO(file);
+    const row = this.table.serializeForWrite(PostgresFilesMapper.toDBO(file));
     await this.table.query().where({ _id: file.id }).update(row);
     this.setFilesToReindex([file]);
   }

@@ -13,6 +13,8 @@ import { PostgresThesaurusMapper, ThesaurusRow } from './PostgresThesaurusMapper
 export class PostgresThesauriDataSource extends PostgresDataSource implements ThesauriDataSource {
   protected tableName = 'thesauri';
 
+  protected jsonbColumns = ['values'];
+
   constructor(deps: { connection: PostgresConnectionConfig; tenantId: string; mongoDb: Db }) {
     super({
       connection: deps.connection,
@@ -33,11 +35,7 @@ export class PostgresThesauriDataSource extends PostgresDataSource implements Th
 
   async create(thesaurus: Thesaurus): Promise<void> {
     const dbo = PostgresThesaurusMapper.toDBO(thesaurus);
-    await this.table.insert({
-      _id: dbo._id,
-      name: dbo.name,
-      values: JSON.stringify(dbo.values),
-    });
+    await this.table.insert(dbo);
   }
 
   async existsById(id: string): Promise<boolean> {
@@ -46,11 +44,8 @@ export class PostgresThesauriDataSource extends PostgresDataSource implements Th
   }
 
   async update(thesaurus: Thesaurus): Promise<void> {
-    const dbo = PostgresThesaurusMapper.toDBO(thesaurus);
-    await this.table
-      .query()
-      .where({ _id: dbo._id })
-      .update({ name: dbo.name, values: JSON.stringify(dbo.values) });
+    const dbo = this.table.serializeForWrite(PostgresThesaurusMapper.toDBO(thesaurus));
+    await this.table.query().where({ _id: dbo._id }).update({ name: dbo.name, values: dbo.values });
   }
 
   async delete(id: string): Promise<void> {

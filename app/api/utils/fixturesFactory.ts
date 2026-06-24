@@ -239,7 +239,7 @@ function getFixturesFactory(config?: FixturesFactoryConfig) {
 
       if (convertIdToString) {
         return {
-          _id: id,
+          _id: idMapper(id).toString(),
           tenant_id: tenantId,
           filename: id,
           originalname: id,

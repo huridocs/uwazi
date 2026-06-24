@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file, max-params */
 import { Db } from 'mongodb';
 import { PostgresTable, PostgresConnectionConfig } from './PostgresTable.js';
 import { PostgresQueryBuilder } from './PostgresQueryBuilder.js';
@@ -38,9 +39,10 @@ export class SyncedPostgresTable extends PostgresTable {
     tableName: string,
     tenantId: string,
     syncDb: Db,
-    syncNamespace: string
+    syncNamespace: string,
+    jsonbColumns: string[] = []
   ) {
-    super(connection, tableName, tenantId);
+    super(connection, tableName, tenantId, jsonbColumns);
     this.syncWriter = new SyncLogWriter(syncDb, syncNamespace);
   }
 

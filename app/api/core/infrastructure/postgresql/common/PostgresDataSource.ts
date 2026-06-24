@@ -16,6 +16,8 @@ type Deps = {
 abstract class PostgresDataSource {
   protected abstract tableName: string;
 
+  protected jsonbColumns: string[] = [];
+
   private _connection: PostgresConnectionConfig;
 
   private _tenantId: string;
@@ -40,10 +42,16 @@ abstract class PostgresDataSource {
           this.tableName,
           this._tenantId,
           this._syncOptions.syncDb,
-          this._syncOptions.syncNamespace
+          this._syncOptions.syncNamespace,
+          this.jsonbColumns
         );
       } else {
-        this._table = new PostgresTable(this._connection, this.tableName, this._tenantId);
+        this._table = new PostgresTable(
+          this._connection,
+          this.tableName,
+          this._tenantId,
+          this.jsonbColumns
+        );
       }
     }
     return this._table;

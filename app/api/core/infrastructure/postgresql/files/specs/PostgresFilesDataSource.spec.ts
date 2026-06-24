@@ -216,7 +216,7 @@ describe('PostgresFilesDataSource', () => {
   describe('create', () => {
     it('should insert a PDF document (status: ready)', async () => {
       const { sut } = createSut();
-      const doc = FileBuilder.processedDocument('new-doc', {
+      const doc = FileBuilder.processedDocument(factory.idString('new-doc'), {
         entity: 'entity1',
         language: 'en',
         totalPages: 10,
@@ -226,7 +226,7 @@ describe('PostgresFilesDataSource', () => {
       await sut.create(doc);
 
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
-      const inserted = rows.find(r => r._id === 'new-doc');
+      const inserted = rows.find(r => r._id === factory.idString('new-doc'));
       expect(inserted).toMatchObject({
         tenant_id: TENANT_ID,
         type: 'document',
@@ -240,9 +240,40 @@ describe('PostgresFilesDataSource', () => {
       });
     });
 
+    it('should insert a document with JSONB columns (toc, fullText, propertySelections)', async () => {
+      const { sut } = createSut();
+      const toc = [{ indentation: 0, label: 'Chapter 1' }];
+      const propertySelections = [{ name: 'prop1' }];
+      const fullText = { 1: 'page one text' };
+      const doc = FileBuilder.processedDocument(factory.idString('jsonb-doc'), {
+        entity: 'entity1',
+        language: 'en',
+        totalPages: 5,
+        toc,
+        propertySelections,
+        fullText,
+      });
+
+      await sut.create(doc);
+
+      const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
+      const inserted = rows.find(r => r._id === factory.idString('jsonb-doc'));
+      expect(inserted).toMatchObject({
+        tenant_id: TENANT_ID,
+        type: 'document',
+        entity: 'entity1',
+        status: 'ready',
+        totalPages: 5,
+        language: 'eng',
+        toc,
+        propertySelections,
+        fullText,
+      });
+    });
+
     it('should insert a processing PDF document', async () => {
       const { sut } = createSut();
-      const doc = FileBuilder.document('new-doc', {
+      const doc = FileBuilder.document(factory.idString('new-doc'), {
         entity: 'entity2',
         status: 'processing',
       });
@@ -250,7 +281,7 @@ describe('PostgresFilesDataSource', () => {
       await sut.create(doc);
 
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
-      const inserted = rows.find(r => r._id === 'new-doc');
+      const inserted = rows.find(r => r._id === factory.idString('new-doc'));
       expect(inserted).toMatchObject({
         type: 'document',
         entity: 'entity2',
@@ -262,12 +293,12 @@ describe('PostgresFilesDataSource', () => {
 
     it('should insert an attachment', async () => {
       const { sut } = createSut();
-      const attachment = FileBuilder.attachment('new-att', { entity: 'entity1' });
+      const attachment = FileBuilder.attachment(factory.idString('new-att'), { entity: 'entity1' });
 
       await sut.create(attachment);
 
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
-      const inserted = rows.find(r => r._id === 'new-att');
+      const inserted = rows.find(r => r._id === factory.idString('new-att'));
       expect(inserted).toMatchObject({
         type: 'attachment',
         entity: 'entity1',
@@ -277,7 +308,7 @@ describe('PostgresFilesDataSource', () => {
 
     it('should insert a URL attachment', async () => {
       const { sut } = createSut();
-      const urlAttachment = FileBuilder.urlAttachment('new-url', {
+      const urlAttachment = FileBuilder.urlAttachment(factory.idString('new-url'), {
         entity: 'entity1',
         url: 'https://example.com/doc.pdf',
       });
@@ -285,7 +316,7 @@ describe('PostgresFilesDataSource', () => {
       await sut.create(urlAttachment);
 
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
-      const inserted = rows.find(r => r._id === 'new-url');
+      const inserted = rows.find(r => r._id === factory.idString('new-url'));
       expect(inserted).toMatchObject({
         type: 'attachment',
         entity: 'entity1',
@@ -295,7 +326,7 @@ describe('PostgresFilesDataSource', () => {
 
     it('should insert a thumbnail', async () => {
       const { sut } = createSut();
-      const thumbnail = FileBuilder.thumbnail('new-thumb', {
+      const thumbnail = FileBuilder.thumbnail(factory.idString('new-thumb'), {
         entity: 'entity1',
         language: 'es',
       });
@@ -303,7 +334,7 @@ describe('PostgresFilesDataSource', () => {
       await sut.create(thumbnail);
 
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
-      const inserted = rows.find(r => r._id === 'new-thumb');
+      const inserted = rows.find(r => r._id === factory.idString('new-thumb'));
       expect(inserted).toMatchObject({
         type: 'thumbnail',
         entity: 'entity1',
@@ -314,12 +345,12 @@ describe('PostgresFilesDataSource', () => {
 
     it('should insert a custom upload', async () => {
       const { sut } = createSut();
-      const custom = FileBuilder.customUpload('new-custom');
+      const custom = FileBuilder.customUpload(factory.idString('new-custom'));
 
       await sut.create(custom);
 
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
-      const inserted = rows.find(r => r._id === 'new-custom');
+      const inserted = rows.find(r => r._id === factory.idString('new-custom'));
       expect(inserted).toMatchObject({
         type: 'custom',
         entity: null,
@@ -330,25 +361,40 @@ describe('PostgresFilesDataSource', () => {
   describe('bulkCreate', () => {
     it('should insert multiple files of different types', async () => {
       const { sut } = createSut();
-      const doc = FileBuilder.processedDocument('bulk-doc', { entity: 'entity-bulk' });
-      const attachment = FileBuilder.attachment('bulk-att', { entity: 'entity-bulk' });
-      const custom = FileBuilder.customUpload('bulk-custom');
+      const doc = FileBuilder.processedDocument(factory.idString('bulk-doc'), {
+        entity: 'entity-bulk',
+      });
+      const attachment = FileBuilder.attachment(factory.idString('bulk-att'), {
+        entity: 'entity-bulk',
+      });
+      const custom = FileBuilder.customUpload(factory.idString('bulk-custom'));
 
       await sut.bulkCreate([doc, attachment, custom]);
 
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
       const insertedIds = rows
-        .filter(r => ['bulk-doc', 'bulk-att', 'bulk-custom'].includes(r._id as string))
+        .filter(r =>
+          [
+            factory.idString('bulk-doc'),
+            factory.idString('bulk-att'),
+            factory.idString('bulk-custom'),
+          ].includes(r._id as string)
+        )
         .map(r => r._id)
         .sort();
-      expect(insertedIds).toEqual(['bulk-att', 'bulk-custom', 'bulk-doc']);
+      const expectedIds = [
+        factory.idString('bulk-att'),
+        factory.idString('bulk-custom'),
+        factory.idString('bulk-doc'),
+      ].sort();
+      expect(insertedIds).toEqual(expectedIds);
     });
   });
 
   describe('update', () => {
     it('should update an existing document', async () => {
       const { sut } = createSut();
-      const updated = FileBuilder.processedDocument('update-doc', {
+      const updated = FileBuilder.processedDocument(factory.idString('update-doc'), {
         entity: 'entity1',
         language: 'en',
         totalPages: 5,
@@ -358,7 +404,7 @@ describe('PostgresFilesDataSource', () => {
       await sut.update(updated);
 
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
-      const row = rows.find(r => r._id === 'update-doc');
+      const row = rows.find(r => r._id === factory.idString('update-doc'));
       expect(row).toMatchObject({
         status: 'ready',
         totalPages: 5,
@@ -366,38 +412,97 @@ describe('PostgresFilesDataSource', () => {
       });
     });
 
+    it('should update a document with JSONB columns (toc, fullText, propertySelections)', async () => {
+      const { sut } = createSut();
+      const toc = [{ indentation: 0, label: 'Updated Chapter' }];
+      const propertySelections = [{ name: 'updated-prop' }];
+      const fullText = { 1: 'updated text' };
+      const updated = FileBuilder.processedDocument(factory.idString('update-doc'), {
+        entity: 'entity1',
+        language: 'en',
+        totalPages: 5,
+        status: 'ready',
+        toc,
+        propertySelections,
+        fullText,
+      });
+
+      await sut.update(updated);
+
+      const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
+      const row = rows.find(r => r._id === factory.idString('update-doc'));
+      expect(row).toMatchObject({
+        status: 'ready',
+        totalPages: 5,
+        language: 'eng',
+        toc,
+        propertySelections,
+        fullText,
+      });
+    });
+
     it('should be a no-op when updating a non-existent _id', async () => {
       const { sut } = createSut();
-      const doc = FileBuilder.processedDocument('nonexistent', { entity: 'entity1' });
+      const doc = FileBuilder.processedDocument(factory.idString('nonexistent'), {
+        entity: 'entity1',
+      });
 
       await sut.update(doc);
 
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
-      expect(rows.find(r => r._id === 'nonexistent')).toBeUndefined();
+      expect(rows.find(r => r._id === factory.idString('nonexistent'))).toBeUndefined();
     });
   });
 
   describe('bulkUpdate', () => {
     it('should upsert a mix of existing and new files', async () => {
       const { sut } = createSut();
-      const updated = FileBuilder.processedDocument('bulk-update-doc', {
+      const updated = FileBuilder.processedDocument(factory.idString('bulk-update-doc'), {
         entity: 'entity1',
         language: 'en',
         totalPages: 3,
         status: 'ready',
       });
-      const newDoc = FileBuilder.attachment('new-att', { entity: 'entity2' });
+      const newDoc = FileBuilder.attachment(factory.idString('new-att'), { entity: 'entity2' });
 
       await sut.bulkUpdate([updated, newDoc]);
 
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
-      expect(rows.find(r => r._id === 'bulk-update-doc')).toMatchObject({
+      expect(rows.find(r => r._id === factory.idString('bulk-update-doc'))).toMatchObject({
         status: 'ready',
         totalPages: 3,
       });
-      expect(rows.find(r => r._id === 'new-att')).toMatchObject({
+      expect(rows.find(r => r._id === factory.idString('new-att'))).toMatchObject({
         type: 'attachment',
         entity: 'entity2',
+      });
+    });
+
+    it('should upsert documents with JSONB columns (toc, fullText, propertySelections)', async () => {
+      const { sut } = createSut();
+      const toc = [{ indentation: 0, label: 'Bulk Chapter' }];
+      const propertySelections = [{ name: 'bulk-prop' }];
+      const fullText = { 1: 'bulk text' };
+      const updated = FileBuilder.processedDocument(factory.idString('bulk-update-doc'), {
+        entity: 'entity1',
+        language: 'en',
+        totalPages: 3,
+        status: 'ready',
+        toc,
+        propertySelections,
+        fullText,
+      });
+
+      await sut.bulkUpdate([updated]);
+
+      const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
+      const row = rows.find(r => r._id === factory.idString('bulk-update-doc'));
+      expect(row).toMatchObject({
+        status: 'ready',
+        totalPages: 3,
+        toc,
+        propertySelections,
+        fullText,
       });
     });
 
@@ -413,12 +518,14 @@ describe('PostgresFilesDataSource', () => {
   describe('replaceFile', () => {
     it('should replace a document with an attachment (demoteToAttachment pattern)', async () => {
       const { sut } = createSut();
-      const attachment = FileBuilder.attachment('replace-doc', { entity: 'entity1' });
+      const attachment = FileBuilder.attachment(factory.idString('replace-doc'), {
+        entity: 'entity1',
+      });
 
       await sut.replaceFile(attachment);
 
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
-      const row = rows.find(r => r._id === 'replace-doc');
+      const row = rows.find(r => r._id === factory.idString('replace-doc'));
       expect(row).toMatchObject({
         type: 'attachment',
         entity: 'entity1',
@@ -434,16 +541,16 @@ describe('PostgresFilesDataSource', () => {
     it('should delete files by id', async () => {
       const { sut } = createSut();
       const toDelete = [
-        FileBuilder.document('delete-doc-1'),
-        FileBuilder.customUpload('delete-custom'),
+        FileBuilder.document(factory.idString('delete-doc-1')),
+        FileBuilder.customUpload(factory.idString('delete-custom')),
       ];
 
       await sut.delete(toDelete);
 
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
-      expect(rows.find(r => r._id === 'delete-doc-1')).toBeUndefined();
-      expect(rows.find(r => r._id === 'delete-custom')).toBeUndefined();
-      expect(rows.find(r => r._id === 'delete-doc-2')).toBeDefined();
+      expect(rows.find(r => r._id === factory.idString('delete-doc-1'))).toBeUndefined();
+      expect(rows.find(r => r._id === factory.idString('delete-custom'))).toBeUndefined();
+      expect(rows.find(r => r._id === factory.idString('delete-doc-2'))).toBeDefined();
     });
 
     it('should be a no-op with empty array', async () => {
@@ -470,7 +577,7 @@ describe('PostgresFilesDataSource', () => {
 
     it('should reindex after create for entity files', async () => {
       const { sut, transactionManager } = createSut();
-      const doc = FileBuilder.document('reindex-doc', { entity: 'entity1' });
+      const doc = FileBuilder.document(factory.idString('reindex-doc'), { entity: 'entity1' });
 
       await transactionManager.run(async () => {
         await sut.create(doc);
@@ -484,7 +591,9 @@ describe('PostgresFilesDataSource', () => {
 
     it('should reindex with +fullText when a ready PDF is created', async () => {
       const { sut, transactionManager } = createSut();
-      const doc = FileBuilder.processedDocument('reindex-doc', { entity: 'entity1' });
+      const doc = FileBuilder.processedDocument(factory.idString('reindex-doc'), {
+        entity: 'entity1',
+      });
 
       await transactionManager.run(async () => {
         await sut.create(doc);
@@ -498,7 +607,7 @@ describe('PostgresFilesDataSource', () => {
 
     it('should NOT reindex after creating a custom upload (no entity)', async () => {
       const { sut, transactionManager } = createSut();
-      const custom = FileBuilder.customUpload('reindex-custom');
+      const custom = FileBuilder.customUpload(factory.idString('reindex-custom'));
 
       await transactionManager.run(async () => {
         await sut.create(custom);
@@ -509,7 +618,7 @@ describe('PostgresFilesDataSource', () => {
 
     it('should reindex after update', async () => {
       const { sut, transactionManager } = createSut();
-      const original = FileBuilder.document('reindex-doc', {
+      const original = FileBuilder.document(factory.idString('reindex-doc'), {
         entity: 'entity1',
         status: 'processing',
       });
@@ -518,7 +627,7 @@ describe('PostgresFilesDataSource', () => {
         await sut.create(original);
       });
 
-      const updated = FileBuilder.processedDocument('reindex-doc', {
+      const updated = FileBuilder.processedDocument(factory.idString('reindex-doc'), {
         entity: 'entity1',
         language: 'en',
         totalPages: 5,
@@ -537,7 +646,7 @@ describe('PostgresFilesDataSource', () => {
 
     it('should reindex after delete', async () => {
       const { sut, transactionManager } = createSut();
-      const doc = FileBuilder.document('reindex-doc', { entity: 'entity1' });
+      const doc = FileBuilder.document(factory.idString('reindex-doc'), { entity: 'entity1' });
 
       await transactionManager.run(async () => {
         await sut.create(doc);
@@ -555,8 +664,8 @@ describe('PostgresFilesDataSource', () => {
 
     it('should reindex once for multiple files on same entity', async () => {
       const { sut, transactionManager } = createSut();
-      const doc1 = FileBuilder.document('reindex-1', { entity: 'entity1' });
-      const doc2 = FileBuilder.attachment('reindex-2', { entity: 'entity1' });
+      const doc1 = FileBuilder.document(factory.idString('reindex-1'), { entity: 'entity1' });
+      const doc2 = FileBuilder.attachment(factory.idString('reindex-2'), { entity: 'entity1' });
 
       await transactionManager.run(async () => {
         await sut.create(doc1);
@@ -574,12 +683,12 @@ describe('PostgresFilesDataSource', () => {
   describe('getById', () => {
     it('should return a ready PDF document', async () => {
       const { sut } = createSut();
-      const result = await sut.getById('query-ready-doc');
+      const result = await sut.getById(factory.idString('query-ready-doc'));
 
       expect(result.isOk()).toBe(true);
       const doc = result.getData() as PDFDocument;
       expect(doc).toBeInstanceOf(PDFDocument);
-      expect(doc.id).toBe('query-ready-doc');
+      expect(doc.id).toBe(factory.idString('query-ready-doc'));
       expect(doc.entity).toBe('query-entity');
       expect(doc.status).toBe('ready');
       expect(doc.language).toBe('es');
@@ -590,7 +699,7 @@ describe('PostgresFilesDataSource', () => {
 
     it('should return a processing PDF document', async () => {
       const { sut } = createSut();
-      const result = await sut.getById('query-processing-doc');
+      const result = await sut.getById(factory.idString('query-processing-doc'));
 
       expect(result.isOk()).toBe(true);
       const doc = result.getData() as PDFDocument;
@@ -600,7 +709,7 @@ describe('PostgresFilesDataSource', () => {
 
     it('should return an attachment', async () => {
       const { sut } = createSut();
-      const result = await sut.getById('query-attachment');
+      const result = await sut.getById(factory.idString('query-attachment'));
 
       expect(result.isOk()).toBe(true);
       expect(result.getData()).toBeInstanceOf(FileAttachment);
@@ -608,7 +717,7 @@ describe('PostgresFilesDataSource', () => {
 
     it('should return a URL attachment', async () => {
       const { sut } = createSut();
-      const result = await sut.getById('query-url-attachment');
+      const result = await sut.getById(factory.idString('query-url-attachment'));
 
       expect(result.isOk()).toBe(true);
       const att = result.getData() as URLAttachment;
@@ -618,7 +727,7 @@ describe('PostgresFilesDataSource', () => {
 
     it('should return a thumbnail', async () => {
       const { sut } = createSut();
-      const result = await sut.getById('query-thumb');
+      const result = await sut.getById(factory.idString('query-thumb'));
 
       expect(result.isOk()).toBe(true);
       const thumb = result.getData() as Thumbnail;
@@ -628,7 +737,7 @@ describe('PostgresFilesDataSource', () => {
 
     it('should return a custom upload', async () => {
       const { sut } = createSut();
-      const result = await sut.getById('query-custom');
+      const result = await sut.getById(factory.idString('query-custom'));
 
       expect(result.isOk()).toBe(true);
       expect(result.getData()).toBeInstanceOf(CustomUpload);
@@ -636,7 +745,7 @@ describe('PostgresFilesDataSource', () => {
 
     it('should return FileNotFound when _id does not exist', async () => {
       const { sut } = createSut();
-      const result = await sut.getById('nonexistent');
+      const result = await sut.getById(factory.idString('nonexistent'));
 
       expect(result.isError()).toBe(true);
       expect(result.getError()).toBeInstanceOf(FileNotFound);
@@ -644,7 +753,7 @@ describe('PostgresFilesDataSource', () => {
 
     it('should not return fullText', async () => {
       const { sut } = createSut();
-      const result = await sut.getById('fulltext-doc');
+      const result = await sut.getById(factory.idString('fulltext-doc'));
 
       expect(result.isOk()).toBe(true);
       const doc = result.getData() as PDFDocument;
@@ -655,33 +764,43 @@ describe('PostgresFilesDataSource', () => {
   describe('getByIds', () => {
     it('should return array of domain objects for multiple ids', async () => {
       const { sut } = createSut();
-      const files = await sut.getByIds(['query-ready-doc', 'query-attachment', 'query-thumb']);
+      const files = await sut.getByIds([
+        factory.idString('query-ready-doc'),
+        factory.idString('query-attachment'),
+        factory.idString('query-thumb'),
+      ]);
 
       expect(files).toHaveLength(3);
       const byId = Object.fromEntries(files.map(f => [f.id, f]));
-      expect(byId['query-ready-doc']).toBeInstanceOf(PDFDocument);
-      expect(byId['query-attachment']).toBeInstanceOf(FileAttachment);
-      expect(byId['query-thumb']).toBeInstanceOf(Thumbnail);
+      expect(byId[factory.idString('query-ready-doc')]).toBeInstanceOf(PDFDocument);
+      expect(byId[factory.idString('query-attachment')]).toBeInstanceOf(FileAttachment);
+      expect(byId[factory.idString('query-thumb')]).toBeInstanceOf(Thumbnail);
     });
 
     it('should return empty array when no ids match', async () => {
       const { sut } = createSut();
-      const files = await sut.getByIds(['nonexistent-1', 'nonexistent-2']);
+      const files = await sut.getByIds([
+        factory.idString('nonexistent-1'),
+        factory.idString('nonexistent-2'),
+      ]);
 
       expect(files).toEqual([]);
     });
 
     it('should return only matching files when some ids do not exist', async () => {
       const { sut } = createSut();
-      const files = await sut.getByIds(['query-ready-doc', 'nonexistent']);
+      const files = await sut.getByIds([
+        factory.idString('query-ready-doc'),
+        factory.idString('nonexistent'),
+      ]);
 
       expect(files).toHaveLength(1);
-      expect(files[0].id).toBe('query-ready-doc');
+      expect(files[0].id).toBe(factory.idString('query-ready-doc'));
     });
 
     it('should not return fullText', async () => {
       const { sut } = createSut();
-      const files = await sut.getByIds(['fulltext-doc']);
+      const files = await sut.getByIds([factory.idString('fulltext-doc')]);
 
       expect(files).toHaveLength(1);
       expect((files[0] as PDFDocument).fullText).toBeUndefined();
@@ -694,7 +813,7 @@ describe('PostgresFilesDataSource', () => {
       const result = await sut.getByFilename('query-processing-doc');
 
       expect(result.isOk()).toBe(true);
-      expect(result.getDataOrThrow().id).toBe('query-processing-doc');
+      expect(result.getDataOrThrow().id).toBe(factory.idString('query-processing-doc'));
     });
 
     it('should return FileNotFound when filename does not exist', async () => {
@@ -717,7 +836,7 @@ describe('PostgresFilesDataSource', () => {
       const result = await sut.getByFilename('query-ready-doc', ['document']);
 
       expect(result.isOk()).toBe(true);
-      expect(result.getDataOrThrow().id).toBe('query-ready-doc');
+      expect(result.getDataOrThrow().id).toBe(factory.idString('query-ready-doc'));
     });
 
     it('should not return fullText', async () => {
@@ -733,7 +852,7 @@ describe('PostgresFilesDataSource', () => {
   describe('getProcessingById', () => {
     it('should return PDFDocument when status is processing', async () => {
       const { sut } = createSut();
-      const result = await sut.getProcessingById('query-processing-doc');
+      const result = await sut.getProcessingById(factory.idString('query-processing-doc'));
 
       expect(result.isOk()).toBe(true);
       const doc = result.getDataOrThrow();
@@ -743,7 +862,7 @@ describe('PostgresFilesDataSource', () => {
 
     it('should return ProcessingFileNotFound when file is not in processing', async () => {
       const { sut } = createSut();
-      const result = await sut.getProcessingById('query-ready-doc');
+      const result = await sut.getProcessingById(factory.idString('query-ready-doc'));
 
       expect(result.isError()).toBe(true);
       expect(result.getError()).toBeInstanceOf(ProcessingFileNotFound);
@@ -751,7 +870,7 @@ describe('PostgresFilesDataSource', () => {
 
     it('should return ProcessingFileNotFound when file does not exist', async () => {
       const { sut } = createSut();
-      const result = await sut.getProcessingById('nonexistent');
+      const result = await sut.getProcessingById(factory.idString('nonexistent'));
 
       expect(result.isError()).toBe(true);
       expect(result.getError()).toBeInstanceOf(ProcessingFileNotFound);
@@ -775,7 +894,7 @@ describe('PostgresFilesDataSource', () => {
       const { sut } = createSut();
       const files = await sut.getAll();
 
-      const doc = files.find(f => f.id === 'fulltext-doc') as PDFDocument;
+      const doc = files.find(f => f.id === factory.idString('fulltext-doc')) as PDFDocument;
       expect(doc.fullText).toBeUndefined();
     });
   });
@@ -786,12 +905,13 @@ describe('PostgresFilesDataSource', () => {
       const files = await sut.getByEntitiesIds(['coll-entity']);
 
       const ids = files.map(f => f.id).sort();
-      expect(ids).toEqual([
-        'coll-attachment',
-        'coll-doc-processing',
-        'coll-doc-ready',
-        'coll-doc-ready-es',
-      ]);
+      const expected = [
+        factory.idString('coll-attachment'),
+        factory.idString('coll-doc-processing'),
+        factory.idString('coll-doc-ready'),
+        factory.idString('coll-doc-ready-es'),
+      ].sort();
+      expect(ids).toEqual(expected);
       expect(files.every(f => f.type !== 'thumbnail')).toBe(true);
     });
 
@@ -856,7 +976,7 @@ describe('PostgresFilesDataSource', () => {
 
     it('should return empty for entity without thumbnails', async () => {
       const { sut } = createSut();
-      const thumbnails = await sut.getThumbnails(['nonexistent']);
+      const thumbnails = await sut.getThumbnails([factory.idString('nonexistent')]);
 
       expect(thumbnails).toEqual([]);
     });
@@ -899,7 +1019,7 @@ describe('PostgresFilesDataSource', () => {
 
     it('should return empty when no doc ids match', async () => {
       const { sut } = createSut();
-      const thumbnails = await sut.getThumbnailsForProcessedPDFs(['nonexistent']);
+      const thumbnails = await sut.getThumbnailsForProcessedPDFs([factory.idString('nonexistent')]);
 
       expect(thumbnails).toEqual([]);
     });
@@ -909,8 +1029,8 @@ describe('PostgresFilesDataSource', () => {
     it('should return true when all files exist with correct entity', async () => {
       const { sut } = createSut();
       const result = await sut.filesExistForEntities([
-        { _id: 'exist-doc', entity: 'exist-entity' },
-        { _id: 'exist-att', entity: 'exist-entity' },
+        { _id: factory.idString('exist-doc'), entity: 'exist-entity' },
+        { _id: factory.idString('exist-att'), entity: 'exist-entity' },
       ]);
 
       expect(result).toBe(true);
@@ -919,8 +1039,8 @@ describe('PostgresFilesDataSource', () => {
     it('should return false when any file is missing', async () => {
       const { sut } = createSut();
       const result = await sut.filesExistForEntities([
-        { _id: 'exist-doc', entity: 'exist-entity' },
-        { _id: 'nonexistent', entity: 'exist-entity' },
+        { _id: factory.idString('exist-doc'), entity: 'exist-entity' },
+        { _id: factory.idString('nonexistent'), entity: 'exist-entity' },
       ]);
 
       expect(result).toBe(false);
@@ -929,7 +1049,7 @@ describe('PostgresFilesDataSource', () => {
     it('should return false when file exists but entity does not match', async () => {
       const { sut } = createSut();
       const result = await sut.filesExistForEntities([
-        { _id: 'exist-doc', entity: 'wrong-entity' },
+        { _id: factory.idString('exist-doc'), entity: 'wrong-entity' },
       ]);
 
       expect(result).toBe(false);
@@ -941,7 +1061,7 @@ describe('PostgresFilesDataSource', () => {
       const { sut } = createSut();
       await sut.deletePropertySelections(['propA'], ['prop-e']);
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
-      const row = rows.find(r => r._id === 'del-prop-doc');
+      const row = rows.find(r => r._id === factory.idString('del-prop-doc'));
       expect(row!.propertySelections).toEqual([{ name: 'propB' }]);
     });
 
@@ -949,7 +1069,7 @@ describe('PostgresFilesDataSource', () => {
       const { sut } = createSut();
       await sut.deletePropertySelections(['propA', 'propB'], ['prop-e']);
       const row = (await testingPG.getAllFrom<Record<string, unknown>>('files')).find(
-        r => r._id === 'del-prop-doc'
+        r => r._id === factory.idString('del-prop-doc')
       );
       expect(row!.propertySelections).toEqual([]);
     });
@@ -958,7 +1078,7 @@ describe('PostgresFilesDataSource', () => {
       const { sut } = createSut();
       await sut.deletePropertySelections(['propA'], ['other-e']);
       const row = (await testingPG.getAllFrom<Record<string, unknown>>('files')).find(
-        r => r._id === 'del-prop-doc'
+        r => r._id === factory.idString('del-prop-doc')
       );
       expect(row!.propertySelections).toEqual([{ name: 'propA' }, { name: 'propB' }]);
     });
@@ -967,7 +1087,7 @@ describe('PostgresFilesDataSource', () => {
       const { sut } = createSut();
       await sut.deletePropertySelections(['propA'], ['prop-e']);
       const row = (await testingPG.getAllFrom<Record<string, unknown>>('files')).find(
-        r => r._id === 'del-prop-null'
+        r => r._id === factory.idString('del-prop-null')
       );
       expect(row!.propertySelections).toBeNull();
     });
@@ -976,7 +1096,7 @@ describe('PostgresFilesDataSource', () => {
       const { sut } = createSut();
       await sut.deletePropertySelections(['propA'], ['prop-e']);
       const row = (await testingPG.getAllFrom<Record<string, unknown>>('files')).find(
-        r => r._id === 'del-prop-empty'
+        r => r._id === factory.idString('del-prop-empty')
       );
       expect(row!.propertySelections).toEqual([]);
     });
@@ -985,7 +1105,7 @@ describe('PostgresFilesDataSource', () => {
       const { sut } = createSut();
       await sut.deletePropertySelections(['propA'], ['prop-e']);
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
-      const otherRow = rows.find(r => r._id === 'del-prop-other');
+      const otherRow = rows.find(r => r._id === factory.idString('del-prop-other'));
       expect(otherRow!.propertySelections).toEqual([{ name: 'propA' }]);
     });
   });
@@ -995,7 +1115,7 @@ describe('PostgresFilesDataSource', () => {
       const { sut } = createSut();
       await sut.renamePropertySelections({ oldA: 'newA' }, ['rename-e']);
       const row = (await testingPG.getAllFrom<Record<string, unknown>>('files')).find(
-        r => r._id === 'ren-prop-doc'
+        r => r._id === factory.idString('ren-prop-doc')
       );
       expect(row!.propertySelections).toEqual([{ name: 'newA' }, { name: 'oldB' }]);
     });
@@ -1004,7 +1124,7 @@ describe('PostgresFilesDataSource', () => {
       const { sut } = createSut();
       await sut.renamePropertySelections({ oldA: 'newA', oldB: 'newB' }, ['rename-e']);
       const row = (await testingPG.getAllFrom<Record<string, unknown>>('files')).find(
-        r => r._id === 'ren-prop-doc'
+        r => r._id === factory.idString('ren-prop-doc')
       );
       expect(row!.propertySelections).toEqual([{ name: 'newA' }, { name: 'newB' }]);
     });
@@ -1013,7 +1133,7 @@ describe('PostgresFilesDataSource', () => {
       const { sut } = createSut();
       await sut.renamePropertySelections({ oldA: 'newA' }, ['other-e']);
       const row = (await testingPG.getAllFrom<Record<string, unknown>>('files')).find(
-        r => r._id === 'ren-prop-doc'
+        r => r._id === factory.idString('ren-prop-doc')
       );
       expect(row!.propertySelections).toEqual([{ name: 'oldA' }, { name: 'oldB' }]);
     });
@@ -1022,7 +1142,7 @@ describe('PostgresFilesDataSource', () => {
       const { sut } = createSut();
       await sut.renamePropertySelections({ oldA: 'newA' }, ['rename-e']);
       const row = (await testingPG.getAllFrom<Record<string, unknown>>('files')).find(
-        r => r._id === 'ren-prop-null'
+        r => r._id === factory.idString('ren-prop-null')
       );
       expect(row!.propertySelections).toBeNull();
     });
@@ -1031,7 +1151,7 @@ describe('PostgresFilesDataSource', () => {
       const { sut } = createSut();
       await sut.renamePropertySelections({ oldA: 'newA' }, ['rename-e']);
       const row = (await testingPG.getAllFrom<Record<string, unknown>>('files')).find(
-        r => r._id === 'ren-prop-empty'
+        r => r._id === factory.idString('ren-prop-empty')
       );
       expect(row!.propertySelections).toEqual([]);
     });
@@ -1040,7 +1160,7 @@ describe('PostgresFilesDataSource', () => {
       const { sut } = createSut();
       await sut.renamePropertySelections({ oldA: 'newA' }, ['rename-e']);
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
-      const otherRow = rows.find(r => r._id === 'ren-prop-other');
+      const otherRow = rows.find(r => r._id === factory.idString('ren-prop-other'));
       expect(otherRow!.propertySelections).toEqual([{ name: 'oldA' }]);
     });
   });
