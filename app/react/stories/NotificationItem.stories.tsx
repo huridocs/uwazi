@@ -27,10 +27,13 @@ const makeNotification = (
 });
 
 const Primary: Story = {
+  args: {
+    isUnread: true,
+  },
   render: args => (
     <div className="tw-content">
       <div className="max-w-sm p-4">
-        <NotificationItem {...args} onDismiss={action('dismiss')} />
+        <NotificationItem {...args} onDismiss={action('dismiss')} onRead={action('read')} />
       </div>
     </div>
   ),

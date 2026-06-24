@@ -34,6 +34,12 @@ const getBucket = (
   return notification.timestamp.getTime() >= todayStart ? 'today' : 'earlier';
 };
 
+const getTodayStart = () => {
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  return start.getTime();
+};
+
 const NotificationsPanel = () => {
   const {
     isPanelOpen,
@@ -52,13 +58,9 @@ const NotificationsPanel = () => {
   const hasClearable = notifications.length > 0 || tasks.some(t => t.status !== 'running');
   const [filter, setFilter] = useState<Filter>('all');
   const unreadIds = useMemo(() => new Set(unreadNotificationIds), [unreadNotificationIds]);
-  const todayStart = useMemo(() => {
-    const start = new Date();
-    start.setHours(0, 0, 0, 0);
-    return start.getTime();
-  }, []);
   const groupedNotifications = useMemo(() => {
     const groups: Record<Bucket, StatusNotification[]> = { new: [], today: [], earlier: [] };
+    const todayStart = getTodayStart();
     notifications
       .filter(notification => filter === 'all' || unreadIds.has(notification.id))
       .forEach(notification => {
@@ -73,7 +75,7 @@ const NotificationsPanel = () => {
     groups.today.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
     groups.earlier.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
     return groups;
-  }, [filter, notifications, todayStart, unreadIds]);
+  }, [filter, notifications, unreadIds]);
   const orderedNotifications = useMemo(
     () => bucketOrder.flatMap(bucket => groupedNotifications[bucket]),
     [groupedNotifications]
@@ -144,7 +146,9 @@ const NotificationsPanel = () => {
             </section>
           )}
 
-          {!hasVisibleNotifications && <EmptyState filter={filter} />}
+          {!hasVisibleNotifications && tasks.length === 0 && (
+            <EmptyState filter={filter} hasNotifications={notifications.length > 0} />
+          )}
 
           {bucketOrder.map(bucket =>
             groupedNotifications[bucket].length === 0 ? null : (
