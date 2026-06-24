@@ -6,6 +6,8 @@ import { EntityUpdatedEvent } from '#api/core/domain/entity/EntityUpdatedEvent.j
 import { DBFixture } from '#api/utils/testing_db.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingPG } from '#api/utils/testing_pg.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
@@ -13,86 +15,126 @@ import { DeleteFileUseCaseFactory } from '#api/core/infrastructure/factories/Del
 
 const f = getFixturesFactory();
 
-const baseFixtures: DBFixture = {
+const allFixtures: DBFixture = {
   settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
   templates: [f.template('template1')],
-};
-
-const createSUT = () => {
-  const actor = User.createFrom({
-    _id: new ObjectId(),
-    role: 'admin',
-    groups: [],
-    email: 'admin@test.com',
-    username: 'adminUser',
-  });
-
-  const tenant = { name: 'tenant' } as any;
-
-  const { sut, eventEmitter } = testingEnvironment.runWithContext(
-    () => ({
-      sut: DeleteFileUseCaseFactory.default({
-        filesService: FilesServiceFactory.default({
-          pathManager: TestUtils.mockClass<PathManager>({ createPath: jest.fn() }),
-        }),
-      }),
-      eventEmitter: ExecutionContext.eventEmitter,
+  entities: [
+    f.entity('entity1', 'template1', {}, { language: 'en', preview: 'old.jpg' }),
+    f.entity('entity1', 'template1', {}, { language: 'es', preview: 'old.jpg' }),
+    f.entity('entity2', 'template1', {}, { language: 'en', preview: 'stale.jpg' }),
+    f.entity('entity2', 'template1', {}, { language: 'es', preview: 'stale.jpg' }),
+  ],
+  files: [
+    f.file('doc1', {
+      type: 'document',
+      status: 'ready',
+      entity: 'entity1',
+      language: 'en',
+      mimetype: 'application/pdf',
+      size: 0,
+      creationDate: 0,
     }),
-    { actor, tenant, instances: { jobsDispatcher: TestUtils.mockClass<JobsDispatcher>({}) } }
-  );
-
-  return { sut, eventEmitter };
+    f.file('doc1-thumb', {
+      type: 'thumbnail',
+      entity: 'entity1',
+      language: 'en',
+      filename: `${f.idString('doc1')}.jpg`,
+      mimetype: 'image/jpeg',
+      size: 0,
+      creationDate: 0,
+    }),
+    f.file('doc2', {
+      type: 'document',
+      status: 'ready',
+      entity: 'entity1',
+      language: 'es',
+      mimetype: 'application/pdf',
+      size: 0,
+      creationDate: 0,
+    }),
+    f.file('doc2-thumb', {
+      type: 'thumbnail',
+      entity: 'entity1',
+      language: 'es',
+      filename: `${f.idString('doc2')}.jpg`,
+      mimetype: 'image/jpeg',
+      size: 0,
+      creationDate: 0,
+    }),
+    f.file('lonely-doc', {
+      type: 'document',
+      status: 'ready',
+      entity: 'entity2',
+      language: 'en',
+      mimetype: 'application/pdf',
+      size: 0,
+      creationDate: 0,
+    }),
+  ],
 };
+
+type TestConfig = {
+  name: string;
+  usePostgres: boolean;
+};
+
+const testConfigs: TestConfig[] = [
+  { name: 'Mongo', usePostgres: false },
+  { name: 'Postgres', usePostgres: true },
+];
 
 describe('FileDelete - setPreview (real DB)', () => {
+  beforeAll(async () => {
+    await testingEnvironment.setUp({}, { postgres: true });
+  });
+
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
 
-  describe('when thumbnails remain after deleting a document', () => {
-    beforeAll(async () => {
-      await testingEnvironment.setUp({
-        ...baseFixtures,
-        entities: [
-          f.entity('entity1', 'template1', {}, { language: 'en', preview: 'old.jpg' }),
-          f.entity('entity1', 'template1', {}, { language: 'es', preview: 'old.jpg' }),
-        ],
-        files: [
-          f.file('doc1', {
-            type: 'document',
-            status: 'ready',
-            entity: 'entity1',
-            language: 'en',
-            mimetype: 'application/pdf',
-          }),
-          f.file('doc1-thumb', {
-            type: 'thumbnail',
-            entity: 'entity1',
-            language: 'en',
-            filename: `${f.idString('doc1')}.jpg`,
-            mimetype: 'image/jpeg',
-          }),
-          f.file('doc2', {
-            type: 'document',
-            status: 'ready',
-            entity: 'entity1',
-            language: 'es',
-            mimetype: 'application/pdf',
-          }),
-          f.file('doc2-thumb', {
-            type: 'thumbnail',
-            entity: 'entity1',
-            language: 'es',
-            filename: `${f.idString('doc2')}.jpg`,
-            mimetype: 'image/jpeg',
-          }),
-        ],
+  describe.each(testConfigs)('$name', ({ usePostgres }) => {
+    beforeEach(async () => {
+      testingTenants.changeCurrentTenant({
+        name: 'tenant',
+        featureFlags: { postgresFiles: usePostgres },
       });
+
+      await testingEnvironment.setFixtures(allFixtures);
+
+      if (usePostgres) {
+        await testingPG.clear(['files']);
+        await testingPG.setFixtures({
+          files: allFixtures.files!.map(file => ({ ...file, _id: file._id?.toString() })),
+        });
+      }
     });
 
+    const createSut = () => {
+      const actor = User.createFrom({
+        _id: new ObjectId(),
+        role: 'admin',
+        groups: [],
+        email: 'admin@test.com',
+        username: 'adminUser',
+      });
+
+      const { sut, eventEmitter } = testingEnvironment.runWithContext(
+        () => ({
+          sut: DeleteFileUseCaseFactory.default({
+            filesService: FilesServiceFactory.default({
+              pathManager: TestUtils.mockClass<PathManager>({ createPath: jest.fn() }),
+            }),
+          }),
+          eventEmitter: ExecutionContext.eventEmitter,
+        }),
+        { actor, instances: { jobsDispatcher: TestUtils.mockClass<JobsDispatcher>({}) } }
+      );
+
+      return { sut, eventEmitter };
+    };
+
     it('should recalculate preview from the surviving thumbnail', async () => {
-      // delete doc1 (en) — doc2 (es) and its thumbnail survive
-      const { sut, eventEmitter } = createSUT();
+      const { sut, eventEmitter } = createSut();
       await sut.execute({ fileId: f.idString('doc1') });
 
       const entities = await testingEnvironment.db.getAllFrom('entities');
@@ -104,35 +146,14 @@ describe('FileDelete - setPreview (real DB)', () => {
 
       expect(eventEmitter.emit).toHaveBeenCalledWith(expect.any(EntityUpdatedEvent));
     });
-  });
-
-  describe('when no thumbnails remain after deleting the last document', () => {
-    beforeAll(async () => {
-      await testingEnvironment.setUp({
-        ...baseFixtures,
-        entities: [
-          f.entity('entity1', 'template1', {}, { language: 'en', preview: 'stale.jpg' }),
-          f.entity('entity1', 'template1', {}, { language: 'es', preview: 'stale.jpg' }),
-        ],
-        files: [
-          f.file('doc1', {
-            type: 'document',
-            status: 'ready',
-            entity: 'entity1',
-            language: 'en',
-            mimetype: 'application/pdf',
-          }),
-        ],
-      });
-    });
 
     it('should clear preview from all entity translations', async () => {
-      const { sut } = createSUT();
-      await sut.execute({ fileId: f.idString('doc1') });
+      const { sut } = createSut();
+      await sut.execute({ fileId: f.idString('lonely-doc') });
 
       const entities = await testingEnvironment.db.getAllFrom('entities');
-      const en = entities.find(e => e.sharedId === 'entity1' && e.language === 'en');
-      const es = entities.find(e => e.sharedId === 'entity1' && e.language === 'es');
+      const en = entities.find(e => e.sharedId === 'entity2' && e.language === 'en');
+      const es = entities.find(e => e.sharedId === 'entity2' && e.language === 'es');
 
       expect(en?.preview).toBeUndefined();
       expect(es?.preview).toBeUndefined();
