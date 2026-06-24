@@ -73,6 +73,7 @@ import { AcceptSuggestionsFactory } from '#api/suggestions/infrastructure/Accept
 import { AcceptSuggestionsJob } from '#api/suggestions/jobs/AcceptSuggestionsJob.js';
 import { CreateBlankStateSuggestionsJob } from '#api/suggestions/jobs/CreateBlankStateSuggestionsJob.js';
 import { tenants } from '#api/tenants/tenantContext.js';
+import { SendWelcomeEmailHandler } from '#api/core/infrastructure/jobs/SendWelcomeEmailHandler.js';
 
 type Register = <T extends Dispatchable>(
   dispatchable: DispatchableClass<T>,
@@ -315,4 +316,6 @@ export function registerJobs(register: Register) {
   );
 
   register(DeleteLanguagePagesListener.asJob(), async () => new DeleteLanguagePagesListener({}));
+
+  register(SendWelcomeEmailHandler, async () => new SendWelcomeEmailHandler());
 }
