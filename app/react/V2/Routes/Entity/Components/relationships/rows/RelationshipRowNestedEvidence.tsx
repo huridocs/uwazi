@@ -12,7 +12,7 @@ type RowData = ReturnType<typeof useRelationshipRowData>;
 
 type RelationshipRowNestedEvidenceProps = Pick<
   RowData,
-  'rowRef' | 'marker' | 'referenceText' | 'referencePage' | 'editMode'
+  'rowRef' | 'referenceText' | 'referencePage' | 'editMode'
 > & {
   isSelected?: boolean;
   representedIds: string[];
@@ -24,7 +24,6 @@ type RelationshipRowNestedEvidenceProps = Pick<
 
 const RelationshipRowNestedEvidence = ({
   rowRef,
-  marker,
   referenceText,
   referencePage,
   editMode,

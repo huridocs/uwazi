@@ -105,7 +105,6 @@ const RelationshipRowDetail = ({
     return (
       <RelationshipRowNestedEvidence
         rowRef={rowRef}
-        marker={marker}
         referenceText={referenceText}
         referencePage={referencePage}
         editMode={editMode}

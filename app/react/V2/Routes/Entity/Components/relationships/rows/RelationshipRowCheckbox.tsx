@@ -19,7 +19,8 @@ const RelationshipRowCheckbox = ({ relationshipIds }: RelationshipRowCheckboxPro
   }
 
   const checked =
-    relationshipIds.length > 0 && relationshipIds.every(relationshipId => selected.has(relationshipId));
+    relationshipIds.length > 0 &&
+    relationshipIds.every(relationshipId => selected.has(relationshipId));
 
   return (
     <span className="flex shrink-0 items-center" onClick={e => e.stopPropagation()}>
