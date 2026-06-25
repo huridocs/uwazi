@@ -54,6 +54,8 @@ const logger = LoggerFactory.systemLogger(
   replaceTenantWithJobNamespace(withFeature(StandardJSONWriter, 'Queue worker'))
 );
 
+const SYSTEM_USER = { _id: 'system', role: 'admin', groups: [] };
+
 function register<T extends Dispatchable>(
   this: QueueWorker,
   dispatchable: DispatchableClass<T>,
@@ -68,7 +70,7 @@ function register<T extends Dispatchable>(
         actor = await users.getById(job.params.userId, '-password', true);
       }
       deps = {
-        actor: User.createFrom(actor),
+        actor: User.createFrom(actor ?? SYSTEM_USER),
         tenant: tenants.current(),
         factories: {
           transactionManager: TransactionManagerFactory.default,

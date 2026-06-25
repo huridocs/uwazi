@@ -4,14 +4,22 @@ import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
 import { Dispatchable, HeartbeatCallback, JobInfo } from './Dispatchable.js';
 
-export type UserAwareDispatchableParams = { tenantName: string; userId: string };
+export type UserAwareDispatchableParams = { tenantName: string; userId?: string };
 
-export type Params<ExtendedParams> = ExtendedParams & { tenantName: string; userId: string };
+export type Params<ExtendedParams> = ExtendedParams & { tenantName: string; userId?: string };
 
 export abstract class UserAwareDispatchable<ExtendedParams> implements Dispatchable {
   protected params!: Params<ExtendedParams>;
 
   protected jobInfo!: JobInfo;
+
+  private static readonly SYSTEM_USER = {
+    _id: 'system',
+    username: 'system',
+    role: 'admin' as const,
+    email: 'system@uwazi',
+    groups: [],
+  };
 
   protected abstract handle(heartBeatCallBack: HeartbeatCallback, jobInfo?: JobInfo): Promise<void>;
 
@@ -25,17 +33,13 @@ export abstract class UserAwareDispatchable<ExtendedParams> implements Dispatcha
     return tenantName;
   }
 
-  protected get userId() {
-    if (!this.params.userId) {
-      throw new Error('There is no userId, you should provide a userId on Job params');
-    }
-
-    return this.params.userId;
-  }
-
   private async setCurrentUser() {
-    const user = await users.getById(this.userId, '-password', true);
-    permissionsContext.setUserInContext(user);
+    if (this.params.userId) {
+      const user = await users.getById(this.params.userId, '-password', true);
+      permissionsContext.setUserInContext(user ?? UserAwareDispatchable.SYSTEM_USER);
+    } else {
+      permissionsContext.setUserInContext(UserAwareDispatchable.SYSTEM_USER);
+    }
   }
 
   async handleDispatch(
