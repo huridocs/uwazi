@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   SelectionRegion,
   HandleTextSelection,
@@ -66,6 +66,7 @@ const PDF = ({
   const animationFrameIdRef = useRef<number>(0);
   const snippetAnimationFrameIdRef = useRef<number>(0);
   const pdfContainerRef = useRef<HTMLDivElement | null>(null);
+  const pageVisibilityRef = useRef<Map<number, number>>(new Map());
   const isReady = useRef(false);
   const [intersectionObserver, setIntersectionObserver] = useState<IntersectionObserver | null>(
     null
@@ -265,10 +266,7 @@ const PDF = ({
     const observerHandler: IntersectionObserverCallback = entries => {
       entries.forEach(entry => {
         const pageNumber = Number.parseInt(entry.target.getAttribute('data-pagenumber') || '0', 10);
-
-        if (isReady.current && entry.intersectionRatio >= CHANGE_PAGE_THRESHOLD) {
-          onPageChangeRef.current?.(pageNumber);
-        }
+        pageVisibilityRef.current.set(pageNumber, entry.intersectionRatio);
 
         if (entry.isIntersecting) {
           pdfEventBus.dispatch('renderpage', { pageNumber });
@@ -276,6 +274,23 @@ const PDF = ({
           pdfEventBus.dispatch('unmountpage', { pageNumber });
         }
       });
+
+      if (!isReady.current) return;
+
+      let mostVisiblePage = 0;
+      let highestRatio = 0;
+      pageVisibilityRef.current.forEach((ratio, pageNumber) => {
+        const wins =
+          ratio > highestRatio || (ratio === highestRatio && pageNumber < mostVisiblePage);
+        if (ratio > 0 && (mostVisiblePage === 0 || wins)) {
+          highestRatio = ratio;
+          mostVisiblePage = pageNumber;
+        }
+      });
+
+      if (mostVisiblePage > 0 && highestRatio >= CHANGE_PAGE_THRESHOLD) {
+        onPageChangeRef.current?.(mostVisiblePage);
+      }
     };
 
     const observer = new IntersectionObserver(observerHandler, {
@@ -327,6 +342,54 @@ const PDF = ({
     []
   );
 
+  const pages = useMemo(() => {
+    if (!pdf) return null;
+    const allHighlights = [highlights, ...internalHighlights];
+
+    return Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
+      const regionId = number;
+      const highlightsForPage = allHighlights.find(group => group && group[regionId]);
+      const pageHighlights = highlightsForPage?.[regionId];
+
+      return (
+        <div
+          key={`page-${regionId}`}
+          id={`page-${regionId}-container`}
+          ref={el => {
+            pageRefsMap.current[regionId] = el;
+          }}
+          className={[
+            'relative mb-4 border-solid',
+            `[border-width:${BORDER_WIDTH}px]`,
+            'border-[color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)]',
+          ].join(' ')}
+        >
+          <SelectionRegion regionId={regionId.toString()}>
+            <PDFPage
+              pdf={pdf}
+              page={number}
+              eventBus={pdfEventBus}
+              intersectionObserver={intersectionObserver}
+              highlights={pageHighlights}
+              onHighlightClick={onHighlightClick}
+              containerWidth={containerWidth}
+              onScaleChange={handleScaleChange}
+            />
+          </SelectionRegion>
+        </div>
+      );
+    });
+  }, [
+    pdf,
+    highlights,
+    internalHighlights,
+    pdfEventBus,
+    intersectionObserver,
+    onHighlightClick,
+    containerWidth,
+    handleScaleChange,
+  ]);
+
   const viewerStyle = {
     height: size?.height || '100%',
     width: size?.width || '100%',
@@ -365,48 +428,7 @@ const PDF = ({
           </div>
         ) : null}
         <div id="pdf-container" className="pdfViewer" ref={setPdfContainer} style={viewerStyle}>
-          {pdf
-            ? Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
-                const regionId = number;
-                let pageHighlights;
-                const allHighlights = [highlights, ...internalHighlights];
-
-                if (allHighlights.length) {
-                  const highlightsForPage = allHighlights.find(
-                    highligh => highligh && highligh[regionId]
-                  );
-                  pageHighlights = highlightsForPage?.[regionId];
-                }
-
-                return (
-                  <div
-                    key={`page-${regionId}`}
-                    id={`page-${regionId}-container`}
-                    ref={el => {
-                      pageRefsMap.current[regionId] = el;
-                    }}
-                    className={[
-                      'relative mb-4 border-solid',
-                      `[border-width:${BORDER_WIDTH}px]`,
-                      'border-[color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)]',
-                    ].join(' ')}
-                  >
-                    <SelectionRegion regionId={regionId.toString()}>
-                      <PDFPage
-                        pdf={pdf}
-                        page={number}
-                        eventBus={pdfEventBus}
-                        intersectionObserver={intersectionObserver}
-                        highlights={pageHighlights}
-                        onHighlightClick={onHighlightClick}
-                        containerWidth={containerWidth}
-                        onScaleChange={handleScaleChange}
-                      />
-                    </SelectionRegion>
-                  </div>
-                );
-              })
-            : null}
+          {pages}
         </div>
       </div>
     </HandleTextSelection>
