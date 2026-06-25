@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 // eslint-disable-next-line node/no-restricted-import
 import { copyFile } from 'fs/promises';
 import path, { dirname } from 'path';
@@ -153,6 +154,17 @@ const testingEnvironment = {
     if (pgFixtures && this.pgEnabled) {
       await testingPG.setFixtures(pgFixtures);
     }
+
+    if (this.pgEnabled && fixtures) {
+      await testingPG.setFixtures(
+        Object.fromEntries(
+          Object.entries(fixtures)
+            .filter(([table]) => ['thesauri', 'templates', 'files'].includes(table))
+            .map(([table, fixture]) => [table, fixture.map(f => JSON.parse(JSON.stringify(f)))])
+        )
+      );
+    }
+
     if (this.pgEnabled && fixtures?.dictionaries?.length) {
       const pgThesauri = fixtures.dictionaries.map((dict: any) => ({
         _id: dict._id.toString(),

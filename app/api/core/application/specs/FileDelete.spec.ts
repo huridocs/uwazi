@@ -6,7 +6,6 @@ import { EntityUpdatedEvent } from '#api/core/domain/entity/EntityUpdatedEvent.j
 import { DBFixture } from '#api/utils/testing_db.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { testingPG } from '#api/utils/testing_pg.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
@@ -100,13 +99,6 @@ describe('FileDelete - setPreview (real DB)', () => {
       });
 
       await testingEnvironment.setFixtures(allFixtures);
-
-      if (usePostgres) {
-        await testingPG.clear(['files']);
-        await testingPG.setFixtures({
-          files: allFixtures.files!.map(file => ({ ...file, _id: file._id?.toString() })),
-        });
-      }
     });
 
     const createSut = () => {
