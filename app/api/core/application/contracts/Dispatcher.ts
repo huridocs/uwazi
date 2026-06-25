@@ -48,6 +48,11 @@ type DeleteLanguageEntitiesParams = {
   language: LanguageISO6391;
 };
 
+type SendWelcomeEmailParams = {
+  domain: string;
+  userId: string;
+};
+
 interface Dispatcher {
   syncRelationships(items: SyncRelationshipsParams[]): Promise<void>;
   cleanupEntities(chunks: CleanupEntityParams[]): Promise<void>;
@@ -59,6 +64,7 @@ interface Dispatcher {
   denormalizeThesaurus(params: DenormalizeThesaurusParams): Promise<void>;
   cloneLanguageEntities(params: CloneLanguageEntitiesParams): Promise<void>;
   deleteLanguageEntities(params: DeleteLanguageEntitiesParams): Promise<void>;
+  sendWelcomeEmail(params: SendWelcomeEmailParams): Promise<void>;
 }
 
 export type {

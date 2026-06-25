@@ -16,7 +16,7 @@ const cloneStoryEntity = (sharedId: string): Entity => ({
   ),
 });
 
-describe('RelationshipsPanel entity scope', () => {
+describe('Relationships panel across entities', () => {
   before(() => {
     suppressResizeObserverLoop();
   });
@@ -25,7 +25,7 @@ describe('RelationshipsPanel entity scope', () => {
     prepareRelationshipsViewport();
   });
 
-  it('clears panel search when the story entity changes', () => {
+  it('clears the search filter when viewing a different entity', () => {
     const nextEntity = cloneStoryEntity('entity-scope-reset');
 
     mount(<RelationshipsStoryShell locale="en" />);
