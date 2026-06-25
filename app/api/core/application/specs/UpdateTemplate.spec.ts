@@ -287,11 +287,7 @@ describe('UpdateTemplateUseCase', () => {
           { language: 'en', fullReindex: false }
         )
       ).rejects.toMatchObject({
-        errors: [
-          expect.objectContaining({
-            message: 'Properties cannot swap names',
-          }),
-        ],
+        message: expect.stringContaining('Template contains duplicate property name'),
       });
     });
 
