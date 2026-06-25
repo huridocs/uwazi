@@ -1,15 +1,16 @@
+import type { DatavizDefinition } from '#shared/types/datavizSchema.js';
 import { DatavizDataSource } from '#api/dataviz.v2/application/contracts/DatavizDataSource.js';
 import { DatavizQueryExecutor } from '#api/dataviz.v2/application/contracts/DatavizQueryExecutor.js';
 import { DatavizSnapshotsDataSource } from '#api/dataviz.v2/application/contracts/DatavizSnapshotsDataSource.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { Dataviz } from '#api/dataviz.v2/domain/Dataviz.js';
-import type { DatavizDefinition } from '#shared/types/datavizSchema.js';
 import type { DatavizScheduler } from '#api/dataviz.v2/application/contracts/DatavizScheduler.js';
 import { normalizeDatavizRefresh } from '#shared/dataviz/normalizeDatavizRefresh.js';
 import type { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { planSnapshotPersistence } from '#api/dataviz.v2/application/services/persistDatavizSnapshot.js';
+import { createDatavizInputSchema } from '#api/dataviz.v2/application/contracts/datavizInputSchemas.js';
 
-type Input = Omit<DatavizDefinition, 'id' | 'createdAt' | 'updatedAt'>;
+type Input = Omit<DatavizDefinition, 'id' | 'createdAt' | 'updatedAt' | 'processing'>;
 
 type Output = Dataviz;
 
@@ -22,6 +23,8 @@ type Deps = {
 };
 
 class CreateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
+  static inputSchema = createDatavizInputSchema;
+
   async execute(input: Input): Promise<Output> {
     const id = this.idGenerator.generate();
 

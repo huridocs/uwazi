@@ -9,8 +9,9 @@ import type { DatavizScheduler } from '#api/dataviz.v2/application/contracts/Dat
 import { normalizeDatavizRefresh } from '#shared/dataviz/normalizeDatavizRefresh.js';
 import type { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { planSnapshotPersistence } from '#api/dataviz.v2/application/services/persistDatavizSnapshot.js';
+import { updateDatavizInputSchema } from '#api/dataviz.v2/application/contracts/datavizInputSchemas.js';
 
-type Input = DatavizDefinition;
+type Input = Omit<DatavizDefinition, 'createdAt' | 'updatedAt' | 'processing'>;
 
 type Output = Dataviz;
 
@@ -23,6 +24,8 @@ type Deps = {
 };
 
 class UpdateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
+  static inputSchema = updateDatavizInputSchema;
+
   async execute(input: Input): Promise<Output> {
     const existingResult = await this.deps.datavizDS.getById(input.id);
     if (existingResult.isError()) {
