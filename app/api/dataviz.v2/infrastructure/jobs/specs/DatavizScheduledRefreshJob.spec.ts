@@ -70,7 +70,9 @@ describe('DatavizScheduledRefreshJob', () => {
   });
 
   it('should throw NonRetryableJobError when the query configuration is invalid', async () => {
-    const invalidQuery = new DatavizInvalidQueryError('Manual data visualizations cannot be refreshed');
+    const invalidQuery = new DatavizInvalidQueryError(
+      'Manual data visualizations cannot be refreshed'
+    );
     const refreshUseCase = {
       execute: jest.fn().mockRejectedValue(invalidQuery),
     };
