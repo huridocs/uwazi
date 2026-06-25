@@ -1,4 +1,3 @@
-import { computeQueryHash } from '#shared/dataviz/computeQueryHash.js';
 import type { DatavizDefinition } from '#shared/types/datavizSchema.js';
 import { DatavizSnapshotsDataSource } from '#api/dataviz.v2/application/contracts/DatavizSnapshotsDataSource.js';
 import { DatavizDataSource } from '#api/dataviz.v2/application/contracts/DatavizDataSource.js';
@@ -10,7 +9,6 @@ import type { DatavizScheduler } from '#api/dataviz.v2/application/contracts/Dat
 import { normalizeDatavizRefresh } from '#shared/dataviz/normalizeDatavizRefresh.js';
 import type { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { planSnapshotPersistence } from '#api/dataviz.v2/application/services/persistDatavizSnapshot.js';
-import { shouldPersistSnapshotOnSave } from '#api/dataviz.v2/application/services/shouldPersistSnapshotOnSave.js';
 
 type Input = DatavizDefinition;
 
@@ -53,9 +51,9 @@ class UpdateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
       updatedAt: new Date(),
     });
 
-    const queryChanged = computeQueryHash(existing.query) !== computeQueryHash(dataviz.query);
+    const queryChanged = existing.queryHash !== dataviz.queryHash;
     const refreshChanged = JSON.stringify(existing.refresh) !== JSON.stringify(dataviz.refresh);
-    const snapshotChanged = shouldPersistSnapshotOnSave(existing, dataviz);
+    const snapshotChanged = dataviz.requiresSnapshotRegenerationFrom(existing);
 
     let saved = dataviz;
 

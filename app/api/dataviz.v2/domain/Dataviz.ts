@@ -94,6 +94,34 @@ class Dataviz {
     return this.dataSource === 'manual';
   }
 
+  requiresSnapshotRegenerationFrom(previous: Dataviz): boolean {
+    if (previous.dataSource !== this.dataSource) {
+      return true;
+    }
+
+    if (previous.queryHash !== this.queryHash) {
+      return true;
+    }
+
+    if (Dataviz.stableJson(previous.chart) !== Dataviz.stableJson(this.chart)) {
+      return true;
+    }
+
+    if (Dataviz.stableJson(previous.appearance) !== Dataviz.stableJson(this.appearance)) {
+      return true;
+    }
+
+    if (Dataviz.stableJson(previous.manualData) !== Dataviz.stableJson(this.manualData)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  private static stableJson(value: unknown): string {
+    return JSON.stringify(value ?? null);
+  }
+
   private validate(): void {
     if (!this.name.trim()) {
       throw new DatavizInvalidQueryError('Dataviz name is required');
