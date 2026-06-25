@@ -9,8 +9,7 @@ import {
   DocumentSelectionFloatingMenu,
 } from '#V2/Routes/Entity/Components/document/index.js';
 import { useDocumentPdfView } from '../hooks/useDocumentPdfView.js';
-
-const RAIL_WIDTH = 32;
+import { useRailInset } from '../hooks/useRailInset.js';
 
 type DocumentTabProps = {
   entity: EntityType;
@@ -47,7 +46,7 @@ const DocumentTab = ({
   const isMobile = useIsMobile();
   const [pdfScrollRoot, setPdfScrollRoot] = useState<HTMLDivElement | null>(null);
   const [pageHeight, setPageHeight] = useState<number | undefined>();
-  const [railInsetRight, setRailInsetRight] = useState<number | undefined>();
+  const { railInsetRight, measureRailInset } = useRailInset(pdfScrollRoot, !isRaw);
 
   useEffect(() => {
     if (isRaw) {
@@ -80,31 +79,6 @@ const DocumentTab = ({
       observer.disconnect();
     };
   }, [isRaw, pageNumber]);
-
-  const measureRailInset = useCallback(() => {
-    const container = pdfScrollRoot?.querySelector<HTMLElement>('#pdf-container');
-    if (!pdfScrollRoot || !container) {
-      return;
-    }
-    const containerRect = container.getBoundingClientRect();
-    if (containerRect.width <= 0) {
-      return;
-    }
-    const gutter = pdfScrollRoot.getBoundingClientRect().right - containerRect.right;
-    setRailInsetRight(Math.max(0, Math.round(gutter / 2 - RAIL_WIDTH / 2)));
-  }, [pdfScrollRoot]);
-
-  useEffect(() => {
-    if (isRaw || !pdfScrollRoot) {
-      return undefined;
-    }
-    measureRailInset();
-    const observer = new ResizeObserver(measureRailInset);
-    observer.observe(pdfScrollRoot);
-    return () => {
-      observer.disconnect();
-    };
-  }, [isRaw, pdfScrollRoot, measureRailInset]);
 
   const handlePdfReady = useCallback(
     (controls: PDFControls) => {
