@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { useAnimateToPosition } from '../hooks/useAnimateToPosition.js';
 import { computeClusterOuterSize } from '../computeMarkerY.js';
 import { RAIL_MARKER_SIZE, RAIL_MARKER_SPACING, railMarkerZIndex } from '../markerMetrics.js';
-import { RelationshipMarker } from '../types.js';
+import { RelationshipMarker, markerEvidenceKey } from '../types.js';
 import { Point } from './Point.js';
 import { ShowMoreButton } from './ShowMoreButton.js';
 
 type ClusterProps = {
   position: number;
+  markerLayerHeight?: number;
   stackOrder?: number;
   references: RelationshipMarker[];
   onPointClick: (marker: RelationshipMarker) => void;
@@ -25,9 +26,68 @@ const TRUNK_X = RAIL_MARKER_SIZE + PAD + BRANCH_LEN;
 const SVG_WIDTH = TRUNK_X + STEM_LEN;
 const LINE_STROKE = 'var(--color-theme-text-secondary)';
 const LINE_OPACITY = 0.4;
+const MAX_VISIBLE_POINTS = 18;
+
+type ClusterSubtreeLayoutInput = {
+  position: number;
+  markerLayerHeight?: number;
+  outerSize: number;
+  rowCount: number;
+};
+
+type ClusterPointGroup = {
+  marker: RelationshipMarker;
+  markers: RelationshipMarker[];
+};
+
+const clamp = (value: number, min: number, max: number): number =>
+  Math.min(Math.max(value, min), max);
+
+const groupClusterPoints = (references: RelationshipMarker[]): ClusterPointGroup[] => {
+  const grouped = new Map<string, ClusterPointGroup>();
+  references.forEach(marker => {
+    const key = markerEvidenceKey(marker);
+    const group = grouped.get(key);
+    if (group) {
+      group.markers.push(marker);
+      return;
+    }
+    grouped.set(key, { marker, markers: [marker] });
+  });
+  return Array.from(grouped.values());
+};
+
+const computeClusterSubtreeLayout = ({
+  position,
+  markerLayerHeight,
+  outerSize,
+  rowCount,
+}: ClusterSubtreeLayoutInput) => {
+  const height = (rowCount - 1) * RAIL_MARKER_SPACING + RAIL_MARKER_SIZE;
+  const rootY = outerSize / 2;
+  const preferredTop = position + rootY - height / 2;
+  const maxTop = Math.max(0, (markerLayerHeight ?? height) - height);
+  const top = markerLayerHeight === undefined ? preferredTop : clamp(preferredTop, 0, maxTop);
+  let stemY = position + rootY - top;
+
+  if (markerLayerHeight !== undefined && preferredTop < 0) {
+    stemY = RAIL_MARKER_SIZE / 2;
+  }
+
+  if (markerLayerHeight !== undefined && preferredTop > maxTop) {
+    stemY = height - RAIL_MARKER_SIZE / 2;
+  }
+
+  return {
+    height,
+    stemY: clamp(stemY, RAIL_MARKER_SIZE / 2, height - RAIL_MARKER_SIZE / 2),
+    topOffset: top - position,
+  };
+};
 
 const Cluster = ({
   position,
+  markerLayerHeight,
   stackOrder = 1,
   references,
   onPointClick,
@@ -40,16 +100,15 @@ const Cluster = ({
   const animatedPosition = useAnimateToPosition(position);
   const [internalIsOpen, setInternalIsOpen] = useState(false);
 
-  const points = references.slice(0, 10);
-  const extraPoints = references.slice(10);
+  const pointGroups = groupClusterPoints(references);
+  const points = pointGroups.slice(0, MAX_VISIBLE_POINTS);
+  const extraPoints = pointGroups.slice(MAX_VISIBLE_POINTS);
 
   const clusterIsOpen = isOpen ?? internalIsOpen;
   const outerSize = computeClusterOuterSize(references.length);
   const hasActiveRef = references.some(ref => ref._id === activePointId);
   const rowCount = points.length + (extraPoints.length > 0 ? 1 : 0);
-  const pointsHeight = (rowCount - 1) * RAIL_MARKER_SPACING + RAIL_MARKER_SIZE;
-  const stemMidY = pointsHeight / 2;
-  const treeTopOffset = outerSize / 2 - stemMidY;
+  const subtree = computeClusterSubtreeLayout({ position, markerLayerHeight, outerSize, rowCount });
   const zIndex = railMarkerZIndex(stackOrder, clusterIsOpen ? 'cluster-open' : 'cluster');
 
   return (
@@ -87,20 +146,25 @@ const Cluster = ({
         <div
           data-testid="cluster-subtree"
           className="absolute pointer-events-none"
-          style={{ left: -SVG_WIDTH, top: treeTopOffset, width: SVG_WIDTH, height: pointsHeight }}
+          style={{
+            left: -SVG_WIDTH,
+            top: subtree.topOffset,
+            width: SVG_WIDTH,
+            height: subtree.height,
+          }}
         >
           <svg
             data-testid="cluster-subtree-svg"
             width={SVG_WIDTH}
-            height={pointsHeight}
+            height={subtree.height}
             className="absolute inset-0 overflow-visible"
             aria-hidden
           >
             <line
               x1={TRUNK_X}
-              y1={stemMidY}
+              y1={subtree.stemY}
               x2={SVG_WIDTH}
-              y2={stemMidY}
+              y2={subtree.stemY}
               stroke={LINE_STROKE}
               strokeOpacity={LINE_OPACITY}
               strokeWidth={1}
@@ -109,7 +173,7 @@ const Cluster = ({
               x1={TRUNK_X}
               y1={RAIL_MARKER_SIZE / 2}
               x2={TRUNK_X}
-              y2={pointsHeight - RAIL_MARKER_SIZE / 2}
+              y2={subtree.height - RAIL_MARKER_SIZE / 2}
               stroke={LINE_STROKE}
               strokeOpacity={LINE_OPACITY}
               strokeWidth={1}
@@ -135,19 +199,20 @@ const Cluster = ({
             className="absolute inset-0 pointer-events-auto"
             style={{ width: RAIL_MARKER_SIZE + PAD, left: 0 }}
           >
-            {points.map((marker, index) => (
+            {points.map(({ marker, markers }, index) => (
               <Point
                 key={marker._id || `cluster-point-${index}`}
                 position={index * RAIL_MARKER_SPACING}
                 marker={marker}
                 onClick={onPointClick}
-                isActive={activePointId === marker._id}
+                isActive={markers.some(pointMarker => pointMarker._id === activePointId)}
+                representedCount={markers.length}
               />
             ))}
             {extraPoints.length > 0 && (
               <ShowMoreButton
                 position={points.length * RAIL_MARKER_SPACING}
-                references={extraPoints}
+                references={references}
                 onClick={onMoreClick}
               />
             )}
@@ -158,4 +223,4 @@ const Cluster = ({
   );
 };
 
-export { Cluster };
+export { Cluster, computeClusterSubtreeLayout };

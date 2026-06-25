@@ -38,6 +38,7 @@ const DocumentTab = ({
     handleHighlightClick,
     handleRailPointClick,
     handleClusterClick,
+    handleClusterMoreClick,
     onPdfReady,
   } = useDocumentPdfView({ mainDocument, entity });
 
@@ -110,6 +111,7 @@ const DocumentTab = ({
             activeRelationshipId={activeRelationshipId}
             onPointClick={handleRailPointClick}
             onClusterClick={handleClusterClick}
+            onMoreClick={handleClusterMoreClick}
           />
         )}
         {selectedText && userIsAdminOrEditor && !isRaw ? (

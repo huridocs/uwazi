@@ -240,6 +240,7 @@ Create relationship,Create relationship
 Create relationship types,Create relationship types
 Create relationships and references,Create relationships and references
 Create table of contents,Create table of contents
+Created,Created
 Created entity,Created entity
 Created entity coming from a public form,Created entity coming from a public form
 Created page,Created page
@@ -516,6 +517,7 @@ Importing data in progress,Importing data in progress
 in,in
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,In OCR queue
+in this document,in this document
 Incoming,Incoming
 Indexing entities may take a few minutes,Indexing entities may take a few minutes
 Info,Info
@@ -685,7 +687,6 @@ No page,No page
 No property,Item does not have this property
 No References,No References
 No References description,References are parts of this document related with other documents and entities.
-No relationship types available,No relationship types available
 No Relationships,No Relationships
 No Relationships description,Relationships are bonds between entities.
 No relationships found,No relationships found
@@ -735,6 +736,7 @@ one character,one character
                 available for selection."
 "Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Open,Open
+Open entity,Open entity
 Open group,Open group
 Open link,Open link
 Open PDF,Open PDF
@@ -850,6 +852,7 @@ Recommended,Recommended
 Reference,Reference
 References,References
 references,references
+References in document,References in document
 Reject,Reject
 Related entities created,Related entities created
 Relation type,Relation type
@@ -983,6 +986,7 @@ Show actions,Show actions
 Show cookie policy,Show cookie policy
 Show filters,Show filters
 Show in cards,Show in cards
+Show less,Show less
 Show more,Show more
 Show toolbar,Show toolbar
 Showing,Showing
@@ -1166,7 +1170,6 @@ Translations,Translations
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully
 Translations saved,Translations saved
-Try adjusting your search terms or check for typos,Try adjusting your search terms or check for typos
 Turn off inline translation,Turn off inline translation
 Two-Factor Authentication,Two-Factor Authentication
 Two-factor authentication enabled,Two-factor authentication enabled
@@ -1262,6 +1265,7 @@ Will show the entire media inside the container.,Will show the entire media insi
 with,with
 With great power comes great responsibility!,With great power comes great responsibility!
 wom?n,wom?n
+x,x
 x less,less
 x more,more
 Year,Year

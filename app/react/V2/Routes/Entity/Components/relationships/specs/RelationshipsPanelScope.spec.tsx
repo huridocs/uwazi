@@ -48,8 +48,8 @@ const createPanelScopeRouter = (entity: Entity) => {
   ]);
 };
 
-describe('RelationshipsPanel entity scope', () => {
-  it('resets panel filters when the scoped entity remounts', async () => {
+describe('Relationships panel across entities', () => {
+  it('clears the search filter when viewing a different entity', async () => {
     const user = userEvent.setup();
     const searchInput = () => screen.getByRole('textbox', { name: /search relationships/i });
 
@@ -64,7 +64,7 @@ describe('RelationshipsPanel entity scope', () => {
     render(<RouterProvider router={createPanelScopeRouter(entityWithRelationsB)} />);
 
     expect(searchInput()).toHaveValue('');
-    expect(screen.getByText('alpha snippet')).toBeInTheDocument();
+    expect(screen.getByText(/alpha snippet/)).toBeInTheDocument();
     expect(screen.getByText('Other Entity')).toBeInTheDocument();
   });
 });

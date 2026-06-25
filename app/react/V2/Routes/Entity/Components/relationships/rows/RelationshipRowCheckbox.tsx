@@ -1,39 +1,47 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { t } from '#app/I18N/index.js';
 import { checkboxInputClassName } from '#V2/Components/Forms/Checkbox.js';
 import { useRelationshipsSelection } from '#V2/Routes/Entity/Components/context/index.js';
 
 type RelationshipRowCheckboxProps = {
-  relationshipId: string;
+  relationshipIds: string[];
 };
 
-const RelationshipRowCheckbox = ({ relationshipId }: RelationshipRowCheckboxProps) => {
+const RelationshipRowCheckbox = ({ relationshipIds }: RelationshipRowCheckboxProps) => {
   const {
     relationshipsEditMode: editMode,
     selectedRelationshipIds: selected,
     setSelectedRelationshipIds: setSelected,
   } = useRelationshipsSelection();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const checked =
+    relationshipIds.length > 0 &&
+    relationshipIds.every(relationshipId => selected.has(relationshipId));
+  const indeterminate =
+    !checked && relationshipIds.some(relationshipId => selected.has(relationshipId));
+
+  useEffect(() => {
+    if (inputRef.current) inputRef.current.indeterminate = indeterminate;
+  }, [indeterminate]);
 
   if (!editMode) {
     return null;
   }
 
-  const checked = selected.has(relationshipId);
-
   return (
     <span className="flex shrink-0 items-center" onClick={e => e.stopPropagation()}>
       <input
+        ref={inputRef}
         type="checkbox"
         checked={checked}
         aria-label={t('System', 'Select relationship', null, false)}
         onChange={() => {
           setSelected(prev => {
             const next = new Set(prev);
-            if (checked) {
-              next.delete(relationshipId);
-            } else {
-              next.add(relationshipId);
-            }
+            relationshipIds.forEach(relationshipId =>
+              checked ? next.delete(relationshipId) : next.add(relationshipId)
+            );
             return next;
           });
         }}

@@ -1,7 +1,6 @@
 export {
   RelationshipsPanel,
   RelationshipRow,
-  CreateReference,
   CreateRelationshipModal,
   useRelationships,
   useRelationshipsActions,

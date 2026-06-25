@@ -13,27 +13,33 @@ const useRelationshipDelete = (
 ) => {
   const entity = useEntityScopedEntity();
   const [relationshipToDelete, setRelationshipToDelete] = useState<RelationshipMarker | null>(null);
+  const [idsToDelete, setIdsToDelete] = useState<string[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
   const revalidator = useRevalidator();
 
-  const handleDeleteClick = useCallback((marker: RelationshipMarker) => {
-    setRelationshipToDelete(marker);
-  }, []);
+  const handleDeleteClick = useCallback(
+    (marker: RelationshipMarker, relationshipIds?: string[]) => {
+      setRelationshipToDelete(marker);
+      setIdsToDelete(relationshipIds?.length ? relationshipIds : [marker._id]);
+    },
+    []
+  );
 
   const handleConfirmDelete = useCallback(async () => {
-    if (!relationshipToDelete?._id || !entity?.sharedId) return;
+    if (!idsToDelete.length || !entity?.sharedId) return;
     setIsDeleting(true);
     try {
-      const relationshipId = String(relationshipToDelete._id);
-      await deleteReferencesById([relationshipId]);
+      await deleteReferencesById(idsToDelete.map(String));
       setRelationshipToDelete(null);
-      if (activeRelationshipId === relationshipToDelete._id) clearRelationshipSelection();
+      if (activeRelationshipId && idsToDelete.includes(activeRelationshipId)) {
+        clearRelationshipSelection();
+      }
       await refreshEntityRelationships(entity.sharedId, revalidator);
     } finally {
       setIsDeleting(false);
     }
   }, [
-    relationshipToDelete,
+    idsToDelete,
     entity?.sharedId,
     activeRelationshipId,
     clearRelationshipSelection,

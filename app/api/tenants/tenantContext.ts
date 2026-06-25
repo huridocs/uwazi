@@ -31,6 +31,7 @@ type Tenant = {
     postgresTemplates?: boolean;
     aiAssistant?: boolean;
     aiAssistantServiceUrl?: string;
+    v2CreateUser?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

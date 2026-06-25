@@ -7,6 +7,7 @@ import { RelationshipsPanelFiltersProvider } from './RelationshipsPanelFiltersCo
 import { DocumentInteractionProvider } from './DocumentInteractionContext.js';
 import { TocProvider } from './TocContext.js';
 import { MetadataEditingProvider } from './MetadataEditingContext.js';
+import { EntityOverlayProvider } from './EntityOverlayContext.js';
 
 type EntityScopedProviderProps = {
   entity: Entity;
@@ -20,7 +21,9 @@ const EntityScopedProvider = ({ entity, children }: EntityScopedProviderProps) =
         <RelationshipsPanelFiltersProvider>
           <DocumentInteractionProvider>
             <TocProvider>
-              <MetadataEditingProvider>{children}</MetadataEditingProvider>
+              <MetadataEditingProvider>
+                <EntityOverlayProvider>{children}</EntityOverlayProvider>
+              </MetadataEditingProvider>
             </TocProvider>
           </DocumentInteractionProvider>
         </RelationshipsPanelFiltersProvider>

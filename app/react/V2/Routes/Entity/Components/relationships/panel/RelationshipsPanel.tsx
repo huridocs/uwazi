@@ -14,6 +14,7 @@ import {
   useRelationshipsPanelLayout,
   useRelationshipsPanelUi,
   useRelationshipsSelectionActions,
+  useEntityOverlay,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 import { useGroupLabelContext } from '../hooks/useGroupLabelContext.js';
@@ -38,6 +39,7 @@ const RelationshipsPanel = ({
   const { setSelectedRelationshipIds, setRelationshipsEditMode } =
     useRelationshipsSelectionActions();
 
+  const { openEntityOverlay } = useEntityOverlay();
   const {
     relationshipToDelete,
     isDeleting,
@@ -57,9 +59,8 @@ const RelationshipsPanel = ({
   );
 
   const handleViewClick = useCallback(
-    (marker: RelationshipMarker) =>
-      window.open(`/entity/${marker.target.sharedId}`, '_blank', 'noopener,noreferrer'),
-    []
+    (marker: RelationshipMarker) => openEntityOverlay(marker),
+    [openEntityOverlay]
   );
 
   useEffect(

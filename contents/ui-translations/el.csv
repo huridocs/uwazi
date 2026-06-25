@@ -239,6 +239,7 @@ Create relationship,Create relationship
 Create relationship types,Δημιουργία τύπων σχέσεων
 Create relationships and references,Δημιουργία σχέσεων και αναφορών
 Create table of contents,Δημιουργία πίνακα περιεχομένων
+Created,Created
 Created entity,Δημιουργήθηκε οντότητα
 Created entity coming from a public form,Δημιουργήθηκε οντότητα από δημόσια φόρμα
 Created page,Δημιουργήθηκε σελίδα
@@ -515,6 +516,7 @@ Importing data in progress,Εισαγωγή δεδομένων σε εξέλιξ
 in,σε
 "In a group, either all relationships must have a hub or none of them.","Σε μια ομάδα, είτε όλες οι σχέσεις πρέπει να έχουν έναν κόμβο είτε καμία από αυτές."
 In OCR queue,Στην ουρά OCR
+in this document,in this document
 Incoming,Incoming
 Indexing entities may take a few minutes,Η ευρετηριοποίηση οντοτήτων μπορεί να διαρκέσει μερικά λεπτά
 Info,Πληροφορίες
@@ -684,7 +686,6 @@ No page,No page
 No property,Το στοιχείο δεν έχει αυτήν την ιδιότητα
 No References,Δεν υπάρχουν αναφορές
 No References description,Οι αναφορές είναι τμήματα αυτού του εγγράφου που σχετίζονται με άλλα έγγραφα και οντότητες.
-No relationship types available,No relationship types available
 No Relationships,Δεν υπάρχουν σχέσεις
 No Relationships description,Οι σχέσεις είναι δεσμοί μεταξύ οντοτήτων.
 No relationships found,No relationships found
@@ -734,6 +735,7 @@ one character,one character
                 και μία αριθμητική ιδιότητα είναι διαθέσιμα για επιλογή."
 "Only the extractor will be deleted, all created entities will remain on the library.","Μόνο ο εξαγωγέας θα διαγραφεί, όλες οι δημιουργημένες οντότητες θα παραμείνουν στη βιβλιοθήκη."
 Open,Άνοιγμα
+Open entity,Open entity
 Open group,Άνοιγμα ομάδας
 Open link,Open link
 Open PDF,Άνοιγμα PDF
@@ -849,6 +851,7 @@ Recommended,Recommended
 Reference,Αναφορά
 References,Αναφορές
 references,Αναφορές
+References in document,References in document
 Reject,Απόρριψη
 Related entities created,Related entities created
 Relation type,Τύπος σχέσης
@@ -982,6 +985,7 @@ Show actions,Εμφάνιση ενεργειών
 Show cookie policy,Εμφάνιση πολιτικής cookie
 Show filters,Εμφάνιση φίλτρων
 Show in cards,Εμφάνιση σε κάρτες
+Show less,Show less
 Show more,Εμφάνιση περισσότερων
 Show toolbar,Εμφάνιση γραμμής εργαλείων
 Showing,Εμφάνιση
@@ -1165,7 +1169,6 @@ Translations,Μεταφράσεις
 Translations imported.,Οι μεταφράσεις εισήχθησαν.
 Translations reset successfully,Οι μεταφράσεις επαναφέρθηκαν επιτυχώς
 Translations saved,Οι μεταφράσεις αποθηκεύτηκαν
-Try adjusting your search terms or check for typos,Try adjusting your search terms or check for typos
 Turn off inline translation,Απενεργοποίηση ενσωματωμένης μετάφρασης
 Two-Factor Authentication,Πιστοποίηση δύο παραγόντων
 Two-factor authentication enabled,Η πιστοποίηση δύο παραγόντων ενεργοποιήθηκε
@@ -1261,6 +1264,7 @@ Will show the entire media inside the container.,Θα εμφανίσει ολό�
 with,με
 With great power comes great responsibility!,Με τη μεγάλη δύναμη έρχεται και η μεγάλη ευθύνη!
 wom?n,wom?n
+x,x
 x less,λιγότερα
 x more,περισσότερα
 Year,Έτος

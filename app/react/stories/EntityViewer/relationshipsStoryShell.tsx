@@ -6,7 +6,9 @@ import {
   RelationshipsPanel,
   RelationshipsFiltersDrawer,
 } from '#V2/Routes/Entity/Components/relationships/index.js';
+import { EntityOverlay } from '#V2/Routes/Entity/Components/relationships/overlay/EntityOverlay.js';
 import { useRelationshipsPanelUi } from '#V2/Routes/Entity/Components/context/index.js';
+import type { ClientTemplateSchema } from '#V2/shared/types.js';
 import { apiEntity } from '../fixtures/referencesFixtures.js';
 import { RelationshipsStoryProvider } from './RelationshipsStoryProvider.js';
 import { RelationshipsSyncedDocumentView } from './relationshipsDocumentViews.js';
@@ -17,6 +19,8 @@ type RelationshipsStoryShellProps = {
   locale: 'en' | 'es';
   layout?: RelationshipsStoryLayout;
   entity?: Entity;
+  storyTemplates?: ClientTemplateSchema[];
+  preloadEntities?: Entity[];
   children?: React.ReactNode;
 };
 
@@ -46,6 +50,8 @@ const RelationshipsStoryShell = ({
   locale,
   layout = 'panel',
   entity = apiEntity,
+  storyTemplates,
+  preloadEntities,
   children,
 }: RelationshipsStoryShellProps) => {
   const storyEntity = useMemo(() => structuredClone(entity), [entity]);
@@ -61,7 +67,12 @@ const RelationshipsStoryShell = ({
         {
           path: '*',
           element: (
-            <RelationshipsStoryProvider locale={locale} entity={storyEntity}>
+            <RelationshipsStoryProvider
+              locale={locale}
+              entity={storyEntity}
+              storyTemplates={storyTemplates}
+              preloadEntities={preloadEntities}
+            >
               <ResetFiltersDrawer />
               <div className={shellClass}>
                 {layout === 'split' ? (
@@ -80,6 +91,7 @@ const RelationshipsStoryShell = ({
                           dir="ltr"
                           className="relative flex h-full min-h-0 flex-col gap-3 overflow-hidden border-l border-border-soft"
                         >
+                          <EntityOverlay />
                           <div className="shrink-0 px-3 pt-2.5">
                             <SideTabsStub />
                           </div>
@@ -96,6 +108,7 @@ const RelationshipsStoryShell = ({
                     dir="ltr"
                     className="relative h-full overflow-hidden rounded-md border border-border-soft bg-paper"
                   >
+                    <EntityOverlay />
                     {children ?? (
                       <>
                         <PanelContent />
@@ -109,7 +122,16 @@ const RelationshipsStoryShell = ({
           ),
         },
       ]),
-    [children, layout, locale, mainDocument, shellClass, storyEntity]
+    [
+      children,
+      layout,
+      locale,
+      mainDocument,
+      preloadEntities,
+      shellClass,
+      storyEntity,
+      storyTemplates,
+    ]
   );
 
   return <RouterProvider router={router} />;

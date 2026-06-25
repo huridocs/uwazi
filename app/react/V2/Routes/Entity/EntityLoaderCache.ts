@@ -2,6 +2,17 @@ import { SnippetsSearchResponse } from '#V2/api/types.js';
 import { Entity, FileType } from '#V2/api/entities/types.js';
 import { isClient } from '#app/utils/index.js';
 
+type EntityCacheOptions = {
+  requireRelationships?: boolean;
+};
+
+const entityIncludesRelationships = (entity: Entity): boolean => 'relations' in entity;
+
+const mergeEntityCacheEntry = (existing: Entity, incoming: Entity): Entity =>
+  entityIncludesRelationships(existing)
+    ? { ...existing, ...incoming, relations: existing.relations }
+    : incoming;
+
 interface CachedItem<T> {
   data: T;
   timestamp: number;
@@ -51,6 +62,9 @@ const invalidateByPrefix = <T>(cache: Map<string, CachedItem<T>>, prefix: string
 };
 
 class EntityLoaderCache {
+  // Shared entity cache keyed by `${sharedId}:${language}` (5-minute TTL).
+  // Loader and overlay read the same entry; loader requires `relations`, overlay does not.
+  // Full fetches replace the entry; partial fetches merge metadata without dropping relations.
   private entityCache = new Map<string, CachedItem<Entity>>();
 
   private mainDocumentCache = new Map<string, CachedItem<FileType>>();
@@ -58,8 +72,6 @@ class EntityLoaderCache {
   private plaintextCache = new Map<string, CachedItem<string>>();
 
   private searchResultsCache = new Map<string, CachedItem<SnippetsSearchResponse>>();
-
-  private isSSR = !isClient;
 
   private ttls = {
     entity: 5 * 60 * 1000,
@@ -75,21 +87,40 @@ class EntityLoaderCache {
     searchResults: 20,
   };
 
-  getEntity(sharedId: string, language: string): Entity | undefined {
-    if (this.isSSR) {
+  getEntity(
+    sharedId: string,
+    language: string,
+    { requireRelationships = false }: EntityCacheOptions = {}
+  ): Entity | undefined {
+    if (!isClient) {
       return undefined;
     }
 
     const key = `${sharedId}:${language}`;
+    const entity = getCachedItem(this.entityCache, key, this.ttls.entity);
 
-    return getCachedItem(this.entityCache, key, this.ttls.entity);
+    if (!entity?._id) {
+      return undefined;
+    }
+
+    if (requireRelationships && !entityIncludesRelationships(entity)) {
+      return undefined;
+    }
+
+    return entity;
   }
 
   setEntity(sharedId: string, language: string, data: Entity): void {
-    if (!this.isSSR) {
-      const key = `${sharedId}:${language}`;
-      setCachedItem(this.entityCache, key, data, this.limits.entity);
+    if (!isClient || !data._id) {
+      return;
     }
+
+    const key = `${sharedId}:${language}`;
+    const existing = getCachedItem(this.entityCache, key, this.ttls.entity);
+    const next =
+      entityIncludesRelationships(data) || !existing ? data : mergeEntityCacheEntry(existing, data);
+
+    setCachedItem(this.entityCache, key, next, this.limits.entity);
   }
 
   invalidateEntity(sharedId: string): void {
@@ -99,7 +130,7 @@ class EntityLoaderCache {
   }
 
   getMainDocument(sharedId: string, language: string): FileType | undefined {
-    if (this.isSSR) {
+    if (!isClient) {
       return undefined;
     }
 
@@ -108,14 +139,14 @@ class EntityLoaderCache {
   }
 
   setMainDocument(sharedId: string, language: string, data: FileType): void {
-    if (!this.isSSR) {
+    if (isClient) {
       const key = `${sharedId}:${language}`;
       setCachedItem(this.mainDocumentCache, key, data, this.limits.mainDocument);
     }
   }
 
   getPlaintext(documentId: string, page: number): string | undefined {
-    if (this.isSSR) {
+    if (!isClient) {
       return undefined;
     }
 
@@ -124,7 +155,7 @@ class EntityLoaderCache {
   }
 
   setPlaintext(documentId: string, page: number, text: string): void {
-    if (!this.isSSR) {
+    if (isClient) {
       const key = `${documentId}:${page}`;
       setCachedItem(this.plaintextCache, key, text, this.limits.plaintext);
     }
@@ -139,7 +170,7 @@ class EntityLoaderCache {
     language: string,
     searchTerm: string
   ): SnippetsSearchResponse | undefined {
-    if (this.isSSR) {
+    if (!isClient) {
       return undefined;
     }
 
@@ -153,7 +184,7 @@ class EntityLoaderCache {
     searchTerm: string,
     results: SnippetsSearchResponse
   ): void {
-    if (!this.isSSR) {
+    if (isClient) {
       const key = `${sharedId}:${language}:${searchTerm.toLowerCase().trim()}`;
       setCachedItem(this.searchResultsCache, key, results, this.limits.searchResults);
     }
@@ -172,3 +203,5 @@ class EntityLoaderCache {
 }
 
 export const entityLoaderCache = new EntityLoaderCache();
+export { entityIncludesRelationships };
+export type { EntityCacheOptions };

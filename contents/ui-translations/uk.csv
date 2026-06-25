@@ -240,6 +240,7 @@ Create relationship,Create relationship
 Create relationship types,Створення типів зв'язків
 Create relationships and references,Створюйте зв'язки та посилання
 Create table of contents,Створити зміст
+Created,Created
 Created entity,Створена сутність
 Created entity coming from a public form,Створений суб'єкт з публічної форми
 Created page,Створена сторінка
@@ -516,6 +517,7 @@ Importing data in progress,Імпортування даних під час в�
 in,в
 "In a group, either all relationships must have a hub or none of them.","У групі або всі відносини повинні мати центр, або жоден з них."
 In OCR queue,У черзі на оптичне розпізнавання символів
+in this document,in this document
 Incoming,Incoming
 Indexing entities may take a few minutes,Індексація об'єктів може тривати декілька хвилин
 Info,Інформація
@@ -685,7 +687,6 @@ No page,No page
 No property,Товар не має цієї властивості
 No References,Немає посилань
 No References description,"Посилання - це частини цього документа, пов'язані з іншими документами та об'єктами."
-No relationship types available,No relationship types available
 No Relationships,Немає взаємозв'язків
 No Relationships description,Відносини - це зв'язки між суб'єктами.
 No relationships found,No relationships found
@@ -735,6 +736,7 @@ one character,one character
                 доступні для вибору."
 "Only the extractor will be deleted, all created entities will remain on the library.","Буде видалено лише розпакувальник, всі створені сутності залишаться у бібліотеці."
 Open,Відкрито
+Open entity,Open entity
 Open group,Відкрита група
 Open link,Open link
 Open PDF,Відкрити PDF
@@ -850,6 +852,7 @@ Recommended,Recommended
 Reference,Посилання
 References,Посилання
 references,references
+References in document,References in document
 Reject,Відхилити
 Related entities created,Related entities created
 Relation type,Тип відношення
@@ -983,6 +986,7 @@ Show actions,Показати дії
 Show cookie policy,Показати політику cookie
 Show filters,Показати фільтри
 Show in cards,Показати в картках
+Show less,Show less
 Show more,Показати більше
 Show toolbar,Показати панель інструментів
 Showing,Показати
@@ -1166,7 +1170,6 @@ Translations,Переклади
 Translations imported.,Переклади імпортовані.
 Translations reset successfully,Переклади успішно скинуто
 Translations saved,Переклади збережено
-Try adjusting your search terms or check for typos,Try adjusting your search terms or check for typos
 Turn off inline translation,Вимкнути вбудований переклад
 Two-Factor Authentication,Двофакторна автентифікація
 Two-factor authentication enabled,Увімкнено двофакторну автентифікацію
@@ -1262,6 +1265,7 @@ Will show the entire media inside the container.,Покаже всі носії 
 with,з
 With great power comes great responsibility!,З великою силою приходить велика відповідальність!
 wom?n,wom?n
+x,x
 x less,менше
 x more,більше
 Year,Рік

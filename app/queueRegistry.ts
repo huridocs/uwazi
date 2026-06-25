@@ -75,6 +75,7 @@ import { CreateBlankStateSuggestionsJob } from '#api/suggestions/jobs/CreateBlan
 import { DatavizScheduledRefreshJobHandlerFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizScheduledRefreshJobHandlerFactory.js';
 import { DatavizScheduledRefreshJobHandler } from '#api/dataviz.v2/infrastructure/jobHandlers/DatavizScheduledRefreshJobHandler.js';
 import { tenants } from '#api/tenants/tenantContext.js';
+import { SendWelcomeEmailHandler } from '#api/core/infrastructure/jobs/SendWelcomeEmailHandler.js';
 
 type Register = <T extends Dispatchable>(
   dispatchable: DispatchableClass<T>,
@@ -321,4 +322,6 @@ export function registerJobs(register: Register) {
   register(DatavizScheduledRefreshJobHandler, async namespace =>
     DatavizScheduledRefreshJobHandlerFactory.default(namespace)
   );
+
+  register(SendWelcomeEmailHandler, async () => new SendWelcomeEmailHandler());
 }

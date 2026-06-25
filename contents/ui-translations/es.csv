@@ -236,6 +236,7 @@ Create relationship,Crear relación
 Create relationship types,Crear tipos de relación
 Create relationships and references,Crear relaciones y referencias
 Create table of contents,Crear tabla de contenidos
+Created,Creado
 Created entity,Entidad creada
 Created entity coming from a public form,Entidad creada desde un formulario público
 Created page,Página creada
@@ -512,6 +513,7 @@ Importing data in progress,Importación de datos en curso
 in,en
 "In a group, either all relationships must have a hub or none of them.","En un grupo, todas las relaciones deben tener un nodo o ninguno de ellos."
 In OCR queue,En cola para ROC
+in this document,en este documento
 Incoming,Entrante
 Indexing entities may take a few minutes,La indexación de entidades puede tomar unos minutos.
 Info,Información
@@ -681,7 +683,6 @@ No page,No hay página
 No property,Ninguna propiedad
 No References,Sin referencias
 No References description,Las referencias son partes de este documento relacionadas con otros documentos y entidades.
-No relationship types available,No relationship types available
 No Relationships,No existen relaciones
 No Relationships description,Las relaciones son vínculos entre entidades.
 No relationships found,No se encontraron relaciones
@@ -731,6 +732,7 @@ one character,one character
                 available for selection."
 "Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Open,Open
+Open entity,Abrir entidad
 Open group,Open group
 Open link,Open link
 Open PDF,Open PDF
@@ -846,6 +848,7 @@ Recommended,Recommended
 Reference,Reference
 References,Referencias
 references,referencias
+References in document,Referencias en el documento
 Reject,Rechazar
 Related entities created,Related entities created
 Relation type,Tipo de relación
@@ -979,6 +982,7 @@ Show actions,Mostrar acciones
 Show cookie policy,Mostrar política de cookies
 Show filters,Mostrar filtros
 Show in cards,Mostrar en tarjetas
+Show less,Show less
 Show more,Mostrar más
 Show toolbar,Mostrar la barra de herramientas
 Showing,Showing
@@ -1161,7 +1165,6 @@ Translations,Traducciones
 Translations imported.,Traducciones importadas.
 Translations reset successfully,Traducciones reseteadas exitosamente
 Translations saved,Traducciones guardadas
-Try adjusting your search terms or check for typos,Try adjusting your search terms or check for typos
 Turn off inline translation,Desactivar la traducción en línea
 Two-Factor Authentication,Two-Factor Authentication
 Two-factor authentication enabled,Doble factor de autenticación habilitado
@@ -1257,6 +1260,7 @@ Will show the entire media inside the container.,Will show the entire media insi
 with,con
 With great power comes great responsibility!,"¡Con un gran poder, viene una gran responsabilidad!"
 wom?n,wom?n
+x,x
 x less,menos
 x more,más
 Year,Año
