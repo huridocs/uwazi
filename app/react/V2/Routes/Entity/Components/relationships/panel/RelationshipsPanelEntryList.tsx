@@ -21,8 +21,11 @@ type RelationshipsPanelEntryListProps = RelationshipPanelRowHandlers & {
   flat?: boolean;
 };
 
-const panelEntryCount = (markers: RelationshipMarker[], selfSharedId: string): number =>
-  buildPanelListEntries(markers, selfSharedId).length;
+const panelEntryCount = (
+  markers: RelationshipMarker[],
+  selfSharedId: string,
+  flat = false
+): number => (flat ? markers.length : buildPanelListEntries(markers, selfSharedId).length);
 
 const renderPanelEntryRows = ({
   markers,
