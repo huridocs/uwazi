@@ -129,9 +129,7 @@ const testingPG = {
     }
   },
 
-  async getAllFrom<T extends pg.QueryResultRow = Record<string, unknown>>(
-    table: string
-  ): Promise<T[]> {
+  async getAllFrom<T extends pg.QueryResultRow = Record<string, any>>(table: string): Promise<T[]> {
     if (!pool) throw new Error('testingPG not connected');
     const result = await pool.query<T>(`SELECT * FROM ${table}`);
     return result.rows;

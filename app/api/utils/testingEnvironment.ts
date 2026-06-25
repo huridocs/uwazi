@@ -161,18 +161,12 @@ const testingEnvironment = {
         Object.fromEntries(
           Object.entries(fixtures)
             .filter(([table]) => ['thesauri', 'templates', 'files'].includes(table))
-            .map(([table, fixture]) => [table, fixture.map(f => JSON.parse(JSON.stringify(f)))])
+            .map(([table, fixture]) => [
+              table,
+              fixture.map((f: any) => JSON.parse(JSON.stringify(f))),
+            ])
         )
       );
-    }
-
-    if (this.pgEnabled && fixtures?.dictionaries?.length) {
-      const pgThesauri = fixtures.dictionaries.map((dict: any) => ({
-        _id: dict._id.toString(),
-        name: dict.name,
-        values: dict.values ?? [],
-      }));
-      await testingPG.setFixtures({ thesauri: pgThesauri });
     }
 
     if (this.pgEnabled && fixtures?.templates?.length) {
