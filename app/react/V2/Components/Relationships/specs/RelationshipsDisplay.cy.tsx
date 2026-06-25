@@ -160,7 +160,16 @@ describe('References Display', () => {
       it('cluster subtree renders stem trunk and branch svg lines', () => {
         openMainCluster();
         cy.get('[data-testid="cluster-subtree"]').should('be.visible');
-        cy.get('[data-testid="cluster-subtree-svg"] line').should('have.length.at.least', 12);
+        cy.get('[data-testid="cluster-subtree"]').within(() => {
+          cy.get('[data-testid="rail-marker"]').then($markers => {
+            const showMoreCount = $markers
+              .first()
+              .closest('[data-testid="cluster-subtree"]')
+              .find('[data-testid="rail-show-more"]').length;
+            const rowCount = $markers.length + showMoreCount;
+            cy.get('[data-testid="cluster-subtree-svg"] line').should('have.length', rowCount + 2);
+          });
+        });
         cy.get('[data-testid="cluster-subtree-svg"] line').eq(0).should('have.attr', 'x1', '28');
         cy.get('[data-testid="cluster-subtree-svg"] line').eq(0).should('have.attr', 'x2', '40');
         cy.get('[data-testid="cluster-subtree-svg"] line').eq(1).should('have.attr', 'x1', '28');

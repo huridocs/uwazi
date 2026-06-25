@@ -20,10 +20,13 @@ const RelationshipsMarkerListBody = ({
 }: RelationshipsMarkerListBodyProps) => {
   const { groupBy, subGroupBy } = useRelationshipsPanelLayout();
 
+  const flat = variant === 'list';
+
   if (groupBy === 'none') {
     return (
       <RelationshipsPanelEntryList
         bordered={variant === 'list'}
+        flat={flat}
         variant={variant}
         markers={markers}
         groupContext={groupContext}
