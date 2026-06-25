@@ -30,6 +30,7 @@ import { testingPG } from '#api/utils/testing_pg.js';
 import type { PGFixture } from '#api/utils/testing_pg.js';
 import { User } from '#api/users.v2/model/User.js';
 import { UserSchema } from '#shared/types/userType.js';
+import { ObjectUtils } from '#api/common.v2/utils/Object.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -160,27 +161,13 @@ const testingEnvironment = {
       await testingPG.setFixtures(
         Object.fromEntries(
           Object.entries(fixtures)
-            .filter(([table]) => ['thesauri', 'templates', 'files'].includes(table))
+            .filter(([table]) => ['dictionaries', 'templates', 'files'].includes(table))
             .map(([table, fixture]) => [
-              table,
-              fixture.map((f: any) => JSON.parse(JSON.stringify(f))),
+              table === 'dictionaries' ? 'thesauri' : table,
+              fixture.map((f: any) => JSON.parse(JSON.stringify(ObjectUtils.sanitize(f, ['__v'])))),
             ])
         )
       );
-    }
-
-    if (this.pgEnabled && fixtures?.templates?.length) {
-      const pgTemplates = fixtures.templates.map((t: any) => ({
-        _id: t._id.toString(),
-        name: t.name,
-        properties: t.properties ?? [],
-        commonProperties: t.commonProperties ?? [],
-        color: t.color ?? null,
-        default: t.default ?? false,
-        entityViewPage: t.entityViewPage ?? null,
-        processing: t.processing ?? null,
-      }));
-      await testingPG.setFixtures({ templates: pgTemplates });
     }
   },
 
