@@ -3,23 +3,22 @@ import users from '#api/users/users.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
 import { Dispatchable, HeartbeatCallback, JobInfo } from './Dispatchable.js';
+import { User } from '#api/core/domain/user/User.js';
 
-export type UserAwareDispatchableParams = { tenantName: string; userId?: string };
+type ActorData = Pick<User, '_id' | 'username' | 'role' | 'email' | 'groups'>;
 
-export type Params<ExtendedParams> = ExtendedParams & { tenantName: string; userId?: string };
+export type UserAwareDispatchableParams = { tenantName: string; userId?: string; actor?: ActorData };
+
+export type Params<ExtendedParams> = ExtendedParams & {
+  tenantName: string;
+  userId?: string;
+  actor?: ActorData;
+};
 
 export abstract class UserAwareDispatchable<ExtendedParams> implements Dispatchable {
   protected params!: Params<ExtendedParams>;
 
   protected jobInfo!: JobInfo;
-
-  private static readonly SYSTEM_USER = {
-    _id: 'system',
-    username: 'system',
-    role: 'admin' as const,
-    email: 'system@uwazi',
-    groups: [],
-  };
 
   protected abstract handle(heartBeatCallBack: HeartbeatCallback, jobInfo?: JobInfo): Promise<void>;
 
@@ -34,11 +33,16 @@ export abstract class UserAwareDispatchable<ExtendedParams> implements Dispatcha
   }
 
   private async setCurrentUser() {
-    if (this.params.userId) {
+    if (this.params.actor) {
+      permissionsContext.setUserInContext(this.params.actor);
+    } else if (this.params.userId) {
       const user = await users.getById(this.params.userId, '-password', true);
-      permissionsContext.setUserInContext(user ?? UserAwareDispatchable.SYSTEM_USER);
+      if (!user) {
+        throw new Error(`User '${this.params.userId}' not found for job`);
+      }
+      permissionsContext.setUserInContext(user);
     } else {
-      permissionsContext.setUserInContext(UserAwareDispatchable.SYSTEM_USER);
+      throw new Error('No actor or userId provided for job');
     }
   }
 

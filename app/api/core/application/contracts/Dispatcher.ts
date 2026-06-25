@@ -1,23 +1,26 @@
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { User } from '#api/core/domain/user/User.js';
+
+type ActorData = Pick<User, '_id' | 'username' | 'role' | 'email' | 'groups'>;
 
 type SyncRelationshipsParams = {
   sharedId: string;
   targetLanguage: LanguageISO6391;
   templateId: string;
   tenantName: string;
-  userId: string;
+  actor?: ActorData;
 };
 
 type CleanupEntityParams = {
   sharedIds: string[];
-  userId: string;
   tenantName: string;
+  actor?: ActorData;
 };
 
 type PDFPostProcessParams = {
   tenantName: string;
   documentId: string;
-  userId: string;
+  actor?: ActorData;
 };
 
 type TemplatePostProcessParams = {
@@ -31,13 +34,13 @@ type TemplatePostProcessParams = {
   fullReindex: boolean;
   resaveForFilterChange: boolean;
   tenantName: string;
-  userId: string;
+  actor?: ActorData;
 };
 
 type DenormalizeThesaurusParams = {
   tenantName: string;
   thesaurusId: string;
-  userId: string;
+  actor?: ActorData;
 };
 
 type CloneLanguageEntitiesParams = {
