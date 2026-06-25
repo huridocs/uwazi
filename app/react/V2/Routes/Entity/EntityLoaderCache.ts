@@ -73,8 +73,6 @@ class EntityLoaderCache {
 
   private searchResultsCache = new Map<string, CachedItem<SnippetsSearchResponse>>();
 
-  private isSSR = !isClient;
-
   private ttls = {
     entity: 5 * 60 * 1000,
     mainDocument: 5 * 60 * 1000,
@@ -94,7 +92,7 @@ class EntityLoaderCache {
     language: string,
     { requireRelationships = false }: EntityCacheOptions = {}
   ): Entity | undefined {
-    if (this.isSSR) {
+    if (!isClient) {
       return undefined;
     }
 
@@ -113,7 +111,7 @@ class EntityLoaderCache {
   }
 
   setEntity(sharedId: string, language: string, data: Entity): void {
-    if (this.isSSR || !data._id) {
+    if (!isClient || !data._id) {
       return;
     }
 
@@ -132,7 +130,7 @@ class EntityLoaderCache {
   }
 
   getMainDocument(sharedId: string, language: string): FileType | undefined {
-    if (this.isSSR) {
+    if (!isClient) {
       return undefined;
     }
 
@@ -141,14 +139,14 @@ class EntityLoaderCache {
   }
 
   setMainDocument(sharedId: string, language: string, data: FileType): void {
-    if (!this.isSSR) {
+    if (isClient) {
       const key = `${sharedId}:${language}`;
       setCachedItem(this.mainDocumentCache, key, data, this.limits.mainDocument);
     }
   }
 
   getPlaintext(documentId: string, page: number): string | undefined {
-    if (this.isSSR) {
+    if (!isClient) {
       return undefined;
     }
 
@@ -157,7 +155,7 @@ class EntityLoaderCache {
   }
 
   setPlaintext(documentId: string, page: number, text: string): void {
-    if (!this.isSSR) {
+    if (isClient) {
       const key = `${documentId}:${page}`;
       setCachedItem(this.plaintextCache, key, text, this.limits.plaintext);
     }
@@ -172,7 +170,7 @@ class EntityLoaderCache {
     language: string,
     searchTerm: string
   ): SnippetsSearchResponse | undefined {
-    if (this.isSSR) {
+    if (!isClient) {
       return undefined;
     }
 
@@ -186,7 +184,7 @@ class EntityLoaderCache {
     searchTerm: string,
     results: SnippetsSearchResponse
   ): void {
-    if (!this.isSSR) {
+    if (isClient) {
       const key = `${sharedId}:${language}:${searchTerm.toLowerCase().trim()}`;
       setCachedItem(this.searchResultsCache, key, results, this.limits.searchResults);
     }

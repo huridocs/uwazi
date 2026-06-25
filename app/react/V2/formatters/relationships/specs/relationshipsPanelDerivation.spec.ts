@@ -2,6 +2,7 @@ import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import {
   buildFlatPanelListEntries,
   buildPanelListEntries,
+  panelEntryKey,
 } from '../relationshipsPanelDerivation.js';
 
 const marker = (
@@ -68,5 +69,11 @@ describe('relationshipsPanelDerivation', () => {
     });
     expect(entries).toHaveLength(1);
     expect(entries[0]?.kind).toBe('aggregate');
+  });
+
+  it('uses stable keys per marker in flat mode', () => {
+    const markers = [marker('1', 'hub-a', 'target1'), marker('2', 'hub-a', 'target1')];
+    const entries = buildFlatPanelListEntries(markers);
+    expect(entries.map(entry => panelEntryKey(entry))).toEqual(['1', '2']);
   });
 });

@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { createStore, Provider } from 'jotai';
 import { templatesAtom } from '#V2/atoms/index.js';
 import { Point } from '../Components/Point.js';
@@ -57,5 +57,17 @@ describe('Point', () => {
     const dot = screen.getByTestId('rail-marker-dot');
     expect(dot).toHaveStyle({ width: '14px' });
     expect(dot.style.boxShadow).not.toBe('none');
+  });
+
+  it('shows the target title in the tooltip', () => {
+    render(
+      <Provider store={store}>
+        <Point marker={marker} position={0} onClick={() => undefined} />
+      </Provider>
+    );
+
+    fireEvent.mouseOver(screen.getByTestId('rail-marker-dot'));
+
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Person 2');
   });
 });

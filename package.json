@@ -82,6 +82,7 @@
     "blank-e2e-fixtures": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e ./uwazi-fixtures/restore.blank-e2e.sh",
     "eslint": "./node_modules/.bin/eslint e2e app cypress --quiet",
     "eslint-fulldiff": "git diff-index --name-only origin/development | grep ^app/ | grep -v snap | xargs ls -d 2>/dev/null | xargs ./node_modules/.bin/eslint ",
+    "eslint-diff-branch": "git diff --name-only HEAD | grep '^app/' | grep -v snap | xargs -r ls -d 2>/dev/null | xargs -r ./node_modules/.bin/eslint --cache",
     "prettier": "./node_modules/.bin/prettier --write 'app/**/*.{js,ts,tsx}'",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",

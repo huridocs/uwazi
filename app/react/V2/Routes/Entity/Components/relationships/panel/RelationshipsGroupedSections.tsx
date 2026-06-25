@@ -39,12 +39,21 @@ const renderGroupLabel = (
   />
 );
 
-const renderPanelEntries = (
-  markersList: RelationshipMarker[],
-  groupContext: GroupLabelContext,
-  variant: 'list' | 'tree',
-  rowProps: RelationshipPanelRowHandlers
-) => {
+type PanelEntriesRenderParams = {
+  markersList: RelationshipMarker[];
+  groupContext: GroupLabelContext;
+  variant: 'list' | 'tree';
+  rowProps: RelationshipPanelRowHandlers;
+  flat?: boolean;
+};
+
+const renderPanelEntries = ({
+  markersList,
+  groupContext,
+  variant,
+  rowProps,
+  flat = false,
+}: PanelEntriesRenderParams) => {
   if (variant === 'tree') {
     return renderPanelEntryRows({
       markers: markersList,
@@ -59,6 +68,7 @@ const renderPanelEntries = (
       markers={markersList}
       groupContext={groupContext}
       variant={variant}
+      flat={flat}
       {...rowProps}
     />
   );
@@ -71,6 +81,7 @@ type SubGroupRenderParams = {
   groupContext: GroupLabelContext;
   rowProps: RelationshipPanelRowHandlers;
   variant: 'list' | 'tree';
+  flat: boolean;
 };
 
 const renderSubGroups = ({
@@ -80,14 +91,21 @@ const renderSubGroups = ({
   groupContext,
   rowProps,
   variant,
+  flat,
 }: SubGroupRenderParams) => {
   const subGroups = groupMarkers(groupMarkersList, subGroupBy, groupContext).map(
     ([subKey, subMarkers]) => {
       const title = renderGroupLabel(subKey, subGroupBy, groupContext, subMarkers);
       const color = getGroupColor(subKey, subGroupBy, groupContext, subMarkers);
-      const count = panelEntryCount(subMarkers, rowProps.selfSharedId);
+      const count = panelEntryCount(subMarkers, rowProps.selfSharedId, flat);
       const markerIds = subMarkers.map(marker => marker._id);
-      const entries = renderPanelEntries(subMarkers, groupContext, variant, rowProps);
+      const entries = renderPanelEntries({
+        markersList: subMarkers,
+        groupContext,
+        variant,
+        rowProps,
+        flat,
+      });
 
       if (variant === 'list') {
         return (
@@ -132,16 +150,23 @@ const RelationshipsGroupedSections = ({
   variant,
   ...rowProps
 }: RelationshipsGroupedSectionsProps) => {
+  const flat = variant === 'list';
   const primaryGroups = groupMarkers(markers, groupBy, groupContext);
 
   const sections = primaryGroups.map(([key, groupMarkersList]) => {
     const title = renderGroupLabel(key, groupBy, groupContext, groupMarkersList);
     const color = getGroupColor(key, groupBy, groupContext, groupMarkersList);
-    const count = panelEntryCount(groupMarkersList, rowProps.selfSharedId);
+    const count = panelEntryCount(groupMarkersList, rowProps.selfSharedId, flat);
     const markerIds = groupMarkersList.map(marker => marker._id);
     const content =
       subGroupBy === 'none'
-        ? renderPanelEntries(groupMarkersList, groupContext, variant, rowProps)
+        ? renderPanelEntries({
+            markersList: groupMarkersList,
+            groupContext,
+            variant,
+            rowProps,
+            flat,
+          })
         : renderSubGroups({
             parentKey: key,
             groupMarkersList,
@@ -149,6 +174,7 @@ const RelationshipsGroupedSections = ({
             groupContext,
             rowProps,
             variant,
+            flat,
           });
 
     if (variant === 'list') {
