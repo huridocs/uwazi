@@ -3,12 +3,9 @@ import { buildManualDataDTO, isManualDataSource } from '#shared/dataviz/manualDa
 import type { DatavizDataDTO } from '#shared/types/datavizSchema.js';
 import { User } from '#api/users.v2/model/User.js';
 import { Dataviz } from '#api/dataviz.v2/domain/Dataviz.js';
-import type { DatavizDataSource } from '#api/dataviz.v2/application/contracts/DatavizDataSource.js';
 import type { DatavizQueryExecutor } from '#api/dataviz.v2/application/contracts/DatavizQueryExecutor.js';
-import type { DatavizSnapshotsDataSource } from '#api/dataviz.v2/application/contracts/DatavizSnapshotsDataSource.js';
 import type { DatavizSnapshot } from '#api/dataviz.v2/application/contracts/DatavizSnapshotsDataSource.js';
 import type { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-import type { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { validateQueryStructure } from '#api/dataviz.v2/domain/validators/validateExecutableDatavizQuery.js';
 import {
   buildRenderSnapshot,
@@ -21,13 +18,11 @@ type BuildSnapshotDeps = {
   templatesDS: TemplatesDataSource;
 };
 
-type PersistSnapshotDeps = BuildSnapshotDeps & {
-  datavizDS: DatavizDataSource;
-  snapshotsDS: DatavizSnapshotsDataSource;
-  transactionManager: TransactionManager;
+type SnapshotPersistencePlan = {
+  snapshot: DatavizSnapshot;
+  datavizWithRefresh: Dataviz;
+  snapshotData: DatavizDataDTO;
 };
-
-type PersistDefinitionMode = 'create' | 'update';
 
 const withSnapshotRefreshMetadata = (dataviz: Dataviz): Dataviz => {
   const refresh = {
@@ -90,46 +85,16 @@ const buildDatavizSnapshot = async (
   return buildRenderSnapshot(dataviz, data, templates);
 };
 
-const persistDatavizSnapshot = async (
+const planSnapshotPersistence = async (
   dataviz: Dataviz,
   actor: User,
-  deps: PersistSnapshotDeps,
-  mode: PersistDefinitionMode
-): Promise<{ dataviz: Dataviz; snapshotData: DatavizDataDTO }> => {
+  deps: BuildSnapshotDeps
+): Promise<SnapshotPersistencePlan> => {
   const snapshot = await buildDatavizSnapshot(dataviz, actor, deps);
   const datavizWithRefresh = withSnapshotRefreshMetadata(dataviz);
 
-  await deps.transactionManager.run(async () => {
-    if (mode === 'create') {
-      await deps.datavizDS.create(datavizWithRefresh);
-    } else {
-      await deps.datavizDS.update(datavizWithRefresh);
-    }
-    await deps.snapshotsDS.upsert(snapshot);
-  });
-
-  return { dataviz: datavizWithRefresh, snapshotData: snapshot.payload.data };
+  return { snapshot, datavizWithRefresh, snapshotData: snapshot.payload.data };
 };
 
-const persistDatavizSnapshotForRefresh = async (
-  dataviz: Dataviz,
-  actor: User,
-  deps: PersistSnapshotDeps
-): Promise<{ dataviz: Dataviz; snapshotData: DatavizDataDTO }> => {
-  const snapshot = await buildDatavizSnapshot(dataviz, actor, deps);
-  const datavizWithRefresh = withSnapshotRefreshMetadata(dataviz);
-
-  await deps.transactionManager.run(async () => {
-    await deps.snapshotsDS.upsert(snapshot);
-    await deps.datavizDS.update(datavizWithRefresh);
-  });
-
-  return { dataviz: datavizWithRefresh, snapshotData: snapshot.payload.data };
-};
-
-export {
-  buildDatavizSnapshot,
-  persistDatavizSnapshot,
-  persistDatavizSnapshotForRefresh,
-  withSnapshotRefreshMetadata,
-};
+export { buildDatavizSnapshot, planSnapshotPersistence, withSnapshotRefreshMetadata };
+export type { BuildSnapshotDeps, SnapshotPersistencePlan };

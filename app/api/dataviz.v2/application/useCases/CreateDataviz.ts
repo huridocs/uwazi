@@ -9,7 +9,7 @@ import { validateLiveRefreshAllowed } from '#api/dataviz.v2/domain/validators/va
 import type { DatavizScheduler } from '#api/dataviz.v2/application/contracts/DatavizScheduler.js';
 import { normalizeDatavizRefresh } from '#shared/dataviz/normalizeDatavizRefresh.js';
 import type { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-import { persistDatavizSnapshot } from '#api/dataviz.v2/application/services/persistDatavizSnapshot.js';
+import { planSnapshotPersistence } from '#api/dataviz.v2/application/services/persistDatavizSnapshot.js';
 
 type Input = Omit<DatavizDefinition, 'id' | 'createdAt' | 'updatedAt'>;
 
@@ -51,18 +51,21 @@ class CreateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
       updatedAt: new Date(),
     });
 
-    const { dataviz: saved } = await persistDatavizSnapshot(
+    const { snapshot, datavizWithRefresh } = await planSnapshotPersistence(
       dataviz,
       this.getActor(),
       {
-        datavizDS: this.deps.datavizDS,
-        snapshotsDS: this.deps.snapshotsDS,
         queryExecutor: this.deps.queryExecutor,
         templatesDS: this.deps.templatesDS,
-        transactionManager: this.transactionManager,
-      },
-      'create'
+      }
     );
+
+    await this.transactionManager.run(async () => {
+      await this.deps.datavizDS.create(datavizWithRefresh);
+      await this.deps.snapshotsDS.upsert(snapshot);
+    });
+
+    const saved = datavizWithRefresh;
 
     if (saved.isScheduled) {
       await this.deps.scheduler.schedule(saved, this.getActor(), false);

@@ -11,7 +11,7 @@ import { validateLiveRefreshAllowed } from '#api/dataviz.v2/domain/validators/va
 import type { DatavizScheduler } from '#api/dataviz.v2/application/contracts/DatavizScheduler.js';
 import { normalizeDatavizRefresh } from '#shared/dataviz/normalizeDatavizRefresh.js';
 import type { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-import { persistDatavizSnapshot } from '#api/dataviz.v2/application/services/persistDatavizSnapshot.js';
+import { planSnapshotPersistence } from '#api/dataviz.v2/application/services/persistDatavizSnapshot.js';
 import { shouldPersistSnapshotOnSave } from '#api/dataviz.v2/application/services/shouldPersistSnapshotOnSave.js';
 
 type Input = DatavizDefinition;
@@ -66,18 +66,21 @@ class UpdateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
     let saved = dataviz;
 
     if (snapshotChanged) {
-      ({ dataviz: saved } = await persistDatavizSnapshot(
+      const { snapshot, datavizWithRefresh } = await planSnapshotPersistence(
         dataviz,
         this.getActor(),
         {
-          datavizDS: this.deps.datavizDS,
-          snapshotsDS: this.deps.snapshotsDS,
           queryExecutor: this.deps.queryExecutor,
           templatesDS: this.deps.templatesDS,
-          transactionManager: this.transactionManager,
-        },
-        'update'
-      ));
+        }
+      );
+
+      await this.transactionManager.run(async () => {
+        await this.deps.datavizDS.update(datavizWithRefresh);
+        await this.deps.snapshotsDS.upsert(snapshot);
+      });
+
+      saved = datavizWithRefresh;
     } else {
       await this.transactionManager.run(async () => {
         await this.deps.datavizDS.update(dataviz);

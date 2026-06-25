@@ -6,7 +6,7 @@ import type { TemplatesDataSource } from '#api/core/application/contracts/Templa
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { isManualDataSource } from '#shared/dataviz/manualData.js';
 import { DatavizInvalidQueryError, DatavizNotFoundError } from '#api/dataviz.v2/domain/errors.js';
-import { persistDatavizSnapshotForRefresh } from '#api/dataviz.v2/application/services/persistDatavizSnapshot.js';
+import { planSnapshotPersistence } from '#api/dataviz.v2/application/services/persistDatavizSnapshot.js';
 
 type Input = { datavizId: string };
 
@@ -37,12 +37,18 @@ class RefreshDatavizSnapshotUseCase extends AbstractUseCase<Input, Output, Deps>
     });
 
     try {
-      const { snapshotData } = await persistDatavizSnapshotForRefresh(dataviz, this.getActor(), {
-        datavizDS: this.deps.datavizDS,
-        snapshotsDS: this.deps.snapshotsDS,
-        queryExecutor: this.deps.queryExecutor,
-        templatesDS: this.deps.templatesDS,
-        transactionManager: this.transactionManager,
+      const { snapshot, datavizWithRefresh, snapshotData } = await planSnapshotPersistence(
+        dataviz,
+        this.getActor(),
+        {
+          queryExecutor: this.deps.queryExecutor,
+          templatesDS: this.deps.templatesDS,
+        }
+      );
+
+      await this.transactionManager.run(async () => {
+        await this.deps.snapshotsDS.upsert(snapshot);
+        await this.deps.datavizDS.update(datavizWithRefresh);
       });
 
       return snapshotData;
