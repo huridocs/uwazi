@@ -1,7 +1,7 @@
 import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import type { DatavizEmbedPayload } from '#shared/types/datavizSchema.js';
 import { filterDataForDisplay } from '#shared/dataviz/filterDataForDisplay.js';
-import { buildManualDataDTO, isManualDataSource } from '#shared/dataviz/manualData.js';
+import { buildManualDataDTO } from '#shared/dataviz/manualData.js';
 import { buildRenderSnapshotPayload } from './buildRenderSnapshot.js';
 import { Dataviz } from '#api/dataviz.v2/domain/Dataviz.js';
 import {
@@ -29,7 +29,7 @@ const resolveDatavizRenderSnapshot = async (
     throw new DatavizProcessingError(dataviz.id);
   }
 
-  if (isManualDataSource(dataviz.dataSource)) {
+  if (dataviz.isManual) {
     const manualPayload = buildRenderSnapshotPayload(
       dataviz,
       buildManualDataDTO(dataviz.id, dataviz.manualData)

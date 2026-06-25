@@ -6,8 +6,6 @@ import { DatavizQueryExecutor } from '#api/dataviz.v2/application/contracts/Data
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { Dataviz } from '#api/dataviz.v2/domain/Dataviz.js';
 import { DatavizNotFoundError } from '#api/dataviz.v2/domain/errors.js';
-import { isManualDataSource } from '#shared/dataviz/manualData.js';
-import { validateLiveRefreshAllowed } from '#api/dataviz.v2/domain/validators/validateLiveRefreshAllowed.js';
 import type { DatavizScheduler } from '#api/dataviz.v2/application/contracts/DatavizScheduler.js';
 import { normalizeDatavizRefresh } from '#shared/dataviz/normalizeDatavizRefresh.js';
 import type { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
@@ -33,10 +31,6 @@ class UpdateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
       throw new DatavizNotFoundError(input.id);
     }
     const existing = existingResult.getDataOrThrow();
-
-    if (input.refresh.refreshMode === 'live' && !isManualDataSource(input.dataSource)) {
-      validateLiveRefreshAllowed(input.refresh.refreshMode, input.query);
-    }
 
     const exists = await this.deps.datavizDS.existsByName(input.name, input.id);
     if (exists) {

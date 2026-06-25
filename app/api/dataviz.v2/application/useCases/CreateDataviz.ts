@@ -4,8 +4,6 @@ import { DatavizSnapshotsDataSource } from '#api/dataviz.v2/application/contract
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { Dataviz } from '#api/dataviz.v2/domain/Dataviz.js';
 import type { DatavizDefinition } from '#shared/types/datavizSchema.js';
-import { isManualDataSource } from '#shared/dataviz/manualData.js';
-import { validateLiveRefreshAllowed } from '#api/dataviz.v2/domain/validators/validateLiveRefreshAllowed.js';
 import type { DatavizScheduler } from '#api/dataviz.v2/application/contracts/DatavizScheduler.js';
 import { normalizeDatavizRefresh } from '#shared/dataviz/normalizeDatavizRefresh.js';
 import type { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
@@ -26,10 +24,6 @@ type Deps = {
 class CreateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
     const id = this.idGenerator.generate();
-
-    if (input.refresh.refreshMode === 'live' && !isManualDataSource(input.dataSource)) {
-      validateLiveRefreshAllowed(input.refresh.refreshMode, input.query);
-    }
 
     const exists = await this.deps.datavizDS.existsByName(input.name);
     if (exists) {

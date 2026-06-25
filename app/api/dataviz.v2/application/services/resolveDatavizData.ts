@@ -1,6 +1,6 @@
 import type { DatavizDataDTO, DatavizQuery } from '#shared/types/datavizSchema.js';
 import { DATAVIZ_DRAFT_ID } from '#shared/types/datavizSchema.js';
-import { buildManualDataDTO, isManualDataSource } from '#shared/dataviz/manualData.js';
+import { buildManualDataDTO } from '#shared/dataviz/manualData.js';
 import { User } from '#api/users.v2/model/User.js';
 import { Dataviz } from '#api/dataviz.v2/domain/Dataviz.js';
 import {
@@ -68,7 +68,7 @@ const resolveDatavizData = async (
     throw new DatavizProcessingError(id);
   }
 
-  if (isManualDataSource(dataviz.dataSource)) {
+  if (dataviz.isManual) {
     return buildManualDataDTO(id, dataviz.manualData);
   }
 

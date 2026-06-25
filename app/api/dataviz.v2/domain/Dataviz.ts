@@ -9,9 +9,9 @@ import type {
   DatavizRefreshPolicy,
 } from '#shared/types/datavizSchema.js';
 import { computeQueryHash } from '#shared/dataviz/computeQueryHash.js';
-import { isManualDataSource } from '#shared/dataviz/manualData.js';
 import { DatavizInvalidQueryError } from './errors.js';
 import { validateExecutableDatavizQuery } from './validators/validateExecutableDatavizQuery.js';
+import { validateLiveRefreshAllowed } from './validators/validateLiveRefreshAllowed.js';
 import { validateManualData } from './validators/validateManualData.js';
 
 type Props = {
@@ -90,17 +90,22 @@ class Dataviz {
     return this.refresh.refreshMode !== 'live';
   }
 
+  get isManual(): boolean {
+    return this.dataSource === 'manual';
+  }
+
   private validate(): void {
     if (!this.name.trim()) {
       throw new DatavizInvalidQueryError('Dataviz name is required');
     }
 
-    if (isManualDataSource(this.dataSource)) {
+    if (this.isManual) {
       validateManualData(this.manualData);
       return;
     }
 
     validateExecutableDatavizQuery(this.query);
+    validateLiveRefreshAllowed(this.refresh.refreshMode, this.query);
   }
 
   validateForPersist(): void {

@@ -4,7 +4,6 @@ import { DatavizQueryExecutor } from '#api/dataviz.v2/application/contracts/Data
 import { DatavizSnapshotsDataSource } from '#api/dataviz.v2/application/contracts/DatavizSnapshotsDataSource.js';
 import type { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
-import { isManualDataSource } from '#shared/dataviz/manualData.js';
 import { DatavizInvalidQueryError, DatavizNotFoundError } from '#api/dataviz.v2/domain/errors.js';
 import { planSnapshotPersistence } from '#api/dataviz.v2/application/services/persistDatavizSnapshot.js';
 
@@ -27,7 +26,7 @@ class RefreshDatavizSnapshotUseCase extends AbstractUseCase<Input, Output, Deps>
     }
     const dataviz = datavizResult.getDataOrThrow();
 
-    if (isManualDataSource(dataviz.dataSource)) {
+    if (dataviz.isManual) {
       throw new DatavizInvalidQueryError('Manual data visualizations cannot be refreshed');
     }
 

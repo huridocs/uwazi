@@ -1,5 +1,5 @@
 import { computeNextScheduledAtIso } from '#shared/dataviz/computeNextLockedUntil.js';
-import { buildManualDataDTO, isManualDataSource } from '#shared/dataviz/manualData.js';
+import { buildManualDataDTO } from '#shared/dataviz/manualData.js';
 import type { DatavizDataDTO } from '#shared/types/datavizSchema.js';
 import { User } from '#api/users.v2/model/User.js';
 import { Dataviz } from '#api/dataviz.v2/domain/Dataviz.js';
@@ -54,7 +54,7 @@ const buildDatavizSnapshot = async (
   actor: User,
   deps: BuildSnapshotDeps
 ): Promise<DatavizSnapshot> => {
-  if (isManualDataSource(dataviz.dataSource)) {
+  if (dataviz.isManual) {
     const data = buildManualDataDTO(dataviz.id, dataviz.manualData);
     return {
       datavizId: dataviz.id,
