@@ -26,7 +26,7 @@ import relationtypes from '#api/relationtypes/index.js';
 import syncRoutes from '#api/sync/routes.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { tenants } from '#api/tenants/index.js';
-import thesauri from '#api/thesauri/index.js';
+import thesauri from '#api/core/v1_layer/thesauri/index.js';
 import users from '#api/users/users.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';

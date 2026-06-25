@@ -14,13 +14,13 @@ import { UserRole } from '#shared/types/userSchema.js';
 import { DeleteThesaurusUseCaseFactory } from '#api/core/infrastructure/factories/DeleteThesaurusUseCaseFactory.js';
 
 jest.mock(
-  '../../auth/authMiddleware.ts',
+  '../../../../auth/authMiddleware.ts',
   () => () => (_req: Request, _res: Response, next: NextFunction) => {
     next();
   }
 );
 
-jest.mock('../../core/infrastructure/factories/DeleteThesaurusUseCaseFactory.ts', () => ({
+jest.mock('../../../../core/infrastructure/factories/DeleteThesaurusUseCaseFactory.ts', () => ({
   DeleteThesaurusUseCaseFactory: {
     default: jest.fn(),
   },

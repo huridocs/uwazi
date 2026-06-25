@@ -5,7 +5,7 @@ import translations from '#api/i18n/index.js';
 import { EnforcedWithId } from '#api/odm/index.js';
 import settings from '#api/settings/index.js';
 import templates from '#api/core/v1_layer/templates/index.js';
-import thesauri from '#api/thesauri/index.js';
+import thesauri from '#api/core/v1_layer/thesauri/index.js';
 import { EventEmitter } from 'events';
 
 import { objectIndex } from '#shared/data_utils/objectIndex.js';

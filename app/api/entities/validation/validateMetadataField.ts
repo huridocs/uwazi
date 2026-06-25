@@ -7,8 +7,8 @@ import { EntitySchema, EntityWithFilesSchema } from '#shared/types/entityType.js
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { arrayBidirectionalDiff } from '#shared/data_utils/arrayBidirectionalDiff.js';
 import entities from '#api/entities/index.js';
-import thesauris from '#api/thesauri/index.js';
-import { flatThesaurusValues } from '#api/thesauri/thesauri.js';
+import thesauris from '#api/core/v1_layer/thesauri/index.js';
+import { flatThesaurusValues } from '#api/core/v1_layer/thesauri/thesauri.js';
 import { validators, customErrorMessages } from './metadataValidators.js';
 
 const hasValue = (value: any) => value !== undefined && value !== null;
