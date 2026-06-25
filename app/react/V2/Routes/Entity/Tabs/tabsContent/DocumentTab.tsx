@@ -125,7 +125,7 @@ const DocumentTab = ({
         <div
           ref={setPdfScrollRoot}
           data-testid="pdf-scroll-container"
-          className="absolute inset-0 overflow-y-auto pl-1 pr-[60px] [scrollbar-gutter:stable]"
+          className="absolute inset-0 overflow-y-auto pl-1 pr-[60px] scrollbar-gutter-stable"
         >
           <PDF
             fileUrl={`/api/files/${filename}`}

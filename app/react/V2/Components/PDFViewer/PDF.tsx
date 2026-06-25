@@ -67,6 +67,7 @@ const PDF = ({
   const snippetAnimationFrameIdRef = useRef<number>(0);
   const pdfContainerRef = useRef<HTMLDivElement | null>(null);
   const pageVisibilityRef = useRef<Map<number, number>>(new Map());
+  const numPagesRef = useRef(0);
   const isReady = useRef(false);
   const [intersectionObserver, setIntersectionObserver] = useState<IntersectionObserver | null>(
     null
@@ -255,22 +256,34 @@ const PDF = ({
         }
       });
 
+    const pageVisibility = pageVisibilityRef.current;
     isReady.current = false;
+    pageVisibility.clear();
+    pageRefsMap.current = {};
 
     return () => {
       isReady.current = false;
+      pageVisibility.clear();
     };
   }, [fileUrl]);
 
   useEffect(() => {
+    numPagesRef.current = pdf?.numPages ?? 0;
+    pageVisibilityRef.current.clear();
+  }, [pdf]);
+
+  useEffect(() => {
+    pageVisibilityRef.current.clear();
+
     const observerHandler: IntersectionObserverCallback = entries => {
       entries.forEach(entry => {
         const pageNumber = Number.parseInt(entry.target.getAttribute('data-pagenumber') || '0', 10);
-        pageVisibilityRef.current.set(pageNumber, entry.intersectionRatio);
 
         if (entry.isIntersecting) {
+          pageVisibilityRef.current.set(pageNumber, entry.intersectionRatio);
           pdfEventBus.dispatch('renderpage', { pageNumber });
         } else {
+          pageVisibilityRef.current.delete(pageNumber);
           pdfEventBus.dispatch('unmountpage', { pageNumber });
         }
       });
@@ -279,7 +292,12 @@ const PDF = ({
 
       let mostVisiblePage = 0;
       let highestRatio = 0;
+      const maxPages = numPagesRef.current;
       pageVisibilityRef.current.forEach((ratio, pageNumber) => {
+        if (pageNumber < 1 || pageNumber > maxPages) {
+          pageVisibilityRef.current.delete(pageNumber);
+          return;
+        }
         const wins =
           ratio > highestRatio || (ratio === highestRatio && pageNumber < mostVisiblePage);
         if (ratio > 0 && (mostVisiblePage === 0 || wins)) {
