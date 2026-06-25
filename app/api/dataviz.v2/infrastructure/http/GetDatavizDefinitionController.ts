@@ -1,9 +1,9 @@
 import { DatavizController } from './DatavizController.js';
-import { GetDatavizDefinitionUseCaseFactory } from '../factories/GetDatavizDefinitionUseCaseFactory.js';
+import { DatavizFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizFactory.js';
 
 class GetDatavizDefinitionController extends DatavizController {
   protected async handle(): Promise<void> {
-    const useCase = GetDatavizDefinitionUseCaseFactory.default();
+    const useCase = DatavizFactory.getDefinitionUseCase();
     const dataviz = await useCase.execute({ id: this.request.params.id! });
     this.response.json(dataviz.toDefinition());
   }

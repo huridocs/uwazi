@@ -161,8 +161,8 @@ describe('public dataviz embed integration', () => {
 
     await testingEnvironment.runWithContext(async () => {
       const snapshotsDS = (
-        await import('#api/dataviz.v2/infrastructure/factories/DatavizSnapshotsDataSourceFactory.js')
-      ).DatavizSnapshotsDataSourceFactory.default();
+        await import('#api/dataviz.v2/infrastructure/factories/DatavizFactory.js')
+      ).DatavizFactory.snapshotsDataSource();
       await snapshotsDS.deleteByDatavizId(datavizId);
     });
 

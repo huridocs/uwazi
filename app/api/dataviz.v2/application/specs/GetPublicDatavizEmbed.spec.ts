@@ -6,8 +6,7 @@ import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGenerat
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import settings from '#api/settings/settings.js';
 import { User } from '#api/users.v2/model/User.js';
-import { DatavizDataSourceFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizDataSourceFactory.js';
-import { DatavizSnapshotsDataSourceFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizSnapshotsDataSourceFactory.js';
+import { DatavizFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import type { DatavizScheduler } from '#api/dataviz.v2/application/contracts/DatavizScheduler.js';
 import { MANUAL_DATA_EXAMPLE } from '#shared/dataviz/manualData.js';
@@ -52,8 +51,8 @@ const createSut = (queryExecutor = createMockQueryExecutor()) =>
         {
           transactionManager,
           idGenerator: IdGeneratorFactory.default(),
-          datavizDS: DatavizDataSourceFactory.default(),
-          snapshotsDS: DatavizSnapshotsDataSourceFactory.default(),
+          datavizDS: DatavizFactory.dataSource(),
+          snapshotsDS: DatavizFactory.snapshotsDataSource(),
           queryExecutor,
           templatesDS: TemplatesDataSourceFactory.default(),
           scheduler: { cancelPending: jest.fn(), schedule: jest.fn() } satisfies DatavizScheduler,
@@ -66,8 +65,8 @@ const createSut = (queryExecutor = createMockQueryExecutor()) =>
             const tm = ExecutionContext.transactionManager as MongoTransactionManager;
             const useCase = new GetPublicDatavizEmbedUseCase(
               {
-                datavizDS: DatavizDataSourceFactory.default(),
-                snapshotsDS: DatavizSnapshotsDataSourceFactory.default(),
+                datavizDS: DatavizFactory.dataSource(),
+                snapshotsDS: DatavizFactory.snapshotsDataSource(),
                 settingsDS: SettingsDataSourceFactory.default({ transactionManager: tm }),
               },
               { actor, tenant: ExecutionContext.tenant, targetLanguage: 'en' }
@@ -75,8 +74,8 @@ const createSut = (queryExecutor = createMockQueryExecutor()) =>
             return useCase.execute(input);
           }),
       }),
-      datavizDS: DatavizDataSourceFactory.default(),
-      snapshotsDS: DatavizSnapshotsDataSourceFactory.default(),
+      datavizDS: DatavizFactory.dataSource(),
+      snapshotsDS: DatavizFactory.snapshotsDataSource(),
     };
   });
 

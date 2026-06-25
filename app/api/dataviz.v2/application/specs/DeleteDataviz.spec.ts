@@ -2,9 +2,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { DatavizDataSourceFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizDataSourceFactory.js';
-import { DatavizSnapshotsDataSourceFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizSnapshotsDataSourceFactory.js';
-import { DatavizQueryExecutorFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizQueryExecutorFactory.js';
+import { DatavizFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { MANUAL_DATA_EXAMPLE } from '#shared/dataviz/manualData.js';
 import { CreateDatavizUseCase } from '../useCases/CreateDataviz.js';
@@ -29,9 +27,9 @@ describe('DeleteDatavizUseCase', () => {
         {
           transactionManager,
           idGenerator: IdGeneratorFactory.default(),
-          datavizDS: DatavizDataSourceFactory.default(),
-          snapshotsDS: DatavizSnapshotsDataSourceFactory.default(),
-          queryExecutor: DatavizQueryExecutorFactory.default(),
+          datavizDS: DatavizFactory.dataSource(),
+          snapshotsDS: DatavizFactory.snapshotsDataSource(),
+          queryExecutor: DatavizFactory.queryExecutor(),
           templatesDS: TemplatesDataSourceFactory.default(),
           scheduler: createScheduler,
         },
@@ -57,8 +55,8 @@ describe('DeleteDatavizUseCase', () => {
       const deleteUseCase = new DeleteDatavizUseCase(
         {
           transactionManager,
-          datavizDS: DatavizDataSourceFactory.default(),
-          snapshotsDS: DatavizSnapshotsDataSourceFactory.default(),
+          datavizDS: DatavizFactory.dataSource(),
+          snapshotsDS: DatavizFactory.snapshotsDataSource(),
           scheduler: deleteScheduler,
         },
         { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant }
@@ -69,7 +67,7 @@ describe('DeleteDatavizUseCase', () => {
     expect(deleteScheduler.cancelPending).toHaveBeenCalledWith(created.id);
 
     const result = await testingEnvironment.runWithContext(async () =>
-      DatavizDataSourceFactory.default().getById(created.id)
+      DatavizFactory.dataSource().getById(created.id)
     );
     expect(result.isError()).toBe(true);
   });

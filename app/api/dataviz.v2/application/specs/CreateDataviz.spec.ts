@@ -3,8 +3,7 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
-import { DatavizDataSourceFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizDataSourceFactory.js';
-import { DatavizSnapshotsDataSourceFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizSnapshotsDataSourceFactory.js';
+import { DatavizFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizFactory.js';
 import type { DatavizScheduler } from '#api/dataviz.v2/application/contracts/DatavizScheduler.js';
 import type { DatavizQueryExecutor } from '#api/dataviz.v2/application/contracts/DatavizQueryExecutor.js';
 import { CreateDatavizUseCase } from '../useCases/CreateDataviz.js';
@@ -32,8 +31,8 @@ const createSut = (scheduler: DatavizScheduler, queryExecutor = createMockQueryE
         {
           transactionManager,
           idGenerator: IdGeneratorFactory.default(),
-          datavizDS: DatavizDataSourceFactory.default(),
-          snapshotsDS: DatavizSnapshotsDataSourceFactory.default(),
+          datavizDS: DatavizFactory.dataSource(),
+          snapshotsDS: DatavizFactory.snapshotsDataSource(),
           queryExecutor,
           templatesDS: TemplatesDataSourceFactory.default(),
           scheduler,
@@ -41,7 +40,7 @@ const createSut = (scheduler: DatavizScheduler, queryExecutor = createMockQueryE
         { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant }
       ),
       queryExecutor,
-      snapshotsDS: DatavizSnapshotsDataSourceFactory.default(),
+      snapshotsDS: DatavizFactory.snapshotsDataSource(),
     };
   });
 
