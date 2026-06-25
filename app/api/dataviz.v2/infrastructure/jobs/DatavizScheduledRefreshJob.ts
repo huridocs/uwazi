@@ -3,9 +3,12 @@ import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
 } from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
+import { HeartbeatCallback, JobInfo } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { DatavizDataSource } from '#api/dataviz.v2/application/contracts/DatavizDataSource.js';
 import { rescheduleDatavizRefresh } from '../services/rescheduleDatavizRefresh.js';
+import { isNonRetryableDatavizRefreshError } from './isNonRetryableDatavizRefreshError.js';
 
 type Params = {
   datavizId: string;
@@ -32,9 +35,14 @@ class DatavizScheduledRefreshJob extends UserAwareDispatchable<Params> {
     });
   }
 
-  protected async handle() {
+  protected async handle(_heartbeat: HeartbeatCallback, _jobInfo?: JobInfo) {
     try {
       await this.deps.refreshUseCase.execute({ datavizId: this.params.datavizId });
+    } catch (error) {
+      if (isNonRetryableDatavizRefreshError(error)) {
+        throw new NonRetryableJobError(error);
+      }
+      throw error;
     } finally {
       await this.rescheduleIfNeeded();
     }
