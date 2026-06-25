@@ -7,7 +7,11 @@ import { User } from '#api/core/domain/user/User.js';
 
 type ActorData = Pick<User, '_id' | 'username' | 'role' | 'email' | 'groups'>;
 
-export type UserAwareDispatchableParams = { tenantName: string; userId?: string; actor?: ActorData };
+export type UserAwareDispatchableParams = {
+  tenantName: string;
+  userId?: string;
+  actor?: ActorData;
+};
 
 export type Params<ExtendedParams> = ExtendedParams & {
   tenantName: string;
