@@ -4,7 +4,6 @@ import { Result } from '#api/core/libs/Result.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { testingPG } from '#api/utils/testing_pg.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { UpdateFileDeps } from '../UpdateFile.js';
@@ -88,26 +87,11 @@ const fixtures: DBFixture = {
 type TestConfig = {
   name: string;
   usePostgres: boolean;
-  getDbFile: (id: string) => Promise<Record<string, unknown>>;
 };
 
 const testConfigs: TestConfig[] = [
-  {
-    name: 'Mongo',
-    usePostgres: false,
-    getDbFile: async (id: string) => {
-      const files = await testingEnvironment.db.getAllFrom('files');
-      return files.find((file: any) => file._id.toString() === f.idString(id))!;
-    },
-  },
-  {
-    name: 'Postgres',
-    usePostgres: true,
-    getDbFile: async (id: string) => {
-      const files = await testingEnvironment.pg.getAllFrom('files');
-      return files.find((file: any) => file._id === f.idString(id))!;
-    },
-  },
+  { name: 'Mongo', usePostgres: false },
+  { name: 'Postgres', usePostgres: true },
 ];
 
 describe('UpdateFile', () => {
@@ -119,19 +103,17 @@ describe('UpdateFile', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ usePostgres, getDbFile }) => {
+  describe.each(testConfigs)('$name', ({ usePostgres }) => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({ featureFlags: { postgresFiles: usePostgres } });
 
       await testingEnvironment.setFixtures(fixtures);
-
-      if (usePostgres) {
-        await testingPG.clear(['files']);
-        await testingPG.setFixtures({
-          files: fixtures.files!.map(file => ({ ...file, _id: file._id?.toString() })),
-        });
-      }
     });
+
+    const getDbFile = async (id: string) => {
+      const files = await testingEnvironment.db.getAllFrom('files');
+      return files.find((file: any) => file._id.toString() === f.idString(id))!;
+    };
 
     const createSut = (deps?: Partial<UpdateFileDeps>) => {
       const entityPermissions = TestUtils.mockClass<EntityPermissionChecker>({

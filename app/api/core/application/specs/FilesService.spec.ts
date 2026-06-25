@@ -28,7 +28,6 @@ import { tenants } from '#api/tenants/index.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { testingPG } from '#api/utils/testing_pg.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { FilesDataSource } from '../contracts/FilesDataSource.js';
 import { FilesServiceDeps } from '../FilesService.js';
@@ -227,9 +226,7 @@ describe('FilesService', () => {
         );
         await service.insert([document, attachment]);
 
-        const dbFiles = usePostgres
-          ? await testingPG.getAllFrom('files')
-          : await testingEnvironment.db.getAllFrom('files');
+        const dbFiles = await testingEnvironment.db.getAllFrom('files');
 
         expect(dbFiles).toEqual(
           expect.arrayContaining([
@@ -299,9 +296,7 @@ describe('FilesService', () => {
           await service.deleteEntityFiles(['entity1', 'entity3']);
         });
 
-        const dbFiles = usePostgres
-          ? await testingPG.getAllFrom('files')
-          : await testingEnvironment.db.getAllFrom('files');
+        const dbFiles = await testingEnvironment.db.getAllFrom('files');
 
         const entity2Files = dbFiles.filter(f => f.entity === 'entity2');
 
@@ -334,9 +329,7 @@ describe('FilesService', () => {
           await service.delete([doc1]);
         });
 
-        const dbFiles = usePostgres
-          ? await testingPG.getAllFrom('files')
-          : await testingEnvironment.db.getAllFrom('files');
+        const dbFiles = await testingEnvironment.db.getAllFrom('files');
 
         const filenames = dbFiles.map(file => file.filename);
 
@@ -351,15 +344,11 @@ describe('FilesService', () => {
         const { service } = createService();
         await service.demoteToAttachment(docId);
 
-        const dbFiles = usePostgres
-          ? await testingPG.getAllFrom('files')
-          : await testingEnvironment.db.getAllFrom('files');
+        const dbFiles = await testingEnvironment.db.getAllFrom('files');
 
-        const demoted = usePostgres
-          ? (dbFiles as Record<string, unknown>[]).find(file => file._id === docId)!
-          : (dbFiles as Record<string, unknown>[]).find(
-              file => (file._id as any).toString() === docId
-            )!;
+        const demoted = (dbFiles as Record<string, unknown>[]).find(
+          file => file._id!.toString() === docId
+        )!;
 
         expect(demoted).toBeDefined();
         expect(demoted.type).toBe('attachment');

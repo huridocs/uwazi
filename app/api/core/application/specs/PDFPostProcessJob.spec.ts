@@ -20,29 +20,11 @@ const f = getFixturesFactory();
 type TestConfig = {
   name: string;
   usePostgres: boolean;
-  getDbFile: (id: string) => Promise<Record<string, unknown> | undefined>;
-  getAllFrom: (collection: string) => Promise<Record<string, unknown>[]>;
 };
 
 const testConfigs: TestConfig[] = [
-  {
-    name: 'Mongo',
-    usePostgres: false,
-    getDbFile: async id => {
-      const files = await testingEnvironment.db.getAllFrom('files');
-      return files.find((file: any) => file._id.toString() === f.idString(id));
-    },
-    getAllFrom: async collection => testingEnvironment.db.getAllFrom(collection),
-  },
-  {
-    name: 'Postgres',
-    usePostgres: true,
-    getDbFile: async id => {
-      const files = await testingEnvironment.pg.getAllFrom('files');
-      return files.find((file: any) => file._id === f.idString(id));
-    },
-    getAllFrom: async collection => testingEnvironment.db.getAllFrom(collection),
-  },
+  { name: 'Mongo', usePostgres: false },
+  { name: 'Postgres', usePostgres: true },
 ];
 
 const allFixtures: DBFixture = {
@@ -156,7 +138,7 @@ describe('PDFPostProcessJob - setPreview (real DB)', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ usePostgres, getAllFrom }) => {
+  describe.each(testConfigs)('$name', ({ usePostgres }) => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
         name: 'test',
@@ -180,7 +162,7 @@ describe('PDFPostProcessJob - setPreview (real DB)', () => {
           true
         );
 
-        const entities = await getAllFrom('entities');
+        const entities = await testingEnvironment.db.getAllFrom('entities');
         const en = entities.find(e => e.sharedId === 'ent1' && e.language === 'en');
         const es = entities.find(e => e.sharedId === 'ent1' && e.language === 'es');
 
@@ -204,7 +186,7 @@ describe('PDFPostProcessJob - setPreview (real DB)', () => {
           true
         );
 
-        const entities = await getAllFrom('entities');
+        const entities = await testingEnvironment.db.getAllFrom('entities');
         const en = entities.find(e => e.sharedId === 'ent2' && e.language === 'en');
         const es = entities.find(e => e.sharedId === 'ent2' && e.language === 'es');
 
@@ -228,7 +210,7 @@ describe('PDFPostProcessJob - setPreview (real DB)', () => {
           true
         );
 
-        const entities = await getAllFrom('entities');
+        const entities = await testingEnvironment.db.getAllFrom('entities');
         const en = entities.find(e => e.sharedId === 'ent3' && e.language === 'en');
         const es = entities.find(e => e.sharedId === 'ent3' && e.language === 'es');
 

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-statements */
 // eslint-disable-next-line node/no-restricted-import
 import { copyFile } from 'fs/promises';
@@ -292,6 +293,13 @@ const testingEnvironment = {
 
   db: {
     async getAllFrom(collectionName: string) {
+      if (
+        testingEnvironment.pgEnabled &&
+        testingTenants.current().featureFlags?.postgresFiles &&
+        ['files', 'templates', 'thesauri'].includes(collectionName)
+      ) {
+        return testingPG.getAllFrom(collectionName);
+      }
       if (!testingDB.mongodb) {
         throw new Error('Testing mongodb not connected');
       }
