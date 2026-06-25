@@ -12,7 +12,7 @@ import {
 } from './CollapsibleRelationshipRowHeader.js';
 
 type CollapsibleRelationshipRowProps = {
-  checkboxId: string;
+  checkboxIds: string[];
   evidenceCount: number;
   header: ReactNode;
   meta?: ReactNode;
@@ -35,7 +35,7 @@ const rowPadding: Record<RelationshipsPanelZoom, string> = {
 };
 
 const CollapsibleRelationshipRow = ({
-  checkboxId,
+  checkboxIds,
   evidenceCount,
   header,
   meta,
@@ -112,7 +112,7 @@ const CollapsibleRelationshipRow = ({
       <ListCardRow selected={false} onClick={handleHeaderClick} className={rowPadding[zoom]}>
         <div className={`flex ${alignItems} justify-between gap-2`}>
           <div className={`flex min-w-0 items-center gap-1.5 ${headerWrap ? 'flex-wrap' : ''}`}>
-            <RelationshipRowCheckbox relationshipId={checkboxId} />
+            <RelationshipRowCheckbox relationshipIds={checkboxIds} />
             {chevron}
             {headerContent}
           </div>

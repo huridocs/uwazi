@@ -60,7 +60,8 @@ const buildRelationshipRowDerivedData = ({
 const useRelationshipRowData = (
   marker: RelationshipMarker,
   selfSharedId: string,
-  relationshipTypeNameProp?: string
+  relationshipTypeNameProp?: string,
+  representedIds?: string[]
 ) => {
   const rowRef = useRef<HTMLDivElement>(null);
   const { scrollToRelationshipPanel, setScrollToRelationshipPanel } = useDocumentRelationshipNav();
@@ -77,10 +78,12 @@ const useRelationshipRowData = (
   });
 
   useEffect(() => {
-    if (scrollToRelationshipPanel !== marker._id) return;
+    const ids = representedIds ?? [marker._id];
+
+    if (!scrollToRelationshipPanel || !ids.includes(scrollToRelationshipPanel)) return;
     scrollIntoView(rowRef.current, { behavior: 'smooth', block: 'center' });
     setScrollToRelationshipPanel(null);
-  }, [marker._id, scrollToRelationshipPanel, setScrollToRelationshipPanel]);
+  }, [marker._id, representedIds, scrollToRelationshipPanel, setScrollToRelationshipPanel]);
 
   return {
     rowRef,
