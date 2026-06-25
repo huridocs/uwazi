@@ -1,4 +1,4 @@
-import { RefreshDatavizSnapshotUseCase } from '#api/dataviz.v2/application/useCases/RefreshDatavizSnapshot.js';
+import { RefreshDatavizSnapshotJob } from '#api/dataviz.v2/application/jobs/RefreshDatavizSnapshotJob.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { DatavizDataSourceFactory } from './DatavizDataSourceFactory.js';
@@ -7,12 +7,12 @@ import { DatavizQueryExecutorFactory } from './DatavizQueryExecutorFactory.js';
 
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 
-class RefreshDatavizSnapshotUseCaseFactory {
+class RefreshDatavizSnapshotJobFactory {
   static default() {
     const { tenant, actor } = ExecutionContext;
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
 
-    return new RefreshDatavizSnapshotUseCase(
+    return new RefreshDatavizSnapshotJob(
       {
         transactionManager,
         datavizDS: DatavizDataSourceFactory.default(),
@@ -25,4 +25,4 @@ class RefreshDatavizSnapshotUseCaseFactory {
   }
 }
 
-export { RefreshDatavizSnapshotUseCaseFactory };
+export { RefreshDatavizSnapshotJobFactory };

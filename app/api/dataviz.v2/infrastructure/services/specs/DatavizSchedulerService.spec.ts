@@ -1,6 +1,6 @@
 import { Dataviz } from '#api/dataviz.v2/domain/Dataviz.js';
 import { User } from '#api/users.v2/model/User.js';
-import { DatavizScheduledRefreshJobToken } from '#api/dataviz.v2/application/contracts/DatavizScheduledRefreshJobToken.js';
+import { DatavizScheduledRefreshJobHandlerToken } from '#api/dataviz.v2/application/contracts/DatavizScheduledRefreshJobHandlerToken.js';
 import { DatavizSchedulerService } from '../DatavizSchedulerService.js';
 
 const baseDataviz = () =>
@@ -42,7 +42,7 @@ describe('DatavizSchedulerService', () => {
 
     expect(cancelByParams).toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith(
-      DatavizScheduledRefreshJobToken,
+      DatavizScheduledRefreshJobHandlerToken,
       expect.objectContaining({ datavizId: 'dv1', tenantName: 'tenant1', userId: 'user1' })
     );
   });
@@ -58,7 +58,7 @@ describe('DatavizSchedulerService', () => {
     await service.schedule(baseDataviz(), actor, false);
 
     expect(dispatch).toHaveBeenCalledWith(
-      DatavizScheduledRefreshJobToken,
+      DatavizScheduledRefreshJobHandlerToken,
       expect.objectContaining({ datavizId: 'dv1' }),
       expect.objectContaining({ lockedUntil: expect.any(Number) })
     );

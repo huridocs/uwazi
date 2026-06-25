@@ -3,7 +3,7 @@ import { Dataviz } from '#api/dataviz.v2/domain/Dataviz.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { User } from '#api/users.v2/model/User.js';
 import { computeNextLockedUntil } from '#shared/dataviz/computeNextLockedUntil.js';
-import { DatavizScheduledRefreshJobToken } from '#api/dataviz.v2/application/contracts/DatavizScheduledRefreshJobToken.js';
+import { DatavizScheduledRefreshJobHandlerToken } from '#api/dataviz.v2/application/contracts/DatavizScheduledRefreshJobHandlerToken.js';
 
 type Deps = {
   jobsDispatcher: JobsDispatcher;
@@ -14,7 +14,7 @@ class DatavizSchedulerService implements DatavizScheduler {
   constructor(private deps: Deps) {}
 
   async cancelPending(datavizId: string): Promise<void> {
-    await this.deps.jobsDispatcher.cancelByParams(DatavizScheduledRefreshJobToken, { datavizId });
+    await this.deps.jobsDispatcher.cancelByParams(DatavizScheduledRefreshJobHandlerToken, { datavizId });
   }
 
   async schedule(dataviz: Dataviz, actor: User, runImmediately = true): Promise<void> {
@@ -31,12 +31,12 @@ class DatavizSchedulerService implements DatavizScheduler {
     };
 
     if (runImmediately) {
-      await this.deps.jobsDispatcher.dispatch(DatavizScheduledRefreshJobToken, params);
+      await this.deps.jobsDispatcher.dispatch(DatavizScheduledRefreshJobHandlerToken, params);
       return;
     }
 
     const lockedUntil = computeNextLockedUntil(dataviz.refresh);
-    await this.deps.jobsDispatcher.dispatch(DatavizScheduledRefreshJobToken, params, {
+    await this.deps.jobsDispatcher.dispatch(DatavizScheduledRefreshJobHandlerToken, params, {
       lockedUntil,
     });
   }

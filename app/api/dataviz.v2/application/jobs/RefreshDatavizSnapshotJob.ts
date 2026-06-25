@@ -18,7 +18,7 @@ type Deps = {
   templatesDS: TemplatesDataSource;
 };
 
-class RefreshDatavizSnapshotUseCase extends AbstractUseCase<Input, Output, Deps> {
+class RefreshDatavizSnapshotJob extends AbstractUseCase<Input, Output, Deps> {
   async execute({ datavizId }: Input): Promise<Output> {
     const datavizResult = await this.deps.datavizDS.getById(datavizId);
     if (datavizResult.isError()) {
@@ -58,4 +58,4 @@ class RefreshDatavizSnapshotUseCase extends AbstractUseCase<Input, Output, Deps>
   }
 }
 
-export { RefreshDatavizSnapshotUseCase };
+export { RefreshDatavizSnapshotJob };

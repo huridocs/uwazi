@@ -1,5 +1,5 @@
 import { Dataviz } from '#api/dataviz.v2/domain/Dataviz.js';
-import { DatavizScheduledRefreshJobToken } from '#api/dataviz.v2/application/contracts/DatavizScheduledRefreshJobToken.js';
+import { DatavizScheduledRefreshJobHandlerToken } from '#api/dataviz.v2/application/contracts/DatavizScheduledRefreshJobHandlerToken.js';
 import { rescheduleDatavizRefresh } from '../rescheduleDatavizRefresh.js';
 
 const scheduledDataviz = () =>
@@ -35,7 +35,7 @@ describe('rescheduleDatavizRefresh', () => {
     });
 
     expect(dispatch).toHaveBeenCalledWith(
-      DatavizScheduledRefreshJobToken,
+      DatavizScheduledRefreshJobHandlerToken,
       expect.objectContaining({ datavizId: 'dv1', tenantName: 'tenant1', userId: 'user1' }),
       expect.objectContaining({ lockedUntil: expect.any(Number) })
     );

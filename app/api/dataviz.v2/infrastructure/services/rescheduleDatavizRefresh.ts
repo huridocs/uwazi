@@ -1,5 +1,5 @@
 import type { DatavizDataSource } from '#api/dataviz.v2/application/contracts/DatavizDataSource.js';
-import { DatavizScheduledRefreshJobToken } from '#api/dataviz.v2/application/contracts/DatavizScheduledRefreshJobToken.js';
+import { DatavizScheduledRefreshJobHandlerToken } from '#api/dataviz.v2/application/contracts/DatavizScheduledRefreshJobHandlerToken.js';
 import type { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { computeNextLockedUntil } from '#shared/dataviz/computeNextLockedUntil.js';
 
@@ -30,7 +30,7 @@ const rescheduleDatavizRefresh = async ({
 
   const lockedUntil = computeNextLockedUntil(dataviz.refresh);
   await jobsDispatcher.dispatch(
-    DatavizScheduledRefreshJobToken,
+    DatavizScheduledRefreshJobHandlerToken,
     { datavizId, tenantName, userId },
     { lockedUntil }
   );

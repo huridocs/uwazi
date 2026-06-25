@@ -2,6 +2,6 @@ import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatc
 import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 
 /** Job registry name — avoids application/infrastructure circular imports. */
-export const DatavizScheduledRefreshJobToken = {
-  name: 'DatavizScheduledRefreshJob',
+export const DatavizScheduledRefreshJobHandlerToken = {
+  name: 'DatavizScheduledRefreshJobHandler',
 } as DispatchableClass<Dispatchable>;

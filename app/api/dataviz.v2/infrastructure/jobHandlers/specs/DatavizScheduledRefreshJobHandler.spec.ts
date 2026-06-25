@@ -19,35 +19,35 @@ import {
   DatavizQueryTimeoutError,
 } from '#api/dataviz.v2/domain/errors.js';
 import { rescheduleDatavizRefresh } from '#api/dataviz.v2/infrastructure/services/rescheduleDatavizRefresh.js';
-import { DatavizScheduledRefreshJob } from '../DatavizScheduledRefreshJob.js';
+import { DatavizScheduledRefreshJobHandler } from '../DatavizScheduledRefreshJobHandler.js';
 
-const createJob = (refreshUseCase: { execute: jest.Mock }) => {
-  const job = new DatavizScheduledRefreshJob({
-    refreshUseCase: refreshUseCase as any,
+const createJobHandler = (job: { execute: jest.Mock }) => {
+  const handler = new DatavizScheduledRefreshJobHandler({
+    job: job as any,
     datavizDS: {} as any,
     jobsDispatcher: {} as any,
   });
 
-  (job as any).params = { datavizId: 'dv1', tenantName: 'tenant1', userId: 'user1' };
-  (job as any).tenantName = 'tenant1';
-  (job as any).userId = 'user1';
+  (handler as any).params = { datavizId: 'dv1', tenantName: 'tenant1', userId: 'user1' };
+  (handler as any).tenantName = 'tenant1';
+  (handler as any).userId = 'user1';
 
-  return job;
+  return handler;
 };
 
-describe('DatavizScheduledRefreshJob', () => {
+describe('DatavizScheduledRefreshJobHandler', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('should reschedule the next run when refresh fails with a retryable error', async () => {
-    const refreshUseCase = {
+    const job = {
       execute: jest.fn().mockRejectedValue(new Error('refresh failed')),
     };
 
-    const job = createJob(refreshUseCase);
+    const handler = createJobHandler(job);
 
-    await expect((job as any).handle()).rejects.toThrow('refresh failed');
+    await expect((handler as any).handle()).rejects.toThrow('refresh failed');
     expect(rescheduleDatavizRefresh).toHaveBeenCalledWith(
       expect.objectContaining({
         datavizId: 'dv1',
@@ -59,13 +59,13 @@ describe('DatavizScheduledRefreshJob', () => {
 
   it('should throw NonRetryableJobError when the dataviz was deleted', async () => {
     const notFound = new DatavizNotFoundError('dv1');
-    const refreshUseCase = {
+    const job = {
       execute: jest.fn().mockRejectedValue(notFound),
     };
 
-    const job = createJob(refreshUseCase);
+    const handler = createJobHandler(job);
 
-    await expect((job as any).handle()).rejects.toThrow(new NonRetryableJobError(notFound));
+    await expect((handler as any).handle()).rejects.toThrow(new NonRetryableJobError(notFound));
     expect(rescheduleDatavizRefresh).toHaveBeenCalled();
   });
 
@@ -73,25 +73,25 @@ describe('DatavizScheduledRefreshJob', () => {
     const invalidQuery = new DatavizInvalidQueryError(
       'Manual data visualizations cannot be refreshed'
     );
-    const refreshUseCase = {
+    const job = {
       execute: jest.fn().mockRejectedValue(invalidQuery),
     };
 
-    const job = createJob(refreshUseCase);
+    const handler = createJobHandler(job);
 
-    await expect((job as any).handle()).rejects.toThrow(new NonRetryableJobError(invalidQuery));
+    await expect((handler as any).handle()).rejects.toThrow(new NonRetryableJobError(invalidQuery));
     expect(rescheduleDatavizRefresh).toHaveBeenCalled();
   });
 
   it('should allow retries when the query times out', async () => {
     const timeout = new DatavizQueryTimeoutError();
-    const refreshUseCase = {
+    const job = {
       execute: jest.fn().mockRejectedValue(timeout),
     };
 
-    const job = createJob(refreshUseCase);
+    const handler = createJobHandler(job);
 
-    await expect((job as any).handle()).rejects.toThrow(timeout);
+    await expect((handler as any).handle()).rejects.toThrow(timeout);
     expect(rescheduleDatavizRefresh).toHaveBeenCalled();
   });
 });

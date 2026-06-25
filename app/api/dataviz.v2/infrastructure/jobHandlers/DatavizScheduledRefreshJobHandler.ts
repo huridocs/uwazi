@@ -1,4 +1,4 @@
-import type { RefreshDatavizSnapshotUseCase } from '#api/dataviz.v2/application/useCases/RefreshDatavizSnapshot.js';
+import type { RefreshDatavizSnapshotJob } from '#api/dataviz.v2/application/jobs/RefreshDatavizSnapshotJob.js';
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
@@ -18,12 +18,12 @@ type Params = {
 } & UserAwareDispatchableParams;
 
 type JobDependencies = {
-  refreshUseCase: RefreshDatavizSnapshotUseCase;
+  job: RefreshDatavizSnapshotJob;
   datavizDS: DatavizDataSource;
   jobsDispatcher: JobsDispatcher;
 };
 
-class DatavizScheduledRefreshJob extends UserAwareDispatchable<Params> {
+class DatavizScheduledRefreshJobHandler extends UserAwareDispatchable<Params> {
   public constructor(private deps: JobDependencies) {
     super();
   }
@@ -40,7 +40,7 @@ class DatavizScheduledRefreshJob extends UserAwareDispatchable<Params> {
 
   protected async handle(_heartbeat: HeartbeatCallback, _jobInfo?: JobInfo) {
     try {
-      await this.deps.refreshUseCase.execute({ datavizId: this.params.datavizId });
+      await this.deps.job.execute({ datavizId: this.params.datavizId });
     } catch (error) {
       if (isNonRetryableDatavizRefreshError(error)) {
         throw new NonRetryableJobError(error);
@@ -52,4 +52,4 @@ class DatavizScheduledRefreshJob extends UserAwareDispatchable<Params> {
   }
 }
 
-export { DatavizScheduledRefreshJob };
+export { DatavizScheduledRefreshJobHandler };
