@@ -48,7 +48,7 @@ async function main() {
       const rows = JSON.parse(readFileSync(filePath, 'utf-8'));
 
       if (!Array.isArray(rows) || rows.length === 0) {
-        console.log(`Table ${tableName}: no rows in JSON, skipping.`);
+        console.info(`Table ${tableName}: no rows in JSON, skipping.`);
         continue;
       }
 
@@ -62,7 +62,7 @@ async function main() {
       );
 
       if (columnsResult.rows.length === 0) {
-        console.log(`Table ${tableName} does not exist, skipping.`);
+        console.info(`Table ${tableName} does not exist, skipping.`);
         continue;
       }
 
@@ -72,10 +72,10 @@ async function main() {
           .map(r => r.column_name)
       );
 
-      console.log(`Deleting existing PG data from ${tableName} for tenant: ${tenantId}...`);
+      console.info(`Deleting existing PG data from ${tableName} for tenant: ${tenantId}...`);
       await client.query(`DELETE FROM "${tableName}" WHERE "tenant_id" = $1`, [tenantId]);
 
-      console.log(`Restoring ${rows.length} rows into ${tableName} for tenant: ${tenantId}...`);
+      console.info(`Restoring ${rows.length} rows into ${tableName} for tenant: ${tenantId}...`);
       for (const row of rows) {
         const cleanRow = { ...row, tenant_id: tenantId };
         const columns = Object.keys(cleanRow);
@@ -95,7 +95,7 @@ async function main() {
     }
 
     await client.query('COMMIT');
-    console.log('PostgreSQL data restored successfully.');
+    console.info('PostgreSQL data restored successfully.');
   } catch (err) {
     await client.query('ROLLBACK');
     console.error('Error restoring PostgreSQL data:', err.message);

@@ -36,6 +36,11 @@ const SettingsNavigation = () => {
               <li>{renderLink('settings/collection', <Translate>Collection</Translate>)}</li>
               <li>{renderLink('settings/navlinks', <Translate>Menu</Translate>)}</li>
               <li>{renderLink('settings/pages', <Translate>Pages</Translate>)}</li>
+              {isClient && window.__featureFlags__?.dataViz && (
+                <li>
+                  {renderLink('settings/dataviz', <Translate>Data visualizations</Translate>)}
+                </li>
+              )}
               <li>{renderLink('settings/languages', <Translate>Languages</Translate>)}</li>
               <li>{renderLink('settings/translations', <Translate>Translations</Translate>)}</li>
               <li>{renderLink('settings/filters', <Translate>Filters</Translate>)}</li>

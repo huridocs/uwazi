@@ -38,3 +38,9 @@ export class UnknownPageLanguageKeysError extends DomainError {
     super(`Unknown language keys: ${keys.join(', ')}`, 'page.unknown_language_keys');
   }
 }
+
+export class PageUnauthorizedError extends DomainError {
+  constructor() {
+    super('Unauthorized', 'page.unauthorized');
+  }
+}
