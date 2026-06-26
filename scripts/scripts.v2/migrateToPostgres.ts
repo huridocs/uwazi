@@ -7,8 +7,7 @@ import {
   MigrateCollectionToPostgres,
   MigrationConfig,
 } from '#api/core/infrastructure/postgresql/migrations/MigrateCollectionToPostgres.js';
-import { destroyKnexConnections } from '#api/core/infrastructure/postgresql/common/PostgresTable.js';
-import { PostgresConnectionFactory } from '#api/core/infrastructure/factories/PostgresConnectionFactory.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { TemplateMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/TemplateMigrationConfig.js';
 import { ThesaurusMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/ThesaurusMigrationConfig.js';
 
@@ -66,13 +65,12 @@ async function migrateCollection(
   await tenants.run(async () => {
     const tenantConfig = tenants.current();
     const mongoDb = DB.mongodb_Db(tenantConfig.dbName);
-    const pgConfig = PostgresConnectionFactory.connectionConfig();
 
     log(`[${tenantName}] Starting migration: ${collectionName}`);
     log(`[${tenantName}] MongoDB collection: ${migrationConfig.mongoCollection}`);
     log(`[${tenantName}] PostgreSQL table: ${migrationConfig.pgTable}`);
 
-    const migrator = new MigrateCollectionToPostgres(mongoDb, pgConfig, tenantName);
+    const migrator = new MigrateCollectionToPostgres(mongoDb, tenantName);
     migrated = await migrator.migrate(migrationConfig);
 
     log(`[${tenantName}] Migrated ${migrated} rows for ${collectionName}`);
@@ -105,7 +103,6 @@ async function migrateCollection(
   } finally {
     await tenants.model?.closeChangeStream();
     await DB.disconnect();
-    await PostgresConnectionFactory.close();
-    await destroyKnexConnections();
+    await PostgresDB.disconnect();
   }
 })();

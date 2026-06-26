@@ -22,11 +22,13 @@ export default async (app, server) => {
   (await import('./relationships/routes.js')).default(app);
   (await import('./activitylog/routes.js')).default(app);
   (await import('./users/routes.js')).default(app);
+  (await import('./core/infrastructure/express/users/routes.js')).userRoutes(app);
   (await import('./core/infrastructure/express/template/routes.js')).default(app);
+  (await import('./dataviz.v2/infrastructure/http/routes.js')).default(app);
   (await import('./search/deprecatedRoutes.js')).default(app);
   (await import('./search/routes.js')).default(app);
   (await import('./search.v2/routes.js')).searchRoutes(app);
-  (await import('./thesauri/routes.js')).default(app);
+  (await import('./core/v1_layer/thesauri/routes.js')).default(app);
   (await import('./relationtypes/routes.js')).default(app);
   (await import('./documents/deprecatedRoutes.js')).default(app);
   (await import('./documents/routes.js')).documentRoutes(app);

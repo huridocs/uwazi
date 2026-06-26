@@ -30,7 +30,7 @@ const RelationshipsPanelToolbarControls = ({
         />
         <RelationshipsSortControl />
       </div>
-      <div className="flex min-w-fit flex-1 items-center justify-end gap-1.5">
+      <div className="flex min-w-fit flex-1 items-center justify-start gap-1.5">
         <RelationshipsZoomControl disabled={zoomDisabled} />
         <FilterDrawerButton activeCount={activeFilterCount} onClick={onOpenFilters} />
       </div>

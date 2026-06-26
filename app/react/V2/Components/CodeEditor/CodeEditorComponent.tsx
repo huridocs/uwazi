@@ -8,7 +8,7 @@ import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
 type CodeEditorInstance = monaco.editor.IStandaloneCodeEditor;
 
 type CodeEditorProps = {
-  language: 'html' | 'javascript' | 'css';
+  language: 'html' | 'javascript' | 'css' | 'json';
   intialValue?: string;
   onMount?: (editor: CodeEditorInstance) => void;
   onChange?: (value: string) => void;

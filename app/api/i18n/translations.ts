@@ -5,7 +5,7 @@ import { DefaultTranslations } from '#api/i18n/defaultTranslations.js';
 import { legacyLogger } from '#api/log/index.js';
 import { EnforcedWithId, WithId } from '#api/odm/index.js';
 import settings from '#api/settings/settings.js';
-import thesauri from '#api/thesauri/thesauri.js';
+import thesauri from '#api/core/v1_layer/thesauri/thesauri.js';
 import { prettifyError } from '#api/utils/handleError.js';
 import * as os from 'os';
 import path from 'path';

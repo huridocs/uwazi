@@ -18,7 +18,7 @@ interface PDFPageProps {
   onScaleChange?: (scale: number) => void;
 }
 
-const PDFPage = ({
+const PDFPageComponent = ({
   pdf,
   page,
   eventBus,
@@ -201,5 +201,7 @@ const PDFPage = ({
     </div>
   );
 };
+
+const PDFPage = React.memo(PDFPageComponent);
 
 export { PDFPage };

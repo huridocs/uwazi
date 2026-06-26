@@ -1,5 +1,6 @@
 NaN.optimized
 node_modules
+.eslintcache
 .DS_Store
 .vscode/*
 .history/*

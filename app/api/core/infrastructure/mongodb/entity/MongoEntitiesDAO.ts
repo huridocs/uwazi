@@ -1,6 +1,7 @@
 import { Db, FindCursor, ObjectId } from 'mongodb';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import type { LocalizedLabels } from '#shared/types/datavizSchema.js';
 import { User } from '#api/users.v2/model/User.js';
 import { MongoDataSource, MongoDSOptions } from '../common/MongoDataSource.js';
 import { FileDBO } from '../files/schemas/filesTypes.js';
@@ -166,6 +167,36 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> {
     return this.getCollection()
       .find({ sharedId: { $in: sharedIds } })
       .toArray();
+  }
+
+  async getTitleLabelsBySharedIds(
+    sharedIds: string[],
+    languages: LanguageISO6391[]
+  ): Promise<Map<string, LocalizedLabels>> {
+    const result = new Map<string, LocalizedLabels>();
+
+    if (sharedIds.length === 0 || languages.length === 0) {
+      return result;
+    }
+
+    const entities = await this.getCollection()
+      .find(
+        { sharedId: { $in: sharedIds }, language: { $in: languages } },
+        { projection: { sharedId: 1, language: 1, title: 1 } }
+      )
+      .toArray();
+
+    entities.forEach(entity => {
+      if (!entity.sharedId || !entity.language) {
+        return;
+      }
+
+      const labels = result.get(entity.sharedId) ?? {};
+      labels[entity.language] = entity.title;
+      result.set(entity.sharedId, labels);
+    });
+
+    return result;
   }
 
   async countDistinctSharedIds(): Promise<number> {

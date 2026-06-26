@@ -26,6 +26,7 @@ import { PermissionSchema } from '#shared/types/permissionType.js';
 import { MongoSegmentationBuilder } from '#api/core/infrastructure/mongodb/files/specs/MongoSegmentationBuilder.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { ConnectionSchema } from '#shared/types/connectionType.js';
+import { UserGroupSchema } from '#shared/types/userGroupType.js';
 import {
   ProcessedPDFDBO,
   ThumbnailDBO,
@@ -391,6 +392,12 @@ function getFixturesFactory() {
       role: role || UserRole.COLLABORATOR,
       email: email || `${username}@provider.tld`,
       password,
+    }),
+
+    usergroup: (name: string, members?: { refId: ObjectId }[]): UserGroupSchema => ({
+      _id: idMapper(name),
+      name,
+      members: members ?? [],
     }),
 
     updatelog: (
