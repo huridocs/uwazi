@@ -77,9 +77,24 @@ describe('RelationshipPanelRow', () => {
   it('groups nested evidence by source, target, type, and counterpart text', () => {
     const groups = groupNestedEvidence(
       [
-        marker('1', { selfText: 'Article 4', selfPage: 3, counterpartText: 'Articles 4', targetId: '1' }),
-        marker('2', { selfText: 'Article 4', selfPage: 4, counterpartText: 'Articles 4', targetId: '1' }),
-        marker('3', { selfText: 'Article 5', selfPage: 3, counterpartText: 'Articles 5', targetId: '1' }),
+        marker('1', {
+          selfText: 'Article 4',
+          selfPage: 3,
+          counterpartText: 'Articles 4',
+          targetId: '1',
+        }),
+        marker('2', {
+          selfText: 'Article 4',
+          selfPage: 4,
+          counterpartText: 'Articles 4',
+          targetId: '1',
+        }),
+        marker('3', {
+          selfText: 'Article 5',
+          selfPage: 3,
+          counterpartText: 'Articles 5',
+          targetId: '1',
+        }),
       ],
       SELF
     );
@@ -103,10 +118,7 @@ describe('RelationshipPanelRow', () => {
 
   it('merges rows with the same empty counterpart text for the same target and type', () => {
     const groups = groupNestedEvidence(
-      [
-        marker('1', { selfPage: 2, targetId: '1' }),
-        marker('2', { selfPage: 3, targetId: '1' }),
-      ],
+      [marker('1', { selfPage: 2, targetId: '1' }), marker('2', { selfPage: 3, targetId: '1' })],
       SELF
     );
 

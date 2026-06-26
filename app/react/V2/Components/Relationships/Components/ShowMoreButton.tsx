@@ -28,8 +28,8 @@ const ShowMoreButton = ({ position, references, onClick }: ShowMoreButtonProps) 
       type="button"
       onClick={() => onClick(references)}
     >
-      <Translate className="sr-only">Show more</Translate>
-      <Tooltip content={<Translate>Show more</Translate>} placement="left">
+      <Translate className="sr-only">Show remaining in panel</Translate>
+      <Tooltip content={<Translate>Show remaining in panel</Translate>} placement="left">
         <EllipsisHorizontalCircleIcon className="w-3.5 h-3.5" />
       </Tooltip>
     </button>
