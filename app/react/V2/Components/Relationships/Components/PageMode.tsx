@@ -26,7 +26,7 @@ const DEFAULT_COLOR = '#A4CAFE';
 const getGroupMarkers = (group: RelationshipGroup): RelationshipMarker[] =>
   group.type === 'cluster' ? group.references : [group.reference];
 
-const PageMode = ({
+const PageModeComponent = ({
   markerLayerHeight,
   onPointClick,
   relationshipGroups,
@@ -162,5 +162,7 @@ const PageMode = ({
     </>
   );
 };
+
+const PageMode = React.memo(PageModeComponent);
 
 export { PageMode };

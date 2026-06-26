@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { PDF } from '#V2/Components/PDFViewer/index.js';
+import React, { useCallback, useEffect, useState } from 'react';
+import { PDF, type PDFControls } from '#V2/Components/PDFViewer/index.js';
 import { RelationshipsDisplay } from '#V2/Components/Relationships/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
@@ -9,6 +9,7 @@ import {
   DocumentSelectionFloatingMenu,
 } from '#V2/Routes/Entity/Components/document/index.js';
 import { useDocumentPdfView } from '../hooks/useDocumentPdfView.js';
+import { useRailInset } from '../hooks/useRailInset.js';
 
 type DocumentTabProps = {
   entity: EntityType;
@@ -45,6 +46,7 @@ const DocumentTab = ({
   const isMobile = useIsMobile();
   const [pdfScrollRoot, setPdfScrollRoot] = useState<HTMLDivElement | null>(null);
   const [pageHeight, setPageHeight] = useState<number | undefined>();
+  const { railInsetRight, measureRailInset } = useRailInset(pdfScrollRoot, !isRaw);
 
   useEffect(() => {
     if (isRaw) {
@@ -78,6 +80,14 @@ const DocumentTab = ({
     };
   }, [isRaw, pageNumber]);
 
+  const handlePdfReady = useCallback(
+    (controls: PDFControls) => {
+      onPdfReady(controls);
+      measureRailInset();
+    },
+    [onPdfReady, measureRailInset]
+  );
+
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col gap-3 overflow-hidden">
       {showViewModeSelect ? (
@@ -89,17 +99,17 @@ const DocumentTab = ({
         <div
           ref={setPdfScrollRoot}
           data-testid="pdf-scroll-container"
-          className="absolute inset-0 overflow-y-auto"
+          className="absolute inset-0 overflow-y-auto pl-1 pr-[60px] scrollbar-gutter-stable"
         >
           <PDF
             fileUrl={`/api/files/${filename}`}
-            size={{ height: '100%', width: '90%' }}
+            size={{ height: '100%', width: '100%' }}
             scrollRoot={pdfScrollRoot}
             onSelect={handleTextSelect}
             onDeselect={handleTextDeselect}
             onPageChange={handlePageChange}
             onHighlightClick={handleHighlightClick}
-            onPdfReady={onPdfReady}
+            onPdfReady={handlePdfReady}
           />
         </div>
         {!isMobile && (
@@ -108,6 +118,7 @@ const DocumentTab = ({
             document={mainDocument}
             currentPage={pageNumber}
             pageHeight={pageHeight}
+            railInsetRight={railInsetRight}
             activeRelationshipId={activeRelationshipId}
             onPointClick={handleRailPointClick}
             onClusterClick={handleClusterClick}
