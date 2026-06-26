@@ -48,6 +48,26 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
     });
   }
 
+  async cancelByParams(
+    jobName: string,
+    params: Partial<Params>,
+    tenantName: string
+  ): Promise<void> {
+    if (Object.keys(params).length === 0) {
+      return;
+    }
+
+    const query = Object.fromEntries(
+      Object.entries(params).map(([key, value]) => [`params.${key}`, value])
+    );
+
+    await this.getCollection().deleteMany({
+      ...query,
+      name: jobName,
+      namespace: tenantName,
+    });
+  }
+
   async renewJobLock(job: Job) {
     await this.getCollection().findOneAndUpdate(
       {

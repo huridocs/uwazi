@@ -651,6 +651,31 @@ describe('deleteByParams', () => {
     expect(after).toEqual(TestUtils.arrayIncludesObjects([{ _id: factory.id('locked_job') }]));
   });
 
+  it('should cancel jobs with future lockedUntil via cancelByParams', async () => {
+    const adapter = DefaultTestingQueueAdapter();
+    const NOW_VALUE = 1000;
+    jest.spyOn(Date, 'now').mockReturnValue(NOW_VALUE);
+
+    await testingEnvironment.setFixtures({
+      jobs: [
+        {
+          _id: factory.id('locked_job'),
+          namespace: 'tenant1',
+          queue: 'queue1',
+          name: 'scheduled_job',
+          params: { datavizId: 'dv1' },
+          lockedUntil: NOW_VALUE + 5000,
+          retryCount: 0,
+        },
+      ] as JobDBO[],
+    });
+
+    await adapter.cancelByParams('scheduled_job', { datavizId: 'dv1' }, 'tenant1');
+
+    const after = await testingEnvironment.db.getAllFrom('jobs');
+    expect(after).toHaveLength(0);
+  });
+
   it('should delete jobs matching a single numeric param', async () => {
     const adapter = DefaultTestingQueueAdapter();
 

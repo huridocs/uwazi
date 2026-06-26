@@ -27,6 +27,15 @@ export class JobsRouter implements JobsDispatcher {
     return dispatcher.deleteByParams(dispatchable, params);
   }
 
+  async cancelByParams<T extends Dispatchable>(
+    dispatchable: DispatchableClass<T>,
+    params: Partial<Parameters<T['handleDispatch']>[1]>
+  ): Promise<void> {
+    const dispatcher = this.routeJob();
+
+    return dispatcher.cancelByParams(dispatchable, params);
+  }
+
   private routeJob() {
     const { queueName } = config;
     return this.dispatcherFactory(queueName);

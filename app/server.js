@@ -39,6 +39,7 @@ import { routesErrorHandler } from './api/utils/routesErrorHandler.js';
 import { serverSideRender } from './react/server.js';
 import { setupQueueWorker } from './setupQueueWorker.js';
 import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
+import { embedFrameHeaders } from './api/middleware/embedFrameHeaders.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -62,6 +63,7 @@ const metricsMiddleware = promBundle({
 app.use(metricsMiddleware);
 routesErrorHandler(app);
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
+app.use(embedFrameHeaders);
 
 const http = Server(app);
 
