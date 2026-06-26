@@ -1,5 +1,6 @@
 import { config } from '#api/config.js';
 import { DB } from '#api/odm/index.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { elastic, search } from '#api/search/index.js';
 import { IndexError } from '#api/search/entitiesIndex.js';
@@ -43,6 +44,7 @@ const endScriptProcedures = async () =>
       try {
         await restoreSettings();
         await DB.disconnect();
+        await PostgresDB.disconnect();
         resolve();
       } catch (err) {
         reject(err);

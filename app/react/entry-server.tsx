@@ -27,7 +27,7 @@ import { FetchResponseError } from '#shared/JSONRequest.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import templatesApi from '#api/core/v1_layer/templates/templates.js';
-import thesauriApi from '../api/thesauri/thesauri.js';
+import thesauriApi from '../api/core/v1_layer/thesauri/thesauri.js';
 import relationtypes from '../api/relationtypes/relationtypes.js';
 import translationsApi, { IndexedTranslations } from '../api/i18n/translations.js';
 import settingsApi from '../api/settings/settings.js';

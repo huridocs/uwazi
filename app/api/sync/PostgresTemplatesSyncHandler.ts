@@ -1,5 +1,4 @@
 import { Db } from 'mongodb';
-import { PostgresConnectionConfig } from '#api/core/infrastructure/postgresql/common/PostgresTable.js';
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { TemplateRow } from '#api/core/infrastructure/postgresql/template/PostgresTemplateMapper.js';
 import { SyncHandler } from './SyncHandler.js';
@@ -12,9 +11,8 @@ export class PostgresTemplatesSyncHandler
 {
   protected tableName = 'templates';
 
-  constructor(deps: { connection: PostgresConnectionConfig; tenantId: string; mongoDb: Db }) {
+  constructor(deps: { tenantId: string; mongoDb: Db }) {
     super({
-      connection: deps.connection,
       tenantId: deps.tenantId,
       sync: { syncDb: deps.mongoDb, syncNamespace: 'templates' },
     });

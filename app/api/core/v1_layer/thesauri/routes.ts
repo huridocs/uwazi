@@ -6,8 +6,8 @@ import { CreateThesaurusController } from '#api/core/infrastructure/express/thes
 import { UpdateThesaurusController } from '#api/core/infrastructure/express/thesaurus/UpdateThesaurusController.js';
 import { GetThesauriController } from '#api/core/infrastructure/express/thesaurus/GetThesauriController.js';
 import { DeleteThesaurusController } from '#api/core/infrastructure/express/thesaurus/DeleteThesaurusController.js';
-import { validation } from '../utils/index.js';
-import needsAuthorization from '../auth/authMiddleware.js';
+import { validation } from '../../../utils/index.js';
+import needsAuthorization from '../../../auth/authMiddleware.js';
 import thesauri from './thesauri.js';
 
 const routes = (app: Application) => {
