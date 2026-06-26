@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { Translate } from '#app/I18N/index.js';
 import { Modal } from '#V2/Components/UI/Modal.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import { InputField } from '#V2/Components/Forms/InputField.js';
@@ -27,7 +28,9 @@ const LoadManualExampleModal = ({ onSelect, onClose }: LoadManualExampleModalPro
   return (
     <Modal size="md">
       <Modal.Header>
-        <span className="text-lg font-semibold">Load example</span>
+        <span className="text-lg font-semibold">
+          <Translate>Load example</Translate>
+        </span>
         <Modal.CloseButton onClick={onClose} />
       </Modal.Header>
       <Modal.Body>
@@ -40,7 +43,9 @@ const LoadManualExampleModal = ({ onSelect, onClose }: LoadManualExampleModalPro
         />
         <ul className="mt-4 max-h-60 space-y-1 overflow-y-auto">
           {available.length === 0 && (
-            <li className="text-sm text-ink-secondary">No chart types match your search.</li>
+            <li className="text-sm text-ink-secondary">
+              <Translate>No chart types match your search.</Translate>
+            </li>
           )}
           {available.map(chartType => (
             <li key={chartType}>
@@ -60,7 +65,7 @@ const LoadManualExampleModal = ({ onSelect, onClose }: LoadManualExampleModalPro
       </Modal.Body>
       <Modal.Footer>
         <Button type="button" variant="secondary" size="small" onClick={onClose}>
-          Cancel
+          <Translate>Cancel</Translate>
         </Button>
       </Modal.Footer>
     </Modal>

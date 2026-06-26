@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
+import { Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
 import type {
   DatavizDataSourceKind,
@@ -219,16 +220,21 @@ const DataTab = ({ definition, onPatch, onPatchQuery, onPatchChart }: DataTabPro
           )}
           {!isMultiSource && isTwoDimensionalQuery(query.dimensions) && (
             <p className="text-xs text-ink-secondary">
-              Two categorical dimensions enable stacked bar charts (e.g. country with sex
-              breakdown).
+              <Translate>
+                Two categorical dimensions enable stacked bar charts (e.g. country with sex
+                breakdown).
+              </Translate>
             </p>
           )}
           {!isMultiSource &&
             query.dimensions.length >= 2 &&
             query.dimensions[1]?.propertyType === 'numeric' && (
               <p className="text-xs text-ink-secondary">
-                Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
-                measure over the primary dimension (e.g. max engine size per registration date).
+                <Translate>
+                  Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot
+                  the measure over the primary dimension (e.g. max engine size per registration
+                  date).
+                </Translate>
               </p>
             )}
           <SupportedChartTypesCallout
@@ -236,7 +242,9 @@ const DataTab = ({ definition, onPatch, onPatchQuery, onPatchChart }: DataTabPro
             measures={query.measures}
             dataSource={dataSource}
           />
-          <p className="text-xs text-ink-muted">Preview updates automatically (300ms debounce)</p>
+          <p className="text-xs text-ink-muted">
+            <Translate>Preview updates automatically (300ms debounce)</Translate>
+          </p>
         </>
       )}
     </div>

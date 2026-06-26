@@ -1,4 +1,5 @@
 import React from 'react';
+import { Translate } from '#app/I18N/index.js';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { Select } from '#V2/Components/Forms/Select.js';
 import type { DatavizFilter, DatavizSource } from '#V2/Dataviz/types/definition.js';
@@ -25,7 +26,9 @@ const FilterRow = ({ filter, sources, onChange, onRemove }: FilterRowProps) => {
   return (
     <div className="flex flex-col gap-2 rounded-lg border border-border p-3">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-ink-secondary">Filter</span>
+        <span className="text-xs font-medium text-ink-secondary">
+          <Translate>Filter</Translate>
+        </span>
         <button
           type="button"
           onClick={onRemove}

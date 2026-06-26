@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { Translate } from '#app/I18N/index.js';
 import { Checkbox } from '#V2/Components/Forms/Checkbox.js';
 import { InputColorPicker } from '#V2/Components/Forms/InputColorPicker.js';
 
@@ -25,7 +26,9 @@ const ThemeColorsSection = ({ background, foreground, onChange }: ThemeColorsSec
 
   return (
     <section className="flex flex-col gap-3">
-      <h3 className="text-sm font-semibold text-ink">Chart theme</h3>
+      <h3 className="text-sm font-semibold text-ink">
+        <Translate>Chart theme</Translate>
+      </h3>
       <Checkbox
         name="transparent-background"
         label="Transparent background"

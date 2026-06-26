@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
 import type { ClientTemplateSchema } from '#app/istore.js';
 import { Select } from '#V2/Components/Forms/Select.js';
@@ -191,7 +192,9 @@ const DimensionSection = ({
       <h3 className="text-sm font-semibold text-ink">{title}</h3>
       {multiSource && (
         <p className="text-xs text-ink-secondary">
-          Only properties with the same name and configuration in every data source are available.
+          <Translate>
+            Only properties with the same name and configuration in every data source are available.
+          </Translate>
         </p>
       )}
       <Select

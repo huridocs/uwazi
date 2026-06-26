@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Translate } from '#app/I18N/index.js';
 import ReactECharts from 'echarts-for-react';
 import type { EChartsOption } from 'echarts';
 
@@ -17,7 +18,7 @@ const DatavizChartView = ({ option, height = 320, className }: DatavizChartViewP
         className={`flex items-center justify-center text-sm text-ink-secondary ${className || ''}`}
         style={style}
       >
-        Chart type uses a custom view
+        <Translate>Chart type uses a custom view</Translate>
       </div>
     );
   }

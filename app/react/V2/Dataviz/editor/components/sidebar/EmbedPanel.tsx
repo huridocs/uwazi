@@ -38,26 +38,36 @@ const EmbedPanel = ({ id, embedPublic = false, onEmbedPublicChange }: EmbedPanel
   if (!persisted) {
     return (
       <section className="flex flex-col gap-2">
-        <h3 className="text-sm font-semibold text-ink">Embed</h3>
-        <p className="text-sm text-ink-secondary">Save the visualization to get embed code.</p>
+        <h3 className="text-sm font-semibold text-ink">
+          <Translate>Embed</Translate>
+        </h3>
+        <p className="text-sm text-ink-secondary">
+          <Translate>Save the visualization to get embed code.</Translate>
+        </p>
       </section>
     );
   }
 
   return (
     <section className="flex flex-col gap-4">
-      <h3 className="text-sm font-semibold text-ink">Embed</h3>
+      <h3 className="text-sm font-semibold text-ink">
+        <Translate>Embed</Translate>
+      </h3>
 
       <div className="flex flex-col gap-2">
-        <p className="text-sm font-medium text-ink">Embed in pages</p>
+        <p className="text-sm font-medium text-ink">
+          <Translate>Embed in pages</Translate>
+        </p>
         <p className="text-xs text-ink-secondary">
-          Paste this tag in a page HTML. The chart uses the page language.
+          <Translate>Paste this tag in a page HTML. The chart uses the page language.</Translate>
         </p>
         <CopyValueInput id="dataviz-page-embed" label="Page embed code" value={pageSnippet} />
       </div>
 
       <div className="flex flex-col gap-3">
-        <p className="text-sm font-medium text-ink">External embed</p>
+        <p className="text-sm font-medium text-ink">
+          <Translate>External embed</Translate>
+        </p>
         {isPrivateInstance && onEmbedPublicChange && (
           <ToggleButton
             checked={embedPublic}

@@ -2,11 +2,11 @@
 import { Db } from 'mongodb';
 
 export default {
-  delta: 192,
+  delta: 197,
 
   reindex: false,
 
-  name: '192-dataviz-collections',
+  name: '197-dataviz-collections',
 
   description: 'Creates dataviz and dataviz_snapshots collections with indexes.',
 

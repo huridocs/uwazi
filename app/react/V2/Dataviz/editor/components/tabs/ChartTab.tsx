@@ -1,4 +1,5 @@
 import React from 'react';
+import { Translate } from '#app/I18N/index.js';
 import { Checkbox } from '#V2/Components/Forms/Checkbox.js';
 import { Select } from '#V2/Components/Forms/Select.js';
 import { InputField } from '#V2/Components/Forms/InputField.js';
@@ -46,7 +47,9 @@ const ChartTab = ({ definition, onPatchChart, onPatchQuery }: ChartTabProps) => 
   return (
     <div className="flex flex-col gap-6 p-4">
       <section>
-        <h3 className="mb-3 text-sm font-semibold text-ink">Chart type</h3>
+        <h3 className="mb-3 text-sm font-semibold text-ink">
+          <Translate>Chart type</Translate>
+        </h3>
         <div className="grid grid-cols-3 gap-2">
           {availability.map(item => {
             const Icon = CHART_TYPE_ICONS[item.type] || DEFAULT_CHART_TYPE_ICON;
@@ -87,22 +90,30 @@ const ChartTab = ({ definition, onPatchChart, onPatchQuery }: ChartTabProps) => 
       </section>
 
       <section className="flex flex-col gap-3">
-        <h3 className="text-sm font-semibold text-ink">Chart options</h3>
+        <h3 className="text-sm font-semibold text-ink">
+          <Translate>Chart options</Translate>
+        </h3>
         {chart.type === 'metric' && (
           <p className="text-xs text-ink-secondary">
-            Metric shows a single total count. Select Pie, Bar, or another chart type above to
-            configure categories, labels, and slices. Use the Appearance tab for colors.
+            <Translate>
+              Metric shows a single total count. Select Pie, Bar, or another chart type above to
+              configure categories, labels, and slices. Use the Appearance tab for colors.
+            </Translate>
           </p>
         )}
         {!hasTypeSpecificOptions && chart.type !== 'metric' && chart.type !== 'list' && (
           <p className="text-xs text-ink-secondary">
-            This chart type has no extra options. Select another chart type above if you need
-            legend, labels, or data filters.
+            <Translate>
+              This chart type has no extra options. Select another chart type above if you need
+              legend, labels, or data filters.
+            </Translate>
           </p>
         )}
         {chart.type === 'list' && (
           <p className="text-xs text-ink-secondary">
-            List renders as a table. Use the options below to filter empty or zero values.
+            <Translate>
+              List renders as a table. Use the options below to filter empty or zero values.
+            </Translate>
           </p>
         )}
         {usesEcharts && optionVisibility.legend && (

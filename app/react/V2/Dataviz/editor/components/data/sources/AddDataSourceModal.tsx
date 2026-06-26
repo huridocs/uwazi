@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
 import { Modal } from '#V2/Components/UI/Modal.js';
 import { Button } from '#V2/Components/UI/Button.js';
@@ -24,7 +25,9 @@ const AddDataSourceModal = ({ onAdd, onClose }: AddDataSourceModalProps) => {
   return (
     <Modal size="md">
       <Modal.Header>
-        <span className="text-lg font-semibold">Add data source</span>
+        <span className="text-lg font-semibold">
+          <Translate>Add data source</Translate>
+        </span>
         <Modal.CloseButton onClick={onClose} />
       </Modal.Header>
       <Modal.Body>
@@ -37,7 +40,9 @@ const AddDataSourceModal = ({ onAdd, onClose }: AddDataSourceModalProps) => {
         />
         <ul className="mt-4 max-h-60 space-y-1 overflow-y-auto">
           {available.length === 0 && (
-            <li className="text-sm text-ink-secondary">No templates available to add.</li>
+            <li className="text-sm text-ink-secondary">
+              <Translate>No templates available to add.</Translate>
+            </li>
           )}
           {available.map(template => (
             <li key={template._id}>
@@ -60,7 +65,7 @@ const AddDataSourceModal = ({ onAdd, onClose }: AddDataSourceModalProps) => {
       </Modal.Body>
       <Modal.Footer>
         <Button type="button" variant="secondary" size="small" onClick={onClose}>
-          Cancel
+          <Translate>Cancel</Translate>
         </Button>
       </Modal.Footer>
     </Modal>

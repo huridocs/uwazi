@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
 import { localeAtom, settingsAtom, templatesAtom } from '#V2/atoms/index.js';
 import { Tabs } from '#V2/Components/UI/index.js';
@@ -82,13 +83,15 @@ const PreviewTabContent = ({
             renderChartPreview()
           ) : (
             <p className="text-sm text-ink-secondary">
-              This chart type cannot display the current data. Pick a supported type in the Chart
-              tab.
+              <Translate>
+                This chart type cannot display the current data. Pick a supported type in the Chart
+                tab.
+              </Translate>
             </p>
           )}
           {displayData.meta && (
             <p className="text-xs text-ink-muted">
-              {displayData.meta.totalEntities} entities · generated{' '}
+              {displayData.meta.totalEntities} <Translate>entities · generated</Translate>{' '}
               {new Date(displayData.generatedAt).toLocaleString()}
             </p>
           )}

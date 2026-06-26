@@ -1,4 +1,5 @@
 import React from 'react';
+import { Translate } from '#app/I18N/index.js';
 import type { DataPoint } from '#V2/Dataviz/types/data.js';
 
 type FromDataColorHintProps = {
@@ -8,7 +9,9 @@ type FromDataColorHintProps = {
 const FromDataColorHint = ({ previewPoints }: FromDataColorHintProps) => (
   <div className="rounded-lg bg-vellum p-3 text-xs text-ink-secondary">
     <p>
-      Colors come from the server data layer. Preview shows assigned bucket colors when available.
+      <Translate>
+        Colors come from the server data layer. Preview shows assigned bucket colors when available.
+      </Translate>
     </p>
     {previewPoints && previewPoints.length > 0 && (
       <div className="mt-2 flex flex-wrap gap-2">

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Translate } from '#app/I18N/index.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import type { DatavizSource } from '#V2/Dataviz/types/definition.js';
 import { DataSourceRow } from './DataSourceRow.js';
@@ -28,7 +29,9 @@ const DataSourcesList = ({ sources, onChange }: DataSourcesListProps) => {
 
   return (
     <section className="flex flex-col gap-3">
-      <h3 className="text-sm font-semibold text-ink">Data sources</h3>
+      <h3 className="text-sm font-semibold text-ink">
+        <Translate>Data sources</Translate>
+      </h3>
       {sources.map((source, index) => (
         <DataSourceRow
           key={`source-row-${index}`}
@@ -41,7 +44,7 @@ const DataSourcesList = ({ sources, onChange }: DataSourcesListProps) => {
         />
       ))}
       <Button type="button" variant="secondary" size="small" onClick={() => setShowModal(true)}>
-        + Add data source
+        <Translate>+ Add data source</Translate>
       </Button>
       {showModal && <AddDataSourceModal onAdd={addSource} onClose={() => setShowModal(false)} />}
     </section>

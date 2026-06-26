@@ -127,7 +127,9 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
   return (
     <div className="flex flex-col gap-6 p-4">
       <section className="flex flex-col gap-3">
-        <h3 className="text-sm font-semibold text-ink">Refresh mode</h3>
+        <h3 className="text-sm font-semibold text-ink">
+          <Translate>Refresh mode</Translate>
+        </h3>
         {REFRESH_OPTIONS.map(option => {
           const isLive = option.value === 'live';
           const isDisabled = isLive && !constraints.liveAllowed;
@@ -172,14 +174,19 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
                   <div className="flex flex-col gap-2 border-t border-border-soft pt-3 pl-7">
                     {option.value === 'snapshot_manual' && (
                       <p className="text-xs text-ink-secondary">
-                        Re-runs the query against your current collection. Use this after importing
-                        or editing entities—not when changing chart settings (save handles that).
+                        <Translate>
+                          Re-runs the query against your current collection. Use this after
+                          importing or editing entities—not when changing chart settings (save
+                          handles that).
+                        </Translate>
                       </p>
                     )}
                     {option.value === 'snapshot_scheduled' && (
                       <p className="text-xs text-ink-secondary">
-                        Refresh manually when you have added data and cannot wait for the next
-                        scheduled run.
+                        <Translate>
+                          Refresh manually when you have added data and cannot wait for the next
+                          scheduled run.
+                        </Translate>
                       </p>
                     )}
                     <Button
@@ -197,18 +204,21 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
                     </Button>
                     {!canRefreshSnapshot && (
                       <p className="text-xs text-amber-700">
-                        Save the visualization before refreshing.
+                        <Translate>Save the visualization before refreshing.</Translate>
                       </p>
                     )}
                     {canRefreshSnapshot && recentlyRefreshed && (
                       <p className="text-xs text-ink-muted">
-                        Data was updated recently. You can refresh again in a few seconds.
+                        <Translate>
+                          Data was updated recently. You can refresh again in a few seconds.
+                        </Translate>
                       </p>
                     )}
 
                     {refresh.lastRefreshedAt && (
                       <p className="text-xs text-ink-muted">
-                        Last updated from collection: {formatRefreshedAt(refresh.lastRefreshedAt)}
+                        <Translate>Last updated from collection:</Translate>{' '}
+                        {formatRefreshedAt(refresh.lastRefreshedAt)}
                       </p>
                     )}
                   </div>
@@ -228,7 +238,9 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
 
       {refresh.refreshMode === 'snapshot_scheduled' && (
         <section className="flex flex-col gap-3">
-          <h3 className="text-sm font-semibold text-ink">Schedule</h3>
+          <h3 className="text-sm font-semibold text-ink">
+            <Translate>Schedule</Translate>
+          </h3>
           <Select
             id="schedule-frequency"
             label="Frequency"
@@ -245,7 +257,7 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
             }
           />
           <label className="flex flex-col gap-1 text-sm text-ink-secondary">
-            Time (UTC)
+            <Translate>Time (UTC)</Translate>
             <input
               id="schedule-time"
               type="time"
@@ -255,7 +267,7 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
             />
           </label>
           <p className="text-xs text-ink-secondary">
-            Schedules run in UTC (Coordinated Universal Time).
+            <Translate>Schedules run in UTC (Coordinated Universal Time).</Translate>
           </p>
         </section>
       )}

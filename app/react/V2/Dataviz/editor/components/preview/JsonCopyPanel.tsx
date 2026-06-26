@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Translate } from '#app/I18N/index.js';
 import { CheckIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 
 type JsonCopyPanelProps = {
@@ -41,12 +42,12 @@ const JsonCopyPanel = ({ title, value, emptyMessage = 'No data loaded' }: JsonCo
           {copied ? (
             <>
               <CheckIcon className="h-4 w-4 text-success-600" />
-              Copied
+              <Translate>Copied</Translate>
             </>
           ) : (
             <>
               <ClipboardDocumentIcon className="h-4 w-4" />
-              Copy
+              <Translate>Copy</Translate>
             </>
           )}
         </button>

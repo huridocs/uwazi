@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Translate } from '#app/I18N/index.js';
 import type { DataPoint, DatavizDataDTO } from '#V2/Dataviz/types/data.js';
 
 type DatavizListViewProps = {
@@ -33,7 +34,11 @@ const DatavizListView = ({ data }: DatavizListViewProps) => {
   const isCrossTab = hasBreakdown(points);
 
   if (!points.length) {
-    return <p className="text-sm text-ink-secondary">No data</p>;
+    return (
+      <p className="text-sm text-ink-secondary">
+        <Translate>No data</Translate>
+      </p>
+    );
   }
 
   if (isCrossTab) {
@@ -84,8 +89,12 @@ const DatavizListView = ({ data }: DatavizListViewProps) => {
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-border text-left text-ink-secondary">
-            <th className="py-2 pr-4 font-medium">Label</th>
-            <th className="py-2 pr-4 font-medium text-right">Count</th>
+            <th className="py-2 pr-4 font-medium">
+              <Translate>Label</Translate>
+            </th>
+            <th className="py-2 pr-4 font-medium text-right">
+              <Translate>Count</Translate>
+            </th>
             <th className="py-2 font-medium text-right">%</th>
           </tr>
         </thead>

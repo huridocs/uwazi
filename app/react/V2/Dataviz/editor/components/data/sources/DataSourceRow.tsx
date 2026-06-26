@@ -1,4 +1,5 @@
 import React from 'react';
+import { Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { Select } from '#V2/Components/Forms/Select.js';
@@ -32,7 +33,9 @@ const DataSourceRow = ({
   return (
     <div className="flex flex-col gap-2 rounded-lg border border-border p-3">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-xs font-medium text-ink-secondary">Source {index + 1}</span>
+        <span className="text-xs font-medium text-ink-secondary">
+          <Translate>Source</Translate> {index + 1}
+        </span>
         {canRemove && (
           <button
             type="button"

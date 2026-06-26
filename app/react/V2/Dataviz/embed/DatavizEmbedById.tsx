@@ -1,4 +1,5 @@
 import React from 'react';
+import { Translate } from '#app/I18N/index.js';
 import { DatavizEmbed } from '#V2/Dataviz/embed/DatavizEmbed.js';
 import { useDatavizEmbedData } from '#V2/Dataviz/embed/useDatavizEmbedData.js';
 import { DatavizLoadingIndicator } from '#V2/Dataviz/components/DatavizLoadingIndicator.js';
@@ -24,7 +25,11 @@ const DatavizEmbedById = ({ id, height }: DatavizEmbedByIdProps) => {
   }
 
   if (!payload) {
-    return <p className="text-sm text-ink-secondary">No visualization data available.</p>;
+    return (
+      <p className="text-sm text-ink-secondary">
+        <Translate>No visualization data available.</Translate>
+      </p>
+    );
   }
 
   return <DatavizEmbed payload={payload} height={height} />;

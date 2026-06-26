@@ -1,4 +1,5 @@
 import React from 'react';
+import { Translate } from '#app/I18N/index.js';
 import { Select } from '#V2/Components/Forms/Select.js';
 import type { DatavizQuery } from '#V2/Dataviz/types/definition.js';
 
@@ -26,7 +27,9 @@ const JoinModeSection = ({ join, onChange }: JoinModeSectionProps) => {
 
   return (
     <section className="flex flex-col gap-2">
-      <h3 className="text-sm font-semibold text-ink">Multi-source mode</h3>
+      <h3 className="text-sm font-semibold text-ink">
+        <Translate>Multi-source mode</Translate>
+      </h3>
       <Select
         id="dataviz-join-mode"
         label="How to combine sources"

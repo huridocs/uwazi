@@ -1,4 +1,5 @@
 import React from 'react';
+import { Translate } from '#app/I18N/index.js';
 import type { DatavizDataSourceKind } from '#shared/types/datavizSchema.js';
 
 type DataSourceKindSectionProps = {
@@ -25,7 +26,9 @@ const DATA_SOURCE_OPTIONS: {
 
 const DataSourceKindSection = ({ value, onChange }: DataSourceKindSectionProps) => (
   <section className="flex flex-col gap-3">
-    <h3 className="text-sm font-semibold text-ink">Data source</h3>
+    <h3 className="text-sm font-semibold text-ink">
+      <Translate>Data source</Translate>
+    </h3>
     <div className="flex gap-3">
       {DATA_SOURCE_OPTIONS.map(option => {
         const isSelected = value === option.value;

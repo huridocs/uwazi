@@ -1,4 +1,5 @@
 import React from 'react';
+import { Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from '#V2/atoms/index.js';
 import type { DatavizSource } from '#V2/Dataviz/types/definition.js';
@@ -13,7 +14,9 @@ const TemplateColorHint = ({ sources }: TemplateColorHintProps) => {
   return (
     <div className="rounded-lg bg-vellum p-3">
       <p className="text-xs text-ink-secondary mb-2">
-        Each series uses the template brand color when comparing data sources.
+        <Translate>
+          Each series uses the template brand color when comparing data sources.
+        </Translate>
       </p>
       <div className="flex flex-wrap gap-3">
         {sources.map(source => {

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Translate } from '#app/I18N/index.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import { createEmptyFilter } from '#V2/Dataviz/utils/createEmptyFilter.js';
 import type { DatavizFilter, DatavizSource } from '#V2/Dataviz/types/definition.js';
@@ -23,10 +24,14 @@ const FiltersSection = ({ filters, sources, onChange }: FiltersSectionProps) => 
 
   return (
     <section className="flex flex-col gap-3">
-      <h3 className="text-sm font-semibold text-ink">Filters</h3>
+      <h3 className="text-sm font-semibold text-ink">
+        <Translate>Filters</Translate>
+      </h3>
       <p className="text-xs text-ink-secondary">
-        Narrow entities before aggregation. With multiple sources, pick the property under the
-        source alias so each filter applies only to that series.
+        <Translate>
+          Narrow entities before aggregation. With multiple sources, pick the property under the
+          source alias so each filter applies only to that series.
+        </Translate>
       </p>
       {filters.map((filter, index) => (
         <FilterRow
@@ -43,7 +48,7 @@ const FiltersSection = ({ filters, sources, onChange }: FiltersSectionProps) => 
         size="small"
         onClick={() => onChange([...filters, createEmptyFilter()])}
       >
-        + Add filter
+        <Translate>+ Add filter</Translate>
       </Button>
     </section>
   );

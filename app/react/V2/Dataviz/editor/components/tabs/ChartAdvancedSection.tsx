@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
 import { CodeEditor } from '#V2/Components/CodeEditor/index.js';
 import { localeAtom, settingsAtom, templatesAtom } from '#V2/atoms/index.js';
@@ -84,10 +85,14 @@ const ChartAdvancedSection = ({
   return (
     <section className="flex flex-col gap-4">
       <div>
-        <h3 className="text-sm font-semibold text-ink">Advanced ECharts overrides</h3>
+        <h3 className="text-sm font-semibold text-ink">
+          <Translate>Advanced ECharts overrides</Translate>
+        </h3>
         <p className="mt-1 text-xs text-ink-secondary">
-          Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
-          the Chart tab.
+          <Translate>
+            Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed
+            in the Chart tab.
+          </Translate>
         </p>
       </div>
       <div className="h-64 overflow-hidden rounded-lg border border-border">

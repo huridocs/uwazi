@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Translate } from '#app/I18N/index.js';
 import type { DatavizEmbedPayload } from '#shared/types/datavizSchema.js';
 import { mapToEChartsOption } from '#V2/Dataviz/rendering/mappers/index.js';
 import { DatavizChartView } from '#V2/Dataviz/rendering/DatavizChartView.js';
@@ -22,7 +23,9 @@ const DatavizEmbed = ({ payload, height }: DatavizEmbedProps) => {
 
   if (!canRenderChart) {
     return (
-      <p className="text-sm text-ink-secondary">This chart type cannot display the current data.</p>
+      <p className="text-sm text-ink-secondary">
+        <Translate>This chart type cannot display the current data.</Translate>
+      </p>
     );
   }
 
@@ -44,7 +47,9 @@ const DatavizEmbed = ({ payload, height }: DatavizEmbedProps) => {
   if (payload.data.stale) {
     return (
       <div className="flex flex-col gap-2">
-        <p className="text-xs text-amber-700">Data may be outdated.</p>
+        <p className="text-xs text-amber-700">
+          <Translate>Data may be outdated.</Translate>
+        </p>
         {chartBody}
       </div>
     );

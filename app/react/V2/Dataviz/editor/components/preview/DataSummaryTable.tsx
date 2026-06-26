@@ -1,4 +1,5 @@
 import React from 'react';
+import { Translate } from '#app/I18N/index.js';
 import type { DatavizDataDTO } from '#V2/Dataviz/types/data.js';
 import { hasBreakdownData } from '#V2/Dataviz/utils/twoDimensionalQuery.js';
 
@@ -17,9 +18,15 @@ const DataSummaryTable = ({ data }: DataSummaryTableProps) => {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border text-left text-ink-secondary">
-              <th className="py-2 pr-4 font-medium">Category</th>
-              <th className="py-2 pr-4 font-medium">Series</th>
-              <th className="py-2 pr-4 font-medium text-right">Count</th>
+              <th className="py-2 pr-4 font-medium">
+                <Translate>Category</Translate>
+              </th>
+              <th className="py-2 pr-4 font-medium">
+                <Translate>Series</Translate>
+              </th>
+              <th className="py-2 pr-4 font-medium text-right">
+                <Translate>Count</Translate>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -49,8 +56,12 @@ const DataSummaryTable = ({ data }: DataSummaryTableProps) => {
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-border text-left text-ink-secondary">
-            <th className="py-2 pr-4 font-medium">Label</th>
-            <th className="py-2 pr-4 font-medium text-right">Count</th>
+            <th className="py-2 pr-4 font-medium">
+              <Translate>Label</Translate>
+            </th>
+            <th className="py-2 pr-4 font-medium text-right">
+              <Translate>Count</Translate>
+            </th>
             <th className="py-2 font-medium text-right">%</th>
           </tr>
         </thead>

@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from '#V2/atoms/index.js';
 import {
@@ -55,7 +56,9 @@ const AppearanceTab = ({ definition, previewData, onPatchAppearance }: Appearanc
   return (
     <div className="flex flex-col gap-6 p-4">
       <section className="flex flex-col gap-3">
-        <h3 className="text-sm font-semibold text-ink">Colors</h3>
+        <h3 className="text-sm font-semibold text-ink">
+          <Translate>Colors</Translate>
+        </h3>
         <ColorModeSelect
           value={appearance.colorMode}
           supportsCustomColors={supportsCustom}
@@ -65,16 +68,20 @@ const AppearanceTab = ({ definition, previewData, onPatchAppearance }: Appearanc
         />
         {appearance.colorMode === 'custom' && !supportsCustom && (
           <p className="text-xs text-amber-700">
-            Custom colors are not available for this chart type. Use the chart palette or template
-            colors instead.
+            <Translate>
+              Custom colors are not available for this chart type. Use the chart palette or template
+              colors instead.
+            </Translate>
           </p>
         )}
         {appearance.colorMode === 'template' && <TemplateColorHint sources={query.sources} />}
         {(appearance.colorMode === 'template' || appearance.colorMode === 'from_data') &&
           !isTemplateDimension && (
             <p className="text-xs text-amber-700">
-              Template colors apply when comparing data sources or when the dimension is entity
-              type. Otherwise the chart palette is used as fallback.
+              <Translate>
+                Template colors apply when comparing data sources or when the dimension is entity
+                type. Otherwise the chart palette is used as fallback.
+              </Translate>
             </p>
           )}
         {appearance.colorMode === 'custom' && supportsCustom && (

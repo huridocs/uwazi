@@ -171,24 +171,22 @@ describe('heatmapMapper', () => {
   });
 
   it('should return null when points have no breakdown', () => {
-    const option = requireOption(
-      mapHeatmapOption(
-        {
-          ...twoDimensionalData,
-          series: [
-            {
-              id: 'main',
-              label: 'Series',
-              points: [
-                { key: 'a', label: 'Category A', value: 10 },
-                { key: 'b', label: 'Category B', value: 25 },
-              ],
-            },
-          ],
-        },
-        { type: 'heatmap' },
-        { colorMode: 'theme' }
-      )
+    const option = mapHeatmapOption(
+      {
+        ...twoDimensionalData,
+        series: [
+          {
+            id: 'main',
+            label: 'Series',
+            points: [
+              { key: 'a', label: 'Category A', value: 10 },
+              { key: 'b', label: 'Category B', value: 25 },
+            ],
+          },
+        ],
+      },
+      { type: 'heatmap' },
+      { colorMode: 'theme' }
     );
 
     expect(option).toBeNull();
