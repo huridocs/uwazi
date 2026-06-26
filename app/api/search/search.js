@@ -18,7 +18,7 @@ import { propertyTypes } from '#shared/propertyTypes.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import templatesFacade from '../core/v1_layer/templates/index.js';
 import entitiesModel from '../entities/entitiesModel.js';
-import thesauri from '../thesauri/index.js';
+import thesauri from '../core/v1_layer/thesauri/index.js';
 import documentQueryBuilder from './documentQueryBuilder.js';
 import { elastic } from './elastic.js';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex.js';

@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useMemo } from 'react';
 import type {
   RelationshipsPanelGroupBy,
   RelationshipsPanelSort,
@@ -107,15 +107,18 @@ const useRelationshipsPanelFilterInputs = () => {
   const { sort } = useSortSlice();
   const { groupBy, subGroupBy } = useLayoutSlice();
   const { relTypeFilters, entityTypeFilters, activeClusterRefIds } = useFacetFiltersSlice();
-  return {
-    search,
-    sort,
-    groupBy,
-    subGroupBy,
-    relTypeFilters,
-    entityTypeFilters,
-    activeClusterRefIds,
-  };
+  return useMemo(
+    () => ({
+      search,
+      sort,
+      groupBy,
+      subGroupBy,
+      relTypeFilters,
+      entityTypeFilters,
+      activeClusterRefIds,
+    }),
+    [search, sort, groupBy, subGroupBy, relTypeFilters, entityTypeFilters, activeClusterRefIds]
+  );
 };
 
 const useRelationshipsPanelFilters = () => {

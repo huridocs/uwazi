@@ -5,7 +5,6 @@ import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriData
 import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDataSource.js';
 import { CachedMongoThesauriDataSource } from '../mongodb/thesauri/CachedMongoThesauriDataSource.js';
 import { PostgresThesauriDataSource } from '../postgresql/thesaurus/PostgresThesauriDataSource.js';
-import { PostgresConnectionFactory } from './PostgresConnectionFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 type Overrides = { transactionManager?: TransactionManager };
@@ -17,7 +16,6 @@ export class ThesauriDataSourceFactory {
 
     if (tenant.featureFlags?.postgresThesauri) {
       return new PostgresThesauriDataSource({
-        connection: PostgresConnectionFactory.connectionConfig(),
         tenantId: tenant.name,
         mongoDb: db,
       });
@@ -34,7 +32,6 @@ export class ThesauriDataSourceFactory {
 
     if (tenant.featureFlags?.postgresThesauri) {
       return new PostgresThesauriDataSource({
-        connection: PostgresConnectionFactory.connectionConfig(),
         tenantId: tenant.name,
         mongoDb: db,
       });

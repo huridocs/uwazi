@@ -1,6 +1,5 @@
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { Db, ObjectId } from 'mongodb';
-import { PostgresConnectionConfig } from '#api/core/infrastructure/postgresql/common/PostgresTable.js';
 import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import { TemplateRow } from './PostgresTemplateMapper.js';
@@ -8,7 +7,6 @@ import { TemplateRow } from './PostgresTemplateMapper.js';
 type PropertyDescriptor = { name: string; type: PropertyType; inheritedType?: PropertyType };
 
 type Deps = {
-  connection: PostgresConnectionConfig;
   tenantId: string;
   mongoDb: Db;
 };
@@ -18,7 +16,6 @@ class PostgresTemplatesDAO extends PostgresDataSource {
 
   constructor(deps: Deps) {
     super({
-      connection: deps.connection,
       tenantId: deps.tenantId,
       sync: { syncDb: deps.mongoDb, syncNamespace: 'templates' },
     });

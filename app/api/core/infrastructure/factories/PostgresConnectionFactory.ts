@@ -1,51 +1,30 @@
 import pg from 'pg';
-import { config } from '#api/config.js';
-import { PostgresConnectionConfig } from '../postgresql/common/PostgresTable.js';
-
-let defaultPool: pg.Pool | null = null;
+import { PostgresDB, PostgresConnectionConfig } from '#api/infrastructure/PostgresDB.js';
 
 /**
- * Active config override. Process-local only; safe because Jest runs test
- * suites in separate processes (workers) by default. Reset after each test.
+ * @deprecated Use PostgresDB from '#api/infrastructure/PostgresDB.js' instead.
+ * Kept for backwards compatibility with existing callers.
  */
-let activeConfig: PostgresConnectionConfig | null = null;
-
 export class PostgresConnectionFactory {
   static setConfig(cfg: PostgresConnectionConfig): void {
-    activeConfig = cfg;
-    defaultPool = null; // force re-creation with new config
+    PostgresDB.setConfig(cfg);
   }
 
   static resetConfig(): void {
-    activeConfig = null;
+    PostgresDB.resetConfig();
   }
 
   static default(): pg.Pool {
-    const cfg = activeConfig ?? config.postgres;
-
-    if (!defaultPool) {
-      defaultPool = new pg.Pool(cfg);
-    }
-
-    return defaultPool;
+    return PostgresDB.pool();
   }
 
   static connectionConfig(): PostgresConnectionConfig {
-    return (
-      activeConfig ?? {
-        host: config.postgres.host,
-        port: config.postgres.port,
-        database: config.postgres.database,
-        user: config.postgres.user,
-        password: config.postgres.password,
-      }
-    );
+    return PostgresDB.connectionConfig();
   }
 
   static async close(): Promise<void> {
-    if (defaultPool) {
-      await defaultPool.end();
-      defaultPool = null;
-    }
+    await PostgresDB.disconnect();
   }
 }
+
+export type { PostgresConnectionConfig };

@@ -15,7 +15,7 @@ import {
 } from '#shared/types/commonTypes.js';
 const isString = (val: unknown): val is string => typeof val === 'string';
 import model from './entitiesModel.js';
-import thesauri from '#api/thesauri/thesauri.js';
+import thesauri from '#api/core/v1_layer/thesauri/thesauri.js';
 
 interface DenormalizationUpdate {
   propertyName: string;

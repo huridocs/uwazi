@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useAnimateToPosition } from '../hooks/useAnimateToPosition.js';
 import { computeClusterOuterSize } from '../computeMarkerY.js';
 import { RAIL_MARKER_SIZE, RAIL_MARKER_SPACING, railMarkerZIndex } from '../markerMetrics.js';
@@ -85,7 +85,7 @@ const computeClusterSubtreeLayout = ({
   };
 };
 
-const Cluster = ({
+const ClusterComponent = ({
   position,
   markerLayerHeight,
   stackOrder = 1,
@@ -100,7 +100,7 @@ const Cluster = ({
   const animatedPosition = useAnimateToPosition(position);
   const [internalIsOpen, setInternalIsOpen] = useState(false);
 
-  const pointGroups = groupClusterPoints(references);
+  const pointGroups = useMemo(() => groupClusterPoints(references), [references]);
   const points = pointGroups.slice(0, MAX_VISIBLE_POINTS);
   const extraPoints = pointGroups.slice(MAX_VISIBLE_POINTS);
 
@@ -222,5 +222,7 @@ const Cluster = ({
     </div>
   );
 };
+
+const Cluster = React.memo(ClusterComponent);
 
 export { Cluster, computeClusterSubtreeLayout };

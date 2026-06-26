@@ -33,11 +33,16 @@ function useDocumentPdfPage({
 
   const updatePageParam = useCallback(
     (pageParam: number | string) => {
-      const next = new URLSearchParams(searchParams.toString());
-      next.set(PAGE_PARAM, String(pageParam));
-      setSearchParams(next, { replace: true, preventScrollReset: true });
+      setSearchParams(
+        prev => {
+          const next = new URLSearchParams(prev);
+          next.set(PAGE_PARAM, String(pageParam));
+          return next;
+        },
+        { replace: true, preventScrollReset: true }
+      );
     },
-    [searchParams, setSearchParams]
+    [setSearchParams]
   );
 
   const handlePageNavigation = useCallback(

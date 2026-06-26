@@ -9,7 +9,7 @@ const DEFAULT_TENANT = 'tenant-a';
 const NAMESPACE = 'test_thesauri';
 
 const createTable = (tenantId = DEFAULT_TENANT, db: Db = getConnection()) =>
-  new SyncedPostgresTable(testingPG.config, 'thesauri', tenantId, db, NAMESPACE);
+  new SyncedPostgresTable('thesauri', tenantId, db, NAMESPACE);
 
 const jsonVal = (v: unknown) => JSON.stringify(v);
 

@@ -163,16 +163,7 @@ const testingEnvironment = {
     }
 
     if (this.pgEnabled && fixtures?.templates?.length) {
-      const pgTemplates = fixtures.templates.map((t: any) => ({
-        _id: t._id.toString(),
-        name: t.name,
-        properties: t.properties ?? [],
-        commonProperties: t.commonProperties ?? [],
-        color: t.color ?? null,
-        default: t.default ?? false,
-        entityViewPage: t.entityViewPage ?? null,
-        processing: t.processing ?? null,
-      }));
+      const pgTemplates = fixtures.templates.map((t: any) => JSON.parse(JSON.stringify(t)));
       await testingPG.setFixtures({ templates: pgTemplates });
     }
   },
