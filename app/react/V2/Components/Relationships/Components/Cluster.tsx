@@ -20,7 +20,7 @@ type ClusterProps = {
 };
 
 const PAD = 2;
-const BRANCH_LEN = 12;
+const BRANCH_LEN = 9;
 const STEM_LEN = 8;
 const POINT_INSET = 3;
 const SUBTREE_EDGE_INSET = RAIL_MARKER_SPACING / 2;
