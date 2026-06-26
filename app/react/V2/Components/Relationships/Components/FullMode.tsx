@@ -23,7 +23,7 @@ const getMarkerTop = (marker: RelationshipMarker): number => {
   return typeof selection?.top === 'number' ? selection.top : 0;
 };
 
-const FullMode = ({
+const FullModeComponent = ({
   document,
   markerLayerHeight,
   activeRelationshipId = null,
@@ -60,45 +60,51 @@ const FullMode = ({
       .map((item, index) => ({ ...item, stackOrder: index + 1 }));
   }, [documentClusters, documentPages, markerLayerHeight]);
 
-  return markers.map(({ key, element, position, stackOrder }) => {
-    if (element.type === 'cluster') {
-      return (
-        <Cluster
-          key={key}
-          position={position}
-          markerLayerHeight={markerLayerHeight}
-          stackOrder={stackOrder}
-          references={element.references}
-          activePointId={activeRelationshipId}
-          isOpen={openClusterKey === key}
-          onToggle={() => {
-            setOpenClusterKey(currentValue => (currentValue === key ? null : key));
-          }}
-          onPointClick={reference => {
-            onPointClick?.(reference);
-          }}
-          onMoreClick={references => onMoreClick?.(references)}
-          onClusterClick={references => {
-            onClusterClick?.(references);
-          }}
-        />
-      );
-    }
+  return (
+    <>
+      {markers.map(({ key, element, position, stackOrder }) => {
+        if (element.type === 'cluster') {
+          return (
+            <Cluster
+              key={key}
+              position={position}
+              markerLayerHeight={markerLayerHeight}
+              stackOrder={stackOrder}
+              references={element.references}
+              activePointId={activeRelationshipId}
+              isOpen={openClusterKey === key}
+              onToggle={() => {
+                setOpenClusterKey(currentValue => (currentValue === key ? null : key));
+              }}
+              onPointClick={reference => {
+                onPointClick?.(reference);
+              }}
+              onMoreClick={references => onMoreClick?.(references)}
+              onClusterClick={references => {
+                onClusterClick?.(references);
+              }}
+            />
+          );
+        }
 
-    return (
-      <Point
-        key={key}
-        position={position}
-        stackOrder={stackOrder}
-        marker={element.references[0]}
-        isActive={activeRelationshipId === element.references[0]._id}
-        onClick={marker => {
-          setOpenClusterKey(null);
-          onPointClick?.(marker);
-        }}
-      />
-    );
-  });
+        return (
+          <Point
+            key={key}
+            position={position}
+            stackOrder={stackOrder}
+            marker={element.references[0]}
+            isActive={activeRelationshipId === element.references[0]._id}
+            onClick={marker => {
+              setOpenClusterKey(null);
+              onPointClick?.(marker);
+            }}
+          />
+        );
+      })}
+    </>
+  );
 };
+
+const FullMode = React.memo(FullModeComponent);
 
 export { FullMode };
