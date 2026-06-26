@@ -42,6 +42,7 @@ module.exports = production => {
     entry: {
       main: path.join(rootPath, 'app/react/entry-client'),
       nprogress: path.join(rootPath, 'node_modules/nprogress/nprogress.js'),
+      'dataviz-embed': path.join(rootPath, 'app/react/V2/Dataviz/embed/dataviz-embed.entry.ts'),
     },
     output: {
       path: outputPath,

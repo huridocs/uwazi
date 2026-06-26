@@ -72,6 +72,9 @@ import settings from '#api/settings/index.js';
 import { AcceptSuggestionsFactory } from '#api/suggestions/infrastructure/AcceptSuggestionsFactory.js';
 import { AcceptSuggestionsJob } from '#api/suggestions/jobs/AcceptSuggestionsJob.js';
 import { CreateBlankStateSuggestionsJob } from '#api/suggestions/jobs/CreateBlankStateSuggestionsJob.js';
+import { DatavizFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizFactory.js';
+import { DatavizScheduledRefreshJobHandler } from '#api/dataviz.v2/infrastructure/jobHandlers/DatavizScheduledRefreshJobHandler.js';
+import { DatavizScheduledRefreshJobLegacyToken } from '#api/dataviz.v2/application/contracts/DatavizScheduledRefreshJobHandlerToken.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { SendWelcomeEmailHandler } from '#api/core/infrastructure/jobs/SendWelcomeEmailHandler.js';
 
@@ -316,6 +319,14 @@ export function registerJobs(register: Register) {
   );
 
   register(DeleteLanguagePagesListener.asJob(), async () => new DeleteLanguagePagesListener({}));
+
+  register(DatavizScheduledRefreshJobHandler, async namespace =>
+    DatavizFactory.scheduledRefreshJobHandler(namespace)
+  );
+
+  register(DatavizScheduledRefreshJobLegacyToken, async namespace =>
+    DatavizFactory.scheduledRefreshJobHandler(namespace)
+  );
 
   register(SendWelcomeEmailHandler, async () => new SendWelcomeEmailHandler());
 }

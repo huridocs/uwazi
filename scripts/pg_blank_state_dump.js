@@ -55,7 +55,7 @@ async function main() {
 
       const outputPath = join(dataDir, file);
       writeFileSync(outputPath, JSON.stringify(rows, null, 2) + '\n');
-      console.log(`Dumped ${rows.length} rows from ${tableName} to ${outputPath}`);
+      console.info(`Dumped ${rows.length} rows from ${tableName} to ${outputPath}`);
     }
   } catch (err) {
     console.error('Error dumping PostgreSQL data:', err.message);
