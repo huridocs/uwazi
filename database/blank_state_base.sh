@@ -45,6 +45,14 @@ fi
 
 blank_state_dir="${BLANK_STATE_DIR:-$parent_path/blank_state}"
 
+# Collect PostgreSQL table names from schema files for dynamic operations
+pg_tables=()
+for schema_file in "$repo_root/app/api/core/infrastructure/postgresql/schema/"*.sql; do
+  [ -f "$schema_file" ] || continue
+  table_name=$(grep -oiE 'CREATE TABLE IF NOT EXISTS\s+"?[^"( ]+"?' "$schema_file" | sed -E 's/CREATE TABLE IF NOT EXISTS\s+"?([^" ]+)"?/\1/i' | head -1)
+  [ -n "$table_name" ] && pg_tables+=("$table_name")
+done
+
 recreate_database() {
   if [ "$SCHEMA_ONLY_FLAG" = false ]; then
     mongosh --quiet "${AUTH[@]}" --host "$HOST" "$DB" --eval "db.dropDatabase()"
@@ -91,9 +99,13 @@ recreate_database() {
         fi
       else
         echo "Deleting existing PostgreSQL data for tenant '$DB'..."
+        delete_statements=""
+        for table in "${pg_tables[@]}"; do
+          delete_statements+="DELETE FROM \"$table\" WHERE tenant_id = '$DB'; "
+        done
         PGPASSWORD="${POSTGRES_PASSWORD:-uwazi}" psql \
           -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d "$PG_DB" \
-          -c "DELETE FROM templates WHERE tenant_id = '$DB'; DELETE FROM thesauri WHERE tenant_id = '$DB';"
+          -c "$delete_statements"
       fi
     fi
 
