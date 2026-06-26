@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import db from '#api/utils/testing_db.js';
-import thesauri from '#api/thesauri/index.js';
+import thesauri from '#api/core/v1_layer/thesauri/index.js';
 import { templateUtils } from '#api/core/v1_layer/templates/index.js';
 import translations from '#api/i18n/translations.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
@@ -341,7 +341,7 @@ describe('arrangeThesauri', () => {
       jest.resetModules();
 
       const csvModulePath = require.resolve('../csv');
-      const thesauriModulePath = require.resolve('api/thesauri');
+      const thesauriModulePath = require.resolve('api/core/v1_layer/thesauri');
       const arrangeThesauriModulePath = require.resolve('../arrangeThesauri');
 
       const csvState = { onErrorThrew: false };

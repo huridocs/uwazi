@@ -28,7 +28,7 @@ export default async (app, server) => {
   (await import('./search/deprecatedRoutes.js')).default(app);
   (await import('./search/routes.js')).default(app);
   (await import('./search.v2/routes.js')).searchRoutes(app);
-  (await import('./thesauri/routes.js')).default(app);
+  (await import('./core/v1_layer/thesauri/routes.js')).default(app);
   (await import('./relationtypes/routes.js')).default(app);
   (await import('./documents/deprecatedRoutes.js')).default(app);
   (await import('./documents/routes.js')).documentRoutes(app);

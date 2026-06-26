@@ -7,15 +7,13 @@ import {
   ThesaurusNotFoundError,
 } from '#api/core/domain/thesaurus/errors.js';
 import { PostgresDataSource } from '../common/PostgresDataSource.js';
-import { PostgresConnectionConfig } from '../common/PostgresTable.js';
 import { PostgresThesaurusMapper, ThesaurusRow } from './PostgresThesaurusMapper.js';
 
 export class PostgresThesauriDataSource extends PostgresDataSource implements ThesauriDataSource {
   protected tableName = 'thesauri';
 
-  constructor(deps: { connection: PostgresConnectionConfig; tenantId: string; mongoDb: Db }) {
+  constructor(deps: { tenantId: string; mongoDb: Db }) {
     super({
-      connection: deps.connection,
       tenantId: deps.tenantId,
       sync: { syncDb: deps.mongoDb, syncNamespace: 'dictionaries' }, // syncNamespace matches MongoDB collection name for updatelogs compatibility
     });

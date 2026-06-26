@@ -1,6 +1,5 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { tenants } from '#api/tenants/tenantContext.js';
-import { PostgresConnectionFactory } from '#api/core/infrastructure/factories/PostgresConnectionFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
@@ -25,12 +24,10 @@ describe('PostgresTemplatesDataSource', () => {
     const transactionManager = TransactionManagerFactory.default();
     const tenantId = tenants.current().name;
     const dao = new PostgresTemplatesDAO({
-      connection: PostgresConnectionFactory.connectionConfig(),
       tenantId,
       mongoDb: db,
     });
     return new PostgresTemplatesDataSource({
-      connection: PostgresConnectionFactory.connectionConfig(),
       tenantId,
       mongoDb: db,
       transactionManager,
