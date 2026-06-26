@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Translate } from '#app/I18N/index.js';
 import { CodeEditor } from '#V2/Components/CodeEditor/index.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import type { ChartType } from '#shared/types/datavizSchema.js';
@@ -45,13 +46,14 @@ const ManualDataEditor = ({ manualData, onChange, onLoadExample }: ManualDataEdi
     <section className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-2">
         <div>
-          <h3 className="text-sm font-semibold text-ink">Manual data</h3>
+          <h3 className="text-sm font-semibold text-ink">
+            <Translate>Manual data</Translate>
+          </h3>
           <p className="mt-1 text-xs text-ink-secondary">
-            Provide chart-ready data as JSON. Each series needs <code className="text-ink">id</code>
-            , <code className="text-ink">label</code>, and a{' '}
-            <code className="text-ink">points</code> array with{' '}
-            <code className="text-ink">label</code> and <code className="text-ink">value</code> per
-            row. Optional <code className="text-ink">key</code> on points helps stable colors.
+            <Translate>
+              Provide chart-ready data as JSON. Each series needs id, label, and a points array with
+              label and value per row. Optional key on points helps stable colors.
+            </Translate>
           </p>
         </div>
         <Button
@@ -60,7 +62,7 @@ const ManualDataEditor = ({ manualData, onChange, onLoadExample }: ManualDataEdi
           size="small"
           onClick={() => setShowExampleModal(true)}
         >
-          Load example
+          <Translate>Load example</Translate>
         </Button>
       </div>
       <div className="h-80 overflow-hidden rounded-lg border border-border">
@@ -72,7 +74,9 @@ const ManualDataEditor = ({ manualData, onChange, onLoadExample }: ManualDataEdi
         />
       </div>
       {parseError && <p className="text-xs text-red-600">{parseError}</p>}
-      <p className="text-xs text-ink-muted">Preview updates when the JSON is valid.</p>
+      <p className="text-xs text-ink-muted">
+        <Translate>Preview updates when the JSON is valid.</Translate>
+      </p>
       {showExampleModal && (
         <LoadManualExampleModal
           onSelect={applyExample}

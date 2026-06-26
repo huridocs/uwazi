@@ -5,7 +5,6 @@ import { buildManualDataDTO } from '#shared/dataviz/manualData.js';
 import { buildRenderSnapshotPayload } from './buildRenderSnapshot.js';
 import { Dataviz } from '#api/dataviz.v2/domain/Dataviz.js';
 import {
-  DatavizNotFoundError,
   DatavizProcessingError,
   DatavizSnapshotUnavailableError,
 } from '#api/dataviz.v2/domain/errors.js';
@@ -67,17 +66,4 @@ const resolveDatavizRenderSnapshot = async (
   };
 };
 
-const loadDatavizOrThrow = async (
-  id: string,
-  datavizDS: {
-    getById: (id: string) => Promise<{ isError: () => boolean; getData: () => Dataviz }>;
-  }
-): Promise<Dataviz> => {
-  const result = await datavizDS.getById(id);
-  if (result.isError()) {
-    throw new DatavizNotFoundError(id);
-  }
-  return result.getData();
-};
-
-export { resolveDatavizRenderSnapshot, loadDatavizOrThrow };
+export { resolveDatavizRenderSnapshot };

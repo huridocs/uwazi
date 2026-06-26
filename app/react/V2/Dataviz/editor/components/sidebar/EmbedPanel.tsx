@@ -72,7 +72,10 @@ const EmbedPanel = ({ id, embedPublic = false, onEmbedPublicChange }: EmbedPanel
         {externalEmbedAllowed ? (
           <>
             <p className="text-xs text-ink-secondary">
-              Use this iframe on external sites. Change <code>?locale=</code> in the URL if needed.
+              <Translate>
+                Use this iframe on external sites. Change the locale query parameter in the URL if
+                needed.
+              </Translate>
             </p>
             <CopyValueInput
               id="dataviz-external-embed"

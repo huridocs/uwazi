@@ -1,6 +1,7 @@
 import { Db, FindCursor, ObjectId } from 'mongodb';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import type { LocalizedLabels } from '#shared/types/datavizSchema.js';
 import { User } from '#api/users.v2/model/User.js';
 import { MongoDataSource, MongoDSOptions } from '../common/MongoDataSource.js';
 import { FileDBO } from '../files/schemas/filesTypes.js';
@@ -171,8 +172,8 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> {
   async getTitleLabelsBySharedIds(
     sharedIds: string[],
     languages: LanguageISO6391[]
-  ): Promise<Map<string, Partial<Record<LanguageISO6391, string>>>> {
-    const result = new Map<string, Partial<Record<LanguageISO6391, string>>>();
+  ): Promise<Map<string, LocalizedLabels>> {
+    const result = new Map<string, LocalizedLabels>();
 
     if (sharedIds.length === 0 || languages.length === 0) {
       return result;

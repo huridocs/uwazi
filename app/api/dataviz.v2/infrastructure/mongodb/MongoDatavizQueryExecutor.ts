@@ -636,10 +636,7 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
     }
   }
 
-  private coerceMissingValueStages(
-    pipeline: object[],
-    field: '__primary' | '__secondary'
-  ): void {
+  private coerceMissingValueStages(pipeline: object[], field: '__primary' | '__secondary'): void {
     pipeline.push({
       $addFields: {
         [field]: {

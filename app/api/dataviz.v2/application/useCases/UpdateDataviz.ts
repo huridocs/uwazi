@@ -1,4 +1,5 @@
 import type { DatavizDefinition } from '#shared/types/datavizSchema.js';
+import { z } from 'zod';
 import { DatavizSnapshotsDataSource } from '#api/dataviz.v2/application/contracts/DatavizSnapshotsDataSource.js';
 import { DatavizDataSource } from '#api/dataviz.v2/application/contracts/DatavizDataSource.js';
 import { DatavizQueryExecutor } from '#api/dataviz.v2/application/contracts/DatavizQueryExecutor.js';
@@ -11,7 +12,7 @@ import type { TemplatesDataSource } from '#api/core/application/contracts/Templa
 import { planSnapshotPersistence } from '#api/dataviz.v2/application/services/persistDatavizSnapshot.js';
 import { updateDatavizInputSchema } from '#api/dataviz.v2/application/contracts/datavizInputSchemas.js';
 
-type Input = Omit<DatavizDefinition, 'createdAt' | 'updatedAt' | 'processing'>;
+type Input = z.infer<typeof updateDatavizInputSchema>;
 
 type Output = Dataviz;
 
@@ -44,12 +45,12 @@ class UpdateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
       id: input.id,
       name: input.name,
       description: input.description,
-      dataSource: input.dataSource,
-      query: input.query,
-      manualData: input.manualData,
-      chart: input.chart,
-      appearance: input.appearance,
-      refresh: normalizeDatavizRefresh(input.refresh),
+      dataSource: input.dataSource as DatavizDefinition['dataSource'],
+      query: input.query as DatavizDefinition['query'],
+      manualData: input.manualData as DatavizDefinition['manualData'],
+      chart: input.chart as DatavizDefinition['chart'],
+      appearance: input.appearance as DatavizDefinition['appearance'],
+      refresh: normalizeDatavizRefresh(input.refresh as DatavizDefinition['refresh']),
       processing: existing.processing,
       embedPublic: input.embedPublic ?? existing.embedPublic,
       createdAt: existing.createdAt,

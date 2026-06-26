@@ -2,9 +2,11 @@ import { z } from 'zod';
 
 const looseObject = z.object({}).passthrough();
 
+const datavizSourceSchema = z.object({ templateId: z.string().min(1) }).passthrough();
+
 const datavizQuerySchema = z
   .object({
-    sources: z.array(looseObject),
+    sources: z.array(datavizSourceSchema).min(1),
     dimensions: z.array(looseObject),
     measures: z.array(looseObject).min(1, 'At least one measure is required'),
   })

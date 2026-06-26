@@ -4,6 +4,7 @@ import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsD
 import { User } from '#api/users.v2/model/User.js';
 import { computeNextLockedUntil } from '#shared/dataviz/computeNextLockedUntil.js';
 import { DatavizScheduledRefreshJobHandlerToken } from '#api/dataviz.v2/application/contracts/DatavizScheduledRefreshJobHandlerToken.js';
+import { cancelPendingDatavizRefreshJobs } from './cancelPendingDatavizRefreshJobs.js';
 
 type Deps = {
   jobsDispatcher: JobsDispatcher;
@@ -14,7 +15,7 @@ class DatavizSchedulerService implements DatavizScheduler {
   constructor(private deps: Deps) {}
 
   async cancelPending(datavizId: string): Promise<void> {
-    await this.deps.jobsDispatcher.cancelByParams(DatavizScheduledRefreshJobHandlerToken, { datavizId });
+    await cancelPendingDatavizRefreshJobs(this.deps.jobsDispatcher, datavizId);
   }
 
   async schedule(dataviz: Dataviz, actor: User, runImmediately = true): Promise<void> {

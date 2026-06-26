@@ -1,6 +1,9 @@
 import { Dataviz } from '#api/dataviz.v2/domain/Dataviz.js';
 import { User } from '#api/users.v2/model/User.js';
-import { DatavizScheduledRefreshJobHandlerToken } from '#api/dataviz.v2/application/contracts/DatavizScheduledRefreshJobHandlerToken.js';
+import {
+  DatavizScheduledRefreshJobHandlerToken,
+  DatavizScheduledRefreshJobLegacyToken,
+} from '#api/dataviz.v2/application/contracts/DatavizScheduledRefreshJobHandlerToken.js';
 import { DatavizSchedulerService } from '../DatavizSchedulerService.js';
 
 const baseDataviz = () =>
@@ -26,7 +29,13 @@ describe('DatavizSchedulerService', () => {
     });
 
     await service.cancelPending('dv1');
-    expect(cancelByParams).toHaveBeenCalled();
+    expect(cancelByParams).toHaveBeenCalledTimes(2);
+    expect(cancelByParams).toHaveBeenCalledWith(DatavizScheduledRefreshJobHandlerToken, {
+      datavizId: 'dv1',
+    });
+    expect(cancelByParams).toHaveBeenCalledWith(DatavizScheduledRefreshJobLegacyToken, {
+      datavizId: 'dv1',
+    });
   });
 
   it('should dispatch immediate job when scheduling', async () => {

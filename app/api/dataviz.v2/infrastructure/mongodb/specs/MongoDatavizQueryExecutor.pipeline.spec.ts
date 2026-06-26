@@ -16,9 +16,7 @@ type PipelineTestHarness = {
   buildMeasureGroupAccumulator: (measure: MeasureSpec) => Record<string, object>;
 };
 
-const pipeline = Object.create(
-  MongoDatavizQueryExecutor.prototype
-) as PipelineTestHarness;
+const pipeline = Object.create(MongoDatavizQueryExecutor.prototype) as PipelineTestHarness;
 
 describe('MongoDatavizQueryExecutor pipeline helpers', () => {
   describe('buildFilterMatch source scoping', () => {
@@ -164,11 +162,11 @@ describe('MongoDatavizQueryExecutor pipeline helpers', () => {
 
   describe('buildMeasureGroupAccumulator', () => {
     it('should count entities by default', () => {
-      expect(pipeline.buildMeasureGroupAccumulator({ aggregation: 'count', countMode: 'all' })).toEqual(
-        {
-          count: { $sum: 1 },
-        }
-      );
+      expect(
+        pipeline.buildMeasureGroupAccumulator({ aggregation: 'count', countMode: 'all' })
+      ).toEqual({
+        count: { $sum: 1 },
+      });
     });
 
     it('should aggregate numeric measure fields', () => {
