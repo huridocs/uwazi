@@ -19,7 +19,7 @@ type PointProps = {
 const activeMarkerShadow = (color: string): string =>
   `0 0 0 2px var(--color-theme-surface-raised), 0 0 0 4.5px ${color}99`;
 
-const Point = ({
+const PointComponent = ({
   position,
   stackOrder = 1,
   marker,
@@ -89,5 +89,7 @@ const Point = ({
     </PortalTooltip>
   );
 };
+
+const Point = React.memo(PointComponent);
 
 export { Point };

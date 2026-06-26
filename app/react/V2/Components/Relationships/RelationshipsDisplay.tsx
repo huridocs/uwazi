@@ -15,7 +15,7 @@ import { RelationshipMarker } from './types.js';
 const RAIL_LAYOUT = {
   insetTop: 8,
   insetBottom: 8,
-  insetRight: 16,
+  insetRight: 29,
   width: 32,
   trackTopBelowToggle: 28,
 } as const;
@@ -25,6 +25,7 @@ type RelationshipsDisplayProps = {
   document: FileType;
   currentPage?: number;
   pageHeight?: number;
+  railInsetRight?: number;
   showRail?: boolean;
   activeRelationshipId?: string | null;
   onPointClick?: (marker: RelationshipMarker) => void;
@@ -37,6 +38,7 @@ const RelationshipsDisplay = ({
   document,
   currentPage,
   pageHeight,
+  railInsetRight,
   showRail = true,
   activeRelationshipId = null,
   onPointClick,
@@ -101,7 +103,7 @@ const RelationshipsDisplay = ({
     position: 'absolute' as const,
     top: RAIL_LAYOUT.insetTop,
     bottom: RAIL_LAYOUT.insetBottom,
-    right: RAIL_LAYOUT.insetRight,
+    right: railInsetRight ?? RAIL_LAYOUT.insetRight,
     width: RAIL_LAYOUT.width,
     zIndex: 5,
   };
