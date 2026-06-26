@@ -123,7 +123,7 @@ class PageViewer extends Component {
                       />
                     </ErrorBoundary>
                   </Context.Provider>
-                  <Footer />
+                  {!this.props.chromeless && <Footer />}
                 </div>
               </main>
               <ScriptConnected
@@ -137,7 +137,7 @@ class PageViewer extends Component {
           {processedError && (
             <div className="main-wrapper">
               <ErrorFallback error={processedError} />
-              <Footer />
+              {!this.props.chromeless && <Footer />}
             </div>
           )}
         </div>
@@ -152,6 +152,7 @@ PageViewer.defaultProps = {
   datasets: Immutable.fromJS({}),
   error: Immutable.fromJS({}),
   setBrowserTitle: true,
+  chromeless: false,
 };
 
 PageViewer.propTypes = {
@@ -160,6 +161,7 @@ PageViewer.propTypes = {
   datasets: PropTypes.instanceOf(Immutable.Map),
   error: PropTypes.oneOfType([PropTypes.instanceOf(Immutable.Map), PropTypes.object]),
   setBrowserTitle: PropTypes.bool,
+  chromeless: PropTypes.bool,
 };
 
 const mapStateToProps = ({ page }) => ({

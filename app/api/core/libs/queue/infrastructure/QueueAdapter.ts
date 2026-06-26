@@ -28,4 +28,5 @@ export interface QueueAdapter {
   updateLockWindow(job: Job, newLockWindow: number): Promise<Job>;
   deleteJob(job: Job): Promise<void>;
   deleteByParams(jobName: string, params: Partial<Params>, tenantName: string): Promise<void>;
+  cancelByParams(jobName: string, params: Partial<Params>, tenantName: string): Promise<void>;
 }

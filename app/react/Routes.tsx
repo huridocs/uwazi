@@ -46,6 +46,13 @@ import {
   pagesListLoader,
 } from '#V2/Routes/Settings/Pages/index.js';
 import {
+  DatavizList,
+  datavizListLoader,
+  DatavizEditorRoute,
+  datavizEditorLoader,
+  datavizNewLoader,
+} from '#V2/Routes/Settings/Dataviz/index.js';
+import {
   customisationLoader,
   Customisation,
 } from '#V2/Routes/Settings/Customization/Customization.js';
@@ -90,7 +97,6 @@ import {
   UploadStatus,
   uploadStatusLoader,
 } from './V2/Routes/Settings/CSVUpload/index.js';
-
 const deconstructSearchQuery = (query?: string) => {
   if (!query) return '';
   if (query.startsWith('?q=')) return decodeURI(query.substring(1).split('=')[1]);
@@ -253,6 +259,23 @@ const getRoutesLayout = (
           path="edit/:sharedId?"
           element={adminsOnlyRoute(<PageEditor />)}
           loader={pageEditorLoader(headers)}
+        />
+      </Route>
+      <Route path="dataviz">
+        <Route
+          index
+          element={adminsOnlyRoute(<DatavizList />)}
+          loader={datavizListLoader(headers)}
+        />
+        <Route
+          path="new"
+          element={adminsOnlyRoute(<DatavizEditorRoute />)}
+          loader={datavizNewLoader(headers)}
+        />
+        <Route
+          path="edit/:id"
+          element={adminsOnlyRoute(<DatavizEditorRoute />)}
+          loader={datavizEditorLoader(headers)}
         />
       </Route>
       <Route path="templates">
