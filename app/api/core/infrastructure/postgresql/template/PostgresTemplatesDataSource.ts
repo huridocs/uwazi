@@ -11,7 +11,6 @@ import { Property } from '#api/core/domain/template/Property.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
-import { PostgresConnectionConfig } from '#api/core/infrastructure/postgresql/common/PostgresTable.js';
 import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
 import { resetIndex, updateMapping } from '#api/search/entitiesIndex.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
@@ -19,7 +18,6 @@ import { PostgresTemplatesDAO } from './PostgresTemplatesDAO.js';
 import { PostgresTemplateMapper } from './PostgresTemplateMapper.js';
 
 type Deps = {
-  connection: PostgresConnectionConfig;
   tenantId: string;
   mongoDb: Db;
   transactionManager: TransactionManager;
@@ -37,7 +35,6 @@ export class PostgresTemplatesDataSource extends PostgresDataSource implements T
 
   constructor(deps: Deps) {
     super({
-      connection: deps.connection,
       tenantId: deps.tenantId,
       sync: { syncDb: deps.mongoDb, syncNamespace: 'templates' },
     });

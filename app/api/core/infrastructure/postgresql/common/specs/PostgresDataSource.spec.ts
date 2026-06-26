@@ -37,7 +37,6 @@ class TestDataSource extends PostgresDataSource {
 
 const makeDS = (tenantId: string) =>
   new TestDataSource({
-    connection: testingPG.config,
     tenantId,
   });
 

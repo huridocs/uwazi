@@ -21,7 +21,7 @@ import { legacyLogger } from '#api/log/index.js';
 import { EnforcedWithId } from '#api/odm/index.js';
 import settings from '#api/settings/index.js';
 import { tenants } from '#api/tenants/index.js';
-import thesauri from '#api/thesauri/index.js';
+import thesauri from '#api/core/v1_layer/thesauri/index.js';
 import users from '#api/users/users.js';
 import { newThesauriId } from '#api/utils/templateUtils.js';
 import request from '#shared/JSONRequest.js';

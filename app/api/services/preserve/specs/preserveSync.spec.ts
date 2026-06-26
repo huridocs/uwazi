@@ -14,7 +14,7 @@ import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { elastic, search } from '#api/search/index.js';
 import { tenants } from '#api/tenants/index.js';
 import { Tenant } from '#api/tenants/tenantContext.js';
-import thesauri from '#api/thesauri/index.js';
+import thesauri from '#api/core/v1_layer/thesauri/index.js';
 import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { EntitySchema, EntityWithFilesSchema } from '#shared/types/entityType.js';

@@ -1,7 +1,6 @@
 import { tenants } from '#api/tenants/tenantContext.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
-import { PostgresConnectionFactory } from '#api/core/infrastructure/factories/PostgresConnectionFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { PostgresTemplatesSyncHandler } from '../PostgresTemplatesSyncHandler.js';
@@ -19,7 +18,6 @@ describe('PostgresTemplatesSyncHandler', () => {
 
   const createHandler = () =>
     new PostgresTemplatesSyncHandler({
-      connection: PostgresConnectionFactory.connectionConfig(),
       tenantId: tenants.current().name,
       mongoDb: getConnection(),
     });

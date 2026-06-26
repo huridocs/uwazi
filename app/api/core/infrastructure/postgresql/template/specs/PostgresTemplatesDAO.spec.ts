@@ -1,6 +1,5 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { tenants } from '#api/tenants/tenantContext.js';
-import { PostgresConnectionFactory } from '#api/core/infrastructure/factories/PostgresConnectionFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
@@ -19,7 +18,6 @@ describe('PostgresTemplatesDAO', () => {
 
   const createDao = () =>
     new PostgresTemplatesDAO({
-      connection: PostgresConnectionFactory.connectionConfig(),
       tenantId: tenants.current().name,
       mongoDb: getConnection(),
     });

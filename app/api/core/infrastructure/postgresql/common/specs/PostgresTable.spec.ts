@@ -11,8 +11,7 @@ type TestRow = {
   values: Record<string, unknown>[];
 };
 
-const createTable = (tenantId = DEFAULT_TENANT) =>
-  new PostgresTable(testingPG.config, 'thesauri', tenantId);
+const createTable = (tenantId = DEFAULT_TENANT) => new PostgresTable('thesauri', tenantId);
 
 const jsonVal = (v: unknown) => JSON.stringify(v);
 
@@ -416,7 +415,7 @@ describe('PostgresTable', () => {
     });
 
     const createCategoryTable = (tenantId = DEFAULT_TENANT) =>
-      new PostgresTable(testingPG.config, 'thesauri_categories', tenantId);
+      new PostgresTable('thesauri_categories', tenantId);
 
     it('should join thesauri with categories and enforce tenant_id on the base table', async () => {
       const thesauriTable = createTable();

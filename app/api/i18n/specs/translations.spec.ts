@@ -7,7 +7,7 @@ import entities from '#api/entities/index.js';
 import { TranslationSyO } from '#api/i18n.v2/schemas/TranslationSyO.js';
 import pages from '#api/pages/index.js';
 import settings from '#api/settings/index.js';
-import thesauri from '#api/thesauri/thesauri.js';
+import thesauri from '#api/core/v1_layer/thesauri/thesauri.js';
 import { ContextType } from '#shared/translationSchema.js';
 import { UITranslationNotAvailable } from '../defaultTranslations.js';
 import { addLanguage } from '../routes.js';

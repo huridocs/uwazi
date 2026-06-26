@@ -1,5 +1,5 @@
 import { Db } from 'mongodb';
-import { PostgresTable, PostgresConnectionConfig } from '../common/PostgresTable.js';
+import { PostgresTable } from '../common/PostgresTable.js';
 
 export const BATCH_SIZE = 1000;
 
@@ -12,7 +12,6 @@ export interface MigrationConfig {
 export class MigrateCollectionToPostgres {
   constructor(
     private mongoDb: Db,
-    private connection: PostgresConnectionConfig,
     private tenantId: string
   ) {}
 
@@ -26,7 +25,7 @@ export class MigrateCollectionToPostgres {
       return 0;
     }
 
-    const table = new PostgresTable(this.connection, config.pgTable, this.tenantId);
+    const table = new PostgresTable(config.pgTable, this.tenantId);
 
     for (let i = 0; i < mongoDocs.length; i += BATCH_SIZE) {
       const batch = mongoDocs.slice(i, i + BATCH_SIZE);

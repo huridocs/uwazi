@@ -17,4 +17,13 @@ rm -f "$parent_path/uploaded_documents/"*.pdf
 rm -f "$parent_path/uploaded_documents/"*.jpg
 cp -f "$parent_path/../uploaded_documents/"*.pdf "$parent_path/uploaded_documents/" 2>/dev/null || true
 cp -f "$parent_path/../uploaded_documents/"*.jpg "$parent_path/uploaded_documents/" 2>/dev/null || true
+PG_HOST="${POSTGRES_HOST:-127.0.0.1}"
+PG_PORT="${POSTGRES_PORT:-5432}"
+PG_USER="${POSTGRES_USER:-uwazi}"
+
+if command -v pg_isready &>/dev/null && pg_isready -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -q 2>/dev/null; then
+  echo "Dumping PostgreSQL data..."
+  node "$parent_path/../scripts/pg_blank_state_dump.js" "$DB"
+fi
+
 echo "DONE !"
