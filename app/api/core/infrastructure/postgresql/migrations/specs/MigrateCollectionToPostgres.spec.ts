@@ -22,7 +22,7 @@ describe('MigrateCollectionToPostgres', () => {
 
   const makeMigrator = () => {
     const mongoDb = testingDB.db(testingDB.dbName);
-    return new MigrateCollectionToPostgres(mongoDb, testingPG.config, TENANT);
+    return new MigrateCollectionToPostgres(mongoDb, TENANT);
   };
 
   it('should migrate all documents from a MongoDB collection to PostgreSQL table', async () => {
@@ -152,11 +152,11 @@ describe('MigrateCollectionToPostgres', () => {
       },
     };
 
-    const migratorA = new MigrateCollectionToPostgres(mongoDb, testingPG.config, 'tenant-a');
+    const migratorA = new MigrateCollectionToPostgres(mongoDb, 'tenant-a');
     const migratedA = await migratorA.migrate(config);
     expect(migratedA).toBe(1);
 
-    const migratorB = new MigrateCollectionToPostgres(mongoDb, testingPG.config, 'tenant-b');
+    const migratorB = new MigrateCollectionToPostgres(mongoDb, 'tenant-b');
     const migratedB = await migratorB.migrate(config);
     expect(migratedB).toBe(1);
 

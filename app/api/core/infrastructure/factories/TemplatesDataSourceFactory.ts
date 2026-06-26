@@ -1,7 +1,6 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { PostgresConnectionFactory } from '#api/core/infrastructure/factories/PostgresConnectionFactory.js';
 import { PostgresTemplatesDataSource } from '#api/core/infrastructure/postgresql/template/PostgresTemplatesDataSource.js';
 import { MongoTemplatesDataSource } from '../mongodb/template/MongoTemplatesDataSource.js';
 import { CachedMongoTemplatesDataSource } from '../mongodb/template/CachedMongoTemplatesDataSource.js';
@@ -27,7 +26,6 @@ export class TemplatesDataSourceFactory {
     if (tenant.featureFlags?.postgresTemplates) {
       const dao = TemplatesDAOFactory.default() as PostgresTemplatesDAO;
       return new PostgresTemplatesDataSource({
-        connection: PostgresConnectionFactory.connectionConfig(),
         tenantId: tenant.name,
         mongoDb: db,
         transactionManager: mongoTM,
@@ -54,7 +52,6 @@ export class TemplatesDataSourceFactory {
     if (tenant.featureFlags?.postgresTemplates) {
       const dao = TemplatesDAOFactory.default() as PostgresTemplatesDAO;
       return new PostgresTemplatesDataSource({
-        connection: PostgresConnectionFactory.connectionConfig(),
         tenantId: tenant.name,
         mongoDb: db,
         transactionManager: mongoTM,

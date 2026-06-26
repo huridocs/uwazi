@@ -52,9 +52,13 @@ recreate_database() {
       INDEX_NAME="$DB" DATABASE_NAME="$DB" node "$repo_root/prod/scripts/run.js" ../database/reindex_elastic.js
     else
       INDEX_NAME="$DB" DATABASE_NAME="$DB" yarn migrate
+      echo 'before reindexing'
       INDEX_NAME="$DB" DATABASE_NAME="$DB" yarn reindex
+      echo 'after reindexing'
     fi
   fi
+
+  echo 'PG'
 
   PG_HOST="${POSTGRES_HOST:-127.0.0.1}"
   PG_PORT="${POSTGRES_PORT:-5432}"
@@ -62,22 +66,32 @@ recreate_database() {
   PG_DB="${POSTGRES_DB:-uwazi_development}"
 
   if command -v pg_isready &>/dev/null && pg_isready -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -q 2>/dev/null; then
-    echo "Cleaning existing PostgreSQL data..."
-    PGPASSWORD="${POSTGRES_PASSWORD:-uwazi}" psql \
-      -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d "$PG_DB" \
-      -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;" \
-      && echo "Existing data cleaned." \
-      || echo "WARNING: PostgreSQL cleanup failed, skipping."
-
     echo "Applying PostgreSQL schema..."
     for schema_file in "$repo_root/app/api/core/infrastructure/postgresql/schema/"*.sql; do
       [ -f "$schema_file" ] || continue
+
+      table_name=$(grep -oiE 'CREATE TABLE IF NOT EXISTS\s+"?[^"( ]+"?' "$schema_file" | sed -E 's/CREATE TABLE IF NOT EXISTS\s+"?([^" ]+)"?/\1/i' | head -1)
+
+      if [ -n "$table_name" ]; then
+        table_exists=$(PGPASSWORD="${POSTGRES_PASSWORD:-uwazi}" psql \
+          -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d "$PG_DB" \
+          -At -c "SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = '$table_name';" 2>/dev/null | tr -d '\n')
+
+        if [ "$table_exists" = "1" ]; then
+          echo "Skipping: $(basename "$schema_file") — table '$table_name' already exists."
+          continue
+        fi
+      fi
+
       PGPASSWORD="${POSTGRES_PASSWORD:-uwazi}" psql \
         -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d "$PG_DB" \
         -f "$schema_file" \
         && echo "Applied: $(basename "$schema_file")" \
         || echo "WARNING: Failed to apply $(basename "$schema_file"), skipping."
     done
+
+    echo "Restoring PostgreSQL initial data..."
+    node "$repo_root/scripts/pg_blank_state_restore.js" "$DB"
   else
     echo "PostgreSQL not available on $PG_HOST:$PG_PORT, skipping schema."
   fi

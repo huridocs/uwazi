@@ -13,7 +13,6 @@ const TENANT_ID = 'test-tenant';
 
 const makeDS = () =>
   new PostgresThesauriDataSource({
-    connection: testingPG.config,
     tenantId: TENANT_ID,
     mongoDb: getConnection(),
   });

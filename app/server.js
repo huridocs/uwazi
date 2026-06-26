@@ -39,6 +39,7 @@ import { routesErrorHandler } from './api/utils/routesErrorHandler.js';
 import { serverSideRender } from './react/server.js';
 import { setupQueueWorker } from './setupQueueWorker.js';
 import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -85,6 +86,7 @@ const gracefullShutdown = () => {
       (async () => {
         try {
           await DB.disconnect();
+          await PostgresDB.disconnect();
           process.stdout.write('Disconnected from database\r\n');
         } catch (e) {
           // ignore

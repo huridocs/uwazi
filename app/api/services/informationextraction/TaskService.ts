@@ -3,7 +3,7 @@ import { PropertySchema } from '#shared/types/commonTypes.js';
 import settings from '#api/settings/index.js';
 import { ObjectId } from 'mongodb';
 import entities from '#api/entities/index.js';
-import thesauri from '#api/thesauri/index.js';
+import thesauri from '#api/core/v1_layer/thesauri/index.js';
 import _ from 'lodash';
 import { EnforcedWithId } from '#api/odm/index.js';
 import { IXTaskManager, TaskParameters } from './InformationExtraction.js';

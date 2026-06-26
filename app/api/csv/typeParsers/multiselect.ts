@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import thesauri from '#api/thesauri/index.js';
+import thesauri from '#api/core/v1_layer/thesauri/index.js';
 import { RawEntity } from '#api/csv/entityRow.js';
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 import { MetadataObjectSchema, PropertySchema } from '#shared/types/commonTypes.js';
