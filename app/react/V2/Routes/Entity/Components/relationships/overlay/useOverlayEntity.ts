@@ -116,12 +116,10 @@ const useOverlayEntity = (sharedId: string | null): OverlayEntityState => {
   }, [language, sharedId]);
 
   const resolvedEntity = entityMatchesRequest(entity, sharedId, language) ? entity : undefined;
-  const isResolving =
-    Boolean(sharedId) && !resolvedEntity && !error && (loading || entity !== undefined);
 
   return {
     entity: resolvedEntity,
-    loading: Boolean(sharedId) && (loading || isResolving),
+    loading: Boolean(sharedId) && !resolvedEntity && !error && loading,
     error,
   };
 };

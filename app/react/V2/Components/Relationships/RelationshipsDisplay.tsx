@@ -15,7 +15,7 @@ import { RelationshipMarker } from './types.js';
 const RAIL_LAYOUT = {
   insetTop: 8,
   insetBottom: 8,
-  insetRight: 16,
+  insetRight: 29,
   width: 32,
   trackTopBelowToggle: 28,
 } as const;
@@ -25,10 +25,12 @@ type RelationshipsDisplayProps = {
   document: FileType;
   currentPage?: number;
   pageHeight?: number;
+  railInsetRight?: number;
   showRail?: boolean;
   activeRelationshipId?: string | null;
   onPointClick?: (marker: RelationshipMarker) => void;
   onClusterClick?: (markers: RelationshipMarker[]) => void;
+  onMoreClick?: (markers: RelationshipMarker[]) => void;
 };
 
 const RelationshipsDisplay = ({
@@ -36,10 +38,12 @@ const RelationshipsDisplay = ({
   document,
   currentPage,
   pageHeight,
+  railInsetRight,
   showRail = true,
   activeRelationshipId = null,
   onPointClick,
   onClusterClick,
+  onMoreClick,
 }: RelationshipsDisplayProps) => {
   const [fullMode, setFullMode] = useState(true);
   const markerLayerRef = useRef<HTMLDivElement>(null);
@@ -99,7 +103,7 @@ const RelationshipsDisplay = ({
     position: 'absolute' as const,
     top: RAIL_LAYOUT.insetTop,
     bottom: RAIL_LAYOUT.insetBottom,
-    right: RAIL_LAYOUT.insetRight,
+    right: railInsetRight ?? RAIL_LAYOUT.insetRight,
     width: RAIL_LAYOUT.width,
     zIndex: 5,
   };
@@ -139,6 +143,7 @@ const RelationshipsDisplay = ({
               activeRelationshipId={activeRelationshipId}
               onPointClick={onPointClick}
               onClusterClick={onClusterClick}
+              onMoreClick={onMoreClick}
             />
           ) : (
             <PageMode
@@ -149,6 +154,7 @@ const RelationshipsDisplay = ({
               pageHeight={pageHeight}
               activeRelationshipId={activeRelationshipId}
               onPointClick={onPointClick}
+              onMoreClick={onMoreClick}
             />
           )}
         </div>

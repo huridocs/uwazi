@@ -17,6 +17,7 @@ const ShowMoreButton = ({ position, references, onClick }: ShowMoreButtonProps) 
 
   return (
     <button
+      data-testid="rail-show-more"
       className="absolute flex items-center justify-center [transition-property:top] duration-500 ease-out cursor-pointer rounded-full bg-(--color-theme-surface-raised)"
       style={{
         top: `${animatedPosition}px`,
