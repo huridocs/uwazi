@@ -69,6 +69,20 @@ recreate_database() {
     echo "Applying PostgreSQL schema..."
     for schema_file in "$repo_root/app/api/core/infrastructure/postgresql/schema/"*.sql; do
       [ -f "$schema_file" ] || continue
+
+      table_name=$(grep -oiE 'CREATE TABLE IF NOT EXISTS\s+"?[^"( ]+"?' "$schema_file" | sed -E 's/CREATE TABLE IF NOT EXISTS\s+"?([^" ]+)"?/\1/i' | head -1)
+
+      if [ -n "$table_name" ]; then
+        table_exists=$(PGPASSWORD="${POSTGRES_PASSWORD:-uwazi}" psql \
+          -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d "$PG_DB" \
+          -At -c "SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = '$table_name';" 2>/dev/null | tr -d '\n')
+
+        if [ "$table_exists" = "1" ]; then
+          echo "Skipping: $(basename "$schema_file") — table '$table_name' already exists."
+          continue
+        fi
+      fi
+
       PGPASSWORD="${POSTGRES_PASSWORD:-uwazi}" psql \
         -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d "$PG_DB" \
         -f "$schema_file" \
