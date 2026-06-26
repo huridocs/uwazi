@@ -78,7 +78,11 @@ const renderNestedRows = (
   });
 };
 
-const RelationshipPanelRow = ({ entry, groupContext, ...handlers }: RelationshipPanelRowProps) => {
+const RelationshipPanelRowComponent = ({
+  entry,
+  groupContext,
+  ...handlers
+}: RelationshipPanelRowProps) => {
   const { hideTargetPill, hideRelationType } = useRelationshipRowVisibility();
 
   if (entry.kind === 'reference') {
@@ -172,6 +176,8 @@ const RelationshipPanelRow = ({ entry, groupContext, ...handlers }: Relationship
     </CollapsibleRelationshipRow>
   );
 };
+
+const RelationshipPanelRow = React.memo(RelationshipPanelRowComponent);
 
 export type { RelationshipPanelRowHandlers };
 export { RelationshipPanelRow, groupNestedEvidence };
