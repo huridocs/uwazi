@@ -168,6 +168,36 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> {
       .toArray();
   }
 
+  async getTitleLabelsBySharedIds(
+    sharedIds: string[],
+    languages: LanguageISO6391[]
+  ): Promise<Map<string, Partial<Record<LanguageISO6391, string>>>> {
+    const result = new Map<string, Partial<Record<LanguageISO6391, string>>>();
+
+    if (sharedIds.length === 0 || languages.length === 0) {
+      return result;
+    }
+
+    const entities = await this.getCollection()
+      .find(
+        { sharedId: { $in: sharedIds }, language: { $in: languages } },
+        { projection: { sharedId: 1, language: 1, title: 1 } }
+      )
+      .toArray();
+
+    entities.forEach(entity => {
+      if (!entity.sharedId || !entity.language) {
+        return;
+      }
+
+      const labels = result.get(entity.sharedId) ?? {};
+      labels[entity.language] = entity.title;
+      result.set(entity.sharedId, labels);
+    });
+
+    return result;
+  }
+
   async countDistinctSharedIds(): Promise<number> {
     const result = await this.getCollection()
       .aggregate<{ count: number }>([{ $group: { _id: '$sharedId' } }, { $count: 'count' }])

@@ -33,9 +33,11 @@ class UpdateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
     }
     const existing = existingResult.getDataOrThrow();
 
-    const exists = await this.deps.datavizDS.existsByName(input.name, input.id);
-    if (exists) {
-      throw new Error(`A dataviz named "${input.name}" already exists`);
+    if (input.name !== existing.name) {
+      const exists = await this.deps.datavizDS.existsByName(input.name);
+      if (exists) {
+        throw new Error(`A dataviz named "${input.name}" already exists`);
+      }
     }
 
     const dataviz = new Dataviz({

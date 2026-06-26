@@ -15,11 +15,15 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
+import { MongoEntitiesDAOFactory } from '#api/core/infrastructure/factories/MongoEntitiesDAOFactory.js';
 import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { MongoDatavizDataSource } from '../mongodb/MongoDatavizDataSource.js';
 import { MongoDatavizSnapshotsDataSource } from '../mongodb/MongoDatavizSnapshotsDataSource.js';
 import { MongoDatavizQueryExecutor } from '../mongodb/MongoDatavizQueryExecutor.js';
-import type { TemplatesReadDAO } from '../mongodb/executor/buildDatavizMultilingualLabelContext.js';
+import type {
+  EntitiesReadDAO,
+  TemplatesReadDAO,
+} from '../mongodb/executor/buildDatavizMultilingualLabelContext.js';
 import { DatavizSchedulerService } from '../services/DatavizSchedulerService.js';
 import { DatavizScheduledRefreshJobHandler } from '../jobHandlers/DatavizScheduledRefreshJobHandler.js';
 
@@ -49,6 +53,7 @@ class DatavizFactory {
       translationsDS: CachedTranslationsDataSource(transactionManager),
       templatesDAO: TemplatesDAOFactory.default() as TemplatesReadDAO,
       thesauriDAO: ThesauriDAOFactory.default(),
+      entitiesDAO: MongoEntitiesDAOFactory.default() as EntitiesReadDAO,
     });
   }
 

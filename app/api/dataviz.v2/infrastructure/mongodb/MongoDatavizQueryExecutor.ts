@@ -44,7 +44,6 @@ import {
   relatedEntityProperties,
   type DatavizLabelContextDeps,
 } from './executor/buildDatavizMultilingualLabelContext.js';
-import { loadEntityTitleLabels } from './executor/loadEntityTitleLabels.js';
 import {
   createMultilingualLabelResolver,
   pickDefaultLocalizedLabel,
@@ -73,7 +72,14 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
     }
 
     const languages = await this.labelContextDeps.settingsDS.getLanguageKeys();
-    return loadEntityTitleLabels(this.db, [...bucketKeys], languages as LanguageISO6391[]);
+    const filteredIds = [...bucketKeys].filter(
+      id => id && id !== DATAVIZ_MISSING_BUCKET_KEY && id !== 'null' && id !== 'undefined'
+    );
+
+    return this.labelContextDeps.entitiesDAO.getTitleLabelsBySharedIds(
+      filteredIds,
+      languages as LanguageISO6391[]
+    );
   }
 
   private async buildLabelContext(query: DatavizQuery, bucketKeys: Iterable<string>) {

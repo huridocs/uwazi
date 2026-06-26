@@ -28,10 +28,18 @@ export type ThesauriReadDAO = {
   get(ids?: string[]): Promise<ThesaurusReadRow[]>;
 };
 
+export type EntitiesReadDAO = {
+  getTitleLabelsBySharedIds(
+    sharedIds: string[],
+    languages: LanguageISO6391[]
+  ): Promise<Map<string, LocalizedLabels>>;
+};
+
 export type DatavizLabelContextDeps = {
   settingsDS: SettingsDataSource;
   templatesDAO: TemplatesReadDAO;
   thesauriDAO: ThesauriReadDAO;
+  entitiesDAO: EntitiesReadDAO;
   translationsDS: TranslationsDataSource;
 };
 

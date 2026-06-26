@@ -41,12 +41,8 @@ class MongoDatavizDataSource extends MongoDataSource<DatavizDBO> implements Data
     return dbos.map(DatavizMapper.toDomain);
   }
 
-  async existsByName(name: string, excludeId?: string): Promise<boolean> {
-    const query: Record<string, unknown> = { name };
-    if (excludeId) {
-      query._id = { $ne: ObjectId.createFromHexString(excludeId) };
-    }
-    const doc = await this.getCollection().findOne(query);
+  async existsByName(name: string): Promise<boolean> {
+    const doc = await this.getCollection().findOne({ name });
     return Boolean(doc);
   }
 

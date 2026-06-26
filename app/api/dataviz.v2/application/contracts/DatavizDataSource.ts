@@ -7,6 +7,6 @@ export interface DatavizDataSource {
   delete(id: string): Promise<void>;
   getById(id: string): Promise<ResultType<Dataviz, Error>>;
   list(): Promise<Dataviz[]>;
-  existsByName(name: string, excludeId?: string): Promise<boolean>;
+  existsByName(name: string): Promise<boolean>;
   setProcessing(id: string, processing: Dataviz['processing']): Promise<void>;
 }

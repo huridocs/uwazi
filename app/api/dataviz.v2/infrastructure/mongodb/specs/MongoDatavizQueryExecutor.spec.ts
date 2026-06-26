@@ -9,7 +9,11 @@ import { CachedTranslationsDataSource } from '#api/i18n.v2/database/data_source_
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
-import type { TemplatesReadDAO } from '../executor/buildDatavizMultilingualLabelContext.js';
+import { MongoEntitiesDAOFactory } from '#api/core/infrastructure/factories/MongoEntitiesDAOFactory.js';
+import type {
+  EntitiesReadDAO,
+  TemplatesReadDAO,
+} from '../executor/buildDatavizMultilingualLabelContext.js';
 import { MongoDatavizQueryExecutor } from '../MongoDatavizQueryExecutor.js';
 
 const createExecutor = () =>
@@ -20,6 +24,7 @@ const createExecutor = () =>
       translationsDS: CachedTranslationsDataSource(tm),
       templatesDAO: TemplatesDAOFactory.default() as TemplatesReadDAO,
       thesauriDAO: ThesauriDAOFactory.default(),
+      entitiesDAO: MongoEntitiesDAOFactory.default() as EntitiesReadDAO,
     });
   });
 
