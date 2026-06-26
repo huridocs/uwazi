@@ -1,9 +1,9 @@
 /* eslint-disable max-statements */
+import { ObjectId } from 'mongodb';
 import { MultiUpdateEntityUseCaseFactory } from '#api/core/infrastructure/factories/MultiUpdateEntityUseCaseFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { User } from '#api/users.v2/model/User.js';
-import { ObjectId } from 'mongodb';
 import { factory, fixtures, permissionsFixtures } from './MultiUpdateEntityFixtures.js';
 
 type TestConfig = {
@@ -17,20 +17,17 @@ const testConfigs: TestConfig[] = [
 ];
 
 const createSut = (actor?: User, postgresTemplates = false) =>
-  testingEnvironment.runWithContext(
-    () => ({ sut: MultiUpdateEntityUseCaseFactory.default() }),
-    postgresTemplates
+  testingEnvironment.runWithContext(() => ({ sut: MultiUpdateEntityUseCaseFactory.default() }), {
+    actor,
+    ...(postgresTemplates
       ? {
-          actor,
           tenant: {
             ...testingTenants.current(),
             featureFlags: { postgresTemplates: true },
           },
         }
-      : actor
-        ? { actor }
-        : undefined
-  );
+      : {}),
+  });
 
 const getAllDocs = async (sharedId: string) =>
   testingEnvironment.db.getCollection('entities')!.find({ sharedId }).toArray();
