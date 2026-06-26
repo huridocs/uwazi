@@ -377,6 +377,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const clientFeatureFlags: ClientFeatureFlags = {
     paragraphExtraction: featureFlags?.paragraphExtraction,
     v2CSVImport: featureFlags?.v2CSVImport,
+    dataViz: featureFlags?.dataViz,
     newHeader: featureFlags?.newHeader,
     themeCustomization: featureFlags?.themeCustomization,
     v2GetEntity: featureFlags?.v2GetEntity,

@@ -37,6 +37,7 @@ const mongoSchema = new mongoose.Schema({
     paragraphExtraction: Boolean,
     v2UpdateEntity: Boolean,
     v2CSVImport: Boolean,
+    dataViz: Boolean,
     fileCacheHeaders: Boolean,
     themeCustomization: Boolean,
     v2GetEntity: Boolean,

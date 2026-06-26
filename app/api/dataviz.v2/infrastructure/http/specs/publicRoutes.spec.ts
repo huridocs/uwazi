@@ -11,6 +11,7 @@ import { DatavizFactory } from '#api/dataviz.v2/infrastructure/factories/Dataviz
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import type { DatavizScheduler } from '#api/dataviz.v2/application/contracts/DatavizScheduler.js';
 import { MANUAL_DATA_EXAMPLE } from '#shared/dataviz/manualData.js';
+import { tenants } from '#api/tenants/index.js';
 import { CreateDatavizUseCase } from '#api/dataviz.v2/application/useCases/CreateDataviz.js';
 import { UpdateDatavizUseCase } from '#api/dataviz.v2/application/useCases/UpdateDataviz.js';
 import datavizRoutes from '../routes.js';
@@ -68,12 +69,23 @@ describe('public dataviz embed routes', () => {
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
+    tenants.current().featureFlags!.dataViz = true;
     const dataviz = await createManualDataviz();
     datavizId = dataviz.id;
   });
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
+  });
+
+  it('should return 403 when the dataViz feature flag is disabled', async () => {
+    tenants.current().featureFlags!.dataViz = false;
+
+    const response = await request(app).get(`/api/public/dataviz/${datavizId}/data`).expect(403);
+
+    expect(response.body.error).toBe('Feature not available');
+
+    tenants.current().featureFlags!.dataViz = true;
   });
 
   it('should return chart data and render fields for anonymous users on a public instance', async () => {
