@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useAnimateToPosition } from '../hooks/useAnimateToPosition.js';
 import { computeClusterOuterSize } from '../computeMarkerY.js';
 import { RAIL_MARKER_SIZE, RAIL_MARKER_SPACING, railMarkerZIndex } from '../markerMetrics.js';
-import { RelationshipMarker, markerEvidenceKey } from '../types.js';
+import { RelationshipMarker, compareMarkerAppearance, markerEvidenceKey } from '../types.js';
 import { Point } from './Point.js';
 import { ShowMoreButton } from './ShowMoreButton.js';
 
@@ -48,16 +48,19 @@ const clamp = (value: number, min: number, max: number): number =>
 
 const groupClusterPoints = (references: RelationshipMarker[]): ClusterPointGroup[] => {
   const grouped = new Map<string, ClusterPointGroup>();
-  references.forEach(marker => {
+  [...references].sort(compareMarkerAppearance).forEach(marker => {
     const key = markerEvidenceKey(marker);
     const group = grouped.get(key);
     if (group) {
       group.markers.push(marker);
+      if (compareMarkerAppearance(marker, group.marker) < 0) {
+        group.marker = marker;
+      }
       return;
     }
     grouped.set(key, { marker, markers: [marker] });
   });
-  return Array.from(grouped.values());
+  return Array.from(grouped.values()).sort((a, b) => compareMarkerAppearance(a.marker, b.marker));
 };
 
 const computeClusterSubtreeLayout = ({

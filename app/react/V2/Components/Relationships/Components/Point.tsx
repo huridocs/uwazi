@@ -14,6 +14,7 @@ type PointProps = {
   onClick: (marker: RelationshipMarker) => void;
   isActive?: boolean;
   representedCount?: number;
+  centerOnAxis?: boolean;
 };
 
 const activeMarkerShadow = (color: string): string =>
@@ -26,6 +27,7 @@ const PointComponent = ({
   onClick,
   isActive = false,
   representedCount = 1,
+  centerOnAxis = false,
 }: PointProps) => {
   const animatedPosition = useAnimateToPosition(position);
   const templates = useAtomValue(templatesAtom);
@@ -47,7 +49,7 @@ const PointComponent = ({
         className="pointer-events-auto absolute cursor-pointer [transition-property:top] duration-500 ease-out"
         style={{
           top: `${animatedPosition - activeOffset}px`,
-          left: `${-activeOffset}px`,
+          left: centerOnAxis ? `calc(50% - ${dotSize / 2}px)` : `${-activeOffset}px`,
           width: dotSize,
           height: dotSize,
           zIndex: railMarkerZIndex(stackOrder, isActive ? 'point-active' : 'point'),
