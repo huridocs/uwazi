@@ -144,6 +144,7 @@ const PageModeComponent = ({
             key={key}
             position={position}
             stackOrder={stackOrder}
+            centerOnAxis
             marker={element.reference}
             isActive={activeRelationshipId === element.reference._id}
             onClick={marker => {
