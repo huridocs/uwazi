@@ -142,6 +142,57 @@ describe('Cluster', () => {
     expect(screen.getByLabelText('3 matching references')).toBeVisible();
   });
 
+  it('keeps distinct counterpart references separate when the self text is empty', () => {
+    const counterpartMarker = (index: number, counterpartText: string): RelationshipMarker => {
+      const counterpart = {
+        type: 'textReference' as const,
+        entity: 'target-1',
+        entityTitle: 'Target 1',
+        entityTemplateId: 'template3',
+        file: 'file2',
+        text: counterpartText,
+        selections: [{ page: 5, top: 0, left: 0, width: 10, height: 10 }],
+      };
+      const selfAnchor = {
+        type: 'textReference' as const,
+        entity: 'self',
+        entityTitle: 'Self',
+        entityTemplateId: 'template1',
+        file: 'file1',
+        text: '',
+        selections: [{ page: 1, top: 0, left: 0, width: 10, height: 10 }],
+      };
+      return {
+        _id: `ref-${index}`,
+        view: {
+          _id: `ref-${index}`,
+          hub: 'hub-1',
+          type: 'rel-type',
+          from: selfAnchor,
+          to: counterpart,
+          relationTypeOnSelf: false,
+        },
+        target: { sharedId: 'target-1', title: 'Target 1', templateId: 'template3' },
+        anchor: selfAnchor,
+      };
+    };
+
+    render(
+      <Provider store={store}>
+        <Cluster
+          position={100}
+          markerLayerHeight={800}
+          references={[counterpartMarker(1, 'Article 4'), counterpartMarker(2, 'Article 5')]}
+          isOpen
+          onPointClick={() => undefined}
+          onMoreClick={() => undefined}
+        />
+      </Provider>
+    );
+
+    expect(document.querySelectorAll('[data-marker-id]')).toHaveLength(2);
+  });
+
   it('marks a grouped point active when any represented marker is active', () => {
     const references = [marker(1, 1), marker(2, 1)];
 

@@ -23,7 +23,7 @@ const markerEvidenceKey = (marker: RelationshipMarker): string =>
   [
     marker.target.sharedId,
     marker.anchor?.selections?.[0]?.page ?? '',
-    marker.anchor?.text?.trim() ?? '',
+    markerReferenceText(marker, marker.anchor?.entity ?? ''),
   ].join('\u0000');
 
 const markerNestedEvidenceKey = (marker: RelationshipMarker, selfSharedId: string): string =>

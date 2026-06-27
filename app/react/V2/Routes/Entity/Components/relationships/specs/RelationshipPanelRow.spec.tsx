@@ -126,7 +126,7 @@ describe('RelationshipPanelRow', () => {
     expect(groups[0]?.markers).toHaveLength(2);
   });
 
-  it('shows counterpart text and page in relationship rows', () => {
+  it('shows counterpart text but the self page when both sides are anchored', () => {
     const m = marker('1', {
       selfText: 'Article 4Human beings are inviolable',
       selfPage: 3,
@@ -137,7 +137,42 @@ describe('RelationshipPanelRow', () => {
 
     expect(relationshipReferenceDisplay(m, SELF)).toEqual({
       referenceText: 'Articles 4',
-      referencePage: 2,
+      referencePage: 3,
+    });
+  });
+
+  it('falls back to the counterpart page when there is no self anchor', () => {
+    const selfSharedId = 'self';
+    const targetSharedId = 'target-1';
+    const m: RelationshipMarker = {
+      _id: '1',
+      view: {
+        _id: '1',
+        hub: 'hub-1',
+        type: 'rel-type',
+        from: {
+          type: 'textReference',
+          entity: targetSharedId,
+          entityTitle: 'Target 1',
+          entityTemplateId: 'template3',
+          file: 'file2',
+          text: 'Counterpart only',
+          selections: [{ page: 7, top: 10, left: 0, width: 10, height: 10 }],
+        },
+        to: {
+          type: 'entity',
+          entity: selfSharedId,
+          entityTitle: 'Self',
+          entityTemplateId: 'template1',
+        },
+        relationTypeOnSelf: false,
+      },
+      target: { sharedId: targetSharedId, title: 'Target 1', templateId: 'template3' },
+    };
+
+    expect(relationshipReferenceDisplay(m, selfSharedId)).toEqual({
+      referenceText: 'Counterpart only',
+      referencePage: 7,
     });
   });
 

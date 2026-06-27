@@ -20,9 +20,8 @@ const relationshipReferenceDisplay = (
   const selfText = selfAnchor?.text?.trim() ?? '';
   const counterpartText = counterpartAnchor?.text?.trim() ?? '';
   const referenceText = counterpartText || selfText;
-  const referencePage = counterpartText
-    ? counterpartAnchor?.selections?.[0]?.page
-    : selfAnchor?.selections?.[0]?.page;
+  const referencePage =
+    selfAnchor?.selections?.[0]?.page ?? counterpartAnchor?.selections?.[0]?.page;
   return { referenceText, referencePage };
 };
 
