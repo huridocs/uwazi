@@ -45,7 +45,7 @@ describe('FullMode', () => {
 
     const marker = document.querySelector('[data-marker-id="ref-partner-33"]');
     expect(marker).not.toBeNull();
-    expect(marker?.querySelector('[data-testid="rail-marker-dot"]')).toHaveStyle({ width: '14px' });
+    expect(marker?.querySelector('[data-testid="rail-marker-dot"]')).toHaveStyle({ width: '12px' });
   });
 
   it('exposes stack order on document clusters', () => {

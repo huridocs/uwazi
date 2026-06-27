@@ -3,7 +3,7 @@ import { useAtomValue } from 'jotai';
 import { useAnimateToPosition } from '../hooks/useAnimateToPosition.js';
 import { RelationshipMarker } from '../types.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
-import { PortalTooltip } from '#V2/Components/UI/index.js';
+import { PortalTooltip } from '#V2/Components/UI/PortalTooltip.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { RAIL_MARKER_ACTIVE_SIZE, RAIL_MARKER_SIZE, railMarkerZIndex } from '../markerMetrics.js';
 
@@ -17,7 +17,7 @@ type PointProps = {
 };
 
 const activeMarkerShadow = (color: string): string =>
-  `0 0 0 2px var(--color-theme-surface-raised), 0 0 0 4.5px ${color}99`;
+  `0 0 0 1.5px var(--color-theme-surface-raised), 0 0 0 2.25px ${color}99`;
 
 const PointComponent = ({
   position,
@@ -47,6 +47,7 @@ const PointComponent = ({
         className="pointer-events-auto absolute cursor-pointer [transition-property:top] duration-500 ease-out"
         style={{
           top: `${animatedPosition - activeOffset}px`,
+          left: `${-activeOffset}px`,
           width: dotSize,
           height: dotSize,
           zIndex: railMarkerZIndex(stackOrder, isActive ? 'point-active' : 'point'),
