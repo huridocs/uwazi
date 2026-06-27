@@ -28,6 +28,10 @@ const DOCUMENT_CLUSTER_RATIO = 0.03;
 const DOCUMENT_CLUSTER_MIN_PAGES = 1;
 // Cap merged cluster size so dense adjacent pages stay separate on the rail.
 const DOCUMENT_CLUSTER_MERGE_MAX_REFS = 50;
+// Cap how many pages a single cluster may span so distributed references stay separate on the rail.
+const DOCUMENT_CLUSTER_MAX_SPAN_RATIO = 0.25;
+// Minimum page span a cluster may always grow to, regardless of document length.
+const DOCUMENT_CLUSTER_MIN_SPAN = 2;
 
 const getGroupReferences = (group: RelationshipGroup): RelationshipMarker[] =>
   group.type === 'cluster' ? group.references : [group.reference];
@@ -90,9 +94,18 @@ const countGrouped = (groups: RelationshipGroups): number =>
 const countClusterReferences = (cluster: PositionedGroup[]): number =>
   cluster.reduce((count, item) => count + getGroupReferences(item.group).length, 0);
 
-const canMergeIntoCluster = (cluster: PositionedGroup[], current: PositionedGroup): boolean =>
+const isDenseGroup = (group: PositionedGroup): boolean =>
+  getGroupReferences(group.group).length > 1;
+
+const canMergeIntoCluster = (
+  cluster: PositionedGroup[],
+  current: PositionedGroup,
+  maxSpan: number
+): boolean =>
   countClusterReferences(cluster) + getGroupReferences(current.group).length <=
-  DOCUMENT_CLUSTER_MERGE_MAX_REFS;
+    DOCUMENT_CLUSTER_MERGE_MAX_REFS &&
+  current.page - cluster[0].page <= maxSpan &&
+  (cluster.some(isDenseGroup) || isDenseGroup(current));
 
 const shouldAllowMultiPageClustering = (groups: RelationshipGroups, safePages: number): boolean => {
   const refsPerPage = countGrouped(groups) / safePages;
@@ -127,12 +140,16 @@ const groupDocumentRelationships = (
   const thresholdPages = allowMultiPageClustering
     ? Math.max(DOCUMENT_CLUSTER_MIN_PAGES, Math.ceil(safePages * DOCUMENT_CLUSTER_RATIO))
     : DOCUMENT_CLUSTER_MIN_PAGES;
+  const maxSpan = Math.max(
+    DOCUMENT_CLUSTER_MIN_SPAN,
+    Math.floor(safePages * DOCUMENT_CLUSTER_MAX_SPAN_RATIO)
+  );
 
   const finalState = perPageGroupsOnly.slice(1).reduce(
     (state, current) => {
       if (
         current.page <= state.clusterEndPage + thresholdPages &&
-        canMergeIntoCluster(state.cluster, current)
+        canMergeIntoCluster(state.cluster, current, maxSpan)
       ) {
         return {
           grouped: state.grouped,

@@ -142,6 +142,63 @@ describe('Cluster', () => {
     expect(screen.getByLabelText('3 matching references')).toBeVisible();
   });
 
+  it('keeps same counterpart references at different positions as separate points', () => {
+    const sharedTarget = 'target-1';
+    const sharedCounterpart =
+      'Article 19\nAll peoples shall be equal; they shall enjoy the same respect and shall have the same rights.';
+    const positionedMarker = (index: number, top: number): RelationshipMarker => {
+      const counterpart = {
+        type: 'textReference' as const,
+        entity: sharedTarget,
+        entityTitle: 'Target 1',
+        entityTemplateId: 'template3',
+        file: 'file2',
+        text: sharedCounterpart,
+        selections: [{ page: 6, top: 0, left: 0, width: 10, height: 10 }],
+      };
+      const selfAnchor = {
+        type: 'textReference' as const,
+        entity: 'self',
+        entityTitle: 'Self',
+        entityTemplateId: 'template1',
+        file: 'file1',
+        text: '19',
+        selections: [{ page: 6, top, left: 0, width: 10, height: 10 }],
+      };
+      return {
+        _id: `ref-${index}`,
+        view: {
+          _id: `ref-${index}`,
+          hub: 'hub-1',
+          type: 'rel-type',
+          from: selfAnchor,
+          to: counterpart,
+          relationTypeOnSelf: false,
+        },
+        target: { sharedId: sharedTarget, title: 'Target 1', templateId: 'template3' },
+        anchor: selfAnchor,
+      };
+    };
+
+    render(
+      <Provider store={store}>
+        <Cluster
+          position={100}
+          markerLayerHeight={800}
+          references={[positionedMarker(1, 410), positionedMarker(2, 796)]}
+          isOpen
+          onPointClick={() => undefined}
+          onMoreClick={() => undefined}
+        />
+      </Provider>
+    );
+
+    const dots = document.querySelectorAll('[data-marker-id]');
+    expect(dots).toHaveLength(2);
+    expect(dots[0].getAttribute('data-marker-id')).toBe('ref-1');
+    expect(dots[1].getAttribute('data-marker-id')).toBe('ref-2');
+  });
+
   it('keeps distinct counterpart references separate when the self text is empty', () => {
     const counterpartMarker = (index: number, counterpartText: string): RelationshipMarker => {
       const counterpart = {
