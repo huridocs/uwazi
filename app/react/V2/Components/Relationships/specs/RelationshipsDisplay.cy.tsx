@@ -170,12 +170,12 @@ describe('References Display', () => {
             cy.get('[data-testid="cluster-subtree-svg"] line').should('have.length', rowCount + 2);
           });
         });
-        cy.get('[data-testid="cluster-subtree-svg"] line').eq(0).should('have.attr', 'x1', '28');
-        cy.get('[data-testid="cluster-subtree-svg"] line').eq(0).should('have.attr', 'x2', '40');
-        cy.get('[data-testid="cluster-subtree-svg"] line').eq(1).should('have.attr', 'x1', '28');
-        cy.get('[data-testid="cluster-subtree-svg"] line').eq(1).should('have.attr', 'x2', '28');
-        cy.get('[data-testid="cluster-subtree-svg"] line').eq(2).should('have.attr', 'x1', '12');
-        cy.get('[data-testid="cluster-subtree-svg"] line').eq(2).should('have.attr', 'x2', '28');
+        cy.get('[data-testid="cluster-subtree-svg"] line').eq(0).should('have.attr', 'x1', '24');
+        cy.get('[data-testid="cluster-subtree-svg"] line').eq(0).should('have.attr', 'x2', '32');
+        cy.get('[data-testid="cluster-subtree-svg"] line').eq(1).should('have.attr', 'x1', '24');
+        cy.get('[data-testid="cluster-subtree-svg"] line').eq(1).should('have.attr', 'x2', '24');
+        cy.get('[data-testid="cluster-subtree-svg"] line').eq(2).should('have.attr', 'x1', '15');
+        cy.get('[data-testid="cluster-subtree-svg"] line').eq(2).should('have.attr', 'x2', '24');
         cy.get('[data-testid="cluster-subtree-svg"] line').eq(2).should('have.attr', 'y1', '5');
         cy.get('[data-testid="cluster-subtree-svg"] line').eq(2).should('have.attr', 'y2', '5');
       });
@@ -343,7 +343,7 @@ describe('References Display', () => {
 
       cy.get('[data-marker-id="ref-partner-1"]', { timeout: 20000 })
         .find('[data-testid="rail-marker-dot"]')
-        .should('have.css', 'width', '14px')
+        .should('have.css', 'width', '12px')
         .should($dot => {
           expect($dot.css('box-shadow')).to.not.equal('none');
         });

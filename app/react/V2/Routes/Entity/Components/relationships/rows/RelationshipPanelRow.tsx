@@ -3,7 +3,7 @@ import { Translate } from '#app/I18N/index.js';
 import type { PanelListEntry } from '#V2/formatters/relationships/relationshipsPanelDerivation.js';
 import type { GroupLabelContext } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
 import {
-  markerEvidenceKey,
+  markerNestedEvidenceKey,
   markerReferenceText,
   type RelationshipMarker,
 } from '#V2/Components/Relationships/types.js';
@@ -34,10 +34,13 @@ type NestedEvidenceGroup = {
 
 const nestedEvidenceCount = (markers: RelationshipMarker[]): number => markers.length;
 
-const groupNestedEvidence = (markers: RelationshipMarker[]): NestedEvidenceGroup[] => {
+const groupNestedEvidence = (
+  markers: RelationshipMarker[],
+  selfSharedId: string
+): NestedEvidenceGroup[] => {
   const grouped = new Map<string, NestedEvidenceGroup>();
   markers.forEach(marker => {
-    const key = markerEvidenceKey(marker);
+    const key = markerNestedEvidenceKey(marker, selfSharedId);
     const group = grouped.get(key);
     if (group) {
       group.markers.push(marker);
@@ -53,7 +56,10 @@ const renderNestedRows = (
   handlers: RelationshipPanelRowHandlers,
   groupContext: GroupLabelContext
 ) => {
-  const groups = groupNestedEvidence(markers.filter(marker => markerReferenceText(marker)));
+  const groups = groupNestedEvidence(
+    markers.filter(marker => markerReferenceText(marker, handlers.selfSharedId)),
+    handlers.selfSharedId
+  );
   return groups.map(({ marker, markers: representedMarkers }, index) => {
     const representedIds = representedMarkers.map(representedMarker => representedMarker._id);
     return (
