@@ -92,6 +92,7 @@ const FullModeComponent = ({
             key={key}
             position={position}
             stackOrder={stackOrder}
+            centerOnAxis
             marker={element.references[0]}
             isActive={activeRelationshipId === element.references[0]._id}
             onClick={marker => {
