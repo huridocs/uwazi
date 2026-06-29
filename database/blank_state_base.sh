@@ -31,15 +31,17 @@ AUTH=()
 [[ -n "$DBUSER" ]] && AUTH+=("--authenticationDatabase" "admin" "-u" "$DBUSER")
 [[ -n "$DBPASS" ]] && AUTH+=("-p" "$DBPASS")
 
-mongo_indexof_db=$(mongosh --quiet "${AUTH[@]}" --host "$HOST" --eval "JSON.stringify(db.getMongo().getDBNames().indexOf('$DB'))" | tr -d '\r\n')
-
 RED='\033[0;31m'
 NC='\033[0m'
 
-if [[ "$mongo_indexof_db" =~ ^[0-9]+$ && "$mongo_indexof_db" -ne -1 ]]; then
-  if [ "$FORCE_FLAG" = false ] && [ "$SCHEMA_ONLY_FLAG" = false ]; then
-    echo -e "\nError!${RED} $DB ${NC}database already exists. It will not be deleted.\nPlease use --force flag if you want to override\n"
-    exit 2
+if [ "$SCHEMA_ONLY_FLAG" = false ]; then
+  mongo_indexof_db=$(mongosh --quiet "${AUTH[@]}" --host "$HOST" --eval "JSON.stringify(db.getMongo().getDBNames().indexOf('$DB'))" | tr -d '\r\n')
+
+  if [[ "$mongo_indexof_db" =~ ^[0-9]+$ && "$mongo_indexof_db" -ne -1 ]]; then
+    if [ "$FORCE_FLAG" = false ]; then
+      echo -e "\nError!${RED} $DB ${NC}database already exists. It will not be deleted.\nPlease use --force flag if you want to override\n"
+      exit 2
+    fi
   fi
 fi
 
