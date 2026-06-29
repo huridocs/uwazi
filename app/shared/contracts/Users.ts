@@ -19,4 +19,11 @@ type CreateUserRequest = NewUser;
 
 type CreateUserResponse = { user: Pick<User, '_id' | 'email' | 'role' | 'username'> };
 
-export type { CreateUserResponse, CreateUserRequest };
+type DeleteUserRequest = string[];
+
+type DeleteUserResponse = {
+  acknowledged: boolean;
+  deletedCount: number;
+};
+
+export type { CreateUserResponse, CreateUserRequest, DeleteUserRequest, DeleteUserResponse };

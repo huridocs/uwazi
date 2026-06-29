@@ -1,13 +1,18 @@
-import { Db } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import {
   MongoDataSource,
   MongoDSOptions,
 } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { UsersDataSource } from '#api/core/application/contracts/UsersDataSource.js';
-import { User } from '#api/core/domain/user/User.js';
-import { EmailInUse, UsernameExists } from '#api/core/domain/user/errors.js';
-import { Result } from '#api/core/libs/Result.js';
+import { User, PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
+import {
+  EmailInUse,
+  IsDeletingSelf,
+  IsPublicUser,
+  UsernameExists,
+} from '#api/core/domain/user/errors.js';
+import { Result, ResultType } from '#api/core/libs/Result.js';
 import { UserDBO } from './UserDBO.js';
 import { MongoUsersMapper } from './MongoUsersMapper.js';
 
@@ -19,7 +24,11 @@ class MongoUsersDataSource extends MongoDataSource<UserDBO> implements UsersData
   }
 
   async checkUniqueUsername(user: User) {
-    const userInDb = await this.getCollection<UserDBO>().findOne({ username: user.username });
+    const userInDb = await this.getCollection<UserDBO>().findOne({
+      username: user.username,
+      deletedAt: { $exists: false },
+    });
+
     if (userInDb) {
       return Result.fail(new UsernameExists(user.username));
     }
@@ -27,15 +36,48 @@ class MongoUsersDataSource extends MongoDataSource<UserDBO> implements UsersData
   }
 
   async checkUniqueEmail(user: User) {
-    const userInDb = await this.getCollection<UserDBO>().findOne({ email: user.email });
+    const userInDb = await this.getCollection<UserDBO>().findOne({
+      email: user.email,
+      deletedAt: { $exists: false },
+    });
+
     if (userInDb) {
       return Result.fail(new EmailInUse(user.email));
     }
     return Result.ok(true);
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  checkIsDeletingSelf(userIds: string[], selfId: string): ResultType<boolean, IsDeletingSelf> {
+    if (userIds.includes(selfId)) {
+      return Result.fail(new IsDeletingSelf());
+    }
+    return Result.ok(true);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  checkIsPublicUser(userIds: string[]): ResultType<boolean, IsPublicUser> {
+    if (userIds.includes(PUBLIC_USER_ID.toString())) {
+      return Result.fail(new IsPublicUser());
+    }
+    return Result.ok(true);
+  }
+
   async insert(user: User): Promise<void> {
     await this.getCollection<UserDBO>().insertOne(MongoUsersMapper.toDBO(user));
+  }
+
+  async delete(userIds: string[]): Promise<number> {
+    if (userIds.length) {
+      const collection = await this.getCollection<UserDBO>();
+      const result = await collection.updateMany(
+        { _id: { $in: userIds.map(id => ObjectId.createFromHexString(id)) } },
+        { $set: { deletedAt: new Date() } }
+      );
+      return result.modifiedCount;
+    }
+
+    return 0;
   }
 }
 
