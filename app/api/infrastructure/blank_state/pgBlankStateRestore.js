@@ -14,7 +14,7 @@ const __dirname = dirname(__filename);
 
 const tenantId = process.argv[2];
 if (!tenantId) {
-  console.error('Usage: node pg_blank_state_restore.js <tenant_id>');
+  console.error('Usage: node pgBlankStateRestore.js <tenant_id>');
   process.exit(1);
 }
 
@@ -24,7 +24,7 @@ const pgUser = process.env.POSTGRES_USER || 'uwazi';
 const pgPassword = process.env.POSTGRES_PASSWORD || 'uwazi';
 const pgDb = process.env.POSTGRES_DB || 'uwazi_development';
 
-const dataDir = join(__dirname, '..', 'database', 'blank_state', 'pg_data');
+const dataDir = join(__dirname, 'data');
 
 async function main() {
   const client = new Client({
