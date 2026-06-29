@@ -28,7 +28,7 @@ const EntityOverlayReferences = ({ markers, selfSharedId }: EntityOverlayReferen
 
   return (
     <section className="flex flex-col gap-3">
-      <h4 className="text-[10px] font-semibold uppercase tracking-wider text-ink-tertiary">
+      <h4 className="text-micro font-semibold uppercase tracking-wider text-ink-tertiary">
         <Translate>References in document</Translate>
       </h4>
       <div>
@@ -47,9 +47,7 @@ const EntityOverlayReferences = ({ markers, selfSharedId }: EntityOverlayReferen
               <p className="text-xs text-ink-tertiary">—</p>
             )}
             {relationshipTypeName && (
-              <p className="mt-1 text-[10px] capitalize text-ink-tertiary">
-                {relationshipTypeName}
-              </p>
+              <p className="mt-1 text-micro capitalize text-ink-tertiary">{relationshipTypeName}</p>
             )}
           </div>
         ))}

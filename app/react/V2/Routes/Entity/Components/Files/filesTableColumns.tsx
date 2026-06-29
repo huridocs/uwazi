@@ -44,6 +44,8 @@ const getRowIcon = (row: EntityFileRow) => {
 
 const cellClassName = 'text-xs text-ink-tertiary';
 
+const headerClassName = 'w-0 !p-2 text-micro text-ink-tertiary font-semibold';
+
 const filesTableColumns = ({ onFocus }: { onFocus: (row: EntityFileRow) => void }) => [
   columnHelper.accessor('displayName', {
     header: 'FILE NAME',
@@ -61,35 +63,35 @@ const filesTableColumns = ({ onFocus }: { onFocus: (row: EntityFileRow) => void 
       );
     },
     meta: {
-      headerClassName: 'w-2/5 !p-2 text-[11px] text-ink-tertiary font-semibold',
+      headerClassName: 'w-2/5 !p-2 text-micro text-ink-tertiary font-semibold',
       contentClassName: cellClassName,
     },
   }),
   columnHelper.accessor('typeLabel', {
     header: 'TYPE',
     meta: {
-      headerClassName: 'w-0 !p-2 text-[11px] text-ink-tertiary font-semibold',
+      headerClassName,
       contentClassName: cellClassName,
     },
   }),
   columnHelper.accessor('sizeLabel', {
     header: 'SIZE',
     meta: {
-      headerClassName: 'w-0 !p-2 text-[11px] text-ink-tertiary font-semibold',
+      headerClassName,
       contentClassName: cellClassName,
     },
   }),
   columnHelper.accessor('languageKey', {
     header: 'LANG',
     meta: {
-      headerClassName: 'w-0 !p-2 text-[11px] text-ink-tertiary font-semibold',
+      headerClassName,
       contentClassName: cellClassName,
     },
   }),
   columnHelper.accessor('modifiedLabel', {
     header: 'MODIFIED',
     meta: {
-      headerClassName: 'w-0 !p-2 text-[11px] text-ink-tertiary font-semibold',
+      headerClassName,
       contentClassName: cellClassName,
     },
   }),

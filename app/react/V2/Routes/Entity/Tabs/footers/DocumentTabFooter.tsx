@@ -31,7 +31,7 @@ const DocumentTabFooter = ({ mainDocument }: DocumentTabFooterProps) => {
             </NeedAuthorization>
           ) : null}
         </div>
-        <div className="flex items-center gap-2 justify-self-end text-xs font-medium">
+        <div className="flex items-center gap-2 justify-self-end text-tab font-medium">
           <button
             type="button"
             onClick={() => handlePageNavigation('prev')}

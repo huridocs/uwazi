@@ -14,7 +14,7 @@ const FileDetailsView = ({ row, onEdit }: { row: EntityFileRow; onEdit: () => vo
     <div className="flex h-full flex-col">
       <div className="rounded-md border border-border-soft bg-warm p-4">
         <div className="mb-3 flex items-center justify-between">
-          <p className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
+          <p className="text-micro font-semibold uppercase tracking-wide text-ink-tertiary">
             <Translate>File details</Translate>
           </p>
           <Button variant="compact" onClick={onEdit}>
@@ -26,33 +26,33 @@ const FileDetailsView = ({ row, onEdit }: { row: EntityFileRow; onEdit: () => vo
             <div className="text-xs text-ink-tertiary">
               <Translate>Name</Translate>
             </div>
-            <div className="text-sm text-ink">{row.displayName}</div>
+            <div className="text-sm font-medium text-ink">{row.displayName}</div>
           </div>
           {showLanguage ? (
             <div>
               <div className="text-xs text-ink-tertiary">
                 <Translate>Language</Translate>
               </div>
-              <div className="text-sm text-ink">{row.languageKey}</div>
+              <div className="text-sm font-medium text-ink">{row.languageKey}</div>
             </div>
           ) : null}
           <div>
             <div className="text-xs text-ink-tertiary">
               <Translate>Type</Translate>
             </div>
-            <div className="text-sm text-ink">{row.typeLabel}</div>
+            <div className="text-sm font-medium text-ink">{row.typeLabel}</div>
           </div>
           <div>
             <div className="text-xs text-ink-tertiary">
               <Translate>Size</Translate>
             </div>
-            <div className="text-sm text-ink">{row.sizeLabel}</div>
+            <div className="text-sm font-medium text-ink">{row.sizeLabel}</div>
           </div>
           <div>
             <div className="text-xs text-ink-tertiary">
               <Translate>Modified</Translate>
             </div>
-            <div className="text-sm text-ink">{row.modifiedLabel}</div>
+            <div className="text-sm font-medium text-ink">{row.modifiedLabel}</div>
           </div>
         </div>
       </div>

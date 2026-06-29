@@ -60,9 +60,7 @@ const fallbackLabel = ({
   relationshipTypeName,
 }: Pick<HeaderContext, 'glyphDirection' | 'relationshipTypeName'>) => {
   const relLabel = relationshipTypeName ? (
-    <span className="truncate text-[10px] capitalize text-ink-tertiary">
-      {relationshipTypeName}
-    </span>
+    <span className="truncate text-nano capitalize text-ink-tertiary">{relationshipTypeName}</span>
   ) : null;
 
   if (!glyphDirection) return relLabel;
@@ -80,7 +78,7 @@ const hubOverflowHeader = (ctx: HeaderContext) => {
   return (
     <>
       {pills}
-      <span className="text-[10px] text-ink-tertiary">+{ctx.memberCount - 3}</span>
+      <span className="text-nano text-ink-tertiary">+{ctx.memberCount - 3}</span>
     </>
   );
 };
@@ -95,7 +93,7 @@ const compactHeader = (ctx: HeaderContext) => {
   if (ctx.hideTargetPill && !ctx.isHub) return fallbackLabel(ctx);
   if (ctx.isHub && ctx.memberCount > 3) return hubOverflowHeader(ctx);
   const relLabel = ctx.relationshipTypeName ? (
-    <span className="truncate text-[10px] capitalize text-ink-tertiary">
+    <span className="truncate text-nano capitalize text-ink-tertiary">
       {ctx.relationshipTypeName}
     </span>
   ) : null;

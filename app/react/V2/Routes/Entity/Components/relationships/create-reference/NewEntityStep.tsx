@@ -41,7 +41,7 @@ const NewEntityStep = ({
           onChange={event => setNewEntityTitle(event.target.value)}
           className="w-full rounded-md border border-border bg-warm px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-carbon/20"
         />
-        <p className="mt-1 text-[11px] text-ink-tertiary">
+        <p className="mt-1 text-micro text-ink-tertiary">
           <Translate>Pre-filled from your selection. Edit as needed.</Translate>
         </p>
       </div>

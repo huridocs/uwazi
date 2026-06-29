@@ -9,6 +9,7 @@ import {
 } from '#V2/Components/Metadata/display/index.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataCard } from './MetadataCard.js';
+import { PropertyValue } from '#V2/Components/Metadata/Components/PropertyValue.js';
 import { COMPACT_METADATA_FIELD_LAYOUT } from '../metadataPropertyLayout.js';
 import { MetadataFieldProps } from './MetadataFieldPropsType.js';
 import {
@@ -51,7 +52,7 @@ const Date = ({
           hideLabel={hideLabel}
         />
       </dt>
-      <dd className="flex flex-col gap-1">
+      <PropertyValue as="dd" className="flex flex-col gap-1">
         {values.map((stamp, index) => {
           if (typeof stamp.value === 'number') {
             const formattedValue = formatMetadataTimestamp(stamp.value, displayContext);
@@ -62,9 +63,7 @@ const Date = ({
 
             return (
               // eslint-disable-next-line react/no-array-index-key
-              <span key={index} className="font-medium text-ink">
-                {formattedValue}
-              </span>
+              <span key={index}>{formattedValue}</span>
             );
           }
 
@@ -80,11 +79,8 @@ const Date = ({
           }
 
           return (
-            <div
-              // eslint-disable-next-line react/no-array-index-key
-              key={index}
-              className="font-medium text-ink"
-            >
+            // eslint-disable-next-line react/no-array-index-key
+            <div key={index}>
               <span className="sr-only">
                 <Translate>From</Translate>
               </span>
@@ -97,7 +93,7 @@ const Date = ({
             </div>
           );
         })}
-      </dd>
+      </PropertyValue>
     </MetadataCard>
   );
 };

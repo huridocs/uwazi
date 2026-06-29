@@ -21,7 +21,7 @@ const resolveFileLanguage = (rawLanguage?: string) => {
   return known?.ISO639_3 ?? 'other';
 };
 
-const readOnlyFieldClass = 'text-xs font-semibold uppercase tracking-wide text-ink-tertiary';
+const readOnlyFieldClass = 'text-micro font-semibold uppercase tracking-wide text-ink-tertiary';
 
 const FileDetailsEditor = ({
   row,

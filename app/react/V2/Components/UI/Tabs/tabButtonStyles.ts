@@ -5,10 +5,10 @@ const tabListScrollClass =
   'min-w-0 max-w-full w-full shrink-0 overflow-x-auto overflow-y-visible [-webkit-overflow-scrolling:touch] [scrollbar-width:thin]';
 
 const tabListClass =
-  'inline-flex items-stretch w-max max-w-none shrink-0 rounded-md border border-border shadow-sm overflow-hidden';
+  'inline-flex items-stretch w-max max-w-none shrink-0 rounded-md border border-border shadow-[0_1px_2px_rgba(0,0,0,0.08)] overflow-hidden';
 
 const tabTriggerBaseClass =
-  'flex items-center justify-center gap-1 px-2.5 py-1 text-center text-xs font-medium leading-tight transition-colors md:px-3 md:py-2.5 focus-visible:outline-hidden focus-visible:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]';
+  'flex items-center justify-center gap-1 px-2.5 py-1.5 text-center text-tab font-medium transition-colors md:px-3 focus-visible:outline-hidden focus-visible:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]';
 
 const getTabShapeClass = (index: number, totalTabs: number) => {
   if (totalTabs === 1) {
