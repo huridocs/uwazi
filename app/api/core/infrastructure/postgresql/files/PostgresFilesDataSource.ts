@@ -16,6 +16,7 @@ import { FileNotFound, ProcessingFileNotFound } from '../../../domain/files/erro
 import { search } from '#api/search/index.js';
 import { PostgresFilesMapper } from './PostgresFilesMapper.js';
 import type { FilesRow } from './PostgresFilesRow.js';
+import { FILES_COLUMNS_WITHOUT_FULL_TEXT } from './PostgresFilesDAOColumns.js';
 
 type Deps = {
   transactionManager: TransactionManager;
@@ -26,25 +27,6 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
   protected tableName = 'files';
 
   protected jsonbColumns = ['toc', 'propertySelections', 'fullText'];
-
-  private static readonly COLUMNS_WITHOUT_FULL_TEXT = [
-    '_id',
-    'tenant_id',
-    'originalname',
-    'filename',
-    'mimetype',
-    'size',
-    'creationDate',
-    'type',
-    'entity',
-    'status',
-    'totalPages',
-    'language',
-    'generatedToc',
-    'url',
-    'toc',
-    'propertySelections',
-  ];
 
   private transactionManager: MongoTransactionManager;
 
@@ -123,7 +105,7 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
   async getById<T extends BaseFile = BaseFile>(id: string): Promise<ResultType<T, FileNotFound>> {
     const row = await this.table
       .query<FilesRow>()
-      .select(PostgresFilesDataSource.COLUMNS_WITHOUT_FULL_TEXT)
+      .select(FILES_COLUMNS_WITHOUT_FULL_TEXT)
       .where({ _id: id })
       .first();
     if (!row) {
@@ -135,7 +117,7 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
   async getByIds(ids: string[]): Promise<BaseFile[]> {
     const rows = await this.table
       .query<FilesRow>()
-      .select(PostgresFilesDataSource.COLUMNS_WITHOUT_FULL_TEXT)
+      .select(FILES_COLUMNS_WITHOUT_FULL_TEXT)
       .whereIn('_id', ids)
       .all();
     return rows.map(row => this.toDomain(row));
@@ -147,7 +129,7 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
   ): Promise<ResultType<BaseFile, FileNotFound>> {
     let query = this.table
       .query<FilesRow>()
-      .select(PostgresFilesDataSource.COLUMNS_WITHOUT_FULL_TEXT)
+      .select(FILES_COLUMNS_WITHOUT_FULL_TEXT)
       .where({ filename });
     if (allowedTypes) {
       query = query.whereIn('type', allowedTypes);
@@ -182,10 +164,7 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
   }
 
   async getAll(): Promise<BaseFile[]> {
-    const rows = await this.table
-      .query<FilesRow>()
-      .select(PostgresFilesDataSource.COLUMNS_WITHOUT_FULL_TEXT)
-      .all();
+    const rows = await this.table.query<FilesRow>().select(FILES_COLUMNS_WITHOUT_FULL_TEXT).all();
     return rows.map(row => this.toDomain(row));
   }
 
@@ -204,7 +183,7 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
   ): Promise<PDFDocument[]> {
     let query = this.table
       .query<FilesRow>()
-      .select(PostgresFilesDataSource.COLUMNS_WITHOUT_FULL_TEXT)
+      .select(FILES_COLUMNS_WITHOUT_FULL_TEXT)
       .where({ entity: entitySharedId, type: 'document', status: 'ready' });
 
     if (options?.languages) {
