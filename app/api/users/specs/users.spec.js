@@ -8,11 +8,11 @@ import * as usersUtils from '#api/auth2fa/usersUtils.js';
 import { settingsModel } from '#api/settings/settingsModel.js';
 import userGroups from '#api/usergroups/userGroups.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import * as unlockCode from '../generateUnlockCode.js';
 import passwordRecoveriesModel from '../passwordRecoveriesModel.js';
 import users from '../users.js';
 import usersModel from '../usersModel.js';
-import { PUBLIC_USER_ID } from '../publicUser.js';
 import fixtures, {
   blockedUserId,
   expectedKey,

@@ -10,12 +10,12 @@ import {
   updateUserMemberships,
   removeUsersFromAllGroups,
 } from '#api/usergroups/userGroupsMembers.js';
+import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import mailer from '../utils/mailer.js';
 import model from './usersModel.js';
 import passwordRecoveriesModel from './passwordRecoveriesModel.js';
 import settings from '../settings/settings.js';
 import { generateUnlockCode } from './generateUnlockCode.js';
-import { PUBLIC_USER_ID } from './publicUser.js';
 
 const MAX_FAILED_LOGIN_ATTEMPTS = 6;
 

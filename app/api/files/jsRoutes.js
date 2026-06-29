@@ -1,3 +1,5 @@
+import cors from 'cors';
+import proxy from 'express-http-proxy';
 import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
 import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
 import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
@@ -7,9 +9,7 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { MongoEntitiesDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntitiesDAO.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import settings from '#api/settings/index.js';
-import { PUBLIC_USER_ID } from '#api/users/publicUser.js';
-import cors from 'cors';
-import proxy from 'express-http-proxy';
+import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { publicAPIMiddleware } from '../auth/publicAPIMiddleware.js';
 import { createError } from '../utils/index.js';
 import { User } from '#api/users.v2/model/User.js';

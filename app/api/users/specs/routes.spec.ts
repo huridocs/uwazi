@@ -6,12 +6,12 @@ import { WithId } from '#api/odm/model.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DomainError } from '#api/core/domain/error/DomainError.js';
 import { UserRole } from '#shared/types/userSchema.js';
+import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { UserSchema } from '#shared/types/userType.js';
 import userRoutes from '../routes.js';
 import { userRoutes as v2UserRoutes } from '#api/core/infrastructure/express/users/routes.js';
 import users from '../users.js';
 import { User } from '../usersModel.js';
-import { PUBLIC_USER_ID } from '../publicUser.js';
 
 const combinedRoutes = (app: any) => {
   userRoutes(app);
