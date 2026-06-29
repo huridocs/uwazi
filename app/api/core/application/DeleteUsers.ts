@@ -43,7 +43,7 @@ class DeleteUsers extends AbstractUseCase<Input, Output, Deps> {
 
     await this.transactionManager.run(async () => {
       deletedCount = await this.deps.usersDS.delete(ids);
-      // await this.deps.usergroupsDS.updateUserGroups(user);
+      await this.deps.usergroupsDS.removeUsersFromGroups(ids);
     });
 
     return deletedCount;

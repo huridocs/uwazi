@@ -46,6 +46,12 @@ class MongoUsergroupsDataSource
       { $pull: { members: { refId: userId } } }
     );
   }
+
+  async removeUsersFromGroups(userIds: string[]): Promise<void> {
+    const collection = this.getCollection();
+    const userIdsToObjecIRds = userIds.map(userId => ObjectId.createFromHexString(userId));
+    await collection.updateMany({}, { $pull: { members: { refId: { $in: userIdsToObjecIRds } } } });
+  }
 }
 
 export { MongoUsergroupsDataSource };
