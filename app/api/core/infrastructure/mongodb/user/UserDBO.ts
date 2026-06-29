@@ -9,6 +9,7 @@ interface UserDBO {
   password?: string | null;
   using2fa?: boolean;
   secret?: string | null;
+  deletedAt?: Date | null;
 }
 
 export type { UserDBO };
