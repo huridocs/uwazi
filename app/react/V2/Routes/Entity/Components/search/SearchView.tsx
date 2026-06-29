@@ -133,13 +133,9 @@ const SearchView = () => {
                     ? fullText.map((pageText, j) => {
                         const snippetKey = `${i}-${j}`;
                         const isActive = activeSnippet === snippetKey;
-                        const activeClass = isActive
-                          ? 'border-border bg-selected'
-                          : 'border-border/40 bg-paper';
                         const snippetClass = [
-                          'rounded-md border border-border/40 bg-paper p-3 cursor-pointer',
-                          'hover:bg-warm transition',
-                          activeClass,
+                          'rounded-md border p-3 cursor-pointer hover:bg-warm transition',
+                          isActive ? 'border-border bg-selected' : 'border-border/40 bg-paper',
                         ].join(' ');
 
                         return (

@@ -36,7 +36,8 @@ const LinkProperty = ({
         />
       </dt>
       {values.map((value, index) => (
-        <PropertyValue key={value.value || index} as="dd" className="underline">
+        // eslint-disable-next-line react/no-array-index-key
+        <PropertyValue key={`${index}-${value.value}`} as="dd" className="underline">
           <a href={value.value} target="_blank" rel="noreferrer">
             {value.label || value.value}
           </a>
