@@ -55,7 +55,7 @@ describe('Point', () => {
     );
 
     const dot = screen.getByTestId('rail-marker-dot');
-    expect(dot).toHaveStyle({ width: '14px' });
+    expect(dot).toHaveStyle({ width: '12px' });
     expect(dot.style.boxShadow).not.toBe('none');
   });
 

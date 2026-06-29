@@ -64,7 +64,7 @@ describe('Relationships panel across entities', () => {
     render(<RouterProvider router={createPanelScopeRouter(entityWithRelationsB)} />);
 
     expect(searchInput()).toHaveValue('');
-    expect(screen.getByText(/alpha snippet/)).toBeInTheDocument();
+    expect(screen.getByText(/target quoted text/)).toBeInTheDocument();
     expect(screen.getByText('Other Entity')).toBeInTheDocument();
   });
 });
