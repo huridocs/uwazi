@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
   accountUnlockCode: { type: String, select: false },
   using2fa: { type: Boolean, default: false },
   secret: { type: String, select: false },
-  deletedAt: { type: Date, default: null, required: false },
+  deletedAt: { type: Date, required: false },
 });
 
 export interface User {
