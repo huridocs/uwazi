@@ -316,21 +316,22 @@ describe('users routes', () => {
     });
 
     it('should invalidate if the schema is not matched', async () => {
-      const response = await request(app).delete('/api/users').query({ ids: undefined });
-      expect(response.status).toBe(400);
-      expect(response.body.errors[0].keyword).toEqual('required');
+      const response = await request(app).delete('/api/users');
+      expect(response.status).toBe(422);
     });
 
     it('should need authorization', async () => {
       currentUser = editorUser;
-      const response = await request(app).delete('/api/users').query({ ids: 'user1' });
+      const response = await request(app)
+        .delete('/api/users')
+        .query({ ids: JSON.stringify(['user1']) });
       expect(response.status).toBe(401);
     });
 
     it('should use users to delete it', async () => {
       const response = await request(app)
         .delete('/api/users')
-        .query({ ids: ['userToDeleteId'] });
+        .query({ ids: JSON.stringify(['userToDeleteId']) });
       expect(response.status).toBe(200);
       expect(users.delete).toHaveBeenCalledWith(['userToDeleteId'], currentUser);
     });
