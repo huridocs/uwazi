@@ -3,6 +3,7 @@
 exports[`Users login 2fa should login if account requires 2fa and correct token sent 1`] = `
 Object {
   "__v": 0,
+  "deletedAt": null,
   "email": "someuser1@mailer.com",
   "role": "admin",
   "username": "someuser1",
@@ -31,6 +32,7 @@ http://host.domain/unlockaccount/someuser1/hash",
 exports[`Users login should return user with matching username and password 1`] = `
 Object {
   "__v": 0,
+  "deletedAt": null,
   "email": "someuser1@mailer.com",
   "role": "admin",
   "username": "someuser1",

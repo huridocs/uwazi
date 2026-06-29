@@ -50,9 +50,9 @@ describe('Users', () => {
     it('should not save a null password on update', async () => {
       const user = { _id: recoveryUserId, role: 'admin' };
 
-      const [userInDb] = await users.get(recoveryUserId, '+password');
+      const [userInDb] = await users.get({ _id: recoveryUserId }, '+password');
       await users.save(user, { _id: userId, role: 'admin' });
-      const [updatedUser] = await users.get(recoveryUserId, '+password');
+      const [updatedUser] = await users.get({ _id: recoveryUserId }, '+password');
 
       expect(updatedUser.password.toString()).toBe(userInDb.password.toString());
     });
@@ -150,6 +150,20 @@ describe('Users', () => {
           expect(error).toEqual(createError('Can not change your own role', 403));
         }
       });
+    });
+
+    it('should not allow saving to a deleted user', async () => {
+      await usersModel.db.updateOne({ _id: userId }, { $set: { deletedAt: new Date() } });
+
+      try {
+        await users.save(
+          { _id: userId.toString(), username: 'updated' },
+          { _id: 'user2', role: 'admin' }
+        );
+        fail('should throw error');
+      } catch (error) {
+        expect(error).toEqual(createError('User not found', 404));
+      }
     });
 
     describe('newUser', () => {
@@ -316,6 +330,16 @@ describe('Users', () => {
     it('should throw error if username does not exist', async () => {
       try {
         await createUserAndTestLogin('unknownuser1', 'password');
+        fail('should throw error');
+      } catch (e) {
+        expect(e).toEqual(createError('Invalid username or password', 401));
+      }
+    });
+
+    it('should throw error if user is deleted', async () => {
+      await usersModel.save({ ...testUser, deletedAt: new Date() });
+      try {
+        await testLogin('someuser1', 'password');
         fail('should throw error');
       } catch (e) {
         expect(e).toEqual(createError('Invalid username or password', 401));
@@ -824,6 +848,12 @@ describe('Users', () => {
     it('should not fail if asking for groups but user does not exist', async () => {
       const user = await users.getById(db.id(), '-password', true);
       expect(user).toBe(null);
+    });
+
+    it('should return null for a deleted user', async () => {
+      await usersModel.db.updateOne({ _id: userId }, { $set: { deletedAt: new Date() } });
+      const user = await users.getById(userId);
+      expect(user).toBeNull();
     });
   });
 
