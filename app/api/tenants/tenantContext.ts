@@ -33,6 +33,7 @@ type Tenant = {
     aiAssistant?: boolean;
     aiAssistantServiceUrl?: string;
     v2CreateUser?: boolean;
+    v2DeleteUser?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;
