@@ -1,8 +1,8 @@
-import { parseQuery, validation } from '#api/utils/index.js';
+import { validation } from '#api/utils/index.js';
 import { userSchema } from '#shared/types/userSchema.js';
 import { needsAuthorization, validatePasswordMiddleWare } from '../auth/index.js';
 import users from './users.js';
-import { PUBLIC_USER_ID } from './publicUser.js';
+import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { tenants } from '#api/tenants/index.js';
 
 const getDomain = req => `${req.protocol}://${tenants.current().domain}`;
@@ -136,33 +136,4 @@ export default app => {
       })
       .catch(next);
   });
-
-  app.delete(
-    '/api/users',
-    needsAuthorization(),
-    parseQuery,
-    validatePasswordMiddleWare,
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        query: {
-          type: 'object',
-          additionalProperties: false,
-          required: ['ids'],
-          properties: {
-            ids: { oneOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }] },
-          },
-        },
-      },
-      required: ['query'],
-    }),
-    (req, res, next) => {
-      const { ids } = req.query;
-      const idsArray = Array.isArray(ids) ? ids : [ids];
-      users
-        .delete(idsArray, req.user)
-        .then(response => res.json(response))
-        .catch(next);
-    }
-  );
 };
