@@ -154,7 +154,7 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({ className = 
             </li>
           );
         })}
-        <NeedAuthorization roles={['admin', 'editor']}>
+        <NeedAuthorization roles={['admin']}>
           <li role="none">
             <button
               role="menuitem"
