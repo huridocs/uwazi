@@ -5,14 +5,9 @@ import {
 } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { UsersDataSource } from '#api/core/application/contracts/UsersDataSource.js';
-import { User, PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
-import {
-  EmailInUse,
-  IsDeletingSelf,
-  IsPublicUser,
-  UsernameExists,
-} from '#api/core/domain/user/errors.js';
-import { Result, ResultType } from '#api/core/libs/Result.js';
+import { User } from '#api/core/domain/user/User.js';
+import { EmailInUse, UsernameExists } from '#api/core/domain/user/errors.js';
+import { Result } from '#api/core/libs/Result.js';
 import { UserDBO } from './UserDBO.js';
 import { MongoUsersMapper } from './MongoUsersMapper.js';
 

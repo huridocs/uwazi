@@ -350,6 +350,10 @@ export default {
   async resetPassword(credentials) {
     const [key] = await passwordRecoveriesModel.get({ key: credentials.key });
     if (key) {
+      const [user] = await model.get({ _id: key.user, deletedAt: null }, '_id');
+      if (!user) {
+        throw createError('User not found', 404);
+      }
       return Promise.all([
         passwordRecoveriesModel.delete(key._id),
         model

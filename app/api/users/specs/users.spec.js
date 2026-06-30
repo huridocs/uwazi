@@ -279,6 +279,24 @@ describe('Users', () => {
           message: 'Usernames can not contain spaces.',
         });
       });
+
+      it('should allow creating a user with the same username as a soft-deleted user', async () => {
+        await usersModel.db.updateOne({ _id: userId }, { $set: { deletedAt: new Date() } });
+        const newUser = await users.newUser(
+          { username: 'username', email: 'unique@email.com', role: 'editor' },
+          domain
+        );
+        expect(newUser.username).toBe('username');
+      });
+
+      it('should allow creating a user with the same email as a soft-deleted user', async () => {
+        await usersModel.db.updateOne({ _id: userId }, { $set: { deletedAt: new Date() } });
+        const newUser = await users.newUser(
+          { username: 'unique_username', email: 'test@email.com', role: 'editor' },
+          domain
+        );
+        expect(newUser.email).toBe('test@email.com');
+      });
     });
   });
 
@@ -577,6 +595,17 @@ describe('Users', () => {
         expect(user.accountUnlockCode).toBe('code');
       }
     });
+
+    it('should throw error if user is soft-deleted', async () => {
+      const deletedUser = { ...testUser, deletedAt: new Date() };
+      await usersModel.save(deletedUser);
+      try {
+        await testUnlock('someuser1', 'code');
+        fail('should throw error');
+      } catch (e) {
+        expect(e).toEqual(createError('Invalid username or unlock code', 403));
+      }
+    });
   });
 
   describe('simpleUnlock', () => {
@@ -695,6 +724,14 @@ describe('Users', () => {
         expect(response.length).toBe(0);
       });
     });
+
+    describe('when the user is soft-deleted', () => {
+      it('should return nothing', async () => {
+        await usersModel.db.updateOne({ _id: userId }, { $set: { deletedAt: new Date() } });
+        const response = await users.recoverPassword('test@email.com', 'domain');
+        expect(response).toBe(undefined);
+      });
+    });
   });
 
   describe('resetPassword', () => {
@@ -728,6 +765,22 @@ describe('Users', () => {
       expect(user.failedLogins).toBe(undefined);
       expect(user.accountLocked).toBe(undefined);
       expect(user.accountUnlockCode).toBe(undefined);
+    });
+
+    it('should fail for a soft-deleted user', async () => {
+      await usersModel.db.updateOne({ _id: recoveryUserId }, { $set: { deletedAt: new Date() } });
+      const keyBefore = await passwordRecoveriesModel.get({ key: expectedKey });
+      expect(keyBefore.length).toBe(1);
+
+      try {
+        await users.resetPassword({ key: expectedKey, password: '1234' });
+        fail('should throw error');
+      } catch (error) {
+        expect(error).toEqual(createError('User not found', 404));
+      }
+
+      const keyAfter = await passwordRecoveriesModel.get({ key: expectedKey });
+      expect(keyAfter.length).toBe(1);
     });
   });
 
@@ -870,6 +923,13 @@ describe('Users', () => {
       expect(userList.length).toBe(6);
       expect(userList[0].groups[0].name).toBe('Group 2');
       expect(userList[1].groups[0].name).toBe('Group 1');
+    });
+
+    it('should exclude soft-deleted users from results', async () => {
+      await usersModel.db.updateOne({ _id: userId }, { $set: { deletedAt: new Date() } });
+      const userList = await users.get();
+      expect(userList.length).toBe(5);
+      expect(userList.find(u => u._id.toString() === userId.toString())).toBeUndefined();
     });
   });
 
