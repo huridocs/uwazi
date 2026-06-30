@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { Db, FindCursor, ObjectId } from 'mongodb';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
@@ -5,6 +6,7 @@ import { User } from '#api/users.v2/model/User.js';
 import { MongoDataSource, MongoDSOptions } from '../common/MongoDataSource.js';
 import { FileDBO } from '../files/schemas/filesTypes.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import type { PostgresFilesDAO } from '../../postgresql/files/PostgresFilesDAO.js';
 
 type GetWithFilesMatch = {
   language?: LanguageISO6391;
@@ -19,14 +21,17 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> {
 
   private user: User;
 
+  private filesDAO?: PostgresFilesDAO;
+
   constructor(
     db: Db,
     transactionManager: TransactionManager,
     user: User,
-    options?: MongoDSOptions
+    options?: MongoDSOptions & { filesDAO?: PostgresFilesDAO }
   ) {
     super(db, transactionManager, options);
     this.user = user;
+    this.filesDAO = options?.filesDAO;
   }
 
   private buildPermissionMatch(): Record<string, unknown> {
@@ -41,7 +46,14 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> {
     };
   }
 
-  getWithFiles($match: GetWithFilesMatch) {
+  async getWithFiles($match: GetWithFilesMatch): Promise<EntityWithFiles[]> {
+    if (this.filesDAO) {
+      return this.getWithFilesInMemory($match);
+    }
+    return this.getWithFilesAggregation($match).toArray();
+  }
+
+  private getWithFilesAggregation($match: GetWithFilesMatch) {
     const permissionMatch = this.buildPermissionMatch();
 
     return this.getCollection().aggregate<EntityWithFiles>([
@@ -86,6 +98,32 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> {
         $unset: 'files',
       },
     ]);
+  }
+
+  private async getWithFilesInMemory($match: GetWithFilesMatch): Promise<EntityWithFiles[]> {
+    const permissionMatch = this.buildPermissionMatch();
+    const entities = await this.getCollection()
+      .aggregate<EntityDBO>([{ $match: { ...$match, ...permissionMatch } }])
+      .toArray();
+
+    if (entities.length === 0) return [];
+
+    const sharedIds = entities.map(e => e.sharedId);
+    const allFiles = await this.filesDAO!.getByEntitySharedIds(sharedIds);
+
+    const filesByEntity: Record<string, typeof allFiles> = {};
+    for (const file of allFiles) {
+      const entityId = file.entity;
+      if (!entityId) continue;
+      if (!filesByEntity[entityId]) filesByEntity[entityId] = [];
+      filesByEntity[entityId].push(file);
+    }
+
+    return entities.map(entity => ({
+      ...entity,
+      documents: (filesByEntity[entity.sharedId] || []).filter(f => f.type === 'document'),
+      attachments: (filesByEntity[entity.sharedId] || []).filter(f => f.type === 'attachment'),
+    })) as unknown as EntityWithFiles[];
   }
 
   streamAll(options?: { afterSharedId?: string }): FindCursor<EntityDBO> {
