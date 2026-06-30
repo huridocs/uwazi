@@ -1,11 +1,34 @@
+import { z } from 'zod';
 import type { DeleteUserRequest, DeleteUserResponse } from '#shared/contracts/Users.js';
 import users from '#api/users/users.js';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { DeleteUsersInputSchema } from '#api/core/application/DeleteUsers.js';
 import { DeleteUsersUseCaseFactory } from '../../factories/DeleteUsersUseCaseFactory.js';
 
+const DeleteUsersInputSchema = z.object({
+  ids: z.string().transform((value, context) => {
+    try {
+      const parsed = JSON.parse(value);
+      if (!Array.isArray(parsed) || !parsed.every(item => typeof item === 'string')) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'ids must be an array of strings',
+        });
+        return z.NEVER;
+      }
+      return parsed;
+    } catch {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'ids must be a valid JSON array',
+      });
+      return z.NEVER;
+    }
+  }),
+});
+
 class DeleteUserController extends AbstractController<DeleteUserRequest> {
+  // eslint-disable-next-line max-statements
   protected async handle(): Promise<void> {
     if (ExecutionContext.tenant.featureFlags?.v2DeleteUser) {
       const startTime = Date.now();
