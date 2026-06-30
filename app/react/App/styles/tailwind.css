@@ -676,3 +676,25 @@
     opacity: 1;
   }
 }
+
+/* Beacon hover rail — content settles in as the beacon reveals the latest item */
+@keyframes beacon-rail-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-beacon-rail {
+  animation: beacon-rail-in 0.22s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-beacon-rail {
+    animation: none !important;
+  }
+}

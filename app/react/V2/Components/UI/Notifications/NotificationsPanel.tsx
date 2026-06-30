@@ -52,6 +52,7 @@ const NotificationsPanel = () => {
     return groups;
   }, [notifications]);
   const hasNotifications = notifications.length > 0;
+  const itemCount = notifications.length + tasks.length;
   const hasClearable = hasNotifications || tasks.some(t => t.status !== 'running');
 
   useEffect(() => {
@@ -123,12 +124,12 @@ const NotificationsPanel = () => {
             <h1 id={titleId} className="text-base font-bold text-ink">
               <Translate>Notifications</Translate>
             </h1>
-            {hasNotifications && (
+            {itemCount > 0 && (
               <span
                 className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1.5 text-[11px] font-bold tabular-nums text-white"
                 style={{ backgroundColor: 'var(--color-theme-accent-supporting)' }}
               >
-                {notifications.length}
+                {itemCount}
               </span>
             )}
             <button

@@ -1,6 +1,7 @@
 import React from 'react';
-import { ArrowPathIcon, LinkSlashIcon } from '@heroicons/react/24/outline';
+import { LinkSlashIcon } from '@heroicons/react/24/outline';
 import type { OverallStatus } from '#V2/atoms/requestStatusAtom.js';
+import { UwaziLoader, type UwaziLoaderColor } from '#V2/Components/UI/UwaziLoader.js';
 import { Translate } from '#app/I18N/index.js';
 
 interface StatusDotProps {
@@ -14,26 +15,7 @@ interface StatusDotProps {
   isExpanded?: boolean;
 }
 
-const dotColorMap: Record<Exclude<OverallStatus, 'loading'>, string> = {
-  success: 'bg-green-500',
-  warning: 'bg-yellow-400',
-  error: 'bg-error-500',
-};
-
-// Injected directly so the animation always works regardless of Tailwind JIT cache state.
-const DOT_KEYFRAMES = `
-  @keyframes dotPulse {
-    0%, 55%, 100% { transform: scale(1); }
-    27%           { transform: scale(1.5); }
-  }
-  @keyframes dotSpreadLeft {
-    from { transform: translateX(6px); opacity: 0; }
-    to   { transform: translateX(0);   opacity: 1; }
-  }
-  @keyframes dotSpreadRight {
-    from { transform: translateX(-6px); opacity: 0; }
-    to   { transform: translateX(0);    opacity: 1; }
-  }
+const POP_KEYFRAMES = `
   @keyframes dotPop {
     0%   { transform: scale(1); }
     40%  { transform: scale(1.65); }
@@ -42,37 +24,12 @@ const DOT_KEYFRAMES = `
   }
 `;
 
-const DOT_SIZE = 'w-2 h-2';
-
-const LoadingDots = ({ color }: { color: string }) => (
-  <span className="flex items-center gap-1" aria-hidden="true">
-    <span style={{ animation: 'dotSpreadLeft 0.25s ease-out forwards' }}>
-      <span
-        className={`block ${DOT_SIZE} rounded-full`}
-        style={{
-          backgroundColor: color,
-          animation: 'dotPulse 1.8s ease-in-out 0ms infinite backwards',
-        }}
-      />
-    </span>
-    <span
-      className={`block ${DOT_SIZE} rounded-full`}
-      style={{
-        backgroundColor: color,
-        animation: 'dotPulse 1.8s ease-in-out 300ms infinite backwards',
-      }}
-    />
-    <span style={{ animation: 'dotSpreadRight 0.25s ease-out forwards' }}>
-      <span
-        className={`block ${DOT_SIZE} rounded-full`}
-        style={{
-          backgroundColor: color,
-          animation: 'dotPulse 1.8s ease-in-out 600ms infinite backwards',
-        }}
-      />
-    </span>
-  </span>
-);
+const statusColor: Record<OverallStatus, UwaziLoaderColor> = {
+  loading: 'carbon',
+  error: 'seal',
+  warning: 'warning',
+  success: 'default',
+};
 
 const DisconnectWarning = ({ color, tooltipId }: { color: string; tooltipId: string }) => (
   <span className="relative inline-flex group">
@@ -123,40 +80,38 @@ const StatusDot = ({
   color = 'black',
   controlsId,
   isExpanded,
-}: StatusDotProps) => (
-  <>
-    {/* eslint-disable-next-line react/no-danger */}
-    <style dangerouslySetInnerHTML={{ __html: DOT_KEYFRAMES }} />
-    <div className="flex items-center gap-1.5">
-      {!isConnected && <DisconnectWarning color={color} tooltipId="disconnect-tooltip" />}
+}: StatusDotProps) => {
+  const isBusy = overallStatus === 'loading' || hasRunningTasks;
+  const markColor = isBusy ? 'carbon' : statusColor[overallStatus];
 
-      <button
-        type="button"
-        onClick={onClick}
-        aria-label={buildAriaLabel(overallStatus, isConnected, hasRunningTasks)}
-        aria-controls={controlsId}
-        aria-expanded={isExpanded}
-        data-testid="status-dot"
-        className="flex items-center gap-1.5 p-1 rounded-full cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-300"
-      >
-        {overallStatus === 'loading' ? (
-          <LoadingDots color={color} />
-        ) : (
+  return (
+    <>
+      {/* eslint-disable-next-line react/no-danger */}
+      <style dangerouslySetInnerHTML={{ __html: POP_KEYFRAMES }} />
+      <div className="flex items-center gap-1.5">
+        {!isConnected && <DisconnectWarning color={color} tooltipId="disconnect-tooltip" />}
+
+        <button
+          type="button"
+          onClick={onClick}
+          aria-label={buildAriaLabel(overallStatus, isConnected, hasRunningTasks)}
+          aria-controls={controlsId}
+          aria-expanded={isExpanded}
+          data-testid="status-dot"
+          className="flex items-center justify-center p-1.5 rounded-md cursor-pointer transition-colors hover:bg-warm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+        >
           <span
             key={popKey}
-            className={`block w-3 h-3 rounded-full ${dotColorMap[overallStatus]}`}
-            style={popKey ? { animation: 'dotPop 0.45s ease-out forwards' } : undefined}
             aria-hidden="true"
-          />
-        )}
-
-        {hasRunningTasks && (
-          <ArrowPathIcon className="w-4 h-4 animate-spin" style={{ color }} aria-hidden="true" />
-        )}
-      </button>
-    </div>
-  </>
-);
+            style={popKey ? { animation: 'dotPop 0.45s ease-out forwards' } : undefined}
+          >
+            <UwaziLoader size="xs" color={markColor} animate={isBusy} />
+          </span>
+        </button>
+      </div>
+    </>
+  );
+};
 
 export type { StatusDotProps };
 export { StatusDot };

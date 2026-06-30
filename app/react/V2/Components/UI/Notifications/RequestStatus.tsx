@@ -1,4 +1,10 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import {
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+  InformationCircleIcon,
+  XCircleIcon,
+} from '@heroicons/react/24/outline';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import type { NotificationType } from '#V2/atoms/requestStatusAtom.js';
 import { useContrastColor } from '#V2/CustomHooks/useContrastColor.js';
@@ -29,6 +35,13 @@ const flashTypeLabel: Record<NotificationType, string> = {
   info: 'Information',
 };
 
+const railIcon: Record<NotificationType, { Icon: typeof CheckCircleIcon; color: string }> = {
+  success: { Icon: CheckCircleIcon, color: 'text-success' },
+  error: { Icon: XCircleIcon, color: 'text-emphasis' },
+  warning: { Icon: ExclamationTriangleIcon, color: 'text-(--color-theme-warning)' },
+  info: { Icon: InformationCircleIcon, color: 'text-supporting' },
+};
+
 const RequestStatus = () => {
   const {
     overallStatus,
@@ -54,6 +67,7 @@ const RequestStatus = () => {
 
   const [popKey, setPopKey] = useState(0);
   const lastPopId = useRef<string | null>(null);
+  const [hovered, setHovered] = useState(false);
   const PANEL_ID = 'notifications-panel-dialog';
   const liveAnnouncement = flash ? `${flashTypeLabel[flash.type]}: ${flash.title}` : '';
 
@@ -119,13 +133,38 @@ const RequestStatus = () => {
     };
   }, [hasRunningTasks, isLoading, overallStatus]);
 
+  const latest = notifications[notifications.length - 1];
+  const moreCount = notifications.length - 1;
+  const showRail = hovered && !flash && !isPanelOpen && Boolean(latest);
+  const RailIcon = latest ? railIcon[latest.type].Icon : null;
+
   return (
     <>
       <CsvImportTasksSubscriber />
       <div
         ref={containerRef}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
         className="relative inline-flex min-h-13 items-center gap-1.5 rounded-xl p-1"
       >
+        {showRail && latest && RailIcon && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 inset-e-8 z-10 flex items-center justify-end"
+          >
+            <div className="animate-beacon-rail flex items-center gap-2 rounded-md border border-border-soft bg-warm px-2.5 py-1 shadow-sm">
+              <RailIcon className={`h-3.5 w-3.5 shrink-0 ${railIcon[latest.type].color}`} />
+              <span className="max-w-[10rem] truncate text-[12px] font-medium text-ink">
+                {latest.title}
+              </span>
+              {moreCount > 0 && (
+                <span className="shrink-0 text-[11px] font-semibold text-ink-tertiary tabular-nums">
+                  +{moreCount}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
         {flash && (
           <div
             key={`announcement-${flash.id}`}
