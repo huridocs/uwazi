@@ -7,7 +7,12 @@ const f = getFixturesFactory();
 const fixtures: DBFixture = {
   users: [
     f.user({ username: 'existinguser', role: UserRole.EDITOR, email: 'existing@test.com' }),
-    f.user({ username: 'deletedUser', role: UserRole.ADMIN, email: 'deleted@test.com' }),
+    f.user({
+      username: 'deletedUser',
+      role: UserRole.ADMIN,
+      email: 'deleted@test.com',
+      deletedAt: '1',
+    }),
   ],
   settings: [
     {
