@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -43,6 +44,7 @@ const fixtures: DBFixture = {
     factory.file('thumb_entity_a', {
       entity: 'entity_a',
       type: 'thumbnail',
+      language: 'en',
     }),
     // getByEntitySharedIds fixtures: entities with languages
     factory.document('doc_x_en', {
@@ -397,6 +399,53 @@ describe('MongoFilesDAO', () => {
     });
   });
 
+  describe('getDistinctEntitySharedIds()', () => {
+    it('returns distinct entity sharedIds filtered by type, status, and language', async () => {
+      const sut = createSut();
+      const result = await sut.getDistinctEntitySharedIds({
+        type: 'document',
+        status: 'ready',
+        language: 'eng',
+      });
+      expect(result.sort()).toEqual(['entity_x', 'entity_y']);
+    });
+
+    it('filters by type only', async () => {
+      const sut = createSut();
+      const result = await sut.getDistinctEntitySharedIds({ type: 'attachment' });
+      expect(result.sort()).toEqual(['entity_1', 'entity_a', 'entity_x']);
+    });
+
+    it('filters by status only', async () => {
+      const sut = createSut();
+      const result = await sut.getDistinctEntitySharedIds({ status: 'ready' });
+      expect(result.sort()).toEqual([
+        'entity_1',
+        'entity_2',
+        'entity_a',
+        'entity_x',
+        'entity_y',
+        'entity_z',
+      ]);
+    });
+
+    it('filters by language only', async () => {
+      const sut = createSut();
+      const result = await sut.getDistinctEntitySharedIds({ language: 'eng' });
+      expect(result.sort()).toEqual(['entity_a', 'entity_x', 'entity_y']);
+    });
+
+    it('returns empty array when no files match', async () => {
+      const sut = createSut();
+      const result = await sut.getDistinctEntitySharedIds({
+        type: 'document',
+        status: 'ready',
+        language: 'xx' as any,
+      });
+      expect(result).toEqual([]);
+    });
+  });
+
   describe('getByQuery()', () => {
     it('excludes fullText by default', async () => {
       const sut = createSut();
@@ -526,6 +575,34 @@ describe('MongoFilesDAO', () => {
         expect(result.isError()).toBe(true);
         expect(result.getError()).toBeInstanceOf(FileNotFound);
       });
+    });
+  });
+
+  describe('getDistinctEntitySharedIds — null entity exclusion', () => {
+    beforeAll(async () => {
+      await testingEnvironment.setUp({
+        files: [
+          factory.document('doc_has_entity', {
+            entity: 'entity_valid',
+            type: 'document',
+            status: 'ready',
+          }),
+          factory.document('doc_no_entity', {
+            type: 'document',
+            status: 'ready',
+            entity: null as any,
+          }),
+        ],
+      });
+    });
+
+    it('excludes files with null entity from results', async () => {
+      const sut = createSut();
+      const result = await sut.getDistinctEntitySharedIds({
+        type: 'document',
+        status: 'ready',
+      });
+      expect(result).toEqual(['entity_valid']);
     });
   });
 

@@ -1,4 +1,3 @@
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { User } from '#api/users.v2/model/User.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -7,23 +6,23 @@ import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManag
 import { V1WebSocketsWrapper } from '../services/V1WebSocketsWrapper.js';
 import { CloneLanguageEntitiesJob } from '../jobs/CloneLanguageEntitiesJob.js';
 import { MongoEntitiesDAOFactory } from './MongoEntitiesDAOFactory.js';
+import { FilesDAOFactory } from './FilesDAOFactory.js';
 
 class CloneLanguageEntitiesJobFactory {
   static default(
     overrides?: Partial<ConstructorParameters<typeof CloneLanguageEntitiesJob>[0]>
   ): CloneLanguageEntitiesJob {
     const transactionManager = TransactionManagerFactory.default() as MongoTransactionManager;
-    const db = getConnection();
     const entityDAO = MongoEntitiesDAOFactory.default({
       transactionManager,
       user: User.createFrom(null),
     });
-    const filesCollection = db.collection('files');
+    const filesDAO = FilesDAOFactory.default();
     const { jobsDispatcher } = ExecutionContext;
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     return new CloneLanguageEntitiesJob({
       entityDAO,
-      filesCollection,
+      filesDAO,
       jobsDispatcher,
       webSockets: new V1WebSocketsWrapper(),
       settingsDS,

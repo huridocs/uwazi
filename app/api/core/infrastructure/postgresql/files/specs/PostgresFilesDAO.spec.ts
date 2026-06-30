@@ -418,6 +418,76 @@ describe('PostgresFilesDAO', () => {
     });
   });
 
+  describe('getDistinctEntitySharedIds()', () => {
+    it('returns distinct entity sharedIds filtered by type, status, and language', async () => {
+      const dao = createSut();
+      const result = await dao.getDistinctEntitySharedIds({
+        type: 'document',
+        status: 'ready',
+        language: 'eng',
+      });
+      expect(result.sort()).toEqual(['entity_x', 'entity_y']);
+    });
+
+    it('filters by type only', async () => {
+      const dao = createSut();
+      const result = await dao.getDistinctEntitySharedIds({ type: 'attachment' });
+      expect(result.sort()).toEqual(['entity_1', 'entity_a', 'entity_x']);
+    });
+
+    it('filters by status only', async () => {
+      const dao = createSut();
+      const result = await dao.getDistinctEntitySharedIds({ status: 'ready' });
+      expect(result.sort()).toEqual([
+        'entity_1',
+        'entity_2',
+        'entity_a',
+        'entity_x',
+        'entity_y',
+        'entity_z',
+      ]);
+    });
+
+    it('filters by language only', async () => {
+      const dao = createSut();
+      const result = await dao.getDistinctEntitySharedIds({ language: 'eng' });
+      expect(result.sort()).toEqual(['entity_a', 'entity_x', 'entity_y']);
+    });
+
+    it('returns empty array when no files match', async () => {
+      const dao = createSut();
+      const result = await dao.getDistinctEntitySharedIds({
+        type: 'document',
+        status: 'ready',
+        language: 'xx',
+      });
+      expect(result).toEqual([]);
+    });
+
+    it('excludes files with null entity', async () => {
+      await testingEnvironment.setFixtures({
+        files: [
+          factory.document('doc_has_entity', {
+            entity: 'entity_valid',
+            type: 'document',
+            status: 'ready',
+          }),
+          factory.document('doc_no_entity', {
+            type: 'document',
+            status: 'ready',
+            entity: null as any,
+          }),
+        ],
+      });
+      const dao = createSut();
+      const result = await dao.getDistinctEntitySharedIds({
+        type: 'document',
+        status: 'ready',
+      });
+      expect(result).toEqual(['entity_valid']);
+    });
+  });
+
   describe('getByQuery()', () => {
     it('excludes fullText by default', async () => {
       const dao = createSut();

@@ -13,6 +13,7 @@ import type {
   ListFileOptions,
   EntityFileOptions,
 } from '../../mongodb/files/queryOptions.js';
+import type { LanguageISO6393 } from '#shared/language/languageISO639_3.js';
 
 type Deps = PostgresDataSourceDeps;
 
@@ -180,6 +181,23 @@ class PostgresFilesDAO extends PostgresDataSource {
     }
 
     return query.all() as Promise<T[]>;
+  }
+
+  async getDistinctEntitySharedIds(filters: {
+    type?: string;
+    status?: string;
+    language?: LanguageISO6393;
+  }): Promise<string[]> {
+    let query = this.table.query<FilesRow>().distinct(['entity']);
+
+    if (filters.type) query = query.where({ type: filters.type });
+    if (filters.status) query = query.where({ status: filters.status });
+    if (filters.language) query = query.where({ language: filters.language });
+
+    const rows = await query.all();
+    return rows
+      .map((r: any) => r.entity as string)
+      .filter(entity => entity !== null && entity !== undefined);
   }
 }
 

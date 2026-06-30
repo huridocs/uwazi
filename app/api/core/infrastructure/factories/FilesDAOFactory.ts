@@ -5,8 +5,10 @@ import { PostgresConnectionFactory } from './PostgresConnectionFactory.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
+type FilesDAO = MongoFilesDAO | PostgresFilesDAO;
+
 class FilesDAOFactory {
-  static default(): MongoFilesDAO | PostgresFilesDAO {
+  static default(): FilesDAO {
     const { tenant } = ExecutionContext;
 
     if (tenant.featureFlags?.postgresFiles) {
@@ -24,3 +26,4 @@ class FilesDAOFactory {
 }
 
 export { FilesDAOFactory };
+export type { FilesDAO };
