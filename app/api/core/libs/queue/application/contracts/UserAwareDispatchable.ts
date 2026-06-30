@@ -34,7 +34,7 @@ export abstract class UserAwareDispatchable<ExtendedParams> implements Dispatcha
   }
 
   private async setCurrentUser() {
-    const user = await users.getById(this.userId, '-password', true);
+    const user = await users.getById(this.userId, '-password', true, true);
     permissionsContext.setUserInContext(user);
   }
 
