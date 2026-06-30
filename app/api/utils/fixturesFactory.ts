@@ -395,10 +395,9 @@ function getFixturesFactory() {
     }: {
       username: string;
       role: UserRole;
-      _id?: ObjectId;
       email?: string;
       password?: string;
-      deletedAt?: Date;
+      deletedAt?: Date | string | number;
     }): UserDBO => {
       const user = new User({
         _id: idMapper(username).toString(),
@@ -412,7 +411,7 @@ function getFixturesFactory() {
         role: user.role,
         email: user.email,
         password: password || 'hash',
-        deletedAt,
+        ...(deletedAt && { deletedAt: deletedAt as Date }),
       };
     },
 

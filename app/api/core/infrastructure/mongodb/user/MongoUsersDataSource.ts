@@ -5,7 +5,7 @@ import {
 } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { UsersDataSource } from '#api/core/application/contracts/UsersDataSource.js';
-import { User } from '#api/core/domain/user/User.js';
+import { PUBLIC_USER_ID, User } from '#api/core/domain/user/User.js';
 import { EmailInUse, UsernameExists } from '#api/core/domain/user/errors.js';
 import { Result } from '#api/core/libs/Result.js';
 import { UserDBO } from './UserDBO.js';
@@ -27,6 +27,7 @@ class MongoUsersDataSource extends MongoDataSource<UserDBO> implements UsersData
     if (userInDb) {
       return Result.fail(new UsernameExists(user.username));
     }
+
     return Result.ok(true);
   }
 
@@ -39,7 +40,17 @@ class MongoUsersDataSource extends MongoDataSource<UserDBO> implements UsersData
     if (userInDb) {
       return Result.fail(new EmailInUse(user.email));
     }
+
     return Result.ok(true);
+  }
+
+  async countActiveUsers(): Promise<number> {
+    const collection = this.getCollection<UserDBO>();
+    const count = await collection.countDocuments({
+      deletedAt: { $exists: false },
+      _id: { $ne: PUBLIC_USER_ID },
+    });
+    return count;
   }
 
   async insert(user: User): Promise<void> {
@@ -48,7 +59,7 @@ class MongoUsersDataSource extends MongoDataSource<UserDBO> implements UsersData
 
   async delete(userIds: string[]): Promise<number> {
     if (userIds.length) {
-      const collection = await this.getCollection<UserDBO>();
+      const collection = this.getCollection<UserDBO>();
       const result = await collection.updateMany(
         { _id: { $in: userIds.map(id => ObjectId.createFromHexString(id)) } },
         { $set: { deletedAt: new Date() } }
