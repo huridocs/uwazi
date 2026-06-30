@@ -19,8 +19,9 @@ const relationshipReferenceDisplay = (
   const counterpartAnchor = counterpartAnchorOf(marker.view, selfSharedId);
   const selfText = selfAnchor?.text?.trim() ?? '';
   const counterpartText = counterpartAnchor?.text?.trim() ?? '';
-  const referenceText = selfText || counterpartText;
-  const referencePage = selfText ? selfAnchor?.selections?.[0]?.page : undefined;
+  const referenceText = counterpartText || selfText;
+  const referencePage =
+    selfAnchor?.selections?.[0]?.page ?? counterpartAnchor?.selections?.[0]?.page;
   return { referenceText, referencePage };
 };
 
