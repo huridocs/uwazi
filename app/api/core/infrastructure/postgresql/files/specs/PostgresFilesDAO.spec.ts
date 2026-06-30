@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { PostgresConnectionFactory } from '#api/core/infrastructure/factories/PostgresConnectionFactory.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
@@ -485,6 +486,46 @@ describe('PostgresFilesDAO', () => {
         status: 'ready',
       });
       expect(result).toEqual(['entity_valid']);
+    });
+  });
+
+  describe('countDocuments()', () => {
+    it('returns the total number of files', async () => {
+      const dao = createSut();
+      const count = await dao.countDocuments();
+      expect(count).toBe(13);
+    });
+
+    describe('when collection is empty', () => {
+      beforeEach(async () => {
+        await testingEnvironment.setFixtures({ files: [] });
+      });
+
+      it('returns 0', async () => {
+        const dao = createSut();
+        const count = await dao.countDocuments();
+        expect(count).toBe(0);
+      });
+    });
+  });
+
+  describe('getTotalFileSize()', () => {
+    it('returns the sum of all file sizes', async () => {
+      const dao = createSut();
+      const totalSize = await dao.getTotalFileSize();
+      expect(totalSize).toBe(13312);
+    });
+
+    describe('when collection is empty', () => {
+      beforeEach(async () => {
+        await testingEnvironment.setFixtures({ files: [] });
+      });
+
+      it('returns 0', async () => {
+        const dao = createSut();
+        const totalSize = await dao.getTotalFileSize();
+        expect(totalSize).toBe(0);
+      });
     });
   });
 

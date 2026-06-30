@@ -139,6 +139,17 @@ class MongoFilesDAO extends MongoDataSource<FileDBO> {
     const values = await this.getCollection().distinct('entity', query);
     return values.filter((v): v is string => v !== null && v !== undefined);
   }
+
+  async countDocuments(): Promise<number> {
+    return this.getCollection().countDocuments();
+  }
+
+  async getTotalFileSize(): Promise<number> {
+    const [result] = await this.getCollection()
+      .aggregate<{ totalSize: number }>([{ $group: { _id: null, totalSize: { $sum: '$size' } } }])
+      .toArray();
+    return result?.totalSize ?? 0;
+  }
 }
 
 export { MongoFilesDAO };

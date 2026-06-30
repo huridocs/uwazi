@@ -2,6 +2,7 @@ import { Db } from 'mongodb';
 import { elastic } from '#api/search/index.js';
 import { PUBLIC_USER_ID } from '#api/users/publicUser.js';
 import { UserSchema } from '#shared/types/userType.js';
+import type { FilesDAO } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 
 type RoleCount = {
   _id: UserSchema['role'];
@@ -10,9 +11,11 @@ type RoleCount = {
 
 export class RetrieveStatsService {
   private readonly db: Db;
+  private readonly filesDAO: FilesDAO;
 
-  constructor(db: Db) {
+  constructor(db: Db, filesDAO: FilesDAO) {
     this.db = db;
+    this.filesDAO = filesDAO;
   }
 
   async execute(language: string) {
@@ -24,11 +27,8 @@ export class RetrieveStatsService {
     };
   }
 
-  private readonly NO_FILES_SIZE = 0;
-
   private static parseElasticSize(elasticBody: unknown) {
     if (typeof elasticBody === 'string') {
-      // Plain text response (Elasticsearch 8.x behavior)
       const sizeStr = elasticBody.trim();
       return parseInt(sizeStr, 10);
     }
@@ -39,7 +39,6 @@ export class RetrieveStatsService {
       typeof elasticBody[0] === 'object' &&
       'store.size' in elasticBody[0]
     ) {
-      // JSON response (Elasticsearch 7.x behavior)
       return parseInt((elasticBody[0] as Record<string, string>)['store.size'], 10);
     }
 
@@ -57,20 +56,9 @@ export class RetrieveStatsService {
   }
 
   private async calculateStorageStats() {
-    const [filesSize] = await this.db
-      .collection('files')
-      .aggregate([
-        {
-          $group: {
-            _id: null,
-            totalSize: { $sum: '$size' },
-          },
-        },
-      ])
-      .toArray();
-
+    const filesSize = await this.filesDAO.getTotalFileSize();
     const dbStats = await this.db.stats();
-    const baseSize = (filesSize?.totalSize || this.NO_FILES_SIZE) + dbStats.storageSize;
+    const baseSize = filesSize + dbStats.storageSize;
 
     try {
       const elasticSize = await RetrieveStatsService.getElasticStorageSize();
@@ -87,7 +75,7 @@ export class RetrieveStatsService {
   }
 
   private async calculateFileStats() {
-    return { total: await this.db.collection('files').countDocuments() };
+    return { total: await this.filesDAO.countDocuments() };
   }
 
   private async calculateUserStats() {

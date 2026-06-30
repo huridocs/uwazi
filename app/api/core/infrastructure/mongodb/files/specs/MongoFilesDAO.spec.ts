@@ -446,6 +446,22 @@ describe('MongoFilesDAO', () => {
     });
   });
 
+  describe('countDocuments()', () => {
+    it('returns the total number of files in the collection', async () => {
+      const sut = createSut();
+      const count = await sut.countDocuments();
+      expect(count).toBe(13);
+    });
+  });
+
+  describe('getTotalFileSize()', () => {
+    it('returns the sum of all file sizes', async () => {
+      const sut = createSut();
+      const totalSize = await sut.getTotalFileSize();
+      expect(totalSize).toBe(0);
+    });
+  });
+
   describe('getByQuery()', () => {
     it('excludes fullText by default', async () => {
       const sut = createSut();
@@ -603,6 +619,30 @@ describe('MongoFilesDAO', () => {
         status: 'ready',
       });
       expect(result).toEqual(['entity_valid']);
+    });
+  });
+
+  describe('countDocuments — empty collection', () => {
+    beforeAll(async () => {
+      await testingEnvironment.setUp({ files: [] });
+    });
+
+    it('returns 0', async () => {
+      const sut = createSut();
+      const count = await sut.countDocuments();
+      expect(count).toBe(0);
+    });
+  });
+
+  describe('getTotalFileSize — empty collection', () => {
+    beforeAll(async () => {
+      await testingEnvironment.setUp({ files: [] });
+    });
+
+    it('returns 0', async () => {
+      const sut = createSut();
+      const totalSize = await sut.getTotalFileSize();
+      expect(totalSize).toBe(0);
     });
   });
 

@@ -113,6 +113,11 @@ export class PostgresQueryBuilder<TRow> {
     return parseInt(result?.count ?? '0', 10);
   }
 
+  async sum(column: string): Promise<number> {
+    const result = await this.qb.clone().sum({ total: column }).first();
+    return Number((result as any)?.total ?? 0);
+  }
+
   async update(changes: Record<string, unknown>): Promise<void> {
     await this.qb.update(changes);
   }

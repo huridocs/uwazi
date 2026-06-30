@@ -199,6 +199,14 @@ class PostgresFilesDAO extends PostgresDataSource {
       .map((r: any) => r.entity as string)
       .filter(entity => entity !== null && entity !== undefined);
   }
+
+  async countDocuments(): Promise<number> {
+    return this.table.query().count();
+  }
+
+  async getTotalFileSize(): Promise<number> {
+    return this.table.query().sum('size');
+  }
 }
 
 export { PostgresFilesDAO };
