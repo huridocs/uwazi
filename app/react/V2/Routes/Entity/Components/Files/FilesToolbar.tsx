@@ -30,7 +30,7 @@ const FilesToolbar = ({
       </Button>
       <button
         type="button"
-        className="text-tab font-medium text-ink-secondary hover:text-ink"
+        className="text-xs text-ink-secondary hover:text-ink"
         onClick={onSelectAll}
       >
         <Translate>Select all</Translate>
