@@ -39,7 +39,6 @@ const taskCleanups: Map<string, () => void> = new Map();
 
 interface RequestStatusState {
   notifications: StatusNotification[];
-  unreadNotificationIds: string[];
   tasks: StatusTask[];
   isConnected: boolean;
   isPanelOpen: boolean;
@@ -48,7 +47,6 @@ interface RequestStatusState {
 
 const initialState: RequestStatusState = {
   notifications: [],
-  unreadNotificationIds: [],
   tasks: [],
   isConnected: true,
   isPanelOpen: false,
@@ -93,12 +91,9 @@ const startLoading = () => startLoadingWith(update => getStore().set(requestStat
 const endLoading = () => endLoadingWith(update => getStore().set(requestStatusAtom, update));
 
 const getOverallStatus = (state: RequestStatusState): OverallStatus => {
-  const unreadNotifications = state.notifications.filter(n =>
-    state.unreadNotificationIds.includes(n.id)
-  );
   if (state.isLoading) return 'loading';
-  if (unreadNotifications.some(n => n.type === 'error')) return 'error';
-  if (unreadNotifications.some(n => n.type === 'warning')) return 'warning';
+  if (state.notifications.some(n => n.type === 'error')) return 'error';
+  if (state.notifications.some(n => n.type === 'warning')) return 'warning';
   return 'success';
 };
 
@@ -177,7 +172,6 @@ const getRequestStatusActions = (setState: SetRequestStatusState) => ({
         ...prev.notifications,
         { id, type, title, message, details, timestamp: timestamp ?? new Date() },
       ],
-      unreadNotificationIds: [...prev.unreadNotificationIds, id],
     }));
   },
   registerTask: (
@@ -196,27 +190,18 @@ const getRequestStatusActions = (setState: SetRequestStatusState) => ({
     clearTaskCleanup(id);
     setState(prev => ({ ...prev, tasks: prev.tasks.filter(t => t.id !== id) }));
   },
-  clearNotifications: () =>
-    setState(prev => ({ ...prev, notifications: [], unreadNotificationIds: [] })),
+  clearNotifications: () => setState(prev => ({ ...prev, notifications: [] })),
   clearAll: () =>
     setState(prev => ({
       ...prev,
       notifications: [],
-      unreadNotificationIds: [],
       tasks: prev.tasks.filter(t => t.status === 'running'),
     })),
   removeNotification: (id: string) =>
     setState(prev => ({
       ...prev,
       notifications: prev.notifications.filter(n => n.id !== id),
-      unreadNotificationIds: prev.unreadNotificationIds.filter(uid => uid !== id),
     })),
-  markNotificationRead: (id: string) =>
-    setState(prev => ({
-      ...prev,
-      unreadNotificationIds: prev.unreadNotificationIds.filter(uid => uid !== id),
-    })),
-  markAllNotificationsRead: () => setState(prev => ({ ...prev, unreadNotificationIds: [] })),
   setConnected: (connected: boolean) => setState(prev => ({ ...prev, isConnected: connected })),
   openPanel: () => setState(prev => ({ ...prev, isPanelOpen: true })),
   closePanel: () => setState(prev => ({ ...prev, isPanelOpen: false })),
@@ -234,7 +219,6 @@ const useRequestStatus = () => {
     overallStatus: getOverallStatus(state),
     hasRunningTasks: state.tasks.some(t => t.status === 'running'),
     notificationCount: state.notifications.length,
-    unreadNotificationCount: state.unreadNotificationIds.length,
     ...actions,
   };
 };

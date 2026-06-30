@@ -1,6 +1,5 @@
 import React, { useId, useState } from 'react';
 import {
-  CheckIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon,
   XCircleIcon,
@@ -13,9 +12,7 @@ import { Translate } from '#app/I18N/index.js';
 
 interface NotificationItemProps {
   notification: StatusNotification;
-  isUnread: boolean;
   onDismiss: (id: string) => void;
-  onRead: (id: string) => void;
 }
 
 const iconMap: Record<NotificationType, React.ReactNode> = {
@@ -57,7 +54,7 @@ const formatTimestamp = (date: Date): string => {
   });
 };
 
-const NotificationItem = ({ notification, isUnread, onDismiss, onRead }: NotificationItemProps) => {
+const NotificationItem = ({ notification, onDismiss }: NotificationItemProps) => {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const detailsId = useId();
   const titleId = useId();
@@ -70,15 +67,12 @@ const NotificationItem = ({ notification, isUnread, onDismiss, onRead }: Notific
     <article
       aria-labelledby={titleId}
       aria-describedby={detailsDescription}
-      className={`group relative flex items-start gap-2.5 rounded-lg border px-3 py-2.5 transition-opacity ${cardStyle[notification.type]} ${isUnread ? '' : 'opacity-75 hover:opacity-100'}`}
+      className={`group relative flex items-start gap-2.5 rounded-lg border px-3 py-2.5 ${cardStyle[notification.type]}`}
     >
       <span className="mt-px">{iconMap[notification.type]}</span>
 
       <div className="min-w-0 flex-1 overflow-hidden pr-5">
         <div className="flex items-center gap-1.5">
-          {isUnread && (
-            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-(--color-theme-accent-supporting)" />
-          )}
           <p id={titleId} className="wrap-break-word text-[13px] font-medium text-ink">
             {notification.title}
           </p>
@@ -130,20 +124,6 @@ const NotificationItem = ({ notification, isUnread, onDismiss, onRead }: Notific
           <p id={timestampId} className="text-[11px] text-ink-tertiary">
             {formatTimestamp(notification.timestamp)}
           </p>
-          {isUnread && (
-            <button
-              type="button"
-              onClick={event => {
-                event.stopPropagation();
-                onRead(notification.id);
-              }}
-              className="ml-auto flex h-6 w-6 items-center justify-center rounded-md text-ink-tertiary transition-colors hover:bg-[color-mix(in_srgb,var(--color-theme-text-primary)_5%,transparent)]"
-              aria-label="Mark read"
-              title="Mark read"
-            >
-              <CheckIcon className="h-[13px] w-[13px]" aria-hidden="true" />
-            </button>
-          )}
         </div>
       </div>
 

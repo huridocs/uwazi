@@ -1,38 +1,19 @@
-import React, { useMemo, useState } from 'react';
-import { CheckIcon } from '@heroicons/react/24/outline';
+import React, { useMemo } from 'react';
 import { Sidepanel } from '#V2/Components/UI/Sidepanel.js';
 import { Button } from '#V2/Components/UI/Button.js';
-import {
-  type NotificationType,
-  type StatusNotification,
-  useRequestStatus,
-} from '#V2/atoms/requestStatusAtom.js';
+import { type StatusNotification, useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { NotificationItem } from './NotificationItem.js';
 import { TaskItem } from './TaskItem.js';
 import { EmptyState } from './EmptyState.js';
-import { FilterPill } from './FilterPill.js';
 import { SectionLabel } from './SectionLabel.js';
 import { Translate } from '#app/I18N/index.js';
 
-type Filter = 'all' | 'unread';
-type Bucket = 'new' | 'today' | 'earlier';
+type Bucket = 'today' | 'earlier';
 
-const bucketOrder: Bucket[] = ['new', 'today', 'earlier'];
-const severityRank: Record<NotificationType, number> = {
-  error: 3,
-  warning: 2,
-  info: 1,
-  success: 0,
-};
+const bucketOrder: Bucket[] = ['today', 'earlier'];
 
-const getBucket = (
-  notification: StatusNotification,
-  isUnread: boolean,
-  todayStart: number
-): Bucket => {
-  if (isUnread) return 'new';
-  return notification.timestamp.getTime() >= todayStart ? 'today' : 'earlier';
-};
+const getBucket = (notification: StatusNotification, todayStart: number): Bucket =>
+  notification.timestamp.getTime() >= todayStart ? 'today' : 'earlier';
 
 const getTodayStart = () => {
   const start = new Date();
@@ -44,38 +25,24 @@ const NotificationsPanel = () => {
   const {
     isPanelOpen,
     notifications,
-    unreadNotificationIds,
-    unreadNotificationCount,
     tasks,
     closePanel,
     removeNotification,
-    markNotificationRead,
-    markAllNotificationsRead,
     removeTask,
     clearAll,
   } = useRequestStatus();
 
   const hasClearable = notifications.length > 0 || tasks.some(t => t.status !== 'running');
-  const [filter, setFilter] = useState<Filter>('all');
-  const unreadIds = useMemo(() => new Set(unreadNotificationIds), [unreadNotificationIds]);
   const groupedNotifications = useMemo(() => {
-    const groups: Record<Bucket, StatusNotification[]> = { new: [], today: [], earlier: [] };
+    const groups: Record<Bucket, StatusNotification[]> = { today: [], earlier: [] };
     const todayStart = getTodayStart();
-    notifications
-      .filter(notification => filter === 'all' || unreadIds.has(notification.id))
-      .forEach(notification => {
-        groups[getBucket(notification, unreadIds.has(notification.id), todayStart)].push(
-          notification
-        );
-      });
-    groups.new.sort(
-      (a, b) =>
-        severityRank[b.type] - severityRank[a.type] || b.timestamp.getTime() - a.timestamp.getTime()
-    );
+    notifications.forEach(notification => {
+      groups[getBucket(notification, todayStart)].push(notification);
+    });
     groups.today.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
     groups.earlier.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
     return groups;
-  }, [filter, notifications, unreadIds]);
+  }, [notifications]);
   const orderedNotifications = useMemo(
     () => bucketOrder.flatMap(bucket => groupedNotifications[bucket]),
     [groupedNotifications]
@@ -85,11 +52,6 @@ const NotificationsPanel = () => {
   const title = (
     <span className="flex items-center gap-2">
       <Translate className="capitalize">Notifications</Translate>
-      {unreadNotificationCount > 0 && (
-        <span className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-(--color-theme-accent-supporting) px-1.5 text-[11px] font-bold tabular-nums text-parchment">
-          {unreadNotificationCount}
-        </span>
-      )}
     </span>
   );
 
@@ -104,33 +66,6 @@ const NotificationsPanel = () => {
         panelId="notifications-panel-dialog"
       >
         <Sidepanel.Body className="flex flex-col overflow-y-auto bg-warm p-0!">
-          <div className="shrink-0 border-b border-border bg-paper px-4 pb-2.5">
-            <div className="flex items-center gap-1">
-              <FilterPill
-                active={filter === 'all'}
-                onClick={() => setFilter('all')}
-                label={<Translate>All</Translate>}
-                count={notifications.length}
-              />
-              <FilterPill
-                active={filter === 'unread'}
-                onClick={() => setFilter('unread')}
-                label={<Translate>Unread</Translate>}
-                count={unreadNotificationCount}
-              />
-              {unreadNotificationCount > 0 && (
-                <button
-                  type="button"
-                  onClick={markAllNotificationsRead}
-                  className="ml-auto flex h-7 items-center gap-1 rounded-md px-2 text-[12px] font-medium text-ink-secondary transition-colors hover:bg-warm"
-                >
-                  <CheckIcon className="h-3.5 w-3.5" aria-hidden="true" />
-                  <Translate>Mark all read</Translate>
-                </button>
-              )}
-            </div>
-          </div>
-
           {tasks.length > 0 && (
             <section>
               <SectionLabel>
@@ -146,15 +81,12 @@ const NotificationsPanel = () => {
             </section>
           )}
 
-          {!hasVisibleNotifications && tasks.length === 0 && (
-            <EmptyState filter={filter} hasNotifications={notifications.length > 0} />
-          )}
+          {!hasVisibleNotifications && tasks.length === 0 && <EmptyState />}
 
           {bucketOrder.map(bucket =>
             groupedNotifications[bucket].length === 0 ? null : (
               <section key={bucket}>
                 <SectionLabel>
-                  {bucket === 'new' && <Translate>New</Translate>}
                   {bucket === 'today' && <Translate>Today</Translate>}
                   {bucket === 'earlier' && <Translate>Earlier</Translate>}
                 </SectionLabel>
@@ -163,9 +95,7 @@ const NotificationsPanel = () => {
                     <li key={notification.id}>
                       <NotificationItem
                         notification={notification}
-                        isUnread={unreadIds.has(notification.id)}
                         onDismiss={removeNotification}
-                        onRead={markNotificationRead}
                       />
                     </li>
                   ))}

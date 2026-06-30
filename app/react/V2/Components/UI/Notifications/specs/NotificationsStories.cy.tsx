@@ -6,7 +6,7 @@ import * as requestStatusStories from '#app/stories/RequestStatus.stories.js';
 import * as notificationsStories from '#app/stories/NotificationsPanel.stories.js';
 
 const { Playground } = composeStories(requestStatusStories);
-const { Mixed, WithNotifications } = composeStories(notificationsStories);
+const { Mixed } = composeStories(notificationsStories);
 
 describe('Notifications stories accessibility', () => {
   it('opens and closes the notifications panel from RequestStatus playground', () => {
@@ -27,17 +27,6 @@ describe('Notifications stories accessibility', () => {
     cy.checkA11y(undefined, { includedImpacts: ['critical'] });
   });
 
-  it('filters unread notifications and marks them read', () => {
-    mount(<WithNotifications />);
-
-    cy.contains('button', 'Unread').click();
-    cy.contains('New').should('exist');
-    cy.contains('Some fields could not be validated.').should('exist');
-
-    cy.contains('button', 'Mark all read').click();
-    cy.contains('No unread notifications').should('exist');
-  });
-
   it('expands notification details and clears completed history', () => {
     mount(<Mixed />);
 
@@ -45,7 +34,7 @@ describe('Notifications stories accessibility', () => {
     cy.contains('ETIMEDOUT').should('exist');
 
     cy.contains('button', 'Clear all').click();
-    cy.contains('div', /^New$/).should('not.exist');
+    cy.contains('Today').should('not.exist');
     cy.contains('Uploading document batch...').should('exist');
   });
 });

@@ -19,7 +19,6 @@ const DAY = 24 * HR;
 
 const baseState: RequestStatusState = {
   notifications: [],
-  unreadNotificationIds: [],
   tasks: [],
   isConnected: true,
   isPanelOpen: true,
@@ -73,7 +72,6 @@ const notificationsState: RequestStatusState = {
       timestamp: ago(10 * DAY),
     },
   ],
-  unreadNotificationIds: ['success-new', 'info-new', 'warning-new'],
 };
 
 const tasksState: RequestStatusState = {

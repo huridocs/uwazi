@@ -8,7 +8,6 @@ const meta: Meta<typeof NotificationItem> = {
   title: 'Components/Notifications/NotificationItem',
   component: NotificationItem,
 };
-export default meta;
 
 type Story = StoryObj<typeof NotificationItem>;
 
@@ -27,13 +26,10 @@ const makeNotification = (
 });
 
 const Primary: Story = {
-  args: {
-    isUnread: true,
-  },
   render: args => (
     <div className="tw-content">
       <div className="max-w-sm p-4">
-        <NotificationItem {...args} onDismiss={action('dismiss')} onRead={action('read')} />
+        <NotificationItem {...args} onDismiss={action('dismiss')} />
       </div>
     </div>
   ),
@@ -101,3 +97,5 @@ export {
   ErrorWithDetails,
   InfoNotification,
 };
+
+export default meta;
