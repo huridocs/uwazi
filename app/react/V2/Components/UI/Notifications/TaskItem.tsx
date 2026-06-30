@@ -1,6 +1,7 @@
 import React, { useId } from 'react';
-import { ArrowPathIcon, CheckCircleIcon, XCircleIcon, XMarkIcon } from '@heroicons/react/20/solid';
+import { CheckCircleIcon, XCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { ProgressBar } from '#V2/Components/UI/ProgressBar.js';
+import { UwaziLoader } from '#V2/Components/UI/UwaziLoader.js';
 import { type StatusTask, type TaskStatus } from '#V2/atoms/requestStatusAtom.js';
 
 interface TaskItemProps {
@@ -9,7 +10,11 @@ interface TaskItemProps {
 }
 
 const statusIcon: Record<TaskStatus, React.ReactNode> = {
-  running: <ArrowPathIcon className="h-4 w-4 shrink-0 animate-spin text-supporting" />,
+  running: (
+    <span className="flex shrink-0 items-center">
+      <UwaziLoader size="xs" color="carbon" />
+    </span>
+  ),
   completed: <CheckCircleIcon className="h-4 w-4 shrink-0 text-success" />,
   failed: <XCircleIcon className="h-4 w-4 shrink-0 text-emphasis" />,
 };

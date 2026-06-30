@@ -6,7 +6,7 @@ import {
   InformationCircleIcon,
   XMarkIcon,
   ChevronDownIcon,
-} from '@heroicons/react/20/solid';
+} from '@heroicons/react/24/outline';
 import { type NotificationType, type StatusNotification } from '#V2/atoms/requestStatusAtom.js';
 import { Translate } from '#app/I18N/index.js';
 

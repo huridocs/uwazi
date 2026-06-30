@@ -1,12 +1,13 @@
-import React, { useMemo } from 'react';
-import { Sidepanel } from '#V2/Components/UI/Sidepanel.js';
-import { Button } from '#V2/Components/UI/Button.js';
+import React, { Fragment, useEffect, useId, useMemo, useRef } from 'react';
+import { Transition } from '@headlessui/react';
+import { useAtomValue } from 'jotai';
+import { Translate } from '#app/I18N/index.js';
+import { effectiveThemeModeAtom } from '#V2/atoms/index.js';
 import { type StatusNotification, useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { NotificationItem } from './NotificationItem.js';
 import { TaskItem } from './TaskItem.js';
 import { EmptyState } from './EmptyState.js';
 import { SectionLabel } from './SectionLabel.js';
-import { Translate } from '#app/I18N/index.js';
 
 type Bucket = 'today' | 'earlier';
 
@@ -21,6 +22,9 @@ const getTodayStart = () => {
   return start.getTime();
 };
 
+const FOCUSABLE =
+  'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
+
 const NotificationsPanel = () => {
   const {
     isPanelOpen,
@@ -31,91 +35,183 @@ const NotificationsPanel = () => {
     removeTask,
     clearAll,
   } = useRequestStatus();
+  const themeMode = useAtomValue(effectiveThemeModeAtom);
+  const titleId = useId();
+  const panelRef = useRef<HTMLElement>(null);
+  const previousFocus = useRef<HTMLElement | null>(null);
 
-  const hasClearable = notifications.length > 0 || tasks.some(t => t.status !== 'running');
   const groupedNotifications = useMemo(() => {
     const groups: Record<Bucket, StatusNotification[]> = { today: [], earlier: [] };
     const todayStart = getTodayStart();
-    notifications.forEach(notification => {
-      groups[getBucket(notification, todayStart)].push(notification);
-    });
-    groups.today.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-    groups.earlier.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+    notifications.forEach(notification =>
+      groups[getBucket(notification, todayStart)].push(notification)
+    );
+    bucketOrder.forEach(bucket =>
+      groups[bucket].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+    );
     return groups;
   }, [notifications]);
-  const orderedNotifications = useMemo(
-    () => bucketOrder.flatMap(bucket => groupedNotifications[bucket]),
-    [groupedNotifications]
-  );
-  const hasVisibleNotifications = orderedNotifications.length > 0;
+  const hasNotifications = notifications.length > 0;
+  const hasClearable = hasNotifications || tasks.some(t => t.status !== 'running');
 
-  const title = (
-    <span className="flex items-center gap-2">
-      <Translate className="capitalize">Notifications</Translate>
-    </span>
-  );
+  useEffect(() => {
+    if (!isPanelOpen) {
+      previousFocus.current?.focus();
+      previousFocus.current = null;
+      return undefined;
+    }
+    previousFocus.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    requestAnimationFrame(() => {
+      const panel = panelRef.current;
+      (panel?.querySelector<HTMLElement>(FOCUSABLE) ?? panel)?.focus();
+    });
+    const onKeyDown = (event: KeyboardEvent) => event.key === 'Escape' && closePanel();
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [isPanelOpen, closePanel]);
+
+  const trapFocus = (event: React.KeyboardEvent<HTMLElement>) => {
+    if (event.key !== 'Tab') return;
+    const focusable = Array.from(event.currentTarget.querySelectorAll<HTMLElement>(FOCUSABLE));
+    if (focusable.length === 0) return;
+    const [first] = focusable;
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
 
   return (
-    <div data-testid="notifications-panel" className="tw-content">
-      <Sidepanel
-        isOpen={isPanelOpen}
-        closeSidepanelFunction={closePanel}
-        title={title}
-        size="medium"
-        withOverlay
-        panelId="notifications-panel-dialog"
+    <Transition show={isPanelOpen} as={Fragment}>
+      <div
+        data-testid="notifications-panel"
+        className="tw-content fixed inset-0 z-60"
+        style={{ colorScheme: themeMode }}
       >
-        <Sidepanel.Body className="flex flex-col overflow-y-auto bg-warm p-0!">
-          {tasks.length > 0 && (
-            <section>
-              <SectionLabel>
-                <Translate>Tasks</Translate> · {tasks.length}
-              </SectionLabel>
-              <ul className="space-y-2 px-3 pb-3">
-                {tasks.map(task => (
-                  <li key={task.id}>
-                    <TaskItem task={task} onRemove={removeTask} />
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+        <Transition.Child
+          as="div"
+          data-testid="notifications-overlay"
+          aria-hidden="true"
+          onClick={closePanel}
+          className="absolute inset-0 transition-opacity duration-300"
+          style={{ backgroundColor: 'rgba(38, 30, 20, 0.18)' }}
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        />
+        <Transition.Child
+          as="aside"
+          ref={panelRef}
+          id="notifications-panel-dialog"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
+          onKeyDown={trapFocus}
+          className="absolute inset-y-0 inset-e-0 flex w-92 max-w-[calc(100vw-2.5rem)] flex-col border-l border-border bg-paper shadow-xl transition-transform duration-300 ease-out"
+          enterFrom="translate-x-full rtl:-translate-x-full"
+          enterTo="translate-x-0"
+          leaveFrom="translate-x-0"
+          leaveTo="translate-x-full rtl:-translate-x-full"
+        >
+          <div className="flex h-14 shrink-0 items-center gap-2 border-b border-border px-4">
+            <h1 id={titleId} className="text-base font-bold text-ink">
+              <Translate>Notifications</Translate>
+            </h1>
+            {hasNotifications && (
+              <span
+                className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1.5 text-[11px] font-bold tabular-nums text-white"
+                style={{ backgroundColor: 'var(--color-theme-accent-supporting)' }}
+              >
+                {notifications.length}
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={closePanel}
+              aria-label="Close"
+              className="ms-auto flex h-7 w-7 items-center justify-center rounded-md text-ink-muted transition-colors hover:bg-warm hover:text-ink-secondary"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            </button>
+          </div>
 
-          {!hasVisibleNotifications && tasks.length === 0 && <EmptyState />}
-
-          {bucketOrder.map(bucket =>
-            groupedNotifications[bucket].length === 0 ? null : (
-              <section key={bucket}>
+          <div className="min-h-0 flex-1 overflow-y-auto bg-warm">
+            {tasks.length > 0 && (
+              <section>
                 <SectionLabel>
-                  {bucket === 'today' && <Translate>Today</Translate>}
-                  {bucket === 'earlier' && <Translate>Earlier</Translate>}
+                  <Translate>Tasks</Translate> · {tasks.length}
                 </SectionLabel>
-                <ul className="space-y-2 px-3 pb-3">
-                  {groupedNotifications[bucket].map(notification => (
-                    <li key={notification.id}>
-                      <NotificationItem
-                        notification={notification}
-                        onDismiss={removeNotification}
-                      />
+                <ul className="flex flex-col gap-2 px-3 pb-3">
+                  {tasks.map(task => (
+                    <li key={task.id}>
+                      <TaskItem task={task} onRemove={removeTask} />
                     </li>
                   ))}
                 </ul>
               </section>
-            )
-          )}
-        </Sidepanel.Body>
-        <Sidepanel.Footer className="border-t border-t-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] p-3">
-          <Button
-            variant="secondary"
-            onClick={clearAll}
-            className="w-full"
-            disabled={!hasClearable}
-          >
-            <Translate>Clear all</Translate>
-          </Button>
-        </Sidepanel.Footer>
-      </Sidepanel>
-    </div>
+            )}
+
+            {!hasNotifications ? (
+              <EmptyState />
+            ) : (
+              bucketOrder.map(bucket =>
+                groupedNotifications[bucket].length === 0 ? null : (
+                  <section key={bucket}>
+                    <SectionLabel>
+                      {bucket === 'today' ? (
+                        <Translate>Today</Translate>
+                      ) : (
+                        <Translate>Earlier</Translate>
+                      )}
+                    </SectionLabel>
+                    <ul className="flex flex-col gap-2 px-3 pb-3">
+                      {groupedNotifications[bucket].map(notification => (
+                        <li key={notification.id}>
+                          <NotificationItem
+                            notification={notification}
+                            onDismiss={removeNotification}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                )
+              )
+            )}
+          </div>
+
+          <div className="shrink-0 border-t border-border p-3">
+            <button
+              type="button"
+              onClick={clearAll}
+              disabled={!hasClearable}
+              className="h-9 w-full rounded-md border border-border bg-paper text-[13px] font-medium text-ink-secondary transition-colors hover:bg-warm disabled:cursor-default disabled:opacity-40"
+            >
+              <Translate>Clear all</Translate>
+            </button>
+          </div>
+        </Transition.Child>
+      </div>
+    </Transition>
   );
 };
 
