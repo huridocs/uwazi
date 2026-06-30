@@ -104,7 +104,7 @@ const EntityOverlay = () => {
               className="h-2 w-2 shrink-0 rounded-[2px]"
               style={{ backgroundColor: templateColor }}
             />
-            <span id={titleId} className="truncate text-sm font-semibold text-ink">
+            <span id={titleId} className="truncate text-sm font-bold text-ink">
               {title}
             </span>
           </div>
@@ -150,7 +150,7 @@ const EntityOverlay = () => {
           <button
             type="button"
             onClick={closeEntityOverlay}
-            className="cursor-pointer rounded-md bg-warm px-3 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink"
+            className="cursor-pointer rounded-md bg-warm px-3 py-1.5 text-tab font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink"
           >
             <Translate>Close</Translate>
           </button>
@@ -158,7 +158,7 @@ const EntityOverlay = () => {
             <I18NLinkV2
               to={`entityv2/${target.sharedId}`}
               onClick={closeEntityOverlay}
-              className="cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium text-white transition-colors"
+              className="cursor-pointer rounded-md px-3 py-1.5 text-tab font-medium text-parchment transition-colors"
               style={{ backgroundColor: 'var(--text-primary)' }}
             >
               <Translate>Open entity</Translate>

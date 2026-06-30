@@ -40,7 +40,7 @@ const ExpandableText = ({
             event.stopPropagation();
             setExpanded(current => !current);
           }}
-          className={`relative mt-0.5 text-[10px] font-medium text-ink-tertiary hover:text-ink-secondary ${buttonClassName}`}
+          className={`relative mt-0.5 text-nano font-medium text-ink-tertiary hover:text-ink-secondary ${buttonClassName}`}
         >
           {expanded ? <Translate>Show less</Translate> : <Translate>Show more</Translate>}
         </button>

@@ -54,7 +54,13 @@ const Geolocation = ({
     <MetadataCard className={className ?? COMPACT_METADATA_FIELD_LAYOUT}>
       <dt>
         {isGroup ? (
-          <Translate className={`${hideLabel ? 'sr-only' : 'font-bold text-ink'}`}>
+          <Translate
+            className={
+              hideLabel
+                ? 'sr-only'
+                : 'text-xs font-semibold uppercase tracking-wide text-ink-tertiary'
+            }
+          >
             Grouped geolocation properties
           </Translate>
         ) : (

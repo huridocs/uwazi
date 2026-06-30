@@ -6,6 +6,7 @@ export { Markdown } from './Markdown.js';
 export { Media } from './Media.js';
 export { MetadataCard } from './MetadataCard.js';
 export { PropertyLabel } from './PropertyLabel.js';
+export { PropertyValue } from './PropertyValue.js';
 export { Relationship } from './Relationship.js';
 export { TemplateLabel } from './TemplateLabel.js';
 export { SimpleValue } from './SimpleValue.js';

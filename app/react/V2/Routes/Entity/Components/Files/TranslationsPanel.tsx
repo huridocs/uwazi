@@ -29,21 +29,21 @@ const TranslationsPanel = ({
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div className="flex gap-2 flex-grow flex-col space-y-2 overflow-auto">
+      <div className="flex gap-2 grow flex-col space-y-2 overflow-auto">
         {translations.map(file => (
           <div
             key={file.rowId}
             className="flex items-center gap-2 rounded-md border border-border-soft p-2"
           >
-            <Pill className="text-[10px]">{file.languageKey}</Pill>
+            <Pill className="text-nano">{file.languageKey}</Pill>
             <DocumentTextIcon className="h-4 w-4" />
-            <div className="flex-grow">
+            <div className="grow">
               <div>
                 <span className="text-xs truncate text-ink">{file.displayName}</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] text-ink-muted">{file.typeLabel}</span>
-                <span className="text-[10px] text-ink-muted">{file.sizeLabel}</span>
+                <span className="text-nano text-ink-muted">{file.typeLabel}</span>
+                <span className="text-nano text-ink-muted">{file.sizeLabel}</span>
               </div>
             </div>
 

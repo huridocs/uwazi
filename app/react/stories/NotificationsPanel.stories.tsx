@@ -129,3 +129,5 @@ const Mixed: Story = {
 export default meta;
 
 export { Empty, WithNotifications, WithTasks, Mixed };
+
+export default meta;

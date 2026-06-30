@@ -26,7 +26,7 @@ const PageCount = ({ count, placement, colors = [] }: PageCountProps) => {
   );
 
   return (
-    <div className="rounded-[3px] p-1 text-[10px] font-medium text-ink-secondary bg-(--color-theme-surface-warm) flex flex-col gap-0.5 items-center">
+    <div className="rounded-[3px] p-1 text-nano font-medium text-ink-secondary bg-(--color-theme-surface-warm) flex flex-col gap-0.5 items-center">
       {placement === 'top' && dots}
       <div className="flex flex-row gap-1 items-baseline">
         <Icon className="w-2 h-2" />
