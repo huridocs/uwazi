@@ -11,7 +11,7 @@ const checkUserExists = (user: User) => {
 };
 
 const getUser = async (user: User, options?: string) => {
-  const [dbUser] = await usersModel.get({ _id: user._id }, options);
+  const [dbUser] = await usersModel.get({ _id: user._id, deletedAt: null }, options);
   checkUserExists(dbUser);
   return dbUser;
 };
