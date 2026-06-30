@@ -27,7 +27,7 @@ const ToCView = ({ generatedToc, panel }: ToCViewProps) => {
   } = panel;
 
   return (
-    <div className="flex h-full flex-col gap-3 px-1">
+    <div className="flex h-full flex-col gap-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 py-2">
           <p className="text-sm font-bold text-ink">
@@ -40,7 +40,7 @@ const ToCView = ({ generatedToc, panel }: ToCViewProps) => {
               arrow={false}
               content="This table of contents was automatically created by the system."
             >
-              <span className="flex items-center gap-1 rounded-full bg-(--color-theme-surface-warm) px-2 py-0.5 text-xs font-semibold tracking-wide text-ink">
+              <span className="flex items-center gap-1 rounded-full bg-warm px-2 py-0.5 text-micro font-semibold tracking-wide text-ink">
                 <Translate className="sr-only">auto created</Translate>
                 <SparklesIcon className="h-5 w-5 text-ink" />
               </span>

@@ -92,7 +92,7 @@ const RelationshipsGraphView = ({
 
   return (
     <div className="relative min-h-[320px] flex-1 overflow-hidden bg-warm">
-      <div className="absolute bottom-3 right-3 z-10 flex items-center gap-1 rounded-md border border-border bg-paper px-1 py-0.5 shadow-sm">
+      <div className="absolute bottom-3 right-3 z-10 flex items-center gap-1 rounded-md border border-border bg-paper px-1 py-0.5 shadow-[0_1px_2px_rgba(0,0,0,0.08)]">
         <button
           type="button"
           aria-label={t('System', 'Zoom out', null, false)}
@@ -101,7 +101,7 @@ const RelationshipsGraphView = ({
         >
           −
         </button>
-        <span className="min-w-[3.5ch] text-center text-xs text-ink-secondary">
+        <span className="min-w-[3.5ch] text-center text-tab font-medium text-ink-secondary">
           {Math.round(transform.scale * 100)}%
         </span>
         <button
@@ -170,7 +170,7 @@ const RelationshipsGraphView = ({
                     y={spoke.labelY}
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    className="fill-ink-secondary text-[11px] font-medium"
+                    className="fill-ink-secondary text-micro font-medium"
                   >
                     {spoke.label}
                   </text>
@@ -191,7 +191,7 @@ const RelationshipsGraphView = ({
             y={CY}
             textAnchor="middle"
             dominantBaseline="middle"
-            className="fill-ink text-[10px] font-semibold"
+            className="fill-ink text-nano font-semibold"
           >
             {selfTitle.length > 14 ? `${selfTitle.slice(0, 12)}…` : selfTitle}
           </text>

@@ -89,7 +89,7 @@ describe('RelationshipsDisplay WithPanel', () => {
         .filter(':contains("Person 1")')
         .first()
         .find('[data-testid="rail-marker-dot"]')
-        .should('have.css', 'width', '14px');
+        .should('have.css', 'width', '12px');
     });
 
     it('adds a cluster filter chip when a rail cluster is clicked', () => {

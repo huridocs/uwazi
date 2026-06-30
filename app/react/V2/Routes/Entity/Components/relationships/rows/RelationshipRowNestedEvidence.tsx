@@ -55,7 +55,7 @@ const RelationshipRowNestedEvidence = ({
         {representedCount > 1 && (
           <span
             aria-label={t('System', `${representedCount} matching references`, null, false)}
-            className="rounded bg-parchment px-1 text-[10px] font-medium tabular-nums text-ink-tertiary"
+            className="rounded bg-parchment px-1 text-nano font-medium tabular-nums text-ink-tertiary"
           >
             <Translate>x</Translate>
             {representedCount}

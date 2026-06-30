@@ -66,19 +66,19 @@ export const EntitySearchResult = ({
         className="cursor-pointer"
       >
         <Card
-          className={`transition-colors ${isSelected ? 'bg-primary-50 border-2 border-primary-500' : 'hover:bg-gray-50'}`}
+          className={`transition-colors ${isSelected ? 'bg-parchment border-2 border-border' : 'hover:bg-warm'}`}
         >
           <div className="flex items-center justify-between gap-2">
             <div className="flex-1 min-w-0">
-              <h3 className="text-sm text-gray-900 line-clamp-2">{entity.title || '-'}</h3>
-              {formattedDate && <p className="text-xs text-gray-600 mt-1">{formattedDate}</p>}
+              <h3 className="text-sm font-bold text-ink line-clamp-2">{entity.title || '-'}</h3>
+              {formattedDate && <p className="text-xs text-ink-tertiary mt-1">{formattedDate}</p>}
             </div>
             <TemplateLabel templateId={entity.template} />
           </div>
         </Card>
       </div>
       {showFiles && pdfFiles.length > 0 && (
-        <div className="ml-4 flex flex-col gap-2 border-l-2 border-gray-200 pl-4">
+        <div className="ml-4 flex flex-col gap-2 border-l-2 border-border-soft pl-4">
           {pdfFiles.map((file, index) => {
             const fileId = String(file._id) || file.filename || `file-${index}`;
             const isFileSelected = selectedFile && String(selectedFile._id) === String(file._id);
@@ -94,19 +94,19 @@ export const EntitySearchResult = ({
                     handleFileSelect(file);
                   }
                 }}
-                className={`p-2 bg-gray-50 rounded-md border-2 cursor-pointer transition-colors ${
+                className={`rounded-md border-2 p-2 cursor-pointer transition-colors ${
                   isFileSelected
-                    ? 'border-primary-500 bg-primary-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-border bg-parchment'
+                    : 'border-border-soft bg-warm hover:border-border'
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium text-gray-700">
+                    <span className="text-sm font-medium text-ink">
                       {file.originalname || file.filename}
                     </span>
                     {file.totalPages && (
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-ink-tertiary">
                         ({file.totalPages} {file.totalPages === 1 ? 'page' : 'pages'})
                       </span>
                     )}
@@ -119,12 +119,12 @@ export const EntitySearchResult = ({
                           LanguageUtils.fromISO639_3(file.language, false)?.ISO639_1 ||
                           file.language;
                         return (
-                          <span className="px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 text-xs font-medium">
+                          <span className="rounded-md bg-warm px-2 py-0.5 text-micro font-medium text-ink-secondary">
                             {languageCode.toUpperCase()}
                           </span>
                         );
                       })()}
-                    <DocumentTextIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                    <DocumentTextIcon className="h-5 w-5 text-ink-muted" aria-hidden="true" />
                   </div>
                 </div>
               </div>
