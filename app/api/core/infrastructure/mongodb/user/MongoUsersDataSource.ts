@@ -47,22 +47,6 @@ class MongoUsersDataSource extends MongoDataSource<UserDBO> implements UsersData
     return Result.ok(true);
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  checkIsDeletingSelf(userIds: string[], selfId: string): ResultType<boolean, IsDeletingSelf> {
-    if (userIds.includes(selfId)) {
-      return Result.fail(new IsDeletingSelf());
-    }
-    return Result.ok(true);
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  checkIsPublicUser(userIds: string[]): ResultType<boolean, IsPublicUser> {
-    if (userIds.includes(PUBLIC_USER_ID.toString())) {
-      return Result.fail(new IsPublicUser());
-    }
-    return Result.ok(true);
-  }
-
   async insert(user: User): Promise<void> {
     await this.getCollection<UserDBO>().insertOne(MongoUsersMapper.toDBO(user));
   }

@@ -1,31 +1,10 @@
-import { z } from 'zod';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { UsersDataSource } from './contracts/UsersDataSource.js';
 import { UsergroupsDataSource } from './contracts/UsergroupsDataSource.js';
+import { IsDeletingSelf, IsPublicUser } from '../domain/user/errors.js';
+import { PUBLIC_USER_ID } from '../domain/user/User.js';
 
-const DeleteUsersInputSchema = z.object({
-  ids: z.string().transform((value, context) => {
-    try {
-      const parsed = JSON.parse(value);
-      if (!Array.isArray(parsed) || !parsed.every(item => typeof item === 'string')) {
-        context.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'ids must be an array of strings',
-        });
-        return z.NEVER;
-      }
-      return parsed;
-    } catch {
-      context.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'ids must be a valid JSON array',
-      });
-      return z.NEVER;
-    }
-  }),
-});
-
-type Input = z.infer<typeof DeleteUsersInputSchema>;
+type Input = { ids: string[] };
 
 type Output = number;
 
@@ -35,9 +14,12 @@ class DeleteUsers extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
     const { ids } = input;
 
-    this.deps.usersDS.checkIsPublicUser(ids).getDataOrThrow();
-
-    this.deps.usersDS.checkIsDeletingSelf(ids, this.actorId).getDataOrThrow();
+    if (ids.includes(PUBLIC_USER_ID.toString())) {
+      throw new IsPublicUser();
+    }
+    if (ids.includes(this.actorId)) {
+      throw new IsDeletingSelf();
+    }
 
     let deletedCount = 0;
 
@@ -50,5 +32,5 @@ class DeleteUsers extends AbstractUseCase<Input, Output, Deps> {
   }
 }
 
-export { DeleteUsers, DeleteUsersInputSchema };
+export { DeleteUsers };
 export type { Deps as DeleteUsersDependencies };
