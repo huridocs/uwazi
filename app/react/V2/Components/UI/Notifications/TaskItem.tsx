@@ -12,7 +12,7 @@ interface TaskItemProps {
 const statusIcon: Record<TaskStatus, React.ReactNode> = {
   running: (
     <span className="flex shrink-0 items-center">
-      <UwaziLoader size="xs" color="carbon" />
+      <UwaziLoader size="xs" color="carbon" animate />
     </span>
   ),
   completed: <CheckCircleIcon className="h-4 w-4 shrink-0 text-success" />,

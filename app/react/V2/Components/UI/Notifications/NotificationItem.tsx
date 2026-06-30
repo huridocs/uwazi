@@ -1,28 +1,13 @@
 import React, { useId, useState } from 'react';
-import {
-  CheckCircleIcon,
-  ExclamationTriangleIcon,
-  XCircleIcon,
-  InformationCircleIcon,
-  XMarkIcon,
-  ChevronDownIcon,
-} from '@heroicons/react/24/outline';
+import { XMarkIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import { type NotificationType, type StatusNotification } from '#V2/atoms/requestStatusAtom.js';
+import { NotificationKindIcon } from './notificationKindIcons.js';
 import { Translate } from '#app/I18N/index.js';
 
 interface NotificationItemProps {
   notification: StatusNotification;
   onDismiss: (id: string) => void;
 }
-
-const iconMap: Record<NotificationType, React.ReactNode> = {
-  success: <CheckCircleIcon className="h-[17px] w-[17px] shrink-0 text-success" />,
-  warning: (
-    <ExclamationTriangleIcon className="h-[17px] w-[17px] shrink-0 text-(--color-theme-warning)" />
-  ),
-  error: <XCircleIcon className="h-[17px] w-[17px] shrink-0 text-emphasis" />,
-  info: <InformationCircleIcon className="h-[17px] w-[17px] shrink-0 text-supporting" />,
-};
 
 const cardStyle: Record<NotificationType, string> = {
   success:
@@ -69,7 +54,9 @@ const NotificationItem = ({ notification, onDismiss }: NotificationItemProps) =>
       aria-describedby={detailsDescription}
       className={`group relative flex items-start gap-2.5 rounded-lg border px-3 py-2.5 ${cardStyle[notification.type]}`}
     >
-      <span className="mt-px">{iconMap[notification.type]}</span>
+      <span className="mt-px">
+        <NotificationKindIcon type={notification.type} size="drawer" />
+      </span>
 
       <div className="min-w-0 flex-1 overflow-hidden pr-5">
         <div className="flex items-center gap-1.5">
