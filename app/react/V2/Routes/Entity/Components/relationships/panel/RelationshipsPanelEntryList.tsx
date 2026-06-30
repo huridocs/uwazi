@@ -100,16 +100,21 @@ const RelationshipsPanelEntryList = ({
       (!!activeRelationshipId && entryMatchesId(entry, activeRelationshipId)) ||
       (!!scrollToRelationshipPanel && entryMatchesId(entry, scrollToRelationshipPanel));
 
-    if (variant !== 'list' || pinned) return <React.Fragment key={key}>{row}</React.Fragment>;
+    const node =
+      variant !== 'list' || pinned ? (
+        row
+      ) : (
+        <RenderIfVisible defaultHeight={ROW_ESTIMATED_HEIGHT} visibleOffset={ROW_WINDOW_OFFSET}>
+          {row}
+        </RenderIfVisible>
+      );
 
-    return (
-      <RenderIfVisible
-        key={key}
-        defaultHeight={ROW_ESTIMATED_HEIGHT}
-        visibleOffset={ROW_WINDOW_OFFSET}
-      >
-        {row}
-      </RenderIfVisible>
+    return bordered ? (
+      <div key={key} className="border-b border-border/50 last:border-b-0">
+        {node}
+      </div>
+    ) : (
+      <React.Fragment key={key}>{node}</React.Fragment>
     );
   });
 

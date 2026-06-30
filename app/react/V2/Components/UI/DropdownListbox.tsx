@@ -36,7 +36,7 @@ const DropdownListbox = <T extends string>({
         aria-expanded={open}
         aria-haspopup="listbox"
         disabled={disabled}
-        className={`flex h-6 items-center gap-1 rounded-md border border-border bg-warm px-2 text-[11px] font-medium transition-colors ${
+        className={`flex h-6 items-center gap-1 rounded-md border border-border bg-warm px-2 text-micro font-medium transition-colors ${
           disabled
             ? 'cursor-not-allowed text-ink-muted opacity-60'
             : 'cursor-pointer text-ink-secondary hover:bg-parchment hover:text-ink'

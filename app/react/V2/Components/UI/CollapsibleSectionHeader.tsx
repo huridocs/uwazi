@@ -28,9 +28,9 @@ const titleClass: Record<CollapsibleSectionHeaderVariant, string> = {
 };
 
 const countClass: Record<CollapsibleSectionHeaderVariant, string> = {
-  facet: 'shrink-0 text-[11px] tabular-nums text-ink-tertiary',
-  group: 'shrink-0 rounded bg-warm px-1.5 text-[10px] font-semibold tabular-nums text-ink-tertiary',
-  tree: 'shrink-0 text-[11px] tabular-nums text-ink-tertiary',
+  facet: 'shrink-0 text-micro tabular-nums text-ink-tertiary',
+  group: 'shrink-0 rounded bg-warm px-1.5 text-nano font-semibold tabular-nums text-ink-tertiary',
+  tree: 'shrink-0 text-micro tabular-nums text-ink-tertiary',
 };
 
 const CollapsibleSectionHeader = ({

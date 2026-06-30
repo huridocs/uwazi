@@ -158,7 +158,7 @@ type RightSideContentProps = {
 const renderRightSideContent = (props: RightSideContentProps): React.ReactNode => (
   <div className="relative flex items-center gap-2">
     {typeof props.pageNumber === 'number' && !props.isEditMode && (
-      <p className="text-xs font-medium text-ink-muted whitespace-nowrap shrink-0">
+      <p className="text-micro font-medium text-ink-muted whitespace-nowrap shrink-0">
         {props.pageNumber}
       </p>
     )}
@@ -240,9 +240,7 @@ export const ToCItem = ({
   };
 
   const interactiveProps = getInteractiveProps(isInteractive, handleEntryClick);
-  const topLevelClasses = item.isTopLevel
-    ? 'bg-(--color-theme-surface-selected) shadow-(--color-theme-shadow-sm) hover:bg-(--color-theme-surface-warm)'
-    : 'hover:bg-(--color-theme-surface-warm)';
+  const topLevelClasses = item.isTopLevel ? 'bg-selected hover:bg-warm' : 'hover:bg-warm';
   const baseClasses = `flex items-center justify-between gap-4 py-1.5 pr-2 transition ${
     isInteractive ? 'cursor-pointer' : ''
   } focus:outline-none focus:ring-2 focus:ring-(--color-theme-control-border-focus) focus:ring-inset rounded`;

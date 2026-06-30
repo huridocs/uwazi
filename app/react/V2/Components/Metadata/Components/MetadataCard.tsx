@@ -2,7 +2,7 @@ import React, { PropsWithChildren } from 'react';
 
 const MetadataCard = ({ children, className }: PropsWithChildren<{ className?: string }>) => (
   <div
-    className={`min-w-0 w-full rounded-md border border-[color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)] bg-(--color-theme-surface-raised) flex flex-col text-sm gap-2 px-3 py-2 shadow-(--color-theme-shadow-sm) ${className ?? ''}`}
+    className={`min-w-0 w-full rounded-md border border-border/40 bg-paper flex flex-col gap-2 px-4 py-3 ${className ?? ''}`}
   >
     {children}
   </div>
