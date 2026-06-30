@@ -3,7 +3,11 @@ import { EncryptedPassword } from './EncryptedPassword.js';
 
 const PUBLIC_USER_ID = new ObjectId('698c35e7cf8880419d91fe4d');
 
-type UserRole = 'admin' | 'editor' | 'collaborator';
+enum UserRole {
+  ADMIN = 'admin',
+  EDITOR = 'editor',
+  COLLABORATOR = 'collaborator',
+}
 
 type UserGroup = {
   _id: string;
@@ -44,5 +48,4 @@ class User {
   }
 }
 
-export type { UserRole };
-export { User, PUBLIC_USER_ID };
+export { User, UserRole, PUBLIC_USER_ID };

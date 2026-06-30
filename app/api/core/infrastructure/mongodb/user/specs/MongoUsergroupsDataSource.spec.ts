@@ -9,7 +9,10 @@ import { MongoUsergroupsDataSource } from '../MongoUsergroupsDataSource.js';
 const f = getFixturesFactory();
 
 const fixtures = {
-  users: [f.user('existing1', UserRole.ADMIN), f.user('existing2', UserRole.EDITOR)],
+  users: [
+    f.user({ username: 'existing1', role: UserRole.ADMIN }),
+    f.user({ username: 'existing2', role: UserRole.EDITOR }),
+  ],
   usergroups: [
     f.usergroup('Empty', []),
     f.usergroup('With one member', [{ refId: f.id('existing1') }]),

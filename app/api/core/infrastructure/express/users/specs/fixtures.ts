@@ -5,7 +5,10 @@ import { UserRole } from '#shared/types/userSchema.js';
 const f = getFixturesFactory();
 
 const fixtures: DBFixture = {
-  users: [f.user('existinguser', UserRole.EDITOR, 'existing@test.com')],
+  users: [
+    f.user({ username: 'existinguser', role: UserRole.EDITOR, email: 'existing@test.com' }),
+    f.user({ username: 'deletedUser', role: UserRole.ADMIN, email: 'deleted@test.com' }),
+  ],
   settings: [
     {
       site_name: 'Uwazi',

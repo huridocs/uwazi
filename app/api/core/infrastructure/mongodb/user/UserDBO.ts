@@ -6,7 +6,7 @@ interface UserDBO {
   username: string;
   role: UserRole;
   email: string;
-  password?: string | null;
+  password?: string;
   using2fa?: boolean;
   secret?: string | null;
   deletedAt?: Date | null;

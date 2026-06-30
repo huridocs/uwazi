@@ -5,8 +5,6 @@ import { ObjectId } from 'mongodb';
 import { testingDB } from '#api/utils/testing_db.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { FileType } from '#shared/types/fileType.js';
-import { UserRole } from '#shared/types/userSchema.js';
-import { UserSchema } from '#shared/types/userType.js';
 import { ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
 import {
   PropertySchema,
@@ -27,10 +25,12 @@ import { MongoSegmentationBuilder } from '#api/core/infrastructure/mongodb/files
 import { LanguageUtils } from '#shared/language/index.js';
 import { ConnectionSchema } from '#shared/types/connectionType.js';
 import { UserGroupSchema } from '#shared/types/userGroupType.js';
+import { User, UserRole } from '#api/core/domain/user/User.js';
 import {
   ProcessedPDFDBO,
   ThumbnailDBO,
 } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+import { UserDBO } from '#api/core/infrastructure/mongodb/user/UserDBO.js';
 
 type PartialSuggestion = Partial<Omit<IXSuggestionType, 'state'>> & {
   state?: Partial<IXSuggestionType['state']>;
@@ -386,13 +386,35 @@ function getFixturesFactory() {
       };
     },
 
-    user: (username: string, role?: UserRole, email?: string, password?: string): UserSchema => ({
+    user: ({
       username,
-      _id: idMapper(username),
-      role: role || UserRole.COLLABORATOR,
-      email: email || `${username}@provider.tld`,
+      role,
+      email,
       password,
-    }),
+      deletedAt,
+    }: {
+      username: string;
+      role: UserRole;
+      _id?: ObjectId;
+      email?: string;
+      password?: string;
+      deletedAt?: Date;
+    }): UserDBO => {
+      const user = new User({
+        _id: idMapper(username).toString(),
+        username,
+        role: role || UserRole.COLLABORATOR,
+        email: email || `${username}@provider.tld`,
+      });
+      return {
+        _id: idMapper(username),
+        username: user.username,
+        role: user.role,
+        email: user.email,
+        password: password || 'hash',
+        deletedAt,
+      };
+    },
 
     usergroup: (name: string, members?: { refId: ObjectId }[]): UserGroupSchema => ({
       _id: idMapper(name),

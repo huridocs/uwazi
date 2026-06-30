@@ -44,11 +44,31 @@ const permissions = [{ refId: 'userId', level: AccessLevels.WRITE, type: Permiss
 
 const fixtures: DBFixture = {
   users: [
-    fixtureFactory.user('admin', UserRole.ADMIN, 'admin@uwazi.com', 'hashedpass'),
-    fixtureFactory.user('user1', UserRole.EDITOR, 'user1@uwazi.com', 'hashedpass'),
-    fixtureFactory.user('user2', UserRole.EDITOR, 'user2@uwazi.com', 'hashedpass'),
+    fixtureFactory.user({
+      username: 'admin',
+      role: UserRole.ADMIN,
+      email: 'admin@uwazi.com',
+      password: 'hashedpass',
+    }),
+    fixtureFactory.user({
+      username: 'user1',
+      role: UserRole.EDITOR,
+      email: 'user1@uwazi.com',
+      password: 'hashedpass',
+    }),
+    fixtureFactory.user({
+      username: 'user2',
+      role: UserRole.EDITOR,
+      email: 'user2@uwazi.com',
+      password: 'hashedpass',
+    }),
     {
-      ...fixtureFactory.user('user3', UserRole.COLLABORATOR, 'user3@uwazi.com', 'hashedpass'),
+      ...fixtureFactory.user({
+        username: 'user3',
+        role: UserRole.COLLABORATOR,
+        email: 'user3@uwazi.com',
+        password: 'hashedpass',
+      }),
       groups: [{ _id: testGroup1Id, name: 'Test Group 1' }],
     } as any,
   ],
