@@ -91,7 +91,7 @@ const QuerySearchBar = ({
               <div
                 role="dialog"
                 aria-label={tipsAriaLabel}
-                className="absolute right-0 top-full z-40 mt-1 w-64 rounded-md border border-border bg-paper p-3 text-[11px] leading-snug shadow-lg"
+                className="absolute right-0 top-full z-40 mt-1 w-64 rounded-md border border-border bg-paper p-3 text-micro leading-snug shadow-lg"
               >
                 {tipsContent}
               </div>

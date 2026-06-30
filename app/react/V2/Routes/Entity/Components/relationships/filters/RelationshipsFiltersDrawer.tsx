@@ -20,7 +20,7 @@ const RelationshipsFiltersDrawer = () => {
           <button
             type="button"
             onClick={() => clearFilters()}
-            className="cursor-pointer text-[11px] font-medium text-ink-secondary transition-colors hover:text-ink"
+            className="cursor-pointer text-micro font-medium text-ink-secondary transition-colors hover:text-ink"
           >
             <Translate>Clear all filters</Translate>
           </button>

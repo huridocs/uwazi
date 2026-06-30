@@ -7,7 +7,6 @@ const meta: Meta<typeof NotificationsPanel> = {
   title: 'Components/Notifications/NotificationsPanel',
   component: NotificationsPanel,
 };
-export default meta;
 
 type Story = StoryObj<typeof NotificationsPanel>;
 
@@ -66,3 +65,5 @@ const Mixed: Story = {
 };
 
 export { Empty, WithNotifications, WithTasks, Mixed };
+
+export default meta;

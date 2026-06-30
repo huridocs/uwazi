@@ -64,7 +64,7 @@ const EntitySearchStep = ({
         hasSearched &&
         Array.from(groupedResults.entries()).map(([templateId, entities]) => (
           <div key={templateId}>
-            <h4 className="mb-2 text-[11px] font-medium uppercase tracking-wider text-ink-muted">
+            <h4 className="mb-2 text-micro font-medium uppercase tracking-wider text-ink-muted">
               {templateName(templateId)}
             </h4>
             <div className="space-y-1">

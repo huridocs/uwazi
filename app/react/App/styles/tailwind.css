@@ -168,6 +168,27 @@
   --breakpoint-lg: 64rem;
   --breakpoint-xl: 80rem;
   --breakpoint-2xl: 96rem;
+
+  --text-nano: 10px;
+  --text-nano--line-height: 1rem;
+  --text-micro: 11px;
+  --text-micro--line-height: 1rem;
+  --text-tab: 13px;
+  --text-tab--line-height: 1.25rem;
+}
+
+@layer theme {
+  :root {
+    --radius-xs: 2px;
+    --radius-sm: 3px;
+    --radius: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --radius-xl: 10px;
+    --radius-2xl: 12px;
+    --radius-3xl: 14px;
+    --radius-4xl: 16px;
+  }
 }
 
 @utility bg-paper {

@@ -7,6 +7,7 @@ import {
 import { CountryFlag } from '../../CustomIcons/index.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataCard } from './MetadataCard.js';
+import { PropertyValue } from './PropertyValue.js';
 import { COMPACT_METADATA_FIELD_LAYOUT } from '../metadataPropertyLayout.js';
 import { MetadataFieldProps } from './MetadataFieldPropsType.js';
 
@@ -40,7 +41,7 @@ const Relationship = ({
           hideLabel={hideLabel}
         />
       </dt>
-      <dd className="flex flex-col gap-1">
+      <PropertyValue as="dd" className="flex flex-col gap-1">
         {values.map((value, index) => {
           const itemKey = value._id || `${label}-${index}`;
 
@@ -68,7 +69,7 @@ const Relationship = ({
             </span>
           );
         })}
-      </dd>
+      </PropertyValue>
     </MetadataCard>
   );
 };
