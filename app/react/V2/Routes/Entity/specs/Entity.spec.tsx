@@ -259,7 +259,9 @@ describe('Entity view', () => {
       const sideDocumentPanel = document.getElementById('entity-side-panel-document');
       expect(sideDocumentPanel).not.toBeNull();
       expect(within(sideDocumentPanel as HTMLElement).queryByText('Sample Entity')).toBeNull();
-      expect(within(sideDocumentPanel as HTMLElement).getByRole('button', { name: 'View' })).toBeInTheDocument();
+      expect(
+        within(sideDocumentPanel as HTMLElement).getByRole('button', { name: 'View' })
+      ).toBeInTheDocument();
       expect(within(sideDocumentPanel as HTMLElement).getByTestId('mock-pdf')).toBeInTheDocument();
     });
 
