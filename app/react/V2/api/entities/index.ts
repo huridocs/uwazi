@@ -7,6 +7,7 @@ import { SearchQuery, CompoundFilter } from '#shared/types/SearchQueryType.js';
 import { EntitySearchResponse } from '../types.js';
 import * as formatter from './formatter.js';
 import { ApiResponse } from '../ApiResponse.js';
+import { apiCall } from '../helpers.js';
 import { Entity } from './types.js';
 
 const getById = async ({
@@ -17,8 +18,8 @@ const getById = async ({
   _id: string;
   language: string;
   omitRelationships?: boolean;
-}): Promise<ApiResponse<Entity | undefined, FetchResponseError>> => {
-  try {
+}): Promise<ApiResponse<Entity | undefined, FetchResponseError>> =>
+  apiCall(async () => {
     const requestParams = new RequestParams({
       _id,
       omitRelationships,
@@ -30,13 +31,10 @@ const getById = async ({
       json: { rows: response },
     } = await api.get('entities', requestParams);
     if (response.length) {
-      return [response[0]];
+      return response[0];
     }
-    return [undefined];
-  } catch (e) {
-    return [undefined, e];
-  }
-};
+    return undefined;
+  });
 
 const getBySharedId = async (
   {
@@ -45,8 +43,8 @@ const getBySharedId = async (
     omitRelationships = true,
   }: { sharedId: string; language: string; omitRelationships?: boolean },
   headers?: IncomingHttpHeaders
-): Promise<ApiResponse<Entity[] | undefined, FetchResponseError>> => {
-  try {
+): Promise<ApiResponse<Entity[] | undefined, FetchResponseError>> =>
+  apiCall(async () => {
     const requestParams = new RequestParams(
       {
         sharedId,
@@ -60,11 +58,8 @@ const getBySharedId = async (
     const {
       json: { rows: response },
     } = await api.get('entities', requestParams);
-    return [response];
-  } catch (e) {
-    return [undefined, e];
-  }
-};
+    return response;
+  });
 
 const update = async (
   entity: Entity
