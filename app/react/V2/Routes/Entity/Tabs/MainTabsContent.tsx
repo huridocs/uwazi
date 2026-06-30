@@ -39,7 +39,11 @@ const MainTabsContent = ({
       }
       break;
     case MAIN_TAB.METADATA:
-      content = <MetadataTab entity={entity} />;
+      content = (
+        <div className="flex min-h-0 flex-1 flex-col px-3">
+          <MetadataTab entity={entity} />
+        </div>
+      );
       break;
     case MAIN_TAB.RELATIONSHIPS:
       content = (

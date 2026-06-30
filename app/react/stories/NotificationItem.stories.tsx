@@ -8,7 +8,6 @@ const meta: Meta<typeof NotificationItem> = {
   title: 'Components/Notifications/NotificationItem',
   component: NotificationItem,
 };
-export default meta;
 
 type Story = StoryObj<typeof NotificationItem>;
 
@@ -98,3 +97,5 @@ export {
   ErrorWithDetails,
   InfoNotification,
 };
+
+export default meta;

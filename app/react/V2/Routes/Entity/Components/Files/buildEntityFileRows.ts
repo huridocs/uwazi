@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon';
 import { t } from '#app/I18N/index.js';
+import { LanguageUtils } from '#shared/language/index.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { formatEntityFiles, getMainDocument } from '#V2/formatters/index.js';
 import { ClientTemplateSchema } from '#V2/shared/types.js';
@@ -19,6 +20,14 @@ const getTypeLabel = (file: EntityFileForView) => {
   return file.fileType === 'document'
     ? t('System', 'Document', null, false)
     : t('System', 'Attachment', null, false);
+};
+
+const getLanguageLabel = (language?: string) => {
+  if (!language) {
+    return '—';
+  }
+
+  return (LanguageUtils.fromISO639_3(language, false)?.ISO639_1 || language).toUpperCase();
 };
 
 const formatFileDate = (timestamp?: number, locale?: string) => {
@@ -64,7 +73,7 @@ const buildEntityFileRows = (
         t('System', 'Untitled', null, false),
       typeLabel: getTypeLabel(entityFile),
       sizeLabel: entityFile.size ? formatBytes(entityFile.size) : '—',
-      languageKey: entityFile.language?.toUpperCase() || '—',
+      languageKey: getLanguageLabel(entityFile.language),
       modifiedLabel: formatFileDate(modifiedTimestamp, locale),
       modifiedTimestamp,
       category,

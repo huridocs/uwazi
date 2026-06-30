@@ -71,7 +71,7 @@ const RelationshipRowCompact = ({
         <TargetPill marker={marker} hideTargetPill={hideTargetPill} />
         <DirectionGlyph direction={direction} />
         {!hideRelationType && relationshipTypeName && (
-          <span className="truncate text-[10px] capitalize text-ink-tertiary">
+          <span className="truncate text-nano capitalize text-ink-tertiary">
             {relationshipTypeName}
           </span>
         )}
@@ -128,7 +128,7 @@ const RelationshipRowDetail = ({
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
           {templateName && !hideTemplateName && (
-            <span className="text-[10px] text-ink-tertiary">{templateName}</span>
+            <span className="text-nano text-ink-tertiary">{templateName}</span>
           )}
           {referencePage !== undefined && <PageTag page={referencePage} onClick={onClick} />}
         </div>
@@ -140,7 +140,7 @@ const RelationshipRowDetail = ({
           textClassName="min-w-0 text-xs italic leading-relaxed text-ink-secondary"
         />
       )}
-      <div className="mt-1 flex items-center justify-between text-[10px] text-ink-tertiary">
+      <div className="mt-1 flex items-center justify-between text-nano text-ink-tertiary">
         <span className="flex items-center gap-1">
           <DirectionGlyph direction={direction} />
           {!hideRelationType && relationshipTypeName && (
