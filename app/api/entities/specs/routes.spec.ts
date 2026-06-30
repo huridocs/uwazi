@@ -5,7 +5,6 @@ import path from 'path';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import * as entitySavingManager from '#api/entities/entitySavingManager.js';
 import routes from '#api/entities/routes.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
@@ -346,80 +345,74 @@ describe('entities routes', () => {
       expect(entityWithFiles.attachments).toHaveLength(2);
     });
 
-    it('should call the saving manager with the correct filenames', async () => {
-      jest
-        .spyOn(entitySavingManager, 'saveEntity')
-        .mockImplementation(async () => Promise.resolve({ entity: {}, errors: [] }));
+    describe('V2 entity update', () => {
+      it('should update an existing entity via UpdateEntityController', async () => {
+        new UserInContextMockFactory().mock(user);
 
-      const entityToUpdate = { ...entityToSave, sharedId: 'existing123' };
+        const entityToUpdate = {
+          _id: 'abc123',
+          sharedId: 'shared',
+          title: 'updated title',
+          language: 'en',
+          template: templateId.toString(),
+        };
 
-      await request(app)
-        .post('/api/entities')
-        .field('entity', JSON.stringify(entityToUpdate))
-        .attach('documents[0]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español')
-        .attach('documents[1]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español 2')
-        .attach('attachments[0]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español 3')
-        .attach('attachments[1]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español 4')
-        .field('documents_originalname[0]', 'Nombre en español')
-        .field('documents_originalname[1]', 'Nombre en español 2')
-        .field('attachments_originalname[0]', 'Nombre en español 3')
-        .field('attachments_originalname[1]', 'Nombre en español 4');
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .send(entityToUpdate)
+          .expect(200);
 
-      expect(entitySavingManager.saveEntity).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({
-          files: expect.arrayContaining([
-            expect.objectContaining({ fieldname: 'documents[0]' }),
-            expect.objectContaining({ fieldname: 'documents[1]' }),
-            expect.objectContaining({ fieldname: 'attachments[0]' }),
-            expect.objectContaining({ fieldname: 'attachments[1]' }),
-          ]),
-        })
-      );
-    });
-
-    it('should return entity payload for legacy JSON update requests', async () => {
-      jest.restoreAllMocks();
-      const savedEntity = {
-        sharedId: 'existing123',
-        title: 'updated title',
-      };
-      jest.spyOn(entitySavingManager, 'saveEntity').mockResolvedValue({
-        entity: savedEntity as any,
-        errors: [],
+        expect(response.body).toMatchObject({
+          sharedId: 'shared',
+        });
       });
 
-      const response: SuperTestResponse = await request(app)
-        .post('/api/entities')
-        .send({ ...entityToSave, sharedId: 'existing123', title: 'updated title' })
-        .expect(200);
+      it('should update an existing entity with files via UpdateEntityController', async () => {
+        new UserInContextMockFactory().mock(user);
 
-      expect(response.body).toMatchObject(savedEntity);
-    });
+        const entityToUpdate = {
+          _id: 'abc123',
+          sharedId: 'shared',
+          title: 'updated title with files',
+          language: 'en',
+          template: templateId.toString(),
+        };
 
-    it('should run saveEntity process as a transaction', async () => {
-      jest.restoreAllMocks();
-      jest.spyOn(entities, 'getUnrestrictedWithDocuments').mockImplementationOnce(() => {
-        throw new Error('error at the end of the saveEntity');
-      });
-      new UserInContextMockFactory().mock(user);
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .field('entity', JSON.stringify(entityToUpdate))
+          .attach('documents[0]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español')
+          .field('documents_originalname[0]', 'Nombre en español')
+          .expect(200);
 
-      const entityToUpdate = { ...entityToSave, sharedId: 'existing123' };
-
-      const response: SuperTestResponse = await request(app)
-        .post('/api/entities')
-        .field('entity', JSON.stringify(entityToUpdate))
-        .attach('documents[0]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español')
-        .field('documents_originalname[0]', 'Nombre en español')
-        .expect(500);
-
-      expect(response.body).toMatchObject({
-        error: expect.any(String),
+        expect(response.body).toMatchObject({
+          entity: expect.objectContaining({
+            sharedId: 'shared',
+          }),
+          errors: [],
+        });
       });
 
-      await appContext.run(async () => {
-        const myEntity = await entities.get({ title: 'my entity' });
-        expect(myEntity.length).toBe(0);
+      it('should return entity payload for legacy JSON update requests', async () => {
+        new UserInContextMockFactory().mock(user);
+
+        const entityToUpdate = {
+          _id: 'abc123',
+          sharedId: 'shared',
+          title: 'updated title',
+          language: 'en',
+          template: templateId.toString(),
+        };
+
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .send(entityToUpdate);
+
+        expect(response).toHaveStatus(200);
+
+        expect(response.body).toMatchObject({
+          sharedId: 'shared',
+        });
       });
     });
   });
