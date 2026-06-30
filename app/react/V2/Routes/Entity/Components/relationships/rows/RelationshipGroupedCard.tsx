@@ -21,7 +21,7 @@ const RelationshipGroupedCard = ({
   useExpandCollapseSignals(setExpanded, markerIds);
 
   return (
-    <div className="overflow-hidden rounded-md border border-border/60 bg-paper">
+    <div className="overflow-hidden rounded-md border border-border/40 bg-paper">
       <CollapsibleSectionHeader
         variant="group"
         title={title}

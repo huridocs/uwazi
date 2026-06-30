@@ -12,31 +12,31 @@ const RelationshipsSearchTips = () => (
     </div>
     <ul className="space-y-1 text-ink-secondary">
       <li>
-        <code className="font-mono text-[10px] text-ink">
+        <code className="font-mono text-nano text-ink">
           <Translate>AND OR NOT</Translate>
         </code>{' '}
         — <Translate>boolean</Translate>
       </li>
       <li>
-        <code className="font-mono text-[10px] text-ink">
+        <code className="font-mono text-nano text-ink">
           &quot;<Translate>exact phrase</Translate>&quot;
         </code>{' '}
         — <Translate>match verbatim</Translate>
       </li>
       <li>
-        <code className="font-mono text-[10px] text-ink">
+        <code className="font-mono text-nano text-ink">
           <Translate>stat*</Translate>
         </code>{' '}
         — <Translate>wildcard</Translate>
       </li>
       <li>
-        <code className="font-mono text-[10px] text-ink">
+        <code className="font-mono text-nano text-ink">
           <Translate>wom?n</Translate>
         </code>{' '}
         <Translate>one character</Translate>
       </li>
       <li>
-        <code className="font-mono text-[10px] text-ink">( ... )</code> —{' '}
+        <code className="font-mono text-nano text-ink">( ... )</code> —{' '}
         <Translate>group expressions</Translate>
       </li>
     </ul>

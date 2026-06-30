@@ -57,7 +57,7 @@ const FacetSection = ({
               />
               {renderMarker?.(id)}
               <span className="flex-1 truncate text-xs text-ink-secondary">{label(id)}</span>
-              <span className="shrink-0 text-[11px] tabular-nums text-ink-tertiary">{count}</span>
+              <span className="shrink-0 text-micro tabular-nums text-ink-tertiary">{count}</span>
             </label>
           ))}
           {noLabelEntry && (
@@ -72,7 +72,7 @@ const FacetSection = ({
               <span className="flex-1 truncate text-xs italic text-ink-tertiary">
                 {noLabelText}
               </span>
-              <span className="shrink-0 text-[11px] tabular-nums text-ink-tertiary">
+              <span className="shrink-0 text-micro tabular-nums text-ink-tertiary">
                 {noLabelEntry[1]}
               </span>
             </label>

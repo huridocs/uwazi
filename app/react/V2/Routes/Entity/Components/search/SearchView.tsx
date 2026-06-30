@@ -73,7 +73,7 @@ const SearchView = () => {
                 placeholder={t('System', 'Search', null, false)}
                 // eslint-disable-next-line react/jsx-props-no-spreading
                 {...field}
-                className="w-full rounded-md border border-[color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] bg-(--color-theme-surface-warm) p-2 text-sm text-ink shadow-(--color-theme-shadow-sm) placeholder:text-ink-muted focus:border-(--color-theme-control-border-focus) focus:outline-hidden"
+                className="w-full rounded-md border border-border/40 bg-warm p-2 text-sm text-ink placeholder:text-ink-muted focus:border-border focus:outline-hidden"
               />
             )}
           />
@@ -107,15 +107,18 @@ const SearchView = () => {
                         {metadata.map((m, j) => (
                           <div
                             key={`metadata-${i}-${j}`}
-                            className="rounded-md border border-[color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)] bg-(--color-theme-surface-raised) p-2 shadow-(--color-theme-shadow-sm)"
+                            className="rounded-md border border-border/40 bg-paper p-3"
                           >
-                            <dt className="text-sm font-semibold text-ink">
+                            <dt className="text-sm font-bold text-ink">
                               <Translate context={entity?.template || ''}>
                                 {getFieldName(m.field, template)}
                               </Translate>
                             </dt>
                             {m.texts.map((text, k) => (
-                              <dd key={`metadata-${i}-${j}-${k}`} className="text-sm text-ink">
+                              <dd
+                                key={`metadata-${i}-${j}-${k}`}
+                                className="text-sm font-medium text-ink"
+                              >
                                 {parseSnippetToNodes(text)}
                               </dd>
                             ))}
@@ -130,14 +133,9 @@ const SearchView = () => {
                     ? fullText.map((pageText, j) => {
                         const snippetKey = `${i}-${j}`;
                         const isActive = activeSnippet === snippetKey;
-                        const activeClass = isActive
-                          ? 'border-(--color-theme-action-primary) bg-(--color-theme-surface-selected)'
-                          : 'border-[color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)] bg-(--color-theme-surface-raised)';
                         const snippetClass = [
-                          'rounded-md border p-3',
-                          'shadow-(--color-theme-shadow-sm) cursor-pointer',
-                          'hover:bg-(--color-theme-surface-warm) transition',
-                          activeClass,
+                          'rounded-md border p-3 cursor-pointer hover:bg-warm transition',
+                          isActive ? 'border-border bg-selected' : 'border-border/40 bg-paper',
                         ].join(' ');
 
                         return (

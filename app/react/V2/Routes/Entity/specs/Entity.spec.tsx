@@ -56,6 +56,12 @@ const checkEntityRendered = async () => {
 const relationshipsSideTab = /^Relationships/;
 const relationshipsMainTab = /^Relationships/;
 
+const selectPlainTextView = (container?: HTMLElement) => {
+  const scope = container ? within(container) : screen;
+  fireEvent.click(scope.getByRole('button', { name: 'View' }));
+  fireEvent.click(scope.getByRole('menuitem', { name: 'Plain text' }));
+};
+
 describe('Entity view', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -253,7 +259,9 @@ describe('Entity view', () => {
       const sideDocumentPanel = document.getElementById('entity-side-panel-document');
       expect(sideDocumentPanel).not.toBeNull();
       expect(within(sideDocumentPanel as HTMLElement).queryByText('Sample Entity')).toBeNull();
-      expect(within(sideDocumentPanel as HTMLElement).getByRole('combobox')).toBeInTheDocument();
+      expect(
+        within(sideDocumentPanel as HTMLElement).getByRole('button', { name: 'View' })
+      ).toBeInTheDocument();
       expect(within(sideDocumentPanel as HTMLElement).getByTestId('mock-pdf')).toBeInTheDocument();
     });
 
@@ -391,8 +399,7 @@ describe('Entity view', () => {
         'hidden'
       );
 
-      const select = screen.getByRole('combobox');
-      fireEvent.change(select, { target: { value: 'raw' } });
+      selectPlainTextView();
 
       await waitFor(() => {
         expect(screen.getByText(pageText).parentElement?.classList).toContain('block');
