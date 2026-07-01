@@ -60,7 +60,10 @@ const deriveBeaconDisplay = (
   const showFlash = Boolean(flash && flash.phase === 'showing');
   const hasContent = showFlash || hasActivity || notifications.length > 0;
   const isExpanded =
-    options.canExpand && !options.isPanelOpen && hasContent && (showFlash || options.hovered);
+    options.canExpand &&
+    !options.isPanelOpen &&
+    hasContent &&
+    (showFlash || options.hovered || hasActivity);
   const isBusy =
     options.isLoading || options.overallStatus === 'loading' || options.hasRunningTasks;
 
@@ -70,7 +73,7 @@ const deriveBeaconDisplay = (
     showFlash,
     isExpanded,
     isBusy,
-    markColor: isBusy ? 'carbon' : statusColor[options.overallStatus],
+    markColor: hasActivity ? 'carbon' : statusColor[options.overallStatus],
     activityLabel:
       runningTasks.length === 1 ? runningTasks[0].label : `${runningTasks.length} tasks running`,
     taskProgress: averageProgress(runningTasks),

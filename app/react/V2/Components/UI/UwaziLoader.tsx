@@ -22,7 +22,7 @@ const colors: Record<UwaziLoaderColor, string> = {
   default: 'var(--color-theme-text-primary, #1a1a1a)',
   white: '#ffffff',
   muted: 'var(--color-theme-text-muted, #6b7280)',
-  carbon: 'var(--color-theme-action-primary, #2563eb)',
+  carbon: 'var(--color-theme-accent-supporting, #00B4F0)',
   seal: 'var(--color-theme-feedback-danger, #dc2626)',
   warning: 'var(--color-theme-feedback-warning, #d97706)',
 };

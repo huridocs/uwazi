@@ -58,6 +58,7 @@ const initialState: RequestStatusState = {
 
 const requestStatusAtom = atom<RequestStatusState>(initialState);
 
+/** Minimum time the loading animation stays visible, even if the request finishes sooner. */
 const MIN_LOADING_MS = 1000;
 type SetRequestStatusState = (update: (prev: RequestStatusState) => RequestStatusState) => void;
 
@@ -135,6 +136,7 @@ const replaceTask = (
   label: string,
   initialProgress?: number
 ) => {
+  // filter out any existing task with the same id (re-registration / re-run)
   setState(prev => ({
     ...prev,
     tasks: [
@@ -224,6 +226,7 @@ const getRequestStatusActions = (setState: SetRequestStatusState) => ({
     setState(prev => ({
       ...prev,
       isPanelOpen: !prev.isPanelOpen,
+      // Mark all notifications read when opening the panel
       unreadNotificationIds: prev.isPanelOpen ? prev.unreadNotificationIds : [],
     })),
   startLoading: () => startLoadingWith(setState),
