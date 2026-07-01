@@ -81,7 +81,6 @@ Advanced ECharts overrides,Advanced ECharts overrides
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","All changes will be lost, are you sure you want to proceed?"
-All clear,All clear
 All data,All data
 All editing options will be disabled.,All editing options will be disabled.
 All of the paragraphs will be deleted,All of the paragraphs will be deleted
@@ -384,6 +383,7 @@ Duplicated name,Duplicated name
 Duplicated username,Duplicated username
 Duration,Duration
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
+Earlier,Earlier
 Edit,Edit
 Edit Extractor,Edit Extractor
 Edit File,Edit File
@@ -524,6 +524,7 @@ here,here
 "Hi, I'm Bert.","Hi, I'm Bert."
 Hide,Hide
 Hide actions,Hide actions
+Hide details,Hide details
 Hide label,Hide label
 Hide restricted relationships from public,Hide restricted relationships from public
 Hide toolbar,Hide toolbar
@@ -686,6 +687,7 @@ ML TOC,ML TOC
 Modified,Modified
 Month,Month
 Months,Months
+More,More
 more options.,more options.
 Multi-source mode,Multi-source mode
 Multiple date,Multiple date
@@ -706,6 +708,7 @@ Navigate back,Navigate back
 Navigation menu tool tip part 1,"If it is an internal URL within this website, be sure to delete the first part"
 Navigation menu tool tip part 2,leaving only a relative URL starting with a slash character. Ie. /some_url.
 New,New
+New activity will show up here.,New activity will show up here.
 New conversation,New conversation
 New entity,New entity
 New group,New group
@@ -735,7 +738,6 @@ No icon / flag,No icon / flag
 No items available,No items available
 No Label,No Label
 No label,No label
-No notifications or active tasks.,No notifications or active tasks.
 No options,No options
 No options found,No options found
 No page,No page
@@ -1063,6 +1065,7 @@ Shared as editor,Shared as editor
 Shared as viewer,Shared as viewer
 Show actions,Show actions
 Show cookie policy,Show cookie policy
+Show details,Show details
 Show filters,Show filters
 Show in cards,Show in cards
 Show less,Show less
@@ -1384,6 +1387,7 @@ You have unsaved changes. Do you want to continue?,You have unsaved changes. Do 
 You should activate this feature for enhanced account security,You should activate this feature for enhanced account security
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
 You won't be able to save an entity if this property is empty.,You won't be able to save an entity if this property is empty.
+You're all caught up,You're all caught up
 Your account's security is enhanced with two-factor authentication.,Your account's security is enhanced with two-factor authentication.
 Z → A,Z → A
 Zoom in,Zoom in

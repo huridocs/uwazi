@@ -18,11 +18,13 @@ const sizes: Record<UwaziLoaderSize, { cell: number; gap: number }> = {
   lg: { cell: 16, gap: 4 },
 };
 
+const gridCells = ['0-0', '1-0', '2-0', '0-1', '1-1', '2-1'] as const;
+
 const colors: Record<UwaziLoaderColor, string> = {
   default: 'var(--color-theme-text-primary, #1a1a1a)',
   white: '#ffffff',
   muted: 'var(--color-theme-text-muted, #6b7280)',
-  carbon: 'var(--color-theme-action-primary, #2563eb)',
+  carbon: 'var(--color-theme-accent-supporting, #00B4F0)',
   seal: 'var(--color-theme-feedback-danger, #dc2626)',
   warning: 'var(--color-theme-feedback-warning, #d97706)',
 };
@@ -47,9 +49,9 @@ const UwaziLoader = ({
       role={animate ? 'status' : undefined}
       aria-label={animate ? 'Loading' : undefined}
     >
-      {Array.from({ length: 6 }).map((_, index) => (
+      {gridCells.map(cellKey => (
         <div
-          key={index}
+          key={cellKey}
           className={animate ? 'uwazi-loader-cell rounded-[1px]' : 'rounded-[1px]'}
           style={{
             width: cell,
