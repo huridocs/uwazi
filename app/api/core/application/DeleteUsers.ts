@@ -1,7 +1,7 @@
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { UsersDataSource } from './contracts/UsersDataSource.js';
 import { UsergroupsDataSource } from './contracts/UsergroupsDataSource.js';
-import { IsDeletingSelf, IsPublicUser } from '../domain/user/errors.js';
+import { IsDeletingSelf, IsDeleteOfLastUser, IsDeleteOfPublicUser } from '../domain/user/errors.js';
 import { PUBLIC_USER_ID } from '../domain/user/User.js';
 
 type Input = { ids: string[] };
@@ -15,8 +15,13 @@ class DeleteUsers extends AbstractUseCase<Input, Output, Deps> {
     const { ids } = input;
 
     if (ids.includes(PUBLIC_USER_ID.toString())) {
-      throw new IsPublicUser();
+      throw new IsDeleteOfPublicUser();
     }
+
+    if ((await this.deps.usersDS.countActiveUsers()) === 1) {
+      throw new IsDeleteOfLastUser();
+    }
+
     if (ids.includes(this.actorId)) {
       throw new IsDeletingSelf();
     }

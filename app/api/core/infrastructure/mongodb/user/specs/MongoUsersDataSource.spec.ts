@@ -1,16 +1,21 @@
+import { ObjectId } from 'mongodb';
 import { PUBLIC_USER_ID, User, UserRole } from '#api/core/domain/user/User.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { ObjectId } from 'mongodb';
 import { MongoUsersDataSource } from '../MongoUsersDataSource.js';
 
 const f = getFixturesFactory();
 
 const fixtures = {
   users: [
-    { _id: PUBLIC_USER_ID, username: 'public', role: UserRole.COLLABORATOR },
+    {
+      _id: PUBLIC_USER_ID,
+      username: 'public',
+      role: UserRole.COLLABORATOR,
+      email: 'public@public.com',
+    },
     f.user({ username: 'existing1', role: UserRole.ADMIN }),
     f.user({ username: 'existing2', role: UserRole.EDITOR }),
     f.user({ username: 'deleted1', role: UserRole.COLLABORATOR, deletedAt: new Date() }),
