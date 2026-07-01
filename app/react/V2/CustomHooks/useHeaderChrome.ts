@@ -24,12 +24,16 @@ const observeChromeAncestors = (el: HTMLElement, update: () => void): MutationOb
   return observer;
 };
 
+const DEFAULT_FADE_START = 'rgb(255, 255, 255)';
+
+const defaultHeaderChrome = (): HeaderChrome => ({
+  fadeColor: DEFAULT_FADE_START,
+  fadeStartColor: DEFAULT_FADE_START,
+  foreground: toForeground(DEFAULT_FADE_START),
+});
+
 const useHeaderChrome = (ref: RefObject<HTMLElement | null>): HeaderChrome => {
-  const [chrome, setChrome] = useState<HeaderChrome>({
-    foreground: '#ffffff',
-    fadeColor: 'rgb(255, 255, 255)',
-    fadeStartColor: 'rgb(255, 255, 255)',
-  });
+  const [chrome, setChrome] = useState<HeaderChrome>(defaultHeaderChrome);
 
   useEffect(() => {
     const el = ref.current;
