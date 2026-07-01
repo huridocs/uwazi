@@ -2,50 +2,16 @@ import { useMemo } from 'react';
 import { atom, useAtom } from 'jotai';
 import { getStore } from '#shared/atomStore/index.js';
 import { createUuid } from '#V2/utils/uuid.js';
-
-type NotificationType = 'success' | 'warning' | 'error' | 'info';
-
-type TaskStatus = 'running' | 'completed' | 'failed';
-
-type OverallStatus = 'loading' | 'error' | 'warning' | 'success';
-
-interface StatusNotification {
-  id: string;
-  type: NotificationType;
-  title: string;
-  message?: string;
-  details?: string;
-  timestamp: Date;
-}
-
-interface StatusTask {
-  id: string;
-  label: string;
-  progress?: number;
-  status: TaskStatus;
-}
-
-type TaskListenerUpdate = { label?: string; progress?: number };
-type TaskUpdate = TaskListenerUpdate & { status?: TaskStatus };
-type NotifyArgs = [NotificationType, string, string?, string?, Date?];
-
-type TaskListenerSetup = (
-  update: (updates: TaskListenerUpdate) => void,
-  complete: () => void,
-  fail: (details?: string) => void
-) => () => void;
+import type {
+  NotifyArgs,
+  OverallStatus,
+  RequestStatusState,
+  TaskListenerSetup,
+  TaskUpdate,
+} from './requestStatusTypes.js';
 
 /** Stores cleanup functions (socket unsubscribes) keyed by task ID, outside the atom. */
 const taskCleanups: Map<string, () => void> = new Map();
-
-interface RequestStatusState {
-  notifications: StatusNotification[];
-  unreadNotificationIds: string[];
-  tasks: StatusTask[];
-  isConnected: boolean;
-  isPanelOpen: boolean;
-  isLoading: boolean;
-}
 
 const initialState: RequestStatusState = {
   notifications: [],
@@ -136,7 +102,6 @@ const replaceTask = (
   label: string,
   initialProgress?: number
 ) => {
-  // filter out any existing task with the same id (re-registration / re-run)
   setState(prev => ({
     ...prev,
     tasks: [
@@ -226,7 +191,6 @@ const getRequestStatusActions = (setState: SetRequestStatusState) => ({
     setState(prev => ({
       ...prev,
       isPanelOpen: !prev.isPanelOpen,
-      // Mark all notifications read when opening the panel
       unreadNotificationIds: prev.isPanelOpen ? prev.unreadNotificationIds : [],
     })),
   startLoading: () => startLoadingWith(setState),
@@ -246,6 +210,7 @@ const useRequestStatus = () => {
     ...actions,
   };
 };
+
 export type {
   NotificationType,
   TaskStatus,
@@ -254,5 +219,5 @@ export type {
   StatusTask,
   RequestStatusState,
   TaskListenerSetup,
-};
+} from './requestStatusTypes.js';
 export { requestStatusAtom, useRequestStatus, startLoading, endLoading, MIN_LOADING_MS };

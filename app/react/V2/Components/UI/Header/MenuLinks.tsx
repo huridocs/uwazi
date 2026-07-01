@@ -85,6 +85,7 @@ const renderMeasure = (link: HeaderLink) => (
 
 const MenuLinks = ({ links = [], className = '', endOverlapPx = 0 }: MenuLinksProps) => {
   const valid = links.filter(hasContent);
+  const measureKey = valid.map(link => `${linkKey(link)}:${menuLabel(link.title)}`).join('\0');
   const containerRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLSpanElement>(null);
@@ -125,16 +126,18 @@ const MenuLinks = ({ links = [], className = '', endOverlapPx = 0 }: MenuLinksPr
 
   useIsomorphicLayoutEffect(() => {
     recompute();
-    const container = containerRef.current;
-    if (!container || typeof ResizeObserver === 'undefined') return undefined;
+    if (typeof ResizeObserver === 'undefined') return undefined;
     const observer = new ResizeObserver(recompute);
-    observer.observe(container);
+    const container = containerRef.current;
+    const measure = measureRef.current;
+    if (container) observer.observe(container);
+    if (measure) observer.observe(measure);
     return () => observer.disconnect();
-  }, [recompute, valid.length]);
+  }, [recompute, measureKey]);
 
   if (!valid.length) return null;
 
-  const visible = hasMeasured ? valid.slice(0, visibleCount) : [];
+  const visible = hasMeasured ? valid.slice(0, visibleCount) : valid;
   const overflow = hasMeasured ? valid.slice(visibleCount) : [];
 
   return (

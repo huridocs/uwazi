@@ -47,6 +47,7 @@ const NotificationsPanel = () => {
     return groups;
   }, [notifications]);
   const hasNotifications = notifications.length > 0;
+  const isEmpty = !hasNotifications && tasks.length === 0;
   const itemCount = notifications.length + tasks.length;
   const hasClearable = hasNotifications || tasks.some(t => t.status !== 'running');
 
@@ -126,7 +127,7 @@ const NotificationsPanel = () => {
         </section>
       )}
 
-      {!hasNotifications ? (
+      {isEmpty ? (
         <EmptyState />
       ) : (
         bucketOrder.map(bucket =>
