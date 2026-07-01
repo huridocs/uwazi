@@ -19,9 +19,8 @@ class MongoUsergroupsDataSource
   }
 
   async getUserGroups(user: User): Promise<User['groups']> {
-    const userId = ObjectId.createFromHexString(user._id);
     const collection = this.getCollection();
-    const groupDocuments = await collection.find({ 'members.refId': userId }).toArray();
+    const groupDocuments = await collection.find({ 'members.refId': user._id }).toArray();
     return groupDocuments.map(group => ({
       _id: group._id.toString(),
       name: group.name,
