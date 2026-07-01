@@ -17,8 +17,8 @@ export class URLAttachment extends BaseFile<Props> {
   protected _type = 'attachment' as const;
 
   constructor(props: Props) {
-    const filename = props.filename ?? props.url;
-    const originalname = props.originalname ?? props.url;
+    const filename = props.filename || props.url;
+    const originalname = props.originalname || props.url;
     const validated = Schema.parse({ ...props, filename, originalname });
     super({ ...props, filename, originalname, entity: validated.entity, url: validated.url });
     // Override filename/originalname after super because BaseFile sanitizes them,
