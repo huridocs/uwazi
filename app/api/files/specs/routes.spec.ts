@@ -518,10 +518,6 @@ describe('files routes', () => {
         });
 
         it('should set tocGenerated to false on the file', async () => {
-          if (usePostgres) {
-            return;
-          }
-
           const response: SuperTestResponse = await request(app)
             .post('/api/files/tocReviewed')
             .set('content-language', 'es')
@@ -534,10 +530,6 @@ describe('files routes', () => {
         });
 
         it('should set tocGenerated to false on the entity when all associated files are false', async () => {
-          if (usePostgres) {
-            return;
-          }
-
           await request(app)
             .post('/api/files/tocReviewed')
             .send({ fileId: uploadId.toString() })
