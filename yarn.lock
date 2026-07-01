@@ -12547,18 +12547,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-cypress@npm:^6.4.1":
-  version: 6.4.1
-  resolution: "eslint-plugin-cypress@npm:6.4.1"
+"eslint-plugin-cypress@npm:^6.4.2":
+  version: 6.4.2
+  resolution: "eslint-plugin-cypress@npm:6.4.2"
   dependencies:
-    globals: "npm:^17.6.0"
+    globals: "npm:^17.7.0"
   peerDependencies:
     "@typescript-eslint/parser": ">=8"
     eslint: ">=9"
   peerDependenciesMeta:
     "@typescript-eslint/parser":
       optional: true
-  checksum: 10c0/6eb4c058d017036cfa8c62db7dfed3fdd5edbcb9faa44dc4b675f02e8bf7f19d69545fa892cb8dd4b1fd40238934e565986cc477f9e340c135a78c050ea73216
+  checksum: 10c0/0b886c66ba251949508abefedfee09e0d186d6be0960b5737d6c70abbf54d3ba7e0d07b907643524c2f223d09082bf6e516f1b40182a43546390acdd758875b7
   languageName: node
   linkType: hard
 
@@ -12603,9 +12603,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jest@npm:^29.15.2":
-  version: 29.15.2
-  resolution: "eslint-plugin-jest@npm:29.15.2"
+"eslint-plugin-jest@npm:^29.15.4":
+  version: 29.15.4
+  resolution: "eslint-plugin-jest@npm:29.15.4"
   dependencies:
     "@typescript-eslint/utils": "npm:^8.0.0"
   peerDependencies:
@@ -12620,7 +12620,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10c0/be8d59b0d4c1ff1afd5294b227cdd190a3a7741fb28f8092d359eda1010cb87ef61c3db6c0a794e9612f745ae008c4d53ee78754d8faf87a22a823b71c9b14e4
+  checksum: 10c0/4a32cd29cb67b54e5fb5f4acbc749e79c024f50099825e91c93d1d9674caf5b4bfe4810c7931e01d6b30e77cbf72d7619db785a12f459f2b23f5885d39cb1033
   languageName: node
   linkType: hard
 
@@ -14358,10 +14358,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globals@npm:^17.6.0":
-  version: 17.6.0
-  resolution: "globals@npm:17.6.0"
-  checksum: 10c0/cf94fb4329cc5c68cf81018fd68324f413181ee169f0235b0b33b82bc93fe7825a21beea951f83a80e8e4bbdad9c0c80515a145b5fd4b5cb52f2a80db899a93f
+"globals@npm:^17.7.0":
+  version: 17.7.0
+  resolution: "globals@npm:17.7.0"
+  checksum: 10c0/e83f791acf537b85fa1632ac48a45432a1999a61acd9f955b5c2145f66d6b5000a7945029874b6184fa2dfac8d33af03885a5a7ffa457866f1bcf0b40d0c1291
   languageName: node
   linkType: hard
 
@@ -24890,9 +24890,9 @@ __metadata:
     enzyme-to-json: "npm:^3.6.2"
     eslint: "npm:^9.16.0"
     eslint-config-airbnb: "npm:19.0.4"
-    eslint-plugin-cypress: "npm:^6.4.1"
+    eslint-plugin-cypress: "npm:^6.4.2"
     eslint-plugin-import: "npm:^2.31.0"
-    eslint-plugin-jest: "npm:^29.15.2"
+    eslint-plugin-jest: "npm:^29.15.4"
     eslint-plugin-jsx-a11y: "npm:^6.10.2"
     eslint-plugin-node: "npm:^11.1.0"
     eslint-plugin-prettier: "npm:^5.5.6"
