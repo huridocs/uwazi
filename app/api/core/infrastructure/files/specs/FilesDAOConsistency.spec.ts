@@ -238,6 +238,18 @@ describe('FilesDAOConsistency', () => {
           mimetype: 'image/jpeg',
         });
       });
+
+      it('does not include null values in returned rows', async () => {
+        const dao = getDao();
+        const result = await dao.getById(f.idString('doc_with_fulltext'));
+
+        const data = result.getDataOrThrow();
+        expect(data).not.toHaveProperty('url');
+        if (usePostgres) {
+          expect(typeof data.creationDate).toBe('number');
+        }
+        expect(typeof data.size).toBe('number');
+      });
     });
 
     describe('getByFilename', () => {
@@ -335,6 +347,21 @@ describe('FilesDAOConsistency', () => {
 
         expect(files.length).toBeGreaterThan(0);
         files.forEach(f => expect(f).toHaveProperty('_id'));
+      });
+
+      it('returns rows without null values for any file type', async () => {
+        const dao = getDao();
+        const files = await dao.getByEntity('entity_a');
+
+        for (const file of files) {
+          if (file.type !== 'attachment') {
+            expect(file).not.toHaveProperty('url');
+          }
+          if (usePostgres) {
+            expect(typeof file.creationDate).toBe('number');
+          }
+          expect(typeof file.size).toBe('number');
+        }
       });
     });
 
@@ -450,6 +477,18 @@ describe('FilesDAOConsistency', () => {
         const files = await dao.getByQuery({ type: 'document' }, { limit: 2 });
 
         expect(files).toHaveLength(2);
+      });
+
+      it('returns rows without null values', async () => {
+        const dao = getDao();
+        const files = await dao.getByQuery({ type: 'document' });
+
+        for (const file of files) {
+          expect(file).not.toHaveProperty('url');
+          if (usePostgres) {
+            expect(typeof file.creationDate).toBe('number');
+          }
+        }
       });
     });
 

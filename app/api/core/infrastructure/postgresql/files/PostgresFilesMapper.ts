@@ -9,18 +9,18 @@ import { LanguageUtils } from '#shared/language/index.js';
 import type { FilesRow } from './PostgresFilesRow.js';
 
 export class PostgresFilesMapper {
-  private static baseFields(row: FilesRow) {
+  private static baseFields(row: Omit<FilesRow, 'tenant_id'>) {
     return {
       id: row._id,
       originalname: row.originalname,
       filename: row.filename,
       mimetype: row.mimetype,
-      size: Number(row.size),
-      creationDate: Number(row.creationDate),
+      size: row.size ?? 0,
+      creationDate: row.creationDate ?? 0,
     };
   }
 
-  static toDomain(row: FilesRow, contentLoader: FileContentLoader) {
+  static toDomain(row: Omit<FilesRow, 'tenant_id'>, contentLoader: FileContentLoader) {
     switch (row.type) {
       case 'document': {
         if (row.status === 'ready') {
@@ -29,7 +29,7 @@ export class PostgresFilesMapper {
             entity: row.entity!,
             status: 'ready',
             language: LanguageUtils.fromISO639_3(row.language!).ISO639_1,
-            totalPages: Number(row.totalPages!),
+            totalPages: row.totalPages ?? undefined,
             generatedToc: row.generatedToc ?? false,
             toc: row.toc ?? undefined,
             propertySelections: row.propertySelections ?? undefined,
@@ -78,9 +78,8 @@ export class PostgresFilesMapper {
   static toDBO(file: BaseFile) {
     const dto = file.toDTO();
 
-    const base: FilesRow = {
+    const base: Omit<FilesRow, 'tenant_id'> = {
       _id: file.id,
-      tenant_id: '',
       originalname: dto.originalname,
       filename: dto.filename,
       mimetype: dto.mimetype,

@@ -23,7 +23,6 @@ describe('PostgresFilesMapper', () => {
 
       expect(row).toMatchObject({
         _id: 'doc-1',
-        tenant_id: '',
         originalname: 'doc.pdf',
         filename: 'doc.pdf',
         mimetype: 'application/pdf',

@@ -92,20 +92,21 @@ export class PostgresQueryBuilder<TRow> {
     return this;
   }
 
-  private stripTenantId(row: Record<string, unknown>): Record<string, unknown> {
-    const { tenant_id: _, ...rest } = row;
-    return rest;
+  private cleanRow(row: Record<string, unknown>): Record<string, unknown> {
+    return Object.fromEntries(
+      Object.entries(row).filter(([k, v]) => k !== 'tenant_id' && v !== null)
+    );
   }
 
   async first(): Promise<TRow | undefined> {
     const row = await this.qb.first();
     if (!row) return undefined;
-    return this.stripTenantId(row) as TRow;
+    return this.cleanRow(row) as TRow;
   }
 
   async all(): Promise<TRow[]> {
     const rows = (await this.qb) as Record<string, unknown>[];
-    return rows.map(r => this.stripTenantId(r)) as TRow[];
+    return rows.map(r => this.cleanRow(r)) as TRow[];
   }
 
   async count(): Promise<number> {

@@ -282,6 +282,7 @@ describe('PostgresFilesDataSource', () => {
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
       const inserted = rows.find(r => r._id === factory.idString('new-doc'));
       expect(inserted).toMatchObject({
+        tenant_id: TENANT_ID,
         type: 'document',
         entity: 'entity2',
         status: 'processing',
@@ -299,6 +300,7 @@ describe('PostgresFilesDataSource', () => {
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
       const inserted = rows.find(r => r._id === factory.idString('new-att'));
       expect(inserted).toMatchObject({
+        tenant_id: TENANT_ID,
         type: 'attachment',
         entity: 'entity1',
         url: null,
@@ -317,6 +319,7 @@ describe('PostgresFilesDataSource', () => {
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
       const inserted = rows.find(r => r._id === factory.idString('new-url'));
       expect(inserted).toMatchObject({
+        tenant_id: TENANT_ID,
         type: 'attachment',
         entity: 'entity1',
         url: 'https://example.com/doc.pdf',
@@ -335,6 +338,7 @@ describe('PostgresFilesDataSource', () => {
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
       const inserted = rows.find(r => r._id === factory.idString('new-thumb'));
       expect(inserted).toMatchObject({
+        tenant_id: TENANT_ID,
         type: 'thumbnail',
         entity: 'entity1',
         language: 'spa',
@@ -351,6 +355,7 @@ describe('PostgresFilesDataSource', () => {
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
       const inserted = rows.find(r => r._id === factory.idString('new-custom'));
       expect(inserted).toMatchObject({
+        tenant_id: TENANT_ID,
         type: 'custom',
         entity: null,
       });
@@ -371,22 +376,15 @@ describe('PostgresFilesDataSource', () => {
       await sut.bulkCreate([doc, attachment, custom]);
 
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
-      const insertedIds = rows
-        .filter(r =>
-          [
-            factory.idString('bulk-doc'),
-            factory.idString('bulk-att'),
-            factory.idString('bulk-custom'),
-          ].includes(r._id as string)
-        )
-        .map(r => r._id)
-        .sort();
-      const expectedIds = [
-        factory.idString('bulk-att'),
-        factory.idString('bulk-custom'),
-        factory.idString('bulk-doc'),
-      ].sort();
-      expect(insertedIds).toEqual(expectedIds);
+      const inserted = rows.filter(r =>
+        [
+          factory.idString('bulk-doc'),
+          factory.idString('bulk-att'),
+          factory.idString('bulk-custom'),
+        ].includes(r._id as string)
+      );
+      expect(inserted).toHaveLength(3);
+      inserted.forEach(r => expect(r).toMatchObject({ tenant_id: TENANT_ID }));
     });
   });
 
@@ -405,6 +403,7 @@ describe('PostgresFilesDataSource', () => {
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
       const row = rows.find(r => r._id === factory.idString('update-doc'));
       expect(row).toMatchObject({
+        tenant_id: TENANT_ID,
         status: 'ready',
         totalPages: 5,
         language: 'eng',
@@ -431,6 +430,7 @@ describe('PostgresFilesDataSource', () => {
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
       const row = rows.find(r => r._id === factory.idString('update-doc'));
       expect(row).toMatchObject({
+        tenant_id: TENANT_ID,
         status: 'ready',
         totalPages: 5,
         language: 'eng',
@@ -468,10 +468,12 @@ describe('PostgresFilesDataSource', () => {
 
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
       expect(rows.find(r => r._id === factory.idString('bulk-update-doc'))).toMatchObject({
+        tenant_id: TENANT_ID,
         status: 'ready',
         totalPages: 3,
       });
       expect(rows.find(r => r._id === factory.idString('new-att'))).toMatchObject({
+        tenant_id: TENANT_ID,
         type: 'attachment',
         entity: 'entity2',
       });
@@ -497,6 +499,7 @@ describe('PostgresFilesDataSource', () => {
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
       const row = rows.find(r => r._id === factory.idString('bulk-update-doc'));
       expect(row).toMatchObject({
+        tenant_id: TENANT_ID,
         status: 'ready',
         totalPages: 3,
         toc,
@@ -526,6 +529,7 @@ describe('PostgresFilesDataSource', () => {
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
       const row = rows.find(r => r._id === factory.idString('replace-doc'));
       expect(row).toMatchObject({
+        tenant_id: TENANT_ID,
         type: 'attachment',
         entity: 'entity1',
         status: null,
@@ -549,7 +553,9 @@ describe('PostgresFilesDataSource', () => {
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
       expect(rows.find(r => r._id === factory.idString('delete-doc-1'))).toBeUndefined();
       expect(rows.find(r => r._id === factory.idString('delete-custom'))).toBeUndefined();
-      expect(rows.find(r => r._id === factory.idString('delete-doc-2'))).toBeDefined();
+      expect(rows.find(r => r._id === factory.idString('delete-doc-2'))).toMatchObject({
+        tenant_id: TENANT_ID,
+      });
     });
 
     it('should be a no-op with empty array', async () => {
