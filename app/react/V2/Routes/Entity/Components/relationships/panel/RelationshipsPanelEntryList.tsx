@@ -1,17 +1,23 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   buildFlatPanelListEntries,
   buildPanelListEntries,
   buildTreePanelListEntries,
   panelEntryKey,
+  type PanelListEntry,
 } from '#V2/formatters/relationships/relationshipsPanelDerivation.js';
 import type { GroupLabelContext } from '#V2/formatters/relationships/relationshipsPanelGrouping.js';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
+import { useDocumentRelationshipNav } from '#V2/Routes/Entity/Components/context/index.js';
 import {
   RelationshipPanelRow,
   type RelationshipPanelRowHandlers,
 } from '../rows/RelationshipPanelRow.js';
+import { RenderIfVisible } from './RenderIfVisible.js';
+
+const ROW_ESTIMATED_HEIGHT = 72;
+const ROW_WINDOW_OFFSET = 600;
 
 type RelationshipsPanelEntryListProps = RelationshipPanelRowHandlers & {
   markers: RelationshipMarker[];
@@ -21,8 +27,17 @@ type RelationshipsPanelEntryListProps = RelationshipPanelRowHandlers & {
   flat?: boolean;
 };
 
-const panelEntryCount = (markers: RelationshipMarker[], selfSharedId: string): number =>
-  buildPanelListEntries(markers, selfSharedId).length;
+const panelEntryCount = (
+  markers: RelationshipMarker[],
+  selfSharedId: string,
+  flat = false
+): number => (flat ? markers.length : buildPanelListEntries(markers, selfSharedId).length);
+
+const entryMatchesId = (entry: PanelListEntry, id: string): boolean => {
+  if (entry.kind === 'reference') return entry.marker._id === id;
+  if (entry.kind === 'aggregate') return entry.aggregate.markerIds.includes(id);
+  return entry.hub.markerIds.includes(id);
+};
 
 const renderPanelEntryRows = ({
   markers,
@@ -58,9 +73,50 @@ const renderPanelEntryRows = ({
 const RelationshipsPanelEntryList = ({
   bordered = false,
   variant = 'list',
-  ...props
+  flat = false,
+  markers,
+  groupContext,
+  selfSharedId,
+  activeRelationshipId,
+  onClick,
+  onView,
+  onDelete,
 }: RelationshipsPanelEntryListProps) => {
-  const content = renderPanelEntryRows({ bordered, variant, ...props });
+  const { scrollToRelationshipPanel } = useDocumentRelationshipNav();
+
+  const entries = useMemo(() => {
+    if (flat) return buildFlatPanelListEntries(markers);
+    if (variant === 'tree') return buildTreePanelListEntries(markers, selfSharedId);
+    return buildPanelListEntries(markers, selfSharedId);
+  }, [flat, variant, markers, selfSharedId]);
+
+  const rowProps = { selfSharedId, activeRelationshipId, onClick, onView, onDelete };
+
+  const content = entries.map(entry => {
+    const key = panelEntryKey(entry);
+    const row = <RelationshipPanelRow entry={entry} groupContext={groupContext} {...rowProps} />;
+
+    const pinned =
+      (!!activeRelationshipId && entryMatchesId(entry, activeRelationshipId)) ||
+      (!!scrollToRelationshipPanel && entryMatchesId(entry, scrollToRelationshipPanel));
+
+    const node =
+      variant !== 'list' || pinned ? (
+        row
+      ) : (
+        <RenderIfVisible defaultHeight={ROW_ESTIMATED_HEIGHT} visibleOffset={ROW_WINDOW_OFFSET}>
+          {row}
+        </RenderIfVisible>
+      );
+
+    return bordered ? (
+      <div key={key} className="border-b border-border/50 last:border-b-0">
+        {node}
+      </div>
+    ) : (
+      <React.Fragment key={key}>{node}</React.Fragment>
+    );
+  });
 
   if (bordered) {
     return (

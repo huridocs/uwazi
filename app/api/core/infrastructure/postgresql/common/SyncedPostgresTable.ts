@@ -1,6 +1,6 @@
-/* eslint-disable max-classes-per-file, max-params */
+/* eslint-disable max-classes-per-file */
 import { Db } from 'mongodb';
-import { PostgresTable, PostgresConnectionConfig } from './PostgresTable.js';
+import { PostgresTable } from './PostgresTable.js';
 import { PostgresQueryBuilder } from './PostgresQueryBuilder.js';
 import { SyncLogWriter } from './SyncLogWriter.js';
 
@@ -34,15 +34,8 @@ class SyncedPostgresQueryBuilder<TRow> extends PostgresQueryBuilder<TRow> {
 export class SyncedPostgresTable extends PostgresTable {
   private syncWriter: SyncLogWriter;
 
-  constructor(
-    connection: PostgresConnectionConfig,
-    tableName: string,
-    tenantId: string,
-    syncDb: Db,
-    syncNamespace: string,
-    jsonbColumns: string[] = []
-  ) {
-    super(connection, tableName, tenantId, jsonbColumns);
+  constructor(tableName: string, tenantId: string, syncDb: Db, syncNamespace: string) {
+    super(tableName, tenantId);
     this.syncWriter = new SyncLogWriter(syncDb, syncNamespace);
   }
 

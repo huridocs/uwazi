@@ -32,6 +32,14 @@ export class SyncDispatcherForTests implements JobsDispatcher {
   }
 
   // eslint-disable-next-line class-methods-use-this
+  async cancelByParams<T extends Dispatchable>(
+    _dispatchable: DispatchableClass<T>,
+    _params: Partial<Parameters<T['handleDispatch']>[1]>
+  ): Promise<void> {
+    // No-op for sync dispatcher in tests
+  }
+
+  // eslint-disable-next-line class-methods-use-this
   async dispatch<T extends Dispatchable>(
     dispatchable: DispatchableClass<T>,
     params: Parameters<T['handleDispatch']>[1],

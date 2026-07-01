@@ -5,9 +5,8 @@ import { fileURLToPath } from 'url';
 import pg from 'pg';
 import { config } from '#api/config.js';
 import uniqueID from '#shared/uniqueID.js';
-import { PostgresConnectionFactory } from '#api/core/infrastructure/factories/PostgresConnectionFactory.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { tenants } from '#api/tenants/tenantContext.js';
-import { destroyKnexConnections } from '#api/core/infrastructure/postgresql/common/PostgresTable.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -91,7 +90,7 @@ const testingPG = {
      * Override PG config for this test process. Safe because Jest workers are
      * separate processes; the override is local to this process and reset in disconnect().
      */
-    PostgresConnectionFactory.setConfig(this.config);
+    PostgresDB.setConfig(this.config);
 
     await pool.query(SCHEMA_SQL);
 
@@ -136,14 +135,14 @@ const testingPG = {
   },
 
   async disconnect(): Promise<void> {
-    await destroyKnexConnections();
+    await PostgresDB.disconnect();
 
     if (pool) {
       pool.on('error', () => {});
       await pool.end();
       pool = null;
       this.pool = null;
-      PostgresConnectionFactory.resetConfig();
+      PostgresDB.resetConfig();
     }
 
     if (this.dbName) {

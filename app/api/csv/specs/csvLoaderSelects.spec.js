@@ -2,7 +2,7 @@
 import path from 'path';
 
 import translations from '#api/i18n/translations.js';
-import thesauri from '#api/thesauri/index.js';
+import thesauri from '#api/core/v1_layer/thesauri/index.js';
 import entities from '#api/entities/index.js';
 import { fixtureFactory } from '#api/csv/specs/csvLoaderSelectsFixtures.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';

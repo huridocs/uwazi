@@ -7,17 +7,13 @@ import {
   ThesaurusNotFoundError,
 } from '#api/core/domain/thesaurus/errors.js';
 import { PostgresDataSource } from '../common/PostgresDataSource.js';
-import { PostgresConnectionConfig } from '../common/PostgresTable.js';
 import { PostgresThesaurusMapper, ThesaurusRow } from './PostgresThesaurusMapper.js';
 
 export class PostgresThesauriDataSource extends PostgresDataSource implements ThesauriDataSource {
   protected tableName = 'thesauri';
 
-  protected jsonbColumns = ['values'];
-
-  constructor(deps: { connection: PostgresConnectionConfig; tenantId: string; mongoDb: Db }) {
+  constructor(deps: { tenantId: string; mongoDb: Db }) {
     super({
-      connection: deps.connection,
       tenantId: deps.tenantId,
       sync: { syncDb: deps.mongoDb, syncNamespace: 'dictionaries' }, // syncNamespace matches MongoDB collection name for updatelogs compatibility
     });
@@ -35,7 +31,11 @@ export class PostgresThesauriDataSource extends PostgresDataSource implements Th
 
   async create(thesaurus: Thesaurus): Promise<void> {
     const dbo = PostgresThesaurusMapper.toDBO(thesaurus);
-    await this.table.insert(dbo);
+    await this.table.insert({
+      _id: dbo._id,
+      name: dbo.name,
+      values: JSON.stringify(dbo.values),
+    });
   }
 
   async existsById(id: string): Promise<boolean> {
@@ -44,8 +44,11 @@ export class PostgresThesauriDataSource extends PostgresDataSource implements Th
   }
 
   async update(thesaurus: Thesaurus): Promise<void> {
-    const dbo = this.table.serializeForWrite(PostgresThesaurusMapper.toDBO(thesaurus));
-    await this.table.query().where({ _id: dbo._id }).update({ name: dbo.name, values: dbo.values });
+    const dbo = PostgresThesaurusMapper.toDBO(thesaurus);
+    await this.table
+      .query()
+      .where({ _id: dbo._id })
+      .update({ name: dbo.name, values: JSON.stringify(dbo.values) });
   }
 
   async delete(id: string): Promise<void> {

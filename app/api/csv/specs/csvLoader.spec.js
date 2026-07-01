@@ -10,7 +10,7 @@ import { search } from '#api/search/index.js';
 import settings from '#api/settings/index.js';
 import testingDB from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import thesauri from '#api/thesauri/index.js';
+import thesauri from '#api/core/v1_layer/thesauri/index.js';
 import typeParsers from '../typeParsers.js';
 import fixtures, { template1Id } from './csvLoaderFixtures.js';
 import { mockCsvFileReadStream } from './helpers.js';

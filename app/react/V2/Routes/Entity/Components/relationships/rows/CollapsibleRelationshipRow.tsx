@@ -12,7 +12,7 @@ import {
 } from './CollapsibleRelationshipRowHeader.js';
 
 type CollapsibleRelationshipRowProps = {
-  checkboxId: string;
+  checkboxIds: string[];
   evidenceCount: number;
   header: ReactNode;
   meta?: ReactNode;
@@ -35,7 +35,7 @@ const rowPadding: Record<RelationshipsPanelZoom, string> = {
 };
 
 const CollapsibleRelationshipRow = ({
-  checkboxId,
+  checkboxIds,
   evidenceCount,
   header,
   meta,
@@ -93,14 +93,14 @@ const CollapsibleRelationshipRow = ({
       }}
       aria-label={t('System', `${evidenceCount} evidence references`, null, false)}
       aria-expanded={expanded}
-      className="flex h-5 shrink-0 items-center gap-1 rounded bg-warm px-1.5 text-[10px] font-medium tabular-nums text-ink-tertiary transition-colors hover:bg-parchment hover:text-ink-secondary"
+      className="flex h-5 shrink-0 items-center gap-1 rounded bg-warm px-1.5 text-nano font-medium tabular-nums text-ink-tertiary transition-colors hover:bg-parchment hover:text-ink-secondary"
     >
       <LinkIcon className="h-2.5 w-2.5" />
       {evidenceCount}
     </button>
   );
   const hubBadge = isHub ? (
-    <span className="text-[10px] uppercase tracking-wide text-ink-tertiary">
+    <span className="text-nano uppercase tracking-wide text-ink-tertiary">
       <Translate>hub</Translate>
     </span>
   ) : null;
@@ -112,7 +112,7 @@ const CollapsibleRelationshipRow = ({
       <ListCardRow selected={false} onClick={handleHeaderClick} className={rowPadding[zoom]}>
         <div className={`flex ${alignItems} justify-between gap-2`}>
           <div className={`flex min-w-0 items-center gap-1.5 ${headerWrap ? 'flex-wrap' : ''}`}>
-            <RelationshipRowCheckbox relationshipId={checkboxId} />
+            <RelationshipRowCheckbox relationshipIds={checkboxIds} />
             {chevron}
             {headerContent}
           </div>
@@ -122,7 +122,7 @@ const CollapsibleRelationshipRow = ({
           </div>
         </div>
         {showMetaBelow && (
-          <div className="mt-1 flex items-center gap-1 text-[10px] text-ink-tertiary">{meta}</div>
+          <div className="mt-1 flex items-center gap-1 text-nano text-ink-tertiary">{meta}</div>
         )}
       </ListCardRow>
       {expanded && <div className="ml-[14px]">{children}</div>}

@@ -35,6 +35,31 @@ describe('groupDocumentRelationships', () => {
     expect(result[1].references).toHaveLength(1);
   });
 
+  it('keeps single references on different pages as separate rail points', () => {
+    const groups = [2, 3, 4, 5, 7].map(page => singlePageGroup(page, [`p${page}`]));
+
+    const result = groupDocumentRelationships(groups, 12);
+
+    expect(result).toHaveLength(5);
+    result.forEach(cluster => {
+      expect(cluster.type).toBe('single');
+      expect(cluster.references).toHaveLength(1);
+    });
+  });
+
+  it('keeps references distributed across a short document in separate clusters', () => {
+    const groups = Array.from({ length: 12 }, (_, index) =>
+      singlePageGroup(index + 1, [`p${index + 1}-a`, `p${index + 1}-b`, `p${index + 1}-c`])
+    );
+
+    const result = groupDocumentRelationships(groups, 12);
+
+    expect(result.length).toBeGreaterThan(1);
+    result.forEach(cluster => {
+      expect(cluster.endPage - cluster.startPage).toBeLessThanOrEqual(3);
+    });
+  });
+
   it('extends clusters from the last merged page, not the cluster start page', () => {
     const groups = [
       singlePageGroup(

@@ -19,8 +19,9 @@ const relationshipReferenceDisplay = (
   const counterpartAnchor = counterpartAnchorOf(marker.view, selfSharedId);
   const selfText = selfAnchor?.text?.trim() ?? '';
   const counterpartText = counterpartAnchor?.text?.trim() ?? '';
-  const referenceText = selfText || counterpartText;
-  const referencePage = selfText ? selfAnchor?.selections?.[0]?.page : undefined;
+  const referenceText = counterpartText || selfText;
+  const referencePage =
+    selfAnchor?.selections?.[0]?.page ?? counterpartAnchor?.selections?.[0]?.page;
   return { referenceText, referencePage };
 };
 
@@ -60,7 +61,8 @@ const buildRelationshipRowDerivedData = ({
 const useRelationshipRowData = (
   marker: RelationshipMarker,
   selfSharedId: string,
-  relationshipTypeNameProp?: string
+  relationshipTypeNameProp?: string,
+  representedIds?: string[]
 ) => {
   const rowRef = useRef<HTMLDivElement>(null);
   const { scrollToRelationshipPanel, setScrollToRelationshipPanel } = useDocumentRelationshipNav();
@@ -77,10 +79,12 @@ const useRelationshipRowData = (
   });
 
   useEffect(() => {
-    if (scrollToRelationshipPanel !== marker._id) return;
+    const ids = representedIds ?? [marker._id];
+
+    if (!scrollToRelationshipPanel || !ids.includes(scrollToRelationshipPanel)) return;
     scrollIntoView(rowRef.current, { behavior: 'smooth', block: 'center' });
     setScrollToRelationshipPanel(null);
-  }, [marker._id, scrollToRelationshipPanel, setScrollToRelationshipPanel]);
+  }, [marker._id, representedIds, scrollToRelationshipPanel, setScrollToRelationshipPanel]);
 
   return {
     rowRef,

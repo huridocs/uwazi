@@ -27,7 +27,7 @@ import { FetchResponseError } from '#shared/JSONRequest.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import templatesApi from '#api/core/v1_layer/templates/templates.js';
-import thesauriApi from '../api/thesauri/thesauri.js';
+import thesauriApi from '../api/core/v1_layer/thesauri/thesauri.js';
 import relationtypes from '../api/relationtypes/relationtypes.js';
 import translationsApi, { IndexedTranslations } from '../api/i18n/translations.js';
 import settingsApi from '../api/settings/settings.js';
@@ -45,7 +45,7 @@ import { create as createReduxStore } from './store.js';
 import { ProtectedRoute } from './ProtectedRoute.js';
 import { isMobileDevice } from '../shared/detectDevice.js';
 import { loadIcons } from '#UI/Icon/library.js';
-import { ClientFeatureFlags } from './V2/shared/types.js';
+import type { ClientFeatureFlags } from '#V2/shared/types.js';
 
 loadIcons();
 
@@ -337,6 +337,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   };
 
   const routes = getRoutes(settings, req.user && req.user._id, headers, indexComponents);
+
   const matched = matchRoutes(routes, req.path);
 
   if (matched === null) {
@@ -376,6 +377,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const clientFeatureFlags: ClientFeatureFlags = {
     paragraphExtraction: featureFlags?.paragraphExtraction,
     v2CSVImport: featureFlags?.v2CSVImport,
+    dataViz: featureFlags?.dataViz,
     newHeader: featureFlags?.newHeader,
     themeCustomization: featureFlags?.themeCustomization,
     v2GetEntity: featureFlags?.v2GetEntity,
@@ -417,6 +419,8 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     matched
   );
 
+  const resolvedLoadingError = loadingError;
+
   const pageCssRaw = initialState.page?.pageView?.toJS?.()?.metadata?.css;
   const documentHeadPageCss =
     typeof pageCssRaw === 'string' && pageCssRaw.trim() ? pageCssRaw : undefined;
@@ -431,7 +435,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
         <Provider store={atomStore}>
           <React.StrictMode>
-            <ErrorBoundary error={loadingError || ssrError}>
+            <ErrorBoundary error={resolvedLoadingError || ssrError}>
               <StaticRouterProvider
                 router={router}
                 context={staticHandleContext as any}
@@ -457,7 +461,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       reduxData={initialState}
       documentHeadPageCss={documentHeadPageCss}
       assets={assets}
-      loadingError={loadingError || ssrError}
+      loadingError={resolvedLoadingError || ssrError}
       featureFlags={clientFeatureFlags}
       atomStoreData={{ ...atomStoreData, ...(globalMatomo && { globalMatomo }), ciMatomoActive }}
     />
@@ -467,7 +471,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     logSSRAborted(req, 'Aborted before response', ssrStart, routeName);
     return;
   }
-  const responseCode = loadingError?.status || (ssrError ? 500 : 200);
+  const responseCode = resolvedLoadingError?.status || (ssrError ? 500 : 200);
   const resStatus = isCatchAll ? 404 : responseCode;
   res.status(resStatus).send(`<!DOCTYPE html>${html}`);
 };

@@ -6,9 +6,9 @@ const TRACK = {
 } as const;
 
 const DEFAULT_PAGE_HEIGHT = 842;
-const CLUSTER_BASE_SIZE = 16;
+const CLUSTER_BASE_SIZE = 14;
 const CLUSTER_GROWTH_FACTOR = 3;
-const CLUSTER_MAX_GROWTH = 16;
+const CLUSTER_MAX_GROWTH = 12;
 
 const normalizeTop = (top: number, pageHeight?: number): number => {
   if (top <= 1) {

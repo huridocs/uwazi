@@ -1,36 +1,8 @@
-/* eslint-disable import/exports-last */
-import knex, { Knex } from 'knex';
+import { Knex } from 'knex';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { PostgresQueryBuilder } from './PostgresQueryBuilder.js';
 
-export type PostgresConnectionConfig = {
-  host: string;
-  port: number;
-  database: string;
-  user: string;
-  password: string;
-};
-
-const _knexCache = new Map<string, Knex>();
-
-export function knexForConfig(config: PostgresConnectionConfig): Knex {
-  const key = `${config.host}:${config.port}/${config.database}`;
-  let kx = _knexCache.get(key);
-  if (!kx) {
-    kx = knex({
-      client: 'pg',
-      connection: config,
-      useNullAsDefault: true,
-    });
-    _knexCache.set(key, kx);
-  }
-  return kx;
-}
-
-export async function destroyKnexConnections() {
-  const promises = Array.from(_knexCache.values()).map(async kx => kx.destroy());
-  _knexCache.clear();
-  return Promise.all(promises).then(() => undefined);
-}
+export { PostgresQueryBuilder };
 
 export class PostgresTable {
   protected knex: Knex;
@@ -39,18 +11,10 @@ export class PostgresTable {
 
   readonly tenantId: string;
 
-  private readonly jsonbColumns: string[];
-
-  constructor(
-    connection: PostgresConnectionConfig,
-    tableName: string,
-    tenantId: string,
-    jsonbColumns: string[] = []
-  ) {
+  constructor(tableName: string, tenantId: string) {
     this.tableName = tableName;
     this.tenantId = tenantId;
-    this.jsonbColumns = jsonbColumns;
-    this.knex = knexForConfig(connection);
+    this.knex = PostgresDB.knex;
   }
 
   query<TRow = Record<string, unknown>>(): PostgresQueryBuilder<TRow> {
@@ -82,38 +46,17 @@ export class PostgresTable {
     return this.knex.raw(sql, bindings as any) as Promise<Knex.Raw<TResult>>;
   }
 
-  serializeForWrite(doc: Record<string, unknown>): Record<string, unknown> {
-    return this._serializeJsonb(doc);
-  }
-
-  private _serializeJsonb(row: Record<string, unknown>): Record<string, unknown> {
-    for (const col of this.jsonbColumns) {
-      if (
-        col in row &&
-        row[col] !== null &&
-        row[col] !== undefined &&
-        typeof row[col] === 'object'
-      ) {
-        // eslint-disable-next-line no-param-reassign
-        row[col] = JSON.stringify(row[col]);
-      }
-    }
-    return row;
-  }
-
   async insert(doc: Record<string, unknown> | Record<string, unknown>[]): Promise<void> {
     const rows = Array.isArray(doc)
-      ? doc.map(row => this._serializeJsonb({ ...row, tenant_id: this.tenantId }))
-      : this._serializeJsonb({ ...doc, tenant_id: this.tenantId });
+      ? doc.map(row => ({ ...row, tenant_id: this.tenantId }))
+      : { ...doc, tenant_id: this.tenantId };
     await this.knex(this.tableName).insert(rows);
   }
 
   async upsert(doc: Record<string, unknown> | Record<string, unknown>[]): Promise<void> {
     const rows = Array.isArray(doc)
-      ? doc.map(row => this._serializeJsonb({ ...row, tenant_id: this.tenantId }))
-      : this._serializeJsonb({ ...doc, tenant_id: this.tenantId });
+      ? doc.map(row => ({ ...row, tenant_id: this.tenantId }))
+      : { ...doc, tenant_id: this.tenantId };
     await this.knex(this.tableName).insert(rows).onConflict(['_id', 'tenant_id']).merge();
   }
 }
-
-export { PostgresQueryBuilder };

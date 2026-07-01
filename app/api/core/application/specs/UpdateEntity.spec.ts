@@ -13,17 +13,25 @@ import { factory, fixtures, SampleListener } from './UpdateEntityFixtures.js';
 
 type TestConfig = {
   name: string;
-  usePostgres: boolean;
+  postgresTemplates: boolean;
 };
 
 const testConfigs: TestConfig[] = [
-  { name: 'Mongo', usePostgres: false },
-  { name: 'Postgres', usePostgres: true },
+  { name: 'Mongo', postgresTemplates: false },
+  { name: 'Postgres', postgresTemplates: true },
 ];
 
-const createSut = () => {
+const createSut = (postgresTemplates = false) => {
   const fileStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
+
+  const contextOverrides: any = {};
+  if (postgresTemplates) {
+    contextOverrides.tenant = {
+      ...testingTenants.current(),
+      featureFlags: { postgresTemplates: true },
+    };
+  }
 
   return testingEnvironment.runWithContext(
     () => {
@@ -34,9 +42,31 @@ const createSut = () => {
 
       return { sut, fileStorage };
     },
-    { factories: { eventEmitter: () => EventEmitterFactory.default() } }
+    { ...contextOverrides, factories: { eventEmitter: () => EventEmitterFactory.default() } }
   );
 };
+
+const inputFile = (
+  fieldname: string,
+  originalname: string,
+  filename: string,
+  mimetype: string,
+  type: 'document' | 'attachment',
+  size?: number
+) =>
+  new InputFile(
+    {
+      fieldname,
+      encoding: '7bit',
+      mimetype,
+      destination: '/tmp',
+      originalname,
+      filename,
+      path: `/tmp/${filename}`,
+      size: size ?? (type === 'document' ? 78636 : 50000),
+    },
+    type
+  );
 
 describe('UpdateEntityUseCase', () => {
   const icon: EntityIcon = { id: 'iconId', type: 'entity', label: 'iconLabel' };
@@ -44,14 +74,10 @@ describe('UpdateEntityUseCase', () => {
   const getAllEntities = async (sharedId: string) =>
     testingEnvironment.db.getCollection('entities')!.find({ sharedId }).toArray();
 
-  const getAllFiles = async (entity: string) => {
-    const files = await testingEnvironment.db.getAllFrom('files');
-    return files.filter(f => f.entity === entity);
-  };
-  const getFileById = async (id: string) => {
-    const files = await testingEnvironment.db.getAllFrom('files');
-    return files.find(f => f._id!.toString() === factory.id(id).toString());
-  };
+  const getAllFiles = async (entity: string) =>
+    testingEnvironment.db.getCollection('files')!.find({ entity }).toArray();
+  const getFileById = async (id: string) =>
+    testingEnvironment.db.getCollection('files')!.findOne({ _id: factory.id(id) });
 
   const getAllJobs = async () => getConnection().collection('jobs').find().toArray();
   const clearJobs = async () => getConnection().collection('jobs').deleteMany({});
@@ -61,44 +87,23 @@ describe('UpdateEntityUseCase', () => {
     EventEmitterFactory.registry.register(SampleListener);
   });
 
+  beforeEach(async () => {
+    await testingEnvironment.setFixtures(fixtures);
+    await clearJobs();
+  });
+
   afterAll(async () => {
     await testingEnvironment.tearDown();
     EventEmitterFactory.registry.reset();
   });
 
-  describe.each(testConfigs)('$name', ({ usePostgres }) => {
-    beforeEach(async () => {
-      testingTenants.changeCurrentTenant({
-        featureFlags: { postgresFiles: usePostgres },
-      });
-      await testingEnvironment.setFixtures(fixtures);
-      await clearJobs();
-    });
-
+  describe.each(testConfigs)('$name', ({ postgresTemplates }) => {
     it('should update basic entity data', async () => {
-      const { sut } = createSut();
-
-      const entitiesBefore = await getAllEntities('entity1');
+      const { sut } = createSut(postgresTemplates);
 
       await sut.execute({ sharedId: 'entity1', language: 'en', icon, propertyAssignments: [] });
 
       const entities = await getAllEntities('entity1');
-      expect(entitiesBefore).toMatchObject([
-        {
-          sharedId: 'entity1',
-          title: 'Entity 1 EN',
-          template: factory.id('Basic Template'),
-          metadata: {},
-          language: 'en',
-        },
-        {
-          sharedId: 'entity1',
-          title: 'Entity 1 PT',
-          template: factory.id('Basic Template'),
-          metadata: {},
-          language: 'pt',
-        },
-      ]);
 
       expect(entities).toMatchObject([
         {
@@ -121,7 +126,7 @@ describe('UpdateEntityUseCase', () => {
     });
 
     it('should update title', async () => {
-      const { sut } = createSut();
+      const { sut } = createSut(postgresTemplates);
 
       await sut.execute({
         sharedId: 'entity1',
@@ -151,7 +156,7 @@ describe('UpdateEntityUseCase', () => {
 
     describe('When Property Assignments gets updated', () => {
       it('should update property assignments', async () => {
-        const { sut } = createSut();
+        const { sut } = createSut(postgresTemplates);
 
         const now = Date.now();
 
@@ -364,7 +369,7 @@ describe('UpdateEntityUseCase', () => {
       });
 
       it('should denormalize relationship icons correctly for mixed related entities', async () => {
-        const { sut } = createSut();
+        const { sut } = createSut(postgresTemplates);
 
         await sut.execute({
           sharedId: 'full_entity',
@@ -441,7 +446,7 @@ describe('UpdateEntityUseCase', () => {
       });
 
       it('should clear metadata when given empty or nullable values', async () => {
-        const { sut } = createSut();
+        const { sut } = createSut(postgresTemplates);
 
         await sut.execute({
           sharedId: 'full_entity',
@@ -554,7 +559,7 @@ describe('UpdateEntityUseCase', () => {
         ]);
       });
       it('should throw when a required property has no value', async () => {
-        const { sut } = createSut();
+        const { sut } = createSut(postgresTemplates);
 
         await expect(
           sut.execute({
@@ -568,7 +573,7 @@ describe('UpdateEntityUseCase', () => {
 
     describe('When Files gets uploaded', () => {
       it('should properly create url attachments', async () => {
-        const { sut, fileStorage } = createSut();
+        const { sut, fileStorage } = createSut(postgresTemplates);
 
         await sut.execute({
           language: 'en',
@@ -597,52 +602,32 @@ describe('UpdateEntityUseCase', () => {
       });
 
       it('should add files', async () => {
-        const { sut, fileStorage } = createSut();
+        const { sut, fileStorage } = createSut(postgresTemplates);
 
         await sut.execute({
           language: 'en',
           sharedId: 'entity1',
           propertyAssignments: [],
           uploadedFiles: [
-            new InputFile(
-              {
-                fieldname: 'documents[0]',
-                encoding: '7bit',
-                mimetype: 'application/pdf',
-                destination: '/tmp',
-                originalname: 'primary_1.pdf',
-                filename: 'primary_1.pdf',
-                path: '/tmp/primary_1.pdf',
-                size: 78636,
-              },
+            inputFile(
+              'documents[0]',
+              'primary_1.pdf',
+              'primary_1.pdf',
+              'application/pdf',
               'document'
             ),
-
-            new InputFile(
-              {
-                fieldname: 'documents[1]',
-                encoding: '7bit',
-                mimetype: 'application/pdf',
-                destination: '/tmp',
-                originalname: 'primary_2.pdf',
-                filename: 'primary_2.pdf',
-                path: '/tmp/primary_2.pdf',
-                size: 78636,
-              },
+            inputFile(
+              'documents[1]',
+              'primary_2.pdf',
+              'primary_2.pdf',
+              'application/pdf',
               'document'
             ),
-
-            new InputFile(
-              {
-                fieldname: 'attachments[0]',
-                encoding: '7bit',
-                mimetype: 'image/png',
-                destination: '/tmp',
-                originalname: 'attachment_1.png',
-                filename: 'attachment_1.png',
-                path: '/tmp/attachment_1.png',
-                size: 78636,
-              },
+            inputFile(
+              'attachments[0]',
+              'attachment_1.png',
+              'attachment_1.png',
+              'image/png',
               'attachment'
             ),
           ],
@@ -668,7 +653,7 @@ describe('UpdateEntityUseCase', () => {
       });
 
       it('should link image property to uploaded file', async () => {
-        const { sut } = createSut();
+        const { sut } = createSut(postgresTemplates);
 
         await sut.execute({
           language: 'en',
@@ -680,17 +665,11 @@ describe('UpdateEntityUseCase', () => {
             },
           ],
           uploadedFiles: [
-            new InputFile(
-              {
-                fieldname: 'attachments[0]',
-                encoding: '7bit',
-                mimetype: 'image/png',
-                destination: '/tmp',
-                originalname: 'new_image.png',
-                filename: 'generated_filename_123.png',
-                path: '/tmp/generated_filename_123.png',
-                size: 50000,
-              },
+            inputFile(
+              'attachments[0]',
+              'new_image.png',
+              'generated_filename_123.png',
+              'image/png',
               'attachment'
             ),
           ],
@@ -704,7 +683,7 @@ describe('UpdateEntityUseCase', () => {
       });
 
       it('should link media property to uploaded file', async () => {
-        const { sut } = createSut();
+        const { sut } = createSut(postgresTemplates);
 
         await sut.execute({
           language: 'en',
@@ -716,18 +695,13 @@ describe('UpdateEntityUseCase', () => {
             },
           ],
           uploadedFiles: [
-            new InputFile(
-              {
-                fieldname: 'attachments[0]',
-                encoding: '7bit',
-                mimetype: 'video/mp4',
-                destination: '/tmp',
-                originalname: 'new_video.mp4',
-                filename: 'generated_video_456.mp4',
-                path: '/tmp/generated_video_456.mp4',
-                size: 1000000,
-              },
-              'attachment'
+            inputFile(
+              'attachments[0]',
+              'new_video.mp4',
+              'generated_video_456.mp4',
+              'video/mp4',
+              'attachment',
+              1000000
             ),
           ],
         });
@@ -740,7 +714,7 @@ describe('UpdateEntityUseCase', () => {
       });
 
       it('should link media property with timeLinks to uploaded file', async () => {
-        const { sut } = createSut();
+        const { sut } = createSut(postgresTemplates);
 
         await sut.execute({
           language: 'en',
@@ -752,18 +726,13 @@ describe('UpdateEntityUseCase', () => {
             },
           ],
           uploadedFiles: [
-            new InputFile(
-              {
-                fieldname: 'attachments[0]',
-                encoding: '7bit',
-                mimetype: 'video/mp4',
-                destination: '/tmp',
-                originalname: 'video_with_timelinks.mp4',
-                filename: 'generated_video_789.mp4',
-                path: '/tmp/generated_video_789.mp4',
-                size: 1000000,
-              },
-              'attachment'
+            inputFile(
+              'attachments[0]',
+              'video_with_timelinks.mp4',
+              'generated_video_789.mp4',
+              'video/mp4',
+              'attachment',
+              1000000
             ),
           ],
         });
@@ -776,7 +745,7 @@ describe('UpdateEntityUseCase', () => {
       });
 
       it('should link multiple files to different properties in same request', async () => {
-        const { sut } = createSut();
+        const { sut } = createSut(postgresTemplates);
 
         await sut.execute({
           language: 'en',
@@ -792,31 +761,14 @@ describe('UpdateEntityUseCase', () => {
             },
           ],
           uploadedFiles: [
-            new InputFile(
-              {
-                fieldname: 'attachments[0]',
-                encoding: '7bit',
-                mimetype: 'image/jpeg',
-                destination: '/tmp',
-                originalname: 'photo.jpg',
-                filename: 'photo_abc.jpg',
-                path: '/tmp/photo_abc.jpg',
-                size: 50000,
-              },
-              'attachment'
-            ),
-            new InputFile(
-              {
-                fieldname: 'attachments[1]',
-                encoding: '7bit',
-                mimetype: 'video/mp4',
-                destination: '/tmp',
-                originalname: 'clip.mp4',
-                filename: 'clip_xyz.mp4',
-                path: '/tmp/clip_xyz.mp4',
-                size: 800000,
-              },
-              'attachment'
+            inputFile('attachments[0]', 'photo.jpg', 'photo_abc.jpg', 'image/jpeg', 'attachment'),
+            inputFile(
+              'attachments[1]',
+              'clip.mp4',
+              'clip_xyz.mp4',
+              'video/mp4',
+              'attachment',
+              800000
             ),
           ],
         });
@@ -832,7 +784,7 @@ describe('UpdateEntityUseCase', () => {
 
     describe('When Files gets updated', () => {
       it('should rename existing files', async () => {
-        const { sut } = createSut();
+        const { sut } = createSut(postgresTemplates);
 
         const filesBefore = await getAllFiles('entity1');
 
@@ -858,74 +810,69 @@ describe('UpdateEntityUseCase', () => {
 
         const filesAfter = await getAllFiles('entity1');
 
-        expect(filesBefore).toHaveLength(5);
-        expect(filesBefore).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({
-              entity: 'entity1',
-              filename: 'entity1_doc1',
-              originalname: 'Document 1.pdf',
-              language: 'eng',
-            }),
-            expect.objectContaining({
-              entity: 'entity1',
-              type: 'thumbnail',
-              filename: `${factory.id('entity1_doc1').toHexString()}.jpg`,
-              language: 'eng',
-            }),
-            expect.objectContaining({
-              entity: 'entity1',
-              filename: 'entity1_doc2',
-              originalname: 'Document 2.pdf',
-              language: 'eng',
-            }),
-            expect.objectContaining({
-              entity: 'entity1',
-              type: 'thumbnail',
-              filename: `${factory.id('entity1_doc2').toHexString()}.jpg`,
-              language: 'eng',
-            }),
-            expect.objectContaining({ entity: 'entity1', originalname: 'Attachment 1.txt' }),
-          ])
-        );
+        expect(filesBefore).toMatchObject([
+          {
+            _id: factory.id('entity1_doc1'),
+            entity: 'entity1',
+            originalname: 'Document 1.pdf',
+            language: 'eng',
+          },
+          {
+            _id: factory.id('entity1_doc1_thumbnail'),
+            entity: 'entity1',
+            type: 'thumbnail',
+            filename: `${factory.id('entity1_doc1').toHexString()}.jpg`,
+            language: 'eng',
+          },
+          {
+            _id: factory.id('entity1_doc2'),
+            entity: 'entity1',
+            originalname: 'Document 2.pdf',
+            language: 'eng',
+          },
+          {
+            _id: factory.id('entity1_doc2_thumbnail'),
+            entity: 'entity1',
+            type: 'thumbnail',
+            filename: `${factory.id('entity1_doc2').toHexString()}.jpg`,
+            language: 'eng',
+          },
+          { entity: 'entity1', originalname: 'Attachment 1.txt' },
+        ]);
 
-        expect(filesAfter).toHaveLength(5);
-        expect(filesAfter).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({
-              entity: 'entity1',
-              filename: 'entity1_doc1',
-              originalname: 'Document 1 Renamed.pdf',
-              language: 'eng',
-            }),
-            expect.objectContaining({
-              entity: 'entity1',
-              type: 'thumbnail',
-              filename: `${factory.id('entity1_doc1').toHexString()}.jpg`,
-              language: 'eng',
-            }),
-            expect.objectContaining({
-              entity: 'entity1',
-              filename: 'entity1_doc2',
-              originalname: 'Document 2 Renamed.pdf',
-              language: 'eng',
-            }),
-            expect.objectContaining({
-              entity: 'entity1',
-              type: 'thumbnail',
-              filename: `${factory.id('entity1_doc2').toHexString()}.jpg`,
-              language: 'eng',
-            }),
-            expect.objectContaining({
-              entity: 'entity1',
-              originalname: 'Attachment 1 Renamed.txt',
-            }),
-          ])
-        );
+        expect(filesAfter).toMatchObject([
+          {
+            _id: factory.id('entity1_doc1'),
+            entity: 'entity1',
+            originalname: 'Document 1 Renamed.pdf',
+            language: 'eng',
+          },
+          {
+            _id: factory.id('entity1_doc1_thumbnail'),
+            entity: 'entity1',
+            type: 'thumbnail',
+            filename: `${factory.id('entity1_doc1').toHexString()}.jpg`,
+            language: 'eng',
+          },
+          {
+            _id: factory.id('entity1_doc2'),
+            entity: 'entity1',
+            originalname: 'Document 2 Renamed.pdf',
+            language: 'eng',
+          },
+          {
+            _id: factory.id('entity1_doc2_thumbnail'),
+            entity: 'entity1',
+            type: 'thumbnail',
+            filename: `${factory.id('entity1_doc2').toHexString()}.jpg`,
+            language: 'eng',
+          },
+          { entity: 'entity1', originalname: 'Attachment 1 Renamed.txt' },
+        ]);
       });
 
       it('should persist property selections on the selected file', async () => {
-        const { sut } = createSut();
+        const { sut } = createSut(postgresTemplates);
 
         await sut.execute({
           language: 'en',
@@ -962,6 +909,7 @@ describe('UpdateEntityUseCase', () => {
         const file = await getFileById('entity1_doc1');
 
         expect(file).toMatchObject({
+          _id: factory.id('entity1_doc1'),
           entity: 'entity1',
           originalname: 'Document 1 changed.pdf',
           propertySelections: [
@@ -977,7 +925,7 @@ describe('UpdateEntityUseCase', () => {
       });
 
       it('should not persist property selections if selected file does not belong to entity', async () => {
-        const { sut } = createSut();
+        const { sut } = createSut(postgresTemplates);
 
         await sut.execute({
           language: 'en',
@@ -1013,13 +961,13 @@ describe('UpdateEntityUseCase', () => {
 
         const file = await getFileById('entity1_doc1');
 
-        expect(file?.propertySelections ?? undefined).toBeUndefined();
+        expect(file?.propertySelections).toBeUndefined();
       });
     });
 
     describe('When Files gets removed', () => {
       it('should delete files that are not in the files array', async () => {
-        const { sut } = createSut();
+        const { sut } = createSut(postgresTemplates);
 
         await sut.execute({
           language: 'en',
@@ -1044,16 +992,16 @@ describe('UpdateEntityUseCase', () => {
             type: 'document',
           },
           {
+            _id: factory.id('entity1_doc1_thumbnail'),
             entity: 'entity1',
             type: 'thumbnail',
-            filename: `${factory.id('entity1_doc1').toHexString()}.jpg`,
           },
         ]);
       });
     });
 
     it('should emit EntityUpdatedEvent after updating the entity', async () => {
-      const { sut } = createSut();
+      const { sut } = createSut(postgresTemplates);
 
       await sut.execute({
         language: 'en',
@@ -1082,7 +1030,7 @@ describe('UpdateEntityUseCase', () => {
     });
 
     it('should change entity template', async () => {
-      const { sut } = createSut();
+      const { sut } = createSut(postgresTemplates);
 
       await sut.execute({
         sharedId: 'entity1',
@@ -1127,7 +1075,7 @@ describe('UpdateEntityUseCase', () => {
 
       describe('when only deleting a document', () => {
         it('should set preview to the surviving thumbnail on all translations', async () => {
-          const { sut } = createSut();
+          const { sut } = createSut(postgresTemplates);
 
           // entity1 has doc1 (thumbnail) and doc2 (thumbnail) — remove doc2, keep doc1
           await sut.execute({
@@ -1151,7 +1099,7 @@ describe('UpdateEntityUseCase', () => {
         });
 
         it('should clear preview on all translations when all documents are removed', async () => {
-          const { sut } = createSut();
+          const { sut } = createSut(postgresTemplates);
 
           // Remove all files
           await sut.execute({
@@ -1171,7 +1119,7 @@ describe('UpdateEntityUseCase', () => {
 
       describe('when deleting a document and uploading a new one', () => {
         it('should set preview to the surviving thumbnail (new doc has no thumbnail yet)', async () => {
-          const { sut } = createSut();
+          const { sut } = createSut(postgresTemplates);
 
           // Remove doc2, keep doc1, add a new document upload
           await sut.execute({
@@ -1185,18 +1133,13 @@ describe('UpdateEntityUseCase', () => {
               },
             ],
             uploadedFiles: [
-              new InputFile(
-                {
-                  fieldname: 'documents[0]',
-                  encoding: '7bit',
-                  mimetype: 'application/pdf',
-                  destination: '/tmp',
-                  originalname: 'new_doc.pdf',
-                  filename: 'new_doc.pdf',
-                  path: '/tmp/new_doc.pdf',
-                  size: 50000,
-                },
-                'document'
+              inputFile(
+                'documents[0]',
+                'new_doc.pdf',
+                'new_doc.pdf',
+                'application/pdf',
+                'document',
+                50000
               ),
             ],
           });

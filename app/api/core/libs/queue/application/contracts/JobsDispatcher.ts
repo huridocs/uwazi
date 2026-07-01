@@ -14,6 +14,11 @@ export interface JobsDispatcher {
     params: Partial<Parameters<T['handleDispatch']>[1]>
   ): Promise<void>;
 
+  cancelByParams<T extends Dispatchable>(
+    dispatchable: DispatchableClass<T>,
+    params: Partial<Parameters<T['handleDispatch']>[1]>
+  ): Promise<void>;
+
   dispatch<T extends Dispatchable>(
     dispatchable: DispatchableClass<T>,
     params: Parameters<T['handleDispatch']>[1],

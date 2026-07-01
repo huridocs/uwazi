@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useAnimateToPosition } from '../hooks/useAnimateToPosition.js';
 import { computeClusterOuterSize } from '../computeMarkerY.js';
 import { RAIL_MARKER_SIZE, RAIL_MARKER_SPACING, railMarkerZIndex } from '../markerMetrics.js';
-import { RelationshipMarker } from '../types.js';
+import { RelationshipMarker, compareMarkerAppearance, markerEvidenceKey } from '../types.js';
 import { Point } from './Point.js';
 import { ShowMoreButton } from './ShowMoreButton.js';
 
@@ -20,12 +20,16 @@ type ClusterProps = {
 };
 
 const PAD = 2;
-const BRANCH_LEN = 16;
-const STEM_LEN = 12;
-const TRUNK_X = RAIL_MARKER_SIZE + PAD + BRANCH_LEN;
+const BRANCH_LEN = 9;
+const STEM_LEN = 8;
+const POINT_INSET = 3;
+const SUBTREE_EDGE_INSET = RAIL_MARKER_SPACING / 2;
+const BRANCH_X = POINT_INSET + RAIL_MARKER_SIZE + PAD;
+const TRUNK_X = BRANCH_X + BRANCH_LEN;
 const SVG_WIDTH = TRUNK_X + STEM_LEN;
 const LINE_STROKE = 'var(--color-theme-text-secondary)';
 const LINE_OPACITY = 0.4;
+const MAX_VISIBLE_POINTS = 18;
 
 type ClusterSubtreeLayoutInput = {
   position: number;
@@ -34,8 +38,30 @@ type ClusterSubtreeLayoutInput = {
   rowCount: number;
 };
 
+type ClusterPointGroup = {
+  marker: RelationshipMarker;
+  markers: RelationshipMarker[];
+};
+
 const clamp = (value: number, min: number, max: number): number =>
   Math.min(Math.max(value, min), max);
+
+const groupClusterPoints = (references: RelationshipMarker[]): ClusterPointGroup[] => {
+  const grouped = new Map<string, ClusterPointGroup>();
+  [...references].sort(compareMarkerAppearance).forEach(marker => {
+    const key = markerEvidenceKey(marker);
+    const group = grouped.get(key);
+    if (group) {
+      group.markers.push(marker);
+      if (compareMarkerAppearance(marker, group.marker) < 0) {
+        group.marker = marker;
+      }
+      return;
+    }
+    grouped.set(key, { marker, markers: [marker] });
+  });
+  return Array.from(grouped.values()).sort((a, b) => compareMarkerAppearance(a.marker, b.marker));
+};
 
 const computeClusterSubtreeLayout = ({
   position,
@@ -44,21 +70,20 @@ const computeClusterSubtreeLayout = ({
   rowCount,
 }: ClusterSubtreeLayoutInput) => {
   const height = (rowCount - 1) * RAIL_MARKER_SPACING + RAIL_MARKER_SIZE;
-  const rootY = outerSize / 2;
-  const preferredTop = position + rootY - height / 2;
-  const top =
-    markerLayerHeight === undefined
-      ? preferredTop
-      : clamp(preferredTop, 0, Math.max(0, markerLayerHeight - height));
+  const center = position + outerSize / 2;
+  const preferredTop = center - height / 2;
+  const minTop = SUBTREE_EDGE_INSET;
+  const maxTop = Math.max(minTop, (markerLayerHeight ?? height) - height - SUBTREE_EDGE_INSET);
+  const top = markerLayerHeight === undefined ? preferredTop : clamp(preferredTop, minTop, maxTop);
 
   return {
     height,
-    stemY: clamp(position + rootY - top, RAIL_MARKER_SIZE / 2, height - RAIL_MARKER_SIZE / 2),
+    stemY: clamp(center - top, RAIL_MARKER_SIZE / 2, height - RAIL_MARKER_SIZE / 2),
     topOffset: top - position,
   };
 };
 
-const Cluster = ({
+const ClusterComponent = ({
   position,
   markerLayerHeight,
   stackOrder = 1,
@@ -73,13 +98,14 @@ const Cluster = ({
   const animatedPosition = useAnimateToPosition(position);
   const [internalIsOpen, setInternalIsOpen] = useState(false);
 
-  const points = references.slice(0, 10);
-  const extraPoints = references.slice(10);
+  const pointGroups = useMemo(() => groupClusterPoints(references), [references]);
+  const points = pointGroups.slice(0, MAX_VISIBLE_POINTS);
+  const hasExtra = pointGroups.length > MAX_VISIBLE_POINTS;
 
   const clusterIsOpen = isOpen ?? internalIsOpen;
   const outerSize = computeClusterOuterSize(references.length);
   const hasActiveRef = references.some(ref => ref._id === activePointId);
-  const rowCount = points.length + (extraPoints.length > 0 ? 1 : 0);
+  const rowCount = points.length + (hasExtra ? 1 : 0);
   const subtree = computeClusterSubtreeLayout({ position, markerLayerHeight, outerSize, rowCount });
   const zIndex = railMarkerZIndex(stackOrder, clusterIsOpen ? 'cluster-open' : 'cluster');
 
@@ -155,7 +181,7 @@ const Cluster = ({
               return (
                 <line
                   key={`branch-${index}`}
-                  x1={RAIL_MARKER_SIZE + PAD}
+                  x1={BRANCH_X}
                   y1={cy}
                   x2={TRUNK_X}
                   y2={cy}
@@ -169,21 +195,22 @@ const Cluster = ({
 
           <div
             className="absolute inset-0 pointer-events-auto"
-            style={{ width: RAIL_MARKER_SIZE + PAD, left: 0 }}
+            style={{ width: RAIL_MARKER_SIZE + PAD, left: POINT_INSET }}
           >
-            {points.map((marker, index) => (
+            {points.map(({ marker, markers }, index) => (
               <Point
                 key={marker._id || `cluster-point-${index}`}
                 position={index * RAIL_MARKER_SPACING}
                 marker={marker}
                 onClick={onPointClick}
-                isActive={activePointId === marker._id}
+                isActive={markers.some(pointMarker => pointMarker._id === activePointId)}
+                representedCount={markers.length}
               />
             ))}
-            {extraPoints.length > 0 && (
+            {hasExtra && (
               <ShowMoreButton
                 position={points.length * RAIL_MARKER_SPACING}
-                references={extraPoints}
+                references={pointGroups.slice(MAX_VISIBLE_POINTS).flatMap(group => group.markers)}
                 onClick={onMoreClick}
               />
             )}
@@ -193,5 +220,7 @@ const Cluster = ({
     </div>
   );
 };
+
+const Cluster = React.memo(ClusterComponent);
 
 export { Cluster, computeClusterSubtreeLayout };

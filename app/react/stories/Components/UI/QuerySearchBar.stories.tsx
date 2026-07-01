@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { ActiveFilterChip } from '#V2/Components/UI/ActiveFilterChip.js';
 import { QuerySearchBar } from '#V2/Components/UI/QuerySearchBar.js';
 
-const searchTips = <p className="text-[11px] text-ink-secondary">AND OR NOT</p>;
+const searchTips = <p className="text-micro text-ink-secondary">AND OR NOT</p>;
 
 const meta: Meta<typeof QuerySearchBar> = {
   title: 'Components/UI/QuerySearchBar',

@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { RawEntity } from '#api/csv/entityRow.js';
-import { normalizeThesaurusLabel } from '#api/thesauri/thesauri.js';
+import { normalizeThesaurusLabel } from '#api/core/v1_layer/thesauri/thesauri.js';
 import { MetadataObjectSchema, PropertySchema } from '#shared/types/commonTypes.js';
 import { ensure } from '#shared/tsUtils.js';
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';

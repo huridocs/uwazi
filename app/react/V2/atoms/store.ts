@@ -44,7 +44,7 @@ const hydrateAtomStore = (data: AtomStoreData, store: ReturnType<typeof createSt
   if (data.relationTypes) store.set(relationshipTypesAtom, data.relationTypes);
   if (data.isMobile !== undefined) store.set(serverIsMobileAtom, data.isMobile);
   store.set(userAtom, data.user);
-  store.set(translationsAtom, data.translations);
+  store.set(translationsAtom, data.translations ?? []);
   store.set(localeAtom, data.locale || 'en');
   store.set(ixAcceptedSuggestions, new Set<string>());
 };
