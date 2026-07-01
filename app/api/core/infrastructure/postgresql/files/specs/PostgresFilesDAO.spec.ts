@@ -1,6 +1,5 @@
 /* eslint-disable max-statements */
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { PostgresConnectionFactory } from '#api/core/infrastructure/factories/PostgresConnectionFactory.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { PostgresFilesDAO } from '../PostgresFilesDAO.js';
 import { FileNotFound } from '#api/core/domain/files/errors.js';
@@ -68,7 +67,6 @@ const baseFixtures = {
 
 const createSut = () =>
   new PostgresFilesDAO({
-    connection: PostgresConnectionFactory.connectionConfig(),
     tenantId: TENANT_ID,
   });
 

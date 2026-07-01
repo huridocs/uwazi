@@ -1,7 +1,6 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoFilesDataSource } from '../mongodb/files/MongoFilesDataSource.js';
 import { PostgresFilesDataSource } from '../postgresql/files/PostgresFilesDataSource.js';
-import { PostgresConnectionFactory } from './PostgresConnectionFactory.js';
 import { FileStorageFactory } from '../files/FileStorageFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
@@ -21,7 +20,6 @@ export class FilesDataSourceFactory {
 
     if (tenant.featureFlags?.postgresFiles) {
       return new PostgresFilesDataSource({
-        connection: PostgresConnectionFactory.connectionConfig(),
         tenantId: tenant.name,
         transactionManager: tm,
         fileStorage: FileStorageFactory.default(),

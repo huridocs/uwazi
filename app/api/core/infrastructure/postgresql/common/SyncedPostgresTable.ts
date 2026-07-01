@@ -34,8 +34,14 @@ class SyncedPostgresQueryBuilder<TRow> extends PostgresQueryBuilder<TRow> {
 export class SyncedPostgresTable extends PostgresTable {
   private syncWriter: SyncLogWriter;
 
-  constructor(tableName: string, tenantId: string, syncDb: Db, syncNamespace: string) {
-    super(tableName, tenantId);
+  constructor(
+    tableName: string,
+    tenantId: string,
+    syncDb: Db,
+    syncNamespace: string,
+    jsonbColumns: string[] = []
+  ) {
+    super(tableName, tenantId, jsonbColumns);
     this.syncWriter = new SyncLogWriter(syncDb, syncNamespace);
   }
 

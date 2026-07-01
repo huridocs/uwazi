@@ -20,7 +20,6 @@ const TENANT_ID = 'test-tenant';
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
   const sut = new PostgresFilesDataSource({
-    connection: testingPG.config,
     tenantId: TENANT_ID,
     transactionManager,
     fileStorage: FileStorageFactory.default(),
