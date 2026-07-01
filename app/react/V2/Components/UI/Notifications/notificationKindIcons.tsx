@@ -37,7 +37,7 @@ const NotificationKindIcon = ({
 }) => {
   const Icon = icons[type];
   return (
-    <Icon className={`notification-kind-icon ${sizeClass[size]} shrink-0 ${kindColor[type]}`} />
+    <Icon className={`notification-kind-icon ${kindColor[type]} ${sizeClass[size]} shrink-0`} />
   );
 };
 
