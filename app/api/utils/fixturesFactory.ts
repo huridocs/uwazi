@@ -24,7 +24,6 @@ import { PermissionSchema } from '#shared/types/permissionType.js';
 import { MongoSegmentationBuilder } from '#api/core/infrastructure/mongodb/files/specs/MongoSegmentationBuilder.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { ConnectionSchema } from '#shared/types/connectionType.js';
-import { UserGroupSchema } from '#shared/types/userGroupType.js';
 import { User, UserRole } from '#api/core/domain/user/User.js';
 import {
   ProcessedPDFDBO,
