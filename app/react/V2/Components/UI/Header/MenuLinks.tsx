@@ -168,7 +168,7 @@ const MenuLinks = ({ links = [], className = '', endOverlapPx = 0 }: MenuLinksPr
   const containerRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLSpanElement>(null);
-  const [visibleCount, setVisibleCount] = useState(valid.length);
+  const [visibleCount, setVisibleCount] = useState(0);
   const [hasMeasured, setHasMeasured] = useState(false);
 
   const recompute = useCallback(() => {
@@ -214,7 +214,7 @@ const MenuLinks = ({ links = [], className = '', endOverlapPx = 0 }: MenuLinksPr
 
   if (!valid.length) return null;
 
-  const visible = hasMeasured ? valid.slice(0, visibleCount) : valid;
+  const visible = hasMeasured ? valid.slice(0, visibleCount) : [];
   const overflow = hasMeasured ? valid.slice(visibleCount) : [];
 
   return (
@@ -224,6 +224,7 @@ const MenuLinks = ({ links = [], className = '', endOverlapPx = 0 }: MenuLinksPr
         .filter(Boolean)
         .join(' ')}
       aria-label="Primary"
+      aria-busy={!hasMeasured}
     >
       <div
         ref={measureRef}

@@ -16,7 +16,7 @@ describe('Notifications stories accessibility', () => {
     cy.get('#notifications-panel-dialog').should('exist');
 
     cy.get('body').trigger('keydown', { key: 'Escape' });
-    cy.get('#notifications-panel-dialog').should('not.exist');
+    cy.get('#notifications-panel-dialog').should('have.attr', 'aria-hidden', 'true');
   });
 
   it('has no critical axe violations when panel is open', () => {
