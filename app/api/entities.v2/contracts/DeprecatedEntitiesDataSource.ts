@@ -6,8 +6,6 @@ type MarkAsChangedData = { property: string } | { properties: string[] };
 export type MarkAsChangedItems = MarkAsChangedCriteria & MarkAsChangedData;
 
 export interface DeprecatedEntitiesDataSource {
-  updateEntities_OnlyUpdateAndReindex(entity: DeprecatedEntity): Promise<void>;
-  updateEntity(entity: DeprecatedEntity): Promise<void>;
   updateObsoleteMetadataValues(
     id: DeprecatedEntity['_id'],
     values: Record<string, EntityMetadata[]>
