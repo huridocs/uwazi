@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import type { Application, NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
@@ -132,9 +131,9 @@ describe('POST /api/users/new', () => {
         name: 'Researchers',
         members: [
           {
-            refId: f.id('existinguser'),
+            refId: f.idString('existinguser'),
           },
-          { refId: new ObjectId(newUserId) },
+          { refId: newUserId },
         ],
       },
       {
@@ -145,7 +144,7 @@ describe('POST /api/users/new', () => {
       {
         _id: f.id('Investigators'),
         name: 'Investigators',
-        members: [{ refId: new ObjectId(newUserId) }],
+        members: [{ refId: newUserId }],
       },
     ]);
   });

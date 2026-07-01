@@ -31,6 +31,7 @@ import {
   ThumbnailDBO,
 } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { UserDBO } from '#api/core/infrastructure/mongodb/user/UserDBO.js';
+import { UserGroupDBO } from '#api/core/infrastructure/mongodb/user/UserGroupDBO.js';
 
 type PartialSuggestion = Partial<Omit<IXSuggestionType, 'state'>> & {
   state?: Partial<IXSuggestionType['state']>;
@@ -415,7 +416,7 @@ function getFixturesFactory() {
       };
     },
 
-    usergroup: (name: string, members?: { refId: ObjectId }[]): UserGroupSchema => ({
+    usergroup: (name: string, members?: { refId: string }[]): UserGroupDBO => ({
       _id: idMapper(name),
       name,
       members: members ?? [],

@@ -22,7 +22,7 @@ const fixtures: DBFixture = {
     },
   ],
   usergroups: [
-    f.usergroup('Researchers', [{ refId: f.id('existinguser') }]),
+    f.usergroup('Researchers', [{ refId: f.idString('existinguser') }]),
     f.usergroup('Journalists', []),
     f.usergroup('Investigators', []),
   ],

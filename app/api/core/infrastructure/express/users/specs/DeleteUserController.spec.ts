@@ -40,7 +40,15 @@ describe('DELETE /api/users', () => {
       await testingEnvironment.setFixtures(fixtures);
     });
 
+    // eslint-disable-next-line max-statements
     it('should soft delete a user and return 200', async () => {
+      let groups = await testingEnvironment.db.getAllFrom('usergroups');
+      let targetGroup = groups.find(group =>
+        group._id.equals(f.idString('Researchers'))
+      ) as UserGroupDBO;
+
+      expect(targetGroup.members).toEqual([{ refId: f.idString('existinguser') }]);
+
       const response = await request(app)
         .delete('/api/users')
         .query({ ids: JSON.stringify([f.idString('existinguser')]) });
@@ -52,12 +60,12 @@ describe('DELETE /api/users', () => {
       const deletedUser = users.find(user => user.username === 'existinguser');
       expect(deletedUser?.deletedAt).toBeDefined();
 
-      const groups = await testingEnvironment.db.getAllFrom('usergroups');
-      const targetGroup = groups.find(group =>
+      groups = await testingEnvironment.db.getAllFrom('usergroups');
+      targetGroup = groups.find(group =>
         group._id.equals(f.idString('Researchers'))
       ) as UserGroupDBO;
 
-      expect(targetGroup.members).not.toContain({ refId: deletedUser?._id });
+      expect(targetGroup.members).toEqual([]);
     });
 
     it('should return 422 when ids is missing', async () => {
