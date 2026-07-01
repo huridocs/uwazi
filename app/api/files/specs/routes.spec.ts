@@ -21,7 +21,6 @@ import { UserSchema } from '#shared/types/userType.js';
 import { FileCreatedEvent } from '../events/FileCreatedEvent.js';
 import { FileUpdatedEvent } from '../events/FileUpdatedEvent.js';
 import { FilesDeletedEvent } from '../events/FilesDeletedEvent.js';
-import { files } from '../files.js';
 import jsRoutes from '../jsRoutes.js';
 import uploadRoutes from '../routes.js';
 import { storage } from '../storage.js';
@@ -67,6 +66,7 @@ const coerceNumericFields = (row: Record<string, any>) => {
 };
 
 const normalizeForEvent = (file: Record<string, any>) => {
+  // eslint-disable-next-line camelcase
   const { tenant_id, ...rest } = file;
   const cleaned = Object.fromEntries(
     Object.entries(coerceNumericFields(rest)).filter(([, v]) => v !== null && v !== undefined)
@@ -277,7 +277,7 @@ describe('files routes', () => {
 
             const allFiles = await testingEnvironment.db.getAllFrom('files');
             const file = allFiles.find(f => f.originalname === 'A Happy Cat');
-            expect(file.mimetype).toBe('image/png');
+            expect(file!.mimetype).toBe('image/png');
           });
 
           it('should return a validation error for a no secured url', async () => {

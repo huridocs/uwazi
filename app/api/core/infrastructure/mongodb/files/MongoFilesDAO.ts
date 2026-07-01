@@ -1,11 +1,11 @@
 import { Db, Document, FindOptions, ObjectId } from 'mongodb';
 import { MongoDataSource } from '../common/MongoDataSource.js';
 import { MongoTransactionManager } from '../common/MongoTransactionManager.js';
-import { FileDBO } from './schemas/filesTypes.js';
+import { FileDBO } from './schemas/FilesTypes.js';
 import { Result } from '#api/core/libs/Result.js';
 import type { ResultType } from '#api/core/libs/Result.js';
 import { FileNotFound } from '#api/core/domain/files/errors.js';
-import type { GetFileOptions, ListFileOptions, EntityFileOptions } from './queryOptions.js';
+import type { GetFileOptions, ListFileOptions, EntityFileOptions } from './FileDAOTypes.js';
 import type { LanguageISO6393 } from '#shared/language/languageISO639_3.js';
 
 type Deps = {

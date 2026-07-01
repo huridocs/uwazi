@@ -29,7 +29,7 @@ import { ConnectionSchema } from '#shared/types/connectionType.js';
 import {
   ProcessedPDFDBO,
   ThumbnailDBO,
-} from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+} from '#api/core/infrastructure/mongodb/files/schemas/FilesTypes.js';
 
 type PartialSuggestion = Partial<Omit<IXSuggestionType, 'state'>> & {
   state?: Partial<IXSuggestionType['state']>;

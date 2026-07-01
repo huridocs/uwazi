@@ -21,7 +21,7 @@ import {
 } from '../../../application/contracts/FilesDataSource.js';
 import { FileNotFound, ProcessingFileNotFound } from '../../../domain/files/errors.js';
 import { FileMappers } from './FilesMappers.js';
-import { FileDBO } from './schemas/filesTypes.js';
+import { FileDBO } from './schemas/FilesTypes.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 type GetDocumentsForEntityQuery = {

@@ -1,11 +1,11 @@
-import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { Request, Response } from 'express';
 import { Writable } from 'stream';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { tenants } from '#api/tenants/index.js';
 import { ClientAbortedRequestError } from '#api/common.v2/errors/ClientAbortedRequestError.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { FileContents } from '#api/core/domain/files/FileContents.js';
-import { FileDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+import { FileDBO } from '#api/core/infrastructure/mongodb/files/schemas/FilesTypes.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -92,8 +92,9 @@ const createSut = (props?: CreateSutProps) => {
   jest.spyOn(TransactionManagerFactory, 'default').mockReturnValue({} as any);
   jest.spyOn(tenants, 'current').mockReturnValue({ featureFlags: {} } as any);
 
-  const MongoEntityPermissionChecker =
-    require('#api/core/infrastructure/mongodb/entity/MongoEntityPermissionChecker').MongoEntityPermissionChecker;
+  const {
+    MongoEntityPermissionChecker,
+  } = require('#api/core/infrastructure/mongodb/entity/MongoEntityPermissionChecker');
   jest
     .spyOn(MongoEntityPermissionChecker.prototype, 'checkReadPermission')
     .mockImplementation(mockPermissionChecker.checkReadPermission);

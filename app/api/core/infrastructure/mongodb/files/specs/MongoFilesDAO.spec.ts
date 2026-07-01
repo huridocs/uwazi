@@ -8,7 +8,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { MongoFilesDAO } from '../MongoFilesDAO.js';
 import { FileNotFound } from '#api/core/domain/files/errors.js';
-import { ProcessedPDFDBO } from '../schemas/filesTypes.js';
+import { ProcessedPDFDBO } from '../schemas/FilesTypes.js';
 
 const factory = getFixturesFactory();
 

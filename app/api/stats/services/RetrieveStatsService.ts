@@ -2,7 +2,7 @@ import { Db } from 'mongodb';
 import { elastic } from '#api/search/index.js';
 import { PUBLIC_USER_ID } from '#api/users/publicUser.js';
 import { UserSchema } from '#shared/types/userType.js';
-import type { FilesDAO } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
+import { MongoFilesDAO } from '#api/core/infrastructure/mongodb/files/MongoFilesDAO.js';
 
 type RoleCount = {
   _id: UserSchema['role'];
@@ -11,9 +11,10 @@ type RoleCount = {
 
 export class RetrieveStatsService {
   private readonly db: Db;
-  private readonly filesDAO: FilesDAO;
 
-  constructor(db: Db, filesDAO: FilesDAO) {
+  private readonly filesDAO: MongoFilesDAO;
+
+  constructor(db: Db, filesDAO: MongoFilesDAO) {
     this.db = db;
     this.filesDAO = filesDAO;
   }

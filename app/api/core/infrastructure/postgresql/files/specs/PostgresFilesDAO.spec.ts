@@ -460,7 +460,7 @@ describe('PostgresFilesDAO', () => {
       const result = await dao.getDistinctEntitySharedIds({
         type: 'document',
         status: 'ready',
-        language: 'xx',
+        language: 'xx' as any,
       });
       expect(result).toEqual([]);
     });

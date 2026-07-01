@@ -14,7 +14,7 @@ import { WebSockets } from '#api/core/application/contracts/WebSockets.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { MongoEntitiesDAO } from '../mongodb/entity/MongoEntitiesDAO.js';
 import { EntityPreviewBatchHandler } from './EntityPreviewBatchHandler.js';
-import { FilesDAO } from '../factories/FilesDAOFactory.js';
+import { MongoFilesDAO } from '../mongodb/files/MongoFilesDAO.js';
 
 type Pair = {
   from: LanguageISO6391;
@@ -27,7 +27,7 @@ type Params = {
 
 type JobDependencies = {
   entityDAO: MongoEntitiesDAO;
-  filesDAO: FilesDAO;
+  filesDAO: MongoFilesDAO;
   jobsDispatcher: JobsDispatcher;
   webSockets: WebSockets;
   settingsDS: SettingsDataSource;

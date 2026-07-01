@@ -1,12 +1,13 @@
+/* eslint-disable no-continue */
 /* eslint-disable max-statements */
 import { Db, FindCursor, ObjectId } from 'mongodb';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { User } from '#api/users.v2/model/User.js';
 import { MongoDataSource, MongoDSOptions } from '../common/MongoDataSource.js';
-import { FileDBO } from '../files/schemas/filesTypes.js';
+import { FileDBO } from '../files/schemas/FilesTypes.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import type { PostgresFilesDAO } from '../../postgresql/files/PostgresFilesDAO.js';
+import { MongoFilesDAO } from '../files/MongoFilesDAO.js';
 
 type GetWithFilesMatch = {
   language?: LanguageISO6391;
@@ -21,13 +22,13 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> {
 
   private user: User;
 
-  private filesDAO?: PostgresFilesDAO;
+  private filesDAO?: MongoFilesDAO;
 
   constructor(
     db: Db,
     transactionManager: TransactionManager,
     user: User,
-    options?: MongoDSOptions & { filesDAO?: PostgresFilesDAO }
+    options?: MongoDSOptions & { filesDAO?: MongoFilesDAO }
   ) {
     super(db, transactionManager, options);
     this.user = user;

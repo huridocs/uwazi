@@ -12,7 +12,7 @@ import type {
   GetFileOptions,
   ListFileOptions,
   EntityFileOptions,
-} from '../../mongodb/files/queryOptions.js';
+} from '../../mongodb/files/FileDAOTypes.js';
 import type { LanguageISO6393 } from '#shared/language/languageISO639_3.js';
 
 type Deps = PostgresDataSourceDeps;
