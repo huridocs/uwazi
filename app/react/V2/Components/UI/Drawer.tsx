@@ -55,6 +55,20 @@ const overlayMotionClass: Record<DrawerMotion, string> = {
   none: '',
 };
 
+const ANIMATED_PANEL_STATE = {
+  open: 'translate-x-0',
+  closed: 'invisible pointer-events-none translate-x-full rtl:-translate-x-full',
+} as const;
+
+const PANEL_STATE: Record<DrawerMotion, Record<'open' | 'closed', string>> = {
+  none: {
+    open: 'visible',
+    closed: 'invisible pointer-events-none',
+  },
+  spring: ANIMATED_PANEL_STATE,
+  'ease-out': ANIMATED_PANEL_STATE,
+};
+
 const Drawer = ({
   open,
   onClose,
@@ -75,7 +89,7 @@ const Drawer = ({
 }: DrawerProps) => {
   const defaults = SCOPE_DEFAULTS[scope];
   const resolvedMotion = motion ?? defaults.motion;
-  const panelRef = useRef<HTMLElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
   const previousFocus = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -91,39 +105,34 @@ const Drawer = ({
       (panel?.querySelector<HTMLElement>(FOCUSABLE) ?? panel)?.focus();
     });
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
+      if (event.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const panel = panelRef.current;
+      if (!panel) return;
+      const focusable = Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE));
+      if (focusable.length === 0) return;
+      const [first] = focusable;
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [open, onClose]);
 
-  const trapFocus = (event: React.KeyboardEvent<HTMLElement>) => {
-    if (event.key !== 'Tab' || !open) return;
-    const focusable = Array.from(event.currentTarget.querySelectorAll<HTMLElement>(FOCUSABLE));
-    if (focusable.length === 0) return;
-    const [first] = focusable;
-    const last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
-  };
-
   const wrapperClasses = [defaults.wrapper, wrapperClassName, open ? '' : 'pointer-events-none']
     .filter(Boolean)
     .join(' ');
 
-  const panelStateClass =
-    resolvedMotion === 'none'
-      ? open
-        ? 'visible'
-        : 'invisible pointer-events-none'
-      : open
-        ? 'translate-x-0'
-        : 'invisible pointer-events-none translate-x-full rtl:-translate-x-full';
+  const panelStateClass = PANEL_STATE[resolvedMotion][open ? 'open' : 'closed'];
 
   const panelClasses = [
     defaults.panel,
@@ -149,7 +158,7 @@ const Drawer = ({
         }`}
         style={{ backgroundColor: 'rgba(38, 30, 20, 0.18)' }}
       />
-      <aside
+      <div
         ref={panelRef}
         id={id}
         role="dialog"
@@ -157,13 +166,13 @@ const Drawer = ({
         aria-labelledby={labelledBy}
         aria-label={ariaLabel}
         aria-hidden={!open}
-        onKeyDown={trapFocus}
+        tabIndex={-1}
         className={`flex ${panelClasses}`}
       >
         {header}
         <div className={bodyClassName}>{children}</div>
         {footer}
-      </aside>
+      </div>
     </div>
   );
 };

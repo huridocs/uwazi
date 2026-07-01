@@ -138,10 +138,7 @@ const NotificationsPanel = () => {
               <ul className="flex flex-col gap-2 px-3 pb-3">
                 {groupedNotifications[bucket].map(notification => (
                   <li key={notification.id}>
-                    <NotificationItem
-                      notification={notification}
-                      onDismiss={removeNotification}
-                    />
+                    <NotificationItem notification={notification} onDismiss={removeNotification} />
                   </li>
                 ))}
               </ul>
