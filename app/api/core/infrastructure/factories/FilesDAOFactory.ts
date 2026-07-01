@@ -6,7 +6,7 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 class FilesDAOFactory {
   static default(): MongoFilesDAO {
-    const { tenant } = ExecutionContext;
+    const tenant = ExecutionContext.currentTenant;
 
     if (tenant.featureFlags?.postgresFiles) {
       return new PostgresFilesDAO({
