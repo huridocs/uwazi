@@ -291,6 +291,10 @@
   color: var(--color-theme-success);
 }
 
+@utility text-warning {
+  color: var(--color-theme-warning);
+}
+
 @utility text-emphasis-solid-foreground {
   color: var(--color-theme-accent-emphasis-solid-foreground);
 }

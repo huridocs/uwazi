@@ -101,7 +101,13 @@ const WithNotifications: Story = {
 };
 
 const WithFlash: Story = {
-  ...Primary,
+  render: args => (
+    <div className="tw-content">
+      <div className="flex w-[20rem] justify-end rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+        <Beacon {...args} />
+      </div>
+    </div>
+  ),
   args: {
     ...baseArgs,
     overallStatus: 'success',

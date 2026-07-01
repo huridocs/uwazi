@@ -9,7 +9,7 @@ import type { NotificationType } from '#V2/atoms/requestStatusAtom.js';
 
 const kindColor: Record<NotificationType, string> = {
   success: 'text-success',
-  warning: 'text-(--color-theme-warning)',
+  warning: 'text-warning',
   error: 'text-emphasis',
   info: 'text-supporting',
 };
