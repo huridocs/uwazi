@@ -1,12 +1,12 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { action } from 'storybook/actions';
-import { Beacon } from '#V2/Components/UI/Notifications/Beacon.js';
+import { ThemedBeacon, LegacyBeacon } from '#V2/Components/UI/Notifications/Beacon.js';
 import type { StatusNotification, StatusTask } from '#V2/atoms/requestStatusAtom.js';
 
-const meta: Meta<typeof Beacon> = {
+const meta: Meta<typeof ThemedBeacon> = {
   title: 'Components/Notifications/Beacon',
-  component: Beacon,
+  component: ThemedBeacon,
   argTypes: {
     overallStatus: {
       control: { type: 'select' },
@@ -19,7 +19,7 @@ const meta: Meta<typeof Beacon> = {
   },
 };
 
-type Story = StoryObj<typeof Beacon>;
+type Story = StoryObj<typeof ThemedBeacon>;
 
 const baseArgs = {
   isConnected: true,
@@ -37,7 +37,7 @@ const Primary: Story = {
   render: args => (
     <div className="tw-content">
       <div className="inline-flex rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-        <Beacon {...args} />
+        <ThemedBeacon {...args} />
       </div>
     </div>
   ),
@@ -104,7 +104,7 @@ const WithFlash: Story = {
   render: args => (
     <div className="tw-content">
       <div className="flex w-[20rem] justify-end rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-        <Beacon {...args} />
+        <ThemedBeacon {...args} />
       </div>
     </div>
   ),
@@ -112,6 +112,27 @@ const WithFlash: Story = {
     ...baseArgs,
     overallStatus: 'success',
     flash: { id: '1', type: 'success', title: 'Entity saved successfully.', phase: 'showing' },
+  },
+};
+
+const WithFlashOnCustomHeader: StoryObj<typeof LegacyBeacon> = {
+  render: args => (
+    <div className="tw-content">
+      <div
+        className="flex h-12 w-[24rem] items-center justify-end px-3"
+        style={{ background: 'linear-gradient(to right, #2f4f6f 0%, #ffffff 72%)' }}
+      >
+        <LegacyBeacon {...args} />
+      </div>
+    </div>
+  ),
+  args: {
+    ...baseArgs,
+    overallStatus: 'success',
+    chromeForeground: '#ffffff',
+    chromeFadeColor: '#ffffff',
+    chromeFadeStartColor: '#2f4f6f',
+    flash: { id: '1', type: 'success', title: 'Entity updated', phase: 'showing' },
   },
 };
 
@@ -126,4 +147,5 @@ export {
   WithRunningTasks,
   WithNotifications,
   WithFlash,
+  WithFlashOnCustomHeader,
 };

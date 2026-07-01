@@ -524,6 +524,36 @@
   color: inherit;
   stroke: currentColor;
 }
+
+.notification-kind-icon {
+  stroke: currentColor;
+}
+
+.notification-kind-icon--solid {
+  fill: currentColor;
+  stroke: none;
+}
+
+/* Legacy header only — themed V2 uses @utility text-* */
+.beacon-legacy .notification-kind-icon--success {
+  color: var(--color-theme-success, #059669);
+}
+.beacon-legacy .notification-kind-icon--warning {
+  color: var(--color-theme-warning, #d97706);
+}
+.beacon-legacy .notification-kind-icon--error {
+  color: var(--color-theme-accent-emphasis, #e8432a);
+}
+.beacon-legacy .notification-kind-icon--info {
+  color: var(--color-theme-accent-supporting, #00b4f0);
+}
+
+header button svg:not([class*='notification-kind-icon']),
+.menuNav button svg:not([class*='notification-kind-icon']) {
+  color: inherit;
+  stroke: currentColor;
+}
+
 .tw-content .header-bar[data-uwazi-header] .header-bar-brand {
   color: var(--color-theme-chrome-app-bar-fg, var(--color-theme-text-primary, #1a1a1a));
 }
@@ -759,6 +789,25 @@
     to right,
     transparent 0%,
     var(--color-theme-chrome-app-bar, var(--color-theme-bg-surface, #ffffff)) 100%
+  );
+}
+
+/* Legacy header: horizontal fade into the beacon rail (menu-row height only) */
+.beacon-header-veil {
+  height: 1.75rem;
+  width: 5.5rem;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    var(--beacon-header-fade, #ffffff) 100%
+  );
+}
+
+.beacon-header-fade-rail {
+  background-image: linear-gradient(
+    to right,
+    var(--beacon-header-fade-start, var(--beacon-header-fade, #ffffff)) 0%,
+    var(--beacon-header-fade, #ffffff) 100%
   );
 }
 
