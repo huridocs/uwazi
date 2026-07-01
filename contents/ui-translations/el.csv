@@ -81,7 +81,6 @@ Advanced ECharts overrides,Advanced ECharts overrides
 ALL,ΟΛΑ
 All,Όλα
 "All changes will be lost, are you sure you want to proceed?","Όλες οι αλλαγές θα χαθούν, είστε σίγουροι ότι θέλετε να προχωρήσετε;"
-All clear,All clear
 All data,Όλα τα δεδομένα
 All editing options will be disabled.,Όλες οι επιλογές επεξεργασίας θα απενεργοποιηθούν.
 All of the paragraphs will be deleted,Όλες οι παράγραφοι θα διαγραφούν
@@ -383,6 +382,7 @@ Duplicated name,Διπλότυπο όνομα
 Duplicated username,Διπλότυπο όνομα χρήστη
 Duration,Duration
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
+Earlier,Earlier
 Edit,Επεξεργασία
 Edit Extractor,Επεξεργασία εξαγωγέα
 Edit File,Επεξεργασία αρχείου
@@ -523,6 +523,7 @@ here,εδώ
 "Hi, I'm Bert.","Hi, I'm Bert."
 Hide,Hide
 Hide actions,Απόκρυψη ενεργειών
+Hide details,Hide details
 Hide label,Απόκρυψη ετικέτας
 Hide restricted relationships from public,Hide restricted relationships from public
 Hide toolbar,Απόκρυψη γραμμής εργαλείων
@@ -685,6 +686,7 @@ ML TOC,ML TOC
 Modified,Modified
 Month,Μήνας
 Months,Μήνες
+More,More
 more options.,περισσότερες επιλογές.
 Multi-source mode,Multi-source mode
 Multiple date,Πολλαπλή ημερομηνία
@@ -705,6 +707,7 @@ Navigate back,Πλοήγηση πίσω
 Navigation menu tool tip part 1,"Εάν είναι εσωτερικό URL εντός αυτού του ιστότοπου, φροντίστε να διαγράψετε το πρώτο τμήμα"
 Navigation menu tool tip part 2,αφήνοντας μόνο ένα σχετικό URL που ξεκινά με κάθετο (/). Δηλαδή /some_url.
 New,Νέο
+New activity will show up here.,New activity will show up here.
 New conversation,New conversation
 New entity,Νέα οντότητα
 New group,Νέα ομάδα
@@ -734,7 +737,6 @@ No icon / flag,Χωρίς εικονίδιο/σημαία
 No items available,Δεν υπάρχουν διαθέσιμα στοιχεία
 No Label,Χωρίς ετικέτα
 No label,Χωρίς ετικέτα
-No notifications or active tasks.,No notifications or active tasks.
 No options,Δεν υπάρχουν επιλογές
 No options found,Δεν βρέθηκαν επιλογές
 No page,No page
@@ -1062,6 +1064,7 @@ Shared as editor,Κοινοποιήθηκε ως επιμελητής
 Shared as viewer,Κοινοποιήθηκε ως θεατής
 Show actions,Εμφάνιση ενεργειών
 Show cookie policy,Εμφάνιση πολιτικής cookie
+Show details,Show details
 Show filters,Εμφάνιση φίλτρων
 Show in cards,Εμφάνιση σε κάρτες
 Show less,Show less
@@ -1383,6 +1386,7 @@ You have unsaved changes. Do you want to continue?,Έχετε μη αποθηκ�
 You should activate this feature for enhanced account security,Θα πρέπει να ενεργοποιήσετε αυτή τη λειτουργία για αυξημένη ασφάλεια λογαριασμού
 You should activate this feature for enhanced account security.,Θα πρέπει να ενεργοποιήσετε αυτή τη λειτουργία για αυξημένη ασφάλεια λογαριασμού.
 You won't be able to save an entity if this property is empty.,Δεν θα μπορείτε να αποθηκεύσετε μια οντότητα αν αυτή η ιδιότητα είναι κενή.
+You're all caught up,You're all caught up
 Your account's security is enhanced with two-factor authentication.,Η ασφάλεια του λογαριασμού σας ενισχύεται με την πιστοποίηση ταυτότητας δύο παραγόντων.
 Z → A,Z → A
 Zoom in,Μεγέθυνση
