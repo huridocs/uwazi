@@ -1,13 +1,42 @@
 import React from 'react';
+import {
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+  InformationCircleIcon,
+  XCircleIcon,
+} from '@heroicons/react/24/solid';
 import type { NotificationType, StatusNotification } from '#V2/atoms/requestStatusAtom.js';
 import { UwaziLoader, type UwaziLoaderColor } from '#V2/Components/UI/UwaziLoader.js';
 import { BeaconRailLabel } from './BeaconRailLabel.js';
 import type { FlashState } from './beaconHelpers.js';
-import { NotificationKindIcon } from './notificationKindIcons.js';
 
-const suffixClass = 'shrink-0 text-[11px] font-semibold text-ink-tertiary tabular-nums';
+const suffixClass = 'shrink-0 text-[11px] font-semibold tabular-nums';
 
-interface BeaconButtonContentProps {
+const legacyIconColor: Record<NotificationType, string> = {
+  success: 'var(--color-theme-success, #059669)',
+  warning: 'var(--color-theme-warning, #d97706)',
+  error: 'var(--color-theme-accent-emphasis, #e8432a)',
+  info: 'var(--color-theme-accent-supporting, #00b4f0)',
+};
+
+const LegacyNotificationKindIcon = ({ type }: { type: NotificationType }) => {
+  const icons = {
+    success: CheckCircleIcon,
+    warning: ExclamationTriangleIcon,
+    error: XCircleIcon,
+    info: InformationCircleIcon,
+  } as const;
+  const Icon = icons[type];
+  return (
+    <Icon
+      className="notification-kind-icon notification-kind-icon--solid h-3.5 w-3.5 shrink-0"
+      style={{ color: legacyIconColor[type] }}
+    />
+  );
+};
+
+interface LegacyBeaconButtonContentProps {
+  chromeForeground: string;
   showFlash: boolean;
   flash: FlashState | null;
   isExpanded: boolean;
@@ -20,7 +49,8 @@ interface BeaconButtonContentProps {
   isBusy: boolean;
 }
 
-const BeaconButtonContent = ({
+const LegacyBeaconButtonContent = ({
+  chromeForeground,
   showFlash,
   flash,
   isExpanded,
@@ -31,7 +61,10 @@ const BeaconButtonContent = ({
   moreCount,
   markColor,
   isBusy,
-}: BeaconButtonContentProps) => {
+}: LegacyBeaconButtonContentProps) => {
+  const railTextStyle = { color: chromeForeground };
+  const suffixStyle = { color: chromeForeground, opacity: 0.72 };
+
   if (showFlash && flash) {
     return (
       <div
@@ -39,11 +72,12 @@ const BeaconButtonContent = ({
         data-testid="notification-flash"
         className="animate-beacon-rail flex w-full min-w-0 items-center gap-2"
       >
-        <NotificationKindIcon type={flash.type} size="beacon" />
+        <LegacyNotificationKindIcon type={flash.type} />
         <span
           data-testid="notification-flash-title"
           title={flash.title}
-          className="min-w-0 flex-1 truncate text-[12px] font-medium text-ink"
+          className="min-w-0 flex-1 truncate text-[12px] font-medium"
+          style={railTextStyle}
         >
           {flash.title}
         </span>
@@ -59,9 +93,12 @@ const BeaconButtonContent = ({
         </span>
         <BeaconRailLabel
           text={activityLabel}
+          foreground={chromeForeground}
           suffix={
             taskProgress !== null ? (
-              <span className={suffixClass}>{taskProgress}%</span>
+              <span className={suffixClass} style={suffixStyle}>
+                {taskProgress}%
+              </span>
             ) : undefined
           }
         />
@@ -72,10 +109,17 @@ const BeaconButtonContent = ({
   if (isExpanded && latest) {
     return (
       <div key="summary" className="animate-beacon-rail flex w-full min-w-0 items-center gap-2">
-        <NotificationKindIcon type={latest.type} size="beacon" />
+        <LegacyNotificationKindIcon type={latest.type} />
         <BeaconRailLabel
           text={latest.title}
-          suffix={moreCount > 0 ? <span className={suffixClass}>+{moreCount}</span> : undefined}
+          foreground={chromeForeground}
+          suffix={
+            moreCount > 0 ? (
+              <span className={suffixClass} style={suffixStyle}>
+                +{moreCount}
+              </span>
+            ) : undefined
+          }
         />
       </div>
     );
@@ -88,4 +132,4 @@ const BeaconButtonContent = ({
   );
 };
 
-export { BeaconButtonContent };
+export { LegacyBeaconButtonContent };

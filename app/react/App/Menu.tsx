@@ -50,6 +50,15 @@ type mappedProps = ConnectedProps<typeof connector> & MenuProps;
 const isLibraryView = (value: string | undefined): value is keyof typeof libraryViewInfo =>
   typeof value === 'string' && value in libraryViewInfo;
 
+const legacyBeaconSlotStyle: React.CSSProperties = {
+  marginLeft: 'auto',
+  flexShrink: 0,
+  display: 'flex',
+  alignItems: 'center',
+  padding: '0 8px',
+  minWidth: '48px',
+};
+
 const MenuComponent = ({
   librarySearch,
   libraryFilters,
@@ -128,10 +137,7 @@ const MenuComponent = ({
       <li className="menuItems">
         <ul className="menuNav-list">{navLinks}</ul>
       </li>
-      <li
-        className="menuNav-item only-desktop"
-        style={{ display: 'flex', alignItems: 'center', padding: '0 8px', minWidth: '48px' }}
-      >
+      <li className="menuNav-item only-desktop" style={legacyBeaconSlotStyle}>
         {!isMobile && (
           <div className="tw-content">
             <RequestStatus />
