@@ -19,6 +19,7 @@ const DAY = 24 * HR;
 
 const baseState: RequestStatusState = {
   notifications: [],
+  unreadNotificationIds: [],
   tasks: [],
   isConnected: true,
   isPanelOpen: true,
@@ -27,6 +28,7 @@ const baseState: RequestStatusState = {
 
 const notificationsState: RequestStatusState = {
   ...baseState,
+  unreadNotificationIds: ['success-new', 'info-new', 'warning-new', 'error-today'],
   notifications: [
     {
       id: 'success-new',

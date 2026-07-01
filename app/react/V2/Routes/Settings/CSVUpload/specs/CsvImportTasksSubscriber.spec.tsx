@@ -30,6 +30,7 @@ jest.mock('#V2/api/csv/index.js', () => ({
 
 const initialRequestStatus = {
   notifications: [],
+  unreadNotificationIds: [],
   tasks: [],
   isConnected: true,
   isPanelOpen: false,

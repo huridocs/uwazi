@@ -25,6 +25,7 @@ const notify = (
       ...prev.notifications,
       { id, type: mapType(type), title, message, details, timestamp: new Date() },
     ],
+    unreadNotificationIds: [...prev.unreadNotificationIds, id],
   }));
 };
 
