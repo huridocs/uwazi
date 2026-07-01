@@ -19,8 +19,104 @@ function channelLuminance(c: number): number {
 }
 
 /** WCAG relative luminance of an rgb(...) or rgba(...) string (0 = black, 1 = white). */
-function getLuminance(rgbString: string): number {
-  const [r, g, b] = (rgbString.match(/\d+/g) ?? ['255', '255', '255']).map(Number);
+const parseRgbChannels = (color: string): [number, number, number] | null => {
+  const match = color.trim().match(/^rgba?\(\s*([^)]+)\)$/i);
+  if (!match) return null;
+  const [r, g, b] = match[1].split(',').map(part => Number.parseFloat(part.trim()));
+  if ([r, g, b].some(channel => Number.isNaN(channel))) return null;
+  return [r, g, b];
+};
+
+const parseHexChannels = (color: string): [number, number, number] | null => {
+  const raw = color.trim().replace(/^#/, '');
+  if (raw.length === 3) {
+    return [
+      Number.parseInt(raw[0] + raw[0], 16),
+      Number.parseInt(raw[1] + raw[1], 16),
+      Number.parseInt(raw[2] + raw[2], 16),
+    ];
+  }
+  if (raw.length === 6 || raw.length === 8) {
+    return [
+      Number.parseInt(raw.slice(0, 2), 16),
+      Number.parseInt(raw.slice(2, 4), 16),
+      Number.parseInt(raw.slice(4, 6), 16),
+    ];
+  }
+  return null;
+};
+
+const hslHueToRgb = (huePrime: number, chroma: number, x: number): [number, number, number] => {
+  const hueRgb: ReadonlyArray<readonly [number, number, number]> = [
+    [chroma, x, 0],
+    [x, chroma, 0],
+    [0, chroma, x],
+    [0, x, chroma],
+    [x, 0, chroma],
+    [chroma, 0, x],
+  ];
+  const [r, g, b] = hueRgb[Math.min(5, Math.floor(huePrime))];
+  return [r, g, b];
+};
+
+const hslToRgbChannels = (
+  hue: number,
+  saturation: number,
+  lightness: number
+): [number, number, number] | null => {
+  if ([hue, saturation, lightness].some(value => Number.isNaN(value))) return null;
+
+  const chroma = (1 - Math.abs(2 * lightness - 1)) * saturation;
+  const huePrime = hue / 60;
+  const x = chroma * (1 - Math.abs((huePrime % 2) - 1));
+  const [r, g, b] = hslHueToRgb(huePrime, chroma, x);
+  const lightnessOffset = lightness - chroma / 2;
+
+  return [
+    Math.round((r + lightnessOffset) * 255),
+    Math.round((g + lightnessOffset) * 255),
+    Math.round((b + lightnessOffset) * 255),
+  ];
+};
+
+const parseHslChannels = (color: string): [number, number, number] | null => {
+  const match = color.trim().match(/^hsla?\(\s*([^)]+)\)$/i);
+  if (!match) return null;
+  const parts = match[1]
+    .split(/[,\s/]+/)
+    .map(part => part.trim())
+    .filter(Boolean);
+  if (parts.length < 3) return null;
+
+  const hue = Number.parseFloat(parts[0]);
+  const saturation = Number.parseFloat(parts[1].replace('%', '')) / 100;
+  const lightness = Number.parseFloat(parts[2].replace('%', '')) / 100;
+  return hslToRgbChannels(hue, saturation, lightness);
+};
+
+const probeColorChannels = (color: string): [number, number, number] | null => {
+  if (typeof document === 'undefined') return null;
+
+  const probe = document.createElement('div');
+  probe.style.color = color;
+  document.body.appendChild(probe);
+  const resolved = getComputedStyle(probe).color;
+  probe.remove();
+  return parseRgbChannels(resolved);
+};
+
+const parseColorChannels = (color: string): [number, number, number] => {
+  const parsers = [parseRgbChannels, parseHexChannels, parseHslChannels];
+  for (const parse of parsers) {
+    const channels = parse(color);
+    if (channels) return channels;
+  }
+
+  return probeColorChannels(color) ?? [255, 255, 255];
+};
+
+function getLuminance(color: string): number {
+  const [r, g, b] = parseColorChannels(color);
   return 0.2126 * channelLuminance(r) + 0.7152 * channelLuminance(g) + 0.0722 * channelLuminance(b);
 }
 

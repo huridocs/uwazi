@@ -13,11 +13,14 @@ interface NotificationFlashProps {
 const NotificationFlash = ({ title, type, phase, color = 'black' }: NotificationFlashProps) => {
   const [isIn, setIsIn] = useState(false);
 
+  // After mount, trigger the enter transition on the next animation frame
+  // so the browser renders the collapsed initial state first.
   useEffect(() => {
     const id = requestAnimationFrame(() => setIsIn(true));
     return () => cancelAnimationFrame(id);
   }, []);
 
+  // When the parent signals 'leaving', reverse the transition.
   useEffect(() => {
     if (phase === 'leaving') setIsIn(false);
   }, [phase]);

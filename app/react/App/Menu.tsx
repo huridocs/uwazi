@@ -12,6 +12,8 @@ import { Icon } from '#app/UI/index.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { IStore } from '#app/istore.js';
 import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
+import type { ClientSettingsLinkSchema } from '#app/apiResponseTypes.js';
+import type { IImmutable } from '#shared/types/Immutable.js';
 import { RequestStatus } from '#V2/Components/UI/Notifications/RequestStatus.js';
 import { DropdownMenu } from './DropdownMenu.js';
 
@@ -58,6 +60,9 @@ const legacyBeaconSlotStyle: React.CSSProperties = {
   minWidth: '48px',
 };
 
+const menuLinkKey = (link: IImmutable<ClientSettingsLinkSchema>, index: number): string =>
+  String(link.get('_id') ?? `${link.get('type') ?? 'link'}-${link.get('title')}-${index}`);
+
 const MenuComponent = ({
   librarySearch,
   libraryFilters,
@@ -95,7 +100,7 @@ const MenuComponent = ({
         const url = link.get('url') || '/';
         if (url.startsWith('http')) {
           return (
-            <li key={link.get('_id')} className="menuNav-item">
+            <li key={menuLinkKey(link, index!)} className="menuNav-item">
               <a href={url} className="btn menuNav-btn" target="_blank" rel="noreferrer">
                 {t('Menu', link.get('title'))}
               </a>
@@ -103,7 +108,7 @@ const MenuComponent = ({
           );
         }
         return (
-          <li key={link.get('_id')} className="menuNav-item">
+          <li key={menuLinkKey(link, index!)} className="menuNav-item">
             <I18NLink
               to={url}
               className="btn menuNav-btn"
@@ -120,7 +125,7 @@ const MenuComponent = ({
         <DropdownMenu
           link={Immutable.fromJS(link.toJS())}
           position={index!}
-          key={link.get('_id')}
+          key={menuLinkKey(link, index!)}
           hideMobileMenu={hideMobileMenu}
         />
       );
