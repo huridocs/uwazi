@@ -99,9 +99,10 @@ export default app => {
           User.createFrom(req.user)
         );
         const result = await EntityFacade.create(entityToSave, req.language, req.inputFiles);
-        const entityInTargetLanguage = await entityDAO
-          .getWithFiles({ language: req.language, sharedId: result.sharedId })
-          .next();
+        const [entityInTargetLanguage] = await entityDAO.getWithFiles({
+          language: req.language,
+          sharedId: result.sharedId,
+        });
 
         const response = req.body.entity
           ? { entity: entityInTargetLanguage, errors: [] }
