@@ -81,7 +81,6 @@ Advanced ECharts overrides,Advanced ECharts overrides
 ALL,ВСІ
 All,ВСІ
 "All changes will be lost, are you sure you want to proceed?","Усі зміни будуть втрачені, ви впевнені, що хочете продовжити?"
-All clear,All clear
 All data,Всі дані
 All editing options will be disabled.,Всі опції редагування будуть вимкнені.
 All of the paragraphs will be deleted,Всі абзаци будуть видалені
@@ -384,6 +383,7 @@ Duplicated name,Дубльоване ім'я
 Duplicated username,Продубльоване ім'я користувача
 Duration,Duration
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
+Earlier,Earlier
 Edit,Редагувати
 Edit Extractor,Редагувати витягач
 Edit File,Редагувати файл
@@ -524,6 +524,7 @@ here,тут.
 "Hi, I'm Bert.","Hi, I'm Bert."
 Hide,Hide
 Hide actions,Приховати дії
+Hide details,Hide details
 Hide label,Приховати мітку
 Hide restricted relationships from public,Hide restricted relationships from public
 Hide toolbar,Приховати панель інструментів
@@ -686,6 +687,7 @@ ML TOC,Зміст для машинного навчання
 Modified,Modified
 Month,Місяць
 Months,Місяці
+More,More
 more options.,більше опцій.
 Multi-source mode,Multi-source mode
 Multiple date,Кілька дат
@@ -706,6 +708,7 @@ Navigate back,Повернутися назад
 Navigation menu tool tip part 1,"Якщо це внутрішня URL-адреса на цьому веб-сайті, обов'язково видаліть першу частину"
 Navigation menu tool tip part 2,"залишивши лише відносну URL-адресу, що починається з косої риски. Тобто. /деяка_адреса."
 New,Новий
+New activity will show up here.,New activity will show up here.
 New conversation,New conversation
 New entity,Новий об'єкт
 New group,Нова група
@@ -735,7 +738,6 @@ No icon / flag,Немає піктограми / прапорця
 No items available,Немає товарів у наявності
 No Label,Немає мітки
 No label,Без етикетки
-No notifications or active tasks.,No notifications or active tasks.
 No options,Без варіантів
 No options found,Варіантів не знайдено
 No page,No page
@@ -1063,6 +1065,7 @@ Shared as editor,Поширено для редагування
 Shared as viewer,Поширено для перегляду
 Show actions,Показати дії
 Show cookie policy,Показати політику cookie
+Show details,Show details
 Show filters,Показати фільтри
 Show in cards,Показати в картках
 Show less,Show less
@@ -1384,6 +1387,7 @@ You have unsaved changes. Do you want to continue?,У вас є незбереж
 You should activate this feature for enhanced account security,Ви маєте активувати цю функцію для посилення безпеки облікового запису
 You should activate this feature for enhanced account security.,Вам слід активувати цю функцію для посилення безпеки акаунта.
 You won't be able to save an entity if this property is empty.,"Ви не зможете зберегти сутність, якщо ця властивість порожня."
+You're all caught up,You're all caught up
 Your account's security is enhanced with two-factor authentication.,Безпека вашого облікового запису посилюється завдяки двофакторній автентифікації.
 Z → A,Z → A
 Zoom in,Збільшити масштаб

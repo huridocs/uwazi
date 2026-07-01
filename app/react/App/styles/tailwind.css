@@ -291,6 +291,10 @@
   color: var(--color-theme-success);
 }
 
+@utility text-warning {
+  color: var(--color-theme-warning);
+}
+
 @utility text-emphasis-solid-foreground {
   color: var(--color-theme-accent-emphasis-solid-foreground);
 }
@@ -515,8 +519,8 @@
 .tw-content .header-bar[data-uwazi-header] button {
   color: inherit;
 }
-.tw-content .header-bar[data-uwazi-header] a svg,
-.tw-content .header-bar[data-uwazi-header] button svg {
+.tw-content .header-bar[data-uwazi-header] a svg:not(.notification-kind-icon),
+.tw-content .header-bar[data-uwazi-header] button svg:not(.notification-kind-icon) {
   color: inherit;
   stroke: currentColor;
 }
@@ -696,4 +700,70 @@
     animation: none !important;
     opacity: 1;
   }
+}
+
+/* Beacon hover rail — content settles in as the beacon reveals the latest item */
+@keyframes beacon-rail-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-beacon-rail {
+  animation: beacon-rail-in 0.22s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-beacon-rail {
+    animation: none !important;
+  }
+}
+
+.beacon-spring {
+  transition-timing-function: cubic-bezier(0.34, 1.4, 0.5, 1);
+}
+
+@keyframes beacon-pop {
+  0% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.055);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-beacon-pop {
+  animation: beacon-pop 0.46s cubic-bezier(0.34, 1.45, 0.5, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .beacon-spring {
+    transition-duration: 0.001ms !important;
+  }
+  .animate-beacon-pop {
+    animation: none !important;
+  }
+}
+
+/* Fades menu items into the header surface as the beacon rail expands */
+.beacon-collision-veil {
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    var(--color-theme-chrome-app-bar, var(--color-theme-bg-surface, #ffffff)) 100%
+  );
+}
+
+/* Full-height solid chrome behind the pill — blanks menu items in padding-y */
+.beacon-chrome-backing {
+  height: 3.25rem;
+  background-color: var(--color-theme-chrome-app-bar, var(--color-theme-bg-surface, #ffffff));
 }
