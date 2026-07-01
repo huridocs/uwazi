@@ -1,5 +1,5 @@
 export { RequestStatus } from './RequestStatus.js';
-export { Beacon } from './Beacon.js';
+export { Beacon, ThemedBeacon, LegacyBeacon } from './Beacon.js';
 export { NotificationsPanel } from './NotificationsPanel.js';
 export { NotificationItem } from './NotificationItem.js';
 export { TaskItem } from './TaskItem.js';
