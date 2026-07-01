@@ -26,8 +26,11 @@ const RequestStatus = () => {
   const settings = useAtomValue(settingsAtom);
   const isNewHeader = Boolean(settings.features?.newHeader);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { foreground: chromeForeground, fadeColor: chromeFadeColor, fadeStartColor: chromeFadeStartColor } =
-    useHeaderChrome(containerRef);
+  const {
+    foreground: chromeForeground,
+    fadeColor: chromeFadeColor,
+    fadeStartColor: chromeFadeStartColor,
+  } = useHeaderChrome(containerRef);
 
   const {
     overallStatus,

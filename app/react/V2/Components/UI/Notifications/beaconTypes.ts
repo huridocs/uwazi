@@ -1,8 +1,4 @@
-import type {
-  OverallStatus,
-  StatusNotification,
-  StatusTask,
-} from '#V2/atoms/requestStatusAtom.js';
+import type { OverallStatus, StatusNotification, StatusTask } from '#V2/atoms/requestStatusAtom.js';
 import type { FlashState } from './beaconHelpers.js';
 
 interface BaseBeaconProps {

@@ -1,10 +1,6 @@
 import { useState } from 'react';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
-import {
-  COLLAPSED_WIDTH,
-  EXPANDED_WIDTH,
-  FLASH_WIDTH,
-} from './beaconConstants.js';
+import { COLLAPSED_WIDTH, EXPANDED_WIDTH, FLASH_WIDTH } from './beaconConstants.js';
 import { deriveBeaconDisplay } from './beaconHelpers.js';
 import type { BaseBeaconProps } from './beaconTypes.js';
 

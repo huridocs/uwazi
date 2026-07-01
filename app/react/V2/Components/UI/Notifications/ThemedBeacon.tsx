@@ -34,7 +34,8 @@ const ThemedBeacon = ({
 
   const showChrome = showVeil;
   const pillBg = isPanelOpen ? PILL_BG_VELLUM : PILL_BG_WARM;
-  const pillClassName = showChrome ? '' : isPanelOpen ? 'bg-vellum' : 'bg-warm';
+  const pillBgClass = isPanelOpen ? 'bg-vellum' : 'bg-warm';
+  const pillClassName = showChrome ? '' : pillBgClass;
 
   return (
     <BeaconShell
@@ -71,6 +72,7 @@ const ThemedBeacon = ({
           />
         ) : undefined
       }
+      // eslint-disable-next-line react/jsx-props-no-spreading
       {...hoverHandlers}
     >
       <BeaconButtonContent

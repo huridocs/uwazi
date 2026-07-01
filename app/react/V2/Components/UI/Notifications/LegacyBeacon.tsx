@@ -77,6 +77,7 @@ const LegacyBeacon = ({
         ) : undefined
       }
       shellClassName="beacon-legacy"
+      // eslint-disable-next-line react/jsx-props-no-spreading
       {...hoverHandlers}
     >
       <LegacyBeaconButtonContent

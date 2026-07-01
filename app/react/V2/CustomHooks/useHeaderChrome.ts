@@ -14,6 +14,16 @@ type HeaderChrome = {
 const toForeground = (surfaceColor: string): string =>
   getContrastColor(surfaceColor) === 'white' ? '#ffffff' : '#171717';
 
+const observeChromeAncestors = (el: HTMLElement, update: () => void): MutationObserver => {
+  const observer = new MutationObserver(update);
+  let node: HTMLElement | null = el.parentElement;
+  while (node) {
+    observer.observe(node, { attributes: true, attributeFilter: ['class', 'style'] });
+    node = node.parentElement;
+  }
+  return observer;
+};
+
 const useHeaderChrome = (ref: RefObject<HTMLElement | null>): HeaderChrome => {
   const [chrome, setChrome] = useState<HeaderChrome>({
     foreground: '#ffffff',
@@ -23,24 +33,20 @@ const useHeaderChrome = (ref: RefObject<HTMLElement | null>): HeaderChrome => {
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    let observer: MutationObserver | undefined;
 
-    const update = () => {
-      const fadeColor = resolveChromeFadeColor(el);
-      const fadeStartColor = resolveChromeTextColor(el);
-      setChrome({ fadeColor, fadeStartColor, foreground: toForeground(fadeStartColor) });
-    };
+    if (el) {
+      const update = () => {
+        const fadeColor = resolveChromeFadeColor(el);
+        const fadeStartColor = resolveChromeTextColor(el);
+        setChrome({ fadeColor, fadeStartColor, foreground: toForeground(fadeStartColor) });
+      };
 
-    update();
-
-    const observer = new MutationObserver(update);
-    let node: HTMLElement | null = el.parentElement;
-    while (node) {
-      observer.observe(node, { attributes: true, attributeFilter: ['class', 'style'] });
-      node = node.parentElement;
+      update();
+      observer = observeChromeAncestors(el, update);
     }
 
-    return () => observer.disconnect();
+    return () => observer?.disconnect();
   }, [ref]);
 
   return chrome;

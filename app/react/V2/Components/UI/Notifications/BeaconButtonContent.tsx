@@ -1,5 +1,5 @@
 import React from 'react';
-import type { NotificationType, StatusNotification } from '#V2/atoms/requestStatusAtom.js';
+import type { StatusNotification } from '#V2/atoms/requestStatusAtom.js';
 import { UwaziLoader, type UwaziLoaderColor } from '#V2/Components/UI/UwaziLoader.js';
 import { BeaconRailLabel } from './BeaconRailLabel.js';
 import type { FlashState } from './beaconHelpers.js';
@@ -60,9 +60,7 @@ const BeaconButtonContent = ({
         <BeaconRailLabel
           text={activityLabel}
           suffix={
-            taskProgress !== null ? (
-              <span className={suffixClass}>{taskProgress}%</span>
-            ) : undefined
+            taskProgress !== null ? <span className={suffixClass}>{taskProgress}%</span> : undefined
           }
         />
       </div>

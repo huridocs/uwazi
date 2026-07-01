@@ -1,4 +1,3 @@
-/* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { useLocation } from 'react-router';
 import { bindActionCreators, Dispatch } from 'redux';
@@ -121,7 +120,7 @@ const MenuComponent = ({
         <DropdownMenu
           link={Immutable.fromJS(link.toJS())}
           position={index!}
-          key={index}
+          key={link.get('_id')}
           hideMobileMenu={hideMobileMenu}
         />
       );
