@@ -7,6 +7,7 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { userRoutes } from '../routes.js';
 import { fixtures, f } from './fixtures.js';
+import { UserGroupDBO } from '#api/core/infrastructure/mongodb/user/UserGroupDBO.js';
 
 jest.mock('../../../../../auth/encryptPassword.ts', () => ({
   encryptPassword: async () => Promise.resolve('hush hush super secret'),
@@ -52,8 +53,11 @@ describe('DELETE /api/users', () => {
       expect(deletedUser?.deletedAt).toBeDefined();
 
       const groups = await testingEnvironment.db.getAllFrom('usergroups');
-      const allMemberRefIds = groups.flatMap(g => (g.members || []).map(m => m.refId?.toString()));
-      expect(allMemberRefIds).not.toContain(f.id('existinguser').toString());
+      const targetGroup = groups.find(group =>
+        group._id.equals(f.idString('Researchers'))
+      ) as UserGroupDBO;
+
+      expect(targetGroup.members).not.toContain({ refId: deletedUser?._id });
     });
 
     it('should return 422 when ids is missing', async () => {
