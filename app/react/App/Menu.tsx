@@ -1,4 +1,3 @@
-/* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { useLocation } from 'react-router';
 import { bindActionCreators, Dispatch } from 'redux';
@@ -13,6 +12,8 @@ import { Icon } from '#app/UI/index.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { IStore } from '#app/istore.js';
 import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
+import type { ClientSettingsLinkSchema } from '#app/apiResponseTypes.js';
+import type { IImmutable } from '#shared/types/Immutable.js';
 import { RequestStatus } from '#V2/Components/UI/Notifications/RequestStatus.js';
 import { DropdownMenu } from './DropdownMenu.js';
 
@@ -49,6 +50,18 @@ type mappedProps = ConnectedProps<typeof connector> & MenuProps;
 
 const isLibraryView = (value: string | undefined): value is keyof typeof libraryViewInfo =>
   typeof value === 'string' && value in libraryViewInfo;
+
+const legacyBeaconSlotStyle: React.CSSProperties = {
+  marginLeft: 'auto',
+  flexShrink: 0,
+  display: 'flex',
+  alignItems: 'center',
+  padding: '0 8px',
+  minWidth: '48px',
+};
+
+const menuLinkKey = (link: IImmutable<ClientSettingsLinkSchema>, index: number): string =>
+  String(link.get('_id') ?? `${link.get('type') ?? 'link'}-${link.get('title')}-${index}`);
 
 const MenuComponent = ({
   librarySearch,
@@ -87,7 +100,7 @@ const MenuComponent = ({
         const url = link.get('url') || '/';
         if (url.startsWith('http')) {
           return (
-            <li key={link.get('_id')} className="menuNav-item">
+            <li key={menuLinkKey(link, index!)} className="menuNav-item">
               <a href={url} className="btn menuNav-btn" target="_blank" rel="noreferrer">
                 {t('Menu', link.get('title'))}
               </a>
@@ -95,7 +108,7 @@ const MenuComponent = ({
           );
         }
         return (
-          <li key={link.get('_id')} className="menuNav-item">
+          <li key={menuLinkKey(link, index!)} className="menuNav-item">
             <I18NLink
               to={url}
               className="btn menuNav-btn"
@@ -112,7 +125,7 @@ const MenuComponent = ({
         <DropdownMenu
           link={Immutable.fromJS(link.toJS())}
           position={index!}
-          key={index}
+          key={menuLinkKey(link, index!)}
           hideMobileMenu={hideMobileMenu}
         />
       );
@@ -128,10 +141,7 @@ const MenuComponent = ({
       <li className="menuItems">
         <ul className="menuNav-list">{navLinks}</ul>
       </li>
-      <li
-        className="menuNav-item only-desktop"
-        style={{ display: 'flex', alignItems: 'center', padding: '0 8px', minWidth: '48px' }}
-      >
+      <li className="menuNav-item only-desktop" style={legacyBeaconSlotStyle}>
         {!isMobile && (
           <div className="tw-content">
             <RequestStatus />

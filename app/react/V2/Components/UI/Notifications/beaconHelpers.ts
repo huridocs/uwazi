@@ -37,7 +37,7 @@ const averageProgress = (runningTasks: StatusTask[]): number | null => {
   return Math.round(defined.reduce((sum, t) => sum + (t.progress ?? 0), 0) / defined.length);
 };
 
-const getButtonSurface = (showFlash: boolean, isPanelOpen: boolean): string => {
+const getThemedButtonSurface = (showFlash: boolean, isPanelOpen: boolean): string => {
   if (showFlash) return isPanelOpen ? 'bg-vellum hover:bg-vellum' : 'bg-warm hover:bg-warm';
   return isPanelOpen ? 'bg-vellum hover:bg-parchment' : 'bg-warm hover:bg-parchment';
 };
@@ -79,9 +79,9 @@ const deriveBeaconDisplay = (
     taskProgress: averageProgress(runningTasks),
     latest: notifications[notifications.length - 1],
     moreCount: notifications.length - 1,
-    buttonSurface: getButtonSurface(showFlash, options.isPanelOpen),
+    themedButtonSurface: getThemedButtonSurface(showFlash, options.isPanelOpen),
   };
 };
 
-export { buildAriaLabel, deriveBeaconDisplay };
+export { buildAriaLabel, deriveBeaconDisplay, getThemedButtonSurface };
 export type { FlashState };

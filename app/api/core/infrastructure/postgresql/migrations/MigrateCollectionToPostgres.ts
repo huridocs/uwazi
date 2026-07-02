@@ -15,7 +15,7 @@ export class MigrateCollectionToPostgres {
     private tenantId: string
   ) {}
 
-  async migrate(config: MigrationConfig): Promise<number> {
+  private async fetchAndInsert(config: MigrationConfig, table: PostgresTable): Promise<number> {
     const mongoDocs = await this.mongoDb
       .collection<Record<string, unknown>>(config.mongoCollection)
       .find({})
@@ -25,16 +25,26 @@ export class MigrateCollectionToPostgres {
       return 0;
     }
 
-    const table = new PostgresTable(config.pgTable, this.tenantId);
-
     for (let i = 0; i < mongoDocs.length; i += BATCH_SIZE) {
       const batch = mongoDocs.slice(i, i + BATCH_SIZE);
       const rows = batch.map(doc => config.mapDocument(doc));
 
       // eslint-disable-next-line no-await-in-loop
-      await table.upsert(rows);
+      await table.insert(rows);
     }
 
     return mongoDocs.length;
+  }
+
+  async migrate(config: MigrationConfig): Promise<{ migrated: number; skipped: boolean }> {
+    const table = new PostgresTable(config.pgTable, this.tenantId);
+    const existingRow = await table.query().first();
+
+    if (existingRow !== undefined) {
+      return { migrated: 0, skipped: true };
+    }
+
+    const migrated = await this.fetchAndInsert(config, table);
+    return { migrated, skipped: false };
   }
 }

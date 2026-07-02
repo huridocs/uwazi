@@ -1,8 +1,11 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { useAtomValue } from 'jotai';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import type { NotificationType } from '#V2/atoms/requestStatusAtom.js';
+import { settingsAtom } from '#V2/atoms/settingsAtom.js';
+import { useHeaderChrome } from '#V2/CustomHooks/useHeaderChrome.js';
 import { CsvImportTasksSubscriber } from '#V2/Routes/Settings/CSVUpload/CsvImportTasksSubscriber.js';
-import { Beacon, type FlashState } from './Beacon.js';
+import { ThemedBeacon, LegacyBeacon, type FlashState } from './Beacon.js';
 
 interface E2ERequestStatusState {
   isLoading: boolean;
@@ -20,6 +23,15 @@ const flashTypeLabel: Record<NotificationType, string> = {
 };
 
 const RequestStatus = () => {
+  const settings = useAtomValue(settingsAtom);
+  const isNewHeader = Boolean(settings.features?.newHeader);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const {
+    foreground: chromeForeground,
+    fadeColor: chromeFadeColor,
+    fadeStartColor: chromeFadeStartColor,
+  } = useHeaderChrome(containerRef);
+
   const {
     overallStatus,
     isConnected,
@@ -101,7 +113,7 @@ const RequestStatus = () => {
   }, [hasRunningTasks, isLoading, overallStatus]);
 
   return (
-    <>
+    <div ref={containerRef} className="flex items-center">
       <CsvImportTasksSubscriber />
       {flash && (
         <div
@@ -114,20 +126,39 @@ const RequestStatus = () => {
           {liveAnnouncement}
         </div>
       )}
-      <Beacon
-        overallStatus={overallStatus}
-        isConnected={isConnected}
-        hasRunningTasks={hasRunningTasks}
-        isLoading={isLoading}
-        isPanelOpen={isPanelOpen}
-        tasks={tasks}
-        notifications={notifications}
-        flash={flash}
-        popKey={popKey}
-        onClick={togglePanel}
-        controlsId={PANEL_ID}
-      />
-    </>
+      {isNewHeader ? (
+        <ThemedBeacon
+          overallStatus={overallStatus}
+          isConnected={isConnected}
+          hasRunningTasks={hasRunningTasks}
+          isLoading={isLoading}
+          isPanelOpen={isPanelOpen}
+          tasks={tasks}
+          notifications={notifications}
+          flash={flash}
+          popKey={popKey}
+          onClick={togglePanel}
+          controlsId={PANEL_ID}
+        />
+      ) : (
+        <LegacyBeacon
+          overallStatus={overallStatus}
+          isConnected={isConnected}
+          hasRunningTasks={hasRunningTasks}
+          isLoading={isLoading}
+          isPanelOpen={isPanelOpen}
+          tasks={tasks}
+          notifications={notifications}
+          flash={flash}
+          popKey={popKey}
+          onClick={togglePanel}
+          controlsId={PANEL_ID}
+          chromeForeground={chromeForeground}
+          chromeFadeColor={chromeFadeColor}
+          chromeFadeStartColor={chromeFadeStartColor}
+        />
+      )}
+    </div>
   );
 };
 

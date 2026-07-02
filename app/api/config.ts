@@ -132,7 +132,6 @@ export const config = {
       fileCacheHeaders: FEATURE_FLAG_FILE_CACHE_HEADERS === 'true' || false,
       themeCustomization: FEATURE_FLAG_THEME_CUSTOMIZATION === 'true' || false,
       testing: DEV_FLAG_TESTING === 'true' || false,
-      v2UpdateEntity: false,
       v2CSVImport: FEATURE_FLAG_V2_CSV_IMPORT === 'true' || false,
       dataViz: FEATURE_FLAG_DATA_VIZ === 'true' || false,
       v2GetEntity: false,
