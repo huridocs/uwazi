@@ -42,9 +42,9 @@ class PXGetExtractorStatuses implements UseCase<
       const row = _row;
       await prev;
 
-      const entityValidFiles = await filesDS
-        .getProcessedDocsForEntity(row.entity.sharedId, { languages: installedLanguages })
-        .all();
+      const entityValidFiles = await filesDS.getProcessedDocsForEntity(row.entity.sharedId, {
+        languages: installedLanguages,
+      });
 
       row.availableFileLanguages = [
         ...new Set(

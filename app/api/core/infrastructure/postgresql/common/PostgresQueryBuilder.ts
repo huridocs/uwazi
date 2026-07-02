@@ -17,6 +17,15 @@ export class PostgresQueryBuilder<TRow> {
     return this;
   }
 
+  whereAny(conditions: Record<string, unknown>[]): this {
+    this.qb = this.qb.where(knex =>
+      conditions.forEach((condition, i) =>
+        i === 0 ? knex.where(condition) : knex.orWhere(condition)
+      )
+    );
+    return this;
+  }
+
   whereNot(column: string, value: unknown): this {
     this.qb = this.qb.whereNot(column, value as Knex.Value);
     return this;
@@ -83,25 +92,31 @@ export class PostgresQueryBuilder<TRow> {
     return this;
   }
 
-  private stripTenantId(row: Record<string, unknown>): Record<string, unknown> {
-    const { tenant_id: _, ...rest } = row;
-    return rest;
+  private cleanRow(row: Record<string, unknown>): Record<string, unknown> {
+    return Object.fromEntries(
+      Object.entries(row).filter(([k, v]) => k !== 'tenant_id' && v !== null)
+    );
   }
 
   async first(): Promise<TRow | undefined> {
     const row = await this.qb.first();
     if (!row) return undefined;
-    return this.stripTenantId(row) as TRow;
+    return this.cleanRow(row) as TRow;
   }
 
   async all(): Promise<TRow[]> {
     const rows = (await this.qb) as Record<string, unknown>[];
-    return rows.map(r => this.stripTenantId(r)) as TRow[];
+    return rows.map(r => this.cleanRow(r)) as TRow[];
   }
 
   async count(): Promise<number> {
     const result = await this.qb.clone().count<{ count: string }[]>('* as count').first();
     return parseInt(result?.count ?? '0', 10);
+  }
+
+  async sum(column: string): Promise<number> {
+    const result = await this.qb.clone().sum({ total: column }).first();
+    return Number((result as any)?.total ?? 0);
   }
 
   async update(changes: Record<string, unknown>): Promise<void> {

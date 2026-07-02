@@ -15,7 +15,7 @@ import {
   FileDBO,
   ProcessedPDFDBO,
   ThumbnailDBO,
-} from '../schemas/filesTypes.js';
+} from '../schemas/FilesTypes.js';
 
 const f = getFixturesFactory();
 

@@ -475,7 +475,7 @@ describe('PostgresTable', () => {
 
       expect(rows).toHaveLength(1);
       expect(rows[0].name).toBe('Empty');
-      expect(rows[0].label).toBeNull();
+      expect(rows[0].label).toBeUndefined();
     });
 
     it('should leftJoin and enforce tenant_id — cannot access rows from other tenants', async () => {
@@ -494,7 +494,7 @@ describe('PostgresTable', () => {
 
       expect(rowsFromA).toHaveLength(1);
       expect(rowsFromA[0].name).toBe('Isolated');
-      expect(rowsFromA[0].label).toBeNull();
+      expect(rowsFromA[0].label).toBeUndefined();
     });
   });
 

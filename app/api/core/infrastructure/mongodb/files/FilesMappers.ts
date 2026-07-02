@@ -14,7 +14,7 @@ import {
   URLAttachmentDBO,
   CustomDBO,
   FileDBO,
-} from './schemas/filesTypes.js';
+} from './schemas/FilesTypes.js';
 
 function dboCommonFields(dbo: FileDBO) {
   return {

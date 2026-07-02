@@ -108,7 +108,13 @@ export const files = {
       FilesServiceFactory.default().bulkUpsert([updatedFile])
     );
 
-    const sameEntityFiles = await files.get({ entity: updatedFile.entity }, { generatedToc: 1 });
+    const entityFiles = await FilesDataSourceFactory.default().getByEntitiesIds([
+      updatedFile.entity,
+    ]);
+    const generatedToc = entityFiles
+      .filter((f): f is PDFDocument => f instanceof PDFDocument)
+      .some(f => f.generatedToc);
+
     const [entity] = await entities.get({
       sharedId: updatedFile.entity,
     });
@@ -118,10 +124,7 @@ export const files = {
         _id: entity._id,
         sharedId: entity.sharedId,
         template: entity.template,
-        generatedToc: sameEntityFiles.reduce<boolean>(
-          (generated, file) => generated || Boolean(file.generatedToc),
-          false
-        ),
+        generatedToc,
       },
       { user: {}, language }
     );

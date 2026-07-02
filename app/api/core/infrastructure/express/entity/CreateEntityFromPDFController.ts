@@ -31,9 +31,10 @@ class CreateEntityFromPDFController extends AbstractController<Request> {
 
     const entitiesDAO = MongoEntitiesDAOFactory.default();
 
-    const entityWithFiles = await entitiesDAO
-      .getWithFiles({ sharedId: output.sharedId, language: this.language })
-      .next();
+    const [entityWithFiles] = await entitiesDAO.getWithFiles({
+      sharedId: output.sharedId,
+      language: this.language,
+    });
 
     const response: CreateEntityFromPDFResponse = {
       data: entityWithFiles as any as EntityWithFilesSchema,

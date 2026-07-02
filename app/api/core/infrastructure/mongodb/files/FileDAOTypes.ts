@@ -1,5 +1,5 @@
 import { Sort } from 'mongodb';
-import { FileDBO } from './schemas/filesTypes.js';
+import { FileDBO } from './schemas/FilesTypes.js';
 
 type FileProjection<T = FileDBO> = Partial<Record<keyof T, 0 | 1>>;
 
