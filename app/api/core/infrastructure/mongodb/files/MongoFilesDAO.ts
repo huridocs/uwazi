@@ -1,11 +1,12 @@
 import { Db, Document, FindOptions, ObjectId } from 'mongodb';
 import { MongoDataSource } from '../common/MongoDataSource.js';
 import { MongoTransactionManager } from '../common/MongoTransactionManager.js';
-import { FileDBO } from './schemas/filesTypes.js';
+import { FileDBO } from './schemas/FilesTypes.js';
 import { Result } from '#api/core/libs/Result.js';
 import type { ResultType } from '#api/core/libs/Result.js';
 import { FileNotFound } from '#api/core/domain/files/errors.js';
-import type { GetFileOptions, ListFileOptions, EntityFileOptions } from './queryOptions.js';
+import type { GetFileOptions, ListFileOptions, EntityFileOptions } from './FileDAOTypes.js';
+import type { LanguageISO6393 } from '#shared/language/languageISO639_3.js';
 
 type Deps = {
   db: Db;
@@ -123,6 +124,31 @@ class MongoFilesDAO extends MongoDataSource<FileDBO> {
     if (options?.limit) findOptions.limit = options.limit;
 
     return this.getCollection().find(filter, findOptions).toArray() as Promise<T[]>;
+  }
+
+  async getDistinctEntitySharedIds(filters: {
+    type?: string;
+    status?: string;
+    language?: LanguageISO6393;
+  }): Promise<string[]> {
+    const query: Record<string, unknown> = {};
+    if (filters.type) query.type = filters.type;
+    if (filters.status) query.status = filters.status;
+    if (filters.language) query.language = filters.language;
+
+    const values = await this.getCollection().distinct('entity', query);
+    return values.filter((v): v is string => v !== null && v !== undefined);
+  }
+
+  async countDocuments(): Promise<number> {
+    return this.getCollection().countDocuments();
+  }
+
+  async getTotalFileSize(): Promise<number> {
+    const [result] = await this.getCollection()
+      .aggregate<{ totalSize: number }>([{ $group: { _id: null, totalSize: { $sum: '$size' } } }])
+      .toArray();
+    return result?.totalSize ?? 0;
   }
 }
 

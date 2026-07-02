@@ -130,13 +130,13 @@ describe('MongoFilesDataSource', () => {
   describe('getAll', () => {
     it('should return all files', async () => {
       const { ds } = createDs();
-      const all = await ds.getAll().all();
+      const all = await ds.getAll();
 
       expect(all.length).toBe(12);
     });
     it('should not return fullText', async () => {
       const { ds } = createDs();
-      const all = await ds.getAll().all();
+      const all = await ds.getAll();
 
       const processed = all.find(file => file.filename === 'processed1');
       //@ts-ignore
@@ -170,7 +170,7 @@ describe('MongoFilesDataSource', () => {
   describe('getByEntitiesIds', () => {
     it('should get files belonging to entities', async () => {
       const { ds } = createDs();
-      const files = await ds.getByEntitiesIds(['entity2', 'entity3']).all();
+      const files = await ds.getByEntitiesIds(['entity2', 'entity3']);
 
       expect(files).toMatchObject([
         { filename: 'file2', entity: 'entity2' },
@@ -400,7 +400,7 @@ describe('MongoFilesDataSource', () => {
     it('should return the processed documents (type: "ready") for an entity', async () => {
       const { ds } = createDs();
 
-      const documentsForEntity = await ds.getProcessedDocsForEntity('entity1').all();
+      const documentsForEntity = await ds.getProcessedDocsForEntity('entity1');
       expect(documentsForEntity.length).toBe(5);
       expect(documentsForEntity.every(d => d.entity === 'entity1')).toBe(true);
       expect(documentsForEntity.every(d => d.status === 'ready')).toBe(true);
@@ -409,7 +409,7 @@ describe('MongoFilesDataSource', () => {
     it('should not return fullText', async () => {
       const { ds } = createDs();
 
-      const documentsForEntity = await ds.getProcessedDocsForEntity('entity1').all();
+      const documentsForEntity = await ds.getProcessedDocsForEntity('entity1');
       const processed = documentsForEntity.find(file => file.filename === 'processed1');
       //@ts-ignore
       expect(processed.fullText).toBe(undefined);
@@ -423,9 +423,9 @@ describe('MongoFilesDataSource', () => {
     it('should allow fetching documents only in specific languages', async () => {
       const { ds } = createDs();
 
-      const documentsForEntity = await ds
-        .getProcessedDocsForEntity('entity1', { languages: ['en', 'it'] })
-        .all();
+      const documentsForEntity = await ds.getProcessedDocsForEntity('entity1', {
+        languages: ['en', 'it'],
+      });
 
       expect(documentsForEntity.length).toBe(2);
       const filenames = documentsForEntity.map(d => d.filename);
@@ -538,7 +538,7 @@ describe('MongoFilesDataSource', () => {
         (await ds.getById(f.idString('processed1'))).getDataOrThrow() as PDFDocument,
         (await ds.getById(f.idString('processed2'))).getDataOrThrow() as PDFDocument,
       ];
-      const thumbnails = await ds.getThumbnails(processed.map(p => p.entity)).all();
+      const thumbnails = await ds.getThumbnails(processed.map(p => p.entity));
       expect(thumbnails.length).toBe(2);
       expect(thumbnails[0]).toBeInstanceOf(Thumbnail);
       expect(thumbnails[1]).toBeInstanceOf(Thumbnail);
@@ -555,7 +555,7 @@ describe('MongoFilesDataSource', () => {
     it('should return only the thumbnails belonging to the given document ids', async () => {
       const { ds } = createDs();
 
-      const thumbnails = await ds.getThumbnailsForProcessedPDFs([f.idString('processed1')]).all();
+      const thumbnails = await ds.getThumbnailsForProcessedPDFs([f.idString('processed1')]);
 
       expect(thumbnails).toHaveLength(1);
       expect(thumbnails[0]).toBeInstanceOf(Thumbnail);
@@ -565,7 +565,7 @@ describe('MongoFilesDataSource', () => {
     it('should not return thumbnails belonging to other documents of the same entity', async () => {
       const { ds } = createDs();
 
-      const thumbnails = await ds.getThumbnailsForProcessedPDFs([f.idString('processed1')]).all();
+      const thumbnails = await ds.getThumbnailsForProcessedPDFs([f.idString('processed1')]);
 
       const filenames = thumbnails.map(t => t.filename);
       expect(filenames).not.toContain(`${f.idString('processed2')}.jpg`);
@@ -574,9 +574,10 @@ describe('MongoFilesDataSource', () => {
     it('should return thumbnails for multiple document ids at once', async () => {
       const { ds } = createDs();
 
-      const thumbnails = await ds
-        .getThumbnailsForProcessedPDFs([f.idString('processed1'), f.idString('processed2')])
-        .all();
+      const thumbnails = await ds.getThumbnailsForProcessedPDFs([
+        f.idString('processed1'),
+        f.idString('processed2'),
+      ]);
 
       expect(thumbnails).toHaveLength(2);
       const filenames = thumbnails.map(t => t.filename);
@@ -587,7 +588,7 @@ describe('MongoFilesDataSource', () => {
     it('should return empty when no document ids match', async () => {
       const { ds } = createDs();
 
-      const thumbnails = await ds.getThumbnailsForProcessedPDFs([f.idString('nonexistent')]).all();
+      const thumbnails = await ds.getThumbnailsForProcessedPDFs([f.idString('nonexistent')]);
 
       expect(thumbnails).toHaveLength(0);
     });
