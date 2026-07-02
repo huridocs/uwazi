@@ -11,6 +11,8 @@ import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import entities from '../entities.js';
+import { RequestEntityTranslation } from '#api/externalIntegrations.v2/automaticTranslation/RequestEntityTranslation.js';
+import { SaveEntityTranslations } from '#api/externalIntegrations.v2/automaticTranslation/SaveEntityTranslations.js';
 import fixtures, { templateId } from './fixtures.js';
 
 jest.mock(
@@ -365,6 +367,57 @@ describe('entities routes', () => {
         expect(response.body).toMatchObject({
           sharedId: 'shared',
         });
+      });
+
+      it('should preserve AI translated text when user edit has pending prefix (AT conflict)', async () => {
+        new UserInContextMockFactory().mock(user);
+
+        // Set up AT config with template_test as an AT template
+        await db.mongodb?.collection('settings').updateOne(
+          {},
+          {
+            $set: {
+              'features.automaticTranslation': {
+                active: true,
+                templates: [
+                  {
+                    template: templateId.toString(),
+                    properties: [],
+                    commonProperties: ['title'],
+                  },
+                ],
+              },
+            },
+          }
+        );
+
+        // Seed the entity with an AI-translated title
+        await db.mongodb
+          ?.collection('entities')
+          .updateOne(
+            { sharedId: 'shared', language: 'en' },
+            { $set: { title: `${SaveEntityTranslations.AITranslatedText} Hello` } }
+          );
+
+        const entityToUpdate = {
+          _id: 'abc123',
+          sharedId: 'shared',
+          title: `${RequestEntityTranslation.AITranslationPendingText} Hello`,
+          language: 'en',
+          template: templateId.toString(),
+        };
+
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .send(entityToUpdate)
+          .expect(200);
+
+        expect(response.body).toMatchObject({
+          sharedId: 'shared',
+        });
+
+        const updatedEntity = await entities.getById('shared', 'en');
+        expect(updatedEntity?.title).toBe(`${SaveEntityTranslations.AITranslatedText} Hello`);
       });
 
       it('should update an existing entity with files via UpdateEntityController', async () => {
