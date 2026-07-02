@@ -86,17 +86,17 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
       >
         <Translate>Skip to main content</Translate>
       </a>
-      <div className="flex min-h-13 items-center justify-between gap-4 px-5">
-        <div className="flex min-w-0 items-center gap-3">
+      <div className="relative flex min-h-13 items-stretch justify-between gap-4 overflow-visible px-5">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
           {isMobile ? <MobileMenuDropdown links={headerLinks} /> : null}
           <SiteName
-            className="header-bar-brand px-0 py-0 text-base font-semibold"
+            className="header-bar-brand shrink-0 px-0 py-0 text-base font-semibold"
             textClassName="truncate"
             hideTextWhenLogo
           />
-          {!isMobile ? <MenuLinks links={headerLinks} className="min-w-0 flex-wrap" /> : null}
+          {!isMobile ? <MenuLinks links={headerLinks} endOverlapPx={16} /> : null}
         </div>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="relative z-40 flex shrink-0 items-center gap-2 overflow-visible">
           <RequestStatus />
           <LanguageDropdown />
           <div

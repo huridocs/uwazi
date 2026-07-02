@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DefaultDeprecatedEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 import { entityInputDataSchema } from '#api/entities.v2/types/EntityInputDataSchema.js';
 import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';
 import { Redis } from '#api/infrastructure/Redis.js';
@@ -81,7 +81,8 @@ beforeEach(async () => {
   requestEntityTranslation = new RequestEntityTranslation(
     taskManager,
     AutomaticTranslationFactory.defaultATConfigDataSource(transactionManager),
-    DefaultDeprecatedEntitiesDataSource(transactionManager),
+    EntitiesDataSourceFactory.default({ transactionManager }),
+    transactionManager,
     new Validator<EntityInputModel>(entityInputDataSchema),
     mockLogger
   );

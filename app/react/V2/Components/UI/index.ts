@@ -14,6 +14,8 @@ export type {
   TabPanelDef,
 } from './Tabs/index.js';
 export { Sidepanel } from './Sidepanel.js';
+export { Drawer } from './Drawer.js';
+export type { DrawerProps, DrawerScope, DrawerMotion } from './Drawer.js';
 export { ConfirmationModal } from './ConfirmationModal.js';
 export { Card } from './Card.js';
 export { SurfacePanel, SectionHeading } from './SurfacePanel.js';

@@ -1,13 +1,10 @@
+import { Db, ObjectId } from 'mongodb';
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import entities from '#api/entities/entities.js';
-import v1EntitiesModel from '#api/entities/entitiesModel.js';
-import { search } from '#api/search/index.js';
-import { Db, ObjectId } from 'mongodb';
-import { MetadataSchema } from '#shared/types/commonTypes.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { DeprecatedEntitiesDataSource } from '../contracts/DeprecatedEntitiesDataSource.js';
@@ -34,35 +31,6 @@ export class MongoDeprecatedEntitiesDataSource
     super(db, transactionManager);
     this.templatesDS = templatesDS;
     this.settingsDS = settingsDS;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  async updateEntities_OnlyUpdateAndReindex(entity: DeprecatedEntity) {
-    // This is using V1 model and custom reindex here
-    // this is a hack and should be changed as soon as we finish AT
-    const entityToModify = await entities.getById(entity._id);
-    if (!entityToModify) {
-      throw new Error(`entity does not exists: ${entity._id}`);
-    }
-
-    entityToModify.title = entity.title;
-    entityToModify.metadata = entity.metadata as MetadataSchema;
-    await v1EntitiesModel.save(entityToModify);
-    await search.indexEntities({ sharedId: entity.sharedId });
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  async updateEntity(entity: DeprecatedEntity) {
-    // This is using V1 so that it gets denormalized to speed up development
-    // this is a hack and should be changed as soon as we finish AT
-    const entityToModify = await entities.getById(entity._id);
-    if (!entityToModify) {
-      throw new Error(`entity does not exists: ${entity._id}`);
-    }
-
-    entityToModify.title = entity.title;
-    entityToModify.metadata = entity.metadata as MetadataSchema;
-    await entities.save(entityToModify, { user: {}, language: entityToModify.language });
   }
 
   async entitiesExist(sharedIds: string[]) {

@@ -81,7 +81,6 @@ Advanced ECharts overrides,Advanced ECharts overrides
 ALL,TODOS
 All,TODOS
 "All changes will be lost, are you sure you want to proceed?","Se perderán todos los cambios, ¿estás seguro de que quieres continuar?"
-All clear,All clear
 All data,Todos los datos
 All editing options will be disabled.,All editing options will be disabled.
 All of the paragraphs will be deleted,All of the paragraphs will be deleted
@@ -380,6 +379,7 @@ Duplicated name,Nombre duplicado
 Duplicated username,Nombre de usuario duplicado
 Duration,Duración
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
+Earlier,Más temprano
 Edit,Editar
 Edit Extractor,Edit Extractor
 Edit File,Edit File
@@ -520,6 +520,7 @@ here,aquí
 "Hi, I'm Bert.","Hi, I'm Bert."
 Hide,Hide
 Hide actions,Ocultar acciones
+Hide details,Ocultar detalles
 Hide label,Ocultar etiqueta
 Hide restricted relationships from public,Hide restricted relationships from public
 Hide toolbar,Ocultar barra de herramientas
@@ -682,6 +683,7 @@ ML TOC,ML TdC
 Modified,Modified
 Month,Mes
 Months,Months
+More,Más
 more options.,más opciones.
 Multi-source mode,Multi-source mode
 Multiple date,Fecha múltiple
@@ -702,6 +704,7 @@ Navigate back,Navegar hacia atrás
 Navigation menu tool tip part 1,"Si utilizas una URL interna de este sitio web, asegúrate de eliminar la primera parte."
 Navigation menu tool tip part 2,dejando solo una URL relativa que comienza con una barra inclinada. Es decir. /algun_url.
 New,New
+New activity will show up here.,La actividad nueva se mostrará aquí.
 New conversation,New conversation
 New entity,Nueva entidad
 New group,Grupo nuevo
@@ -731,7 +734,6 @@ No icon / flag,Sin icono / bandera
 No items available,No items available
 No Label,No existe etiqueta
 No label,No label
-No notifications or active tasks.,No notifications or active tasks.
 No options,No options
 No options found,Opciones no encontradas
 No page,No hay página
@@ -1059,6 +1061,7 @@ Shared as editor,Compartido como editor
 Shared as viewer,Compartido como observador
 Show actions,Mostrar acciones
 Show cookie policy,Mostrar política de cookies
+Show details,Mostrar detalles
 Show filters,Mostrar filtros
 Show in cards,Mostrar en tarjetas
 Show less,Show less
@@ -1379,6 +1382,7 @@ You have unsaved changes. Do you want to continue?,Tienes cambios sin guardar. Q
 You should activate this feature for enhanced account security,Activa esta función para mejorar la seguridad de la cuenta.
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
 You won't be able to save an entity if this property is empty.,You won't be able to save an entity if this property is empty.
+You're all caught up,Estás al día
 Your account's security is enhanced with two-factor authentication.,Your account's security is enhanced with two-factor authentication.
 Z → A,Z → A
 Zoom in,Aumentar zoom
