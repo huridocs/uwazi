@@ -44,6 +44,8 @@ export class ATConflictSolver {
           resolved.title = currentValue;
         }
       } else {
+        // AT currently only handles single-value text properties.
+        // This logic assumes metadata[propName] is a single-element array.
         const newValue = `${resolved.metadata?.[propName]?.[0]?.value ?? ''}`;
         const currentValue = `${current.metadata[propName]?.[0]?.value ?? ''}`;
 

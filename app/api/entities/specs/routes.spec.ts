@@ -467,6 +467,39 @@ describe('entities routes', () => {
           sharedId: 'shared',
         });
       });
+
+      it('should rollback the transaction when the update fails', async () => {
+        new UserInContextMockFactory().mock(user);
+
+        const { EntitiesService } = await import('#api/core/application/EntitiesService.js');
+        const updateSpy = jest
+          .spyOn(EntitiesService.prototype, 'update')
+          .mockImplementationOnce(async () => {
+            throw new Error('forced update failure');
+          });
+
+        const entityToUpdate = {
+          _id: 'abc123',
+          sharedId: 'shared',
+          title: 'should not persist',
+          language: 'en',
+          template: templateId.toString(),
+        };
+
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .send(entityToUpdate)
+          .expect(500);
+
+        expect(response.body).toMatchObject({
+          error: expect.any(String),
+        });
+
+        const updatedEntity = await entities.getById('shared', 'en');
+        expect(updatedEntity?.title).toBe('Batman finishes');
+
+        updateSpy.mockRestore();
+      });
     });
   });
 });

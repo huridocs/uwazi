@@ -2,6 +2,7 @@ import { getTenant } from '#api/core/infrastructure/mongodb/common/getConnection
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { ATConfigDataSource } from './contracts/ATConfigDataSource.js';
 import { Validator } from './infrastructure/Validator.js';
 import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';
@@ -25,6 +26,8 @@ export class RequestEntityTranslation {
 
   private entitiesDS: EntitiesDataSource;
 
+  private transactionManager: TransactionManager;
+
   private inputValidator: Validator<EntityInputModel>;
 
   private logger: Logger;
@@ -34,12 +37,14 @@ export class RequestEntityTranslation {
     taskManager: TaskManager<ATTaskMessage>,
     ATConfigDS: ATConfigDataSource,
     entitiesDS: EntitiesDataSource,
+    transactionManager: TransactionManager,
     inputValidator: Validator<EntityInputModel>,
     logger: Logger
   ) {
     this.taskManager = taskManager;
     this.ATConfigDS = ATConfigDS;
     this.entitiesDS = entitiesDS;
+    this.transactionManager = transactionManager;
     this.inputValidator = inputValidator;
     this.logger = logger;
   }
@@ -112,7 +117,9 @@ export class RequestEntityTranslation {
       );
     }
 
-    await this.entitiesDS.update(entity);
+    await this.transactionManager.run(async () => {
+      await this.entitiesDS.update(entity);
+    });
   }
 
   private async getConfig(entityInputModel: EntityInputModel) {

@@ -82,6 +82,7 @@ beforeEach(async () => {
     taskManager,
     AutomaticTranslationFactory.defaultATConfigDataSource(transactionManager),
     EntitiesDataSourceFactory.default({ transactionManager }),
+    transactionManager,
     new Validator<EntityInputModel>(entityInputDataSchema),
     mockLogger
   );

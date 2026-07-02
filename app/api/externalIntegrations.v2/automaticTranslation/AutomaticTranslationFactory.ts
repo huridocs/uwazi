@@ -59,6 +59,7 @@ const AutomaticTranslationFactory = {
       }),
       AutomaticTranslationFactory.defaultATConfigDataSource(transactionManager),
       EntitiesDataSourceFactory.default({ transactionManager }),
+      transactionManager,
       new Validator<EntityInputModel>(entityInputDataSchema),
       LoggerFactory.default()
     );
