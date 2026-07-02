@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { EntityIcon } from '#api/core/domain/entity/Entity.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
@@ -101,7 +102,9 @@ describe('UpdateEntityUseCase', () => {
       const row = rows.find((r: any) => r._id === hexId);
       return row ? normalizeFile(row) : null;
     }
-    const file = await testingEnvironment.db.getCollection('files')!.findOne({ _id: factory.id(id) });
+    const file = await testingEnvironment.db
+      .getCollection('files')!
+      .findOne({ _id: factory.id(id) });
     return file ? { ...file, _id: file._id.toHexString() } : null;
   };
 
