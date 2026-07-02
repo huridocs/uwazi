@@ -463,7 +463,7 @@ const fixtures: DBFixture = {
         { key: 'pt', label: 'Portuguese' },
         { key: 'en', label: 'English' },
       ],
-      featureFlags: { v2UpdateEntity: true },
+      featureFlags: {},
       filterUnauthorizedRelated: false,
     } as any,
   ],

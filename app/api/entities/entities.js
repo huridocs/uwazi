@@ -11,7 +11,7 @@ import date from '#api/utils/date.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import ID from '#shared/uniqueID.js';
 
-import { ATSolveVersionConflict } from '#api/externalIntegrations.v2/automaticTranslation/utils/ATSolveVersionConflict.js';
+import { ATSolveVersionConflict } from '#api/externalIntegrations.v2/automaticTranslation/utils/ATConflictSolverDeprecated.js';
 import settings from '../settings/index.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize.js';

@@ -6,6 +6,8 @@ import { ExpressEntityMapper } from './ExpressEntityMapper.js';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoEntitiesDAO } from '../../mongodb/entity/MongoEntitiesDAO.js';
 import { MongoTransactionManager } from '../../mongodb/common/MongoTransactionManager.js';
+import { ATConflictSolver } from '#api/externalIntegrations.v2/automaticTranslation/utils/ATConflictSolver.js';
+import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
 
 type Request = UpdateEntityRequest | { entity: string };
 
@@ -26,6 +28,24 @@ class UpdateEntityController extends AbstractController<Request> {
         parsed = UpdateEntitySchema.parse(JSON.parse(this.request.body.entity));
       } else {
         parsed = UpdateEntitySchema.parse(this.request.body);
+      }
+
+      const currentDocs = await entityDAO.findBySharedIds([parsed.sharedId]);
+      const currentDoc = currentDocs.find(d => d.language === parsed.language);
+      if (currentDoc) {
+        const resolver = new ATConflictSolver(
+          AutomaticTranslationFactory.defaultATConfigDataSource(
+            ExecutionContext.transactionManager as MongoTransactionManager
+          ),
+          ExecutionContext.logger
+        );
+        parsed = await resolver.execute(currentDoc, parsed);
+
+        if ('entity' in this.request.body) {
+          this.request.body.entity = JSON.stringify(parsed);
+        } else {
+          Object.assign(this.request.body, parsed);
+        }
       }
 
       const mapped = ExpressEntityMapper.toEntityUpdateInput({
