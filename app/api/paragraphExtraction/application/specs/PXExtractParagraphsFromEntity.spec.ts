@@ -154,7 +154,9 @@ const createSut = () =>
   });
 
 describe('PXExtractParagraphsFromEntity', () => {
-  beforeAll(async () => testingEnvironment.setUp(createFixtures(), { postgres: true }));
+  beforeAll(async () =>
+    testingEnvironment.setUp(createFixtures(), { elasticIndex: true, postgres: true })
+  );
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
