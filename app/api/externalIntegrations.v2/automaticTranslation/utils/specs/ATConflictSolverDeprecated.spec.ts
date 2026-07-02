@@ -2,7 +2,7 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { RequestEntityTranslation } from '../../RequestEntityTranslation.js';
 import { SaveEntityTranslations } from '../../SaveEntityTranslations.js';
-import { ATSolveVersionConflict } from '../ATSolveVersionConflict.js';
+import { ATSolveVersionConflict } from '../ATConflictSolverDeprecated.js';
 
 const factory = getFixturesFactory();
 

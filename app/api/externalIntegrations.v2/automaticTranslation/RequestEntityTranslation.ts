@@ -1,11 +1,12 @@
 import { getTenant } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { DeprecatedEntity } from '#api/entities.v2/model/Entity.js';
-import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
-import { DeprecatedEntitiesDataSource } from '#api/entities.v2/contracts/DeprecatedEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { ATConfigDataSource } from './contracts/ATConfigDataSource.js';
 import { Validator } from './infrastructure/Validator.js';
+import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 export type ATTaskMessage = {
   key: string[];
@@ -23,7 +24,9 @@ export class RequestEntityTranslation {
 
   private ATConfigDS: ATConfigDataSource;
 
-  private entitiesDS: DeprecatedEntitiesDataSource;
+  private entitiesDS: EntitiesDataSource;
+
+  private transactionManager: TransactionManager;
 
   private inputValidator: Validator<EntityInputModel>;
 
@@ -33,21 +36,24 @@ export class RequestEntityTranslation {
   constructor(
     taskManager: TaskManager<ATTaskMessage>,
     ATConfigDS: ATConfigDataSource,
-    entitiesDS: DeprecatedEntitiesDataSource,
+    entitiesDS: EntitiesDataSource,
+    transactionManager: TransactionManager,
     inputValidator: Validator<EntityInputModel>,
     logger: Logger
   ) {
     this.taskManager = taskManager;
     this.ATConfigDS = ATConfigDS;
     this.entitiesDS = entitiesDS;
+    this.transactionManager = transactionManager;
     this.inputValidator = inputValidator;
     this.logger = logger;
   }
 
+  // eslint-disable-next-line max-statements
   async execute(entityInputModel: EntityInputModel | unknown) {
     this.inputValidator.ensure(entityInputModel);
-    const entity = DeprecatedEntity.fromInputModel(entityInputModel);
-    const { atTemplateConfig, languagesTo, atConfig, languageFrom } = await this.getConfig(entity);
+    const { atTemplateConfig, languagesTo, atConfig, languageFrom } =
+      await this.getConfig(entityInputModel);
 
     if (
       !atTemplateConfig ||
@@ -57,55 +63,75 @@ export class RequestEntityTranslation {
       return;
     }
 
-    let updatedEntities = (await this.entitiesDS.getByIds([entity.sharedId]).all()).filter(
-      e => e.language !== languageFrom
-    );
+    const entityResult = await this.entitiesDS.getById(entityInputModel.sharedId);
+    if (entityResult.isError()) {
+      return;
+    }
+    const entity = entityResult.getDataOrThrow();
 
-    await atTemplateConfig?.properties.reduce(async (prev, property) => {
-      await prev;
-      const propertyValue = entity.getPropertyValue(property);
+    const targetLanguages = entity.languages.filter(l => l !== languageFrom);
 
-      if (propertyValue) {
-        const pendingText = `${RequestEntityTranslation.AITranslationPendingText} ${propertyValue}`;
+    for (const property of atTemplateConfig.properties) {
+      const templateProperty = entity.template.getPropertyById(property.id);
+      // eslint-disable-next-line no-continue
+      if (!templateProperty) continue;
 
-        updatedEntities = updatedEntities.map(fetchedEntity =>
-          fetchedEntity.setPropertyValue(property, pendingText)
-        );
+      const propertyValue = entity.getValue(templateProperty.name, languageFrom).value;
+      const rawValue =
+        Array.isArray(propertyValue) && propertyValue.length
+          ? `${propertyValue[0]?.value ?? ''}`
+          : '';
 
-        await this.taskManager.startTask({
-          key: [getTenant().name, entity.sharedId, property.id],
-          text: propertyValue,
-          language_from: languageFrom,
-          languages_to: languagesTo,
+      // eslint-disable-next-line no-continue
+      if (!rawValue) continue;
+
+      const pendingText = `${RequestEntityTranslation.AITranslationPendingText} ${rawValue}`;
+
+      for (const targetLanguage of targetLanguages) {
+        const propertyAssignment = entity.template.createPropertyAssignment(templateProperty.name, {
+          value: [{ value: pendingText }],
         });
 
-        this.logger.info(
-          `[AT] - Translation requested - ${JSON.stringify({
-            entityId: entity._id,
-            languageFrom,
-            languagesTo,
-            [property.name]: propertyValue,
-          })}`
+        entity.setPropertyAssignments(
+          [propertyAssignment],
+          targetLanguage as LanguageISO6391,
+          false
         );
       }
-    }, Promise.resolve());
 
-    await Promise.all(
-      updatedEntities.map(async updatedEntity => {
-        this.logger.info(`[AT] - Pending translation saved on DB for entity - ${entity._id}`);
-        await this.entitiesDS.updateEntities_OnlyUpdateAndReindex(updatedEntity);
-      })
-    );
+      // eslint-disable-next-line no-await-in-loop
+      await this.taskManager.startTask({
+        key: [getTenant().name, entityInputModel.sharedId, templateProperty.id],
+        text: rawValue,
+        language_from: languageFrom,
+        languages_to: languagesTo,
+      });
+
+      this.logger.info(
+        `[AT] - Translation requested - ${JSON.stringify({
+          entityId: entityInputModel._id,
+          languageFrom,
+          languagesTo,
+          [templateProperty.name]: rawValue,
+        })}`
+      );
+    }
+
+    await this.transactionManager.run(async () => {
+      await this.entitiesDS.update(entity);
+    });
   }
 
-  private async getConfig(entity: DeprecatedEntity) {
+  private async getConfig(entityInputModel: EntityInputModel) {
     const atConfig = await this.ATConfigDS.get();
     const atTemplateConfig = atConfig.templates.find(
-      t => t.template === entity.template?.toString()
+      t => t.template === entityInputModel.template?.toString()
     );
 
-    const languageFrom = entity.language;
-    const languagesTo = atConfig.languages.filter(language => language !== entity.language);
+    const languageFrom = entityInputModel.language;
+    const languagesTo = atConfig.languages.filter(
+      language => language !== entityInputModel.language
+    );
     return { atTemplateConfig, languagesTo, atConfig, languageFrom };
   }
 }
