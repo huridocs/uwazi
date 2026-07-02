@@ -60,8 +60,7 @@ async function migrateCollection(
   tenantName: string,
   collectionName: string,
   migrationConfig: MigrationConfig
-): Promise<number> {
-  let migrated = 0;
+): Promise<void> {
   await tenants.run(async () => {
     const tenantConfig = tenants.current();
     const mongoDb = DB.mongodb_Db(tenantConfig.dbName);
@@ -71,11 +70,14 @@ async function migrateCollection(
     log(`[${tenantName}] PostgreSQL table: ${migrationConfig.pgTable}`);
 
     const migrator = new MigrateCollectionToPostgres(mongoDb, tenantName);
-    migrated = await migrator.migrate(migrationConfig);
+    const result = await migrator.migrate(migrationConfig);
 
-    log(`[${tenantName}] Migrated ${migrated} rows for ${collectionName}`);
+    if (result.skipped) {
+      log(`[${tenantName}] Skipped ${collectionName}: PostgreSQL table already contains data for tenant`);
+    } else {
+      log(`[${tenantName}] Migrated ${result.migrated} rows for ${collectionName}`);
+    }
   }, tenantName);
-  return migrated;
 }
 
 (async function run() {
