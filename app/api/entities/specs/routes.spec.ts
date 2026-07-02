@@ -5,13 +5,14 @@ import path from 'path';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import * as entitySavingManager from '#api/entities/entitySavingManager.js';
 import routes from '#api/entities/routes.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import entities from '../entities.js';
+import { RequestEntityTranslation } from '#api/externalIntegrations.v2/automaticTranslation/RequestEntityTranslation.js';
+import { SaveEntityTranslations } from '#api/externalIntegrations.v2/automaticTranslation/SaveEntityTranslations.js';
 import fixtures, { templateId } from './fixtures.js';
 
 jest.mock(
@@ -346,80 +347,158 @@ describe('entities routes', () => {
       expect(entityWithFiles.attachments).toHaveLength(2);
     });
 
-    it('should call the saving manager with the correct filenames', async () => {
-      jest
-        .spyOn(entitySavingManager, 'saveEntity')
-        .mockImplementation(async () => Promise.resolve({ entity: {}, errors: [] }));
+    describe('V2 entity update', () => {
+      it('should update an existing entity via UpdateEntityController', async () => {
+        new UserInContextMockFactory().mock(user);
 
-      const entityToUpdate = { ...entityToSave, sharedId: 'existing123' };
+        const entityToUpdate = {
+          _id: 'abc123',
+          sharedId: 'shared',
+          title: 'updated title',
+          language: 'en',
+          template: templateId.toString(),
+        };
 
-      await request(app)
-        .post('/api/entities')
-        .field('entity', JSON.stringify(entityToUpdate))
-        .attach('documents[0]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español')
-        .attach('documents[1]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español 2')
-        .attach('attachments[0]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español 3')
-        .attach('attachments[1]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español 4')
-        .field('documents_originalname[0]', 'Nombre en español')
-        .field('documents_originalname[1]', 'Nombre en español 2')
-        .field('attachments_originalname[0]', 'Nombre en español 3')
-        .field('attachments_originalname[1]', 'Nombre en español 4');
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .send(entityToUpdate)
+          .expect(200);
 
-      expect(entitySavingManager.saveEntity).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({
-          files: expect.arrayContaining([
-            expect.objectContaining({ fieldname: 'documents[0]' }),
-            expect.objectContaining({ fieldname: 'documents[1]' }),
-            expect.objectContaining({ fieldname: 'attachments[0]' }),
-            expect.objectContaining({ fieldname: 'attachments[1]' }),
-          ]),
-        })
-      );
-    });
-
-    it('should return entity payload for legacy JSON update requests', async () => {
-      jest.restoreAllMocks();
-      const savedEntity = {
-        sharedId: 'existing123',
-        title: 'updated title',
-      };
-      jest.spyOn(entitySavingManager, 'saveEntity').mockResolvedValue({
-        entity: savedEntity as any,
-        errors: [],
+        expect(response.body).toMatchObject({
+          sharedId: 'shared',
+        });
       });
 
-      const response: SuperTestResponse = await request(app)
-        .post('/api/entities')
-        .send({ ...entityToSave, sharedId: 'existing123', title: 'updated title' })
-        .expect(200);
+      it('should preserve AI translated text when user edit has pending prefix (AT conflict)', async () => {
+        new UserInContextMockFactory().mock(user);
 
-      expect(response.body).toMatchObject(savedEntity);
-    });
+        // Set up AT config with template_test as an AT template
+        await db.mongodb?.collection('settings').updateOne(
+          {},
+          {
+            $set: {
+              'features.automaticTranslation': {
+                active: true,
+                templates: [
+                  {
+                    template: templateId.toString(),
+                    properties: [],
+                    commonProperties: ['title'],
+                  },
+                ],
+              },
+            },
+          }
+        );
 
-    it('should run saveEntity process as a transaction', async () => {
-      jest.restoreAllMocks();
-      jest.spyOn(entities, 'getUnrestrictedWithDocuments').mockImplementationOnce(() => {
-        throw new Error('error at the end of the saveEntity');
+        // Seed the entity with an AI-translated title
+        await db.mongodb
+          ?.collection('entities')
+          .updateOne(
+            { sharedId: 'shared', language: 'en' },
+            { $set: { title: `${SaveEntityTranslations.AITranslatedText} Hello` } }
+          );
+
+        const entityToUpdate = {
+          _id: 'abc123',
+          sharedId: 'shared',
+          title: `${RequestEntityTranslation.AITranslationPendingText} Hello`,
+          language: 'en',
+          template: templateId.toString(),
+        };
+
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .send(entityToUpdate)
+          .expect(200);
+
+        expect(response.body).toMatchObject({
+          sharedId: 'shared',
+        });
+
+        const updatedEntity = await entities.getById('shared', 'en');
+        expect(updatedEntity?.title).toBe(`${SaveEntityTranslations.AITranslatedText} Hello`);
       });
-      new UserInContextMockFactory().mock(user);
 
-      const entityToUpdate = { ...entityToSave, sharedId: 'existing123' };
+      it('should update an existing entity with files via UpdateEntityController', async () => {
+        new UserInContextMockFactory().mock(user);
 
-      const response: SuperTestResponse = await request(app)
-        .post('/api/entities')
-        .field('entity', JSON.stringify(entityToUpdate))
-        .attach('documents[0]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español')
-        .field('documents_originalname[0]', 'Nombre en español')
-        .expect(500);
+        const entityToUpdate = {
+          _id: 'abc123',
+          sharedId: 'shared',
+          title: 'updated title with files',
+          language: 'en',
+          template: templateId.toString(),
+        };
 
-      expect(response.body).toMatchObject({
-        error: expect.any(String),
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .field('entity', JSON.stringify(entityToUpdate))
+          .attach('documents[0]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español')
+          .field('documents_originalname[0]', 'Nombre en español')
+          .expect(200);
+
+        expect(response.body).toMatchObject({
+          entity: expect.objectContaining({
+            sharedId: 'shared',
+          }),
+          errors: [],
+        });
       });
 
-      await appContext.run(async () => {
-        const myEntity = await entities.get({ title: 'my entity' });
-        expect(myEntity.length).toBe(0);
+      it('should return entity payload for legacy JSON update requests', async () => {
+        new UserInContextMockFactory().mock(user);
+
+        const entityToUpdate = {
+          _id: 'abc123',
+          sharedId: 'shared',
+          title: 'updated title',
+          language: 'en',
+          template: templateId.toString(),
+        };
+
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .send(entityToUpdate);
+
+        expect(response).toHaveStatus(200);
+
+        expect(response.body).toMatchObject({
+          sharedId: 'shared',
+        });
+      });
+
+      it('should rollback the transaction when the update fails', async () => {
+        new UserInContextMockFactory().mock(user);
+
+        const { EntitiesService } = await import('#api/core/application/EntitiesService.js');
+        const updateSpy = jest
+          .spyOn(EntitiesService.prototype, 'update')
+          .mockImplementationOnce(async () => {
+            throw new Error('forced update failure');
+          });
+
+        const entityToUpdate = {
+          _id: 'abc123',
+          sharedId: 'shared',
+          title: 'should not persist',
+          language: 'en',
+          template: templateId.toString(),
+        };
+
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .send(entityToUpdate)
+          .expect(500);
+
+        expect(response.body).toMatchObject({
+          error: expect.any(String),
+        });
+
+        const updatedEntity = await entities.getById('shared', 'en');
+        expect(updatedEntity?.title).toBe('Batman finishes');
+
+        updateSpy.mockRestore();
       });
     });
   });
