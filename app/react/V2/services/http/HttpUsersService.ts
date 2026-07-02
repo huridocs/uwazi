@@ -24,16 +24,12 @@ const fromLegacyApi = async <T>(
 const createHttpUsersService = (): UsersService => ({
   getAll: ({ headers } = {}) => fromLegacyApi(() => usersApi.get(headers)),
   getCurrent: ({ headers } = {}) => fromLegacyApi(() => usersApi.getCurrentUser(headers)),
-  create: (user, currentPassword, { headers } = {}) =>
-    fromLegacyApi(() => usersApi.newUser(user, currentPassword, headers)),
-  update: (user, currentPassword, { headers } = {}) =>
-    fromLegacyApi(() => usersApi.updateUser(user, currentPassword, headers)),
+  upsert: (user, currentPassword, { headers } = {}) =>
+    user._id
+      ? fromLegacyApi(() => usersApi.updateUser(user, currentPassword, headers))
+      : fromLegacyApi(() => usersApi.newUser(user, currentPassword, headers)),
   delete: (users, currentPassword, { headers } = {}) =>
     fromLegacyApi(() => usersApi.deleteUser(users, currentPassword, headers)),
-  getAllGroups: ({ headers } = {}) => fromLegacyApi(() => usersApi.getUserGroups(headers)),
-  upsertGroup: (group, { headers } = {}) => fromLegacyApi(() => usersApi.saveGroup(group, headers)),
-  deleteGroups: (groups, { headers } = {}) =>
-    fromLegacyApi(() => usersApi.deleteGroup(groups, headers)),
   unlockAccount: (user, currentPassword, { headers } = {}) =>
     fromLegacyApi(() => usersApi.unlockAccount(user, currentPassword, headers)),
   requestPasswordReset: (data, { headers } = {}) =>

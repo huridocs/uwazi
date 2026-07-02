@@ -43,5 +43,6 @@ export { services, createDefaultServices };
 export { ServicesProvider, useServices } from './ServicesProvider.js';
 export type { V2Services, DeepPartial } from './types.js';
 export type { ThesaurusService, ThesaurusInput } from './contracts/ThesaurusService.js';
-export type { UsersService } from './contracts/UsersService.js';
+export type { UsersService, UserInput } from './contracts/UsersService.js';
+export type { UserGroupsService, UserGroupInput } from './contracts/UserGroupsService.js';
 export type { ServiceRequestOptions } from './contracts/ServiceRequestOptions.js';

@@ -8,10 +8,8 @@ type ThesaurusInput = Omit<ClientThesaurus, '_id'> & { _id?: string };
 /**
  * Thesaurus domain service.
  *
- * Naming convention (shared across V2 services):
- * - getAll / getById — reads
- * - upsert — create or update
- * - delete — remove one or many
+ * Standard reads: `getAll`, `getById`.
+ * Standard writes: `upsert`, `delete`.
  */
 interface ThesaurusService {
   getAll(options?: ServiceRequestOptions): Promise<ApiResponse<ClientThesaurus[]>>;
