@@ -3,8 +3,7 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { UpdateEntityRequest, UpdateEntitySchema } from './Schemas.js';
 import { UpdateEntityUseCaseFactory } from '../../factories/UpdateEntityUseCaseFactory.js';
 import { ExpressEntityMapper } from './ExpressEntityMapper.js';
-import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoEntitiesDAO } from '../../mongodb/entity/MongoEntitiesDAO.js';
+import { MongoEntitiesDAOFactory } from '../../factories/MongoEntitiesDAOFactory.js';
 import { MongoTransactionManager } from '../../mongodb/common/MongoTransactionManager.js';
 import { ATConflictSolver } from '#api/externalIntegrations.v2/automaticTranslation/utils/ATConflictSolver.js';
 import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
@@ -16,11 +15,7 @@ class UpdateEntityController extends AbstractController<Request> {
     const startTime = Date.now();
     try {
       const useCase = UpdateEntityUseCaseFactory.default();
-      const entityDAO = new MongoEntitiesDAO(
-        getConnection(),
-        ExecutionContext.transactionManager as MongoTransactionManager,
-        this.user
-      );
+      const entityDAO = MongoEntitiesDAOFactory.default({ user: this.user });
 
       let parsed: UpdateEntityRequest;
 
@@ -55,12 +50,10 @@ class UpdateEntityController extends AbstractController<Request> {
 
       const output = await useCase.execute(mapped);
 
-      const entityWithFiles = await entityDAO
-        .getWithFiles({
-          sharedId: output.sharedId,
-          language: this.language,
-        })
-        .next();
+      const [entityWithFiles] = await entityDAO.getWithFiles({
+        sharedId: output.sharedId,
+        language: this.language,
+      });
 
       const response =
         'entity' in this.request.body ? { entity: entityWithFiles, errors: [] } : entityWithFiles;

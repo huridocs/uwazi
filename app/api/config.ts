@@ -136,6 +136,7 @@ export const config = {
       dataViz: FEATURE_FLAG_DATA_VIZ === 'true' || false,
       v2GetEntity: false,
       v2Languages: false,
+      postgresFiles: false,
       postgresThesauri: false,
       postgresTemplates: false,
       newHeader: NEW_HEADER === 'true' || false,

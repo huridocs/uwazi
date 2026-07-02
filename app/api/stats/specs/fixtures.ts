@@ -115,6 +115,8 @@ export const fixtures: DBFixture = {
       _id: testingDB.id(),
       entity: 'entity4SharedId',
       filename: 'entity4SharedId.pdf',
+      originalname: 'entity4SharedId.pdf',
+      mimetype: 'application/pdf',
       language: 'eng',
       type: 'document',
       fullText: {
@@ -126,6 +128,8 @@ export const fixtures: DBFixture = {
       _id: testingDB.id(),
       entity: 'entity5SharedId',
       filename: 'entity5SharedId.pdf',
+      originalname: 'entity5SharedId.pdf',
+      mimetype: 'application/pdf',
       language: 'eng',
       type: 'document',
       fullText: {

@@ -125,13 +125,10 @@ const processFiles = async (
   );
 
   if (entity._id && (entity.attachments || entity.documents)) {
-    const entityFiles: WithId<FileType>[] = await FilesDAOFactory.default().getByEntity(
-      entity.sharedId!,
-      {
-        types: [TypeOfFile.attachment, TypeOfFile.document],
-        projection: { _id: 1, originalname: 1, type: 1 },
-      }
-    );
+    const entityFiles = await FilesDAOFactory.default().getByEntity(entity.sharedId!, {
+      types: [TypeOfFile.attachment, TypeOfFile.document],
+      projection: { _id: 1, originalname: 1, type: 1 },
+    });
 
     await updateDeletedFiles(entityFiles, entity, TypeOfFile.attachment);
     await updateDeletedFiles(entityFiles, entity, TypeOfFile.document);

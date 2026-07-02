@@ -25,7 +25,7 @@ import translations from './translations.js';
 const dispatchEntityPreviewJobs = async (languageKey: LanguageISO6391) => {
   const transactionManager = TransactionManagerFactory.default();
   const filesDS = FilesDataSourceFactory.default();
-  const thumbnails = await filesDS.getThumbnailsByLanguage(languageKey).all();
+  const thumbnails = await filesDS.getThumbnailsByLanguage(languageKey);
   const sharedIds = [...new Set(thumbnails.map(t => t.entity))];
   if (sharedIds.length === 0) return;
   const chunks = ArrayUtils.splitInChunks(sharedIds, 100);

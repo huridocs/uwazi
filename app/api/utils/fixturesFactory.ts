@@ -30,7 +30,7 @@ import { UserGroupSchema } from '#shared/types/userGroupType.js';
 import {
   ProcessedPDFDBO,
   ThumbnailDBO,
-} from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+} from '#api/core/infrastructure/mongodb/files/schemas/FilesTypes.js';
 
 type PartialSuggestion = Partial<Omit<IXSuggestionType, 'state'>> & {
   state?: Partial<IXSuggestionType['state']>;
@@ -101,8 +101,14 @@ const thesaurusNestedValues = (rootValue: string, children: Array<string>) => {
   return { id: rootValue, label: rootValue, values: nestedValues };
 };
 
-function getFixturesFactory() {
+type FixturesFactoryConfig = {
+  convertIdToString?: boolean;
+  tenantId?: string;
+};
+
+function getFixturesFactory(config?: FixturesFactoryConfig) {
   const idMapper = getIdMapper();
+  const { convertIdToString = false, tenantId } = config || {};
 
   return Object.freeze({
     id: idMapper,
@@ -230,6 +236,20 @@ function getFixturesFactory() {
             'Please pass a valid ISO639_1 Language to Factory.file, the factory will replace with the appropriate DB ISO639_3'
           );
         }
+      }
+
+      if (convertIdToString) {
+        return {
+          _id: idMapper(id).toString(),
+          tenant_id: tenantId,
+          filename: id,
+          originalname: id,
+          mimetype: 'application/pdf',
+          size: 1024,
+          creationDate: 1000,
+          ...extra,
+          ...fileLanguage,
+        } as unknown as WithId<FileType>;
       }
 
       return {

@@ -657,6 +657,9 @@ const fixtures: DBFixture = {
     {
       entity: 'templateDeletingProperties-sharedId',
       filename: 'file1.pdf',
+      originalname: 'file1.pdf',
+      mimetype: 'application/pdf',
+      type: 'document',
       propertySelections: [
         {
           propertyID: propertyA.toString(),
@@ -678,6 +681,9 @@ const fixtures: DBFixture = {
     {
       entity: 'templateDeletingProperties-sharedId',
       filename: 'file2.pdf',
+      originalname: 'file2.pdf',
+      mimetype: 'application/pdf',
+      type: 'document',
       propertySelections: [
         {
           propertyID: propertyA.toString(),
@@ -688,6 +694,9 @@ const fixtures: DBFixture = {
     },
     {
       filename: 'file3.pdf',
+      originalname: 'file3.pdf',
+      mimetype: 'application/pdf',
+      type: 'document',
       propertySelections: [],
     },
   ],
