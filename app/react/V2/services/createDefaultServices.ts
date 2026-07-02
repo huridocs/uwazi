@@ -1,10 +1,10 @@
-import { createThesaurusService } from './thesauri/ThesaurusService.js';
-import { createUsersService } from './users/UsersService.js';
+import { createHttpThesaurusService } from './http/HttpThesaurusService.js';
+import { createHttpUsersService } from './http/HttpUsersService.js';
 import type { V2Services } from './types.js';
 
 const createDefaultServices = (): V2Services => ({
-  thesauri: createThesaurusService(),
-  users: createUsersService(),
+  thesauri: createHttpThesaurusService(),
+  users: createHttpUsersService(),
 });
 
 export { createDefaultServices };

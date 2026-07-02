@@ -10,7 +10,7 @@ const createThesauriLoader =
   (svc: V2Services = services) =>
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
-    const [data, error] = await svc.thesauri.list({ headers });
+    const [data, error] = await svc.thesauri.getAll({ headers });
     if (error) throw error;
     return data;
   };

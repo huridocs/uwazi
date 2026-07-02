@@ -1,5 +1,5 @@
-import type { ThesaurusService } from './thesauri/ThesaurusService.js';
-import type { UsersService } from './users/UsersService.js';
+import type { ThesaurusService } from './contracts/ThesaurusService.js';
+import type { UsersService } from './contracts/UsersService.js';
 
 interface V2Services {
   thesauri: ThesaurusService;

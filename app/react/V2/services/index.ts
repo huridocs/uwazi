@@ -13,7 +13,7 @@
  *   (svc: V2Services = services) =>
  *   (headers?: IncomingHttpHeaders): LoaderFunction =>
  *   async () => {
- *     const [data, error] = await svc.thesauri.list({ headers });
+ *     const [data, error] = await svc.thesauri.getAll({ headers });
  *     if (error) throw error;
  *     return data;
  *   };
@@ -29,7 +29,7 @@
  *
  * ## Tests
  *
- * - Loader / full route: `createTestServices({ thesauri: { list: mock } })` +
+ * - Loader / full route: `createTestServices({ thesauri: { getAll: mock } })` +
  *   `createThesauriLoader(testServices)({})` on the router.
  * - Component only: `<ServicesProvider value={testServices}>`.
  * - Import test helpers from `#V2/testing/createTestServices.js` and
@@ -42,5 +42,6 @@ import { createDefaultServices } from './createDefaultServices.js';
 export { services, createDefaultServices };
 export { ServicesProvider, useServices } from './ServicesProvider.js';
 export type { V2Services, DeepPartial } from './types.js';
-export type { ThesaurusService } from './thesauri/ThesaurusService.js';
-export type { UsersService } from './users/UsersService.js';
+export type { ThesaurusService, ThesaurusInput } from './contracts/ThesaurusService.js';
+export type { UsersService } from './contracts/UsersService.js';
+export type { ServiceRequestOptions } from './contracts/ServiceRequestOptions.js';

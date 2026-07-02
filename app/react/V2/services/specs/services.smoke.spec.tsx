@@ -11,12 +11,12 @@ import { thesauri } from '#V2/Routes/Settings/Thesauri/specs/fixtures.js';
 
 describe('V2 services infrastructure', () => {
   it('loads ThesauriList via createThesauriLoader with injected services', async () => {
-    const listMock = jest.fn().mockResolvedValue([thesauri, undefined]);
+    const getAllMock = jest.fn().mockResolvedValue([thesauri, undefined]);
 
     renderRoute({
       Component: ThesauriList,
       createLoader: svc => createThesauriLoader(svc)({}),
-      services: { thesauri: { list: listMock } },
+      services: { thesauri: { getAll: getAllMock } },
       atomInitialValues: [[templatesAtom, []]],
     });
 
@@ -24,17 +24,17 @@ describe('V2 services infrastructure', () => {
       expect(screen.getByTestId('settings-thesauri')).toBeInTheDocument();
     });
 
-    expect(listMock).toHaveBeenCalledWith({ headers: {} });
+    expect(getAllMock).toHaveBeenCalledWith({ headers: {} });
     expect(screen.getByTestId('thesauri')).toHaveTextContent('Colors');
     expect(screen.getByTestId('thesauri')).toHaveTextContent('Names');
   });
 
   it('createTestServices merges partial overrides with defaults', () => {
-    const listMock = jest.fn();
-    const testServices = createTestServices({ thesauri: { list: listMock } });
+    const getAllMock = jest.fn();
+    const testServices = createTestServices({ thesauri: { getAll: getAllMock } });
 
-    expect(testServices.thesauri.list).toBe(listMock);
-    expect(typeof testServices.thesauri.save).toBe('function');
-    expect(typeof testServices.users.get).toBe('function');
+    expect(testServices.thesauri.getAll).toBe(getAllMock);
+    expect(typeof testServices.thesauri.upsert).toBe('function');
+    expect(typeof testServices.users.getAll).toBe('function');
   });
 });
