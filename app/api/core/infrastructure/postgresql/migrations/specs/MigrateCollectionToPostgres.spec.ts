@@ -54,10 +54,10 @@ describe('MigrateCollectionToPostgres', () => {
     };
 
     const migrator = makeMigrator();
-    const migrated = await migrator.migrate(config);
+    const result = await migrator.migrate(config);
 
-    expect(migrated.migrated).toBe(2);
-    expect(migrated.skipped).toBe(false);
+    expect(result.migrated).toBe(2);
+    expect(result.skipped).toBe(false);
 
     const pgRows = await testingPG.getAllFrom('thesauri');
     const rowsForTenant = pgRows.filter(r => r.tenant_id === TENANT);
@@ -92,14 +92,14 @@ describe('MigrateCollectionToPostgres', () => {
     };
 
     const migratorA = new MigrateCollectionToPostgres(mongoDb, 'tenant-a');
-    const migratedA = await migratorA.migrate(config);
-    expect(migratedA.migrated).toBe(1);
-    expect(migratedA.skipped).toBe(false);
+    const resultA = await migratorA.migrate(config);
+    expect(resultA.migrated).toBe(1);
+    expect(resultA.skipped).toBe(false);
 
     const migratorB = new MigrateCollectionToPostgres(mongoDb, 'tenant-b');
-    const migratedB = await migratorB.migrate(config);
-    expect(migratedB.migrated).toBe(1);
-    expect(migratedB.skipped).toBe(false);
+    const resultB = await migratorB.migrate(config);
+    expect(resultB.migrated).toBe(1);
+    expect(resultB.skipped).toBe(false);
 
     const pgRows = await testingPG.getAllFrom('thesauri');
     const rowsForA = pgRows.filter(r => r.tenant_id === 'tenant-a');
@@ -127,9 +127,9 @@ describe('MigrateCollectionToPostgres', () => {
     };
 
     const migrator = makeMigrator();
-    const migrated = await migrator.migrate(config);
-    expect(migrated.migrated).toBe(0);
-    expect(migrated.skipped).toBe(false);
+    const result = await migrator.migrate(config);
+    expect(result.migrated).toBe(0);
+    expect(result.skipped).toBe(false);
 
     const pgRows = await testingPG.getAllFrom('thesauri');
     expect(pgRows.filter(r => r.tenant_id === TENANT)).toHaveLength(0);
@@ -158,9 +158,9 @@ describe('MigrateCollectionToPostgres', () => {
     };
 
     const migrator = makeMigrator();
-    const migrated = await migrator.migrate(config);
-    expect(migrated.migrated).toBe(2500);
-    expect(migrated.skipped).toBe(false);
+    const result = await migrator.migrate(config);
+    expect(result.migrated).toBe(2500);
+    expect(result.skipped).toBe(false);
 
     const pgRows = await testingPG.getAllFrom('thesauri');
     const rowsForTenant = pgRows.filter(r => r.tenant_id === TENANT);
@@ -189,9 +189,9 @@ describe('MigrateCollectionToPostgres', () => {
     });
 
     const migrator = makeMigrator();
-    const migrated = await migrator.migrate(ThesaurusMigrationConfig);
-    expect(migrated.migrated).toBe(1);
-    expect(migrated.skipped).toBe(false);
+    const result = await migrator.migrate(ThesaurusMigrationConfig);
+    expect(result.migrated).toBe(1);
+    expect(result.skipped).toBe(false);
 
     const pgRows = await testingPG.getAllFrom('thesauri');
     const rowsForTenant = pgRows.filter(r => r.tenant_id === TENANT);
