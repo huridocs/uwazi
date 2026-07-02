@@ -87,7 +87,7 @@ Dos módulos de `api/` importan tipos de rutas (dirección incorrecta):
 ┌─────────────────────────────────────────────────────────┐
 │  Components                                             │
 │  - Lectura: useLoaderData                               │
-│  - Escritura: useServices() + useServiceMutation()      │
+│  - Escritura: useServices() + ApiResponse tupla         │
 │  - NO importan api/ ni http; NO useFetcher/actions      │
 └──────────────────────────┬──────────────────────────────┘
                            │
@@ -128,7 +128,7 @@ Una ruta puede usar **varios servicios** en el mismo loader. Eso **no** va en un
 | `#V2/services/*` | Fachada por dominio (`entities`, `files`, `thesauri`, …) |
 | `Routes/*/loader.ts` | Factory React Router + wiring a `services` |
 | `Routes/*/loadXPage.ts` | Orquestación pura (opcional, rutas complejas) |
-| Mutaciones | `useServices()` / `useServiceMutation()` en componentes + `useRevalidator()` si hace falta refrescar loader |
+| Mutaciones | `useServices()` + tupla `ApiResponse` en handlers + `useRequestStatus` + `useRevalidator()` |
 
 ### 2.2 Cómo acceden los loaders a los servicios
 
@@ -284,22 +284,28 @@ flowchart TB
 ```tsx
 // Patrón estándar en cualquier ruta Settings / Entity
 const Users = () => {
-  const { users, groups } = useLoaderData();
   const { users: usersService } = useServices();
   const revalidator = useRevalidator();
-  const { mutate, isPending } = useServiceMutation(usersService.deleteUser, {
-    successMessage: t('System', 'User deleted', null, false),
-    onSuccess: () => revalidator.revalidate(),
-  });
+  const { notify } = useRequestStatus();
+  const [isPending, setIsPending] = useState(false);
 
-  const handleDelete = (selected: User[]) => mutate({ users: selected, confirmation });
+  const handleDelete = async (selected: User[], confirmation: string) => {
+    setIsPending(true);
+    const [, error] = await usersService.deleteUser(selected, confirmation);
+    setIsPending(false);
+
+    if (error) {
+      notify('error', t('System', 'An error occurred', null, false), undefined, error.json?.prettyMessage);
+      return;
+    }
+
+    notify('success', t('System', 'User deleted', null, false));
+    await revalidator.revalidate();
+  };
 };
 ```
 
-`useServiceMutation` (evolución de `useApiCaller`) centraliza:
-- llamada al método del servicio;
-- `useRequestStatus` (toast / error);
-- estado `isPending` opcional.
+Misma tupla que en loaders; en componentes el handler gestiona toasts, `isPending` y revalidación. Sin hook extra hasta que el patrón se repita lo suficiente.
 
 `ServicesProvider` envuelve el árbol de la app en cliente (o solo la ruta en tests) para que `useServices()` resuelva el mismo objeto que los loaders usan por import.
 
@@ -557,7 +563,7 @@ Hoy solo **Users** y **EditTranslations** usan `action` + `useFetcher().submit()
 **Migración Users (Fase 1b o Fase 3):**
 
 1. `UsersService` con métodos que hoy despacha `userAction` (`newUser`, `deleteUser`, `saveGroup`, …).
-2. Sustituir `useFetcher` por `useServiceMutation` / `useServices()` en `Users.tsx` y sidepanels.
+2. Sustituir `useFetcher` por handlers con `useServices()` + tupla `ApiResponse` en `Users.tsx` y sidepanels.
 3. Quitar `userAction` y `action={userAction()}` de `Routes.tsx`.
 4. Mantener `createUsersLoader` para lectura.
 
@@ -727,21 +733,24 @@ Ver implementación en §2.9.
 | `loader.spec.ts` con mock de api | Testear `loadEntityPage(testServices, input)` directamente, o `createEntityLoader(testServices)` |
 | `Thesauri.spec.tsx` (loader real + mock api) | `createThesauriLoader(testServices)` en el router |
 
-### 5.4 `useServiceMutation` (patrón estándar de escritura)
+### 5.4 Mutaciones en componentes (tupla + `useRequestStatus`)
 
-Reemplaza `useApiCaller` (Languages) y elimina la necesidad de actions/`useFetcher` (Users).
+Reemplaza `useApiCaller` (Languages) y elimina actions/`useFetcher` (Users). Sin hook dedicado en Fase 0 — extraer uno solo si el boilerplate se repite en muchas rutas.
 
-```typescript
-// CustomHooks/useServiceMutation.ts
-const { mutate, isPending, error } = useServiceMutation(
-  (svc) => svc.templates.setDefault,
-  {
-    successMessage: t('System', 'Default template updated', null, false),
-    onSuccess: () => revalidator.revalidate(),
+```tsx
+const { templates: templatesService } = useServices();
+const { notify } = useRequestStatus();
+const revalidator = useRevalidator();
+
+const handleSetDefault = async (templateId: string) => {
+  const [, error] = await templatesService.setDefault(templateId);
+  if (error) {
+    notify('error', t('System', 'An error occurred', null, false), undefined, error.json?.prettyMessage);
+    return;
   }
-);
-
-await mutate(templateId);
+  notify('success', t('System', 'Default template updated', null, false));
+  await revalidator.revalidate();
+};
 ```
 
 En tests del componente:
@@ -759,7 +768,7 @@ fireEvent.click(screen.getByRole('button', { name: /set default/i }));
 await waitFor(() => expect(setDefaultMock).toHaveBeenCalledWith('tpl1'));
 ```
 
-Implementar en **Fase 0** junto con `ServicesProvider` — es prerequisito para migrar Users sin actions.
+`ServicesProvider` + `useServices` en Fase 0; migración de mutaciones en Fase 1+ con el patrón de tupla arriba.
 
 ---
 
@@ -771,10 +780,9 @@ Implementar en **Fase 0** junto con `ServicesProvider` — es prerequisito para 
 
 - [ ] Crear `app/react/V2/services/` con `types.ts`, `createDefaultServices.ts`, `index.ts`
 - [ ] Añadir alias `#V2/services/*` en `package.json` imports
-- [ ] Implementar `ServicesProvider`, `useServices`, `useServiceMutation`, `createTestServices`, `renderRoute`
+- [ ] Implementar `ServicesProvider`, `useServices`, `createTestServices`, `renderRoute`
 - [ ] Documentar patrón `createXLoader(svc?)` en convención de rutas
 - [ ] Documentar convención en comentario JSDoc en `services/index.ts`
-- [ ] Añadir `api/helpers.ts` con `apiCall` y migrar **un** módulo piloto (`entities` ya usa tuplas)
 
 **Criterio de done:** tests existentes verdes; un test de humo que monta `ServicesProvider` con mock.
 
@@ -785,7 +793,7 @@ Implementar en **Fase 0** junto con `ServicesProvider` — es prerequisito para 
 **1a — Thesauri**
 
 - [ ] `ThesaurusService` (`list`, `getById`, `save`, `deleteMany`)
-- [ ] `createThesauriLoader`; componente con `useServices` + `useServiceMutation`
+- [ ] `createThesauriLoader`; componente con `useServices` + mutaciones vía tupla
 - [ ] `buildThesauriRows` en helper de ruta
 - [ ] Migrar `Thesauri.spec.tsx` a `createThesauriLoader(testServices)`
 
@@ -793,7 +801,7 @@ Implementar en **Fase 0** junto con `ServicesProvider` — es prerequisito para 
 
 - [ ] `UsersService` envolviendo `usersAPI`
 - [ ] `createUsersLoader` para lectura
-- [ ] Reescribir `Users.tsx` y sidepanels: `useServiceMutation` en lugar de `useFetcher` + `userAction`
+- [ ] Reescribir `Users.tsx` y sidepanels: `useServices()` + tupla en lugar de `useFetcher` + `userAction`
 - [ ] Eliminar `userAction` y `action={…}` en `Routes.tsx`
 - [ ] Tests: mock `usersService.*` vía `ServicesProvider`
 
@@ -920,7 +928,7 @@ Loaders → Services (interfaz) → [ http (#V2/api) | server (use cases / v1_la
 
 **Media-baja en cobertura completa a corto plazo** — backend heterogéneo (legacy `app/api/*`, V2 core, `v1_layer`), auth/permisos que hoy pasan por middleware HTTP, y dominios con sockets/uploads.
 
-Las **mutaciones en SSR no son prioridad**: el plan cierra escritura en cliente vía `useServices()` / `useServiceMutation()`. El ahorro in-process aplica sobre todo a **lecturas de loader**.
+Las **mutaciones en SSR no son prioridad**: el plan cierra escritura en cliente vía `useServices()` + tupla `ApiResponse`. El ahorro in-process aplica sobre todo a **lecturas de loader**.
 
 #### Tres implementaciones de servicio (mismo contrato)
 
@@ -1049,7 +1057,7 @@ const createServerEntitiesService = (ctx: ServerServiceContext): EntitiesService
 
 4. **React Query / SWR.** Fuera de alcance; el proyecto usa React Router loaders + Jotai. Los servicios son compatibles con una migración futura a React Query (los hooks llamarían a los mismos servicios).
 
-5. **React Router Actions para mutaciones.** **Cerrado: no.** Users/Translations son legado. Estándar = loader (lectura) + `useServices` / `useServiceMutation` (escritura) + `useRevalidator` cuando aplique. Ver §2.8.
+5. **React Router Actions para mutaciones.** **Cerrado: no.** Users/Translations son legado. Estándar = loader (lectura) + `useServices()` + tupla en handlers (escritura) + `useRevalidator` cuando aplique. Ver §2.8.
 
 6. **SSR: HTTP loopback vs in-process.** **Cerrado: ambos vía inyección.** Cliente usa `createDefaultServices()` (HTTP). SSR loaders usan `createServerServices(req)` (in-process) cuando el adapter existe; fallback HTTP hasta completar migración por dominio. Ver §7.4. La inyección `createXLoader(svc?)` sirve para tests, SSR y cliente — no solo para mocks.
 
@@ -1064,13 +1072,13 @@ const createServerEntitiesService = (ctx: ServerServiceContext): EntitiesService
 | `app/react/V2/api/ApiResponse.ts` | Tipo tupla a estandarizar |
 | `app/react/V2/api/entities/index.ts` | Ejemplo de contrato tupla |
 | `app/react/V2/api/templates/index.ts` | Ejemplo de `return e` en catch |
-| `app/react/V2/Routes/Settings/Users/Users.tsx` | Legado action — migrar a `useServiceMutation` (§2.8) |
+| `app/react/V2/Routes/Settings/Users/Users.tsx` | Legado action — migrar a `useServices()` + tupla (§2.8) |
 | `app/react/V2/Routes/Settings/Translations/EditTranslations.tsx` | Legado action — migrar en Fase 3 |
 | `app/react/V2/Routes/Entity/loader.ts` | Orquestación → `loadEntityPage.ts`; servicios por dominio |
 | `app/react/V2/Routes/Settings/ParagraphExtraction/Loaders.ts` | Orquestación multi-API |
 | `app/react/V2/Routes/Settings/Thesauri/specs/Thesauri.spec.tsx` | Test con loader real |
 | `app/react/V2/testing/TestRouterContext.tsx` | Harness actual a extender |
-| `app/react/V2/CustomHooks/useApiCaller.tsx` | Base para `useServiceMutation` |
+| `app/react/V2/CustomHooks/useApiCaller.tsx` | Patrón legacy de mutaciones (Languages); sustituir por tupla + `useRequestStatus` |
 | `app/react/V2/atoms/store.ts` | Hidratación SSR de datos de referencia |
 
 ---

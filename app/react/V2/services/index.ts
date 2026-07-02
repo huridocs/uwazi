@@ -24,8 +24,8 @@
  * ## Component mutations (client only)
  *
  * Wrap the app (or test tree) with `ServicesProvider` and call domain methods via
- * `useServices()` / `useServiceMutation`. Revalidate loader data with `useRevalidator()`
- * after successful writes.
+ * `useServices()`. Services return `ApiResponse` tuples — handle `[data, error]` in the
+ * handler (`useRequestStatus` for toasts, `useRevalidator()` after success).
  *
  * ## Tests
  *
