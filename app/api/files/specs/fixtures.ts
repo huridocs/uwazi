@@ -1,7 +1,7 @@
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import db, { DBFixture } from '#api/utils/testing_db.js';
 import { UserRole } from '#shared/types/userSchema.js';
-import { PUBLIC_USER_ID } from '#api/users/publicUser.js';
+import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 
 const fixturesFactory = getFixturesFactory();
 

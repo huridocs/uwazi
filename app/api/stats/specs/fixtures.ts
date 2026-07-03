@@ -1,5 +1,5 @@
 import { testingDB, DBFixture } from '#api/utils/testing_db.js';
-import { PUBLIC_USER_ID } from '#api/users/publicUser.js';
+import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 
 const entity1en = testingDB.id();
 const entity2en = testingDB.id();
