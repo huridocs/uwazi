@@ -66,7 +66,7 @@ function register<T extends Dispatchable>(
     await tenants.run(async () => {
       let actor: UserSchema | null = null;
       if (job.params.userId) {
-        actor = await users.getById(job.params.userId, '-password', true);
+        actor = await users.getById(job.params.userId, '-password', true, true);
       }
       deps = {
         actor: User.createFrom(actor),

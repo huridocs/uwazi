@@ -9,11 +9,17 @@ import { MongoUsergroupsDataSource } from '../MongoUsergroupsDataSource.js';
 const f = getFixturesFactory();
 
 const fixtures = {
-  users: [f.user('existing1', UserRole.ADMIN), f.user('existing2', UserRole.EDITOR)],
+  users: [
+    f.user({ username: 'existing1', role: UserRole.ADMIN }),
+    f.user({ username: 'existing2', role: UserRole.EDITOR }),
+  ],
   usergroups: [
     f.usergroup('Empty', []),
-    f.usergroup('With one member', [{ refId: f.id('existing1') }]),
-    f.usergroup('With two members', [{ refId: f.id('existing1') }, { refId: f.id('existing2') }]),
+    f.usergroup('With one member', [{ refId: f.idString('existing1') }]),
+    f.usergroup('With two members', [
+      { refId: f.idString('existing1') },
+      { refId: f.idString('existing2') },
+    ]),
   ],
 };
 
@@ -49,7 +55,7 @@ describe('MongoGroupsDataSource', () => {
       const groups = await testingEnvironment.db.getAllFrom('usergroups');
       const emptyGroup = groups.find(g => g.name === 'Empty');
 
-      expect(emptyGroup?.members).toMatchObject([{ refId: f.id('newuser') }]);
+      expect(emptyGroup?.members).toMatchObject([{ refId: f.idString('newuser') }]);
     });
 
     it('should add a user to multiple groups', async () => {
@@ -72,10 +78,10 @@ describe('MongoGroupsDataSource', () => {
       const emptyGroup = groups.find(group => group.name === 'Empty');
       const oneMemberGroup = groups.find(group => group.name === 'With one member');
 
-      expect(emptyGroup?.members).toMatchObject([{ refId: f.id('newuser') }]);
+      expect(emptyGroup?.members).toMatchObject([{ refId: f.idString('newuser') }]);
       expect(oneMemberGroup?.members).toMatchObject([
-        { refId: f.id('existing1') },
-        { refId: f.id('newuser') },
+        { refId: f.idString('existing1') },
+        { refId: f.idString('newuser') },
       ]);
     });
 
@@ -97,7 +103,7 @@ describe('MongoGroupsDataSource', () => {
       const twoMemberGroup = groups.find(group => group.name === 'With two members');
 
       expect(oneMemberGroup?.members).toMatchObject([]);
-      expect(twoMemberGroup?.members).toMatchObject([{ refId: f.id('existing2') }]);
+      expect(twoMemberGroup?.members).toMatchObject([{ refId: f.idString('existing2') }]);
     });
 
     it('should add and remove a user from different groups', async () => {
@@ -118,9 +124,9 @@ describe('MongoGroupsDataSource', () => {
       const oneMemberGroup = groups.find(group => group.name === 'With one member');
       const twoMemberGroup = groups.find(group => group.name === 'With two members');
 
-      expect(emptyGroup?.members).toMatchObject([{ refId: f.id('existing1') }]);
+      expect(emptyGroup?.members).toMatchObject([{ refId: f.idString('existing1') }]);
       expect(oneMemberGroup?.members).toMatchObject([]);
-      expect(twoMemberGroup?.members).toMatchObject([{ refId: f.id('existing2') }]);
+      expect(twoMemberGroup?.members).toMatchObject([{ refId: f.idString('existing2') }]);
     });
   });
 
