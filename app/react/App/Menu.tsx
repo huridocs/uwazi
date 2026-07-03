@@ -141,13 +141,13 @@ const MenuComponent = ({
       <li className="menuItems">
         <ul className="menuNav-list">{navLinks}</ul>
       </li>
-      <li className="menuNav-item only-desktop" style={legacyBeaconSlotStyle}>
-        {!isMobile && (
+      {!isMobile && (
+        <li className="menuNav-item only-desktop" style={legacyBeaconSlotStyle}>
           <div className="tw-content">
             <RequestStatus />
           </div>
-        )}
-      </li>
+        </li>
+      )}
       <I18NMenu />
       <li className="menuActions mobile-menuActions">
         <ul className="menuNav-list">
