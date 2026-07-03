@@ -1,3 +1,6 @@
+-- Migration 003: create_files_table
+-- Create the files table for V2 core file storage
+
 CREATE TABLE IF NOT EXISTS files (
   "_id"                 TEXT NOT NULL,
   "tenant_id"           TEXT NOT NULL,

@@ -1,5 +1,4 @@
 // eslint-disable-next-line node/no-restricted-import
-import { readdirSync, readFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import pg from 'pg';
@@ -7,15 +6,12 @@ import { config } from '#api/config.js';
 import uniqueID from '#shared/uniqueID.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { tenants } from '#api/tenants/tenantContext.js';
+import { PgMigrator } from '../core/infrastructure/postgresql/PgMigrator.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const SCHEMA_DIR = path.join(__dirname, '../core/infrastructure/postgresql/schema');
-const SCHEMA_SQL = readdirSync(SCHEMA_DIR)
-  .filter(f => f.endsWith('.sql'))
-  .map(f => readFileSync(path.join(SCHEMA_DIR, f), 'utf-8'))
-  .join('\n');
+const MIGRATIONS_DIR = path.join(__dirname, '../core/infrastructure/postgresql/schema_migrations');
 
 /** Open a one-off admin client connected to the postgres maintenance DB. */
 const adminClient = () =>
@@ -92,7 +88,8 @@ const testingPG = {
      */
     PostgresDB.setConfig(this.config);
 
-    await pool.query(SCHEMA_SQL);
+    const migrator = new PgMigrator(MIGRATIONS_DIR, pool);
+    await migrator.migrate();
 
     return pool;
   },

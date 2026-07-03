@@ -47,11 +47,11 @@ fi
 
 blank_state_dir="${BLANK_STATE_DIR:-$parent_path/blank_state}"
 
-# Collect PostgreSQL table names from schema files for dynamic operations
+# Collect PostgreSQL table names from migration files for dynamic operations
 pg_tables=()
-for schema_file in "$repo_root/app/api/core/infrastructure/postgresql/schema/"*.sql; do
-  [ -f "$schema_file" ] || continue
-  table_name=$(grep -oiE 'CREATE TABLE IF NOT EXISTS\s+"?[^"( ]+"?' "$schema_file" | sed -E 's/CREATE TABLE IF NOT EXISTS\s+"?([^" ]+)"?/\1/i' | head -1)
+for migration_file in "$repo_root/app/api/core/infrastructure/postgresql/schema_migrations/"*.sql; do
+  [ -f "$migration_file" ] || continue
+  table_name=$(grep -oiE 'CREATE TABLE IF NOT EXISTS\s+"?[^"( ]+"?' "$migration_file" | sed -E 's/CREATE TABLE IF NOT EXISTS\s+"?([^" ]+)"?/\1/i' | head -1)
   [ -n "$table_name" ] && pg_tables+=("$table_name")
 done
 
@@ -111,29 +111,12 @@ recreate_database() {
       fi
     fi
 
-    echo "Applying PostgreSQL schema..."
-    for schema_file in "$repo_root/app/api/core/infrastructure/postgresql/schema/"*.sql; do
-      [ -f "$schema_file" ] || continue
-
-      table_name=$(grep -oiE 'CREATE TABLE IF NOT EXISTS\s+"?[^"( ]+"?' "$schema_file" | sed -E 's/CREATE TABLE IF NOT EXISTS\s+"?([^" ]+)"?/\1/i' | head -1)
-
-      if [ -n "$table_name" ]; then
-        table_exists=$(PGPASSWORD="${POSTGRES_PASSWORD:-uwazi}" psql \
-          -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d "$PG_DB" \
-          -At -c "SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = '$table_name';" 2>/dev/null | tr -d '\n')
-
-        if [ "$table_exists" = "1" ]; then
-          echo "Skipping: $(basename "$schema_file") — table '$table_name' already exists."
-          continue
-        fi
-      fi
-
-      PGPASSWORD="${POSTGRES_PASSWORD:-uwazi}" psql \
-        -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d "$PG_DB" \
-        -f "$schema_file" \
-        && echo "Applied: $(basename "$schema_file")" \
-        || echo "WARNING: Failed to apply $(basename "$schema_file"), skipping."
-    done
+    echo "Applying PostgreSQL migrations..."
+    if [ "$TRANSPILED" = true ]; then
+      INDEX_NAME="$DB" DATABASE_NAME="$DB" node "$repo_root/prod/scripts/run.js" "$repo_root/app/api/core/infrastructure/postgresql/runPgMigrations.js"
+    else
+      INDEX_NAME="$DB" DATABASE_NAME="$DB" node "$repo_root/scripts/runner.js" "$repo_root/app/api/core/infrastructure/postgresql/runPgMigrations.js"
+    fi
 
     if [ "$SCHEMA_ONLY_FLAG" = true ]; then
       echo "Skipping PostgreSQL data restore (--schema-only)."
