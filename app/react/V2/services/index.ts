@@ -3,22 +3,24 @@
  *
  * ## Loaders (SSR + client navigation)
  *
- * Loaders run outside React and cannot use Context. Import the production singleton
- * and pass an optional override to the loader factory in tests:
+ * Loaders run outside React and cannot use Context. Import the default `services`
+ * instance and pass an optional override to the loader factory in tests:
  *
  * ```ts
- * import { services, type V2Services } from '#V2/services/index.js';
+ * import { httpServices } from '#V2/services/http/index.js';
+ * import type { V2Services } from '#V2/services/types.js';
  *
- * export const createThesauriLoader =
- *   (svc: V2Services = services) =>
- *   (headers?: IncomingHttpHeaders): LoaderFunction =>
- *   async () => {
- *     const [data, error] = await svc.thesauri.getAll({ headers });
- *     if (error) throw error;
- *     return data;
- *   };
+ * // Wiring layer (Routes.tsx / entry-server) — default HTTP on client, server adapters in SSR:
+ * const getRoutes = (..., services: V2Services = httpServices) => (
+ *   <Route loader={createThesauriLoader(services)(headers)} />
+ * );
  *
- * export const thesauriLoader = createThesauriLoader();
+ * // entry-server.tsx (Phase 2b):
+ * const services = createServerServices(req);
+ * const routes = getRoutes(settings, userId, headers, indexComponents, services);
+ *
+ * // Loader factory — no default; services always injected by wiring above:
+ * export const thesauriLoader = createThesauriLoader(services);
  * ```
  *
  * ## Component mutations (client only)
@@ -36,13 +38,12 @@
  *   `#V2/testing/renderRoute.js` (not the `testing/index` barrel) so existing
  *   specs that import `TestAtomStoreProvider` do not load the services layer.
  */
-import { services } from './singleton.js';
-import { createDefaultServices } from './createDefaultServices.js';
-
-export { services, createDefaultServices };
+export { httpServices as services } from './http/index.js';
 export { ServicesProvider, useServices } from './ServicesProvider.js';
-export type { V2Services, DeepPartial } from './types.js';
+export type { V2Services } from './types.js';
 export type { ThesaurusService, ThesaurusInput } from './contracts/ThesaurusService.js';
+export type { Thesaurus } from '#shared/contracts/Thesaurus.js';
 export type { UsersService, UserInput } from './contracts/UsersService.js';
+export type { User, UserGroup } from '#shared/contracts/Users.js';
 export type { UserGroupsService, UserGroupInput } from './contracts/UserGroupsService.js';
 export type { ServiceRequestOptions } from './contracts/ServiceRequestOptions.js';

@@ -9,7 +9,7 @@ import { TestAtomStoreProvider } from './TestAtomStoreProvider.js';
 
 type RenderRouteOptions = {
   Component: ComponentType;
-  createLoader: (svc: V2Services) => LoaderFunction;
+  createLoader: (services: V2Services) => LoaderFunction;
   services?: Parameters<typeof createTestServices>[0];
   atomInitialValues?: Iterable<readonly [any, any]>;
   initialEntries?: string[];

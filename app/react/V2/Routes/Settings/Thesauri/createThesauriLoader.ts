@@ -1,16 +1,18 @@
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction } from 'react-router';
-import { services, type V2Services } from '#V2/services/index.js';
+import type { V2Services } from '#V2/services/types.js';
 
 /**
- * Injectable loader factory for the Thesauri list route.
- * Production wiring migrates in Phase 1a; tests use this factory today.
+ * Loader factory for the Thesauri list route.
+ *
+ * Does not import or default to any service implementation — the caller
+ * (getRoutes, entry-server, or tests) injects the `V2Services` bundle.
  */
 const createThesauriLoader =
-  (svc: V2Services = services) =>
+  (services: V2Services) =>
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
-    const [data, error] = await svc.thesauri.getAll({ headers });
+    const [data, error] = await services.thesauri.getAll({ headers });
     if (error) throw error;
     return data;
   };

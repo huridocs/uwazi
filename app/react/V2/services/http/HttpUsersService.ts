@@ -21,7 +21,7 @@ const fromLegacyApi = async <T>(
   }
 };
 
-const createHttpUsersService = (): UsersService => ({
+const httpUsersService: UsersService = {
   getAll: ({ headers } = {}) => fromLegacyApi(() => usersApi.get(headers)),
   getCurrent: ({ headers } = {}) => fromLegacyApi(() => usersApi.getCurrentUser(headers)),
   upsert: (user, currentPassword, { headers } = {}) =>
@@ -36,6 +36,6 @@ const createHttpUsersService = (): UsersService => ({
     fromLegacyApi(() => usersApi.resetPassword(data, headers)),
   reset2FA: (data, currentPassword, { headers } = {}) =>
     fromLegacyApi(() => usersApi.reset2FA(data, currentPassword, headers)),
-});
+};
 
-export { createHttpUsersService };
+export { httpUsersService };

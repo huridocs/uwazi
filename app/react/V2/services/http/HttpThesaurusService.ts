@@ -1,7 +1,7 @@
 import { ApiResponse } from '#V2/api/ApiResponse.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import * as thesauriApi from '#V2/api/thesauri/index.js';
-import type { ThesaurusInput, ThesaurusService } from '../contracts/ThesaurusService.js';
+import type { ThesaurusService } from '../contracts/ThesaurusService.js';
 
 const toApiResponse = async <T>(
   fn: () => Promise<T>
@@ -13,7 +13,7 @@ const toApiResponse = async <T>(
   }
 };
 
-const createHttpThesaurusService = (): ThesaurusService => ({
+const httpThesaurusService: ThesaurusService = {
   getAll: ({ headers } = {}) => toApiResponse(() => thesauriApi.get({}, headers)),
 
   getById: (id, { headers } = {}) =>
@@ -28,6 +28,6 @@ const createHttpThesaurusService = (): ThesaurusService => ({
     toApiResponse(async () => {
       await Promise.all(ids.map(_id => thesauriApi.deleteThesauri({ _id })));
     }),
-});
+};
 
-export { createHttpThesaurusService };
+export { httpThesaurusService };

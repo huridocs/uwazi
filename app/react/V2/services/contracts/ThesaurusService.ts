@@ -1,9 +1,7 @@
-import { ClientThesaurus } from '#app/apiResponseTypes.js';
+import type { Thesaurus, ThesaurusInput } from '#shared/contracts/Thesaurus.js';
 import { ApiResponse } from '#V2/api/ApiResponse.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import type { ServiceRequestOptions } from './ServiceRequestOptions.js';
-
-type ThesaurusInput = Omit<ClientThesaurus, '_id'> & { _id?: string };
 
 /**
  * Thesaurus domain service.
@@ -12,12 +10,12 @@ type ThesaurusInput = Omit<ClientThesaurus, '_id'> & { _id?: string };
  * Standard writes: `upsert`, `delete`.
  */
 interface ThesaurusService {
-  getAll(options?: ServiceRequestOptions): Promise<ApiResponse<ClientThesaurus[]>>;
+  getAll(options?: ServiceRequestOptions): Promise<ApiResponse<Thesaurus[]>>;
   getById(
     id: string,
     options?: ServiceRequestOptions
-  ): Promise<ApiResponse<ClientThesaurus | undefined>>;
-  upsert(thesaurus: ThesaurusInput): Promise<ApiResponse<ClientThesaurus>>;
+  ): Promise<ApiResponse<Thesaurus | undefined>>;
+  upsert(thesaurus: ThesaurusInput): Promise<ApiResponse<Thesaurus>>;
   delete(ids: string[]): Promise<ApiResponse<void, FetchResponseError>>;
 }
 

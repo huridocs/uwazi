@@ -15,7 +15,7 @@ describe('V2 services infrastructure', () => {
 
     renderRoute({
       Component: ThesauriList,
-      createLoader: svc => createThesauriLoader(svc)({}),
+      createLoader: services => createThesauriLoader(services)({}),
       services: { thesauri: { getAll: getAllMock } },
       atomInitialValues: [[templatesAtom, []]],
     });

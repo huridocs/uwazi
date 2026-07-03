@@ -21,10 +21,10 @@ const fromLegacyApi = async <T>(
   }
 };
 
-const createHttpUserGroupsService = (): UserGroupsService => ({
+const httpUserGroupsService: UserGroupsService = {
   getAll: ({ headers } = {}) => fromLegacyApi(() => usersApi.getUserGroups(headers)),
   upsert: (group, { headers } = {}) => fromLegacyApi(() => usersApi.saveGroup(group, headers)),
   delete: (groups, { headers } = {}) => fromLegacyApi(() => usersApi.deleteGroup(groups, headers)),
-});
+};
 
-export { createHttpUserGroupsService };
+export { httpUserGroupsService };

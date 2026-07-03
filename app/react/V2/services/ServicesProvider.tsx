@@ -1,5 +1,5 @@
 import React, { createContext, ReactNode, useContext } from 'react';
-import { services } from './singleton.js';
+import { httpServices as services } from './http/index.js';
 import type { V2Services } from './types.js';
 
 const ServicesContext = createContext<V2Services>(services);

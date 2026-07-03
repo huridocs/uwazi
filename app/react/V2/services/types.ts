@@ -8,8 +8,4 @@ interface V2Services {
   userGroups: UserGroupsService;
 }
 
-type DeepPartial<T> = {
-  [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
-};
-
-export type { V2Services, DeepPartial };
+export type { V2Services };
