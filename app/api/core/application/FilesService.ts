@@ -130,7 +130,7 @@ class FilesService {
   }
 
   async deleteEntityFiles(entitySharedIds: string[]) {
-    const files = await this.deps.filesDS.getByEntitiesIds(entitySharedIds).all();
+    const files = await this.deps.filesDS.getByEntitiesIds(entitySharedIds);
     if (isNonEmptyArray(files)) {
       await this.delete(files);
     }
@@ -141,9 +141,9 @@ class FilesService {
     const pdfDocuments = files.filter(
       (f): f is PDFDocument => f instanceof PDFDocument && f.isReady()
     );
-    const thumbnails = await this.deps.filesDS
-      .getThumbnailsForProcessedPDFs(pdfDocuments.map(f => f.id))
-      .all();
+    const thumbnails = await this.deps.filesDS.getThumbnailsForProcessedPDFs(
+      pdfDocuments.map(f => f.id)
+    );
 
     const allFilesToDelete = [...files, ...thumbnails];
 

@@ -1,6 +1,7 @@
 /* eslint-disable max-statements */
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
@@ -12,9 +13,19 @@ import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusMode
 import { extractorsQueryFixtures, extractor1 } from './shared/extractorsQueryFixtures.js';
 import { PXGetExtractorStatuses } from '../PXGetExtractorStatuses.js';
 
+type TestConfig = {
+  name: string;
+  usePostgres: boolean;
+};
+
+const testConfigs: TestConfig[] = [
+  { name: 'Mongo', usePostgres: false },
+  { name: 'Postgres', usePostgres: true },
+];
+
 const createFixtures = (): DBFixture => extractorsQueryFixtures;
 
-const setupUseCase = () =>
+const createSut = () =>
   testingEnvironment.runWithContext(() => {
     const mongoTransactionManager = TransactionManagerFactory.default();
     const connection = getConnection();
@@ -37,87 +48,96 @@ const setupUseCase = () =>
   });
 
 describe('PXGetExtractorStatuses', () => {
-  beforeEach(async () => {
-    await testingEnvironment.setUp(createFixtures());
+  beforeAll(async () => {
+    await testingEnvironment.setUp(createFixtures(), { postgres: true });
   });
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should fetch and populate entity statuses for an extractor (with languages and paragraph count)', async () => {
-    const getExtractorStatuses = setupUseCase();
-
-    const input: GetExtractorStatusesInput = {
-      id: extractor1._id.toString(),
-      language: 'pt',
-    };
-
-    const results = await getExtractorStatuses.execute(input);
-
-    expect(results.page).toMatchObject({ number: 1, size: 10 });
-    expect(results.totalRows).toBe(8);
-    expect(results.rows[0]).toMatchObject({
-      entity: { title: 'entity1', language: 'pt' },
-      availableFileLanguages: ['en', 'pt'],
-      paragraphsCount: 3,
-      status: { status: EntityStatus.Processed },
-    });
-    expect(results.rows[1]).toMatchObject({
-      entity: { title: 'entity2', language: 'pt' },
-      availableFileLanguages: [],
-      paragraphsCount: 0,
-      status: { status: EntityStatus.New },
-    });
-    expect(results.rows[3]).toMatchObject({
-      entity: { title: 'entity5', language: 'pt' },
-      availableFileLanguages: ['en'],
-      paragraphsCount: 1,
-      status: { status: EntityStatus.Processing },
-    });
-  });
-
-  it('should allow filtering and paginating the results', async () => {
-    const getExtractorStatuses = setupUseCase();
-
-    const input: GetExtractorStatusesInput = {
-      id: extractor1._id.toString(),
-      language: 'pt',
-      page: { number: 1, size: 3 },
-      filter: { status: [EntityStatus.New, EntityStatus.Processing] },
-    };
-
-    const resultsPg1 = await getExtractorStatuses.execute(input);
-
-    expect(resultsPg1.page).toMatchObject({ number: 1, size: 3 });
-    expect(resultsPg1.totalRows).toBe(4);
-    expect(resultsPg1.rows[0]).toMatchObject({
-      availableFileLanguages: [],
-      entity: { title: 'entity2', language: 'pt' },
-      status: { status: EntityStatus.New },
-    });
-    expect(resultsPg1.rows[1]).toMatchObject({
-      availableFileLanguages: [],
-      entity: { title: 'entity4', language: 'pt' },
-      status: { status: EntityStatus.New },
-    });
-    expect(resultsPg1.rows[2]).toMatchObject({
-      availableFileLanguages: ['en'],
-      entity: { title: 'entity5', language: 'pt' },
-      status: { status: EntityStatus.Processing },
+  describe.each(testConfigs)('$name', ({ usePostgres }) => {
+    beforeEach(async () => {
+      testingTenants.changeCurrentTenant({
+        featureFlags: { postgresFiles: usePostgres },
+      });
+      await testingEnvironment.setFixtures(createFixtures());
     });
 
-    input.page!.number = 2;
+    it('should fetch and populate entity statuses for an extractor (with languages and paragraph count)', async () => {
+      const getExtractorStatuses = createSut();
 
-    const resultsPg2 = await getExtractorStatuses.execute(input);
+      const input: GetExtractorStatusesInput = {
+        id: extractor1._id.toString(),
+        language: 'pt',
+      };
 
-    expect(resultsPg2.page).toMatchObject({ number: 2, size: 3 });
-    expect(resultsPg2.totalRows).toBe(4);
-    expect(resultsPg2.rows.length).toBe(1);
-    expect(resultsPg2.rows[0]).toMatchObject({
-      availableFileLanguages: [],
-      entity: { title: 'entity9', language: 'pt' },
-      status: { status: EntityStatus.New },
+      const results = await getExtractorStatuses.execute(input);
+
+      expect(results.page).toMatchObject({ number: 1, size: 10 });
+      expect(results.totalRows).toBe(8);
+      expect(results.rows[0]).toMatchObject({
+        entity: { title: 'entity1', language: 'pt' },
+        availableFileLanguages: ['en', 'pt'],
+        paragraphsCount: 3,
+        status: { status: EntityStatus.Processed },
+      });
+      expect(results.rows[1]).toMatchObject({
+        entity: { title: 'entity2', language: 'pt' },
+        availableFileLanguages: [],
+        paragraphsCount: 0,
+        status: { status: EntityStatus.New },
+      });
+      expect(results.rows[3]).toMatchObject({
+        entity: { title: 'entity5', language: 'pt' },
+        availableFileLanguages: ['en'],
+        paragraphsCount: 1,
+        status: { status: EntityStatus.Processing },
+      });
+    });
+
+    it('should allow filtering and paginating the results', async () => {
+      const getExtractorStatuses = createSut();
+
+      const input: GetExtractorStatusesInput = {
+        id: extractor1._id.toString(),
+        language: 'pt',
+        page: { number: 1, size: 3 },
+        filter: { status: [EntityStatus.New, EntityStatus.Processing] },
+      };
+
+      const resultsPg1 = await getExtractorStatuses.execute(input);
+
+      expect(resultsPg1.page).toMatchObject({ number: 1, size: 3 });
+      expect(resultsPg1.totalRows).toBe(4);
+      expect(resultsPg1.rows[0]).toMatchObject({
+        availableFileLanguages: [],
+        entity: { title: 'entity2', language: 'pt' },
+        status: { status: EntityStatus.New },
+      });
+      expect(resultsPg1.rows[1]).toMatchObject({
+        availableFileLanguages: [],
+        entity: { title: 'entity4', language: 'pt' },
+        status: { status: EntityStatus.New },
+      });
+      expect(resultsPg1.rows[2]).toMatchObject({
+        availableFileLanguages: ['en'],
+        entity: { title: 'entity5', language: 'pt' },
+        status: { status: EntityStatus.Processing },
+      });
+
+      input.page!.number = 2;
+
+      const resultsPg2 = await getExtractorStatuses.execute(input);
+
+      expect(resultsPg2.page).toMatchObject({ number: 2, size: 3 });
+      expect(resultsPg2.totalRows).toBe(4);
+      expect(resultsPg2.rows.length).toBe(1);
+      expect(resultsPg2.rows[0]).toMatchObject({
+        availableFileLanguages: [],
+        entity: { title: 'entity9', language: 'pt' },
+        status: { status: EntityStatus.New },
+      });
     });
   });
 });

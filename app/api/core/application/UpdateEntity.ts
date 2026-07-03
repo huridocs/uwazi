@@ -68,7 +68,7 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
       f.toEntityFile(entity.sharedId, this.idGenerator.generate())
     );
 
-    const existingFiles = await this.deps.filesDS.getByEntitiesIds([entity.sharedId]).all();
+    const existingFiles = await this.deps.filesDS.getByEntitiesIds([entity.sharedId]);
 
     const [keptFiles, removedFiles] = ArrayUtils.splitInTwo(existingFiles, (f: BaseFile) =>
       (input.files || []).some(file => file.id === f.id)
@@ -97,7 +97,7 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
       .filter((f): f is PDFDocument => f instanceof PDFDocument && f.isReady())
       .map(f => f.id);
 
-    const allEntityThumbnails = await this.deps.filesDS.getThumbnails([entity.sharedId]).all();
+    const allEntityThumbnails = await this.deps.filesDS.getThumbnails([entity.sharedId]);
     const remainingThumbnails = allEntityThumbnails.filter(
       t => !removedPDFIds.some(id => t.filename === `${id}.jpg`)
     );

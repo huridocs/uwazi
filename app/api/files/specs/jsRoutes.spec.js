@@ -1,4 +1,3 @@
-/*eslint-disable max-lines*/
 import express from 'express';
 import request from 'supertest';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';

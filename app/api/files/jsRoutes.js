@@ -81,9 +81,10 @@ const routes = app => {
           TransactionManagerFactory.default(),
           User.createFrom(userForContext)
         );
-        const entityWithFiles = await entityDAO
-          .getWithFiles({ language: req.language, sharedId: result.sharedId })
-          .next();
+        const [entityWithFiles] = await entityDAO.getWithFiles({
+          language: req.language,
+          sharedId: result.sharedId,
+        });
 
         res.json(entityWithFiles);
       } catch (error) {

@@ -144,8 +144,7 @@ describe('MongoEntitiesDAO', () => {
     // eslint-disable-next-line max-statements
     it('should return entity with files separated as documents and attachments', async () => {
       const dao = createSut();
-      const result = dao.getWithFiles({ sharedId: 'entity_1', language: 'en' });
-      const entities = await result.toArray();
+      const entities = await dao.getWithFiles({ sharedId: 'entity_1', language: 'en' });
       const entity = entities[0];
 
       expect(entities).toHaveLength(1);
@@ -159,8 +158,7 @@ describe('MongoEntitiesDAO', () => {
 
     it('should return empty array when no entities match', async () => {
       const dao = createSut();
-      const result = dao.getWithFiles({ sharedId: 'non_existent', language: 'en' });
-      const entities = await result.toArray();
+      const entities = await dao.getWithFiles({ sharedId: 'non_existent', language: 'en' });
 
       expect(entities).toHaveLength(0);
     });
@@ -169,7 +167,7 @@ describe('MongoEntitiesDAO', () => {
   describe('permission filtering', () => {
     it('should return all entities for admin users', async () => {
       const dao = createSut(adminUser);
-      const entities = await dao.getWithFiles({ language: 'en' }).toArray();
+      const entities = await dao.getWithFiles({ language: 'en' });
       const sharedIds = entities.map(e => e.sharedId).sort();
 
       expect(sharedIds).toEqual(['entity_1', 'entity_2', 'entity_3', 'entity_4', 'entity_5']);
@@ -177,7 +175,7 @@ describe('MongoEntitiesDAO', () => {
 
     it('should return all entities for editor users', async () => {
       const dao = createSut(editorUser);
-      const entities = await dao.getWithFiles({ language: 'en' }).toArray();
+      const entities = await dao.getWithFiles({ language: 'en' });
       const sharedIds = entities.map(e => e.sharedId).sort();
 
       expect(sharedIds).toEqual(['entity_1', 'entity_2', 'entity_3', 'entity_4', 'entity_5']);
@@ -185,7 +183,7 @@ describe('MongoEntitiesDAO', () => {
 
     it('should return only published entities for public users', async () => {
       const dao = createSut(publicUser);
-      const entities = await dao.getWithFiles({ language: 'en' }).toArray();
+      const entities = await dao.getWithFiles({ language: 'en' });
       const sharedIds = entities.map(e => e.sharedId).sort();
 
       expect(sharedIds).toEqual(['entity_1', 'entity_5']);
@@ -193,7 +191,7 @@ describe('MongoEntitiesDAO', () => {
 
     it('should return published + explicitly shared entities for collaborator', async () => {
       const dao = createSut(collaboratorUser);
-      const entities = await dao.getWithFiles({ language: 'en' }).toArray();
+      const entities = await dao.getWithFiles({ language: 'en' });
       const sharedIds = entities.map(e => e.sharedId).sort();
 
       // entity_1: published + has user permission
@@ -205,7 +203,7 @@ describe('MongoEntitiesDAO', () => {
 
     it('should return only published entities for collaborator without matching permissions', async () => {
       const dao = createSut(otherCollaborator);
-      const entities = await dao.getWithFiles({ language: 'en' }).toArray();
+      const entities = await dao.getWithFiles({ language: 'en' });
       const sharedIds = entities.map(e => e.sharedId).sort();
 
       expect(sharedIds).toEqual(['entity_1', 'entity_5']);
@@ -213,14 +211,14 @@ describe('MongoEntitiesDAO', () => {
 
     it('should not return an unpublished entity to public user even when queried by sharedId', async () => {
       const dao = createSut(publicUser);
-      const entities = await dao.getWithFiles({ sharedId: 'entity_2', language: 'en' }).toArray();
+      const entities = await dao.getWithFiles({ sharedId: 'entity_2', language: 'en' });
 
       expect(entities).toHaveLength(0);
     });
 
     it('should return unpublished entity shared with collaborator via group permission', async () => {
       const dao = createSut(collaboratorUser);
-      const entities = await dao.getWithFiles({ sharedId: 'entity_4', language: 'en' }).toArray();
+      const entities = await dao.getWithFiles({ sharedId: 'entity_4', language: 'en' });
 
       expect(entities).toHaveLength(1);
       expect(entities[0].sharedId).toBe('entity_4');

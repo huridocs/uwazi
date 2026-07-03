@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { featureFlaggedHandler } from '#api/common.v2/utils/featureFlaggedHandler.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
@@ -11,7 +12,6 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { FileMappers } from '#api/core/infrastructure/mongodb/files/FilesMappers.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
-import { ObjectId } from 'mongodb';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory.js';
@@ -53,9 +53,8 @@ export class PXFilesDeletedListener {
     sharedId: string,
     installedLanguages: LanguageISO6391[]
   ) {
-    const documentsInInstalledLanguages = await this.dependencies.filesDS
-      .getProcessedDocsForEntity(sharedId)
-      .all();
+    const documentsInInstalledLanguages =
+      await this.dependencies.filesDS.getProcessedDocsForEntity(sharedId);
 
     return documentsInInstalledLanguages.filter(
       d => d.language !== undefined && installedLanguages.includes(d.language)
