@@ -35,10 +35,6 @@ const updateMappings = async (req: Request) => {
   }
 };
 
-const deleteFileFromIndex = async (file: { entity?: string | null }) => {
-  await search.indexEntities({ sharedId: file.entity });
-};
-
 const deleteEntityFromIndex = async (entityId: string) => {
   try {
     await search.delete({ _id: entityId });
@@ -47,18 +43,6 @@ const deleteEntityFromIndex = async (entityId: string) => {
       throw err;
     }
   }
-};
-
-const deleteFile = async (fileId: string) => {
-  const result = await FilesDAOFactory.default().getById(fileId, {
-    withFullText: false,
-  });
-  const file = result.getData(null);
-  if (file) {
-    await storage.removeFile(file.filename || '', file.type || 'document');
-    await deleteFileFromIndex(file);
-  }
-  return file;
 };
 
 const preserveTranslations = async (syncData: TranslationType): Promise<TranslationType> => {
@@ -149,14 +133,27 @@ export default (app: Application) => {
         const data = JSON.parse(req.query.data);
         const handler = SyncHandlerRegistry.get(req.query.namespace);
 
+        let fileInfo: { entity?: string | null; filename?: string; type?: string } | null = null;
+        if (req.query.namespace === 'files') {
+          const result = await FilesDAOFactory.default().getById(data._id, {
+            withFullText: false,
+          });
+          fileInfo = result.getData(null);
+        }
+
         if (handler) {
           await handler.delete(data._id);
         } else {
           await models[req.query.namespace]().delete(data);
         }
 
-        if (req.query.namespace === 'files') {
-          await deleteFile(data._id);
+        if (fileInfo) {
+          if (fileInfo.filename) {
+            await storage.removeFile(fileInfo.filename, fileInfo.type || 'document');
+          }
+          if (fileInfo.entity) {
+            await search.indexEntities({ sharedId: fileInfo.entity });
+          }
         }
 
         if (req.query.namespace === 'entities') {

@@ -1,4 +1,5 @@
 /* eslint-disable max-lines */
+import { Db } from 'mongodb';
 import { PostgresDataSource, PostgresDataSourceDeps } from '../common/PostgresDataSource.js';
 import { FileStorage } from '../../../application/contracts/FileStorage.js';
 import { TransactionManager } from '../../../application/contracts/TransactionManager.js';
@@ -21,7 +22,8 @@ import { FILES_COLUMNS_WITHOUT_FULL_TEXT } from './PostgresFilesDAOColumns.js';
 type Deps = {
   transactionManager: TransactionManager;
   fileStorage: FileStorage;
-} & PostgresDataSourceDeps;
+  mongoDb: Db;
+} & Omit<PostgresDataSourceDeps, 'sync'>;
 
 export class PostgresFilesDataSource extends PostgresDataSource implements FilesDataSource {
   protected tableName = 'files';
@@ -35,7 +37,7 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
   private filesToReindex = new Set<BaseFile>();
 
   constructor(deps: Deps) {
-    super(deps);
+    super({ ...deps, sync: { syncDb: deps.mongoDb, syncNamespace: 'files' } });
 
     this.transactionManager = deps.transactionManager as MongoTransactionManager;
     this.fileStorage = deps.fileStorage;

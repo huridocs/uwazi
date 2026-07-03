@@ -22,6 +22,7 @@ export class PostgresFilesSyncHandler implements SyncHandler<FilesRow> {
   }
 
   async save(document: Partial<FilesRow>): Promise<FilesRow> {
+    console.log('CALLED', document._id);
     const { _id: rawId, ...rest } = document as FilesRow;
     if (!rawId) throw new Error('PostgresFilesSyncHandler: document._id is required');
     const id = rawId.toString();
@@ -34,6 +35,7 @@ export class PostgresFilesSyncHandler implements SyncHandler<FilesRow> {
   }
 
   async saveMultiple(documents: Partial<FilesRow>[]): Promise<FilesRow[]> {
+    console.log('CALLED', documents);
     if (documents.length === 0) return [];
 
     const rows = documents.map(doc => {
@@ -47,9 +49,10 @@ export class PostgresFilesSyncHandler implements SyncHandler<FilesRow> {
     await this.dao.getTable().upsert(rows);
 
     const ids = rows.map(row => row._id as string);
-    return (await Promise.all(ids.map(async id => this.getById(id)))).filter(
-      (r): r is FilesRow => r != null
-    );
+
+    const files = await this.dao.getTable().query<FilesRow>().whereIn('_id', ids).all();
+
+    return files;
   }
 
   async delete(id: string): Promise<void> {

@@ -1,6 +1,7 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-lines */
+import sift from 'sift';
 import entitiesModel from '#api/entities/entitiesModel.js';
-import { filesModel } from '#api/files/filesModel.js';
 import { DataType, models, WithId } from '#api/odm/index.js';
 import { settingsModel } from '#api/settings/settingsModel.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
@@ -15,7 +16,6 @@ import {
   SettingsSyncTemplateSchema,
 } from '#shared/types/settingsType.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
-import sift from 'sift';
 
 const noDataFound = 'NO_DATA_FOUND';
 
@@ -295,10 +295,8 @@ class ProcessNamespaces {
 
   private async files() {
     const { mongoId } = this.change;
-    const data = ensure<WithId<FileType>>(
-      await filesModel.getById(mongoId, '+fullText'),
-      noDataFound
-    );
+    const handler = SyncHandlerRegistry.get('files')!;
+    const data = ensure<WithId<FileType>>(await handler.getById(mongoId.toString()), noDataFound);
 
     if (data.type === 'custom') {
       return { data };
@@ -306,6 +304,9 @@ class ProcessNamespaces {
 
     if (data.entity) {
       const [entity] = await entitiesModel.get({ sharedId: data.entity });
+      if (!entity) {
+        return { skip: true };
+      }
       const { template } = entity;
       if (template && !this.templatesConfig[template.toString()]?.attachments) {
         return { skip: true };
