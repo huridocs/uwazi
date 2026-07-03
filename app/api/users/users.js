@@ -1,6 +1,6 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import SHA256 from 'crypto-js/sha256.js';
-
 import { createError } from '#api/utils/index.js';
 import random from '#shared/uniqueID.js';
 import { encryptPassword, comparePasswords } from '#api/auth/encryptPassword.js';
@@ -10,12 +10,12 @@ import {
   updateUserMemberships,
   removeUsersFromAllGroups,
 } from '#api/usergroups/userGroupsMembers.js';
+import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import mailer from '../utils/mailer.js';
 import model from './usersModel.js';
 import passwordRecoveriesModel from './passwordRecoveriesModel.js';
 import settings from '../settings/settings.js';
 import { generateUnlockCode } from './generateUnlockCode.js';
-import { PUBLIC_USER_ID } from './publicUser.js';
 
 const MAX_FAILED_LOGIN_ATTEMPTS = 6;
 
@@ -171,7 +171,11 @@ export default {
       return Promise.reject(createError('Cannot modify system users', 403));
     }
 
-    const [userInTheDatabase] = await model.get({ _id: user._id }, '+password');
+    const [userInTheDatabase] = await model.get({ _id: user._id, deletedAt: null }, '+password');
+
+    if (!userInTheDatabase) {
+      return Promise.reject(createError('User not found', 404));
+    }
 
     if (unauthorizedAction(user, userInTheDatabase, currentUser)) {
       return Promise.reject(createError('Unauthorized', 403));
@@ -201,8 +205,8 @@ export default {
 
   async newUser(user, domain) {
     const [userNameMatch, emailMatch] = await Promise.all([
-      model.get({ username: user.username }),
-      model.get({ email: user.email }),
+      model.get({ username: user.username, deletedAt: null }),
+      model.get({ email: user.email, deletedAt: null }),
     ]);
     if (user.username && user.username.includes(' ')) {
       return Promise.reject(createError('Usernames can not contain spaces.', 400));
@@ -226,7 +230,7 @@ export default {
   },
 
   async get(query, select) {
-    const users = await model.get(query, select);
+    const users = await model.get({ ...query, deletedAt: null }, select);
     if (typeof select === 'string' && select.includes('+groups')) {
       const userIds = users.map(user => user._id.toString());
       const groups = await getByMemberIdList(userIds);
@@ -235,13 +239,18 @@ export default {
     return users;
   },
 
-  async getById(id, select = '', includeGroups = false) {
-    const user = await model.getById(id, select);
+  async getById(id, select = '', includeGroups = false, includeDeleted = false) {
+    const [user] = await model.get(
+      { _id: id, ...(!includeDeleted && { deletedAt: null }) },
+      select
+    );
+
     if (includeGroups && user) {
       const groups = await getByMemberIdList([user._id.toString()]);
       return populateGroupsOfUsers(user, groups);
     }
-    return user;
+
+    return user ?? null;
   },
 
   async delete(_ids, currentUser) {
@@ -264,10 +273,11 @@ export default {
   },
 
   async login({ username, password, token }, domain) {
-    const [dbuser] = await this.get(
-      { username },
+    const [dbuser] = await model.get(
+      { username, deletedAt: null },
       '+password +accountLocked +failedLogins +accountUnlockCode'
     );
+
     validateURL(domain);
     const dummy = { password: await encryptPassword('Avoid user enum on login req ms diff') };
     const user = dbuser || dummy;
@@ -290,7 +300,7 @@ export default {
   },
 
   async unlockAccount({ username, code }) {
-    const [user] = await model.get({ username, accountUnlockCode: code }, '_id');
+    const [user] = await model.get({ username, accountUnlockCode: code, deletedAt: null }, '_id');
 
     if (!user) {
       throw createError('Invalid username or unlock code', 403);
@@ -313,31 +323,37 @@ export default {
 
   recoverPassword(email, domain, options = {}) {
     const key = generateUnlockCode();
-    return Promise.all([model.get({ email }), settings.get()]).then(([_user, _settings]) => {
-      const user = _user[0];
-      if (user) {
-        return passwordRecoveriesModel.save({ key, user: user._id }).then(() => {
-          const emailSender = mailer.createSenderDetails(_settings);
-          const mailOptions = { from: emailSender, to: email };
-          const mailTexts = conformRecoverText(options, _settings, domain, key, user);
-          mailOptions.subject = mailTexts.subject;
-          mailOptions.text = mailTexts.text;
+    return Promise.all([model.get({ email, deletedAt: null }), settings.get()]).then(
+      ([_user, _settings]) => {
+        const user = _user[0];
+        if (user) {
+          return passwordRecoveriesModel.save({ key, user: user._id }).then(() => {
+            const emailSender = mailer.createSenderDetails(_settings);
+            const mailOptions = { from: emailSender, to: email };
+            const mailTexts = conformRecoverText(options, _settings, domain, key, user);
+            mailOptions.subject = mailTexts.subject;
+            mailOptions.text = mailTexts.text;
 
-          if (options.newUser) {
-            mailOptions.html = mailTexts.html;
-          }
+            if (options.newUser) {
+              mailOptions.html = mailTexts.html;
+            }
 
-          return mailer.send(mailOptions);
-        });
+            return mailer.send(mailOptions);
+          });
+        }
+
+        return undefined;
       }
-
-      return undefined;
-    });
+    );
   },
 
   async resetPassword(credentials) {
     const [key] = await passwordRecoveriesModel.get({ key: credentials.key });
     if (key) {
+      const [user] = await model.get({ _id: key.user, deletedAt: null }, '_id');
+      if (!user) {
+        throw createError('User not found', 404);
+      }
       return Promise.all([
         passwordRecoveriesModel.delete(key._id),
         model

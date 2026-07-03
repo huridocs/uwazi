@@ -6,7 +6,7 @@ import { UserRole } from '#shared/types/userSchema.js';
 
 const f = getFixturesFactory();
 
-const user = f.user('admin', UserRole.ADMIN);
+const user = f.user({ username: 'admin', role: UserRole.ADMIN });
 
 const sourceTemplate = f.template('Source Template');
 
