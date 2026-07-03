@@ -58,9 +58,7 @@ describe('CreateEntityFromPDFController', () => {
 
     jest.spyOn(MongoEntitiesDAOFactory, 'default').mockReturnValue(
       TestUtils.mockClass<MongoEntitiesDAO>({
-        getWithFiles: jest
-          .fn()
-          .mockReturnValue({ next: jest.fn().mockResolvedValue(entityResult) }),
+        getWithFiles: jest.fn().mockResolvedValue([entityResult]),
       })
     );
   });

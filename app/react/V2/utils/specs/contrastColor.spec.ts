@@ -99,6 +99,16 @@ describe('getLuminance', () => {
     // Same as black numerically — alpha is ignored in luminance
     expect(getLuminance('rgba(0, 0, 0, 0.5)')).toBeCloseTo(0, 5);
   });
+
+  it('handles hex colors', () => {
+    expect(getLuminance('#ffffff')).toBeCloseTo(1, 5);
+    expect(getLuminance('#000000')).toBeCloseTo(0, 5);
+  });
+
+  it('handles hsl colors', () => {
+    expect(getLuminance('hsl(0, 0%, 100%)')).toBeCloseTo(1, 5);
+    expect(getLuminance('hsl(0, 0%, 0%)')).toBeCloseTo(0, 5);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -128,5 +138,13 @@ describe('getContrastColor', () => {
 
   it('returns black for a mid-bright yellow (high luminance)', () => {
     expect(getContrastColor('rgb(255, 220, 0)')).toBe('black');
+  });
+
+  it('returns white for a dark hex background', () => {
+    expect(getContrastColor('#12486b')).toBe('white');
+  });
+
+  it('returns black for a light hsl background', () => {
+    expect(getContrastColor('hsl(0, 0%, 94%)')).toBe('black');
   });
 });

@@ -1,6 +1,5 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable max-statements */
-import { Collection } from 'mongodb';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
@@ -15,6 +14,7 @@ import { WebSockets } from '#api/core/application/contracts/WebSockets.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { MongoEntitiesDAO } from '../mongodb/entity/MongoEntitiesDAO.js';
 import { EntityPreviewBatchHandler } from './EntityPreviewBatchHandler.js';
+import { MongoFilesDAO } from '../mongodb/files/MongoFilesDAO.js';
 
 type Pair = {
   from: LanguageISO6391;
@@ -27,7 +27,7 @@ type Params = {
 
 type JobDependencies = {
   entityDAO: MongoEntitiesDAO;
-  filesCollection: Collection;
+  filesDAO: MongoFilesDAO;
   jobsDispatcher: JobsDispatcher;
   webSockets: WebSockets;
   settingsDS: SettingsDataSource;
@@ -53,7 +53,7 @@ class CloneLanguageEntitiesJob extends V1CompatTenantDispatchable<Params> {
 
         const ISO639_3 = LanguageUtils.fromISO639_1(to)?.ISO639_3;
         if (ISO639_3) {
-          const sharedIds: string[] = await this.deps.filesCollection.distinct('entity', {
+          const sharedIds = await this.deps.filesDAO.getDistinctEntitySharedIds({
             type: 'document',
             status: 'ready',
             language: ISO639_3,

@@ -1,9 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
-import { uploadMiddleware } from '#api/files/index.js';
 import { tenants } from '#api/tenants/index.js';
-import { withTransaction } from '#api/utils/withTransaction.js';
 import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { BulkDeleteEntityController } from '#api/core/infrastructure/express/entity/BulkDeleteEntityController.js';
@@ -20,7 +18,6 @@ import needsAuthorization from '../auth/authMiddleware.js';
 import { parseQuery, validation } from '../utils/index.js';
 import date from '../utils/date.js';
 import entities from './entities.js';
-import { saveEntity } from './entitySavingManager.js';
 import { User } from '#api/users.v2/model/User.js';
 
 function coerceValues(value, type, locale) {
@@ -80,15 +77,7 @@ export default app => {
     '/api/entities',
     needsAuthorization(['admin', 'editor', 'collaborator']),
     activitylogMiddleware,
-    (req, res, next) => {
-      const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
-
-      if (!tenants.current()?.featureFlags?.v2UpdateEntity && entityToSave.sharedId) {
-        return uploadMiddleware.multiple()(req, res, next);
-      }
-
-      return new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next);
-    },
+    (req, res, next) => new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next),
     async (req, res, next) => {
       const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
 
@@ -99,9 +88,10 @@ export default app => {
           User.createFrom(req.user)
         );
         const result = await EntityFacade.create(entityToSave, req.language, req.inputFiles);
-        const entityInTargetLanguage = await entityDAO
-          .getWithFiles({ language: req.language, sharedId: result.sharedId })
-          .next();
+        const [entityInTargetLanguage] = await entityDAO.getWithFiles({
+          language: req.language,
+          sharedId: result.sharedId,
+        });
 
         const response = req.body.entity
           ? { entity: entityInTargetLanguage, errors: [] }
@@ -112,33 +102,7 @@ export default app => {
         return;
       }
 
-      if (tenants.current()?.featureFlags?.v2UpdateEntity && entityToSave?.sharedId) {
-        await UpdateEntityController.createHandler()(req, res, next);
-        return;
-      }
-
-      try {
-        const result = await withTransaction(async ({ abort }) => {
-          const saveResult = await saveEntity(entityToSave, {
-            user: req.user,
-            language: req.language,
-            socketEmiter: req.emitToSessionSocket,
-            files: req.files,
-          });
-          const { errors } = saveResult;
-          if (errors.length) {
-            await abort();
-          }
-          return req.body.entity ? saveResult : saveResult.entity;
-        }, 'POST /api/entities');
-        res.json(result);
-        req.emitToSessionSocket(
-          'documentProcessed',
-          req.body.entity ? result.entity.sharedId : result.sharedId
-        );
-      } catch (e) {
-        next(e);
-      }
+      await UpdateEntityController.createHandler()(req, res, next);
     }
   );
 

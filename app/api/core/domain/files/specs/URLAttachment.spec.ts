@@ -18,6 +18,21 @@ describe('URLAttachment', () => {
     expect(file.url).toBe('https://example.com/document.pdf');
   });
 
+  it('should fallback filename and originalname to url if empty', () => {
+    const file = new URLAttachment({
+      id: 'id',
+      entity: 'sharedId1',
+      url: 'https://example.com/document.pdf',
+      filename: '',
+      originalname: '',
+      mimetype: 'application/pdf',
+    } as any);
+
+    expect(file.filename).toBe('https://example.com/document.pdf');
+    expect(file.originalname).toBe('https://example.com/document.pdf');
+    expect(file.url).toBe('https://example.com/document.pdf');
+  });
+
   describe('validation', () => {
     it('throws when entity is missing', () => {
       expect(

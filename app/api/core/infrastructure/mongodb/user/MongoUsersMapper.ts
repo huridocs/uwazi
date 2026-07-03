@@ -16,7 +16,7 @@ export class MongoUsersMapper {
       return dbo;
     }
 
-    dbo.password = user.password?.getValue() ?? null;
+    dbo.password = user.password?.getValue() ?? undefined;
 
     return dbo;
   }
@@ -25,7 +25,7 @@ export class MongoUsersMapper {
     const user = new User({
       _id: dbo._id.toHexString(),
       username: dbo.username,
-      role: dbo.role as 'admin' | 'editor' | 'collaborator',
+      role: dbo.role,
       email: dbo.email,
     });
 

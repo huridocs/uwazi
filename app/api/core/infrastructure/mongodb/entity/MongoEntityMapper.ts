@@ -22,7 +22,7 @@ class MongoEntityLanguageMapper {
       editDate: template.createPropertyAssignment('editDate', { value: [{ value: dbo.editDate }] }),
     };
 
-    const metadata = Object.entries(dbo.metadata).reduce((acc, [name, value]) => {
+    const metadata = Object.entries(dbo.metadata || {}).reduce((acc, [name, value]) => {
       const property = template.getPropertyByName(name);
       if (property.isError()) {
         LoggerFactory.systemLogger().info(

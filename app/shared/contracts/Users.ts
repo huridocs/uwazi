@@ -34,6 +34,13 @@ type CreateUserResponse = {
   user: Required<Pick<User, '_id' | 'email' | 'role' | 'username'>>;
 };
 
+type DeleteUserRequest = string[];
+
+type DeleteUserResponse = {
+  acknowledged: boolean;
+  deletedCount: number;
+};
+
 export type {
   User,
   UserGroup,
@@ -41,4 +48,6 @@ export type {
   GroupSummary,
   CreateUserRequest,
   CreateUserResponse,
+  DeleteUserRequest,
+  DeleteUserResponse,
 };

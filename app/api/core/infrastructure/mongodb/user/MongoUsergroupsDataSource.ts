@@ -19,9 +19,8 @@ class MongoUsergroupsDataSource
   }
 
   async getUserGroups(user: User): Promise<User['groups']> {
-    const userId = ObjectId.createFromHexString(user._id);
     const collection = this.getCollection();
-    const groupDocuments = await collection.find({ 'members.refId': userId }).toArray();
+    const groupDocuments = await collection.find({ 'members.refId': user._id }).toArray();
     return groupDocuments.map(group => ({
       _id: group._id.toString(),
       name: group.name,
@@ -29,7 +28,6 @@ class MongoUsergroupsDataSource
   }
 
   async updateUserGroups(user: User): Promise<void> {
-    const userId = ObjectId.createFromHexString(user._id);
     const targetGroupIds = user.groups.map(group => ObjectId.createFromHexString(group._id));
 
     const collection = this.getCollection();
@@ -37,14 +35,19 @@ class MongoUsergroupsDataSource
     if (targetGroupIds.length > 0) {
       await collection.updateMany(
         { _id: { $in: targetGroupIds } },
-        { $addToSet: { members: { refId: userId } } }
+        { $addToSet: { members: { refId: user._id } } }
       );
     }
 
     await collection.updateMany(
-      { _id: { $nin: targetGroupIds }, 'members.refId': userId },
-      { $pull: { members: { refId: userId } } }
+      { _id: { $nin: targetGroupIds }, 'members.refId': user._id },
+      { $pull: { members: { refId: user._id } } }
     );
+  }
+
+  async removeUsersFromGroups(userIds: string[]): Promise<void> {
+    const collection = this.getCollection();
+    await collection.updateMany({}, { $pull: { members: { refId: { $in: userIds } } } });
   }
 }
 

@@ -1,5 +1,6 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoFilesDataSource } from '../mongodb/files/MongoFilesDataSource.js';
+import { PostgresFilesDataSource } from '../postgresql/files/PostgresFilesDataSource.js';
 import { FileStorageFactory } from '../files/FileStorageFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
@@ -12,10 +13,19 @@ type Overrides = {
 export class FilesDataSourceFactory {
   static default(overrides?: Overrides) {
     const db = getConnection();
+    const { tenant } = ExecutionContext;
 
-    const mongoTM = (overrides?.transactionManager ??
+    const tm = (overrides?.transactionManager ??
       ExecutionContext.transactionManager) as MongoTransactionManager;
 
-    return new MongoFilesDataSource(db, mongoTM, FileStorageFactory.default());
+    if (tenant.featureFlags?.postgresFiles) {
+      return new PostgresFilesDataSource({
+        tenantId: tenant.name,
+        transactionManager: tm,
+        fileStorage: FileStorageFactory.default(),
+      });
+    }
+
+    return new MongoFilesDataSource(db, tm, FileStorageFactory.default());
   }
 }

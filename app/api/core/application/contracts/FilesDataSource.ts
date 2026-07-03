@@ -1,4 +1,3 @@
-import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
 import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
 import { ResultType } from '#api/core/libs/Result.js';
@@ -25,15 +24,15 @@ interface FilesDataSource {
     entitySharedIds: string[]
   ): Promise<void>;
   filesExistForEntities(files: { entity: string; _id: string }[]): Promise<boolean>;
-  getAll(): ResultSet<BaseFile>;
-  getByEntitiesIds(entitySharedIds: string[]): ResultSet<BaseFile>;
+  getAll(): Promise<BaseFile[]>;
+  getByEntitiesIds(entitySharedIds: string[]): Promise<BaseFile[]>;
   getProcessedDocsForEntity(
     entitySharedId: string,
     options?: GetDocumentsForEntityOptions
-  ): ResultSet<PDFDocument>;
-  getThumbnails(entitySharedIds: string[]): ResultSet<Thumbnail>;
-  getThumbnailsByLanguage(language: LanguageISO6391): ResultSet<Thumbnail>;
-  getThumbnailsForProcessedPDFs(documentIds: string[]): ResultSet<Thumbnail>;
+  ): Promise<PDFDocument[]>;
+  getThumbnails(entitySharedIds: string[]): Promise<Thumbnail[]>;
+  getThumbnailsByLanguage(language: LanguageISO6391): Promise<Thumbnail[]>;
+  getThumbnailsForProcessedPDFs(documentIds: string[]): Promise<Thumbnail[]>;
   getByFilename(
     filename: string,
     allowedTypes?: FileType[]

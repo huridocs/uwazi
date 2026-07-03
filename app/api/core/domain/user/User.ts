@@ -1,6 +1,13 @@
+import { ObjectId } from 'mongodb';
 import { EncryptedPassword } from './EncryptedPassword.js';
 
-type UserRole = 'admin' | 'editor' | 'collaborator';
+const PUBLIC_USER_ID = new ObjectId('698c35e7cf8880419d91fe4d');
+
+enum UserRole {
+  ADMIN = 'admin',
+  EDITOR = 'editor',
+  COLLABORATOR = 'collaborator',
+}
 
 type UserGroup = {
   _id: string;
@@ -41,5 +48,4 @@ class User {
   }
 }
 
-export type { UserRole };
-export { User };
+export { User, UserRole, PUBLIC_USER_ID };

@@ -20,7 +20,6 @@ type Tenant = {
     sync?: boolean;
     deactivateTestJob?: boolean;
     paragraphExtraction?: boolean;
-    v2UpdateEntity?: boolean;
     fileCacheHeaders?: boolean;
     v2CSVImport?: boolean;
     dataViz?: boolean;
@@ -29,10 +28,12 @@ type Tenant = {
     newHeader?: boolean;
     v2Languages?: boolean;
     postgresThesauri?: boolean;
+    postgresFiles?: boolean;
     postgresTemplates?: boolean;
     aiAssistant?: boolean;
     aiAssistantServiceUrl?: string;
     v2CreateUser?: boolean;
+    v2DeleteUser?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

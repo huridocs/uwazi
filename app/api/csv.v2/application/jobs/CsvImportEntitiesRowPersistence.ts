@@ -100,7 +100,7 @@ const updateEntityForImportRow = async (params: {
     idGenerator: params.deps.idGenerator,
   });
   const filesToInsert = filterFilesToAppend({
-    existingFiles: await params.deps.filesDS.getByEntitiesIds([entity.sharedId]).all(),
+    existingFiles: await params.deps.filesDS.getByEntitiesIds([entity.sharedId]),
     entityFiles,
   });
   await params.deps.filesService.storeFiles(filesToInsert);

@@ -111,7 +111,7 @@ export class FilesHealthCheck {
       },
       {} as { [k: string]: number }
     );
-    const dbFiles = await this.filesDS.getAll().all();
+    const dbFiles = await this.filesDS.getAll();
     const storageFilesIndexedByPath = storageFiles.reduce(
       (memo, file) => {
         // eslint-disable-next-line no-param-reassign

@@ -1,9 +1,10 @@
 import type { Application, NextFunction, Request, Response } from 'express';
 import { validatePasswordMiddleWare, needsAuthorization } from '#api/auth/index.js';
-import { CreateUserController } from './CreateUserController.js';
 import { validation } from '#api/utils/index.js';
 import { userSchema } from '#shared/types/userSchema.js';
 import { tenants } from '#api/tenants/index.js';
+import { CreateUserController } from './CreateUserController.js';
+import { DeleteUserController } from './DeleteUserController.js';
 
 export const userRoutes = (app: Application) => {
   app.post(
@@ -25,5 +26,11 @@ export const userRoutes = (app: Application) => {
       }
     },
     CreateUserController.createHandler()
+  );
+  app.delete(
+    '/api/users',
+    needsAuthorization(),
+    validatePasswordMiddleWare,
+    DeleteUserController.createHandler()
   );
 };
