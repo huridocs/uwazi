@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import type { Application, NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
@@ -65,6 +64,29 @@ describe('POST /api/users/new', () => {
     expect(createdUser?.password).toBe('hush hush super secret');
   });
 
+  it('should be able to recreate a deleted user', async () => {
+    const response = await request(app).post('/api/users/new').send({
+      username: 'deletedUser',
+      role: 'collaborator',
+      email: 'deleted@test.com',
+    });
+
+    expect(response.status).toBe(201);
+    expect(response.body.user).toMatchObject({
+      username: 'deletedUser',
+      role: 'collaborator',
+      email: 'deleted@test.com',
+    });
+
+    const users = await testingEnvironment.db.getAllFrom('users');
+    const oldAndNewUser = users.filter(user => user.username === 'deletedUser');
+    expect(oldAndNewUser).toHaveLength(2);
+    expect(oldAndNewUser).toMatchObject([
+      { username: 'deletedUser', role: 'admin', email: 'deleted@test.com', deletedAt: '1' },
+      { username: 'deletedUser', role: 'collaborator', email: 'deleted@test.com' },
+    ]);
+  });
+
   it('should create a job for the notification email for the new user', async () => {
     const users = await testingEnvironment.db.getAllFrom('users');
     const createdUser = users.find(user => user.username === 'newguy');
@@ -109,9 +131,9 @@ describe('POST /api/users/new', () => {
         name: 'Researchers',
         members: [
           {
-            refId: f.id('existinguser'),
+            refId: f.idString('existinguser'),
           },
-          { refId: new ObjectId(newUserId) },
+          { refId: newUserId },
         ],
       },
       {
@@ -122,7 +144,7 @@ describe('POST /api/users/new', () => {
       {
         _id: f.id('Investigators'),
         name: 'Investigators',
-        members: [{ refId: new ObjectId(newUserId) }],
+        members: [{ refId: newUserId }],
       },
     ]);
   });

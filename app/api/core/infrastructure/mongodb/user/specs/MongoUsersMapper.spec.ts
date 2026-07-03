@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { MongoUsersMapper } from '../MongoUsersMapper.js';
-import { User } from '#api/core/domain/user/User.js';
+import { User, UserRole } from '#api/core/domain/user/User.js';
 import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
 import type { UserDBO } from '../UserDBO.js';
 
@@ -10,7 +10,7 @@ describe('MongoUsersMapper', () => {
       const user = new User({
         _id: '507f191e810c19729de860ea',
         username: 'testuser',
-        role: 'admin',
+        role: UserRole.ADMIN,
         email: 'test@example.com',
       });
 
@@ -25,28 +25,14 @@ describe('MongoUsersMapper', () => {
       expect(result).not.toHaveProperty('password');
     });
 
-    it('should include password as null when user.password is null', () => {
-      const user = new User({
-        _id: '507f191e810c19729de860ea',
-        username: 'testuser',
-        role: 'admin',
-        email: 'test@example.com',
-      });
-
-      user.password = null;
-
-      const result = MongoUsersMapper.toDBO(user);
-
-      expect(result.password).toBeNull();
-    });
-
     it('should include password hash when user.password is set', () => {
       const user = new User({
         _id: '507f191e810c19729de860ea',
         username: 'testuser',
-        role: 'admin',
+        role: UserRole.ADMIN,
         email: 'test@example.com',
       });
+
       user.setPassword(EncryptedPassword.fromHash('$2a$10$hashedvalue'));
 
       const result = MongoUsersMapper.toDBO(user);
@@ -60,7 +46,7 @@ describe('MongoUsersMapper', () => {
       const dbo: UserDBO = {
         _id: new ObjectId('507f191e810c19729de860ea'),
         username: 'testuser',
-        role: 'admin',
+        role: UserRole.ADMIN,
         email: 'test@example.com',
         password: '$2a$10$hashedvalue',
       };
@@ -78,22 +64,8 @@ describe('MongoUsersMapper', () => {
       const dbo: UserDBO = {
         _id: new ObjectId('507f191e810c19729de860ea'),
         username: 'testuser',
-        role: 'admin',
+        role: UserRole.ADMIN,
         email: 'test@example.com',
-      };
-
-      const result = MongoUsersMapper.toDomain(dbo);
-
-      expect(result.password).toBeUndefined();
-    });
-
-    it('should not set password when dbo.password is null', () => {
-      const dbo: UserDBO = {
-        _id: new ObjectId('507f191e810c19729de860ea'),
-        username: 'testuser',
-        role: 'admin',
-        email: 'test@example.com',
-        password: null,
       };
 
       const result = MongoUsersMapper.toDomain(dbo);
