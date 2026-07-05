@@ -173,20 +173,18 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
         process.exit(1);
       }
 
-      if (!skipMigrationCheck) {
-        const pgMigrationsDir = path.resolve(
-          __dirname,
-          'api/core/infrastructure/postgresql/schema_migrations'
+      const pgMigrationsDir = path.resolve(
+        __dirname,
+        'api/core/infrastructure/postgresql/schema_migrations'
+      );
+      const pgMigrator = new PgMigrator(pgMigrationsDir, PostgresDB.pool());
+      const { pending: pendingPgMigrations } = await pgMigrator.status();
+      if (pendingPgMigrations.length > 0) {
+        console.error(
+          '\x1b[33m%s\x1b[0m',
+          '==> PostgreSQL needs to be migrated, please run:\n\n yarn migrate-pg\n\n'
         );
-        const pgMigrator = new PgMigrator(pgMigrationsDir, PostgresDB.pool());
-        const { pending: pendingPgMigrations } = await pgMigrator.status();
-        if (pendingPgMigrations.length > 0) {
-          console.error(
-            '\x1b[33m%s\x1b[0m',
-            '==> PostgreSQL needs to be migrated, please run:\n\n yarn migrate-pg\n\n'
-          );
-          process.exit(1);
-        }
+        process.exit(1);
       }
     });
 

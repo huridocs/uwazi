@@ -45,19 +45,12 @@ blank_state_dir="${BLANK_STATE_DIR:-$parent_path/blank_state}"
 recreate_database() {
   mongosh --quiet "${AUTH[@]}" --host "$HOST" "$DB" --eval "db.dropDatabase()"
 
-  if [ "$DB" = "uwazi_shared_db" ]; then
+    if [ "$DB" = "uwazi_shared_db" ]; then
     mongorestore -h "$HOST" "${AUTH[@]}" "$blank_state_dir/uwazi_shared_db/" --db="$DB"
   else
     mongorestore -h "$HOST" "${AUTH[@]}" "$blank_state_dir/uwazi_development/" --db="$DB"
-    if [ "$TRANSPILED" = true ]; then
-      INDEX_NAME="$DB" DATABASE_NAME="$DB" node "$repo_root/prod/scripts/run.js" ./migrate.js
-      INDEX_NAME="$DB" DATABASE_NAME="$DB" node "$repo_root/prod/scripts/run.js" ../database/reindex_elastic.js
-    else
-      INDEX_NAME="$DB" DATABASE_NAME="$DB" yarn migrate
-      echo 'before reindexing'
-      INDEX_NAME="$DB" DATABASE_NAME="$DB" yarn reindex
-      echo 'after reindexing'
-    fi
+    INDEX_NAME="$DB" DATABASE_NAME="$DB" yarn migrate
+    INDEX_NAME="$DB" DATABASE_NAME="$DB" yarn reindex
   fi
 
   echo 'PG'
@@ -67,20 +60,20 @@ recreate_database() {
   PG_USER="${POSTGRES_USER:-uwazi}"
   PG_DB="${POSTGRES_DB:-uwazi_development}"
 
-  if command -v pg_isready &>/dev/null && pg_isready -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -q 2>/dev/null; then
-    echo "Applying PostgreSQL migrations..."
-    if [ "$TRANSPILED" = true ]; then
-      INDEX_NAME="$DB" DATABASE_NAME="$DB" node "$repo_root/prod/scripts/run.js" "$repo_root/app/api/core/infrastructure/postgresql/runPgMigrations.js"
-    else
+  if command -v pg_isready &>/dev/null; then
+    if pg_isready -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -q 2>/dev/null; then
+      echo "Applying PostgreSQL migrations..."
       INDEX_NAME="$DB" DATABASE_NAME="$DB" node "$repo_root/scripts/runner.js" "$repo_root/app/api/core/infrastructure/postgresql/runPgMigrations.js"
-    fi
 
-    echo "Restoring PostgreSQL initial data..."
-    local force_flag=""
-    [ "$FORCE_FLAG" = true ] && force_flag="--force"
-    node "$repo_root/scripts/runner.js" "$repo_root/app/api/infrastructure/blank_state/runPgBlankState.ts" "$DB" $force_flag
+      echo "Restoring PostgreSQL initial data..."
+      local force_flag=""
+      [ "$FORCE_FLAG" = true ] && force_flag="--force"
+      INDEX_NAME="$DB" DATABASE_NAME="$DB" node "$repo_root/scripts/runner.js" "$repo_root/app/api/infrastructure/blank_state/runPgBlankState.js" "$DB" $force_flag
+    else
+      echo "PostgreSQL is not ready on $PG_HOST:$PG_PORT, skipping schema."
+    fi
   else
-    echo "PostgreSQL not available on $PG_HOST:$PG_PORT, skipping schema."
+    echo "pg_isready not found, skipping PostgreSQL schema."
   fi
 
   exit 0

@@ -1,6 +1,6 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
-import pg from 'pg';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { PgBlankState, TenantDataExistsError } from './PgBlankState.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -18,19 +18,8 @@ async function main() {
     process.exit(1);
   }
 
-  const pgHost = process.env.POSTGRES_HOST || '127.0.0.1';
-  const pgPort = parseInt(process.env.POSTGRES_PORT || '5432', 10);
-  const pgUser = process.env.POSTGRES_USER || 'uwazi';
-  const pgPassword = process.env.POSTGRES_PASSWORD || 'uwazi';
-  const pgDb = process.env.POSTGRES_DB || 'uwazi_development';
-
-  const pool = new pg.Pool({
-    host: pgHost,
-    port: pgPort,
-    user: pgUser,
-    password: pgPassword,
-    database: pgDb,
-  });
+  PostgresDB.connect();
+  const pool = PostgresDB.pool();
 
   try {
     const blankState = new PgBlankState(pool, tenantId, DATA_DIR);
@@ -44,7 +33,7 @@ async function main() {
     process.stderr.write(`Error: ${(error as Error).message}\n`);
     process.exit(1);
   } finally {
-    await pool.end();
+    await PostgresDB.disconnect();
   }
 }
 

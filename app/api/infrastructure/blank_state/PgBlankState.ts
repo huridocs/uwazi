@@ -3,6 +3,10 @@ import { readdirSync, readFileSync } from 'fs';
 import path from 'path';
 import pg from 'pg';
 
+function escapeIdentifier(identifier: string): string {
+  return identifier.replace(/"/g, '""');
+}
+
 export class TenantDataExistsError extends Error {
   constructor(tenantId: string) {
     super(`PostgreSQL data for tenant '${tenantId}' already exists.`);
@@ -32,7 +36,7 @@ export class PgBlankState {
       if (exists) {
         /* eslint-disable no-await-in-loop */
         for (const table of tables) {
-          await client.query(`DELETE FROM "${table}" WHERE tenant_id = $1`, [this.tenantId]);
+          await client.query(`DELETE FROM "${escapeIdentifier(table)}" WHERE tenant_id = $1`, [this.tenantId]);
         }
         /* eslint-enable no-await-in-loop */
       }
@@ -65,7 +69,7 @@ export class PgBlankState {
     for (const table of tables) {
       const result = await this.pool.query<{ exists: boolean }>(
         `SELECT EXISTS (
-          SELECT 1 FROM "${table}" WHERE tenant_id = $1 LIMIT 1
+          SELECT 1 FROM "${escapeIdentifier(table)}" WHERE tenant_id = $1 LIMIT 1
         )`,
         [this.tenantId]
       );
@@ -120,8 +124,9 @@ export class PgBlankState {
           return val;
         });
 
+        const escapedColumns = columns.map(col => `"${escapeIdentifier(col)}"`).join(', ');
         await client.query(
-          `INSERT INTO "${tableName}" ("${columns.join('","')}") VALUES (${placeholders})`,
+          `INSERT INTO "${escapeIdentifier(tableName)}" (${escapedColumns}) VALUES (${placeholders})`,
           values
         );
       }

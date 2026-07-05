@@ -172,8 +172,6 @@ describe('PgBlankState', () => {
       const bs = new PgBlankState(pool, TENANT_A, dataDir);
       await expect(bs.run({ force: true })).rejects.toThrow();
 
-      // BUG: deleteTenantData() commits in its own transaction, so even when
-      // restoreFixtures() throws, the old data is already gone.
       const aResult = await pool.query('SELECT * FROM templates WHERE tenant_id = $1', [TENANT_A]);
       expect(aResult.rows).toHaveLength(1);
       expect(aResult.rows[0].name).toBe('Tenant A Template');
