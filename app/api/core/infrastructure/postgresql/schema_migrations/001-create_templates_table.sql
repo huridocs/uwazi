@@ -1,3 +1,6 @@
+-- Migration 001: create_templates_table
+-- Create the templates table for V2 core entity definitions
+
 CREATE TABLE IF NOT EXISTS templates (
   "_id" TEXT NOT NULL,
   "name" TEXT NOT NULL,
