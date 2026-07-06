@@ -22,7 +22,6 @@ export class PostgresFilesSyncHandler implements SyncHandler<FilesRow> {
   }
 
   async save(document: Partial<FilesRow>): Promise<FilesRow> {
-    console.log('CALLED', document._id);
     const { _id: rawId, ...rest } = document as FilesRow;
     if (!rawId) throw new Error('PostgresFilesSyncHandler: document._id is required');
     const id = rawId.toString();
@@ -35,7 +34,6 @@ export class PostgresFilesSyncHandler implements SyncHandler<FilesRow> {
   }
 
   async saveMultiple(documents: Partial<FilesRow>[]): Promise<FilesRow[]> {
-    console.log('CALLED', documents);
     if (documents.length === 0) return [];
 
     const rows = documents.map(doc => {
