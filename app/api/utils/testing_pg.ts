@@ -7,6 +7,7 @@ import uniqueID from '#shared/uniqueID.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { PgMigrator } from '../core/infrastructure/postgresql/PgMigrator.js';
+import { serializePgValue } from '../core/infrastructure/postgresql/serializePgValue.js';
 
 function escapeIdentifier(identifier: string): string {
   return identifier.replace(/"/g, '""');
@@ -71,7 +72,7 @@ const testingPG = {
     const admin = adminClient();
     await admin.connect();
     try {
-      await admin.query(`CREATE DATABASE "${this.dbName}"`);
+      await admin.query(`CREATE DATABASE "${escapeIdentifier(this.dbName)}"`);
     } finally {
       await admin.end();
     }
@@ -121,7 +122,7 @@ const testingPG = {
           .map((_, i) => `$${i + 1}`)
           .join(', ');
         const values = Object.values(finalRow).map(v =>
-          v !== null && typeof v === 'object' ? JSON.stringify(v) : v
+          serializePgValue(v, v !== null && typeof v === 'object')
         );
         //eslint-disable-next-line no-await-in-loop
         await pool.query(`INSERT INTO "${escapeIdentifier(table)}" (${cols}) VALUES (${placeholders})`, values);
@@ -150,7 +151,7 @@ const testingPG = {
       const admin = adminClient();
       await admin.connect();
       try {
-        await admin.query(`DROP DATABASE IF EXISTS "${this.dbName}" WITH (FORCE)`);
+        await admin.query(`DROP DATABASE IF EXISTS "${escapeIdentifier(this.dbName)}" WITH (FORCE)`);
       } finally {
         await admin.end();
       }

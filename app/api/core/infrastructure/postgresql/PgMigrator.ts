@@ -9,7 +9,8 @@ type MigrationStatus = {
   applied: boolean;
 };
 
-const MIGRATION_FILE_PATTERN = /^(\d+)-(.+)\.sql$/;
+const MIGRATION_FILE_PATTERN = /^(\d+)-([\w-]+)\.sql$/;
+const TRACKING_TABLE = 'pg_migrations';
 
 function parseMigrationFile(fileName: string): { delta: number; name: string } | null {
   const match = fileName.match(MIGRATION_FILE_PATTERN);
@@ -28,7 +29,7 @@ export class PgMigrator {
 
   private async ensureTrackingTable(): Promise<void> {
     await this.pool.query(`
-      CREATE TABLE IF NOT EXISTS pg_migrations (
+      CREATE TABLE IF NOT EXISTS ${TRACKING_TABLE} (
         delta INTEGER PRIMARY KEY,
         name TEXT NOT NULL,
         applied_at TIMESTAMP NOT NULL DEFAULT NOW()
@@ -55,7 +56,7 @@ export class PgMigrator {
 
   private async getAppliedDeltas(): Promise<Set<number>> {
     const result = await this.pool.query<{ delta: number }>(
-      'SELECT delta FROM pg_migrations ORDER BY delta ASC'
+      `SELECT delta FROM ${TRACKING_TABLE} ORDER BY delta ASC`
     );
     return new Set(result.rows.map(r => r.delta));
   }
@@ -98,7 +99,7 @@ export class PgMigrator {
         // eslint-disable-next-line no-await-in-loop
         await client.query(sql);
         // eslint-disable-next-line no-await-in-loop
-        await client.query('INSERT INTO pg_migrations (delta, name) VALUES ($1, $2)', [
+        await client.query(`INSERT INTO ${TRACKING_TABLE} (delta, name) VALUES ($1, $2)`, [
           migration.delta,
           migration.name,
         ]);

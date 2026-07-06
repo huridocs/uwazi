@@ -60,6 +60,7 @@ recreate_database() {
   PG_USER="${POSTGRES_USER:-uwazi}"
   PG_DB="${POSTGRES_DB:-uwazi_development}"
 
+  # runner.js resolves .js → .ts via tsx in dev; production has compiled .js files
   if command -v pg_isready &>/dev/null; then
     if pg_isready -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -q 2>/dev/null; then
       echo "Applying PostgreSQL migrations..."

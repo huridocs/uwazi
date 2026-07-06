@@ -2,6 +2,7 @@
 import { readdirSync, readFileSync } from 'fs';
 import path from 'path';
 import pg from 'pg';
+import { serializePgValue } from '#api/core/infrastructure/postgresql/serializePgValue.js';
 
 function escapeIdentifier(identifier: string): string {
   return identifier.replace(/"/g, '""');
@@ -117,12 +118,9 @@ export class PgBlankState {
         const cleanRow = { ...row, tenant_id: this.tenantId };
         const columns = Object.keys(cleanRow);
         const placeholders = columns.map((_, i) => `$${i + 1}`).join(', ');
-        const values = columns.map(col => {
-          const val = cleanRow[col];
-          if (val === null || val === undefined) return null;
-          if (jsonbColumns.has(col)) return JSON.stringify(val);
-          return val;
-        });
+        const values = columns.map(col =>
+          serializePgValue(cleanRow[col], jsonbColumns.has(col))
+        );
 
         const escapedColumns = columns.map(col => `"${escapeIdentifier(col)}"`).join(', ');
         await client.query(
