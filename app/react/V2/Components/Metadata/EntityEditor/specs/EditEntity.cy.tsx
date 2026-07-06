@@ -134,6 +134,36 @@ describe('Entity edit', () => {
       cy.get('input[name="metadata.location_on_map.0.value[lat]"]').should('have.value', '40.7128');
       cy.get('input[name="metadata.location_on_map.0.value[lon]"]').should('have.value', '-74.006');
     });
+
+    it('should render the image field preview', () => {
+      cy.contains('Media with an image').should('exist');
+      cy.get('img[alt="Media with an image"]').should('have.attr', 'src', '/short-video-thumbnail.jpg');
+    });
+
+    it('should render the media field with timelinks', () => {
+      cy.contains('Media video with timelinks').should('exist');
+      cy.contains('Timelink 1').should('exist');
+      cy.contains('Timelink 2').should('exist');
+    });
+
+    it('should render the preview field as read-only', () => {
+      cy.contains('Document preview').should('exist');
+      cy.contains('This content is automatically generated').should('exist');
+    });
+
+    it('should select media from URL in the picker modal', () => {
+      cy.get('[data-testid="metadata.selected_image.0.value"]')
+        .contains('button', 'Change')
+        .click();
+      cy.get('[data-testid="modal"]').should('exist');
+      cy.get('[data-testid="modal"] input[type="url"]').type('https://example.com/image.jpg');
+      cy.get('[data-testid="media-picker-use-url"]').click();
+      cy.get('img[alt="Media with an image"]').should(
+        'have.attr',
+        'src',
+        'https://example.com/image.jpg'
+      );
+    });
   });
 
   describe('Editing metadata', () => {
@@ -222,6 +252,30 @@ describe('Entity edit', () => {
           expect(
             saved.metadata.related_people.map((p: { value: string }) => p.value)
           ).to.have.members(['entity2', 'entity3']);
+        });
+      });
+
+      it('should unlink image and media fields on save', () => {
+        const saveSpy = cy.stub().as('saveSpy');
+        mount(
+          <ThemeProvider>
+            <Basic onSave={saveSpy} />
+          </ThemeProvider>
+        );
+
+        cy.get('[data-testid="metadata.selected_image.0.value"]')
+          .contains('button', 'Unlink')
+          .click();
+        cy.get('[data-testid="metadata.video_of_event.0.value"]')
+          .contains('button', 'Unlink')
+          .click();
+        cy.contains('button', 'Save').click();
+
+        cy.get('@saveSpy').should('have.been.calledOnce');
+        cy.get('@saveSpy').then(spy => {
+          const saved = (spy as unknown as Cypress.Agent<sinon.SinonSpy>).getCall(0).args[0];
+          expect(saved.metadata.selected_image).to.deep.equal([{ value: '' }]);
+          expect(saved.metadata.video_of_event).to.deep.equal([{ value: '' }]);
         });
       });
     });

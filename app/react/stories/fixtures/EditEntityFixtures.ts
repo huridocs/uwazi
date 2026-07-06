@@ -155,6 +155,13 @@ const templates: Template[] = [
         name: 'video_of_event',
       },
       {
+        _id: '1.16',
+        type: 'preview',
+        label: 'Document preview',
+        noLabel: false,
+        name: 'preview_document',
+      },
+      {
         _id: '1.14',
         type: 'numeric',
         label: 'Numeric property',
@@ -420,6 +427,26 @@ const apiEntity: Entity = {
     ],
   },
   documents: [],
+  attachments: [
+    {
+      _id: 'att1',
+      entity: 'shared1',
+      filename: 'photo.jpg',
+      originalname: 'Event photo.jpg',
+      mimetype: 'image/jpeg',
+      size: 245000,
+      type: 'attachment',
+    },
+    {
+      _id: 'att2',
+      entity: 'shared1',
+      filename: 'clip.mp4',
+      originalname: 'Event clip.mp4',
+      mimetype: 'video/mp4',
+      size: 1250000,
+      type: 'attachment',
+    },
+  ],
 };
 
 export { apiEntity, thesauri, templates };
