@@ -20,11 +20,7 @@ const FilterValueInput = ({ filter, sources, onChange }: FilterValueInputProps) 
 
   const isDateLikePropertyType = (
     propertyType: DatavizFilter['propertyType']
-  ): propertyType is
-    | 'date'
-    | 'daterange'
-    | 'multidate'
-    | 'multidaterange' =>
+  ): propertyType is 'date' | 'daterange' | 'multidate' | 'multidaterange' =>
     propertyType === 'date' ||
     propertyType === 'daterange' ||
     propertyType === 'multidate' ||
@@ -32,17 +28,13 @@ const FilterValueInput = ({ filter, sources, onChange }: FilterValueInputProps) 
 
   const normalizeFilterValue = (value: string | number | undefined) => {
     if (isDateLikePropertyType(filter.propertyType)) {
-      return typeof value === 'number'
-        ? secondsToISODate(value) ?? ''
-        : (value ?? '');
+      return typeof value === 'number' ? (secondsToISODate(value) ?? '') : (value ?? '');
     }
     return value ?? '';
   };
 
   const parseDateOrStringValue = (value: string) =>
-    isDateLikePropertyType(filter.propertyType)
-      ? (parseLocalizedDate(value) ?? undefined)
-      : value;
+    isDateLikePropertyType(filter.propertyType) ? (parseLocalizedDate(value) ?? undefined) : value;
 
   const thesaurusOptions = useMemo(() => {
     const source = sources.find(s => s.alias === filter.sourceAlias) || sources[0];
@@ -105,12 +97,12 @@ const FilterValueInput = ({ filter, sources, onChange }: FilterValueInputProps) 
         id={`filter-bound-${filter.id}`}
         label={filter.operator === 'gte' ? 'From' : 'Up to'}
         type={inputType}
-        value={normalizeFilterValue(
-          filter.operator === 'gte' ? filter.from : filter.to
-        )}
+        value={normalizeFilterValue(filter.operator === 'gte' ? filter.from : filter.to)}
         onChange={e =>
           onChange(
-            filter.operator === 'gte' ? { from: parseDateOrStringValue(e.target.value) } : { to: parseDateOrStringValue(e.target.value) }
+            filter.operator === 'gte'
+              ? { from: parseDateOrStringValue(e.target.value) }
+              : { to: parseDateOrStringValue(e.target.value) }
           )
         }
       />
