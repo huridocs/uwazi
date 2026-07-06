@@ -14,6 +14,7 @@ import { FileNotFound, ProcessingFileNotFound } from '#api/core/domain/files/err
 import { search } from '#api/search/index.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 const TENANT_ID = 'test-tenant';
 
@@ -23,6 +24,7 @@ const createSut = () => {
     tenantId: TENANT_ID,
     transactionManager,
     fileStorage: FileStorageFactory.default(),
+    mongoDb: getConnection(),
   });
   return { sut, transactionManager };
 };

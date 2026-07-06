@@ -12,6 +12,7 @@ import { needsAuthorization } from '../auth/index.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { SyncHandlerRegistry } from './SyncHandlerRegistry.js';
 import { registerSyncHandlers } from './registerSyncHandlers.js';
+import { FileDBO } from '#api/core/infrastructure/mongodb/files/schemas/FilesTypes.js';
 
 const diskStorage = multer.diskStorage({
   filename(_req, file, cb) {
@@ -133,12 +134,12 @@ export default (app: Application) => {
         const data = JSON.parse(req.query.data);
         const handler = SyncHandlerRegistry.get(req.query.namespace);
 
-        let fileInfo: { entity?: string | null; filename?: string; type?: string } | null = null;
+        let fileInfo: FileDBO | undefined;
         if (req.query.namespace === 'files') {
           const result = await FilesDAOFactory.default().getById(data._id, {
             withFullText: false,
           });
-          fileInfo = result.getData(null);
+          fileInfo = result.getData();
         }
 
         if (handler) {
