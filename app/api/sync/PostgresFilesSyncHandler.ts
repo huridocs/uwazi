@@ -1,15 +1,32 @@
-import { Db } from 'mongodb';
 import { PostgresFilesDAO } from '#api/core/infrastructure/postgresql/files/PostgresFilesDAO.js';
 import type { FilesRow } from '#api/core/infrastructure/postgresql/files/PostgresFilesRow.js';
 import { SyncHandler } from './SyncHandler.js';
 
+const ALLOWED_FILES_COLUMNS: (keyof FilesRow)[] = [
+  '_id',
+  'originalname',
+  'filename',
+  'mimetype',
+  'size',
+  'creationDate',
+  'type',
+  'entity',
+  'status',
+  'totalPages',
+  'language',
+  'generatedToc',
+  'url',
+  'toc',
+  'propertySelections',
+  'fullText',
+];
+
 export class PostgresFilesSyncHandler implements SyncHandler<FilesRow> {
   private dao: PostgresFilesDAO;
 
-  constructor(deps: { tenantId: string; mongoDb: Db }) {
+  constructor(deps: { tenantId: string }) {
     this.dao = new PostgresFilesDAO({
       tenantId: deps.tenantId,
-      sync: { syncDb: deps.mongoDb, syncNamespace: 'files' },
     });
   }
 
@@ -21,12 +38,24 @@ export class PostgresFilesSyncHandler implements SyncHandler<FilesRow> {
     return result.getData();
   }
 
+  private stripNonRowFields(doc: Record<string, unknown>): Record<string, unknown> {
+    const cleaned: Record<string, unknown> = {};
+    for (const key of ALLOWED_FILES_COLUMNS) {
+      if (key in doc) {
+        cleaned[key] = doc[key];
+      }
+    }
+    return cleaned;
+  }
+
   async save(document: Partial<FilesRow>): Promise<FilesRow> {
     const { _id: rawId, ...rest } = document as FilesRow;
     if (!rawId) throw new Error('PostgresFilesSyncHandler: document._id is required');
     const id = rawId.toString();
 
-    await this.dao.getTable().upsert({ _id: id, ...rest } as Record<string, unknown>);
+    const cleaned = this.stripNonRowFields({ _id: id, ...rest });
+
+    await this.dao.getTable().upsert(cleaned);
 
     const saved = await this.dao.getById(id, { withFullText: true });
 
@@ -39,9 +68,9 @@ export class PostgresFilesSyncHandler implements SyncHandler<FilesRow> {
     const rows = documents.map(doc => {
       const rawId = (doc as FilesRow)._id;
       if (!rawId) throw new Error('PostgresFilesSyncHandler: document._id is required');
-      const id = rawId.toString();
-      const { _id: _ignored, ...rest } = doc as FilesRow;
-      return { _id: id, ...rest } as Record<string, unknown>;
+      const _id = rawId.toString();
+
+      return this.stripNonRowFields({ ...doc, _id } as FilesRow);
     });
 
     await this.dao.getTable().upsert(rows);

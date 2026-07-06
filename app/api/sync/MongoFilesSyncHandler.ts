@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { ObjectId } from 'mongodb';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
@@ -20,7 +21,7 @@ export class MongoFilesSyncHandler
   }
 
   async save(document: Partial<FileDBO>): Promise<FileDBO> {
-    const { _id: rawId, ...rest } = document as FileDBO;
+    const { _id: rawId, tenant_id, ...rest } = document as FileDBO & { tenant_id?: string };
     if (!rawId) {
       throw new Error('MongoFilesSyncHandler: document._id is required');
     }
@@ -46,7 +47,7 @@ export class MongoFilesSyncHandler
 
     await this.getCollection().bulkWrite(
       documents.map((doc, i) => {
-        const { _id: _ignored, ...rest } = doc as FileDBO;
+        const { _id: _ignored, tenant_id, ...rest } = doc as FileDBO & { tenant_id?: string };
         return {
           replaceOne: {
             filter: { _id: ids[i] },

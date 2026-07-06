@@ -146,6 +146,28 @@ describe('MongoFilesSyncHandler', () => {
         'MongoFilesSyncHandler: document._id is required'
       );
     });
+
+    it('should strip tenant_id from incoming data when saving', async () => {
+      const handler = createHandler();
+      const id = new ObjectId();
+
+      const dataWithTenantId = {
+        _id: id.toHexString(),
+        originalname: 'test.pdf',
+        filename: 'test.pdf',
+        mimetype: 'application/pdf',
+        size: 1024,
+        creationDate: Date.now(),
+        type: 'custom',
+        tenant_id: 'some-other-tenant',
+      };
+
+      await handler.save(dataWithTenantId as any);
+
+      const saved = await handler.getById(id.toHexString());
+      expect(saved).not.toBeNull();
+      expect((saved as any).tenant_id).toBeUndefined();
+    });
   });
 
   describe('saveMultiple', () => {
@@ -225,6 +247,41 @@ describe('MongoFilesSyncHandler', () => {
 
       expect(result).toHaveLength(1);
       expect(result[0].originalname).toBe('after.pdf');
+    });
+
+    it('should strip tenant_id from all documents when saving multiple', async () => {
+      const handler = createHandler();
+      const id1 = new ObjectId().toHexString();
+      const id2 = new ObjectId().toHexString();
+
+      await handler.saveMultiple([
+        {
+          _id: id1,
+          originalname: 'file1.pdf',
+          filename: 'file1.pdf',
+          mimetype: 'application/pdf',
+          size: 100,
+          creationDate: Date.now(),
+          type: 'custom',
+          tenant_id: 'tenant-a',
+        } as any,
+        {
+          _id: id2,
+          originalname: 'file2.pdf',
+          filename: 'file2.pdf',
+          mimetype: 'application/pdf',
+          size: 200,
+          creationDate: Date.now(),
+          type: 'custom',
+          tenant_id: 'tenant-b',
+        } as any,
+      ]);
+
+      const stored = await testingEnvironment.db.getAllFrom('files');
+      expect(stored).toHaveLength(2);
+      stored.forEach(doc => {
+        expect((doc as any).tenant_id).toBeUndefined();
+      });
     });
   });
 

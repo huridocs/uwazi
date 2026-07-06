@@ -10,7 +10,6 @@ const factory = getFixturesFactory({ convertIdToString: true });
 const createHandler = () =>
   new PostgresFilesSyncHandler({
     tenantId: tenants.current().name,
-    mongoDb: getConnection(),
   });
 
 describe('PostgresFilesSyncHandler', () => {
@@ -119,6 +118,26 @@ describe('PostgresFilesSyncHandler', () => {
       expect(found!.propertySelections).toEqual([{ propertyID: 'p1', name: 'selected' }]);
       expect(found!.fullText).toEqual({ 1: 'page one', 2: 'page two' });
     });
+
+    it('should strip legacy MongoDB-only fields before upserting into Postgres', async () => {
+      const handler = createHandler();
+      const file = factory.document('test-doc', { entity: 'e1', status: 'ready' });
+
+      const dataWithExtras = {
+        ...file,
+        __v: 0,
+        uploaded: true,
+        iso639_3: 'eng',
+      };
+
+      await expect(handler.save(dataWithExtras as any)).resolves.not.toThrow();
+
+      const saved = await handler.getById(file._id as string);
+      expect(saved).not.toBeNull();
+      expect((saved as any).__v).toBeUndefined();
+      expect((saved as any).uploaded).toBeUndefined();
+      expect((saved as any).iso639_3).toBeUndefined();
+    });
   });
 
   describe('saveMultiple', () => {
@@ -158,6 +177,28 @@ describe('PostgresFilesSyncHandler', () => {
       expect(saved).toHaveLength(2);
       expect(saved.map(r => r.filename)).toEqual(expect.arrayContaining(['multi-a', 'multi-b']));
     });
+
+    it('should strip legacy MongoDB-only fields when saving multiple documents', async () => {
+      const handler = createHandler();
+      const file1 = factory.document('multi-extra-1', { entity: 'e1', status: 'ready' });
+      const file2 = factory.document('multi-extra-2', { entity: 'e1', status: 'ready' });
+
+      const docs = [
+        { ...file1, __v: 0, uploaded: true },
+        { ...file2, __v: 0, iso639_3: 'eng' },
+      ];
+
+      await expect(handler.saveMultiple(docs as any)).resolves.not.toThrow();
+
+      const rows = await testingPG.getAllFrom('files');
+      expect(rows).toHaveLength(2);
+
+      for (const row of rows) {
+        expect((row as any).__v).toBeUndefined();
+        expect((row as any).uploaded).toBeUndefined();
+        expect((row as any).iso639_3).toBeUndefined();
+      }
+    });
   });
 
   describe('delete', () => {
@@ -175,6 +216,51 @@ describe('PostgresFilesSyncHandler', () => {
     it('does not throw when deleting a non-existent id', async () => {
       const handler = createHandler();
       await expect(handler.delete('nonexistent-id')).resolves.not.toThrow();
+    });
+  });
+
+  describe('sync log pollution', () => {
+    it('should not write sync log entries when saving', async () => {
+      const logCollection = getConnection().collection('updatelogs');
+      await logCollection.deleteMany({ namespace: 'files' });
+
+      const handler = createHandler();
+      const file = factory.document('no-sync-log', { entity: 'e1', status: 'ready' });
+
+      await handler.save(file as any);
+
+      const logs = await logCollection.countDocuments({ namespace: 'files' });
+      expect(logs).toBe(0);
+    });
+
+    it('should not write sync log entries when saving multiple', async () => {
+      const logCollection = getConnection().collection('updatelogs');
+      await logCollection.deleteMany({ namespace: 'files' });
+
+      const handler = createHandler();
+      const file1 = factory.document('no-sync-log-1', { entity: 'e1', status: 'ready' });
+      const file2 = factory.document('no-sync-log-2', { entity: 'e2', status: 'ready' });
+
+      await handler.saveMultiple([file1 as any, file2 as any]);
+
+      const logs = await logCollection.countDocuments({ namespace: 'files' });
+      expect(logs).toBe(0);
+    });
+
+    it('should not write sync log entries when deleting', async () => {
+      const logCollection = getConnection().collection('updatelogs');
+      await logCollection.deleteMany({ namespace: 'files' });
+
+      const handler = createHandler();
+      const file = factory.document('no-sync-log-del', { entity: 'e1', status: 'ready' });
+      await handler.save(file as any);
+
+      await logCollection.deleteMany({ namespace: 'files' });
+
+      await handler.delete(file._id as string);
+
+      const logs = await logCollection.countDocuments({ namespace: 'files' });
+      expect(logs).toBe(0);
     });
   });
 });
