@@ -37,7 +37,9 @@ export class PgBlankState {
       if (exists) {
         /* eslint-disable no-await-in-loop */
         for (const table of tables) {
-          await client.query(`DELETE FROM "${escapeIdentifier(table)}" WHERE tenant_id = $1`, [this.tenantId]);
+          await client.query(`DELETE FROM "${escapeIdentifier(table)}" WHERE tenant_id = $1`, [
+            this.tenantId,
+          ]);
         }
         /* eslint-enable no-await-in-loop */
       }
@@ -118,9 +120,7 @@ export class PgBlankState {
         const cleanRow = { ...row, tenant_id: this.tenantId };
         const columns = Object.keys(cleanRow);
         const placeholders = columns.map((_, i) => `$${i + 1}`).join(', ');
-        const values = columns.map(col =>
-          serializePgValue(cleanRow[col], jsonbColumns.has(col))
-        );
+        const values = columns.map(col => serializePgValue(cleanRow[col], jsonbColumns.has(col)));
 
         const escapedColumns = columns.map(col => `"${escapeIdentifier(col)}"`).join(', ');
         await client.query(

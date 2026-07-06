@@ -1,6 +1,6 @@
 import { Db } from 'mongodb';
 import { elastic } from '#api/search/index.js';
-import { PUBLIC_USER_ID } from '#api/users/publicUser.js';
+import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { MongoFilesDAO } from '#api/core/infrastructure/mongodb/files/MongoFilesDAO.js';
 
@@ -83,7 +83,7 @@ export class RetrieveStatsService {
     const users = await this.db
       .collection('users')
       .aggregate<RoleCount>([
-        { $match: { _id: { $ne: PUBLIC_USER_ID } } },
+        { $match: { _id: { $ne: PUBLIC_USER_ID }, deletedAt: null } },
         { $group: { _id: '$role', count: { $sum: 1 } } },
       ])
       .toArray();

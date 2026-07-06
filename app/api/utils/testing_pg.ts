@@ -125,7 +125,10 @@ const testingPG = {
           serializePgValue(v, v !== null && typeof v === 'object')
         );
         //eslint-disable-next-line no-await-in-loop
-        await pool.query(`INSERT INTO "${escapeIdentifier(table)}" (${cols}) VALUES (${placeholders})`, values);
+        await pool.query(
+          `INSERT INTO "${escapeIdentifier(table)}" (${cols}) VALUES (${placeholders})`,
+          values
+        );
       }
     }
   },
@@ -151,7 +154,9 @@ const testingPG = {
       const admin = adminClient();
       await admin.connect();
       try {
-        await admin.query(`DROP DATABASE IF EXISTS "${escapeIdentifier(this.dbName)}" WITH (FORCE)`);
+        await admin.query(
+          `DROP DATABASE IF EXISTS "${escapeIdentifier(this.dbName)}" WITH (FORCE)`
+        );
       } finally {
         await admin.end();
       }
