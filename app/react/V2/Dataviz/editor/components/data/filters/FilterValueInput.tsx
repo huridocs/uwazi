@@ -7,7 +7,6 @@ import { templatesAtom, thesauriAtom } from '#V2/atoms/index.js';
 import type { DatavizFilter, DatavizSource } from '#V2/Dataviz/types/definition.js';
 import { usesMultipleValues } from '#V2/Dataviz/utils/filterOperators.js';
 import { parseLocalizedDate, secondsToISODate } from '#V2/shared/dateHelpers.js';
-import { isDateLikePropertyType } from '#shared/dataviz/dimensionPropertyTypes.js';
 
 type FilterValueInputProps = {
   filter: DatavizFilter;
@@ -19,15 +18,31 @@ const FilterValueInput = ({ filter, sources, onChange }: FilterValueInputProps) 
   const templates = useAtomValue(templatesAtom);
   const thesauri = useAtomValue(thesauriAtom);
 
+  const isDateLikePropertyType = (
+    propertyType: DatavizFilter['propertyType']
+  ): propertyType is
+    | 'date'
+    | 'daterange'
+    | 'multidate'
+    | 'multidaterange' =>
+    propertyType === 'date' ||
+    propertyType === 'daterange' ||
+    propertyType === 'multidate' ||
+    propertyType === 'multidaterange';
+
   const normalizeFilterValue = (value: string | number | undefined) => {
     if (isDateLikePropertyType(filter.propertyType)) {
-      return typeof value === 'number' ? secondsToISODate(value) : value ?? '';
+      return typeof value === 'number'
+        ? secondsToISODate(value) ?? ''
+        : (value ?? '');
     }
     return value ?? '';
   };
 
   const parseDateOrStringValue = (value: string) =>
-    isDateLikePropertyType(filter.propertyType) ? parseLocalizedDate(value) ?? undefined : value;
+    isDateLikePropertyType(filter.propertyType)
+      ? (parseLocalizedDate(value) ?? undefined)
+      : value;
 
   const thesaurusOptions = useMemo(() => {
     const source = sources.find(s => s.alias === filter.sourceAlias) || sources[0];
@@ -95,9 +110,7 @@ const FilterValueInput = ({ filter, sources, onChange }: FilterValueInputProps) 
         )}
         onChange={e =>
           onChange(
-            filter.operator === 'gte'
-              ? { from: parseDateOrStringValue(e.target.value) }
-              : { to: parseDateOrStringValue(e.target.value) }
+            filter.operator === 'gte' ? { from: parseDateOrStringValue(e.target.value) } : { to: parseDateOrStringValue(e.target.value) }
           )
         }
       />
