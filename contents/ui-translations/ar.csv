@@ -487,6 +487,8 @@ Forgot Password?,هل نسيت كلمة المرور؟
 Forms and email configuration,تكوين النماذج والبريد الإلكتروني
 From,From
 From all suggestions,From all suggestions
+From computer,From computer
+From files,From files
 From previous step,From previous step
 From selection,From selection
 From:,From:
@@ -577,6 +579,7 @@ Invalid captcha,حروف التحقق غير صحيحة
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
 Invalid form,المدخلات غير صحيحة او غير مكتمله. رجاء التصحيح واعادج المحاولة
+Invalid URL,Invalid URL
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,من الممكن أيضاً كسر التطبيق بسهولة بالغة. اكتب فقط الرمز هنا إذا كنت على دراية تامة بما تفعله
 it has been logged with request id #,it has been logged with request id #
 Item,Item
@@ -735,6 +738,7 @@ No icon / flag,لا توجد أيقونة/ علامة
 No items available,No items available
 No Label,لا تسمية
 No label,No label
+No media selected,No media selected
 No options,No options
 No options found,لم يتم العثور على خيارات
 No page,No page
@@ -753,6 +757,7 @@ No table of contents description,لا جدول محتويات الوصف
 No templates available to add.,No templates available to add.
 No text match,لا يوجد نص تطابق
 No text match description,يمكنك كتابه نص مختلف للحصول على بعض النتائج
+No timelinks added,No timelinks added
 No type,لا نوع
 No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,No valid target template available
@@ -828,6 +833,7 @@ Password is too long,كلمة المرور طويلة جداً
 Password updated,تم تحديث كلمة المرور
 Passwords do not match,Passwords do not match
 Paste this tag in a page HTML. The chart uses the page language.,Paste this tag in a page HTML. The chart uses the page language.
+Paste URL,Paste URL
 Paste URL here,Paste URL here
 PDF,PDF
 Pending,Pending
@@ -1324,6 +1330,7 @@ Use for training,Use for training
 "Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed.","Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed."
+Use URL,Use URL
 User,المستخدم
 User Action,User Action
 User Role,User Role
