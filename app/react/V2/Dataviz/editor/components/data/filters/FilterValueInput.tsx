@@ -6,6 +6,7 @@ import { MultiSelect } from '#V2/Components/Forms/MultiSelect.js';
 import { templatesAtom, thesauriAtom } from '#V2/atoms/index.js';
 import type { DatavizFilter, DatavizSource } from '#V2/Dataviz/types/definition.js';
 import { usesMultipleValues } from '#V2/Dataviz/utils/filterOperators.js';
+import { parseLocalizedDate, secondsToISODate } from '#V2/shared/dateHelpers.js';
 
 type FilterValueInputProps = {
   filter: DatavizFilter;
@@ -16,6 +17,24 @@ type FilterValueInputProps = {
 const FilterValueInput = ({ filter, sources, onChange }: FilterValueInputProps) => {
   const templates = useAtomValue(templatesAtom);
   const thesauri = useAtomValue(thesauriAtom);
+
+  const isDateLikePropertyType = (
+    propertyType: DatavizFilter['propertyType']
+  ): propertyType is 'date' | 'daterange' | 'multidate' | 'multidaterange' =>
+    propertyType === 'date' ||
+    propertyType === 'daterange' ||
+    propertyType === 'multidate' ||
+    propertyType === 'multidaterange';
+
+  const normalizeFilterValue = (value: string | number | undefined) => {
+    if (isDateLikePropertyType(filter.propertyType)) {
+      return typeof value === 'number' ? (secondsToISODate(value) ?? '') : (value ?? '');
+    }
+    return value ?? '';
+  };
+
+  const parseDateOrStringValue = (value: string) =>
+    isDateLikePropertyType(filter.propertyType) ? (parseLocalizedDate(value) ?? undefined) : value;
 
   const thesaurusOptions = useMemo(() => {
     const source = sources.find(s => s.alias === filter.sourceAlias) || sources[0];
@@ -35,15 +54,15 @@ const FilterValueInput = ({ filter, sources, onChange }: FilterValueInputProps) 
           id={`filter-from-${filter.id}`}
           label="From"
           type={filter.propertyType === 'date' ? 'date' : 'number'}
-          value={filter.from || ''}
-          onChange={e => onChange({ from: e.target.value })}
+          value={normalizeFilterValue(filter.from)}
+          onChange={e => onChange({ from: parseDateOrStringValue(e.target.value) })}
         />
         <InputField
           id={`filter-to-${filter.id}`}
           label="To"
           type={filter.propertyType === 'date' ? 'date' : 'number'}
-          value={filter.to || ''}
-          onChange={e => onChange({ to: e.target.value })}
+          value={normalizeFilterValue(filter.to)}
+          onChange={e => onChange({ to: parseDateOrStringValue(e.target.value) })}
         />
       </div>
     );
@@ -78,9 +97,13 @@ const FilterValueInput = ({ filter, sources, onChange }: FilterValueInputProps) 
         id={`filter-bound-${filter.id}`}
         label={filter.operator === 'gte' ? 'From' : 'Up to'}
         type={inputType}
-        value={filter.operator === 'gte' ? filter.from || '' : filter.to || ''}
+        value={normalizeFilterValue(filter.operator === 'gte' ? filter.from : filter.to)}
         onChange={e =>
-          onChange(filter.operator === 'gte' ? { from: e.target.value } : { to: e.target.value })
+          onChange(
+            filter.operator === 'gte'
+              ? { from: parseDateOrStringValue(e.target.value) }
+              : { to: parseDateOrStringValue(e.target.value) }
+          )
         }
       />
     );
