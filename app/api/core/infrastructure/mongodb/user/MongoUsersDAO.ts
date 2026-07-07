@@ -1,5 +1,5 @@
 import { Db, Document, Filter, ObjectId } from 'mongodb';
-import { MongoDataSource, MongoDSOptions } from '../common/MongoDataSource.js';
+import { MongoDataSource } from '../common/MongoDataSource.js';
 import { Result } from '#api/core/libs/Result.js';
 import type { ResultType } from '#api/core/libs/Result.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
@@ -11,11 +11,16 @@ import { UserNotFound } from '#api/core/domain/user/errors.js';
 type UserGroup = { _id: string; name: string };
 type UserWithGroups = UserDBO & { groups: UserGroup[] };
 
+type Deps = {
+  db: Db;
+  transactionManager: TransactionManager;
+};
+
 class MongoUsersDAO extends MongoDataSource<UserDBO> {
   protected collectionName = 'users';
 
-  constructor(db: Db, transactionManager: TransactionManager, options?: MongoDSOptions) {
-    super(db, transactionManager, options);
+  constructor(deps: Deps) {
+    super(deps.db, deps.transactionManager);
   }
 
   async getById(

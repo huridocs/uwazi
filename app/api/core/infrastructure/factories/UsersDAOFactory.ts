@@ -4,7 +4,10 @@ import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 
 class UsersDAOFactory {
   static default(): MongoUsersDAO {
-    return new MongoUsersDAO(getConnection(), TransactionManagerFactory.default());
+    return new MongoUsersDAO({
+      db: getConnection(),
+      transactionManager: TransactionManagerFactory.default(),
+    });
   }
 }
 

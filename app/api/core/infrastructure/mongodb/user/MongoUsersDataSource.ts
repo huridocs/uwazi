@@ -1,6 +1,4 @@
-import { Db, ObjectId } from 'mongodb';
-import { MongoDSOptions } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { ObjectId } from 'mongodb';
 import { UsersDataSource } from '#api/core/application/contracts/UsersDataSource.js';
 import { PUBLIC_USER_ID, User } from '#api/core/domain/user/User.js';
 import { EmailInUse, UsernameExists } from '#api/core/domain/user/errors.js';
@@ -10,10 +8,6 @@ import { MongoUsersMapper } from './MongoUsersMapper.js';
 import { MongoUsersDAO } from './MongoUsersDAO.js';
 
 class MongoUsersDataSource extends MongoUsersDAO implements UsersDataSource {
-  constructor(db: Db, transactionManager: TransactionManager, options?: MongoDSOptions) {
-    super(db, transactionManager, options);
-  }
-
   async checkUniqueUsername(user: User) {
     const [userInDb] = await this.get({ username: user.username });
 

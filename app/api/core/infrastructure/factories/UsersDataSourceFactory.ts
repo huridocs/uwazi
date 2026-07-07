@@ -5,7 +5,10 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 class UsersDataSourceFactory {
   static default(): UsersDataSource {
-    return new MongoUsersDataSource(getConnection(), ExecutionContext.transactionManager);
+    return new MongoUsersDataSource({
+      db: getConnection(),
+      transactionManager: ExecutionContext.transactionManager,
+    });
   }
 }
 

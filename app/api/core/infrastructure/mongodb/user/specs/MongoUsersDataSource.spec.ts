@@ -25,7 +25,10 @@ const fixtures = {
 
 const createDs = () => {
   const transactionManager = TransactionManagerFactory.default();
-  const ds = new MongoUsersDataSource(getConnection(), transactionManager);
+  const ds = new MongoUsersDataSource({
+    db: getConnection(),
+    transactionManager,
+  });
   return { ds, transactionManager };
 };
 
