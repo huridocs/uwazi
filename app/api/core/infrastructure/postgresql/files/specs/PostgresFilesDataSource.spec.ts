@@ -473,7 +473,7 @@ describe('PostgresFilesDataSource', () => {
   });
 
   describe('bulkUpdate', () => {
-    it('should upsert a mix of existing and new files', async () => {
+    it('should update existing files', async () => {
       const { sut } = createSut();
       const updated = FileBuilder.processedDocument(factory.idString('bulk-update-doc'), {
         entity: 'entity1',
@@ -481,9 +481,8 @@ describe('PostgresFilesDataSource', () => {
         totalPages: 3,
         status: 'ready',
       });
-      const newDoc = FileBuilder.attachment(factory.idString('new-att'), { entity: 'entity2' });
 
-      await sut.bulkUpdate([updated, newDoc]);
+      await sut.bulkUpdate([updated]);
 
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
       expect(rows.find(r => r._id === factory.idString('bulk-update-doc'))).toMatchObject({
@@ -491,14 +490,9 @@ describe('PostgresFilesDataSource', () => {
         status: 'ready',
         totalPages: 3,
       });
-      expect(rows.find(r => r._id === factory.idString('new-att'))).toMatchObject({
-        tenant_id: TENANT_ID,
-        type: 'attachment',
-        entity: 'entity2',
-      });
     });
 
-    it('should upsert documents with JSONB columns (toc, fullText, propertySelections)', async () => {
+    it('should update documents with JSONB columns (toc, fullText, propertySelections)', async () => {
       const { sut } = createSut();
       const toc = [{ indentation: 0, label: 'Bulk Chapter' }];
       const propertySelections = [{ name: 'bulk-prop' }];

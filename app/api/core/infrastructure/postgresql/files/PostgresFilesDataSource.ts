@@ -18,6 +18,7 @@ import { search } from '#api/search/index.js';
 import { PostgresFilesMapper } from './PostgresFilesMapper.js';
 import type { FilesRow } from './PostgresFilesRow.js';
 import { FILES_COLUMNS_WITHOUT_FULL_TEXT } from './PostgresFilesDAOColumns.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 
 type Deps = {
   transactionManager: TransactionManager;
@@ -84,12 +85,19 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
 
   async bulkUpdate(files: BaseFile[]): Promise<void> {
     if (!files.length) return;
-    await this.table.upsert(files.map(PostgresFilesMapper.toDBO));
+    await ArrayUtils.sequentialFor(files, async file =>
+      this.table
+        .query()
+        .where({ _id: file.id })
+        .update(this.table.serializeForWrite(PostgresFilesMapper.toDBO(file)))
+    );
+
     this.setFilesToReindex(files);
   }
 
   async replaceFile(file: BaseFile): Promise<void> {
-    await this.table.upsert(PostgresFilesMapper.toDBO(file));
+    const row = this.table.serializeForWrite(PostgresFilesMapper.toDBO(file));
+    await this.table.query().where({ _id: file.id }).update(row);
     this.setFilesToReindex([file]);
   }
 
