@@ -1,8 +1,5 @@
 import { Db, ObjectId } from 'mongodb';
-import {
-  MongoDataSource,
-  MongoDSOptions,
-} from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { MongoDSOptions } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { UsersDataSource } from '#api/core/application/contracts/UsersDataSource.js';
 import { PUBLIC_USER_ID, User } from '#api/core/domain/user/User.js';
@@ -10,19 +7,15 @@ import { EmailInUse, UsernameExists } from '#api/core/domain/user/errors.js';
 import { Result } from '#api/core/libs/Result.js';
 import { UserDBO } from './UserDBO.js';
 import { MongoUsersMapper } from './MongoUsersMapper.js';
+import { MongoUsersDAO } from './MongoUsersDAO.js';
 
-class MongoUsersDataSource extends MongoDataSource<UserDBO> implements UsersDataSource {
-  protected collectionName = 'users';
-
+class MongoUsersDataSource extends MongoUsersDAO implements UsersDataSource {
   constructor(db: Db, transactionManager: TransactionManager, options?: MongoDSOptions) {
     super(db, transactionManager, options);
   }
 
   async checkUniqueUsername(user: User) {
-    const userInDb = await this.getCollection<UserDBO>().findOne({
-      username: user.username,
-      deletedAt: { $exists: false },
-    });
+    const [userInDb] = await this.get({ username: user.username });
 
     if (userInDb) {
       return Result.fail(new UsernameExists(user.username));
@@ -32,10 +25,7 @@ class MongoUsersDataSource extends MongoDataSource<UserDBO> implements UsersData
   }
 
   async checkUniqueEmail(user: User) {
-    const userInDb = await this.getCollection<UserDBO>().findOne({
-      email: user.email,
-      deletedAt: { $exists: false },
-    });
+    const [userInDb] = await this.get({ email: user.email });
 
     if (userInDb) {
       return Result.fail(new EmailInUse(user.email));
