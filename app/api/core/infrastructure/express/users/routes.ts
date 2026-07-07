@@ -42,17 +42,17 @@ export const userRoutes = (app: Application) => {
     async (_req: Request, res: Response, next: NextFunction) => {
       if (tenants.current().featureFlags?.v2GetUsers) {
         next();
+      } else {
+        users
+          .get({}, '+groups +failedLogins +accountLocked')
+          .then(response => {
+            const filteredUsers = response.filter(
+              user => user._id.toString() !== PUBLIC_USER_ID.toString()
+            );
+            res.json(filteredUsers);
+          })
+          .catch(next);
       }
-
-      users
-        .get({}, '+groups +failedLogins +accountLocked')
-        .then(response => {
-          const filteredUsers = response.filter(
-            user => user._id.toString() !== PUBLIC_USER_ID.toString()
-          );
-          res.json(filteredUsers);
-        })
-        .catch(next);
     },
     GetUsersController.createHandler()
   );
