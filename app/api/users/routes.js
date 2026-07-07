@@ -124,16 +124,4 @@ export default app => {
         .catch(next);
     }
   );
-
-  app.get('/api/users', needsAuthorization(), (_req, res, next) => {
-    users
-      .get({}, '+groups +failedLogins +accountLocked')
-      .then(response => {
-        const filteredUsers = response.filter(
-          user => user._id.toString() !== PUBLIC_USER_ID.toString()
-        );
-        res.json(filteredUsers);
-      })
-      .catch(next);
-  });
 };
