@@ -33,8 +33,8 @@ export type DatavizFilter = {
   operator: DatavizFilterOperator;
   value?: string | number;
   values?: string[];
-  from?: string;
-  to?: string;
+  from?: string | number;
+  to?: string | number;
 };
 
 export type DatavizSource = {

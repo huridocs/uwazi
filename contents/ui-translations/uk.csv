@@ -490,6 +490,8 @@ Forgot Password?,Забули пароль?
 Forms and email configuration,Налаштування форм та електронної пошти
 From,Від
 From all suggestions,З усіх пропозицій
+From computer,From computer
+From files,From files
 From previous step,З попереднього кроку
 From selection,From selection
 From:,From:
@@ -580,6 +582,7 @@ Invalid captcha,Невірна captcha
 Invalid csv: all the values for a row must be either nested or non-nested,"Неправильний csv: всі значення рядка повинні бути або вкладеними, або невкладеними"
 Invalid csv: nested value need to be under a non-nested value,Неправильний csv: вкладені значення мають бути під невкладеними значеннями
 Invalid form,"Запис є обов'язковим або має невірне значення. Будь ласка, виправте і спробуйте ще раз."
+Invalid URL,Invalid URL
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,"Це також ненароком може порушити роботу додатка. Введіть код лише у випадку, якщо ви точно знаєте, що робите."
 it has been logged with request id #,його було зареєстровано з ідентифікатором запиту #
 Item,Пункт
@@ -738,6 +741,7 @@ No icon / flag,Немає піктограми / прапорця
 No items available,Немає товарів у наявності
 No Label,Немає мітки
 No label,Без етикетки
+No media selected,No media selected
 No options,Без варіантів
 No options found,Варіантів не знайдено
 No page,No page
@@ -756,6 +760,7 @@ No table of contents description,Ви можете почати з виділе�
 No templates available to add.,No templates available to add.
 No text match,"Немає тексту, що збігається"
 No text match description,"Ви можете ввести щось інше в поле пошуку, щоб отримати деякі результати."
+No timelinks added,No timelinks added
 No type,Немає типу
 No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,Відсутній правильний шаблон цілі
@@ -831,6 +836,7 @@ Password is too long,Пароль занадто довгий
 Password updated,Пароль оновлено
 Passwords do not match,Паролі не збігаються
 Paste this tag in a page HTML. The chart uses the page language.,Paste this tag in a page HTML. The chart uses the page language.
+Paste URL,Paste URL
 Paste URL here,Вставте URL-адресу сюди
 PDF,PDF
 Pending,На розгляді
@@ -1327,6 +1333,7 @@ Use for training,Використання для навчання
 "Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed.","Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed."
+Use URL,Use URL
 User,Користувач
 User Action,Дія користувача
 User Role,Роль користувача
