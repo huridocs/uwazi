@@ -12,14 +12,8 @@ type UserGroupInput = UserGroup & { rowId?: string };
  */
 interface UserGroupsService {
   getAll(options?: ServiceRequestOptions): Promise<ApiResponse<UserGroup[]>>;
-  upsert(
-    group: UserGroupInput,
-    options?: ServiceRequestOptions
-  ): Promise<ApiResponse<unknown>>;
-  delete(
-    groups: UserGroup[],
-    options?: ServiceRequestOptions
-  ): Promise<ApiResponse<unknown>>;
+  upsert(group: UserGroupInput, options?: ServiceRequestOptions): Promise<ApiResponse<unknown>>;
+  delete(groups: UserGroup[], options?: ServiceRequestOptions): Promise<ApiResponse<unknown>>;
 }
 
 export type { UserGroupsService, UserGroupInput };

@@ -11,10 +11,7 @@ import type { ServiceRequestOptions } from './ServiceRequestOptions.js';
  */
 interface ThesaurusService {
   getAll(options?: ServiceRequestOptions): Promise<ApiResponse<Thesaurus[]>>;
-  getById(
-    id: string,
-    options?: ServiceRequestOptions
-  ): Promise<ApiResponse<Thesaurus | undefined>>;
+  getById(id: string, options?: ServiceRequestOptions): Promise<ApiResponse<Thesaurus | undefined>>;
   upsert(thesaurus: ThesaurusInput): Promise<ApiResponse<Thesaurus>>;
   delete(ids: string[]): Promise<ApiResponse<void, FetchResponseError>>;
 }

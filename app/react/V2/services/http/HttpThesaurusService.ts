@@ -14,19 +14,19 @@ const toApiResponse = async <T>(
 };
 
 const httpThesaurusService: ThesaurusService = {
-  getAll: ({ headers } = {}) => toApiResponse(() => thesauriApi.get({}, headers)),
+  getAll: async ({ headers } = {}) => toApiResponse(async () => thesauriApi.get({}, headers)),
 
-  getById: (id, { headers } = {}) =>
+  getById: async (id, { headers } = {}) =>
     toApiResponse(async () => {
       const rows = await thesauriApi.get({ _id: id }, headers);
       return rows[0];
     }),
 
-  upsert: thesaurus => toApiResponse(() => thesauriApi.save(thesaurus)),
+  upsert: async thesaurus => toApiResponse(async () => thesauriApi.save(thesaurus)),
 
-  delete: ids =>
+  delete: async ids =>
     toApiResponse(async () => {
-      await Promise.all(ids.map(_id => thesauriApi.deleteThesauri({ _id })));
+      await Promise.all(ids.map(async _id => thesauriApi.deleteThesauri({ _id })));
     }),
 };
 

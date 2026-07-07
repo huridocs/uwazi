@@ -22,9 +22,11 @@ const fromLegacyApi = async <T>(
 };
 
 const httpUserGroupsService: UserGroupsService = {
-  getAll: ({ headers } = {}) => fromLegacyApi(() => usersApi.getUserGroups(headers)),
-  upsert: (group, { headers } = {}) => fromLegacyApi(() => usersApi.saveGroup(group, headers)),
-  delete: (groups, { headers } = {}) => fromLegacyApi(() => usersApi.deleteGroup(groups, headers)),
+  getAll: async ({ headers } = {}) => fromLegacyApi(async () => usersApi.getUserGroups(headers)),
+  upsert: async (group, { headers } = {}) =>
+    fromLegacyApi(async () => usersApi.saveGroup(group, headers)),
+  delete: async (groups, { headers } = {}) =>
+    fromLegacyApi(async () => usersApi.deleteGroup(groups, headers)),
 };
 
 export { httpUserGroupsService };

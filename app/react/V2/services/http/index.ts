@@ -9,9 +9,4 @@ const httpServices: V2Services = {
   userGroups: httpUserGroupsService,
 };
 
-export {
-  httpThesaurusService,
-  httpUsersService,
-  httpUserGroupsService,
-  httpServices,
-};
+export { httpThesaurusService, httpUsersService, httpUserGroupsService, httpServices };
