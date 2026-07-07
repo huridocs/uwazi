@@ -156,7 +156,7 @@ const MediaFieldPreview = ({
             className="inline-flex items-center gap-1.5 px-2 py-1.5"
             onClick={addTimelink}
           >
-            <PlusIcon className="h-4 w-4" />
+            <PlusIcon className="w-4 h-4" />
             <Translate>Add</Translate>
           </Button>
         </div>
@@ -179,7 +179,7 @@ const MediaFieldPreview = ({
                   onClick={() => handleSeek(timelink)}
                   aria-label={`${timelink.hh}:${timelink.mm}:${timelink.ss}`}
                 >
-                  <PlayIcon className="h-4 w-4" />
+                  <PlayIcon className="w-4 h-4" />
                 </button>
                 <input
                   type="text"
@@ -227,7 +227,7 @@ const MediaFieldPreview = ({
                   onClick={() => removeTimelink(index)}
                   aria-label="Remove timelink"
                 >
-                  <XMarkIcon className="h-4 w-4" />
+                  <XMarkIcon className="w-4 h-4" />
                 </button>
               </li>
             ))}
@@ -341,7 +341,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
                   className="inline-flex items-center gap-1.5"
                   onClick={() => setModalOpen(true)}
                 >
-                  <ArrowUpTrayIcon className="h-4 w-4" />
+                  <ArrowUpTrayIcon className="w-4 h-4" />
                   <Translate>{hasValue ? 'Change' : 'Choose'}</Translate>
                 </Button>
                 {hasValue ? (
@@ -352,7 +352,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
                     className="inline-flex items-center gap-1.5"
                     onClick={handleUnlink}
                   >
-                    <LinkSlashIcon className="h-4 w-4" />
+                    <LinkSlashIcon className="w-4 h-4" />
                     <Translate>Unlink</Translate>
                   </Button>
                 ) : null}
@@ -364,7 +364,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
                     <img
                       src={url}
                       alt={label}
-                      className="max-h-96 max-w-full rounded-md"
+                      className="max-w-full rounded-md max-h-96"
                       style={{ objectFit: imageStyle === 'cover' ? 'cover' : 'contain' }}
                     />
                   ) : (
