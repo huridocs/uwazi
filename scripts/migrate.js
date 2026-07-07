@@ -10,8 +10,12 @@ process.on('unhandledRejection', error => {
 runMigration()
   .then(result => {
     process.stdout.write(`${MIGRATION_RESULT_PREFIX}${JSON.stringify(result)}\n`);
+    if (result.blocked) {
+      process.exitCode = 1;
+    }
   })
   .catch(async e => {
+    process.stderr.write(`${MIGRATION_RESULT_PREFIX}${JSON.stringify({ error: e.message })}\n`);
     await DB.disconnect();
-    throw e;
+    process.exit(1);
   });

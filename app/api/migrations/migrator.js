@@ -1,8 +1,7 @@
-import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { dirname } from 'path';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
+import path, { dirname } from 'path';
 import migrationsModel from './migrationsModel.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -35,16 +34,40 @@ const getMigrations = async (migrationsDir, loader = loadMigration) => {
 
 const saveMigration = migration => migrationsModel.save(migration);
 
+const getPendingMigrations = async (migrationsDir, loader, schemaVersion) => {
+  const pending = await getMigrations(migrationsDir, loader);
+  const runnable = [];
+  let blocked = null;
+
+  for (const migration of pending) {
+    const requiredSchema = migration.requiresSchema || 0;
+    if (requiredSchema <= schemaVersion) {
+      runnable.push(migration);
+    } else {
+      blocked = { delta: migration.delta, requiresSchema: requiredSchema };
+      break;
+    }
+  }
+
+  return { runnable, blocked };
+};
+
 const migrator = {
   migrationsDir: `${__dirname}/migrations/`,
   loader: loadMigration,
 
-  async migrate(db) {
-    return getMigrations(this.migrationsDir, this.loader).then(migrations =>
-      promiseInSequence(
-        migrations.map(migration => () => migration.up(db).then(() => saveMigration(migration)))
-      )
+  async migrate(db, schemaVersion = Number.MAX_SAFE_INTEGER) {
+    const { runnable, blocked } = await getPendingMigrations(
+      this.migrationsDir,
+      this.loader,
+      schemaVersion
     );
+
+    const applied = await promiseInSequence(
+      runnable.map(migration => () => migration.up(db).then(() => saveMigration(migration)))
+    );
+
+    return { migrations: applied, blocked };
   },
   shouldMigrate() {
     return getMigrations(this.migrationsDir, this.loader).then(migrations =>
@@ -53,4 +76,4 @@ const migrator = {
   },
 };
 
-export { migrator, getMigrations, sortByDelta };
+export { migrator, getMigrations, getPendingMigrations, sortByDelta };

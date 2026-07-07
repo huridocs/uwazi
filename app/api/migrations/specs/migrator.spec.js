@@ -33,7 +33,7 @@ describe('migrator', () => {
       migrator.migrationsDir = path.join(__dirname, 'testMigrations');
       migrator.loader = p =>
         Promise.resolve(
-          (function (r) {
+          (function resolveModule(r) {
             const m = r(p);
             return m.default ?? m;
           })(require)
@@ -44,17 +44,18 @@ describe('migrator', () => {
     });
 
     it('should execute all migrations in order', async () => {
-      await migrator.migrate(connection.db);
+      const result = await migrator.migrate(connection.db, Number.MAX_SAFE_INTEGER);
 
       expect(migration1.up).toHaveBeenCalledWith(connection.db);
       expect(migration2.up).toHaveBeenCalledWith(connection.db);
       expect(migration10.up).toHaveBeenCalledWith(connection.db);
       expect(migration1.up).toHaveBeenCalledBefore(migration2.up);
       expect(migration2.up).toHaveBeenCalledBefore(migration10.up);
+      expect(result.blocked).toBeNull();
     });
 
     it('should save migrations run on the db', async () => {
-      await migrator.migrate(connection.db);
+      await migrator.migrate(connection.db, Number.MAX_SAFE_INTEGER);
 
       const migrations = await migrationsModel.get();
       expect(
@@ -74,6 +75,11 @@ describe('migrator', () => {
           reindex: true,
         },
         {
+          delta: 3,
+          description: 'migration test 3 blocked',
+          reindex: false,
+        },
+        {
           delta: 10,
           description: 'migration test 10',
           reindex: false,
@@ -87,25 +93,13 @@ describe('migrator', () => {
       migration10.up.mockClear();
 
       await migrationsModel.save({ delta: 1 });
-      await migrator.migrate(connection.db);
+      const result = await migrator.migrate(connection.db, Number.MAX_SAFE_INTEGER);
 
       expect(migration1.up).not.toHaveBeenCalled();
       expect(migration2.up).toHaveBeenCalledWith(connection.db);
       expect(migration10.up).toHaveBeenCalledWith(connection.db);
       expect(migration2.up).toHaveBeenCalledBefore(migration10.up);
-    });
-
-    it('should only run migrations that had not been run before', async () => {
-      migration1.up.mockClear();
-      migration2.up.mockClear();
-      migration10.up.mockClear();
-
-      await migrationsModel.saveMultiple([{ delta: 1 }, { delta: 2 }]);
-      await migrator.migrate(connection.db);
-
-      expect(migration1.up).not.toHaveBeenCalled();
-      expect(migration2.up).not.toHaveBeenCalled();
-      expect(migration10.up).toHaveBeenCalledWith(connection.db);
+      expect(result.blocked).toBeNull();
     });
 
     it('should not run any migration when the last one has already been run', async () => {
@@ -113,12 +107,39 @@ describe('migrator', () => {
       migration2.up.mockClear();
       migration10.up.mockClear();
 
-      await migrationsModel.saveMultiple([{ delta: 10 }]);
-      await migrator.migrate(connection.db);
+      await migrationsModel.saveMultiple([{ delta: 1 }, { delta: 2 }, { delta: 3 }, { delta: 10 }]);
+      const result = await migrator.migrate(connection.db, Number.MAX_SAFE_INTEGER);
 
       expect(migration1.up).not.toHaveBeenCalled();
       expect(migration2.up).not.toHaveBeenCalled();
       expect(migration10.up).not.toHaveBeenCalled();
+      expect(result.blocked).toBeNull();
+    });
+
+    it('should run migrations up to the first blocked one', async () => {
+      migration1.up.mockClear();
+      migration2.up.mockClear();
+      migration10.up.mockClear();
+
+      const result = await migrator.migrate(connection.db, 99);
+
+      expect(migration1.up).toHaveBeenCalledWith(connection.db);
+      expect(migration2.up).toHaveBeenCalledWith(connection.db);
+      expect(migration10.up).not.toHaveBeenCalled();
+      expect(result.blocked).toEqual({ delta: 3, requiresSchema: 100 });
+      expect(result.migrations).toHaveLength(2);
+    });
+
+    it('should skip all when first migration is blocked', async () => {
+      migration1.up.mockClear();
+      migration2.up.mockClear();
+      migration10.up.mockClear();
+
+      const result = await migrator.migrate(connection.db, -1);
+
+      expect(migration1.up).not.toHaveBeenCalled();
+      expect(result.blocked).toEqual({ delta: 1, requiresSchema: 0 });
+      expect(result.migrations).toHaveLength(0);
     });
   });
 });

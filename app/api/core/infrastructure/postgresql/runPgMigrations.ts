@@ -12,6 +12,23 @@ async function main() {
   const args = process.argv.slice(2);
   const showStatus = args.includes('--status');
 
+  if (args.some(a => a === '--until')) {
+    process.stderr.write('Error: --until requires a value. Use --until=N format.\n');
+    process.exit(1);
+  }
+
+  const untilFlag = args.find(a => a.startsWith('--until='));
+  let until: number | undefined;
+  if (untilFlag) {
+    const value = untilFlag.split('=')[1];
+    const parsed = parseInt(value, 10);
+    if (Number.isNaN(parsed) || parsed <= 0 || String(parsed) !== value) {
+      process.stderr.write(`Error: --until must be a positive integer. Got: "${value}". Use --until=N format.\n`);
+      process.exit(1);
+    }
+    until = parsed;
+  }
+
   PostgresDB.connect();
   const pool = PostgresDB.pool();
 
@@ -36,7 +53,7 @@ async function main() {
       }
     } else {
       const { pending: pendingBefore } = await migrator.status();
-      const applied = await migrator.migrate();
+      const applied = await migrator.migrate(until);
 
       if (applied.length === 0) {
         process.stdout.write('No pending migrations.\n');

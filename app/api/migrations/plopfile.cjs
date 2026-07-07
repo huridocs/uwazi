@@ -1,6 +1,18 @@
-/* eslint-disable import/no-dynamic-require, global-require */
+const fs = require('fs');
+const path = require('path');
 
-require('@babel/register')({ extensions: ['.js', '.jsx', '.ts', '.tsx'] });
+const getLatestDelta = migrationsDir => {
+  const files = fs.readdirSync(migrationsDir);
+  const deltas = files
+    .map(file => {
+      const match = file.match(/^(\d+)-/);
+      return match ? parseInt(match[1], 10) : null;
+    })
+    .filter(m => m !== null)
+    .sort((a, b) => b - a);
+
+  return deltas.length ? deltas[0] : 0;
+};
 
 module.exports = plop => {
   let currentDelta;
@@ -9,24 +21,14 @@ module.exports = plop => {
       return currentDelta;
     }
 
-    const fs = require('fs');
-    const path = require('path');
-    const { migrator } = require('./migrator');
-
-    const { migrationsDir } = migrator;
-    let migrations = fs.readdirSync(migrationsDir);
-    migrations = migrations
-      .map(migration => {
-        try {
-          return require(path.join(migrationsDir, migration)).default.delta;
-        } catch (e) {
-          return null;
-        }
-      })
-      .filter(m => m)
-      .sort((a, b) => b - a);
-    currentDelta = migrations.length ? migrations[0] + 1 : 1;
+    const migrationsDir = path.join(__dirname, 'migrations');
+    currentDelta = getLatestDelta(migrationsDir) + 1;
     return currentDelta;
+  });
+
+  plop.setHelper('latestPgSchemaDelta', () => {
+    const pgMigrationsDir = path.join(__dirname, '../core/infrastructure/postgresql/schema_migrations');
+    return getLatestDelta(pgMigrationsDir);
   });
 
   plop.setGenerator('migration', {
