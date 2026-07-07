@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowUpTrayIcon, LinkSlashIcon, PlayIcon, PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import {
-  Controller,
-  FieldValues,
-  Path,
-  RegisterOptions,
-  useFormContext,
-} from 'react-hook-form';
+  ArrowUpTrayIcon,
+  LinkSlashIcon,
+  PlayIcon,
+  PlusIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline';
+import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
 import { FileType } from '#shared/types/fileType.js';
 import { Button, MediaPlayer } from '#V2/Components/UI/index.js';
@@ -79,12 +79,14 @@ const encodeTimelinksValue = (url: string, timelinks: EditableTimelink[]) => {
     return url;
   }
 
-  const timelinksObj = timelinks.reduce<Record<string, string>>((current, timelink) => {
-    current[
-      `${padTimePart(timelink.hh)}:${padTimePart(timelink.mm)}:${padTimePart(timelink.ss)}`
-    ] = timelink.label;
-    return current;
-  }, {});
+  const timelinksObj = timelinks.reduce<Record<string, string>>(
+    (current, timelink) => ({
+      ...current,
+      [`${padTimePart(timelink.hh)}:${padTimePart(timelink.mm)}:${padTimePart(timelink.ss)}`]:
+        timelink.label,
+    }),
+    {}
+  );
 
   return `(${url}, ${JSON.stringify({ timelinks: timelinksObj })})`;
 };
@@ -103,173 +105,6 @@ const revokeBlobUrl = (url: string | null) => {
   if (url?.startsWith('blob:')) {
     URL.revokeObjectURL(url);
   }
-};
-
-const MediaField = <TFormValues extends FieldValues = FieldValues>({
-  context,
-  label,
-  field,
-  mode,
-  registerOptions,
-  disabled,
-  attachments,
-  imageStyle = 'fill',
-}: MediaFieldProps<TFormValues>) => {
-  const { control } = useFormContext<TFormValues>();
-  const [modalOpen, setModalOpen] = useState(false);
-  const pendingLocalFileRef = useRef<File | null>(null);
-  const previewBlobRef = useRef<string | null>(null);
-  const required = Boolean(registerOptions?.required);
-
-  useEffect(
-    () => () => {
-      revokeBlobUrl(previewBlobRef.current);
-    },
-    []
-  );
-
-  return (
-    <div className="text-ink bg-(--bg-surface)" data-testid={String(field)}>
-      <Controller
-        control={control}
-        name={field}
-        rules={{
-          ...registerOptions,
-          validate: value => {
-            if (!required) {
-              return true;
-            }
-
-            const { url } = parseFieldValue(typeof value === 'string' ? value : '');
-            return url.trim().length > 0 || 'Required';
-          },
-        }}
-        render={({ field: mediaField, fieldState }) => {
-          const rawValue = typeof mediaField.value === 'string' ? mediaField.value : '';
-          const { url, timelinks } = parseFieldValue(rawValue);
-          const hasValue = url.trim().length > 0;
-          const showRequiredError = Boolean(fieldState.error);
-
-          const updateValue = (
-            nextUrl: string,
-            localFile?: File,
-            nextTimelinks: EditableTimelink[] = timelinks
-          ) => {
-            if (previewBlobRef.current && previewBlobRef.current !== nextUrl) {
-              revokeBlobUrl(previewBlobRef.current);
-            }
-
-            previewBlobRef.current = nextUrl.startsWith('blob:') ? nextUrl : null;
-            pendingLocalFileRef.current = localFile ?? (nextUrl.startsWith('blob:') ? pendingLocalFileRef.current : null);
-
-            if (!nextUrl.startsWith('blob:')) {
-              pendingLocalFileRef.current = null;
-            }
-
-            if (mode === 'media') {
-              mediaField.onChange(encodeTimelinksValue(nextUrl, nextTimelinks));
-              return;
-            }
-
-            mediaField.onChange(nextUrl);
-          };
-
-          const handleUnlink = () => {
-            if (previewBlobRef.current) {
-              revokeBlobUrl(previewBlobRef.current);
-              previewBlobRef.current = null;
-            }
-
-            pendingLocalFileRef.current = null;
-            mediaField.onChange('');
-          };
-
-          const handleTimelinksChange = (nextTimelinks: EditableTimelink[]) => {
-            if (!url) {
-              return;
-            }
-
-            mediaField.onChange(encodeTimelinksValue(url, nextTimelinks));
-          };
-
-          return (
-            <>
-              <div className="mb-2 font-bold">
-                <Translate context={context}>{label}</Translate>
-                {registerOptions?.required && '*'}
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  disabled={disabled}
-                  className="inline-flex items-center gap-1.5"
-                  onClick={() => setModalOpen(true)}
-                >
-                  <ArrowUpTrayIcon className="h-4 w-4" />
-                  <Translate>{hasValue ? 'Change' : 'Choose'}</Translate>
-                </Button>
-                {hasValue ? (
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    disabled={disabled}
-                    className="inline-flex items-center gap-1.5"
-                    onClick={handleUnlink}
-                  >
-                    <LinkSlashIcon className="h-4 w-4" />
-                    <Translate>Unlink</Translate>
-                  </Button>
-                ) : null}
-              </div>
-
-              {hasValue ? (
-                <div className="mt-3 flex justify-center rounded-md bg-(--color-theme-surface-warm) p-3">
-                  {mode === 'image' ? (
-                    <img
-                      src={url}
-                      alt={label}
-                      className="max-h-96 max-w-full rounded-md"
-                      style={{ objectFit: imageStyle === 'cover' ? 'cover' : 'contain' }}
-                    />
-                  ) : (
-                    <MediaFieldPreview
-                      url={url}
-                      timelinks={timelinks}
-                      disabled={disabled}
-                      onTimelinksChange={handleTimelinksChange}
-                    />
-                  )}
-                </div>
-              ) : (
-                <div className="mt-3 rounded-md border border-dashed border-(--color-theme-control-border) bg-(--color-theme-control-bg) px-4 py-8 text-center text-sm text-ink-secondary">
-                  <Translate>No media selected</Translate>
-                </div>
-              )}
-
-              {showRequiredError ? (
-                <div className="mt-2 text-sm text-(--color-theme-control-text-error)">
-                  <Translate>This field is required</Translate>
-                </div>
-              ) : null}
-
-              <MediaPickerModal
-                isOpen={modalOpen}
-                onClose={() => setModalOpen(false)}
-                onSelect={(selectedUrl, localFile) =>
-                  updateValue(selectedUrl, localFile, mode === 'media' ? timelinks : [])
-                }
-                mode={mode}
-                attachments={attachments}
-                currentValue={rawValue}
-              />
-            </>
-          );
-        }}
-      />
-    </div>
-  );
 };
 
 type MediaFieldPreviewProps = {
@@ -399,6 +234,174 @@ const MediaFieldPreview = ({
           </ul>
         )}
       </div>
+    </div>
+  );
+};
+
+const MediaField = <TFormValues extends FieldValues = FieldValues>({
+  context,
+  label,
+  field,
+  mode,
+  registerOptions,
+  disabled,
+  attachments,
+  imageStyle = 'fill',
+}: MediaFieldProps<TFormValues>) => {
+  const { control } = useFormContext<TFormValues>();
+  const [modalOpen, setModalOpen] = useState(false);
+  const pendingLocalFileRef = useRef<File | null>(null);
+  const previewBlobRef = useRef<string | null>(null);
+  const required = Boolean(registerOptions?.required);
+
+  useEffect(
+    () => () => {
+      revokeBlobUrl(previewBlobRef.current);
+    },
+    []
+  );
+
+  return (
+    <div className="text-ink bg-(--bg-surface)" data-testid={String(field)}>
+      <Controller
+        control={control}
+        name={field}
+        rules={{
+          ...registerOptions,
+          validate: value => {
+            if (!required) {
+              return true;
+            }
+
+            const { url } = parseFieldValue(typeof value === 'string' ? value : '');
+            return url.trim().length > 0 || 'Required';
+          },
+        }}
+        render={({ field: mediaField, fieldState }) => {
+          const rawValue = typeof mediaField.value === 'string' ? mediaField.value : '';
+          const { url, timelinks } = parseFieldValue(rawValue);
+          const hasValue = url.trim().length > 0;
+          const showRequiredError = Boolean(fieldState.error);
+
+          const updateValue = (
+            nextUrl: string,
+            localFile?: File,
+            nextTimelinks: EditableTimelink[] = timelinks
+          ) => {
+            if (previewBlobRef.current && previewBlobRef.current !== nextUrl) {
+              revokeBlobUrl(previewBlobRef.current);
+            }
+
+            previewBlobRef.current = nextUrl.startsWith('blob:') ? nextUrl : null;
+            pendingLocalFileRef.current =
+              localFile ?? (nextUrl.startsWith('blob:') ? pendingLocalFileRef.current : null);
+
+            if (!nextUrl.startsWith('blob:')) {
+              pendingLocalFileRef.current = null;
+            }
+
+            if (mode === 'media') {
+              mediaField.onChange(encodeTimelinksValue(nextUrl, nextTimelinks));
+              return;
+            }
+
+            mediaField.onChange(nextUrl);
+          };
+
+          const handleUnlink = () => {
+            if (previewBlobRef.current) {
+              revokeBlobUrl(previewBlobRef.current);
+              previewBlobRef.current = null;
+            }
+
+            pendingLocalFileRef.current = null;
+            mediaField.onChange('');
+          };
+
+          const handleTimelinksChange = (nextTimelinks: EditableTimelink[]) => {
+            if (!url) {
+              return;
+            }
+
+            mediaField.onChange(encodeTimelinksValue(url, nextTimelinks));
+          };
+
+          return (
+            <>
+              <div className="mb-2 font-bold">
+                <Translate context={context}>{label}</Translate>
+                {registerOptions?.required && '*'}
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  disabled={disabled}
+                  className="inline-flex items-center gap-1.5"
+                  onClick={() => setModalOpen(true)}
+                >
+                  <ArrowUpTrayIcon className="h-4 w-4" />
+                  <Translate>{hasValue ? 'Change' : 'Choose'}</Translate>
+                </Button>
+                {hasValue ? (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    disabled={disabled}
+                    className="inline-flex items-center gap-1.5"
+                    onClick={handleUnlink}
+                  >
+                    <LinkSlashIcon className="h-4 w-4" />
+                    <Translate>Unlink</Translate>
+                  </Button>
+                ) : null}
+              </div>
+
+              {hasValue ? (
+                <div className="mt-3 flex justify-center rounded-md bg-(--color-theme-surface-warm) p-3">
+                  {mode === 'image' ? (
+                    <img
+                      src={url}
+                      alt={label}
+                      className="max-h-96 max-w-full rounded-md"
+                      style={{ objectFit: imageStyle === 'cover' ? 'cover' : 'contain' }}
+                    />
+                  ) : (
+                    <MediaFieldPreview
+                      url={url}
+                      timelinks={timelinks}
+                      disabled={disabled}
+                      onTimelinksChange={handleTimelinksChange}
+                    />
+                  )}
+                </div>
+              ) : (
+                <div className="mt-3 rounded-md border border-dashed border-(--color-theme-control-border) bg-(--color-theme-control-bg) px-4 py-8 text-center text-sm text-ink-secondary">
+                  <Translate>No media selected</Translate>
+                </div>
+              )}
+
+              {showRequiredError ? (
+                <div className="mt-2 text-sm text-(--color-theme-control-text-error)">
+                  <Translate>This field is required</Translate>
+                </div>
+              ) : null}
+
+              <MediaPickerModal
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+                onSelect={(selectedUrl, localFile) =>
+                  updateValue(selectedUrl, localFile, mode === 'media' ? timelinks : [])
+                }
+                mode={mode}
+                attachments={attachments}
+                currentValue={rawValue}
+              />
+            </>
+          );
+        }}
+      />
     </div>
   );
 };

@@ -17,7 +17,11 @@ const PreviewField = ({ context, label, value }: PreviewFieldProps) => (
     </p>
     {value ? (
       <div className="rounded-md bg-(--color-theme-surface-warm) p-3">
-        <img src={value} alt={label} className="mx-auto max-h-48 w-full rounded-md object-contain" />
+        <img
+          src={value}
+          alt={label}
+          className="mx-auto max-h-48 w-full rounded-md object-contain"
+        />
       </div>
     ) : null}
   </div>

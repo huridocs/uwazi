@@ -137,7 +137,11 @@ describe('Entity edit', () => {
 
     it('should render the image field preview', () => {
       cy.contains('Media with an image').should('exist');
-      cy.get('img[alt="Media with an image"]').should('have.attr', 'src', '/short-video-thumbnail.jpg');
+      cy.get('img[alt="Media with an image"]').should(
+        'have.attr',
+        'src',
+        '/short-video-thumbnail.jpg'
+      );
     });
 
     it('should render the media field with timelinks', () => {

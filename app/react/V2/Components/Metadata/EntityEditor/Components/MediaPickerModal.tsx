@@ -106,7 +106,8 @@ const MediaPickerModal = ({
     }
 
     handleSelect(URL.createObjectURL(file), file);
-    event.target.value = '';
+    const { target } = event;
+    target.value = '';
   };
 
   const handleUrlSubmit = () => {
@@ -208,7 +209,13 @@ const MediaPickerModal = ({
                   const isSelected = attachmentUrl === selectedUrl;
 
                   return (
-                    <li key={attachment._id || attachment.filename}>
+                    <li
+                      key={
+                        attachment._id
+                          ? String(attachment._id)
+                          : (attachment.filename ?? attachment.url ?? '')
+                      }
+                    >
                       <button
                         type="button"
                         data-testid={`media-picker-attachment-${attachment._id || attachment.filename}`}
