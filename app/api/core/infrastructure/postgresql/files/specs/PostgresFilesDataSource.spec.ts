@@ -453,6 +453,23 @@ describe('PostgresFilesDataSource', () => {
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
       expect(rows.find(r => r._id === factory.idString('nonexistent'))).toBeUndefined();
     });
+
+    it('should not overwrite fullText when updating a file loaded without it', async () => {
+      const { sut } = createSut();
+
+      const result = await sut.getById(factory.idString('fulltext-doc'));
+      const doc = result.getDataOrThrow() as PDFDocument;
+      expect(doc.fullText).toBeUndefined();
+
+      const updated = doc.update({
+        toc: [{ label: 'New Toc', indentation: 0 }],
+      }) as PDFDocument;
+      await sut.update(updated);
+
+      const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
+      const row = rows.find(r => r._id === factory.idString('fulltext-doc'));
+      expect(row!.fullText).toEqual({ 1: 'page one', 2: 'page two' });
+    });
   });
 
   describe('bulkUpdate', () => {
@@ -517,6 +534,23 @@ describe('PostgresFilesDataSource', () => {
       const rows = await testingPG.getAllFrom('files');
       expect(rows).toHaveLength(fixtures.files!.length);
     });
+
+    it('should not overwrite fullText via bulkUpdate when loaded without it', async () => {
+      const { sut } = createSut();
+
+      const result = await sut.getById(factory.idString('fulltext-doc'));
+      const doc = result.getDataOrThrow() as PDFDocument;
+      expect(doc.fullText).toBeUndefined();
+
+      const updated = doc.update({
+        toc: [{ label: 'New Toc', indentation: 0 }],
+      }) as PDFDocument;
+      await sut.bulkUpdate([updated]);
+
+      const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
+      const row = rows.find(r => r._id === factory.idString('fulltext-doc'));
+      expect(row!.fullText).toEqual({ 1: 'page one', 2: 'page two' });
+    });
   });
 
   describe('replaceFile', () => {
@@ -534,11 +568,24 @@ describe('PostgresFilesDataSource', () => {
         tenant_id: TENANT_ID,
         type: 'attachment',
         entity: 'entity1',
-        status: null,
-        totalPages: null,
-        language: null,
-        generatedToc: null,
       });
+    });
+
+    it('should not overwrite fullText via replaceFile when loaded without it', async () => {
+      const { sut } = createSut();
+
+      const result = await sut.getById(factory.idString('fulltext-doc'));
+      const doc = result.getDataOrThrow() as PDFDocument;
+      expect(doc.fullText).toBeUndefined();
+
+      const updated = doc.update({
+        toc: [{ label: 'New Toc', indentation: 0 }],
+      }) as PDFDocument;
+      await sut.replaceFile(updated);
+
+      const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
+      const row = rows.find(r => r._id === factory.idString('fulltext-doc'));
+      expect(row!.fullText).toEqual({ 1: 'page one', 2: 'page two' });
     });
   });
 
