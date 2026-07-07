@@ -489,6 +489,8 @@ Forgot Password?,Ξεχάσατε τον κωδικό πρόσβασης;
 Forms and email configuration,Διαμόρφωση φορμών και email
 From,Από
 From all suggestions,Από όλες τις προτάσεις
+From computer,From computer
+From files,From files
 From previous step,Από το προηγούμενο βήμα
 From selection,From selection
 From:,From:
@@ -579,6 +581,7 @@ Invalid captcha,Μη έγκυρο CAPTCHA
 Invalid csv: all the values for a row must be either nested or non-nested,Μη έγκυρο CSV: όλες οι τιμές μιας γραμμής πρέπει να είναι είτε εμφωλευμένες είτε μη εμφωλευμένες
 Invalid csv: nested value need to be under a non-nested value,Μη έγκυρο CSV: οι εμφωλευμένες τιμές πρέπει να βρίσκονται κάτω από μη εμφωλευμένη τιμή
 Invalid form,Μια καταχώριση είναι υποχρεωτική ή έχει μη έγκυρη τιμή. Διορθώστε και δοκιμάστε ξανά.
+Invalid URL,Invalid URL
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,Μπορεί επίσης να προκαλέσει πολύ εύκολα δυσλειτουργία της εφαρμογής. Γράψτε κώδικα εδώ μόνο εάν γνωρίζετε ακριβώς τι κάνετε.
 it has been logged with request id #,έχει καταγραφεί με αναγνωριστικό αιτήματος #
 Item,Στοιχείο
@@ -737,6 +740,7 @@ No icon / flag,Χωρίς εικονίδιο/σημαία
 No items available,Δεν υπάρχουν διαθέσιμα στοιχεία
 No Label,Χωρίς ετικέτα
 No label,Χωρίς ετικέτα
+No media selected,No media selected
 No options,Δεν υπάρχουν επιλογές
 No options found,Δεν βρέθηκαν επιλογές
 No page,No page
@@ -755,6 +759,7 @@ No table of contents description,"Ο πίνακας περιεχομένων ε�
 No templates available to add.,No templates available to add.
 No text match,Δεν υπάρχει αντιστοιχία κειμένου
 No text match description,Μπορείτε να πληκτρολογήσετε κάτι διαφορετικό στο πλαίσιο αναζήτησης για να λάβετε αποτελέσματα.
+No timelinks added,No timelinks added
 No type,Κανένας τύπος
 No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,Δεν υπάρχει διαθέσιμο έγκυρο πρότυπο στόχου
@@ -830,6 +835,7 @@ Password is too long,Ο κωδικός πρόσβασης είναι πολύ μ
 Password updated,Ο κωδικός πρόσβασης ενημερώθηκε
 Passwords do not match,Οι κωδικοί πρόσβασης δεν ταιριάζουν
 Paste this tag in a page HTML. The chart uses the page language.,Paste this tag in a page HTML. The chart uses the page language.
+Paste URL,Paste URL
 Paste URL here,Επικολλήστε το URL εδώ
 PDF,PDF
 Pending,Σε εκκρεμότητα
@@ -1326,6 +1332,7 @@ Use for training,Χρήση για εκπαίδευση
 "Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed.","Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed."
+Use URL,Use URL
 User,Χρήστης
 User Action,Ενέργεια χρήστη
 User Role,Ρόλος χρήστη

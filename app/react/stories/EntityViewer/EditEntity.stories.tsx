@@ -15,6 +15,16 @@ import { EditEntity } from '#V2/Components/Metadata/EntityEditor/index.js';
 import { Button } from '#V2/Components/UI/index.js';
 import { apiEntity, templates, thesauri } from '../fixtures/EditEntityFixtures.js';
 
+const emptyMediaEntity: Entity = {
+  ...apiEntity,
+  metadata: {
+    ...apiEntity.metadata,
+    selected_image: [{ value: '' }],
+    video_of_event: [{ value: '' }],
+    preview_document: [{ value: '' }],
+  },
+};
+
 const EditEntityComponent = ({
   entity,
   onSave,
@@ -115,5 +125,23 @@ const Basic: Story = {
   },
 };
 
+const MediaFields: Story = {
+  ...Primary,
+  args: {
+    entity: apiEntity,
+    locale: 'en',
+    onSave: undefined,
+  },
+};
+
+const EmptyMediaFields: Story = {
+  ...Primary,
+  args: {
+    entity: emptyMediaEntity,
+    locale: 'en',
+    onSave: undefined,
+  },
+};
+
 export default meta;
-export { Basic };
+export { Basic, MediaFields, EmptyMediaFields };
