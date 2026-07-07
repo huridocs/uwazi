@@ -30,7 +30,6 @@ const FilterValueInput = ({ filter, sources, onChange }: FilterValueInputProps) 
     if (isDateLikePropertyType(filter.propertyType)) {
       return typeof value === 'number' ? (secondsToISODate(value) ?? '') : (value ?? '');
     }
-
     return value ?? '';
   };
 
