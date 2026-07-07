@@ -34,13 +34,13 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
       filter.deletedAt = { $exists: false };
     }
 
-    const dbo = await this.getCollection().findOne(filter, { projection });
+    const user = await this.getCollection().findOne(filter, { projection });
 
-    if (!dbo) {
+    if (!user) {
       return Result.fail(new UserNotFound(id));
     }
 
-    return Result.ok(dbo);
+    return Result.ok(user);
   }
 
   async get(query: Filter<UserDBO> = {}, projection?: Document): Promise<UserWithGroups[]> {

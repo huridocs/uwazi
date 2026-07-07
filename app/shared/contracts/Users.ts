@@ -43,6 +43,7 @@ type DeleteUserResponse = {
 type GetUsersResponse = User[];
 
 export type {
+  User,
   GetUsersResponse,
   CreateUserResponse,
   CreateUserRequest,
