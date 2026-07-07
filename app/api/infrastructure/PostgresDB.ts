@@ -20,6 +20,8 @@ export const PostgresDB = {
 
     const connection = cfg ?? _activeConfig ?? config.postgres;
 
+    pg.types.setTypeParser(pg.types.builtins.INT8, parseInt);
+
     _knex = knex({
       client: 'pg',
       connection,

@@ -291,6 +291,10 @@
   color: var(--color-theme-success);
 }
 
+@utility text-warning {
+  color: var(--color-theme-warning);
+}
+
 @utility text-emphasis-solid-foreground {
   color: var(--color-theme-accent-emphasis-solid-foreground);
 }
@@ -515,11 +519,41 @@
 .tw-content .header-bar[data-uwazi-header] button {
   color: inherit;
 }
-.tw-content .header-bar[data-uwazi-header] a svg,
-.tw-content .header-bar[data-uwazi-header] button svg {
+.tw-content .header-bar[data-uwazi-header] a svg:not(.notification-kind-icon),
+.tw-content .header-bar[data-uwazi-header] button svg:not(.notification-kind-icon) {
   color: inherit;
   stroke: currentColor;
 }
+
+.notification-kind-icon {
+  stroke: currentColor;
+}
+
+.notification-kind-icon--solid {
+  fill: currentColor;
+  stroke: none;
+}
+
+/* Legacy header only — themed V2 uses @utility text-* */
+.beacon-legacy .notification-kind-icon--success {
+  color: var(--color-theme-success, #059669);
+}
+.beacon-legacy .notification-kind-icon--warning {
+  color: var(--color-theme-warning, #d97706);
+}
+.beacon-legacy .notification-kind-icon--error {
+  color: var(--color-theme-accent-emphasis, #e8432a);
+}
+.beacon-legacy .notification-kind-icon--info {
+  color: var(--color-theme-accent-supporting, #00b4f0);
+}
+
+header button svg:not([class*='notification-kind-icon']),
+.menuNav button svg:not([class*='notification-kind-icon']) {
+  color: inherit;
+  stroke: currentColor;
+}
+
 .tw-content .header-bar[data-uwazi-header] .header-bar-brand {
   color: var(--color-theme-chrome-app-bar-fg, var(--color-theme-text-primary, #1a1a1a));
 }
@@ -696,4 +730,89 @@
     animation: none !important;
     opacity: 1;
   }
+}
+
+/* Beacon hover rail — content settles in as the beacon reveals the latest item */
+@keyframes beacon-rail-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-beacon-rail {
+  animation: beacon-rail-in 0.22s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-beacon-rail {
+    animation: none !important;
+  }
+}
+
+.beacon-spring {
+  transition-timing-function: cubic-bezier(0.34, 1.4, 0.5, 1);
+}
+
+@keyframes beacon-pop {
+  0% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.055);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-beacon-pop {
+  animation: beacon-pop 0.46s cubic-bezier(0.34, 1.45, 0.5, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .beacon-spring {
+    transition-duration: 0.001ms !important;
+  }
+  .animate-beacon-pop {
+    animation: none !important;
+  }
+}
+
+/* Fades menu items into the header surface as the beacon rail expands */
+.beacon-collision-veil {
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    var(--color-theme-chrome-app-bar, var(--color-theme-bg-surface, #ffffff)) 100%
+  );
+}
+
+/* Legacy header: horizontal fade into the beacon rail (menu-row height only) */
+.beacon-header-veil {
+  height: 1.75rem;
+  width: 5.5rem;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    var(--beacon-header-fade, #ffffff) 100%
+  );
+}
+
+.beacon-header-fade-rail {
+  background-image: linear-gradient(
+    to right,
+    var(--beacon-header-fade-start, var(--beacon-header-fade, #ffffff)) 0%,
+    var(--beacon-header-fade, #ffffff) 100%
+  );
+}
+
+/* Full-height solid chrome behind the pill — blanks menu items in padding-y */
+.beacon-chrome-backing {
+  height: 3.25rem;
+  background-color: var(--color-theme-chrome-app-bar, var(--color-theme-bg-surface, #ffffff));
 }

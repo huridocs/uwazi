@@ -70,7 +70,6 @@ const checkValidationForRoute = async (
 ) => {
   const req = request(app)[method](route);
   if (method === 'post') {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     req.send({ not_allowed_property: { key: 'value' } });
   }
 
@@ -158,7 +157,7 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
       };
       const response = await request(app).post('/api/paragraphExtraction/extractor').send(body);
       const extractors = await testingEnvironment.db.getAllFrom(mongoPXExtractorsCollection);
-      createdExtractorId = extractors?.[0]._id.toString() || '';
+      createdExtractorId = extractors?.[0]._id!.toString() || '';
 
       expect(response.body.extractorId).toBe(createdExtractorId);
       expect(mockDispatchMethod).toHaveBeenCalledWith(

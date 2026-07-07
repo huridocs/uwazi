@@ -1,5 +1,5 @@
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DefaultDeprecatedEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -11,6 +11,7 @@ import { SaveEntityTranslations } from '../SaveEntityTranslations.js';
 import { TranslationResult, translationResultSchema } from '../types/TranslationResult.js';
 import { ValidationError, Validator } from '../infrastructure/Validator.js';
 import { saveEntityFixtures } from './fixtures/SaveEntity.fixtures.js';
+import { search } from '#api/search/index.js';
 
 const factory = getFixturesFactory();
 
@@ -35,7 +36,8 @@ describe('SaveEntityTranslations', () => {
     mockLogger = createMockLogger();
     saveEntityTranslations = new SaveEntityTranslations(
       TemplatesDataSourceFactory.default({ transactionManager }),
-      DefaultDeprecatedEntitiesDataSource(transactionManager),
+      EntitiesDataSourceFactory.default({ transactionManager }),
+      transactionManager,
       new Validator<TranslationResult>(translationResultSchema),
       mockLogger
     );
@@ -114,7 +116,7 @@ describe('SaveEntityTranslations', () => {
     });
   });
 
-  it('should denormalize text property on related entities', async () => {
+  it('should save translated text on the target entity', async () => {
     const fixtures: DBFixture = {
       settings: [
         {
@@ -147,29 +149,14 @@ describe('SaveEntityTranslations', () => {
 
     const entities = (await testingDB.mongodb?.collection('entities').find().toArray()) || [];
 
-    expect(entities).toMatchObject([
-      {
-        sharedId: 'A1',
-        metadata: {
-          relationship: [
-            {
-              value: 'B1',
-              label: 'B1title',
-              inheritedValue: [
-                { value: `${SaveEntityTranslations.AITranslatedText} original text` },
-              ],
-            },
-          ],
-        },
+    const b1Entity = entities.find((e: any) => e.sharedId === 'B1');
+    expect(b1Entity).toMatchObject({
+      title: 'B1title',
+      sharedId: 'B1',
+      metadata: {
+        text: [{ value: `${SaveEntityTranslations.AITranslatedText} original text` }],
       },
-      {
-        title: 'B1title',
-        sharedId: 'B1',
-        metadata: {
-          text: [{ value: `${SaveEntityTranslations.AITranslatedText} original text` }],
-        },
-      },
-    ]);
+    });
   });
 
   it('should call Logger.info two times', async () => {
@@ -212,5 +199,23 @@ describe('SaveEntityTranslations', () => {
     });
 
     expect(mockLogger.error).toHaveBeenCalledTimes(1);
+  });
+
+  it('should reindex entity in search after saving translations', async () => {
+    const searchIndexSpy = jest.spyOn(search, 'indexEntities').mockResolvedValue(undefined as any);
+
+    const translationResult: TranslationResult = {
+      key: ['tenant', 'entity', factory.idString('propertyName')],
+      text: 'original text',
+      language_from: 'en',
+      languages_to: ['es'],
+      translations: [{ text: 'texto original', language: 'es', success: true, error_message: '' }],
+    };
+
+    await executeWithContext(saveEntityTranslations, translationResult);
+
+    expect(searchIndexSpy).toHaveBeenCalledWith({ sharedId: { $in: ['entity'] } });
+
+    searchIndexSpy.mockRestore();
   });
 });

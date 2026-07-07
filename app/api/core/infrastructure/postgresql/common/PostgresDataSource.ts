@@ -7,6 +7,8 @@ type SyncOptions = {
   syncNamespace: string;
 };
 
+type Deps = { tenantId: string; sync?: SyncOptions };
+
 export abstract class PostgresDataSource {
   protected abstract tableName: string;
 
@@ -16,7 +18,9 @@ export abstract class PostgresDataSource {
 
   private _table: PostgresTable | null = null;
 
-  constructor({ tenantId, sync }: { tenantId: string; sync?: SyncOptions }) {
+  protected jsonbColumns: string[] = [];
+
+  constructor({ tenantId, sync }: Deps) {
     this._tenantId = tenantId;
     if (sync) {
       this._syncOptions = sync;
@@ -30,12 +34,15 @@ export abstract class PostgresDataSource {
           this.tableName,
           this._tenantId,
           this._syncOptions.syncDb,
-          this._syncOptions.syncNamespace
+          this._syncOptions.syncNamespace,
+          this.jsonbColumns
         );
       } else {
-        this._table = new PostgresTable(this.tableName, this._tenantId);
+        this._table = new PostgresTable(this.tableName, this._tenantId, this.jsonbColumns);
       }
     }
     return this._table;
   }
 }
+
+export type { Deps as PostgresDataSourceDeps };

@@ -171,7 +171,7 @@ export class PXExtractParagraphsFromEntity extends AbstractUseCase<
     installedLanguages: LanguagesListSchema,
     defaultLanguage: LanguageISO6391
   ) {
-    const documents = await this.deps.filesDS.getProcessedDocsForEntity(entity.sharedId).all();
+    const documents = await this.deps.filesDS.getProcessedDocsForEntity(entity.sharedId);
 
     const filteredDocuments = documents.filter(document =>
       installedLanguages.some(language => language.key === document.language)

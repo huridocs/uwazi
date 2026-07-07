@@ -5,7 +5,7 @@ import { Suggestions } from '../suggestions.js';
 import { CreateBlankSuggestionsInput } from './createBlankSuggestionStrategy.js';
 import { SuggestionFactory } from '../suggestionFactory.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
-import { ProcessedPDFDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+import { ProcessedPDFDBO } from '#api/core/infrastructure/mongodb/files/schemas/FilesTypes.js';
 
 type Input = CreateBlankSuggestionsInput;
 

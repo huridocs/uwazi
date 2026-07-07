@@ -13,4 +13,22 @@ class EmailInUse extends DomainError {
   }
 }
 
-export { UsernameExists, EmailInUse };
+class IsDeleteOfPublicUser extends DomainError {
+  constructor() {
+    super('Cannot delete system users', 'user.delete_system_user');
+  }
+}
+
+class IsDeletingSelf extends DomainError {
+  constructor() {
+    super('Users cannot delete themselves', 'user.delete_self');
+  }
+}
+
+class IsDeleteOfLastUser extends DomainError {
+  constructor() {
+    super('Cannot delete last remaining user', 'user.delete_self');
+  }
+}
+
+export { UsernameExists, EmailInUse, IsDeleteOfPublicUser, IsDeletingSelf, IsDeleteOfLastUser };

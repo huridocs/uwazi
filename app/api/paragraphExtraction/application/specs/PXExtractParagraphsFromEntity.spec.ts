@@ -16,6 +16,7 @@ import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastr
 import { tenants } from '#api/tenants/index.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
@@ -60,6 +61,16 @@ import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/En
 import { MongoSegmentationDataSource } from '#api/segmentation.v2/infrastructure/mongodb/MongoSegmentationDataSource.js';
 import { User } from '#api/users.v2/model/User.js';
 
+type TestConfig = {
+  name: string;
+  usePostgres: boolean;
+};
+
+const testConfigs: TestConfig[] = [
+  { name: 'Mongo', usePostgres: false },
+  { name: 'Postgres', usePostgres: true },
+];
+
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
   [mongoPXEntitiesStatusCollection]: [entityStatus1],
@@ -77,7 +88,7 @@ const createFixtures = (): DBFixture => ({
   segmentations: [segmentation, segmentation2],
 });
 
-const setUpUseCase = () =>
+const createSut = () =>
   testingEnvironment.runWithContext(() => {
     const extractionService = {
       extractParagraphs: jest.fn(),
@@ -144,302 +155,311 @@ const setUpUseCase = () =>
 
 describe('PXExtractParagraphsFromEntity', () => {
   beforeAll(async () =>
-    testingEnvironment.setUp(createFixtures(), 'px_extract_paragraphs_from_entity')
+    testingEnvironment.setUp(createFixtures(), { elasticIndex: true, postgres: true })
   );
-
-  beforeEach(async () => {
-    await testingEnvironment.setFixtures(createFixtures());
-  });
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should change Extraction status to "error" on fail if use case is not going to be retried again', async () => {
-    const { extractParagraphs } = setUpUseCase();
+  describe.each(testConfigs)('$name', ({ usePostgres }) => {
+    beforeEach(async () => {
+      testingTenants.changeCurrentTenant({
+        featureFlags: { postgresFiles: usePostgres },
+      });
+      await testingEnvironment.setFixtures(createFixtures());
+    });
 
-    await expect(
-      extractParagraphs.execute(
+    it('should change Extraction status to "error" on fail if use case is not going to be retried again', async () => {
+      const { extractParagraphs } = createSut();
+
+      await expect(
+        extractParagraphs.execute(
+          {
+            entitySharedId: 'entity_shared_id_that_does_not_exist',
+            extractorId: extractor._id.toString(),
+            userId: userId.toString(),
+            entityStatusId: entityStatus1._id.toString(),
+          },
+          true
+        )
+      ).rejects.toThrow();
+
+      const entitiesStatus1 = await testingEnvironment.db.getAllFrom(
+        mongoPXEntitiesStatusCollection
+      );
+
+      expect(entitiesStatus1).toMatchObject([
         {
-          entitySharedId: 'entity_shared_id_that_does_not_exist',
-          extractorId: extractor._id.toString(),
-          userId: userId.toString(),
-          entityStatusId: entityStatus1._id.toString(),
+          _id: entityStatus1._id,
+          status: EntityStatus.Processing,
         },
-        true
-      )
-    ).rejects.toThrow();
+      ]);
 
-    const entitiesStatus1 = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
+      await expect(
+        extractParagraphs.execute(
+          {
+            entitySharedId: 'entity_shared_id_that_does_not_exist',
+            extractorId: extractor._id.toString(),
+            userId: userId.toString(),
+            entityStatusId: entityStatus1._id.toString(),
+          },
+          false
+        )
+      ).rejects.toThrow();
 
-    expect(entitiesStatus1).toMatchObject([
-      {
-        _id: entityStatus1._id,
-        status: EntityStatus.Processing,
-      },
-    ]);
+      const entitiesStatus2 = await testingEnvironment.db.getAllFrom(
+        mongoPXEntitiesStatusCollection
+      );
 
-    await expect(
-      extractParagraphs.execute(
+      expect(entitiesStatus2).toMatchObject([
         {
-          entitySharedId: 'entity_shared_id_that_does_not_exist',
-          extractorId: extractor._id.toString(),
-          userId: userId.toString(),
-          entityStatusId: entityStatus1._id.toString(),
+          _id: entityStatus1._id,
+          status: EntityStatus.Error,
         },
-        false
-      )
-    ).rejects.toThrow();
-
-    const entitiesStatus2 = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
-
-    expect(entitiesStatus2).toMatchObject([
-      {
-        _id: entityStatus1._id,
-        status: EntityStatus.Error,
-      },
-    ]);
-  });
-
-  it("should fallback to the first document's language if no default language is present", async () => {
-    await testingEnvironment.setFixtures({
-      ...createFixtures(),
-      files: [file2],
-      segmentations: [segmentation2],
+      ]);
     });
 
-    const { extractParagraphs, extractionService } = setUpUseCase();
+    it("should fallback to the first document's language if no default language is present", async () => {
+      await testingEnvironment.setFixtures({
+        ...createFixtures(),
+        files: [file2],
+        segmentations: [segmentation2],
+      });
 
-    await extractParagraphs.execute({
-      entitySharedId: entity1.sharedId!.toString()!,
-      extractorId: extractor._id.toString(),
-      userId: userId.toString(),
-      entityStatusId: entityStatus1._id.toString(),
+      const { extractParagraphs, extractionService } = createSut();
+
+      await extractParagraphs.execute({
+        entitySharedId: entity1.sharedId!.toString()!,
+        extractorId: extractor._id.toString(),
+        userId: userId.toString(),
+        entityStatusId: entityStatus1._id.toString(),
+      });
+
+      const { mainLanguage } = extractionService.extractParagraphs.mock.lastCall[0];
+
+      expect(mainLanguage).toBe('es');
     });
 
-    const { mainLanguage } = extractionService.extractParagraphs.mock.lastCall[0];
+    it('should only extract Documents which language are installed on Settings collections', async () => {
+      const fixtures = createFixtures();
+      fixtures.files = [file, file2, fileWithLanguageNotInstalled];
+      await testingEnvironment.setFixtures(fixtures);
 
-    expect(mainLanguage).toBe('es');
-  });
+      const { extractParagraphs, extractionService } = createSut();
 
-  it('should only extract Documents which language are installed on Settings collections', async () => {
-    const fixtures = createFixtures();
-    fixtures.files = [file, file2, fileWithLanguageNotInstalled];
-    await testingEnvironment.setFixtures(fixtures);
+      await extractParagraphs.execute({
+        entitySharedId: entity1.sharedId!.toString()!,
+        extractorId: extractor._id.toString(),
+        userId: new ObjectId().toString(),
+        entityStatusId: entityStatus1._id.toString(),
+      });
 
-    const { extractParagraphs, extractionService } = setUpUseCase();
+      const [payload] = extractionService.extractParagraphs.mock.lastCall;
 
-    await extractParagraphs.execute({
-      entitySharedId: entity1.sharedId!.toString()!,
-      extractorId: extractor._id.toString(),
-      userId: new ObjectId().toString(),
-      entityStatusId: entityStatus1._id.toString(),
+      expect(payload.documents).toMatchObject([{ language: 'en' }, { language: 'es' }]);
     });
 
-    const [payload] = extractionService.extractParagraphs.mock.lastCall;
+    it('should only use Segmentation which have "ready" status', async () => {
+      const fixtures = createFixtures();
+      fixtures.files = [file];
+      fixtures.segmentations = [segmentation, failedSegmentation, processingSegmentation];
+      await testingEnvironment.setFixtures(fixtures);
 
-    expect(payload.documents).toMatchObject([{ language: 'en' }, { language: 'es' }]);
-  });
+      const { extractParagraphs, extractionService } = createSut();
 
-  it('should only use Segmentation which have "ready" status', async () => {
-    const fixtures = createFixtures();
-    fixtures.files = [file];
-    fixtures.segmentations = [segmentation, failedSegmentation, processingSegmentation];
-    await testingEnvironment.setFixtures(fixtures);
+      await extractParagraphs.execute({
+        entitySharedId: entity1.sharedId!.toString()!,
+        extractorId: extractor._id.toString(),
+        userId: new ObjectId().toString(),
+        entityStatusId: entityStatus1._id.toString(),
+      });
 
-    const { extractParagraphs, extractionService } = setUpUseCase();
+      const [payload] = extractionService.extractParagraphs.mock.lastCall;
 
-    await extractParagraphs.execute({
-      entitySharedId: entity1.sharedId!.toString()!,
-      extractorId: extractor._id.toString(),
-      userId: new ObjectId().toString(),
-      entityStatusId: entityStatus1._id.toString(),
+      expect(payload.segmentations).toMatchObject([
+        {
+          id: segmentation._id?.toString(),
+          fileId: segmentation.fileID?.toString(),
+          status: 'ready',
+        },
+      ]);
     });
 
-    const [payload] = extractionService.extractParagraphs.mock.lastCall;
+    it('should use oldest Document if there are Documents with repeated languages', async () => {
+      const getNextObjectId = (prevId: ObjectId, offsetSeconds: number = 10): ObjectId => {
+        const prevTimestamp = prevId.getTimestamp().getTime() / 1000; // Convert to seconds
+        const newTimestamp = prevTimestamp + offsetSeconds; // Add offset
+        return new ObjectId(`${Math.floor(newTimestamp).toString(16)}0000000000000000`);
+      };
 
-    expect(payload.segmentations).toMatchObject([
-      {
-        id: segmentation._id?.toString(),
-        fileId: segmentation.fileID?.toString(),
-        status: 'ready',
-      },
-    ]);
-  });
+      const file3 = {
+        ...file2,
+        _id: getNextObjectId(file2._id),
+        filename: 'file_with_repeated_language',
+        language: file2.language,
+      };
 
-  it('should use oldest Document if there are Documents with repeated languages', async () => {
-    const getNextObjectId = (prevId: ObjectId, offsetSeconds: number = 10): ObjectId => {
-      const prevTimestamp = prevId.getTimestamp().getTime() / 1000; // Convert to seconds
-      const newTimestamp = prevTimestamp + offsetSeconds; // Add offset
-      return new ObjectId(`${Math.floor(newTimestamp).toString(16)}0000000000000000`);
-    };
+      await testingEnvironment.setFixtures({
+        ...createFixtures(),
+        files: [file, file2, file3],
+        segmentations: [
+          segmentation,
+          segmentation2,
+          { ...segmentation2, _id: new ObjectId(), fileID: file3._id },
+        ],
+      });
 
-    const file3 = {
-      ...file2,
-      _id: getNextObjectId(file2._id),
-      filename: 'file_with_repeated_language',
-      language: file2.language,
-    };
+      const { extractParagraphs, extractionService } = createSut();
 
-    await testingEnvironment.setFixtures({
-      ...createFixtures(),
-      files: [file, file2, file3],
-      segmentations: [
-        segmentation,
-        segmentation2,
-        { ...segmentation2, _id: new ObjectId(), fileID: file3._id },
-      ],
+      await extractParagraphs.execute({
+        entitySharedId: entity1.sharedId!.toString()!,
+        extractorId: extractor._id.toString(),
+        userId: new ObjectId().toString(),
+        entityStatusId: entityStatus1._id.toString(),
+      });
+
+      const [payload] = extractionService.extractParagraphs.mock.lastCall;
+
+      expect(payload.documents).toMatchObject([
+        { id: file._id.toString() },
+        { id: file2._id.toString() },
+      ]);
     });
 
-    const { extractParagraphs, extractionService } = setUpUseCase();
+    it('should delete previous created Paragraphs before extracting new ones', async () => {
+      await testingEnvironment.setFixtures({
+        ...createFixtures(),
+        entities: [
+          entity1,
+          entity2,
+          entity3,
+          paragraph1,
+          paragraph2,
+          paragraph3,
+          paragraph4,
+          paragraph5,
+        ],
+        connections: [
+          relationshipE1Hub1,
+          relationshipE1Hub3,
 
-    await extractParagraphs.execute({
-      entitySharedId: entity1.sharedId!.toString()!,
-      extractorId: extractor._id.toString(),
-      userId: new ObjectId().toString(),
-      entityStatusId: entityStatus1._id.toString(),
+          relationshipP1Hub1,
+          relationshipP1Hub1Repeated,
+          relationshipP2Hub1,
+          relationshipP3Hub3,
+
+          relationshipE2Hub1,
+          relationshipE2Hub2,
+
+          relationshipP4Hub1,
+          relationshipP5Hub2,
+        ],
+      });
+
+      const { extractParagraphs } = createSut();
+
+      await extractParagraphs.execute({
+        entitySharedId: entity1.sharedId!.toString()!,
+        extractorId: extractor._id.toString(),
+        userId: new ObjectId().toString(),
+        entityStatusId: entityStatus1._id.toString(),
+      });
+
+      const entities = await testingEnvironment.db.getAllFrom('entities');
+
+      // Entities (paragraphs) should be deleted synchronously
+      expect(entities).toMatchObject([entity1, entity2, entity3, paragraph4, paragraph5]);
+
+      // Note: Connections are deleted asynchronously via BulkCleanupEntityJob,
+      // so they won't be deleted immediately after execute() returns
     });
 
-    const [payload] = extractionService.extractParagraphs.mock.lastCall;
+    it('should throw if Extractor does not exist', async () => {
+      const { extractParagraphs } = createSut();
 
-    expect(payload.documents).toMatchObject([
-      { id: file._id.toString() },
-      { id: file2._id.toString() },
-    ]);
-  });
+      const promise = extractParagraphs.execute({
+        entitySharedId: entity1.sharedId!,
+        extractorId: new ObjectId().toString(),
+        userId: new ObjectId().toString(),
+        entityStatusId: entityStatus1._id.toString(),
+      });
 
-  it('should delete previous created Paragraphs before extracting new ones', async () => {
-    await testingEnvironment.setFixtures({
-      ...createFixtures(),
-      entities: [
-        entity1,
-        entity2,
-        entity3,
-        paragraph1,
-        paragraph2,
-        paragraph3,
-        paragraph4,
-        paragraph5,
-      ],
-      connections: [
-        relationshipE1Hub1,
-        relationshipE1Hub3,
-
-        relationshipP1Hub1,
-        relationshipP1Hub1Repeated,
-        relationshipP2Hub1,
-        relationshipP3Hub3,
-
-        relationshipE2Hub1,
-        relationshipE2Hub2,
-
-        relationshipP4Hub1,
-        relationshipP5Hub2,
-      ],
+      await expect(promise).rejects.toMatchObject({
+        code: PXErrorCode.EXTRACTOR_NOT_FOUND,
+      });
     });
 
-    const { extractParagraphs } = setUpUseCase();
+    it('should throw if Entity does not exist', async () => {
+      const { extractParagraphs } = createSut();
 
-    await extractParagraphs.execute({
-      entitySharedId: entity1.sharedId!.toString()!,
-      extractorId: extractor._id.toString(),
-      userId: new ObjectId().toString(),
-      entityStatusId: entityStatus1._id.toString(),
+      const promise = extractParagraphs.execute({
+        entitySharedId: new ObjectId().toString(),
+        extractorId: extractor._id.toString(),
+        userId: new ObjectId().toString(),
+        entityStatusId: entityStatus1._id.toString(),
+      });
+
+      await expect(promise).rejects.toMatchObject({
+        code: PXErrorCode.ENTITY_NOT_FOUND,
+      });
     });
 
-    const entities = await testingEnvironment.db.getAllFrom('entities');
+    it('should throw if Entity does not belong to the source template', async () => {
+      const { extractParagraphs } = createSut();
 
-    // Entities (paragraphs) should be deleted synchronously
-    expect(entities).toMatchObject([entity1, entity2, entity3, paragraph4, paragraph5]);
+      const promise = extractParagraphs.execute({
+        entitySharedId: invalidEntity.sharedId!.toString()!,
+        extractorId: extractor._id.toString(),
+        userId: new ObjectId().toString(),
+        entityStatusId: entityStatus1._id.toString(),
+      });
 
-    // Note: Connections are deleted asynchronously via BulkCleanupEntityJob,
-    // so they won't be deleted immediately after execute() returns
-  });
-
-  it('should throw if Extractor does not exist', async () => {
-    const { extractParagraphs } = setUpUseCase();
-
-    const promise = extractParagraphs.execute({
-      entitySharedId: entity1.sharedId!,
-      extractorId: new ObjectId().toString(),
-      userId: new ObjectId().toString(),
-      entityStatusId: entityStatus1._id.toString(),
+      await expect(promise).rejects.toMatchObject({
+        code: PXErrorCode.ENTITY_INVALID, // rename to entity does not belong to the source template
+      });
     });
 
-    await expect(promise).rejects.toMatchObject({
-      code: PXErrorCode.EXTRACTOR_NOT_FOUND,
-    });
-  });
+    it('should throw if any of the Documents do not have Segmentations', async () => {
+      const fixtures = createFixtures();
+      fixtures.segmentations = [segmentation];
 
-  it('should throw if Entity does not exist', async () => {
-    const { extractParagraphs } = setUpUseCase();
+      await testingEnvironment.setFixtures(fixtures);
 
-    const promise = extractParagraphs.execute({
-      entitySharedId: new ObjectId().toString(),
-      extractorId: extractor._id.toString(),
-      userId: new ObjectId().toString(),
-      entityStatusId: entityStatus1._id.toString(),
-    });
+      const { extractParagraphs, extractionService } = createSut();
 
-    await expect(promise).rejects.toMatchObject({
-      code: PXErrorCode.ENTITY_NOT_FOUND,
-    });
-  });
+      const promise = extractParagraphs.execute({
+        entitySharedId: entity1.sharedId!.toString()!,
+        extractorId: extractor._id.toString(),
+        userId: new ObjectId().toString(),
+        entityStatusId: entityStatus1._id.toString(),
+      });
 
-  it('should throw if Entity does not belong to the source template', async () => {
-    const { extractParagraphs } = setUpUseCase();
+      await expect(promise).rejects.toMatchObject({
+        code: PXErrorCode.SEGMENTATIONS_UNAVAILABLE,
+      });
 
-    const promise = extractParagraphs.execute({
-      entitySharedId: invalidEntity.sharedId!.toString()!,
-      extractorId: extractor._id.toString(),
-      userId: new ObjectId().toString(),
-      entityStatusId: entityStatus1._id.toString(),
+      expect(extractionService.extractParagraphs).not.toHaveBeenCalled();
     });
 
-    await expect(promise).rejects.toMatchObject({
-      code: PXErrorCode.ENTITY_INVALID, // rename to entity does not belong to the source template
-    });
-  });
+    it('should throw if there is no Documents to be extracted', async () => {
+      const fixtures = createFixtures();
+      fixtures.files = [fileWithLanguageNotInstalled];
 
-  it('should throw if any of the Documents do not have Segmentations', async () => {
-    const fixtures = createFixtures();
-    fixtures.segmentations = [segmentation];
+      await testingEnvironment.setFixtures(fixtures);
 
-    await testingEnvironment.setFixtures(fixtures);
+      const { extractParagraphs } = createSut();
 
-    const { extractParagraphs, extractionService } = setUpUseCase();
+      const promise = extractParagraphs.execute({
+        entitySharedId: entity1.sharedId!.toString()!,
+        extractorId: extractor._id.toString(),
+        userId: new ObjectId().toString(),
+        entityStatusId: entityStatus1._id.toString(),
+      });
 
-    const promise = extractParagraphs.execute({
-      entitySharedId: entity1.sharedId!.toString()!,
-      extractorId: extractor._id.toString(),
-      userId: new ObjectId().toString(),
-      entityStatusId: entityStatus1._id.toString(),
-    });
-
-    await expect(promise).rejects.toMatchObject({
-      code: PXErrorCode.SEGMENTATIONS_UNAVAILABLE,
-    });
-
-    expect(extractionService.extractParagraphs).not.toHaveBeenCalled();
-  });
-
-  it('should throw if there is no Documents to be extracted', async () => {
-    const fixtures = createFixtures();
-    fixtures.files = [fileWithLanguageNotInstalled];
-
-    await testingEnvironment.setFixtures(fixtures);
-
-    const { extractParagraphs } = setUpUseCase();
-
-    const promise = extractParagraphs.execute({
-      entitySharedId: entity1.sharedId!.toString()!,
-      extractorId: extractor._id.toString(),
-      userId: new ObjectId().toString(),
-      entityStatusId: entityStatus1._id.toString(),
-    });
-
-    await expect(promise).rejects.toMatchObject({
-      code: PXErrorCode.DOCUMENTS_NOT_FOUND,
+      await expect(promise).rejects.toMatchObject({
+        code: PXErrorCode.DOCUMENTS_NOT_FOUND,
+      });
     });
   });
 });
