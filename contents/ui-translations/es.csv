@@ -486,6 +486,8 @@ Forgot Password?,¿Has olvidado tu contraseña?
 Forms and email configuration,Configuración de formularios y correo electrónico
 From,From
 From all suggestions,From all suggestions
+From computer,From computer
+From files,From files
 From previous step,From previous step
 From selection,From selection
 From:,Desde:
@@ -575,6 +577,7 @@ Invalid captcha,Captcha no válido
 Invalid csv: all the values for a row must be either nested or non-nested,CSV no válido: o todos o ninguno de los valores para una fila deben estar anidados
 Invalid csv: nested value need to be under a non-nested value,CSV no válido: los valores anidados necesitan estar bajo un valor no anidado
 Invalid form,Formulario no válido
+Invalid URL,Invalid URL
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,La aplicación incluso podría dejar de funcionar. Escribe código aquí únicamente si sabes exactamente lo que estás haciendo.
 it has been logged with request id #,ha sido registrado con el id de solicitud #
 Item,Elemento
@@ -731,6 +734,7 @@ No icon / flag,Sin icono / bandera
 No items available,No items available
 No Label,No existe etiqueta
 No label,No label
+No media selected,No media selected
 No notifications or active tasks.,No notifications or active tasks.
 No options,No options
 No options found,Opciones no encontradas
@@ -750,6 +754,7 @@ No table of contents description,Sin descripción de Tabla de Contenidos
 No templates available to add.,No templates available to add.
 No text match,Sin coincidencias de texto
 No text match description,Puedes escribir algo diferente en la barra de búsqueda para obtener algunos resultados.
+No timelinks added,No timelinks added
 No type,Sin tipo
 No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,No valid target template available
@@ -825,6 +830,7 @@ Password is too long,La contraseña es demasiado larga
 Password updated,Contraseña actualizada
 Passwords do not match,Passwords do not match
 Paste this tag in a page HTML. The chart uses the page language.,Paste this tag in a page HTML. The chart uses the page language.
+Paste URL,Paste URL
 Paste URL here,Pega el URL aquí
 PDF,PDF
 Pending,Pending
@@ -1319,6 +1325,7 @@ Use for training,Use for training
 "Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed.","Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed."
+Use URL,Use URL
 User,Usuario
 User Action,User Action
 User Role,User Role

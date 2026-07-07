@@ -485,6 +485,8 @@ Forgot Password?,Забыли пароль?
 Forms and email configuration,Настройка форм и электронной почты
 From,From
 From all suggestions,From all suggestions
+From computer,From computer
+From files,From files
 From previous step,From previous step
 From selection,From selection
 From:,From:
@@ -574,6 +576,7 @@ Invalid captcha,Неверная Captcha
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
 Invalid form,Недействительная форма
+Invalid URL,Invalid URL
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,"Это также может с легкостью нарушить работу приложения. Введите код только в случае, если точно знаете, что делаете."
 it has been logged with request id #,it has been logged with request id #
 Item,Item
@@ -730,6 +733,7 @@ No icon / flag,Нет иконки/флажка
 No items available,No items available
 No Label,Нет метки
 No label,No label
+No media selected,No media selected
 No notifications or active tasks.,No notifications or active tasks.
 No options,No options
 No options found,Варианты не найдены
@@ -749,6 +753,7 @@ No table of contents description,Нет описания содержания
 No templates available to add.,No templates available to add.
 No text match,Нет совпадающего текста
 No text match description,You can type something different in the search box to get some results.
+No timelinks added,No timelinks added
 No type,Нет типа
 No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,No valid target template available
@@ -824,6 +829,7 @@ Password is too long,Пароль слишком длинный
 Password updated,Пароль обновлен
 Passwords do not match,Passwords do not match
 Paste this tag in a page HTML. The chart uses the page language.,Paste this tag in a page HTML. The chart uses the page language.
+Paste URL,Paste URL
 Paste URL here,Paste URL here
 PDF,PDF
 Pending,Pending
@@ -1319,6 +1325,7 @@ Use for training,Use for training
 "Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed.","Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed."
+Use URL,Use URL
 User,Пользователь
 User Action,User Action
 User Role,User Role

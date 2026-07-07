@@ -490,6 +490,8 @@ Forgot Password?,Forgot Password?
 Forms and email configuration,Forms and email configuration
 From,From
 From all suggestions,From all suggestions
+From computer,From computer
+From files,From files
 From previous step,From previous step
 From selection,From selection
 From:,From:
@@ -579,6 +581,7 @@ Invalid captcha,Invalid captcha
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
 Invalid form,An entry is required or has an invalid value. Please correct and try again.
+Invalid URL,Invalid URL
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,It could also very easily break the app. Only write code here if you know exactly what you are doing.
 it has been logged with request id #,it has been logged with request id #
 Item,Item
@@ -735,6 +738,7 @@ No icon / flag,No icon / flag
 No items available,No items available
 No Label,No Label
 No label,No label
+No media selected,No media selected
 No notifications or active tasks.,No notifications or active tasks.
 No options,No options
 No options found,No options found
@@ -754,6 +758,7 @@ No table of contents description,"You can start by selecting text in the documen
 No templates available to add.,No templates available to add.
 No text match,No text match
 No text match description,You can type something different in the search box to get some results.
+No timelinks added,No timelinks added
 No type,No type
 No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,No valid target template available
@@ -829,6 +834,7 @@ Password is too long,Password is too long
 Password updated,Password updated
 Passwords do not match,Passwords do not match
 Paste this tag in a page HTML. The chart uses the page language.,Paste this tag in a page HTML. The chart uses the page language.
+Paste URL,Paste URL
 Paste URL here,Paste URL here
 PDF,PDF
 Pending,Pending
@@ -1324,6 +1330,7 @@ Use for training,Use for training
 "Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed.","Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed."
+Use URL,Use URL
 User,User
 User Action,User Action
 User Role,User Role
