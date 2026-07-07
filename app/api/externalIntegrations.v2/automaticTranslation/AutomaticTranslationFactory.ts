@@ -1,7 +1,7 @@
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { DefaultDeprecatedEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 import { entityInputDataSchema } from '#api/entities.v2/types/EntityInputDataSchema.js';
 import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
@@ -44,7 +44,8 @@ const AutomaticTranslationFactory = {
     const transactionManager = TransactionManagerFactory.default();
     return new SaveEntityTranslations(
       TemplatesDataSourceFactory.default({ transactionManager }),
-      DefaultDeprecatedEntitiesDataSource(transactionManager),
+      EntitiesDataSourceFactory.default({ transactionManager }),
+      transactionManager,
       new Validator<TranslationResult>(translationResultSchema),
       LoggerFactory.default()
     );
@@ -57,7 +58,8 @@ const AutomaticTranslationFactory = {
         serviceName: RequestEntityTranslation.SERVICE_NAME,
       }),
       AutomaticTranslationFactory.defaultATConfigDataSource(transactionManager),
-      DefaultDeprecatedEntitiesDataSource(transactionManager),
+      EntitiesDataSourceFactory.default({ transactionManager }),
+      transactionManager,
       new Validator<EntityInputModel>(entityInputDataSchema),
       LoggerFactory.default()
     );

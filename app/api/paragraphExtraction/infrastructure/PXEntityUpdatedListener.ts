@@ -74,9 +74,10 @@ export class PXEntityUpdatedListener {
       l => l.ISO639_1!
     );
 
-    const documentsInInstalledLanguage = await this.dependencies.filesDS
-      .getProcessedDocsForEntity(newEntity.sharedId!, { languages })
-      .all();
+    const documentsInInstalledLanguage = await this.dependencies.filesDS.getProcessedDocsForEntity(
+      newEntity.sharedId!,
+      { languages }
+    );
 
     if (!extractor || !documentsInInstalledLanguage.length) {
       return;

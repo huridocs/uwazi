@@ -1,5 +1,4 @@
 // eslint-disable-next-line node/no-restricted-import
-import { readdirSync, readFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import pg from 'pg';
@@ -7,15 +6,17 @@ import { config } from '#api/config.js';
 import uniqueID from '#shared/uniqueID.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { tenants } from '#api/tenants/tenantContext.js';
+import { PgMigrator } from '../core/infrastructure/postgresql/PgMigrator.js';
+import { serializePgValue } from '../core/infrastructure/postgresql/serializePgValue.js';
+
+function escapeIdentifier(identifier: string): string {
+  return identifier.replace(/"/g, '""');
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const SCHEMA_DIR = path.join(__dirname, '../core/infrastructure/postgresql/schema');
-const SCHEMA_SQL = readdirSync(SCHEMA_DIR)
-  .filter(f => f.endsWith('.sql'))
-  .map(f => readFileSync(path.join(SCHEMA_DIR, f), 'utf-8'))
-  .join('\n');
+const MIGRATIONS_DIR = path.join(__dirname, '../core/infrastructure/postgresql/schema_migrations');
 
 /** Open a one-off admin client connected to the postgres maintenance DB. */
 const adminClient = () =>
@@ -71,7 +72,7 @@ const testingPG = {
     const admin = adminClient();
     await admin.connect();
     try {
-      await admin.query(`CREATE DATABASE "${this.dbName}"`);
+      await admin.query(`CREATE DATABASE "${escapeIdentifier(this.dbName)}"`);
     } finally {
       await admin.end();
     }
@@ -92,16 +93,17 @@ const testingPG = {
      */
     PostgresDB.setConfig(this.config);
 
-    await pool.query(SCHEMA_SQL);
+    const migrator = new PgMigrator(MIGRATIONS_DIR, pool);
+    await migrator.migrate();
 
     return pool;
   },
 
-  async clear(tables: string[] = ['thesauri', 'templates']): Promise<void> {
+  async clear(tables: string[] = ['thesauri', 'templates', 'files']): Promise<void> {
     if (!pool) throw new Error('testingPG not connected');
     for (const table of tables) {
       //eslint-disable-next-line no-await-in-loop
-      await pool.query(`DELETE FROM "${table}"`);
+      await pool.query(`DELETE FROM "${escapeIdentifier(table)}"`);
     }
   },
 
@@ -110,29 +112,30 @@ const testingPG = {
     const tenantId = tenants.current().name;
     for (const [table, rows] of Object.entries(fixtures)) {
       //eslint-disable-next-line no-await-in-loop
-      await pool.query(`DELETE FROM "${table}"`);
+      await pool.query(`DELETE FROM "${escapeIdentifier(table)}"`);
       for (const row of rows) {
         const finalRow = 'tenant_id' in row ? row : { ...row, tenant_id: tenantId };
         const cols = Object.keys(finalRow)
-          .map(c => `"${c}"`)
+          .map(c => `"${escapeIdentifier(c)}"`)
           .join(', ');
         const placeholders = Object.keys(finalRow)
           .map((_, i) => `$${i + 1}`)
           .join(', ');
         const values = Object.values(finalRow).map(v =>
-          v !== null && typeof v === 'object' ? JSON.stringify(v) : v
+          serializePgValue(v, v !== null && typeof v === 'object')
         );
         //eslint-disable-next-line no-await-in-loop
-        await pool.query(`INSERT INTO "${table}" (${cols}) VALUES (${placeholders})`, values);
+        await pool.query(
+          `INSERT INTO "${escapeIdentifier(table)}" (${cols}) VALUES (${placeholders})`,
+          values
+        );
       }
     }
   },
 
-  async getAllFrom<T extends pg.QueryResultRow = Record<string, unknown>>(
-    table: string
-  ): Promise<T[]> {
+  async getAllFrom<T extends pg.QueryResultRow = Record<string, any>>(table: string): Promise<T[]> {
     if (!pool) throw new Error('testingPG not connected');
-    const result = await pool.query<T>(`SELECT * FROM ${table}`);
+    const result = await pool.query<T>(`SELECT * FROM "${escapeIdentifier(table)}"`);
     return result.rows;
   },
 
@@ -151,7 +154,9 @@ const testingPG = {
       const admin = adminClient();
       await admin.connect();
       try {
-        await admin.query(`DROP DATABASE IF EXISTS "${this.dbName}" WITH (FORCE)`);
+        await admin.query(
+          `DROP DATABASE IF EXISTS "${escapeIdentifier(this.dbName)}" WITH (FORCE)`
+        );
       } finally {
         await admin.end();
       }

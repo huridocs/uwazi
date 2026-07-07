@@ -81,7 +81,6 @@ Advanced ECharts overrides,Advanced ECharts overrides
 ALL,전체 필터
 All,전체 필터
 "All changes will be lost, are you sure you want to proceed?",모든 변경 사항이 손실됩니다. 계속 진행하시겠습니까?
-All clear,All clear
 All data,All data
 All editing options will be disabled.,All editing options will be disabled.
 All of the paragraphs will be deleted,All of the paragraphs will be deleted
@@ -382,6 +381,7 @@ Duplicated name,중복된 이름
 Duplicated username,사용자 이름 중복
 Duration,Duration
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
+Earlier,Earlier
 Edit,편집
 Edit Extractor,Edit Extractor
 Edit File,Edit File
@@ -524,6 +524,7 @@ here,here
 "Hi, I'm Bert.","Hi, I'm Bert."
 Hide,Hide
 Hide actions,Hide actions
+Hide details,Hide details
 Hide label,라벨 숨기기
 Hide restricted relationships from public,Hide restricted relationships from public
 Hide toolbar,Hide toolbar
@@ -687,6 +688,7 @@ ML TOC,ML TOC
 Modified,Modified
 Month,월
 Months,Months
+More,More
 more options.,옵션 더보기
 Multi-source mode,Multi-source mode
 Multiple date,Multiple date
@@ -707,6 +709,7 @@ Navigate back,Navigate back
 Navigation menu tool tip part 1,"If it is an internal URL within this website, be sure to delete the first part"
 Navigation menu tool tip part 2,leaving only a relative URL starting with a slash character. Ie. /some_url.
 New,New
+New activity will show up here.,New activity will show up here.
 New conversation,New conversation
 New entity,새 엔티티
 New group,New group
@@ -1067,6 +1070,7 @@ Shared as editor,편집자로 공유
 Shared as viewer,뷰어로 공유
 Show actions,Show actions
 Show cookie policy,쿠키 정책 보기
+Show details,Show details
 Show filters,필터 보기
 Show in cards,카드에 표시하기
 Show less,Show less
@@ -1389,6 +1393,7 @@ You have unsaved changes. Do you want to continue?,You have unsaved changes. Do 
 You should activate this feature for enhanced account security,계정 보안 향상이 필요한 경우 이 기능을 활성화해야 합니다.
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
 You won't be able to save an entity if this property is empty.,You won't be able to save an entity if this property is empty.
+You're all caught up,You're all caught up
 Your account's security is enhanced with two-factor authentication.,Your account's security is enhanced with two-factor authentication.
 Z → A,Z → A
 Zoom in,확대

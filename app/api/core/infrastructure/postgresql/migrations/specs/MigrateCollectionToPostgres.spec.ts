@@ -54,9 +54,10 @@ describe('MigrateCollectionToPostgres', () => {
     };
 
     const migrator = makeMigrator();
-    const migrated = await migrator.migrate(config);
+    const result = await migrator.migrate(config);
 
-    expect(migrated).toBe(2);
+    expect(result.migrated).toBe(2);
+    expect(result.skipped).toBe(false);
 
     const pgRows = await testingPG.getAllFrom('thesauri');
     const rowsForTenant = pgRows.filter(r => r.tenant_id === TENANT);
@@ -66,68 +67,6 @@ describe('MigrateCollectionToPostgres', () => {
     const byId = Object.fromEntries(rowsForTenant.map(r => [r._id, r]));
     expect(byId['64a1b2c3d4e5f6a7b8c9d0e1'].name).toBe('Countries');
     expect(byId['64a1b2c3d4e5f6a7b8c9d0e2'].name).toBe('Fruits');
-  });
-
-  it('should upsert — update existing rows and insert new ones', async () => {
-    const mongoDb = testingDB.db(testingDB.dbName);
-
-    await testingPG.setFixtures({
-      thesauri: [
-        {
-          _id: '64a1b2c3d4e5f6a7b8c9d0e3',
-          name: 'Old Colors',
-          values: JSON.stringify([{ id: 'v1', label: 'Red' }]),
-          tenant_id: TENANT,
-        },
-      ],
-    });
-
-    await mongoDb.collection('dictionaries').insertMany([
-      {
-        _id: new ObjectId('64a1b2c3d4e5f6a7b8c9d0e3'),
-        name: 'Updated Colors',
-        values: [
-          { id: 'v1', label: 'Red' },
-          { id: 'v2', label: 'Blue' },
-        ],
-      },
-      {
-        _id: new ObjectId('64a1b2c3d4e5f6a7b8c9d0e4'),
-        name: 'Shapes',
-        values: [{ id: 'v3', label: 'Circle' }],
-      },
-    ]);
-
-    const config: MigrationConfig = {
-      mongoCollection: 'dictionaries',
-      pgTable: 'thesauri',
-      mapDocument(doc: Record<string, unknown>) {
-        const _id = doc._id instanceof ObjectId ? doc._id.toHexString() : String(doc._id);
-        return {
-          _id,
-          name: doc.name,
-          values: JSON.stringify(doc.values ?? []),
-        };
-      },
-    };
-
-    const migrator = makeMigrator();
-    const migrated = await migrator.migrate(config);
-
-    expect(migrated).toBe(2);
-
-    const pgRows = await testingPG.getAllFrom('thesauri');
-    const rowsForTenant = pgRows.filter(r => r.tenant_id === TENANT);
-    expect(rowsForTenant).toHaveLength(2);
-    expect(rowsForTenant.every(r => r.tenant_id === TENANT)).toBe(true);
-
-    const byId = Object.fromEntries(rowsForTenant.map(r => [r._id, r]));
-    expect(byId['64a1b2c3d4e5f6a7b8c9d0e3'].name).toBe('Updated Colors');
-    expect(byId['64a1b2c3d4e5f6a7b8c9d0e3'].values).toEqual([
-      { id: 'v1', label: 'Red' },
-      { id: 'v2', label: 'Blue' },
-    ]);
-    expect(byId['64a1b2c3d4e5f6a7b8c9d0e4'].name).toBe('Shapes');
   });
 
   it('should isolate different tenants', async () => {
@@ -153,12 +92,14 @@ describe('MigrateCollectionToPostgres', () => {
     };
 
     const migratorA = new MigrateCollectionToPostgres(mongoDb, 'tenant-a');
-    const migratedA = await migratorA.migrate(config);
-    expect(migratedA).toBe(1);
+    const resultA = await migratorA.migrate(config);
+    expect(resultA.migrated).toBe(1);
+    expect(resultA.skipped).toBe(false);
 
     const migratorB = new MigrateCollectionToPostgres(mongoDb, 'tenant-b');
-    const migratedB = await migratorB.migrate(config);
-    expect(migratedB).toBe(1);
+    const resultB = await migratorB.migrate(config);
+    expect(resultB.migrated).toBe(1);
+    expect(resultB.skipped).toBe(false);
 
     const pgRows = await testingPG.getAllFrom('thesauri');
     const rowsForA = pgRows.filter(r => r.tenant_id === 'tenant-a');
@@ -186,8 +127,9 @@ describe('MigrateCollectionToPostgres', () => {
     };
 
     const migrator = makeMigrator();
-    const migrated = await migrator.migrate(config);
-    expect(migrated).toBe(0);
+    const result = await migrator.migrate(config);
+    expect(result.migrated).toBe(0);
+    expect(result.skipped).toBe(false);
 
     const pgRows = await testingPG.getAllFrom('thesauri');
     expect(pgRows.filter(r => r.tenant_id === TENANT)).toHaveLength(0);
@@ -216,8 +158,9 @@ describe('MigrateCollectionToPostgres', () => {
     };
 
     const migrator = makeMigrator();
-    const migrated = await migrator.migrate(config);
-    expect(migrated).toBe(2500);
+    const result = await migrator.migrate(config);
+    expect(result.migrated).toBe(2500);
+    expect(result.skipped).toBe(false);
 
     const pgRows = await testingPG.getAllFrom('thesauri');
     const rowsForTenant = pgRows.filter(r => r.tenant_id === TENANT);
@@ -246,8 +189,9 @@ describe('MigrateCollectionToPostgres', () => {
     });
 
     const migrator = makeMigrator();
-    const migrated = await migrator.migrate(ThesaurusMigrationConfig);
-    expect(migrated).toBe(1);
+    const result = await migrator.migrate(ThesaurusMigrationConfig);
+    expect(result.migrated).toBe(1);
+    expect(result.skipped).toBe(false);
 
     const pgRows = await testingPG.getAllFrom('thesauri');
     const rowsForTenant = pgRows.filter(r => r.tenant_id === TENANT);
@@ -267,5 +211,51 @@ describe('MigrateCollectionToPostgres', () => {
         ],
       },
     ]);
+  });
+
+  it('should skip migration when PostgreSQL table already contains data for tenant', async () => {
+    const mongoDb = testingDB.db(testingDB.dbName);
+
+    await testingPG.setFixtures({
+      thesauri: [
+        {
+          _id: '64a1b2c3d4e5f6a7b8c9d0e7',
+          name: 'Existing',
+          values: JSON.stringify([{ id: 'v1', label: 'Existing' }]),
+          tenant_id: TENANT,
+        },
+      ],
+    });
+
+    await mongoDb.collection('dictionaries').insertMany([
+      {
+        _id: new ObjectId('64a1b2c3d4e5f6a7b8c9d0e8'),
+        name: 'New',
+        values: [{ id: 'v2', label: 'New' }],
+      },
+    ]);
+
+    const config: MigrationConfig = {
+      mongoCollection: 'dictionaries',
+      pgTable: 'thesauri',
+      mapDocument(doc: Record<string, unknown>) {
+        return {
+          _id: doc._id instanceof ObjectId ? doc._id.toHexString() : String(doc._id),
+          name: doc.name,
+          values: JSON.stringify(doc.values ?? []),
+        };
+      },
+    };
+
+    const migrator = makeMigrator();
+    const result = await migrator.migrate(config);
+
+    expect(result.migrated).toBe(0);
+    expect(result.skipped).toBe(true);
+
+    const pgRows = await testingPG.getAllFrom('thesauri');
+    const rowsForTenant = pgRows.filter(r => r.tenant_id === TENANT);
+    expect(rowsForTenant).toHaveLength(1);
+    expect(rowsForTenant[0].name).toBe('Existing');
   });
 });

@@ -10,27 +10,29 @@ import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFac
 import { EventsBus } from '#api/core/libs/eventsbus/EventsBus.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
+import { testingPG } from '#api/utils/testing_pg.js';
 import { factory, fixtures, SampleListener } from './UpdateEntityFixtures.js';
 
 type TestConfig = {
   name: string;
   postgresTemplates: boolean;
+  postgresFiles: boolean;
 };
 
 const testConfigs: TestConfig[] = [
-  { name: 'Mongo', postgresTemplates: false },
-  { name: 'Postgres', postgresTemplates: true },
+  { name: 'Mongo', postgresTemplates: false, postgresFiles: false },
+  { name: 'Postgres', postgresTemplates: true, postgresFiles: true },
 ];
 
-const createSut = (postgresTemplates = false) => {
+const createSut = (postgresTemplates = false, postgresFiles = false) => {
   const fileStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
 
   const contextOverrides: any = {};
-  if (postgresTemplates) {
+  if (postgresTemplates || postgresFiles) {
     contextOverrides.tenant = {
       ...testingTenants.current(),
-      featureFlags: { postgresTemplates: true },
+      featureFlags: { postgresTemplates, postgresFiles },
     };
   }
 
@@ -75,10 +77,36 @@ describe('UpdateEntityUseCase', () => {
   const getAllEntities = async (sharedId: string) =>
     testingEnvironment.db.getCollection('entities')!.find({ sharedId }).toArray();
 
-  const getAllFiles = async (entity: string) =>
-    testingEnvironment.db.getCollection('files')!.find({ entity }).toArray();
-  const getFileById = async (id: string) =>
-    testingEnvironment.db.getCollection('files')!.findOne({ _id: factory.id(id) });
+  const normalizeFile = (f: any) =>
+    Object.fromEntries(Object.entries(f).filter(([, v]) => v !== null));
+  const getAllFiles = async (entity: string, postgresFiles = false) => {
+    if (postgresFiles) {
+      const rows = await testingPG.getAllFrom('files');
+      return rows
+        .filter((r: any) => r.entity === entity)
+        .map(normalizeFile)
+        .sort((a: any, b: any) => a._id.localeCompare(b._id));
+    }
+    const files = await testingEnvironment.db.getCollection('files')!.find({ entity }).toArray();
+    return files
+      .map((f: any) => ({
+        ...f,
+        _id: f._id.toHexString(),
+      }))
+      .sort((a: any, b: any) => a._id.localeCompare(b._id));
+  };
+  const getFileById = async (id: string, postgresFiles = false) => {
+    const hexId = factory.id(id).toHexString();
+    if (postgresFiles) {
+      const rows = await testingPG.getAllFrom('files');
+      const row = rows.find((r: any) => r._id === hexId);
+      return row ? normalizeFile(row) : null;
+    }
+    const file = await testingEnvironment.db
+      .getCollection('files')!
+      .findOne({ _id: factory.id(id) });
+    return file ? { ...file, _id: file._id.toHexString() } : null;
+  };
 
   const getAllJobs = async () => getConnection().collection('jobs').find().toArray();
   const clearJobs = async () => getConnection().collection('jobs').deleteMany({});
@@ -98,9 +126,9 @@ describe('UpdateEntityUseCase', () => {
     EventEmitterFactory.registry.reset();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresTemplates }) => {
+  describe.each(testConfigs)('$name', ({ postgresTemplates, postgresFiles }) => {
     it('should update basic entity data', async () => {
-      const { sut } = createSut(postgresTemplates);
+      const { sut } = createSut(postgresTemplates, postgresFiles);
 
       await sut.execute({ sharedId: 'entity1', language: 'en', icon, propertyAssignments: [] });
 
@@ -127,7 +155,7 @@ describe('UpdateEntityUseCase', () => {
     });
 
     it('should update title', async () => {
-      const { sut } = createSut(postgresTemplates);
+      const { sut } = createSut(postgresTemplates, postgresFiles);
 
       await sut.execute({
         sharedId: 'entity1',
@@ -157,7 +185,7 @@ describe('UpdateEntityUseCase', () => {
 
     describe('When Property Assignments gets updated', () => {
       it('should update property assignments', async () => {
-        const { sut } = createSut(postgresTemplates);
+        const { sut } = createSut(postgresTemplates, postgresFiles);
 
         const now = Date.now();
 
@@ -370,7 +398,7 @@ describe('UpdateEntityUseCase', () => {
       });
 
       it('should denormalize relationship icons correctly for mixed related entities', async () => {
-        const { sut } = createSut(postgresTemplates);
+        const { sut } = createSut(postgresTemplates, postgresFiles);
 
         await sut.execute({
           sharedId: 'full_entity',
@@ -447,7 +475,7 @@ describe('UpdateEntityUseCase', () => {
       });
 
       it('should clear metadata when given empty or nullable values', async () => {
-        const { sut } = createSut(postgresTemplates);
+        const { sut } = createSut(postgresTemplates, postgresFiles);
 
         await sut.execute({
           sharedId: 'full_entity',
@@ -560,7 +588,7 @@ describe('UpdateEntityUseCase', () => {
         ]);
       });
       it('should throw when a required property has no value', async () => {
-        const { sut } = createSut(postgresTemplates);
+        const { sut } = createSut(postgresTemplates, postgresFiles);
 
         await expect(
           sut.execute({
@@ -574,7 +602,7 @@ describe('UpdateEntityUseCase', () => {
 
     describe('When Files gets uploaded', () => {
       it('should properly create url attachments', async () => {
-        const { sut, fileStorage } = createSut(postgresTemplates);
+        const { sut, fileStorage } = createSut(postgresTemplates, postgresFiles);
 
         await sut.execute({
           language: 'en',
@@ -588,7 +616,7 @@ describe('UpdateEntityUseCase', () => {
           ],
         });
 
-        const files = await getAllFiles('required_entity');
+        const files = await getAllFiles('required_entity', postgresFiles);
 
         expect(fileStorage.storeFile).not.toHaveBeenCalled();
 
@@ -603,7 +631,7 @@ describe('UpdateEntityUseCase', () => {
       });
 
       it('should add files', async () => {
-        const { sut, fileStorage } = createSut(postgresTemplates);
+        const { sut, fileStorage } = createSut(postgresTemplates, postgresFiles);
 
         await sut.execute({
           language: 'en',
@@ -644,7 +672,7 @@ describe('UpdateEntityUseCase', () => {
           expect.objectContaining({ originalname: 'attachment_1.png' })
         );
 
-        const files = await getAllFiles('entity1');
+        const files = await getAllFiles('entity1', postgresFiles);
 
         expect(files).toMatchObject([
           { originalname: 'primary_1.pdf' },
@@ -654,7 +682,7 @@ describe('UpdateEntityUseCase', () => {
       });
 
       it('should link image property to uploaded file', async () => {
-        const { sut } = createSut(postgresTemplates);
+        const { sut } = createSut(postgresTemplates, postgresFiles);
 
         await sut.execute({
           language: 'en',
@@ -684,7 +712,7 @@ describe('UpdateEntityUseCase', () => {
       });
 
       it('should link media property to uploaded file', async () => {
-        const { sut } = createSut(postgresTemplates);
+        const { sut } = createSut(postgresTemplates, postgresFiles);
 
         await sut.execute({
           language: 'en',
@@ -715,7 +743,7 @@ describe('UpdateEntityUseCase', () => {
       });
 
       it('should link media property with timeLinks to uploaded file', async () => {
-        const { sut } = createSut(postgresTemplates);
+        const { sut } = createSut(postgresTemplates, postgresFiles);
 
         await sut.execute({
           language: 'en',
@@ -746,7 +774,7 @@ describe('UpdateEntityUseCase', () => {
       });
 
       it('should link multiple files to different properties in same request', async () => {
-        const { sut } = createSut(postgresTemplates);
+        const { sut } = createSut(postgresTemplates, postgresFiles);
 
         await sut.execute({
           language: 'en',
@@ -785,9 +813,9 @@ describe('UpdateEntityUseCase', () => {
 
     describe('When Files gets updated', () => {
       it('should rename existing files', async () => {
-        const { sut } = createSut(postgresTemplates);
+        const { sut } = createSut(postgresTemplates, postgresFiles);
 
-        const filesBefore = await getAllFiles('entity1');
+        const filesBefore = await getAllFiles('entity1', postgresFiles);
 
         await sut.execute({
           language: 'en',
@@ -809,30 +837,30 @@ describe('UpdateEntityUseCase', () => {
           ],
         });
 
-        const filesAfter = await getAllFiles('entity1');
+        const filesAfter = await getAllFiles('entity1', postgresFiles);
 
         expect(filesBefore).toMatchObject([
           {
-            _id: factory.id('entity1_doc1'),
+            _id: factory.id('entity1_doc1').toHexString(),
             entity: 'entity1',
             originalname: 'Document 1.pdf',
             language: 'eng',
           },
           {
-            _id: factory.id('entity1_doc1_thumbnail'),
+            _id: factory.id('entity1_doc1_thumbnail').toHexString(),
             entity: 'entity1',
             type: 'thumbnail',
             filename: `${factory.id('entity1_doc1').toHexString()}.jpg`,
             language: 'eng',
           },
           {
-            _id: factory.id('entity1_doc2'),
+            _id: factory.id('entity1_doc2').toHexString(),
             entity: 'entity1',
             originalname: 'Document 2.pdf',
             language: 'eng',
           },
           {
-            _id: factory.id('entity1_doc2_thumbnail'),
+            _id: factory.id('entity1_doc2_thumbnail').toHexString(),
             entity: 'entity1',
             type: 'thumbnail',
             filename: `${factory.id('entity1_doc2').toHexString()}.jpg`,
@@ -843,26 +871,26 @@ describe('UpdateEntityUseCase', () => {
 
         expect(filesAfter).toMatchObject([
           {
-            _id: factory.id('entity1_doc1'),
+            _id: factory.id('entity1_doc1').toHexString(),
             entity: 'entity1',
             originalname: 'Document 1 Renamed.pdf',
             language: 'eng',
           },
           {
-            _id: factory.id('entity1_doc1_thumbnail'),
+            _id: factory.id('entity1_doc1_thumbnail').toHexString(),
             entity: 'entity1',
             type: 'thumbnail',
             filename: `${factory.id('entity1_doc1').toHexString()}.jpg`,
             language: 'eng',
           },
           {
-            _id: factory.id('entity1_doc2'),
+            _id: factory.id('entity1_doc2').toHexString(),
             entity: 'entity1',
             originalname: 'Document 2 Renamed.pdf',
             language: 'eng',
           },
           {
-            _id: factory.id('entity1_doc2_thumbnail'),
+            _id: factory.id('entity1_doc2_thumbnail').toHexString(),
             entity: 'entity1',
             type: 'thumbnail',
             filename: `${factory.id('entity1_doc2').toHexString()}.jpg`,
@@ -873,7 +901,7 @@ describe('UpdateEntityUseCase', () => {
       });
 
       it('should persist property selections on the selected file', async () => {
-        const { sut } = createSut(postgresTemplates);
+        const { sut } = createSut(postgresTemplates, postgresFiles);
 
         await sut.execute({
           language: 'en',
@@ -907,10 +935,10 @@ describe('UpdateEntityUseCase', () => {
           },
         });
 
-        const file = await getFileById('entity1_doc1');
+        const file = await getFileById('entity1_doc1', postgresFiles);
 
         expect(file).toMatchObject({
-          _id: factory.id('entity1_doc1'),
+          _id: factory.id('entity1_doc1').toHexString(),
           entity: 'entity1',
           originalname: 'Document 1 changed.pdf',
           propertySelections: [
@@ -926,7 +954,7 @@ describe('UpdateEntityUseCase', () => {
       });
 
       it('should not persist property selections if selected file does not belong to entity', async () => {
-        const { sut } = createSut(postgresTemplates);
+        const { sut } = createSut(postgresTemplates, postgresFiles);
 
         await sut.execute({
           language: 'en',
@@ -960,7 +988,7 @@ describe('UpdateEntityUseCase', () => {
           },
         });
 
-        const file = await getFileById('entity1_doc1');
+        const file = await getFileById('entity1_doc1', postgresFiles);
 
         expect(file?.propertySelections).toBeUndefined();
       });
@@ -968,7 +996,7 @@ describe('UpdateEntityUseCase', () => {
 
     describe('When Files gets removed', () => {
       it('should delete files that are not in the files array', async () => {
-        const { sut } = createSut(postgresTemplates);
+        const { sut } = createSut(postgresTemplates, postgresFiles);
 
         await sut.execute({
           language: 'en',
@@ -982,7 +1010,7 @@ describe('UpdateEntityUseCase', () => {
           ],
         });
 
-        const filesAfter = await getAllFiles('entity1');
+        const filesAfter = await getAllFiles('entity1', postgresFiles);
 
         expect(filesAfter).toHaveLength(2);
         expect(filesAfter).toMatchObject([
@@ -993,7 +1021,7 @@ describe('UpdateEntityUseCase', () => {
             type: 'document',
           },
           {
-            _id: factory.id('entity1_doc1_thumbnail'),
+            _id: factory.id('entity1_doc1_thumbnail').toHexString(),
             entity: 'entity1',
             type: 'thumbnail',
           },
@@ -1002,7 +1030,7 @@ describe('UpdateEntityUseCase', () => {
     });
 
     it('should emit EntityUpdatedEvent after updating the entity', async () => {
-      const { sut } = createSut(postgresTemplates);
+      const { sut } = createSut(postgresTemplates, postgresFiles);
 
       await sut.execute({
         language: 'en',
@@ -1031,7 +1059,7 @@ describe('UpdateEntityUseCase', () => {
     });
 
     it('should change entity template', async () => {
-      const { sut } = createSut(postgresTemplates);
+      const { sut } = createSut(postgresTemplates, postgresFiles);
 
       await sut.execute({
         sharedId: 'entity1',
@@ -1076,7 +1104,7 @@ describe('UpdateEntityUseCase', () => {
 
       describe('when only deleting a document', () => {
         it('should set preview to the surviving thumbnail on all translations', async () => {
-          const { sut } = createSut(postgresTemplates);
+          const { sut } = createSut(postgresTemplates, postgresFiles);
 
           // entity1 has doc1 (thumbnail) and doc2 (thumbnail) — remove doc2, keep doc1
           await sut.execute({
@@ -1100,7 +1128,7 @@ describe('UpdateEntityUseCase', () => {
         });
 
         it('should clear preview on all translations when all documents are removed', async () => {
-          const { sut } = createSut(postgresTemplates);
+          const { sut } = createSut(postgresTemplates, postgresFiles);
 
           // Remove all files
           await sut.execute({
@@ -1120,7 +1148,7 @@ describe('UpdateEntityUseCase', () => {
 
       describe('when deleting a document and uploading a new one', () => {
         it('should set preview to the surviving thumbnail (new doc has no thumbnail yet)', async () => {
-          const { sut } = createSut(postgresTemplates);
+          const { sut } = createSut(postgresTemplates, postgresFiles);
 
           // Remove doc2, keep doc1, add a new document upload
           await sut.execute({

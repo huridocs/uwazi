@@ -5,8 +5,6 @@ import { ObjectId } from 'mongodb';
 import { testingDB } from '#api/utils/testing_db.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { FileType } from '#shared/types/fileType.js';
-import { UserRole } from '#shared/types/userSchema.js';
-import { UserSchema } from '#shared/types/userType.js';
 import { ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
 import {
   PropertySchema,
@@ -26,11 +24,13 @@ import { PermissionSchema } from '#shared/types/permissionType.js';
 import { MongoSegmentationBuilder } from '#api/core/infrastructure/mongodb/files/specs/MongoSegmentationBuilder.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { ConnectionSchema } from '#shared/types/connectionType.js';
-import { UserGroupSchema } from '#shared/types/userGroupType.js';
+import { User, UserRole } from '#api/core/domain/user/User.js';
 import {
   ProcessedPDFDBO,
   ThumbnailDBO,
-} from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+} from '#api/core/infrastructure/mongodb/files/schemas/FilesTypes.js';
+import { UserDBO } from '#api/core/infrastructure/mongodb/user/UserDBO.js';
+import { UserGroupDBO } from '#api/core/infrastructure/mongodb/user/UserGroupDBO.js';
 
 type PartialSuggestion = Partial<Omit<IXSuggestionType, 'state'>> & {
   state?: Partial<IXSuggestionType['state']>;
@@ -101,8 +101,14 @@ const thesaurusNestedValues = (rootValue: string, children: Array<string>) => {
   return { id: rootValue, label: rootValue, values: nestedValues };
 };
 
-function getFixturesFactory() {
+type FixturesFactoryConfig = {
+  convertIdToString?: boolean;
+  tenantId?: string;
+};
+
+function getFixturesFactory(config?: FixturesFactoryConfig) {
   const idMapper = getIdMapper();
+  const { convertIdToString = false, tenantId } = config || {};
 
   return Object.freeze({
     id: idMapper,
@@ -230,6 +236,20 @@ function getFixturesFactory() {
             'Please pass a valid ISO639_1 Language to Factory.file, the factory will replace with the appropriate DB ISO639_3'
           );
         }
+      }
+
+      if (convertIdToString) {
+        return {
+          _id: idMapper(id).toString(),
+          tenant_id: tenantId,
+          filename: id,
+          originalname: id,
+          mimetype: 'application/pdf',
+          size: 1024,
+          creationDate: 1000,
+          ...extra,
+          ...fileLanguage,
+        } as unknown as WithId<FileType>;
       }
 
       return {
@@ -386,15 +406,36 @@ function getFixturesFactory() {
       };
     },
 
-    user: (username: string, role?: UserRole, email?: string, password?: string): UserSchema => ({
+    user: ({
       username,
-      _id: idMapper(username),
-      role: role || UserRole.COLLABORATOR,
-      email: email || `${username}@provider.tld`,
+      role,
+      email,
       password,
-    }),
+      deletedAt,
+    }: {
+      username: string;
+      role: UserRole;
+      email?: string;
+      password?: string;
+      deletedAt?: Date | string | number;
+    }): UserDBO => {
+      const user = new User({
+        _id: idMapper(username).toString(),
+        username,
+        role: role || UserRole.COLLABORATOR,
+        email: email || `${username}@provider.tld`,
+      });
+      return {
+        _id: idMapper(username),
+        username: user.username,
+        role: user.role,
+        email: user.email,
+        password: password || 'hash',
+        ...(deletedAt && { deletedAt: deletedAt as Date }),
+      };
+    },
 
-    usergroup: (name: string, members?: { refId: ObjectId }[]): UserGroupSchema => ({
+    usergroup: (name: string, members?: { refId: string }[]): UserGroupDBO => ({
       _id: idMapper(name),
       name,
       members: members ?? [],

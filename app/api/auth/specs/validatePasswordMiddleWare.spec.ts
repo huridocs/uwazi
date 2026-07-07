@@ -34,20 +34,20 @@ describe('validatePasswordMiddleWare', () => {
     users.push(
       ...[
         {
-          ...fixturesFactory.user(
-            'admin',
-            UserRole.ADMIN,
-            'admin@test.com',
-            await encryptPassword('admin1234')
-          ),
+          ...fixturesFactory.user({
+            username: 'admin',
+            role: UserRole.ADMIN,
+            email: 'admin@test.com',
+            password: await encryptPassword('admin1234'),
+          }),
         },
         {
-          ...fixturesFactory.user(
-            'editor',
-            UserRole.EDITOR,
-            'editor@test.com',
-            await encryptPassword('editor1234')
-          ),
+          ...fixturesFactory.user({
+            username: 'editor',
+            role: UserRole.EDITOR,
+            email: 'editor@test.com',
+            password: await encryptPassword('editor1234'),
+          }),
         },
       ]
     );

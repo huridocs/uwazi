@@ -10,7 +10,7 @@ const fixturesFactory = getFixturesFactory();
 
 const fixtures = {
   settings: [{ languages: [{ key: 'en' as LanguageISO6391, label: 'English', default: true }] }],
-  users: [fixturesFactory.user('ai-assistant-poll-user', UserRole.EDITOR)],
+  users: [fixturesFactory.user({ username: 'ai-assistant-poll-user', role: UserRole.EDITOR })],
 };
 
 jest.mock('#api/socketio/setupSockets.js', () => ({

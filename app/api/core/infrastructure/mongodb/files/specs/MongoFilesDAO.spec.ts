@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -7,7 +8,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { MongoFilesDAO } from '../MongoFilesDAO.js';
 import { FileNotFound } from '#api/core/domain/files/errors.js';
-import { ProcessedPDFDBO } from '../schemas/filesTypes.js';
+import { ProcessedPDFDBO } from '../schemas/FilesTypes.js';
 
 const factory = getFixturesFactory();
 
@@ -43,6 +44,7 @@ const fixtures: DBFixture = {
     factory.file('thumb_entity_a', {
       entity: 'entity_a',
       type: 'thumbnail',
+      language: 'en',
     }),
     // getByEntitySharedIds fixtures: entities with languages
     factory.document('doc_x_en', {
@@ -397,6 +399,69 @@ describe('MongoFilesDAO', () => {
     });
   });
 
+  describe('getDistinctEntitySharedIds()', () => {
+    it('returns distinct entity sharedIds filtered by type, status, and language', async () => {
+      const sut = createSut();
+      const result = await sut.getDistinctEntitySharedIds({
+        type: 'document',
+        status: 'ready',
+        language: 'eng',
+      });
+      expect(result.sort()).toEqual(['entity_x', 'entity_y']);
+    });
+
+    it('filters by type only', async () => {
+      const sut = createSut();
+      const result = await sut.getDistinctEntitySharedIds({ type: 'attachment' });
+      expect(result.sort()).toEqual(['entity_1', 'entity_a', 'entity_x']);
+    });
+
+    it('filters by status only', async () => {
+      const sut = createSut();
+      const result = await sut.getDistinctEntitySharedIds({ status: 'ready' });
+      expect(result.sort()).toEqual([
+        'entity_1',
+        'entity_2',
+        'entity_a',
+        'entity_x',
+        'entity_y',
+        'entity_z',
+      ]);
+    });
+
+    it('filters by language only', async () => {
+      const sut = createSut();
+      const result = await sut.getDistinctEntitySharedIds({ language: 'eng' });
+      expect(result.sort()).toEqual(['entity_a', 'entity_x', 'entity_y']);
+    });
+
+    it('returns empty array when no files match', async () => {
+      const sut = createSut();
+      const result = await sut.getDistinctEntitySharedIds({
+        type: 'document',
+        status: 'ready',
+        language: 'xx' as any,
+      });
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('countDocuments()', () => {
+    it('returns the total number of files in the collection', async () => {
+      const sut = createSut();
+      const count = await sut.countDocuments();
+      expect(count).toBe(13);
+    });
+  });
+
+  describe('getTotalFileSize()', () => {
+    it('returns the sum of all file sizes', async () => {
+      const sut = createSut();
+      const totalSize = await sut.getTotalFileSize();
+      expect(totalSize).toBe(0);
+    });
+  });
+
   describe('getByQuery()', () => {
     it('excludes fullText by default', async () => {
       const sut = createSut();
@@ -529,8 +594,60 @@ describe('MongoFilesDAO', () => {
     });
   });
 
+  describe('getDistinctEntitySharedIds — null entity exclusion', () => {
+    beforeAll(async () => {
+      await testingEnvironment.setUp({
+        files: [
+          factory.document('doc_has_entity', {
+            entity: 'entity_valid',
+            type: 'document',
+            status: 'ready',
+          }),
+          factory.document('doc_no_entity', {
+            type: 'document',
+            status: 'ready',
+            entity: null as any,
+          }),
+        ],
+      });
+    });
+
+    it('excludes files with null entity from results', async () => {
+      const sut = createSut();
+      const result = await sut.getDistinctEntitySharedIds({
+        type: 'document',
+        status: 'ready',
+      });
+      expect(result).toEqual(['entity_valid']);
+    });
+  });
+
+  describe('countDocuments — empty collection', () => {
+    beforeAll(async () => {
+      await testingEnvironment.setUp({ files: [] });
+    });
+
+    it('returns 0', async () => {
+      const sut = createSut();
+      const count = await sut.countDocuments();
+      expect(count).toBe(0);
+    });
+  });
+
+  describe('getTotalFileSize — empty collection', () => {
+    beforeAll(async () => {
+      await testingEnvironment.setUp({ files: [] });
+    });
+
+    it('returns 0', async () => {
+      const sut = createSut();
+      const totalSize = await sut.getTotalFileSize();
+      expect(totalSize).toBe(0);
+    });
+  });
+
   describe('FilesDAOFactory', () => {
-    it('returns a MongoFilesDAO instance when called inside runWithContext', async () => {
+    it('returns a MongoFilesDAO instance when postgresFiles feature flag is not set', async () => {
       await testingEnvironment.runWithContext(async () => {
         const dao = FilesDAOFactory.default();
         expect(dao).toBeInstanceOf(MongoFilesDAO);

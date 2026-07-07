@@ -4,6 +4,7 @@ import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStor
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
@@ -17,6 +18,16 @@ import { CsvImportEntitiesJob } from '../CsvImportEntitiesJob.js';
 import { CsvImportEntitiesJobFactory } from '../../../infrastructure/factories/CsvImportEntitiesJobFactory.js';
 import { cleanupCsvV2QueueJobsByImportIds } from '../../../specs/helpers/queueTestCleanup.js';
 import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
+
+type TestConfig = {
+  name: string;
+  usePostgres: boolean;
+};
+
+const testConfigs: TestConfig[] = [
+  { name: 'Mongo', usePostgres: false },
+  { name: 'Postgres', usePostgres: true },
+];
 
 const fixturesFactory = getFixturesFactory();
 
@@ -198,551 +209,556 @@ describe('CsvImportEntitiesJob (integration)', () => {
   const createdImportIds: string[] = [];
 
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures, 'csv-import-entities-job');
-  });
-
-  afterEach(async () => {
-    jest.clearAllMocks();
-    await testingEnvironment.setFixtures(fixtures);
-    await cleanupCsvV2QueueJobsByImportIds(createdImportIds.splice(0));
-    await Promise.all(
-      [
-        'csv_imports',
-        'csv_import_rows',
-        'csv_import_row_errors',
-        'csv_import_thesauri_values',
-        'csv_import_relationships_values',
-        'entities',
-        'files',
-      ].map(async collectionName => {
-        const collection = testingEnvironment.db.getCollection(collectionName);
-        if (collection) {
-          await collection.deleteMany({});
-        }
-      })
-    );
+    await testingEnvironment.setUp(fixtures, { postgres: true });
   });
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should create entities from staged rows and update stats', async () => {
-    const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } = buildUseCase();
-    const importId = fixturesFactory.idString('import-entities-basic');
-    createdImportIds.push(importId);
-    const userId = fixturesFactory.idString('import-entities-user');
-
-    const { callbacks, updatedImport, rowErrorsCount } = await runSingleRowImport({
-      useCase,
-      csvImportsDS,
-      rowsDS,
-      rowErrorsDS,
-      importId,
-      templateId,
-      userId,
+  describe.each(testConfigs)('$name', ({ usePostgres }) => {
+    beforeEach(async () => {
+      testingTenants.changeCurrentTenant({
+        featureFlags: { postgresFiles: usePostgres },
+      });
+      jest.clearAllMocks();
+      await testingEnvironment.setFixtures(fixtures);
+      await cleanupCsvV2QueueJobsByImportIds(createdImportIds.splice(0));
+      await Promise.all(
+        [
+          'csv_imports',
+          'csv_import_rows',
+          'csv_import_row_errors',
+          'csv_import_thesauri_values',
+          'csv_import_relationships_values',
+          'entities',
+          'files',
+        ].map(async collectionName => {
+          const collection = testingEnvironment.db.getCollection(collectionName);
+          if (collection) {
+            await collection.deleteMany({});
+          }
+        })
+      );
     });
 
-    expectCallbacksForSingleRow(callbacks, importId);
-    expectImportState(updatedImport);
-    expect(rowErrorsCount).toBe(0);
+    it('should create entities from staged rows and update stats', async () => {
+      const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } = buildUseCase();
+      const importId = fixturesFactory.idString('import-entities-basic');
+      createdImportIds.push(importId);
+      const userId = fixturesFactory.idString('import-entities-user');
 
-    const entities = await fetchEntitiesByTemplate(entitiesDS, templateId);
-    expect(entities).toHaveLength(1);
-    expectEntityContent(entities[0]);
-  });
-
-  it('should update an existing entity when id is provided and count entitiesUpdated', async () => {
-    const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } = buildUseCase();
-    const importId = fixturesFactory.idString('import-entities-update-by-id');
-    createdImportIds.push(importId);
-    const userId = fixturesFactory.idString('import-entities-update-by-id-user');
-    const sharedId = fixturesFactory.idString('existing-entity-shared-id');
-
-    await testingEnvironment.db.getCollection('entities')!.insertMany([
-      {
-        _id: fixturesFactory.id('existing-entity-en'),
-        sharedId,
-        title: 'Old title',
-        language: 'en',
-        template: fixtures.templates[0]._id,
-        metadata: { description: [{ value: 'Old description' }] },
-        user: fixturesFactory.id('import-entities-update-by-id-user'),
-        creationDate: Date.now(),
-        editDate: Date.now(),
-        published: false,
-      },
-      {
-        _id: fixturesFactory.id('existing-entity-es'),
-        sharedId,
-        title: 'Titulo viejo',
-        language: 'es',
-        template: fixtures.templates[0]._id,
-        metadata: { description: [{ value: 'Descripcion vieja' }] },
-        user: fixturesFactory.id('import-entities-update-by-id-user'),
-        creationDate: Date.now(),
-        editDate: Date.now(),
-        published: false,
-      },
-    ]);
-
-    await insertImport(csvImportsDS, {
-      importId,
-      templateId,
-      userId,
-    });
-    await stageRows(rowsDS, {
-      importId,
-      csv: `id,title\n${sharedId},Updated title`,
-    });
-
-    const callbacks = createCallbacks();
-    await useCase.execute({ importId, callbacks });
-
-    const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
-    const rowErrorsCount = await rowErrorsDS.countByImport(importId);
-    const entities = await fetchEntitiesByTemplate(entitiesDS, templateId);
-
-    expect(updatedImport.status).toBe(CsvImportStatus.ImportEntitiesDone);
-    expect(updatedImport.stats).toEqual(
-      expect.objectContaining({
-        entitiesCreated: 0,
-        entitiesUpdated: 1,
-        rowsProcessed: 1,
-        rowsFailed: 0,
-      })
-    );
-    expect(rowErrorsCount).toBe(0);
-    expect(entities).toHaveLength(1);
-    expect(entities[0].getTranslation('en').title.value[0].value).toBe('Updated title');
-    expect(entities[0].getTranslation('en').getValue('description').value).toEqual([]);
-    expect(callbacks.onProgress).toHaveBeenCalledWith(
-      expect.objectContaining({
+      const { callbacks, updatedImport, rowErrorsCount } = await runSingleRowImport({
+        useCase,
+        csvImportsDS,
+        rowsDS,
+        rowErrorsDS,
         importId,
-        entitiesCreatedInBatch: 0,
-        entitiesUpdatedInBatch: 1,
-      })
-    );
-  });
-
-  it('should register ID_NOT_FOUND_IN_TEMPLATE when id does not belong to import template', async () => {
-    const { useCase, csvImportsDS, rowsDS, rowErrorsDS } = buildUseCase();
-    const importId = fixturesFactory.idString('import-entities-update-id-template-mismatch');
-    createdImportIds.push(importId);
-    const userId = fixturesFactory.idString('import-entities-update-id-template-mismatch-user');
-    const sharedId = fixturesFactory.idString('existing-other-template-shared-id');
-
-    await testingEnvironment.db.getCollection('entities')!.insertMany([
-      {
-        _id: fixturesFactory.id('existing-other-template-en'),
-        sharedId,
-        title: 'Other template entity',
-        language: 'en',
-        template: fixtures.templates[1]._id,
-        metadata: {},
-        user: fixturesFactory.id('import-entities-update-id-template-mismatch-user'),
-        creationDate: Date.now(),
-        editDate: Date.now(),
-        published: false,
-      },
-      {
-        _id: fixturesFactory.id('existing-other-template-es'),
-        sharedId,
-        title: 'Entidad de otra plantilla',
-        language: 'es',
-        template: fixtures.templates[1]._id,
-        metadata: {},
-        user: fixturesFactory.id('import-entities-update-id-template-mismatch-user'),
-        creationDate: Date.now(),
-        editDate: Date.now(),
-        published: false,
-      },
-    ]);
-
-    await insertImport(csvImportsDS, {
-      importId,
-      templateId,
-      userId,
-    });
-    await stageRows(rowsDS, {
-      importId,
-      csv: `id,title,description\n${sharedId},Updated title,Updated description`,
-    });
-
-    const callbacks = createCallbacks();
-    await useCase.execute({ importId, callbacks });
-
-    const persistedErrors = await rowErrorsDS.getByImport(importId);
-    expect(persistedErrors).toHaveLength(1);
-    expect(persistedErrors[0].code).toBe(RowErrorCode.IdNotFoundInTemplate);
-    expect(persistedErrors[0].message).toBe('id not found in template');
-    expect(persistedErrors[0].property).toBe('id');
-    expect(persistedErrors[0].rawValue).toBe(sharedId);
-
-    const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
-    expect(updatedImport.stats).toEqual(
-      expect.objectContaining({
-        entitiesCreated: 0,
-        entitiesUpdated: 0,
-        rowsProcessed: 1,
-        rowsFailed: 1,
-      })
-    );
-  });
-
-  it('should import rows with any-template relationship when there is a unique match', async () => {
-    const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS, jobsDispatcher } =
-      buildUseCase();
-    const importId = fixturesFactory.idString('import-entities-any-relationship');
-    createdImportIds.push(importId);
-    const userId = fixturesFactory.idString('import-entities-any-user');
-    const relatedSharedId = fixturesFactory.idString('related-any-shared');
-
-    await testingEnvironment.db.getCollection('entities')!.insertMany([
-      {
-        _id: fixturesFactory.id('related-any-en'),
-        sharedId: relatedSharedId,
-        title: 'Related Any',
-        language: 'en',
-        template: fixtures.templates[1]._id,
-        metadata: {},
-        user: fixturesFactory.id('import-entities-any-user'),
-        creationDate: Date.now(),
-        editDate: Date.now(),
-        published: false,
-      },
-      {
-        _id: fixturesFactory.id('related-any-es'),
-        sharedId: relatedSharedId,
-        title: 'Related Any',
-        language: 'es',
-        template: fixtures.templates[1]._id,
-        metadata: {},
-        user: fixturesFactory.id('import-entities-any-user'),
-        creationDate: Date.now(),
-        editDate: Date.now(),
-        published: false,
-      },
-    ]);
-
-    await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({
-      importId,
-      templateId: '',
-      values: [
-        {
-          label: 'Related Any',
-          matches: [{ sharedId: relatedSharedId, templateId: relatedTemplateId }],
-        },
-      ],
-      createdAt: Date.now(),
-    });
-
-    await insertImport(csvImportsDS, {
-      importId,
-      templateId,
-      userId,
-    });
-    await stageRows(rowsDS, {
-      importId,
-      csv: 'title,description,rel_any\nMy Title,Some description,Related Any',
-    });
-
-    const callbacks = createCallbacks();
-    await useCase.execute({ importId, callbacks });
-    const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
-    const rowErrorsCount = await rowErrorsDS.countByImport(importId);
-
-    expectCallbacksForSingleRow(callbacks, importId);
-    expectImportState(updatedImport);
-    expect(rowErrorsCount).toBe(0);
-
-    const entities = await fetchEntitiesByTemplate(entitiesDS, templateId);
-    expect(entities).toHaveLength(1);
-    const translation = entities[0].getTranslation('en');
-    expect(translation.getValue('rel_any').value).toEqual([
-      expect.objectContaining({ value: relatedSharedId }),
-    ]);
-    expect(jobsDispatcher.dispatch).toHaveBeenCalledWith(
-      RelationshipSyncJob,
-      expect.objectContaining({
-        tenantName: tenants.current().name,
-        userId,
         templateId,
-        targetLanguage: 'en',
-        sharedId: expect.any(String),
-      })
-    );
-  });
+        userId,
+      });
 
-  it('should import rows with multiple any-template relationships separated by pipe', async () => {
-    const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } = buildUseCase();
-    const importId = fixturesFactory.idString('import-entities-any-relationship-multi');
-    createdImportIds.push(importId);
-    const userId = fixturesFactory.idString('import-entities-any-multi-user');
-    const relatedSharedIdA = fixturesFactory.idString('related-any-shared-a');
-    const relatedSharedIdB = fixturesFactory.idString('related-any-shared-b');
+      expectCallbacksForSingleRow(callbacks, importId);
+      expectImportState(updatedImport);
+      expect(rowErrorsCount).toBe(0);
 
-    await testingEnvironment.db.getCollection('entities')!.insertMany([
-      {
-        _id: fixturesFactory.id('related-any-a-en'),
-        sharedId: relatedSharedIdA,
-        title: 'Related Any A',
-        language: 'en',
-        template: fixtures.templates[1]._id,
-        metadata: {},
-        user: fixturesFactory.id('import-entities-any-multi-user'),
-        creationDate: Date.now(),
-        editDate: Date.now(),
-        published: false,
-      },
-      {
-        _id: fixturesFactory.id('related-any-a-es'),
-        sharedId: relatedSharedIdA,
-        title: 'Related Any A',
-        language: 'es',
-        template: fixtures.templates[1]._id,
-        metadata: {},
-        user: fixturesFactory.id('import-entities-any-multi-user'),
-        creationDate: Date.now(),
-        editDate: Date.now(),
-        published: false,
-      },
-      {
-        _id: fixturesFactory.id('related-any-b-en'),
-        sharedId: relatedSharedIdB,
-        title: 'Related Any B',
-        language: 'en',
-        template: fixtures.templates[1]._id,
-        metadata: {},
-        user: fixturesFactory.id('import-entities-any-multi-user'),
-        creationDate: Date.now(),
-        editDate: Date.now(),
-        published: false,
-      },
-      {
-        _id: fixturesFactory.id('related-any-b-es'),
-        sharedId: relatedSharedIdB,
-        title: 'Related Any B',
-        language: 'es',
-        template: fixtures.templates[1]._id,
-        metadata: {},
-        user: fixturesFactory.id('import-entities-any-multi-user'),
-        creationDate: Date.now(),
-        editDate: Date.now(),
-        published: false,
-      },
-    ]);
+      const entities = await fetchEntitiesByTemplate(entitiesDS, templateId);
+      expect(entities).toHaveLength(1);
+      expectEntityContent(entities[0]);
+    });
 
-    await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({
-      importId,
-      templateId: '',
-      values: [
+    it('should update an existing entity when id is provided and count entitiesUpdated', async () => {
+      const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } = buildUseCase();
+      const importId = fixturesFactory.idString('import-entities-update-by-id');
+      createdImportIds.push(importId);
+      const userId = fixturesFactory.idString('import-entities-update-by-id-user');
+      const sharedId = fixturesFactory.idString('existing-entity-shared-id');
+
+      await testingEnvironment.db.getCollection('entities')!.insertMany([
         {
-          label: 'Related Any A',
-          matches: [{ sharedId: relatedSharedIdA, templateId: relatedTemplateId }],
+          _id: fixturesFactory.id('existing-entity-en'),
+          sharedId,
+          title: 'Old title',
+          language: 'en',
+          template: fixtures.templates[0]._id,
+          metadata: { description: [{ value: 'Old description' }] },
+          user: fixturesFactory.id('import-entities-update-by-id-user'),
+          creationDate: Date.now(),
+          editDate: Date.now(),
+          published: false,
         },
         {
-          label: 'Related Any B',
-          matches: [{ sharedId: relatedSharedIdB, templateId: relatedTemplateId }],
+          _id: fixturesFactory.id('existing-entity-es'),
+          sharedId,
+          title: 'Titulo viejo',
+          language: 'es',
+          template: fixtures.templates[0]._id,
+          metadata: { description: [{ value: 'Descripcion vieja' }] },
+          user: fixturesFactory.id('import-entities-update-by-id-user'),
+          creationDate: Date.now(),
+          editDate: Date.now(),
+          published: false,
         },
-      ],
-      createdAt: Date.now(),
+      ]);
+
+      await insertImport(csvImportsDS, {
+        importId,
+        templateId,
+        userId,
+      });
+      await stageRows(rowsDS, {
+        importId,
+        csv: `id,title\n${sharedId},Updated title`,
+      });
+
+      const callbacks = createCallbacks();
+      await useCase.execute({ importId, callbacks });
+
+      const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+      const rowErrorsCount = await rowErrorsDS.countByImport(importId);
+      const entities = await fetchEntitiesByTemplate(entitiesDS, templateId);
+
+      expect(updatedImport.status).toBe(CsvImportStatus.ImportEntitiesDone);
+      expect(updatedImport.stats).toEqual(
+        expect.objectContaining({
+          entitiesCreated: 0,
+          entitiesUpdated: 1,
+          rowsProcessed: 1,
+          rowsFailed: 0,
+        })
+      );
+      expect(rowErrorsCount).toBe(0);
+      expect(entities).toHaveLength(1);
+      expect(entities[0].getTranslation('en').title.value[0].value).toBe('Updated title');
+      expect(entities[0].getTranslation('en').getValue('description').value).toEqual([]);
+      expect(callbacks.onProgress).toHaveBeenCalledWith(
+        expect.objectContaining({
+          importId,
+          entitiesCreatedInBatch: 0,
+          entitiesUpdatedInBatch: 1,
+        })
+      );
     });
 
-    await insertImport(csvImportsDS, {
-      importId,
-      templateId,
-      userId,
-    });
-    await stageRows(rowsDS, {
-      importId,
-      csv: 'title,description,rel_any\nMy Title,Some description,Related Any A|Related Any B',
-    });
+    it('should register ID_NOT_FOUND_IN_TEMPLATE when id does not belong to import template', async () => {
+      const { useCase, csvImportsDS, rowsDS, rowErrorsDS } = buildUseCase();
+      const importId = fixturesFactory.idString('import-entities-update-id-template-mismatch');
+      createdImportIds.push(importId);
+      const userId = fixturesFactory.idString('import-entities-update-id-template-mismatch-user');
+      const sharedId = fixturesFactory.idString('existing-other-template-shared-id');
 
-    const callbacks = createCallbacks();
-    await useCase.execute({ importId, callbacks });
-    const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
-    const rowErrorsCount = await rowErrorsDS.countByImport(importId);
-
-    expectCallbacksForSingleRow(callbacks, importId);
-    expectImportState(updatedImport);
-    expect(rowErrorsCount).toBe(0);
-
-    const entities = await fetchEntitiesByTemplate(entitiesDS, templateId);
-    expect(entities).toHaveLength(1);
-    const translation = entities[0].getTranslation('en');
-    expect(translation.getValue('rel_any').value).toEqual([
-      expect.objectContaining({ value: relatedSharedIdA }),
-      expect.objectContaining({ value: relatedSharedIdB }),
-    ]);
-  });
-
-  it('preserves completed batch progress when cancelled before finalization', async () => {
-    const { useCase, csvImportsDS, rowsDS, rowErrorsDS } = buildUseCase();
-    const importId = fixturesFactory.idString('import-entities-cancelled-before-finalize');
-    createdImportIds.push(importId);
-    const userId = fixturesFactory.idString('import-entities-cancel-user');
-
-    await insertImport(csvImportsDS, {
-      importId,
-      templateId,
-      userId,
-    });
-    await stageRows(rowsDS, {
-      importId,
-      csv: 'title,description\nMy Title,Some description',
-    });
-
-    const callbacks = createCallbacks();
-    callbacks.onProgress.mockImplementation(async () => {
-      await csvImportsDS.cancel(importId);
-    });
-
-    await useCase.execute({ importId, callbacks });
-
-    const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
-    const rowErrorsCount = await rowErrorsDS.countByImport(importId);
-
-    expect(updatedImport.status).toBe(CsvImportStatus.Cancelled);
-    expect(updatedImport.stats).toEqual(
-      expect.objectContaining({
-        rowsProcessed: 1,
-        rowsFailed: 0,
-      })
-    );
-    expect(rowErrorsCount).toBe(0);
-    expect(callbacks.onSuccess).not.toHaveBeenCalled();
-    expect(callbacks.onError).not.toHaveBeenCalled();
-  });
-
-  it('persists relationship taxonomy metadata for failed rows', async () => {
-    const { useCase, csvImportsDS, rowsDS, rowErrorsDS } = buildUseCase();
-    const importId = fixturesFactory.idString('import-entities-relationship-failure');
-    createdImportIds.push(importId);
-    const userId = fixturesFactory.idString('import-entities-relationship-failure-user');
-
-    await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({
-      importId,
-      templateId: '',
-      values: [],
-      createdAt: Date.now(),
-    });
-
-    await insertImport(csvImportsDS, {
-      importId,
-      templateId,
-      userId,
-    });
-    await stageRows(rowsDS, {
-      importId,
-      csv: 'title,description,rel_any\nMy Title,Some description,Unknown Related',
-    });
-
-    const callbacks = createCallbacks();
-    await useCase.execute({ importId, callbacks });
-
-    const persistedErrors = await rowErrorsDS.getByImport(importId);
-    expect(persistedErrors).toHaveLength(1);
-
-    const [error] = persistedErrors;
-    expect(error.code).toBe(RowErrorCode.RelationshipNotFound);
-    expect(error.message).toBe('Relationship value could not be resolved to an existing entity.');
-    expect(error.property).toBe('rel_any');
-    expect(error.rawValue).toBe('Unknown Related');
-    expect(error.details).toEqual({
-      unresolved: [
+      await testingEnvironment.db.getCollection('entities')!.insertMany([
         {
-          token: 'Unknown Related',
-          reason: 'not_found',
-          scope: 'any-template',
-          candidates: null,
+          _id: fixturesFactory.id('existing-other-template-en'),
+          sharedId,
+          title: 'Other template entity',
+          language: 'en',
+          template: fixtures.templates[1]._id,
+          metadata: {},
+          user: fixturesFactory.id('import-entities-update-id-template-mismatch-user'),
+          creationDate: Date.now(),
+          editDate: Date.now(),
+          published: false,
         },
-      ],
+        {
+          _id: fixturesFactory.id('existing-other-template-es'),
+          sharedId,
+          title: 'Entidad de otra plantilla',
+          language: 'es',
+          template: fixtures.templates[1]._id,
+          metadata: {},
+          user: fixturesFactory.id('import-entities-update-id-template-mismatch-user'),
+          creationDate: Date.now(),
+          editDate: Date.now(),
+          published: false,
+        },
+      ]);
+
+      await insertImport(csvImportsDS, {
+        importId,
+        templateId,
+        userId,
+      });
+      await stageRows(rowsDS, {
+        importId,
+        csv: `id,title,description\n${sharedId},Updated title,Updated description`,
+      });
+
+      const callbacks = createCallbacks();
+      await useCase.execute({ importId, callbacks });
+
+      const persistedErrors = await rowErrorsDS.getByImport(importId);
+      expect(persistedErrors).toHaveLength(1);
+      expect(persistedErrors[0].code).toBe(RowErrorCode.IdNotFoundInTemplate);
+      expect(persistedErrors[0].message).toBe('id not found in template');
+      expect(persistedErrors[0].property).toBe('id');
+      expect(persistedErrors[0].rawValue).toBe(sharedId);
+
+      const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+      expect(updatedImport.stats).toEqual(
+        expect.objectContaining({
+          entitiesCreated: 0,
+          entitiesUpdated: 0,
+          rowsProcessed: 1,
+          rowsFailed: 1,
+        })
+      );
     });
 
-    const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
-    expect(updatedImport.rowErrors).toEqual(
-      expect.objectContaining({
-        failedRows: 1,
-        reportPath: `csv-imports/${importId}/reports/failed_rows.csv`,
-      })
-    );
-  });
+    it('should import rows with any-template relationship when there is a unique match', async () => {
+      const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS, jobsDispatcher } =
+        buildUseCase();
+      const importId = fixturesFactory.idString('import-entities-any-relationship');
+      createdImportIds.push(importId);
+      const userId = fixturesFactory.idString('import-entities-any-user');
+      const relatedSharedId = fixturesFactory.idString('related-any-shared');
 
-  it('classifies empty lines as row errors and excludes them from failed-rows report artifact', async () => {
-    const { useCase, csvImportsDS, rowsDS, rowErrorsDS } = buildUseCase();
-    const importId = fixturesFactory.idString('import-entities-empty-line');
-    createdImportIds.push(importId);
-    const userId = fixturesFactory.idString('import-entities-empty-line-user');
+      await testingEnvironment.db.getCollection('entities')!.insertMany([
+        {
+          _id: fixturesFactory.id('related-any-en'),
+          sharedId: relatedSharedId,
+          title: 'Related Any',
+          language: 'en',
+          template: fixtures.templates[1]._id,
+          metadata: {},
+          user: fixturesFactory.id('import-entities-any-user'),
+          creationDate: Date.now(),
+          editDate: Date.now(),
+          published: false,
+        },
+        {
+          _id: fixturesFactory.id('related-any-es'),
+          sharedId: relatedSharedId,
+          title: 'Related Any',
+          language: 'es',
+          template: fixtures.templates[1]._id,
+          metadata: {},
+          user: fixturesFactory.id('import-entities-any-user'),
+          creationDate: Date.now(),
+          editDate: Date.now(),
+          published: false,
+        },
+      ]);
 
-    await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({
-      importId,
-      templateId: '',
-      values: [],
-      createdAt: Date.now(),
+      await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({
+        importId,
+        templateId: '',
+        values: [
+          {
+            label: 'Related Any',
+            matches: [{ sharedId: relatedSharedId, templateId: relatedTemplateId }],
+          },
+        ],
+        createdAt: Date.now(),
+      });
+
+      await insertImport(csvImportsDS, {
+        importId,
+        templateId,
+        userId,
+      });
+      await stageRows(rowsDS, {
+        importId,
+        csv: 'title,description,rel_any\nMy Title,Some description,Related Any',
+      });
+
+      const callbacks = createCallbacks();
+      await useCase.execute({ importId, callbacks });
+      const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+      const rowErrorsCount = await rowErrorsDS.countByImport(importId);
+
+      expectCallbacksForSingleRow(callbacks, importId);
+      expectImportState(updatedImport);
+      expect(rowErrorsCount).toBe(0);
+
+      const entities = await fetchEntitiesByTemplate(entitiesDS, templateId);
+      expect(entities).toHaveLength(1);
+      const translation = entities[0].getTranslation('en');
+      expect(translation.getValue('rel_any').value).toEqual([
+        expect.objectContaining({ value: relatedSharedId }),
+      ]);
+      expect(jobsDispatcher.dispatch).toHaveBeenCalledWith(
+        RelationshipSyncJob,
+        expect.objectContaining({
+          tenantName: tenants.current().name,
+          userId,
+          templateId,
+          targetLanguage: 'en',
+          sharedId: expect.any(String),
+        })
+      );
     });
 
-    await insertImport(csvImportsDS, {
-      importId,
-      templateId,
-      userId,
+    it('should import rows with multiple any-template relationships separated by pipe', async () => {
+      const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } = buildUseCase();
+      const importId = fixturesFactory.idString('import-entities-any-relationship-multi');
+      createdImportIds.push(importId);
+      const userId = fixturesFactory.idString('import-entities-any-multi-user');
+      const relatedSharedIdA = fixturesFactory.idString('related-any-shared-a');
+      const relatedSharedIdB = fixturesFactory.idString('related-any-shared-b');
+
+      await testingEnvironment.db.getCollection('entities')!.insertMany([
+        {
+          _id: fixturesFactory.id('related-any-a-en'),
+          sharedId: relatedSharedIdA,
+          title: 'Related Any A',
+          language: 'en',
+          template: fixtures.templates[1]._id,
+          metadata: {},
+          user: fixturesFactory.id('import-entities-any-multi-user'),
+          creationDate: Date.now(),
+          editDate: Date.now(),
+          published: false,
+        },
+        {
+          _id: fixturesFactory.id('related-any-a-es'),
+          sharedId: relatedSharedIdA,
+          title: 'Related Any A',
+          language: 'es',
+          template: fixtures.templates[1]._id,
+          metadata: {},
+          user: fixturesFactory.id('import-entities-any-multi-user'),
+          creationDate: Date.now(),
+          editDate: Date.now(),
+          published: false,
+        },
+        {
+          _id: fixturesFactory.id('related-any-b-en'),
+          sharedId: relatedSharedIdB,
+          title: 'Related Any B',
+          language: 'en',
+          template: fixtures.templates[1]._id,
+          metadata: {},
+          user: fixturesFactory.id('import-entities-any-multi-user'),
+          creationDate: Date.now(),
+          editDate: Date.now(),
+          published: false,
+        },
+        {
+          _id: fixturesFactory.id('related-any-b-es'),
+          sharedId: relatedSharedIdB,
+          title: 'Related Any B',
+          language: 'es',
+          template: fixtures.templates[1]._id,
+          metadata: {},
+          user: fixturesFactory.id('import-entities-any-multi-user'),
+          creationDate: Date.now(),
+          editDate: Date.now(),
+          published: false,
+        },
+      ]);
+
+      await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({
+        importId,
+        templateId: '',
+        values: [
+          {
+            label: 'Related Any A',
+            matches: [{ sharedId: relatedSharedIdA, templateId: relatedTemplateId }],
+          },
+          {
+            label: 'Related Any B',
+            matches: [{ sharedId: relatedSharedIdB, templateId: relatedTemplateId }],
+          },
+        ],
+        createdAt: Date.now(),
+      });
+
+      await insertImport(csvImportsDS, {
+        importId,
+        templateId,
+        userId,
+      });
+      await stageRows(rowsDS, {
+        importId,
+        csv: 'title,description,rel_any\nMy Title,Some description,Related Any A|Related Any B',
+      });
+
+      const callbacks = createCallbacks();
+      await useCase.execute({ importId, callbacks });
+      const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+      const rowErrorsCount = await rowErrorsDS.countByImport(importId);
+
+      expectCallbacksForSingleRow(callbacks, importId);
+      expectImportState(updatedImport);
+      expect(rowErrorsCount).toBe(0);
+
+      const entities = await fetchEntitiesByTemplate(entitiesDS, templateId);
+      expect(entities).toHaveLength(1);
+      const translation = entities[0].getTranslation('en');
+      expect(translation.getValue('rel_any').value).toEqual([
+        expect.objectContaining({ value: relatedSharedIdA }),
+        expect.objectContaining({ value: relatedSharedIdB }),
+      ]);
     });
-    await stageRows(rowsDS, {
-      importId,
-      csv: 'title,description\nMy Title,Some description\n,',
+
+    it('preserves completed batch progress when cancelled before finalization', async () => {
+      const { useCase, csvImportsDS, rowsDS, rowErrorsDS } = buildUseCase();
+      const importId = fixturesFactory.idString('import-entities-cancelled-before-finalize');
+      createdImportIds.push(importId);
+      const userId = fixturesFactory.idString('import-entities-cancel-user');
+
+      await insertImport(csvImportsDS, {
+        importId,
+        templateId,
+        userId,
+      });
+      await stageRows(rowsDS, {
+        importId,
+        csv: 'title,description\nMy Title,Some description',
+      });
+
+      const callbacks = createCallbacks();
+      callbacks.onProgress.mockImplementation(async () => {
+        await csvImportsDS.cancel(importId);
+      });
+
+      await useCase.execute({ importId, callbacks });
+
+      const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+      const rowErrorsCount = await rowErrorsDS.countByImport(importId);
+
+      expect(updatedImport.status).toBe(CsvImportStatus.Cancelled);
+      expect(updatedImport.stats).toEqual(
+        expect.objectContaining({
+          rowsProcessed: 1,
+          rowsFailed: 0,
+        })
+      );
+      expect(rowErrorsCount).toBe(0);
+      expect(callbacks.onSuccess).not.toHaveBeenCalled();
+      expect(callbacks.onError).not.toHaveBeenCalled();
     });
 
-    const callbacks = createCallbacks();
-    await useCase.execute({ importId, callbacks });
+    it('persists relationship taxonomy metadata for failed rows', async () => {
+      const { useCase, csvImportsDS, rowsDS, rowErrorsDS } = buildUseCase();
+      const importId = fixturesFactory.idString('import-entities-relationship-failure');
+      createdImportIds.push(importId);
+      const userId = fixturesFactory.idString('import-entities-relationship-failure-user');
 
-    const persistedErrors = await rowErrorsDS.getByImport(importId);
-    expect(persistedErrors).toHaveLength(1);
-    expect(persistedErrors[0].code).toBe(RowErrorCode.RowEmptyOrMalformed);
-    expect(persistedErrors[0].message).toBe('Empty line.');
+      await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({
+        importId,
+        templateId: '',
+        values: [],
+        createdAt: Date.now(),
+      });
 
-    const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
-    expect(updatedImport.stats).toEqual(
-      expect.objectContaining({
-        rowsProcessed: 2,
-        rowsFailed: 1,
-      })
-    );
-    expect(updatedImport.rowErrors ?? undefined).toBeUndefined();
-  });
+      await insertImport(csvImportsDS, {
+        importId,
+        templateId,
+        userId,
+      });
+      await stageRows(rowsDS, {
+        importId,
+        csv: 'title,description,rel_any\nMy Title,Some description,Unknown Related',
+      });
 
-  it('persists VALUE_INVALID_FORMAT for existing entity validation errors', async () => {
-    const { useCase, csvImportsDS, rowsDS, rowErrorsDS } = buildUseCase();
-    const importId = fixturesFactory.idString('import-entities-date-validation-failure');
-    createdImportIds.push(importId);
-    const userId = fixturesFactory.idString('import-entities-date-validation-failure-user');
+      const callbacks = createCallbacks();
+      await useCase.execute({ importId, callbacks });
 
-    await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({
-      importId,
-      templateId: '',
-      values: [],
-      createdAt: Date.now(),
+      const persistedErrors = await rowErrorsDS.getByImport(importId);
+      expect(persistedErrors).toHaveLength(1);
+
+      const [error] = persistedErrors;
+      expect(error.code).toBe(RowErrorCode.RelationshipNotFound);
+      expect(error.message).toBe('Relationship value could not be resolved to an existing entity.');
+      expect(error.property).toBe('rel_any');
+      expect(error.rawValue).toBe('Unknown Related');
+      expect(error.details).toEqual({
+        unresolved: [
+          {
+            token: 'Unknown Related',
+            reason: 'not_found',
+            scope: 'any-template',
+            candidates: null,
+          },
+        ],
+      });
+
+      const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+      expect(updatedImport.rowErrors).toEqual(
+        expect.objectContaining({
+          failedRows: 1,
+          reportPath: `csv-imports/${importId}/reports/failed_rows.csv`,
+        })
+      );
     });
 
-    await insertImport(csvImportsDS, {
-      importId,
-      templateId: dateTemplateId,
-      userId,
+    it('classifies empty lines as row errors and excludes them from failed-rows report artifact', async () => {
+      const { useCase, csvImportsDS, rowsDS, rowErrorsDS } = buildUseCase();
+      const importId = fixturesFactory.idString('import-entities-empty-line');
+      createdImportIds.push(importId);
+      const userId = fixturesFactory.idString('import-entities-empty-line-user');
+
+      await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({
+        importId,
+        templateId: '',
+        values: [],
+        createdAt: Date.now(),
+      });
+
+      await insertImport(csvImportsDS, {
+        importId,
+        templateId,
+        userId,
+      });
+      await stageRows(rowsDS, {
+        importId,
+        csv: 'title,description\nMy Title,Some description\n,',
+      });
+
+      const callbacks = createCallbacks();
+      await useCase.execute({ importId, callbacks });
+
+      const persistedErrors = await rowErrorsDS.getByImport(importId);
+      expect(persistedErrors).toHaveLength(1);
+      expect(persistedErrors[0].code).toBe(RowErrorCode.RowEmptyOrMalformed);
+      expect(persistedErrors[0].message).toBe('Empty line.');
+
+      const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+      expect(updatedImport.stats).toEqual(
+        expect.objectContaining({
+          rowsProcessed: 2,
+          rowsFailed: 1,
+        })
+      );
+      expect(updatedImport.rowErrors ?? undefined).toBeUndefined();
     });
-    await stageRows(rowsDS, {
-      importId,
-      csv: 'title,published_date\nMy Title,not-a-date',
+
+    it('persists VALUE_INVALID_FORMAT for existing entity validation errors', async () => {
+      const { useCase, csvImportsDS, rowsDS, rowErrorsDS } = buildUseCase();
+      const importId = fixturesFactory.idString('import-entities-date-validation-failure');
+      createdImportIds.push(importId);
+      const userId = fixturesFactory.idString('import-entities-date-validation-failure-user');
+
+      await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({
+        importId,
+        templateId: '',
+        values: [],
+        createdAt: Date.now(),
+      });
+
+      await insertImport(csvImportsDS, {
+        importId,
+        templateId: dateTemplateId,
+        userId,
+      });
+      await stageRows(rowsDS, {
+        importId,
+        csv: 'title,published_date\nMy Title,not-a-date',
+      });
+
+      const callbacks = createCallbacks();
+      await useCase.execute({ importId, callbacks });
+
+      const persistedErrors = await rowErrorsDS.getByImport(importId);
+      expect(persistedErrors).toHaveLength(1);
+
+      const [error] = persistedErrors;
+      expect(error.code).toBe(RowErrorCode.ValueInvalidFormat);
+      expect(error.property).toBe('published_date');
+      expect(error.rawValue).toBe('not-a-date');
+      expect(error.message).toContain('Invalid value for "published_date".');
     });
-
-    const callbacks = createCallbacks();
-    await useCase.execute({ importId, callbacks });
-
-    const persistedErrors = await rowErrorsDS.getByImport(importId);
-    expect(persistedErrors).toHaveLength(1);
-
-    const [error] = persistedErrors;
-    expect(error.code).toBe(RowErrorCode.ValueInvalidFormat);
-    expect(error.property).toBe('published_date');
-    expect(error.rawValue).toBe('not-a-date');
-    expect(error.message).toContain('Invalid value for "published_date".');
   });
 });
