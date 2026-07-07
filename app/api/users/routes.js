@@ -2,7 +2,6 @@ import { validation } from '#api/utils/index.js';
 import { userSchema } from '#shared/types/userSchema.js';
 import { needsAuthorization, validatePasswordMiddleWare } from '../auth/index.js';
 import users from './users.js';
-import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { tenants } from '#api/tenants/index.js';
 
 const getDomain = req => `${req.protocol}://${tenants.current().domain}`;

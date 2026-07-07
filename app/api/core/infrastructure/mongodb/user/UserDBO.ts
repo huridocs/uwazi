@@ -10,6 +10,7 @@ interface UserDBO {
   using2fa?: boolean;
   secret?: string | null;
   deletedAt?: Date | null;
+  accountLocked?: boolean;
 }
 
 export type { UserDBO };

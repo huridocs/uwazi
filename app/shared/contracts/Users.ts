@@ -26,4 +26,12 @@ type DeleteUserResponse = {
   deletedCount: number;
 };
 
-export type { CreateUserResponse, CreateUserRequest, DeleteUserRequest, DeleteUserResponse };
+type GetUsersResponse = User[];
+
+export type {
+  CreateUserResponse,
+  CreateUserRequest,
+  DeleteUserRequest,
+  DeleteUserResponse,
+  GetUsersResponse,
+};

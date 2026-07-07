@@ -1,6 +1,8 @@
+import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { UserRole } from '#shared/types/userSchema.js';
+import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 
 const f = getFixturesFactory();
 
@@ -14,6 +16,12 @@ const fixtures: DBFixture = {
       email: 'deleted@test.com',
       deletedAt: '1',
     }),
+    {
+      _id: new ObjectId(PUBLIC_USER_ID),
+      username: 'public',
+      role: UserRole.COLLABORATOR,
+      email: 'public@uwazi.local',
+    },
   ],
   settings: [
     {
