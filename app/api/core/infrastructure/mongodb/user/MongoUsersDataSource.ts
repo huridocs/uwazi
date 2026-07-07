@@ -1,15 +1,26 @@
-import { ObjectId } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { UsersDataSource } from '#api/core/application/contracts/UsersDataSource.js';
 import { PUBLIC_USER_ID, User } from '#api/core/domain/user/User.js';
 import { EmailInUse, UsernameExists } from '#api/core/domain/user/errors.js';
 import { Result } from '#api/core/libs/Result.js';
+import { MongoDataSource } from '../common/MongoDataSource.js';
 import { UserDBO } from './UserDBO.js';
 import { MongoUsersMapper } from './MongoUsersMapper.js';
 import { MongoUsersDAO } from './MongoUsersDAO.js';
 
-class MongoUsersDataSource extends MongoUsersDAO implements UsersDataSource {
+class MongoUsersDataSource extends MongoDataSource<UserDBO> implements UsersDataSource {
+  protected collectionName = 'users';
+
+  private dao: MongoUsersDAO;
+
+  constructor(deps: { db: Db; transactionManager: TransactionManager; dao: MongoUsersDAO }) {
+    super(deps.db, deps.transactionManager);
+    this.dao = deps.dao;
+  }
+
   async checkUniqueUsername(user: User) {
-    const [userInDb] = await this.get({ username: user.username });
+    const [userInDb] = await this.dao.get({ username: user.username });
 
     if (userInDb) {
       return Result.fail(new UsernameExists(user.username));
@@ -19,7 +30,7 @@ class MongoUsersDataSource extends MongoUsersDAO implements UsersDataSource {
   }
 
   async checkUniqueEmail(user: User) {
-    const [userInDb] = await this.get({ email: user.email });
+    const [userInDb] = await this.dao.get({ email: user.email });
 
     if (userInDb) {
       return Result.fail(new EmailInUse(user.email));

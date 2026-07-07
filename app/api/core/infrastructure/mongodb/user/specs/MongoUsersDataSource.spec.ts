@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { PUBLIC_USER_ID, User, UserRole } from '#api/core/domain/user/User.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -25,9 +26,11 @@ const fixtures = {
 
 const createDs = () => {
   const transactionManager = TransactionManagerFactory.default();
+  const dao = UsersDAOFactory.default();
   const ds = new MongoUsersDataSource({
     db: getConnection(),
     transactionManager,
+    dao,
   });
   return { ds, transactionManager };
 };
