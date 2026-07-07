@@ -118,8 +118,20 @@ class PostgresFilesDAO extends PostgresDataSource {
     for (const [key, value] of Object.entries(query)) {
       if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
         const obj = value as Record<string, unknown>;
+        if ('$exists' in obj) {
+          if (obj.$exists) {
+            qb = qb.whereNotNull(key);
+          } else {
+            qb = qb.whereNull(key);
+          }
+          continue;
+        }
         if ('$in' in obj) {
           qb = qb.whereIn(key, obj.$in as unknown[]);
+          continue;
+        }
+        if ('$nin' in obj) {
+          qb = qb.whereNotIn(key, obj.$nin as unknown[]);
           continue;
         }
       }

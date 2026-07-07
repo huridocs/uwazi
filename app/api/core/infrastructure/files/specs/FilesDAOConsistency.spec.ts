@@ -490,6 +490,63 @@ describe('FilesDAOConsistency', () => {
           }
         }
       });
+
+      it('filters by $exists:true for nullable fields', async () => {
+        const dao = getDao();
+        const files = await dao.getByQuery({ language: { $exists: true } });
+
+        expect(files.length).toBeGreaterThan(0);
+        files.forEach(f => expect(f.language).toBeTruthy());
+      });
+
+      it('filters by $exists:false for nullable fields', async () => {
+        const dao = getDao();
+        const files = await dao.getByQuery({ language: { $exists: false } });
+
+        expect(files.length).toBeGreaterThan(0);
+        files.forEach(f => expect(f.language).toBeFalsy());
+      });
+
+      it('combines $exists with other filters', async () => {
+        const dao = getDao();
+        const files = await dao.getByQuery({
+          type: 'document',
+          language: { $exists: true },
+        });
+
+        expect(files.length).toBeGreaterThan(0);
+        files.forEach(f => {
+          expect(f.type).toBe('document');
+          expect(f.language).toBeTruthy();
+        });
+      });
+
+      it('filters by $nin', async () => {
+        const dao = getDao();
+        const files = await dao.getByQuery({
+          entity: { $nin: ['entity_a', 'entity_x'] },
+        });
+
+        expect(files.length).toBeGreaterThan(0);
+        files.forEach(f => {
+          expect(f.entity).not.toBe('entity_a');
+          expect(f.entity).not.toBe('entity_x');
+        });
+      });
+
+      it('combines $nin with other filters', async () => {
+        const dao = getDao();
+        const files = await dao.getByQuery({
+          type: 'document',
+          entity: { $nin: ['entity_a'] },
+        });
+
+        expect(files.length).toBeGreaterThan(0);
+        files.forEach(f => {
+          expect(f.type).toBe('document');
+          expect(f.entity).not.toBe('entity_a');
+        });
+      });
     });
 
     describe('getNextDocumentWithoutToc', () => {

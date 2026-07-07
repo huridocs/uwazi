@@ -26,6 +26,16 @@ export class PostgresQueryBuilder<TRow> {
     return this;
   }
 
+  whereNull(column: string): this {
+    this.qb = this.qb.whereNull(column);
+    return this;
+  }
+
+  whereNotNull(column: string): this {
+    this.qb = this.qb.whereNotNull(column);
+    return this;
+  }
+
   whereNot(column: string, value: unknown): this {
     this.qb = this.qb.whereNot(column, value as Knex.Value);
     return this;
