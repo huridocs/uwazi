@@ -547,6 +547,14 @@ describe('FilesDAOConsistency', () => {
           expect(f.entity).not.toBe('entity_a');
         });
       });
+
+      it('returns _id when projection uses inclusion mode', async () => {
+        const dao = getDao();
+        const files = await dao.getByQuery({ type: 'document' }, { projection: { filename: 1 } });
+
+        expect(files.length).toBeGreaterThan(0);
+        files.forEach(f => expect(f).toHaveProperty('_id'));
+      });
     });
 
     describe('getNextDocumentWithoutToc', () => {

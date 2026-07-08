@@ -38,7 +38,12 @@ class PostgresFilesDAO extends PostgresDataSource {
       const hasInclusions = entries.some(([, v]) => v === 1);
 
       if (hasInclusions) {
-        return entries.filter(([, v]) => v === 1).map(([k]) => k);
+        const columns = entries.filter(([, v]) => v === 1).map(([k]) => k);
+        const idExplicitlyExcluded = entries.some(([k, v]) => k === '_id' && v === 0);
+        if (!columns.includes('_id') && !idExplicitlyExcluded) {
+          columns.unshift('_id');
+        }
+        return columns;
       }
 
       const excludes = new Set(entries.filter(([, v]) => v === 0).map(([k]) => k));
