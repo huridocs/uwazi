@@ -4,7 +4,7 @@
 
 **Alcance:** `app/react/V2` en uwazi-wt-second.  
 **Fecha:** 2026-06-11.  
-**Actualizado:** 2026-06-11 — servicios por dominio; loaders orquestan; `createXLoader`; mutaciones vía `useServices` (sin actions).
+**Actualizado:** 2026-06-25 — servicios por dominio; loaders orquestan; `createXLoader`; mutaciones vía `useServices`; **SSR in-process** (§7.4).
 
 ---
 
@@ -87,7 +87,7 @@ Dos módulos de `api/` importan tipos de rutas (dirección incorrecta):
 ┌─────────────────────────────────────────────────────────┐
 │  Components                                             │
 │  - Lectura: useLoaderData                               │
-│  - Escritura: useServices() + useServiceMutation()      │
+│  - Escritura: useServices() + ApiResponse tupla         │
 │  - NO importan api/ ni http; NO useFetcher/actions      │
 └──────────────────────────┬──────────────────────────────┘
                            │
@@ -101,11 +101,12 @@ Dos módulos de `api/` importan tipos de rutas (dirección incorrecta):
 │  Services (#V2/services/) — un objeto por dominio       │
 │  - Operaciones de dominio: getBySharedId, list, save…   │
 │  - NO conocen loaderData ni nombres de rutas            │
-│  - Delegan en api/; opcional caché reutilizable       │
+│  - Implementación HTTP (cliente) o server (SSR, §7.4)   │
 └──────────────────────────┬──────────────────────────────┘
                            │ usa
 ┌──────────────────────────▼──────────────────────────────┐
-│  API (#V2/api/) → #app/utils/api.js                     │
+│  API (#V2/api/) → #app/utils/api.js  [solo transporte HTTP] │
+│  — o — adapters server → app/api (use cases) [SSR in-process] │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -127,7 +128,7 @@ Una ruta puede usar **varios servicios** en el mismo loader. Eso **no** va en un
 | `#V2/services/*` | Fachada por dominio (`entities`, `files`, `thesauri`, …) |
 | `Routes/*/loader.ts` | Factory React Router + wiring a `services` |
 | `Routes/*/loadXPage.ts` | Orquestación pura (opcional, rutas complejas) |
-| Mutaciones | `useServices()` / `useServiceMutation()` en componentes + `useRevalidator()` si hace falta refrescar loader |
+| Mutaciones | `useServices()` + tupla `ApiResponse` en handlers + `useRequestStatus` + `useRevalidator()` |
 
 ### 2.2 Cómo acceden los loaders a los servicios
 
@@ -245,7 +246,8 @@ El loader **compone** `entities`, `files` y `search`. Ningún servicio individua
 
 | Mecanismo | Quién lo usa | Cuándo |
 |-----------|--------------|--------|
-| `import { services }` + `createXLoader()` default | Loaders en producción | Siempre (SSR incluido) |
+| `import { services }` + `createXLoader()` default | Loaders en producción (cliente) | Navegación en browser |
+| `createServerServices(req)` + `createXLoader(serverServices)` | Loaders en SSR (`entry-server`) | Lectura inicial sin HTTP loopback (§7.4) |
 | `createXLoader(testServices)` | Tests de loader, tests de ruta con loader real | Sustituir deps sin `jest.mock` de api |
 | `ServicesProvider` + `useServices()` | **Solo componentes** (mutaciones en cliente) | EntityFilesContext, modales, etc. |
 
@@ -282,22 +284,28 @@ flowchart TB
 ```tsx
 // Patrón estándar en cualquier ruta Settings / Entity
 const Users = () => {
-  const { users, groups } = useLoaderData();
   const { users: usersService } = useServices();
   const revalidator = useRevalidator();
-  const { mutate, isPending } = useServiceMutation(usersService.deleteUser, {
-    successMessage: t('System', 'User deleted', null, false),
-    onSuccess: () => revalidator.revalidate(),
-  });
+  const { notify } = useRequestStatus();
+  const [isPending, setIsPending] = useState(false);
 
-  const handleDelete = (selected: User[]) => mutate({ users: selected, confirmation });
+  const handleDelete = async (selected: User[], confirmation: string) => {
+    setIsPending(true);
+    const [, error] = await usersService.deleteUser(selected, confirmation);
+    setIsPending(false);
+
+    if (error) {
+      notify('error', t('System', 'An error occurred', null, false), undefined, error.json?.prettyMessage);
+      return;
+    }
+
+    notify('success', t('System', 'User deleted', null, false));
+    await revalidator.revalidate();
+  };
 };
 ```
 
-`useServiceMutation` (evolución de `useApiCaller`) centraliza:
-- llamada al método del servicio;
-- `useRequestStatus` (toast / error);
-- estado `isPending` opcional.
+Misma tupla que en loaders; en componentes el handler gestiona toasts, `isPending` y revalidación. Sin hook extra hasta que el patrón se repita lo suficiente.
 
 `ServicesProvider` envuelve el árbol de la app en cliente (o solo la ruta en tests) para que `useServices()` resuelva el mismo objeto que los loaders usan por import.
 
@@ -555,7 +563,7 @@ Hoy solo **Users** y **EditTranslations** usan `action` + `useFetcher().submit()
 **Migración Users (Fase 1b o Fase 3):**
 
 1. `UsersService` con métodos que hoy despacha `userAction` (`newUser`, `deleteUser`, `saveGroup`, …).
-2. Sustituir `useFetcher` por `useServiceMutation` / `useServices()` en `Users.tsx` y sidepanels.
+2. Sustituir `useFetcher` por handlers con `useServices()` + tupla `ApiResponse` en `Users.tsx` y sidepanels.
 3. Quitar `userAction` y `action={userAction()}` de `Routes.tsx`.
 4. Mantener `createUsersLoader` para lectura.
 
@@ -725,21 +733,24 @@ Ver implementación en §2.9.
 | `loader.spec.ts` con mock de api | Testear `loadEntityPage(testServices, input)` directamente, o `createEntityLoader(testServices)` |
 | `Thesauri.spec.tsx` (loader real + mock api) | `createThesauriLoader(testServices)` en el router |
 
-### 5.4 `useServiceMutation` (patrón estándar de escritura)
+### 5.4 Mutaciones en componentes (tupla + `useRequestStatus`)
 
-Reemplaza `useApiCaller` (Languages) y elimina la necesidad de actions/`useFetcher` (Users).
+Reemplaza `useApiCaller` (Languages) y elimina actions/`useFetcher` (Users). Sin hook dedicado en Fase 0 — extraer uno solo si el boilerplate se repite en muchas rutas.
 
-```typescript
-// CustomHooks/useServiceMutation.ts
-const { mutate, isPending, error } = useServiceMutation(
-  (svc) => svc.templates.setDefault,
-  {
-    successMessage: t('System', 'Default template updated', null, false),
-    onSuccess: () => revalidator.revalidate(),
+```tsx
+const { templates: templatesService } = useServices();
+const { notify } = useRequestStatus();
+const revalidator = useRevalidator();
+
+const handleSetDefault = async (templateId: string) => {
+  const [, error] = await templatesService.setDefault(templateId);
+  if (error) {
+    notify('error', t('System', 'An error occurred', null, false), undefined, error.json?.prettyMessage);
+    return;
   }
-);
-
-await mutate(templateId);
+  notify('success', t('System', 'Default template updated', null, false));
+  await revalidator.revalidate();
+};
 ```
 
 En tests del componente:
@@ -757,7 +768,7 @@ fireEvent.click(screen.getByRole('button', { name: /set default/i }));
 await waitFor(() => expect(setDefaultMock).toHaveBeenCalledWith('tpl1'));
 ```
 
-Implementar en **Fase 0** junto con `ServicesProvider` — es prerequisito para migrar Users sin actions.
+`ServicesProvider` + `useServices` en Fase 0; migración de mutaciones en Fase 1+ con el patrón de tupla arriba.
 
 ---
 
@@ -769,10 +780,9 @@ Implementar en **Fase 0** junto con `ServicesProvider` — es prerequisito para 
 
 - [ ] Crear `app/react/V2/services/` con `types.ts`, `createDefaultServices.ts`, `index.ts`
 - [ ] Añadir alias `#V2/services/*` en `package.json` imports
-- [ ] Implementar `ServicesProvider`, `useServices`, `useServiceMutation`, `createTestServices`, `renderRoute`
+- [ ] Implementar `ServicesProvider`, `useServices`, `createTestServices`, `renderRoute`
 - [ ] Documentar patrón `createXLoader(svc?)` en convención de rutas
 - [ ] Documentar convención en comentario JSDoc en `services/index.ts`
-- [ ] Añadir `api/helpers.ts` con `apiCall` y migrar **un** módulo piloto (`entities` ya usa tuplas)
 
 **Criterio de done:** tests existentes verdes; un test de humo que monta `ServicesProvider` con mock.
 
@@ -783,7 +793,7 @@ Implementar en **Fase 0** junto con `ServicesProvider` — es prerequisito para 
 **1a — Thesauri**
 
 - [ ] `ThesaurusService` (`list`, `getById`, `save`, `deleteMany`)
-- [ ] `createThesauriLoader`; componente con `useServices` + `useServiceMutation`
+- [ ] `createThesauriLoader`; componente con `useServices` + mutaciones vía tupla
 - [ ] `buildThesauriRows` en helper de ruta
 - [ ] Migrar `Thesauri.spec.tsx` a `createThesauriLoader(testServices)`
 
@@ -791,7 +801,7 @@ Implementar en **Fase 0** junto con `ServicesProvider` — es prerequisito para 
 
 - [ ] `UsersService` envolviendo `usersAPI`
 - [ ] `createUsersLoader` para lectura
-- [ ] Reescribir `Users.tsx` y sidepanels: `useServiceMutation` en lugar de `useFetcher` + `userAction`
+- [ ] Reescribir `Users.tsx` y sidepanels: `useServices()` + tupla en lugar de `useFetcher` + `userAction`
 - [ ] Eliminar `userAction` y `action={…}` en `Routes.tsx`
 - [ ] Tests: mock `usersService.*` vía `ServicesProvider`
 
@@ -810,6 +820,22 @@ Implementar en **Fase 0** junto con `ServicesProvider` — es prerequisito para 
 - [ ] Reducir imports directos de `#V2/api` en `Routes/Entity/**`
 
 **Criterio de done:** `loader.ts` solo wiring; `loadEntityPage.spec.ts` mockea `entities`/`files`/`search` por separado.
+
+### Fase 2b — SSR in-process (opcional, paralelizable tras Fase 2)
+
+**Objetivo:** eliminar HTTP loopback en loaders SSR sin cambiar loaders ni componentes cliente.
+
+**Prerequisito:** dominios de Fase 2 ya tienen `EntitiesService` / `FilesService` / `SearchService` con contrato estable (implementación HTTP).
+
+- [ ] `createServerServices(req)` + `ServerServiceContext` (user, tenant, language, headers)
+- [ ] `services/server/*` — adapters in-process para `entities`, `files`, `search`
+- [ ] Wiring en `entry-server.tsx`: pasar `serverServices` a `getRoutes` / loaders
+- [ ] Tests de paridad: mismo `req` → mismo `loaderData` (HTTP vs server)
+- [ ] Métrica: latencia SSR en Entity (antes/después)
+
+**Criterio de done:** Entity loader en SSR sin loopback para lectura; cliente sin cambios; tests de paridad verdes.
+
+**Nota:** dominios cuyo bootstrap ya es in-process (`prepareStores`: templates, thesauri, relation types) pueden servir de plantilla. Expandir a loaders de ruta cuando el adapter HTTP del servicio exista.
 
 ### Fase 3 — Settings masivos (PRs por subdominio)
 
@@ -848,7 +874,9 @@ Algunos componentes en `V2/Components/` importan api (buscar y migrar):
 | Desde | Puede importar |
 |-------|----------------|
 | `Routes/**` | `#V2/services`, `#V2/formatters`, `#V2/Components`, `#V2/atoms`, tipos. Loaders importan `services` + exportan `createXLoader` |
-| `services/**` | `#V2/api`, `#V2/formatters`, `#shared/*` |
+| `services/http/**` | `#V2/api`, `#V2/formatters`, `#shared/*` |
+| `services/server/**` | `#api/*` (use cases, factories, `v1_layer`), `#V2/formatters`, `#shared/*`. **No** controllers Express ni `#V2/Routes` |
+| `services/**` (shared) | Solo tipos, `createDefaultServices`, `createServerServices`, providers |
 | `api/**` | `#app/utils/api`, `#shared/*`, **nunca** `#V2/Routes` |
 | `Components/**` | Evitar `#V2/api`; preferir props o `useServices()` |
 
@@ -867,9 +895,127 @@ Regla `no-restricted-imports` en `Routes/**`:
 
 Aplicar primero como `warn`, luego `error` cuando Fase 3 avance.
 
-### 7.3 SSR
+### 7.3 SSR — headers y wiring de loaders
 
 Los servicios reciben `headers?: IncomingHttpHeaders` en métodos usados por loaders SSR. La firma `(headers?) => LoaderFunction` se mantiene en el export de producción (`xLoader`). Internamente: `createXLoader(services)(headers)`.
+
+En **cliente**, el singleton `services` delega en `#V2/api` (HTTP al servidor real).
+
+En **SSR**, hoy los loaders siguen ese mismo camino: `entry-server.tsx` configura `api.APIURL('http://localhost:PORT/api/')` y cada loader hace HTTP loopback (sale del proceso Node, entra por Express, serializa JSON y vuelve). Ver §7.4 para la alternativa in-process.
+
+### 7.4 SSR in-process — servicios que llaman al backend directamente
+
+#### Problema
+
+En SSR coexisten **dos patrones** (ver `app/react/entry-server.tsx`):
+
+| Capa | Patrón actual | Ejemplo |
+|------|---------------|---------|
+| **Bootstrap** (`prepareStores`) | Llamada directa a `app/api/*` | `templatesApi.get()`, `thesauriApi.dictionaries()` |
+| **Loaders de ruta** (React Router) | HTTP loopback vía `#V2/api` → `#app/utils/api.js` | `entityLoader`, `thesauriLoader`, etc. |
+
+El loopback añade overhead por llamada: serialización JSON, routing Express, middleware (auth, tenant, i18n), allocación request/response. En rutas multi-servicio (p. ej. Entity: `entities` + `files` + `search`) el coste se multiplica.
+
+#### Viabilidad
+
+**Alta a nivel arquitectónico** — el plan ya define servicios como fachada inyectable (`createXLoader(svc?)`). La inyección no es solo para tests: también permite elegir **transporte según runtime**:
+
+```
+Loaders → Services (interfaz) → [ http (#V2/api) | server (use cases / v1_layer) | test (mocks) ]
+```
+
+**Media-alta en migración incremental** — dominio a dominio, alineado con las fases del plan.
+
+**Media-baja en cobertura completa a corto plazo** — backend heterogéneo (legacy `app/api/*`, V2 core, `v1_layer`), auth/permisos que hoy pasan por middleware HTTP, y dominios con sockets/uploads.
+
+Las **mutaciones en SSR no son prioridad**: el plan cierra escritura en cliente vía `useServices()` + tupla `ApiResponse`. El ahorro in-process aplica sobre todo a **lecturas de loader**.
+
+#### Tres implementaciones de servicio (mismo contrato)
+
+```
+services/
+  http/       → delega en #V2/api (cliente + SSR actual)
+  server/     → delega en use cases / factories / v1_layer (SSR loaders)
+  testing/    → createTestServices (Fase 0)
+```
+
+Cada dominio expone la **misma interfaz** (`EntitiesService`, `ThesaurusService`, …). Solo cambia el adapter:
+
+| Runtime | Factory | Transporte |
+|---------|---------|------------|
+| Browser | `createDefaultServices()` | `services/http/*` → `#V2/api` |
+| SSR | `createServerServices(req)` | `services/server/*` → `app/api` (in-process) |
+| Tests | `createTestServices(overrides)` | mocks parciales |
+
+#### Wiring en `entry-server` (no en loaders ni en componentes)
+
+```typescript
+// Pseudocódigo — entry-server.tsx
+const serverServices = createServerServices({
+  user: req.user,
+  tenant: req.get('tenant'),
+  language,
+  headers,
+});
+
+const routes = getRoutes(settings, userId, headers, indexComponents, serverServices);
+// Cada loader: createEntityLoader(serverServices)(headers)
+```
+
+- **Cliente:** `Routes.tsx` sigue usando `createXLoader()` con singleton HTTP.
+- **SSR:** `getRoutes` recibe `serverServices` y los loaders se cierran con esa instancia.
+- **Componentes:** `useServices()` en cliente **nunca** usa el adapter servidor.
+
+#### Reglas del adapter servidor
+
+1. **Mismo DTO que `#V2/api`** — el adapter devuelve el shape que la UI espera (reutilizar `formatters/` si aplica). Sin esto hay regresiones de hidratación.
+2. **No importar `Routes/**` ni controllers Express** — llamar application layer (factories, use cases, `v1_layer`) como hace `prepareStores`.
+3. **`ExecutionContext`** — envolver llamadas en `runWithContext()` con `tenant` + `actor` derivados de `req.user` / `req.headers`. No reimplementar permisos en React.
+4. **Los loaders no conocen el transporte** — solo llaman `svc.entities.getBySharedId(...)`.
+
+#### Ejemplo: `ServerEntitiesService`
+
+```typescript
+// services/server/entities/ServerEntitiesService.ts
+import { EntitiesQueryServiceFactory } from '#api/core/infrastructure/factories/EntitiesQueryServiceFactory.js';
+import type { ServerServiceContext } from '../types.js';
+
+const createServerEntitiesService = (ctx: ServerServiceContext): EntitiesService => ({
+  getBySharedId: async ({ sharedId, language, omitRelationships }, _headers) =>
+    runWithServerContext(ctx, async () => {
+      const queryService = EntitiesQueryServiceFactory.default(ctx.user);
+      const rows = await queryService.getEntities({
+        sharedId,
+        language,
+        includeRelationships: !omitRelationships,
+      });
+      return [mapToClientEntity(rows), undefined];
+    }),
+  // ...
+});
+```
+
+#### Orden sugerido (después de Fase 2 HTTP)
+
+| Prioridad | Dominio | Motivo |
+|-----------|---------|--------|
+| Alta | `entities`, `files`, `search` | Entity loader multi-llamada; ruta crítica |
+| Media | `thesauri`, `templates`, `users` | Settings; bootstrap ya llama backend directo para algunos |
+| Baja | `csv`, uploads, sockets | Poco impacto en lectura SSR de loader |
+
+#### Qué no hacer
+
+- Que los loaders importen `app/api` directamente (rompe testabilidad y la capa de servicios).
+- Big-bang que sustituya todo el loopback SSR de golpe.
+- Asumir que in-process es siempre más simple — a veces el módulo legacy no es más limpio que HTTP.
+
+#### Tests
+
+| Tipo | Enfoque |
+|------|---------|
+| Loader (unit) | `createTestServices` — sin red, sin backend |
+| Adapter servidor | Integración contra use cases / DB de test |
+| Paridad SSR | Mismo `req` → comparar `loaderData` HTTP vs in-process |
 
 ---
 
@@ -879,7 +1025,9 @@ Los servicios reciben `headers?: IncomingHttpHeaders` en métodos usados por loa
 |--------|------------|
 | PRs enormes | Un servicio / subdominio por PR; fases estrictas |
 | Doble abstracción (api + service) sin valor | Servicios = fachada por dominio; orquestación multi-dominio en loaders/helpers |
-| Regresiones SSR | Tests de loader con headers mock; smoke e2e en rutas piloto |
+| Regresiones SSR | Tests de loader con headers mock; smoke e2e en rutas piloto; tests de paridad HTTP vs in-process (§7.4) |
+| Divergencia HTTP vs in-process (bugs solo en SSR) | Misma interfaz de servicio; contract tests por dominio |
+| `ExecutionContext` no inicializado en adapter servidor | `runWithServerContext(ctx, fn)` en cada método server |
 | `jest.mock` de módulo singleton `services` | Usar `createXLoader(testServices)` / `loadXPage(testServices, input)`; nunca espiar el singleton global |
 | Uploads/sockets no encajan en CRUD | `FilesService` y `CsvImportService` encapsulan `UploadService` y `csv/events` |
 | Regresión al migrar Users off actions | PR dedicado 1b; mantener comportamiento de confirmación/password en handlers |
@@ -909,7 +1057,9 @@ Los servicios reciben `headers?: IncomingHttpHeaders` en métodos usados por loa
 
 4. **React Query / SWR.** Fuera de alcance; el proyecto usa React Router loaders + Jotai. Los servicios son compatibles con una migración futura a React Query (los hooks llamarían a los mismos servicios).
 
-5. **React Router Actions para mutaciones.** **Cerrado: no.** Users/Translations son legado. Estándar = loader (lectura) + `useServices` / `useServiceMutation` (escritura) + `useRevalidator` cuando aplique. Ver §2.8.
+5. **React Router Actions para mutaciones.** **Cerrado: no.** Users/Translations son legado. Estándar = loader (lectura) + `useServices()` + tupla en handlers (escritura) + `useRevalidator` cuando aplique. Ver §2.8.
+
+6. **SSR: HTTP loopback vs in-process.** **Cerrado: ambos vía inyección.** Cliente usa `createDefaultServices()` (HTTP). SSR loaders usan `createServerServices(req)` (in-process) cuando el adapter existe; fallback HTTP hasta completar migración por dominio. Ver §7.4. La inyección `createXLoader(svc?)` sirve para tests, SSR y cliente — no solo para mocks.
 
 ---
 
@@ -917,17 +1067,18 @@ Los servicios reciben `headers?: IncomingHttpHeaders` en métodos usados por loa
 
 | Archivo | Rol |
 |---------|-----|
+| `app/react/entry-server.tsx` | SSR: bootstrap in-process (`prepareStores`) + loaders con loopback HTTP; destino del wiring `createServerServices` (§7.4) |
 | `app/react/Routes.tsx` | Registro de rutas V2 y wiring de loaders |
 | `app/react/V2/api/ApiResponse.ts` | Tipo tupla a estandarizar |
 | `app/react/V2/api/entities/index.ts` | Ejemplo de contrato tupla |
 | `app/react/V2/api/templates/index.ts` | Ejemplo de `return e` en catch |
-| `app/react/V2/Routes/Settings/Users/Users.tsx` | Legado action — migrar a `useServiceMutation` (§2.8) |
+| `app/react/V2/Routes/Settings/Users/Users.tsx` | Legado action — migrar a `useServices()` + tupla (§2.8) |
 | `app/react/V2/Routes/Settings/Translations/EditTranslations.tsx` | Legado action — migrar en Fase 3 |
 | `app/react/V2/Routes/Entity/loader.ts` | Orquestación → `loadEntityPage.ts`; servicios por dominio |
 | `app/react/V2/Routes/Settings/ParagraphExtraction/Loaders.ts` | Orquestación multi-API |
 | `app/react/V2/Routes/Settings/Thesauri/specs/Thesauri.spec.tsx` | Test con loader real |
 | `app/react/V2/testing/TestRouterContext.tsx` | Harness actual a extender |
-| `app/react/V2/CustomHooks/useApiCaller.tsx` | Base para `useServiceMutation` |
+| `app/react/V2/CustomHooks/useApiCaller.tsx` | Patrón legacy de mutaciones (Languages); sustituir por tupla + `useRequestStatus` |
 | `app/react/V2/atoms/store.ts` | Hidratación SSR de datos de referencia |
 
 ---

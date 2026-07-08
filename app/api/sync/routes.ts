@@ -2,16 +2,17 @@
 import multer from 'multer';
 
 import type { Application, Request } from 'express';
-import { models, WithId } from '#api/odm/index.js';
+import { models } from '#api/odm/index.js';
 import { search } from '#api/search/index.js';
 
 import { storage, uploadMiddleware } from '#api/files/index.js';
 import { updateMapping } from '#api/search/entitiesIndex.js';
 import { TranslationType } from '#shared/translationType.js';
-import { FileType } from '#shared/types/fileType.js';
 import { needsAuthorization } from '../auth/index.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { SyncHandlerRegistry } from './SyncHandlerRegistry.js';
 import { registerSyncHandlers } from './registerSyncHandlers.js';
+import { FileDBO } from '#api/core/infrastructure/mongodb/files/schemas/FilesTypes.js';
 
 const diskStorage = multer.diskStorage({
   filename(_req, file, cb) {
@@ -35,10 +36,6 @@ const updateMappings = async (req: Request) => {
   }
 };
 
-const deleteFileFromIndex = async (file: FileType) => {
-  await search.indexEntities({ sharedId: file.entity });
-};
-
 const deleteEntityFromIndex = async (entityId: string) => {
   try {
     await search.delete({ _id: entityId });
@@ -47,15 +44,6 @@ const deleteEntityFromIndex = async (entityId: string) => {
       throw err;
     }
   }
-};
-
-const deleteFile = async (fileId: string) => {
-  const file: WithId<FileType> | undefined = await models.files().getById(fileId);
-  if (file) {
-    await storage.removeFile(file.filename || '', file.type || 'document');
-    await deleteFileFromIndex(file);
-  }
-  return file;
 };
 
 const preserveTranslations = async (syncData: TranslationType): Promise<TranslationType> => {
@@ -101,8 +89,8 @@ export default (app: Application) => {
         );
         await models[req.body.namespace]().save(req.body.data);
       } else {
-        const odmModel = models[req.body.namespace]?.();
-        const handler = odmModel ?? SyncHandlerRegistry.get(req.body.namespace);
+        const handler =
+          SyncHandlerRegistry.get(req.body.namespace) ?? models[req.body.namespace]?.();
         if (!handler) {
           throw new Error(`No sync handler for namespace: ${req.body.namespace}`);
         }
@@ -143,21 +131,34 @@ export default (app: Application) => {
     needsAuthorization(['admin']),
     async (req: Request<{}, {}, {}, { data: string; namespace: string }>, res, next) => {
       try {
-        if (SyncHandlerRegistry.has(req.query.namespace)) {
-          const handler = SyncHandlerRegistry.get(req.query.namespace)!;
-          await handler.delete(JSON.parse(req.query.data)._id);
-          res.json('ok');
-          return;
+        const data = JSON.parse(req.query.data);
+        const handler = SyncHandlerRegistry.get(req.query.namespace);
+
+        let fileInfo: FileDBO | undefined;
+        if (req.query.namespace === 'files') {
+          const result = await FilesDAOFactory.default().getById(data._id, {
+            withFullText: false,
+          });
+          fileInfo = result.getData();
         }
 
-        await models[req.query.namespace]().delete(JSON.parse(req.query.data));
+        if (handler) {
+          await handler.delete(data._id);
+        } else {
+          await models[req.query.namespace]().delete(data);
+        }
 
-        if (req.query.namespace === 'files') {
-          await deleteFile(JSON.parse(req.query.data)._id);
+        if (fileInfo) {
+          if (fileInfo.filename) {
+            await storage.removeFile(fileInfo.filename, fileInfo.type || 'document');
+          }
+          if (fileInfo.entity) {
+            await search.indexEntities({ sharedId: fileInfo.entity });
+          }
         }
 
         if (req.query.namespace === 'entities') {
-          await deleteEntityFromIndex(JSON.parse(req.query.data)._id);
+          await deleteEntityFromIndex(data._id);
         }
 
         res.json('ok');
