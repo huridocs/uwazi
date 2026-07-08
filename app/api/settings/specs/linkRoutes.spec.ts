@@ -13,21 +13,21 @@ import settings from '../settings.js';
 let currentUser: UserSchema;
 
 const adminUser = {
-  _id: new ObjectId().toString(),
+  _id: new ObjectId(),
   username: 'admin',
   role: UserRole.ADMIN,
   email: 'user@test.com',
 };
 
 const editor = {
-  _id: new ObjectId().toString(),
+  _id: new ObjectId(),
   username: 'editor',
   role: UserRole.EDITOR,
   email: 'editor@test.com',
 };
 
 const collaborator = {
-  _id: new ObjectId().toString(),
+  _id: new ObjectId(),
   username: 'collaborator',
   role: UserRole.COLLABORATOR,
   email: 'collab@test.com',
