@@ -104,7 +104,7 @@ jobs:
 
   api_unit_tests_shards:
     needs: [precheck, build_ci_image]
-    if: needs.precheck.outputs.should_run == 'true'
+    if: ${{ always() && needs.precheck.outputs.should_run == 'true' && needs.build_ci_image.result != 'failure' }}
     name: api_unit_tests (shard ${{ matrix.shard }}/4)
     runs-on: ubuntu-24.04
     container:
@@ -237,7 +237,7 @@ jobs:
 
   app_unit_tests:
     needs: [precheck, build_ci_image]
-    if: needs.precheck.outputs.should_run == 'true'
+    if: ${{ always() && needs.precheck.outputs.should_run == 'true' && needs.build_ci_image.result != 'failure' }}
     runs-on: ubuntu-24.04
     container:
       image: ghcr.io/${{ github.repository }}-ci:latest
