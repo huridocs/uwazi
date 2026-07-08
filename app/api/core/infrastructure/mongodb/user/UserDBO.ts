@@ -11,6 +11,8 @@ interface UserDBO {
   secret?: string | null;
   deletedAt?: Date | null;
   accountLocked?: boolean;
+  failedLogins?: number;
+  accountUnlockCode?: string;
 }
 
 export type { UserDBO };

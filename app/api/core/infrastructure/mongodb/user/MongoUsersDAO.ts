@@ -16,6 +16,14 @@ type Deps = {
   transactionManager: TransactionManager;
 };
 
+type GetByIdOptions = {
+  includePassword?: boolean;
+  includeSecret?: boolean;
+  includeFailedLogins?: boolean;
+  includeAccountUnlockCode?: boolean;
+  includeDeleted?: boolean;
+};
+
 class MongoUsersDAO extends MongoDataSource<UserDBO> {
   protected collectionName = 'users';
 
@@ -23,18 +31,33 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
     super(deps.db, deps.transactionManager);
   }
 
+  // eslint-disable-next-line max-statements
   async getById(
     id: string,
-    projection?: Document,
-    includeDeleted = false
+    options: GetByIdOptions = {}
   ): Promise<ResultType<UserDBO, UserNotFound>> {
+    const {
+      includePassword,
+      includeSecret,
+      includeFailedLogins,
+      includeAccountUnlockCode,
+      includeDeleted,
+    } = options;
     const filter: Filter<UserDBO> = { _id: new ObjectId(id) };
 
     if (!includeDeleted) {
       filter.deletedAt = { $exists: false };
     }
 
-    const user = await this.getCollection().findOne(filter, { projection });
+    const projection: Document = {};
+    if (!includePassword) projection.password = 0;
+    if (!includeSecret) projection.secret = 0;
+    if (!includeFailedLogins) projection.failedLogins = 0;
+    if (!includeAccountUnlockCode) projection.accountUnlockCode = 0;
+
+    const user = await this.getCollection().findOne(filter, {
+      projection: Object.keys(projection).length ? projection : undefined,
+    });
 
     if (!user) {
       return Result.fail(new UserNotFound(id));
@@ -43,14 +66,18 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
     return Result.ok(user);
   }
 
-  async get(query: Filter<UserDBO> = {}, projection?: Document): Promise<UserWithGroups[]> {
+  async get(query: Filter<UserDBO> = {}): Promise<UserWithGroups[]> {
     const filter = {
       ...query,
       _id: { $ne: PUBLIC_USER_ID },
       deletedAt: { $exists: false },
     };
 
-    const users = await this.getCollection().find(filter, { projection }).toArray();
+    const users = await this.getCollection()
+      .find(filter, {
+        projection: { _id: 1, username: 1, role: 1, email: 1, using2fa: 1, accountLocked: 1 },
+      })
+      .toArray();
 
     const userIds = users.map(user => user._id.toString());
 
