@@ -493,7 +493,7 @@ class InformationExtraction {
       xmlname: rawSuggestion.xml_file_name,
     });
 
-    if (!segmentation.fileID) {
+    if (!segmentation?.fileID) {
       return null;
     }
     const dao = FilesDAOFactory.default();
