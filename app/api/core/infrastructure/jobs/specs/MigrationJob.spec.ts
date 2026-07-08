@@ -272,9 +272,41 @@ describe('MigrationJob', () => {
       results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
     });
 
-    expect(logger.info).toHaveBeenCalledWith('Starting migration job', expect.any(Object));
-    expect(logger.info).toHaveBeenCalledWith('Current schema version: 100', expect.any(Object));
-    expect(logger.info).toHaveBeenCalledWith('Migration process complete', expect.any(Object));
+    const infoMessages = logger.info.mock.calls.map(([message]) => message);
+    expect(infoMessages).toEqual(expect.arrayContaining(['Starting migration job']));
+    expect(infoMessages).toEqual(expect.arrayContaining(['Current schema version: 100']));
+    expect(infoMessages).toEqual(
+      expect.arrayContaining([expect.stringContaining('Migration run complete')])
+    );
+    expect(infoMessages).toEqual(
+      expect.arrayContaining([expect.stringContaining('Data migrations applied:')])
+    );
+  });
+
+  it('should not log per-tenant migration details', async () => {
+    const logger = createMockLogger();
+    const reindexTenant = jest.fn();
+    const pgMigrator = new FakePgMigrator({ currentVersion: 100 });
+    const { dispatcher } = createJobFactory({ logger, reindexTenant, pgMigrator });
+
+    await dispatcher.dispatch(MigrationJob, {
+      reindex: false,
+      results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
+    });
+
+    const infoMessages = logger.info.mock.calls.map(([message]) => message);
+    expect(infoMessages).not.toEqual(
+      expect.arrayContaining([expect.stringContaining('Applying migration')])
+    );
+    expect(infoMessages).not.toEqual(
+      expect.arrayContaining([expect.stringContaining('successfully applied on tenant')])
+    );
+    expect(infoMessages).not.toEqual(
+      expect.arrayContaining([expect.stringContaining('already applied on tenant')])
+    );
+    expect(infoMessages).toEqual(
+      expect.arrayContaining([expect.stringContaining('Applied data migration')])
+    );
   });
 
   it('should throw when a migration fails', async () => {

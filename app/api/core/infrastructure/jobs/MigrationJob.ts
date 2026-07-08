@@ -43,74 +43,76 @@ class MigrationJob implements Dispatchable {
   async handleDispatch(
     _heartbeat: HeartbeatCallback,
     params: Params,
-    jobInfo?: JobInfo
+    _jobInfo?: JobInfo
   ): Promise<void> {
     const jobParams = this.normalizeParams(params as MigrationJobParams);
-    const namespace = jobInfo?.namespace || 'system';
 
-    this.deps.logger.info('Starting migration job', { namespace });
+    this.deps.logger.info('Starting migration job');
 
     let schemaVersion = await this.deps.pgMigrator.getCurrentVersion();
-    this.deps.logger.info(`Current schema version: ${schemaVersion}`, { namespace });
+    this.deps.logger.info(`Current schema version: ${schemaVersion}`);
 
     const nextDelta = await this.getNextGlobalDelta(schemaVersion);
 
     if (nextDelta === null) {
-      await this.finishMigrationProcess(jobParams, namespace);
+      await this.finishMigrationProcess(jobParams);
       return;
     }
 
     this.deps.logger.info(`Next data migration to apply: delta ${nextDelta}`, {
       delta: nextDelta,
-      namespace,
     });
 
     const blockedInfo = await this.getBlockedInfo(nextDelta, schemaVersion);
     if (blockedInfo) {
       this.deps.logger.warning(
-        `Migration ${nextDelta} is blocked, requires schema version ${blockedInfo.requiresSchema}`,
-        { delta: nextDelta, requiresSchema: blockedInfo.requiresSchema, namespace }
+        `Data migration ${nextDelta} blocked, requires schema version ${blockedInfo.requiresSchema}`,
+        { delta: nextDelta, requiresSchema: blockedInfo.requiresSchema }
       );
       const appliedSchemas = await this.deps.pgMigrator.migrate(blockedInfo.requiresSchema);
       jobParams.results.appliedSchemaDeltas.push(...appliedSchemas);
       schemaVersion = await this.deps.pgMigrator.getCurrentVersion();
-      this.deps.logger.info(
-        `Applied schema migrations up to version ${schemaVersion}: [${appliedSchemas.join(', ')}]`,
-        {
-          targetSchema: blockedInfo.requiresSchema,
-          applied: appliedSchemas,
-          schemaVersion,
-          delta: nextDelta,
-          namespace,
-        }
-      );
-      this.deps.logger.info(`Migration ${nextDelta} unblocked, applying now`, {
+      this.deps.logger.info(`Applied schema migrations: [${appliedSchemas.join(', ')}]`, {
+        targetSchema: blockedInfo.requiresSchema,
+        applied: appliedSchemas,
+        schemaVersion,
+        delta: nextDelta,
+      });
+      this.deps.logger.info(`Data migration ${nextDelta} unblocked, applying now`, {
         delta: nextDelta,
         schemaVersion,
-        namespace,
       });
     }
 
-    const migration = await this.runDeltaOnAllTenants(nextDelta, schemaVersion, namespace);
-    const nextReindex = jobParams.reindex || migration.reindex === true;
+    const { migration, reindex: deltaReindex, applied } = await this.runDeltaOnAllTenants(
+      nextDelta,
+      schemaVersion
+    );
+    const nextReindex = jobParams.reindex || deltaReindex;
 
-    if (!jobParams.results.appliedDataDeltas.includes(nextDelta)) {
+    if (applied && !jobParams.results.appliedDataDeltas.includes(nextDelta)) {
       jobParams.results.appliedDataDeltas.push(nextDelta);
     }
 
-    this.deps.logger.info(`Migration ${nextDelta} complete on all tenants`, {
-      delta: nextDelta,
-      reindex: nextReindex,
-      namespace,
-    });
+    if (applied) {
+      this.deps.logger.info(`Applied data migration ${nextDelta}`, {
+        delta: nextDelta,
+        reindex: nextReindex,
+      });
+    } else {
+      this.deps.logger.info(`Skipped data migration ${nextDelta} (already applied)`, {
+        delta: nextDelta,
+        reindex: nextReindex,
+      });
+    }
 
     const nextGlobalDelta = await this.getNextGlobalDelta(schemaVersion);
     if (nextGlobalDelta === null) {
-      await this.finishMigrationProcess(jobParams, namespace);
+      await this.finishMigrationProcess(jobParams);
       return;
     }
 
-    this.deps.logger.info('Dispatching next migration job', { namespace });
+    this.deps.logger.info('Dispatching next migration job');
     await this.deps.dispatcher.dispatch(MigrationJob, {
       reindex: nextReindex,
       results: jobParams.results,
@@ -184,56 +186,27 @@ class MigrationJob implements Dispatchable {
 
   private async runDeltaOnAllTenants(
     delta: number,
-    schemaVersion: number,
-    namespace: string
-  ): Promise<any> {
+    schemaVersion: number
+  ): Promise<{ migration: any; reindex: boolean; applied: boolean }> {
     const tenantNames = Object.keys(tenants.tenants);
     let appliedMigration: any = null;
-
-    const captureAppliedMigration = (migration: any) => {
-      appliedMigration = migration;
-    };
 
     for (const tenantName of tenantNames) {
       // eslint-disable-next-line no-await-in-loop
       await tenants.run(async () => {
-        this.deps.logger.info(`Applying migration ${delta} on tenant '${tenantName}'`, {
-          delta,
-          tenant: tenantName,
-          namespace,
-        });
-
         const tenant = tenants.current();
         const { db } = DB.connectionForDB(tenant.dbName);
         const result = await this.deps.migrator.migrateDelta(db as Db, delta, schemaVersion);
 
         if (result.status === 'applied') {
-          captureAppliedMigration(result.migration);
-          this.deps.logger.info(
-            `Migration ${delta} successfully applied on tenant '${tenantName}'`,
-            {
-              delta,
-              tenant: tenantName,
-              namespace,
-            }
-          );
-        } else if (result.status === 'done') {
-          this.deps.logger.info(
-            `Migration ${delta} already applied on tenant '${tenantName}', skipping`,
-            {
-              delta,
-              tenant: tenantName,
-              namespace,
-            }
-          );
+          appliedMigration = result.migration;
         } else if (result.status === 'blocked') {
           this.deps.logger.error(
-            `Migration ${delta} blocked on tenant '${tenantName}' after schema advance`,
+            `Data migration ${delta} blocked on tenant '${tenantName}' after schema advance`,
             {
               delta,
               tenant: tenantName,
               requiresSchema: result.blocked?.requiresSchema,
-              namespace,
             }
           );
           throw new Error(
@@ -243,16 +216,15 @@ class MigrationJob implements Dispatchable {
       }, tenantName);
     }
 
-    return appliedMigration || { reindex: false };
+    return {
+      migration: appliedMigration,
+      reindex: appliedMigration?.reindex === true,
+      applied: appliedMigration !== null,
+    };
   }
 
-  private async finishMigrationProcess(
-    jobParams: Required<MigrationJobParams>,
-    namespace: string
-  ): Promise<void> {
-    this.deps.logger.info('No pending data migrations, running remaining schema migrations', {
-      namespace,
-    });
+  private async finishMigrationProcess(jobParams: Required<MigrationJobParams>): Promise<void> {
+    this.deps.logger.info('No pending data migrations, running remaining schema migrations');
 
     const appliedSchemas = await this.deps.pgMigrator.migrate();
     jobParams.results.appliedSchemaDeltas.push(...appliedSchemas);
@@ -261,38 +233,31 @@ class MigrationJob implements Dispatchable {
       `Schema migrations complete: applied [${appliedSchemas.join(', ') || 'none'}]`,
       {
         applied: appliedSchemas,
-        namespace,
       }
     );
 
     if (jobParams.reindex) {
-      this.deps.logger.info('Reindex requested, reindexing all tenants', { namespace });
-      await this.reindexAllTenants(namespace);
+      this.deps.logger.info('Reindex requested, reindexing all tenants');
+      await this.reindexAllTenants();
     }
 
-    this.deps.logger.info('Migration process complete', {
-      appliedDataDeltas: jobParams.results.appliedDataDeltas,
-      appliedSchemaDeltas: jobParams.results.appliedSchemaDeltas,
-      reindex: jobParams.reindex,
-      namespace,
-    });
+    const summary = [
+      'Migration run complete',
+      `  Data migrations applied: [${jobParams.results.appliedDataDeltas.join(', ') || 'none'}]`,
+      `  Schema migrations applied: [${jobParams.results.appliedSchemaDeltas.join(', ') || 'none'}]`,
+      `  Reindex required: ${jobParams.reindex}`,
+    ].join('\n');
+
+    this.deps.logger.info(summary);
   }
 
-  private async reindexAllTenants(namespace: string): Promise<void> {
+  private async reindexAllTenants(): Promise<void> {
     const tenantNames = Object.keys(tenants.tenants);
 
     for (const tenantName of tenantNames) {
       // eslint-disable-next-line no-await-in-loop
       await tenants.run(async () => {
-        this.deps.logger.info(`Reindexing tenant '${tenantName}'`, {
-          tenant: tenantName,
-          namespace,
-        });
         await this.deps.reindexTenant();
-        this.deps.logger.info(`Tenant '${tenantName}' reindexed`, {
-          tenant: tenantName,
-          namespace,
-        });
       }, tenantName);
     }
   }

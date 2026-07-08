@@ -16,7 +16,10 @@ const run = isNewFlow ? () => runNewMigration({ async: isAsync, structuredLogs }
 
 run()
   .then(result => {
-    process.stdout.write(`${MIGRATION_RESULT_PREFIX}${JSON.stringify(result)}\n`);
+    if (!isNewFlow) {
+      process.stdout.write(`${MIGRATION_RESULT_PREFIX}${JSON.stringify(result)}\n`);
+    }
+
     const hasError = 'error' in result;
     const isBlocked = 'blocked' in result && result.blocked;
     const isDone = 'done' in result && result.done;
@@ -27,7 +30,9 @@ run()
     }
   })
   .catch(async e => {
-    process.stderr.write(`${MIGRATION_RESULT_PREFIX}${JSON.stringify({ error: e.message })}\n`);
+    if (!isNewFlow) {
+      process.stderr.write(`${MIGRATION_RESULT_PREFIX}${JSON.stringify({ error: e.message })}\n`);
+    }
     await DB.disconnect();
     process.exit(1);
   });
