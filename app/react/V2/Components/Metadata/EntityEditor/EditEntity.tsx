@@ -23,6 +23,8 @@ import {
   GeolocationField,
   RelationshipField,
   MarkdownField,
+  MediaField,
+  PreviewField,
 } from './Components/index.js';
 import { EMPTY_ICON, hasEntityIcon, type EntityIcon } from './Components/IconField.js';
 import { MultiselectListOption } from '../../Forms/index.js';
@@ -154,8 +156,14 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
         label: property.label,
         required: property.required,
         content: property.content,
+        style: property.style,
       })) || [],
     [activeTemplate]
+  );
+
+  const entityAttachments = useMemo(
+    () => [...(entity?.attachments ?? []), ...(entity?.documents ?? [])],
+    [entity?.attachments, entity?.documents]
   );
 
   const isMetadataReady = metadataProperties.every(
@@ -375,12 +383,50 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
               );
             }
 
-            if (
-              property.type === 'image' ||
-              property.type === 'media' ||
-              property.type === 'preview'
-            ) {
-              return <p no-translate="true">Image, media and preview fields not implement yet.</p>;
+            if (property.type === 'image') {
+              return (
+                <MediaField<EditEntityFormValues>
+                  context={activeTemplate?._id ?? ''}
+                  label={property.label}
+                  field={`metadata.${property.name}.0.value`}
+                  mode="image"
+                  imageStyle={
+                    property.style === 'contain' || property.style === 'cover'
+                      ? property.style
+                      : 'fill'
+                  }
+                  registerOptions={{ required: property.required }}
+                  disabled={disabled}
+                  attachments={entityAttachments}
+                  key={property._id}
+                />
+              );
+            }
+
+            if (property.type === 'media') {
+              return (
+                <MediaField<EditEntityFormValues>
+                  context={activeTemplate?._id ?? ''}
+                  label={property.label}
+                  field={`metadata.${property.name}.0.value`}
+                  mode="media"
+                  registerOptions={{ required: property.required }}
+                  disabled={disabled}
+                  attachments={entityAttachments}
+                  key={property._id}
+                />
+              );
+            }
+
+            if (property.type === 'preview') {
+              return (
+                <PreviewField
+                  context={activeTemplate?._id ?? ''}
+                  label={property.label}
+                  value={metadata?.[property.name]?.[0]?.value as string | undefined}
+                  key={property._id}
+                />
+              );
             }
 
             return undefined;
