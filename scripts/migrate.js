@@ -17,7 +17,12 @@ const run = isNewFlow ? () => runNewMigration({ async: isAsync, structuredLogs }
 run()
   .then(result => {
     process.stdout.write(`${MIGRATION_RESULT_PREFIX}${JSON.stringify(result)}\n`);
-    if ('error' in result || ('blocked' in result && result.blocked)) {
+    const hasError = 'error' in result;
+    const isBlocked = 'blocked' in result && result.blocked;
+    const isDone = 'done' in result && result.done;
+    const isDispatched = 'dispatched' in result && result.dispatched;
+
+    if (hasError || (isBlocked && !isDone && !isDispatched)) {
       process.exitCode = 1;
     }
   })

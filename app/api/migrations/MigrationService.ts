@@ -1,7 +1,10 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { Connection, ConnectOptions } from 'mongoose';
 import { DB } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
 import { config } from '#api/config.js';
-import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
+import { PostgresDB, PostgresConnectionConfig } from '#api/infrastructure/PostgresDB.js';
 import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -10,6 +13,7 @@ import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGenerat
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import {
   JobRegistry,
   SyncJobsDispatcher,
@@ -17,10 +21,13 @@ import {
 import { MigrationJobFactory } from '#api/core/infrastructure/factories/MigrationJobFactory.js';
 import { MigrationJob } from '#api/core/infrastructure/jobs/MigrationJob.js';
 
-const PG_MIGRATIONS_DIR = new URL(
-  '../core/infrastructure/postgresql/schema_migrations',
-  import.meta.url
-).pathname;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const PG_MIGRATIONS_DIR = path.join(
+  __dirname,
+  '../core/infrastructure/postgresql/schema_migrations'
+);
 
 type MigrationRunResult =
   | {
@@ -33,7 +40,41 @@ type MigrationRunResult =
       dispatched: true;
     };
 
-async function createDispatcher(options: { async: boolean }): Promise<JobsDispatcher> {
+type DBConnector = {
+  connect: (host: string, auth: ConnectOptions) => Promise<Connection>;
+  disconnect: () => Promise<void>;
+};
+
+type PostgresConnector = {
+  connect: (cfg?: PostgresConnectionConfig) => any;
+  disconnect: () => Promise<void>;
+  pool: () => any;
+};
+
+type TenantsManager = {
+  setupTenants: () => Promise<void>;
+  run: (fn: () => Promise<void>, tenantName?: string) => Promise<void>;
+  current: () => any;
+  tenants: { [name: string]: any };
+};
+
+type DispatcherFactory = (options: { async: boolean }) => Promise<JobsDispatcher>;
+
+type LoggerFactoryFn = (options: { async: boolean; structuredLogs: boolean }) => Logger;
+
+type MigrationServiceDeps = {
+  db: DBConnector;
+  postgresDB: PostgresConnector;
+  tenants: TenantsManager;
+  createDispatcher: DispatcherFactory;
+  createLogger: LoggerFactoryFn;
+  pgMigratorFactory: (pool: any) => PgMigrator;
+  transactionManagerFactory: () => any;
+  eventEmitterFactory: () => any;
+  idGeneratorFactory: () => any;
+};
+
+const createDefaultDispatcher: DispatcherFactory = async (options: { async: boolean }) => {
   if (options.async) {
     return DefaultDispatcher('system', TransactionManagerFactory.createForSharedDataBase());
   }
@@ -43,6 +84,84 @@ async function createDispatcher(options: { async: boolean }): Promise<JobsDispat
   registry.MigrationJob = async () => MigrationJobFactory.create({ dispatcher });
 
   return dispatcher;
+};
+
+const createDefaultLogger: LoggerFactoryFn = (options: {
+  async: boolean;
+  structuredLogs: boolean;
+}) => {
+  if (options.async) {
+    return LoggerFactory.systemLogger();
+  }
+  return LoggerFactory.migrationLogger(options.structuredLogs);
+};
+
+const createDefaultPgMigrator = (pool: any) => new PgMigrator(PG_MIGRATIONS_DIR, pool);
+
+const defaultDeps: MigrationServiceDeps = {
+  db: DB,
+  postgresDB: PostgresDB,
+  tenants,
+  createDispatcher: createDefaultDispatcher,
+  createLogger: createDefaultLogger,
+  pgMigratorFactory: createDefaultPgMigrator,
+  transactionManagerFactory: TransactionManagerFactory.default,
+  eventEmitterFactory: EventEmitterFactory.default,
+  idGeneratorFactory: IdGeneratorFactory.default,
+};
+
+class MigrationService {
+  constructor(private deps: MigrationServiceDeps) {}
+
+  async run(options: { async: boolean; structuredLogs: boolean }): Promise<MigrationRunResult> {
+    await this.deps.db.connect(config.DBHOST, config.DBAUTH);
+    this.deps.postgresDB.connect();
+
+    await this.deps.tenants.setupTenants();
+
+    const dispatcher = await this.deps.createDispatcher(options);
+    const initialResults = { appliedDataDeltas: [], appliedSchemaDeltas: [] };
+    const logger = this.deps.createLogger(options);
+
+    await this.deps.tenants.run(async () => {
+      await ExecutionContext.run(
+        {
+          tenant: this.deps.tenants.current(),
+          factories: {
+            transactionManager: this.deps.transactionManagerFactory,
+            jobsDispatcher: () => dispatcher,
+            eventEmitter: this.deps.eventEmitterFactory,
+            idGenerator: this.deps.idGeneratorFactory,
+            logger: () => logger,
+          },
+        },
+        async () => {
+          await dispatcher.dispatch(MigrationJob, {
+            reindex: false,
+            results: initialResults,
+          });
+        }
+      );
+    });
+
+    const pgPool = this.deps.postgresDB.pool();
+    const pgMigrator = this.deps.pgMigratorFactory(pgPool);
+    const schemaVersion = await pgMigrator.getCurrentVersion();
+
+    await this.deps.db.disconnect();
+    await this.deps.postgresDB.disconnect();
+
+    if (options.async) {
+      return { dispatched: true };
+    }
+
+    return {
+      done: true,
+      appliedDataDeltas: initialResults.appliedDataDeltas,
+      appliedSchemaDeltas: initialResults.appliedSchemaDeltas,
+      schemaVersion,
+    };
+  }
 }
 
 async function runNewMigration(
@@ -51,56 +170,9 @@ async function runNewMigration(
     structuredLogs: false,
   }
 ): Promise<MigrationRunResult> {
-  await DB.connect(config.DBHOST, config.DBAUTH);
-  PostgresDB.connect();
-
-  await tenants.setupTenants();
-
-  const dispatcher = await createDispatcher(options);
-  const initialResults = { appliedDataDeltas: [], appliedSchemaDeltas: [] };
-  const logger = options.async
-    ? LoggerFactory.systemLogger()
-    : LoggerFactory.migrationLogger(options.structuredLogs);
-
-  await tenants.run(async () => {
-    await ExecutionContext.run(
-      {
-        tenant: tenants.current(),
-        factories: {
-          transactionManager: TransactionManagerFactory.default,
-          jobsDispatcher: () => dispatcher,
-          eventEmitter: EventEmitterFactory.default,
-          idGenerator: IdGeneratorFactory.default,
-          logger: () => logger,
-        },
-      },
-      async () => {
-        await dispatcher.dispatch(MigrationJob, {
-          reindex: false,
-          results: initialResults,
-        });
-      }
-    );
-  });
-
-  const pgPool = PostgresDB.pool();
-  const pgMigrator = new PgMigrator(PG_MIGRATIONS_DIR, pgPool);
-  const schemaVersion = await pgMigrator.getCurrentVersion();
-
-  await DB.disconnect();
-  await PostgresDB.disconnect();
-
-  if (options.async) {
-    return { dispatched: true };
-  }
-
-  return {
-    done: true,
-    appliedDataDeltas: initialResults.appliedDataDeltas,
-    appliedSchemaDeltas: initialResults.appliedSchemaDeltas,
-    schemaVersion,
-  };
+  const service = new MigrationService(defaultDeps);
+  return service.run(options);
 }
 
-export { runNewMigration };
-export type { MigrationRunResult };
+export { MigrationService, runNewMigration };
+export type { MigrationRunResult, MigrationServiceDeps };

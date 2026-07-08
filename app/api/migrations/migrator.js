@@ -9,23 +9,17 @@ const __dirname = dirname(__filename);
 
 const loadMigration = p => import(pathToFileURL(p).href).then(m => m.default);
 
-const promiseInSequence = funcs =>
-  funcs.reduce(
-    (promise, func) => promise.then(result => func().then(Array.prototype.concat.bind(result))),
-    Promise.resolve([])
-  );
-
 const sortByDelta = migrations => migrations.sort((a, b) => a.delta - b.delta);
 
 const getMigrations = async (migrationsDir, loader = loadMigration) => {
   const [lastMigration] = await migrationsModel.get({}, null, { limit: 1, sort: { delta: -1 } });
   const files = await fs.readdir(migrationsDir);
-  let migrations = await Promise.all(
+  const loadedMigrations = await Promise.all(
     files
       .filter(f => !f.startsWith('.'))
       .map(migration => loader(path.join(migrationsDir, migration, 'index.js')))
   );
-  migrations = sortByDelta(migrations);
+  let migrations = sortByDelta(loadedMigrations);
   if (lastMigration) {
     migrations = migrations.map(m => (m.delta > lastMigration.delta ? m : null)).filter(m => m);
   }
@@ -103,9 +97,14 @@ const migrator = {
       schemaVersion
     );
 
-    const applied = await promiseInSequence(
-      runnable.map(migration => () => migration.up(db).then(() => saveMigration(migration)))
-    );
+    const applied = [];
+    for (const migration of runnable) {
+      // eslint-disable-next-line no-await-in-loop
+      await migration.up(db);
+      // eslint-disable-next-line no-await-in-loop
+      await saveMigration(migration);
+      applied.push(migration);
+    }
 
     return { migrations: applied, blocked };
   },

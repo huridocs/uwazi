@@ -79,7 +79,9 @@ describe('SyncJobsDispatcher', () => {
     await dispatcher.dispatch(ChainJob, { current: 1, next: { value: 2 } });
 
     expect(ChainJob.calls).toEqual([{ current: 1, next: { value: 2 } }]);
-    expect(ExampleJob.calls).toEqual([{ value: 2 }]);
+    expect(ExampleJob.calls).toEqual([
+      { params: { value: 2 }, jobInfo: { retryCount: 0, maxRetries: 0, namespace: 'system' } },
+    ]);
   });
 
   it('should execute dispatchMany jobs sequentially', async () => {

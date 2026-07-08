@@ -14,12 +14,16 @@ class FakePgMigrator {
 
   private appliedDeltas: number[];
 
+  private maxDelta: number;
+
   constructor({
     currentVersion = 0,
     appliedDeltas = [],
-  }: { currentVersion?: number; appliedDeltas?: number[] } = {}) {
+    maxDelta = 1,
+  }: { currentVersion?: number; appliedDeltas?: number[]; maxDelta?: number } = {}) {
     this.currentVersion = currentVersion;
     this.appliedDeltas = appliedDeltas;
+    this.maxDelta = maxDelta;
   }
 
   async getCurrentVersion(): Promise<number> {
@@ -27,7 +31,7 @@ class FakePgMigrator {
   }
 
   async migrate(until?: number): Promise<number[]> {
-    const target = until ?? Number.MAX_SAFE_INTEGER;
+    const target = Math.min(until ?? this.maxDelta, this.maxDelta);
     const deltas: number[] = [];
     for (let delta = this.currentVersion + 1; delta <= target; delta += 1) {
       this.appliedDeltas.push(delta);
@@ -96,7 +100,8 @@ describe('MigrationJob', () => {
   it('should apply the next data migration on the tenant and dispatch itself', async () => {
     const logger = createMockLogger();
     const reindexTenant = jest.fn();
-    const { dispatcher } = createJobFactory({ logger, reindexTenant });
+    const pgMigrator = new FakePgMigrator({ currentVersion: 100 });
+    const { dispatcher } = createJobFactory({ logger, reindexTenant, pgMigrator });
     const dispatchSpy = jest.spyOn(dispatcher, 'dispatch');
 
     await dispatcher.dispatch(MigrationJob, {
@@ -105,12 +110,12 @@ describe('MigrationJob', () => {
     });
 
     const migrations = await migrationsModel.get();
-    expect(migrations.map(m => m.delta)).toEqual([1]);
+    expect(migrations.map(m => m.delta).sort((a, b) => a - b)).toEqual([1, 2, 3, 10]);
 
-    expect(dispatchSpy).toHaveBeenCalledTimes(1);
-    expect(dispatchSpy).toHaveBeenCalledWith(MigrationJob, {
-      reindex: false,
-      results: { appliedDataDeltas: [1], appliedSchemaDeltas: [] },
+    expect(dispatchSpy).toHaveBeenCalledTimes(4);
+    expect(dispatchSpy).toHaveBeenLastCalledWith(MigrationJob, {
+      reindex: true,
+      results: { appliedDataDeltas: [1, 2, 3, 10], appliedSchemaDeltas: [] },
     });
   });
 
@@ -120,7 +125,7 @@ describe('MigrationJob', () => {
 
     const logger = createMockLogger();
     const reindexTenant = jest.fn();
-    const pgMigrator = new FakePgMigrator({ currentVersion: 99 });
+    const pgMigrator = new FakePgMigrator({ currentVersion: 99, maxDelta: 100 });
     const { dispatcher } = createJobFactory({ logger, reindexTenant, pgMigrator });
 
     await dispatcher.dispatch(MigrationJob, {
@@ -128,16 +133,16 @@ describe('MigrationJob', () => {
       results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
     });
 
-    expect(pgMigrator.getCurrentVersion()).toBe(100);
+    expect(await pgMigrator.getCurrentVersion()).toBe(100);
 
     const migrations = await migrationsModel.get();
-    expect(migrations.map(m => m.delta).sort()).toEqual([1, 2, 3]);
+    expect(migrations.map(m => m.delta).sort((a, b) => a - b)).toEqual([1, 2, 3, 10]);
   });
 
   it('should run all pending data migrations then remaining schema migrations and stop', async () => {
     const logger = createMockLogger();
     const reindexTenant = jest.fn();
-    const pgMigrator = new FakePgMigrator({ currentVersion: 0 });
+    const pgMigrator = new FakePgMigrator({ currentVersion: 0, maxDelta: 100 });
     const { dispatcher } = createJobFactory({ logger, reindexTenant, pgMigrator });
     const dispatchSpy = jest.spyOn(dispatcher, 'dispatch');
 
@@ -147,15 +152,23 @@ describe('MigrationJob', () => {
     });
 
     const migrations = await migrationsModel.get();
-    expect(migrations.map(m => m.delta).sort()).toEqual([1, 2, 3, 10]);
+    expect(migrations.map(m => m.delta).sort((a, b) => a - b)).toEqual([1, 2, 3, 10]);
 
     expect(dispatchSpy).toHaveBeenCalledTimes(4);
-    expect(dispatchSpy.mock.calls[3][1]).toEqual({
+    const lastCall = dispatchSpy.mock.calls[3][1] as {
+      reindex: boolean;
+      results: { appliedDataDeltas: number[]; appliedSchemaDeltas: number[] };
+    };
+    expect(lastCall).toEqual({
       reindex: true,
-      results: { appliedDataDeltas: [1, 2, 3, 10], appliedSchemaDeltas: [1] },
+      results: {
+        appliedDataDeltas: [1, 2, 3, 10],
+        appliedSchemaDeltas: expect.arrayContaining([1]),
+      },
     });
+    expect(lastCall.results.appliedSchemaDeltas).toHaveLength(100);
 
-    expect(reindexTenant).not.toHaveBeenCalled();
+    expect(reindexTenant).toHaveBeenCalledTimes(1);
   });
 
   it('should reindex all tenants when the final job has reindex flag', async () => {
@@ -199,7 +212,8 @@ describe('MigrationJob', () => {
 
     const logger = createMockLogger();
     const reindexTenant = jest.fn();
-    const { dispatcher } = createJobFactory({ logger, reindexTenant });
+    const pgMigrator = new FakePgMigrator({ currentVersion: 100 });
+    const { dispatcher } = createJobFactory({ logger, reindexTenant, pgMigrator });
     const dispatchSpy = jest.spyOn(dispatcher, 'dispatch');
 
     await dispatcher.dispatch(MigrationJob, {
@@ -208,7 +222,7 @@ describe('MigrationJob', () => {
     });
 
     const migrations = await migrationsModel.get();
-    expect(migrations.map(m => m.delta).sort()).toEqual([1, 2, 3, 10]);
+    expect(migrations.map(m => m.delta).sort((a, b) => a - b)).toEqual([1, 2, 3, 10]);
 
     expect(dispatchSpy).toHaveBeenCalledTimes(3);
   });
@@ -216,7 +230,8 @@ describe('MigrationJob', () => {
   it('should propagate reindex flag through the chain', async () => {
     const logger = createMockLogger();
     const reindexTenant = jest.fn();
-    const { dispatcher } = createJobFactory({ logger, reindexTenant });
+    const pgMigrator = new FakePgMigrator({ currentVersion: 100 });
+    const { dispatcher } = createJobFactory({ logger, reindexTenant, pgMigrator });
 
     await dispatcher.dispatch(MigrationJob, {
       reindex: false,
@@ -249,15 +264,16 @@ describe('MigrationJob', () => {
   it('should log migration lifecycle events', async () => {
     const logger = createMockLogger();
     const reindexTenant = jest.fn();
-    const { dispatcher } = createJobFactory({ logger, reindexTenant });
+    const pgMigrator = new FakePgMigrator({ currentVersion: 100 });
+    const { dispatcher } = createJobFactory({ logger, reindexTenant, pgMigrator });
 
     await dispatcher.dispatch(MigrationJob, {
       reindex: false,
       results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
     });
 
-    expect(logger.info).toHaveBeenCalledWith('MigrationJob started', expect.any(Object));
-    expect(logger.info).toHaveBeenCalledWith('Current schema version', expect.any(Object));
+    expect(logger.info).toHaveBeenCalledWith('Starting migration job', expect.any(Object));
+    expect(logger.info).toHaveBeenCalledWith('Current schema version: 100', expect.any(Object));
     expect(logger.info).toHaveBeenCalledWith('Migration process complete', expect.any(Object));
   });
 

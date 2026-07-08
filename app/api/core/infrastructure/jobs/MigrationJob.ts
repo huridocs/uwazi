@@ -50,7 +50,7 @@ class MigrationJob implements Dispatchable {
 
     this.deps.logger.info('Starting migration job', { namespace });
 
-    const schemaVersion = await this.deps.pgMigrator.getCurrentVersion();
+    let schemaVersion = await this.deps.pgMigrator.getCurrentVersion();
     this.deps.logger.info(`Current schema version: ${schemaVersion}`, { namespace });
 
     const nextDelta = await this.getNextGlobalDelta(schemaVersion);
@@ -73,17 +73,20 @@ class MigrationJob implements Dispatchable {
       );
       const appliedSchemas = await this.deps.pgMigrator.migrate(blockedInfo.requiresSchema);
       jobParams.results.appliedSchemaDeltas.push(...appliedSchemas);
+      schemaVersion = await this.deps.pgMigrator.getCurrentVersion();
       this.deps.logger.info(
-        `Applied schema migrations up to version ${blockedInfo.requiresSchema}: [${appliedSchemas.join(', ')}]`,
+        `Applied schema migrations up to version ${schemaVersion}: [${appliedSchemas.join(', ')}]`,
         {
           targetSchema: blockedInfo.requiresSchema,
           applied: appliedSchemas,
+          schemaVersion,
           delta: nextDelta,
           namespace,
         }
       );
       this.deps.logger.info(`Migration ${nextDelta} unblocked, applying now`, {
         delta: nextDelta,
+        schemaVersion,
         namespace,
       });
     }
@@ -100,6 +103,12 @@ class MigrationJob implements Dispatchable {
       reindex: nextReindex,
       namespace,
     });
+
+    const nextGlobalDelta = await this.getNextGlobalDelta(schemaVersion);
+    if (nextGlobalDelta === null) {
+      await this.finishMigrationProcess(jobParams, namespace);
+      return;
+    }
 
     this.deps.logger.info('Dispatching next migration job', { namespace });
     await this.deps.dispatcher.dispatch(MigrationJob, {
