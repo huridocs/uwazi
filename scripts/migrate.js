@@ -1,16 +1,23 @@
 import { DB } from '#api/odm/index.js';
 import { runMigration } from '#api/migrations/migrate.js';
+import { runNewMigration } from '#api/migrations/MigrationService.js';
 
 const MIGRATION_RESULT_PREFIX = '__UWAZI_MIGRATE_RESULT__=';
+
+const isNewFlow = process.argv.includes('--new');
+const isAsync = process.argv.includes('--async');
+const structuredLogs = process.argv.includes('--structured-logs');
 
 process.on('unhandledRejection', error => {
   throw error;
 });
 
-runMigration()
+const run = isNewFlow ? () => runNewMigration({ async: isAsync, structuredLogs }) : runMigration;
+
+run()
   .then(result => {
     process.stdout.write(`${MIGRATION_RESULT_PREFIX}${JSON.stringify(result)}\n`);
-    if (result.blocked) {
+    if ('error' in result || ('blocked' in result && result.blocked)) {
       process.exitCode = 1;
     }
   })

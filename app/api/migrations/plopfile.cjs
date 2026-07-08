@@ -1,20 +1,20 @@
 const fs = require('fs');
 const path = require('path');
 
-const getLatestDelta = migrationsDir => {
+const getLatestDelta = (migrationsDir) => {
   const files = fs.readdirSync(migrationsDir);
   const deltas = files
-    .map(file => {
+    .map((file) => {
       const match = file.match(/^(\d+)-/);
       return match ? parseInt(match[1], 10) : null;
     })
-    .filter(m => m !== null)
+    .filter((m) => m !== null)
     .sort((a, b) => b - a);
 
   return deltas.length ? deltas[0] : 0;
 };
 
-module.exports = plop => {
+module.exports = (plop) => {
   let currentDelta;
   plop.setHelper('nextMigrationDelta', () => {
     if (currentDelta) {

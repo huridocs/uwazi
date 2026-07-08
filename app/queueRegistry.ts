@@ -77,6 +77,8 @@ import { DatavizScheduledRefreshJobHandler } from '#api/dataviz.v2/infrastructur
 import { DatavizScheduledRefreshJobLegacyToken } from '#api/dataviz.v2/application/contracts/DatavizScheduledRefreshJobHandlerToken.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { SendWelcomeEmailHandler } from '#api/core/infrastructure/jobs/SendWelcomeEmailHandler.js';
+import { MigrationJob } from '#api/core/infrastructure/jobs/MigrationJob.js';
+import { MigrationJobFactory } from '#api/core/infrastructure/factories/MigrationJobFactory.js';
 
 type Register = <T extends Dispatchable>(
   dispatchable: DispatchableClass<T>,
@@ -329,4 +331,6 @@ export function registerJobs(register: Register) {
   );
 
   register(SendWelcomeEmailHandler, async () => new SendWelcomeEmailHandler());
+
+  register(MigrationJob, async () => MigrationJobFactory.create());
 }

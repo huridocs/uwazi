@@ -2,6 +2,7 @@ import { StandardLogger } from '#api/core/libs/logger/infrastructure/StandardLog
 import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
 import { config } from '#api/config.js';
 import { DevelopmentWritter } from '#api/core/libs/logger/infrastructure/writers/DevelopmentWriter.js';
+import { MigrationHumanReadableWriter } from '#api/core/libs/logger/infrastructure/writers/MigrationHumanReadableWriter.js';
 import { getTenant } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
@@ -53,5 +54,20 @@ export class LoggerFactory {
   static fake() {
     // eslint-disable-next-line no-empty-function
     return new StandardLogger(() => {}, getTenant());
+  }
+
+  static migrationLogger(structured = false): Logger {
+    const writer = structured ? StandardJSONWriter : MigrationHumanReadableWriter;
+
+    return new StandardLogger(writer, {
+      name: 'Migration Logger',
+      dbName: 'N/a',
+      activityLogs: 'N/a',
+      attachments: 'N/a',
+      customUploads: 'N/a',
+      indexName: 'N/a',
+      uploadedDocuments: 'N/a',
+      domain: 'N/a',
+    });
   }
 }

@@ -9,6 +9,7 @@ import { migrator } from '../migrator.js';
 import migration1 from './testMigrations/1-migrationTest.js';
 import migration10 from './testMigrations/10-migrationTest.js';
 import migration2 from './testMigrations/2-migrationTest.js';
+import migration3 from './testMigrations/3-migrationBlocked.js';
 
 expect.extend({ toHaveBeenCalledBefore });
 
@@ -140,6 +141,119 @@ describe('migrator', () => {
       expect(migration1.up).not.toHaveBeenCalled();
       expect(result.blocked).toEqual({ delta: 1, requiresSchema: 0 });
       expect(result.migrations).toHaveLength(0);
+    });
+  });
+
+  describe('migrateNext', () => {
+    beforeEach(async () => {
+      await testingDB.clear();
+      migrator.migrationsDir = path.join(__dirname, 'testMigrations');
+      migrator.loader = p =>
+        Promise.resolve(
+          (function resolveModule(r) {
+            const m = r(p);
+            return m.default ?? m;
+          })(require)
+        );
+      jest.spyOn(migration1, 'up');
+      jest.spyOn(migration2, 'up');
+      jest.spyOn(migration3, 'up');
+      jest.spyOn(migration10, 'up');
+    });
+
+    it('should apply only the next pending migration', async () => {
+      const result = await migrator.migrateNext(connection.db, Number.MAX_SAFE_INTEGER);
+
+      expect(result.status).toBe('applied');
+      expect(result.migration.delta).toBe(1);
+      expect(migration1.up).toHaveBeenCalledWith(connection.db);
+      expect(migration2.up).not.toHaveBeenCalled();
+      expect(migration10.up).not.toHaveBeenCalled();
+    });
+
+    it('should return done when there are no pending migrations', async () => {
+      await migrationsModel.saveMultiple([{ delta: 1 }, { delta: 2 }, { delta: 3 }, { delta: 10 }]);
+
+      const result = await migrator.migrateNext(connection.db, Number.MAX_SAFE_INTEGER);
+
+      expect(result.status).toBe('done');
+      expect(migration1.up).not.toHaveBeenCalled();
+      expect(migration2.up).not.toHaveBeenCalled();
+      expect(migration10.up).not.toHaveBeenCalled();
+    });
+
+    it('should return blocked when next migration requires a newer schema', async () => {
+      await migrationsModel.saveMultiple([{ delta: 1 }, { delta: 2 }]);
+
+      const result = await migrator.migrateNext(connection.db, 99);
+
+      expect(result.status).toBe('blocked');
+      expect(result.blocked).toEqual({ delta: 3, requiresSchema: 100 });
+      expect(migration3.up).not.toHaveBeenCalled();
+    });
+
+    it('should apply the next migration after one has already been applied', async () => {
+      await migrationsModel.save({ delta: 1 });
+
+      const result = await migrator.migrateNext(connection.db, Number.MAX_SAFE_INTEGER);
+
+      expect(result.status).toBe('applied');
+      expect(result.migration.delta).toBe(2);
+      expect(migration1.up).not.toHaveBeenCalled();
+      expect(migration2.up).toHaveBeenCalledWith(connection.db);
+    });
+  });
+
+  describe('migrateDelta', () => {
+    beforeEach(async () => {
+      await testingDB.clear();
+      migrator.migrationsDir = path.join(__dirname, 'testMigrations');
+      migrator.loader = p =>
+        Promise.resolve(
+          (function resolveModule(r) {
+            const m = r(p);
+            return m.default ?? m;
+          })(require)
+        );
+      jest.spyOn(migration1, 'up');
+      jest.spyOn(migration2, 'up');
+      jest.spyOn(migration3, 'up');
+      jest.spyOn(migration10, 'up');
+    });
+
+    it('should apply a specific pending migration', async () => {
+      const result = await migrator.migrateDelta(connection.db, 2, Number.MAX_SAFE_INTEGER);
+
+      expect(result.status).toBe('applied');
+      expect(result.migration.delta).toBe(2);
+      expect(migration2.up).toHaveBeenCalledWith(connection.db);
+      expect(migration1.up).not.toHaveBeenCalled();
+      expect(migration10.up).not.toHaveBeenCalled();
+    });
+
+    it('should return done when the specific migration has already been applied', async () => {
+      await migrationsModel.save({ delta: 2 });
+
+      const result = await migrator.migrateDelta(connection.db, 2, Number.MAX_SAFE_INTEGER);
+
+      expect(result.status).toBe('done');
+      expect(migration2.up).not.toHaveBeenCalled();
+    });
+
+    it('should return blocked when the specific migration requires a newer schema', async () => {
+      await migrationsModel.saveMultiple([{ delta: 1 }, { delta: 2 }]);
+
+      const result = await migrator.migrateDelta(connection.db, 3, 99);
+
+      expect(result.status).toBe('blocked');
+      expect(result.blocked).toEqual({ delta: 3, requiresSchema: 100 });
+      expect(migration3.up).not.toHaveBeenCalled();
+    });
+
+    it('should return done when the specific migration is not pending and not blocked', async () => {
+      const result = await migrator.migrateDelta(connection.db, 99, Number.MAX_SAFE_INTEGER);
+
+      expect(result.status).toBe('done');
     });
   });
 });

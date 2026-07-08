@@ -23,7 +23,9 @@ async function main() {
     const value = untilFlag.split('=')[1];
     const parsed = parseInt(value, 10);
     if (Number.isNaN(parsed) || parsed <= 0 || String(parsed) !== value) {
-      process.stderr.write(`Error: --until must be a positive integer. Got: "${value}". Use --until=N format.\n`);
+      process.stderr.write(
+        `Error: --until must be a positive integer. Got: "${value}". Use --until=N format.\n`
+      );
       process.exit(1);
     }
     until = parsed;
