@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
 import { CustomUpload } from '#api/core/domain/files/CustomUpload.js';
 import { FileAttachment } from '#api/core/domain/files/FileAttachment.js';
@@ -34,11 +35,11 @@ describe('PostgresFilesMapper', () => {
         totalPages: 10,
         language: 'eng',
         generatedToc: true,
-        toc: null,
-        propertySelections: null,
-        fullText: null,
-        url: null,
       });
+      expect(row).not.toHaveProperty('toc');
+      expect(row).not.toHaveProperty('propertySelections');
+      expect(row).not.toHaveProperty('fullText');
+      expect(row).not.toHaveProperty('url');
     });
 
     it('should map a processing PDF document', () => {
@@ -54,10 +55,10 @@ describe('PostgresFilesMapper', () => {
         type: 'document',
         entity: 'e2',
         status: 'processing',
-        totalPages: null,
-        language: null,
-        generatedToc: null,
       });
+      expect(row).not.toHaveProperty('totalPages');
+      expect(row).not.toHaveProperty('language');
+      expect(row).not.toHaveProperty('generatedToc');
     });
 
     it('should map a failed PDF document', () => {
@@ -81,10 +82,10 @@ describe('PostgresFilesMapper', () => {
         type: 'attachment',
         entity: 'e1',
         mimetype: 'application/pdf',
-        url: null,
-        status: null,
-        language: null,
       });
+      expect(row).not.toHaveProperty('url');
+      expect(row).not.toHaveProperty('status');
+      expect(row).not.toHaveProperty('language');
     });
 
     it('should map a URL attachment', () => {
@@ -117,9 +118,9 @@ describe('PostgresFilesMapper', () => {
         entity: 'e1',
         language: 'spa',
         mimetype: 'image/jpeg',
-        status: null,
-        url: null,
       });
+      expect(row).not.toHaveProperty('status');
+      expect(row).not.toHaveProperty('url');
     });
 
     it('should map a custom upload', () => {
@@ -130,11 +131,67 @@ describe('PostgresFilesMapper', () => {
       expect(row).toMatchObject({
         _id: 'custom-1',
         type: 'custom',
-        entity: null,
-        status: null,
-        language: null,
-        url: null,
       });
+      expect(row).not.toHaveProperty('entity');
+      expect(row).not.toHaveProperty('status');
+      expect(row).not.toHaveProperty('language');
+      expect(row).not.toHaveProperty('url');
+    });
+
+    it('should not include fullText when domain object has no fullText loaded', () => {
+      const doc = FileBuilder.processedDocument('doc-no-ft', {
+        entity: 'e1',
+      });
+
+      const row = PostgresFilesMapper.toDBO(doc);
+
+      expect(row).not.toHaveProperty('fullText');
+    });
+
+    it('should include fullText when domain object has fullText explicitly set', () => {
+      const fullText = { 1: 'page one', 2: 'page two' };
+      const doc = FileBuilder.processedDocument('doc-with-ft', {
+        entity: 'e1',
+        fullText,
+      });
+
+      const row = PostgresFilesMapper.toDBO(doc);
+
+      expect(row.fullText).toEqual(fullText);
+    });
+
+    it('should not include toc when domain object has no toc', () => {
+      const doc = FileBuilder.processedDocument('doc-no-toc', {
+        entity: 'e1',
+      });
+
+      const row = PostgresFilesMapper.toDBO(doc);
+
+      expect(row).not.toHaveProperty('toc');
+    });
+
+    it('should include toc when domain object has toc explicitly set', () => {
+      const toc = [{ label: 'Chapter 1', indentation: 0 }];
+      const doc = FileBuilder.processedDocument('doc-with-toc', {
+        entity: 'e1',
+        toc,
+      });
+
+      const row = PostgresFilesMapper.toDBO(doc);
+
+      expect(row.toc).toEqual(toc);
+    });
+
+    it('should include propertySelections when domain object has propertySelections explicitly set', () => {
+      const propertySelections = [{ name: 'prop1' }];
+      const doc = FileBuilder.processedDocument('doc-with-ps', {
+        entity: 'e1',
+        propertySelections,
+      });
+
+      const row = PostgresFilesMapper.toDBO(doc);
+
+      expect(row.propertySelections).toEqual(propertySelections);
     });
 
     it('should store _id as string (no ObjectId conversion)', () => {
@@ -150,6 +207,8 @@ describe('PostgresFilesMapper', () => {
     it('should reconstruct a processed PDF document', () => {
       const row: FilesRow = {
         _id: 'doc-1',
+        //@ts-ignore
+        //@ts-ignore
         tenant_id: 't1',
         originalname: 'doc.pdf',
         filename: 'doc.pdf',
@@ -182,6 +241,7 @@ describe('PostgresFilesMapper', () => {
     it('should convert language from ISO 639-3 to ISO 639-1', () => {
       const row: FilesRow = {
         _id: 'thumb-1',
+        //@ts-ignore
         tenant_id: 't1',
         originalname: 'thumb.jpg',
         filename: 'thumb.jpg',
@@ -209,6 +269,7 @@ describe('PostgresFilesMapper', () => {
     it('should reconstruct a processing PDF document', () => {
       const row: FilesRow = {
         _id: 'doc-2',
+        //@ts-ignore
         tenant_id: 't1',
         originalname: 'doc.pdf',
         filename: 'doc.pdf',
@@ -238,6 +299,7 @@ describe('PostgresFilesMapper', () => {
     it('should reconstruct a file attachment', () => {
       const row: FilesRow = {
         _id: 'att-1',
+        //@ts-ignore
         tenant_id: 't1',
         originalname: 'file.pdf',
         filename: 'file.pdf',
@@ -266,6 +328,7 @@ describe('PostgresFilesMapper', () => {
     it('should reconstruct a URL attachment when url is present', () => {
       const row: FilesRow = {
         _id: 'url-1',
+        //@ts-ignore
         tenant_id: 't1',
         originalname: 'url-doc.pdf',
         filename: 'url-doc.pdf',
@@ -294,6 +357,7 @@ describe('PostgresFilesMapper', () => {
     it('should reconstruct a thumbnail', () => {
       const row: FilesRow = {
         _id: 'thumb-1',
+        //@ts-ignore
         tenant_id: 't1',
         originalname: 'thumb.jpg',
         filename: 'thumb.jpg',
@@ -323,6 +387,7 @@ describe('PostgresFilesMapper', () => {
     it('should reconstruct a custom upload', () => {
       const row: FilesRow = {
         _id: 'custom-1',
+        //@ts-ignore
         tenant_id: 't1',
         originalname: 'custom.jpg',
         filename: 'custom.jpg',
@@ -354,6 +419,7 @@ describe('PostgresFilesMapper', () => {
 
       const row: FilesRow = {
         _id: 'doc-1',
+        //@ts-ignore
         tenant_id: 't1',
         originalname: 'doc.pdf',
         filename: 'doc.pdf',
@@ -382,6 +448,7 @@ describe('PostgresFilesMapper', () => {
     it('should handle null optional fields gracefully', () => {
       const row: FilesRow = {
         _id: 'doc-1',
+        //@ts-ignore
         tenant_id: 't1',
         originalname: 'doc.pdf',
         filename: 'doc.pdf',
@@ -417,7 +484,10 @@ describe('PostgresFilesMapper', () => {
       });
 
       const row = PostgresFilesMapper.toDBO(original);
-      const reconstructed = PostgresFilesMapper.toDomain(row, contentLoader) as PDFDocument;
+      const reconstructed = PostgresFilesMapper.toDomain(
+        row as FilesRow,
+        contentLoader
+      ) as PDFDocument;
 
       expect(reconstructed.id).toBe(original.id);
       expect(reconstructed.entity).toBe(original.entity);
@@ -434,7 +504,10 @@ describe('PostgresFilesMapper', () => {
       });
 
       const row = PostgresFilesMapper.toDBO(original);
-      const reconstructed = PostgresFilesMapper.toDomain(row, contentLoader) as URLAttachment;
+      const reconstructed = PostgresFilesMapper.toDomain(
+        row as FilesRow,
+        contentLoader
+      ) as URLAttachment;
 
       expect(reconstructed.id).toBe(original.id);
       expect(reconstructed.url).toBe(original.url);
@@ -444,7 +517,10 @@ describe('PostgresFilesMapper', () => {
       const original = FileBuilder.thumbnail('rt-3', { language: 'es' });
 
       const row = PostgresFilesMapper.toDBO(original);
-      const reconstructed = PostgresFilesMapper.toDomain(row, contentLoader) as Thumbnail;
+      const reconstructed = PostgresFilesMapper.toDomain(
+        row as FilesRow,
+        contentLoader
+      ) as Thumbnail;
 
       expect(reconstructed.id).toBe(original.id);
       expect(reconstructed.entity).toBe(original.entity);
@@ -455,7 +531,10 @@ describe('PostgresFilesMapper', () => {
       const original = FileBuilder.customUpload('rt-4');
 
       const row = PostgresFilesMapper.toDBO(original);
-      const reconstructed = PostgresFilesMapper.toDomain(row, contentLoader) as CustomUpload;
+      const reconstructed = PostgresFilesMapper.toDomain(
+        row as FilesRow,
+        contentLoader
+      ) as CustomUpload;
 
       expect(reconstructed.id).toBe(original.id);
       expect(reconstructed.mimetype).toBe(original.mimetype);

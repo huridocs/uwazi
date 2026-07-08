@@ -1,7 +1,9 @@
 /* eslint-disable max-statements */
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingPG } from '#api/utils/testing_pg.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { PostgresFilesDAO } from '../PostgresFilesDAO.js';
+import { PostgresTable } from '#api/core/infrastructure/postgresql/common/PostgresTable.js';
 import { FileNotFound } from '#api/core/domain/files/errors.js';
 
 const TENANT_ID = 'test-tenant';
@@ -687,6 +689,127 @@ describe('PostgresFilesDAO', () => {
           entity: 'e_tenant',
         });
       });
+    });
+  });
+
+  describe('getTable()', () => {
+    beforeEach(async () => {
+      await testingPG.clear(['files']);
+    });
+
+    it('returns a PostgresTable instance', () => {
+      const dao = createSut();
+      const table = dao.getTable();
+      expect(table).toBeInstanceOf(PostgresTable);
+    });
+
+    it('upsert inserts a new row', async () => {
+      const dao = createSut();
+      const row = {
+        _id: 'test-insert-id',
+        originalname: 'test.pdf',
+        filename: 'test.pdf',
+        mimetype: 'application/pdf',
+        size: 2048,
+        creationDate: 1700000000000,
+        type: 'document' as const,
+      };
+
+      await dao.getTable().upsert(row);
+
+      const result = await dao.getById('test-insert-id');
+      expect(result.isOk()).toBe(true);
+      expect(result.getDataOrThrow()).toMatchObject({
+        _id: 'test-insert-id',
+        filename: 'test.pdf',
+        type: 'document',
+        size: 2048,
+      });
+    });
+
+    it('upsert updates an existing row', async () => {
+      const dao = createSut();
+      const row = {
+        _id: 'test-update-id',
+        originalname: 'original.pdf',
+        filename: 'original.pdf',
+        mimetype: 'application/pdf',
+        size: 1024,
+        creationDate: 1700000000000,
+        type: 'document' as const,
+      };
+
+      await dao.getTable().upsert(row);
+
+      await dao.getTable().upsert({
+        ...row,
+        originalname: 'updated.pdf',
+        size: 4096,
+      });
+
+      const result = await dao.getById('test-update-id');
+      expect(result.isOk()).toBe(true);
+      expect(result.getDataOrThrow()).toMatchObject({
+        _id: 'test-update-id',
+        originalname: 'updated.pdf',
+        size: 4096,
+        filename: 'original.pdf',
+      });
+    });
+
+    it('upsert with JSONB columns serializes objects automatically', async () => {
+      const dao = createSut();
+      const row = {
+        _id: 'test-jsonb-id',
+        originalname: 'doc.pdf',
+        filename: 'doc.pdf',
+        mimetype: 'application/pdf',
+        size: 512,
+        creationDate: 1700000000000,
+        type: 'document' as const,
+        entity: 'entity_1',
+        status: 'ready' as const,
+        toc: [{ label: 'Chapter 1', indentation: 0 }],
+        propertySelections: [{ propertyId: 'prop1', text: 'selected text' }],
+        fullText: { 1: 'page content' },
+      };
+
+      await dao.getTable().upsert(row);
+
+      const result = await dao.getById('test-jsonb-id', { withFullText: true });
+      expect(result.isOk()).toBe(true);
+      const data = result.getDataOrThrow();
+      expect(data.toc).toEqual([{ label: 'Chapter 1', indentation: 0 }]);
+      expect(data.propertySelections).toEqual([{ propertyId: 'prop1', text: 'selected text' }]);
+      expect(data.fullText).toEqual({ 1: 'page content' });
+    });
+
+    it('query().delete removes a row', async () => {
+      const dao = createSut();
+      const row = {
+        _id: 'test-delete-id',
+        originalname: 'to-delete.pdf',
+        filename: 'to-delete.pdf',
+        mimetype: 'application/pdf',
+        size: 256,
+        creationDate: 1700000000000,
+        type: 'document' as const,
+      };
+
+      await dao.getTable().upsert(row);
+
+      await dao.getTable().query().where({ _id: 'test-delete-id' }).delete();
+
+      const result = await dao.getById('test-delete-id');
+      expect(result.isError()).toBe(true);
+      expect(result.getError()).toBeInstanceOf(FileNotFound);
+    });
+
+    it('query().delete on non-existent id does not throw', async () => {
+      const dao = createSut();
+      await expect(
+        dao.getTable().query().where({ _id: 'non-existent-id' }).delete()
+      ).resolves.not.toThrow();
     });
   });
 });

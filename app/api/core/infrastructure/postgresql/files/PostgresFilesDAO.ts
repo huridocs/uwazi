@@ -3,6 +3,7 @@
 /* eslint-disable max-statements */
 import { PostgresDataSource } from '../common/PostgresDataSource.js';
 import type { PostgresDataSourceDeps } from '../common/PostgresDataSource.js';
+import { PostgresTable } from '../common/PostgresTable.js';
 import type { FilesRow } from './PostgresFilesRow.js';
 import { FILES_COLUMNS_WITHOUT_FULL_TEXT } from './PostgresFilesDAOColumns.js';
 import { Result } from '../../../libs/Result.js';
@@ -24,6 +25,10 @@ class PostgresFilesDAO extends PostgresDataSource {
 
   constructor(deps: Deps) {
     super(deps);
+  }
+
+  getTable(): PostgresTable {
+    return this.table;
   }
 
   private resolveColumns<T>(options?: GetFileOptions<T>): string[] {
