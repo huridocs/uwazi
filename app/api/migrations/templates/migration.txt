@@ -3,7 +3,7 @@ import { Db } from 'mongodb';
 export default {
   delta: {{ nextMigrationDelta }},
 
-  name: '{{ name }}',
+  name: '{{dashName name}}',
 
   description: '{{ description }}',
 
