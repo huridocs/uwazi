@@ -214,7 +214,8 @@ async function getEntityTemplate(doc, language) {
   if (doc.template) {
     template = await templates.getById(doc.template);
   } else if (doc.sharedId) {
-    const storedDoc = await this.getById(doc.sharedId, language);
+    const storedDoc =
+      (await this.getById(doc.sharedId, language)) || (await this.getById(doc.sharedId));
     if (storedDoc?.template) {
       template = await templates.getById(storedDoc.template);
     }
@@ -339,6 +340,7 @@ const isLegacyCompatibilityError = error => {
     error?.name === 'TemplateWithMissingCommonProperty' ||
     message.includes('Translation for language') ||
     message.includes('EntityTranslationDoesNotExistError') ||
+    message.includes('Transaction already in progress') ||
     message.includes('hex string must be 24 characters') ||
     message.includes('toHexString') ||
     message.includes('Template has the missing Property') ||
@@ -415,7 +417,9 @@ export default {
     doc.editDate = date.currentUTC();
 
     if (doc.sharedId) {
-      const currentDoc = await this.getById(doc.sharedId, language);
+      const docLanguage = doc.language || language;
+      const currentDoc =
+        (await this.getById(doc.sharedId, docLanguage)) || (await this.getById(doc.sharedId));
       if (!currentDoc) {
         throw new Error(`entity does not exists: ${doc.sharedId}`);
       }
@@ -426,7 +430,7 @@ export default {
         ...sanitized,
         _id: sanitized._id || currentDoc._id,
         sharedId: sanitized.sharedId || currentDoc.sharedId,
-        language: sanitized.language || currentDoc.language || language,
+        language: sanitized.language || currentDoc.language || docLanguage,
         title: sanitized.title || currentDoc.title,
       };
       try {
