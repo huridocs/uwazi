@@ -58,7 +58,11 @@ const GeolocationField = <TFormValues extends FieldValues = FieldValues>({
 
           return (
             <>
-              <div className="font-bold mb-2">
+              <div
+                className={`font-bold mb-2 ${
+                  showRequiredError ? 'text-(--color-theme-control-text-error)' : ''
+                }`}
+              >
                 <Translate className="" context={context}>
                   {label}
                 </Translate>
@@ -68,6 +72,7 @@ const GeolocationField = <TFormValues extends FieldValues = FieldValues>({
                 name={geolocationField.name}
                 disabled={disabled}
                 value={{ lat, lon }}
+                hasErrors={showRequiredError}
                 onChange={({ lat: nextLat, lon: nextLon }) => {
                   geolocationField.onChange({
                     lat: nextLat,

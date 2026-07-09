@@ -2,6 +2,7 @@ import React from 'react';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
+import { getFieldErrorMessage } from '../functions/fieldErrorMessage.js';
 import { secondsToISODate, parseLocalizedDate } from '#V2/shared/dateHelpers.js';
 
 type DateFieldProps<TFormValues extends FieldValues = FieldValues> = {
@@ -27,7 +28,7 @@ const DateField = <TFormValues extends FieldValues = FieldValues>({
         control={control}
         name={field}
         rules={registerOptions}
-        render={({ field: { onChange, onBlur, value, ref } }) => (
+        render={({ field: { onChange, onBlur, value, ref }, fieldState }) => (
           <InputField
             id={field}
             label={
@@ -40,6 +41,8 @@ const DateField = <TFormValues extends FieldValues = FieldValues>({
             }
             type="date"
             disabled={disabled}
+            hasErrors={fieldState.invalid}
+            errorMessage={getFieldErrorMessage(fieldState.error)}
             ref={ref}
             onBlur={onBlur}
             value={secondsToISODate(value) || ''}

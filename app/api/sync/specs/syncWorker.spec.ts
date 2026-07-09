@@ -253,19 +253,15 @@ describe('syncWorker', () => {
           attachments: [
             {
               _id: expect.anything(),
-              creationDate: expect.anything(),
               entity: 'newDoc1SharedId',
               filename: 'test2.txt',
               type: 'attachment',
-              __v: 0,
             },
             {
               _id: expect.anything(),
-              creationDate: expect.anything(),
               entity: 'newDoc1SharedId',
               filename: `${newDoc1.toString()}.jpg`,
               type: 'attachment',
-              __v: 0,
             },
           ],
         },
@@ -284,11 +280,9 @@ describe('syncWorker', () => {
           attachments: [
             {
               _id: expect.anything(),
-              creationDate: expect.anything(),
               entity: 'entitytest.txt',
               filename: 'test.txt',
               type: 'attachment',
-              __v: 0,
             },
           ],
         },
