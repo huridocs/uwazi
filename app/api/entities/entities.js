@@ -336,10 +336,14 @@ const isLegacyCompatibilityError = error => {
     error?.name === 'ZodError' ||
     error?.name === 'BSONError' ||
     error?.name === 'EntityTranslationDoesNotExistError' ||
+    error?.name === 'TemplateWithMissingCommonProperty' ||
     message.includes('Translation for language') ||
     message.includes('EntityTranslationDoesNotExistError') ||
     message.includes('hex string must be 24 characters') ||
-    message.includes('toHexString')
+    message.includes('toHexString') ||
+    message.includes('Template has the missing Property') ||
+    (message.includes('The Property type "') && message.includes('was not handled')) ||
+    message.includes("Cannot read properties of undefined (reading 'map')")
   );
 };
 

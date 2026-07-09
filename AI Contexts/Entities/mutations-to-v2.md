@@ -169,6 +169,28 @@ This means old write paths are still alive and reachable.
 Current state remains a hybrid bridge: V2-first delegation with guarded fallback for legacy-shaped payloads.
 `generatedToc` no longer uses the legacy-forced fallback branch in `entities.save`.
 
+### Additional Compatibility Guardrails Added (CSV/template legacy shapes)
+
+During validation we hit CSV import failures caused by legacy template shapes that current V2 template mapping rejects in `CreateEntity` path. To preserve migration safety, `entities.save` compatibility fallback detection was extended for these error families:
+
+- unknown property type:
+  - `The Property type "..." was not handled`
+- missing common properties in template:
+  - `TemplateWithMissingCommonProperty`
+  - `Template has the missing Property`
+- legacy template shape causing mapper crash:
+  - `Cannot read properties of undefined (reading 'map')`
+
+Outcome:
+
+- affected CSV suite recovered:
+  - `app/api/csv/specs/csvLoader.spec.js` passed (37/37)
+
+Important:
+
+- this is explicitly a **temporary migration guardrail** to keep V2-first behavior without breaking legacy data shapes.
+- this is **not** the end-state architecture; final objective remains removing fallback logic and migrating callers/templates to fully V2-compatible contracts.
+
 ## Boundary Rule (Important)
 
 Legacy compatibility fallbacks must stay in legacy boundaries only:
