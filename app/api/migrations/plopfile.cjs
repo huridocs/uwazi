@@ -14,12 +14,11 @@ const getLatestDelta = (migrationsDir) => {
   return deltas.length ? deltas[0] : 0;
 };
 
-const kebabCaseName = (name) =>
-  name
-    .trim()
-    .replace(/[^a-zA-Z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
-    .toLowerCase();
+const kebabCaseName = (name) => name
+  .trim()
+  .replace(/[^a-zA-Z0-9]+/g, '-')
+  .replace(/^-|-$/g, '')
+  .toLowerCase();
 
 module.exports = (plop) => {
   let currentTenantDelta;
