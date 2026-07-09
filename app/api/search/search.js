@@ -53,6 +53,25 @@ function processParentThesauri(property, values, dictionaries, properties) {
   }, []);
 }
 
+function normalizeSelectFilterValue(value) {
+  if (Array.isArray(value)) {
+    return { values: value };
+  }
+
+  if (!_.isPlainObject(value)) {
+    return { values: _.isNil(value) ? [] : [value] };
+  }
+
+  if (Array.isArray(value.values)) {
+    return value;
+  }
+
+  return {
+    ...value,
+    values: _.isNil(value.values) ? [] : [value.values],
+  };
+}
+
 function processFilters(filters, properties, dictionaries) {
   return Object.keys(filters || {}).reduce((res, filterName) => {
     const suggested = filterName.startsWith('__');
@@ -89,6 +108,7 @@ function processFilters(filters, properties, dictionaries) {
 
     if (['select', 'multiselect', 'relationship'].includes(type)) {
       type = 'multiselect';
+      value = normalizeSelectFilterValue(value);
       value.values = processParentThesauri(property, value.values, dictionaries, properties);
     }
 
@@ -578,7 +598,8 @@ const _addAnyAggregation = (aggregations, filters, response) => {
 
     if (aggregation.buckets && aggregationKey !== '_types') {
       const missingBucket = aggregation.buckets.find(b => b.key === 'missing');
-      const keyFilters = ((filters || {})[aggregationKey.replace('.value', '')] || {}).values || [];
+      const keyFilter = (filters || {})[aggregationKey.replace('.value', '')];
+      const keyFilters = normalizeSelectFilterValue(keyFilter).values;
       const filterNoneOrMissing =
         !keyFilters.filter(v => v !== 'any').length || keyFilters.find(v => v === 'missing');
 

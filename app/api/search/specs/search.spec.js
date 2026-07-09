@@ -848,6 +848,41 @@ describe('search', () => {
     });
 
     describe('AND flag', () => {
+      it('should normalize malformed select filter values', async () => {
+        userFactory.mock(undefined);
+
+        const [wellFormedArray, bareArray, wellFormedScalar, scalarValue, bareScalar] =
+          await Promise.all([
+            searchEntities(
+              {
+                filters: { multiselect1: { values: ['SpainID'] } },
+                types: [ids.templateMetadata1, ids.templateMetadata2],
+              },
+              'en'
+            ),
+            searchEntities(
+              {
+                filters: { multiselect1: ['SpainID'] },
+                types: [ids.templateMetadata1, ids.templateMetadata2],
+              },
+              'en'
+            ),
+            searchEntities({ filters: { groupedDictionary: { values: ['EuropeID'] } } }, 'en'),
+            searchEntities({ filters: { groupedDictionary: { values: 'EuropeID' } } }, 'en'),
+            searchEntities({ filters: { groupedDictionary: 'EuropeID' } }, 'en'),
+          ]);
+
+        expect(bareArray.rows.map(row => row.sharedId).sort()).toEqual(
+          wellFormedArray.rows.map(row => row.sharedId).sort()
+        );
+        expect(scalarValue.rows.map(row => row.sharedId).sort()).toEqual(
+          wellFormedScalar.rows.map(row => row.sharedId).sort()
+        );
+        expect(bareScalar.rows.map(row => row.sharedId).sort()).toEqual(
+          wellFormedScalar.rows.map(row => row.sharedId).sort()
+        );
+      });
+
       it('should not fail when no values sent', async () => {
         userFactory.mock(undefined);
         const filtered = await searchEntities(
