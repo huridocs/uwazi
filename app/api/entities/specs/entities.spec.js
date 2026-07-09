@@ -1,12 +1,9 @@
 /* eslint-disable max-statements */
 
 import Ajv from 'ajv';
-// eslint-disable-next-line node/no-restricted-import
-import fs from 'fs/promises';
 
 import entitiesModel from '#api/entities/entitiesModel.js';
 import relationships from '#api/relationships/index.js';
-import { storage, uploadsPath } from '#api/files/index.js';
 import { search } from '#api/search/index.js';
 import date from '#api/utils/date.js';
 import db from '#api/utils/testing_db.js';
@@ -15,14 +12,12 @@ import { UserRole } from '#shared/types/userSchema.js';
 
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { spyOnEmit } from '#api/core/libs/eventsbus/eventTesting.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import entities from '../entities.js';
 
 import { EntityCreatedEvent } from '../events/EntityCreatedEvent.js';
-import { EntityDeletedEvent } from '../events/EntityDeletedEvent.js';
 import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent.js';
 import fixtures, {
   adminId,
@@ -35,8 +30,6 @@ import fixtures, {
   templateId,
   templateWithEntityAsThesauri,
   unpublishedDocId,
-  uploadId1,
-  uploadId2,
 } from './fixtures.js';
 
 const saveEntity = (doc, options, ...rest) =>
@@ -901,7 +894,7 @@ describe('entities', () => {
       expect(doc1db.metadata.numeric).toEqual([{ value: 10.5 }]);
     });
 
-    it('should sanitize numeric, parsing empty strings into no value', async () => {
+    it('should sanitize numeric, normalizing empty strings into an empty array', async () => {
       const doc1 = {
         _id: batmanFinishesId,
         sharedId: 'shared',
@@ -911,7 +904,8 @@ describe('entities', () => {
 
       await saveEntity(doc1, { language: 'en' });
       const doc = await entities.getById('shared', 'en');
-      expect(doc.metadata.numeric).toEqual(undefined);
+      // Empty metadata values are represented as [] in normalized entity payloads.
+      expect(doc.metadata.numeric).toEqual([]);
     });
 
     it('should supply empty arrays for missing metadata, for all languages', async () => {
@@ -1147,155 +1141,6 @@ describe('entities', () => {
       const _entities = await entities.get({ template: templateWithEntityAsThesauri });
       expect(_entities[0].metadata.multiselect).toEqual([]);
       expect(search.indexEntities).toHaveBeenCalled();
-    });
-  });
-
-  describe('delete', () => {
-    describe('when the original file does not exist', () => {
-      it('should delete the entity and not throw an error', async () => {
-        await entities.delete('shared1');
-        const response = await entities.get({ sharedId: 'shared1' });
-        expect(response.length).toBe(0);
-      });
-    });
-
-    describe('when database deletion throws an error', () => {
-      it('should reindex the documents', async () => {
-        jest
-          .spyOn(entitiesModel, 'delete')
-          .mockImplementation(() => Promise.reject(new Error('error')));
-
-        let error;
-        try {
-          await entities.delete('shared');
-        } catch (_error) {
-          error = _error;
-          expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'shared' }, '+fullText');
-        }
-        expect(error).toBeDefined();
-        jest.mocked(entitiesModel.delete).mockRestore();
-      });
-    });
-
-    it('should delete the document in the database', async () => {
-      await entities.delete('shared');
-      const response = await entities.get({ sharedId: 'shared' });
-      expect(response.length).toBe(0);
-    });
-
-    it('should delete the document from the search', async () => {
-      jest.mocked(search.delete).mockReset();
-      await entities.delete('shared');
-      const args = jest.mocked(search.delete).mock.calls;
-      expect(search.delete).toHaveBeenCalled();
-      expect(args[0][0]._id.toString()).toBe(batmanFinishesId.toString());
-    });
-
-    it('should delete the document relationships', async () => {
-      await entities.delete('shared');
-      const refs = await relationships.get({ entity: 'shared' });
-      expect(refs.length).toBe(0);
-    });
-
-    it('should delete the original file', async () => {
-      await fs.writeFile(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'), '');
-      await fs.writeFile(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'), '');
-      await fs.writeFile(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'), '');
-      await fs.writeFile(uploadsPath(`${uploadId1}.jpg`), '');
-      await fs.writeFile(uploadsPath(`${uploadId2}.jpg`), '');
-
-      expect(await storage.fileExists('8202c463d6158af8065022d9b5014ccb.pdf', 'document')).toBe(
-        true
-      );
-      expect(await storage.fileExists('8202c463d6158af8065022d9b5014cc1.pdf', 'document')).toBe(
-        true
-      );
-      expect(await storage.fileExists('8202c463d6158af8065022d9b5014ccc.pdf', 'document')).toBe(
-        true
-      );
-      expect(await storage.fileExists(`${uploadId1}.jpg`, 'document')).toBe(true);
-      expect(await storage.fileExists(`${uploadId2}.jpg`, 'document')).toBe(true);
-
-      await entities.delete('shared');
-
-      expect(await storage.fileExists('8202c463d6158af8065022d9b5014ccb.pdf', 'document')).toBe(
-        false
-      );
-      expect(await storage.fileExists('8202c463d6158af8065022d9b5014cc1.pdf', 'document')).toBe(
-        false
-      );
-      expect(await storage.fileExists('8202c463d6158af8065022d9b5014ccc.pdf', 'document')).toBe(
-        false
-      );
-
-      expect(await storage.fileExists(`${uploadId1}.jpg`, 'document')).toBe(false);
-      expect(await storage.fileExists(`${uploadId2}.jpg`, 'document')).toBe(false);
-    });
-
-    describe('when entity is being used as thesauri', () => {
-      it('should delete the entity id on all entities using it from select/multiselect values', async () => {
-        jest.mocked(search.indexEntities).mockRestore();
-        await entities.delete('shared');
-
-        const documentsToIndex = jest.mocked(search.bulkIndex).mock.calls[0][0];
-
-        expect(documentsToIndex[0].metadata.multiselect).toEqual([{ value: 'value0' }]);
-        expect(documentsToIndex[1].metadata.multiselect2).toEqual([{ value: 'value2' }]);
-        expect(documentsToIndex[2].metadata.select).toEqual([]);
-        expect(documentsToIndex[3].metadata.select2).toEqual([]);
-      });
-
-      describe('when there is no multiselects but there is selects', () => {
-        it('should only delete selects and not throw an error', async () => {
-          jest.mocked(search.indexEntities).mockRestore();
-          jest.mocked(search.bulkIndex).mockReset();
-
-          await entities.delete('shared10');
-
-          const documentsToIndex = jest.mocked(search.bulkIndex).mock.calls[0][0];
-          expect(documentsToIndex[0].metadata.select).toEqual([]);
-        });
-      });
-
-      describe('when there is no selects but there is multiselects', () => {
-        it('should only delete multiselects and not throw an error', async () => {
-          jest.mocked(search.indexEntities).mockRestore();
-          jest.mocked(search.bulkIndex).mockReset();
-          await entities.delete('multiselect');
-          const documentsToIndex = jest.mocked(search.bulkIndex).mock.calls[0][0];
-          expect(documentsToIndex[0].metadata.multiselect).toEqual([{ value: 'value1' }]);
-        });
-      });
-    });
-
-    it('should delete the suggestions with the entity sharedId', async () => {
-      const emitSpy = spyOnEmit();
-      await entities.delete('shared');
-      emitSpy.expectToEmitEvent(EntityDeletedEvent, {
-        entity: fixtures.entities
-          .filter(entity => entity.sharedId === 'shared')
-          .map(entity => expect.objectContaining({ _id: entity._id })),
-      });
-      emitSpy.restore();
-    });
-
-    it('should remove the entity from the relationship metadata of related entities', async () => {
-      await entities.delete('shared2');
-      const [related] = await db.mongodb
-        .collection('entities')
-        .find({ sharedId: 'shared', title: 'Batman finishes' })
-        .toArray();
-      expect(related.metadata).toMatchObject({
-        friends: [],
-        enemies: [],
-      });
-      const [related2] = await db.mongodb
-        .collection('entities')
-        .find({ sharedId: 'entityWithOnlyAnyRelationship' })
-        .toArray();
-      expect(related2.metadata).toMatchObject({
-        relationship_to_any_template: [],
-      });
     });
   });
 

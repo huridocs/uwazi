@@ -5,7 +5,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { legacyLogger } from '#api/log/index.js';
 import documentRoutes from '../deprecatedRoutes.js';
-import documents from '../documents.js';
+import { documents as documentsService } from '../documents.js';
 import { fixtures } from './fixtures.js';
 import templates from '../../core/v1_layer/templates/index.js';
 import entities from '#api/entities/entities.js';
@@ -55,16 +55,20 @@ describe('documents', () => {
     });
 
     it('should need authorization', async () => {
-      jest.spyOn(documents, 'save').mockImplementation(async () => Promise.resolve('document'));
+      jest
+        .spyOn(documentsService, 'save')
+        .mockImplementation(async () => Promise.resolve('document'));
       await request(app).post('/api/documents').send(req).expect(401);
     });
 
     it('should create a new document with current user', async () => {
-      jest.spyOn(documents, 'save').mockImplementation(async () => Promise.resolve('document'));
+      jest
+        .spyOn(documentsService, 'save')
+        .mockImplementation(async () => Promise.resolve('document'));
       currentUser = adminUser;
       const response = await request(app).post('/api/documents').send(document);
       expect(response.body).toBe('document');
-      expect(documents.save).toHaveBeenCalledWith(document, {
+      expect(documentsService.save).toHaveBeenCalledWith(document, {
         user: adminUser,
         language: req.language,
       });
@@ -73,12 +77,14 @@ describe('documents', () => {
 
   describe('GET /api/documents', () => {
     beforeEach(() => {
-      jest.spyOn(documents, 'getById').mockImplementation(async () => Promise.resolve('documents'));
+      jest
+        .spyOn(documentsService, 'getById')
+        .mockImplementation(async () => Promise.resolve('documents'));
     });
 
     it('should return documents.get', async () => {
       const response = await request(app).get('/api/documents').query({ _id: 'id' });
-      expect(documents.getById).toHaveBeenCalledWith('id', 'es');
+      expect(documentsService.getById).toHaveBeenCalledWith('id', 'es');
       expect(response.body).toEqual({ rows: ['documents'] });
     });
   });
@@ -105,7 +111,7 @@ describe('documents', () => {
     });
   });
 
-  describe('DELETE', () => {
+  describe('DELETE /api/documents', () => {
     beforeEach(() => {
       jest
         .spyOn(entities, 'delete')

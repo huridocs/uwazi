@@ -127,7 +127,7 @@ export default (app: Application) => {
     }),
     async (req, res, next) => {
       try {
-        res.json(await files.tocReviewed(req.body.fileId, req.language));
+        res.json(await files.tocReviewed(req.body.fileId));
       } catch (e) {
         next(e);
       }

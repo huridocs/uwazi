@@ -6,6 +6,30 @@ const fixtures: DBFixture = {
   templates: [
     {
       _id: templateId,
+      name: 'toc-template',
+      commonProperties: [
+        {
+          _id: testingDB.id(),
+          label: 'Title',
+          type: 'text',
+          name: 'title',
+          isCommonProperty: true,
+        },
+        {
+          _id: testingDB.id(),
+          label: 'Creation Date',
+          type: 'date',
+          name: 'creationDate',
+          isCommonProperty: true,
+        },
+        {
+          _id: testingDB.id(),
+          label: 'Edit Date',
+          type: 'date',
+          name: 'editDate',
+          isCommonProperty: true,
+        },
+      ],
       properties: [],
     },
   ],

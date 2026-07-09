@@ -20,6 +20,7 @@ import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { FileMappers } from '#api/core/infrastructure/mongodb/files/FilesMappers.js';
+import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
 
 const deduceMimeType = (_file: FileType) => {
   const file = { ..._file };
@@ -97,7 +98,7 @@ export const files = {
     return toDeleteFiles;
   },
 
-  async tocReviewed(_id: string, language: string) {
+  async tocReviewed(_id: string) {
     const existingFile = (
       await FilesDataSourceFactory.default().getById<PDFDocument>(_id)
     ).getDataOrThrow();
@@ -119,15 +120,7 @@ export const files = {
       sharedId: updatedFile.entity,
     });
 
-    await entities.save(
-      {
-        _id: entity._id,
-        sharedId: entity.sharedId,
-        template: entity.template,
-        generatedToc,
-      },
-      { user: {}, language }
-    );
+    await EntityFacade.updateGeneratedToc(entity.sharedId, generatedToc);
 
     return FileMappers.toDBO(updatedFile);
   },

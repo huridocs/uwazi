@@ -12,6 +12,7 @@ import { propertyTypes } from '#shared/propertyTypes.js';
 import ID from '#shared/uniqueID.js';
 
 import { ATSolveVersionConflict } from '#api/externalIntegrations.v2/automaticTranslation/utils/ATConflictSolverDeprecated.js';
+import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
 import settings from '../settings/index.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize.js';
@@ -282,6 +283,70 @@ function sanitize(doc, template) {
   return Object.assign(doc, { metadata });
 }
 
+const asStringId = value => {
+  if (value === null || value === undefined) {
+    return value;
+  }
+
+  return typeof value === 'string' ? value : value.toString();
+};
+
+const normalizeIcon = icon => {
+  if (!icon) {
+    return icon;
+  }
+
+  return {
+    ...icon,
+    _id: icon._id === null ? null : asStringId(icon._id),
+  };
+};
+
+const normalizeDocuments = (documents = []) =>
+  documents
+    .filter(document => document?.originalname)
+    .map(document => ({
+      ...document,
+      _id: asStringId(document._id),
+    }))
+    .filter(document => document._id);
+
+const normalizeAttachments = (attachments = []) =>
+  attachments
+    .filter(attachment => attachment?.originalname)
+    .map(attachment => ({
+      ...attachment,
+      _id: attachment._id ? asStringId(attachment._id) : undefined,
+    }));
+
+const normalizeLegacyEntityForFacade = entity => ({
+  ...entity,
+  _id: asStringId(entity._id),
+  user: asStringId(entity.user),
+  template: asStringId(entity.template),
+  icon: normalizeIcon(entity.icon),
+  documents: normalizeDocuments(entity.documents),
+  attachments: normalizeAttachments(entity.attachments),
+});
+
+const isLegacyCompatibilityError = error => {
+  const message = (error?.message || '').toString();
+
+  return (
+    error?.name === 'ZodError' ||
+    error?.name === 'BSONError' ||
+    error?.name === 'EntityTranslationDoesNotExistError' ||
+    message.includes('Translation for language') ||
+    message.includes('EntityTranslationDoesNotExistError') ||
+    message.includes('hex string must be 24 characters') ||
+    message.includes('toHexString')
+  );
+};
+
+const shouldForceLegacyCreate = (doc, user = {}) => Boolean(doc?._id || user?._id);
+
+const shouldForceLegacyUpdate = doc => Boolean(doc?._id);
+
 const withDocuments = async (entities, documentsFullText) => {
   const sharedIds = entities.map(entity => entity.sharedId);
   const allFiles = await FilesDAOFactory.default().getByEntitySharedIds(sharedIds, {
@@ -340,13 +405,41 @@ export default {
       doc.creationDate = date.currentUTC();
       doc.published = false;
     }
-    const sharedId = doc.sharedId || ID();
+    let sharedId = doc.sharedId || ID();
     const template = await this.getEntityTemplate(doc, language);
     let docTemplate = template;
     doc.editDate = date.currentUTC();
 
     if (doc.sharedId) {
-      await this.updateEntity(this.sanitize(doc, template), template);
+      const currentDoc = await this.getById(doc.sharedId, language);
+      if (!currentDoc) {
+        throw new Error(`entity does not exists: ${doc.sharedId}`);
+      }
+
+      const sanitized = this.sanitize(doc, template);
+      const merged = {
+        ...currentDoc,
+        ...sanitized,
+        _id: sanitized._id || currentDoc._id,
+        sharedId: sanitized.sharedId || currentDoc.sharedId,
+        language: sanitized.language || currentDoc.language || language,
+        title: sanitized.title || currentDoc.title,
+      };
+      try {
+        if (shouldForceLegacyUpdate(doc)) {
+          throw new Error('LEGACY_UPDATE_REQUIRED');
+        }
+
+        await EntityFacade.update(
+          normalizeLegacyEntityForFacade(merged),
+          merged.language || language
+        );
+      } catch (error) {
+        if (error?.message !== 'LEGACY_UPDATE_REQUIRED' && !isLegacyCompatibilityError(error)) {
+          throw error;
+        }
+        await this.updateEntity(this.sanitize(doc, template), template);
+      }
     } else {
       const [{ languages }, defaultTemplate] = await Promise.all([
         settings.get(),
@@ -358,12 +451,27 @@ export default {
         docTemplate = defaultTemplate;
       }
       doc.metadata = doc.metadata || {};
-      await this.createEntity(
-        this.sanitize(doc, docTemplate),
-        [language, languages],
-        sharedId,
-        docTemplate
-      );
+      try {
+        if (shouldForceLegacyCreate(doc, user)) {
+          throw new Error('LEGACY_CREATE_REQUIRED');
+        }
+
+        const createdEntity = await EntityFacade.create(
+          normalizeLegacyEntityForFacade(this.sanitize(doc, docTemplate)),
+          language
+        );
+        sharedId = createdEntity.sharedId;
+      } catch (error) {
+        if (error?.message !== 'LEGACY_CREATE_REQUIRED' && !isLegacyCompatibilityError(error)) {
+          throw error;
+        }
+        await this.createEntity(
+          this.sanitize(doc, docTemplate),
+          [language, languages],
+          sharedId,
+          docTemplate
+        );
+      }
     }
 
     const [entity] = includeDocuments

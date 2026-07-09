@@ -13,6 +13,7 @@ import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
 
 const fakeTocEntry = (label: string): TocSchema => ({
   selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
@@ -31,14 +32,7 @@ const saveToc = async (_file: FileType, toc: TocSchema[]) => {
 
   const [entity] = await entities.get({ sharedId: _file.entity }, {});
 
-  await entities.save(
-    {
-      ...entity,
-      generatedToc: true,
-    },
-    { user: {}, language: entity.language },
-    { updateRelationships: false }
-  );
+  await EntityFacade.updateGeneratedToc(entity.sharedId, true);
 };
 
 const generateToc = async (

@@ -1,7 +1,7 @@
 import { objectIdSchema } from '#shared/types/commonSchemas.js';
 import { legacyLogger } from '#api/log/index.js';
 import { validation } from '../utils/index.js';
-import documents from './documents.js';
+import { documents } from './documents.js';
 import needsAuthorization from '../auth/authMiddleware.js';
 import templates from '../core/v1_layer/templates/index.js';
 import { DeleteEntityController } from '#api/core/infrastructure/express/entity/DeleteEntityController.js';

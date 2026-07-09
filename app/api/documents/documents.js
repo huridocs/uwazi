@@ -4,8 +4,9 @@ import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFact
 
 const documents = {
   save(doc, params) {
-    delete doc.file;
-    return entities.save(doc, params);
+    const sanitizedDoc = { ...doc };
+    delete sanitizedDoc.file;
+    return entities.save(sanitizedDoc, params);
   },
 
   async page(_id, page) {
@@ -50,5 +51,4 @@ const documents = {
   },
 };
 
-export default documents;
 export { documents };
