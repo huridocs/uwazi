@@ -96,9 +96,6 @@ jobs:
         env:
           YARN_ENABLE_HARDENED_MODE: "0"
 
-      - name: Migrate
-        run: yarn migrate --new
-
       - name: Get Playwright version
         id: playwright-version
         run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> $GITHUB_OUTPUT
