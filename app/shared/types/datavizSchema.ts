@@ -16,14 +16,7 @@ export type PropertyTypeForDataviz =
 export type FilterablePropertyType = PropertyTypeForDataviz | 'text';
 
 export type DatavizFilterOperator =
-  | 'eq'
-  | 'ne'
-  | 'in'
-  | 'nin'
-  | 'gte'
-  | 'lte'
-  | 'between'
-  | 'contains';
+  'eq' | 'ne' | 'in' | 'nin' | 'gte' | 'lte' | 'between' | 'contains';
 
 export type DatavizFilter = {
   id: string;
