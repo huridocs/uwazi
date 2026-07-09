@@ -10,12 +10,15 @@ cd "$parent_path" || exit
 repo_root=$(cd "$parent_path/.." && pwd -P)
 
 FORCE_FLAG=false
+MIGRATE_NEW_FLAG=false
 
 filtered=()
 args=("$@")
 for item in "${args[@]}"; do
   if [ "$item" == '--force' ]; then
     FORCE_FLAG=true
+  elif [ "$item" == '--new' ]; then
+    MIGRATE_NEW_FLAG=true
   else
     filtered+=("$item")
   fi
@@ -49,8 +52,13 @@ recreate_database() {
     mongorestore -h "$HOST" "${AUTH[@]}" "$blank_state_dir/uwazi_shared_db/" --db="$DB"
   else
     mongorestore -h "$HOST" "${AUTH[@]}" "$blank_state_dir/uwazi_development/" --db="$DB"
-    INDEX_NAME="$DB" DATABASE_NAME="$DB" yarn migrate
-    INDEX_NAME="$DB" DATABASE_NAME="$DB" yarn reindex
+    if [ "$MIGRATE_NEW_FLAG" = true ]; then
+      INDEX_NAME="$DB" DATABASE_NAME="$DB" yarn migrate --new
+      INDEX_NAME="$DB" DATABASE_NAME="$DB" yarn reindex
+    else
+      INDEX_NAME="$DB" DATABASE_NAME="$DB" yarn migrate
+      INDEX_NAME="$DB" DATABASE_NAME="$DB" yarn reindex
+    fi
   fi
 
   echo 'PG'
@@ -63,9 +71,6 @@ recreate_database() {
   # runner.js resolves .js → .ts via tsx in dev; production has compiled .js files
   if command -v pg_isready &>/dev/null; then
     if pg_isready -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -q 2>/dev/null; then
-      echo "Applying PostgreSQL migrations..."
-      INDEX_NAME="$DB" DATABASE_NAME="$DB" yarn migrate --new
-
       echo "Restoring PostgreSQL initial data..."
       local force_flag=""
       [ "$FORCE_FLAG" = true ] && force_flag="--force"

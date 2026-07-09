@@ -29,11 +29,23 @@ export type MigrationRunResult =
 
 export const runMigration = async (): Promise<MigrationRunResult> => {
   await DB.connect(config.DBHOST, config.DBAUTH);
-  PostgresDB.connect();
-  const pgPool = PostgresDB.pool();
 
-  const pgMigrator = new PgMigrator(PG_MIGRATIONS_DIR, pgPool);
-  const currentSchemaVersion = await pgMigrator.getCurrentVersion();
+  let currentSchemaVersion = Number.MAX_SAFE_INTEGER;
+  let postgresConnected = false;
+
+  try {
+    PostgresDB.connect();
+    postgresConnected = true;
+    const pgPool = PostgresDB.pool();
+    const pgMigrator = new PgMigrator(PG_MIGRATIONS_DIR, pgPool);
+    currentSchemaVersion = await pgMigrator.getCurrentVersion();
+  } catch (error) {
+    process.stdout.write(
+      `Warning: could not connect to PostgreSQL, skipping schema migration check. ${
+        error instanceof Error ? error.message : String(error)
+      }\n`
+    );
+  }
 
   const { db } = DB.connectionForDB(config.defaultTenant.dbName);
   let migrationsResult: {
@@ -45,7 +57,9 @@ export const runMigration = async (): Promise<MigrationRunResult> => {
   });
 
   await DB.disconnect();
-  await PostgresDB.disconnect();
+  if (postgresConnected) {
+    await PostgresDB.disconnect();
+  }
 
   if (migrationsResult.blocked) {
     return {
