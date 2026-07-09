@@ -155,12 +155,15 @@ const findFirstErrorPath = (
   return undefined;
 };
 
+const escapeCssAttributeValue = (value: string) =>
+  value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+
 const focusAndScrollToInvalidField = (path?: string) => {
   if (!path || typeof document === 'undefined') {
     return;
   }
 
-  const escapedPath = (window.CSS?.escape ? window.CSS.escape(path) : path).replace(/"/g, '\\"');
+  const escapedPath = escapeCssAttributeValue(path);
   const fieldElement =
     document.getElementById(path) ||
     document.querySelector<HTMLElement>(`[name="${escapedPath}"]`) ||
