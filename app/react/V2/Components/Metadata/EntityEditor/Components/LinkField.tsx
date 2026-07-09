@@ -1,6 +1,8 @@
 import React from 'react';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
+import { InputError } from '#V2/Components/Forms/InputError.js';
+import { getFieldErrorMessage } from '../functions/fieldErrorMessage.js';
 
 type LinkFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
@@ -101,9 +103,7 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
                 </div>
               </div>
               {showRequiredError ? (
-                <div className="mt-2 text-sm text-(--color-theme-control-text-error)">
-                  <Translate>This field is required</Translate>
-                </div>
+                <InputError>{getFieldErrorMessage(fieldState.error)}</InputError>
               ) : null}
             </>
           );

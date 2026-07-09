@@ -8,7 +8,9 @@ import {
   type SearchSelectGroup,
   type SearchSelectOption,
 } from '#V2/Components/Forms/index.js';
+import { InputError } from '#V2/Components/Forms/InputError.js';
 import { defaultSearch } from '#V2/Components/Forms/MultiselectList/MultiselectList.js';
+import { getFieldErrorMessage } from '../functions/fieldErrorMessage.js';
 
 const toSearchSelectOptions = (options: MultiselectListOption[]) => {
   const searchOptions: SearchSelectOption[] = [];
@@ -135,32 +137,37 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
         }
 
         return (
-          <div className="h-52">
-            <MultiselectList
-              id={field}
-              checkboxes
-              label={renderLabel(fieldState.invalid)}
-              items={optionsState}
-              onSearch={async search => {
-                if (lookupSearch) {
-                  const lookedUpOptions = await lookupSearch(search);
-                  setOptionsState(lookedUpOptions);
-                  return;
-                }
+          <div>
+            <div className="h-52">
+              <MultiselectList
+                id={field}
+                checkboxes
+                label={renderLabel(fieldState.invalid)}
+                items={optionsState}
+                onSearch={async search => {
+                  if (lookupSearch) {
+                    const lookedUpOptions = await lookupSearch(search);
+                    setOptionsState(lookedUpOptions);
+                    return;
+                  }
 
-                setOptionsState(defaultSearch(search, options));
-              }}
-              selectedValues={getSelectedValues(fieldController.value)}
-              onChange={selectedValues => {
-                if (disabled) {
-                  return;
-                }
+                  setOptionsState(defaultSearch(search, options));
+                }}
+                selectedValues={getSelectedValues(fieldController.value)}
+                onChange={selectedValues => {
+                  if (disabled) {
+                    return;
+                  }
 
-                fieldController.onChange(onSelectedValuesChange(selectedValues));
-              }}
-              hasErrors={fieldState.invalid}
-              hideFilters={hideFilters}
-            />
+                  fieldController.onChange(onSelectedValuesChange(selectedValues));
+                }}
+                hasErrors={fieldState.invalid}
+                hideFilters={hideFilters}
+              />
+            </div>
+            {fieldState.invalid && (
+              <InputError>{getFieldErrorMessage(fieldState.error)}</InputError>
+            )}
           </div>
         );
       }}

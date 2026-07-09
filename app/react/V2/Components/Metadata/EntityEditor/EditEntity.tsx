@@ -196,11 +196,30 @@ const focusAndScrollToInvalidField = (path?: string) => {
 const formatMetadataForEntity = (
   metadata: EditEntityFormValues['metadata'],
   metadataProperties: Properties[]
-): Entity['metadata'] =>
-  metadataProperties.reduce<NonNullable<Entity['metadata']>>((acc, property) => {
-    acc[property.name] = (metadata[property.name] ?? []).map(toMetadataObjectSchema);
+): Entity['metadata'] => {
+  const syncedMetadata = { ...metadata };
+
+  groupRelationshipProperties(metadataProperties)
+    .filter(
+      property =>
+        property.type === 'relationship' &&
+        property.groupedRelationshipNames &&
+        property.groupedRelationshipNames.length > 1
+    )
+    .forEach(property => {
+      const [mainName, ...otherNames] = property.groupedRelationshipNames ?? [];
+      const sourceValues = syncedMetadata[mainName] ?? [];
+
+      otherNames.forEach(name => {
+        syncedMetadata[name] = sourceValues;
+      });
+    });
+
+  return metadataProperties.reduce<NonNullable<Entity['metadata']>>((acc, property) => {
+    acc[property.name] = (syncedMetadata[property.name] ?? []).map(toMetadataObjectSchema);
     return acc;
   }, {});
+};
 
 const thesaurusToOptions = (
   thesauri: ClientThesaurus[],
