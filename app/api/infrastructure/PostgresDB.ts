@@ -3,11 +3,11 @@ import pg from 'pg';
 import { config } from '#api/config.js';
 
 export type PostgresConnectionConfig = {
-  host: string;
-  port: number;
-  database: string;
-  user: string;
-  password: string;
+  host?: string;
+  port?: number;
+  database?: string;
+  user?: string;
+  password?: string;
 };
 
 let _knex: Knex | null = null;
@@ -18,7 +18,14 @@ export const PostgresDB = {
   connect(cfg?: PostgresConnectionConfig): Knex {
     if (_knex) return _knex;
 
-    const connection = cfg ?? _activeConfig ?? config.postgres;
+    const connection = cfg ??
+      _activeConfig ?? {
+        host: config.postgres.host,
+        port: config.postgres.port,
+        database: config.postgres.database,
+        user: config.postgres.app?.user,
+        password: config.postgres.app?.password,
+      };
 
     pg.types.setTypeParser(pg.types.builtins.INT8, parseInt);
 
@@ -51,7 +58,15 @@ export const PostgresDB = {
 
   pool(): pg.Pool {
     if (!_pool) {
-      _pool = new pg.Pool(_activeConfig ?? config.postgres);
+      _pool = new pg.Pool(
+        _activeConfig ?? {
+          host: config.postgres.host,
+          port: config.postgres.port,
+          database: config.postgres.database,
+          user: config.postgres.app?.user,
+          password: config.postgres.app?.password,
+        }
+      );
     }
     return _pool;
   },
@@ -74,8 +89,8 @@ export const PostgresDB = {
         host: config.postgres.host,
         port: config.postgres.port,
         database: config.postgres.database,
-        user: config.postgres.user,
-        password: config.postgres.password,
+        user: config.postgres.app?.user,
+        password: config.postgres.app?.password,
       }
     );
   },

@@ -1,4 +1,3 @@
-// eslint-disable-next-line node/no-restricted-import
 import path from 'path';
 import { fileURLToPath } from 'url';
 import pg from 'pg';
@@ -24,8 +23,8 @@ const adminClient = () =>
     host: config.postgres.host,
     port: config.postgres.port,
     database: 'postgres',
-    user: config.postgres.user,
-    password: config.postgres.password,
+    user: config.postgres.admin.user,
+    password: config.postgres.admin.password,
   });
 
 let pool: pg.Pool | null = null;
@@ -50,8 +49,8 @@ const testingPG = {
       host: config.postgres.host,
       port: config.postgres.port,
       database: this.dbName,
-      user: config.postgres.user,
-      password: config.postgres.password,
+      user: config.postgres.admin.user,
+      password: config.postgres.admin.password,
     };
   },
 
@@ -81,8 +80,8 @@ const testingPG = {
       host: config.postgres.host,
       port: config.postgres.port,
       database: this.dbName,
-      user: config.postgres.user,
-      password: config.postgres.password,
+      user: config.postgres.admin.user,
+      password: config.postgres.admin.password,
     });
 
     this.pool = pool;

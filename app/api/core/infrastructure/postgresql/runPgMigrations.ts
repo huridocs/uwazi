@@ -1,7 +1,8 @@
+import pg from 'pg';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { config } from '#api/config.js';
 import { PgMigrator } from './PgMigrator.js';
-import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,8 +13,13 @@ async function main() {
   const args = process.argv.slice(2);
   const showStatus = args.includes('--status');
 
-  PostgresDB.connect();
-  const pool = PostgresDB.pool();
+  const pool = new pg.Pool({
+    host: config.postgres.host,
+    port: config.postgres.port,
+    database: config.postgres.database,
+    user: config.postgres.admin.user,
+    password: config.postgres.admin.password,
+  });
 
   try {
     const migrator = new PgMigrator(MIGRATIONS_DIR, pool);
@@ -51,7 +57,7 @@ async function main() {
       }
     }
   } finally {
-    await PostgresDB.disconnect();
+    await pool.end();
   }
 }
 

@@ -4,10 +4,25 @@ import { dirname } from 'path';
 // eslint-disable-next-line node/no-restricted-import
 import { readFileSync } from 'fs';
 import { hostname } from 'os';
+import { z } from 'zod';
 import { Tenant } from './tenants/tenantContext.js';
 import uniqueID from '#shared/uniqueID.js';
 
 dotenv.config();
+
+const PostgresEnvSchema = z
+  .object({
+    POSTGRES_HOST: z.string(),
+    POSTGRES_PORT: z.coerce.number(),
+    POSTGRES_DB: z.string(),
+    POSTGRES_USER: z.string(),
+    POSTGRES_PASSWORD: z.string(),
+    POSTGRES_APP_USER: z.string(),
+    POSTGRES_APP_PASSWORD: z.string(),
+  })
+  .passthrough();
+
+const pgEnv = PostgresEnvSchema.parse(process.env);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -38,11 +53,6 @@ const {
   UPLOADS_FOLDER,
   USER_SESSION_SECRET,
   NEW_HEADER,
-  POSTGRES_HOST,
-  POSTGRES_PORT,
-  POSTGRES_DB,
-  POSTGRES_USER,
-  POSTGRES_PASSWORD,
 } = process.env;
 
 const rootPath = ROOT_PATH || `${__dirname}/../../`;
@@ -173,10 +183,16 @@ export const config = {
   queueName: QUEUE_NAME || 'uwazi_jobs',
 
   postgres: {
-    host: POSTGRES_HOST || '127.0.0.1',
-    port: parseInt(POSTGRES_PORT || '', 10) || 5432,
-    database: POSTGRES_DB || 'uwazi_development',
-    user: POSTGRES_USER || 'uwazi',
-    password: POSTGRES_PASSWORD || 'uwazi',
+    host: pgEnv.POSTGRES_HOST,
+    port: pgEnv.POSTGRES_PORT,
+    database: pgEnv.POSTGRES_DB,
+    admin: {
+      user: pgEnv.POSTGRES_USER,
+      password: pgEnv.POSTGRES_PASSWORD,
+    },
+    app: {
+      user: pgEnv.POSTGRES_APP_USER,
+      password: pgEnv.POSTGRES_APP_PASSWORD,
+    },
   },
 };

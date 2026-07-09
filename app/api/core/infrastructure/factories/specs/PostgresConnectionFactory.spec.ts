@@ -7,8 +7,8 @@ const adminClient = () =>
     host: config.postgres.host,
     port: config.postgres.port,
     database: 'postgres',
-    user: config.postgres.user,
-    password: config.postgres.password,
+    user: config.postgres.admin.user,
+    password: config.postgres.admin.password,
   });
 
 const TEST_TABLE_SQL = 'CREATE TABLE IF NOT EXISTS pcf_tenant (tenant TEXT)';
@@ -19,8 +19,8 @@ const connectPool = (db: string) =>
     host: config.postgres.host,
     port: config.postgres.port,
     database: db,
-    user: config.postgres.user,
-    password: config.postgres.password,
+    user: config.postgres.admin.user,
+    password: config.postgres.admin.password,
   });
 
 async function createDatabase(dbName: string): Promise<void> {
@@ -59,8 +59,8 @@ describe('PostgresConnectionFactory', () => {
       host: config.postgres.host,
       port: config.postgres.port,
       database: TEST_DB,
-      user: config.postgres.user,
-      password: config.postgres.password,
+      user: config.postgres.admin.user,
+      password: config.postgres.admin.password,
     });
   });
 
@@ -77,8 +77,8 @@ describe('PostgresConnectionFactory', () => {
       host: config.postgres.host,
       port: config.postgres.port,
       database: TEST_DB,
-      user: config.postgres.user,
-      password: config.postgres.password,
+      user: config.postgres.admin.user,
+      password: config.postgres.admin.password,
     });
   });
 
@@ -107,8 +107,8 @@ describe('PostgresConnectionFactory', () => {
         host: config.postgres.host,
         port: config.postgres.port,
         database: TEST_DB,
-        user: config.postgres.user,
-        password: config.postgres.password,
+        user: config.postgres.admin.user,
+        password: config.postgres.admin.password,
       });
       PostgresConnectionFactory.resetConfig();
 
@@ -133,8 +133,8 @@ describe('PostgresConnectionFactory', () => {
           host: config.postgres.host,
           port: config.postgres.port,
           database: TEST_DB,
-          user: config.postgres.user,
-          password: config.postgres.password,
+          user: config.postgres.admin.user,
+          password: config.postgres.admin.password,
         });
       }
     });
