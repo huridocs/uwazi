@@ -1,7 +1,7 @@
 import { LogEntry } from '../LogEntry.js';
 import { LogWriter } from '../LogWriter.js';
 
-const COLORS = {
+const COLORS: Record<string, string> = {
   INFO: '\x1b[32m',
   WARNING: '\x1b[33m',
   ERROR: '\x1b[31m',

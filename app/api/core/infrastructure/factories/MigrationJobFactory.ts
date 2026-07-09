@@ -4,6 +4,8 @@ import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MigrationJob, MigrationJobDeps } from '#api/core/infrastructure/jobs/MigrationJob.js';
+import { TenantMigrationRunner } from '#api/core/infrastructure/mongodb/TenantMigrationRunner.js';
+import { TenantMigrationRunnerAdapter } from '#api/core/infrastructure/mongodb/TenantMigrationRunnerAdapter.js';
 import { migrator } from '#api/migrations/migrator.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -24,8 +26,11 @@ class MigrationJobFactory {
     const pgPool = PostgresDB.pool();
     const pgMigrator = new PgMigrator(PG_MIGRATIONS_DIR, pgPool);
 
+    const runner: TenantMigrationRunner =
+      deps.runner || new TenantMigrationRunnerAdapter(migrator.migrationsDir, migrator.loader);
+
     return new MigrationJob({
-      migrator: deps.migrator || (migrator as MigrationJobDeps['migrator']),
+      runner,
       pgMigrator: deps.pgMigrator || pgMigrator,
       logger: deps.logger || ExecutionContext.logger,
       dispatcher: deps.dispatcher || ExecutionContext.jobsDispatcher,

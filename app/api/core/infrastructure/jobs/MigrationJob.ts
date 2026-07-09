@@ -1,6 +1,4 @@
-import { Db } from 'mongodb';
 import { tenants } from '#api/tenants/index.js';
-import { DB } from '#api/odm/index.js';
 import {
   Dispatchable,
   HeartbeatCallback,
@@ -10,14 +8,7 @@ import {
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
-import { getPendingMigrations } from '#api/migrations/migrator.js';
-
-type MigratorLike = {
-  migrationsDir: string;
-  loader: (p: string) => Promise<any>;
-  migrateNext: (db: Db, schemaVersion?: number) => Promise<any>;
-  migrateDelta: (db: Db, delta: number, schemaVersion?: number) => Promise<any>;
-};
+import { TenantMigrationRunner } from '#api/core/infrastructure/mongodb/TenantMigrationRunner.js';
 
 type MigrationJobResults = {
   appliedDataDeltas: number[];
@@ -30,7 +21,7 @@ type MigrationJobParams = {
 };
 
 type MigrationJobDeps = {
-  migrator: MigratorLike;
+  runner: TenantMigrationRunner;
   pgMigrator: PgMigrator;
   logger: Logger;
   dispatcher: JobsDispatcher;
@@ -41,14 +32,14 @@ class MigrationJob implements Dispatchable {
   constructor(private deps: MigrationJobDeps) {}
 
   async handleDispatch(
-    _heartbeat: HeartbeatCallback,
+    heartbeat: HeartbeatCallback,
     params: Params,
     _jobInfo?: JobInfo
   ): Promise<void> {
     const jobParams = this.normalizeParams(params as MigrationJobParams);
 
     try {
-      await this.runJob(jobParams);
+      await this.runJob(jobParams, heartbeat);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       this.deps.logger.error(`Migration failed: ${message}`);
@@ -56,7 +47,10 @@ class MigrationJob implements Dispatchable {
     }
   }
 
-  private async runJob(jobParams: Required<MigrationJobParams>): Promise<void> {
+  private async runJob(
+    jobParams: Required<MigrationJobParams>,
+    heartbeat: HeartbeatCallback
+  ): Promise<void> {
     this.deps.logger.info('Starting migration job');
 
     let schemaVersion = await this.deps.pgMigrator.getCurrentVersion();
@@ -65,7 +59,7 @@ class MigrationJob implements Dispatchable {
     const nextDelta = await this.getNextGlobalDelta(schemaVersion);
 
     if (nextDelta === null) {
-      await this.finishMigrationProcess(jobParams);
+      await this.finishMigrationProcess(jobParams, heartbeat);
       return;
     }
 
@@ -94,9 +88,10 @@ class MigrationJob implements Dispatchable {
       });
     }
 
-    const { migration, reindex: deltaReindex, applied } = await this.runDeltaOnAllTenants(
+    const { reindex: deltaReindex, applied } = await this.runDeltaOnAllTenants(
       nextDelta,
-      schemaVersion
+      schemaVersion,
+      heartbeat
     );
     const nextReindex = jobParams.reindex || deltaReindex;
 
@@ -118,7 +113,7 @@ class MigrationJob implements Dispatchable {
 
     const nextGlobalDelta = await this.getNextGlobalDelta(schemaVersion);
     if (nextGlobalDelta === null) {
-      await this.finishMigrationProcess(jobParams);
+      await this.finishMigrationProcess(jobParams, heartbeat);
       return;
     }
 
@@ -149,9 +144,9 @@ class MigrationJob implements Dispatchable {
     for (const tenantName of tenantNames) {
       // eslint-disable-next-line no-await-in-loop
       await tenants.run(async () => {
-        const { runnable, blocked } = await getPendingMigrations(
-          this.deps.migrator.migrationsDir,
-          this.deps.migrator.loader,
+        const tenant = tenants.current();
+        const { runnable, blocked } = await this.deps.runner.getPendingMigrations(
+          tenant,
           schemaVersion
         );
 
@@ -175,9 +170,9 @@ class MigrationJob implements Dispatchable {
     let blocked: { delta: number; requiresSchema: number } | null = null;
 
     await tenants.run(async () => {
-      const { runnable, blocked: pendingBlocked } = await getPendingMigrations(
-        this.deps.migrator.migrationsDir,
-        this.deps.migrator.loader,
+      const tenant = tenants.current();
+      const { runnable, blocked: pendingBlocked } = await this.deps.runner.getPendingMigrations(
+        tenant,
         schemaVersion
       );
 
@@ -196,44 +191,55 @@ class MigrationJob implements Dispatchable {
 
   private async runDeltaOnAllTenants(
     delta: number,
-    schemaVersion: number
-  ): Promise<{ migration: any; reindex: boolean; applied: boolean }> {
+    schemaVersion: number,
+    heartbeat: HeartbeatCallback
+  ): Promise<{ reindex: boolean; applied: boolean }> {
     const tenantNames = Object.keys(tenants.tenants);
-    let appliedMigration: any = null;
+    const results: Array<{
+      status: string;
+      migration?: any;
+      blocked?: { requiresSchema?: number };
+    }> = [];
 
     for (const tenantName of tenantNames) {
       // eslint-disable-next-line no-await-in-loop
       await tenants.run(async () => {
         const tenant = tenants.current();
-        const { db } = DB.connectionForDB(tenant.dbName);
-        const result = await this.deps.migrator.migrateDelta(db as Db, delta, schemaVersion);
-
-        if (result.status === 'applied') {
-          appliedMigration = result.migration;
-        } else if (result.status === 'blocked') {
-          this.deps.logger.error(
-            `Data migration ${delta} blocked on tenant '${tenantName}' after schema advance`,
-            {
-              delta,
-              tenant: tenantName,
-              requiresSchema: result.blocked?.requiresSchema,
-            }
-          );
-          throw new Error(
-            `Migration ${delta} is blocked on tenant ${tenantName} requiring schema ${result.blocked?.requiresSchema}`
-          );
-        }
+        const result = await this.deps.runner.migrateDelta(tenant, delta, schemaVersion);
+        results.push(result);
       }, tenantName);
+
+      // eslint-disable-next-line no-await-in-loop
+      await heartbeat();
+
+      const result = results[results.length - 1];
+      if (result.status === 'blocked') {
+        this.deps.logger.error(
+          `Data migration ${delta} blocked on tenant '${tenantName}' after schema advance`,
+          {
+            delta,
+            tenant: tenantName,
+            requiresSchema: result.blocked?.requiresSchema,
+          }
+        );
+        throw new Error(
+          `Migration ${delta} is blocked on tenant ${tenantName} requiring schema ${result.blocked?.requiresSchema}`
+        );
+      }
     }
 
+    const appliedMigration = results.find(r => r.status === 'applied')?.migration;
+
     return {
-      migration: appliedMigration,
       reindex: appliedMigration?.reindex === true,
-      applied: appliedMigration !== null,
+      applied: appliedMigration !== undefined,
     };
   }
 
-  private async finishMigrationProcess(jobParams: Required<MigrationJobParams>): Promise<void> {
+  private async finishMigrationProcess(
+    jobParams: Required<MigrationJobParams>,
+    heartbeat: HeartbeatCallback
+  ): Promise<void> {
     this.deps.logger.info('No pending data migrations, running remaining schema migrations');
 
     const appliedSchemas = await this.deps.pgMigrator.migrate();
@@ -248,7 +254,7 @@ class MigrationJob implements Dispatchable {
 
     if (jobParams.reindex) {
       this.deps.logger.info('Reindex requested, reindexing all tenants');
-      await this.reindexAllTenants();
+      await this.reindexAllTenants(heartbeat);
     }
 
     const summary = [
@@ -261,7 +267,7 @@ class MigrationJob implements Dispatchable {
     this.deps.logger.info(summary);
   }
 
-  private async reindexAllTenants(): Promise<void> {
+  private async reindexAllTenants(heartbeat: HeartbeatCallback): Promise<void> {
     const tenantNames = Object.keys(tenants.tenants);
 
     for (const tenantName of tenantNames) {
@@ -269,9 +275,11 @@ class MigrationJob implements Dispatchable {
       await tenants.run(async () => {
         await this.deps.reindexTenant();
       }, tenantName);
+      // eslint-disable-next-line no-await-in-loop
+      await heartbeat();
     }
   }
 }
 
 export { MigrationJob };
-export type { MigrationJobDeps, MigrationJobParams, MigrationJobResults, MigratorLike };
+export type { MigrationJobDeps, MigrationJobParams, MigrationJobResults };

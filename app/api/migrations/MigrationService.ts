@@ -74,9 +74,13 @@ type MigrationServiceDeps = {
   idGeneratorFactory: () => any;
 };
 
+const MIGRATION_LOCK_WINDOW_MS = 1000 * 60 * 60; // 1 hour
+
 const createDefaultDispatcher: DispatcherFactory = async (options: { async: boolean }) => {
   if (options.async) {
-    return DefaultDispatcher('system', TransactionManagerFactory.createForSharedDataBase());
+    return DefaultDispatcher('system', TransactionManagerFactory.createForSharedDataBase(), {
+      lockWindow: MIGRATION_LOCK_WINDOW_MS,
+    });
   }
 
   const registry: JobRegistry = {};
