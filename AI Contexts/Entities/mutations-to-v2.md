@@ -239,6 +239,21 @@ Implemented rule in this pass:
   - Re-check v1 and v2 relationships/denormalization paths after current refactor lands.
   - If truly unused, remove from contract + implementation in a dedicated cleanup step.
 
+## Optional Scope Expansion (CSV V1 Removal)
+
+Given CSV V2 is now enabled for all tenants, we may include full CSV V1 retirement within this refactor scope.
+
+- Optional objective:
+  - remove CSV V1 execution paths and wrappers that still route through `entities.save` legacy compatibility behavior.
+- Preconditions before removal:
+  - confirm no tenant/runtime path still invokes CSV V1 handlers.
+  - confirm feature-flag/config fallbacks no longer depend on CSV V1 code paths.
+  - validate importer parity against current CSV V2 behavior (including translation, thesauri, relationship parsing, generated ids, and date parsing).
+- If approved:
+  - migrate remaining CSV call sites to pure V2 mutation contracts.
+  - delete CSV V1-only code and tests in a dedicated cleanup commit/PR.
+  - update migration notes/runbook to mark CSV V1 as removed.
+
 ## Validation Run Log
 
 - Passed:
