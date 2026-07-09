@@ -64,7 +64,7 @@ recreate_database() {
   if command -v pg_isready &>/dev/null; then
     if pg_isready -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -q 2>/dev/null; then
       echo "Applying PostgreSQL migrations..."
-      INDEX_NAME="$DB" DATABASE_NAME="$DB" node "$repo_root/scripts/runner.js" "$repo_root/app/api/core/infrastructure/postgresql/runPgMigrations.js"
+      INDEX_NAME="$DB" DATABASE_NAME="$DB" yarn migrate --new
 
       echo "Restoring PostgreSQL initial data..."
       local force_flag=""

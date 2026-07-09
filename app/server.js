@@ -182,7 +182,7 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
       if (pendingPgMigrations.length > 0) {
         console.error(
           '\x1b[33m%s\x1b[0m',
-          '==> PostgreSQL needs to be migrated, please run:\n\n yarn migrate-pg\n\n'
+          '==> PostgreSQL needs to be migrated, please run:\n\n yarn migrate --new\n\n'
         );
         process.exit(1);
       }

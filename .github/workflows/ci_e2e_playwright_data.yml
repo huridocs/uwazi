@@ -96,8 +96,8 @@ jobs:
         env:
           YARN_ENABLE_HARDENED_MODE: "0"
 
-      - name: Migrate PG
-        run: yarn migrate-pg
+      - name: Migrate
+        run: yarn migrate --new
 
       - name: Get Playwright version
         id: playwright-version

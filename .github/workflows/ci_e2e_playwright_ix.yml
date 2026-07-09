@@ -259,8 +259,8 @@ jobs:
           DBHOST: localhost:27017
           DATABASE_NAME: uwazi_e2e
 
-      - name: Migrate PG
-        run: yarn migrate-pg
+      - name: Migrate
+        run: yarn migrate --new
         env:
           POSTGRES_DB: "uwazi_e2e"
           POSTGRES_HOST: postgres
