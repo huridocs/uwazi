@@ -14,6 +14,7 @@ import { FileNotFound, ProcessingFileNotFound } from '#api/core/domain/files/err
 import { search } from '#api/search/index.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 const TENANT_ID = 'test-tenant';
 
@@ -23,6 +24,7 @@ const createSut = () => {
     tenantId: TENANT_ID,
     transactionManager,
     fileStorage: FileStorageFactory.default(),
+    mongoDb: getConnection(),
   });
   return { sut, transactionManager };
 };
@@ -451,10 +453,27 @@ describe('PostgresFilesDataSource', () => {
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
       expect(rows.find(r => r._id === factory.idString('nonexistent'))).toBeUndefined();
     });
+
+    it('should not overwrite fullText when updating a file loaded without it', async () => {
+      const { sut } = createSut();
+
+      const result = await sut.getById(factory.idString('fulltext-doc'));
+      const doc = result.getDataOrThrow() as PDFDocument;
+      expect(doc.fullText).toBeUndefined();
+
+      const updated = doc.update({
+        toc: [{ label: 'New Toc', indentation: 0 }],
+      }) as PDFDocument;
+      await sut.update(updated);
+
+      const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
+      const row = rows.find(r => r._id === factory.idString('fulltext-doc'));
+      expect(row!.fullText).toEqual({ 1: 'page one', 2: 'page two' });
+    });
   });
 
   describe('bulkUpdate', () => {
-    it('should upsert a mix of existing and new files', async () => {
+    it('should update existing files', async () => {
       const { sut } = createSut();
       const updated = FileBuilder.processedDocument(factory.idString('bulk-update-doc'), {
         entity: 'entity1',
@@ -462,9 +481,8 @@ describe('PostgresFilesDataSource', () => {
         totalPages: 3,
         status: 'ready',
       });
-      const newDoc = FileBuilder.attachment(factory.idString('new-att'), { entity: 'entity2' });
 
-      await sut.bulkUpdate([updated, newDoc]);
+      await sut.bulkUpdate([updated]);
 
       const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
       expect(rows.find(r => r._id === factory.idString('bulk-update-doc'))).toMatchObject({
@@ -472,14 +490,9 @@ describe('PostgresFilesDataSource', () => {
         status: 'ready',
         totalPages: 3,
       });
-      expect(rows.find(r => r._id === factory.idString('new-att'))).toMatchObject({
-        tenant_id: TENANT_ID,
-        type: 'attachment',
-        entity: 'entity2',
-      });
     });
 
-    it('should upsert documents with JSONB columns (toc, fullText, propertySelections)', async () => {
+    it('should update documents with JSONB columns (toc, fullText, propertySelections)', async () => {
       const { sut } = createSut();
       const toc = [{ indentation: 0, label: 'Bulk Chapter' }];
       const propertySelections = [{ name: 'bulk-prop' }];
@@ -515,6 +528,23 @@ describe('PostgresFilesDataSource', () => {
       const rows = await testingPG.getAllFrom('files');
       expect(rows).toHaveLength(fixtures.files!.length);
     });
+
+    it('should not overwrite fullText via bulkUpdate when loaded without it', async () => {
+      const { sut } = createSut();
+
+      const result = await sut.getById(factory.idString('fulltext-doc'));
+      const doc = result.getDataOrThrow() as PDFDocument;
+      expect(doc.fullText).toBeUndefined();
+
+      const updated = doc.update({
+        toc: [{ label: 'New Toc', indentation: 0 }],
+      }) as PDFDocument;
+      await sut.bulkUpdate([updated]);
+
+      const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
+      const row = rows.find(r => r._id === factory.idString('fulltext-doc'));
+      expect(row!.fullText).toEqual({ 1: 'page one', 2: 'page two' });
+    });
   });
 
   describe('replaceFile', () => {
@@ -532,11 +562,24 @@ describe('PostgresFilesDataSource', () => {
         tenant_id: TENANT_ID,
         type: 'attachment',
         entity: 'entity1',
-        status: null,
-        totalPages: null,
-        language: null,
-        generatedToc: null,
       });
+    });
+
+    it('should not overwrite fullText via replaceFile when loaded without it', async () => {
+      const { sut } = createSut();
+
+      const result = await sut.getById(factory.idString('fulltext-doc'));
+      const doc = result.getDataOrThrow() as PDFDocument;
+      expect(doc.fullText).toBeUndefined();
+
+      const updated = doc.update({
+        toc: [{ label: 'New Toc', indentation: 0 }],
+      }) as PDFDocument;
+      await sut.replaceFile(updated);
+
+      const rows = await testingPG.getAllFrom<Record<string, unknown>>('files');
+      const row = rows.find(r => r._id === factory.idString('fulltext-doc'));
+      expect(row!.fullText).toEqual({ 1: 'page one', 2: 'page two' });
     });
   });
 

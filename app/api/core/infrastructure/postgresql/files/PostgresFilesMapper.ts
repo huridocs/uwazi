@@ -9,7 +9,7 @@ import { LanguageUtils } from '#shared/language/index.js';
 import type { FilesRow } from './PostgresFilesRow.js';
 
 export class PostgresFilesMapper {
-  private static baseFields(row: Omit<FilesRow, 'tenant_id'>) {
+  private static baseFields(row: FilesRow) {
     return {
       id: row._id,
       originalname: row.originalname,
@@ -20,7 +20,7 @@ export class PostgresFilesMapper {
     };
   }
 
-  static toDomain(row: Omit<FilesRow, 'tenant_id'>, contentLoader: FileContentLoader) {
+  static toDomain(row: FilesRow, contentLoader: FileContentLoader) {
     switch (row.type) {
       case 'document': {
         if (row.status === 'ready') {
@@ -75,10 +75,10 @@ export class PostgresFilesMapper {
     }
   }
 
-  static toDBO(file: BaseFile) {
+  static toDBO(file: BaseFile): Partial<FilesRow> {
     const dto = file.toDTO();
 
-    const base: Omit<FilesRow, 'tenant_id'> = {
+    const base: Partial<FilesRow> = {
       _id: file.id,
       originalname: dto.originalname,
       filename: dto.filename,
@@ -86,15 +86,6 @@ export class PostgresFilesMapper {
       size: dto.size,
       creationDate: dto.creationDate,
       type: dto.type,
-      entity: null,
-      status: null,
-      totalPages: null,
-      language: null,
-      generatedToc: null,
-      url: null,
-      toc: null,
-      propertySelections: null,
-      fullText: null,
     };
 
     switch (dto.type) {
@@ -105,11 +96,17 @@ export class PostgresFilesMapper {
           base.totalPages = dto.totalPages;
           base.language = dto.language;
           base.generatedToc = dto.generatedToc;
-          base.toc = dto.toc ?? null;
-          base.fullText = dto.fullText ?? null;
-          base.propertySelections = dto.propertySelections ?? null;
-        } else {
-          base.propertySelections = dto.propertySelections ?? null;
+          if (dto.toc !== undefined) {
+            base.toc = dto.toc;
+          }
+          if (dto.fullText !== undefined) {
+            base.fullText = dto.fullText;
+          }
+          if (dto.propertySelections !== undefined) {
+            base.propertySelections = dto.propertySelections;
+          }
+        } else if (dto.propertySelections !== undefined) {
+          base.propertySelections = dto.propertySelections;
         }
         break;
       case 'attachment':

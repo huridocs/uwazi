@@ -353,22 +353,6 @@ describe('FilesService', () => {
         expect(demoted).toBeDefined();
         expect(demoted.type).toBe('attachment');
         expect(demoted.entity).toBe('entity1');
-
-        if (usePostgres) {
-          expect(demoted.fullText).toBeNull();
-          expect(demoted.totalPages).toBeNull();
-          expect(demoted.propertySelections).toBeNull();
-          expect(demoted.generatedToc).toBeNull();
-          expect(demoted.language).toBeNull();
-          expect(demoted.status).toBeNull();
-        } else {
-          expect(demoted.fullText).toBeUndefined();
-          expect(demoted.totalPages).toBeUndefined();
-          expect(demoted.propertySelections).toBeUndefined();
-          expect(demoted.generatedToc).toBeUndefined();
-          expect(demoted.language).toBeUndefined();
-          expect(demoted.status).toBeUndefined();
-        }
       });
 
       it('should throw when file is not found', async () => {

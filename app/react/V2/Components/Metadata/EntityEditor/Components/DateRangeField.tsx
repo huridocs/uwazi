@@ -43,10 +43,19 @@ const DateRangeField = <TFormValues extends FieldValues = FieldValues>({
           const idFor = `${field}.from`;
           const idTo = `${field}.to`;
           const showRequiredError = fieldState.error?.type === 'required';
+          const valueInputClassName = `block w-full rounded-lg border p-2.5 text-sm ${
+            showRequiredError
+              ? 'border-(--color-theme-control-border-error) bg-(--color-theme-control-bg-error) text-(--color-theme-control-text-error) focus:border-(--color-theme-control-border-error) focus:[box-shadow:0_0_0_4px_var(--color-theme-control-error-ring)]'
+              : 'border-(--color-theme-control-border) bg-(--color-theme-control-bg)'
+          }`;
 
           return (
             <div>
-              <div className="font-bold mb-2">
+              <div
+                className={`font-bold mb-2 ${
+                  showRequiredError ? 'text-(--color-theme-control-text-error)' : ''
+                }`}
+              >
                 <Translate className="" context={context}>
                   {label}
                 </Translate>
@@ -65,7 +74,7 @@ const DateRangeField = <TFormValues extends FieldValues = FieldValues>({
                     onBlur={onBlur}
                     value={fromISODate || undefined}
                     max={toISODate || undefined}
-                    className="block w-full rounded-lg border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-2.5 text-sm"
+                    className={valueInputClassName}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       const dateString = e.target.value;
                       const seconds = dateString ? parseLocalizedDate(dateString) : null;
@@ -84,7 +93,7 @@ const DateRangeField = <TFormValues extends FieldValues = FieldValues>({
                     onBlur={onBlur}
                     value={toISODate || undefined}
                     min={fromISODate || undefined}
-                    className="block w-full rounded-lg border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-2.5 text-sm"
+                    className={valueInputClassName}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       const dateString = e.target.value;
                       const seconds = dateString ? parseLocalizedDate(dateString) : null;

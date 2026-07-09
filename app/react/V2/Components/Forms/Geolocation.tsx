@@ -13,6 +13,7 @@ interface GeolocationProps {
   startingPoint?: { lat: number; lon: number };
   zoom?: number;
   layers?: Layer[];
+  hasErrors?: boolean;
 }
 
 interface Marker {
@@ -30,6 +31,7 @@ const Geolocation = ({
   zoom,
   value = {},
   layers,
+  hasErrors = false,
 }: GeolocationProps) => {
   const [currentLatitude, setCurrentLatitude] = useState(value?.lat);
   const [currentLongitude, setCurrentLongitude] = useState(value?.lon);
@@ -96,6 +98,7 @@ const Geolocation = ({
           className="grow"
           onChange={latChange}
           disabled={disabled}
+          hasErrors={hasErrors}
           clearFieldAction={clearCoordinates}
           value={currentLatitude || ''}
           label={<Translate>Latitude</Translate>}
@@ -107,6 +110,7 @@ const Geolocation = ({
           label={<Translate>Longitude</Translate>}
           onChange={lonChange}
           disabled={disabled}
+          hasErrors={hasErrors}
           clearFieldAction={clearCoordinates}
           value={currentLongitude || ''}
           id="lon"
