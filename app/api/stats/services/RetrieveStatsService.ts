@@ -83,7 +83,7 @@ export class RetrieveStatsService {
     const users = await this.db
       .collection('users')
       .aggregate<RoleCount>([
-        { $match: { _id: { $ne: PUBLIC_USER_ID }, deletedAt: null } },
+        { $match: { _id: { $ne: PUBLIC_USER_ID }, deletedAt: { $exists: false } } },
         { $group: { _id: '$role', count: { $sum: 1 } } },
       ])
       .toArray();

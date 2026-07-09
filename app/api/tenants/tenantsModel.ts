@@ -48,6 +48,7 @@ const mongoSchema = new mongoose.Schema({
     aiAssistantServiceUrl: String,
     v2CreateUser: Boolean,
     v2DeleteUser: Boolean,
+    v2GetUsers: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,
