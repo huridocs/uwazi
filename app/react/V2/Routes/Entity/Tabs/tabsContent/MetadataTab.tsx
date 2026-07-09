@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useRevalidator } from 'react-router';
 import type { Entity } from '#V2/api/entities/types.js';
 import { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.js';
-import { EditEntity } from '#V2/Components/Metadata/EntityEditor/index.js';
+import { EditEntity, type EditEntityErrors } from '#V2/Components/Metadata/EntityEditor/index.js';
+import { apiValidationsToEditEntityErrors } from '#V2/Components/Metadata/EntityEditor/functions/editEntityErrors.js';
 import { useMetadataEditing } from '#V2/Routes/Entity/Components/context/index.js';
 import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
 import { useServices } from '#V2/services/index.js';
@@ -27,6 +28,7 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
   const savingRef = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
   const mountedRef = useRef(true);
+  const [editErrors, setEditErrors] = useState<EditEntityErrors>();
 
   useEffect(() => {
     mountedRef.current = true;
@@ -34,6 +36,7 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
       abortRef.current?.abort();
       abortRef.current = null;
       savingRef.current = false;
+      setEditErrors(undefined);
       setSaveError(undefined);
       setIsSaving(false);
       setIsEditing(false);
@@ -46,12 +49,29 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
     };
   }, [registerCancelEdit, setIsEditing, setIsSaving, setSaveError]);
 
+  const handleUpsertError = (
+    error: NonNullable<Awaited<ReturnType<typeof entities.upsert>>[1]>
+  ) => {
+    if (error.kind === 'cancelled' || !mountedRef.current) return;
+
+    const fieldErrors = apiValidationsToEditEntityErrors(error.validations);
+    setEditErrors(fieldErrors);
+    if (!fieldErrors) setSaveError(error.detail ?? error.message);
+  };
+
+  const completeSave = async () => {
+    entityLoaderCache.invalidateEntity(entity.sharedId);
+    await revalidator.revalidate();
+    if (mountedRef.current) setIsEditing(false);
+  };
+
   const onSave = async (editedEntity: EntitySaveInput) => {
     if (savingRef.current) return;
 
     savingRef.current = true;
     setIsSaving(true);
     setSaveError(undefined);
+    setEditErrors(undefined);
     abortRef.current = new AbortController();
 
     try {
@@ -59,15 +79,12 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
         signal: abortRef.current.signal,
       });
       if (error) {
-        if (error.kind === 'cancelled') return;
-        if (mountedRef.current) setSaveError(error.detail ?? error.message);
+        handleUpsertError(error);
         return;
       }
       if (!data) return;
 
-      entityLoaderCache.invalidateEntity(entity.sharedId);
-      await revalidator.revalidate();
-      if (mountedRef.current) setIsEditing(false);
+      await completeSave();
     } finally {
       abortRef.current = null;
       savingRef.current = false;
@@ -90,6 +107,7 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
             entity={entity}
             onSave={onSave}
             disabled={isSaving}
+            errors={editErrors}
           />
         </>
       )}
