@@ -45,7 +45,7 @@ type EditEntityFormValues = {
 type EditEntityProps = {
   formId: string;
   entity?: Entity;
-  onSave?: (editedEntity?: Entity) => void;
+  onSave?: (editedEntity: Entity) => void | Promise<void>;
   disabled?: boolean;
 };
 
@@ -177,18 +177,15 @@ const EditEntity = ({ formId, entity, onSave, disabled = false }: EditEntityProp
     });
   }, [entity?.metadata, getValues, metadataProperties, reset]);
 
-  const submit = handleSubmit(values => {
-    if (!entity) {
-      onSave?.(undefined);
-    } else {
-      onSave?.({
-        ...entity,
-        title: values.title || entity.title,
-        template: values.template || entity.template,
-        icon: (values.showIcon ? values.icon : EMPTY_ICON) as Entity['icon'],
-        metadata: formatMetadataForEntity(values.metadata, metadataProperties),
-      });
-    }
+  const submit = handleSubmit(async values => {
+    if (!entity) return;
+    await onSave?.({
+      ...entity,
+      title: values.title || entity.title,
+      template: values.template || entity.template,
+      icon: (values.showIcon ? values.icon : EMPTY_ICON) as Entity['icon'],
+      metadata: formatMetadataForEntity(values.metadata, metadataProperties),
+    });
   });
 
   return (
