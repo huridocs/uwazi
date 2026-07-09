@@ -20,6 +20,7 @@ export class FilesDataSourceFactory {
 
     if (tenant.featureFlags?.postgresFiles) {
       return new PostgresFilesDataSource({
+        mongoDb: db,
         tenantId: tenant.name,
         transactionManager: tm,
         fileStorage: FileStorageFactory.default(),

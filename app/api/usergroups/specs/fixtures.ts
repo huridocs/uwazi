@@ -1,3 +1,4 @@
+import { UserRole } from '#api/core/domain/user/User.js';
 import db, { DBFixture } from '#api/utils/testing_db.js';
 
 const group1Id = db.id();
@@ -21,21 +22,21 @@ const fixtures: DBFixture = {
       password: 'pass1',
       username: 'user1',
       email: 'user1@email.com',
-      role: 'admin',
+      role: UserRole.ADMIN,
     },
     {
       _id: user2Id,
       password: 'pass2',
       username: 'user2',
       email: 'user2@email.com',
-      role: 'editor',
+      role: UserRole.EDITOR,
     },
     {
       _id: user3Id,
       password: 'pass3',
       username: 'user3',
       email: 'user3@email.com',
-      role: 'collaborator',
+      role: UserRole.COLLABORATOR,
     },
   ],
 };

@@ -1,3 +1,4 @@
+import { UserRole } from '#api/core/domain/user/User.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { OcrStatus } from '../../ocrModel.js';
 
@@ -9,7 +10,7 @@ const fixtures = {
       _id: fixturesFactory.id('user1'),
       username: 'user1',
       email: 'user1@test.com',
-      role: 'admin' as const,
+      role: UserRole.ADMIN,
       password: 'password',
     },
   ],

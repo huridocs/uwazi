@@ -1,36 +1,35 @@
+import { UserRole } from '#api/core/domain/user/User.js';
 import { testingDB, DBFixture } from '#api/utils/testing_db.js';
-import { UserSchema } from '#shared/types/userType.js';
-import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 
-const users: { [key: string]: UserSchema & { _id: ObjectIdSchema } } = {
+const users = {
   user1: {
     _id: testingDB.id(),
     username: 'User 1',
-    role: 'collaborator',
+    role: UserRole.COLLABORATOR,
     email: 'one@test.com',
   },
   user2: {
     _id: testingDB.id(),
     username: 'User 2',
-    role: 'collaborator',
+    role: UserRole.COLLABORATOR,
     email: 'two@test.com',
   },
   user3: {
     _id: testingDB.id(),
     username: 'User 3',
-    role: 'collaborator',
+    role: UserRole.COLLABORATOR,
     email: 'three@test.com',
   },
   adminUser: {
     _id: testingDB.id(),
     username: 'admin',
-    role: 'admin',
+    role: UserRole.ADMIN,
     email: 'admin@admin.com',
   },
   editorUser: {
     _id: testingDB.id(),
     username: 'editor',
-    role: 'editor',
+    role: UserRole.EDITOR,
     email: 'editor@editor.com',
   },
 };
