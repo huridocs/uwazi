@@ -47,6 +47,16 @@ class MigrationJob implements Dispatchable {
   ): Promise<void> {
     const jobParams = this.normalizeParams(params as MigrationJobParams);
 
+    try {
+      await this.runJob(jobParams);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.deps.logger.error(`Migration failed: ${message}`);
+      throw error;
+    }
+  }
+
+  private async runJob(jobParams: Required<MigrationJobParams>): Promise<void> {
     this.deps.logger.info('Starting migration job');
 
     let schemaVersion = await this.deps.pgMigrator.getCurrentVersion();
