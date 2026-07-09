@@ -3,8 +3,11 @@ import { validatePasswordMiddleWare, needsAuthorization } from '#api/auth/index.
 import { validation } from '#api/utils/index.js';
 import { userSchema } from '#shared/types/userSchema.js';
 import { tenants } from '#api/tenants/index.js';
+import users from '#api/users/users.js';
 import { CreateUserController } from './CreateUserController.js';
 import { DeleteUserController } from './DeleteUserController.js';
+import { GetUsersController } from './GetUsersController.js';
+import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 
 export const userRoutes = (app: Application) => {
   app.post(
@@ -32,5 +35,25 @@ export const userRoutes = (app: Application) => {
     needsAuthorization(),
     validatePasswordMiddleWare,
     DeleteUserController.createHandler()
+  );
+  app.get(
+    '/api/users',
+    needsAuthorization(),
+    async (_req: Request, res: Response, next: NextFunction) => {
+      if (tenants.current().featureFlags?.v2GetUsers) {
+        next();
+      } else {
+        users
+          .get({}, '+groups +failedLogins +accountLocked')
+          .then(response => {
+            const filteredUsers = response.filter(
+              user => user._id.toString() !== PUBLIC_USER_ID.toString()
+            );
+            res.json(filteredUsers);
+          })
+          .catch(next);
+      }
+    },
+    GetUsersController.createHandler()
   );
 };

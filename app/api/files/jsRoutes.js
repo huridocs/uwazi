@@ -17,7 +17,10 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 const getPublicUser = async () => {
   const usersModel = getConnection().collection('users');
-  const publicUser = await usersModel.findOne({ _id: PUBLIC_USER_ID, deletedAt: null });
+  const publicUser = await usersModel.findOne({
+    _id: PUBLIC_USER_ID,
+    deletedAt: { $exists: false },
+  });
 
   if (!publicUser) {
     throw createError('Public user not configured. Migration required.', 500);

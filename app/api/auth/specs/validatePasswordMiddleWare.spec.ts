@@ -1,10 +1,10 @@
 import type { Request, NextFunction, Response } from 'express';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { UserSchema } from '#shared/types/userType.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { encryptPassword } from '../encryptPassword.js';
 import { validatePasswordMiddleWare } from '../validatePasswordMiddleWare.js';
+import { UserDBO } from '#api/core/infrastructure/mongodb/user/UserDBO.js';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -17,7 +17,7 @@ describe('validatePasswordMiddleWare', () => {
   };
 
   const res = mockResponse();
-  const users: UserSchema[] = [];
+  const users: UserDBO[] = [];
   const next: NextFunction = jest.fn();
 
   const encodePassword = (password: string) => Buffer.from(password).toString('base64');

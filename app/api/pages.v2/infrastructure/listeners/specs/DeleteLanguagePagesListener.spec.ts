@@ -1,12 +1,13 @@
 import db, { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import pages from '#api/pages/index.js';
+import { UserRole } from '#api/core/domain/user/User.js';
 import { DeleteLanguagePagesListener } from '../DeleteLanguagePagesListener.js';
 
 const userId = db.id();
 
 const fixtures: DBFixture = {
-  users: [{ _id: userId, username: 'user1', email: 'user1@test.com', role: 'admin' }],
+  users: [{ _id: userId, username: 'user1', email: 'user1@test.com', role: UserRole.ADMIN }],
   settings: [
     {
       languages: [
