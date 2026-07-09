@@ -4,12 +4,10 @@ import { Result } from '#api/core/libs/Result.js';
 import type { ResultType } from '#api/core/libs/Result.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { UserDBO } from './UserDBO.js';
-import { UserGroupDBO } from './UserGroupDBO.js';
 import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { UserNotFound } from '#api/core/domain/user/errors.js';
 
-type UserGroup = { _id: string; name: string };
-type UserWithGroups = UserDBO & { groups: UserGroup[] };
+type UserWithGroups = UserDBO & { groups: { _id: string; name: string }[] };
 
 type Deps = {
   db: Db;
@@ -67,34 +65,33 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
   }
 
   async get(query: Filter<UserDBO> = {}): Promise<UserWithGroups[]> {
-    const filter = {
-      ...query,
-      _id: { $ne: PUBLIC_USER_ID },
-      deletedAt: { $exists: false },
-    };
+    const aggregation = [
+      {
+        $match: {
+          ...query,
+          _id: { $ne: PUBLIC_USER_ID },
+          deletedAt: { $exists: false },
+        },
+      },
+      {
+        $project: { _id: 1, username: 1, role: 1, email: 1, using2fa: 1, accountLocked: 1 },
+      },
+      {
+        $lookup: {
+          from: 'usergroups',
+          let: { userId: { $toString: '$_id' } },
+          pipeline: [
+            { $match: { $expr: { $in: ['$$userId', '$members.refId'] } } },
+            { $project: { _id: { $toString: '$_id' }, name: 1 } },
+          ],
+          as: 'groups',
+        },
+      },
+    ];
 
-    const users = await this.getCollection()
-      .find(filter, {
-        projection: { _id: 1, username: 1, role: 1, email: 1, using2fa: 1, accountLocked: 1 },
-      })
-      .toArray();
+    const results = await this.getCollection().aggregate<UserWithGroups>(aggregation).toArray();
 
-    const userIds = users.map(user => user._id.toString());
-
-    const groups = userIds.length
-      ? await this.getCollection<UserGroupDBO>('usergroups')
-          .find({ 'members.refId': { $in: userIds } })
-          .toArray()
-      : [];
-
-    const usersWithGroups = users.map(user => ({
-      ...user,
-      groups: groups
-        .filter(group => group.members.some(member => member.refId === user._id.toString()))
-        .map(group => ({ _id: group._id.toString(), name: group.name })),
-    }));
-
-    return usersWithGroups;
+    return results;
   }
 }
 
