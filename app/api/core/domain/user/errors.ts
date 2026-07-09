@@ -27,8 +27,28 @@ class IsDeletingSelf extends DomainError {
 
 class IsDeleteOfLastUser extends DomainError {
   constructor() {
-    super('Cannot delete last remaining user', 'user.delete_self');
+    super('Cannot delete last remaining user', 'user.last_user');
   }
 }
 
-export { UsernameExists, EmailInUse, IsDeleteOfPublicUser, IsDeletingSelf, IsDeleteOfLastUser };
+class UserNotFound extends DomainError {
+  constructor(id: string) {
+    super(`User ${id} not found`, 'user.not_found');
+  }
+}
+
+class UsersGetError extends DomainError {
+  constructor() {
+    super('Could not get useers', 'user.get');
+  }
+}
+
+export {
+  UsernameExists,
+  EmailInUse,
+  IsDeleteOfPublicUser,
+  IsDeletingSelf,
+  IsDeleteOfLastUser,
+  UserNotFound,
+  UsersGetError,
+};

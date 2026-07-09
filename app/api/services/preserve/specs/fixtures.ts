@@ -1,18 +1,18 @@
+import { UserRole } from '#api/core/domain/user/User.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import db, { DBFixture } from '#api/utils/testing_db.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
-import { UserSchema } from '#shared/types/userType.js';
 
 const f = getFixturesFactory();
 
 export const templateId = db.id();
 export const anotherTemplateId = db.id();
 export const thesauri1Id = db.id();
-export const user: UserSchema = {
+export const user = {
   _id: db.id(),
   username: 'author',
   email: 'author@test_preserve.com',
-  role: 'admin',
+  role: UserRole.ADMIN,
 };
 
 export const fixtures: DBFixture = {
