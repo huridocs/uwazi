@@ -3,6 +3,7 @@ import React from 'react';
 import { FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
+import { getFieldErrorMessage } from '../functions/fieldErrorMessage.js';
 
 type TextFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
@@ -21,7 +22,8 @@ const TextField = <TFormValues extends FieldValues = FieldValues>({
   disabled,
   type,
 }: TextFieldProps<TFormValues>) => {
-  const { register } = useFormContext<TFormValues>();
+  const { register, getFieldState, formState } = useFormContext<TFormValues>();
+  const fieldState = getFieldState(field, formState);
 
   return (
     <div className="text-ink bg-(--bg-surface)">
@@ -37,6 +39,8 @@ const TextField = <TFormValues extends FieldValues = FieldValues>({
         }
         type={type}
         disabled={disabled}
+        hasErrors={fieldState.invalid}
+        errorMessage={getFieldErrorMessage(fieldState.error)}
         {...register(field, registerOptions)}
       />
     </div>

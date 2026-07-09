@@ -47,10 +47,19 @@ const MultidateField = <TFormValues extends FieldValues = FieldValues>({
         render={({ field: { onChange, onBlur, value, ref }, fieldState }) => {
           const entries = toDateEntries(value);
           const showRequiredError = fieldState.error?.type === 'required';
+          const valueInputClassName = `block w-full rounded-lg border p-2.5 text-sm ${
+            showRequiredError
+              ? 'border-(--color-theme-control-border-error) bg-(--color-theme-control-bg-error) text-(--color-theme-control-text-error) focus:border-(--color-theme-control-border-error) focus:[box-shadow:0_0_0_4px_var(--color-theme-control-error-ring)]'
+              : 'border-(--color-theme-control-border) bg-(--color-theme-control-bg)'
+          }`;
 
           return (
             <div>
-              <div className="font-bold mb-2">
+              <div
+                className={`font-bold mb-2 ${
+                  showRequiredError ? 'text-(--color-theme-control-text-error)' : ''
+                }`}
+              >
                 <Translate className="" context={context}>
                   {label}
                 </Translate>
@@ -69,7 +78,7 @@ const MultidateField = <TFormValues extends FieldValues = FieldValues>({
                       ref={currentIndex === 0 ? ref : undefined}
                       onBlur={onBlur}
                       value={entry.value !== null ? (secondsToISODate(entry.value) ?? '') : ''}
-                      className="block w-full rounded-lg border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-2.5 text-sm"
+                      className={valueInputClassName}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         const seconds = e.target.value ? parseLocalizedDate(e.target.value) : null;
                         const nextEntries = entries.map((current, indexToUpdate) =>

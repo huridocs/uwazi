@@ -45,10 +45,19 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
           };
 
           const showRequiredError = Boolean(fieldState.error);
+          const valueInputClassName = `block w-full rounded-lg border p-2.5 text-sm ${
+            showRequiredError
+              ? 'border-(--color-theme-control-border-error) bg-(--color-theme-control-bg-error) text-(--color-theme-control-text-error) focus:border-(--color-theme-control-border-error) focus:[box-shadow:0_0_0_4px_var(--color-theme-control-error-ring)]'
+              : 'border-(--color-theme-control-border) bg-(--color-theme-control-bg)'
+          }`;
 
           return (
             <>
-              <div className="font-bold mb-2">
+              <div
+                className={`font-bold mb-2 ${
+                  showRequiredError ? 'text-(--color-theme-control-text-error)' : ''
+                }`}
+              >
                 <Translate className="" context={context}>
                   {label}
                 </Translate>
@@ -69,7 +78,7 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
                       fieldValue.onChange({ ...fieldValue.value, label: e.target.value })
                     }
                     onBlur={fieldValue.onBlur}
-                    className="block w-full rounded-lg border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-2.5 text-sm"
+                    className={valueInputClassName}
                   />
                 </div>
                 <div className="flex flex-row items-center gap-1 md:w-2/3">
@@ -87,7 +96,7 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
                       fieldValue.onChange({ ...fieldValue.value, url: e.target.value })
                     }
                     onBlur={fieldValue.onBlur}
-                    className="block w-full rounded-lg border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-2.5 text-sm"
+                    className={valueInputClassName}
                   />
                 </div>
               </div>

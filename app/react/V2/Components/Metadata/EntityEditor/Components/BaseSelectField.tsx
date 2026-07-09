@@ -46,6 +46,7 @@ type BaseSelectFieldProps<TFormValues extends FieldValues = FieldValues> = {
   registerOptions?: RegisterOptions<TFormValues, Path<TFormValues>>;
   disabled?: boolean;
   hideFilters?: boolean;
+  lookupSearch?: (search: string) => Promise<MultiselectListOption[]>;
   getSelectedValues: (value: unknown) => string[];
   onSelectedValuesChange: (selectedValues: string[]) => unknown;
 };
@@ -59,6 +60,7 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
   options,
   singleSelect,
   hideFilters,
+  lookupSearch,
   getSelectedValues,
   onSelectedValuesChange,
 }: BaseSelectFieldProps<TFormValues>) => {
@@ -67,8 +69,32 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
   const searchSelectOptions = useMemo(() => toSearchSelectOptions(options), [options]);
 
   useEffect(() => {
+    if (lookupSearch) {
+      return;
+    }
     setOptionsState(options);
-  }, [options]);
+  }, [lookupSearch, options]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadInitialLookup = async () => {
+      if (!lookupSearch) {
+        return;
+      }
+
+      const lookedUpOptions = await lookupSearch('');
+      if (isMounted) {
+        setOptionsState(lookedUpOptions);
+      }
+    };
+
+    loadInitialLookup().catch(() => undefined);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [lookupSearch]);
 
   const renderLabel = (invalid: boolean) => (
     <div className={`font-semibold ${invalid ? 'text-(--color-theme-control-text-error)' : ''}`}>
@@ -115,7 +141,15 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
               checkboxes
               label={renderLabel(fieldState.invalid)}
               items={optionsState}
-              onSearch={search => setOptionsState(defaultSearch(search, options))}
+              onSearch={async search => {
+                if (lookupSearch) {
+                  const lookedUpOptions = await lookupSearch(search);
+                  setOptionsState(lookedUpOptions);
+                  return;
+                }
+
+                setOptionsState(defaultSearch(search, options));
+              }}
               selectedValues={getSelectedValues(fieldController.value)}
               onChange={selectedValues => {
                 if (disabled) {
