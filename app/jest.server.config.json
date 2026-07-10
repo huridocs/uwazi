@@ -4,7 +4,8 @@
   "testMatch": [
     "**/app/api/**/specs/*spec.(j|t)s?(x)",
     "**/app/shared/**/specs/*spec.(j|t)s?(x)",
-    "**/app/specs/*spec.(j|t)s?(x)"
+    "**/app/specs/*spec.(j|t)s?(x)",
+    "**/app/react/V2/services/server/**/specs/*spec.(j|t)s?(x)"
   ],
   "testEnvironment": "node",
   "setupFilesAfterEnv": [
@@ -28,6 +29,10 @@
     "^#api/(.*)": "<rootDir>/api/$1",
     "^#shared/(.*)\\.js$": "<rootDir>/shared/$1",
     "^#shared/(.*)": "<rootDir>/shared/$1",
+    "^#app/(.*)\\.js$": "<rootDir>/react/$1",
+    "^#app/(.*)": "<rootDir>/react/$1",
+    "^#V2/(.*)\\.js$": "<rootDir>/react/V2/$1",
+    "^#V2/(.*)": "<rootDir>/react/V2/$1",
     "^api/(.*)": "<rootDir>/api/$1",
     "^shared/(.*)": "<rootDir>/shared/$1",
     "^app/(.*)\\.js$": "<rootDir>/$1",
