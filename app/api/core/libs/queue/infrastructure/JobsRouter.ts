@@ -36,6 +36,11 @@ export class JobsRouter implements JobsDispatcher {
     return dispatcher.cancelByParams(dispatchable, params);
   }
 
+  async countByName<T extends Dispatchable>(dispatchable: DispatchableClass<T>): Promise<number> {
+    const dispatcher = this.routeJob();
+    return dispatcher.countByName(dispatchable);
+  }
+
   private routeJob() {
     const { queueName } = config;
     return this.dispatcherFactory(queueName);
