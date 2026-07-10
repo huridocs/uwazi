@@ -173,7 +173,11 @@ describe('dispatchMany', () => {
 
       expect(await dispatcherNamespace1.countByName(TestJob)).toBe(2);
       expect(await dispatcherNamespace2.countByName(TestJob)).toBe(1);
-      expect(await dispatcherNamespace1.countByName(class OtherJob {})).toBe(0);
+      class OtherJob implements Dispatchable {
+        // eslint-disable-next-line class-methods-use-this
+        async handleDispatch(): Promise<void> {}
+      }
+      expect(await dispatcherNamespace1.countByName(OtherJob)).toBe(0);
     });
   });
 });

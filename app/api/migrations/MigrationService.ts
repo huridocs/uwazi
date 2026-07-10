@@ -144,26 +144,23 @@ class MigrationService {
       }
     }
 
-    await this.deps.tenants.run(async () => {
-      await ExecutionContext.run(
-        {
-          tenant: this.deps.tenants.current(),
-          factories: {
-            transactionManager: this.deps.transactionManagerFactory,
-            jobsDispatcher: () => dispatcher,
-            eventEmitter: this.deps.eventEmitterFactory,
-            idGenerator: this.deps.idGeneratorFactory,
-            logger: () => logger,
-          },
+    await ExecutionContext.run(
+      {
+        factories: {
+          transactionManager: this.deps.transactionManagerFactory,
+          jobsDispatcher: () => dispatcher,
+          eventEmitter: this.deps.eventEmitterFactory,
+          idGenerator: this.deps.idGeneratorFactory,
+          logger: () => logger,
         },
-        async () => {
-          await dispatcher.dispatch(MigrationJob, {
-            reindex: false,
-            results: initialResults,
-          });
-        }
-      );
-    });
+      },
+      async () => {
+        await dispatcher.dispatch(MigrationJob, {
+          reindex: false,
+          results: initialResults,
+        });
+      }
+    );
 
     const pgPool = this.deps.postgresDB.pool();
     const pgMigrator = this.deps.pgMigratorFactory(pgPool);
