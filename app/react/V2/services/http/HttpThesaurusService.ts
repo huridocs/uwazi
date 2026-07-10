@@ -18,6 +18,9 @@ const httpThesaurusService: ThesaurusService = {
     fromLegacyApi(async () => {
       await Promise.all(ids.map(async _id => thesauriApi.deleteThesauri({ _id }, headers)));
     }),
+
+  importFromFile: async (thesaurus, file) =>
+    fromLegacyApi(async () => thesauriApi.importThesaurus(thesaurus, file)),
 };
 
 export { httpThesaurusService };
