@@ -68,6 +68,13 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
     });
   }
 
+  async countByName(jobName: string, tenantName: string): Promise<number> {
+    return this.getCollection().countDocuments({
+      name: jobName,
+      namespace: tenantName,
+    });
+  }
+
   async renewJobLock(job: Job) {
     await this.getCollection().findOneAndUpdate(
       {
