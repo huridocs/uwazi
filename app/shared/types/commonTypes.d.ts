@@ -344,14 +344,7 @@ export type PropertyTypeSchema =
   | 'newRelationship';
 
 export type PropertyValueSchema =
-  | null
-  | string
-  | number
-  | boolean
-  | LinkSchema
-  | DateRangeSchema
-  | LatLonSchema
-  | LatLonSchema[];
+  null | string | number | boolean | LinkSchema | DateRangeSchema | LatLonSchema | LatLonSchema[];
 
 export interface SelectParentSchema {
   label: string;
