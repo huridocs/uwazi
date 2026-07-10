@@ -96,14 +96,7 @@ interface DateRangeSchema {
 }
 
 type PropertyValueSchema =
-  | null
-  | string
-  | number
-  | boolean
-  | LinkSchema
-  | DateRangeSchema
-  | LatLonSchema
-  | LatLonSchema[];
+  null | string | number | boolean | LinkSchema | DateRangeSchema | LatLonSchema | LatLonSchema[];
 
 interface MetadataObjectSchema {
   value: PropertyValueSchema;

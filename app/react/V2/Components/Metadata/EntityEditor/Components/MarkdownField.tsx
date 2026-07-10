@@ -2,6 +2,7 @@ import React from 'react';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
 import { Textarea } from '#V2/Components/Forms/index.js';
+import { getFieldErrorMessage } from '../functions/fieldErrorMessage.js';
 
 type MarkdownFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
@@ -44,9 +45,7 @@ const MarkdownField = <TFormValues extends FieldValues = FieldValues>({
             ref={fieldController.ref}
             disabled={disabled}
             hasErrors={fieldState.invalid}
-            errorMessage={
-              fieldState.error ? <Translate>This field is required</Translate> : undefined
-            }
+            errorMessage={getFieldErrorMessage(fieldState.error)}
             rows={6}
           />
         )}

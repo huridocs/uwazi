@@ -76,8 +76,4 @@ export type CustomDTO = BaseFileDTO & {
 };
 
 export type FileDTO =
-  | PDFDocumentDTO
-  | FileAttachmentDTO
-  | URLAttachmentDTO
-  | ThumbnailDTO
-  | CustomDTO;
+  PDFDocumentDTO | FileAttachmentDTO | URLAttachmentDTO | ThumbnailDTO | CustomDTO;

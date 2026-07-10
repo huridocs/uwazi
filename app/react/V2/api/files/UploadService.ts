@@ -11,8 +11,7 @@ class UploadService {
   private aborted: boolean = false;
 
   private onProgressCallback:
-    | ((filename: string, percent: number, total?: number) => void)
-    | undefined;
+    ((filename: string, percent: number, total?: number) => void) | undefined;
 
   private onUploadCompleteCallback: ((response: FileType | FetchResponseError) => void) | undefined;
 

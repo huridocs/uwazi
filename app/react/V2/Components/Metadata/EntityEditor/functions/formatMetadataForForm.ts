@@ -10,6 +10,7 @@ type FormMetadataProperty = {
   label: string;
   required?: boolean;
   content?: string;
+  relationType?: string;
   style?: string;
   inherited?: boolean;
   inheritedType?: MetadataValue['inheritedType'];

@@ -77,6 +77,16 @@ describe('toMetadataObjectSchema', () => {
     ).toEqual({ value: null });
   });
 
+  it('should preserve nested row objects on save', () => {
+    expect(
+      toMetadataObjectSchema({
+        value: { daddh: ['Art. 1'], dple: ['Art. 2'] },
+      })
+    ).toEqual({
+      value: { daddh: ['Art. 1'], dple: ['Art. 2'] },
+    });
+  });
+
   it('should sanitize parent and inheritedValue recursively', () => {
     expect(
       toMetadataObjectSchema({
