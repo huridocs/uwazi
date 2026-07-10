@@ -13,6 +13,7 @@ type RelationshipFieldProps<TFormValues extends FieldValues = FieldValues> = {
   registerOptions?: RegisterOptions<TFormValues, Path<TFormValues>>;
   disabled?: boolean;
   hideFilters?: boolean;
+  lookupSearch?: (search: string) => Promise<MultiselectListOption[]>;
 };
 
 const RelationshipField = <TFormValues extends FieldValues = FieldValues>({
@@ -23,6 +24,7 @@ const RelationshipField = <TFormValues extends FieldValues = FieldValues>({
   registerOptions,
   disabled,
   hideFilters,
+  lookupSearch,
 }: RelationshipFieldProps<TFormValues>) => (
   <BaseSelectField<TFormValues>
     context={context}
@@ -32,6 +34,7 @@ const RelationshipField = <TFormValues extends FieldValues = FieldValues>({
     registerOptions={registerOptions}
     disabled={disabled}
     hideFilters={hideFilters}
+    lookupSearch={lookupSearch}
     getSelectedValues={getMetadataSelectedValues}
     onSelectedValuesChange={selectedValues =>
       selectedValues.map(

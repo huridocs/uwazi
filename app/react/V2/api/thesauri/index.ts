@@ -1,7 +1,7 @@
+import { IncomingHttpHeaders } from 'http';
 import { api } from '#app/utils/api.js';
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import { IncomingHttpHeaders } from 'http';
 import { httpRequest } from '#shared/superagent.js';
 
 const get = async (
@@ -16,17 +16,21 @@ const get = async (
 };
 
 const save = async (
-  thesaurus: Omit<ClientThesaurus, '_id'> & { _id?: string }
+  thesaurus: Omit<ClientThesaurus, '_id'> & { _id?: string },
+  headers?: IncomingHttpHeaders
 ): Promise<ClientThesaurus> => {
-  const requestParams = new RequestParams(thesaurus);
+  const requestParams = new RequestParams(thesaurus, headers);
   const response = (await api.post('thesauris', requestParams)) as {
     json: ClientThesaurus;
   };
   return response.json;
 };
 
-const deleteThesauri = async (params: { _id: string }): Promise<{ ok: boolean }> => {
-  const requestParams = new RequestParams(params);
+const deleteThesauri = async (
+  params: { _id: string },
+  headers?: IncomingHttpHeaders
+): Promise<{ ok: boolean }> => {
+  const requestParams = new RequestParams(params, headers);
   const response = (await api.delete('thesauris', requestParams)) as { json: { ok: boolean } };
   return response.json;
 };

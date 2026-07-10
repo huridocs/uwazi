@@ -10,8 +10,12 @@ const selectSearchSelectOption = (fieldId: string, optionLabel: string) => {
   cy.contains('[role="option"]', optionLabel).click();
 };
 
+const waitForRelationshipLookup = () => {
+  cy.get('input[id="entity2"]', { timeout: 10000 }).should('exist');
+};
+
 describe('Entity edit', () => {
-  const { Basic } = composeStories(stories);
+  const { Basic, AllRequired, WithExternalErrors } = composeStories(stories);
 
   describe('Current metadata', () => {
     beforeEach(() => {
@@ -282,6 +286,130 @@ describe('Entity edit', () => {
           expect(saved.metadata.video_of_event).to.deep.equal([{ value: '' }]);
         });
       });
+    });
+  });
+
+  describe('Relationship fields', () => {
+    beforeEach(() => {
+      mount(
+        <ThemeProvider>
+          <Basic />
+        </ThemeProvider>
+      );
+      waitForRelationshipLookup();
+    });
+
+    it('should render grouped Owner / Residents as a single relationship field', () => {
+      cy.contains('Owner / Residents').should('exist');
+      cy.get('[id="metadata.related_people"]').should('exist');
+      cy.get('[id="metadata.related_residents"]').should('not.exist');
+    });
+
+    it('should render Witnesses as a separate relationship field', () => {
+      cy.contains('Witnesses').should('exist');
+      cy.get('[id="metadata.related_witnesses"]').should('exist');
+      cy.get('input[id="entity4"]').should('be.checked');
+    });
+
+    it('should filter relationship options when searching the lookup', () => {
+      cy.get('[id="metadata.related_people"]').closest('.h-52').as('ownerField');
+      cy.get('@ownerField').find('ul input[type="checkbox"]').should('have.length.above', 10);
+      cy.get('input[id="metadata.related_people"]').type('Lucia Torres');
+      cy.get('@ownerField')
+        .find('ul input[type="checkbox"]', { timeout: 10000 })
+        .should('have.length', 3);
+      cy.get('@ownerField').find('input[id="entity6"]').should('exist');
+      cy.get('@ownerField').find('input[id="entity10"]').should('not.exist');
+    });
+
+    it('should select and deselect relationship entities', () => {
+      cy.get('input[id="entity6"]').check();
+      cy.get('input[id="entity6"]').should('be.checked');
+      cy.get('input[id="entity2"]').uncheck();
+      cy.get('input[id="entity2"]').should('not.be.checked');
+    });
+
+    it('should sync grouped relationship fields on save', () => {
+      const saveSpy = cy.stub().as('saveSpy');
+      mount(
+        <ThemeProvider>
+          <Basic onSave={saveSpy} />
+        </ThemeProvider>
+      );
+      waitForRelationshipLookup();
+
+      cy.get('[id="metadata.related_people"]')
+        .closest('.h-52')
+        .within(() => {
+          cy.get('input[id="entity6"]').check();
+        });
+      cy.contains('button', 'Save').click();
+
+      cy.get('@saveSpy').should('have.been.calledOnce');
+      cy.get('@saveSpy').then(spy => {
+        const saved = (spy as unknown as Cypress.Agent<sinon.SinonSpy>).getCall(0).args[0];
+        const peopleValues = saved.metadata.related_people.map((p: { value: string }) => p.value);
+        const residentValues = saved.metadata.related_residents.map(
+          (p: { value: string }) => p.value
+        );
+
+        expect(peopleValues).to.include('entity6');
+        expect(residentValues).to.deep.equal(peopleValues);
+      });
+    });
+  });
+
+  describe('Required fields', () => {
+    it('should mark required fields with an asterisk', () => {
+      mount(
+        <ThemeProvider>
+          <AllRequired />
+        </ThemeProvider>
+      );
+
+      cy.get('input[id="title"]').parent().parent().contains('*');
+    });
+
+    it('should block save and show validation errors when required fields are empty', () => {
+      const saveSpy = cy.stub().as('saveSpy');
+      mount(
+        <ThemeProvider>
+          <AllRequired onSave={saveSpy} />
+        </ThemeProvider>
+      );
+
+      cy.contains('button', 'Save').click();
+
+      cy.get('@saveSpy').should('not.have.been.called');
+      cy.contains('This field is required').should('be.visible');
+    });
+
+    it('should focus the first invalid field on failed save', () => {
+      mount(
+        <ThemeProvider>
+          <AllRequired />
+        </ThemeProvider>
+      );
+
+      cy.contains('button', 'Save').click();
+      cy.get('input[id="title"]').should('have.focus');
+    });
+  });
+
+  describe('External errors', () => {
+    beforeEach(() => {
+      mount(
+        <ThemeProvider>
+          <WithExternalErrors />
+        </ThemeProvider>
+      );
+    });
+
+    it('should display external validation errors on affected fields', () => {
+      cy.contains('The title already exists').should('be.visible');
+      cy.contains('This value is invalid').should('be.visible');
+      cy.contains('This relationship is not allowed').should('be.visible');
+      cy.contains('Please provide a valid source URL').should('be.visible');
     });
   });
 });

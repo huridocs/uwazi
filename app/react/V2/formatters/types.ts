@@ -172,8 +172,7 @@ interface EntityFile {
 }
 
 type RelationshipMetadataProperty =
-  | RelatedRelationshipMetadataProperty
-  | InheritedRelationshipMetadataProperty;
+  RelatedRelationshipMetadataProperty | InheritedRelationshipMetadataProperty;
 
 type MetadataProperty =
   | SimpleMetadataProperty

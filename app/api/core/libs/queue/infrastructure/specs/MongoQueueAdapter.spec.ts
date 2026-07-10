@@ -839,3 +839,59 @@ describe('deleteByParams', () => {
     );
   });
 });
+
+describe('countByName', () => {
+  const factory = getFixturesFactory();
+
+  beforeEach(async () => {
+    await testingEnvironment.setFixtures({
+      jobs: [
+        {
+          _id: factory.id('job_a_1'),
+          namespace: 'tenant1',
+          queue: 'queue1',
+          name: 'jobA',
+          params: {},
+          lockedUntil: 0,
+          retryCount: 0,
+        },
+        {
+          _id: factory.id('job_a_2'),
+          namespace: 'tenant1',
+          queue: 'queue1',
+          name: 'jobA',
+          params: {},
+          lockedUntil: 0,
+          retryCount: 0,
+        },
+        {
+          _id: factory.id('job_b_1'),
+          namespace: 'tenant1',
+          queue: 'queue1',
+          name: 'jobB',
+          params: {},
+          lockedUntil: 0,
+          retryCount: 0,
+        },
+        {
+          _id: factory.id('job_a_other_tenant'),
+          namespace: 'tenant2',
+          queue: 'queue1',
+          name: 'jobA',
+          params: {},
+          lockedUntil: 0,
+          retryCount: 0,
+        },
+      ] as JobDBO[],
+    });
+  });
+
+  it('should count jobs by name and namespace', async () => {
+    const adapter = DefaultTestingQueueAdapter();
+
+    expect(await adapter.countByName('jobA', 'tenant1')).toBe(2);
+    expect(await adapter.countByName('jobB', 'tenant1')).toBe(1);
+    expect(await adapter.countByName('jobA', 'tenant2')).toBe(1);
+    expect(await adapter.countByName('jobA', 'tenant3')).toBe(0);
+  });
+});

@@ -58,19 +58,6 @@ jobs:
         image: redis:6.0-alpine
         ports:
           - 6379:6379
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_USER: uwazi
-          POSTGRES_PASSWORD: uwazi
-          POSTGRES_DB: uwazi_e2e
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
 
     steps:
       - uses: actions/checkout@v4
@@ -267,12 +254,6 @@ jobs:
           DBHOST: localhost:27017
           DATABASE_NAME: uwazi_e2e
 
-      - name: Migrate PG
-        run: yarn migrate-pg
-        env:
-          POSTGRES_DB: "uwazi_e2e"
-          POSTGRES_HOST: postgres
-
       - name: start Uwazi
         env:
           DBHOST: localhost:27017
@@ -283,8 +264,6 @@ jobs:
           FEATURE_FLAG_PARAGRAPH_EXTRACTION: true
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
-          POSTGRES_DB: "uwazi_e2e"
-          POSTGRES_HOST: postgres
         run: .github/scripts/start-uwazi.sh
 
       - name: Run Playwright spec - ${{ matrix.name }}
@@ -298,7 +277,6 @@ jobs:
           EXTERNAL_SERVICES: true
           FEATURE_FLAG_PARAGRAPH_EXTRACTION: true
           TRANSPILED: true
-          POSTGRES_HOST: postgres
 
       - name: Upload dummy services log
         if: always()

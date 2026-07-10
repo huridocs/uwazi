@@ -54,6 +54,10 @@ export class NamespacedDispatcher implements JobsDispatcher {
     await this.adapter.cancelByParams(dispatchable.name, params, this.namespace);
   }
 
+  async countByName<T extends Dispatchable>(dispatchable: DispatchableClass<T>): Promise<number> {
+    return this.adapter.countByName(dispatchable.name, this.namespace);
+  }
+
   async dispatch<T extends Dispatchable>(
     dispatchable: DispatchableClass<T>,
     params: Parameters<T['handleDispatch']>[1],

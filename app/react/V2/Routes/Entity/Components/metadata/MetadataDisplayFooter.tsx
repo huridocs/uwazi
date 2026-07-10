@@ -7,16 +7,16 @@ import { useMetadataEditing } from '#V2/Routes/Entity/Components/context/index.j
 const iconClass = 'h-4 w-4 shrink-0';
 
 const MetadataDisplayFooter = () => {
-  const { isEditing, setIsEditing } = useMetadataEditing();
+  const { isEditing, isSaving, cancelEdit, setIsEditing } = useMetadataEditing();
 
   return (
     <div className="flex w-full flex-row items-center justify-between gap-3">
       {isEditing ? (
         <>
-          <Button variant="secondary" onClick={() => setIsEditing(false)}>
+          <Button variant="secondary" onClick={cancelEdit}>
             <Translate>Cancel</Translate>
           </Button>
-          <Button variant="primary" type="submit" form="edit-entity-form">
+          <Button variant="primary" type="submit" form="edit-entity-form" disabled={isSaving}>
             <Translate>Save</Translate>
           </Button>
         </>

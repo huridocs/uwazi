@@ -63,6 +63,7 @@ function register<T extends Dispatchable>(
   this.register(dispatchable, async (namespace, job) => {
     let deps!: ExecutionContextDeps;
     let instance!: T;
+    const tenantName = namespace === 'system' ? config.defaultTenant.name : namespace;
     await tenants.run(async () => {
       let actor: UserSchema | null = null;
       if (job.params.userId) {
@@ -80,7 +81,7 @@ function register<T extends Dispatchable>(
         },
       };
       instance = await ExecutionContext.run(deps, async () => factory(namespace, job));
-    }, namespace);
+    }, tenantName);
 
     // v1 backwards compatibility only (probably)
     ExecutionContext.attachContext(instance, 'handleDispatch', deps);

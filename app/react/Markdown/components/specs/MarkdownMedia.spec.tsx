@@ -155,9 +155,12 @@ describe('MarkdownMedia', () => {
       });
       const editTimeLink = async (inputs: HTMLElement[], field: string, value: string) => {
         await act(async () => {
-          fireEvent.change(inputs.find(x => (x as HTMLInputElement).name === field)!, {
-            target: { value },
-          });
+          fireEvent.change(
+            inputs.find(x => (x as HTMLInputElement).name === field)!,
+            {
+              target: { value },
+            }
+          );
         });
       };
 
