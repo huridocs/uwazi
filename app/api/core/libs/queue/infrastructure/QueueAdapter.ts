@@ -29,4 +29,5 @@ export interface QueueAdapter {
   deleteJob(job: Job): Promise<void>;
   deleteByParams(jobName: string, params: Partial<Params>, tenantName: string): Promise<void>;
   cancelByParams(jobName: string, params: Partial<Params>, tenantName: string): Promise<void>;
+  countByName(jobName: string, tenantName: string): Promise<number>;
 }

@@ -61,6 +61,14 @@ export class PgMigrator {
     return new Set(result.rows.map(r => r.delta));
   }
 
+  async getCurrentVersion(): Promise<number> {
+    await this.ensureTrackingTable();
+    const result = await this.pool.query<{ delta: number }>(
+      `SELECT COALESCE(MAX(delta), 0) as delta FROM ${TRACKING_TABLE}`
+    );
+    return result.rows[0]?.delta || 0;
+  }
+
   async status(): Promise<{ applied: MigrationStatus[]; pending: MigrationStatus[] }> {
     await this.ensureTrackingTable();
 
@@ -80,12 +88,16 @@ export class PgMigrator {
   }
 
   /* eslint-disable max-statements */
-  async migrate(): Promise<number[]> {
+  async migrate(until?: number): Promise<number[]> {
     await this.ensureTrackingTable();
 
     const migrationFiles = this.readMigrationFiles();
     const appliedDeltas = await this.getAppliedDeltas();
-    const pending = migrationFiles.filter(m => !appliedDeltas.has(m.delta));
+    let pending = migrationFiles.filter(m => !appliedDeltas.has(m.delta));
+
+    if (until !== undefined) {
+      pending = pending.filter(m => m.delta <= until);
+    }
 
     const applied: number[] = [];
     for (const migration of pending) {

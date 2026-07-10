@@ -68,5 +68,8 @@ export function NoOpDispatcher(): JobsDispatcher {
     },
     async deleteByParams() {},
     async cancelByParams() {},
+    async countByName() {
+      return 0;
+    },
   };
 }
