@@ -2,6 +2,7 @@ import React from 'react';
 import { EyeIcon, PlusIcon, TrashIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { Button, Pill } from '#V2/Components/UI/index.js';
+import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
 import { EntityFileRow } from './types.js';
 
 const TranslationsPanel = ({
@@ -53,25 +54,29 @@ const TranslationsPanel = ({
                 <Translate className="sr-only">View</Translate>
               </Button>
             </a>
-            <Button
-              variant="dangerSubtle"
-              size="small"
-              onClick={() => onDeleteRow(file)}
-              className="inline-flex items-center gap-1"
-            >
-              <TrashIcon className="h-4 w-4" />
-              <Translate className="sr-only">Delete</Translate>
-            </Button>
+            <EntityWriteAuthorization>
+              <Button
+                variant="dangerSubtle"
+                size="small"
+                onClick={() => onDeleteRow(file)}
+                className="inline-flex items-center gap-1"
+              >
+                <TrashIcon className="h-4 w-4" />
+                <Translate className="sr-only">Delete</Translate>
+              </Button>
+            </EntityWriteAuthorization>
           </div>
         ))}
-        <Button
-          variant="ghost"
-          onClick={onAddTranslation}
-          className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-dashed border-border-soft py-3 text-xs text-ink-muted hover:border-ink/20 hover:bg-paper hover:text-ink"
-        >
-          <PlusIcon className="h-3.5 w-3.5" aria-hidden />
-          <Translate>Add translation</Translate>
-        </Button>
+        <EntityWriteAuthorization>
+          <Button
+            variant="ghost"
+            onClick={onAddTranslation}
+            className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-dashed border-border-soft py-3 text-xs text-ink-muted hover:border-ink/20 hover:bg-paper hover:text-ink"
+          >
+            <PlusIcon className="h-3.5 w-3.5" aria-hidden />
+            <Translate>Add translation</Translate>
+          </Button>
+        </EntityWriteAuthorization>
       </div>
     </div>
   );
