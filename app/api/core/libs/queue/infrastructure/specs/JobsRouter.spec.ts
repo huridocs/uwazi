@@ -47,3 +47,17 @@ it('should dispatch the job to the configured queue', async () => {
   });
   expect(result22).toBe(null);
 });
+
+it('should count jobs by name on the configured queue', async () => {
+  const adapter = DefaultTestingQueueAdapter();
+
+  const router = new JobsRouter(name => new NamespacedDispatcher('count-namespace', name, adapter));
+
+  config.queueName = 'queue1';
+  await router.dispatch(ExampleJob, undefined);
+
+  config.queueName = 'queue2';
+  await router.dispatch(ExampleJob, undefined);
+
+  expect(await router.countByName(ExampleJob)).toBe(2);
+});

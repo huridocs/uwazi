@@ -120,6 +120,9 @@ const createTestDispatcher = (
   async dispatchMany() {},
   async deleteByParams() {},
   async cancelByParams() {},
+  async countByName() {
+    return 0;
+  },
 });
 
 const createJobFactory = (deps: {

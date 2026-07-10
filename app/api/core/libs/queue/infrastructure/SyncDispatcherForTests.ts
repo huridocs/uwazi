@@ -40,6 +40,12 @@ export class SyncDispatcherForTests implements JobsDispatcher {
   }
 
   // eslint-disable-next-line class-methods-use-this
+  async countByName<T extends Dispatchable>(_dispatchable: DispatchableClass<T>): Promise<number> {
+    // No-op for sync dispatcher in tests
+    return 0;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
   async dispatch<T extends Dispatchable>(
     dispatchable: DispatchableClass<T>,
     params: Parameters<T['handleDispatch']>[1],

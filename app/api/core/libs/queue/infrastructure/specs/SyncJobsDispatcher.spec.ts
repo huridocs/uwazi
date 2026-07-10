@@ -114,4 +114,8 @@ describe('SyncJobsDispatcher', () => {
   it('cancelByParams should be a no-op', async () => {
     await expect(dispatcher.cancelByParams(ExampleJob, {})).resolves.toBeUndefined();
   });
+
+  it('countByName should always return 0', async () => {
+    await expect(dispatcher.countByName(ExampleJob)).resolves.toBe(0);
+  });
 });

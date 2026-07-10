@@ -24,9 +24,14 @@ run()
     const isBlocked = 'blocked' in result && result.blocked;
     const isDone = 'done' in result && result.done;
     const isDispatched = 'dispatched' in result && result.dispatched;
+    const isSkipped = 'skipped' in result && result.skipped;
 
     if (hasError || (isBlocked && !isDone && !isDispatched)) {
       process.exitCode = 1;
+    }
+
+    if (isSkipped) {
+      process.stdout.write(`Migration skipped: ${result.reason}\n`);
     }
   })
   .catch(async e => {
@@ -34,5 +39,5 @@ run()
       process.stderr.write(`${MIGRATION_RESULT_PREFIX}${JSON.stringify({ error: e.message })}\n`);
     }
     await DB.disconnect();
-    process.exit(1);
+    throw e;
   });

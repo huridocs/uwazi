@@ -25,7 +25,7 @@ export class LoggerFactory {
 
   static systemLogger(_writer = StandardJSONWriter) {
     let writer = _writer;
-    if (config.ENVIRONMENT === 'development') {
+    if (config.ENVIRONMENT === 'development' && _writer === StandardJSONWriter) {
       writer = DevelopmentWritter;
     }
 

@@ -166,5 +166,14 @@ describe('dispatchMany', () => {
         ])
       );
     });
+
+    it('should count jobs by name only on the specified namespace', async () => {
+      const dispatcherNamespace1 = new NamespacedDispatcher('namespace_1', 'queue name', adapter);
+      const dispatcherNamespace2 = new NamespacedDispatcher('namespace_2', 'queue name', adapter);
+
+      expect(await dispatcherNamespace1.countByName(TestJob)).toBe(2);
+      expect(await dispatcherNamespace2.countByName(TestJob)).toBe(1);
+      expect(await dispatcherNamespace1.countByName(class OtherJob {})).toBe(0);
+    });
   });
 });

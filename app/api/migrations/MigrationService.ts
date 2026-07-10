@@ -11,6 +11,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
@@ -38,6 +39,10 @@ type MigrationRunResult =
     }
   | {
       dispatched: true;
+    }
+  | {
+      skipped: true;
+      reason: string;
     };
 
 type DBConnector = {
@@ -95,7 +100,7 @@ const createDefaultLogger: LoggerFactoryFn = (options: {
   structuredLogs: boolean;
 }) => {
   if (options.async) {
-    return LoggerFactory.systemLogger();
+    return LoggerFactory.systemLogger(StandardJSONWriter);
   }
   return LoggerFactory.migrationLogger(options.structuredLogs);
 };
@@ -126,6 +131,18 @@ class MigrationService {
     const dispatcher = await this.deps.createDispatcher(options);
     const initialResults = { appliedDataDeltas: [], appliedSchemaDeltas: [] };
     const logger = this.deps.createLogger(options);
+
+    if (options.async) {
+      const existingJobs = await dispatcher.countByName(MigrationJob);
+      if (existingJobs > 0) {
+        logger.warning(
+          `Skipping migration job dispatch: ${existingJobs} MigrationJob(s) already queued`
+        );
+        await this.deps.db.disconnect();
+        await this.deps.postgresDB.disconnect();
+        return { skipped: true, reason: 'MigrationJob already queued' };
+      }
+    }
 
     await this.deps.tenants.run(async () => {
       await ExecutionContext.run(

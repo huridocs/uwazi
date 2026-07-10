@@ -29,6 +29,12 @@ export class SyncJobsDispatcher implements JobsDispatcher {
     // Sync dispatch executes jobs immediately; there are no persisted jobs to cancel.
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  async countByName<T extends Dispatchable>(_dispatchable: DispatchableClass<T>): Promise<number> {
+    // Sync dispatch executes jobs immediately; there are no persisted jobs.
+    return 0;
+  }
+
   async dispatch<T extends Dispatchable>(
     dispatchable: DispatchableClass<T>,
     params: Parameters<T['handleDispatch']>[1],

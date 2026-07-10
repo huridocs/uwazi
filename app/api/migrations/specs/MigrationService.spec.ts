@@ -11,13 +11,14 @@ import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFac
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { MigrationService } from '#api/migrations/MigrationService.js';
 
-const createFakeDispatcher = (calls: any[]): JobsDispatcher => ({
+const createFakeDispatcher = (calls: any[], existingJobCount: number = 0): JobsDispatcher => ({
   dispatch: async (_dispatchable: any, params: any) => {
     calls.push(params);
   },
   dispatchMany: async () => {},
   deleteByParams: async () => {},
   cancelByParams: async () => {},
+  countByName: async () => existingJobCount,
 });
 
 const createFakeLogger = (): Logger => ({
@@ -134,5 +135,51 @@ describe('MigrationService', () => {
     expect(postgresDB.connect).toHaveBeenCalled();
     expect(db.disconnect).toHaveBeenCalled();
     expect(postgresDB.disconnect).toHaveBeenCalled();
+  });
+
+  it('should skip dispatch when a MigrationJob already exists in async mode', async () => {
+    const dispatchedCalls: any[] = [];
+    const db = {
+      connect: jest.fn().mockResolvedValue(connection),
+      disconnect: jest.fn().mockResolvedValue(undefined),
+    };
+    const postgresDB = {
+      connect: jest.fn(),
+      disconnect: jest.fn().mockResolvedValue(undefined),
+      pool: jest.fn().mockReturnValue({ query: jest.fn() }),
+    };
+    const { service } = createService({
+      db,
+      postgresDB,
+      createDispatcher: jest.fn().mockResolvedValue(createFakeDispatcher(dispatchedCalls, 1)),
+    });
+
+    const result = await service.run({ async: true, structuredLogs: false });
+
+    expect(result).toEqual({
+      skipped: true,
+      reason: 'MigrationJob already queued',
+    });
+    expect(dispatchedCalls).toHaveLength(0);
+    expect(db.disconnect).toHaveBeenCalled();
+    expect(postgresDB.disconnect).toHaveBeenCalled();
+  });
+
+  it('should not check for existing jobs in sync mode', async () => {
+    const dispatchedCalls: any[] = [];
+    const { service, fakePgMigrator } = createService({
+      createDispatcher: jest.fn().mockResolvedValue(createFakeDispatcher(dispatchedCalls, 1)),
+    });
+
+    const result = await service.run({ async: false, structuredLogs: false });
+
+    expect(result).toEqual({
+      done: true,
+      appliedDataDeltas: [],
+      appliedSchemaDeltas: [],
+      schemaVersion: 42,
+    });
+    expect(dispatchedCalls).toHaveLength(1);
+    expect(fakePgMigrator.getCurrentVersion).toHaveBeenCalled();
   });
 });
