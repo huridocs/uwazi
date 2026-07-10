@@ -36,7 +36,6 @@ const EntityView = ({ mainDocument, pagePlaintext, searchResults }: EntityViewPr
   const entity = useEntityScopedEntity();
   const { focusedRow, primaryRows } = useEntityFiles();
   const hasMainDocument = Boolean(mainDocument?.filename);
-  const filesCount = (entity.documents?.length || 0) + (entity.attachments?.length || 0);
 
   const filesSideTabs = useMemo(
     () => ({
@@ -49,7 +48,6 @@ const EntityView = ({ mainDocument, pagePlaintext, searchResults }: EntityViewPr
   const { activeMainTab, activeSideTab, onMainTabChange, onSideTabChange } = useEntityViewTabs({
     entity,
     hasMainDocument,
-    filesCount,
     searchResults,
     filesSideTabs,
   });

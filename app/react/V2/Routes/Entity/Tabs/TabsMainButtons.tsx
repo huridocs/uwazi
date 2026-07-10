@@ -48,14 +48,12 @@ const TabsMainButtons = ({
       ),
     });
 
-    if (filesCount > 0) {
-      items.push({
-        id: MAIN_TAB.FILES,
-        label: (
-          <TabLabel text="Files" icon={<PaperClipIcon className="h-5 w-5" />} count={filesCount} />
-        ),
-      });
-    }
+    items.push({
+      id: MAIN_TAB.FILES,
+      label: (
+        <TabLabel text="Files" icon={<PaperClipIcon className="h-5 w-5" />} count={filesCount} />
+      ),
+    });
 
     return items;
   }, [entity, mainDocument?.filename]);
