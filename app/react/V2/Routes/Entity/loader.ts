@@ -7,13 +7,24 @@ import { localeAtom, settingsAtom } from '#app/V2/atoms/index.js';
 import { getPagePlaintext } from '#V2/api/files/index.js';
 import { snippets } from '#V2/api/search/index.js';
 import { SnippetsSearchResponse } from '#V2/api/types.js';
-import { getBySharedId } from '#V2/api/entities/index.js';
+import { ApiError } from '#shared/apiClient/index.js';
+import type { V2Services } from '#V2/services/types.js';
+import { httpServices } from '#V2/services/http/index.js';
+import { apiErrorToRequestError } from '#V2/shared/errorUtils.js';
 import { getMainDocument } from '#V2/formatters/index.js';
 import { entityLoaderCache } from './EntityLoaderCache.js';
 import { PAGE_PARAM, SEARCH_PARAM, VIEW_MODE_PARAM } from './Components/index.js';
 import { LoaderResponse } from './types.js';
 
-const entityLoader =
+const entityNotFoundError = (sharedId: string) =>
+  new ApiError('Not found', {
+    kind: 'http',
+    status: 404,
+    detail: `Entity ${sharedId} not found`,
+  });
+
+const createEntityLoader =
+  (services: V2Services) =>
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   // eslint-disable-next-line max-statements
   async ({ params, request }): Promise<LoaderResponse> => {
@@ -38,21 +49,20 @@ const entityLoader =
     let searchResults: SnippetsSearchResponse | undefined;
 
     if (!entity?._id) {
-      const [fetchedEntity, error] = await getBySharedId(
-        {
-          sharedId: entitySharedId,
-          language,
-          omitRelationships: false,
-        },
-        headers
-      );
+      const [fetchedEntity, error] = await services.entities.getBySharedId(entitySharedId, {
+        language,
+        omitRelationships: false,
+        headers,
+      });
 
-      if (error || !fetchedEntity?.[0]?._id) {
-        entity = undefined;
-      } else {
-        [entity] = fetchedEntity;
-        entityLoaderCache.setEntity(entitySharedId, language, entity);
+      if (error) throw apiErrorToRequestError(error);
+
+      if (!fetchedEntity?.[0]?._id) {
+        throw apiErrorToRequestError(entityNotFoundError(entitySharedId));
       }
+
+      [entity] = fetchedEntity;
+      entityLoaderCache.setEntity(entitySharedId, language, entity);
     }
 
     if (!mainDocument && entity?.sharedId) {
@@ -123,4 +133,6 @@ const entityLoader =
     return { entity, mainDocument, pagePlaintext, searchResults };
   };
 
-export { entityLoader };
+const entityLoader = createEntityLoader(httpServices);
+
+export { createEntityLoader, entityLoader };

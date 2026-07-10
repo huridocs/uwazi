@@ -73,10 +73,19 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
         render={({ field: { onChange, onBlur, value, ref }, fieldState }) => {
           const entries = toDateRangeEntries(value);
           const showRequiredError = fieldState.error?.type === 'required';
+          const valueInputClassName = `block w-full rounded-lg border p-2.5 text-sm ${
+            showRequiredError
+              ? 'border-(--color-theme-control-border-error) bg-(--color-theme-control-bg-error) text-(--color-theme-control-text-error) focus:border-(--color-theme-control-border-error) focus:[box-shadow:0_0_0_4px_var(--color-theme-control-error-ring)]'
+              : 'border-(--color-theme-control-border) bg-(--color-theme-control-bg)'
+          }`;
 
           return (
             <div>
-              <div className="font-bold mb-2">
+              <div
+                className={`font-bold mb-2 ${
+                  showRequiredError ? 'text-(--color-theme-control-text-error)' : ''
+                }`}
+              >
                 <Translate className="" context={context}>
                   {label}
                 </Translate>
@@ -106,7 +115,7 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
                           onBlur={onBlur}
                           value={fromISODate}
                           max={toISODate || undefined}
-                          className="block w-full rounded-lg border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-2.5 text-sm"
+                          className={valueInputClassName}
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const nextFrom = e.target.value
                               ? parseLocalizedDate(e.target.value)
@@ -131,7 +140,7 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
                           onBlur={onBlur}
                           value={toISODate}
                           min={fromISODate || undefined}
-                          className="block w-full rounded-lg border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-2.5 text-sm"
+                          className={valueInputClassName}
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const nextTo = e.target.value
                               ? parseLocalizedDate(e.target.value)

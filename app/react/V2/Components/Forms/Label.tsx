@@ -12,18 +12,17 @@ interface LabelProps {
 const renderChild = (child: string | React.ReactNode) =>
   isString(child) ? <Translate>{child}</Translate> : child;
 
-const Label = ({ htmlFor, children, hasErrors, hideLabel }: LabelProps) => {
-  const color = hasErrors ? 'text-emphasis' : 'text-ink-secondary';
-
-  return (
-    <label
-      htmlFor={htmlFor}
-      className={hideLabel ? 'sr-only' : 'mb-2 block'}
-      style={hideLabel ? undefined : { color }}
-    >
-      {renderChild(children)}
-    </label>
-  );
-};
+const Label = ({ htmlFor, children, hasErrors, hideLabel }: LabelProps) => (
+  <label
+    htmlFor={htmlFor}
+    className={
+      hideLabel
+        ? 'sr-only'
+        : `mb-2 block ${hasErrors ? 'text-(--color-theme-control-text-error)' : 'text-ink-secondary'}`
+    }
+  >
+    {renderChild(children)}
+  </label>
+);
 
 export { Label };
