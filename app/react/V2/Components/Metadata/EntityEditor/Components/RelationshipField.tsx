@@ -3,7 +3,7 @@ import { FieldValues, Path, RegisterOptions } from 'react-hook-form';
 import { MultiselectListOption } from '#V2/Components/Forms/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import { BaseSelectField } from './BaseSelectField.js';
-import { getMetadataSelectedValues } from './metadataSelectUtils.js';
+import { getMetadataSelectedValues, getOptionInfo } from './metadataSelectUtils.js';
 
 type RelationshipFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
@@ -36,14 +36,16 @@ const RelationshipField = <TFormValues extends FieldValues = FieldValues>({
     hideFilters={hideFilters}
     lookupSearch={lookupSearch}
     getSelectedValues={getMetadataSelectedValues}
-    onSelectedValuesChange={selectedValues =>
-      selectedValues.map(
-        value =>
-          ({
-            value,
-            type: 'entity',
-          }) satisfies MetadataValue
-      )
+    onSelectedValuesChange={(selectedValues, availableOptions) =>
+      selectedValues.map(value => {
+        const option = getOptionInfo(value, availableOptions);
+
+        return {
+          value,
+          type: 'entity',
+          label: option.label,
+        } satisfies MetadataValue;
+      })
     }
   />
 );

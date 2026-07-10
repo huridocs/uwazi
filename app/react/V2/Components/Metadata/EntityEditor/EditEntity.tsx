@@ -374,6 +374,7 @@ const EditEntity = ({
 
   const relationshipLookupCache = useMemo(
     () => new Map<string, MultiselectListOption[]>(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [entity?._id, activeTemplate?._id]
   );
 
@@ -383,16 +384,27 @@ const EditEntity = ({
     lookedUpOptions: MultiselectListOption[] = [],
     includeCachedOptions = true
   ): Promise<MultiselectListOption[]> => {
-    const selectedOptions = selectedValues
-      .filter(value => value?.value)
-      .map(value => ({
-        label: (value.label as string) || String(value.value),
-        searchLabel: ((value.label as string) || String(value.value)).toLowerCase(),
-        value: String(value.value),
-      }));
-
     const cacheKey = `${property.content ?? ''}::${property.relationType ?? ''}`;
     const cachedOptions = includeCachedOptions ? (relationshipLookupCache.get(cacheKey) ?? []) : [];
+    const selectedOptions = selectedValues
+      .filter(value => value?.value)
+      .map(value => {
+        const valueId = String(value.value);
+        const cached = cachedOptions.find(option => option.value === valueId);
+        const lookedUp = lookedUpOptions.find(option => option.value === valueId);
+        const label =
+          (typeof value.label === 'string' ? value.label : undefined) ||
+          (typeof cached?.label === 'string' ? cached.label : undefined) ||
+          (typeof lookedUp?.label === 'string' ? lookedUp.label : undefined) ||
+          valueId;
+
+        return {
+          label,
+          searchLabel: label.toLowerCase(),
+          value: valueId,
+        };
+      });
+
     const merged = [...selectedOptions, ...cachedOptions, ...lookedUpOptions].filter(
       (option, index, options) => options.findIndex(other => other.value === option.value) === index
     );

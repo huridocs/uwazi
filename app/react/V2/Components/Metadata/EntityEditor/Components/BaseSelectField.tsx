@@ -50,7 +50,7 @@ type BaseSelectFieldProps<TFormValues extends FieldValues = FieldValues> = {
   hideFilters?: boolean;
   lookupSearch?: (search: string) => Promise<MultiselectListOption[]>;
   getSelectedValues: (value: unknown) => string[];
-  onSelectedValuesChange: (selectedValues: string[]) => unknown;
+  onSelectedValuesChange: (selectedValues: string[], options: MultiselectListOption[]) => unknown;
 };
 
 const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
@@ -130,7 +130,9 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
                   return;
                 }
 
-                fieldController.onChange(onSelectedValuesChange(value ? [value] : []));
+                fieldController.onChange(
+                  onSelectedValuesChange(value ? [value] : [], optionsState)
+                );
               }}
             />
           );
@@ -159,7 +161,7 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
                     return;
                   }
 
-                  fieldController.onChange(onSelectedValuesChange(selectedValues));
+                  fieldController.onChange(onSelectedValuesChange(selectedValues, optionsState));
                 }}
                 hasErrors={fieldState.invalid}
                 hideFilters={hideFilters}
