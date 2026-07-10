@@ -11,6 +11,7 @@ export { LinkField } from './LinkField.js';
 export { GeolocationField } from './GeolocationField.js';
 export { RelationshipField } from './RelationshipField.js';
 export { MarkdownField } from './MarkdownField.js';
+export { NestedField } from './NestedField.js';
 export { MediaField } from './MediaField.js';
 export { MediaPickerModal } from './MediaPickerModal.js';
 export { PreviewField } from './PreviewField.js';

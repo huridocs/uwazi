@@ -5,13 +5,12 @@ import React from 'react';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import { createStore, Provider } from 'jotai';
 import { localeAtom } from '#V2/atoms/index.js';
-import * as entityApi from '#V2/api/entities/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import type { ApiResponse } from '#V2/api/ApiResponse.js';
 import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
+import { ServicesProvider } from '#V2/services/ServicesProvider.js';
+import { createTestServices } from '#V2/testing/createTestServices.js';
 import { useOverlayEntity } from '../useOverlayEntity.js';
-
-jest.mock('#V2/api/entities/index.js');
 
 const sharedId = 'a1';
 type EntityApiResponse = ApiResponse<Entity[] | undefined>;
@@ -45,10 +44,12 @@ const OverlayEntityView = ({ sharedId: entitySharedId }: { sharedId: string }) =
 };
 
 describe('useOverlayEntity', () => {
+  let getBySharedId: jest.Mock;
+
   beforeEach(() => {
     jest.clearAllMocks();
     entityLoaderCache.invalidateAll();
-    jest.spyOn(entityApi, 'getBySharedId').mockImplementation(async ({ language }) => {
+    getBySharedId = jest.fn(async (_id: string, { language }: { language: string }) => {
       if (language === 'en') {
         return [[entityForLanguage('en', 'Metadata in English')]];
       }
@@ -56,15 +57,20 @@ describe('useOverlayEntity', () => {
     });
   });
 
+  const renderOverlay = (store: ReturnType<typeof createStore>) =>
+    render(
+      <Provider store={store}>
+        <ServicesProvider value={createTestServices({ entities: { getBySharedId } })}>
+          <OverlayEntityView sharedId={sharedId} />
+        </ServicesProvider>
+      </Provider>
+    );
+
   it('fetches fresh entity when language changes in overlay', async () => {
     const store = createStore();
     store.set(localeAtom, 'en');
 
-    render(
-      <Provider store={store}>
-        <OverlayEntityView sharedId={sharedId} />
-      </Provider>
-    );
+    renderOverlay(store);
 
     await waitFor(() => {
       expect(screen.getByText('Metadata in English')).toBeVisible();
@@ -78,13 +84,11 @@ describe('useOverlayEntity', () => {
     await waitFor(() => {
       expect(screen.getByText('Metadata en Español')).toBeVisible();
     });
-    expect(entityApi.getBySharedId).toHaveBeenCalledWith({
-      sharedId,
+    expect(getBySharedId).toHaveBeenCalledWith(sharedId, {
       language: 'en',
       omitRelationships: true,
     });
-    expect(entityApi.getBySharedId).toHaveBeenCalledWith({
-      sharedId,
+    expect(getBySharedId).toHaveBeenCalledWith(sharedId, {
       language: 'es',
       omitRelationships: true,
     });
@@ -96,18 +100,14 @@ describe('useOverlayEntity', () => {
     const store = createStore();
     store.set(localeAtom, 'en');
 
-    jest.spyOn(entityApi, 'getBySharedId').mockImplementation(async ({ language }) => {
+    getBySharedId.mockImplementation(async (_id: string, { language }: { language: string }) => {
       if (language === 'en') {
         return englishResponse.promise;
       }
       return spanishResponse.promise;
     });
 
-    render(
-      <Provider store={store}>
-        <OverlayEntityView sharedId={sharedId} />
-      </Provider>
-    );
+    renderOverlay(store);
 
     act(() => {
       store.set(localeAtom, 'es');

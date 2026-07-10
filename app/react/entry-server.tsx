@@ -22,6 +22,7 @@ import sortBy from 'lodash/sortBy.js';
 import { Provider as ReduxProvider } from 'react-redux';
 import { getStore } from '#shared/atomStore/index.js';
 import { api } from '#app/utils/api.js';
+import { apiClient } from '#V2/api/client.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
@@ -52,6 +53,7 @@ loadIcons();
 const convertObjectIdsToStrings = (data: any) => JSON.parse(JSON.stringify(data));
 
 api.APIURL(`http://localhost:${process.env.PORT || 3000}/api/`);
+apiClient.setBaseUrl(`http://localhost:${process.env.PORT || 3000}/api/`);
 
 class ServerRenderingFetchError extends Error {
   status: number;

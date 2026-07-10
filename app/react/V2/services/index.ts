@@ -41,6 +41,7 @@
 export { httpServices as services } from './http/index.js';
 export { ServicesProvider, useServices } from './ServicesProvider.js';
 export type { V2Services } from './types.js';
+export type { EntitiesService, EntitySaveInput } from './contracts/EntitiesService.js';
 export type { ThesaurusService, ThesaurusInput } from './contracts/ThesaurusService.js';
 export type { Thesaurus } from '#shared/contracts/Thesaurus.js';
 export type { UsersService, UserInput } from './contracts/UsersService.js';
