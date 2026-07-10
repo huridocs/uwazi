@@ -115,8 +115,7 @@ interface TextSelectionMaterialsData extends LabeledMaterialsData {
   entity_name?: string;
   source_text?: string;
   label_segments_boxes:
-    | (Omit<ParagraphSchema, 'page_number'> & { page_number?: string })[]
-    | undefined;
+    (Omit<ParagraphSchema, 'page_number'> & { page_number?: string })[] | undefined;
 }
 
 interface ValuesSelectionMaterialsData extends LabeledMaterialsData {
@@ -124,9 +123,7 @@ interface ValuesSelectionMaterialsData extends LabeledMaterialsData {
 }
 
 type MaterialsData =
-  | CommonMaterialsData
-  | TextSelectionMaterialsData
-  | ValuesSelectionMaterialsData;
+  CommonMaterialsData | TextSelectionMaterialsData | ValuesSelectionMaterialsData;
 
 interface PropertySourceMaterials {
   entity_name: string;
