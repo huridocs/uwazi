@@ -1,5 +1,6 @@
 import type { FormMetadataProperty } from '../formatMetadataForForm.js';
 import {
+  apiValidationsToEditEntityErrors,
   applyEditEntityErrors,
   getFirstEditEntityErrorPath,
   getMetadataFieldPath,
@@ -87,5 +88,21 @@ describe('editEntityErrors', () => {
         properties
       )
     ).toBe('metadata.simple_text.0.value');
+  });
+
+  it('should map api validations to edit entity errors', () => {
+    expect(
+      apiValidationsToEditEntityErrors([
+        { instancePath: ".metadata['simple_text']", message: 'Text is invalid' },
+        { instancePath: '.template', message: 'Template is invalid' },
+        { instancePath: '/metadata/status_selection/0/value', message: 'Select is invalid' },
+      ])
+    ).toEqual({
+      template: 'Template is invalid',
+      metadata: {
+        simple_text: 'Text is invalid',
+        status_selection: 'Select is invalid',
+      },
+    });
   });
 });

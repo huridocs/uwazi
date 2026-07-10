@@ -52,7 +52,7 @@ type EditEntityFormValues = {
 type EditEntityProps = {
   formId: string;
   entity?: Entity;
-  onSave?: (editedEntity?: Entity) => void;
+  onSave?: (editedEntity: Entity) => void | Promise<void>;
   disabled?: boolean;
   errors?: EditEntityErrors;
   relationshipLookup?: (params: {
@@ -418,18 +418,15 @@ const EditEntity = ({
   }, [errors, metadataProperties, setError]);
 
   const submit = handleSubmit(
-    values => {
-      if (!entity) {
-        onSave?.(undefined);
-      } else {
-        onSave?.({
-          ...entity,
-          title: values.title || entity.title,
-          template: values.template || entity.template,
-          icon: (values.showIcon ? values.icon : EMPTY_ICON) as Entity['icon'],
-          metadata: formatMetadataForEntity(values.metadata, metadataProperties),
-        });
-      }
+    async values => {
+      if (!entity) return;
+      await onSave?.({
+        ...entity,
+        title: values.title || entity.title,
+        template: values.template || entity.template,
+        icon: (values.showIcon ? values.icon : EMPTY_ICON) as Entity['icon'],
+        metadata: formatMetadataForEntity(values.metadata, metadataProperties),
+      });
     },
     invalidErrors => {
       const firstErrorPath = findFirstErrorPath(invalidErrors);
