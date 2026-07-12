@@ -58,7 +58,10 @@ const EntityView = ({ mainDocument, pagePlaintext, searchResults }: EntityViewPr
       <AddFileModal />
       <PaneLayout defaultRatios={[0.62, 0.38]} className="bg-parchment text-ink">
         <PaneLayout.Pane>
-          <div className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden">
+          <div
+            className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden"
+            data-testid="entity-v2"
+          >
             <div className="shrink-0 border-b border-border-soft px-3 py-2.5">
               <div className="flex flex-col gap-3">
                 <TabsMainButtons

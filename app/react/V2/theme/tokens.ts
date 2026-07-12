@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 import { getAccessibleForegroundOnBackground, mixHex } from '#shared/utils/contrast.js';
+import { UWAZI_DESIGN_DARK, UWAZI_DESIGN_LIGHT } from '#V2/theme/uwaziDesignTokens.js';
 
 type ThemePresetId = 'default' | 'legacy' | 'custom';
 type ThemeMode = 'light' | 'dark';
@@ -82,7 +83,9 @@ type ResolvedThemeKey =
   | '--color-theme-shadow-sm'
   | '--color-theme-shadow-md'
   | '--color-theme-shadow-lg'
-  | '--color-theme-shadow-xl';
+  | '--color-theme-shadow-xl'
+  | '--color-theme-card-shadow'
+  | '--color-theme-card-radius';
 
 type ResolvedThemeVars = Record<ResolvedThemeKey, string>;
 type DerivedThemeKey = Exclude<ResolvedThemeKey, SemanticVarKey>;
@@ -151,6 +154,8 @@ const resolveThemeVars = (source: EditableThemeVars): ResolvedThemeVars => {
     '--color-theme-shadow-md': `0 4px 6px -1px ${mediumShadow}, 0 2px 4px -2px ${softShadow}`,
     '--color-theme-shadow-lg': `0 10px 15px -3px ${strongShadow}, 0 4px 6px -4px ${softShadow}`,
     '--color-theme-shadow-xl': `0 20px 25px -5px ${strongShadow}, 0 8px 10px -6px ${mediumShadow}`,
+    '--color-theme-card-shadow': `0 1px 3px ${mediumShadow}, 0 1px 2px ${softShadow}`,
+    '--color-theme-card-radius': UWAZI_DESIGN_LIGHT.radiusMd,
   };
 };
 
@@ -163,90 +168,93 @@ const withPresetDerivedVars = (
 });
 
 const DEFAULT_LIGHT_DERIVED: DerivedThemeVars = {
-  '--color-theme-bg-warm': '#FCFAF8',
-  '--color-theme-border-soft': '#D4CDB8',
-  '--color-theme-bg-overlay': '#00000066',
-  '--color-theme-bg-selected': '#F0EDED',
-  '--color-theme-border-primary-64': '#E0D9C8A3',
-  '--color-theme-border-soft-64': '#D4CDB8A3',
-  '--color-theme-accent-supporting-tint': '#DDF3FD',
-  '--color-theme-accent-emphasis-tint': '#FEE2E2',
-  '--color-theme-success-light': '#D1FAE5',
-  '--color-theme-warning-light': '#FEF3C7',
-  '--color-theme-danger': '#E8432A',
-  '--color-theme-danger-light': '#FEE2E2',
-  '--color-theme-feedback-success-fg': getAccessibleForegroundOnBackground('#059669', '#FFFFFF')
-    .foreground,
-  '--color-theme-feedback-danger-fg': getAccessibleForegroundOnBackground('#E8432A', '#FFFFFF')
-    .foreground,
-  '--color-theme-highlight-yellow': '#FDE68A',
-  '--color-theme-highlight-yellow-active': '#FCD34D',
-  '--color-theme-highlight-blue': '#BFDBFE',
-  '--color-theme-shadow-sm': '0 1px 2px rgba(0, 0, 0, 0.05)',
-  '--color-theme-shadow-md':
-    '0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
-  '--color-theme-shadow-lg':
-    '0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05)',
-  '--color-theme-shadow-xl':
-    '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)',
+  '--color-theme-bg-warm': UWAZI_DESIGN_LIGHT.bgWarm,
+  '--color-theme-border-soft': UWAZI_DESIGN_LIGHT.borderSoft,
+  '--color-theme-bg-overlay': UWAZI_DESIGN_LIGHT.bgOverlay,
+  '--color-theme-bg-selected': UWAZI_DESIGN_LIGHT.bgSelected,
+  '--color-theme-border-primary-64': UWAZI_DESIGN_LIGHT.borderPrimary64,
+  '--color-theme-border-soft-64': UWAZI_DESIGN_LIGHT.borderSoft64,
+  '--color-theme-accent-supporting-tint': UWAZI_DESIGN_LIGHT.accentSupportingTint,
+  '--color-theme-accent-emphasis-tint': UWAZI_DESIGN_LIGHT.accentEmphasisTint,
+  '--color-theme-success-light': UWAZI_DESIGN_LIGHT.successLight,
+  '--color-theme-warning-light': UWAZI_DESIGN_LIGHT.warningLight,
+  '--color-theme-danger': UWAZI_DESIGN_LIGHT.danger,
+  '--color-theme-danger-light': UWAZI_DESIGN_LIGHT.dangerLight,
+  '--color-theme-feedback-success-fg': getAccessibleForegroundOnBackground(
+    UWAZI_DESIGN_LIGHT.success,
+    '#FFFFFF'
+  ).foreground,
+  '--color-theme-feedback-danger-fg': getAccessibleForegroundOnBackground(
+    UWAZI_DESIGN_LIGHT.danger,
+    '#FFFFFF'
+  ).foreground,
+  '--color-theme-highlight-yellow': UWAZI_DESIGN_LIGHT.highlightYellow,
+  '--color-theme-highlight-yellow-active': UWAZI_DESIGN_LIGHT.highlightYellowActive,
+  '--color-theme-highlight-blue': UWAZI_DESIGN_LIGHT.highlightBlue,
+  '--color-theme-shadow-sm': UWAZI_DESIGN_LIGHT.shadowSm,
+  '--color-theme-shadow-md': UWAZI_DESIGN_LIGHT.shadowMd,
+  '--color-theme-shadow-lg': UWAZI_DESIGN_LIGHT.shadowLg,
+  '--color-theme-shadow-xl': UWAZI_DESIGN_LIGHT.shadowXl,
+  '--color-theme-card-shadow': UWAZI_DESIGN_LIGHT.cardShadow,
+  '--color-theme-card-radius': UWAZI_DESIGN_LIGHT.radiusMd,
 };
 
 const DEFAULT_DARK_DERIVED: DerivedThemeVars = {
-  '--color-theme-bg-warm': '#2A2A2A',
-  '--color-theme-border-soft': '#4A4A4A',
-  '--color-theme-bg-overlay': '#000000AA',
-  '--color-theme-bg-selected': '#333333',
-  '--color-theme-border-primary-64': '#3D3D3DA3',
-  '--color-theme-border-soft-64': '#4A4A4AA3',
-  '--color-theme-accent-supporting-tint': '#0C3A4D',
-  '--color-theme-accent-emphasis-tint': '#4A1A1A',
-  '--color-theme-success-light': '#064E3B',
-  '--color-theme-warning-light': '#78350F',
-  '--color-theme-danger': '#E8432A',
-  '--color-theme-danger-light': '#4A1A1A',
+  '--color-theme-bg-warm': UWAZI_DESIGN_DARK.bgWarm,
+  '--color-theme-border-soft': UWAZI_DESIGN_DARK.borderSoft,
+  '--color-theme-bg-overlay': UWAZI_DESIGN_DARK.bgOverlay,
+  '--color-theme-bg-selected': UWAZI_DESIGN_DARK.bgSelected,
+  '--color-theme-border-primary-64': UWAZI_DESIGN_DARK.borderPrimary64,
+  '--color-theme-border-soft-64': UWAZI_DESIGN_DARK.borderSoft64,
+  '--color-theme-accent-supporting-tint': UWAZI_DESIGN_DARK.accentSupportingTint,
+  '--color-theme-accent-emphasis-tint': UWAZI_DESIGN_DARK.accentEmphasisTint,
+  '--color-theme-success-light': UWAZI_DESIGN_DARK.successLight,
+  '--color-theme-warning-light': UWAZI_DESIGN_DARK.warningLight,
+  '--color-theme-danger': UWAZI_DESIGN_DARK.danger,
+  '--color-theme-danger-light': UWAZI_DESIGN_DARK.dangerLight,
   '--color-theme-feedback-success-fg': DEFAULT_LIGHT_DERIVED['--color-theme-feedback-success-fg'],
   '--color-theme-feedback-danger-fg': DEFAULT_LIGHT_DERIVED['--color-theme-feedback-danger-fg'],
-  '--color-theme-highlight-yellow': '#78350F',
-  '--color-theme-highlight-yellow-active': '#92400E',
-  '--color-theme-highlight-blue': '#1E3A5F',
-  '--color-theme-shadow-sm': '0 1px 2px rgba(0, 0, 0, 0.2)',
-  '--color-theme-shadow-md': '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2)',
-  '--color-theme-shadow-lg':
-    '0 10px 15px -3px rgba(0, 0, 0, 0.35), 0 4px 6px -4px rgba(0, 0, 0, 0.2)',
-  '--color-theme-shadow-xl':
-    '0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.25)',
+  '--color-theme-highlight-yellow': UWAZI_DESIGN_DARK.highlightYellow,
+  '--color-theme-highlight-yellow-active': UWAZI_DESIGN_DARK.highlightYellowActive,
+  '--color-theme-highlight-blue': UWAZI_DESIGN_DARK.highlightBlue,
+  '--color-theme-shadow-sm': UWAZI_DESIGN_DARK.shadowSm,
+  '--color-theme-shadow-md': UWAZI_DESIGN_DARK.shadowMd,
+  '--color-theme-shadow-lg': UWAZI_DESIGN_DARK.shadowLg,
+  '--color-theme-shadow-xl': UWAZI_DESIGN_DARK.shadowXl,
+  '--color-theme-card-shadow': UWAZI_DESIGN_DARK.cardShadow,
+  '--color-theme-card-radius': UWAZI_DESIGN_DARK.radiusMd,
 };
 
 const DEFAULT_LIGHT_SOURCE: EditableThemeVars = {
-  '--color-theme-accent-primary': '#1A1A1A',
-  '--color-theme-accent-supporting': '#00B4F0',
-  '--color-theme-accent-emphasis': '#E8432A',
-  '--color-theme-bg-primary': '#F5F0E8',
-  '--color-theme-bg-surface': '#FFFFFF',
-  '--color-theme-bg-muted': '#F5EED7',
-  '--color-theme-success': '#059669',
-  '--color-theme-warning': '#F59E0B',
-  '--color-theme-text-primary': '#1A1A1A',
-  '--color-theme-text-secondary': '#333333',
-  '--color-theme-text-tertiary': '#555555',
-  '--color-theme-text-muted': '#777777',
-  '--color-theme-border-primary': '#E0D9C8',
+  '--color-theme-accent-primary': UWAZI_DESIGN_LIGHT.accentPrimary,
+  '--color-theme-accent-supporting': UWAZI_DESIGN_LIGHT.accentSupporting,
+  '--color-theme-accent-emphasis': UWAZI_DESIGN_LIGHT.accentEmphasis,
+  '--color-theme-bg-primary': UWAZI_DESIGN_LIGHT.bgPrimary,
+  '--color-theme-bg-surface': UWAZI_DESIGN_LIGHT.bgSurface,
+  '--color-theme-bg-muted': UWAZI_DESIGN_LIGHT.bgMuted,
+  '--color-theme-success': UWAZI_DESIGN_LIGHT.success,
+  '--color-theme-warning': UWAZI_DESIGN_LIGHT.warning,
+  '--color-theme-text-primary': UWAZI_DESIGN_LIGHT.textPrimary,
+  '--color-theme-text-secondary': UWAZI_DESIGN_LIGHT.textSecondary,
+  '--color-theme-text-tertiary': UWAZI_DESIGN_LIGHT.textTertiary,
+  '--color-theme-text-muted': UWAZI_DESIGN_LIGHT.textMuted,
+  '--color-theme-border-primary': UWAZI_DESIGN_LIGHT.borderPrimary,
 };
 
 const DEFAULT_DARK_SOURCE: EditableThemeVars = {
-  '--color-theme-accent-primary': '#F5F0E8',
-  '--color-theme-accent-supporting': '#00B4F0',
-  '--color-theme-accent-emphasis': '#E8432A',
-  '--color-theme-bg-primary': '#1A1A1A',
-  '--color-theme-bg-surface': '#242424',
-  '--color-theme-bg-muted': '#333333',
-  '--color-theme-success': '#059669',
-  '--color-theme-warning': '#F59E0B',
-  '--color-theme-text-primary': '#F5F0E8',
-  '--color-theme-text-secondary': '#D4CDB8',
-  '--color-theme-text-tertiary': '#9A9A9A',
-  '--color-theme-text-muted': '#6B6B6B',
-  '--color-theme-border-primary': '#3D3D3D',
+  '--color-theme-accent-primary': UWAZI_DESIGN_DARK.accentPrimary,
+  '--color-theme-accent-supporting': UWAZI_DESIGN_DARK.accentSupporting,
+  '--color-theme-accent-emphasis': UWAZI_DESIGN_DARK.accentEmphasis,
+  '--color-theme-bg-primary': UWAZI_DESIGN_DARK.bgPrimary,
+  '--color-theme-bg-surface': UWAZI_DESIGN_DARK.bgSurface,
+  '--color-theme-bg-muted': UWAZI_DESIGN_DARK.bgMuted,
+  '--color-theme-success': UWAZI_DESIGN_DARK.success,
+  '--color-theme-warning': UWAZI_DESIGN_DARK.warning,
+  '--color-theme-text-primary': UWAZI_DESIGN_DARK.textPrimary,
+  '--color-theme-text-secondary': UWAZI_DESIGN_DARK.textSecondary,
+  '--color-theme-text-tertiary': UWAZI_DESIGN_DARK.textTertiary,
+  '--color-theme-text-muted': UWAZI_DESIGN_DARK.textMuted,
+  '--color-theme-border-primary': UWAZI_DESIGN_DARK.borderPrimary,
 };
 
 const LEGACY_LIGHT_SOURCE: EditableThemeVars = {

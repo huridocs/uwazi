@@ -3,6 +3,14 @@ export { EmbededButton } from './EmbededButton.js';
 export { Modal } from './Modal.js';
 export { Pill } from './Pill.js';
 export { Table } from './Table/index.js';
+export { DataTable } from './DataTable/index.js';
+export type { DataTableProps, DataTableColumn } from './DataTable/index.js';
+export type {
+  DataTableSort,
+  DataTableSelection,
+  DataTableReorder,
+  DataTableTree,
+} from './DataTable/types.js';
 export { ToggleButton } from './ToggleButton.js';
 export { Tabs, TabButtons, TabPanels, useTabGroup, splitTabConfig } from './Tabs/index.js';
 export type {

@@ -299,6 +299,14 @@
   color: var(--color-theme-accent-emphasis-solid-foreground);
 }
 
+@utility text-seal {
+  color: var(--color-theme-accent-emphasis);
+}
+
+@utility bg-seal-tint {
+  background-color: var(--color-theme-accent-emphasis-tint);
+}
+
 @utility border-ink {
   border-color: var(--color-theme-border-interactive, var(--color-theme-text-primary));
 }
