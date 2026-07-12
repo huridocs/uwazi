@@ -158,12 +158,14 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
         sourceLabels,
         sourceLocalizedLabels,
         primaryDim,
+        secondaryDim,
         resolveLabel,
         datavizId: context.datavizId ?? '',
         queryDurationMs: Date.now() - start,
         appearance: context.appearance,
         defaultLanguage: labelContext.defaultLanguage,
         missingBucketLabels: labelContext.missingBucketLabels,
+        measure: query.measures[0],
       });
     }
 
