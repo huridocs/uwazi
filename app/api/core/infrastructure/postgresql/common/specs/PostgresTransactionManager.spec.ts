@@ -12,19 +12,19 @@ const createManager = (tenantId = TENANT) =>
 const insertRow = (executor: any, _id: string, name = _id, tenantId = TENANT) =>
   executor('thesauri').insert({ _id, name, values: JSON.stringify([]), tenant_id: tenantId });
 
-beforeAll(async () => {
-  await testingEnvironment.setUp({}, { postgres: true });
-});
-
-beforeEach(async () => {
-  await testingPG.clear(['thesauri']);
-});
-
-afterAll(async () => {
-  await testingEnvironment.tearDown();
-});
-
 describe('PostgresTransactionManager', () => {
+  beforeAll(async () => {
+    await testingEnvironment.setUp({}, { postgres: true });
+  });
+
+  beforeEach(async () => {
+    await testingPG.clear();
+  });
+
+  afterAll(async () => {
+    await testingEnvironment.tearDown();
+  });
+
   describe('withConnection (case #1 — no active transaction)', () => {
     it('should open a transaction and set app.current_tenant for the manager tenant', async () => {
       const manager = createManager('tenant-x');

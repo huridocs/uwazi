@@ -43,27 +43,20 @@ export class PostgresTransactionManager implements TransactionManager {
    *
    * Case #1 — no active transaction: open a short-lived, self-scoped transaction
    * and set `app.current_tenant` for RLS.
-   *
-   * NOTE (migration trade-off): a case #1 write executed while an *outer* Mongo
-   * `transactionManager.run()` later rolls back is NOT reverted — its own PG
-   * transaction has already committed. This is intentional during the
-   * Mongo→Postgres transition. Once a use case's whole footprint lives on
-   * Postgres and adopts `PostgresTransactionManager.run()`, writes fall into
-   * case #2 and become fully transactional.
    */
-  async withConnection<T>(fn: (executor: Knex) => Promise<T>): Promise<T> {
+  async withConnection<T>(fn: (executor: Knex.Transaction) => Promise<T>): Promise<T> {
     if (this.activeTransaction) {
       return fn(this.activeTransaction);
     }
 
     return this.knex.transaction(async trx => {
-      await PostgresTransactionManager.setTenant(trx, this.tenantId);
+      await this.setTenant(trx);
       return fn(trx);
     });
   }
 
-  private static async setTenant(trx: Knex.Transaction, tenantId: string): Promise<void> {
-    await trx.raw("SELECT set_config('app.current_tenant', ?, true)", [tenantId]);
+  private async setTenant(trx: Knex.Transaction): Promise<void> {
+    await trx.raw("SELECT set_config('app.current_tenant', ?, true)", [this.tenantId]);
   }
 
   private async executeOnCommitHandlers(returnValue: unknown) {
@@ -103,7 +96,7 @@ export class PostgresTransactionManager implements TransactionManager {
     try {
       return await this.knex.transaction(async trx => {
         this.activeTransaction = trx;
-        await PostgresTransactionManager.setTenant(trx, this.tenantId);
+        await this.setTenant(trx);
         return callback();
       });
     } finally {
