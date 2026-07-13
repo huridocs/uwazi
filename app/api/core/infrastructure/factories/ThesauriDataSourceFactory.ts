@@ -5,8 +5,6 @@ import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriData
 import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDataSource.js';
 import { CachedMongoThesauriDataSource } from '../mongodb/thesauri/CachedMongoThesauriDataSource.js';
 import { PostgresThesauriDataSource } from '../postgresql/thesaurus/PostgresThesauriDataSource.js';
-import { PostgresTransactionManagerFactory } from './PostgresTransactionManagerFactory.js';
-import { PostgresTransactionManager } from '../postgresql/common/PostgresTransactionManager.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 type Overrides = { transactionManager?: TransactionManager };
@@ -17,7 +15,7 @@ export class ThesauriDataSourceFactory {
     const { tenant } = ExecutionContext;
 
     if (tenant.featureFlags?.postgresThesauri) {
-      const pgTM = ExecutionContext.postgresTransactionManager as PostgresTransactionManager;
+      const pgTM = ExecutionContext.postgresTransactionManager;
 
       return new PostgresThesauriDataSource({
         tenantId: tenant.name,
@@ -36,7 +34,7 @@ export class ThesauriDataSourceFactory {
     const { tenant } = ExecutionContext;
 
     if (tenant.featureFlags?.postgresThesauri) {
-      const pgTM = ExecutionContext.postgresTransactionManager as PostgresTransactionManager;
+      const pgTM = ExecutionContext.postgresTransactionManager;
 
       return new PostgresThesauriDataSource({
         tenantId: tenant.name,

@@ -1,6 +1,4 @@
 import { PostgresTemplatesDAO } from '#api/core/infrastructure/postgresql/template/PostgresTemplatesDAO.js';
-import { PostgresTransactionManagerFactory } from './PostgresTransactionManagerFactory.js';
-import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTemplatesDAO } from '../mongodb/template/MongoTemplatesDAO.js';
@@ -11,7 +9,7 @@ class TemplatesDAOFactory {
     const tenant = ExecutionContext.currentTenant;
 
     if (tenant.featureFlags?.postgresTemplates) {
-      const pgTM = ExecutionContext.postgresTransactionManager as PostgresTransactionManager;
+      const pgTM = ExecutionContext.postgresTransactionManager;
 
       return new PostgresTemplatesDAO({
         tenantId: tenant.name,
