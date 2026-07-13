@@ -6,6 +6,8 @@ import { MongoTemplatesDataSource } from '../mongodb/template/MongoTemplatesData
 import { CachedMongoTemplatesDataSource } from '../mongodb/template/CachedMongoTemplatesDataSource.js';
 import { MongoTemplatesDAO } from '../mongodb/template/MongoTemplatesDAO.js';
 import { PostgresTemplatesDAO } from '#api/core/infrastructure/postgresql/template/PostgresTemplatesDAO.js';
+import { PostgresTransactionManagerFactory } from './PostgresTransactionManagerFactory.js';
+import { PostgresTransactionManager } from '../postgresql/common/PostgresTransactionManager.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TemplatesDAOFactory } from './TemplatesDAOFactory.js';
 
@@ -14,6 +16,10 @@ type Overrides = Partial<
 > & {
   transactionManager?: TransactionManager;
 };
+
+function resolvePgTM(): PostgresTransactionManager {
+  return ExecutionContext.postgresTransactionManager as PostgresTransactionManager;
+}
 
 export class TemplatesDataSourceFactory {
   static default(overrides?: Overrides) {
@@ -29,6 +35,7 @@ export class TemplatesDataSourceFactory {
         tenantId: tenant.name,
         mongoDb: db,
         transactionManager: mongoTM,
+        pgTransactionManager: resolvePgTM(),
         dao,
       });
     }
@@ -55,6 +62,7 @@ export class TemplatesDataSourceFactory {
         tenantId: tenant.name,
         mongoDb: db,
         transactionManager: mongoTM,
+        pgTransactionManager: resolvePgTM(),
         dao,
       });
     }

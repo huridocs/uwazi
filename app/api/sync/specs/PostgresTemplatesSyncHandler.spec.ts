@@ -3,6 +3,9 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { PostgresTemplatesSyncHandler } from '../PostgresTemplatesSyncHandler.js';
 
 const factory = getFixturesFactory();
@@ -16,11 +19,18 @@ describe('PostgresTemplatesSyncHandler', () => {
     await testingEnvironment.tearDown();
   });
 
-  const createHandler = () =>
-    new PostgresTemplatesSyncHandler({
-      tenantId: tenants.current().name,
+  const createHandler = () => {
+    const tenantName = tenants.current().name;
+    return new PostgresTemplatesSyncHandler({
+      tenantId: tenantName,
       mongoDb: getConnection(),
+      pgTransactionManager: new PostgresTransactionManager(
+        PostgresDB.knex,
+        tenantName,
+        LoggerFactory.forTests()
+      ),
     });
+  };
 
   beforeEach(async () => {
     await testingPG.clear(['templates']);

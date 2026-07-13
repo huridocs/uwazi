@@ -8,6 +8,7 @@ import { PostgresDB, PostgresConnectionConfig } from '#api/infrastructure/Postgr
 import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
@@ -75,6 +76,7 @@ type MigrationServiceDeps = {
   createLogger: LoggerFactoryFn;
   pgMigratorFactory: (pool: any) => PgMigrator;
   transactionManagerFactory: () => any;
+  postgresTransactionManagerFactory: () => any;
   eventEmitterFactory: () => any;
   idGeneratorFactory: () => any;
 };
@@ -115,6 +117,7 @@ const defaultDeps: MigrationServiceDeps = {
   createLogger: createDefaultLogger,
   pgMigratorFactory: createDefaultPgMigrator,
   transactionManagerFactory: TransactionManagerFactory.default,
+  postgresTransactionManagerFactory: PostgresTransactionManagerFactory.default,
   eventEmitterFactory: EventEmitterFactory.default,
   idGeneratorFactory: IdGeneratorFactory.default,
 };
@@ -148,6 +151,7 @@ class MigrationService {
       {
         factories: {
           transactionManager: this.deps.transactionManagerFactory,
+          postgresTransactionManager: this.deps.postgresTransactionManagerFactory,
           jobsDispatcher: () => dispatcher,
           eventEmitter: this.deps.eventEmitterFactory,
           idGenerator: this.deps.idGeneratorFactory,

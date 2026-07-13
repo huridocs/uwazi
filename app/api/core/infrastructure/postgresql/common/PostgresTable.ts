@@ -1,87 +1,240 @@
 import { Knex } from 'knex';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
-import { PostgresQueryBuilder } from './PostgresQueryBuilder.js';
+import { PostgresTransactionManager } from './PostgresTransactionManager.js';
+import { SyncLogWriter } from './SyncLogWriter.js';
 
-export { PostgresQueryBuilder };
+type TableConfig = {
+  knex: Knex;
+  tableName: string;
+  tenantId: string;
+  transactionManager: PostgresTransactionManager;
+  syncWriter?: SyncLogWriter;
+};
 
-export class PostgresTable {
-  protected knex: Knex;
+type ForParams = {
+  tableName: string;
+  tenantId: string;
+  transactionManager: PostgresTransactionManager;
+  knex?: Knex;
+  syncWriter?: SyncLogWriter;
+};
 
-  readonly tableName: string;
+/**
+ * Immutable, tenant-scoped query builder over a single Postgres table.
+ *
+ * Tenant isolation is enforced by Row-Level Security (see migration 004): every
+ * terminal runs through `transactionManager.withConnection`, which sets
+ * `app.current_tenant` on the connection.
+ *
+ * `tenant_id` is never returned to callers — it is stripped by `cleanRow` on
+ * every read (PostgreSQL does not support `SELECT * EXCEPT col` natively).
+ */
+export class PostgresTable<TRow = Record<string, unknown>> {
+  private readonly cfg: TableConfig;
 
-  readonly tenantId: string;
+  private readonly qb: Knex.QueryBuilder;
 
-  private readonly jsonbColumns: string[];
-
-  constructor(tableName: string, tenantId: string, jsonbColumns: string[] = []) {
-    this.tableName = tableName;
-    this.tenantId = tenantId;
-    this.knex = PostgresDB.knex;
-    this.jsonbColumns = jsonbColumns;
+  private constructor(cfg: TableConfig, qb: Knex.QueryBuilder) {
+    this.cfg = cfg;
+    this.qb = qb;
   }
 
-  query<TRow = Record<string, unknown>>(): PostgresQueryBuilder<TRow> {
-    return new PostgresQueryBuilder<TRow>(this.knex, this.tableName, this.tenantId);
+  static for<T = Record<string, unknown>>(params: ForParams): PostgresTable<T> {
+    const knexInstance = params.knex ?? PostgresDB.knex;
+    const cfg: TableConfig = {
+      knex: knexInstance,
+      tableName: params.tableName,
+      tenantId: params.tenantId,
+      transactionManager: params.transactionManager,
+      syncWriter: params.syncWriter,
+    };
+    return new PostgresTable<T>(cfg, knexInstance(params.tableName));
   }
 
-  /**
-   * Executes raw SQL via knex.raw(). This is an escape hatch for rare cases
-   * the query builder cannot express (e.g. atomic JSONB mutations).
-   *
-   * ⚠️ CRITICAL: The SQL MUST include a `tenant_id = ?` filter with the
-   * current tenant bound in `bindings`. This method does NOT auto-inject
-   * tenant isolation — missing it will leak data across tenants.
-   *
-   * Example:
-   *   await this.table.raw(
-   *     `UPDATE ?? SET ... WHERE "_id" = ? AND "tenant_id" = ?`,
-   *     [this.table.tableName, id, this.table.tenantId]
-   *   );
-   */
-  async raw<TResult = unknown>(sql: string, bindings?: unknown): Promise<Knex.Raw<TResult>> {
-    const hasTenantFilter = /["']?tenant_id["']?\s*=\s*\?/i.test(sql);
-    if (!hasTenantFilter) {
-      throw new Error(
-        'PostgresTable.raw() call is missing a tenant_id filter. ' +
-          'SQL must include "tenant_id = ?" to prevent cross-tenant data leakage.'
+  get tableName(): string {
+    return this.cfg.tableName;
+  }
+
+  get tenantId(): string {
+    return this.cfg.tenantId;
+  }
+
+  query<T = TRow>(): PostgresTable<T> {
+    return new PostgresTable<T>(this.cfg, this.cfg.knex(this.cfg.tableName));
+  }
+
+  private chain(qb: Knex.QueryBuilder): PostgresTable<TRow> {
+    return new PostgresTable<TRow>(this.cfg, qb);
+  }
+
+  where(condition: Record<string, unknown>): PostgresTable<TRow> {
+    return this.chain(this.qb.clone().where(condition));
+  }
+
+  whereAny(conditions: Record<string, unknown>[]): PostgresTable<TRow> {
+    const qb = this.qb
+      .clone()
+      .where(builder =>
+        conditions.forEach((condition, i) =>
+          i === 0 ? builder.where(condition) : builder.orWhere(condition)
+        )
       );
-    }
-    return this.knex.raw(sql, bindings as any) as Promise<Knex.Raw<TResult>>;
+    return this.chain(qb);
   }
 
-  serializeForWrite(doc: Record<string, unknown>): Record<string, unknown> {
-    return this._serializeJsonb(doc);
+  whereNot(column: string, value: Knex.Value): PostgresTable<TRow> {
+    return this.chain(this.qb.clone().whereNot(column, value));
   }
 
-  private _serializeJsonb(row: Record<string, unknown>): Record<string, unknown> {
-    for (const col of this.jsonbColumns) {
-      if (
-        col in row &&
-        row[col] !== null &&
-        row[col] !== undefined &&
-        typeof row[col] === 'object'
-      ) {
-        // eslint-disable-next-line no-param-reassign
-        row[col] = JSON.stringify(row[col]);
-      }
-    }
-    return row;
+  whereIn(column: string, values: Knex.Value[]): PostgresTable<TRow> {
+    return this.chain(this.qb.clone().whereIn(column, values));
   }
 
-  async insert(doc: Record<string, unknown> | Record<string, unknown>[]): Promise<void> {
-    const rows = Array.isArray(doc) ? doc : [doc];
+  whereNotIn(column: string, values: Knex.Value[]): PostgresTable<TRow> {
+    return this.chain(this.qb.clone().whereNotIn(column, values));
+  }
 
-    await this.knex(this.tableName).insert(
-      rows.map(r => this._serializeJsonb({ ...r, tenant_id: this.tenantId }))
+  orderBy(column: string, direction: 'asc' | 'desc' = 'asc'): PostgresTable<TRow> {
+    return this.chain(this.qb.clone().orderBy(column, direction));
+  }
+
+  limit(n: number): PostgresTable<TRow> {
+    return this.chain(this.qb.clone().limit(n));
+  }
+
+  offset(n: number): PostgresTable<TRow> {
+    return this.chain(this.qb.clone().offset(n));
+  }
+
+  select(columns: string[]): PostgresTable<TRow> {
+    return this.chain(this.qb.clone().select(columns));
+  }
+
+  join(tableName: string, leftColumn: string, rightColumn: string): PostgresTable<TRow> {
+    return this.chain(this.qb.clone().join(tableName, leftColumn, '=', rightColumn));
+  }
+
+  leftJoin(tableName: string, leftColumn: string, rightColumn: string): PostgresTable<TRow> {
+    return this.chain(this.qb.clone().leftJoin(tableName, leftColumn, '=', rightColumn));
+  }
+
+  groupBy(columns: string[]): PostgresTable<TRow> {
+    return this.chain(this.qb.clone().groupBy(columns));
+  }
+
+  distinct(columns: string[]): PostgresTable<TRow> {
+    return this.chain(this.qb.clone().distinct(columns));
+  }
+
+  returning(columns: string[]): PostgresTable<TRow> {
+    return this.chain(this.qb.clone().returning(columns));
+  }
+
+  private async run<T>(fn: (qb: Knex.QueryBuilder) => Promise<T> | Knex.QueryBuilder): Promise<T> {
+    return this.cfg.transactionManager.withConnection(async trx =>
+      fn(this.qb.clone().transacting(trx))
     );
   }
 
-  async upsert(doc: Record<string, unknown> | Record<string, unknown>[]): Promise<void> {
-    const rows = Array.isArray(doc) ? doc : [doc];
+  async first(): Promise<TRow | undefined> {
+    const row = await this.run(qb => qb.first());
+    return row ? (PostgresTable.cleanRow(row) as TRow) : undefined;
+  }
 
-    await this.knex(this.tableName)
-      .insert(rows.map(r => this._serializeJsonb({ ...r, tenant_id: this.tenantId })))
-      .onConflict(['_id', 'tenant_id'])
-      .merge();
+  async all(): Promise<TRow[]> {
+    const rows = (await this.run(qb => qb)) as Record<string, unknown>[];
+    return rows.map(r => PostgresTable.cleanRow(r)) as TRow[];
+  }
+
+  async count(): Promise<number> {
+    const result = await this.run(qb => qb.count<{ count: string }[]>('* as count').first());
+    return parseInt(result?.count ?? '0', 10);
+  }
+
+  async sum(column: string): Promise<number> {
+    const result = await this.run(qb => qb.sum({ total: column }).first());
+    return Number((result as { total?: unknown })?.total ?? 0);
+  }
+
+  async insert(doc: Record<string, unknown> | Record<string, unknown>[]): Promise<void> {
+    const rows = this.rowsWithTenant(doc);
+    await this.cfg.transactionManager.withConnection(async trx =>
+      trx(this.cfg.tableName).insert(rows)
+    );
+    await this.notifySync(rows, false);
+  }
+
+  async upsert(doc: Record<string, unknown> | Record<string, unknown>[]): Promise<void> {
+    const rows = this.rowsWithTenant(doc);
+    await this.cfg.transactionManager.withConnection(async trx =>
+      trx(this.cfg.tableName).insert(rows).onConflict(['_id', 'tenant_id']).merge()
+    );
+    await this.notifySync(rows, false);
+  }
+
+  async update(changes: Record<string, unknown>): Promise<void> {
+    const serialized = PostgresTable.serialize(changes);
+    if (!this.cfg.syncWriter) {
+      await this.run(qb => qb.update(serialized));
+      return;
+    }
+    const result = await this.run(qb => qb.returning(['_id']).update(serialized));
+    await this.cfg.syncWriter.upsertSyncLogs(PostgresTable.idsOf(result), false);
+  }
+
+  async delete(): Promise<void> {
+    if (!this.cfg.syncWriter) {
+      await this.run(qb => qb.del());
+      return;
+    }
+    const result = await this.run(qb => qb.returning(['_id']).del());
+    await this.cfg.syncWriter.upsertSyncLogs(PostgresTable.idsOf(result), true);
+  }
+
+  /**
+   * Escape hatch for SQL the builder cannot express (e.g. atomic JSONB mutations).
+   * Runs inside a tenant-scoped connection; RLS enforces isolation.
+   *
+   * Uses `withConnection` directly (not `this.run`) — raw SQL must not inherit the
+   * builder's accumulated WHERE/filter state from the chain.
+   */
+  async raw<TResult = unknown>(sql: string, bindings?: unknown): Promise<Knex.Raw<TResult>> {
+    return this.cfg.transactionManager.withConnection(async trx =>
+      trx.raw(sql, bindings as any)
+    ) as Promise<Knex.Raw<TResult>>;
+  }
+
+  private static serialize(row: Record<string, unknown>): Record<string, unknown> {
+    const serialized = { ...row };
+    for (const key of Object.keys(serialized)) {
+      const value = serialized[key];
+      if (typeof value === 'object' && value !== null) {
+        serialized[key] = JSON.stringify(value);
+      }
+    }
+    return serialized;
+  }
+
+  private static cleanRow(row: Record<string, unknown>): Record<string, unknown> {
+    return Object.fromEntries(
+      Object.entries(row).filter(([k, v]) => k !== 'tenant_id' && v !== null)
+    );
+  }
+
+  private async notifySync(rows: Record<string, unknown>[], deleted: boolean): Promise<void> {
+    if (!this.cfg.syncWriter) return;
+    const ids = rows.map(row => row._id).filter((id): id is string => typeof id === 'string');
+    await this.cfg.syncWriter.upsertSyncLogs(ids, deleted);
+  }
+
+  private rowsWithTenant(
+    doc: Record<string, unknown> | Record<string, unknown>[]
+  ): Record<string, unknown>[] {
+    const rows = Array.isArray(doc) ? doc : [doc];
+    return rows.map(r => PostgresTable.serialize({ ...r, tenant_id: this.cfg.tenantId }));
+  }
+
+  private static idsOf(result: unknown): string[] {
+    return (result as { _id: string }[]).map(r => r._id);
   }
 }

@@ -54,6 +54,27 @@ const testingPG = {
     };
   },
 
+  /**
+   * Connection config for the application user. DAOs/PostgresTable use this so
+   * their queries are subject to Row-Level Security (the admin/superuser bypasses RLS).
+   */
+  get appConfig(): {
+    host: string;
+    port: number;
+    database: string;
+    user: string;
+    password: string;
+  } {
+    if (!this.dbName) throw new Error('testingPG not connected');
+    return {
+      host: config.postgres.host,
+      port: config.postgres.port,
+      database: this.dbName,
+      user: config.postgres.app.user,
+      password: config.postgres.app.password,
+    };
+  },
+
   /** Resolved tenant ID for the current test context. */
   currentTenantId(): string {
     try {
@@ -86,16 +107,48 @@ const testingPG = {
 
     this.pool = pool;
 
-    /**
-     * Override PG config for this test process. Safe because Jest workers are
-     * separate processes; the override is local to this process and reset in disconnect().
-     */
-    PostgresDB.setConfig(this.config);
-
     const migrator = new PgMigrator(MIGRATIONS_DIR, pool);
     await migrator.migrate();
 
+    await this.grantAppUser();
+
+    /**
+     * Override PG config for this test process so DAOs connect as the app user
+     * (subject to RLS). Safe because Jest workers are separate processes; the
+     * override is local to this process and reset in disconnect().
+     */
+    PostgresDB.setConfig(this.appConfig);
+
     return pool;
+  },
+
+  /**
+   * Ensure the `app_user` role exists and has DML on the per-test DB. Roles are
+   * cluster-wide; grants are per-database, so they must run after each DB is created.
+   * Runs via the admin (superuser) pool.
+   */
+  async grantAppUser(): Promise<void> {
+    if (!pool) throw new Error('testingPG not connected');
+    const appUser = config.postgres.app.user;
+    const appPassword = config.postgres.app.password;
+
+    await pool.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${appUser}') THEN
+          CREATE ROLE "${appUser}" LOGIN PASSWORD '${appPassword}';
+        END IF;
+      END
+      $$;
+    `);
+
+    await pool.query(`GRANT USAGE ON SCHEMA public TO "${appUser}"`);
+    await pool.query(
+      `GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO "${appUser}"`
+    );
+    await pool.query(
+      `ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO "${appUser}"`
+    );
   },
 
   async clear(tables: string[] = ['thesauri', 'templates', 'files']): Promise<void> {

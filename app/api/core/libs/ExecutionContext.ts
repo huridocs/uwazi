@@ -14,6 +14,7 @@ type DependencyFactories = {
 type Dependencies = {
   eventEmitter: EventEmitter;
   transactionManager: TransactionManager;
+  postgresTransactionManager: TransactionManager;
   jobsDispatcher: JobsDispatcher;
   idGenerator: IdGenerator;
   logger: Logger;
@@ -46,6 +47,10 @@ class ExecutionContext extends AsyncLocalStorage<Context> {
 
   get transactionManager(): TransactionManager {
     return this.getOrInitialize('transactionManager');
+  }
+
+  get postgresTransactionManager(): TransactionManager {
+    return this.getOrInitialize('postgresTransactionManager');
   }
 
   get logger() {

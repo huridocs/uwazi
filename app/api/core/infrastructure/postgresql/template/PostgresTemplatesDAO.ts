@@ -1,5 +1,6 @@
-import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { Db, ObjectId } from 'mongodb';
+import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
+import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import { TemplateRow } from './PostgresTemplateMapper.js';
@@ -9,28 +10,28 @@ type PropertyDescriptor = { name: string; type: PropertyType; inheritedType?: Pr
 type Deps = {
   tenantId: string;
   mongoDb: Db;
+  pgTransactionManager: PostgresTransactionManager;
 };
 
-class PostgresTemplatesDAO extends PostgresDataSource {
-  protected tableName = 'templates';
-
+class PostgresTemplatesDAO extends PostgresDataSource<TemplateRow> {
   constructor(deps: Deps) {
-    super({
+    super('templates', {
       tenantId: deps.tenantId,
+      pgTransactionManager: deps.pgTransactionManager,
       sync: { syncDb: deps.mongoDb, syncNamespace: 'templates' },
     });
   }
 
   async get(ids?: string[]): Promise<TemplateRow[]> {
-    const query = this.table.query<TemplateRow>();
+    let query = this.table;
     if (ids !== undefined && ids.length > 0) {
-      query.whereIn('_id', ids);
+      query = query.whereIn('_id', ids);
     }
     return query.all();
   }
 
   async getByNames(names: string[]): Promise<TemplateRow[]> {
-    return this.table.query<TemplateRow>().whereIn('name', names).all();
+    return this.table.whereIn('name', names).all();
   }
 
   private hasPropertyMatching(predicate: (p: PropertySchema) => boolean, rows: TemplateRow[]) {
@@ -60,7 +61,7 @@ class PostgresTemplatesDAO extends PostgresDataSource {
   }
 
   async getByEntityViewPage(pageId: string): Promise<TemplateRow[]> {
-    return this.table.query<TemplateRow>().where({ entityViewPage: pageId }).all();
+    return this.table.where({ entityViewPage: pageId }).all();
   }
 
   async getByContentsOrUnrestrictedRelationship(contentIds: string[]): Promise<TemplateRow[]> {
@@ -89,12 +90,12 @@ class PostgresTemplatesDAO extends PostgresDataSource {
   }
 
   async getDefaultTemplate(): Promise<TemplateRow | null> {
-    const row = await this.table.query<TemplateRow>().where({ default: true }).first();
+    const row = await this.table.where({ default: true }).first();
     return row || null;
   }
 
   async getAllIds(): Promise<string[]> {
-    const rows = await this.table.query<TemplateRow>().select(['_id']).all();
+    const rows = await this.table.select(['_id']).all();
     return rows.map(r => r._id);
   }
 
