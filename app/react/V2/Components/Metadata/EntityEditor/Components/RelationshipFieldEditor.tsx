@@ -203,7 +203,7 @@ const RelationshipFieldEditor = ({
               runSearch(next).catch(() => undefined);
             }}
           />
-          <div className="max-h-[11.25rem] overflow-auto">
+          <div className="max-h-45 overflow-auto">
             {candidates.length === 0 ? (
               <div className="px-3 py-2 text-xs text-ink-muted">
                 <Translate>No matching entities.</Translate>

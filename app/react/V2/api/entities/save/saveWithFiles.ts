@@ -1,24 +1,16 @@
-import type { IncomingHttpHeaders } from 'http';
 import type { ClientBlobFile, ClientFile } from '#app/istore.js';
 import { constructFile } from '#shared/fileUploadUtils.js';
-import type { ApiResponse, MultipartPayload, RequestContext } from '#shared/apiClient/index.js';
-import type { EntityWithFilesSchema } from '#shared/types/entityType.js';
+import type { ApiResponse, MultipartPayload } from '#shared/apiClient/index.js';
 import { apiClient } from '#V2/api/client.js';
-import type { Entity, FileType } from './types.js';
-
-type EntityFile = FileType;
-type ExistingDocument = NonNullable<Entity['documents']>[number];
-type ExistingAttachment = NonNullable<Entity['attachments']>[number];
-type SaveWithFilesDocument = ExistingDocument | ClientBlobFile;
-type SaveWithFilesAttachment = ExistingAttachment | ClientFile;
-type SaveWithFilesEntity = Omit<EntityWithFilesSchema, 'documents' | 'attachments'> & {
-  documents?: SaveWithFilesDocument[];
-  attachments?: SaveWithFilesAttachment[];
-};
-type SaveWithFilesResponse = {
-  entity?: Entity;
-  errors?: unknown[];
-};
+import { mapMediaMetadataForSave } from './mapMediaMetadataForSave.js';
+import type {
+  EntityFile,
+  SaveWithFilesAttachment,
+  SaveWithFilesContext,
+  SaveWithFilesDocument,
+  SaveWithFilesEntity,
+  SaveWithFilesResponse,
+} from './types.js';
 
 const isClientBlobFile = (file: SaveWithFilesDocument): file is ClientBlobFile =>
   'originalFile' in file;
@@ -84,14 +76,14 @@ const buildSaveWithFilesPayload = (entity: SaveWithFilesEntity): MultipartPayloa
   };
 };
 
-type SaveWithFilesContext = Omit<RequestContext, 'headers'> & {
-  headers?: IncomingHttpHeaders;
-};
-
 const saveWithFiles = async (
   entity: SaveWithFilesEntity,
   ctx?: SaveWithFilesContext
 ): Promise<ApiResponse<SaveWithFilesResponse>> => {
+  const preparedEntity =
+    ctx?.mediaPropertyNames && ctx.mediaPropertyTypes
+      ? mapMediaMetadataForSave(entity, ctx.mediaPropertyNames, ctx.mediaPropertyTypes)
+      : entity;
   const headers = Object.fromEntries(
     Object.entries(ctx?.headers ?? {}).filter((entry): entry is [string, string] => {
       const [, value] = entry;
@@ -99,16 +91,16 @@ const saveWithFiles = async (
     })
   );
   if (
-    typeof entity.language === 'string' &&
+    typeof preparedEntity.language === 'string' &&
     !headers['Content-Language'] &&
     !headers['content-language']
   ) {
-    headers['Content-Language'] = entity.language;
+    headers['Content-Language'] = preparedEntity.language;
   }
 
   return apiClient.postMultipart<SaveWithFilesResponse>(
     'entities',
-    buildSaveWithFilesPayload(entity),
+    buildSaveWithFilesPayload(preparedEntity),
     {
       ...ctx,
       headers,
@@ -117,4 +109,3 @@ const saveWithFiles = async (
 };
 
 export { buildSaveWithFilesPayload, saveWithFiles };
-export type { SaveWithFilesEntity, SaveWithFilesResponse };

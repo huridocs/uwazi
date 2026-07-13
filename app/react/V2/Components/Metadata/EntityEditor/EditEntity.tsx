@@ -1,10 +1,13 @@
 /* eslint-disable max-lines, max-statements */
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FieldErrors, FormProvider, useForm } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { t, Translate } from '#app/I18N/index.js';
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
+import type { ClientFile } from '#app/istore.js';
+import { mapMediaMetadataForSave } from '#V2/api/entities/save/index.js';
 import { Entity } from '#V2/api/entities/types.js';
+import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js';
 import { lookup as lookupEntities } from '#V2/api/search/index.js';
 import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
@@ -54,7 +57,7 @@ type EditEntityFormValues = {
 type EditEntityProps = {
   formId: string;
   entity?: Entity;
-  onSave?: (editedEntity: Entity) => void | Promise<void>;
+  onSave?: (editedEntity: EntitySaveInput) => void | Promise<void>;
   disabled?: boolean;
   errors?: EditEntityErrors;
   relationshipLookup?: (params: {
@@ -340,6 +343,38 @@ const EditEntity = ({
     () => [...(entity?.attachments ?? []), ...(entity?.documents ?? [])],
     [entity?.attachments, entity?.documents]
   );
+  const [pendingAttachments, setPendingAttachments] = useState<ClientFile[]>([]);
+
+  const registerPendingAttachment = useCallback((attachment: ClientFile) => {
+    setPendingAttachments(current => [...current, attachment]);
+  }, []);
+
+  const mediaPropertyNames = useMemo(
+    () =>
+      new Set(
+        metadataProperties
+          .filter(property => property.type === 'image' || property.type === 'media')
+          .map(property => property.name)
+      ),
+    [metadataProperties]
+  );
+
+  const mediaPropertyTypes = useMemo(
+    () =>
+      new Map(
+        metadataProperties
+          .filter(
+            (property): property is Properties & { type: 'image' | 'media' } =>
+              property.type === 'image' || property.type === 'media'
+          )
+          .map(property => [property.name, property.type])
+      ),
+    [metadataProperties]
+  );
+
+  useEffect(() => {
+    setPendingAttachments([]);
+  }, [entity?.sharedId]);
 
   const isMetadataReady = metadataProperties.every(
     property => metadata?.[property.name] !== undefined
@@ -433,13 +468,24 @@ const EditEntity = ({
   const submit = handleSubmit(
     async values => {
       if (!entity) return;
-      await onSave?.({
-        ...entity,
-        title: values.title || entity.title,
-        template: values.template || entity.template,
-        icon: (values.showIcon ? values.icon : EMPTY_ICON) as Entity['icon'],
-        metadata: formatMetadataForEntity(values.metadata, metadataProperties, entity?.metadata),
-      });
+      const formattedMetadata = formatMetadataForEntity(
+        values.metadata,
+        metadataProperties,
+        entity?.metadata
+      );
+      const entityToSave = mapMediaMetadataForSave(
+        {
+          ...entity,
+          title: values.title || entity.title,
+          template: values.template || entity.template,
+          icon: (values.showIcon ? values.icon : EMPTY_ICON) as Entity['icon'],
+          metadata: formattedMetadata,
+          attachments: [...(entity.attachments ?? []), ...pendingAttachments],
+        },
+        mediaPropertyNames,
+        mediaPropertyTypes
+      );
+      await onSave?.(entityToSave);
     },
     invalidErrors => {
       const firstErrorPath = findFirstErrorPath(invalidErrors);
@@ -715,6 +761,9 @@ const EditEntity = ({
                   registerOptions={{ required: property.required }}
                   disabled={disabled}
                   attachments={entityAttachments}
+                  pendingAttachments={pendingAttachments}
+                  entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
+                  onRegisterPendingAttachment={registerPendingAttachment}
                   key={property._id}
                 />
               );
@@ -730,6 +779,9 @@ const EditEntity = ({
                   registerOptions={{ required: property.required }}
                   disabled={disabled}
                   attachments={entityAttachments}
+                  pendingAttachments={pendingAttachments}
+                  entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
+                  onRegisterPendingAttachment={registerPendingAttachment}
                   key={property._id}
                 />
               );

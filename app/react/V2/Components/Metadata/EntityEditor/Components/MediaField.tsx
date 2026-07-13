@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp, max-lines */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowUpTrayIcon,
   LinkSlashIcon,
@@ -9,8 +9,11 @@ import {
 } from '@heroicons/react/24/outline';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
+import type { ClientFile } from '#app/istore.js';
 import { FileType } from '#shared/types/fileType.js';
+import { registerMediaAttachment } from '#V2/api/entities/save/index.js';
 import { Button, MediaPlayer } from '#V2/Components/UI/index.js';
+import { resolveMediaDisplayUrl } from '../functions/resolveMediaDisplayUrl.js';
 import { MediaPickerModal, MediaPickerMode } from './MediaPickerModal.js';
 import { EntityFieldError, getFieldErrorState } from '../functions/fieldErrorState.js';
 import { EntityField } from './EntityField.js';
@@ -33,6 +36,9 @@ type MediaFieldProps<TFormValues extends FieldValues = FieldValues> = {
   registerOptions?: RegisterOptions<TFormValues, Path<TFormValues>>;
   disabled?: boolean;
   attachments: FileType[];
+  pendingAttachments: ClientFile[];
+  entitySharedId: string;
+  onRegisterPendingAttachment: (attachment: ClientFile) => void;
   imageStyle?: 'contain' | 'cover' | 'fill';
 };
 
@@ -249,17 +255,24 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
   registerOptions,
   disabled,
   attachments,
+  pendingAttachments,
+  entitySharedId,
+  onRegisterPendingAttachment,
   imageStyle = 'fill',
 }: MediaFieldProps<TFormValues>) => {
   const { control } = useFormContext<TFormValues>();
   const [modalOpen, setModalOpen] = useState(false);
-  const pendingLocalFileRef = useRef<File | null>(null);
-  const previewBlobRef = useRef<string | null>(null);
+  const previewObjectUrlRef = useRef<string | null>(null);
   const required = Boolean(registerOptions?.required);
+
+  const allAttachments = useMemo(
+    () => [...attachments, ...pendingAttachments],
+    [attachments, pendingAttachments]
+  );
 
   useEffect(
     () => () => {
-      revokeBlobUrl(previewBlobRef.current);
+      revokeBlobUrl(previewObjectUrlRef.current);
     },
     []
   );
@@ -271,38 +284,42 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
         name={field}
         rules={{
           ...registerOptions,
-          validate: value => {
-            if (!required) {
-              return true;
-            }
-
-            const { url } = parseFieldValue(typeof value === 'string' ? value : '');
-            return url.trim().length > 0 || 'Required';
-          },
+          validate: value =>
+            !required || (typeof value === 'string' && value.trim().length > 0) || 'Required',
         }}
         render={({ field: mediaField, fieldState }) => {
           const rawValue = typeof mediaField.value === 'string' ? mediaField.value : '';
-          const { url, timelinks } = parseFieldValue(rawValue);
-          const hasValue = url.trim().length > 0;
+          const { timelinks } = parseFieldValue(rawValue);
+          const previewUrl = resolveMediaDisplayUrl(rawValue, allAttachments);
+          const hasValue = rawValue.trim().length > 0;
           const { showError, message } = getFieldErrorState(fieldState);
 
-          const updateValue = (
+          const updatePreviewObjectUrl = (nextUrl: string) => {
+            if (previewObjectUrlRef.current && previewObjectUrlRef.current !== nextUrl) {
+              revokeBlobUrl(previewObjectUrlRef.current);
+            }
+            previewObjectUrlRef.current = nextUrl.startsWith('blob:') ? nextUrl : null;
+          };
+
+          const updateValue = async (
             nextUrl: string,
             localFile?: File,
             nextTimelinks: EditableTimelink[] = timelinks
           ) => {
-            if (previewBlobRef.current && previewBlobRef.current !== nextUrl) {
-              revokeBlobUrl(previewBlobRef.current);
+            if (localFile) {
+              const attachment = await registerMediaAttachment(entitySharedId, localFile);
+              onRegisterPendingAttachment(attachment);
+              const fileLocalID = attachment.fileLocalID ?? attachment._id;
+              updatePreviewObjectUrl(
+                resolveMediaDisplayUrl(fileLocalID, [...allAttachments, attachment])
+              );
+              mediaField.onChange(
+                mode === 'media' ? encodeTimelinksValue(fileLocalID, nextTimelinks) : fileLocalID
+              );
+              return;
             }
 
-            previewBlobRef.current = nextUrl.startsWith('blob:') ? nextUrl : null;
-            pendingLocalFileRef.current =
-              localFile ?? (nextUrl.startsWith('blob:') ? pendingLocalFileRef.current : null);
-
-            if (!nextUrl.startsWith('blob:')) {
-              pendingLocalFileRef.current = null;
-            }
-
+            updatePreviewObjectUrl(nextUrl);
             if (mode === 'media') {
               mediaField.onChange(encodeTimelinksValue(nextUrl, nextTimelinks));
               return;
@@ -312,21 +329,17 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
           };
 
           const handleUnlink = () => {
-            if (previewBlobRef.current) {
-              revokeBlobUrl(previewBlobRef.current);
-              previewBlobRef.current = null;
-            }
-
-            pendingLocalFileRef.current = null;
+            revokeBlobUrl(previewObjectUrlRef.current);
+            previewObjectUrlRef.current = null;
             mediaField.onChange('');
           };
 
           const handleTimelinksChange = (nextTimelinks: EditableTimelink[]) => {
-            if (!url) {
+            if (!rawValue) {
               return;
             }
 
-            mediaField.onChange(encodeTimelinksValue(url, nextTimelinks));
+            mediaField.onChange(encodeTimelinksValue(rawValue, nextTimelinks));
           };
 
           return (
@@ -365,14 +378,14 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
                 <div className="mt-3 flex justify-center rounded-md bg-(--color-theme-surface-warm) p-3">
                   {mode === 'image' ? (
                     <img
-                      src={url}
+                      src={previewUrl}
                       alt={label}
                       className="max-w-full rounded-md max-h-96"
                       style={{ objectFit: imageStyle === 'cover' ? 'cover' : 'contain' }}
                     />
                   ) : (
                     <MediaFieldPreview
-                      url={url}
+                      url={previewUrl}
                       timelinks={timelinks}
                       disabled={disabled}
                       onTimelinksChange={handleTimelinksChange}
@@ -390,7 +403,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
               <MediaPickerModal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                onSelect={(selectedUrl, localFile) =>
+                onSelect={async (selectedUrl, localFile) =>
                   updateValue(selectedUrl, localFile, mode === 'media' ? timelinks : [])
                 }
                 mode={mode}

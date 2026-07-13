@@ -49,7 +49,6 @@ interface MultiselectListProps {
   hideFilters?: boolean;
   noItems?: string | React.ReactNode;
   id?: string;
-  /** Bordered panel layout for entity relationship pickers. */
   panel?: boolean;
 }
 
