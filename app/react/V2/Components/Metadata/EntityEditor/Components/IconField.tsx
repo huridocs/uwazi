@@ -6,6 +6,7 @@ import { Icon } from '#UI/Icon/Icon.js';
 import { Translate } from '#app/I18N/index.js';
 import { CountryFlag } from '#V2/Components/CustomIcons/CoutryFlags.js';
 import { Checkbox, SearchSelect } from '#V2/Components/Forms/index.js';
+import { EntityField } from './EntityField.js';
 
 type EntityIcon = {
   _id: string | null;
@@ -82,53 +83,63 @@ type IconFieldProps = {
 };
 
 const IconField = ({ disabled = false }: IconFieldProps) => {
-  const { control, watch } = useFormContext<IconFieldFormValues>();
-  const showIcon = watch('showIcon');
-  const icon = watch('icon');
-  const selectorDisabled = disabled || !showIcon;
+  const { control, setValue } = useFormContext<IconFieldFormValues>();
+
+  const clearIcon = () => {
+    setValue('showIcon', false);
+    setValue('icon', EMPTY_ICON);
+  };
 
   return (
-    <div className="flex flex-col gap-3">
+    <EntityField>
+      <div className="text-sm font-bold text-ink">
+        <Translate context="System">Icon</Translate>
+      </div>
+
       <Controller
         control={control}
-        name="showIcon"
+        name="icon"
         render={({ field }) => (
-          <Checkbox
-            name="showIcon"
-            label="Show icon"
-            checked={field.value}
+          <SearchSelect
+            id="entity-icon"
+            hideLabel
+            placeholder="Select icon..."
+            groups={iconSelectGroups}
+            value={selectionFromIcon(field.value)}
             disabled={disabled}
-            onChange={event => {
-              field.onChange(event.currentTarget.checked);
+            onChange={selectedValue => {
+              field.onChange(iconFromSelection(selectedValue));
             }}
           />
         )}
       />
 
-      <div className={selectorDisabled ? 'pointer-events-none opacity-50' : ''}>
+      <div className="flex items-center justify-between">
         <Controller
           control={control}
-          name="icon"
+          name="showIcon"
           render={({ field }) => (
-            <SearchSelect
-              id="entity-icon"
-              label={
-                <span className="font-semibold">
-                  <Translate context="System">Icon</Translate> /{' '}
-                  <Translate context="System">Flag</Translate>
-                </span>
-              }
-              groups={iconSelectGroups}
-              value={selectionFromIcon(icon)}
-              disabled={selectorDisabled}
-              onChange={selectedValue => {
-                field.onChange(iconFromSelection(selectedValue));
+            <Checkbox
+              name="showIcon"
+              label="Show icon"
+              checked={field.value}
+              disabled={disabled}
+              onChange={event => {
+                field.onChange(event.currentTarget.checked);
               }}
             />
           )}
         />
+        <button
+          type="button"
+          className="cursor-pointer text-xs text-ink-muted transition-colors hover:text-ink-secondary"
+          disabled={disabled}
+          onClick={clearIcon}
+        >
+          <Translate>Clear</Translate>
+        </button>
       </div>
-    </div>
+    </EntityField>
   );
 };
 

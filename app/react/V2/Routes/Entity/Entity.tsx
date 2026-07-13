@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import { useLoaderData } from 'react-router';
 import { Translate } from '#app/I18N/index.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
+import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import { FileType } from '#V2/api/entities/types.js';
 import { SnippetsSearchResponse } from '#V2/api/types.js';
 import {
@@ -14,6 +15,7 @@ import {
   AddFileModal,
   useEntityFiles,
   useEntityScopedEntity,
+  useMetadataEditing,
 } from './Components/index.js';
 import { CreateRelationshipModal } from './Components/relationships/create-reference/CreateRelationshipModal.js';
 import {
@@ -51,6 +53,8 @@ const EntityView = ({ mainDocument, pagePlaintext, searchResults }: EntityViewPr
     searchResults,
     filesSideTabs,
   });
+  const { isEditing } = useMetadataEditing();
+  const showMainPaneHeader = !(activeMainTab === MAIN_TAB.METADATA && isEditing);
 
   return (
     <>
@@ -59,22 +63,24 @@ const EntityView = ({ mainDocument, pagePlaintext, searchResults }: EntityViewPr
       <PaneLayout defaultRatios={[0.62, 0.38]} className="bg-parchment text-ink">
         <PaneLayout.Pane>
           <div
-            className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden"
+            className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden bg-paper"
             data-testid="entity-v2"
           >
-            <div className="shrink-0 border-b border-border-soft px-3 py-2.5">
-              <div className="flex flex-col gap-3">
+            <div className="shrink-0">
+              <div className="px-3 py-2 md:py-2.5">
                 <TabsMainButtons
                   entity={entity}
                   mainDocument={mainDocument}
                   activeTabId={activeMainTab}
                   onTabChange={onMainTabChange}
                 />
+              </div>
+              {showMainPaneHeader ? (
                 <EntityMainPaneHeader
                   entity={entity}
                   showDocumentViewMode={activeMainTab === MAIN_TAB.DOCUMENT && hasMainDocument}
                 />
-              </div>
+              ) : null}
             </div>
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
               <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
@@ -117,17 +123,19 @@ const Entity = () => {
   }
 
   return (
-    <EntityScopedProvider key={entity.sharedId} entity={entity}>
-      <EntityFilesProvider entity={entity}>
-        <EntityView
-          mainDocument={mainDocument}
-          pagePlaintext={pagePlaintext}
-          searchResults={searchResults}
-        />
-      </EntityFilesProvider>
-      <SearchHintsModal />
-      <CreateRelationshipModal mainDocument={mainDocument} />
-    </EntityScopedProvider>
+    <ThemeProvider className="h-full min-h-0">
+      <EntityScopedProvider key={entity.sharedId} entity={entity}>
+        <EntityFilesProvider entity={entity}>
+          <EntityView
+            mainDocument={mainDocument}
+            pagePlaintext={pagePlaintext}
+            searchResults={searchResults}
+          />
+        </EntityFilesProvider>
+        <SearchHintsModal />
+        <CreateRelationshipModal mainDocument={mainDocument} />
+      </EntityScopedProvider>
+    </ThemeProvider>
   );
 };
 

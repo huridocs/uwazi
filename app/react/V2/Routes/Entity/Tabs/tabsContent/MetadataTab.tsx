@@ -93,24 +93,26 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
   };
 
   return (
-    <div className="h-full min-h-0 flex-1 overflow-y-auto py-3">
-      {!isEditing && <MetadataDisplay entity={entity} />}
-      {isEditing && (
-        <>
-          {saveError && (
-            <p className="mb-3 text-sm text-red-600" role="alert">
-              {saveError}
-            </p>
-          )}
-          <EditEntity
-            formId="edit-entity-form"
-            entity={entity}
-            onSave={onSave}
-            disabled={isSaving}
-            errors={editErrors}
-          />
-        </>
-      )}
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex-1 overflow-auto px-4 py-3 pb-8" data-testid="metadata-edit-scroll">
+        {!isEditing && <MetadataDisplay entity={entity} />}
+        {isEditing && (
+          <div className="space-y-3">
+            {saveError && (
+              <p className="text-sm text-red-600" role="alert">
+                {saveError}
+              </p>
+            )}
+            <EditEntity
+              formId="edit-entity-form"
+              entity={entity}
+              onSave={onSave}
+              disabled={isSaving}
+              errors={editErrors}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };

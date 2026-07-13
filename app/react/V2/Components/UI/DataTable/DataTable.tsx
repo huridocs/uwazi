@@ -1,5 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable max-lines */
+
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   useReactTable,
@@ -7,7 +8,10 @@ import {
   getSortedRowModel,
   getExpandedRowModel,
   flexRender,
+  type CellContext,
   type ColumnDef,
+  type HeaderContext,
+  type Row,
   type SortingState,
   type RowSelectionState,
   type ExpandedState,
@@ -126,6 +130,48 @@ const ExpandButton = ({ expanded, onToggle }: { expanded: boolean; onToggle: () 
   </button>
 );
 
+const DataTableSelectionHeader = <T extends { rowId: string }>({
+  table,
+}: HeaderContext<T, unknown>) => (
+  <input
+    type="checkbox"
+    className={checkboxInputClassName}
+    checked={table.getIsAllRowsSelected()}
+    onChange={table.getToggleAllRowsSelectedHandler()}
+  />
+);
+
+const DataTableSelectionCell = <T extends { rowId: string }>({
+  row,
+  disableRow,
+}: {
+  row: Row<T>;
+  disableRow?: (row: T) => boolean;
+}) => {
+  const disabled = disableRow?.(row.original);
+  return (
+    <input
+      type="checkbox"
+      className={checkboxInputClassName}
+      checked={row.getIsSelected()}
+      disabled={Boolean(disabled)}
+      onChange={row.getToggleSelectedHandler()}
+    />
+  );
+};
+
+const createSelectionColumn = <T extends { rowId: string }>(
+  disableRow?: (row: T) => boolean
+): ColumnDef<T> => ({
+  id: '_select',
+  header: DataTableSelectionHeader,
+  cell: (props: CellContext<T, unknown>) => (
+    <DataTableSelectionCell row={props.row} disableRow={disableRow} />
+  ),
+  size: 40,
+  enableSorting: false,
+});
+
 const SortableRow = <T extends { rowId: string }>({
   row,
   gridTemplateColumns,
@@ -162,23 +208,26 @@ const SortableRow = <T extends { rowId: string }>({
       }
     : { transform: CSS.Transform.toString(transform), transition };
 
+  const rowInteractionProps = isClickable
+    ? {
+        role: 'button' as const,
+        tabIndex: 0,
+        onClick: () => onRowClick?.(row.original),
+        onKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onRowClick?.(row.original);
+          }
+        },
+      }
+    : { role: 'row' as const };
+
   return (
     <>
       <div
         ref={setNodeRef}
-        role={isClickable ? 'button' : 'row'}
-        tabIndex={isClickable ? 0 : undefined}
-        onClick={onRowClick ? () => onRowClick(row.original) : undefined}
-        onKeyDown={
-          isClickable
-            ? e => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  onRowClick?.(row.original);
-                }
-              }
-            : undefined
-        }
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        {...rowInteractionProps}
         className={`${ROW_BASE} ${isClickable ? 'cursor-pointer' : ''} ${isSelected ? 'bg-parchment' : 'hover:bg-warm'}`}
         style={{
           gridTemplateColumns,
@@ -245,32 +294,8 @@ const DataTable = <T extends { rowId: string }>({
     setInternalData(data);
   }, [data]);
 
-  const selectionColumn = useMemo<ColumnDef<T>>(
-    () => ({
-      id: '_select',
-      header: ({ table }) => (
-        <input
-          type="checkbox"
-          className={checkboxInputClassName}
-          checked={table.getIsAllRowsSelected()}
-          onChange={table.getToggleAllRowsSelectedHandler()}
-        />
-      ),
-      cell: ({ row }) => {
-        const disabled = selection?.disableRow?.(row.original);
-        return (
-          <input
-            type="checkbox"
-            className={checkboxInputClassName}
-            checked={row.getIsSelected()}
-            disabled={Boolean(disabled)}
-            onChange={row.getToggleSelectedHandler()}
-          />
-        );
-      },
-      size: 40,
-      enableSorting: false,
-    }),
+  const selectionColumn = useMemo(
+    () => createSelectionColumn<T>(selection?.disableRow),
     [selection]
   );
 
@@ -305,12 +330,12 @@ const DataTable = <T extends { rowId: string }>({
     if (!selection) return;
     const ids = new Set(Object.keys(rowSelection).filter(id => rowSelection[id]));
     selection.onChange(ids);
-  }, [rowSelection]);
+  }, [rowSelection, selection]);
 
   useEffect(() => {
     if (!onSort || !sorting.length) return;
     onSort(sorting[0].id);
-  }, [sorting]);
+  }, [sorting, onSort]);
 
   const sensors = useSensors(
     useSensor(MouseSensor, {}),

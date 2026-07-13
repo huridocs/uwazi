@@ -14,39 +14,38 @@ const MetadataDisplayFooter = () => {
 
   return (
     <EntityWriteAuthorization>
-      <div className="flex w-full flex-row items-center justify-between gap-3">
-        {isEditing ? (
-          <>
-            <Button variant="secondary" onClick={cancelEdit}>
-              <Translate>Cancel</Translate>
+      {isEditing ? (
+        <div className="flex w-full items-center justify-end gap-3">
+          <Button type="button" variant="warm" onClick={cancelEdit}>
+            <Translate>Cancel</Translate>
+          </Button>
+          <Button type="submit" variant="success" form="edit-entity-form" disabled={isSaving}>
+            <Translate>Save</Translate>
+          </Button>
+        </div>
+      ) : (
+        <div className="flex w-full items-center gap-3">
+          <div className="flex gap-2">
+            <Button
+              variant="warm"
+              className="inline-flex items-center gap-1.5"
+              onClick={() => setIsEditing(true)}
+            >
+              <PencilSquareIcon className={iconClass} />
+              <Translate>Edit</Translate>
             </Button>
-            <Button variant="primary" type="submit" form="edit-entity-form" disabled={isSaving}>
-              <Translate>Save</Translate>
+            <Button variant="warm" className="inline-flex items-center gap-1.5">
+              <ShareIcon className={iconClass} />
+              <Translate>Share</Translate>
             </Button>
-          </>
-        ) : (
-          <>
-            <div className="flex gap-2">
-              <Button
-                variant="secondary"
-                onClick={() => setIsEditing(true)}
-                className="inline-flex items-center gap-1.5"
-              >
-                <PencilSquareIcon className={iconClass} />
-                <Translate>Edit</Translate>
-              </Button>
-              <Button variant="secondary" className="inline-flex items-center gap-1.5">
-                <ShareIcon className={iconClass} />
-                <Translate>Share</Translate>
-              </Button>
-            </div>
-            <Button variant="danger" className="inline-flex items-center gap-1.5">
-              <TrashIcon className={iconClass} />
-              <Translate>Delete</Translate>
-            </Button>
-          </>
-        )}
-      </div>
+          </div>
+          <div className="flex-1" />
+          <Button variant="dangerSubtle" className="inline-flex items-center gap-1.5">
+            <TrashIcon className={iconClass} />
+            <Translate>Delete</Translate>
+          </Button>
+        </div>
+      )}
     </EntityWriteAuthorization>
   );
 };

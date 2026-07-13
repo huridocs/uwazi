@@ -2,16 +2,17 @@
 import React, { useEffect, useMemo } from 'react';
 import { FieldErrors, FormProvider, useForm } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
-import { t } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { lookup as lookupEntities } from '#V2/api/search/index.js';
+import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { thesauriAtom } from '#V2/atoms/thesauriAtom.js';
-import { resolvePropertyMetadataValues } from '#V2/formatters/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import {
   TextField,
+  TitleField,
   IconField,
   SelectField,
   TemplateField,
@@ -27,6 +28,7 @@ import {
   NestedField,
   MediaField,
   PreviewField,
+  DerivedRelationshipsSection,
 } from './Components/index.js';
 import { EMPTY_ICON, hasEntityIcon, type EntityIcon } from './Components/IconField.js';
 import { MultiselectListOption } from '../../Forms/index.js';
@@ -67,6 +69,29 @@ type DisplayProperty = Properties & {
   groupedRelationshipNames?: string[];
 };
 
+const mapTemplateProperty = (property: {
+  _id?: string;
+  name: string;
+  type: Properties['type'];
+  label: string;
+  required?: boolean;
+  content?: string;
+  relationType?: string;
+  style?: string;
+  inherit?: { type?: Properties['inheritedType'] };
+}): Properties => ({
+  _id: String(property._id ?? property.name),
+  type: property.type,
+  name: property.name,
+  label: property.label,
+  required: property.required,
+  content: property.content,
+  relationType: property.relationType,
+  style: property.style,
+  inherited: Boolean(property.inherit),
+  inheritedType: property.inherit?.type,
+});
+
 const DEFAULT_RELATIONSHIP_LOOKUP_LIMIT = 50;
 
 const defaultRelationshipLookup = async ({
@@ -100,7 +125,7 @@ const groupRelationshipProperties = (properties: Properties[]): DisplayProperty[
   const groupedProperties = new Map<string, DisplayProperty>();
 
   properties.forEach(property => {
-    if (property.type !== 'relationship') {
+    if (property.type !== 'relationship' || property.inherited) {
       groupedProperties.set(property._id, property);
       return;
     }
@@ -173,7 +198,7 @@ const focusAndScrollToInvalidField = (path?: string) => {
     return;
   }
 
-  fieldElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  scrollIntoView(fieldElement, { behavior: 'smooth', block: 'center' });
 
   if ('focus' in fieldElement && typeof fieldElement.focus === 'function') {
     fieldElement.focus();
@@ -195,7 +220,8 @@ const focusAndScrollToInvalidField = (path?: string) => {
 
 const formatMetadataForEntity = (
   metadata: EditEntityFormValues['metadata'],
-  metadataProperties: Properties[]
+  metadataProperties: Properties[],
+  originalMetadata?: Entity['metadata']
 ): Entity['metadata'] => {
   const syncedMetadata = { ...metadata };
 
@@ -216,6 +242,11 @@ const formatMetadataForEntity = (
     });
 
   return metadataProperties.reduce<NonNullable<Entity['metadata']>>((acc, property) => {
+    if (property.inherited) {
+      acc[property.name] = [...(originalMetadata?.[property.name] ?? [])];
+      return acc;
+    }
+
     acc[property.name] = (syncedMetadata[property.name] ?? []).map(toMetadataObjectSchema);
     return acc;
   }, {});
@@ -237,25 +268,6 @@ const thesaurusToOptions = (
         value: child.id || child.label,
       })),
     })) || [];
-
-const relationshipToOptions = (
-  property: Properties,
-  metadata?: Entity['metadata']
-): MultiselectListOption[] => {
-  const relationshipValues = resolvePropertyMetadataValues(property, metadata);
-
-  if (!Array.isArray(relationshipValues)) {
-    return [];
-  }
-
-  return relationshipValues
-    .filter(value => value?.value && value.label && value.authorized !== false)
-    .map(value => ({
-      label: value.label as string,
-      searchLabel: value.label as string,
-      value: value.value as string,
-    }));
-};
 
 const EditEntity = ({
   formId,
@@ -291,15 +303,7 @@ const EditEntity = ({
       metadata: formatMetadataForForm(
         templates
           .find(template => template._id === entity?.template)
-          ?.properties?.map(property => ({
-            _id: String(property._id ?? property.name),
-            type: property.type,
-            name: property.name,
-            label: property.label,
-            required: property.required,
-            content: property.content,
-            relationType: property.relationType,
-          })) || [],
+          ?.properties?.map(mapTemplateProperty) || [],
         entity?.metadata
       ),
     },
@@ -317,23 +321,20 @@ const EditEntity = ({
   );
 
   const metadataProperties = useMemo(
-    () =>
-      activeTemplate?.properties?.map(property => ({
-        _id: String(property._id ?? property.name),
-        type: property.type,
-        name: property.name,
-        label: property.label,
-        required: property.required,
-        content: property.content,
-        relationType: property.relationType,
-        style: property.style,
-      })) || [],
+    () => activeTemplate?.properties?.map(mapTemplateProperty) || [],
     [activeTemplate]
   );
-  const displayProperties = useMemo(
-    () => groupRelationshipProperties(metadataProperties),
+  const derivedProperties = useMemo(
+    () => metadataProperties.filter(property => property.inherited),
     [metadataProperties]
   );
+  const displayProperties = useMemo(
+    () => groupRelationshipProperties(metadataProperties.filter(property => !property.inherited)),
+    [metadataProperties]
+  );
+  const firstEditableRelationshipId = displayProperties.find(
+    property => property.type === 'relationship'
+  )?._id;
 
   const entityAttachments = useMemo(
     () => [...(entity?.attachments ?? []), ...(entity?.documents ?? [])],
@@ -437,7 +438,7 @@ const EditEntity = ({
         title: values.title || entity.title,
         template: values.template || entity.template,
         icon: (values.showIcon ? values.icon : EMPTY_ICON) as Entity['icon'],
-        metadata: formatMetadataForEntity(values.metadata, metadataProperties),
+        metadata: formatMetadataForEntity(values.metadata, metadataProperties, entity?.metadata),
       });
     },
     invalidErrors => {
@@ -452,15 +453,15 @@ const EditEntity = ({
       <form
         id={formId}
         onSubmit={submit}
-        className="flex flex-col gap-6 h-full w-full bg(--color-theme-bg-surface)"
+        className="flex w-full flex-col gap-3 font-sans text-base text-ink"
+        data-testid="entity-edit-form"
       >
-        <TextField<EditEntityFormValues>
+        <TitleField<EditEntityFormValues>
           context="System"
           label="Title"
           field="title"
           registerOptions={{ required: true }}
           disabled={disabled}
-          type="text"
         />
 
         <IconField disabled={disabled} />
@@ -476,6 +477,10 @@ const EditEntity = ({
         />
         {isMetadataReady &&
           displayProperties.map(property => {
+            if (property.inherited) {
+              return undefined;
+            }
+
             if (property.type === 'text' || property.type === 'generatedid') {
               return (
                 <TextField<EditEntityFormValues>
@@ -535,39 +540,59 @@ const EditEntity = ({
 
             if (property.type === 'relationship') {
               const fieldName = property.groupedRelationshipNames?.[0] ?? property.name;
+              const inheritColumnLabels =
+                property.groupedRelationshipNames && property.groupedRelationshipNames.length > 1
+                  ? property.groupedRelationshipNames.slice(1).map(name => {
+                      const groupedProperty = metadataProperties.find(
+                        metadataProperty => metadataProperty.name === name
+                      );
+                      return groupedProperty?.label ?? name;
+                    })
+                  : [];
               return (
-                <RelationshipField<EditEntityFormValues>
-                  context={activeTemplate?._id ?? ''}
-                  label={property.label}
-                  field={`metadata.${fieldName}`}
-                  registerOptions={{ required: property.required }}
-                  disabled={disabled}
-                  options={relationshipToOptions(property, entity?.metadata)}
-                  lookupSearch={async search => {
-                    const selectedValues = metadata?.[fieldName] ?? [];
-                    const lookedUp = await relationshipLookup({
-                      search,
-                      template: property.content,
-                      limit: DEFAULT_RELATIONSHIP_LOOKUP_LIMIT,
-                    });
-                    const lookedUpOptions = lookedUp.map(option => ({
-                      label: option.label,
-                      searchLabel: option.label,
-                      value: option.value,
-                    }));
-                    return relationshipLookupSearch(
-                      property,
-                      selectedValues,
-                      lookedUpOptions.filter(
-                        option =>
-                          !search.trim() ||
-                          option.searchLabel.toLowerCase().includes(search.trim().toLowerCase())
-                      ),
-                      !search.trim()
-                    );
-                  }}
-                  key={property._id}
-                />
+                <>
+                  {property._id === firstEditableRelationshipId ? (
+                    <h3
+                      key={`relationships-heading-${property._id}`}
+                      className="pt-2 text-xs font-semibold uppercase tracking-wide text-ink-tertiary"
+                    >
+                      <Translate>Relationships</Translate>
+                    </h3>
+                  ) : null}
+                  <RelationshipField<EditEntityFormValues>
+                    label={property.label}
+                    field={`metadata.${fieldName}`}
+                    registerOptions={{ required: property.required }}
+                    disabled={disabled}
+                    targetTemplateId={property.content}
+                    relationTypeId={property.relationType}
+                    inheritColumnLabels={inheritColumnLabels}
+                    lookupSearch={async search => {
+                      const selectedValues = metadata?.[fieldName] ?? [];
+                      const lookedUp = await relationshipLookup({
+                        search,
+                        template: property.content,
+                        limit: DEFAULT_RELATIONSHIP_LOOKUP_LIMIT,
+                      });
+                      const lookedUpOptions = lookedUp.map(option => ({
+                        label: option.label,
+                        searchLabel: option.label,
+                        value: option.value,
+                      }));
+                      return relationshipLookupSearch(
+                        property,
+                        selectedValues,
+                        lookedUpOptions.filter(
+                          option =>
+                            !search.trim() ||
+                            option.searchLabel.toLowerCase().includes(search.trim().toLowerCase())
+                        ),
+                        !search.trim()
+                      );
+                    }}
+                    key={property._id}
+                  />
+                </>
               );
             }
 
@@ -723,6 +748,9 @@ const EditEntity = ({
 
             return undefined;
           })}
+        {entity && derivedProperties.length > 0 ? (
+          <DerivedRelationshipsSection entity={entity} properties={derivedProperties} />
+        ) : null}
       </form>
     </FormProvider>
   );

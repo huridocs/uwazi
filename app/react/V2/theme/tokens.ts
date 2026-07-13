@@ -1,5 +1,9 @@
 /* eslint-disable max-lines */
-import { getAccessibleForegroundOnBackground, mixHex } from '#shared/utils/contrast.js';
+import {
+  getAccessibleForegroundOnBackground,
+  mixHex,
+  WCAG_AA_LARGE_UI,
+} from '#shared/utils/contrast.js';
 import { UWAZI_DESIGN_DARK, UWAZI_DESIGN_LIGHT } from '#V2/theme/uwaziDesignTokens.js';
 
 type ThemePresetId = 'default' | 'legacy' | 'custom';
@@ -110,6 +114,7 @@ const expandHex = (hex: string) =>
 
 const addAlpha = (hex: string, alpha: string) => `${expandHex(hex)}${alpha}`;
 
+// eslint-disable-next-line max-statements
 const resolveThemeVars = (source: EditableThemeVars): ResolvedThemeVars => {
   const bgPrimary = source['--color-theme-bg-primary'];
   const bgSurface = source['--color-theme-bg-surface'];
@@ -141,11 +146,15 @@ const resolveThemeVars = (source: EditableThemeVars): ResolvedThemeVars => {
     '--color-theme-warning-light': warningTint,
     '--color-theme-danger': accentEmphasis,
     '--color-theme-danger-light': emphasisTint,
-    '--color-theme-feedback-success-fg': getAccessibleForegroundOnBackground(success, '#FFFFFF')
-      .foreground,
+    '--color-theme-feedback-success-fg': getAccessibleForegroundOnBackground(
+      success,
+      '#FFFFFF',
+      WCAG_AA_LARGE_UI
+    ).foreground,
     '--color-theme-feedback-danger-fg': getAccessibleForegroundOnBackground(
       accentEmphasis,
-      '#FFFFFF'
+      '#FFFFFF',
+      WCAG_AA_LARGE_UI
     ).foreground,
     '--color-theme-highlight-yellow': warningTint,
     '--color-theme-highlight-yellow-active': mixHex(warning, bgSurface, 0.65),
@@ -182,11 +191,13 @@ const DEFAULT_LIGHT_DERIVED: DerivedThemeVars = {
   '--color-theme-danger-light': UWAZI_DESIGN_LIGHT.dangerLight,
   '--color-theme-feedback-success-fg': getAccessibleForegroundOnBackground(
     UWAZI_DESIGN_LIGHT.success,
-    '#FFFFFF'
+    '#FFFFFF',
+    WCAG_AA_LARGE_UI
   ).foreground,
   '--color-theme-feedback-danger-fg': getAccessibleForegroundOnBackground(
     UWAZI_DESIGN_LIGHT.danger,
-    '#FFFFFF'
+    '#FFFFFF',
+    WCAG_AA_LARGE_UI
   ).foreground,
   '--color-theme-highlight-yellow': UWAZI_DESIGN_LIGHT.highlightYellow,
   '--color-theme-highlight-yellow-active': UWAZI_DESIGN_LIGHT.highlightYellowActive,

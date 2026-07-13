@@ -7,8 +7,6 @@ const meta: Meta<typeof PaneLayout> = {
   component: PaneLayout,
 };
 
-export default meta;
-
 type Story = StoryObj<typeof PaneLayout>;
 
 const Component = ({
@@ -20,7 +18,7 @@ const Component = ({
 }) => (
   <PaneLayout localStorageKey={localStorageKey} defaultRatios={defaultRatios}>
     <PaneLayout.Pane key="pane-1">
-      <div>
+      <div className="h-full overflow-auto">
         <p>
           Aenean ac purus nulla. Fusce non consequat odio. Duis non sagittis mi. In at magna a lorem
           porta porta. Mauris a tincidunt enim, eget venenatis est. Aenean euismod ex sem.
@@ -44,7 +42,7 @@ const Component = ({
       </div>
     </PaneLayout.Pane>
     <PaneLayout.Pane key="pane-3">
-      <div>
+      <div className="h-full overflow-auto">
         <p>
           Sed velit eros, pretium id imperdiet eget, tristique vel odio. Vestibulum ante ipsum
           primis in faucibus orci luctus et ultrices posuere cubilia curae; Quisque non mollis mi.
@@ -126,3 +124,4 @@ const Basic: Story = {
 };
 
 export { Basic };
+export default meta;

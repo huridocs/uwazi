@@ -63,23 +63,25 @@ const filesDataTableColumns = ({
     width: '2rem',
     align: 'center',
     header: (
-      <label className="flex items-center justify-center" onClick={stopRowClick}>
+      <label className="flex items-center justify-center">
         <input
           type="checkbox"
           className={checkboxInputClassName}
           checked={allSelected}
           onChange={onToggleAll}
+          onClick={stopRowClick}
           aria-label="Select all files"
         />
       </label>
     ),
     cell: row => (
-      <label className="flex items-center justify-center" onClick={stopRowClick}>
+      <label className="flex items-center justify-center">
         <input
           type="checkbox"
           className={checkboxInputClassName}
           checked={selectedIds.has(row.rowId)}
           onChange={() => onToggleRow(row.rowId)}
+          onClick={stopRowClick}
           aria-label={`Select ${row.displayName}`}
         />
       </label>

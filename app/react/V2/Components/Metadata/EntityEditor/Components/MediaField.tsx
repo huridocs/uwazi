@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp, max-lines */
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ArrowUpTrayIcon,
@@ -11,6 +12,8 @@ import { Translate } from '#app/I18N/index.js';
 import { FileType } from '#shared/types/fileType.js';
 import { Button, MediaPlayer } from '#V2/Components/UI/index.js';
 import { MediaPickerModal, MediaPickerMode } from './MediaPickerModal.js';
+import { EntityFieldError, getFieldErrorState } from '../functions/fieldErrorState.js';
+import { EntityField } from './EntityField.js';
 
 type PlayerRef = NonNullable<React.ComponentProps<typeof MediaPlayer>['playerRef']>;
 type PlayerInstance = PlayerRef extends React.RefObject<infer T> ? T : never;
@@ -262,7 +265,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
   );
 
   return (
-    <div className="text-ink bg-(--bg-surface)" data-testid={String(field)}>
+    <EntityField data-testid={String(field)}>
       <Controller
         control={control}
         name={field}
@@ -281,7 +284,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
           const rawValue = typeof mediaField.value === 'string' ? mediaField.value : '';
           const { url, timelinks } = parseFieldValue(rawValue);
           const hasValue = url.trim().length > 0;
-          const showRequiredError = Boolean(fieldState.error);
+          const { showError, message } = getFieldErrorState(fieldState);
 
           const updateValue = (
             nextUrl: string,
@@ -328,7 +331,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
 
           return (
             <>
-              <div className="mb-2 font-bold">
+              <div className="text-sm font-bold text-ink">
                 <Translate context={context}>{label}</Translate>
                 {registerOptions?.required && '*'}
               </div>
@@ -382,11 +385,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
                 </div>
               )}
 
-              {showRequiredError ? (
-                <div className="mt-2 text-sm text-(--color-theme-control-text-error)">
-                  <Translate>This field is required</Translate>
-                </div>
-              ) : null}
+              <EntityFieldError showError={showError} message={message} />
 
               <MediaPickerModal
                 isOpen={modalOpen}
@@ -402,7 +401,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
           );
         }}
       />
-    </div>
+    </EntityField>
   );
 };
 
