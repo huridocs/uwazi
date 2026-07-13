@@ -48,6 +48,7 @@ type MigrationCatalogueEntry = {
 const createFakeRunner = (options: {
   migrations: MigrationCatalogueEntry[];
   failDelta?: number;
+  tenantExists?: boolean;
 }): TenantMigrationRunner => {
   const dbForTenant = (tenant: { dbName: string }) => testingDB.db(tenant.dbName);
 
@@ -57,7 +58,15 @@ const createFakeRunner = (options: {
   };
 
   return {
-    async getPendingMigrations(tenant, schemaVersion) {
+    async tenantExists(_tenant: { dbName: string }) {
+      return options.tenantExists !== false;
+    },
+
+    async getPendingMigrations(tenant: { dbName: string }, schemaVersion: number) {
+      if (options.tenantExists === false) {
+        return { runnable: [], blocked: null };
+      }
+
       const applied = await appliedDeltas(tenant);
       const pending = options.migrations.filter(migration => !applied.has(migration.delta));
       const runnable: MigrationCatalogueEntry[] = [];
@@ -74,7 +83,13 @@ const createFakeRunner = (options: {
       return { runnable, blocked };
     },
 
-    async migrateDelta(tenant, delta, schemaVersion) {
+    async migrateDelta(
+      tenant: { dbName: string },
+      delta: number,
+      schemaVersion: number
+    ): Promise<
+      import('#api/core/infrastructure/mongodb/TenantMigrationRunner.js').TenantMigrationResult
+    > {
       const migration = options.migrations.find(m => m.delta === delta);
       if (!migration) {
         return { status: 'done' };
@@ -485,5 +500,24 @@ describe('MigrationJob', () => {
 
     expect(reindexTenant).toHaveBeenCalledTimes(1);
     expect(heartbeat).toHaveBeenCalledTimes(5);
+  });
+
+  it('should skip reindex for tenants that do not exist', async () => {
+    const heartbeat = jest.fn();
+    const reindexTenant = jest.fn();
+    const pgMigrator = new FakePgMigrator({ currentVersion: 100 });
+    const { dispatcher } = createJobFactory({
+      heartbeat,
+      reindexTenant,
+      pgMigrator,
+      runner: createFakeRunner({ migrations: defaultCatalogue, tenantExists: false }),
+    });
+
+    await dispatcher.dispatch(MigrationJob, {
+      reindex: false,
+      results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
+    });
+
+    expect(reindexTenant).not.toHaveBeenCalled();
   });
 });
