@@ -30,7 +30,7 @@ const resolveMediaDisplayUrl = (
       }
     }
 
-    return rawValue;
+    return id;
   }
 
   if (isUploadId(rawValue)) {

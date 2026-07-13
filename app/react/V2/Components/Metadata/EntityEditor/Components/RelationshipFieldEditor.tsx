@@ -32,10 +32,11 @@ type RelationshipFieldEditorProps = {
 const inheritedCellValue = (row: MetadataValue, columnIndex: number): string | undefined => {
   const inherited = row.inheritedValue;
   if (!inherited?.length) return undefined;
-  const item = inherited[columnIndex] ?? inherited[0];
-  const label = item?.label;
+  const item = inherited[columnIndex];
+  if (!item) return undefined;
+  const { label } = item;
   if (typeof label === 'string' && label.length > 0) return label;
-  return typeof item?.value === 'string' ? item.value : undefined;
+  return typeof item.value === 'string' ? item.value : undefined;
 };
 
 const RelationshipFieldEditor = ({

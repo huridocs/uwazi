@@ -335,11 +335,12 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
           };
 
           const handleTimelinksChange = (nextTimelinks: EditableTimelink[]) => {
-            if (!rawValue) {
+            const { url } = parseFieldValue(rawValue);
+            if (!url) {
               return;
             }
 
-            mediaField.onChange(encodeTimelinksValue(rawValue, nextTimelinks));
+            mediaField.onChange(encodeTimelinksValue(url, nextTimelinks));
           };
 
           return (

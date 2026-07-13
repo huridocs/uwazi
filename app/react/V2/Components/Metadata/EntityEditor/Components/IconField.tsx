@@ -109,6 +109,9 @@ const IconField = ({ disabled = false }: IconFieldProps) => {
             disabled={disabled}
             onChange={selectedValue => {
               field.onChange(iconFromSelection(selectedValue));
+              if (selectedValue) {
+                setValue('showIcon', true);
+              }
             }}
           />
         )}

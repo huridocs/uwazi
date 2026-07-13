@@ -29,6 +29,8 @@ interface InputFieldProps {
   onChange?: ChangeEventHandler<HTMLInputElement>;
   onSelect?: ChangeEventHandler<HTMLInputElement>;
   onBlur?: ChangeEventHandler<HTMLInputElement>;
+  min?: string;
+  max?: string;
 }
 
 const cx = (...classes: Array<string | false | undefined>) => classes.filter(Boolean).join(' ');
@@ -76,6 +78,8 @@ const InputField = React.forwardRef(
       onChange = noop,
       onSelect = noop,
       onBlur = noop,
+      min,
+      max,
     }: InputFieldProps,
     ref: Ref<HTMLInputElement>
   ) => {
@@ -110,6 +114,8 @@ const InputField = React.forwardRef(
               type === 'search' && searchReset
             )}
             placeholder={placeholder}
+            min={min}
+            max={max}
           />
           {showClearButton && (
             <button
