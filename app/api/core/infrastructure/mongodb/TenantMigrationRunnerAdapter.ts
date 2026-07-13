@@ -9,15 +9,39 @@ import { Tenant } from '#api/tenants/tenantContext.js';
 import { getPendingMigrations, migrateDelta } from '#api/migrations/migrator.js';
 
 export class TenantMigrationRunnerAdapter implements TenantMigrationRunner {
+  private tenantExistsCache = new Map<string, boolean>();
+
   constructor(
     private migrationsDir: string,
     private loader: (path: string) => Promise<any>
   ) {}
 
+  async tenantExists(tenant: Tenant): Promise<boolean> {
+    const cached = this.tenantExistsCache.get(tenant.name);
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    const connection = DB.connectionForDB(tenant.dbName);
+    if (!connection.db) {
+      this.tenantExistsCache.set(tenant.name, false);
+      return false;
+    }
+
+    const count = await connection.db.collection('settings').countDocuments();
+    const exists = count > 0;
+    this.tenantExistsCache.set(tenant.name, exists);
+    return exists;
+  }
+
   async getPendingMigrations(
     tenant: Tenant,
     schemaVersion: number
   ): Promise<TenantPendingMigrations> {
+    if (!(await this.tenantExists(tenant))) {
+      return { runnable: [], blocked: null };
+    }
+
     let result: TenantPendingMigrations = { runnable: [], blocked: null };
 
     await tenants.run(async () => {
@@ -43,6 +67,10 @@ export class TenantMigrationRunnerAdapter implements TenantMigrationRunner {
     delta: number,
     schemaVersion: number
   ): Promise<TenantMigrationResult> {
+    if (!(await this.tenantExists(tenant))) {
+      return { status: 'done' };
+    }
+
     let result: TenantMigrationResult = { status: 'done' };
 
     await tenants.run(async () => {

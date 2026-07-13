@@ -205,6 +205,13 @@ class MigrationJob implements Dispatchable {
       // eslint-disable-next-line no-await-in-loop
       await tenants.run(async () => {
         const tenant = tenants.current();
+        if (!(await this.deps.runner.tenantExists(tenant))) {
+          this.deps.logger.info(
+            `Skipping tenant '${tenantName}': no settings collection, tenant is not ready`
+          );
+          results.push({ status: 'done' });
+          return;
+        }
         const result = await this.deps.runner.migrateDelta(tenant, delta, schemaVersion);
         results.push(result);
       }, tenantName);
@@ -273,7 +280,14 @@ class MigrationJob implements Dispatchable {
     for (const tenantName of tenantNames) {
       // eslint-disable-next-line no-await-in-loop
       await tenants.run(async () => {
-        await this.deps.reindexTenant();
+        const tenant = tenants.current();
+        if (await this.deps.runner.tenantExists(tenant)) {
+          await this.deps.reindexTenant();
+        } else {
+          this.deps.logger.info(
+            `Skipping reindex for tenant '${tenantName}': no settings collection, tenant is not ready`
+          );
+        }
       }, tenantName);
       // eslint-disable-next-line no-await-in-loop
       await heartbeat();
