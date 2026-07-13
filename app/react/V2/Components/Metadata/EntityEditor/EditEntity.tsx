@@ -1,11 +1,9 @@
 /* eslint-disable max-lines, max-statements */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { FieldErrors, FormProvider, useForm } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { t, Translate } from '#app/I18N/index.js';
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
-import type { ClientFile } from '#app/istore.js';
-import { mapMediaMetadataForSave } from '#V2/api/entities/save/index.js';
 import { Entity } from '#V2/api/entities/types.js';
 import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js';
 import { lookup as lookupEntities } from '#V2/api/search/index.js';
@@ -45,6 +43,7 @@ import {
   getFirstEditEntityErrorPath,
   type EditEntityErrors,
 } from './functions/editEntityErrors.js';
+import { useEntityMediaUpload } from './hooks/useEntityMediaUpload.js';
 
 type EditEntityFormValues = {
   title: Entity['title'];
@@ -339,42 +338,11 @@ const EditEntity = ({
     property => property.type === 'relationship'
   )?._id;
 
-  const entityAttachments = useMemo(
-    () => [...(entity?.attachments ?? []), ...(entity?.documents ?? [])],
-    [entity?.attachments, entity?.documents]
-  );
-  const [pendingAttachments, setPendingAttachments] = useState<ClientFile[]>([]);
-
-  const registerPendingAttachment = useCallback((attachment: ClientFile) => {
-    setPendingAttachments(current => [...current, attachment]);
-  }, []);
-
-  const mediaPropertyNames = useMemo(
-    () =>
-      new Set(
-        metadataProperties
-          .filter(property => property.type === 'image' || property.type === 'media')
-          .map(property => property.name)
-      ),
-    [metadataProperties]
-  );
-
-  const mediaPropertyTypes = useMemo(
-    () =>
-      new Map(
-        metadataProperties
-          .filter(
-            (property): property is Properties & { type: 'image' | 'media' } =>
-              property.type === 'image' || property.type === 'media'
-          )
-          .map(property => [property.name, property.type])
-      ),
-    [metadataProperties]
-  );
-
-  useEffect(() => {
-    setPendingAttachments([]);
-  }, [entity?.sharedId]);
+  const {
+    allAttachments: entityAttachments,
+    pendingAttachments,
+    registerPendingAttachment,
+  } = useEntityMediaUpload(entity);
 
   const isMetadataReady = metadataProperties.every(
     property => metadata?.[property.name] !== undefined
@@ -473,18 +441,14 @@ const EditEntity = ({
         metadataProperties,
         entity?.metadata
       );
-      const entityToSave = mapMediaMetadataForSave(
-        {
-          ...entity,
-          title: values.title || entity.title,
-          template: values.template || entity.template,
-          icon: (values.showIcon ? values.icon : EMPTY_ICON) as Entity['icon'],
-          metadata: formattedMetadata,
-          attachments: [...(entity.attachments ?? []), ...pendingAttachments],
-        },
-        mediaPropertyNames,
-        mediaPropertyTypes
-      );
+      const entityToSave = {
+        ...entity,
+        title: values.title || entity.title,
+        template: values.template || entity.template,
+        icon: (values.showIcon ? values.icon : EMPTY_ICON) as Entity['icon'],
+        metadata: formattedMetadata,
+        attachments: [...(entity.attachments ?? []), ...pendingAttachments],
+      };
       await onSave?.(entityToSave);
     },
     invalidErrors => {

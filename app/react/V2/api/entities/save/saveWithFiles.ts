@@ -1,8 +1,9 @@
 import type { ClientBlobFile, ClientFile } from '#app/istore.js';
 import { constructFile } from '#shared/fileUploadUtils.js';
 import type { ApiResponse, MultipartPayload } from '#shared/apiClient/index.js';
+import { prepareEntityForSave } from '#shared/entitySave/prepareEntityForSave.js';
+import type { EntityWithSaveMetadata } from '#shared/entitySave/types.js';
 import { apiClient } from '#V2/api/client.js';
-import { mapMediaMetadataForSave } from './mapMediaMetadataForSave.js';
 import type {
   EntityFile,
   SaveWithFilesAttachment,
@@ -80,10 +81,11 @@ const saveWithFiles = async (
   entity: SaveWithFilesEntity,
   ctx?: SaveWithFilesContext
 ): Promise<ApiResponse<SaveWithFilesResponse>> => {
-  const preparedEntity =
-    ctx?.mediaPropertyNames && ctx.mediaPropertyTypes
-      ? mapMediaMetadataForSave(entity, ctx.mediaPropertyNames, ctx.mediaPropertyTypes)
-      : entity;
+  const preparedEntity = (
+    ctx?.saveMediaContext
+      ? prepareEntityForSave(entity as EntityWithSaveMetadata, ctx.saveMediaContext)
+      : entity
+  ) as SaveWithFilesEntity;
   const headers = Object.fromEntries(
     Object.entries(ctx?.headers ?? {}).filter((entry): entry is [string, string] => {
       const [, value] = entry;

@@ -1,0 +1,123 @@
+import type { MetadataObjectSchema } from '#shared/types/commonTypes.js';
+import type { EntityWithSaveMetadata, MediaPropertyType } from './types.js';
+
+const UPLOAD_ID_PATTERN = /^[a-zA-Z\d_]+$/;
+
+const isUploadId = (value: string) => UPLOAD_ID_PATTERN.test(value);
+
+type AttachmentLike = {
+  fileLocalID?: string;
+  serializedFile?: string;
+};
+
+const isUploadedAttachment = (
+  file: AttachmentLike
+): file is AttachmentLike & { serializedFile: string } => typeof file.serializedFile === 'string';
+
+const findUploadedAttachmentIndex = (
+  attachments: ReadonlyArray<AttachmentLike>,
+  matches: (file: AttachmentLike) => boolean
+): number => attachments.filter(isUploadedAttachment).findIndex(matches);
+
+const findFileLocalIdAttachmentIndex = (
+  attachments: ReadonlyArray<AttachmentLike>,
+  fileLocalID: string
+): number =>
+  attachments
+    .filter(file => Boolean(file.fileLocalID))
+    .findIndex(file => file.fileLocalID === fileLocalID);
+
+const resolveMetadataAttachmentIndex = (
+  attachments: ReadonlyArray<AttachmentLike>,
+  fileLocalID: string
+): number => {
+  const uploadedIndex = findUploadedAttachmentIndex(
+    attachments,
+    file => file.fileLocalID === fileLocalID
+  );
+  return uploadedIndex >= 0
+    ? uploadedIndex
+    : findFileLocalIdAttachmentIndex(attachments, fileLocalID);
+};
+
+const mapTimelinkValue = (
+  rawValue: string,
+  attachments: ReadonlyArray<AttachmentLike>
+): MetadataObjectSchema => {
+  const timelinkMatch = rawValue.match(/^\(([^,]+),\s*({.*})\)$/);
+  if (!timelinkMatch) {
+    return { value: rawValue };
+  }
+
+  const [, id, timeLinks] = timelinkMatch;
+  const trimmedId = id.trim();
+  if (!isUploadId(trimmedId)) {
+    return { value: rawValue };
+  }
+
+  const attachmentIndex = resolveMetadataAttachmentIndex(attachments, trimmedId);
+  return attachmentIndex >= 0
+    ? { value: '', attachment: attachmentIndex, timeLinks }
+    : { value: rawValue };
+};
+
+const mapUploadIdValue = (
+  uploadId: string,
+  attachments: ReadonlyArray<AttachmentLike>
+): MetadataObjectSchema => {
+  const attachmentIndex = resolveMetadataAttachmentIndex(attachments, uploadId);
+  return attachmentIndex >= 0 ? { value: '', attachment: attachmentIndex } : { value: '' };
+};
+
+const mapMediaValue = (
+  rawValue: string,
+  attachments: ReadonlyArray<AttachmentLike>,
+  propertyType: MediaPropertyType
+): MetadataObjectSchema => {
+  if (rawValue.startsWith('blob:')) {
+    return { value: '' };
+  }
+  if (propertyType === 'media' && rawValue.startsWith('(')) {
+    return mapTimelinkValue(rawValue, attachments);
+  }
+  if (isUploadId(rawValue)) {
+    return mapUploadIdValue(rawValue, attachments);
+  }
+  return { value: rawValue };
+};
+
+const mapMediaMetadataForSave = <T extends EntityWithSaveMetadata>(
+  entity: T,
+  mediaPropertyNames: ReadonlySet<string>,
+  mediaPropertyTypes: ReadonlyMap<string, MediaPropertyType>
+): T => {
+  if (!entity.metadata || mediaPropertyNames.size === 0) {
+    return entity;
+  }
+
+  const attachments = entity.attachments ?? [];
+  const metadata = Object.fromEntries(
+    Object.entries(entity.metadata).map(([name, values]) => {
+      if (!values?.length || !mediaPropertyNames.has(name)) {
+        return [name, values];
+      }
+      const propertyType = mediaPropertyTypes.get(name);
+      const rawValue = values[0]?.value;
+      if (!propertyType || typeof rawValue !== 'string') {
+        return [name, values];
+      }
+      return [name, [mapMediaValue(rawValue, attachments, propertyType)]];
+    })
+  ) as T['metadata'];
+
+  return { ...entity, metadata };
+};
+
+export {
+  findFileLocalIdAttachmentIndex,
+  findUploadedAttachmentIndex,
+  isUploadId,
+  mapMediaMetadataForSave,
+  mapMediaValue,
+  resolveMetadataAttachmentIndex,
+};

@@ -11,9 +11,9 @@ import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from '
 import { Translate } from '#app/I18N/index.js';
 import type { ClientFile } from '#app/istore.js';
 import { FileType } from '#shared/types/fileType.js';
-import { registerMediaAttachment } from '#V2/api/entities/save/index.js';
+import { registerMediaAttachment } from '#shared/entitySave/legacyMetadata.js';
+import { resolveMediaDisplayUrl } from '#shared/entitySave/resolveMediaDisplayUrl.js';
 import { Button, MediaPlayer } from '#V2/Components/UI/index.js';
-import { resolveMediaDisplayUrl } from '../functions/resolveMediaDisplayUrl.js';
 import { MediaPickerModal, MediaPickerMode } from './MediaPickerModal.js';
 import { EntityFieldError, getFieldErrorState } from '../functions/fieldErrorState.js';
 import { EntityField } from './EntityField.js';

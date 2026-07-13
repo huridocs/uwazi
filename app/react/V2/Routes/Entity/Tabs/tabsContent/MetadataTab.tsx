@@ -1,6 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useRevalidator } from 'react-router';
+import { useAtomValue } from 'jotai';
 import type { Entity } from '#V2/api/entities/types.js';
+import { mediaContextFromTemplate } from '#shared/entitySave/mediaContext.js';
+import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.js';
 import { EditEntity, type EditEntityErrors } from '#V2/Components/Metadata/EntityEditor/index.js';
 import { apiValidationsToEditEntityErrors } from '#V2/Components/Metadata/EntityEditor/functions/editEntityErrors.js';
@@ -15,6 +18,11 @@ type MetadataTabProps = {
 
 const MetadataTab = ({ entity }: MetadataTabProps) => {
   const { entities } = useServices();
+  const templates = useAtomValue(templatesAtom);
+  const saveMediaContext = useMemo(
+    () => mediaContextFromTemplate(templates.find(template => template._id === entity.template)),
+    [entity.template, templates]
+  );
   const {
     isEditing,
     isSaving,
@@ -77,6 +85,7 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
     try {
       const [data, error] = await entities.upsert(editedEntity, {
         signal: abortRef.current.signal,
+        saveMediaContext,
       });
       if (error) {
         handleUpsertError(error);

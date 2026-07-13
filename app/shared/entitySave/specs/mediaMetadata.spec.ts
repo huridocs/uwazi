@@ -1,8 +1,22 @@
 import type { MetadataSchema } from '#shared/types/commonTypes.js';
-import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js';
-import { mapMediaMetadataForSave } from '../mapMediaMetadataForSave.js';
+import { mapMediaMetadataForSave } from '../mediaMetadata.js';
 
-const metadata = (prepared: EntitySaveInput): MetadataSchema =>
+type EntityWithMetadata = {
+  metadata?: MetadataSchema;
+  attachments?: Array<{
+    _id?: string;
+    originalname?: string;
+    filename?: string;
+    type?: string;
+    serializedFile?: string;
+    fileLocalID?: string;
+  }>;
+  sharedId?: string;
+  template?: string;
+  title?: string;
+};
+
+const metadata = (prepared: EntityWithMetadata): MetadataSchema =>
   (prepared.metadata ?? {}) as MetadataSchema;
 
 describe('mapMediaMetadataForSave', () => {
@@ -13,7 +27,7 @@ describe('mapMediaMetadataForSave', () => {
   ]);
 
   it('maps image upload ids to uploaded attachment indices', () => {
-    const entity: EntitySaveInput = {
+    const entity: EntityWithMetadata = {
       sharedId: 'entity1',
       template: 'template1',
       title: 'Entity',
@@ -46,7 +60,7 @@ describe('mapMediaMetadataForSave', () => {
   });
 
   it('maps media timelinks with upload ids to attachment indices', () => {
-    const entity: EntitySaveInput = {
+    const entity: EntityWithMetadata = {
       sharedId: 'entity1',
       template: 'template1',
       title: 'Entity',
@@ -83,7 +97,7 @@ describe('mapMediaMetadataForSave', () => {
   });
 
   it('uses index 0 for the first uploaded attachment even when existing attachments are present', () => {
-    const entity: EntitySaveInput = {
+    const entity: EntityWithMetadata = {
       sharedId: 'entity1',
       template: 'template1',
       title: 'Entity',
@@ -120,7 +134,7 @@ describe('mapMediaMetadataForSave', () => {
   });
 
   it('clears blob urls from image metadata', () => {
-    const entity: EntitySaveInput = {
+    const entity: EntityWithMetadata = {
       sharedId: 'entity1',
       template: 'template1',
       title: 'Entity',

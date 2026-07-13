@@ -1,6 +1,7 @@
 import type { IncomingHttpHeaders } from 'http';
-import type { ClientBlobFile, ClientFile } from '#app/istore.js';
 import type { RequestContext } from '#shared/apiClient/index.js';
+import type { MediaPropertyContext } from '#shared/entitySave/types.js';
+import type { ClientBlobFile, ClientFile } from '#app/istore.js';
 import type { EntityWithFilesSchema } from '#shared/types/entityType.js';
 import type { Entity, FileType } from '../types.js';
 
@@ -19,8 +20,7 @@ type SaveWithFilesResponse = {
 };
 type SaveWithFilesContext = Omit<RequestContext, 'headers'> & {
   headers?: IncomingHttpHeaders;
-  mediaPropertyNames?: ReadonlySet<string>;
-  mediaPropertyTypes?: ReadonlyMap<string, 'image' | 'media'>;
+  saveMediaContext?: MediaPropertyContext;
 };
 
 export type {

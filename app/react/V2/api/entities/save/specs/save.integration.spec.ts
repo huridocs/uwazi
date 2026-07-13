@@ -41,6 +41,65 @@ const createMockXMLHttpRequest = () => {
   return MockXMLHttpRequest;
 };
 
+const mockSavedEntityResponse = () => [
+  {
+    entity: {
+      _id: 'entity1',
+      sharedId: 'entity1',
+      language: 'en',
+      template: 't1',
+      creationDate: 1,
+      user: 'u1',
+      title: 'Entity 1',
+    },
+  },
+];
+
+const imageUploadEntity = () => ({
+  _id: 'entity1',
+  sharedId: 'entity1',
+  title: 'Entity 1',
+  template: 't1',
+  metadata: {
+    image: [{ value: 'localImageId' }],
+  },
+  attachments: [
+    {
+      _id: 'pending1',
+      originalname: 'photo.jpg',
+      filename: 'photo.jpg',
+      serializedFile: 'data:image/jpeg;base64,aW1hZ2U=',
+      fileLocalID: 'localImageId',
+    },
+  ],
+});
+
+const parseEntityJsonFromPayload = (payload: ReturnType<typeof buildSaveWithFilesPayload>) =>
+  JSON.parse(payload.fields?.[0]?.value ?? '{}') as {
+    metadata?: { image?: Array<{ attachment?: number; value: string }> };
+    attachments?: Array<{ serializedFile?: string }>;
+  };
+
+const imageUploadMediaConfig = () => ({
+  saveMediaContext: {
+    names: new Set(['image']),
+    types: new Map<string, 'image' | 'media'>([['image', 'image']]),
+  },
+});
+
+const saveImageUploadEntity = async () => {
+  const entity = imageUploadEntity();
+  mockPostMultipart.mockResolvedValue(mockSavedEntityResponse());
+  const [saved, error] = await saveWithFiles(entity, {
+    headers: { 'Content-Language': 'en' },
+    ...imageUploadMediaConfig(),
+  });
+  const payload = mockPostMultipart.mock.calls[0]?.[1] as ReturnType<
+    typeof buildSaveWithFilesPayload
+  >;
+  return { saved, error, payload, entityJson: parseEntityJsonFromPayload(payload) };
+};
+
 const wirePolicyTestHarness = () => {
   const eventBus = new ApiClientEventBus();
   const start = jest.fn();
@@ -200,54 +259,7 @@ describe('entity save stack integration', () => {
     });
 
     it('uploads image metadata attachments and links them in entity json', async () => {
-      const mediaPropertyNames = new Set(['image']);
-      const mediaPropertyTypes = new Map<string, 'image' | 'media'>([['image', 'image']]);
-      const entity = {
-        _id: 'entity1',
-        sharedId: 'entity1',
-        title: 'Entity 1',
-        template: 't1',
-        metadata: {
-          image: [{ value: 'localImageId' }],
-        },
-        attachments: [
-          {
-            _id: 'pending1',
-            originalname: 'photo.jpg',
-            filename: 'photo.jpg',
-            serializedFile: 'data:image/jpeg;base64,aW1hZ2U=',
-            fileLocalID: 'localImageId',
-          },
-        ],
-      };
-
-      mockPostMultipart.mockResolvedValue([
-        {
-          entity: {
-            _id: 'entity1',
-            sharedId: 'entity1',
-            language: 'en',
-            template: 't1',
-            creationDate: 1,
-            user: 'u1',
-            title: 'Entity 1',
-          },
-        },
-      ]);
-
-      const [saved, error] = await saveWithFiles(entity, {
-        headers: { 'Content-Language': 'en' },
-        mediaPropertyNames,
-        mediaPropertyTypes,
-      });
-
-      const payload = mockPostMultipart.mock.calls[0]?.[1] as ReturnType<
-        typeof buildSaveWithFilesPayload
-      >;
-      const entityJson = JSON.parse(payload.fields?.[0]?.value ?? '{}') as {
-        metadata?: { image?: Array<{ attachment?: number; value: string }> };
-        attachments?: Array<{ serializedFile?: string }>;
-      };
+      const { saved, error, payload, entityJson } = await saveImageUploadEntity();
 
       expect(error).toBeUndefined();
       expect(saved?.entity?.title).toBe('Entity 1');
