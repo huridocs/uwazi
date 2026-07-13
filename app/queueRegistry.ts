@@ -79,6 +79,9 @@ import { tenants } from '#api/tenants/tenantContext.js';
 import { SendWelcomeEmailHandler } from '#api/core/infrastructure/jobs/SendWelcomeEmailHandler.js';
 import { MigrationJob } from '#api/core/infrastructure/jobs/MigrationJob.js';
 import { MigrationJobFactory } from '#api/core/infrastructure/factories/MigrationJobFactory.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
+import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
 
 type Register = <T extends Dispatchable>(
   dispatchable: DispatchableClass<T>,
@@ -332,5 +335,9 @@ export function registerJobs(register: Register) {
 
   register(SendWelcomeEmailHandler, async () => new SendWelcomeEmailHandler());
 
-  register(MigrationJob, async () => MigrationJobFactory.create());
+  register(MigrationJob, async () =>
+    MigrationJobFactory.create({
+      logger: LoggerFactory.systemLogger(withFeature(StandardJSONWriter, 'migration')),
+    })
+  );
 }
