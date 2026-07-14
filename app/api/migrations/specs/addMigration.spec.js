@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 const plopfile = require('../plopfile.cjs');
 
 const createFakePlop = () => {
@@ -85,7 +86,7 @@ describe('add-migration generator', () => {
   });
 
   it('should calculate nextSchemaDelta based on existing schema migrations', () => {
-    expect(plop.helpers.nextSchemaDelta()).toBe(4);
+    expect(plop.helpers.nextSchemaDelta()).toBe(5);
   });
 
   it('should calculate nextMigrationDelta based on existing tenant migrations', () => {
@@ -95,6 +96,6 @@ describe('add-migration generator', () => {
   });
 
   it('should provide latestPgSchemaDelta for tenant migration requiresSchema', () => {
-    expect(plop.helpers.latestPgSchemaDelta()).toBe(3);
+    expect(plop.helpers.latestPgSchemaDelta()).toBe(4);
   });
 });

@@ -1,6 +1,7 @@
--- Migration 004: 004-add-row-level-security
--- Add Row-level security for templates, thesauri and files tables.
+-- Migration 4: add-row-level-security-policy
+-- This migration is adding Row-level Security policy to templates, thesauri and files table
 
+-- Add your schema changes here
 
 ALTER TABLE templates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE thesauri ENABLE ROW LEVEL SECURITY;
