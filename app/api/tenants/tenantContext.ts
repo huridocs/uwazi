@@ -21,7 +21,6 @@ type Tenant = {
     deactivateTestJob?: boolean;
     paragraphExtraction?: boolean;
     fileCacheHeaders?: boolean;
-    v2CSVImport?: boolean;
     dataViz?: boolean;
     themeCustomization?: boolean;
     v2GetEntity?: boolean;
