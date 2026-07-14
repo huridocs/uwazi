@@ -77,8 +77,12 @@ const getSurfaceThemeVars = (
     'color-mix(in srgb, #E5E7EB 70%, #ffffff)',
     `color-mix(in srgb, ${roles.border.default} 60%, transparent)`
   ),
-  [CARD_SHADOW]: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
-  [CARD_RADIUS]: getPresetValue(presetId, '0.375rem', '0.5rem'),
+  [CARD_SHADOW]: getPresetValue(
+    presetId,
+    '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+    resolved['--color-theme-card-shadow']
+  ),
+  [CARD_RADIUS]: getPresetValue(presetId, '0.375rem', resolved['--color-theme-card-radius']),
 });
 
 const getCardThemeVars = (
