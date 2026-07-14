@@ -12,13 +12,13 @@ dotenv.config();
 
 const PostgresEnvSchema = z
   .object({
-    POSTGRES_HOST: z.string(),
-    POSTGRES_PORT: z.coerce.number(),
-    POSTGRES_DB: z.string(),
-    POSTGRES_USER: z.string(),
-    POSTGRES_PASSWORD: z.string(),
-    POSTGRES_APP_USER: z.string(),
-    POSTGRES_APP_PASSWORD: z.string(),
+    POSTGRES_HOST: z.string().default('127.0.0.1'),
+    POSTGRES_PORT: z.coerce.number().default(5432),
+    POSTGRES_DB: z.string().default('uwazi_development'),
+    POSTGRES_USER: z.string().default('uwazi'),
+    POSTGRES_PASSWORD: z.string().default('uwazi'),
+    POSTGRES_APP_USER: z.string().default('app_user'),
+    POSTGRES_APP_PASSWORD: z.string().default('app_user'),
   })
   .passthrough();
 
