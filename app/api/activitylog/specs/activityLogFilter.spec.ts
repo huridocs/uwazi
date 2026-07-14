@@ -294,18 +294,6 @@ describe('activityLogFilter', () => {
                     $and: [
                       {
                         url: {
-                          $regex: '^\\/api\\/import$',
-                        },
-                      },
-                      {
-                        method: 'POST',
-                      },
-                    ],
-                  },
-                  {
-                    $and: [
-                      {
-                        url: {
                           $regex: '^\\/api\\/translations\\/import$',
                         },
                       },
