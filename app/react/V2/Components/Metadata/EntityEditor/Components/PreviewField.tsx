@@ -1,5 +1,6 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
+import { EntityField } from './EntityField.js';
 
 type PreviewFieldProps = {
   context: string;
@@ -8,8 +9,8 @@ type PreviewFieldProps = {
 };
 
 const PreviewField = ({ context, label, value }: PreviewFieldProps) => (
-  <div className="text-ink bg-(--bg-surface)">
-    <div className="mb-2 font-bold">
+  <EntityField>
+    <div className="text-sm font-bold text-ink">
       <Translate context={context}>{label}</Translate>
     </div>
     <p className="mb-3 text-sm text-ink-secondary">
@@ -24,7 +25,7 @@ const PreviewField = ({ context, label, value }: PreviewFieldProps) => (
         />
       </div>
     ) : null}
-  </div>
+  </EntityField>
 );
 
 export { PreviewField };

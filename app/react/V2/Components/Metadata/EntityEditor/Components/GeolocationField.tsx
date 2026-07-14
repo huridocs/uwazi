@@ -1,7 +1,12 @@
 import React from 'react';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
-import { Translate } from '#app/I18N/index.js';
 import { Geolocation } from '#V2/Components/Forms/index.js';
+import {
+  EntityFieldError,
+  EntityFieldLabel,
+  getFieldErrorState,
+} from '../functions/fieldErrorState.js';
+import { EntityField } from './EntityField.js';
 
 type GeolocationFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
@@ -22,7 +27,7 @@ const GeolocationField = <TFormValues extends FieldValues = FieldValues>({
   const required = Boolean(registerOptions?.required);
 
   return (
-    <div className="text-ink bg-(--bg-surface)">
+    <EntityField>
       <Controller
         control={control}
         name={field}
@@ -54,25 +59,22 @@ const GeolocationField = <TFormValues extends FieldValues = FieldValues>({
                 })
               : {};
 
-          const showRequiredError = Boolean(fieldState.error);
+          const { showError, message } = getFieldErrorState(fieldState);
 
           return (
             <>
-              <div
-                className={`font-bold mb-2 ${
-                  showRequiredError ? 'text-(--color-theme-control-text-error)' : ''
-                }`}
-              >
-                <Translate className="" context={context}>
-                  {label}
-                </Translate>
-                {registerOptions?.required && '*'}
-              </div>
+              <EntityFieldLabel
+                htmlFor={geolocationField.name}
+                context={context}
+                label={label}
+                required={Boolean(registerOptions?.required)}
+                showError={showError}
+              />
               <Geolocation
                 name={geolocationField.name}
                 disabled={disabled}
                 value={{ lat, lon }}
-                hasErrors={showRequiredError}
+                hasErrors={showError}
                 onChange={({ lat: nextLat, lon: nextLon }) => {
                   geolocationField.onChange({
                     lat: nextLat,
@@ -80,16 +82,12 @@ const GeolocationField = <TFormValues extends FieldValues = FieldValues>({
                   });
                 }}
               />
-              {showRequiredError ? (
-                <div className="mt-2 text-sm text-(--color-theme-control-text-error)">
-                  <Translate>This field is required</Translate>
-                </div>
-              ) : null}
+              <EntityFieldError showError={showError} message={message} />
             </>
           );
         }}
       />
-    </div>
+    </EntityField>
   );
 };
 

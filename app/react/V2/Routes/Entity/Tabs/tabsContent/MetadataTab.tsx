@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useRevalidator } from 'react-router';
+import { useAtomValue } from 'jotai';
 import type { Entity } from '#V2/api/entities/types.js';
+import { mediaContextFromTemplate } from '#shared/entitySave/mediaContext.js';
+import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.js';
 import { EditEntity, type EditEntityErrors } from '#V2/Components/Metadata/EntityEditor/index.js';
 import { apiValidationsToEditEntityErrors } from '#V2/Components/Metadata/EntityEditor/functions/editEntityErrors.js';
@@ -15,6 +18,7 @@ type MetadataTabProps = {
 
 const MetadataTab = ({ entity }: MetadataTabProps) => {
   const { entities } = useServices();
+  const templates = useAtomValue(templatesAtom);
   const {
     isEditing,
     isSaving,
@@ -75,8 +79,12 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
     abortRef.current = new AbortController();
 
     try {
+      const saveMediaContext = mediaContextFromTemplate(
+        templates.find(template => template._id === editedEntity.template)
+      );
       const [data, error] = await entities.upsert(editedEntity, {
         signal: abortRef.current.signal,
+        saveMediaContext,
       });
       if (error) {
         handleUpsertError(error);
@@ -93,24 +101,26 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
   };
 
   return (
-    <div className="h-full min-h-0 flex-1 overflow-y-auto py-3">
-      {!isEditing && <MetadataDisplay entity={entity} />}
-      {isEditing && (
-        <>
-          {saveError && (
-            <p className="mb-3 text-sm text-red-600" role="alert">
-              {saveError}
-            </p>
-          )}
-          <EditEntity
-            formId="edit-entity-form"
-            entity={entity}
-            onSave={onSave}
-            disabled={isSaving}
-            errors={editErrors}
-          />
-        </>
-      )}
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex-1 overflow-auto px-4 py-3 pb-8" data-testid="metadata-edit-scroll">
+        {!isEditing && <MetadataDisplay entity={entity} />}
+        {isEditing && (
+          <div className="space-y-3">
+            {saveError && (
+              <p className="text-sm text-red-600" role="alert">
+                {saveError}
+              </p>
+            )}
+            <EditEntity
+              formId="edit-entity-form"
+              entity={entity}
+              onSave={onSave}
+              disabled={isSaving}
+              errors={editErrors}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
