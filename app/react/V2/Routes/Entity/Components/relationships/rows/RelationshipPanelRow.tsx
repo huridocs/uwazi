@@ -19,7 +19,7 @@ type RelationshipPanelRowHandlers = {
   activeRelationshipId?: string;
   onClick: (marker: RelationshipMarker) => void;
   onView: (marker: RelationshipMarker) => void;
-  onDelete: (marker: RelationshipMarker, relationshipIds?: string[]) => void;
+  onDelete?: (marker: RelationshipMarker, relationshipIds?: string[]) => void;
 };
 
 type RelationshipPanelRowProps = RelationshipPanelRowHandlers & {
@@ -77,7 +77,9 @@ const renderNestedRows = (
           representedCount={representedMarkers.length}
           onClick={() => handlers.onClick(marker)}
           onView={() => handlers.onView(marker)}
-          onDelete={() => handlers.onDelete(marker, representedIds)}
+          onDelete={
+            handlers.onDelete ? () => handlers.onDelete?.(marker, representedIds) : undefined
+          }
         />
       </RelationshipsTreeNode>
     );
@@ -100,7 +102,7 @@ const RelationshipPanelRowComponent = ({
         isSelected={handlers.activeRelationshipId === entry.marker._id}
         onClick={() => handlers.onClick(entry.marker)}
         onView={() => handlers.onView(entry.marker)}
-        onDelete={() => handlers.onDelete(entry.marker)}
+        onDelete={handlers.onDelete ? () => handlers.onDelete?.(entry.marker) : undefined}
       />
     );
   }

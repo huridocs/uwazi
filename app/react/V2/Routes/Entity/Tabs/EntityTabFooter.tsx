@@ -11,7 +11,7 @@ const EntityTabFooter = ({
   className = '',
 }: EntityTabFooterProps) => (
   <div
-    className={`shrink-0 flex h-12 max-h-12 w-full items-center overflow-hidden border-t border-border-soft px-3 ${
+    className={`shrink-0 flex h-12 max-h-12 w-full items-center overflow-hidden border-t border-border px-4 ${
       highlighted ? 'bg-selected' : 'bg-paper'
     } ${className}`}
     data-testid="entity-tab-footer"

@@ -2,6 +2,7 @@ import React from 'react';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { Button } from '#V2/Components/UI/index.js';
+import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
 import { fileSupportsLanguage } from './fileUploadHelpers.js';
 import { getRowIcon } from './filesTableColumns.js';
 import { EntityFileRow } from './types.js';
@@ -21,15 +22,17 @@ const FileDetailsView = ({ row, onEdit }: { row: EntityFileRow; onEdit: () => vo
           <p className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
             <Translate>File details</Translate>
           </p>
-          <Button
-            variant="compact"
-            size="small"
-            onClick={onEdit}
-            className="inline-flex items-center gap-1"
-          >
-            <PencilIcon className="h-3 w-3" />
-            <Translate>Edit</Translate>
-          </Button>
+          <EntityWriteAuthorization>
+            <Button
+              variant="compact"
+              size="small"
+              onClick={onEdit}
+              className="inline-flex items-center gap-1"
+            >
+              <PencilIcon className="h-3 w-3" />
+              <Translate>Edit</Translate>
+            </Button>
+          </EntityWriteAuthorization>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
