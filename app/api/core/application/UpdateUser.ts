@@ -4,6 +4,7 @@ import { EncryptedPassword } from '../domain/user/EncryptedPassword.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { UsersDataSource } from './contracts/UsersDataSource.js';
 import { UsergroupsDataSource } from './contracts/UsergroupsDataSource.js';
+import { UpdateUserError } from '../domain/user/errors.js';
 
 const UpdateUserInputSchema = z.object({
   _id: z.string(),
@@ -25,9 +26,19 @@ class UpdateUser extends AbstractUseCase<Input, Output, Deps> {
     const { password, ...userData } = input;
     const user = new User(userData);
 
+    const existingUser = (await this.deps.usersDS.getById(input._id)).getDataOrThrow();
+
     (await this.deps.usersDS.checkUniqueUsername(user)).getDataOrThrow();
 
     (await this.deps.usersDS.checkUniqueEmail(user)).getDataOrThrow();
+
+    const actor = this.getActor();
+    const isRoleChanged = user.role !== existingUser.role;
+    const isEditingSelf = user._id === actor._id;
+
+    if ((isRoleChanged || !isEditingSelf) && actor.role !== 'admin') {
+      throw new UpdateUserError('Unauthorized');
+    }
 
     if (password) {
       user.setPassword(await EncryptedPassword.create(password));

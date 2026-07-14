@@ -5,12 +5,16 @@ import { UsersDataSourceFactory } from './UsersDataSourceFactory.js';
 
 export class UpdateUserUseCaseFactory {
   static default(overrides?: Partial<UpdateUserDependencies>) {
-    const useCase = new UpdateUser({
-      usersDS: UsersDataSourceFactory.default(),
-      usergroupsDS: UsergroupsDataSourceFactory.default(),
-      transactionManager: ExecutionContext.transactionManager,
-      ...overrides,
-    });
+    const { actor, tenant } = ExecutionContext;
+    const useCase = new UpdateUser(
+      {
+        usersDS: UsersDataSourceFactory.default(),
+        usergroupsDS: UsergroupsDataSourceFactory.default(),
+        transactionManager: ExecutionContext.transactionManager,
+        ...overrides,
+      },
+      { actor, tenant }
+    );
     return useCase;
   }
 }

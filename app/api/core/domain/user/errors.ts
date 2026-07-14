@@ -39,7 +39,13 @@ class UserNotFound extends DomainError {
 
 class UsersGetError extends DomainError {
   constructor() {
-    super('Could not get useers', 'user.get');
+    super('Could not get users', 'user.get');
+  }
+}
+
+class UpdateUserError extends DomainError {
+  constructor(message: string) {
+    super(message, 'user.update');
   }
 }
 
@@ -51,4 +57,5 @@ export {
   IsDeleteOfLastUser,
   UserNotFound,
   UsersGetError,
+  UpdateUserError,
 };
