@@ -42,6 +42,7 @@ import { I18NUtils } from './I18N/index.js';
 import { IStore } from './istore.js';
 import type { IndexComponents } from './Routes.js';
 import { getRoutes } from './Routes.js';
+import { createServerServices } from '#V2/services/server/index.js';
 import { create as createReduxStore } from './store.js';
 import { ProtectedRoute } from './ProtectedRoute.js';
 import { isMobileDevice } from '../shared/detectDevice.js';
@@ -338,7 +339,14 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     Login: (login as { Login: IndexComponents['Login'] }).Login,
   };
 
-  const routes = getRoutes(settings, req.user && req.user._id, headers, indexComponents);
+  const serverServices = createServerServices(req);
+  const routes = getRoutes(
+    settings,
+    req.user && req.user._id,
+    headers,
+    indexComponents,
+    serverServices
+  );
 
   const matched = matchRoutes(routes, req.path);
 
