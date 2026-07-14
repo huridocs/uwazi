@@ -8,7 +8,7 @@ import {
   createLoadingPolicy,
   createNotificationPolicy,
 } from '#V2/api/policies.js';
-import { buildSaveWithFilesPayload, saveWithFiles } from '#V2/api/entities/saveWithFiles.js';
+import { buildSaveWithFilesPayload, saveWithFiles } from '#V2/api/entities/save/index.js';
 
 const mockPostMultipart = jest.fn();
 
@@ -39,6 +39,65 @@ const createMockXMLHttpRequest = () => {
   }
 
   return MockXMLHttpRequest;
+};
+
+const mockSavedEntityResponse = () => [
+  {
+    entity: {
+      _id: 'entity1',
+      sharedId: 'entity1',
+      language: 'en',
+      template: 't1',
+      creationDate: 1,
+      user: 'u1',
+      title: 'Entity 1',
+    },
+  },
+];
+
+const imageUploadEntity = () => ({
+  _id: 'entity1',
+  sharedId: 'entity1',
+  title: 'Entity 1',
+  template: 't1',
+  metadata: {
+    image: [{ value: 'localImageId' }],
+  },
+  attachments: [
+    {
+      _id: 'pending1',
+      originalname: 'photo.jpg',
+      filename: 'photo.jpg',
+      serializedFile: 'data:image/jpeg;base64,aW1hZ2U=',
+      fileLocalID: 'localImageId',
+    },
+  ],
+});
+
+const parseEntityJsonFromPayload = (payload: ReturnType<typeof buildSaveWithFilesPayload>) =>
+  JSON.parse(payload.fields?.[0]?.value ?? '{}') as {
+    metadata?: { image?: Array<{ attachment?: number; value: string }> };
+    attachments?: Array<{ serializedFile?: string }>;
+  };
+
+const imageUploadMediaConfig = () => ({
+  saveMediaContext: {
+    names: new Set(['image']),
+    types: new Map<string, 'image' | 'media'>([['image', 'image']]),
+  },
+});
+
+const saveImageUploadEntity = async () => {
+  const entity = imageUploadEntity();
+  mockPostMultipart.mockResolvedValue(mockSavedEntityResponse());
+  const [saved, error] = await saveWithFiles(entity, {
+    headers: { 'Content-Language': 'en' },
+    ...imageUploadMediaConfig(),
+  });
+  const payload = mockPostMultipart.mock.calls[0]?.[1] as ReturnType<
+    typeof buildSaveWithFilesPayload
+  >;
+  return { saved, error, payload, entityJson: parseEntityJsonFromPayload(payload) };
 };
 
 const wirePolicyTestHarness = () => {
@@ -197,6 +256,17 @@ describe('entity save stack integration', () => {
       expect(mockPostMultipart).toHaveBeenCalledWith('entities', payload, {
         headers: { 'Content-Language': 'en' },
       });
+    });
+
+    it('uploads image metadata attachments and links them in entity json', async () => {
+      const { saved, error, payload, entityJson } = await saveImageUploadEntity();
+
+      expect(error).toBeUndefined();
+      expect(saved?.entity?.title).toBe('Entity 1');
+      expect(entityJson.metadata?.image).toEqual([{ value: '', attachment: 0 }]);
+      expect(entityJson.attachments?.[0]?.serializedFile).toBeUndefined();
+      expect(payload.files?.map(file => file.name)).toEqual(['attachments[0]']);
+      expect(payload.files?.[0]?.filename).toBe('photo.jpg');
     });
   });
 });

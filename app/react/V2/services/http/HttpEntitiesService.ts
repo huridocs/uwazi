@@ -50,8 +50,12 @@ const httpEntitiesService: EntitiesService = {
     entitiesApi.getBySharedId({ sharedId, language, omitRelationships }, headers),
 
   upsert: async (entity: EntitySaveInput, options: ServiceRequestOptions = {}) => {
-    const { headers, notifySuccess = true, signal } = options;
-    const [data, error] = await entitiesApi.saveWithFiles(entity, { headers, signal });
+    const { headers, notifySuccess = true, signal, saveMediaContext } = options;
+    const [data, error] = await entitiesApi.saveWithFiles(entity, {
+      headers,
+      signal,
+      saveMediaContext,
+    });
     if (error || !data) return [undefined, error];
     if (!data.entity) {
       return [
