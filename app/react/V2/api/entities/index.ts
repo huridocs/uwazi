@@ -9,7 +9,7 @@ import { EntitySearchResponse } from '../types.js';
 import { ApiResponse } from '../ApiResponse.js';
 import * as formatter from './formatter.js';
 import { Entity } from './types.js';
-import { saveWithFiles } from './saveWithFiles.js';
+import { saveWithFiles } from './save/index.js';
 
 const requestHeaders = (headers?: IncomingHttpHeaders): Record<string, string> | undefined => {
   const mapped = Object.fromEntries(

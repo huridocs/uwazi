@@ -3,7 +3,7 @@
  */
 import fetchMock from 'fetch-mock';
 import { ClientTemplateSchema } from '#app/istore.js';
-import { wrapEntityMetadata, prepareMetadataAndFiles } from '../wrapper.js';
+import { prepareMetadataAndFiles, wrapEntityMetadata } from '#shared/entitySave/legacyMetadata.js';
 
 describe('wrapEntityMetadata', () => {
   const template = {
@@ -60,6 +60,30 @@ describe('wrapEntityMetadata', () => {
           fileLocalID: 'k3rutmyxrdr',
         },
       ],
+    });
+  });
+
+  it('indexes by fileLocalID order, not serializedFile upload order', () => {
+    const entity = {
+      title: 'A title',
+      metadata: { image: 'both' },
+      attachments: [
+        {
+          originalname: 'local-only.pdf',
+          type: 'attachment',
+          fileLocalID: 'onlyLocal',
+        },
+        {
+          originalname: 'uploaded.jpg',
+          type: 'attachment',
+          fileLocalID: 'both',
+          serializedFile: 'data:image/jpeg;base64,aW1hZ2U=',
+        },
+      ],
+    };
+
+    expect(wrapEntityMetadata(entity, template).metadata).toEqual({
+      image: [{ value: '', attachment: 1 }],
     });
   });
 
@@ -137,6 +161,7 @@ describe('wrapEntityMetadata', () => {
   });
 });
 
+/* eslint-disable max-statements */
 describe('prepareMetadataAndFiles', () => {
   let template: ClientTemplateSchema;
   beforeEach(() => {
