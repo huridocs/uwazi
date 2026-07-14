@@ -5,10 +5,11 @@ import * as thesauriApi from '#V2/api/thesauri/index.js';
 import { httpThesaurusService } from '../HttpThesaurusService.js';
 
 jest.mock('#V2/api/thesauri', () => ({
-  get: jest.fn(),
-  save: jest.fn(),
-  deleteThesauri: jest.fn(),
-  importThesaurus: jest.fn(),
+  getAll: jest.fn(),
+  getById: jest.fn(),
+  upsert: jest.fn(),
+  remove: jest.fn(),
+  importFromFile: jest.fn(),
 }));
 
 describe('HttpThesaurusService', () => {
@@ -21,11 +22,11 @@ describe('HttpThesaurusService', () => {
     const thesaurus = { name: 'Colors', values: [] };
     const saved = { _id: 'thesaurus1', ...thesaurus };
 
-    jest.mocked(thesauriApi.importThesaurus).mockResolvedValue(saved);
+    jest.mocked(thesauriApi.importFromFile).mockResolvedValue([saved, undefined]);
 
     const [data, error] = await httpThesaurusService.importFromFile(thesaurus, file);
 
-    expect(thesauriApi.importThesaurus).toHaveBeenCalledWith(thesaurus, file);
+    expect(thesauriApi.importFromFile).toHaveBeenCalledWith(thesaurus, file, undefined);
     expect(error).toBeUndefined();
     expect(data).toEqual(saved);
   });
