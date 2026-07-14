@@ -43,7 +43,7 @@ export class MigrateCollectionToPostgres {
     const pgTransactionManager = new PostgresTransactionManager(
       PostgresDB.knex,
       this.tenantId,
-      LoggerFactory.migrationLogger()
+      LoggerFactory.systemLogger()
     );
     const table = PostgresTable.for({
       tableName: config.pgTable,
