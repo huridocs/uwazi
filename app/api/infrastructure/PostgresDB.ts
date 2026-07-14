@@ -71,6 +71,16 @@ export const PostgresDB = {
     return _pool;
   },
 
+  adminPool(): pg.Pool {
+    return new pg.Pool({
+      host: config.postgres.host,
+      port: config.postgres.port,
+      database: config.postgres.database,
+      user: config.postgres.admin.user,
+      password: config.postgres.admin.password,
+    });
+  },
+
   setConfig(cfg: PostgresConnectionConfig): void {
     _activeConfig = cfg;
     _knex = null;

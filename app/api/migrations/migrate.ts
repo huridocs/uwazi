@@ -36,7 +36,7 @@ export const runMigration = async (): Promise<MigrationRunResult> => {
   try {
     PostgresDB.connect();
     postgresConnected = true;
-    const pgPool = PostgresDB.pool();
+    const pgPool = PostgresDB.adminPool();
     const pgMigrator = new PgMigrator(PG_MIGRATIONS_DIR, pgPool);
     currentSchemaVersion = await pgMigrator.getCurrentVersion();
   } catch (error) {

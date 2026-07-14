@@ -180,7 +180,7 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
           __dirname,
           'api/core/infrastructure/postgresql/schema_migrations'
         );
-        const pgMigrator = new PgMigrator(pgMigrationsDir, PostgresDB.pool());
+        const pgMigrator = new PgMigrator(pgMigrationsDir, PostgresDB.adminPool());
         const { pending: pendingPgMigrations } = await pgMigrator.status();
         if (pendingPgMigrations.length > 0) {
           console.error(
