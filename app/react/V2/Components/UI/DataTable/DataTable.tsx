@@ -146,22 +146,22 @@ const DataTableSelectionCell = <T extends { rowId: string }>({
   disableRow,
 }: {
   row: Row<T>;
-  disableRow?: (row: T) => boolean;
+  disableRow?: (row: T) => boolean | string;
 }) => {
-  const disabled = disableRow?.(row.original);
+  const disabled = Boolean(disableRow?.(row.original));
   return (
     <input
       type="checkbox"
       className={checkboxInputClassName}
       checked={row.getIsSelected()}
-      disabled={Boolean(disabled)}
+      disabled={disabled}
       onChange={row.getToggleSelectedHandler()}
     />
   );
 };
 
 const createSelectionColumn = <T extends { rowId: string }>(
-  disableRow?: (row: T) => boolean
+  disableRow?: (row: T) => boolean | string
 ): ColumnDef<T> => ({
   id: '_select',
   header: DataTableSelectionHeader,
@@ -210,17 +210,9 @@ const SortableRow = <T extends { rowId: string }>({
 
   const rowInteractionProps = isClickable
     ? {
-        role: 'button' as const,
-        tabIndex: 0,
         onClick: () => onRowClick?.(row.original),
-        onKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            onRowClick?.(row.original);
-          }
-        },
       }
-    : { role: 'row' as const };
+    : {};
 
   return (
     <>

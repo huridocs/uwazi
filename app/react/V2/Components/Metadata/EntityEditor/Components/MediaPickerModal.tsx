@@ -1,6 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { mimeTypeFromUrl } from '#api/files/extensionHelper.js';
 import { Translate } from '#app/I18N/index.js';
+import type { ClientFile } from '#app/istore.js';
 import { FileType } from '#shared/types/fileType.js';
 import { validateAndSanitizeUrl } from '#shared/urlValidationUtils.js';
 import { Button, FileIcon, Modal } from '#V2/Components/UI/index.js';
@@ -8,12 +9,14 @@ import { formatBytes } from '#V2/shared/formatHelpers.js';
 
 type MediaPickerMode = 'image' | 'media';
 
+type MediaPickerAttachment = FileType | ClientFile;
+
 type MediaPickerModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onSelect: (value: string, localFile?: File) => void;
   mode: MediaPickerMode;
-  attachments: FileType[];
+  attachments: MediaPickerAttachment[];
   currentValue?: string;
 };
 
@@ -26,16 +29,23 @@ const extractMediaUrl = (value?: string) => {
   return match ? match[1].trim() : value;
 };
 
-const getAttachmentUrl = (attachment: FileType) =>
+const getAttachmentUrl = (attachment: MediaPickerAttachment) =>
   attachment.url || (attachment.filename ? `/api/files/${attachment.filename}` : '');
 
-const isImageAttachment = (attachment: FileType) => {
+const getAttachmentSelectionValue = (attachment: MediaPickerAttachment) => {
+  if ('fileLocalID' in attachment && attachment.fileLocalID) {
+    return attachment.fileLocalID;
+  }
+  return getAttachmentUrl(attachment);
+};
+
+const isImageAttachment = (attachment: MediaPickerAttachment) => {
   const mimetype =
     attachment.mimetype || (attachment.url ? mimeTypeFromUrl(attachment.url) : undefined);
   return Boolean(mimetype?.includes('image'));
 };
 
-const isMediaAttachment = (attachment: FileType) => {
+const isMediaAttachment = (attachment: MediaPickerAttachment) => {
   const mimetype =
     attachment.mimetype || (attachment.url ? mimeTypeFromUrl(attachment.url) : undefined);
 
@@ -46,7 +56,7 @@ const isMediaAttachment = (attachment: FileType) => {
   return Boolean(attachment.url);
 };
 
-const filterAttachments = (attachments: FileType[], mode: MediaPickerMode) => {
+const filterAttachments = (attachments: MediaPickerAttachment[], mode: MediaPickerMode) => {
   const withMimetype = attachments.map(attachment => ({
     ...attachment,
     mimetype:
@@ -205,27 +215,29 @@ const MediaPickerModal = ({
             ) : (
               <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {filteredAttachments.map(attachment => {
-                  const attachmentUrl = getAttachmentUrl(attachment);
-                  const isSelected = attachmentUrl === selectedUrl;
+                  const selectionValue = getAttachmentSelectionValue(attachment);
+                  const isSelected = selectionValue === selectedUrl;
 
                   return (
                     <li
                       key={
-                        attachment._id
-                          ? String(attachment._id)
-                          : (attachment.filename ?? attachment.url ?? '')
+                        ('fileLocalID' in attachment && attachment.fileLocalID) ||
+                        (attachment._id ? String(attachment._id) : undefined) ||
+                        attachment.filename ||
+                        attachment.url ||
+                        selectionValue
                       }
                     >
                       <button
                         type="button"
-                        data-testid={`media-picker-attachment-${attachment._id || attachment.filename}`}
+                        data-testid={`media-picker-attachment-${attachment._id || attachment.filename || selectionValue}`}
                         className={[
                           'flex w-full flex-col overflow-hidden rounded-md border text-left',
                           isSelected
                             ? 'border-(--color-theme-control-border-active) bg-(--color-theme-surface-warm)'
                             : 'border-(--color-theme-control-border) bg-(--color-theme-control-bg)',
                         ].join(' ')}
-                        onClick={() => handleSelect(attachmentUrl)}
+                        onClick={() => handleSelect(selectionValue)}
                       >
                         <div className="border-b border-(--color-theme-control-border) px-2 py-1">
                           <span className="block truncate text-xs font-medium">

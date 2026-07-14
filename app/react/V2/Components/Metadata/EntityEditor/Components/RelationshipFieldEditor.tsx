@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   InformationCircleIcon,
   LinkIcon,
@@ -8,6 +8,7 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { Translate, t } from '#app/I18N/index.js';
+import { debounce } from '#app/utils/index.js';
 import { CompactSearchInput } from '#V2/Components/Forms/CompactSearchInput.js';
 import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
@@ -67,6 +68,28 @@ const RelationshipFieldEditor = ({
     const results = await lookupSearch(search);
     setCandidates(results.filter(option => !selectedIds.includes(option.value)));
   };
+
+  const runSearchRef = useRef(runSearch);
+  runSearchRef.current = runSearch;
+
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((search: string) => {
+        runSearchRef.current(search).catch(() => undefined);
+      }, 300),
+    []
+  );
+
+  useEffect(() => {
+    if (!adding) {
+      return;
+    }
+    if (!query) {
+      runSearchRef.current('').catch(() => undefined);
+      return;
+    }
+    debouncedSearch(query);
+  }, [adding, debouncedSearch, query]);
 
   const addEntity = (option: MultiselectListOption) => {
     onChange([
@@ -199,10 +222,7 @@ const RelationshipFieldEditor = ({
             value={query}
             disabled={disabled}
             placeholder={t('System', 'Search entities…', null, false)}
-            onChange={next => {
-              setQuery(next);
-              runSearch(next).catch(() => undefined);
-            }}
+            onChange={setQuery}
           />
           <div className="max-h-45 overflow-auto">
             {candidates.length === 0 ? (
@@ -229,8 +249,8 @@ const RelationshipFieldEditor = ({
           type="button"
           disabled={disabled}
           onClick={() => {
+            setQuery('');
             setAdding(true);
-            runSearch('').catch(() => undefined);
           }}
           className="flex h-7 cursor-pointer items-center gap-1.5 rounded-md bg-warm px-2.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink disabled:cursor-not-allowed disabled:opacity-60"
         >

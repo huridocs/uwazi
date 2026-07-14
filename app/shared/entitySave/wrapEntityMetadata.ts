@@ -1,21 +1,29 @@
 import isString from 'lodash/isString.js';
+import type { MetadataObjectSchema, MetadataSchema } from '#shared/types/commonTypes.js';
 import { isUploadId } from './mediaMetadata.js';
-import { isMediaProperty, shouldSkipValue } from './legacyTypes.js';
+import { isLegacyMetadataObject, isMediaProperty, shouldSkipValue } from './legacyTypes.js';
 import type {
-  LegacyEntity,
-  LegacyMetadataValue,
+  LegacyMetadataPrimitive,
   LegacyTemplate,
   MediaProperty,
   MetadataObjectSchemaLike,
+  WrapableAttachment,
+  WrapableEntity,
 } from './legacyTypes.js';
 
-type FileLocalMetadataValues = Record<
-  string,
-  { value: string; attachment: number; timeLinks?: string }
->;
+type LinkedAttachmentValue = {
+  value: string;
+  attachment: number;
+  timeLinks?: string;
+};
+type FileLocalMetadataValues = Record<string, LinkedAttachmentValue>;
+
+type WrappedEntity<T extends WrapableEntity> = Omit<T, 'metadata'> & {
+  metadata?: MetadataSchema;
+};
 
 const buildFileLocalMetadataValues = (
-  attachments: NonNullable<LegacyEntity['attachments']>
+  attachments: ReadonlyArray<WrapableAttachment>
 ): FileLocalMetadataValues =>
   attachments
     .filter(attachment => Boolean(attachment.fileLocalID))
@@ -34,94 +42,109 @@ const buildFileLocalMetadataValues = (
       };
     }, {});
 
-const resolveFieldValue = (metadataEntry: LegacyMetadataValue | undefined) =>
-  typeof metadataEntry === 'object' &&
-  metadataEntry !== null &&
-  !Array.isArray(metadataEntry) &&
-  metadataEntry.data !== undefined
+const resolveFieldValue = (metadataEntry: unknown) =>
+  isLegacyMetadataObject(metadataEntry) && metadataEntry.data !== undefined
     ? metadataEntry.data
     : metadataEntry;
 
-const applyMediaTimeLinks = (
+const resolveMediaFileLocalId = (
   property: MediaProperty | undefined,
-  metadataEntry: LegacyMetadataValue | undefined,
-  fieldValue: unknown,
-  fileLocalMetadataValues: FileLocalMetadataValues
-) => {
-  let fileLocalID = fieldValue;
+  metadataEntry: unknown,
+  fieldValue: unknown
+): { fileLocalID: unknown; timeLinks?: string } => {
   if (!(property && metadataEntry && property.type === 'media' && isString(fieldValue))) {
-    return fileLocalID;
+    return { fileLocalID: fieldValue };
   }
 
   const mediaExpGroups = fieldValue.match(/^\(?([\w+]{5,15})(, ({.+})\))?|$/);
-  let timeLinks: string | undefined;
-  if (mediaExpGroups?.[1]) {
-    [, fileLocalID = fieldValue, , timeLinks] = mediaExpGroups;
+  if (!mediaExpGroups?.[1]) {
+    return { fileLocalID: fieldValue };
   }
+
+  const [, matchedId = fieldValue, , timeLinks] = mediaExpGroups;
+  return { fileLocalID: matchedId, timeLinks };
+};
+
+const withTimeLinks = (
+  values: FileLocalMetadataValues,
+  fileLocalID: unknown,
+  timeLinks?: string
+): FileLocalMetadataValues => {
   if (
-    isString(fileLocalID) &&
-    fileLocalID.length < 20 &&
-    timeLinks &&
-    isUploadId(fileLocalID) &&
-    fileLocalMetadataValues[fileLocalID]
+    !timeLinks ||
+    !isString(fileLocalID) ||
+    fileLocalID.length >= 20 ||
+    !isUploadId(fileLocalID) ||
+    !values[fileLocalID]
   ) {
-    fileLocalMetadataValues[fileLocalID] = {
-      ...fileLocalMetadataValues[fileLocalID],
-      timeLinks,
-    };
+    return values;
   }
-  return fileLocalID;
+  return {
+    ...values,
+    [fileLocalID]: { ...values[fileLocalID], timeLinks },
+  };
+};
+
+const toPropertyValue = (value: unknown): MetadataObjectSchema['value'] => {
+  if (
+    value === null ||
+    value === undefined ||
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
+  ) {
+    return value ?? null;
+  }
+  return null;
+};
+
+const wrapArrayEntry = (
+  metadataEntry: ReadonlyArray<LegacyMetadataPrimitive | MetadataObjectSchemaLike>
+): MetadataObjectSchema[] =>
+  metadataEntry.map(value =>
+    typeof value === 'object' && value !== null && 'value' in value
+      ? { value: toPropertyValue(value.value) }
+      : { value: toPropertyValue(value) }
+  );
+
+const defaultWrappedValue = (metadataEntry: unknown): MetadataObjectSchema => {
+  if (isLegacyMetadataObject(metadataEntry) && metadataEntry.data !== undefined) {
+    return { value: toPropertyValue(metadataEntry.data) };
+  }
+  return { value: toPropertyValue(metadataEntry) };
 };
 
 const wrapMetadataEntry = (
   key: string,
-  metadataEntry: LegacyMetadataValue | undefined,
+  metadataEntry: unknown,
   mediaProperties: MediaProperty[],
   fileLocalMetadataValues: FileLocalMetadataValues
-): MetadataObjectSchemaLike[] => {
+): { wrapped: MetadataObjectSchema[]; values: FileLocalMetadataValues } => {
   const property = mediaProperties.find(item => item.name === key);
   const fieldValue = resolveFieldValue(metadataEntry);
 
-  if (isMediaProperty(property) && shouldSkipValue(fieldValue as LegacyMetadataValue)) {
-    return [{ value: '' }];
+  if (isMediaProperty(property) && shouldSkipValue(fieldValue)) {
+    return { wrapped: [{ value: '' }], values: fileLocalMetadataValues };
   }
 
-  const fileLocalID = applyMediaTimeLinks(
-    property,
-    metadataEntry,
-    fieldValue,
-    fileLocalMetadataValues
-  );
-  const metadataValue =
-    typeof fileLocalID === 'string' ? fileLocalMetadataValues[fileLocalID] : undefined;
+  const { fileLocalID, timeLinks } = resolveMediaFileLocalId(property, metadataEntry, fieldValue);
+  const values = withTimeLinks(fileLocalMetadataValues, fileLocalID, timeLinks);
+  const metadataValue = typeof fileLocalID === 'string' ? values[fileLocalID] : undefined;
 
   if (Array.isArray(metadataEntry)) {
-    return metadataEntry.map(value =>
-      typeof value === 'object' && value !== null && 'value' in value
-        ? { value: value.value }
-        : { value }
-    );
+    return { wrapped: wrapArrayEntry(metadataEntry), values };
   }
 
-  if (metadataValue) {
-    return [metadataValue];
-  }
-
-  const resolvedValue =
-    typeof metadataEntry === 'object' &&
-    metadataEntry !== null &&
-    !Array.isArray(metadataEntry) &&
-    metadataEntry.data !== undefined
-      ? { value: metadataEntry.data }
-      : { value: metadataEntry };
-
-  return [resolvedValue];
+  return {
+    wrapped: [metadataValue ?? defaultWrappedValue(metadataEntry)],
+    values,
+  };
 };
 
-const wrapEntityMetadata = <T extends LegacyEntity>(
+const wrapEntityMetadata = <T extends WrapableEntity>(
   entity: T,
   template?: LegacyTemplate | null
-): T => {
+): WrappedEntity<T> => {
   const mediaProperties =
     template?.properties?.filter(
       (property): property is MediaProperty =>
@@ -129,24 +152,34 @@ const wrapEntityMetadata = <T extends LegacyEntity>(
     ) ?? [];
 
   if (!entity.metadata) {
-    return entity;
+    const { metadata: _metadata, ...rest } = entity;
+    return { ...rest };
   }
 
-  const fileLocalMetadataValues = buildFileLocalMetadataValues(entity.attachments ?? []);
-  const metadata = Object.keys(entity.metadata).reduce<Record<string, MetadataObjectSchemaLike[]>>(
-    (wrappedMetadata, key) => ({
-      ...wrappedMetadata,
-      [key]: wrapMetadataEntry(
+  const { metadata } = Object.keys(entity.metadata).reduce<{
+    metadata: MetadataSchema;
+    values: FileLocalMetadataValues;
+  }>(
+    (state, key) => {
+      const { wrapped, values } = wrapMetadataEntry(
         key,
         entity.metadata?.[key],
         mediaProperties,
-        fileLocalMetadataValues
-      ),
-    }),
-    {}
+        state.values
+      );
+      return {
+        metadata: { ...state.metadata, [key]: wrapped },
+        values,
+      };
+    },
+    {
+      metadata: {},
+      values: buildFileLocalMetadataValues(entity.attachments ?? []),
+    }
   );
 
   return { ...entity, metadata };
 };
 
 export { wrapEntityMetadata };
+export type { WrappedEntity };

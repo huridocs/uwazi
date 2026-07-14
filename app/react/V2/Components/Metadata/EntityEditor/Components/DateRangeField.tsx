@@ -71,7 +71,7 @@ const DateRangeField = <TFormValues extends FieldValues = FieldValues>({
                     onBlur={onBlur}
                     value={fromISODate || ''}
                     hasErrors={showError}
-                    max={toISODate}
+                    max={toISODate ?? undefined}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       const seconds = e.target.value ? parseLocalizedDate(e.target.value) : null;
                       onChange({ from: seconds, to });
@@ -90,7 +90,7 @@ const DateRangeField = <TFormValues extends FieldValues = FieldValues>({
                     onBlur={onBlur}
                     value={toISODate || ''}
                     hasErrors={showError}
-                    min={fromISODate}
+                    min={fromISODate ?? undefined}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       const seconds = e.target.value ? parseLocalizedDate(e.target.value) : null;
                       onChange({ from, to: seconds });

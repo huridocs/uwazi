@@ -1,23 +1,42 @@
 import uniqueID from '#shared/uniqueID.js';
 import { readFileAsBase64 } from '#shared/fileUploadUtils.js';
+import type { MetadataSchema } from '#shared/types/commonTypes.js';
 import type { ClientFile } from '#app/istore.js';
 import { prepareFiles } from './prepareFiles.js';
 import { wrapEntityMetadata } from './wrapEntityMetadata.js';
-import { shouldSkipValue } from './legacyTypes.js';
-import type { LegacyEntity, LegacyTemplate, MediaProperty } from './legacyTypes.js';
+import { isMediaProperty, shouldSkipValue } from './legacyTypes.js';
+import type {
+  LegacyEntity,
+  LegacyMetadataValue,
+  LegacyTemplate,
+  MediaProperty,
+} from './legacyTypes.js';
+import type { TemplateProperty } from './types.js';
+
+type PreparedLegacyEntity = Omit<LegacyEntity, 'attachments' | 'file' | 'template' | 'metadata'> & {
+  template?: string;
+  file?: File;
+  attachments: File[];
+  metadata: MetadataSchema;
+};
+
+const toMediaProperties = (
+  mediaProperties: ReadonlyArray<TemplateProperty | MediaProperty>
+): MediaProperty[] => mediaProperties.filter(isMediaProperty);
 
 const prepareMetadataAndFiles = async (
-  values: LegacyEntity & { template?: string },
+  values: LegacyEntity,
   attachedFiles: File[],
-  template: LegacyTemplate & { _id?: string },
-  mediaProperties: MediaProperty[]
-) => {
-  const { metadataFiles, entityAttachments, files } = await prepareFiles(mediaProperties, values);
+  template: LegacyTemplate,
+  mediaProperties: ReadonlyArray<TemplateProperty | MediaProperty>
+): Promise<PreparedLegacyEntity> => {
+  const mediaProps = toMediaProperties(mediaProperties);
+  const { metadataFiles, entityAttachments, files } = await prepareFiles(mediaProps, values);
 
-  const cleanedMetadata = { ...values.metadata };
+  const cleanedMetadata: Record<string, LegacyMetadataValue> = { ...values.metadata };
   Object.keys(cleanedMetadata).forEach(key => {
     const metadataValue = cleanedMetadata[key];
-    if (metadataValue && shouldSkipValue(metadataValue)) {
+    if (metadataValue !== undefined && shouldSkipValue(metadataValue)) {
       cleanedMetadata[key] = '';
     }
   });
@@ -25,9 +44,16 @@ const prepareMetadataAndFiles = async (
   const fields = { ...cleanedMetadata, ...metadataFiles };
   const entity = { ...values, metadata: fields, attachments: entityAttachments };
   const wrappedEntity = wrapEntityMetadata(entity, template);
-  wrappedEntity.file = values.file ? (values.file as File[])[0] : undefined;
-  wrappedEntity.attachments = [...files, ...attachedFiles];
-  return { ...wrappedEntity, template: template._id };
+  const primaryFile = Array.isArray(values.file) ? values.file[0] : values.file;
+  const templateId = typeof template._id === 'string' ? template._id : undefined;
+
+  return {
+    ...wrappedEntity,
+    file: primaryFile instanceof File ? primaryFile : undefined,
+    attachments: [...files, ...attachedFiles],
+    template: templateId,
+    metadata: wrappedEntity.metadata ?? {},
+  };
 };
 
 const registerMediaAttachment = async (
@@ -51,3 +77,4 @@ const registerMediaAttachment = async (
   });
 
 export { prepareMetadataAndFiles, registerMediaAttachment, wrapEntityMetadata };
+export type { PreparedLegacyEntity };

@@ -342,6 +342,7 @@ const EditEntity = ({
     allAttachments: entityAttachments,
     pendingAttachments,
     registerPendingAttachment,
+    removePendingAttachment,
   } = useEntityMediaUpload(entity);
 
   const isMetadataReady = metadataProperties.every(
@@ -728,6 +729,7 @@ const EditEntity = ({
                   pendingAttachments={pendingAttachments}
                   entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
                   onRegisterPendingAttachment={registerPendingAttachment}
+                  onRemovePendingAttachment={removePendingAttachment}
                   key={property._id}
                 />
               );
@@ -746,6 +748,7 @@ const EditEntity = ({
                   pendingAttachments={pendingAttachments}
                   entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
                   onRegisterPendingAttachment={registerPendingAttachment}
+                  onRemovePendingAttachment={removePendingAttachment}
                   key={property._id}
                 />
               );

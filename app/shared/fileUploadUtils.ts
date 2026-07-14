@@ -37,7 +37,30 @@ export const constructFile = ({ serializedFile: base64, originalname }: ClientFi
   return new File([new Uint8Array(buff)], originalname || '', { type: fileFormat });
 };
 
+const mediaViewUrlById = new Map<string, string>();
+
 export const prepareHTMLMediaView = (supportingFile: ClientFile) => {
+  const key = supportingFile.fileLocalID;
+  if (key) {
+    const cached = mediaViewUrlById.get(key);
+    if (cached) {
+      return cached;
+    }
+  }
+
   const file = constructFile(supportingFile);
-  return URL.createObjectURL(file);
+  const url = URL.createObjectURL(file);
+  if (key) {
+    mediaViewUrlById.set(key, url);
+  }
+  return url;
+};
+
+export const revokeHTMLMediaView = (fileLocalID: string) => {
+  const url = mediaViewUrlById.get(fileLocalID);
+  if (!url) {
+    return;
+  }
+  URL.revokeObjectURL(url);
+  mediaViewUrlById.delete(fileLocalID);
 };

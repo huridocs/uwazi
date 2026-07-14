@@ -138,7 +138,10 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
                   }
 
                   fieldController.onChange(
-                    onSelectedValuesChange(value ? [value] : [], optionsState)
+                    onSelectedValuesChange(
+                      value ? [value] : [],
+                      lookupSearch ? optionsState : options
+                    )
                   );
                 }}
               />
@@ -168,7 +171,9 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
                     return;
                   }
 
-                  fieldController.onChange(onSelectedValuesChange(selectedValues, optionsState));
+                  fieldController.onChange(
+                    onSelectedValuesChange(selectedValues, lookupSearch ? optionsState : options)
+                  );
                 }}
                 hasErrors={showError}
                 hideFilters={hideFilters}

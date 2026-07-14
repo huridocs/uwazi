@@ -114,6 +114,7 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
                           onBlur={onBlur}
                           value={fromISODate}
                           hasErrors={showError}
+                          max={toISODate || undefined}
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const nextFrom = e.target.value
                               ? parseLocalizedDate(e.target.value)
@@ -139,6 +140,7 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
                           onBlur={onBlur}
                           value={toISODate}
                           hasErrors={showError}
+                          min={fromISODate || undefined}
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const nextTo = e.target.value
                               ? parseLocalizedDate(e.target.value)

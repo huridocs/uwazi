@@ -6,8 +6,12 @@ type LegacyMetadataObject = { data?: string | File; originalFile?: File | null }
 
 type MetadataObjectSchemaLike = { value?: unknown };
 
+type LegacyMetadataPrimitive = string | number | boolean | null | undefined;
+
 type LegacyMetadataValue =
-  string | null | undefined | LegacyMetadataObject | MetadataObjectSchemaLike[];
+  | LegacyMetadataPrimitive
+  | LegacyMetadataObject
+  | ReadonlyArray<LegacyMetadataPrimitive | MetadataObjectSchemaLike>;
 
 type LegacyAttachment = {
   fileLocalID?: string;
@@ -19,20 +23,38 @@ type LegacyAttachment = {
   mimetype?: string;
 };
 
-type LegacyEntity = {
-  metadata?: Record<string, LegacyMetadataValue>;
-  attachments?: LegacyAttachment[];
-  file?: unknown;
+type WrapableAttachment = {
+  fileLocalID?: string;
+  timeLinks?: string;
+};
+
+type WrapableEntity = {
+  title?: string;
+  template?: unknown;
+  metadata?: Record<string, unknown> | null;
+  attachments?: ReadonlyArray<WrapableAttachment> | null;
+};
+
+type LegacyEntity = WrapableEntity & {
+  title?: string;
+  template?: unknown;
+  metadata?: Record<string, LegacyMetadataValue> | null;
+  attachments?: Array<LegacyAttachment | File> | null;
+  file?: File | File[] | undefined;
 };
 
 type LegacyTemplate = {
-  properties?: TemplateProperty[];
+  _id?: unknown;
+  properties?: ReadonlyArray<TemplateProperty> | null;
 };
 
 const isMediaProperty = (property?: TemplateProperty): property is MediaProperty =>
   Boolean(property && (property.type === 'image' || property.type === 'media'));
 
-const shouldSkipValue = (fieldValue: LegacyMetadataValue): boolean => {
+const isLegacyMetadataObject = (value: unknown): value is LegacyMetadataObject =>
+  typeof value === 'object' && value !== null && !Array.isArray(value) && 'data' in value;
+
+const shouldSkipValue = (fieldValue: unknown): boolean => {
   if (fieldValue === null || fieldValue === undefined) {
     return true;
   }
@@ -40,9 +62,7 @@ const shouldSkipValue = (fieldValue: LegacyMetadataValue): boolean => {
     return true;
   }
   if (
-    typeof fieldValue === 'object' &&
-    !Array.isArray(fieldValue) &&
-    'data' in fieldValue &&
+    isLegacyMetadataObject(fieldValue) &&
     typeof fieldValue.data === 'string' &&
     fieldValue.data.startsWith('blob:') &&
     !fieldValue.originalFile
@@ -52,13 +72,16 @@ const shouldSkipValue = (fieldValue: LegacyMetadataValue): boolean => {
   return false;
 };
 
-export { isMediaProperty, shouldSkipValue };
+export { isLegacyMetadataObject, isMediaProperty, shouldSkipValue };
 export type {
   LegacyAttachment,
   LegacyEntity,
   LegacyMetadataObject,
+  LegacyMetadataPrimitive,
   LegacyMetadataValue,
   LegacyTemplate,
   MediaProperty,
   MetadataObjectSchemaLike,
+  WrapableAttachment,
+  WrapableEntity,
 };

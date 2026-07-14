@@ -29,8 +29,8 @@ interface InputFieldProps {
   onChange?: ChangeEventHandler<HTMLInputElement>;
   onSelect?: ChangeEventHandler<HTMLInputElement>;
   onBlur?: ChangeEventHandler<HTMLInputElement>;
-  min?: string;
-  max?: string;
+  min?: string | number;
+  max?: string | number;
 }
 
 const cx = (...classes: Array<string | false | undefined>) => classes.filter(Boolean).join(' ');
