@@ -1,5 +1,5 @@
 import type { MetadataSchema } from '#shared/types/commonTypes.js';
-import { mapMediaMetadataForSave } from '../mediaMetadata.js';
+import { filterReferencedPendingAttachments, mapMediaMetadataForSave } from '../mediaMetadata.js';
 
 type EntityWithMetadata = {
   metadata?: MetadataSchema;
@@ -147,5 +147,55 @@ describe('mapMediaMetadataForSave', () => {
     const prepared = mapMediaMetadataForSave(entity, mediaPropertyNames, mediaPropertyTypes);
 
     expect(metadata(prepared).image).toEqual([{ value: '' }]);
+  });
+
+  it('preserves unresolved upload ids instead of wiping them', () => {
+    const entity: EntityWithMetadata = {
+      sharedId: 'entity1',
+      template: 'template1',
+      title: 'Entity',
+      metadata: {
+        image: [{ value: 'missingUploadId' }],
+      },
+      attachments: [],
+    };
+
+    const prepared = mapMediaMetadataForSave(entity, mediaPropertyNames, mediaPropertyTypes);
+
+    expect(metadata(prepared).image).toEqual([{ value: 'missingUploadId' }]);
+  });
+});
+
+describe('filterReferencedPendingAttachments', () => {
+  it('keeps only pending attachments referenced by media metadata', () => {
+    const pending = [
+      { fileLocalID: 'keepMe', serializedFile: 'data:image/png;base64,a' },
+      { fileLocalID: 'dropMe', serializedFile: 'data:image/png;base64,b' },
+    ];
+
+    const referenced = filterReferencedPendingAttachments(
+      pending,
+      {
+        image: [{ value: 'keepMe' }],
+        media: [{ value: '(otherId, {"timelinks":{}})' }],
+      },
+      new Set(['image', 'media'])
+    );
+
+    expect(referenced).toEqual([pending[0]]);
+  });
+
+  it('extracts upload ids from timelink media values', () => {
+    const pending = [{ fileLocalID: 'clipId', serializedFile: 'data:video/mp4;base64,Y2xpcA==' }];
+
+    const referenced = filterReferencedPendingAttachments(
+      pending,
+      {
+        media: [{ value: '(clipId, {"timelinks":{"00:00:01":"intro"}})' }],
+      },
+      new Set(['media'])
+    );
+
+    expect(referenced).toEqual(pending);
   });
 });

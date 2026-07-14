@@ -18,7 +18,13 @@ const Component = ({
 }) => (
   <PaneLayout localStorageKey={localStorageKey} defaultRatios={defaultRatios}>
     <PaneLayout.Pane key="pane-1">
-      <div className="h-full overflow-auto" tabIndex={0}>
+      <div
+        className="h-full overflow-auto"
+        role="region"
+        aria-label="Scrollable pane content"
+        // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- scrollable-region-focusable
+        tabIndex={0}
+      >
         <p>
           Aenean ac purus nulla. Fusce non consequat odio. Duis non sagittis mi. In at magna a lorem
           porta porta. Mauris a tincidunt enim, eget venenatis est. Aenean euismod ex sem.
@@ -30,7 +36,13 @@ const Component = ({
       </div>
     </PaneLayout.Pane>
     <PaneLayout.Pane key="pane-2">
-      <div className="min-w-96 overflow-x-auto" tabIndex={0}>
+      <div
+        className="min-w-96 overflow-x-auto"
+        role="region"
+        aria-label="Scrollable pane content"
+        // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- scrollable-region-focusable
+        tabIndex={0}
+      >
         <h2 className="text-lg font-semibold">This pane children has a min width</h2>
         <p>
           Nunc ullamcorper metus risus, vitae semper augue laoreet vitae. Morbi commodo risus id
@@ -42,7 +54,13 @@ const Component = ({
       </div>
     </PaneLayout.Pane>
     <PaneLayout.Pane key="pane-3">
-      <div className="h-full overflow-auto" tabIndex={0}>
+      <div
+        className="h-full overflow-auto"
+        role="region"
+        aria-label="Scrollable pane content"
+        // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- scrollable-region-focusable
+        tabIndex={0}
+      >
         <p>
           Sed velit eros, pretium id imperdiet eget, tristique vel odio. Vestibulum ante ipsum
           primis in faucibus orci luctus et ultrices posuere cubilia curae; Quisque non mollis mi.

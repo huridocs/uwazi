@@ -1,10 +1,9 @@
 import { ClientFile } from '#app/istore.js';
 import { AttachmentSchema } from './types/commonTypes.js';
 
-export const readFileAsBase64 = async (
-  file: Blob,
-  cb: (serializedFile: string) => void
-): Promise<void> =>
+const mediaViewUrlById = new Map<string, string>();
+
+const readFileAsBase64 = async (file: Blob, cb: (serializedFile: string) => void): Promise<void> =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
 
@@ -25,10 +24,10 @@ export const readFileAsBase64 = async (
     reader.readAsDataURL(file);
   });
 
-export const isSerializedFile = (file: ClientFile | AttachmentSchema): file is ClientFile =>
+const isSerializedFile = (file: ClientFile | AttachmentSchema): file is ClientFile =>
   (<ClientFile>file).serializedFile !== undefined;
 
-export const constructFile = ({ serializedFile: base64, originalname }: ClientFile) => {
+const constructFile = ({ serializedFile: base64, originalname }: ClientFile) => {
   const fileParts = base64!.split(',');
   const fileFormat = fileParts[0].split(';')[0].split(':')[1];
   const fileContent = fileParts[1];
@@ -37,9 +36,7 @@ export const constructFile = ({ serializedFile: base64, originalname }: ClientFi
   return new File([new Uint8Array(buff)], originalname || '', { type: fileFormat });
 };
 
-const mediaViewUrlById = new Map<string, string>();
-
-export const prepareHTMLMediaView = (supportingFile: ClientFile) => {
+const prepareHTMLMediaView = (supportingFile: ClientFile) => {
   const key = supportingFile.fileLocalID;
   if (key) {
     const cached = mediaViewUrlById.get(key);
@@ -56,11 +53,19 @@ export const prepareHTMLMediaView = (supportingFile: ClientFile) => {
   return url;
 };
 
-export const revokeHTMLMediaView = (fileLocalID: string) => {
+const revokeHTMLMediaView = (fileLocalID: string) => {
   const url = mediaViewUrlById.get(fileLocalID);
   if (!url) {
     return;
   }
   URL.revokeObjectURL(url);
   mediaViewUrlById.delete(fileLocalID);
+};
+
+export {
+  readFileAsBase64,
+  isSerializedFile,
+  constructFile,
+  prepareHTMLMediaView,
+  revokeHTMLMediaView,
 };

@@ -15,7 +15,8 @@ import { registerMediaAttachment } from '#shared/entitySave/legacyMetadata.js';
 import { isUploadId } from '#shared/entitySave/mediaMetadata.js';
 import { resolveMediaDisplayUrl } from '#shared/entitySave/resolveMediaDisplayUrl.js';
 import { Button, MediaPlayer } from '#V2/Components/UI/index.js';
-import { MediaPickerModal, MediaPickerMode } from './MediaPickerModal.js';
+import { MediaPickerModal } from './MediaPickerModal.js';
+import type { MediaPickerMode } from './MediaPickerModal.js';
 import { EntityFieldError, getFieldErrorState } from '../functions/fieldErrorState.js';
 import { EntityField } from './EntityField.js';
 
@@ -273,8 +274,16 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
         name={field}
         rules={{
           ...registerOptions,
-          validate: value =>
-            !required || (typeof value === 'string' && value.trim().length > 0) || 'Required',
+          validate: value => {
+            if (!required) {
+              return true;
+            }
+            if (typeof value !== 'string') {
+              return 'Required';
+            }
+            const { url } = parseFieldValue(value);
+            return url.trim().length > 0 || 'Required';
+          },
         }}
         render={({ field: mediaField, fieldState }) => {
           const rawValue = typeof mediaField.value === 'string' ? mediaField.value : '';
@@ -295,17 +304,13 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
             nextTimelinks: EditableTimelink[] = timelinks
           ) => {
             if (localFile) {
-              try {
-                const attachment = await registerMediaAttachment(entitySharedId, localFile);
-                releaseCurrentUpload();
-                onRegisterPendingAttachment(attachment);
-                const fileLocalID = attachment.fileLocalID ?? attachment._id;
-                mediaField.onChange(
-                  mode === 'media' ? encodeTimelinksValue(fileLocalID, nextTimelinks) : fileLocalID
-                );
-              } catch {
-                return;
-              }
+              const attachment = await registerMediaAttachment(entitySharedId, localFile);
+              releaseCurrentUpload();
+              onRegisterPendingAttachment(attachment);
+              const fileLocalID = attachment.fileLocalID ?? attachment._id;
+              mediaField.onChange(
+                mode === 'media' ? encodeTimelinksValue(fileLocalID, nextTimelinks) : fileLocalID
+              );
               return;
             }
 

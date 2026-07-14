@@ -1,20 +1,24 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ClientFile } from '#app/istore.js';
 import type { Entity } from '#V2/api/entities/types.js';
-import type { FileType } from '#shared/types/fileType.js';
 import { revokeHTMLMediaView } from '#shared/fileUploadUtils.js';
 
-const useEntityMediaUpload = (entity?: Entity) => {
+const revokePending = (attachments: ClientFile[]) => {
+  attachments.forEach(attachment => {
+    if (attachment.fileLocalID) {
+      revokeHTMLMediaView(attachment.fileLocalID);
+    }
+  });
+};
+
+const useEntityMediaUpload = (entity?: Entity, templateId?: string) => {
   const [pendingAttachments, setPendingAttachments] = useState<ClientFile[]>([]);
+  const pendingRef = useRef(pendingAttachments);
+  pendingRef.current = pendingAttachments;
 
   const entityAttachments = useMemo(
     () => [...(entity?.attachments ?? []), ...(entity?.documents ?? [])],
     [entity?.attachments, entity?.documents]
-  );
-
-  const allAttachments = useMemo(
-    () => [...entityAttachments, ...pendingAttachments] as Array<FileType | ClientFile>,
-    [entityAttachments, pendingAttachments]
   );
 
   const registerPendingAttachment = useCallback((attachment: ClientFile) => {
@@ -28,23 +32,30 @@ const useEntityMediaUpload = (entity?: Entity) => {
     revokeHTMLMediaView(fileLocalID);
   }, []);
 
-  useEffect(() => {
+  const clearPendingAttachments = useCallback(() => {
     setPendingAttachments(current => {
-      current.forEach(attachment => {
-        if (attachment.fileLocalID) {
-          revokeHTMLMediaView(attachment.fileLocalID);
-        }
-      });
+      revokePending(current);
       return [];
     });
-  }, [entity?.sharedId]);
+  }, []);
+
+  useEffect(() => {
+    clearPendingAttachments();
+  }, [clearPendingAttachments, entity?.sharedId, templateId]);
+
+  useEffect(
+    () => () => {
+      revokePending(pendingRef.current);
+    },
+    []
+  );
 
   return {
-    allAttachments,
     entityAttachments,
     pendingAttachments,
     registerPendingAttachment,
     removePendingAttachment,
+    clearPendingAttachments,
   };
 };
 

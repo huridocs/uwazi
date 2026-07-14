@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
-import type { ControllerFieldState } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
 import {
   MultiselectList,
@@ -9,7 +8,6 @@ import {
   type SearchSelectGroup,
   type SearchSelectOption,
 } from '#V2/Components/Forms/index.js';
-import { Label } from '#V2/Components/Forms/Label.js';
 import { defaultSearch } from '#V2/Components/Forms/MultiselectList/MultiselectList.js';
 import { EntityFieldError, getFieldErrorState } from '../functions/fieldErrorState.js';
 import { EntityField } from './EntityField.js';
@@ -100,16 +98,12 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
     };
   }, [lookupSearch]);
 
-  const renderLabel = (fieldState: ControllerFieldState) => {
-    const { showError } = getFieldErrorState(fieldState);
-
-    return (
-      <Label htmlFor={field} hasErrors={showError}>
-        <Translate context={context}>{label}</Translate>
-        {registerOptions?.required && '*'}
-      </Label>
-    );
-  };
+  const labelContent = (
+    <>
+      <Translate context={context}>{label}</Translate>
+      {registerOptions?.required && '*'}
+    </>
+  );
 
   return (
     <EntityField>
@@ -124,27 +118,30 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
             const selectedValue = getSelectedValues(fieldController.value)[0] ?? '';
 
             return (
-              <SearchSelect
-                id={field}
-                label={renderLabel(fieldState)}
-                options={searchSelectOptions.options}
-                groups={searchSelectOptions.groups}
-                value={selectedValue}
-                disabled={disabled}
-                hasErrors={showError}
-                onChange={value => {
-                  if (disabled) {
-                    return;
-                  }
+              <div>
+                <SearchSelect
+                  id={field}
+                  label={labelContent}
+                  options={searchSelectOptions.options}
+                  groups={searchSelectOptions.groups}
+                  value={selectedValue}
+                  disabled={disabled}
+                  hasErrors={showError}
+                  onChange={value => {
+                    if (disabled) {
+                      return;
+                    }
 
-                  fieldController.onChange(
-                    onSelectedValuesChange(
-                      value ? [value] : [],
-                      lookupSearch ? optionsState : options
-                    )
-                  );
-                }}
-              />
+                    fieldController.onChange(
+                      onSelectedValuesChange(
+                        value ? [value] : [],
+                        lookupSearch ? optionsState : options
+                      )
+                    );
+                  }}
+                />
+                <EntityFieldError showError={showError} message={message} />
+              </div>
             );
           }
 
@@ -154,7 +151,7 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
                 id={field}
                 panel
                 checkboxes
-                label={renderLabel(fieldState)}
+                label={labelContent}
                 items={optionsState}
                 onSearch={async search => {
                   if (lookupSearch) {

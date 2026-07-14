@@ -5,6 +5,8 @@ export {
   isSerializedFile,
 } from '../fileUploadUtils.js';
 export {
+  extractUploadIdFromMediaValue,
+  filterReferencedPendingAttachments,
   findFileLocalIdAttachmentIndex,
   findUploadedAttachmentIndex,
   isUploadId,

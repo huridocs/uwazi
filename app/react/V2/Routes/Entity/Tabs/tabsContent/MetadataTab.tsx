@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useRevalidator } from 'react-router';
 import { useAtomValue } from 'jotai';
 import type { Entity } from '#V2/api/entities/types.js';
@@ -19,10 +19,6 @@ type MetadataTabProps = {
 const MetadataTab = ({ entity }: MetadataTabProps) => {
   const { entities } = useServices();
   const templates = useAtomValue(templatesAtom);
-  const saveMediaContext = useMemo(
-    () => mediaContextFromTemplate(templates.find(template => template._id === entity.template)),
-    [entity.template, templates]
-  );
   const {
     isEditing,
     isSaving,
@@ -83,6 +79,9 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
     abortRef.current = new AbortController();
 
     try {
+      const saveMediaContext = mediaContextFromTemplate(
+        templates.find(template => template._id === editedEntity.template)
+      );
       const [data, error] = await entities.upsert(editedEntity, {
         signal: abortRef.current.signal,
         saveMediaContext,

@@ -66,7 +66,45 @@ const mapUploadIdValue = (
   attachments: ReadonlyArray<AttachmentLike>
 ): MetadataObjectSchema => {
   const attachmentIndex = resolveMetadataAttachmentIndex(attachments, uploadId);
-  return attachmentIndex >= 0 ? { value: '', attachment: attachmentIndex } : { value: '' };
+  return attachmentIndex >= 0 ? { value: '', attachment: attachmentIndex } : { value: uploadId };
+};
+
+const extractUploadIdFromMediaValue = (rawValue: string): string | undefined => {
+  if (
+    !rawValue ||
+    rawValue.startsWith('blob:') ||
+    rawValue.startsWith('http') ||
+    rawValue.startsWith('/')
+  ) {
+    return undefined;
+  }
+  if (rawValue.startsWith('(')) {
+    const id = rawValue.match(/^\(([^,]+),/)?.[1]?.trim();
+    return id && isUploadId(id) ? id : undefined;
+  }
+  return isUploadId(rawValue) ? rawValue : undefined;
+};
+
+const filterReferencedPendingAttachments = <T extends AttachmentLike>(
+  pending: ReadonlyArray<T>,
+  metadata: EntityWithSaveMetadata['metadata'],
+  mediaPropertyNames: ReadonlySet<string>
+): T[] => {
+  const referenced = new Set<string>();
+  mediaPropertyNames.forEach(name => {
+    const rawValue = metadata?.[name]?.[0]?.value;
+    if (typeof rawValue !== 'string') {
+      return;
+    }
+    const uploadId = extractUploadIdFromMediaValue(rawValue);
+    if (uploadId) {
+      referenced.add(uploadId);
+    }
+  });
+  return pending.filter(
+    (attachment): attachment is T & { fileLocalID: string } =>
+      typeof attachment.fileLocalID === 'string' && referenced.has(attachment.fileLocalID)
+  );
 };
 
 const mapMediaValue = (
@@ -114,6 +152,8 @@ const mapMediaMetadataForSave = <T extends EntityWithSaveMetadata>(
 };
 
 export {
+  extractUploadIdFromMediaValue,
+  filterReferencedPendingAttachments,
   findFileLocalIdAttachmentIndex,
   findUploadedAttachmentIndex,
   isUploadId,

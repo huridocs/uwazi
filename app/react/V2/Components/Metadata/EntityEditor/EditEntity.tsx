@@ -8,6 +8,7 @@ import { Entity } from '#V2/api/entities/types.js';
 import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js';
 import { lookup as lookupEntities } from '#V2/api/search/index.js';
 import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
+import { filterReferencedPendingAttachments } from '#shared/entitySave/mediaMetadata.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { thesauriAtom } from '#V2/atoms/thesauriAtom.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
@@ -339,11 +340,11 @@ const EditEntity = ({
   )?._id;
 
   const {
-    allAttachments: entityAttachments,
+    entityAttachments,
     pendingAttachments,
     registerPendingAttachment,
     removePendingAttachment,
-  } = useEntityMediaUpload(entity);
+  } = useEntityMediaUpload(entity, selectedTemplate);
 
   const isMetadataReady = metadataProperties.every(
     property => metadata?.[property.name] !== undefined
@@ -442,13 +443,23 @@ const EditEntity = ({
         metadataProperties,
         entity?.metadata
       );
+      const mediaPropertyNames = new Set(
+        metadataProperties
+          .filter(property => property.type === 'image' || property.type === 'media')
+          .map(property => property.name)
+      );
+      const referencedPending = filterReferencedPendingAttachments(
+        pendingAttachments,
+        formattedMetadata,
+        mediaPropertyNames
+      );
       const entityToSave = {
         ...entity,
         title: values.title || entity.title,
         template: values.template || entity.template,
         icon: (values.showIcon ? values.icon : EMPTY_ICON) as Entity['icon'],
         metadata: formattedMetadata,
-        attachments: [...(entity.attachments ?? []), ...pendingAttachments],
+        attachments: [...(entity.attachments ?? []), ...referencedPending],
       };
       await onSave?.(entityToSave);
     },

@@ -92,11 +92,12 @@ const RelationshipFieldEditor = ({
   }, [adding, debouncedSearch, query]);
 
   const addEntity = (option: MultiselectListOption) => {
+    const label = typeof option.label === 'string' ? option.label : option.searchLabel;
     onChange([
       ...values,
       {
         value: option.value,
-        label: option.searchLabel,
+        label,
         type: 'entity',
       },
     ]);
@@ -238,7 +239,10 @@ const RelationshipFieldEditor = ({
                   onClick={() => addEntity(option)}
                   className="flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-start transition-colors hover:bg-warm disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  <TemplatePill templateId={targetTemplateId ?? ''} label={option.searchLabel} />
+                  <TemplatePill
+                    templateId={targetTemplateId ?? ''}
+                    label={typeof option.label === 'string' ? option.label : option.searchLabel}
+                  />
                 </button>
               ))
             )}
