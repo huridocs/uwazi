@@ -12,7 +12,9 @@ import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/fact
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
+import { MigrationHumanReadableWriter } from '#api/core/libs/logger/infrastructure/writers/MigrationHumanReadableWriter.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
@@ -102,9 +104,12 @@ const createDefaultLogger: LoggerFactoryFn = (options: {
   structuredLogs: boolean;
 }) => {
   if (options.async) {
-    return LoggerFactory.systemLogger(StandardJSONWriter);
+    return LoggerFactory.systemLogger(withFeature(StandardJSONWriter, 'migration'));
   }
-  return LoggerFactory.migrationLogger(options.structuredLogs);
+  if (options.structuredLogs) {
+    return LoggerFactory.migrationLogger(withFeature(StandardJSONWriter, 'migration'));
+  }
+  return LoggerFactory.migrationLogger(MigrationHumanReadableWriter);
 };
 
 const createDefaultPgMigrator = (pool: any) => new PgMigrator(PG_MIGRATIONS_DIR, pool);

@@ -1,4 +1,5 @@
 import { tenants } from '#api/tenants/index.js';
+import { Tenant, Tenants } from '#api/tenants/tenantContext.js';
 import {
   Dispatchable,
   HeartbeatCallback,
@@ -26,6 +27,7 @@ type MigrationJobDeps = {
   logger: Logger;
   dispatcher: JobsDispatcher;
   reindexTenant: () => Promise<void>;
+  tenantsManager: Tenants;
 };
 
 class MigrationJob implements Dispatchable {
@@ -205,6 +207,13 @@ class MigrationJob implements Dispatchable {
       // eslint-disable-next-line no-await-in-loop
       await tenants.run(async () => {
         const tenant = tenants.current();
+        if (!(await this.deps.runner.tenantExists(tenant))) {
+          this.deps.logger.info(
+            `Skipping tenant '${tenantName}': no settings collection, tenant is not ready`
+          );
+          results.push({ status: 'done' });
+          return;
+        }
         const result = await this.deps.runner.migrateDelta(tenant, delta, schemaVersion);
         results.push(result);
       }, tenantName);
@@ -268,15 +277,34 @@ class MigrationJob implements Dispatchable {
   }
 
   private async reindexAllTenants(heartbeat: HeartbeatCallback): Promise<void> {
-    const tenantNames = Object.keys(tenants.tenants);
+    const tenantNames = Object.keys(this.deps.tenantsManager.tenants);
 
     for (const tenantName of tenantNames) {
       // eslint-disable-next-line no-await-in-loop
-      await tenants.run(async () => {
-        await this.deps.reindexTenant();
+      await this.deps.tenantsManager.run(async () => {
+        const tenant = this.deps.tenantsManager.current();
+        if (await this.deps.runner.tenantExists(tenant)) {
+          await this.reindexTenant(tenant);
+        } else {
+          this.deps.logger.info(
+            `Skipping reindex for tenant '${tenantName}': no settings collection, tenant is not ready`
+          );
+        }
       }, tenantName);
       // eslint-disable-next-line no-await-in-loop
       await heartbeat();
+    }
+  }
+
+  private async reindexTenant(tenant: Tenant): Promise<void> {
+    await this.deps.tenantsManager.setMaintenance(tenant.name, true);
+    this.deps.logger.info(`Tenant '${tenant.name}' set to maintenance mode for reindex`);
+
+    try {
+      await this.deps.reindexTenant();
+    } finally {
+      await this.deps.tenantsManager.setMaintenance(tenant.name, false);
+      this.deps.logger.info(`Tenant '${tenant.name}' removed from maintenance mode after reindex`);
     }
   }
 }
