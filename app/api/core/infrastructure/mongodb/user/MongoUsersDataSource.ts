@@ -52,6 +52,15 @@ class MongoUsersDataSource extends MongoDataSource<UserDBO> implements UsersData
     await this.getCollection<UserDBO>().insertOne(MongoUsersMapper.toDBO(user));
   }
 
+  async update(user: User): Promise<void> {
+    const dbo = MongoUsersMapper.toDBO(user);
+    const { _id, ...updates } = dbo;
+    await this.getCollection<UserDBO>().updateOne(
+      { _id, deletedAt: { $exists: false } },
+      { $set: updates }
+    );
+  }
+
   async delete(userIds: string[]): Promise<number> {
     if (userIds.length) {
       const collection = this.getCollection<UserDBO>();

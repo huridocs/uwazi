@@ -7,6 +7,7 @@ import users from '#api/users/users.js';
 import { CreateUserController } from './CreateUserController.js';
 import { DeleteUserController } from './DeleteUserController.js';
 import { GetUsersController } from './GetUsersController.js';
+import { UpdateUserController } from './UpdateUserController.js';
 import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 
 export const userRoutes = (app: Application) => {
@@ -29,6 +30,25 @@ export const userRoutes = (app: Application) => {
       }
     },
     CreateUserController.createHandler()
+  );
+  app.post(
+    '/api/users',
+    needsAuthorization(['admin', 'editor', 'collaborator']),
+    validatePasswordMiddleWare,
+    async (req: Request, res: Response, next: NextFunction) => {
+      if (tenants.current().featureFlags?.v2UpdateUser) {
+        next();
+      } else {
+        await validation.validateRequest({
+          type: 'object',
+          properties: {
+            body: userSchema,
+          },
+          required: ['body'],
+        })(req, res, next);
+      }
+    },
+    UpdateUserController.createHandler()
   );
   app.delete(
     '/api/users',
