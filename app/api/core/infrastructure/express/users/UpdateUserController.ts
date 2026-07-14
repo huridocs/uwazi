@@ -8,7 +8,7 @@ import { UpdateUserUseCaseFactory } from '../../factories/UpdateUserUseCaseFacto
 class UpdateUserController extends AbstractController<UpdateUserRequest> {
   protected async handle(): Promise<void> {
     const currentUser = this.user;
-    if (ExecutionContext.tenant.featureFlags?.v2CreateUser) {
+    if (ExecutionContext.tenant.featureFlags?.v2UpdateUser) {
       const startTime = Date.now();
       try {
         const input = UpdateUserInputSchema.parse(this.request.body);

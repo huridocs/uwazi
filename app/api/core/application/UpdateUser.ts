@@ -1,10 +1,11 @@
 import { z } from 'zod';
-import { User, UserRole } from '../domain/user/User.js';
+import { PUBLIC_USER_ID, User, UserRole } from '../domain/user/User.js';
 import { EncryptedPassword } from '../domain/user/EncryptedPassword.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { UsersDataSource } from './contracts/UsersDataSource.js';
 import { UsergroupsDataSource } from './contracts/UsergroupsDataSource.js';
 import { UpdateUserError } from '../domain/user/errors.js';
+import { UnauthorizedError } from '#api/authorization.v2/errors/UnauthorizedError.js';
 
 const UpdateUserInputSchema = z.object({
   _id: z.string(),
@@ -24,20 +25,29 @@ type Deps = { usersDS: UsersDataSource; usergroupsDS: UsergroupsDataSource };
 class UpdateUser extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
     const { password, ...userData } = input;
+
+    if (userData._id === PUBLIC_USER_ID.toString()) {
+      throw new UpdateUserError('Cannot modify system user');
+    }
+
     const user = new User(userData);
 
     const existingUser = (await this.deps.usersDS.getById(input._id)).getDataOrThrow();
-
-    (await this.deps.usersDS.checkUniqueUsername(user)).getDataOrThrow();
-
-    (await this.deps.usersDS.checkUniqueEmail(user)).getDataOrThrow();
 
     const actor = this.getActor();
     const isRoleChanged = user.role !== existingUser.role;
     const isEditingSelf = user._id === actor._id;
 
     if ((isRoleChanged || !isEditingSelf) && actor.role !== 'admin') {
-      throw new UpdateUserError('Unauthorized');
+      throw new UnauthorizedError();
+    }
+
+    if (existingUser.username !== user.username) {
+      (await this.deps.usersDS.checkUniqueUsername(user)).getDataOrThrow();
+    }
+
+    if (existingUser.email !== user.email) {
+      (await this.deps.usersDS.checkUniqueEmail(user)).getDataOrThrow();
     }
 
     if (password) {
