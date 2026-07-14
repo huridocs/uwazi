@@ -543,25 +543,20 @@ ID:,ID:
 Image doesn't match the required size.,Image doesn't match the required size.
 Import,Importer
 Import asset,Import asset
-Import completed,Import completed. Number of entities created:
 Import CSV,Importer CSV
 Import failed. Review details below.,Import failed. Review details below.
 Import finished successfully.,Import finished successfully.
 Import finished with errors. Review details below.,Import finished with errors. Review details below.
-Import instructions,Instructions d'importation
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.
 Import theme instance file,Import theme instance file
 Import was cancelled.,Import was cancelled.
-Imported entities from file,Imported entities from file
 Imported translations from file,Imported translations from file
-Importing data in progress,Importation de données en cours
 in,dans
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,dans la file d'attente OCR
 in this document,in this document
 Incoming,Incoming
-Indexing entities may take a few minutes,L'indexation des entités peut prendre quelques minutes
 Info,Info
 Information extraction training,Information extraction training
 Inherit,Inherit
@@ -1165,8 +1160,6 @@ Templates,Modèles
 Templates:,Templates:
 Text,Texte
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
-The import process threw an error:,Le processus d'importation a généré une erreur :
-The import process threw some warnings:,The import process threw some warnings:
 "The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process."
@@ -1310,7 +1303,6 @@ Updated translations,Updated translations
 Updated user,Updated user
 Updating template properties across,Updating template properties across
 Updating…,Updating…
-Upload a ZIP or CSV file.,Téléchargez un fichier ZIP ou CSV.
 Upload and select file,Télécharger et sélectionner le fichier
 Upload from computer,Télécharger à partir de l'ordinateur
 Upload image,Upload image
@@ -1322,7 +1314,6 @@ Uploaded document,Uploaded document
 Uploaded file,Uploaded file
 Uploading,Chargement
 Uploading ...,Transfert en cours ...
-Uploading file,Transférer un fichier
 Uploads,Fichiers Mis en ligne
 URL,URL
 Use,Utilisez

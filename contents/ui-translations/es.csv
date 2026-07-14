@@ -542,25 +542,20 @@ ID:,ID:
 Image doesn't match the required size.,Image doesn't match the required size.
 Import,Importar
 Import asset,Import asset
-Import completed,Importación completada. Número de entidades creadas:
 Import CSV,Importar CSV
 Import failed. Review details below.,Import failed. Review details below.
 Import finished successfully.,Import finished successfully.
 Import finished with errors. Review details below.,Import finished with errors. Review details below.
-Import instructions,Instrucciones de importación
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.
 Import theme instance file,Import theme instance file
 Import was cancelled.,Import was cancelled.
-Imported entities from file,Entidades importadas desde el archivo
 Imported translations from file,Traducciones importadas desde el archivo
-Importing data in progress,Importación de datos en curso
 in,en
 "In a group, either all relationships must have a hub or none of them.","En un grupo, todas las relaciones deben tener un nodo o ninguno de ellos."
 In OCR queue,En cola para ROC
 in this document,en este documento
 Incoming,Entrante
-Indexing entities may take a few minutes,La indexación de entidades puede tomar unos minutos.
 Info,Información
 Information extraction training,Entrenamiento de extracción de información
 Inherit,Heredar
@@ -1163,8 +1158,6 @@ Templates,Plantillas
 Templates:,Templates:
 Text,Texto
 Text references limit warning,Las referencias de texto están temporalmente limitadas a un máximo de 300. Actualmente estamos trabajando en una solución para este problema.
-The import process threw an error:,El proceso de importación tiene un error.
-The import process threw some warnings:,The import process threw some warnings:
 "The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process."
@@ -1308,7 +1301,6 @@ Updated translations,Traducciones actualizadas
 Updated user,Usuario actualizado
 Updating template properties across,Updating template properties across
 Updating…,Updating…
-Upload a ZIP or CSV file.,Subir un archivo ZIP o CSV.
 Upload and select file,Sube y selecciona un archivo
 Upload from computer,Subir desde la computadora
 Upload image,Upload image
@@ -1320,7 +1312,6 @@ Uploaded document,Documento cargado
 Uploaded file,Archivo cargado
 Uploading,Subiendo archivos
 Uploading ...,Subiendo...
-Uploading file,Subiendo archivo
 Uploads,Subir archivos
 URL,URL
 Use,Usar
