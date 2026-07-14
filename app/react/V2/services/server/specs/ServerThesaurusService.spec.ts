@@ -1,17 +1,9 @@
 import { ObjectId } from 'mongodb';
 import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
-import { httpThesaurusService } from '../../http/HttpThesaurusService.js';
 import { createServerThesaurusService } from '../ServerThesaurusService.js';
 
 jest.mock('#api/core/infrastructure/factories/ThesauriDAOFactory.js', () => ({
   ThesauriDAOFactory: { default: jest.fn() },
-}));
-
-jest.mock('#V2/api/thesauri', () => ({
-  get: jest.fn(),
-  save: jest.fn(),
-  deleteThesauri: jest.fn(),
-  importThesaurus: jest.fn(),
 }));
 
 const mockGet = jest.fn();
@@ -57,17 +49,10 @@ describe('ServerThesaurusService', () => {
     expect(data).toBeUndefined();
   });
 
-  it('upsert delegates to the HTTP service with request headers', async () => {
-    const thesaurus = { name: 'Colors', values: [] };
-    const saved = { _id: 'thesaurus1', ...thesaurus };
-    const upsertSpy = jest
-      .spyOn(httpThesaurusService, 'upsert')
-      .mockResolvedValue([saved, undefined]);
+  it('upsert returns not implemented', async () => {
+    const [data, error] = await service.upsert({ name: 'Colors', values: [] });
 
-    const [data, error] = await service.upsert(thesaurus);
-
-    expect(upsertSpy).toHaveBeenCalledWith(thesaurus, { headers: ctx.headers });
-    expect(error).toBeUndefined();
-    expect(data).toEqual(saved);
+    expect(data).toBeUndefined();
+    expect(error?.message).toContain('not implemented on server');
   });
 });

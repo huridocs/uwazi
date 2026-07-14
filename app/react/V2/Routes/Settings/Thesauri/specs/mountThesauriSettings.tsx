@@ -1,5 +1,6 @@
 import React from 'react';
-import { createMemoryRouter, Outlet, RouterProvider, Router } from 'react-router';
+import type { DataRouter } from 'react-router';
+import { createMemoryRouter, Outlet, RouterProvider } from 'react-router';
 import { templatesAtom } from '#V2/atoms/index.js';
 import { createTestingServices } from '#V2/testing/createTestingServices.js';
 import type { TestingThesaurisService } from '#V2/testing/TestingThesaurisService.js';
@@ -39,7 +40,7 @@ const templateAtomValue = [
 type MountedThesauriSettings = {
   services: V2Services;
   thesauri: TestingThesaurisService;
-  router: Router;
+  router: DataRouter;
   tree: React.ReactElement;
 };
 

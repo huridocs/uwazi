@@ -1,5 +1,6 @@
 import React, { ComponentType, ReactElement } from 'react';
-import { createMemoryRouter, LoaderFunction, RouterProvider, Router } from 'react-router';
+import type { DataRouter } from 'react-router';
+import { createMemoryRouter, LoaderFunction, RouterProvider } from 'react-router';
 import { Translate } from '#app/I18N/index.js';
 import { ServicesProvider } from '#V2/services/ServicesProvider.js';
 import type { V2Services } from '#V2/services/types.js';
@@ -16,7 +17,7 @@ type MountRouteOptions = {
 
 type MountedRoute = {
   tree: ReactElement;
-  router: Router;
+  router: DataRouter;
 };
 
 const HydrateFallback = () => (

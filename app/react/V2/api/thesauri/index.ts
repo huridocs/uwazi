@@ -38,7 +38,7 @@ const deleteThesauri = async (
 const importThesaurus = async (
   thesaurus: Omit<ClientThesaurus, '_id'> & { _id?: string },
   file: File
-) => {
+): Promise<ClientThesaurus> => {
   const headers = {
     Accept: 'application/json',
     'X-Requested-With': 'XMLHttpRequest',
@@ -46,7 +46,7 @@ const importThesaurus = async (
   const fields = {
     thesauri: JSON.stringify(thesaurus),
   };
-  return httpRequest('thesauris', fields, headers, file);
+  return httpRequest('thesauris', fields, headers, file) as Promise<ClientThesaurus>;
 };
 
 export { get, save, deleteThesauri, importThesaurus };

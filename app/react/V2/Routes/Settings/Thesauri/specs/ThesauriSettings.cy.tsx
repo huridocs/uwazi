@@ -1,4 +1,4 @@
-import type { Router } from 'react-router';
+import type { DataRouter } from 'react-router';
 import 'cypress-real-events';
 import { mount } from 'cypress/react';
 import { createThesauriSettingsTree } from './mountThesauriSettings.js';
@@ -8,7 +8,7 @@ const typeInInput = (selector: string, value: string, index = 0) => {
   cy.get(selector).eq(index).type(value);
 };
 
-const expectPathname = (router: Router, pathname: string | RegExp) => {
+const expectPathname = (router: DataRouter, pathname: string | RegExp) => {
   cy.wrap(router)
     .its('state.location.pathname')
     .should(typeof pathname === 'string' ? 'eq' : 'match', pathname);

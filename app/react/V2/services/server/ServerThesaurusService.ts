@@ -1,14 +1,25 @@
 import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
 import type { Thesaurus } from '#shared/contracts/Thesaurus.js';
+import { ApiError } from '#shared/apiClient/ApiError.js';
 import { toApiError } from '#shared/apiClient/index.js';
 import type { ApiResponse } from '#V2/api/ApiResponse.js';
 import type { ThesaurusService } from '../contracts/ThesaurusService.js';
 import type { ServiceRequestOptions } from '../contracts/ServiceRequestOptions.js';
-import { httpThesaurusService } from '../http/HttpThesaurusService.js';
 import type { ServerServiceContext } from './types.js';
-import { serializeThesauriRows } from './serializeThesauriRows.js';
 
-const createServerThesaurusService = (ctx: ServerServiceContext): ThesaurusService => ({
+/** Mongo ObjectIds → strings, matching HTTP JSON serialization. */
+const serializeThesauriRows = (rows: unknown[]): Thesaurus[] => JSON.parse(JSON.stringify(rows));
+
+const notImplemented = <T>(): ApiResponse<T> => [
+  undefined as never,
+  new ApiError('ThesaurusService: not implemented on server', {
+    kind: 'http',
+    status: 501,
+    code: 'NOT_IMPLEMENTED',
+  }),
+];
+
+const createServerThesaurusService = (_ctx: ServerServiceContext): ThesaurusService => ({
   getAll: async (_options?: ServiceRequestOptions): Promise<ApiResponse<Thesaurus[]>> => {
     try {
       const rows = await ThesauriDAOFactory.default().get();
@@ -31,14 +42,11 @@ const createServerThesaurusService = (ctx: ServerServiceContext): ThesaurusServi
     }
   },
 
-  upsert: async (thesaurus, options) =>
-    httpThesaurusService.upsert(thesaurus, options ?? { headers: ctx.headers }),
+  upsert: async () => notImplemented<Thesaurus>(),
 
-  delete: async (ids, options) =>
-    httpThesaurusService.delete(ids, options ?? { headers: ctx.headers }),
+  delete: async () => notImplemented<void>(),
 
-  importFromFile: async (thesaurus, file, options) =>
-    httpThesaurusService.importFromFile(thesaurus, file, options),
+  importFromFile: async () => notImplemented<Thesaurus>(),
 });
 
 export { createServerThesaurusService };
