@@ -1,10 +1,11 @@
+/* eslint-disable max-statements */
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { Connection, ConnectOptions } from 'mongoose';
 import { DB } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
 import { config } from '#api/config.js';
-import { PostgresDB, PostgresConnectionConfig } from '#api/infrastructure/PostgresDB.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -53,12 +54,6 @@ type DBConnector = {
   disconnect: () => Promise<void>;
 };
 
-type PostgresConnector = {
-  connect: (cfg?: PostgresConnectionConfig) => any;
-  disconnect: () => Promise<void>;
-  pool: () => any;
-};
-
 type TenantsManager = {
   setupTenants: () => Promise<void>;
   run: (fn: () => Promise<void>, tenantName?: string) => Promise<void>;
@@ -72,7 +67,7 @@ type LoggerFactoryFn = (options: { async: boolean; structuredLogs: boolean }) =>
 
 type MigrationServiceDeps = {
   db: DBConnector;
-  postgresDB: PostgresConnector;
+  postgresDB: typeof PostgresDB;
   tenants: TenantsManager;
   createDispatcher: DispatcherFactory;
   createLogger: LoggerFactoryFn;
@@ -132,7 +127,6 @@ class MigrationService {
 
   async run(options: { async: boolean; structuredLogs: boolean }): Promise<MigrationRunResult> {
     await this.deps.db.connect(config.DBHOST, config.DBAUTH);
-    this.deps.postgresDB.connect();
 
     await this.deps.tenants.setupTenants();
 
@@ -171,8 +165,7 @@ class MigrationService {
       }
     );
 
-    const pgPool = this.deps.postgresDB.pool();
-    const pgMigrator = this.deps.pgMigratorFactory(pgPool);
+    const pgMigrator = this.deps.pgMigratorFactory(this.deps.postgresDB.adminPool());
     const schemaVersion = await pgMigrator.getCurrentVersion();
 
     await this.deps.db.disconnect();

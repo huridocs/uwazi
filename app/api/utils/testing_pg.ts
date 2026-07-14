@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import path from 'path';
 import { fileURLToPath } from 'url';
 import pg from 'pg';
