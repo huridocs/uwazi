@@ -4,6 +4,7 @@ import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MigrationJob, MigrationJobDeps } from '#api/core/infrastructure/jobs/MigrationJob.js';
+import { tenants, Tenant } from '#api/tenants/index.js';
 import { TenantMigrationRunner } from '#api/core/infrastructure/mongodb/TenantMigrationRunner.js';
 import { TenantMigrationRunnerAdapter } from '#api/core/infrastructure/mongodb/TenantMigrationRunnerAdapter.js';
 import { migrator } from '#api/migrations/migrator.js';
@@ -35,6 +36,7 @@ class MigrationJobFactory {
       logger: deps.logger || ExecutionContext.logger,
       dispatcher: deps.dispatcher || ExecutionContext.jobsDispatcher,
       reindexTenant: deps.reindexTenant || createReindexTenant(),
+      tenantsManager: deps.tenantsManager || tenants,
     });
   }
 }
