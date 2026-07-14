@@ -10,14 +10,6 @@ permissions:
 jobs:
   e2e-playwright-data:
     runs-on: ubuntu-24.04
-    env:
-      POSTGRES_HOST: localhost
-      POSTGRES_PORT: 5432
-      POSTGRES_DB: uwazi_development
-      POSTGRES_USER: uwazi
-      POSTGRES_PASSWORD: uwazi
-      POSTGRES_APP_USER: app_user
-      POSTGRES_APP_PASSWORD: app_user
     services:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:8.18.0-amd64
@@ -89,7 +81,7 @@ jobs:
       - name: install dependencies
         run: yarn install
         env:
-          YARN_ENABLE_HARDENED_MODE: "0"
+          YARN_ENABLE_HARDENED_MODE: '0'
 
       - name: Get Playwright version
         id: playwright-version
