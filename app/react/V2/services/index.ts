@@ -15,7 +15,8 @@
  *   <Route loader={createThesauriLoader(services)(headers)} />
  * );
  *
- * // entry-server.tsx (Phase 2b):
+ * // entry-server.tsx (SSR in-process adapters):
+ * import { createServerServices } from '#V2/services/server/index.js';
  * const services = createServerServices(req);
  * const routes = getRoutes(settings, userId, headers, indexComponents, services);
  *

@@ -6,7 +6,7 @@ import type { ServiceRequestOptions } from './ServiceRequestOptions.js';
  * Thesaurus domain service.
  *
  * Standard reads: `getAll`, `getById`.
- * Standard writes: `upsert`, `delete`.
+ * Standard writes: `upsert`, `delete`, `importFromFile`.
  */
 interface ThesaurusService {
   getAll(options?: ServiceRequestOptions): Promise<ApiResponse<Thesaurus[]>>;
@@ -16,6 +16,11 @@ interface ThesaurusService {
     options?: ServiceRequestOptions
   ): Promise<ApiResponse<Thesaurus>>;
   delete(ids: string[], options?: ServiceRequestOptions): Promise<ApiResponse<void>>;
+  importFromFile(
+    thesaurus: ThesaurusInput,
+    file: File,
+    options?: ServiceRequestOptions
+  ): Promise<ApiResponse<Thesaurus>>;
 }
 
 export type { ThesaurusService, ThesaurusInput };
