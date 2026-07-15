@@ -133,7 +133,7 @@ class PostgresFilesDAO extends PostgresDataSource<FilesRow> {
           continue;
         }
         if ('$nin' in obj) {
-          qb = qb.whereNotIn(key, obj.$nin as unknown[]);
+          qb = qb.whereNotIn(key, obj.$nin as Knex.Value[]);
           continue;
         }
       }
