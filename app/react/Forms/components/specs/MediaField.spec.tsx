@@ -74,6 +74,7 @@ describe('MediaField', () => {
           formField=""
           type={MediaModalType.Image}
           value={null}
+          // eslint-disable-next-line react/jsx-props-no-spreading
           {...{ ...baseProps, ...otherProps }}
         />,
         () => defaultState
