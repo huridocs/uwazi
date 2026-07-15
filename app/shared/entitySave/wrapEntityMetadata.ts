@@ -3,10 +3,8 @@ import type { MetadataObjectSchema, MetadataSchema } from '#shared/types/commonT
 import { isUploadId } from './mediaMetadata.js';
 import { isLegacyMetadataObject, isMediaProperty, shouldSkipValue } from './legacyTypes.js';
 import type {
-  LegacyMetadataPrimitive,
   LegacyTemplate,
   MediaProperty,
-  MetadataObjectSchemaLike,
   WrapableAttachment,
   WrapableEntity,
 } from './legacyTypes.js';
@@ -86,26 +84,26 @@ const withTimeLinks = (
 };
 
 const toPropertyValue = (value: unknown): MetadataObjectSchema['value'] => {
-  if (
-    value === null ||
-    value === undefined ||
-    typeof value === 'string' ||
-    typeof value === 'number' ||
-    typeof value === 'boolean'
-  ) {
-    return value ?? null;
+  if (value === null || value === undefined) {
+    return null;
+  }
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+    return value;
+  }
+  if (typeof value === 'object' && !(value instanceof File)) {
+    return value as MetadataObjectSchema['value'];
   }
   return null;
 };
 
-const wrapArrayEntry = (
-  metadataEntry: ReadonlyArray<LegacyMetadataPrimitive | MetadataObjectSchemaLike>
-): MetadataObjectSchema[] =>
-  metadataEntry.map(value =>
-    typeof value === 'object' && value !== null && 'value' in value
-      ? { value: toPropertyValue(value.value) }
-      : { value: toPropertyValue(value) }
-  );
+const wrapArrayEntry = (metadataEntry: ReadonlyArray<unknown>): MetadataObjectSchema[] =>
+  metadataEntry.map(entry => {
+    if (typeof entry === 'object' && entry !== null && 'value' in entry) {
+      const { value } = entry;
+      return { value: toPropertyValue(value) };
+    }
+    return { value: toPropertyValue(entry) };
+  });
 
 const defaultWrappedValue = (metadataEntry: unknown): MetadataObjectSchema => {
   if (isLegacyMetadataObject(metadataEntry) && metadataEntry.data !== undefined) {
