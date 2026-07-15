@@ -3,7 +3,7 @@ import isObject from 'lodash/isObject.js';
 import { Translate } from '#app/I18N/index.js';
 import { Icon } from '#app/UI/index.js';
 import { ClientFile } from '#app/istore.js';
-import { prepareHTMLMediaView } from '#shared/fileUploadUtils.js';
+import { prepareHTMLMediaView, revokeHTMLMediaViewUrl } from '#shared/fileUploadUtils.js';
 import {
   MediaModal,
   MediaModalProps,
@@ -23,11 +23,20 @@ type MediaFieldProps = MediaModalProps & {
 const getValue = (value: MediaFieldProps['value']) =>
   isObject(value) && value.data ? value.data : (value as string);
 
+const parseMediaFieldData = (raw: string) => {
+  const timelinkMatch = raw.match(/^\(([^,]+),\s*({.*})\)$/);
+  if (timelinkMatch) {
+    return { mediaId: timelinkMatch[1].trim(), timeLinksJson: timelinkMatch[2] };
+  }
+  return { mediaId: raw };
+};
+
 const prepareValue = (
   value: MediaFieldProps['value'],
   localAttachments: MediaFieldProps['localAttachments']
 ) => {
   const valueString = getValue(value);
+  const { mediaId, timeLinksJson } = parseMediaFieldData(valueString || '');
   const values = {
     data: valueString,
     fileURL: valueString,
@@ -35,21 +44,24 @@ const prepareValue = (
     originalFile: isObject(value) ? value.originalFile : undefined,
   };
 
-  if (/^[a-zA-Z\d_]*$/.test(values.data)) {
+  if (/^[a-zA-Z\d_]+$/.test(mediaId)) {
     values.type = 'uploadId';
   }
 
-  if (/^https?:\/\//.test(values.data)) {
+  if (/^https?:\/\//.test(mediaId)) {
     values.type = 'webUrl';
   }
 
   const supportingFile = localAttachments.find(
-    file => values.data === (file.url || file.fileLocalID || `/api/files/${file.filename}`)
+    file => mediaId === (file.url || file.fileLocalID || `/api/files/${file.filename}`)
   );
 
   if (values.type === 'uploadId' && supportingFile) {
     values.originalFile = supportingFile;
-    values.fileURL = prepareHTMLMediaView(supportingFile);
+    const blobUrl = prepareHTMLMediaView(supportingFile);
+    values.fileURL = timeLinksJson ? `(${blobUrl}, ${timeLinksJson})` : blobUrl;
+  } else if (timeLinksJson && (values.type === 'webUrl' || mediaId.startsWith('/api/files/'))) {
+    values.fileURL = `(${mediaId}, ${timeLinksJson})`;
   }
 
   return { ...values, supportingFile };
@@ -80,11 +92,13 @@ const MediaField = (props: MediaFieldProps) => {
     if (!file || !file.data) {
       return null;
     }
-    const timelinksObj = timelinks.reduce((current: any, timelink) => {
-      current[`${timelink.timeHours}:${timelink.timeMinutes}:${timelink.timeSeconds}`] =
-        timelink.label;
-      return current;
-    }, {});
+    const timelinksObj = timelinks.reduce<Record<string, string>>(
+      (current, timelink) => ({
+        ...current,
+        [`${timelink.timeHours}:${timelink.timeMinutes}:${timelink.timeSeconds}`]: timelink.label,
+      }),
+      {}
+    );
     const [, fileLocalID] = file.data.match(/\(?(.*?)(, {|$)/) || ['', file.data];
 
     return {
@@ -99,8 +113,13 @@ const MediaField = (props: MediaFieldProps) => {
 
   useEffect(
     () => () => {
-      if (file && file.supportingFile?.serializedFile && file.fileURL) {
-        URL.revokeObjectURL(file.fileURL);
+      if (file?.supportingFile?.serializedFile && file.fileURL) {
+        const blobUrl = file.fileURL.startsWith('(')
+          ? parseMediaFieldData(file.fileURL).mediaId
+          : file.fileURL;
+        if (blobUrl.startsWith('blob:')) {
+          revokeHTMLMediaViewUrl(blobUrl);
+        }
       }
     },
     []

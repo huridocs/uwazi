@@ -21,6 +21,14 @@ const isMediaObjectValue = (
   metadataValue.data !== undefined &&
   metadataValue.data !== null;
 
+const extractTimeLinks = (data: unknown): string | undefined => {
+  if (typeof data !== 'string') {
+    return undefined;
+  }
+  const match = data.match(/^\(([^,]+),\s*({.*})\)$/);
+  return match?.[2];
+};
+
 const prepareFiles = async (
   mediaProperties: MediaProperty[],
   values: Pick<LegacyEntity, 'metadata'>
@@ -53,8 +61,9 @@ const prepareFiles = async (
       return;
     }
     const { data, originalFile } = metadataValue;
+    const timeLinks = extractTimeLinks(data);
     if (originalFile instanceof File) {
-      registerFile(property.name, originalFile);
+      registerFile(property.name, originalFile, timeLinks);
       return;
     }
     if (data instanceof File) {

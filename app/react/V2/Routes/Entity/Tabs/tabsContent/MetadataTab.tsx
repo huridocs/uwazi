@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useRevalidator } from 'react-router';
+import { useAtomValue } from 'jotai';
 import type { Entity } from '#V2/api/entities/types.js';
+import { mediaContextFromTemplate } from '#shared/entitySave/mediaContext.js';
+import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.js';
 import { EditEntity, type EditEntityErrors } from '#V2/Components/Metadata/EntityEditor/index.js';
 import { apiValidationsToEditEntityErrors } from '#V2/Components/Metadata/EntityEditor/functions/editEntityErrors.js';
@@ -15,6 +18,7 @@ type MetadataTabProps = {
 
 const MetadataTab = ({ entity }: MetadataTabProps) => {
   const { entities } = useServices();
+  const templates = useAtomValue(templatesAtom);
   const {
     isEditing,
     isSaving,
@@ -65,6 +69,7 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
     if (mountedRef.current) setIsEditing(false);
   };
 
+  // eslint-disable-next-line max-statements
   const onSave = async (editedEntity: EntitySaveInput) => {
     if (savingRef.current) return;
 
@@ -75,8 +80,17 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
     abortRef.current = new AbortController();
 
     try {
+      const template = templates.find(t => t._id === editedEntity.template);
+      if (!template) {
+        if (mountedRef.current) {
+          setSaveError('Template not found');
+        }
+        return;
+      }
+      const saveMediaContext = mediaContextFromTemplate(template);
       const [data, error] = await entities.upsert(editedEntity, {
         signal: abortRef.current.signal,
+        saveMediaContext,
       });
       if (error) {
         handleUpsertError(error);

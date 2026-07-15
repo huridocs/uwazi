@@ -121,6 +121,20 @@ describe('MediaField', () => {
       expect(mockedRevokeObjectURL).toHaveBeenCalledWith('blob:abc');
     });
 
+    it('should keep the video preview after timelinks are stored on the value', async () => {
+      await render({
+        ...mediaProps,
+        value: {
+          data: '(aoe2t67yrq, {"timelinks":{"00:00:01":"intro"}})',
+          originalFile: baseProps.localAttachments[2],
+        },
+      });
+
+      expect(mockedCreateObjectURL).toHaveBeenCalled();
+      expect(screen.queryByText('This file type is not supported on media fields')).toBeNull();
+      expect(document.querySelector('video, iframe, [class*="react-player"]')).toBeTruthy();
+    });
+
     it('should change the media value according with markdownmedia variations', async () => {
       await render(mediaProps);
 
