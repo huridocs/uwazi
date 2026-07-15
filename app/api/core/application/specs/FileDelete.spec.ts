@@ -12,6 +12,19 @@ import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsD
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
 import { DeleteFileUseCaseFactory } from '#api/core/infrastructure/factories/DeleteFileUseCaseFactory.js';
 
+jest.mock('#api/search/index.js', () => {
+  const actual = jest.requireActual('#api/search/index.js') as Record<string, unknown> & {
+    search: Record<string, unknown>;
+  };
+  return {
+    ...actual,
+    search: {
+      ...(actual.search as Record<string, unknown>),
+      indexEntities: jest.fn().mockResolvedValue(undefined),
+    },
+  };
+});
+
 const f = getFixturesFactory();
 
 const allFixtures: DBFixture = {

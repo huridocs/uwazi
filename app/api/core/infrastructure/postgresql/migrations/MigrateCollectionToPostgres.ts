@@ -1,5 +1,8 @@
 import { Db } from 'mongodb';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
+import { LoggerFactory } from '../../factories/LoggerFactory.js';
 import { PostgresTable } from '../common/PostgresTable.js';
+import { PostgresTransactionManager } from '../common/PostgresTransactionManager.js';
 
 export const BATCH_SIZE = 1000;
 
@@ -37,8 +40,17 @@ export class MigrateCollectionToPostgres {
   }
 
   async migrate(config: MigrationConfig): Promise<{ migrated: number; skipped: boolean }> {
-    const table = new PostgresTable(config.pgTable, this.tenantId);
-    const existingRow = await table.query().first();
+    const pgTransactionManager = new PostgresTransactionManager(
+      PostgresDB.knex,
+      this.tenantId,
+      LoggerFactory.systemLogger()
+    );
+    const table = PostgresTable.for({
+      tableName: config.pgTable,
+      tenantId: this.tenantId,
+      transactionManager: pgTransactionManager,
+    });
+    const existingRow = await table.first();
 
     if (existingRow !== undefined) {
       return { migrated: 0, skipped: true };
