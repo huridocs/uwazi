@@ -30,15 +30,7 @@ const findFileLocalIdAttachmentIndex = (
 const resolveMetadataAttachmentIndex = (
   attachments: ReadonlyArray<AttachmentLike>,
   fileLocalID: string
-): number => {
-  const uploadedIndex = findUploadedAttachmentIndex(
-    attachments,
-    file => file.fileLocalID === fileLocalID
-  );
-  return uploadedIndex >= 0
-    ? uploadedIndex
-    : findFileLocalIdAttachmentIndex(attachments, fileLocalID);
-};
+): number => findUploadedAttachmentIndex(attachments, file => file.fileLocalID === fileLocalID);
 
 const mapTimelinkValue = (
   rawValue: string,
@@ -140,8 +132,15 @@ const mapMediaMetadataForSave = <T extends EntityWithSaveMetadata>(
         return [name, values];
       }
       const propertyType = mediaPropertyTypes.get(name);
-      const rawValue = values[0]?.value;
+      const existing = values[0];
+      const rawValue = existing?.value;
       if (!propertyType || typeof rawValue !== 'string') {
+        return [name, values];
+      }
+      if (
+        rawValue === '' &&
+        (typeof existing.attachment === 'number' || typeof existing.timeLinks === 'string')
+      ) {
         return [name, values];
       }
       return [name, [mapMediaValue(rawValue, attachments, propertyType)]];

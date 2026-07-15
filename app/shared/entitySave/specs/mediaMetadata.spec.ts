@@ -164,6 +164,58 @@ describe('mapMediaMetadataForSave', () => {
 
     expect(metadata(prepared).image).toEqual([{ value: 'missingUploadId' }]);
   });
+
+  it('does not remap upload ids that lack serializedFile attachments', () => {
+    const entity: EntityWithMetadata = {
+      sharedId: 'entity1',
+      template: 'template1',
+      title: 'Entity',
+      metadata: {
+        image: [{ value: 'staleLocalId' }],
+      },
+      attachments: [
+        {
+          _id: 'existing1',
+          originalname: 'old.png',
+          filename: 'old.png',
+          type: 'attachment',
+          fileLocalID: 'staleLocalId',
+        },
+        {
+          _id: 'pending1',
+          originalname: 'new.png',
+          filename: 'new.png',
+          type: 'attachment',
+          serializedFile: 'data:image/png;base64,aW1hZ2U=',
+          fileLocalID: 'newImageId',
+        },
+      ],
+    };
+
+    const prepared = mapMediaMetadataForSave(entity, mediaPropertyNames, mediaPropertyTypes);
+
+    expect(metadata(prepared).image).toEqual([{ value: 'staleLocalId' }]);
+  });
+
+  it('preserves existing attachment and timeLinks for empty media values', () => {
+    const entity: EntityWithMetadata = {
+      sharedId: 'entity1',
+      template: 'template1',
+      title: 'Entity',
+      metadata: {
+        image: [{ value: '', attachment: 1 }],
+        media: [{ value: '', attachment: 0, timeLinks: '{"timelinks":{}}' }],
+      },
+      attachments: [{ _id: 'a1' }, { _id: 'a2' }],
+    };
+
+    const prepared = mapMediaMetadataForSave(entity, mediaPropertyNames, mediaPropertyTypes);
+
+    expect(metadata(prepared).image).toEqual([{ value: '', attachment: 1 }]);
+    expect(metadata(prepared).media).toEqual([
+      { value: '', attachment: 0, timeLinks: '{"timelinks":{}}' },
+    ]);
+  });
 });
 
 describe('filterReferencedPendingAttachments', () => {

@@ -24,7 +24,7 @@ const createReindexTenant = () => async () => {
 
 class MigrationJobFactory {
   static create(deps: Partial<MigrationJobDeps> = {}): MigrationJob {
-    const pgPool = PostgresDB.pool();
+    const pgPool = PostgresDB.adminPool();
     const pgMigrator = new PgMigrator(PG_MIGRATIONS_DIR, pgPool);
 
     const runner: TenantMigrationRunner =
