@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { EntityNotFoundError } from '../../../domain/entity/errors.js';
 import { EntitiesQueryServiceFactory } from '../../factories/EntitiesQueryServiceFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
-import { MongoEntitiesDAOFactory } from '../../factories/MongoEntitiesDAOFactory.js';
+import { EntitiesDAOFactory } from '../../factories/EntitiesDAOFactory.js';
 
 const GetEntityQuerySchema = z.object({
   sharedId: z.string().optional(),
@@ -29,7 +29,7 @@ class GetEntityController extends AbstractController<any> {
       let resolvedLanguage = this.language;
 
       if (!query.sharedId && query._id) {
-        const entityDAO = MongoEntitiesDAOFactory.default({ user: this.user });
+        const entityDAO = EntitiesDAOFactory.default({ user: this.user });
         const entity = await entityDAO.getByInternalId(query._id, {
           sharedId: 1,
           language: 1,

@@ -6,7 +6,7 @@ import {
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { CreateEntityFromPDFUseCaseFactory } from '#api/core/infrastructure/factories/CreateEntityFromPDFUseCaseFactory.js';
 import { CreateEntityFromPDFUseCase } from '#api/core/application/CreateEntityFromPDF.js';
-import { MongoEntitiesDAOFactory } from '#api/core/infrastructure/factories/MongoEntitiesDAOFactory.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { MongoEntitiesDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntitiesDAO.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 
@@ -56,7 +56,7 @@ describe('CreateEntityFromPDFController', () => {
       })
     );
 
-    jest.spyOn(MongoEntitiesDAOFactory, 'default').mockReturnValue(
+    jest.spyOn(EntitiesDAOFactory, 'default').mockReturnValue(
       TestUtils.mockClass<MongoEntitiesDAO>({
         getWithFiles: jest.fn().mockResolvedValue([entityResult]),
       })

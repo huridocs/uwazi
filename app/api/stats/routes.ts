@@ -3,7 +3,7 @@ import needsAuthorization from '#api/auth/authMiddleware.js';
 import { RetrieveStatsService } from '#api/stats/services/RetrieveStatsService.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
-import { MongoEntitiesDAOFactory } from '#api/core/infrastructure/factories/MongoEntitiesDAOFactory.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { User } from '#api/users.v2/model/User.js';
 
 export default (app: Application) => {
@@ -11,7 +11,7 @@ export default (app: Application) => {
     const action = new RetrieveStatsService(
       getConnection(),
       FilesDAOFactory.default(),
-      MongoEntitiesDAOFactory.default({ user: User.createFrom(req.user) })
+      EntitiesDAOFactory.default({ user: User.createFrom(req.user) })
     );
     const stats = await action.execute(req.language);
 

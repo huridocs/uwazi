@@ -15,7 +15,7 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
-import { MongoEntitiesDAOFactory } from '#api/core/infrastructure/factories/MongoEntitiesDAOFactory.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { MongoDatavizDataSource } from '../mongodb/MongoDatavizDataSource.js';
 import { MongoDatavizSnapshotsDataSource } from '../mongodb/MongoDatavizSnapshotsDataSource.js';
@@ -53,7 +53,7 @@ class DatavizFactory {
       translationsDS: CachedTranslationsDataSource(transactionManager),
       templatesDAO: TemplatesDAOFactory.default() as TemplatesReadDAO,
       thesauriDAO: ThesauriDAOFactory.default(),
-      entitiesDAO: MongoEntitiesDAOFactory.default() as EntitiesReadDAO,
+      entitiesDAO: EntitiesDAOFactory.default() as EntitiesReadDAO,
     });
   }
 
