@@ -3,7 +3,10 @@ import { tenants } from '#api/tenants/tenantContext.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { PostgresTemplatesDAO } from '../PostgresTemplatesDAO.js';
+import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
 
 const factory = getFixturesFactory();
 
@@ -16,11 +19,18 @@ describe('PostgresTemplatesDAO', () => {
     await testingEnvironment.tearDown();
   });
 
-  const createDao = () =>
-    new PostgresTemplatesDAO({
-      tenantId: tenants.current().name,
+  const createDao = () => {
+    const tenantName = tenants.current().name;
+    return new PostgresTemplatesDAO({
+      tenantId: tenantName,
       mongoDb: getConnection(),
+      pgTransactionManager: new PostgresTransactionManager(
+        PostgresDB.knex,
+        tenantName,
+        LoggerFactory.forTests()
+      ),
     });
+  };
 
   beforeEach(async () => {
     await testingPG.clear(['templates']);

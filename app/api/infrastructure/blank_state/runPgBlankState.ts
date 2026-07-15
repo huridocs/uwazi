@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
@@ -18,11 +19,8 @@ async function main() {
     process.exit(1);
   }
 
-  PostgresDB.connect();
-  const pool = PostgresDB.pool();
-
   try {
-    const blankState = new PgBlankState(pool, tenantId, DATA_DIR);
+    const blankState = new PgBlankState(PostgresDB.adminPool(), tenantId, DATA_DIR);
     await blankState.run({ force });
     process.stdout.write('PostgreSQL blank state completed successfully.\n');
   } catch (error) {

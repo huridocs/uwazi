@@ -5,6 +5,9 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
 import { PostgresFilesDataSource } from '../PostgresFilesDataSource.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
 import { FileAttachment } from '#api/core/domain/files/FileAttachment.js';
@@ -18,11 +21,15 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 
 const TENANT_ID = 'test-tenant';
 
+const managerFor = (tenantId: string) =>
+  new PostgresTransactionManager(PostgresDB.knex, tenantId, LoggerFactory.forTests());
+
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
   const sut = new PostgresFilesDataSource({
     tenantId: TENANT_ID,
     transactionManager,
+    pgTransactionManager: managerFor(TENANT_ID),
     fileStorage: FileStorageFactory.default(),
     mongoDb: getConnection(),
   });
