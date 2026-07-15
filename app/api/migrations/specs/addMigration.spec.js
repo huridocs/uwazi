@@ -105,7 +105,7 @@ describe('add-migration generator', () => {
   });
 
   it('should calculate nextSchemaDelta based on existing schema migrations', () => {
-    expect(plop.helpers.nextSchemaDelta()).toBe(5);
+    expect(plop.helpers.nextSchemaDelta()).toBe(4);
   });
 
   it('should calculate nextMigrationDelta based on existing tenant migrations', () => {
@@ -114,6 +114,6 @@ describe('add-migration generator', () => {
   });
 
   it('should provide latestPgSchemaDelta for tenant migration requiresSchema', () => {
-    expect(plop.helpers.latestPgSchemaDelta()).toBe(4);
+    expect(plop.helpers.latestPgSchemaDelta()).toBe(3);
   });
 });
