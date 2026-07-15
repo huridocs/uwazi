@@ -9,9 +9,12 @@ class TemplatesDAOFactory {
     const tenant = ExecutionContext.currentTenant;
 
     if (tenant.featureFlags?.postgresTemplates) {
+      const pgTM = ExecutionContext.postgresTransactionManager;
+
       return new PostgresTemplatesDAO({
         tenantId: tenant.name,
         mongoDb: getConnection(),
+        pgTransactionManager: pgTM,
       });
     }
 

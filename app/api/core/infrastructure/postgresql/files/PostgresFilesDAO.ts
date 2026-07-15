@@ -1,6 +1,7 @@
 /* eslint-disable no-continue */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable max-statements */
+import type { Knex } from 'knex';
 import { PostgresDataSource } from '../common/PostgresDataSource.js';
 import type { PostgresDataSourceDeps } from '../common/PostgresDataSource.js';
 import { PostgresTable } from '../common/PostgresTable.js';
@@ -18,16 +19,12 @@ import type { LanguageISO6393 } from '#shared/language/languageISO639_3.js';
 
 type Deps = PostgresDataSourceDeps;
 
-class PostgresFilesDAO extends PostgresDataSource {
-  protected tableName = 'files';
-
-  protected jsonbColumns = ['toc', 'propertySelections', 'fullText'];
-
+class PostgresFilesDAO extends PostgresDataSource<FilesRow> {
   constructor(deps: Deps) {
-    super(deps);
+    super('files', deps);
   }
 
-  getTable(): PostgresTable {
+  getTable(): PostgresTable<FilesRow> {
     return this.table;
   }
 
@@ -58,7 +55,7 @@ class PostgresFilesDAO extends PostgresDataSource {
   ): Promise<ResultType<T, FileNotFound>> {
     const columns = this.resolveColumns(options);
 
-    const row = await this.table.query<FilesRow>().select(columns).where({ _id: id }).first();
+    const row = await this.table.select(columns).where({ _id: id }).first();
 
     if (!row) {
       return Result.fail(new FileNotFound(`file with id: ${id} not found`));
@@ -73,7 +70,7 @@ class PostgresFilesDAO extends PostgresDataSource {
   ): Promise<ResultType<T, FileNotFound>> {
     const columns = this.resolveColumns(options);
 
-    const row = await this.table.query<FilesRow>().select(columns).where({ filename }).first();
+    const row = await this.table.select(columns).where({ filename }).first();
 
     if (!row) {
       return Result.fail(new FileNotFound(`file: ${filename} not found`));
@@ -88,7 +85,7 @@ class PostgresFilesDAO extends PostgresDataSource {
   ): Promise<T[]> {
     const columns = this.resolveColumns(options);
 
-    let query = this.table.query<FilesRow>().select(columns).where({ entity: sharedId });
+    let query = this.table.select(columns).where({ entity: sharedId });
 
     if (options?.types) {
       query = query.whereIn('type', options.types);
@@ -113,13 +110,13 @@ class PostgresFilesDAO extends PostgresDataSource {
   ): Promise<T[]> {
     const columns = this.resolveColumns(options);
 
-    let qb = this.table.query<FilesRow>().select(columns);
+    let qb = this.table.select(columns);
 
     for (const [key, value] of Object.entries(query)) {
       if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
         const obj = value as Record<string, unknown>;
         if ('$in' in obj) {
-          qb = qb.whereIn(key, obj.$in as unknown[]);
+          qb = qb.whereIn(key, obj.$in as Knex.Value[]);
           continue;
         }
       }
@@ -165,7 +162,7 @@ class PostgresFilesDAO extends PostgresDataSource {
   ): Promise<T[]> {
     const columns = this.resolveColumns(options);
 
-    let query = this.table.query<FilesRow>().select(columns).whereIn('entity', sharedIds);
+    let query = this.table.select(columns).whereIn('entity', sharedIds);
 
     if (options?.languages) {
       query = query.whereIn('language', options.languages);
@@ -193,7 +190,7 @@ class PostgresFilesDAO extends PostgresDataSource {
     status?: string;
     language?: LanguageISO6393;
   }): Promise<string[]> {
-    let query = this.table.query<FilesRow>().distinct(['entity']);
+    let query = this.table.distinct(['entity']);
 
     if (filters.type) query = query.where({ type: filters.type });
     if (filters.status) query = query.where({ status: filters.status });
@@ -206,11 +203,11 @@ class PostgresFilesDAO extends PostgresDataSource {
   }
 
   async countDocuments(): Promise<number> {
-    return this.table.query().count();
+    return this.table.count();
   }
 
   async getTotalFileSize(): Promise<number> {
-    return this.table.query().sum('size');
+    return this.table.sum('size');
   }
 }
 

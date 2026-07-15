@@ -1,25 +1,29 @@
 import { Db } from 'mongodb';
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
+import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { TemplateRow } from '#api/core/infrastructure/postgresql/template/PostgresTemplateMapper.js';
 import { SyncHandler } from './SyncHandler.js';
 
 type TemplateSyncRow = Omit<TemplateRow, 'processing'> & { processing?: Record<string, unknown> };
 
 export class PostgresTemplatesSyncHandler
-  extends PostgresDataSource
+  extends PostgresDataSource<TemplateRow>
   implements SyncHandler<TemplateSyncRow>
 {
-  protected tableName = 'templates';
-
-  constructor(deps: { tenantId: string; mongoDb: Db }) {
-    super({
+  constructor(deps: {
+    tenantId: string;
+    mongoDb: Db;
+    pgTransactionManager: PostgresTransactionManager;
+  }) {
+    super('templates', {
       tenantId: deps.tenantId,
+      pgTransactionManager: deps.pgTransactionManager,
       sync: { syncDb: deps.mongoDb, syncNamespace: 'templates' },
     });
   }
 
   async getById(id: string): Promise<TemplateSyncRow | null> {
-    const row = await this.table.query<TemplateRow>().where({ _id: id }).first();
+    const row = await this.table.where({ _id: id }).first();
     return row || null;
   }
 
@@ -38,7 +42,7 @@ export class PostgresTemplatesSyncHandler
       processing: rest.processing ? JSON.stringify(rest.processing) : null,
     } as Record<string, unknown>);
 
-    const row = await this.table.query<TemplateRow>().where({ _id: id }).first();
+    const row = await this.table.where({ _id: id }).first();
     return row!;
   }
 
@@ -67,11 +71,11 @@ export class PostgresTemplatesSyncHandler
     await this.table.upsert(rows);
 
     const ids = rows.map(row => row._id as string);
-    return this.table.query<TemplateRow>().whereIn('_id', ids).all();
+    return this.table.whereIn('_id', ids).all();
   }
 
   async delete(id: string): Promise<void> {
-    await this.table.query().where({ _id: id }).delete();
+    await this.table.where({ _id: id }).delete();
   }
 
   private async unsetOtherDefault(document: Partial<TemplateSyncRow>): Promise<void> {
@@ -79,9 +83,9 @@ export class PostgresTemplatesSyncHandler
       return;
     }
 
-    const currentDefault = await this.table.query<TemplateRow>().where({ default: true }).first();
+    const currentDefault = await this.table.where({ default: true }).first();
     if (currentDefault && currentDefault._id !== document._id) {
-      await this.table.query().where({ _id: currentDefault._id }).update({ default: false });
+      await this.table.where({ _id: currentDefault._id }).update({ default: false });
     }
   }
 }

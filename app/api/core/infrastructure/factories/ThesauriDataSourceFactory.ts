@@ -12,12 +12,15 @@ type Overrides = { transactionManager?: TransactionManager };
 export class ThesauriDataSourceFactory {
   static default(overrides?: Overrides): ThesauriDataSource {
     const db = getConnection();
-    const tenant = ExecutionContext.tenant;
+    const { tenant } = ExecutionContext;
 
     if (tenant.featureFlags?.postgresThesauri) {
+      const pgTM = ExecutionContext.postgresTransactionManager;
+
       return new PostgresThesauriDataSource({
         tenantId: tenant.name,
         mongoDb: db,
+        pgTransactionManager: pgTM,
       });
     }
 
@@ -28,12 +31,15 @@ export class ThesauriDataSourceFactory {
 
   static cached(overrides?: Overrides): ThesauriDataSource {
     const db = getConnection();
-    const tenant = ExecutionContext.tenant;
+    const { tenant } = ExecutionContext;
 
     if (tenant.featureFlags?.postgresThesauri) {
+      const pgTM = ExecutionContext.postgresTransactionManager;
+
       return new PostgresThesauriDataSource({
         tenantId: tenant.name,
         mongoDb: db,
+        pgTransactionManager: pgTM,
       });
     }
 
