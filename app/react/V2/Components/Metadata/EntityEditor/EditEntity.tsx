@@ -1,15 +1,21 @@
 /* eslint-disable max-lines, max-statements */
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { FieldErrors, FormProvider, useForm } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { t } from '#app/I18N/index.js';
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { lookup as lookupEntities } from '#V2/api/search/index.js';
+import {
+  filterReferencedPendingAttachments,
+  extractUploadIdFromMediaValue,
+} from '#shared/entitySave/mediaMetadata.js';
+import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { thesauriAtom } from '#V2/atoms/thesauriAtom.js';
 import { resolvePropertyMetadataValues } from '#V2/formatters/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
+import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
 import {
   TextField,
   IconField,
@@ -40,6 +46,7 @@ import {
   getFirstEditEntityErrorPath,
   type EditEntityErrors,
 } from './functions/editEntityErrors.js';
+import { useEntityMediaUpload } from './hooks/useEntityMediaUpload.js';
 
 type EditEntityFormValues = {
   title: Entity['title'];
@@ -52,7 +59,7 @@ type EditEntityFormValues = {
 type EditEntityProps = {
   formId: string;
   entity?: Entity;
-  onSave?: (editedEntity: Entity) => void | Promise<void>;
+  onSave?: (editedEntity: EntitySaveInput) => void | Promise<void>;
   disabled?: boolean;
   errors?: EditEntityErrors;
   relationshipLookup?: (params: {
@@ -173,7 +180,7 @@ const focusAndScrollToInvalidField = (path?: string) => {
     return;
   }
 
-  fieldElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  scrollIntoView(fieldElement, { behavior: 'smooth', block: 'center' });
 
   if ('focus' in fieldElement && typeof fieldElement.focus === 'function') {
     fieldElement.focus();
@@ -335,10 +342,35 @@ const EditEntity = ({
     [metadataProperties]
   );
 
-  const entityAttachments = useMemo(
-    () => [...(entity?.attachments ?? []), ...(entity?.documents ?? [])],
-    [entity?.attachments, entity?.documents]
+  const {
+    entityAttachments,
+    pendingAttachments,
+    registerPendingAttachment,
+    removePendingAttachment,
+  } = useEntityMediaUpload(entity, selectedTemplate);
+
+  const mediaPropertyNames = useMemo(
+    () =>
+      new Set(
+        metadataProperties
+          .filter(property => property.type === 'image' || property.type === 'media')
+          .map(property => property.name)
+      ),
+    [metadataProperties]
   );
+
+  const removePendingAttachmentIfUnused = (fileLocalID: string) => {
+    const formMetadata = getValues('metadata');
+    const stillReferenced = [...mediaPropertyNames].some(name => {
+      const rawValue = formMetadata?.[name]?.[0]?.value;
+      return (
+        typeof rawValue === 'string' && extractUploadIdFromMediaValue(rawValue) === fileLocalID
+      );
+    });
+    if (!stillReferenced) {
+      removePendingAttachment(fileLocalID);
+    }
+  };
 
   const isMetadataReady = metadataProperties.every(
     property => metadata?.[property.name] !== undefined
@@ -372,10 +404,11 @@ const EditEntity = ({
       });
   }, [displayProperties, metadata, setValue]);
 
-  const relationshipLookupCache = useMemo(
-    () => new Map<string, MultiselectListOption[]>(),
-    [entity?._id, activeTemplate?._id]
-  );
+  const relationshipLookupCacheRef = useRef(new Map<string, MultiselectListOption[]>());
+
+  useEffect(() => {
+    relationshipLookupCacheRef.current.clear();
+  }, [entity?._id, activeTemplate?._id]);
 
   const relationshipLookupSearch = async (
     property: DisplayProperty,
@@ -392,13 +425,15 @@ const EditEntity = ({
       }));
 
     const cacheKey = `${property.content ?? ''}::${property.relationType ?? ''}`;
-    const cachedOptions = includeCachedOptions ? (relationshipLookupCache.get(cacheKey) ?? []) : [];
+    const cachedOptions = includeCachedOptions
+      ? (relationshipLookupCacheRef.current.get(cacheKey) ?? [])
+      : [];
     const merged = [...selectedOptions, ...cachedOptions, ...lookedUpOptions].filter(
       (option, index, options) => options.findIndex(other => other.value === option.value) === index
     );
 
     if (includeCachedOptions) {
-      relationshipLookupCache.set(cacheKey, merged);
+      relationshipLookupCacheRef.current.set(cacheKey, merged);
     }
 
     return merged;
@@ -420,12 +455,19 @@ const EditEntity = ({
   const submit = handleSubmit(
     async values => {
       if (!entity) return;
+      const formattedMetadata = formatMetadataForEntity(values.metadata, metadataProperties);
+      const referencedPending = filterReferencedPendingAttachments(
+        pendingAttachments,
+        formattedMetadata,
+        mediaPropertyNames
+      );
       await onSave?.({
         ...entity,
         title: values.title || entity.title,
         template: values.template || entity.template,
         icon: (values.showIcon ? values.icon : EMPTY_ICON) as Entity['icon'],
-        metadata: formatMetadataForEntity(values.metadata, metadataProperties),
+        metadata: formattedMetadata,
+        attachments: [...(entity.attachments ?? []), ...referencedPending],
       });
     },
     invalidErrors => {
@@ -678,6 +720,10 @@ const EditEntity = ({
                   registerOptions={{ required: property.required }}
                   disabled={disabled}
                   attachments={entityAttachments}
+                  pendingAttachments={pendingAttachments}
+                  entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
+                  onRegisterPendingAttachment={registerPendingAttachment}
+                  onRemovePendingAttachment={removePendingAttachmentIfUnused}
                   key={property._id}
                 />
               );
@@ -693,6 +739,10 @@ const EditEntity = ({
                   registerOptions={{ required: property.required }}
                   disabled={disabled}
                   attachments={entityAttachments}
+                  pendingAttachments={pendingAttachments}
+                  entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
+                  onRegisterPendingAttachment={registerPendingAttachment}
+                  onRemovePendingAttachment={removePendingAttachmentIfUnused}
                   key={property._id}
                 />
               );
