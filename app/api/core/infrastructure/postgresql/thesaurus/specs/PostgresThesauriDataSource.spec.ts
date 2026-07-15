@@ -2,19 +2,26 @@ import { ObjectId } from 'mongodb';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
 import {
   ThesaurusNameAlreadyExistsError,
   ThesaurusNotFoundError,
 } from '#api/core/domain/thesaurus/errors.js';
 import { PostgresThesauriDataSource } from '../PostgresThesauriDataSource.js';
+import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
 
 const TENANT_ID = 'test-tenant';
+
+const managerFor = (tenantId: string) =>
+  new PostgresTransactionManager(PostgresDB.knex, tenantId, LoggerFactory.forTests());
 
 const makeDS = () =>
   new PostgresThesauriDataSource({
     tenantId: TENANT_ID,
     mongoDb: getConnection(),
+    pgTransactionManager: managerFor(TENANT_ID),
   });
 
 const makeThesaurus = (overrides: Partial<{ id: string; name: string; values: any[] }> = {}) =>

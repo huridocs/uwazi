@@ -1,4 +1,5 @@
 const fs = require('fs');
+
 const plopfilePath = require.resolve('../plopfile.cjs');
 
 const createFakePlop = () => {
