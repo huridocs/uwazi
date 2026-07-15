@@ -15,6 +15,19 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { PDFPostProcessJob } from '../PDFPostProcessJob.js';
 
+jest.mock('#api/search/index.js', () => {
+  const actual = jest.requireActual('#api/search/index.js') as Record<string, unknown> & {
+    search: Record<string, unknown>;
+  };
+  return {
+    ...actual,
+    search: {
+      ...(actual.search as Record<string, unknown>),
+      indexEntities: jest.fn().mockResolvedValue(undefined),
+    },
+  };
+});
+
 const f = getFixturesFactory();
 
 type TestConfig = {

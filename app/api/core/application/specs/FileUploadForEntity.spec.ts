@@ -15,6 +15,19 @@ import { tenants } from '#api/tenants/index.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
 
+jest.mock('#api/search/index.js', () => {
+  const actual = jest.requireActual('#api/search/index.js') as Record<string, unknown> & {
+    search: Record<string, unknown>;
+  };
+  return {
+    ...actual,
+    search: {
+      ...(actual.search as Record<string, unknown>),
+      indexEntities: jest.fn().mockResolvedValue(undefined),
+    },
+  };
+});
+
 const f = getFixturesFactory();
 
 const fixtures: DBFixture = {

@@ -6,11 +6,14 @@ import { PostgresThesauriDAO } from '../postgresql/thesaurus/PostgresThesauriDAO
 
 class ThesauriDAOFactory {
   static default(): MongoThesauriDAO | PostgresThesauriDAO {
-    const tenant = ExecutionContext.tenant;
+    const { tenant } = ExecutionContext;
 
     if (tenant.featureFlags?.postgresThesauri) {
+      const pgTM = ExecutionContext.postgresTransactionManager;
+
       return new PostgresThesauriDAO({
         tenantId: tenant.name,
+        pgTransactionManager: pgTM,
       });
     }
 

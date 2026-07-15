@@ -19,10 +19,13 @@ export class FilesDataSourceFactory {
       ExecutionContext.transactionManager) as MongoTransactionManager;
 
     if (tenant.featureFlags?.postgresFiles) {
+      const pgTM = ExecutionContext.postgresTransactionManager;
+
       return new PostgresFilesDataSource({
         mongoDb: db,
         tenantId: tenant.name,
         transactionManager: tm,
+        pgTransactionManager: pgTM,
         fileStorage: FileStorageFactory.default(),
       });
     }

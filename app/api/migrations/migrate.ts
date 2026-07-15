@@ -31,13 +31,9 @@ export const runMigration = async (): Promise<MigrationRunResult> => {
   await DB.connect(config.DBHOST, config.DBAUTH);
 
   let currentSchemaVersion = Number.MAX_SAFE_INTEGER;
-  let postgresConnected = false;
 
   try {
-    PostgresDB.connect();
-    postgresConnected = true;
-    const pgPool = PostgresDB.pool();
-    const pgMigrator = new PgMigrator(PG_MIGRATIONS_DIR, pgPool);
+    const pgMigrator = new PgMigrator(PG_MIGRATIONS_DIR, PostgresDB.adminPool());
     currentSchemaVersion = await pgMigrator.getCurrentVersion();
   } catch (error) {
     process.stdout.write(
@@ -57,9 +53,7 @@ export const runMigration = async (): Promise<MigrationRunResult> => {
   });
 
   await DB.disconnect();
-  if (postgresConnected) {
-    await PostgresDB.disconnect();
-  }
+  await PostgresDB.disconnect();
 
   if (migrationsResult.blocked) {
     return {
