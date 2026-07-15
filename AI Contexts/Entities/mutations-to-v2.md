@@ -14,7 +14,7 @@ We are **not** at the target yet. `entities.js save` is still a hybrid compatibi
 
 #### A) Direct runtime callers still using `entities.save` (legacy façade)
 
-- `app/api/suggestions/updateEntities.ts`
+- none identified (runtime path now migrated; remaining references are test-only)
 
 #### B) Legacy fallback path still inside `entities.js save`
 
@@ -48,9 +48,9 @@ This means old write paths are still alive and reachable.
    - property selections handling
    - These are intertwined with current `save` flow, so removing fallback requires explicit relocation/ownership decisions.
 
-3. **Suggestions flow still depends on legacy save behavior**
-   - `suggestions/updateEntities.ts` currently calls `entities.save`.
-   - Direct swap to `EntityFacade.update` changed behavior in acceptance tests (relationship/multiselect/title expectations), so this needs a dedicated migration preserving semantics.
+3. **Suggestions flow migration must preserve side effects**
+   - Suggestions acceptance now uses `EntityFacade.update`.
+   - Relationship reference sync and explicit search indexing call were reintroduced in that flow to preserve previous behavior.
 
 ### 3) Non-blocking but important context
 
@@ -95,7 +95,7 @@ This means old write paths are still alive and reachable.
 
 - Remove `createEntity/updateEntity` usage from `save`.
 - Remove deprecated `documents.save` wrapper and deprecated `/api/documents` routes once usage is confirmed zero.
-- Remove remaining `entities.save` runtime caller in suggestions by migrating acceptance update semantics to V2.
+- Remove remaining `entities.save` runtime caller in suggestions by migrating acceptance update semantics to V2. (done)
 
 ### 6) Definition of done for this refactor objective
 
@@ -201,10 +201,14 @@ Implemented rule in this pass:
 
 ## Evidence Notes
 
-- `entities.save` runtime callers have been reduced to suggestions flow.
+- `entities.save` runtime callers in `app/api/**` are now test-only references.
 - TOC-related `generatedToc` updates now use regular `EntityFacade.update` and V2 core update contract.
 - Removed code paths had no production runtime callers (test-only or orphaned).
 - TOC fixtures were aligned to include a real user author to match actor requirements in V2 update flow.
+- Suggestions acceptance updates now use `EntityFacade.update`.
+- Side effects are now validated through V2 infrastructure behavior:
+  - relationship denormalization is queued through `EntityUpdatedEvent:ProcessRelationshipAfterEntityUpdatedListener` jobs.
+  - indexing is triggered by V2 datasource commit hooks (`search.indexEntities({ sharedId: { $in: [...] } })`).
 
 ## Remaining Validation Checklist
 
@@ -212,7 +216,7 @@ Implemented rule in this pass:
   - entities save/update compatibility
   - TOC reviewed flow (`generatedToc`)
   - CSV import paths
-  - suggestions acceptance flow
+  - suggestions acceptance flow (done)
   - worker boot/service registration smoke check after twitter integration removal
 - Confirm no non-test imports remain for removed files/methods.
 
@@ -263,3 +267,8 @@ Given CSV V2 is now enabled for all tenants, we may include full CSV V1 retireme
     - `app/api/toc_generation/specs/tocService.spec.ts`
     - `app/api/files/specs/routes.spec.ts`
   - aggregate: 9 suites passed, 229 tests passed
+- Suggestions migration verification:
+  - `app/api/suggestions/specs/suggestions.spec.ts`
+  - `app/api/suggestions/specs/routes.spec.ts`
+  - `app/api/suggestions/specs/eventListeners.spec.ts`
+  - aggregate: 3 suites passed, 65 tests passed

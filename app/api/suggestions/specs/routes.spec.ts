@@ -114,6 +114,22 @@ describe('POST /api/suggestions/train', () => {
 });
 
 describe('POST /api/suggestions/accept', () => {
+  const expectEntityReindexed = (sharedId: string) => {
+    const calls = (search.indexEntities as jest.Mock).mock.calls;
+    const hasExpectedCall = calls.some(
+      ([query]) =>
+        query &&
+        typeof query === 'object' &&
+        'sharedId' in query &&
+        query.sharedId &&
+        typeof query.sharedId === 'object' &&
+        '$in' in query.sharedId &&
+        Array.isArray(query.sharedId.$in) &&
+        query.sharedId.$in.includes(sharedId)
+    );
+    expect(hasExpectedCall).toBe(true);
+  };
+
   const suggestionsSuccess = async () =>
     waitForExpect(() => {
       expect(iosocket.emit).toHaveBeenCalledWith(
@@ -155,7 +171,7 @@ describe('POST /api/suggestions/accept', () => {
         title: 'The Penguin',
       },
     ]);
-    expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'shared6' }, '+fullText');
+    expectEntityReindexed('shared6');
   });
 
   it('should handle partial acceptance parameters for multiselects', async () => {
@@ -181,10 +197,7 @@ describe('POST /api/suggestions/accept', () => {
       { value: 'A', label: 'A' },
       { value: '1B', label: '1B', parent: { value: '1', label: '1' } },
     ]);
-    expect(search.indexEntities).toHaveBeenCalledWith(
-      { sharedId: 'entityWithSelects2' },
-      '+fullText'
-    );
+    expectEntityReindexed('entityWithSelects2');
   });
 
   it('should emit ACCEPT_SUGGESTION_SUCCESS event after accept suggestion finish with success', async () => {

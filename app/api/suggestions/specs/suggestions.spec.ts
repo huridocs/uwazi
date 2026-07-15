@@ -14,6 +14,9 @@ import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { DenormalizeEntityUpdatedListener } from '#api/core/infrastructure/listeners/DenormalizeEntityUpdatedListener.js';
+import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
 import { Suggestions } from '../suggestions.js';
 import {
   factory,
@@ -52,6 +55,11 @@ const matchState = (match: boolean = true): IXSuggestionStateType => ({
   processing: false,
   error: false,
 });
+
+const runWithEntityUpdatedListeners = <T>(fn: () => T) =>
+  testingEnvironment.runWithContext(fn, {
+    factories: { eventEmitter: () => EventEmitterFactory.default() },
+  });
 
 type SuggestionBase = Pick<
   IXSuggestionType,
@@ -94,7 +102,7 @@ const prepareAndAcceptSuggestion = async (
     .suggestions[0];
   const { _id, sharedId, entityId } = savedSuggestion;
 
-  await testingEnvironment.runWithContext(async () =>
+  await runWithEntityUpdatedListeners(async () =>
     Suggestions.accept([{ _id, sharedId, entityId, ...acceptanceParameters }])
   );
   const acceptedSuggestion = (await getSuggestions({ extractorId: factory.id(extractorName) }))
@@ -131,7 +139,7 @@ const prepareAndAcceptSelectSuggestion = async (
     removedValues?: string[];
   } = {}
 ) =>
-  testingEnvironment.runWithContext(async () =>
+  runWithEntityUpdatedListeners(async () =>
     prepareAndAcceptSuggestion(
       selectSuggestionBase(propertyName, extractorName, language),
       suggestedValue,
@@ -180,6 +188,17 @@ const prepareAndAcceptRelationshipSuggestion = async (
 describe('suggestions', () => {
   beforeAll(() => {
     Suggestions.registerEventListeners(applicationEventsBus);
+
+    const currentListeners =
+      EventEmitterFactory.registry.getListeners(DenormalizeEntityUpdatedListener.eventName) || new Set();
+
+    if (!currentListeners.has(DenormalizeEntityUpdatedListener)) {
+      EventEmitterFactory.registry.register(DenormalizeEntityUpdatedListener);
+    }
+
+    if (!currentListeners.has(ProcessRelationshipAfterEntityUpdatedListener)) {
+      EventEmitterFactory.registry.register(ProcessRelationshipAfterEntityUpdatedListener);
+    }
   });
 
   afterAll(async () => {
@@ -202,7 +221,7 @@ describe('suggestions', () => {
 
         const ids = new Set(labelMismatchedSuggestions.map((sug: any) => sug._id.toString()));
 
-        await testingEnvironment.runWithContext(async () =>
+        await runWithEntityUpdatedListeners(async () =>
           Suggestions.accept(
             labelMismatchedSuggestions.map((sug: any) => ({
               _id: sug._id,
@@ -245,7 +264,7 @@ describe('suggestions', () => {
           })
         ).suggestions;
         await expect(
-          testingEnvironment.runWithContext(async () =>
+          runWithEntityUpdatedListeners(async () =>
             Suggestions.accept([
               {
                 _id: ageSuggestion._id!,
@@ -272,7 +291,7 @@ describe('suggestions', () => {
         );
 
         try {
-          await testingEnvironment.runWithContext(async () =>
+          await runWithEntityUpdatedListeners(async () =>
             Suggestions.accept([
               {
                 _id: errorSuggestion!._id!,
@@ -299,7 +318,7 @@ describe('suggestions', () => {
         const suggestionsToAccept = suggestions.filter(
           sug => sug.sharedId === 'shared2' || sug.sharedId === 'shared1'
         );
-        await testingEnvironment.runWithContext(async () =>
+        await runWithEntityUpdatedListeners(async () =>
           Suggestions.accept([
             {
               _id: suggestionsToAccept[0]._id!,
@@ -865,7 +884,7 @@ describe('suggestions', () => {
         expect(allFiles).toEqual(relationshipAcceptanceFixtureBase.files);
       });
 
-      it('should remove or create connections as necessary', async () => {
+      it('should enqueue relationship synchronization after update', async () => {
         const { acceptedSuggestion, metadataValues, allFiles } =
           await prepareAndAcceptRelationshipSuggestion(
             ['S1_sId', 'S3_sId'],
@@ -886,26 +905,20 @@ describe('suggestions', () => {
         ]);
         expect(allFiles).toEqual(relationshipAcceptanceFixtureBase.files);
 
-        const removedConnection = await db.mongodb
-          ?.collection('connections')
-          .findOne({ entity: 'S2_sId', template: factory.id('related') });
-        expect(removedConnection).toBeNull();
-
-        const newConnection = await db.mongodb
-          ?.collection('connections')
-          .findOne({ entity: 'S3_sId' });
-        expect(newConnection).toMatchObject({
-          entity: 'S3_sId',
-          hub: expect.any(ObjectId),
-          template: factory.id('related'),
+        const relationshipSyncJob = await db.mongodb?.collection('jobs').findOne({
+          name: 'EntityUpdatedEvent:ProcessRelationshipAfterEntityUpdatedListener',
+          'params.after.sharedId': 'entityWithRelationships_sId',
+          'params.targetLanguage': 'en',
         });
-        const newHub = newConnection?.hub;
-        const pairedConnection = await db.mongodb
-          ?.collection('connections')
-          .findOne({ entity: 'entityWithRelationships_sId', hub: newHub });
-        expect(pairedConnection).toMatchObject({
-          entity: 'entityWithRelationships_sId',
-          hub: newHub,
+
+        expect(relationshipSyncJob).toMatchObject({
+          name: 'EntityUpdatedEvent:ProcessRelationshipAfterEntityUpdatedListener',
+          params: {
+            after: {
+              sharedId: 'entityWithRelationships_sId',
+            },
+            targetLanguage: 'en',
+          },
         });
       });
     });
