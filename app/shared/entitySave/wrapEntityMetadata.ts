@@ -99,8 +99,8 @@ const toPropertyValue = (value: unknown): MetadataObjectSchema['value'] => {
 const wrapArrayEntry = (metadataEntry: ReadonlyArray<unknown>): MetadataObjectSchema[] =>
   metadataEntry.map(entry => {
     if (typeof entry === 'object' && entry !== null && 'value' in entry) {
-      const { value } = entry;
-      return { value: toPropertyValue(value) };
+      const { value, ...rest } = entry;
+      return { ...rest, value: toPropertyValue(value) };
     }
     return { value: toPropertyValue(entry) };
   });
@@ -127,7 +127,8 @@ const wrapMetadataEntry = (
 
   const { fileLocalID, timeLinks } = resolveMediaFileLocalId(property, metadataEntry, fieldValue);
   const values = withTimeLinks(fileLocalMetadataValues, fileLocalID, timeLinks);
-  const metadataValue = typeof fileLocalID === 'string' ? values[fileLocalID] : undefined;
+  const metadataValue =
+    isMediaProperty(property) && typeof fileLocalID === 'string' ? values[fileLocalID] : undefined;
 
   if (Array.isArray(metadataEntry)) {
     return { wrapped: wrapArrayEntry(metadataEntry), values };

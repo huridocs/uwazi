@@ -83,6 +83,41 @@ describe('wrapEntityMetadata', () => {
     });
   });
 
+  it('should not remap non-media values that match an attachment fileLocalID', () => {
+    const entity = {
+      title: 'A title',
+      metadata: { text: 'k3rutmyxrdr', image: 'k3rutmyxrdr' },
+      attachments: [
+        {
+          originalname: 'image.jpeg',
+          fileLocalID: 'k3rutmyxrdr',
+          type: 'attachment',
+        },
+      ],
+    };
+
+    expect(wrapEntityMetadata(entity, template).metadata).toEqual({
+      text: [{ value: 'k3rutmyxrdr' }],
+      image: [{ value: '', attachment: 0 }],
+    });
+  });
+
+  it('should preserve siblings on already-wrapped metadata entries', () => {
+    const entity = {
+      title: 'A title',
+      metadata: {
+        image: [{ value: '', attachment: 0, timeLinks: '{"timelinks":{}}' }],
+        text: [{ value: 'keep-me', label: 'Label' }],
+      },
+      attachments: [{ fileLocalID: 'img1', type: 'attachment' }],
+    };
+
+    expect(wrapEntityMetadata(entity, template).metadata).toEqual({
+      image: [{ value: '', attachment: 0, timeLinks: '{"timelinks":{}}' }],
+      text: [{ value: 'keep-me', label: 'Label' }],
+    });
+  });
+
   it('indexes by fileLocalID order, not serializedFile upload order', () => {
     const entity = {
       title: 'A title',
