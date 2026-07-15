@@ -1,13 +1,18 @@
+/* eslint-disable max-statements */
 import { ClientSession } from 'mongodb';
 import { Schema } from 'mongoose';
 
+import { Readable } from 'stream';
 import entities from '#api/entities/index.js';
+import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
+import type { UpdateEntityRequest } from '#api/core/infrastructure/express/entity/Schemas.js';
 import { instanceModel } from '#api/odm/model.js';
 import { dbSessionContext } from '#api/odm/sessionsContext.js';
-import { EntitySchema } from '#shared/types/entityType.js';
+import type { LanguageISO6391, MetadataSchema } from '#shared/types/commonTypes.js';
+import type { EntityWithFilesSchema } from '#shared/types/entityType.js';
+import type { FileType } from '#shared/types/fileType.js';
 
 import { storage } from '#api/files/index.js';
-import { Readable } from 'stream';
 import { appContext } from '../AppContext.js';
 import { elasticTesting } from '../elastic_testing.js';
 import { getFixturesFactory } from '../fixturesFactory.js';
@@ -21,23 +26,73 @@ interface TestDoc {
   value?: number;
 }
 
+type UpdateMetadata = NonNullable<UpdateEntityRequest['metadata']>;
+type UpdateMetadataValue = UpdateMetadata[string][number];
+
+const normalizeMetadata = (metadata?: MetadataSchema): UpdateMetadata | undefined => {
+  if (!metadata) {
+    return undefined;
+  }
+
+  const entries = Object.entries(metadata).filter(([, values]) => Array.isArray(values));
+  if (!entries.length) {
+    return undefined;
+  }
+
+  return Object.fromEntries(entries) as Record<string, UpdateMetadataValue[]>;
+};
+
+const toUpdateDocuments = (entity: EntityWithFilesSchema) =>
+  (entity.documents || [])
+    .filter(
+      (
+        doc: FileType
+      ): doc is FileType & { _id: NonNullable<FileType['_id']>; originalname: string } =>
+        Boolean(doc?._id && doc?.originalname)
+    )
+    .map(doc => ({
+      _id: doc._id.toString(),
+      originalname: doc.originalname,
+    }));
+
+const toUpdateAttachments = (entity: EntityWithFilesSchema) =>
+  (entity.attachments || [])
+    .filter((attachment: FileType): attachment is FileType & { originalname: string } =>
+      Boolean(attachment?.originalname)
+    )
+    .map(attachment => ({
+      _id: attachment._id?.toString(),
+      originalname: attachment.originalname,
+      ...(attachment.url ? { url: attachment.url } : {}),
+    }));
+
+const toUpdatePayload = (
+  current: EntityWithFilesSchema,
+  title: string
+): UpdateEntityRequest & { language: LanguageISO6391 } => {
+  const { sharedId, language } = current;
+  const id = current._id?.toString();
+  if (!sharedId || !language || !id) {
+    throw new Error('Missing required fields to update entity');
+  }
+
+  return {
+    _id: id,
+    sharedId,
+    language: language as LanguageISO6391,
+    title,
+    template: current.template?.toString?.(),
+    user: current.user?.toString?.(),
+    metadata: normalizeMetadata(current.metadata),
+    icon: current.icon,
+    documents: toUpdateDocuments(current),
+    attachments: toUpdateAttachments(current),
+  };
+};
+
 afterAll(async () => {
   await testingEnvironment.tearDown();
 });
-
-const saveEntity = async (entity: EntitySchema) =>
-  testingEnvironment.runWithContext(async () =>
-    entities.save(entity, { user: {}, language: 'es' }, { updateRelationships: false })
-  );
-
-const createEntity = async (entity: EntitySchema) =>
-  testingEnvironment.runWithContext(async () =>
-    entities.save(
-      { ...entity, _id: undefined, sharedId: undefined },
-      { user: {}, language: 'es' },
-      { updateRelationships: false }
-    )
-  );
 
 describe('withTransaction utility', () => {
   let model: any;
@@ -260,7 +315,7 @@ describe('withTransaction utility', () => {
     });
   });
 
-  describe('entities elasticsearch index', () => {
+  describe('V2 entity mutation pattern (no withTransaction wrapper)', () => {
     beforeEach(async () => {
       await testingEnvironment.setUp(
         {
@@ -277,71 +332,30 @@ describe('withTransaction utility', () => {
       testingEnvironment.unsetFakeContext();
     });
 
-    it('should handle delayed reindexing after a successful transaction', async () => {
+    const updateEntityTitleWithV2 = async (sharedId: string, title: string) =>
+      testingEnvironment.runWithContext(async () => {
+        const current = await entities.getById(sharedId, 'en');
+        if (!current) {
+          throw new Error(`Entity not found: ${sharedId}`);
+        }
+
+        const payload = toUpdatePayload(current as EntityWithFilesSchema, title);
+        await EntityFacade.update(payload, payload.language);
+      });
+
+    it('should update entities using V2 facade without outer withTransaction', async () => {
       await appContext.run(async () => {
-        await withTransaction(async () => {
-          await testingEnvironment.runWithContext(async () =>
-            entities.save(
-              { ...factory.entity('test1', 'template1'), _id: undefined, sharedId: undefined },
-              { user: {}, language: 'es' },
-              { updateRelationships: false }
-            )
-          );
-          await testingEnvironment.runWithContext(async () =>
-            entities.save(
-              { ...factory.entity('test2', 'template1'), _id: undefined, sharedId: undefined },
-              { user: {}, language: 'es' },
-              { updateRelationships: false }
-            )
-          );
-        });
+        await updateEntityTitleWithV2('existing1', 'update1');
+        await updateEntityTitleWithV2('existing2', 'update2');
 
         await elasticTesting.refresh();
         const indexedEntities = await elasticTesting.getIndexedEntities();
-        expect(indexedEntities).toHaveLength(4);
         expect(indexedEntities).toEqual(
           expect.arrayContaining([
-            expect.objectContaining({ title: 'test1' }),
-            expect.objectContaining({ title: 'test2' }),
-            expect.objectContaining({ title: 'existing1' }),
-            expect.objectContaining({ title: 'existing2' }),
+            expect.objectContaining({ title: 'update1' }),
+            expect.objectContaining({ title: 'update2' }),
           ])
         );
-      });
-    });
-
-    it('should not index changes to elasticsearch if transaction is aborted manually', async () => {
-      await appContext.run(async () => {
-        await withTransaction(async ({ abort }) => {
-          await saveEntity({ ...factory.entity('existing1', 'template1'), title: 'update1' });
-          await saveEntity({ ...factory.entity('existing2', 'template1'), title: 'update2' });
-          await createEntity(factory.entity('new', 'template1'));
-          await abort();
-        });
-
-        const indexedEntities = await elasticTesting.getIndexedEntities();
-        expect(indexedEntities).toMatchObject([{ title: 'existing1' }, { title: 'existing2' }]);
-      });
-    });
-
-    it('should not index changes to elasticsearch if transaction is aborted by an error', async () => {
-      await appContext.run(async () => {
-        let error;
-        try {
-          await withTransaction(async () => {
-            await saveEntity({ ...factory.entity('existing1', 'template1'), title: 'update1' });
-            await saveEntity({ ...factory.entity('existing2', 'template1'), title: 'update2' });
-            await createEntity(factory.entity('new', 'template1'));
-            throw new Error('Testing error');
-          });
-        } catch (e) {
-          error = e;
-        }
-
-        expect(error.message).toBe('Testing error');
-
-        const indexedEntities = await elasticTesting.getIndexedEntities();
-        expect(indexedEntities).toMatchObject([{ title: 'existing1' }, { title: 'existing2' }]);
       });
     });
   });

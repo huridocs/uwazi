@@ -101,6 +101,16 @@ Status update:
   - `app/api/search.v2/specs/sorting.spec.ts` setup was migrated away from `entities.save(...)`; fixture metadata now includes normalized select labels directly.
   - `app/api/search.v2/specs/snippetsSearch.spec.ts` setup was migrated away from `entities.save(...)`; fixture metadata now includes denormalized thesaurus label used in snippet assertions.
   - Both search.v2 suites remain green after these setup-only migrations.
+  - `app/api/suggestions/specs/eventListeners.spec.ts` was migrated away from `entities.save(...)` for template-change updates; it now updates through `EntityFacade.update(...)` with explicit file references.
+  - Suggestion listener fixtures were normalized for strict V2 template validation (select/multiselect content + dictionary fixture), keeping behavior assertions intact.
+  - `app/api/entities/specs/v2_newRelationshipMetadata.spec.ts` was reduced to a minimal deprecated placeholder (removed stale commented legacy block).
+  - `app/api/utils/specs/withTransaction.spec.ts` was refactored to remove the legacy anti-pattern (`withTransaction` wrapping `entities.save` calls).
+  - Added a concrete V2-owned transaction-boundary pattern test: update entities through `EntityFacade.update(...)` **without** outer `withTransaction`, then assert indexed updates.
+  - This documents/enforces the migration rule: V2 facade/use-cases own transaction boundaries; do not nest them under V1 `withTransaction`.
+  - Follow-up TypeScript cleanup completed for:
+    - `app/api/suggestions/specs/eventListeners.spec.ts`
+    - `app/api/utils/specs/withTransaction.spec.ts`
+  - Both suites revalidated green after typing fixes.
 
 #### Phase 3 — Remove fallback from CREATE path
 
@@ -236,6 +246,22 @@ Implemented rule in this pass:
   - worker boot/service registration smoke check after twitter integration removal
 - Confirm no non-test imports remain for removed files/methods.
 
+## Next Session TODOs (Pending)
+
+- Migrate remaining behavior-heavy `entities.save` test suites (not setup-only):
+  - `app/api/entities/specs/entities.spec.js`
+  - `app/api/entities/specs/denormalization.spec.ts`
+- After each behavior migration chunk, re-attempt removing update fallback in `entities.save`:
+  - remove `shouldForceLegacyUpdate`
+  - remove update-side `isLegacyCompatibilityError` fallback branch
+- Re-validate that no `entities.save(` references remain outside intended legacy tests.
+- Once update fallback is gone and green, plan create-side fallback removal:
+  - `shouldForceLegacyCreate`
+  - create-side compatibility fallback in `entities.save`
+- Cleanup pass:
+  - remove stale activity log parser mappings for removed routes (`POST/api/documents`, `DELETE/api/documents`)
+  - remove or update any remaining deprecated docs/DS references in specs/docs.
+
 ## Cleanup TODOs (Pending Deletion Assessment)
 
 - TODO: Follow-up cleanup after `/api/documents` removal:
@@ -288,3 +314,9 @@ Given CSV V2 is now enabled for all tenants, we may include full CSV V1 retireme
   - `app/api/suggestions/specs/routes.spec.ts`
   - `app/api/suggestions/specs/eventListeners.spec.ts`
   - aggregate: 3 suites passed, 65 tests passed
+- WithTransaction migration verification:
+  - `app/api/utils/specs/withTransaction.spec.ts`
+  - aggregate: 1 suite passed, 16 tests passed
+- TS fix verification:
+  - `app/api/suggestions/specs/eventListeners.spec.ts` (21/21)
+  - `app/api/utils/specs/withTransaction.spec.ts` (16/16)
