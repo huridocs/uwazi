@@ -5,6 +5,7 @@ import { DevelopmentWritter } from '#api/core/libs/logger/infrastructure/writers
 import { getTenant } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { LogWriter } from '#api/core/libs/logger/infrastructure/LogWriter.js';
 
 export class LoggerFactory {
   static default(_writer = StandardJSONWriter) {
@@ -24,7 +25,7 @@ export class LoggerFactory {
 
   static systemLogger(_writer = StandardJSONWriter) {
     let writer = _writer;
-    if (config.ENVIRONMENT === 'development') {
+    if (config.ENVIRONMENT === 'development' && _writer === StandardJSONWriter) {
       writer = DevelopmentWritter;
     }
 
@@ -53,5 +54,18 @@ export class LoggerFactory {
   static fake() {
     // eslint-disable-next-line no-empty-function
     return new StandardLogger(() => {}, getTenant());
+  }
+
+  static migrationLogger(writer: LogWriter): Logger {
+    return new StandardLogger(writer, {
+      name: 'Migration Logger',
+      dbName: 'N/a',
+      activityLogs: 'N/a',
+      attachments: 'N/a',
+      customUploads: 'N/a',
+      indexName: 'N/a',
+      uploadedDocuments: 'N/a',
+      domain: 'N/a',
+    });
   }
 }

@@ -11,6 +11,7 @@ export class TemplatesSyncHandlerFactory {
       return new PostgresTemplatesSyncHandler({
         tenantId: tenant.name,
         mongoDb: getConnection(),
+        pgTransactionManager: ExecutionContext.postgresTransactionManager,
       });
     }
 

@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { tenants } from '#api/tenants/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
+import { PostgresTransactionManagerFactory } from '../../factories/PostgresTransactionManagerFactory.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory.js';
@@ -22,6 +23,7 @@ const dependenciesContextMiddleware = (
       actor,
       factories: {
         transactionManager: TransactionManagerFactory.default,
+        postgresTransactionManager: PostgresTransactionManagerFactory.default,
         jobsDispatcher: () => DefaultDispatcher(tenant.name, ExecutionContext.transactionManager),
         eventEmitter: EventEmitterFactory.default,
         idGenerator: IdGeneratorFactory.default,

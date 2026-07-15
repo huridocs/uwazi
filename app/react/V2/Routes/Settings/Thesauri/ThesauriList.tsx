@@ -1,65 +1,60 @@
 import React, { useMemo, useState } from 'react';
-import { IncomingHttpHeaders } from 'http';
-import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
+import { Link, useLoaderData, useRevalidator } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { t, Translate } from '#app/I18N/index.js';
-import * as ThesauriAPI from '#V2/api/thesauri/index.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
 import { templatesAtom } from '#V2/atoms/index.js';
-import { ClientThesaurus, Template } from '#app/apiResponseTypes.js';
+import { ClientThesaurus } from '#app/apiResponseTypes.js';
+import { useServices } from '#V2/services/index.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { ThesauriTable } from './components/ThesauriTable.js';
 import type { ThesauriRow } from './components/ThesauriTable.js';
-import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
-
-const thesauriLoader =
-  (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () =>
-    ThesauriAPI.get({}, headers);
 
 const ThesauriList = () => {
   const revalidator = useRevalidator();
   const thesauri = useLoaderData() as ClientThesaurus[];
+  const { thesauri: thesaurusService } = useServices();
   const { notify } = useRequestStatus();
   const templates = useAtomValue(templatesAtom);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [currentThesauri, setCurrentThesauri] = useState<ThesauriRow[]>([]);
   const [selectedThesauri, setSelectedThesauri] = useState<ThesauriRow[]>([]);
 
-  useMemo(() => {
-    setCurrentThesauri(
+  const currentThesauri = useMemo(
+    () =>
       thesauri.map(thesaurus => {
-        const templatesUsingIt = templates
-          .map(templateItem => {
-            const usingIt = templateItem.properties?.some(
-              (property: any) => property.content === thesaurus._id
-            );
-            return usingIt ? templateItem : null;
-          })
-          .filter(templateItem => templateItem) as Template[];
+        const templatesUsingIt = templates.filter(templateItem =>
+          templateItem.properties?.some(property => property.content === thesaurus._id)
+        );
+
         return {
           ...thesaurus,
-          rowId: thesaurus._id,
+          rowId: thesaurus._id!,
           templates: templatesUsingIt,
-          disableRowSelection: Boolean(templatesUsingIt.length),
-        } as ThesauriRow;
-      })
-    );
-  }, [thesauri, templates]);
+          disableRowSelection: templatesUsingIt.length > 0,
+        };
+      }),
+    [thesauri, templates]
+  );
 
   const deleteSelectedThesauri = async () => {
-    try {
-      const requests = selectedThesauri.map(async thesaurus =>
-        ThesauriAPI.deleteThesauri({ _id: thesaurus._id })
+    const ids = selectedThesauri.map(item => item._id).filter((id): id is string => Boolean(id));
+    const [, error] = await thesaurusService.delete(ids);
+
+    if (error) {
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        error.detail ?? error.message
       );
-      await Promise.all(requests);
+    } else {
       notify('success', t('System', 'Thesauri deleted', null, false));
-    } catch (e) {
-      notify('error', t('System', 'An error occurred', null, false));
-    } finally {
-      await revalidator.revalidate();
-      setShowConfirmationModal(false);
+      setSelectedThesauri([]);
     }
+
+    await revalidator.revalidate();
+    setShowConfirmationModal(false);
   };
 
   return (
@@ -122,4 +117,4 @@ const ThesauriList = () => {
   );
 };
 
-export { ThesauriList, thesauriLoader };
+export { ThesauriList };

@@ -1,22 +1,23 @@
 /**
  * @jest-environment jsdom
  */
-import * as entityApi from '#V2/api/entities/index.js';
+import type { LoaderFunctionArgs } from 'react-router';
+import { ApiError } from '#shared/apiClient/index.js';
 import * as files from '#V2/api/files/index.js';
 import * as search from '#V2/api/search/index.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { getStore } from '#shared/atomStore/index.js';
-import type { LoaderFunctionArgs } from 'react-router';
-import { entityLoader } from '../loader.js';
+import { createTestServices } from '#V2/testing/createTestServices.js';
+import { createEntityLoader } from '../loader.js';
 import { entityLoaderCache } from '../EntityLoaderCache.js';
 
-jest.mock('#V2/api/entities/index.js');
 jest.mock('#V2/api/files/index.js');
 jest.mock('#V2/api/search/index.js');
 
 describe('Entity loader with cache integration', () => {
   let mockEntity: Partial<Entity>;
+  let getBySharedId: jest.Mock;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -34,7 +35,7 @@ describe('Entity loader with cache integration', () => {
       relations: [],
     };
 
-    jest.spyOn(entityApi, 'getBySharedId').mockResolvedValue([[mockEntity as Entity]]);
+    getBySharedId = jest.fn().mockResolvedValue([[mockEntity as Entity]]);
     jest.spyOn(files, 'getPagePlaintext').mockResolvedValue('plaintext content');
     getStore().set(settingsAtom, {
       languages: [
@@ -48,8 +49,9 @@ describe('Entity loader with cache integration', () => {
     const fullUrl = new URL(url);
     const pathParts = fullUrl.pathname.split('/');
     const sharedId = pathParts[pathParts.length - 1];
+    const loader = createEntityLoader(createTestServices({ entities: { getBySharedId } }))();
 
-    return entityLoader()({
+    return loader({
       params: { sharedId, ...(lang ? { lang } : {}) },
       request: new Request(fullUrl),
       unstable_pattern: '',
@@ -61,14 +63,14 @@ describe('Entity loader with cache integration', () => {
     it('should fetch entity when not cached', async () => {
       await loadEntity('http://localhost/entity/shared1');
 
-      expect(entityApi.getBySharedId).toHaveBeenCalledTimes(1);
+      expect(getBySharedId).toHaveBeenCalledTimes(1);
     });
 
     it('should use cached entity and not fetch again', async () => {
       await loadEntity('http://localhost/entity/shared1');
       await loadEntity('http://localhost/entity/shared1');
 
-      expect(entityApi.getBySharedId).toHaveBeenCalledTimes(1);
+      expect(getBySharedId).toHaveBeenCalledTimes(1);
     });
 
     it('should refetch when cache only has a partial entity', async () => {
@@ -78,7 +80,7 @@ describe('Entity loader with cache integration', () => {
 
       await loadEntity('http://localhost/entity/shared1', 'en');
 
-      expect(entityApi.getBySharedId).toHaveBeenCalledTimes(1);
+      expect(getBySharedId).toHaveBeenCalledTimes(1);
       expect(
         entityLoaderCache.getEntity('shared1', 'en', { requireRelationships: true })?.relations
       ).toEqual([]);
@@ -163,7 +165,6 @@ describe('Entity loader with cache integration', () => {
       await loadEntity('http://localhost/entity/shared1');
       await loadEntity('http://localhost/entity/shared1');
 
-      // setMainDocument is only called once — on first load; subsequent loads use the cache
       expect(getMainDocumentSpy).toHaveBeenCalledTimes(1);
     });
 
@@ -190,6 +191,27 @@ describe('Entity loader with cache integration', () => {
   });
 
   describe('Cache invalidation', () => {
+    it('should throw when entity fetch returns an API error', async () => {
+      getBySharedId.mockResolvedValue([
+        undefined,
+        new ApiError('Not found', { kind: 'http', status: 404, detail: 'Entity missing' }),
+      ]);
+
+      await expect(loadEntity('http://localhost/entity/shared1')).rejects.toMatchObject({
+        status: 404,
+        message: 'Entity missing',
+      });
+    });
+
+    it('should throw when entity fetch returns no rows', async () => {
+      getBySharedId.mockResolvedValue([[]]);
+
+      await expect(loadEntity('http://localhost/entity/shared1')).rejects.toMatchObject({
+        status: 404,
+        message: 'Entity shared1 not found',
+      });
+    });
+
     it('should fetch again after cache is invalidated', async () => {
       await loadEntity('http://localhost/entity/shared1');
 
@@ -197,7 +219,7 @@ describe('Entity loader with cache integration', () => {
 
       await loadEntity('http://localhost/entity/shared1');
 
-      expect(entityApi.getBySharedId).toHaveBeenCalledTimes(2);
+      expect(getBySharedId).toHaveBeenCalledTimes(2);
     });
   });
 });

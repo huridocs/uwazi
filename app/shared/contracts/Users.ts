@@ -22,7 +22,6 @@ type User = {
   password?: string;
   using2fa?: boolean;
   accountLocked?: boolean;
-  failedLogins?: number;
   groups?: GroupSummary[];
 };
 
@@ -41,13 +40,14 @@ type DeleteUserResponse = {
   deletedCount: number;
 };
 
+type GetUsersResponse = User[];
+
 export type {
   User,
-  UserGroup,
-  GroupMember,
-  GroupSummary,
-  CreateUserRequest,
+  GetUsersResponse,
   CreateUserResponse,
+  CreateUserRequest,
   DeleteUserRequest,
   DeleteUserResponse,
+  UserGroup,
 };

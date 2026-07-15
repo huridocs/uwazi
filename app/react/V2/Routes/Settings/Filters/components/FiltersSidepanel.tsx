@@ -27,8 +27,7 @@ const FiltersSidepanel = ({
   const { templates: allTemplates } = useLoaderData() as LoaderData;
   const filter = useAtomValue(sidepanelAtom);
   const multiselectValues = filter?.subRows?.map(item => item.id).filter(v => v) as
-    | string[]
-    | undefined;
+    string[] | undefined;
 
   const selectedValues: string[] = [];
   const selectedOptions =

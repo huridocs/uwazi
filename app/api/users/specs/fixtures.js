@@ -1,6 +1,6 @@
 import SHA256 from 'crypto-js/sha256';
 import db from '#api/utils/testing_db.js';
-import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
+import { PUBLIC_USER_ID, UserRole } from '#api/core/domain/user/User.js';
 
 const userId = db.id();
 const group1Id = db.id();
@@ -18,14 +18,14 @@ export default {
       password: 'password',
       username: 'username',
       email: 'test@email.com',
-      role: 'admin',
+      role: UserRole.ADMIN,
     },
     {
       _id: recoveryUserId,
       password: 'anotherpassword',
       username: 'anotherusername',
       email: 'recovery@email.com',
-      role: 'editor',
+      role: UserRole.EDITOR,
       using2fa: false,
     },
     {
@@ -33,7 +33,7 @@ export default {
       password: 'anotherpassword',
       username: 'blockedusername',
       email: 'blocked@email.com',
-      role: 'editor',
+      role: UserRole.EDITOR,
       using2fa: false,
       failedLogins: 6,
       accountLocked: true,
@@ -43,7 +43,7 @@ export default {
       _id: userToDelete,
       username: 'userToDelete',
       email: 'userToDelete@email.com',
-      role: 'admin',
+      role: UserRole.ADMIN,
       using2fa: false,
       failedLogins: 0,
       accountLocked: false,
@@ -52,7 +52,7 @@ export default {
       _id: userToDelete2,
       username: 'userToDelete2',
       email: 'userToDelete2@email.com',
-      role: 'editor',
+      role: UserRole.EDITOR,
       using2fa: false,
     },
     {
@@ -60,7 +60,7 @@ export default {
       username: 'PublicUser',
       email: 'public@uwazi.local',
       password: 'wontbeused',
-      role: 'collaborator',
+      role: UserRole.COLLABORATOR,
     },
   ],
   passwordrecoveries: [{ _id: db.id(), key: expectedKey, user: recoveryUserId }],

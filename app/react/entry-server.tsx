@@ -22,6 +22,7 @@ import sortBy from 'lodash/sortBy.js';
 import { Provider as ReduxProvider } from 'react-redux';
 import { getStore } from '#shared/atomStore/index.js';
 import { api } from '#app/utils/api.js';
+import { apiClient } from '#V2/api/client.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
@@ -41,6 +42,7 @@ import { I18NUtils } from './I18N/index.js';
 import { IStore } from './istore.js';
 import type { IndexComponents } from './Routes.js';
 import { getRoutes } from './Routes.js';
+import { createServerServices } from '#V2/services/server/index.js';
 import { create as createReduxStore } from './store.js';
 import { ProtectedRoute } from './ProtectedRoute.js';
 import { isMobileDevice } from '../shared/detectDevice.js';
@@ -52,6 +54,7 @@ loadIcons();
 const convertObjectIdsToStrings = (data: any) => JSON.parse(JSON.stringify(data));
 
 api.APIURL(`http://localhost:${process.env.PORT || 3000}/api/`);
+apiClient.setBaseUrl(`http://localhost:${process.env.PORT || 3000}/api/`);
 
 class ServerRenderingFetchError extends Error {
   status: number;
@@ -336,7 +339,14 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     Login: (login as { Login: IndexComponents['Login'] }).Login,
   };
 
-  const routes = getRoutes(settings, req.user && req.user._id, headers, indexComponents);
+  const serverServices = createServerServices(req);
+  const routes = getRoutes(
+    settings,
+    req.user && req.user._id,
+    headers,
+    indexComponents,
+    serverServices
+  );
 
   const matched = matchRoutes(routes, req.path);
 
@@ -376,7 +386,6 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();
   const clientFeatureFlags: ClientFeatureFlags = {
     paragraphExtraction: featureFlags?.paragraphExtraction,
-    v2CSVImport: featureFlags?.v2CSVImport,
     dataViz: featureFlags?.dataViz,
     newHeader: featureFlags?.newHeader,
     themeCustomization: featureFlags?.themeCustomization,

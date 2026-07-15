@@ -21,7 +21,6 @@ type Tenant = {
     deactivateTestJob?: boolean;
     paragraphExtraction?: boolean;
     fileCacheHeaders?: boolean;
-    v2CSVImport?: boolean;
     dataViz?: boolean;
     themeCustomization?: boolean;
     v2GetEntity?: boolean;
@@ -34,9 +33,11 @@ type Tenant = {
     aiAssistantServiceUrl?: string;
     v2CreateUser?: boolean;
     v2DeleteUser?: boolean;
+    v2GetUsers?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;
+  maintenance?: boolean;
 };
 
 class Tenants {
@@ -118,8 +119,17 @@ class Tenants {
   getTenantsForFeatureFlag(featureFlag: TenantFeatureFlags) {
     return Object.values(this.tenants).filter(tenant => tenant?.featureFlags?.[featureFlag]);
   }
+
+  async setMaintenance(tenantName: string, maintenance: boolean) {
+    if (this.model) {
+      await this.model.setMaintenance(tenantName, maintenance);
+    }
+    if (this.tenants[tenantName]) {
+      this.tenants[tenantName].maintenance = maintenance;
+    }
+  }
 }
 
 const tenants = new Tenants(config.defaultTenant);
-export { tenants };
+export { tenants, Tenants };
 export type { Tenant, TenantFeatureFlags };

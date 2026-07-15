@@ -8,7 +8,7 @@ import { MetadataFormButtons } from './components/MetadataFormButtons.js';
 import { MetadataFormFields } from './components/MetadataFormFields.js';
 import { SelectMultiplePanel } from './components/SelectMultiplePanel.js';
 
-export * from './helpers/wrapper.js';
+export { prepareMetadataAndFiles, wrapEntityMetadata } from '#shared/entitySave/legacyMetadata.js';
 
 export {
   validator,

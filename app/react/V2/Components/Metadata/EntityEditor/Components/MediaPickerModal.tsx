@@ -1,68 +1,27 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { mimeTypeFromUrl } from '#api/files/extensionHelper.js';
 import { Translate } from '#app/I18N/index.js';
+import type { ClientFile } from '#app/istore.js';
 import { FileType } from '#shared/types/fileType.js';
 import { validateAndSanitizeUrl } from '#shared/urlValidationUtils.js';
 import { Button, FileIcon, Modal } from '#V2/Components/UI/index.js';
 import { formatBytes } from '#V2/shared/formatHelpers.js';
-
-type MediaPickerMode = 'image' | 'media';
+import {
+  attachmentKey,
+  extractMediaUrl,
+  filterAttachments,
+  getAttachmentSelectionValue,
+  getFileInputAccept,
+  type MediaPickerMode,
+} from './mediaPickerAttachments.js';
 
 type MediaPickerModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (value: string, localFile?: File) => void;
+  onSelect: (value: string, localFile?: File) => void | Promise<void>;
   mode: MediaPickerMode;
-  attachments: FileType[];
+  attachments: Array<FileType | ClientFile>;
   currentValue?: string;
 };
-
-const extractMediaUrl = (value?: string) => {
-  if (!value) {
-    return '';
-  }
-
-  const match = value.match(/^\(([^,]+),/);
-  return match ? match[1].trim() : value;
-};
-
-const getAttachmentUrl = (attachment: FileType) =>
-  attachment.url || (attachment.filename ? `/api/files/${attachment.filename}` : '');
-
-const isImageAttachment = (attachment: FileType) => {
-  const mimetype =
-    attachment.mimetype || (attachment.url ? mimeTypeFromUrl(attachment.url) : undefined);
-  return Boolean(mimetype?.includes('image'));
-};
-
-const isMediaAttachment = (attachment: FileType) => {
-  const mimetype =
-    attachment.mimetype || (attachment.url ? mimeTypeFromUrl(attachment.url) : undefined);
-
-  if (mimetype && (mimetype.includes('video') || mimetype.includes('audio'))) {
-    return true;
-  }
-
-  return Boolean(attachment.url);
-};
-
-const filterAttachments = (attachments: FileType[], mode: MediaPickerMode) => {
-  const withMimetype = attachments.map(attachment => ({
-    ...attachment,
-    mimetype:
-      attachment.mimetype ||
-      (attachment.url ? mimeTypeFromUrl(attachment.url) : attachment.mimetype),
-  }));
-
-  if (mode === 'image') {
-    return withMimetype.filter(isImageAttachment);
-  }
-
-  return withMimetype.filter(isMediaAttachment);
-};
-
-const getFileInputAccept = (mode: MediaPickerMode) =>
-  mode === 'image' ? 'image/*' : 'video/*,audio/*';
 
 const MediaPickerModal = ({
   isOpen,
@@ -74,6 +33,8 @@ const MediaPickerModal = ({
 }: MediaPickerModalProps) => {
   const [urlInput, setUrlInput] = useState('');
   const [urlError, setUrlError] = useState(false);
+  const [selectError, setSelectError] = useState(false);
+  const [selecting, setSelecting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const filteredAttachments = useMemo(
@@ -86,6 +47,8 @@ const MediaPickerModal = ({
   const resetState = () => {
     setUrlInput('');
     setUrlError(false);
+    setSelectError(false);
+    setSelecting(false);
   };
 
   const handleClose = () => {
@@ -93,9 +56,17 @@ const MediaPickerModal = ({
     onClose();
   };
 
-  const handleSelect = (value: string, localFile?: File) => {
-    onSelect(value, localFile);
-    handleClose();
+  const handleSelect = async (value: string, localFile?: File) => {
+    setSelectError(false);
+    setSelecting(true);
+    try {
+      await onSelect(value, localFile);
+      handleClose();
+    } catch {
+      setSelectError(true);
+    } finally {
+      setSelecting(false);
+    }
   };
 
   const handleLocalFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,7 +76,7 @@ const MediaPickerModal = ({
       return;
     }
 
-    handleSelect(URL.createObjectURL(file), file);
+    handleSelect('', file).catch(() => undefined);
     const { target } = event;
     target.value = '';
   };
@@ -118,7 +89,7 @@ const MediaPickerModal = ({
       return;
     }
 
-    handleSelect(url);
+    handleSelect(url).catch(() => undefined);
   };
 
   if (!isOpen) {
@@ -142,6 +113,7 @@ const MediaPickerModal = ({
                 type="button"
                 variant="secondary"
                 data-testid="media-picker-select-file"
+                disabled={selecting}
                 onClick={() => fileInputRef.current?.click()}
               >
                 <Translate>Select from computer</Translate>
@@ -152,8 +124,14 @@ const MediaPickerModal = ({
                 accept={getFileInputAccept(mode)}
                 className="sr-only"
                 data-testid="media-picker-file-input"
+                disabled={selecting}
                 onChange={handleLocalFileChange}
               />
+              {selectError ? (
+                <p className="mt-2 text-sm text-(--color-theme-control-text-error)">
+                  <Translate>Could not add media. Please try again.</Translate>
+                </p>
+              ) : null}
             </div>
           </section>
 
@@ -165,6 +143,7 @@ const MediaPickerModal = ({
               <input
                 type="url"
                 value={urlInput}
+                disabled={selecting}
                 onChange={event => {
                   setUrlInput(event.target.value);
                   setUrlError(false);
@@ -182,6 +161,7 @@ const MediaPickerModal = ({
                 type="button"
                 variant="secondary"
                 data-testid="media-picker-use-url"
+                disabled={selecting}
                 onClick={handleUrlSubmit}
               >
                 <Translate>Use URL</Translate>
@@ -205,27 +185,25 @@ const MediaPickerModal = ({
             ) : (
               <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {filteredAttachments.map(attachment => {
-                  const attachmentUrl = getAttachmentUrl(attachment);
-                  const isSelected = attachmentUrl === selectedUrl;
+                  const selectionValue = getAttachmentSelectionValue(attachment);
+                  const isSelected = selectionValue === selectedUrl;
 
                   return (
-                    <li
-                      key={
-                        attachment._id
-                          ? String(attachment._id)
-                          : (attachment.filename ?? attachment.url ?? '')
-                      }
-                    >
+                    <li key={attachmentKey(attachment, selectionValue)}>
                       <button
                         type="button"
-                        data-testid={`media-picker-attachment-${attachment._id || attachment.filename}`}
+                        disabled={selecting}
+                        data-testid={`media-picker-attachment-${attachment._id || attachment.filename || selectionValue}`}
                         className={[
                           'flex w-full flex-col overflow-hidden rounded-md border text-left',
                           isSelected
                             ? 'border-(--color-theme-control-border-active) bg-(--color-theme-surface-warm)'
                             : 'border-(--color-theme-control-border) bg-(--color-theme-control-bg)',
+                          selecting ? 'cursor-not-allowed opacity-60' : '',
                         ].join(' ')}
-                        onClick={() => handleSelect(attachmentUrl)}
+                        onClick={() => {
+                          handleSelect(selectionValue).catch(() => undefined);
+                        }}
                       >
                         <div className="border-b border-(--color-theme-control-border) px-2 py-1">
                           <span className="block truncate text-xs font-medium">

@@ -13,6 +13,12 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 const isLatLon = (value: unknown): value is { label?: string; lat: number; lon: number } =>
   isRecord(value) && typeof value.lat === 'number' && typeof value.lon === 'number';
 
+const isNestedRow = (value: unknown): value is Record<string, string[]> =>
+  isRecord(value) &&
+  Object.values(value).every(
+    column => Array.isArray(column) && column.every(item => typeof item === 'string')
+  );
+
 const toPropertyValueSchema = (value: unknown): PropertyValueSchema => {
   if (
     value === null ||
@@ -37,6 +43,10 @@ const toPropertyValueSchema = (value: unknown): PropertyValueSchema => {
       lat: value.lat,
       lon: value.lon,
     };
+  }
+
+  if (isNestedRow(value)) {
+    return value;
   }
 
   if (isRecord(value)) {

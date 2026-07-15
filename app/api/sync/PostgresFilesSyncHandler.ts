@@ -1,4 +1,5 @@
 import { PostgresFilesDAO } from '#api/core/infrastructure/postgresql/files/PostgresFilesDAO.js';
+import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import type { FilesRow } from '#api/core/infrastructure/postgresql/files/PostgresFilesRow.js';
 import { SyncHandler } from './SyncHandler.js';
 
@@ -24,9 +25,10 @@ const ALLOWED_FILES_COLUMNS: (keyof FilesRow)[] = [
 export class PostgresFilesSyncHandler implements SyncHandler<FilesRow> {
   private dao: PostgresFilesDAO;
 
-  constructor(deps: { tenantId: string }) {
+  constructor(deps: { tenantId: string; pgTransactionManager: PostgresTransactionManager }) {
     this.dao = new PostgresFilesDAO({
       tenantId: deps.tenantId,
+      pgTransactionManager: deps.pgTransactionManager,
     });
   }
 
@@ -77,12 +79,12 @@ export class PostgresFilesSyncHandler implements SyncHandler<FilesRow> {
 
     const ids = rows.map(row => row._id as string);
 
-    const files = await this.dao.getTable().query<FilesRow>().whereIn('_id', ids).all();
+    const files = await this.dao.getTable().whereIn('_id', ids).all();
 
     return files;
   }
 
   async delete(id: string): Promise<void> {
-    await this.dao.getTable().query().where({ _id: id }).delete();
+    await this.dao.getTable().where({ _id: id }).delete();
   }
 }

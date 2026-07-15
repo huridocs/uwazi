@@ -345,8 +345,7 @@ export interface Settings {
       | boolean
       | {
           updateStrategy:
-            | 'OnlineRelationshipPropertyUpdateStrategy'
-            | 'QueuedRelationshipPropertyUpdateStrategy';
+            'OnlineRelationshipPropertyUpdateStrategy' | 'QueuedRelationshipPropertyUpdateStrategy';
         };
     automaticTranslation?: AutomaticTranslationConfig;
     [k: string]: unknown | undefined;
@@ -434,12 +433,7 @@ export type TenantSnapshot = {
 };
 
 export type MigrationStorageFileType =
-  | 'custom'
-  | 'document'
-  | 'thumbnail'
-  | 'attachment'
-  | 'activitylog'
-  | 'segmentation';
+  'custom' | 'document' | 'thumbnail' | 'attachment' | 'activitylog' | 'segmentation';
 
 export interface Fixture {
   settings: Settings[];

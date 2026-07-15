@@ -1,8 +1,8 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { localeAtom } from '#V2/atoms/index.js';
-import { getBySharedId } from '#V2/api/entities/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
+import { useServices } from '#V2/services/index.js';
 import { entityLoaderCache } from '../../../EntityLoaderCache.js';
 
 // Overlay shares EntityLoaderCache with the route loader (`${sharedId}:${locale}`).
@@ -20,6 +20,8 @@ type OverlayEntitySetters = {
   setError: (error: boolean) => void;
 };
 
+type GetBySharedId = ReturnType<typeof useServices>['entities']['getBySharedId'];
+
 const resetOverlayEntity = (setters: OverlayEntitySetters) => {
   setters.setEntity(undefined);
   setters.setLoading(false);
@@ -29,11 +31,12 @@ const resetOverlayEntity = (setters: OverlayEntitySetters) => {
 function fetchOverlayEntity(
   sharedId: string,
   language: string,
+  getBySharedId: GetBySharedId,
   setters: OverlayEntitySetters
 ): () => void {
   let cancelled = false;
 
-  getBySharedId({ sharedId, language, omitRelationships: true })
+  getBySharedId(sharedId, { language, omitRelationships: true })
     .then(([rows, fetchError]) => {
       if (cancelled) return;
       const fetched = rows?.[0];
@@ -62,6 +65,7 @@ function fetchOverlayEntity(
 function loadOverlayEntityForSharedId(
   sharedId: string,
   language: string,
+  getBySharedId: GetBySharedId,
   setters: OverlayEntitySetters
 ): (() => void) | undefined {
   setters.setEntity(undefined);
@@ -75,12 +79,13 @@ function loadOverlayEntityForSharedId(
     return undefined;
   }
 
-  return fetchOverlayEntity(sharedId, language, setters);
+  return fetchOverlayEntity(sharedId, language, getBySharedId, setters);
 }
 
 function loadOverlayEntity(
   sharedId: string | null,
   language: string,
+  getBySharedId: GetBySharedId,
   setters: OverlayEntitySetters
 ): (() => void) | undefined {
   if (!sharedId) {
@@ -88,7 +93,7 @@ function loadOverlayEntity(
     return undefined;
   }
 
-  return loadOverlayEntityForSharedId(sharedId, language, setters);
+  return loadOverlayEntityForSharedId(sharedId, language, getBySharedId, setters);
 }
 
 const entityMatchesRequest = (
@@ -101,19 +106,20 @@ const entityMatchesRequest = (
 const useIsomorphicLayoutEffect = typeof document !== 'undefined' ? useLayoutEffect : useEffect;
 
 const useOverlayEntity = (sharedId: string | null): OverlayEntityState => {
+  const { entities } = useServices();
   const language = useAtomValue(localeAtom);
   const [entity, setEntity] = useState<Entity | undefined>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
   useIsomorphicLayoutEffect(() => {
-    const cancelLoad = loadOverlayEntity(sharedId, language, {
+    const cancelLoad = loadOverlayEntity(sharedId, language, entities.getBySharedId, {
       setEntity,
       setLoading,
       setError,
     });
     return cancelLoad;
-  }, [language, sharedId]);
+  }, [entities.getBySharedId, language, sharedId]);
 
   const resolvedEntity = entityMatchesRequest(entity, sharedId, language) ? entity : undefined;
 

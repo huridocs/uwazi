@@ -13,6 +13,7 @@ interface GeolocationProps {
   startingPoint?: { lat: number; lon: number };
   zoom?: number;
   layers?: Layer[];
+  hasErrors?: boolean;
 }
 
 interface Marker {
@@ -20,6 +21,17 @@ interface Marker {
   longitude: number;
   properties: { [k: string]: any };
 }
+
+const parseCoordinate = (raw: string): number | undefined => {
+  if (raw.trim() === '') {
+    return undefined;
+  }
+  const parsed = Number.parseFloat(raw);
+  return Number.isFinite(parsed) ? parsed : undefined;
+};
+
+const isCoordinateValid = (coord?: number): coord is number =>
+  typeof coord === 'number' && Number.isFinite(coord);
 
 const Geolocation = ({
   name,
@@ -30,36 +42,37 @@ const Geolocation = ({
   zoom,
   value = {},
   layers,
+  hasErrors = false,
 }: GeolocationProps) => {
   const [currentLatitude, setCurrentLatitude] = useState(value?.lat);
   const [currentLongitude, setCurrentLongitude] = useState(value?.lon);
   const [currentMarkers, setCurrentMarkers] = useState<Marker[] | undefined>(undefined);
 
+  useEffect(() => {
+    setCurrentLatitude(value?.lat);
+    setCurrentLongitude(value?.lon);
+  }, [value?.lat, value?.lon]);
+
   const latChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentLatitude(e.target.valueAsNumber);
-    if (onChange) {
-      onChange({ lat: e.target.valueAsNumber, lon: currentLongitude });
-    }
+    const nextLat = parseCoordinate(e.target.value);
+    setCurrentLatitude(nextLat);
+    onChange?.({ lat: nextLat, lon: currentLongitude });
   };
 
   const lonChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentLongitude(e.target.valueAsNumber);
-    if (onChange) {
-      onChange({ lat: currentLatitude, lon: e.target.valueAsNumber });
-    }
+    const nextLon = parseCoordinate(e.target.value);
+    setCurrentLongitude(nextLon);
+    onChange?.({ lat: currentLatitude, lon: nextLon });
   };
 
   const clearCoordinates = () => {
     setCurrentLatitude(undefined);
     setCurrentLongitude(undefined);
-    setCurrentLatitude(undefined);
-    if (onChange) {
-      onChange({ lat: undefined, lon: undefined });
-    }
+    onChange?.({ lat: undefined, lon: undefined });
   };
 
   useEffect(() => {
-    if (currentLatitude && currentLongitude) {
+    if (isCoordinateValid(currentLatitude) && isCoordinateValid(currentLongitude)) {
       setCurrentMarkers([
         {
           latitude: currentLatitude,
@@ -67,17 +80,17 @@ const Geolocation = ({
           properties: {},
         },
       ]);
+      return;
     }
-  }, [currentLatitude, currentLongitude, setCurrentMarkers]);
+    setCurrentMarkers(undefined);
+  }, [currentLatitude, currentLongitude]);
 
   const mapClick = ({ lngLat }: { lngLat: [number, number] }) => {
     if (disabled) return;
     const [lon, lat] = lngLat;
     setCurrentLatitude(lat);
     setCurrentLongitude(lon);
-    if (onChange) {
-      onChange({ lat, lon });
-    }
+    onChange?.({ lat, lon });
   };
 
   return (
@@ -96,21 +109,27 @@ const Geolocation = ({
           className="grow"
           onChange={latChange}
           disabled={disabled}
+          hasErrors={hasErrors}
           clearFieldAction={clearCoordinates}
-          value={currentLatitude || ''}
+          value={currentLatitude ?? ''}
           label={<Translate>Latitude</Translate>}
           id="lat"
           name={`${name}[lat]`}
+          type="number"
+          autoComplete="off"
         />
         <InputField
           className="grow"
           label={<Translate>Longitude</Translate>}
           onChange={lonChange}
           disabled={disabled}
+          hasErrors={hasErrors}
           clearFieldAction={clearCoordinates}
-          value={currentLongitude || ''}
+          value={currentLongitude ?? ''}
           id="lon"
           name={`${name}[lon]`}
+          type="number"
+          autoComplete="off"
         />
       </div>
     </div>

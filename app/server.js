@@ -34,6 +34,7 @@ import { closeSockets } from './api/socketio/setupSockets.js';
 import { tenants } from './api/tenants/tenantContext.js';
 import errorHandlingMiddleware from './api/utils/error_handling_middleware.js';
 import { handleError } from './api/utils/handleError.js';
+import { maintenanceMiddleware } from './api/utils/maintenanceMiddleware.js';
 import { multitenantMiddleware } from './api/utils/multitenantMiddleware.js';
 import { routesErrorHandler } from './api/utils/routesErrorHandler.js';
 import { serverSideRender } from './react/server.js';
@@ -137,6 +138,7 @@ app.use(appContextMiddleware);
 
 // this middleware should go just before any other that accesses to db
 app.use(multitenantMiddleware);
+app.use(maintenanceMiddleware);
 app.use(requestIdMiddleware);
 
 console.info('==> Connecting to', maskMongoPassword(config.DBHOST));
@@ -173,18 +175,20 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
         process.exit(1);
       }
 
-      const pgMigrationsDir = path.resolve(
-        __dirname,
-        'api/core/infrastructure/postgresql/schema_migrations'
-      );
-      const pgMigrator = new PgMigrator(pgMigrationsDir, PostgresDB.pool());
-      const { pending: pendingPgMigrations } = await pgMigrator.status();
-      if (pendingPgMigrations.length > 0) {
-        console.error(
-          '\x1b[33m%s\x1b[0m',
-          '==> PostgreSQL needs to be migrated, please run:\n\n yarn migrate-pg\n\n'
+      if (!skipMigrationCheck) {
+        const pgMigrationsDir = path.resolve(
+          __dirname,
+          'api/core/infrastructure/postgresql/schema_migrations'
         );
-        process.exit(1);
+        const pgMigrator = new PgMigrator(pgMigrationsDir, PostgresDB.adminPool());
+        const { pending: pendingPgMigrations } = await pgMigrator.status();
+        if (pendingPgMigrations.length > 0) {
+          console.error(
+            '\x1b[33m%s\x1b[0m',
+            '==> PostgreSQL needs to be migrated, please run:\n\n yarn migrate --new\n\n'
+          );
+          process.exit(1);
+        }
       }
     });
 

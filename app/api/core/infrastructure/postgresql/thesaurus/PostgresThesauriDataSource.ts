@@ -7,20 +7,27 @@ import {
   ThesaurusNotFoundError,
 } from '#api/core/domain/thesaurus/errors.js';
 import { PostgresDataSource } from '../common/PostgresDataSource.js';
+import { PostgresTransactionManager } from '../common/PostgresTransactionManager.js';
 import { PostgresThesaurusMapper, ThesaurusRow } from './PostgresThesaurusMapper.js';
 
-export class PostgresThesauriDataSource extends PostgresDataSource implements ThesauriDataSource {
-  protected tableName = 'thesauri';
-
-  constructor(deps: { tenantId: string; mongoDb: Db }) {
-    super({
+export class PostgresThesauriDataSource
+  extends PostgresDataSource<ThesaurusRow>
+  implements ThesauriDataSource
+{
+  constructor(deps: {
+    tenantId: string;
+    mongoDb: Db;
+    pgTransactionManager: PostgresTransactionManager;
+  }) {
+    super('thesauri', {
       tenantId: deps.tenantId,
+      pgTransactionManager: deps.pgTransactionManager,
       sync: { syncDb: deps.mongoDb, syncNamespace: 'dictionaries' }, // syncNamespace matches MongoDB collection name for updatelogs compatibility
     });
   }
 
   async getById(id: string): Promise<ResultType<Thesaurus, ThesaurusNotFoundError>> {
-    const row = await this.table.query<ThesaurusRow>().where({ _id: id }).first();
+    const row = await this.table.where({ _id: id }).first();
 
     if (!row) {
       return Result.fail(new ThesaurusNotFoundError(id));
@@ -39,25 +46,25 @@ export class PostgresThesauriDataSource extends PostgresDataSource implements Th
   }
 
   async existsById(id: string): Promise<boolean> {
-    const count = await this.table.query<ThesaurusRow>().where({ _id: id }).count();
+    const count = await this.table.where({ _id: id }).count();
     return count > 0;
   }
 
   async update(thesaurus: Thesaurus): Promise<void> {
     const dbo = PostgresThesaurusMapper.toDBO(thesaurus);
     await this.table
-      .query()
+
       .where({ _id: dbo._id })
       .update({ name: dbo.name, values: JSON.stringify(dbo.values) });
   }
 
   async delete(id: string): Promise<void> {
-    await this.table.query().where({ _id: id }).delete();
+    await this.table.where({ _id: id }).delete();
   }
 
   async exists(thesaurus: Thesaurus): Promise<ResultType<false, Error>> {
     const count = await this.table
-      .query<ThesaurusRow>()
+
       .where({ name: thesaurus.name })
       .whereNot('_id', thesaurus.id)
       .count();

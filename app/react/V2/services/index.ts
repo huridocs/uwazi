@@ -15,7 +15,8 @@
  *   <Route loader={createThesauriLoader(services)(headers)} />
  * );
  *
- * // entry-server.tsx (Phase 2b):
+ * // entry-server.tsx (SSR in-process adapters):
+ * import { createServerServices } from '#V2/services/server/index.js';
  * const services = createServerServices(req);
  * const routes = getRoutes(settings, userId, headers, indexComponents, services);
  *
@@ -41,6 +42,7 @@
 export { httpServices as services } from './http/index.js';
 export { ServicesProvider, useServices } from './ServicesProvider.js';
 export type { V2Services } from './types.js';
+export type { EntitiesService, EntitySaveInput } from './contracts/EntitiesService.js';
 export type { ThesaurusService, ThesaurusInput } from './contracts/ThesaurusService.js';
 export type { Thesaurus } from '#shared/contracts/Thesaurus.js';
 export type { UsersService, UserInput } from './contracts/UsersService.js';
