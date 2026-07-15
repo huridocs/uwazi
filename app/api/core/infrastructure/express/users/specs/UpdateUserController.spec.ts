@@ -4,8 +4,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { userRoutes } from '../routes.js';
-import { fixtures, f } from './fixtures.js';
-import { PUBLIC_USER_ID } from '#api/users/specs/fixtures.js';
+import { fixtures, f, PUBLIC_USER_ID } from './fixtures.js';
 import { UserRole } from '#api/core/domain/user/User.js';
 
 jest.mock('../../../../../auth/encryptPassword.ts', () => ({

@@ -47,6 +47,7 @@ class UpdateUserController extends AbstractController<UpdateUserRequest> {
       }
     } else {
       const input = UpdateUserInputSchema.parse(this.request.body);
+
       const response = await users.save(input, currentUser);
 
       this.response.json({
