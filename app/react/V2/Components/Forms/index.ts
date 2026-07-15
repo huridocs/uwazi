@@ -1,3 +1,5 @@
+export { CompactSearchInput } from './CompactSearchInput.js';
+export type { CompactSearchInputProps } from './CompactSearchInput.js';
 export { InputField } from './InputField.js';
 export { Select } from './Select.js';
 export { SearchSelect } from './SearchSelect.js';

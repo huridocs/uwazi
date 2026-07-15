@@ -7,7 +7,6 @@ const meta: Meta<typeof Checkbox> = {
   title: 'Forms/Checkbox',
   component: Checkbox,
 };
-export default meta;
 
 type Story = StoryObj<typeof Checkbox>;
 
@@ -119,6 +118,10 @@ const DisabledIndeterminate: Story = {
   ),
 };
 
+const CarbonTone: Story = {
+  render: () => <Checkbox name="carbon-tone" label="Carbon tone (filters)" checked tone="carbon" />,
+};
+
 export {
   AllStates,
   Basic,
@@ -127,4 +130,7 @@ export {
   Disabled,
   DisabledChecked,
   DisabledIndeterminate,
+  CarbonTone,
 };
+
+export default meta;
