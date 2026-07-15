@@ -1,19 +1,9 @@
 import { objectIdSchema } from '#shared/types/commonSchemas.js';
 import { legacyLogger } from '#api/log/index.js';
 import { validation } from '../utils/index.js';
-import { documents } from './documents.js';
-import needsAuthorization from '../auth/authMiddleware.js';
 import templates from '../core/v1_layer/templates/index.js';
-import { DeleteEntityController } from '#api/core/infrastructure/express/entity/DeleteEntityController.js';
 
 export default app => {
-  app.post('/api/documents', needsAuthorization(['admin', 'editor']), (req, res, next) =>
-    documents
-      .save(req.body, { user: req.user, language: req.language })
-      .then(doc => res.json(doc))
-      .catch(next)
-  );
-
   app.get(
     '/api/documents/count_by_template',
     validation.validateRequest({
@@ -38,46 +28,5 @@ export default app => {
         .then(results => res.json(results))
         .catch(next);
     }
-  );
-
-  app.get(
-    '/api/documents',
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        query: {
-          type: 'object',
-          additionalProperties: false,
-          properties: {
-            _id: objectIdSchema,
-          },
-          required: ['_id'],
-        },
-      },
-    }),
-    (req, res, next) => {
-      let id;
-
-      if (req.query && req.query._id) {
-        id = req.query._id;
-      }
-
-      documents
-        .getById(id, req.language)
-        .then(response => {
-          if (!response) {
-            res.json({}, 404);
-            return;
-          }
-          res.json({ rows: [response] });
-        })
-        .catch(next);
-    }
-  );
-
-  app.delete(
-    '/api/documents',
-    needsAuthorization(['admin', 'editor', 'collaborator']),
-    DeleteEntityController.createHandler()
   );
 };

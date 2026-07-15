@@ -14,11 +14,9 @@ We are **not** at the target yet. `entities.js save` is still a hybrid compatibi
 
 #### A) Direct runtime callers still using `entities.save` (legacy façade)
 
-- `app/api/documents/documents.js`
 - `app/api/csv/importEntity.ts`
 - `app/api/csv/typeParsers/relationship.ts`
 - `app/api/suggestions/updateEntities.ts`
-- `app/api/services/twitterintegration/TwitterIntegration.ts`
 - `app/api/entities.v2/database/MongoDeprecatedEntitiesDataSource.ts` (`updateMetadataValues`)
 
 #### B) Legacy fallback path still inside `entities.js save`
@@ -57,12 +55,7 @@ This means old write paths are still alive and reachable.
    - `MongoDeprecatedEntitiesDataSource.updateMetadataValues` explicitly uses V1 save path (with a comment noting it as a hack).
    - This is a core blocker for fully removing legacy write behavior.
 
-4. **Deprecated Documents compatibility surface still live**
-   - `POST/GET/DELETE /api/documents` deprecated routes still active.
-   - `documents.save` is still a wrapper over `entities.save`.
-   - Activity log parsing/mapping still includes `/api/documents` route keys.
-
-5. **Contract still present for deprecated metadata update**
+4. **Contract still present for deprecated metadata update**
    - `DeprecatedEntitiesDataSource.updateMetadataValues` remains in interface + implementation.
    - Even if static call sites are scarce, contract presence keeps legacy behavior supported.
 
@@ -129,12 +122,9 @@ This means old write paths are still alive and reachable.
 - `app/api/entities/entities.js`
 - `app/api/entities.v2/database/MongoDeprecatedEntitiesDataSource.ts`
 - `app/api/entities.v2/contracts/DeprecatedEntitiesDataSource.ts`
-- `app/api/documents/documents.js`
-- `app/api/documents/deprecatedRoutes.js`
 - `app/api/csv/importEntity.ts`
 - `app/api/csv/typeParsers/relationship.ts`
 - `app/api/suggestions/updateEntities.ts`
-- `app/api/services/twitterintegration/TwitterIntegration.ts`
 - `AI Contexts/Entities/mutations-to-v2.md`
 
 ## Mutation Inventory
@@ -207,13 +197,18 @@ Implemented rule in this pass:
 
 ## Deprecated Wrapper/Route Cleanup
 
-- Deprecated wrappers/routes were initially removed, then restored for backward compatibility:
-  - `POST /api/documents` restored.
-  - `documents.save` and `documents.delete` restored.
+- Deprecated `/api/documents` CRUD routes and wrapper methods have now been removed:
+  - removed routes: `POST /api/documents`, `GET /api/documents`, `DELETE /api/documents`
+  - removed wrappers in `documents.js`: `save`, `get`, `getById`, `delete`, `countByTemplate`
+  - retained: `/api/documents/count_by_template` (deprecated) and `/api/documents/page` (active route in `routes.ts`)
+
+- Deprecated Twitter integration flow has now been removed:
+  - removed `app/api/services/twitterintegration/**`
+  - removed worker registration/loops from `app/worker.ts` (`twitter_integration`, `twitter_distributed_loop`)
 
 ## Evidence Notes
 
-- `entities.save` production callers (CSV, IX, TOC, Twitter, files) remain and now pass through V2 facade.
+- `entities.save` runtime callers have been reduced by removing deprecated documents and twitter integration paths.
 - TOC-related `generatedToc` updates now use `EntityFacade.updateGeneratedToc` directly from `tocService` and `files.tocReviewed`.
 - Removed code paths had no production runtime callers (test-only or orphaned).
 
@@ -224,15 +219,14 @@ Implemented rule in this pass:
   - TOC reviewed flow (`generatedToc`)
   - CSV import paths
   - suggestions acceptance flow
-  - deprecated documents routes affected specs
+  - worker boot/service registration smoke check after twitter integration removal
 - Confirm no non-test imports remain for removed files/methods.
 
 ## Cleanup TODOs (Pending Deletion Assessment)
 
-- TODO: Validate whether deprecated `POST /api/documents` is used by any external integrator (e.g. Tella) before removal.
-  - Check API access logs/activity logs for `POST/api/documents`.
-  - Confirm with product/integrations owners whether third-party clients still use it.
-  - If unused, remove route + wrapper and adjust related activitylog parsing.
+- TODO: Follow-up cleanup after `/api/documents` removal:
+  - remove/update remaining activity log parser mappings for removed routes (`POST/api/documents`, `DELETE/api/documents`) if no longer needed.
+  - review deprecated fixtures/spec references that still mention `/api/documents`.
 
 - TODO: Validate whether `DeprecatedEntitiesDataSource.updateMetadataValues` is required in any runtime flow.
   - Confirm no dynamic invocation paths (jobs, plugin-style loading, external scripts) rely on it.
