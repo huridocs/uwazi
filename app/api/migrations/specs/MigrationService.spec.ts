@@ -1,5 +1,5 @@
+/* eslint-disable max-statements */
 import { Connection } from 'mongoose';
-import knex from 'knex';
 import testingDB from '#api/utils/testing_db.js';
 import { DB } from '#api/odm/index.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
@@ -33,14 +33,12 @@ describe('MigrationService', () => {
   let connection: Connection;
   let connectSpy: jest.SpyInstance;
   let disconnectSpy: jest.SpyInstance;
-  let postgresConnectSpy: jest.SpyInstance;
   let postgresDisconnectSpy: jest.SpyInstance;
 
   beforeAll(async () => {
     connection = await testingDB.connect();
     connectSpy = jest.spyOn(DB, 'connect').mockResolvedValue(Promise.resolve(connection));
     disconnectSpy = jest.spyOn(DB, 'disconnect').mockResolvedValue(Promise.resolve());
-    postgresConnectSpy = jest.spyOn(PostgresDB, 'connect').mockReturnValue(knex({ client: 'pg' }));
     postgresDisconnectSpy = jest
       .spyOn(PostgresDB, 'disconnect')
       .mockResolvedValue(Promise.resolve());
@@ -49,7 +47,6 @@ describe('MigrationService', () => {
   afterAll(async () => {
     connectSpy.mockRestore();
     disconnectSpy.mockRestore();
-    postgresConnectSpy.mockRestore();
     postgresDisconnectSpy.mockRestore();
     await testingDB.disconnect();
   });
@@ -116,9 +113,9 @@ describe('MigrationService', () => {
       disconnect: jest.fn().mockResolvedValue(undefined),
     };
     const postgresDB = {
-      connect: jest.fn(),
       disconnect: jest.fn().mockResolvedValue(undefined),
       pool: jest.fn().mockReturnValue({ query: jest.fn() }),
+      adminPool: jest.fn().mockReturnValue({ query: jest.fn() }),
     };
     const fakePgMigrator = {
       getCurrentVersion: jest.fn().mockResolvedValue(0),
@@ -132,7 +129,6 @@ describe('MigrationService', () => {
     await service.run({ async: false, structuredLogs: false });
 
     expect(db.connect).toHaveBeenCalled();
-    expect(postgresDB.connect).toHaveBeenCalled();
     expect(db.disconnect).toHaveBeenCalled();
     expect(postgresDB.disconnect).toHaveBeenCalled();
   });
@@ -144,9 +140,9 @@ describe('MigrationService', () => {
       disconnect: jest.fn().mockResolvedValue(undefined),
     };
     const postgresDB = {
-      connect: jest.fn(),
       disconnect: jest.fn().mockResolvedValue(undefined),
       pool: jest.fn().mockReturnValue({ query: jest.fn() }),
+      adminPool: jest.fn().mockReturnValue({ query: jest.fn() }),
     };
     const { service } = createService({
       db,
