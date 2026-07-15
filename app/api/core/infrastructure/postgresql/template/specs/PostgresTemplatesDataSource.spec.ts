@@ -5,8 +5,11 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { PostgresTemplatesDataSource } from '../PostgresTemplatesDataSource.js';
 import { PostgresTemplatesDAO } from '../PostgresTemplatesDAO.js';
+import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
 
 const factory = getFixturesFactory();
 
@@ -23,14 +26,21 @@ describe('PostgresTemplatesDataSource', () => {
     const db = getConnection();
     const transactionManager = TransactionManagerFactory.default();
     const tenantId = tenants.current().name;
+    const pgTransactionManager = new PostgresTransactionManager(
+      PostgresDB.knex,
+      tenantId,
+      LoggerFactory.forTests()
+    );
     const dao = new PostgresTemplatesDAO({
       tenantId,
       mongoDb: db,
+      pgTransactionManager,
     });
     return new PostgresTemplatesDataSource({
       tenantId,
       mongoDb: db,
       transactionManager,
+      pgTransactionManager,
       dao,
     });
   };

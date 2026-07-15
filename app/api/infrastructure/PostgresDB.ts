@@ -3,80 +3,120 @@ import pg from 'pg';
 import { config } from '#api/config.js';
 
 export type PostgresConnectionConfig = {
-  host: string;
-  port: number;
-  database: string;
-  user: string;
-  password: string;
+  host?: string;
+  port?: number;
+  database?: string;
+  user?: string;
+  password?: string;
 };
 
-let _knex: Knex | null = null;
-let _pool: pg.Pool | null = null;
-let _activeConfig: PostgresConnectionConfig | null = null;
+export class PostgresDB {
+  private static _knex: Knex | null = null;
 
-export const PostgresDB = {
-  connect(cfg?: PostgresConnectionConfig): Knex {
-    if (_knex) return _knex;
+  private static _pool: pg.Pool | null = null;
 
-    const connection = cfg ?? _activeConfig ?? config.postgres;
+  private static _adminPool: pg.Pool | null = null;
+
+  private static _activeConfig: PostgresConnectionConfig | null = null;
+
+  private static connect(): Knex {
+    if (this._knex) return this._knex;
+
+    const connection = this._activeConfig ?? {
+      host: config.postgres.host,
+      port: config.postgres.port,
+      database: config.postgres.database,
+      user: config.postgres.app?.user,
+      password: config.postgres.app?.password,
+    };
 
     pg.types.setTypeParser(pg.types.builtins.INT8, parseInt);
 
-    _knex = knex({
+    this._knex = knex({
       client: 'pg',
       connection,
       useNullAsDefault: true,
     });
 
-    return _knex;
-  },
+    return this._knex;
+  }
 
-  async disconnect(): Promise<void> {
-    if (_knex) {
-      await _knex.destroy();
-      _knex = null;
+  static async disconnect(): Promise<void> {
+    if (this._knex) {
+      await this._knex.destroy();
+      this._knex = null;
     }
-    if (_pool) {
-      await _pool.end();
-      _pool = null;
+    if (this._pool) {
+      await this._pool.end();
+      this._pool = null;
     }
-  },
+    if (this._adminPool) {
+      await this._adminPool.end();
+      this._adminPool = null;
+    }
+  }
 
-  get knex(): Knex {
-    if (!_knex) {
+  static get knex(): Knex {
+    if (!this._knex) {
       return this.connect();
     }
-    return _knex;
-  },
+    return this._knex;
+  }
 
-  pool(): pg.Pool {
-    if (!_pool) {
-      _pool = new pg.Pool(_activeConfig ?? config.postgres);
+  static pool(): pg.Pool {
+    if (!this._pool) {
+      this._pool = new pg.Pool(
+        this._activeConfig ?? {
+          host: config.postgres.host,
+          port: config.postgres.port,
+          database: config.postgres.database,
+          user: config.postgres.app?.user,
+          password: config.postgres.app?.password,
+        }
+      );
     }
-    return _pool;
-  },
+    return this._pool;
+  }
 
-  setConfig(cfg: PostgresConnectionConfig): void {
-    _activeConfig = cfg;
-    _knex = null;
-    _pool = null;
-  },
+  static adminPool(): pg.Pool {
+    if (!this._adminPool) {
+      this._adminPool = new pg.Pool(
+        this._activeConfig ?? {
+          host: config.postgres.host,
+          port: config.postgres.port,
+          database: config.postgres.database,
+          user: config.postgres.admin?.user,
+          password: config.postgres.admin?.password,
+        }
+      );
+    }
 
-  resetConfig(): void {
-    _activeConfig = null;
-    _knex = null;
-    _pool = null;
-  },
+    return this._adminPool;
+  }
 
-  connectionConfig(): PostgresConnectionConfig {
+  static setConfig(cfg: PostgresConnectionConfig): void {
+    this._activeConfig = cfg;
+    this._knex = null;
+    this._pool = null;
+    this._adminPool = null;
+  }
+
+  static resetConfig(): void {
+    this._activeConfig = null;
+    this._knex = null;
+    this._pool = null;
+    this._adminPool = null;
+  }
+
+  static connectionConfig(): PostgresConnectionConfig {
     return (
-      _activeConfig ?? {
+      this._activeConfig ?? {
         host: config.postgres.host,
         port: config.postgres.port,
         database: config.postgres.database,
-        user: config.postgres.user,
-        password: config.postgres.password,
+        user: config.postgres.app?.user,
+        password: config.postgres.app?.password,
       }
     );
-  },
-};
+  }
+}
