@@ -15,7 +15,6 @@ import { reducer as attachments } from '#app/Attachments/index.js';
 import { reducer as library } from '#app/Library/reducers/reducer.js';
 import { modalsReducer as modals } from '#app/Modals/reducers/modalsReducer.js';
 import { progressReducer as progress } from '#app/Uploads/reducers/progressReducer.js';
-import { importReducer as importEntities } from '#app/Uploads/reducers/importReducer.js';
 import { reducer as user } from '#app/Auth/reducer.js';
 import { reducer as settings } from '#app/Settings/reducers/reducer.js';
 import { reducer as metadata } from '#app/Metadata/reducer.js';
@@ -30,7 +29,6 @@ const rootReducer = combineReducers({
   library: library('library'),
   uploads: library('uploads'),
   progress,
-  importEntities,
   locale,
   inlineEdit,
   inlineEditForm: formReducer('inlineEditModel', {}),
