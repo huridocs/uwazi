@@ -86,6 +86,22 @@ This means old write paths are still alive and reachable.
 - Remove `shouldForceLegacyUpdate` + update fallback branch.
 - Keep create fallback temporarily if needed.
 
+Status update:
+
+- Attempted direct removal of `shouldForceLegacyUpdate` and the update fallback branch in `entities.save`.
+- Reverted after validation because a broad legacy test surface still depends on V1 update semantics through `entities.save`, including:
+  - transaction-nesting expectations (`withTransaction` / template denormalization suites)
+  - multi-language denormalization behavior expected by legacy entities/search suites
+  - legacy template/thesauri fixture shapes that V2 update rejects in these test paths
+- Conclusion: update fallback cannot be removed safely yet without first migrating or retiring those remaining legacy test flows.
+- Progress made:
+  - `app/api/core/v1_layer/templates/specs/templateUpdateDenormalization.spec.ts` setup was migrated away from `entities.save(...)` bootstrap.
+  - New setup bootstraps relationship connections/metadata directly (via relationship sync helpers + metadata normalization), preserving suite behavior without relying on `entities.save` as a fixture-preparation side effect.
+  - Suite remains green after this change.
+  - `app/api/search.v2/specs/sorting.spec.ts` setup was migrated away from `entities.save(...)`; fixture metadata now includes normalized select labels directly.
+  - `app/api/search.v2/specs/snippetsSearch.spec.ts` setup was migrated away from `entities.save(...)`; fixture metadata now includes denormalized thesaurus label used in snippet assertions.
+  - Both search.v2 suites remain green after these setup-only migrations.
+
 #### Phase 3 — Remove fallback from CREATE path
 
 - Migrate remaining create callers.
