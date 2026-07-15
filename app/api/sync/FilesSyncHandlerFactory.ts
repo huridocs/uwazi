@@ -9,6 +9,7 @@ export class FilesSyncHandlerFactory {
     if (tenant.featureFlags?.postgresFiles) {
       return new PostgresFilesSyncHandler({
         tenantId: tenant.name,
+        pgTransactionManager: ExecutionContext.postgresTransactionManager,
       });
     }
 

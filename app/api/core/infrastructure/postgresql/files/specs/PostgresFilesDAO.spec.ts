@@ -2,11 +2,17 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { PostgresFilesDAO } from '../PostgresFilesDAO.js';
 import { PostgresTable } from '#api/core/infrastructure/postgresql/common/PostgresTable.js';
+import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { FileNotFound } from '#api/core/domain/files/errors.js';
 
 const TENANT_ID = 'test-tenant';
+
+const managerFor = (tenantId: string) =>
+  new PostgresTransactionManager(PostgresDB.knex, tenantId, LoggerFactory.forTests());
 
 const factory = getFixturesFactory({ convertIdToString: true, tenantId: TENANT_ID });
 
@@ -70,6 +76,7 @@ const baseFixtures = {
 const createSut = () =>
   new PostgresFilesDAO({
     tenantId: TENANT_ID,
+    pgTransactionManager: managerFor(TENANT_ID),
   });
 
 describe('PostgresFilesDAO', () => {

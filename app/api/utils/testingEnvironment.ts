@@ -17,6 +17,7 @@ import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFac
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
 import {
   DefaultDispatcher,
   DefaultTestingQueueAdapter,
@@ -229,6 +230,7 @@ const testingEnvironment = {
 
     const defaultFactories: ExecutionContextDeps['factories'] = {
       transactionManager: TransactionManagerFactory.default,
+      postgresTransactionManager: PostgresTransactionManagerFactory.default,
       eventEmitter: EventEmitterFactory.forTesting,
       jobsDispatcher: () =>
         DefaultDispatcher(
