@@ -26,11 +26,10 @@ type Deps = {
   mongoDb: Db;
 } & Omit<PostgresDataSourceDeps, 'sync'>;
 
-export class PostgresFilesDataSource extends PostgresDataSource implements FilesDataSource {
-  protected tableName = 'files';
-
-  protected jsonbColumns = ['toc', 'propertySelections', 'fullText'];
-
+export class PostgresFilesDataSource
+  extends PostgresDataSource<FilesRow>
+  implements FilesDataSource
+{
   private transactionManager: MongoTransactionManager;
 
   private fileStorage: FileStorage;
@@ -38,7 +37,10 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
   private filesToReindex = new Set<BaseFile>();
 
   constructor(deps: Deps) {
-    super({ ...deps, sync: { syncDb: deps.mongoDb, syncNamespace: 'files' } });
+    super('files', {
+      ...deps,
+      sync: { syncDb: deps.mongoDb, syncNamespace: 'files' },
+    });
 
     this.transactionManager = deps.transactionManager as MongoTransactionManager;
     this.fileStorage = deps.fileStorage;
@@ -78,32 +80,26 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
   }
 
   async update(file: BaseFile): Promise<void> {
-    const row = this.table.serializeForWrite(PostgresFilesMapper.toDBO(file));
-    await this.table.query().where({ _id: file.id }).update(row);
+    await this.table.where({ _id: file.id }).update(PostgresFilesMapper.toDBO(file));
     this.setFilesToReindex([file]);
   }
 
   async bulkUpdate(files: BaseFile[]): Promise<void> {
     if (!files.length) return;
     await ArrayUtils.sequentialFor(files, async file =>
-      this.table
-        .query()
-        .where({ _id: file.id })
-        .update(this.table.serializeForWrite(PostgresFilesMapper.toDBO(file)))
+      this.table.where({ _id: file.id }).update(PostgresFilesMapper.toDBO(file))
     );
 
     this.setFilesToReindex(files);
   }
 
   async replaceFile(file: BaseFile): Promise<void> {
-    const row = this.table.serializeForWrite(PostgresFilesMapper.toDBO(file));
-    await this.table.query().where({ _id: file.id }).update(row);
+    await this.table.where({ _id: file.id }).update(PostgresFilesMapper.toDBO(file));
     this.setFilesToReindex([file]);
   }
 
   async delete(files: BaseFile[]): Promise<void> {
     await this.table
-      .query()
       .whereIn(
         '_id',
         files.map(f => f.id)
@@ -113,11 +109,7 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
   }
 
   async getById<T extends BaseFile = BaseFile>(id: string): Promise<ResultType<T, FileNotFound>> {
-    const row = await this.table
-      .query<FilesRow>()
-      .select(FILES_COLUMNS_WITHOUT_FULL_TEXT)
-      .where({ _id: id })
-      .first();
+    const row = await this.table.select(FILES_COLUMNS_WITHOUT_FULL_TEXT).where({ _id: id }).first();
     if (!row) {
       return Result.fail(new FileNotFound(`file with id: ${id} not found`));
     }
@@ -125,11 +117,7 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
   }
 
   async getByIds(ids: string[]): Promise<BaseFile[]> {
-    const rows = await this.table
-      .query<FilesRow>()
-      .select(FILES_COLUMNS_WITHOUT_FULL_TEXT)
-      .whereIn('_id', ids)
-      .all();
+    const rows = await this.table.select(FILES_COLUMNS_WITHOUT_FULL_TEXT).whereIn('_id', ids).all();
     return rows.map(row => this.toDomain(row));
   }
 
@@ -137,10 +125,7 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
     filename: string,
     allowedTypes?: FileType[]
   ): Promise<ResultType<BaseFile, FileNotFound>> {
-    let query = this.table
-      .query<FilesRow>()
-      .select(FILES_COLUMNS_WITHOUT_FULL_TEXT)
-      .where({ filename });
+    let query = this.table.select(FILES_COLUMNS_WITHOUT_FULL_TEXT).where({ filename });
     if (allowedTypes) {
       query = query.whereIn('type', allowedTypes);
     }
@@ -154,10 +139,7 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
   async getProcessingById(
     fileId: string
   ): Promise<ResultType<PDFDocument, ProcessingFileNotFound>> {
-    const row = await this.table
-      .query<FilesRow>()
-      .where({ _id: fileId, status: 'processing' })
-      .first();
+    const row = await this.table.where({ _id: fileId, status: 'processing' }).first();
     if (!row) {
       return Result.fail(new ProcessingFileNotFound(fileId));
     }
@@ -167,20 +149,20 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
   async filesExistForEntities(files: { entity: string; _id: string }[]): Promise<boolean> {
     if (!files.length) return true;
     const count = await this.table
-      .query()
+
       .whereAny(files.map(f => ({ _id: f._id, entity: f.entity })))
       .count();
     return count === files.length;
   }
 
   async getAll(): Promise<BaseFile[]> {
-    const rows = await this.table.query<FilesRow>().select(FILES_COLUMNS_WITHOUT_FULL_TEXT).all();
+    const rows = await this.table.select(FILES_COLUMNS_WITHOUT_FULL_TEXT).all();
     return rows.map(row => this.toDomain(row));
   }
 
   async getByEntitiesIds(entitySharedIds: string[]): Promise<BaseFile[]> {
     const rows = await this.table
-      .query<FilesRow>()
+
       .whereIn('entity', entitySharedIds)
       .whereNot('type', 'thumbnail')
       .all();
@@ -192,7 +174,7 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
     options?: GetDocumentsForEntityOptions
   ): Promise<PDFDocument[]> {
     let query = this.table
-      .query<FilesRow>()
+
       .select(FILES_COLUMNS_WITHOUT_FULL_TEXT)
       .where({ entity: entitySharedId, type: 'document', status: 'ready' });
 
@@ -211,7 +193,6 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
 
   async getThumbnails(entitySharedIds: string[]): Promise<Thumbnail[]> {
     const rows = await this.table
-      .query<FilesRow>()
       .whereIn('entity', entitySharedIds)
       .where({ type: 'thumbnail' })
       .all();
@@ -220,20 +201,13 @@ export class PostgresFilesDataSource extends PostgresDataSource implements Files
 
   async getThumbnailsByLanguage(language: LanguageISO6391): Promise<Thumbnail[]> {
     const iso6393 = LanguageUtils.fromISO639_1(language).ISO639_3;
-    const rows = await this.table
-      .query<FilesRow>()
-      .where({ type: 'thumbnail', language: iso6393 })
-      .all();
+    const rows = await this.table.where({ type: 'thumbnail', language: iso6393 }).all();
     return rows.map(row => this.toDomain(row) as Thumbnail);
   }
 
   async getThumbnailsForProcessedPDFs(documentIds: string[]): Promise<Thumbnail[]> {
     const filenames = documentIds.map(id => `${id}.jpg`);
-    const rows = await this.table
-      .query<FilesRow>()
-      .whereIn('filename', filenames)
-      .where({ type: 'thumbnail' })
-      .all();
+    const rows = await this.table.whereIn('filename', filenames).where({ type: 'thumbnail' }).all();
     return rows.map(row => this.toDomain(row) as Thumbnail);
   }
 

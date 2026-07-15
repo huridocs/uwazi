@@ -11,6 +11,7 @@ export class ThesauriSyncHandlerFactory {
       return new PostgresThesauriSyncHandler({
         tenantId: tenant.name,
         mongoDb: getConnection(),
+        pgTransactionManager: ExecutionContext.postgresTransactionManager,
       });
     }
 

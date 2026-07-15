@@ -3,14 +3,24 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { PostgresFilesSyncHandler } from '../PostgresFilesSyncHandler.js';
 
 const factory = getFixturesFactory({ convertIdToString: true });
 
-const createHandler = () =>
-  new PostgresFilesSyncHandler({
-    tenantId: tenants.current().name,
+const createHandler = () => {
+  const tenantName = tenants.current().name;
+  return new PostgresFilesSyncHandler({
+    tenantId: tenantName,
+    pgTransactionManager: new PostgresTransactionManager(
+      PostgresDB.knex,
+      tenantName,
+      LoggerFactory.forTests()
+    ),
   });
+};
 
 describe('PostgresFilesSyncHandler', () => {
   beforeAll(async () => {

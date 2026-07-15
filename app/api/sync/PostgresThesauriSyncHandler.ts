@@ -1,5 +1,6 @@
 import { Db } from 'mongodb';
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
+import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { SyncHandler } from './SyncHandler.js';
 
 type ThesaurusRow = {
@@ -9,20 +10,23 @@ type ThesaurusRow = {
 };
 
 export class PostgresThesauriSyncHandler
-  extends PostgresDataSource
+  extends PostgresDataSource<ThesaurusRow>
   implements SyncHandler<ThesaurusRow>
 {
-  protected tableName = 'thesauri';
-
-  constructor(deps: { tenantId: string; mongoDb: Db }) {
-    super({
+  constructor(deps: {
+    tenantId: string;
+    mongoDb: Db;
+    pgTransactionManager: PostgresTransactionManager;
+  }) {
+    super('thesauri', {
       tenantId: deps.tenantId,
+      pgTransactionManager: deps.pgTransactionManager,
       sync: { syncDb: deps.mongoDb, syncNamespace: 'dictionaries' },
     });
   }
 
   async getById(id: string): Promise<ThesaurusRow | null> {
-    const row = await this.table.query<ThesaurusRow>().where({ _id: id }).first();
+    const row = await this.table.where({ _id: id }).first();
     return row || null;
   }
 
@@ -33,7 +37,7 @@ export class PostgresThesauriSyncHandler
 
     await this.table.upsert({ _id: id, ...rest } as Record<string, unknown>);
 
-    const row = await this.table.query<ThesaurusRow>().where({ _id: id }).first();
+    const row = await this.table.where({ _id: id }).first();
     return row!;
   }
 
@@ -51,10 +55,10 @@ export class PostgresThesauriSyncHandler
     await this.table.upsert(rows);
 
     const ids = rows.map(row => row._id as string);
-    return this.table.query<ThesaurusRow>().whereIn('_id', ids).all();
+    return this.table.whereIn('_id', ids).all();
   }
 
   async delete(id: string): Promise<void> {
-    await this.table.query().where({ _id: id }).delete();
+    await this.table.where({ _id: id }).delete();
   }
 }
