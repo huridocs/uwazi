@@ -62,10 +62,20 @@ const revokeHTMLMediaView = (fileLocalID: string) => {
   mediaViewUrlById.delete(fileLocalID);
 };
 
+const revokeHTMLMediaViewUrl = (url: string) => {
+  mediaViewUrlById.forEach((cachedUrl, fileLocalID) => {
+    if (cachedUrl === url) {
+      mediaViewUrlById.delete(fileLocalID);
+    }
+  });
+  URL.revokeObjectURL(url);
+};
+
 export {
   readFileAsBase64,
   isSerializedFile,
   constructFile,
   prepareHTMLMediaView,
   revokeHTMLMediaView,
+  revokeHTMLMediaViewUrl,
 };

@@ -300,6 +300,42 @@ describe('prepareMetadataAndFiles', () => {
     expect(wrappedEntity.attachments[0]).toBe(imageFile);
   });
 
+  it('should preserve timelinks from public-form blob media values', async () => {
+    const videoFile = new File([Buffer.from('video content').toString('base64')], 'clip.mp4', {
+      type: 'video/mp4',
+    });
+    template.properties = [
+      ...template.properties,
+      { _id: 'media1', label: 'Media', type: 'media', name: 'media' },
+    ];
+
+    const entity = {
+      title: 'Public form video',
+      metadata: {
+        media: {
+          data: '(blob:http://localhost:3000/12345678-1234-1234-1234-123456789abc, {"timelinks":{"00:00:13":"Check point 1"}})',
+          originalFile: videoFile,
+        },
+      },
+    };
+
+    const mediaProperties = template.properties.filter(
+      prop => prop.type === 'image' || prop.type === 'media'
+    );
+    const wrappedEntity = await prepareMetadataAndFiles(entity, [], template, mediaProperties);
+
+    expect(wrappedEntity.metadata).toEqual({
+      media: [
+        {
+          value: '',
+          attachment: 0,
+          timeLinks: '{"timelinks":{"00:00:13":"Check point 1"}}',
+        },
+      ],
+    });
+    expect(wrappedEntity.attachments).toEqual([videoFile]);
+  });
+
   it('should handle images from URLs without storing a file object', async () => {
     const entity = {
       title: 'Test Entity',
