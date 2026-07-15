@@ -6,6 +6,7 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 import { userRoutes } from '../routes.js';
 import { fixtures, f } from './fixtures.js';
 import { PUBLIC_USER_ID } from '#api/users/specs/fixtures.js';
+import { UserRole } from '#api/core/domain/user/User.js';
 
 jest.mock('../../../../../auth/encryptPassword.ts', () => ({
   encryptPassword: async () => Promise.resolve('hush hush super secret'),
@@ -140,13 +141,41 @@ describe('POST /api/users', () => {
     const response = await request(appWithEditorUser)
       .post('/api/users')
       .send({
-        _id: f.idString('existinguser'),
-        username: 'existinguser',
-        role: 'admin',
-        email: 'existing@test.com',
+        _id: f.idString('admin'),
+        username: 'admin',
+        role: 'editor',
+        email: 'admin@test.com',
       });
     expect(response.status).toBe(401);
   });
+
+  it.each([
+    { role: UserRole.ADMIN, username: 'admin', email: 'admin@test.com' },
+    { role: UserRole.EDITOR, username: 'existinguser', email: 'admin@test.com' },
+  ])(
+    'should not allow a user with the $role role to change its own role',
+    async ({ username, role, email }) => {
+      const app: Application = setUpApp(
+        userRoutes,
+        (req: Request, _res: Response, next: NextFunction) => {
+          req.user = { _id: f.idString(username), role, username };
+          next();
+        }
+      );
+
+      const response = await request(app)
+        .post('/api/users')
+        .send({
+          _id: f.idString(username),
+          username,
+          email,
+          role: 'collaborator',
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe('Cannot change own role');
+    }
+  );
 
   it('should not allow modifiying the system user', async () => {
     const response = await request(appWithAdminUser).post('/api/users').send({

@@ -38,7 +38,11 @@ class UpdateUser extends AbstractUseCase<Input, Output, Deps> {
     const isRoleChanged = user.role !== existingUser.role;
     const isEditingSelf = user._id === actor._id;
 
-    if ((isRoleChanged || !isEditingSelf) && actor.role !== 'admin') {
+    if (isRoleChanged && isEditingSelf) {
+      throw new UpdateUserError('Cannot change own role');
+    }
+
+    if (!isEditingSelf && actor.role !== 'admin') {
       throw new UnauthorizedError();
     }
 
