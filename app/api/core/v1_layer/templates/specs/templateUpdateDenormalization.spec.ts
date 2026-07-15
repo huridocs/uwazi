@@ -13,6 +13,7 @@ import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/Sync
 import entities from '#api/entities/entities.js';
 import { EntityUpdatedData, EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { TemplateSchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
+import relationships from '#api/relationships/index.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
@@ -99,10 +100,57 @@ const elasticIndex = 'templates_denorm_flow';
 describe('Templates Update', () => {
   async function setUpFixtures(_fixtures: DBFixture) {
     await testingEnvironment.setUp(_fixtures, elasticIndex);
+
+    const templatesById = new Map(
+      (_fixtures.templates || []).map((template: any) => [template._id?.toString?.(), template])
+    );
+
     await testingEnvironment.runWithContext(async () => {
-      await Promise.all(
-        (_fixtures.entities || []).map(async e => entities.save(e, { language: 'en', user: {} }))
+      const entitiesInDefaultLanguage = (_fixtures.entities || []).filter(
+        entity => entity.language === 'en' && entity.template
       );
+
+      // Keep fixture metadata shape close to persisted entities.save output:
+      // ensure all template properties exist with empty array values.
+      await Promise.all(
+        (_fixtures.entities || []).map(async entity => {
+          if (!entity.template || !entity._id) {
+            return;
+          }
+          const template = templatesById.get(entity.template.toString()) as any;
+          if (!template?.properties) {
+            return;
+          }
+
+          const metadata = { ...(entity.metadata || {}) } as Record<string, any[]>;
+          template.properties.forEach((property: any) => {
+            if (!metadata[property.name]) {
+              metadata[property.name] = [];
+            }
+          });
+
+          await testingEnvironment.db
+            .getCollection('entities')
+            ?.updateOne({ _id: entity._id as any }, { $set: { metadata } });
+        })
+      );
+
+      await Promise.all(
+        entitiesInDefaultLanguage.map(async entity => {
+          if (!entity.template) {
+            return;
+          }
+          const template = templatesById.get(entity.template.toString());
+          if (template) {
+            await relationships.saveEntityBasedReferences(entity, 'en', template);
+          }
+        })
+      );
+
+      const sharedIds = Array.from(
+        new Set(entitiesInDefaultLanguage.map(entity => entity.sharedId))
+      );
+      await entities.updateMetdataFromRelationships(sharedIds, 'en', false);
     });
 
     testingTenants.mockCurrentTenant({
@@ -253,7 +301,7 @@ describe('Templates Update', () => {
         const entitiesBefore = (await testingEnvironment.db.getAllFrom('entities')).filter(
           e => e.template?.toString() === f.idString('templateA') && e.language === 'en'
         );
-        const editDateBefore = entitiesBefore[0].editDate as number;
+        const editDateBefore = (entitiesBefore[0].editDate as number) || 0;
 
         await new Promise(r => {
           setTimeout(r, 10);
