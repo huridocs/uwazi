@@ -545,25 +545,20 @@ ID:,ID:
 Image doesn't match the required size.,Image doesn't match the required size.
 Import,ထည့်သွင်းရန်
 Import asset,Import asset
-Import completed,Import completed. Number of entities created:
 Import CSV,CSV ထည့်သွင်းရန်
 Import failed. Review details below.,Import failed. Review details below.
 Import finished successfully.,Import finished successfully.
 Import finished with errors. Review details below.,Import finished with errors. Review details below.
-Import instructions,ထည့်သွင်းမှု ညွှန်ကြားချက်များ
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.
 Import theme instance file,Import theme instance file
 Import was cancelled.,Import was cancelled.
-Imported entities from file,Imported entities from file
 Imported translations from file,Imported translations from file
-Importing data in progress,ဒေတာ ထည့်သွင်းဆဲ
 in,၌
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,In OCR queue
 in this document,in this document
 Incoming,Incoming
-Indexing entities may take a few minutes,ဖြည့်သွင်းချက်များကို အညွှန်းတပ်ခြင်းသည် မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်
 Info,အချက်အလက်
 Information extraction training,Information extraction training
 Inherit,Inherit
@@ -1167,8 +1162,6 @@ Templates,ပုံစံပြားများ
 Templates:,Templates:
 Text,စာသား
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
-The import process threw an error:,ထည့်သွင်းသည့် လုပ်ငန်းစဉ်တွင် ချွတ်ယွင်းချက် ဖြစ်ပေါ်ခဲ့သည်-
-The import process threw some warnings:,The import process threw some warnings:
 "The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process."
@@ -1312,7 +1305,6 @@ Updated translations,Updated translations
 Updated user,Updated user
 Updating template properties across,Updating template properties across
 Updating…,Updating…
-Upload a ZIP or CSV file.,ZIP သို့မဟုတ် CSV ဖိုင်တစ်ခု အပ်လုဒ်လုပ်ပါ။
 Upload and select file,အပ်လုဒ်လုပ်ပြီး ဖိုင်ရွေးချယ်ရန်
 Upload from computer,ကွန်ပျူတာမှ အပ်လုဒ်လုပ်ရန်
 Upload image,Upload image
@@ -1324,7 +1316,6 @@ Uploaded document,Uploaded document
 Uploaded file,Uploaded file
 Uploading,အပ်လုဒ်လုပ်နေသည်
 Uploading ...,အပ်လုဒ်လုပ်ဆဲ ...
-Uploading file,ဖိုင် အပ်လုဒ်လုပ်နေသည်
 Uploads,အပ်လုဒ်များ
 URL,URL
 Use,အသုံးပြုရန်

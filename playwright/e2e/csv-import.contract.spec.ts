@@ -31,15 +31,7 @@ test('csv import lifecycle contract from UI', async ({ page }) => {
     });
   });
 
-  await test.step('Enable CSV import flag and login', async () => {
-    await page.addInitScript(() => {
-      const featureFlags = (window as typeof window & { __featureFlags__?: Record<string, boolean> })
-        .__featureFlags__;
-      (window as typeof window & { __featureFlags__?: Record<string, boolean> }).__featureFlags__ = {
-        ...(featureFlags || {}),
-        v2CSVImport: true,
-      };
-    });
+  await test.step('Login and open CSV import page', async () => {
     await loginAsAdmin(page);
     await gotoWithRetry('/settings/csv', page);
     await expect(page.getByText('Import CSV or ZIP files to create entities in bulk.')).toBeVisible();

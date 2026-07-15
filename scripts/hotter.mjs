@@ -191,7 +191,6 @@ const syncDefaultTenant = async (tenantName, port, env) => {
         esReplicas: 0,
         deactivateTestJob: false,
         paragraphExtraction: true,
-        v2CSVImport: true,
         fileCacheHeaders: true,
         themeCustomization: true,
         newHeader: true,
