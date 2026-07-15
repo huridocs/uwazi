@@ -83,6 +83,10 @@ class ExpressEntityMapper {
       }
     }
 
+    if (typeof props.dto.generatedToc !== 'undefined') {
+      input.generatedToc = props.dto.generatedToc;
+    }
+
     if (props.dto.metadata) {
       const properties = Object.entries(props.dto.metadata).map(([name, value]) => ({
         name,

@@ -4,7 +4,9 @@ import { prettifyError } from '#api/utils/handleError.js';
 import { legacyLogger } from '#api/log/index.js';
 import request from '#shared/JSONRequest.js';
 import entities from '#api/entities/index.js';
-import { TocSchema } from '#shared/types/commonTypes.js';
+import { EntityWithFilesSchema } from '#shared/types/entityType.js';
+import users from '#api/users/users.js';
+import { LanguageISO6391, TocSchema } from '#shared/types/commonTypes.js';
 import { FileType } from '#shared/types/fileType.js';
 import { tenants } from '#api/tenants/index.js';
 import settings from '#api/settings/index.js';
@@ -14,12 +16,75 @@ import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/Files
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
+import type { UpdateEntityRequest } from '#api/core/infrastructure/express/entity/Schemas.js';
+import { User } from '#api/users.v2/model/User.js';
 
 const fakeTocEntry = (label: string): TocSchema => ({
   selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
   indentation: 0,
   label,
 });
+
+const ensureEntityActor = async (entity: EntityWithFilesSchema) => {
+  if (ExecutionContext.actor) {
+    return;
+  }
+
+  const actorId = entity.user?.toString?.();
+  if (!actorId) {
+    throw new Error(`Entity actor is missing for sharedId ${entity.sharedId}`);
+  }
+
+  const actorInDb = await users.getById(actorId, '-password', false, true);
+  if (!actorInDb) {
+    throw new Error(`Entity actor not found for user ${actorId}`);
+  }
+
+  ExecutionContext.actor = User.createFrom(actorInDb);
+};
+
+const toEntityUpdatePayload = (
+  entity: EntityWithFilesSchema,
+  generatedToc: boolean
+): UpdateEntityRequest => {
+  const { sharedId, language, title } = entity;
+  const entityId = entity._id?.toString();
+  if (!entityId || !sharedId || !language || !title) {
+    throw new Error(`Missing required entity fields for generatedToc update on ${entity.sharedId}`);
+  }
+
+  const documents = (entity.documents || [])
+    .filter(
+      (
+        doc: FileType
+      ): doc is FileType & { _id: NonNullable<FileType['_id']>; originalname: string } =>
+        Boolean(doc._id && doc.originalname)
+    )
+    .map((doc: FileType & { _id: NonNullable<FileType['_id']>; originalname: string }) => ({
+      _id: doc._id.toString(),
+      originalname: doc.originalname,
+    }));
+  const attachments = (entity.attachments || [])
+    .filter((attachment: FileType): attachment is FileType & { originalname: string } =>
+      Boolean(attachment.originalname)
+    )
+    .map((attachment: FileType & { originalname: string }) => ({
+      _id: attachment._id?.toString(),
+      originalname: attachment.originalname,
+      ...(attachment.url ? { url: attachment.url } : {}),
+    }));
+
+  return {
+    _id: entityId,
+    sharedId,
+    language,
+    title,
+    template: entity.template?.toString?.(),
+    generatedToc,
+    documents,
+    attachments,
+  };
+};
 
 const saveToc = async (_file: FileType, toc: TocSchema[]) => {
   const existingFile = (
@@ -30,9 +95,10 @@ const saveToc = async (_file: FileType, toc: TocSchema[]) => {
     FilesServiceFactory.default().bulkUpsert([existingFile.update({ toc, generatedToc: true })])
   );
 
-  const [entity] = await entities.get({ sharedId: _file.entity }, {});
-
-  await EntityFacade.updateGeneratedToc(entity.sharedId, true);
+  const [entity] = await entities.get({ sharedId: _file.entity }, '+permissions');
+  await ensureEntityActor(entity);
+  const payload = toEntityUpdatePayload(entity, true);
+  await EntityFacade.update(payload, payload.language as LanguageISO6391);
 };
 
 const generateToc = async (

@@ -14,10 +14,7 @@ We are **not** at the target yet. `entities.js save` is still a hybrid compatibi
 
 #### A) Direct runtime callers still using `entities.save` (legacy façade)
 
-- `app/api/csv/importEntity.ts`
-- `app/api/csv/typeParsers/relationship.ts`
 - `app/api/suggestions/updateEntities.ts`
-- `app/api/entities.v2/database/MongoDeprecatedEntitiesDataSource.ts` (`updateMetadataValues`)
 
 #### B) Legacy fallback path still inside `entities.js save`
 
@@ -51,18 +48,15 @@ This means old write paths are still alive and reachable.
    - property selections handling
    - These are intertwined with current `save` flow, so removing fallback requires explicit relocation/ownership decisions.
 
-3. **Deprecated data source bridge still tied to `entities.save`**
-   - `MongoDeprecatedEntitiesDataSource.updateMetadataValues` explicitly uses V1 save path (with a comment noting it as a hack).
-   - This is a core blocker for fully removing legacy write behavior.
-
-4. **Contract still present for deprecated metadata update**
-   - `DeprecatedEntitiesDataSource.updateMetadataValues` remains in interface + implementation.
-   - Even if static call sites are scarce, contract presence keeps legacy behavior supported.
+3. **Suggestions flow still depends on legacy save behavior**
+   - `suggestions/updateEntities.ts` currently calls `entities.save`.
+   - Direct swap to `EntityFacade.update` changed behavior in acceptance tests (relationship/multiselect/title expectations), so this needs a dedicated migration preserving semantics.
 
 ### 3) Non-blocking but important context
 
-- `generatedToc` now has a dedicated wrapper (`EntityFacade.updateGeneratedToc`) and no longer relies on forced legacy `save` fallback.
-- This is good progress, but it does **not** solve the broader `entities.save` legacy fallback problem.
+- `generatedToc` is now part of V2 core update contract (`UpdateEntity` schema/mapper/use case).
+- `tocService` and `files.tocReviewed` now call `EntityFacade.update(...)` with `generatedToc`.
+- To preserve compatibility with legacy template rows in TOC flows, `EntityFacade.update` includes a narrow fallback for generatedToc-only updates when template mapping crashes.
 
 ### 4) Team decisions needed (explicit)
 
@@ -75,10 +69,7 @@ This means old write paths are still alive and reachable.
 3. **Deprecated documents surface**
    - Keep temporarily for integrators (e.g. Tella) with timeline, or schedule removal now.
 
-4. **DeprecatedEntitiesDataSource**
-   - Remove `updateMetadataValues` now (if truly unused), or replace with a V2-equivalent operation first.
-
-5. **Cutover policy**
+4. **Cutover policy**
    - Big-bang removal of fallback, or phased (update path first, then create path).
 
 ### 5) Proposed execution plan (recommended)
@@ -104,7 +95,7 @@ This means old write paths are still alive and reachable.
 
 - Remove `createEntity/updateEntity` usage from `save`.
 - Remove deprecated `documents.save` wrapper and deprecated `/api/documents` routes once usage is confirmed zero.
-- Remove `DeprecatedEntitiesDataSource.updateMetadataValues` if replaced/unused.
+- Remove remaining `entities.save` runtime caller in suggestions by migrating acceptance update semantics to V2.
 
 ### 6) Definition of done for this refactor objective
 
@@ -114,16 +105,16 @@ This means old write paths are still alive and reachable.
   - no V1 fallback branches
 - No reachable runtime path from `entities.save` to legacy V1 persistence methods.
 - Deprecated documents compatibility surface either removed or explicitly deferred with owner + date.
-- Deprecated metadata update bridge resolved (removed or replaced).
+- Deprecated metadata update bridge resolved (removed).
 - Affected integration suites green after each phase.
 
 ### 7) Files to focus discussion on
 
 - `app/api/entities/entities.js`
-- `app/api/entities.v2/database/MongoDeprecatedEntitiesDataSource.ts`
-- `app/api/entities.v2/contracts/DeprecatedEntitiesDataSource.ts`
-- `app/api/csv/importEntity.ts`
-- `app/api/csv/typeParsers/relationship.ts`
+- `app/api/core/infrastructure/express/entity/Schemas.ts`
+- `app/api/core/infrastructure/express/entity/ExpressEntityMapper.ts`
+- `app/api/core/application/UpdateEntity.ts`
+- `app/api/core/infrastructure/facades/EntitiesFacade.ts`
 - `app/api/suggestions/updateEntities.ts`
 - `AI Contexts/Entities/mutations-to-v2.md`
 
@@ -133,19 +124,22 @@ This means old write paths are still alive and reachable.
 | --- | --- | --- | --- |
 | `save` | V1 `createEntity` / `updateEntity` writes via `entitiesModel` | migrated (hybrid) | Delegates to `EntityFacade.create` / `EntityFacade.update` with legacy fallback for incompatible payloads |
 | `delete` | Deprecated V1 delete path | kept (deprecated) | Restored for backward compatibility wrappers |
-| `updateMetadataValues` (deprecated DS method) | V1 `entities.save` bridge | kept (deprecated) | Restored for compatibility safety; no static callers found |
+| `updateMetadataValues` (deprecated DS method) | V1 `entities.save` bridge | deleted | Removed from deprecated DS contract + mongo implementation |
 | `entitySavingManager.saveEntity` | Wrapper around `entities.save` | deleted | File removed (no runtime importers) |
 | `generatedIdPropertyAutoFiller.populateGeneratedIdByTemplate` | Legacy bulk update helper | deleted | File removed (no call sites) |
 
 ## V2 Compatibility Adjustments
 
 - `EntityFacade.update` added to mirror create delegation.
-- `EntityFacade.updateGeneratedToc` added as a dedicated V2-side mutation wrapper for TOC status writes (`generatedToc`) without moving legacy fallback logic into core use cases.
+- `generatedToc` reintroduced into V2 update contract (`Schemas` + `ExpressEntityMapper` + `UpdateEntity` use case).
+- `EntityFacade.updateGeneratedToc` removed; TOC/files now use regular `EntityFacade.update` with `generatedToc`.
+- `UpdateEntity` actor behavior restored to strict/original semantics (no synthetic `__system__` fallback).
+- TOC/files generatedToc updates now resolve and set a real actor from DB before invoking V2 update:
+  - priority: current ExecutionContext actor -> entity author (`entity.user`) -> write-permitted user ids on entity -> existing admin user
+  - no synthetic user ids are created.
 - `entities.save` now normalizes legacy docs before V2 delegation and falls back to legacy mutation path when V2 rejects legacy-shaped payloads (compatibility guard).
-- Core contract rollback applied:
-  - `title` remains required in core update schema.
-  - `generatedToc` handling was removed from core mapper/use case changes.
-  - legacy-sensitive behavior stays only in `entities.js`.
+- `title` remains required in core update schema.
+- legacy-sensitive fallback orchestration still stays in `entities.js`.
 
 ## Compatibility Issue (Current)
 
@@ -157,7 +151,7 @@ This means old write paths are still alive and reachable.
   - template-change metadata carry-over parity in legacy update paths
 
 Current state remains a hybrid bridge: V2-first delegation with guarded fallback for legacy-shaped payloads.
-`generatedToc` no longer uses the legacy-forced fallback branch in `entities.save`.
+`generatedToc` is now handled in V2 core update path.
 
 ### Additional Compatibility Guardrails Added (CSV/template legacy shapes)
 
@@ -176,10 +170,9 @@ Outcome:
 - affected CSV suite recovered:
   - `app/api/csv/specs/csvLoader.spec.js` passed (37/37)
 
-Important:
+Important (historical):
 
-- this is explicitly a **temporary migration guardrail** to keep V2-first behavior without breaking legacy data shapes.
-- this is **not** the end-state architecture; final objective remains removing fallback logic and migrating callers/templates to fully V2-compatible contracts.
+- these guards were temporary and have been trimmed now that CSV V1 entity-import paths were removed.
 
 ## Boundary Rule (Important)
 
@@ -192,7 +185,7 @@ Implemented rule in this pass:
 
 - fallback logic is only in `entities.js` save facade
 - core V2 code changes are limited to shape compatibility (`Schemas`, mapper, use case input), not legacy branching/fallback orchestration
-- fallback trigger was tightened for known legacy-sensitive payloads and legacy compatibility errors, without introducing fallback logic inside `app/api/core/**`
+- fallback trigger was tightened incrementally as deprecated callers were removed.
 - numeric empty-value expectation was explicitly standardized in specs to canonical normalized output (`[]`, not `undefined`)
 
 ## Deprecated Wrapper/Route Cleanup
@@ -208,9 +201,10 @@ Implemented rule in this pass:
 
 ## Evidence Notes
 
-- `entities.save` runtime callers have been reduced by removing deprecated documents and twitter integration paths.
-- TOC-related `generatedToc` updates now use `EntityFacade.updateGeneratedToc` directly from `tocService` and `files.tocReviewed`.
+- `entities.save` runtime callers have been reduced to suggestions flow.
+- TOC-related `generatedToc` updates now use regular `EntityFacade.update` and V2 core update contract.
 - Removed code paths had no production runtime callers (test-only or orphaned).
+- TOC fixtures were aligned to include a real user author to match actor requirements in V2 update flow.
 
 ## Remaining Validation Checklist
 
@@ -228,10 +222,8 @@ Implemented rule in this pass:
   - remove/update remaining activity log parser mappings for removed routes (`POST/api/documents`, `DELETE/api/documents`) if no longer needed.
   - review deprecated fixtures/spec references that still mention `/api/documents`.
 
-- TODO: Validate whether `DeprecatedEntitiesDataSource.updateMetadataValues` is required in any runtime flow.
-  - Confirm no dynamic invocation paths (jobs, plugin-style loading, external scripts) rely on it.
-  - Re-check v1 and v2 relationships/denormalization paths after current refactor lands.
-  - If truly unused, remove from contract + implementation in a dedicated cleanup step.
+- DONE: `DeprecatedEntitiesDataSource.updateMetadataValues` removed from contract + mongo implementation.
+- TODO: remove/update specs/docs that still refer to removed deprecated DS method semantics (if any remain).
 
 ## Optional Scope Expansion (CSV V1 Removal)
 

@@ -1,6 +1,8 @@
 import { testingDB, DBFixture } from '#api/utils/testing_db.js';
+import { UserRole } from '#shared/types/userSchema.js';
 
 const templateId = testingDB.id();
+const userId = testingDB.id();
 
 const fixtures: DBFixture = {
   templates: [
@@ -39,25 +41,38 @@ const fixtures: DBFixture = {
       title: 'pdf1entity',
       template: templateId,
       language: 'es',
+      user: userId,
     },
     {
       sharedId: 'shared3',
       title: 'pdf3entity',
       template: templateId,
       language: 'es',
+      user: userId,
     },
     // entities without templates issue
     {
       sharedId: 'shared 5',
       title: 'pdf5entity',
       language: 'es',
+      user: userId,
     },
     {
       sharedId: 'shared 5',
       title: 'pdf5entity',
       language: 'en',
+      user: userId,
     },
     //
+  ],
+  users: [
+    {
+      _id: userId,
+      username: 'toc-user',
+      email: 'toc-user@test.com',
+      password: 'password',
+      role: UserRole.ADMIN,
+    },
   ],
   files: [
     {

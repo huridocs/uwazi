@@ -57,6 +57,9 @@ type DeleteContext = {
   actor: User;
 };
 
+const isNoEventListenersError = (error: unknown) =>
+  error instanceof Error && error.message.startsWith('There are no listeners for event ');
+
 class EntitiesService {
   constructor(private deps: Deps) {}
 
@@ -130,15 +133,21 @@ class EntitiesService {
     const updatedSharedIds = changedEntities.map(e => e.sharedId);
 
     await Promise.all(
-      changedEntities.map(async entity =>
-        this.deps.eventEmitter.emit(
-          EntityUpdatedEvent.create({
-            entity,
-            targetLanguage: context.targetLanguage,
-            userId: context.actorId,
-          })
-        )
-      )
+      changedEntities.map(async entity => {
+        try {
+          await this.deps.eventEmitter.emit(
+            EntityUpdatedEvent.create({
+              entity,
+              targetLanguage: context.targetLanguage,
+              userId: context.actorId,
+            })
+          );
+        } catch (error) {
+          if (!isNoEventListenersError(error)) {
+            throw error;
+          }
+        }
+      })
     );
 
     this.deps.transactionManager.onCommitted(async () => {
