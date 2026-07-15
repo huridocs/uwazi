@@ -238,6 +238,7 @@ Copy Highlighted,Copy Highlighted
 Copy link,Copy link
 Copy properties to this entity from,Copy properties to this entity from
 Copy to clipboard,Copy to clipboard
+Could not add media. Please try again.,Could not add media. Please try again.
 Could not be processed,Could not be processed
 Could not create entity,Could not create entity
 Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
@@ -546,25 +547,20 @@ ID:,ID:
 Image doesn't match the required size.,Image doesn't match the required size.
 Import,Import
 Import asset,Import asset
-Import completed,Import completed. Number of entities created:
 Import CSV,Import CSV
 Import failed. Review details below.,Import failed. Review details below.
 Import finished successfully.,Import finished successfully.
 Import finished with errors. Review details below.,Import finished with errors. Review details below.
-Import instructions,Import instructions
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.
 Import theme instance file,Import theme instance file
 Import was cancelled.,Import was cancelled.
-Imported entities from file,Imported entities from file
 Imported translations from file,Imported translations from file
-Importing data in progress,Importing data in progress
 in,in
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,In OCR queue
 in this document,in this document
 Incoming,Incoming
-Indexing entities may take a few minutes,Indexing entities may take a few minutes
 Info,Info
 Information extraction training,Information extraction training
 Inherit,Inherit
@@ -1168,8 +1164,6 @@ Templates,Templates
 Templates:,Templates:
 Text,Text
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
-The import process threw an error:,The import process threw an error:
-The import process threw some warnings:,The import process threw some warnings:
 "The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process."
@@ -1313,7 +1307,6 @@ Updated translations,Updated translations
 Updated user,Updated user
 Updating template properties across,Updating template properties across
 Updating…,Updating…
-Upload a ZIP or CSV file.,Upload a ZIP or CSV file.
 Upload and select file,Upload and select file
 Upload from computer,Upload from computer
 Upload image,Upload image
@@ -1325,7 +1318,6 @@ Uploaded document,Uploaded document
 Uploaded file,Uploaded file
 Uploading,Uploading
 Uploading ...,Uploading ...
-Uploading file,Uploading file
 Uploads,Uploads
 URL,URL
 Use,Use
