@@ -208,6 +208,13 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> {
       .toArray();
   }
 
+  async getByInternalId(
+    id: string,
+    projection: Record<string, number> = {}
+  ): Promise<EntityDBO | null> {
+    return this.getCollection().findOne({ _id: new ObjectId(id) }, { projection });
+  }
+
   async getTitleLabelsBySharedIds(
     sharedIds: string[],
     languages: LanguageISO6391[]

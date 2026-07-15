@@ -1,10 +1,9 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
-import { ObjectId } from 'mongodb';
 import { z } from 'zod';
 import { EntityNotFoundError } from '../../../domain/entity/errors.js';
 import { EntitiesQueryServiceFactory } from '../../factories/EntitiesQueryServiceFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
-import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoEntitiesDAOFactory } from '../../factories/MongoEntitiesDAOFactory.js';
 
 const GetEntityQuerySchema = z.object({
   sharedId: z.string().optional(),
@@ -30,10 +29,11 @@ class GetEntityController extends AbstractController<any> {
       let resolvedLanguage = this.language;
 
       if (!query.sharedId && query._id) {
-        const connection = getConnection();
-        const entity = await connection
-          .collection('entities')
-          .findOne({ _id: new ObjectId(query._id) }, { projection: { sharedId: 1, language: 1 } });
+        const entityDAO = MongoEntitiesDAOFactory.default({ user: this.user });
+        const entity = await entityDAO.getByInternalId(query._id, {
+          sharedId: 1,
+          language: 1,
+        });
 
         if (!entity) {
           this.response.status(404).json({ rows: [] });
