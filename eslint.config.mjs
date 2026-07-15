@@ -364,6 +364,8 @@ export default defineConfig([
     rules: {
       'max-lines-per-function': 'off',
       'max-lines': 'off',
+      'global-require': 'off',
+      'import/no-dynamic-require': 'off',
     },
   },
   {

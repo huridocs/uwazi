@@ -1,6 +1,5 @@
 /* eslint-disable max-statements */
 import type { Application } from 'express';
-import { ObjectId } from 'mongodb';
 import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
 import needsAuthorization from '#api/auth/authMiddleware.js';
 import { DownloadFileController } from '#api/core/infrastructure/express/DownloadFileController.js';
@@ -175,7 +174,7 @@ export default (app: Application) => {
     async (req, res) => {
       const query: Record<string, unknown> = {};
       if (typeof req.query._id === 'string') {
-        query._id = new ObjectId(req.query._id);
+        query._id = req.query._id;
       }
       if (typeof req.query.type === 'string') {
         query.type = req.query.type;

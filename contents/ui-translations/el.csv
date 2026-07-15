@@ -237,6 +237,7 @@ Copy Highlighted,Αντιγραφή επισημασμένου
 Copy link,Αντιγραφή συνδέσμου
 Copy properties to this entity from,Αντιγραφή ιδιοτήτων σε αυτή την οντότητα από
 Copy to clipboard,Αντιγραφή στο πρόχειρο
+Could not add media. Please try again.,Could not add media. Please try again.
 Could not be processed,Δεν ήταν δυνατή η επεξεργασία
 Could not create entity,Could not create entity
 Could not detect the area for the selected text,Δεν εντοπίστηκε η περιοχή του επιλεγμένου κειμένου. Επιλέξτε ξανά.
@@ -545,25 +546,20 @@ ID:,ID:
 Image doesn't match the required size.,Image doesn't match the required size.
 Import,Εισαγωγή
 Import asset,Εισαγωγή αρχείου
-Import completed,Η εισαγωγή ολοκληρώθηκε. Αριθμός δημιουργημένων οντοτήτων:
 Import CSV,Εισαγωγή CSV
 Import failed. Review details below.,Import failed. Review details below.
 Import finished successfully.,Import finished successfully.
 Import finished with errors. Review details below.,Import finished with errors. Review details below.
-Import instructions,Οδηγίες εισαγωγής
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.
 Import theme instance file,Import theme instance file
 Import was cancelled.,Import was cancelled.
-Imported entities from file,Εισήχθησαν οντότητες από αρχείο
 Imported translations from file,Εισήχθησαν μεταφράσεις από αρχείο
-Importing data in progress,Εισαγωγή δεδομένων σε εξέλιξη
 in,σε
 "In a group, either all relationships must have a hub or none of them.","Σε μια ομάδα, είτε όλες οι σχέσεις πρέπει να έχουν έναν κόμβο είτε καμία από αυτές."
 In OCR queue,Στην ουρά OCR
 in this document,in this document
 Incoming,Incoming
-Indexing entities may take a few minutes,Η ευρετηριοποίηση οντοτήτων μπορεί να διαρκέσει μερικά λεπτά
 Info,Πληροφορίες
 Information extraction training,Εκπαίδευση εξαγωγής πληροφοριών
 Inherit,Κληρονόμηση
@@ -995,6 +991,7 @@ Save the visualization before refreshing.,Save the visualization before refreshi
 Save the visualization to get embed code.,Save the visualization to get embed code.
 Save your work to make change permanent,Αποθηκεύστε την εργασία σας για να κάνετε την αλλαγή μόνιμη
 Saved successfully.,Αποθηκεύτηκε με επιτυχία.
+Saved with warnings,Saved with warnings
 Saving,Saving
 Saving...,Saving...
 Scanning,Scanning
@@ -1166,8 +1163,6 @@ Templates,Πρότυπα
 Templates:,Πρότυπα:
 Text,Κείμενο
 Text references limit warning,Οι αναφορές κειμένου περιορίζονται σε μέγιστο 300.
-The import process threw an error:,Η διαδικασία εισαγωγής προκάλεσε σφάλμα:
-The import process threw some warnings:,Η διαδικασία εισαγωγής προκάλεσε προειδοποιήσεις:
 "The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process.","Η διαδικασία εξαγωγής των παραγράφων ξεκίνησε επιτυχώς. Ελέγξτε τη στήλη 
               Κατάσταση για ενημερώσεις σχετικά με τη διαδικασία."
@@ -1311,7 +1306,6 @@ Updated translations,Οι μεταφράσεις ενημερώθηκαν
 Updated user,Ο χρήστης ενημερώθηκε
 Updating template properties across,Ενημερώνονται ιδιότητες προτύπου σε
 Updating…,Updating…
-Upload a ZIP or CSV file.,Μεταφόρτωση αρχείου ZIP ή CSV.
 Upload and select file,Μεταφόρτωση και επιλογή αρχείου
 Upload from computer,Μεταφόρτωση από υπολογιστή
 Upload image,Upload image
@@ -1323,7 +1317,6 @@ Uploaded document,Το έγγραφο μεταφορτώθηκε
 Uploaded file,Το αρχείο μεταφορτώθηκε
 Uploading,Μεταφόρτωση
 Uploading ...,Μεταφόρτωση...
-Uploading file,Μεταφόρτωση αρχείου
 Uploads,Μεταφορτώσεις
 URL,URL
 Use,Χρήση

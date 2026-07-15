@@ -211,4 +211,64 @@ describe('PgMigrator', () => {
       expect(pending.map((p: any) => p.delta)).toEqual([2, 3]);
     });
   });
+
+  describe('getCurrentVersion', () => {
+    it('should return 0 when no migrations applied', async () => {
+      const pool = getPool();
+      const migrator = new PgMigrator(migrationsDir, pool as any);
+      const version = await migrator.getCurrentVersion();
+      expect(version).toBe(0);
+    });
+
+    it('should return max applied delta', async () => {
+      createMigration('001-first.sql', 'SELECT 1');
+      createMigration('002-second.sql', 'SELECT 2');
+
+      const pool = getPool();
+      const migrator = new PgMigrator(migrationsDir, pool as any);
+      await migrator.migrate();
+
+      const version = await migrator.getCurrentVersion();
+      expect(version).toBe(2);
+    });
+  });
+
+  describe('migrateUntil', () => {
+    it('should apply migrations up to the target version', async () => {
+      createMigration('001-first.sql', 'SELECT 1');
+      createMigration('002-second.sql', 'SELECT 2');
+      createMigration('003-third.sql', 'SELECT 3');
+
+      const pool = getPool();
+      const migrator = new PgMigrator(migrationsDir, pool as any);
+      const applied = await migrator.migrate(2);
+
+      expect(applied).toEqual([1, 2]);
+
+      const records = await pool.query('SELECT delta FROM pg_migrations ORDER BY delta ASC');
+      expect(records.rows.map((r: any) => r.delta)).toEqual([1, 2]);
+    });
+
+    it('should apply nothing when target is already reached', async () => {
+      createMigration('001-first.sql', 'SELECT 1');
+
+      const pool = getPool();
+      const migrator = new PgMigrator(migrationsDir, pool as any);
+      await migrator.migrate();
+
+      const applied = await migrator.migrate(1);
+      expect(applied).toEqual([]);
+    });
+
+    it('should apply all when target is beyond last migration', async () => {
+      createMigration('001-first.sql', 'SELECT 1');
+      createMigration('002-second.sql', 'SELECT 2');
+
+      const pool = getPool();
+      const migrator = new PgMigrator(migrationsDir, pool as any);
+      const applied = await migrator.migrate(999);
+
+      expect(applied).toEqual([1, 2]);
+    });
+  });
 });

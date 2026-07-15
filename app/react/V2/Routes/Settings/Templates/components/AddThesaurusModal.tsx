@@ -2,7 +2,7 @@ import React, { useState, ChangeEvent } from 'react';
 import { t, Translate } from '#app/I18N/index.js';
 import { Modal, Button } from '#V2/Components/UI/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
-import { save as saveThesauri } from '#V2/api/thesauri/index.js';
+import { useServices } from '#V2/services/index.js';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { thesauriAtom } from '#V2/atoms/index.js';
 import { sanitizeThesaurusName } from '#shared/sanitizationUtils.js';
@@ -17,6 +17,7 @@ export const AddThesaurusModal = ({ onClose }: AddThesaurusModalProps) => {
   const [name, setName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const { notify } = useRequestStatus();
+  const { thesauri: thesaurusService } = useServices();
   const setThesauri = useSetAtom(thesauriAtom);
   const thesauri = useAtomValue(thesauriAtom);
   const [nameError, setNameError] = useState(false);
@@ -31,7 +32,10 @@ export const AddThesaurusModal = ({ onClose }: AddThesaurusModalProps) => {
       name: sanitizeThesaurusName(name),
       values: [],
     };
-    const savedThesaurus = await saveThesauri(newThesaurus);
+    const [savedThesaurus, error] = await thesaurusService.upsert(newThesaurus);
+    if (error || !savedThesaurus) {
+      throw error ?? new Error('Error creating thesaurus');
+    }
     setThesauri([...thesauri, savedThesaurus]);
     notify('success', t('System', 'Thesaurus created successfully.', null, false));
   };

@@ -1,6 +1,6 @@
 import { Dispatch } from 'redux';
 import { actions } from 'react-redux-form';
-import { readFileAsBase64 } from '#app/Library/actions/saveEntityWithFiles.js';
+import { readFileAsBase64 } from '#shared/fileUploadUtils.js';
 import uniqueID from '#shared/uniqueID.js';
 import * as types from '../../Attachments/actions/actionTypes.js';
 
@@ -11,8 +11,8 @@ const uploadLocalAttachment =
     storeKeys: { __reducerKey: string; model: string },
     fileLocalID?: string
   ) =>
-  async (dispatch: Dispatch<{}>): Promise<any> =>
-    readFileAsBase64(file, info => {
+  async (dispatch: Dispatch<{}>): Promise<void> => {
+    await readFileAsBase64(file, info => {
       const newFile = {
         originalname: file.name,
         filename: file.name,
@@ -25,6 +25,7 @@ const uploadLocalAttachment =
       dispatch(actions.push(`${storeKeys.model}.attachments`, newFile));
       dispatch({ type: types.ATTACHMENT_PROGRESS, entity: entitySharedId, progress: 100 });
     });
+  };
 
 const uploadLocalAttachmentFromUrl =
   (

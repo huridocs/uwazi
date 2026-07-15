@@ -1,33 +1,24 @@
-import { ApiResponse } from '#V2/api/ApiResponse.js';
-import { FetchResponseError } from '#shared/JSONRequest.js';
 import * as thesauriApi from '#V2/api/thesauri/index.js';
 import type { ThesaurusService } from '../contracts/ThesaurusService.js';
 
-const toApiResponse = async <T>(
-  fn: () => Promise<T>
-): Promise<ApiResponse<T, FetchResponseError>> => {
-  try {
-    return [await fn()];
-  } catch (e) {
-    return [undefined as T, e as FetchResponseError];
-  }
-};
-
 const httpThesaurusService: ThesaurusService = {
-  getAll: async ({ headers } = {}) => toApiResponse(async () => thesauriApi.get({}, headers)),
+  getAll: async ({ headers } = {}) => thesauriApi.getAll(headers),
 
-  getById: async (id, { headers } = {}) =>
-    toApiResponse(async () => {
-      const rows = await thesauriApi.get({ _id: id }, headers);
-      return rows[0];
-    }),
+  getById: async (id, { headers } = {}) => thesauriApi.getById(id, headers),
 
-  upsert: async thesaurus => toApiResponse(async () => thesauriApi.save(thesaurus)),
+  upsert: async (thesaurus, { headers } = {}) => thesauriApi.upsert(thesaurus, headers),
 
-  delete: async ids =>
-    toApiResponse(async () => {
-      await Promise.all(ids.map(async _id => thesauriApi.deleteThesauri({ _id })));
-    }),
+  delete: async (ids, { headers } = {}) => {
+    const results = await Promise.all(ids.map(async id => thesauriApi.remove(id, headers)));
+    const failed = results.find(([, error]) => error);
+    if (failed?.[1]) {
+      return [undefined as never, failed[1]];
+    }
+    return [undefined];
+  },
+
+  importFromFile: async (thesaurus, file, { headers } = {}) =>
+    thesauriApi.importFromFile(thesaurus, file, headers),
 };
 
 export { httpThesaurusService };

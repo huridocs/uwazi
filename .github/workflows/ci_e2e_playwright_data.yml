@@ -33,19 +33,6 @@ jobs:
         image: redis:6.0-alpine
         ports:
           - 6379:6379
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_USER: uwazi
-          POSTGRES_PASSWORD: uwazi
-          POSTGRES_DB: uwazi_development
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
 
     steps:
       - name: Install MongoDB tools
@@ -94,10 +81,7 @@ jobs:
       - name: install dependencies
         run: yarn install
         env:
-          YARN_ENABLE_HARDENED_MODE: "0"
-
-      - name: Migrate PG
-        run: yarn migrate-pg
+          YARN_ENABLE_HARDENED_MODE: '0'
 
       - name: Get Playwright version
         id: playwright-version

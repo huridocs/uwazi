@@ -11,7 +11,9 @@ const renderChild = (child: string | React.ReactNode) =>
   isString(child) ? <Translate>{child}</Translate> : child;
 
 const InputError = ({ children, className = '' }: InputErrorProps) => (
-  <p className={`${className} mt-2 text-sm text-(--color-theme-danger)`}>{renderChild(children)}</p>
+  <p className={`${className} mt-2 text-sm text-(--color-theme-control-text-error)`}>
+    {renderChild(children)}
+  </p>
 );
 
 export { InputError };

@@ -12,7 +12,7 @@ runMigration()
       await import('../database/reindex_elastic.js');
     }
   })
-  .catch(async e => {
+  .catch(async _e => {
     await DB.disconnect();
-    throw e;
+    process.exit(1);
   });
