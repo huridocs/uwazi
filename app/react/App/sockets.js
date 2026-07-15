@@ -188,13 +188,3 @@ socket.on('documentProcessed', sharedId => {
 socket.on('conversionFailed', sharedId => {
   store.dispatch(documentProcessed(sharedId, 'library'));
 });
-
-socket.on('IMPORT_CSV_START', () => store.dispatch(actions.set('importStart', true)));
-socket.on('IMPORT_CSV_PROGRESS', progress =>
-  store.dispatch(actions.set('importProgress', progress))
-);
-socket.on('IMPORT_CSV_ROW_EXCEPTIONS', exceptions =>
-  store.dispatch(actions.set('importRowExceptions', exceptions))
-);
-socket.on('IMPORT_CSV_ERROR', error => store.dispatch(actions.set('importError', error)));
-socket.on('IMPORT_CSV_END', () => store.dispatch(actions.set('importEnd', true)));
