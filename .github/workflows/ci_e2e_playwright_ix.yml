@@ -84,7 +84,7 @@ jobs:
       - name: install dependencies
         run: yarn install
         env:
-          YARN_ENABLE_HARDENED_MODE: "0"
+          YARN_ENABLE_HARDENED_MODE: '0'
 
       - name: Get Playwright version
         id: playwright-version

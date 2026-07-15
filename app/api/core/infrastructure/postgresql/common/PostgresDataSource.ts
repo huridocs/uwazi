@@ -1,46 +1,38 @@
 import { Db } from 'mongodb';
 import { PostgresTable } from './PostgresTable.js';
-import { SyncedPostgresTable } from './SyncedPostgresTable.js';
+import { PostgresTransactionManager } from './PostgresTransactionManager.js';
+import { SyncLogWriter } from './SyncLogWriter.js';
 
 type SyncOptions = {
   syncDb: Db;
   syncNamespace: string;
 };
 
-type Deps = { tenantId: string; sync?: SyncOptions };
+type Deps = {
+  tenantId: string;
+  pgTransactionManager: PostgresTransactionManager;
+  sync?: SyncOptions;
+};
 
-export abstract class PostgresDataSource {
-  protected abstract tableName: string;
+export abstract class PostgresDataSource<TRow = Record<string, unknown>> {
+  private _table: PostgresTable<TRow>;
 
-  private _tenantId: string;
+  private _syncWriter?: SyncLogWriter;
 
-  private _syncOptions: SyncOptions | null = null;
-
-  private _table: PostgresTable | null = null;
-
-  protected jsonbColumns: string[] = [];
-
-  constructor({ tenantId, sync }: Deps) {
-    this._tenantId = tenantId;
+  constructor(tableName: string, { tenantId, pgTransactionManager, sync }: Deps) {
     if (sync) {
-      this._syncOptions = sync;
+      this._syncWriter = new SyncLogWriter(sync.syncDb, sync.syncNamespace);
     }
+
+    this._table = PostgresTable.for<TRow>({
+      tableName,
+      tenantId,
+      transactionManager: pgTransactionManager,
+      syncWriter: this._syncWriter,
+    });
   }
 
-  protected get table(): PostgresTable {
-    if (!this._table) {
-      if (this._syncOptions) {
-        this._table = new SyncedPostgresTable(
-          this.tableName,
-          this._tenantId,
-          this._syncOptions.syncDb,
-          this._syncOptions.syncNamespace,
-          this.jsonbColumns
-        );
-      } else {
-        this._table = new PostgresTable(this.tableName, this._tenantId, this.jsonbColumns);
-      }
-    }
+  protected get table(): PostgresTable<TRow> {
     return this._table;
   }
 }
