@@ -2,8 +2,6 @@
 /* eslint-disable max-statements */
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import db from '#api/utils/testing_db.js';
-
-import { ObjectId } from 'mongodb';
 import {
   EntitySuggestionType,
   IXSuggestionStateType,
@@ -15,6 +13,7 @@ import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/Files
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
 import { DenormalizeEntityUpdatedListener } from '#api/core/infrastructure/listeners/DenormalizeEntityUpdatedListener.js';
 import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
 import { Suggestions } from '../suggestions.js';
@@ -60,6 +59,17 @@ const runWithEntityUpdatedListeners = <T>(fn: () => T) =>
   testingEnvironment.runWithContext(fn, {
     factories: { eventEmitter: () => EventEmitterFactory.default() },
   });
+
+const hasRegisteredListener = (
+  listeners: Set<typeof Listener> | undefined,
+  listenerClass: typeof Listener<any, any>
+) => {
+  if (!listeners) {
+    return false;
+  }
+
+  return Array.from(listeners).includes(listenerClass as typeof Listener);
+};
 
 type SuggestionBase = Pick<
   IXSuggestionType,
@@ -189,14 +199,15 @@ describe('suggestions', () => {
   beforeAll(() => {
     Suggestions.registerEventListeners(applicationEventsBus);
 
-    const currentListeners =
-      EventEmitterFactory.registry.getListeners(DenormalizeEntityUpdatedListener.eventName) || new Set();
+    const currentListeners = EventEmitterFactory.registry.getListeners(
+      DenormalizeEntityUpdatedListener.eventName
+    );
 
-    if (!currentListeners.has(DenormalizeEntityUpdatedListener)) {
+    if (!hasRegisteredListener(currentListeners, DenormalizeEntityUpdatedListener)) {
       EventEmitterFactory.registry.register(DenormalizeEntityUpdatedListener);
     }
 
-    if (!currentListeners.has(ProcessRelationshipAfterEntityUpdatedListener)) {
+    if (!hasRegisteredListener(currentListeners, ProcessRelationshipAfterEntityUpdatedListener)) {
       EventEmitterFactory.registry.register(ProcessRelationshipAfterEntityUpdatedListener);
     }
   });

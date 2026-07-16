@@ -13,7 +13,6 @@ import {
   thesaurusTemplate3Id,
   thesaurusTemplateId,
 } from '#api/core/v1_layer/templates/specs/fixtures/fixtures.js';
-import documents from '#api/documents/index.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -131,7 +130,7 @@ describe('DeleteTemplateUseCase', () => {
     });
 
     it('should delete the template translation', async () => {
-      jest.spyOn(documents, 'countByTemplate').mockImplementation(async () => Promise.resolve(0));
+      jest.spyOn(templates, 'countByTemplate').mockImplementation(async () => Promise.resolve(0));
 
       await createSut().execute({ templateId: templateToBeDeleted.toString() });
       const translation = await testingEnvironment.db
