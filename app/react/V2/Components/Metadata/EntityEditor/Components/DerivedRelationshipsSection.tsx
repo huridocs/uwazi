@@ -31,6 +31,7 @@ const renderField = (
   const className = metadataGridClassForProperty(data, templatePropertyById.get(data._id));
 
   if (data.type === 'relationship') {
+    const templateProperty = templatePropertyById.get(data._id);
     return (
       <Relationship
         key={data._id}
@@ -39,6 +40,8 @@ const renderField = (
         translationContext={translationContext}
         hideLabel={data.hideLabel}
         className={className}
+        relationTypeId={templateProperty?.relationType}
+        targetTemplateId={data.relationShipTarget || templateProperty?.content}
       />
     );
   }

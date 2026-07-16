@@ -23,6 +23,7 @@ Account updated,Account updated
 Accuracy,Accuracy
 Accuracy tooltip,Accuracy is defined by the amount of matches vs mismatches for labeled samples that have been processed.
 Action,활동
+Actions,Actions
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
@@ -36,6 +37,7 @@ Add as,Add as
 Add data source,Add data source
 Add date,날짜 추가
 Add entities / documents,엔티티/문서 추가
+Add entity,Add entity
 Add entity type,Add entity type
 Add Extractor,Add Extractor
 Add extractor,Add extractor
@@ -341,6 +343,7 @@ Deleted thesaurus,Deleted thesaurus
 Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
+Derived relationships · read-only,Derived relationships · read-only
 Description,설명
 Deselect all,Deselect all
 Direction,Direction
@@ -384,6 +387,7 @@ Duration,Duration
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
 Earlier,Earlier
 Edit,편집
+Edit at source,Edit at source
 Edit Extractor,Edit Extractor
 Edit File,Edit File
 Edit group,Edit group
@@ -564,6 +568,8 @@ Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,속성 이어받기
 Inherit type,Inherit type
+"Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
+inherits,inherits
 Input,Input
 Install,Install
 Install Language(s),Install Language(s)
@@ -721,6 +727,7 @@ No,아니오
 No attachments,첨부파일 없음
 No chart types match your search.,No chart types match your search.
 No common filters,공통 필터 없음
+No connected entities yet.,No connected entities yet.
 No Connections,커넥션 없음
 No Connections description,Connections are the direct relationships between this document and other documents and entities.
 No context,No context
@@ -735,6 +742,7 @@ No icon / flag,아이콘/플래그 없음
 No items available,No items available
 No Label,라벨 없음
 No label,No label
+No matching entities.,No matching entities.
 No media selected,No media selected
 No options,No options
 No options found,검색된 옵션 없음
@@ -948,6 +956,7 @@ Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,제거
+Remove from connection,Remove from connection
 Remove from training set,Remove from training set
 remove icon,아이콘 제거
 Removed language,Removed language
@@ -1001,6 +1010,7 @@ Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordin
 Search,검색
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
 Search entities...,Search entities...
+Search entities…,Search entities…
 Search item,아이템 검색
 Search related entities or documents,연결된 엔티티 및 문서 검색
 Search relationships,Search relationships
@@ -1349,6 +1359,7 @@ Value cannot be transformed to the correct type,Value cannot be transformed to t
 values,values
 Verify,검증
 Verifying...,검증 중
+via,via
 View,보기
 view,보기
 View entities,View entities

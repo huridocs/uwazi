@@ -49,14 +49,14 @@ describe('Metadata Display', () => {
     });
 
     it('renders authorized relationship links with correct hrefs', () => {
+      cy.contains('h3', 'Relationships').should('exist');
       cy.contains('dt', 'Relationship with inheritance').should('exist');
-      cy.contains('a.underline', 'Traffic Accident - Main Street')
+      cy.contains('via').should('exist');
+      cy.contains('linked').should('exist');
+      cy.contains('a', 'Traffic Accident - Main Street')
         .should('have.attr', 'href', '/entityv2/entity4')
         .should('have.attr', 'target', '_blank');
-      cy.contains('a.underline', 'Traffic Accident - Main Street')
-        .parent()
-        .find('span[role="img"]')
-        .should('exist');
+      cy.contains('a', 'Traffic Accident - Main Street').find('span[role="img"]').should('exist');
       cy.contains('This value should not display').should('not.have.attr', 'href');
     });
 

@@ -23,6 +23,7 @@ Account updated,Account updated
 Accuracy,Accuracy
 Accuracy tooltip,Accuracy is defined by the amount of matches vs mismatches for labeled samples that have been processed.
 Action,Action
+Actions,Actions
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
@@ -36,6 +37,7 @@ Add as,Add as
 Add data source,Add data source
 Add date,Ajouter une date
 Add entities / documents,Ajouter des entités / documents
+Add entity,Add entity
 Add entity type,Add entity type
 Add Extractor,Add Extractor
 Add extractor,Add extractor
@@ -340,6 +342,7 @@ Deleted thesaurus,Deleted thesaurus
 Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
+Derived relationships · read-only,Derived relationships · read-only
 Description,Description
 Deselect all,Deselect all
 Direction,Direction
@@ -383,6 +386,7 @@ Duration,Durée
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
 Earlier,Earlier
 Edit,Éditer
+Edit at source,Edit at source
 Edit Extractor,Edit Extractor
 Edit File,Edit File
 Edit group,Edit group
@@ -563,6 +567,8 @@ Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,Hériter la propriété
 Inherit type,Inherit type
+"Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
+inherits,inherits
 Input,Input
 Install,Install
 Install Language(s),Install Language(s)
@@ -720,6 +726,7 @@ No,Non
 No attachments,No attachments
 No chart types match your search.,No chart types match your search.
 No common filters,Pas de filtres communs
+No connected entities yet.,No connected entities yet.
 No Connections,Pas de connexions
 No Connections description,Connections are the direct relationships between this document and other documents and entities.
 No context,No context
@@ -734,6 +741,7 @@ No icon / flag,No icon / flag
 No items available,No items available
 No Label,Aucune étiquettes
 No label,No label
+No matching entities.,No matching entities.
 No media selected,No media selected
 No options,No options
 No options found,Aucune option trouvée
@@ -947,6 +955,7 @@ Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Supprimer
+Remove from connection,Remove from connection
 Remove from training set,Remove from training set
 remove icon,Supprimer l'icône
 Removed language,Removed language
@@ -1000,6 +1009,7 @@ Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordin
 Search,Recherche
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
 Search entities...,Search entities...
+Search entities…,Search entities…
 Search item,Recherche d'éléménts
 Search related entities or documents,Rechercher des entités ou des documents liés
 Search relationships,Search relationships
@@ -1348,6 +1358,7 @@ Value cannot be transformed to the correct type,Value cannot be transformed to t
 values,values
 Verify,Vérifier
 Verifying...,En cours de vérification...
+via,via
 View,Vue
 view,Vue
 View entities,View entities

@@ -23,6 +23,7 @@ Account updated,Account updated
 Accuracy,Accuracy
 Accuracy tooltip,Accuracy is defined by the amount of matches vs mismatches for labeled samples that have been processed.
 Action,Acción
+Actions,Actions
 Activate,Activate
 Activated,Activated
 Active languages,Idiomas activos
@@ -36,6 +37,7 @@ Add as,Add as
 Add data source,Add data source
 Add date,Añadir fecha
 Add entities / documents,Añadir entidades / documentos
+Add entity,Add entity
 Add entity type,Add entity type
 Add Extractor,Add Extractor
 Add extractor,Add extractor
@@ -339,6 +341,7 @@ Deleted thesaurus,Tesauro eliminado
 Deleted user,Usuario eliminado
 Deleted user group,Grupo de usuarios eliminado
 Deletion success,Eliminación exitosa
+Derived relationships · read-only,Derived relationships · read-only
 Description,Descripción
 Deselect all,Deselect all
 Direction,Direction
@@ -382,6 +385,7 @@ Duration,Duración
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
 Earlier,Más temprano
 Edit,Editar
+Edit at source,Edit at source
 Edit Extractor,Edit Extractor
 Edit File,Edit File
 Edit group,Edit group
@@ -562,6 +566,8 @@ Information extraction training,Entrenamiento de extracción de información
 Inherit,Heredar
 Inherit property,Heredar propiedad
 Inherit type,Tipo de herencia
+"Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
+inherits,inherits
 Input,Entrada
 Install,Instalar
 Install Language(s),Instalar Idioma(s)
@@ -719,6 +725,7 @@ No,No
 No attachments,Sin adjuntos
 No chart types match your search.,No chart types match your search.
 No common filters,No existen filtros comunes
+No connected entities yet.,No connected entities yet.
 No Connections,No existen relaciones
 No Connections description,Las conexiones son las relaciones directas entre este documento y otros documentos y entidades.
 No context,No context
@@ -733,6 +740,7 @@ No icon / flag,Sin icono / bandera
 No items available,No items available
 No Label,No existe etiqueta
 No label,No label
+No matching entities.,No matching entities.
 No media selected,No media selected
 No options,No options
 No options found,Opciones no encontradas
@@ -946,6 +954,7 @@ Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Eliminar
+Remove from connection,Remove from connection
 Remove from training set,Eliminar del conjunto de entrenamiento
 remove icon,eliminar ícono
 Removed language,Idioma eliminado
@@ -999,6 +1008,7 @@ Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordin
 Search,Buscar
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
 Search entities...,Buscar entidades...
+Search entities…,Search entities…
 Search item,Buscar elemento
 Search related entities or documents,Buscar entidades o documentos relacionados
 Search relationships,Buscar relaciones
@@ -1346,6 +1356,7 @@ Value cannot be transformed to the correct type,Value cannot be transformed to t
 values,values
 Verify,Verificar
 Verifying...,Verificando
+via,via
 View,Ver
 view,Ver
 View entities,Ver entidades

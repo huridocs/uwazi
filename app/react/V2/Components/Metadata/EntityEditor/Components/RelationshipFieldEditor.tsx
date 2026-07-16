@@ -11,6 +11,7 @@ import { Translate, t } from '#app/I18N/index.js';
 import { debounce } from '#app/utils/index.js';
 import { CompactSearchInput } from '#V2/Components/Forms/CompactSearchInput.js';
 import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
+import { RelationCaption } from '#V2/Components/Metadata/Components/RelationCaption.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import type { MultiselectListOption } from '#V2/Components/Forms/index.js';
 
@@ -122,15 +123,12 @@ const RelationshipFieldEditor = ({
 
   return (
     <div className="space-y-1.5">
-      <div className="flex items-center gap-1.5">
-        <LinkIcon className="h-3.5 w-3.5 text-carbon" aria-hidden />
-        <span className="text-sm font-bold text-ink">{title}</span>
-        {relationLabel ? (
-          <span className="text-[11px] text-ink-tertiary">
-            <Translate>via</Translate>{' '}
-            <span className="font-medium text-carbon">{relationLabel}</span>
-          </span>
-        ) : null}
+      <div className="flex flex-col gap-0.5">
+        <div className="flex items-center gap-1.5">
+          <LinkIcon className="h-3.5 w-3.5 text-carbon" aria-hidden />
+          <span className="text-sm font-bold text-ink">{title}</span>
+        </div>
+        {relationLabel ? <RelationCaption relationLabel={relationLabel} /> : null}
       </div>
 
       <div className="overflow-hidden rounded-md border border-border">

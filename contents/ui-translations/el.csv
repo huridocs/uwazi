@@ -23,6 +23,7 @@ Account updated,Ο λογαριασμός ενημερώθηκε επιτυχώ�
 Accuracy,Ακρίβεια
 Accuracy tooltip,Η ακρίβεια υπολογίζεται από την αναλογία επιτυχιών προς αστοχίες στα επεξεργασμένα δείγματα.
 Action,Ενέργεια
+Actions,Actions
 Activate,Ενεργοποίηση
 Activated,Ενεργοποιημένο
 Active languages,Ενεργές γλώσσες
@@ -36,6 +37,7 @@ Add as,Add as
 Add data source,Add data source
 Add date,Προσθήκη ημερομηνίας
 Add entities / documents,Προσθήκη οντοτήτων / εγγράφων
+Add entity,Add entity
 Add entity type,Προσθήκη τύπου οντότητας
 Add Extractor,Προσθήκη εξαγωγέα
 Add extractor,Προσθήκη εξαγωγέα
@@ -342,6 +344,7 @@ Deleted thesaurus,Διαγράφηκε θησαυρός
 Deleted user,Διαγράφηκε χρήστης
 Deleted user group,Διαγράφηκε ομάδα χρηστών
 Deletion success,Επιτυχία διαγραφής
+Derived relationships · read-only,Derived relationships · read-only
 Description,Περιγραφή
 Deselect all,Deselect all
 Direction,Direction
@@ -385,6 +388,7 @@ Duration,Duration
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
 Earlier,Earlier
 Edit,Επεξεργασία
+Edit at source,Edit at source
 Edit Extractor,Επεξεργασία εξαγωγέα
 Edit File,Επεξεργασία αρχείου
 Edit group,Επεξεργασία ομάδας
@@ -565,6 +569,8 @@ Information extraction training,Εκπαίδευση εξαγωγής πληρο
 Inherit,Κληρονόμηση
 Inherit property,Κληρονομούμενη ιδιότητα
 Inherit type,Κληρονομούμενος τύπος
+"Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
+inherits,inherits
 Input,Είσοδος
 Install,Εγκατάσταση
 Install Language(s),Εγκατάσταση γλωσσών
@@ -722,6 +728,7 @@ No,Όχι
 No attachments,Δεν υπάρχουν συνημμένα αρχεία
 No chart types match your search.,No chart types match your search.
 No common filters,Δεν υπάρχουν κοινά φίλτρα
+No connected entities yet.,No connected entities yet.
 No Connections,Δεν υπάρχουν συνδέσεις
 No Connections description,Οι συνδέσεις είναι οι άμεσες σχέσεις μεταξύ αυτού του εγγράφου και άλλων εγγράφων και οντοτήτων.
 No context,Δεν υπάρχει πλαίσιο
@@ -736,6 +743,7 @@ No icon / flag,Χωρίς εικονίδιο/σημαία
 No items available,Δεν υπάρχουν διαθέσιμα στοιχεία
 No Label,Χωρίς ετικέτα
 No label,Χωρίς ετικέτα
+No matching entities.,No matching entities.
 No media selected,No media selected
 No options,Δεν υπάρχουν επιλογές
 No options found,Δεν βρέθηκαν επιλογές
@@ -949,6 +957,7 @@ Release message,Release message
 remaining files,υπόλοιπα αρχεία
 Remote Server Unreachable,Απομακρυσμένος διακομιστής μη προσβάσιμος
 Remove,Αφαίρεση
+Remove from connection,Remove from connection
 Remove from training set,Αφαίρεση από το σύνολο εκπαίδευσης
 remove icon,αφαιρέση εικονίδιου
 Removed language,Αφαίρεση γλώσσας
@@ -1002,6 +1011,7 @@ Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordin
 Search,Αναζήτηση
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
 Search entities...,Search entities...
+Search entities…,Search entities…
 Search item,Αναζήτηση στοιχείου
 Search related entities or documents,Αναζήτηση σχετικών οντοτήτων ή εγγράφων
 Search relationships,Search relationships
@@ -1350,6 +1360,7 @@ Value cannot be transformed to the correct type,Η τιμή δεν μπορεί 
 values,τιμές
 Verify,Επαλήθευση
 Verifying...,Επαλήθευση...
+via,via
 View,Προβολή
 view,προβολή
 View entities,Προβολή οντοτήτων
