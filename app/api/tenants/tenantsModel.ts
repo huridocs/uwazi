@@ -43,6 +43,7 @@ const mongoSchema = new mongoose.Schema({
     newHeader: Boolean,
     postgresThesauri: Boolean,
     postgresTemplates: Boolean,
+    postgresFiles: Boolean,
     aiAssistant: Boolean,
     aiAssistantServiceUrl: String,
     v2CreateUser: Boolean,
