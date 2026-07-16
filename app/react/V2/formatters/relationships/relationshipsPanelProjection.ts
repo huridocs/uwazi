@@ -1,6 +1,6 @@
 import { Entity } from '#V2/api/entities/types.js';
 import { RelationshipMarker, firstPageOf, toMarker } from '#V2/Components/Relationships/types.js';
-import { counterpartAnchorOf } from './types.js';
+import { counterpartAnchorOf, selfPointer } from './types.js';
 import { formatRelationships } from './formatRelationships.js';
 import { buildPanelListEntries } from './relationshipsPanelDerivation.js';
 import { buildMatcher } from './relationshipsPanelSearchQuery.js';
@@ -29,6 +29,19 @@ const computeStats = (
 
 const projectRelationshipMarkers = (entity: Entity): RelationshipMarker[] =>
   formatRelationships(entity).map(view => toMarker(view, entity.sharedId));
+
+const filterMarkersForDocument = (
+  markers: RelationshipMarker[],
+  documentId: string | undefined,
+  selfSharedId: string
+): RelationshipMarker[] => {
+  if (!documentId) return markers;
+  return markers.filter(marker => {
+    const self = selfPointer(marker.view, selfSharedId);
+    if (self.type === 'entity') return true;
+    return self.file === documentId;
+  });
+};
 
 const projectRelationshipsPanel = (entity: Entity): RelationshipsPanelProjection => {
   const markers = projectRelationshipMarkers(entity);
@@ -146,6 +159,7 @@ export type {
 };
 export {
   projectRelationshipMarkers,
+  filterMarkersForDocument,
   projectRelationshipsPanel,
   filterAndSortMarkers,
   computeStats,

@@ -20,6 +20,7 @@ import {
   useMetadataEditing,
 } from './Components/index.js';
 import { CreateRelationshipModal } from './Components/relationships/create-reference/CreateRelationshipModal.js';
+import { useResetRelationshipsOnDocumentChange } from './Components/relationships/hooks/useDocumentRelationships.js';
 import {
   TabsMainButtons,
   MainTabsContent,
@@ -47,6 +48,7 @@ const EntityFilesFromEntity = ({ children }: { children: React.ReactNode }) => {
 const EntityView = ({ searchResults }: EntityViewProps) => {
   const entity = useEntityScopedEntity();
   const { mainDocument, pagePlaintext, isRtl } = useEntityLanguage();
+  useResetRelationshipsOnDocumentChange();
   const { focusedRow, primaryRows } = useEntityFiles();
   const hasMainDocument = Boolean(mainDocument?.filename);
 

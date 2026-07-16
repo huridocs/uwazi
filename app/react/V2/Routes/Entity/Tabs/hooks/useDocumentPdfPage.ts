@@ -8,7 +8,7 @@ import { PAGE_PARAM, VIEW_MODE_PARAM } from '../../urlParams.js';
 type UseDocumentPdfPageParams = {
   mainDocument: FileType;
   mainPdfController: PDFControls | null | undefined;
-  setPdfController: (controls: PDFControls) => void;
+  setPdfController: (controls: PDFControls | null) => void;
 };
 
 function useDocumentPdfPage({

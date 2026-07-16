@@ -11,7 +11,7 @@ import {
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useEntityTabNavigation } from '#V2/Routes/Entity/Tabs/hooks/useEntityTabNavigation.js';
 import { useRelationshipBulkDelete } from '../hooks/useRelationshipBulkDelete.js';
-import { useEntityRelationshipMarkers } from '../hooks/useEntityRelationshipMarkers.js';
+import { useEntityRelationshipMarkers } from '../hooks/useDocumentRelationships.js';
 
 const RelationshipsActionBar = () => {
   const sourceMarkers = useEntityRelationshipMarkers();

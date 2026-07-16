@@ -27,4 +27,4 @@ export { EntityWriteAuthorization, useEntityWriteAuthorized } from './EntityWrit
 export { useEntityOverlay } from './EntityOverlayContext.js';
 export type { RelationshipsPanelView, RelationshipsPanelZoom } from './types.js';
 export { useRelationshipsPanelData } from '../relationships/hooks/useRelationshipsPanelData.js';
-export { useEntityRelationshipMarkers } from '../relationships/hooks/useEntityRelationshipMarkers.js';
+export { useEntityRelationshipMarkers } from '../relationships/hooks/useDocumentRelationships.js';
