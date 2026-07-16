@@ -378,7 +378,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['app/**/*.ts*', 'database/**/*.ts', 'e2e/**/*.ts'],
+    files: ['app/**/*.ts*', 'database/**/*.ts', 'e2e/**/*.ts', 'playwright/**/*.ts'],
     ignores: ['**/*.cy.tsx'],
     plugins: { '@typescript-eslint': typescriptEslint },
     languageOptions: {

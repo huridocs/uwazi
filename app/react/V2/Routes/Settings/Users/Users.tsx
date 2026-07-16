@@ -1,11 +1,11 @@
 /* eslint-disable max-lines */
 import React, { useRef, useState } from 'react';
-import { IncomingHttpHeaders } from 'http';
-import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react-router';
-import { Translate } from '#app/I18N/index.js';
+import { useLoaderData, useRevalidator } from 'react-router';
+import { t, Translate } from '#app/I18N/index.js';
 import { Button, ConfirmationModal, Table, Tabs } from '#V2/Components/UI/index.js';
-import * as usersAPI from '#V2/api/users/index.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { useServices } from '#V2/services/index.js';
 import {
   UserFormSidepanel,
   GroupFormSidepanel,
@@ -13,10 +13,11 @@ import {
   getGroupsColumns,
   ListOfItems,
 } from './components/index.js';
-import { useHandleNotifications } from './useHandleNotifications.js';
-import { FormIntent, User, Group } from './types.js';
+import { User, Group } from './types.js';
 
 type ActiveTab = 'Groups' | 'Users';
+
+type BulkAction = 'delete-users' | 'delete-groups' | 'bulk-reset-password' | 'bulk-reset-2fa';
 
 // eslint-disable-next-line max-statements
 const Users = () => {
@@ -25,6 +26,10 @@ const Users = () => {
       users: User[];
       groups: Group[];
     }) || [];
+
+  const { users: usersService, userGroups: userGroupsService } = useServices();
+  const revalidator = useRevalidator();
+  const { notify } = useRequestStatus();
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('Users');
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
@@ -38,9 +43,7 @@ const Users = () => {
   });
 
   const password = useRef<string>();
-  const bulkActionIntent = useRef<FormIntent>();
-  const fetcher = useFetcher();
-  useHandleNotifications();
+  const bulkActionIntent = useRef<BulkAction>();
 
   const usersTableColumns = getUsersColumns((user: User) => {
     setShowSidepanel(true);
@@ -52,23 +55,62 @@ const Users = () => {
     setSidepanelData(group);
   });
 
-  const handleBulkAction = async () => {
-    const formData = new FormData();
-    formData.set('intent', bulkActionIntent.current || '');
+  const notifyMutationError = (error: { detail?: string; message: string }) => {
+    notify(
+      'error',
+      t('System', 'An error occurred', null, false),
+      undefined,
+      error.detail ?? error.message
+    );
+  };
 
-    if (activeTab === 'Users') {
-      formData.set('data', JSON.stringify(selectedUsers));
-    } else {
-      formData.set('data', JSON.stringify(selectedGroups));
+  const handleBulkAction = async () => {
+    const intent = bulkActionIntent.current;
+    const confirmation = password.current || '';
+    let error;
+
+    switch (intent) {
+      case 'delete-users':
+        [, error] = await usersService.delete(selectedUsers, confirmation);
+        if (!error) {
+          notify('success', t('System', 'Deleted user', null, false));
+        }
+        break;
+      case 'delete-groups':
+        [, error] = await userGroupsService.delete(selectedGroups);
+        if (!error) {
+          notify('success', t('System', 'Deleted user group', null, false));
+        }
+        break;
+      case 'bulk-reset-password':
+        [, error] = await usersService.requestPasswordReset(selectedUsers);
+        if (!error) {
+          notify(
+            'success',
+            t('System', 'Instructions to reset the password were sent to the user', null, false)
+          );
+        }
+        break;
+      case 'bulk-reset-2fa':
+        [, error] = await usersService.reset2FA(selectedUsers, confirmation);
+        if (!error) {
+          notify('success', t('System', 'Disabled 2FA', null, false));
+        }
+        break;
+      default:
+        return;
     }
 
-    formData.set('confirmation', password.current || '');
+    if (error) {
+      notifyMutationError(error);
+      return;
+    }
 
-    await fetcher.submit(formData, { method: 'post' });
+    await revalidator.revalidate();
   };
 
   return (
-    <div className="w-full h-full overflow-y-auto">
+    <div className="w-full h-full overflow-y-auto" data-testid="settings-users">
       <SettingsContent>
         <SettingsContent.Header title="Users & Groups" />
 
@@ -234,49 +276,4 @@ const Users = () => {
   );
 };
 
-const usersLoader =
-  (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () => {
-    const users = (await usersAPI.get(headers)).map(user => ({ ...user, rowId: user._id! }));
-    const groups = (await usersAPI.getUserGroups(headers)).map(group => ({
-      ...group,
-      rowId: group._id!,
-    }));
-    return { users, groups };
-  };
-
-const userAction =
-  (): ActionFunction =>
-  async ({ request }) => {
-    const formData = await request.formData();
-    const formIntent = formData.get('intent') as FormIntent;
-
-    const formValues = JSON.parse(formData.get('data') as string);
-    const confirmation = formData.get('confirmation') as string;
-
-    switch (formIntent) {
-      case 'new-user':
-        return usersAPI.newUser(formValues, confirmation);
-      case 'edit-user':
-        return usersAPI.updateUser(formValues, confirmation);
-      case 'delete-users':
-        return usersAPI.deleteUser(formValues, confirmation);
-      case 'new-group':
-      case 'edit-group':
-        return usersAPI.saveGroup(formValues);
-      case 'delete-groups':
-        return usersAPI.deleteGroup(formValues);
-      case 'unlock-user':
-        return usersAPI.unlockAccount(formValues, confirmation);
-      case 'reset-password':
-      case 'bulk-reset-password':
-        return usersAPI.resetPassword(formValues);
-      case 'reset-2fa':
-      case 'bulk-reset-2fa':
-        return usersAPI.reset2FA(formValues, confirmation);
-      default:
-        return null;
-    }
-  };
-
-export { Users, usersLoader, userAction };
+export { Users };
