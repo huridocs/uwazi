@@ -67,7 +67,7 @@ const EntityView = ({ mainDocument, pagePlaintext, searchResults }: EntityViewPr
             data-testid="entity-v2"
           >
             <div className="shrink-0">
-              <div className="px-3 py-2 md:py-2.5">
+              <div className="px-4 py-2 md:py-2.5">
                 <TabsMainButtons
                   entity={entity}
                   mainDocument={mainDocument}

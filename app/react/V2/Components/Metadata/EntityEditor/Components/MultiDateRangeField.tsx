@@ -2,7 +2,14 @@ import React from 'react';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { XCircleIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
+import { InputField } from '#V2/Components/Forms/index.js';
 import { secondsToISODate, parseLocalizedDate } from '#V2/shared/dateHelpers.js';
+import {
+  EntityFieldError,
+  EntityFieldLabel,
+  getFieldErrorState,
+} from '../functions/fieldErrorState.js';
+import { EntityField } from './EntityField.js';
 
 type MultiDateRangeFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
@@ -38,7 +45,7 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
   const required = Boolean(registerOptions?.required);
 
   return (
-    <div className="text-ink bg-(--bg-surface)">
+    <EntityField>
       <Controller
         control={control}
         name={field}
@@ -72,26 +79,17 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
         }}
         render={({ field: { onChange, onBlur, value, ref }, fieldState }) => {
           const entries = toDateRangeEntries(value);
-          const showRequiredError = fieldState.error?.type === 'required';
-          const valueInputClassName = `block w-full rounded-lg border p-2.5 text-sm ${
-            showRequiredError
-              ? 'border-(--color-theme-control-border-error) bg-(--color-theme-control-bg-error) text-(--color-theme-control-text-error) focus:border-(--color-theme-control-border-error) focus:[box-shadow:0_0_0_4px_var(--color-theme-control-error-ring)]'
-              : 'border-(--color-theme-control-border) bg-(--color-theme-control-bg)'
-          }`;
+          const { showError, message } = getFieldErrorState(fieldState);
 
           return (
             <div>
-              <div
-                className={`font-bold mb-2 ${
-                  showRequiredError ? 'text-(--color-theme-control-text-error)' : ''
-                }`}
-              >
-                <Translate className="" context={context}>
-                  {label}
-                </Translate>
-                {registerOptions?.required && '*'}
-              </div>
-
+              <EntityFieldLabel
+                htmlFor={`${field}.0.value.from`}
+                context={context}
+                label={label}
+                required={Boolean(registerOptions?.required)}
+                showError={showError}
+              />
               <div className="flex flex-col gap-2">
                 {entries.map((entry, index) => {
                   const { from, to } = entry.value;
@@ -103,19 +101,20 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
                       key={`${field}-${from ?? 'empty'}-${to ?? 'empty'}-${entries.length}`}
                       className="flex flex-col gap-2 md:flex-row md:items-center"
                     >
-                      <div className="flex items-center gap-2 md:w-1/2 w-full">
+                      <div className="flex w-full items-center gap-2 md:w-1/2">
                         <label htmlFor={`${field}.${index}.value.from`} aria-hidden>
                           <Translate>From</Translate>:
                         </label>
-                        <input
+                        <InputField
                           id={`${field}.${index}.value.from`}
+                          hideLabel
                           type="date"
                           disabled={disabled}
                           ref={index === 0 ? ref : undefined}
                           onBlur={onBlur}
                           value={fromISODate}
+                          hasErrors={showError}
                           max={toISODate || undefined}
-                          className={valueInputClassName}
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const nextFrom = e.target.value
                               ? parseLocalizedDate(e.target.value)
@@ -129,18 +128,19 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
                           }}
                         />
                       </div>
-                      <div className="flex items-center gap-2 md:w-1/2 w-full">
+                      <div className="flex w-full items-center gap-2 md:w-1/2">
                         <label htmlFor={`${field}.${index}.value.to`} aria-hidden>
                           <Translate>To</Translate>:
                         </label>
-                        <input
+                        <InputField
                           id={`${field}.${index}.value.to`}
+                          hideLabel
                           type="date"
                           disabled={disabled}
                           onBlur={onBlur}
                           value={toISODate}
+                          hasErrors={showError}
                           min={fromISODate || undefined}
-                          className={valueInputClassName}
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const nextTo = e.target.value
                               ? parseLocalizedDate(e.target.value)
@@ -167,7 +167,7 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
                         }}
                       >
                         <Translate className="sr-only">Remove</Translate>
-                        <XCircleIcon className="w-4 h-4" />
+                        <XCircleIcon className="h-4 w-4" />
                       </button>
                     </div>
                   );
@@ -178,23 +178,18 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
                     type="button"
                     disabled={disabled}
                     onClick={() => onChange([...entries, { value: { from: null, to: null } }])}
-                    className="rounded-lg border border-(--color-theme-control-border) px-3 py-2 text-sm"
+                    className="rounded-lg border border-border px-3 py-2 text-sm"
                   >
                     <Translate>Add date</Translate>
                   </button>
                 </div>
               </div>
-
-              {showRequiredError ? (
-                <div className="mt-2 text-sm text-(--color-theme-control-text-error)">
-                  <Translate>This field is required</Translate>
-                </div>
-              ) : null}
+              <EntityFieldError showError={showError} message={message} />
             </div>
           );
         }}
       />
-    </div>
+    </EntityField>
   );
 };
 

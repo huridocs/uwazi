@@ -94,6 +94,7 @@ const getMetadataFieldPath = (property: FormMetadataProperty): Path<EditEntityFo
     case 'nested':
     case 'multidate':
     case 'multidaterange':
+    case 'geolocation':
       return `metadata.${property.name}`;
     default:
       return `metadata.${property.name}.0.value`;

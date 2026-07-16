@@ -15,7 +15,10 @@ import { registerMediaAttachment } from '#shared/entitySave/legacyMetadata.js';
 import { isUploadId } from '#shared/entitySave/mediaMetadata.js';
 import { resolveMediaDisplayUrl } from '#shared/entitySave/resolveMediaDisplayUrl.js';
 import { Button, MediaPlayer } from '#V2/Components/UI/index.js';
-import { MediaPickerModal, MediaPickerMode } from './MediaPickerModal.js';
+import { MediaPickerModal } from './MediaPickerModal.js';
+import type { MediaPickerMode } from './MediaPickerModal.js';
+import { EntityFieldError, getFieldErrorState } from '../functions/fieldErrorState.js';
+import { EntityField } from './EntityField.js';
 
 type PlayerRef = NonNullable<React.ComponentProps<typeof MediaPlayer>['playerRef']>;
 type PlayerInstance = PlayerRef extends React.RefObject<infer T> ? T : never;
@@ -258,13 +261,14 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
   const { control } = useFormContext<TFormValues>();
   const [modalOpen, setModalOpen] = useState(false);
   const required = Boolean(registerOptions?.required);
+
   const allAttachments = useMemo(
     () => [...attachments, ...pendingAttachments],
     [attachments, pendingAttachments]
   );
 
   return (
-    <div className="text-ink bg-(--bg-surface)" data-testid={String(field)}>
+    <EntityField data-testid={String(field)}>
       <Controller
         control={control}
         name={field}
@@ -286,14 +290,14 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
           const { timelinks, url: currentUrl } = parseFieldValue(rawValue);
           const previewUrl = resolveMediaDisplayUrl(rawValue, allAttachments);
           const hasValue = rawValue.trim().length > 0;
-          const showRequiredError = Boolean(fieldState.error);
+          const { showError, message } = getFieldErrorState(fieldState);
 
           const releaseUploadIfReplaced = (previousUrl: string, nextValue: string) => {
             if (!isUploadId(previousUrl)) {
               return;
             }
-            const nextUrl = parseFieldValue(nextValue).url;
-            if (previousUrl !== nextUrl) {
+            const nextParsedUrl = parseFieldValue(nextValue).url;
+            if (previousUrl !== nextParsedUrl) {
               onRemovePendingAttachment(previousUrl);
             }
           };
@@ -341,7 +345,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
 
           return (
             <>
-              <div className="mb-2 font-bold">
+              <div className="text-sm font-bold text-ink">
                 <Translate context={context}>{label}</Translate>
                 {registerOptions?.required && '*'}
               </div>
@@ -395,11 +399,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
                 </div>
               )}
 
-              {showRequiredError ? (
-                <div className="mt-2 text-sm text-(--color-theme-control-text-error)">
-                  <Translate>This field is required</Translate>
-                </div>
-              ) : null}
+              <EntityFieldError showError={showError} message={message} />
 
               <MediaPickerModal
                 isOpen={modalOpen}
@@ -415,7 +415,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
           );
         }}
       />
-    </div>
+    </EntityField>
   );
 };
 

@@ -10,6 +10,7 @@ type OverlayTarget = {
 type EntityOverlayState = { target: OverlayTarget | null };
 type EntityOverlayActions = {
   openEntityOverlay: (marker: RelationshipMarker) => void;
+  openEntityOverlayTarget: (target: OverlayTarget) => void;
   closeEntityOverlay: () => void;
 };
 
@@ -19,13 +20,20 @@ const EntityOverlayActionsContext = createContext<EntityOverlayActions | null>(n
 const EntityOverlayProvider = ({ children }: { children: React.ReactNode }) => {
   const [target, setTarget] = useState<OverlayTarget | null>(null);
 
-  const openEntityOverlay = useCallback((marker: RelationshipMarker) => {
-    setTarget({
-      sharedId: marker.target.sharedId,
-      title: marker.target.title,
-      templateId: marker.target.templateId,
-    });
+  const openEntityOverlayTarget = useCallback((next: OverlayTarget) => {
+    setTarget(next);
   }, []);
+
+  const openEntityOverlay = useCallback(
+    (marker: RelationshipMarker) => {
+      openEntityOverlayTarget({
+        sharedId: marker.target.sharedId,
+        title: marker.target.title,
+        templateId: marker.target.templateId,
+      });
+    },
+    [openEntityOverlayTarget]
+  );
 
   const closeEntityOverlay = useCallback(() => {
     setTarget(null);
@@ -33,8 +41,8 @@ const EntityOverlayProvider = ({ children }: { children: React.ReactNode }) => {
 
   const state = useMemo(() => ({ target }), [target]);
   const actions = useMemo(
-    () => ({ openEntityOverlay, closeEntityOverlay }),
-    [closeEntityOverlay, openEntityOverlay]
+    () => ({ openEntityOverlay, openEntityOverlayTarget, closeEntityOverlay }),
+    [closeEntityOverlay, openEntityOverlay, openEntityOverlayTarget]
   );
 
   return (

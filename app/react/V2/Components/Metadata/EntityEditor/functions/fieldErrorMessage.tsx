@@ -8,7 +8,7 @@ const getFieldErrorMessage = (error?: FieldError): React.ReactNode | undefined =
   }
 
   if (typeof error.message === 'string' && error.message.length > 0) {
-    return error.message;
+    return <Translate>{error.message}</Translate>;
   }
 
   return <Translate>This field is required</Translate>;
