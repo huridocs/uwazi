@@ -23,7 +23,6 @@ type FilesSideTabs = {
 type UseEntityViewTabsParams = {
   entity: EntityType;
   hasMainDocument: boolean;
-  filesCount: number;
   searchResults?: SnippetsSearchResponse;
   filesSideTabs: FilesSideTabs;
 };
@@ -31,7 +30,6 @@ type UseEntityViewTabsParams = {
 const useEntityViewTabs = ({
   entity,
   hasMainDocument,
-  filesCount,
   searchResults,
   filesSideTabs,
 }: UseEntityViewTabsParams) => {
@@ -50,11 +48,10 @@ const useEntityViewTabs = ({
   }, [entity.sharedId, setTabGroups]);
 
   const mainTabIds = useMemo(() => {
-    const ids = new Set<MainTabId>([MAIN_TAB.METADATA, MAIN_TAB.RELATIONSHIPS]);
+    const ids = new Set<MainTabId>([MAIN_TAB.METADATA, MAIN_TAB.RELATIONSHIPS, MAIN_TAB.FILES]);
     if (hasMainDocument) ids.add(MAIN_TAB.DOCUMENT);
-    if (filesCount > 0) ids.add(MAIN_TAB.FILES);
     return ids;
-  }, [hasMainDocument, filesCount]);
+  }, [hasMainDocument]);
 
   const activeMainTab = useMemo<MainTabId>(() => {
     const mainTab = searchParams.get(MAIN_TAB_PARAM);

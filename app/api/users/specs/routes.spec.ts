@@ -65,6 +65,7 @@ describe('users routes', () => {
   let currentUser: UserSchema | undefined;
 
   const userToUpdate = {
+    _id: '1',
     username: 'User 1',
     role: UserRole.EDITOR,
     email: 'user@test.com',
@@ -103,8 +104,7 @@ describe('users routes', () => {
 
         expect(users.save).toHaveBeenCalledWith(
           userToUpdate,
-          currentUser,
-          expect.stringContaining('http://127.0.0.1')
+          expect.objectContaining({ _id: 'admin1', groups: [], role: 'admin' })
         );
       });
 

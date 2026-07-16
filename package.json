@@ -1,7 +1,7 @@
 {
   "packageManager": "yarn@4.13.0",
   "name": "uwazi",
-  "version": "1.229.0-rc420",
+  "version": "1.229.0-rc421",
   "type": "module",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
@@ -81,7 +81,7 @@
     "e2e-fixtures": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e ./uwazi-fixtures/restore.sh",
     "blank-e2e-fixtures": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e ./uwazi-fixtures/restore.blank-e2e.sh",
     "eslint": "./node_modules/.bin/eslint e2e app cypress --quiet",
-    "eslint-fulldiff": "git diff-index --name-only origin/development | grep ^app/ | grep -v snap | xargs ls -d 2>/dev/null | xargs ./node_modules/.bin/eslint ",
+    "eslint-fulldiff": "git diff-index --name-only origin/production | grep ^app/ | grep -v snap | grep -v '\\.css$' | xargs ls -d 2>/dev/null | xargs ./node_modules/.bin/eslint ",
     "eslint-diff-branch": "git diff --name-only HEAD | grep '^app/' | grep -v snap | xargs -r ls -d 2>/dev/null | xargs -r ./node_modules/.bin/eslint --cache",
     "prettier": "./node_modules/.bin/prettier --write 'app/**/*.{js,ts,tsx}'",
     "storybook": "storybook dev -p 6006",
