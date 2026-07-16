@@ -1,5 +1,6 @@
 /* eslint-disable max-statements */
 import type { MetadataValue } from '#app/V2/formatters/types.js';
+import { parseCoordinate } from '#shared/geolocationCoordinates.js';
 import type {
   MetadataObjectSchema,
   PropertyValueSchema,
@@ -10,8 +11,32 @@ import type {
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
 
-const isLatLon = (value: unknown): value is { label?: string; lat: number; lon: number } =>
-  isRecord(value) && typeof value.lat === 'number' && typeof value.lon === 'number';
+const coerceCoordinate = (value: unknown): number | undefined => {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value;
+  }
+  if (typeof value === 'string') {
+    return parseCoordinate(value);
+  }
+  return undefined;
+};
+
+const hasLatLonKeys = (value: Record<string, unknown>) => 'lat' in value || 'lon' in value;
+
+const toLatLonValue = (
+  value: Record<string, unknown>
+): { lat: number; lon: number; label?: string } | null => {
+  const lat = coerceCoordinate(value.lat);
+  const lon = coerceCoordinate(value.lon);
+  if (lat === undefined || lon === undefined) {
+    return null;
+  }
+  return {
+    lat,
+    lon,
+    ...(typeof value.label === 'string' ? { label: value.label } : {}),
+  };
+};
 
 const isNestedRow = (value: unknown): value is Record<string, string[]> =>
   isRecord(value) &&
@@ -29,20 +54,20 @@ const toPropertyValueSchema = (value: unknown): PropertyValueSchema => {
     return value;
   }
 
-  if (Array.isArray(value) && value.every(isLatLon)) {
-    return value.map(item => ({
-      label: typeof item.label === 'string' ? item.label : undefined,
-      lat: item.lat,
-      lon: item.lon,
-    }));
+  if (
+    Array.isArray(value) &&
+    value.length > 0 &&
+    value.every(item => isRecord(item) && hasLatLonKeys(item))
+  ) {
+    const points = value.map(item => toLatLonValue(item));
+    if (points.some(point => point === null)) {
+      return null;
+    }
+    return points.filter((point): point is NonNullable<typeof point> => point !== null);
   }
 
-  if (isLatLon(value)) {
-    return {
-      label: typeof value.label === 'string' ? value.label : undefined,
-      lat: value.lat,
-      lon: value.lon,
-    };
+  if (isRecord(value) && hasLatLonKeys(value)) {
+    return toLatLonValue(value);
   }
 
   if (isNestedRow(value)) {

@@ -63,7 +63,7 @@ describe('toMetadataObjectSchema', () => {
     ).toEqual({
       value: [
         { lat: 1, lon: 2, label: 'A' },
-        { lat: 3, lon: 4, label: undefined },
+        { lat: 3, lon: 4 },
       ],
     });
 
@@ -73,6 +73,28 @@ describe('toMetadataObjectSchema', () => {
           { lat: 1, lon: 2 },
           { lat: 'x', lon: 4 },
         ],
+      })
+    ).toEqual({ value: null });
+  });
+
+  it('should coerce string coordinates and not treat them as links', () => {
+    expect(
+      toMetadataObjectSchema({
+        value: { lat: '45.5', lon: '5.8', label: '' },
+      })
+    ).toEqual({
+      value: { lat: 45.5, lon: 5.8, label: '' },
+    });
+
+    expect(
+      toMetadataObjectSchema({
+        value: { lat: 45.5, lon: undefined, label: '' },
+      })
+    ).toEqual({ value: null });
+
+    expect(
+      toMetadataObjectSchema({
+        value: { lat: undefined, lon: undefined, label: '' },
       })
     ).toEqual({ value: null });
   });

@@ -259,7 +259,9 @@ const formatMetadataForEntity = (
       return acc;
     }
 
-    acc[property.name] = (syncedMetadata[property.name] ?? []).map(toMetadataObjectSchema);
+    const mapped = (syncedMetadata[property.name] ?? []).map(toMetadataObjectSchema);
+    acc[property.name] =
+      property.type === 'geolocation' ? mapped.filter(entry => entry.value !== null) : mapped;
     return acc;
   }, {});
 };

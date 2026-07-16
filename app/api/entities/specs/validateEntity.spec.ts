@@ -1,8 +1,8 @@
-/* eslint-disable max-lines,max-statements */
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+/* eslint-disable max-statements */
 
 import { ErrorObject } from 'ajv';
 import ValidationError from 'ajv/dist/runtime/validation_error';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import db from '#api/utils/testing_db.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { EntitySchema } from '#shared/types/entityType.js';
@@ -602,6 +602,13 @@ describe('validateEntity', () => {
         it('should not fail if label is not present', async () => {
           const entity = createEntity({
             metadata: { geolocation: [{ value: { label: undefined, lat: 10, lon: 10 } }] },
+          });
+          await testValid(entity);
+        });
+
+        it('should allow null value when property is not required', async () => {
+          const entity = createEntity({
+            metadata: { geolocation: [{ value: null }] },
           });
           await testValid(entity);
         });
