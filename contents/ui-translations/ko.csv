@@ -614,6 +614,7 @@ Languages installed successfully,Languages installed successfully
 Last updated,Last updated
 Last updated from collection:,Last updated from collection:
 Latitude,위도
+Latitude must be between -90 and 90,Latitude must be between -90 and 90
 Learn more,더 알아보기
 Legend,범례
 Lengthy reindex process,Lengthy reindex process
@@ -635,6 +636,7 @@ Login button,로그인 버튼
 Login failed,로그인 실패
 Logout,로그아웃
 Longitude,경도
+Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,낮게
 Manage site settings and configuration,사이트 설정 및 구성 관리

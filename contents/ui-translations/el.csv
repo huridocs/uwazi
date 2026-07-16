@@ -615,6 +615,7 @@ Languages installed successfully,Languages installed successfully
 Last updated,Τελευταία ενημέρωση
 Last updated from collection:,Last updated from collection:
 Latitude,Γεωγραφικό πλάτος
+Latitude must be between -90 and 90,Latitude must be between -90 and 90
 Learn more,Μάθετε περισσότερα
 Legend,Υπόμνημα
 Lengthy reindex process,Χρονοβόρα διαδικασία επαναευρετηριοποίησης
@@ -636,6 +637,7 @@ Login button,Σύνδεση
 Login failed,Η σύνδεση απέτυχε
 Logout,Αποσύνδεση
 Longitude,Γεωγραφικό μήκος
+Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lost connection to the server. Your changes may be lost,Η σύνδεση με τον διακομιστή χάθηκε. Οι αλλαγές σας ενδέχεται να χαθούν.
 low,χαμηλό
 Manage site settings and configuration,Διαχείριση ρυθμίσεων και διαμόρφωσης ιστότοπου

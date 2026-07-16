@@ -1,6 +1,7 @@
 import React from 'react';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { Geolocation } from '#V2/Components/Forms/index.js';
+import { validateGeolocationValue } from '#V2/Components/Forms/geolocationCoordinates.js';
 import {
   EntityFieldError,
   EntityFieldLabel,
@@ -33,22 +34,8 @@ const GeolocationField = <TFormValues extends FieldValues = FieldValues>({
         name={field}
         rules={{
           ...registerOptions,
-          validate: value => {
-            if (!required) {
-              return true;
-            }
-
-            if (!value) {
-              return 'Required';
-            }
-
-            const { lat, lon } = value as {
-              lat?: number;
-              lon?: number;
-            };
-
-            return typeof lat === 'number' && typeof lon === 'number' ? true : 'Required';
-          },
+          validate: value =>
+            validateGeolocationValue(value as { lat?: number; lon?: number } | undefined, required),
         }}
         render={({ field: geolocationField, fieldState }) => {
           const { lat, lon } =

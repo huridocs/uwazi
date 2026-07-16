@@ -2,12 +2,18 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Map } from '#app/Map/index.js';
 import { Translate } from '#app/I18N/index.js';
+import {
+  LATITUDE_MAX,
+  LATITUDE_MIN,
+  LONGITUDE_MAX,
+  LONGITUDE_MIN,
+  clampLatitude,
+  clampLongitude,
+  isValidLatitude,
+  isValidLongitude,
+} from '#shared/geolocationCoordinates.js';
 
 const defaultValue = { lat: '', lon: '', label: '' };
-
-function isCoordinateValid(coord) {
-  return typeof coord === 'number' && !Number.isNaN(coord);
-}
 
 export class Geolocation extends Component {
   constructor(props) {
@@ -46,9 +52,7 @@ export class Geolocation extends Component {
   }
 
   latChange(e) {
-    let latitude = e.target.value ? parseFloat(e.target.value) : '';
-    latitude = latitude && latitude < -89.99999 ? -89.99999 : latitude;
-    latitude = latitude && latitude > 90 ? 90 : latitude;
+    const latitude = e.target.value ? clampLatitude(parseFloat(e.target.value)) : '';
 
     const { label } = this.getInputValues();
     const { currentLongitude } = this.state;
@@ -56,7 +60,7 @@ export class Geolocation extends Component {
   }
 
   lonChange(e) {
-    const longitude = e.target.value ? parseFloat(e.target.value) : '';
+    const longitude = e.target.value ? clampLongitude(parseFloat(e.target.value)) : '';
 
     const { label } = this.getInputValues();
     const { currentLatitude } = this.state;
@@ -65,7 +69,11 @@ export class Geolocation extends Component {
 
   mapClick(event) {
     const { label } = this.getInputValues();
-    this.onChange({ lat: parseFloat(event.lngLat[1]), lon: parseFloat(event.lngLat[0]), label });
+    this.onChange({
+      lat: clampLatitude(parseFloat(event.lngLat[1])),
+      lon: clampLongitude(parseFloat(event.lngLat[0])),
+      label,
+    });
   }
 
   clearCoordinates() {
@@ -78,10 +86,10 @@ export class Geolocation extends Component {
     const { currentLatitude, currentLongitude } = this.state;
     const markers = [];
 
-    if (isCoordinateValid(currentLatitude) && isCoordinateValid(currentLongitude)) {
+    if (isValidLatitude(currentLatitude) && isValidLongitude(currentLongitude)) {
       markers.push({
-        latitude: parseFloat(currentLatitude),
-        longitude: parseFloat(currentLongitude),
+        latitude: currentLatitude,
+        longitude: currentLongitude,
       });
     }
 
@@ -106,6 +114,8 @@ export class Geolocation extends Component {
               type="number"
               id="lat"
               value={currentLatitude}
+              min={LATITUDE_MIN}
+              max={LATITUDE_MAX}
               step="any"
             />
           </div>
@@ -119,6 +129,8 @@ export class Geolocation extends Component {
               type="number"
               id="lon"
               value={currentLongitude}
+              min={LONGITUDE_MIN}
+              max={LONGITUDE_MAX}
               step="any"
             />
           </div>

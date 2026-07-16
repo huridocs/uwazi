@@ -2,6 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { Map, Layer } from '#app/Map/MapContainer.js';
 import { Label, InputField } from '#V2/Components/Forms/index.js';
+import {
+  LATITUDE_MAX,
+  LATITUDE_MIN,
+  LONGITUDE_MAX,
+  LONGITUDE_MIN,
+  isValidLatitude,
+  isValidLongitude,
+  parseCoordinate,
+} from '#shared/geolocationCoordinates.js';
 
 interface GeolocationProps {
   name: string;
@@ -19,19 +28,8 @@ interface GeolocationProps {
 interface Marker {
   latitude: number;
   longitude: number;
-  properties: { [k: string]: any };
+  properties: { [k: string]: unknown };
 }
-
-const parseCoordinate = (raw: string): number | undefined => {
-  if (raw.trim() === '') {
-    return undefined;
-  }
-  const parsed = Number.parseFloat(raw);
-  return Number.isFinite(parsed) ? parsed : undefined;
-};
-
-const isCoordinateValid = (coord?: number): coord is number =>
-  typeof coord === 'number' && Number.isFinite(coord);
 
 const Geolocation = ({
   name,
@@ -72,7 +70,7 @@ const Geolocation = ({
   };
 
   useEffect(() => {
-    if (isCoordinateValid(currentLatitude) && isCoordinateValid(currentLongitude)) {
+    if (isValidLatitude(currentLatitude) && isValidLongitude(currentLongitude)) {
       setCurrentMarkers([
         {
           latitude: currentLatitude,
@@ -116,6 +114,8 @@ const Geolocation = ({
           id="lat"
           name={`${name}[lat]`}
           type="number"
+          min={LATITUDE_MIN}
+          max={LATITUDE_MAX}
           autoComplete="off"
         />
         <InputField
@@ -129,6 +129,8 @@ const Geolocation = ({
           id="lon"
           name={`${name}[lon]`}
           type="number"
+          min={LONGITUDE_MIN}
+          max={LONGITUDE_MAX}
           autoComplete="off"
         />
       </div>

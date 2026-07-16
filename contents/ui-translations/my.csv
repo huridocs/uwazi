@@ -614,6 +614,7 @@ Languages installed successfully,Languages installed successfully
 Last updated,Last updated
 Last updated from collection:,Last updated from collection:
 Latitude,လတ္တီကျု
+Latitude must be between -90 and 90,Latitude must be between -90 and 90
 Learn more,ပိုမိုလေ့လာရန်
 Legend,ဒဏ္ဍာရီ
 Lengthy reindex process,Lengthy reindex process
@@ -635,6 +636,7 @@ Login button,လော့ဂ်အင်ဝင်ရန် ခလုတ်
 Login failed,လော့ဂ်အင်ဝင်၍ မရပါ
 Logout,ထွက်ရန်
 Longitude,လောင်ဂျီကျု
+Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,နိမ့်သော
 Manage site settings and configuration,ဝက်ဘ်ဆိုက် ဆက်တင်များနှင့် စနစ်တည်ဆောက်ပုံကို စီမံခန့်ခွဲရန်

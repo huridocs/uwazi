@@ -612,6 +612,7 @@ Languages installed successfully,Languages installed successfully
 Last updated,Última actualización
 Last updated from collection:,Last updated from collection:
 Latitude,Latitud
+Latitude must be between -90 and 90,Latitude must be between -90 and 90
 Learn more,Aprender más
 Legend,Leyenda
 Lengthy reindex process,Proceso de reindexación largo
@@ -633,6 +634,7 @@ Login button,Inicio de Sesión
 Login failed,Error de inicio de sesión
 Logout,Cerrar Sesión
 Longitude,Longitud
+Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lost connection to the server. Your changes may be lost,Se perdió la conexión con el servidor. Los cambios pueden perderse
 low,bajo
 Manage site settings and configuration,Administrar la configuración del sitio

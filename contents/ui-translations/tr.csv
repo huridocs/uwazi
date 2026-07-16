@@ -614,6 +614,7 @@ Languages installed successfully,Languages installed successfully
 Last updated,Last updated
 Last updated from collection:,Last updated from collection:
 Latitude,Enlem
+Latitude must be between -90 and 90,Latitude must be between -90 and 90
 Learn more,Daha fazla bilgi edin
 Legend,Gösterge
 Lengthy reindex process,Lengthy reindex process
@@ -635,6 +636,7 @@ Login button,Giriş
 Login failed,Giriş başarısız
 Logout,Çıkış
 Longitude,Boylam
+Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,düşük
 Manage site settings and configuration,Site ayarlarını ve yapılandırmasını yönetin
