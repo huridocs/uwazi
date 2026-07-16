@@ -143,8 +143,29 @@ const reset2FA = async (
   return [responses.map(([responseData]) => responseData)];
 };
 
-const get = async (headers?: IncomingHttpHeaders): Promise<ApiResponse<ClientUserSchema[]>> =>
-  apiClient.getJson('users', {}, { headers: requestHeaders(headers) });
+/**
+ * apiClient JSON transport types bodies as records; bare JSON arrays are wrapped as
+ * `{ value: T[] }`. Unwrap that shape (and accept a raw array if the transport changes).
+ */
+const unwrapJsonArray = <T>(data: T[] | { value?: T[] } | undefined): T[] => {
+  if (Array.isArray(data)) return data;
+  if (data && Array.isArray(data.value)) return data.value;
+  return [];
+};
+
+const get = async (headers?: IncomingHttpHeaders): Promise<ApiResponse<ClientUserSchema[]>> => {
+  const [data, error] = await apiClient.getJson<ClientUserSchema[] | { value: ClientUserSchema[] }>(
+    'users',
+    {},
+    { headers: requestHeaders(headers) }
+  );
+
+  if (error) {
+    return [undefined as never, error];
+  }
+
+  return [unwrapJsonArray(data)];
+};
 
 const getCurrentUser = async (
   headers?: IncomingHttpHeaders
@@ -153,8 +174,17 @@ const getCurrentUser = async (
 
 const getUserGroups = async (
   headers?: IncomingHttpHeaders
-): Promise<ApiResponse<ClientUserGroupSchema[]>> =>
-  apiClient.getJson('usergroups', {}, { headers: requestHeaders(headers) });
+): Promise<ApiResponse<ClientUserGroupSchema[]>> => {
+  const [data, error] = await apiClient.getJson<
+    ClientUserGroupSchema[] | { value: ClientUserGroupSchema[] }
+  >('usergroups', {}, { headers: requestHeaders(headers) });
+
+  if (error) {
+    return [undefined as never, error];
+  }
+
+  return [unwrapJsonArray(data)];
+};
 
 const get2FASecret = async (
   headers?: IncomingHttpHeaders
