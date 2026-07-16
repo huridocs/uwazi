@@ -43,5 +43,4 @@ describe('documents', () => {
       expect(response.body).toEqual(2);
     });
   });
-
 });

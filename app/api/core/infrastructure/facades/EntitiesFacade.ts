@@ -132,6 +132,7 @@ export class EntityFacade {
     }
   }
 
+  // eslint-disable-next-line max-statements
   static async update(
     dto: UpdateEntityRequest,
     targetLanguage: LanguageISO6391,
@@ -151,15 +152,17 @@ export class EntityFacade {
       return entity;
     } catch (error) {
       if (this.isGeneratedTocLegacyTemplateError(dto, error)) {
-        await getConnection().collection('entities').updateMany(
-          { sharedId: dto.sharedId },
-          {
-            $set: {
-              generatedToc: dto.generatedToc,
-              editDate: date.currentUTC(),
-            },
-          }
-        );
+        await getConnection()
+          .collection('entities')
+          .updateMany(
+            { sharedId: dto.sharedId },
+            {
+              $set: {
+                generatedToc: dto.generatedToc,
+                editDate: date.currentUTC(),
+              },
+            }
+          );
         await search.indexEntities({ sharedId: dto.sharedId }, '+fullText');
         context.logger.info('Entity generatedToc updated with legacy template fallback', {
           requestId: context.requestId,

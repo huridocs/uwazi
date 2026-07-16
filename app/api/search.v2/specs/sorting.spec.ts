@@ -9,7 +9,6 @@ import { SearchQuery } from '#shared/types/SearchQueryType.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { searchRoutes } from '../routes.js';
 import { setupTestingEnviroment } from './setupTestingEnvironment.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 describe('Sorting', () => {
   const factory = getFixturesFactory();

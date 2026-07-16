@@ -422,10 +422,7 @@ export default {
         merged.language || language
       );
     } else {
-      const [{ languages }, defaultTemplate] = await Promise.all([
-        settings.get(),
-        templates.getDefaultTemplate(),
-      ]);
+      const defaultTemplate = await templates.getDefaultTemplate();
 
       if (!doc.template) {
         doc.template = defaultTemplate?._id;

@@ -142,7 +142,9 @@ export const files = {
 
     const documents = (entity.documents || [])
       .filter(
-        (doc: FileType): doc is FileType & { _id: NonNullable<FileType['_id']>; originalname: string } =>
+        (
+          doc: FileType
+        ): doc is FileType & { _id: NonNullable<FileType['_id']>; originalname: string } =>
           Boolean(doc._id && doc.originalname)
       )
       .map((doc: FileType & { _id: NonNullable<FileType['_id']>; originalname: string }) => ({

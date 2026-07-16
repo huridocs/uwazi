@@ -22,7 +22,6 @@ const documents = {
     const pageNumberMatch = /\[\[(\d+)\]\]/g;
     return document.fullText[page].replace(pageNumberMatch, '');
   },
-
 };
 
 export { documents };
