@@ -16,15 +16,19 @@ import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
 
 jest.mock('#api/search/index.js', () => {
-  const actual = jest.requireActual('#api/search/index.js') as Record<string, unknown> & {
-    search: Record<string, unknown>;
+  const { elastic } = jest.requireActual('#api/search/elastic.js') as {
+    elastic: Record<string, unknown>;
   };
   return {
-    ...actual,
     search: {
-      ...(actual.search as Record<string, unknown>),
       indexEntities: jest.fn().mockResolvedValue(undefined),
+      updateTemplatesMapping: jest.fn().mockResolvedValue(undefined),
+      delete: jest.fn().mockResolvedValue(undefined),
+      bulkIndex: jest.fn().mockResolvedValue(undefined),
+      bulkDelete: jest.fn().mockResolvedValue(undefined),
+      deleteLanguage: jest.fn().mockResolvedValue(undefined),
     },
+    elastic,
   };
 });
 
