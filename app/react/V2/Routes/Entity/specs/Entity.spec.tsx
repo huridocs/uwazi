@@ -16,7 +16,12 @@ import { Entity } from '../Entity.js';
 
 jest.mock('#V2/Components/PDFViewer', () => ({
   ...jest.requireActual('#V2/Components/PDFViewer'),
-  PDF: ({ fileUrl }: any) => <div data-testid="mock-pdf">PDF: {fileUrl}</div>,
+  PDF: ({ fileUrl }: any) => (
+    <div data-testid="mock-pdf">
+      PDF: {fileUrl}
+      <div className="page" data-page-number="1" style={{ height: 800 }} />
+    </div>
+  ),
 }));
 
 class ResizeObserverMock {
@@ -544,6 +549,7 @@ describe('Entity view', () => {
             pagePlaintext: '',
             searchResults: snippets,
           }}
+          initialEntries={['/?s=search']}
         >
           <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
             <Entity />
@@ -553,7 +559,7 @@ describe('Entity view', () => {
 
       await checkEntityRendered();
 
-      expect(screen.getByText('Match title')).toBeInTheDocument();
+      expect(await screen.findByText('Match title')).toBeInTheDocument();
       expect(screen.getByText('Page 3')).toBeInTheDocument();
     });
   });

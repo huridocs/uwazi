@@ -2,6 +2,34 @@ import { formatMetadataForForm } from '../formatMetadataForForm.js';
 import { entity, fixtures } from './fixtures.js';
 import { toMetadataObjectSchema } from '../toMetadataObjectSchema.js';
 
+describe('formatMetadataForForm', () => {
+  it('should keep inherited relationship rows with nested values', () => {
+    const property = fixtures.find(fixture => fixture.property.name === 'inherited_tags')?.property;
+    if (!property) {
+      throw new Error('inherited_tags fixture missing');
+    }
+
+    const formValues = formatMetadataForForm([property], entity.metadata)[property.name] ?? [];
+
+    expect(formValues).toEqual([
+      {
+        value: 'shared-parent',
+        label: 'Parent entity',
+        type: 'entity',
+        inheritedType: 'multiselect',
+        inheritedValue: [
+          { value: 'nested.tag.1', label: 'Nested tag 1' },
+          {
+            value: 'nested.tag.2',
+            label: 'Nested tag 2',
+            parent: { value: 'nested.group', label: 'Nested group' },
+          },
+        ],
+      },
+    ]);
+  });
+});
+
 describe('toMetadataObjectSchema', () => {
   it.each(fixtures)(
     'should format $property.type metadata from form values for $property.name',
@@ -63,7 +91,7 @@ describe('toMetadataObjectSchema', () => {
     ).toEqual({
       value: [
         { lat: 1, lon: 2, label: 'A' },
-        { lat: 3, lon: 4, label: undefined },
+        { lat: 3, lon: 4 },
       ],
     });
 
@@ -73,6 +101,36 @@ describe('toMetadataObjectSchema', () => {
           { lat: 1, lon: 2 },
           { lat: 'x', lon: 4 },
         ],
+      })
+    ).toEqual({ value: null });
+  });
+
+  it('should coerce string coordinates and not treat them as links', () => {
+    expect(
+      toMetadataObjectSchema({
+        value: { lat: '45.5', lon: '5.8', label: '' },
+      })
+    ).toEqual({
+      value: { lat: 45.5, lon: 5.8, label: '' },
+    });
+
+    expect(
+      toMetadataObjectSchema({
+        value: { latitude: '45.5', longitude: '5.8' },
+      })
+    ).toEqual({
+      value: { lat: 45.5, lon: 5.8 },
+    });
+
+    expect(
+      toMetadataObjectSchema({
+        value: { lat: 45.5, lon: undefined, label: '' },
+      })
+    ).toEqual({ value: null });
+
+    expect(
+      toMetadataObjectSchema({
+        value: { lat: undefined, lon: undefined, label: '' },
       })
     ).toEqual({ value: null });
   });

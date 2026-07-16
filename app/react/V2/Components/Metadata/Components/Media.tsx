@@ -10,8 +10,8 @@ import { COMPACT_METADATA_FIELD_LAYOUT } from '../metadataPropertyLayout.js';
 
 type MediaProps = MetadataFieldProps & {
   values: MediaMetadataProperty['values'];
-  width?: number;
-  height?: number;
+  width?: number | string;
+  height?: number | string;
 };
 
 type PlayerRef = NonNullable<React.ComponentProps<typeof MediaPlayer>['playerRef']>;
@@ -23,7 +23,7 @@ const Media = ({
   hideLabel,
   translationContext,
   className,
-  width = 500,
+  width = '100%',
   height = 300,
 }: MediaProps) => {
   const baseId = useId();
@@ -49,7 +49,7 @@ const Media = ({
           hideLabel={hideLabel}
         />
       </dt>
-      <dd className="flex flex-col gap-4">
+      <dd className="flex min-w-0 max-w-full flex-col gap-4 overflow-hidden">
         {nonEmptyValues.map(({ value, alt, timelinks = [] }, index) => {
           const playerRef = playerRefs.current[index];
           const handleTimelinkClick = (time: number) => {
@@ -60,13 +60,13 @@ const Media = ({
 
           return (
             // eslint-disable-next-line react/no-array-index-key
-            <div key={index} className="flex flex-col items-center gap-2">
+            <div key={index} className="flex min-w-0 max-w-full flex-col gap-2">
               <figure
                 aria-labelledby={figId}
-                className="w-full bg-(--color-theme-surface-warm) rounded-md"
+                className="w-full min-w-0 max-w-full overflow-hidden rounded-md bg-(--color-theme-surface-warm)"
               >
                 <MediaPlayer
-                  className="m-auto"
+                  className="max-w-full"
                   playerRef={playerRef}
                   url={value}
                   width={width}
@@ -90,7 +90,7 @@ const Media = ({
                           onClick={() => handleTimelinkClick(time)}
                           aria-label={`${hh} ${mm} ${ss} : ${timelinkLabel}`}
                         >
-                          <PlayIcon className="w-4 h-4" />
+                          <PlayIcon className="h-4 w-4" />
                           {`${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`}{' '}
                           - {timelinkLabel}
                         </button>

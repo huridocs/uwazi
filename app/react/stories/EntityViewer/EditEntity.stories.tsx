@@ -11,8 +11,8 @@ import {
 } from '#V2/atoms/index.js';
 import { Translate } from '#app/I18N/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
-import { EditEntity, type EditEntityErrors } from '#V2/Components/Metadata/EntityEditor/index.js';
 import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js';
+import { EditEntity, type EditEntityErrors } from '#V2/Components/Metadata/EntityEditor/index.js';
 import { Button } from '#V2/Components/UI/index.js';
 import { apiEntity, templates, thesauri } from '../fixtures/EditEntityFixtures.js';
 

@@ -2,6 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { Map, Layer } from '#app/Map/MapContainer.js';
 import { Label, InputField } from '#V2/Components/Forms/index.js';
+import {
+  LATITUDE_MAX,
+  LATITUDE_MIN,
+  LONGITUDE_MAX,
+  LONGITUDE_MIN,
+  clampLatitude,
+  clampLongitude,
+  isValidLatitude,
+  isValidLongitude,
+  parseCoordinate,
+} from '#shared/geolocationCoordinates.js';
 
 interface GeolocationProps {
   name: string;
@@ -10,7 +21,6 @@ interface GeolocationProps {
   label?: string;
   className?: string;
   disabled?: boolean;
-  startingPoint?: { lat: number; lon: number };
   zoom?: number;
   layers?: Layer[];
   hasErrors?: boolean;
@@ -19,19 +29,8 @@ interface GeolocationProps {
 interface Marker {
   latitude: number;
   longitude: number;
-  properties: { [k: string]: any };
+  properties: { [k: string]: unknown };
 }
-
-const parseCoordinate = (raw: string): number | undefined => {
-  if (raw.trim() === '') {
-    return undefined;
-  }
-  const parsed = Number.parseFloat(raw);
-  return Number.isFinite(parsed) ? parsed : undefined;
-};
-
-const isCoordinateValid = (coord?: number): coord is number =>
-  typeof coord === 'number' && Number.isFinite(coord);
 
 const Geolocation = ({
   name,
@@ -46,7 +45,6 @@ const Geolocation = ({
 }: GeolocationProps) => {
   const [currentLatitude, setCurrentLatitude] = useState(value?.lat);
   const [currentLongitude, setCurrentLongitude] = useState(value?.lon);
-  const [currentMarkers, setCurrentMarkers] = useState<Marker[] | undefined>(undefined);
 
   useEffect(() => {
     setCurrentLatitude(value?.lat);
@@ -54,13 +52,15 @@ const Geolocation = ({
   }, [value?.lat, value?.lon]);
 
   const latChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const nextLat = parseCoordinate(e.target.value);
+    const parsed = parseCoordinate(e.target.value);
+    const nextLat = parsed === undefined ? undefined : clampLatitude(parsed);
     setCurrentLatitude(nextLat);
     onChange?.({ lat: nextLat, lon: currentLongitude });
   };
 
   const lonChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const nextLon = parseCoordinate(e.target.value);
+    const parsed = parseCoordinate(e.target.value);
+    const nextLon = parsed === undefined ? undefined : clampLongitude(parsed);
     setCurrentLongitude(nextLon);
     onChange?.({ lat: currentLatitude, lon: nextLon });
   };
@@ -71,38 +71,31 @@ const Geolocation = ({
     onChange?.({ lat: undefined, lon: undefined });
   };
 
-  useEffect(() => {
-    if (isCoordinateValid(currentLatitude) && isCoordinateValid(currentLongitude)) {
-      setCurrentMarkers([
-        {
-          latitude: currentLatitude,
-          longitude: currentLongitude,
-          properties: {},
-        },
-      ]);
-      return;
-    }
-    setCurrentMarkers(undefined);
-  }, [currentLatitude, currentLongitude]);
+  const markers: Marker[] =
+    isValidLatitude(currentLatitude) && isValidLongitude(currentLongitude)
+      ? [{ latitude: currentLatitude, longitude: currentLongitude, properties: {} }]
+      : [];
 
   const mapClick = ({ lngLat }: { lngLat: [number, number] }) => {
     if (disabled) return;
     const [lon, lat] = lngLat;
-    setCurrentLatitude(lat);
-    setCurrentLongitude(lon);
-    onChange?.({ lat, lon });
+    const nextLat = clampLatitude(lat);
+    const nextLon = clampLongitude(lon);
+    setCurrentLatitude(nextLat);
+    setCurrentLongitude(nextLon);
+    onChange?.({ lat: nextLat, lon: nextLon });
   };
 
   return (
     <div className={className}>
-      <Label htmlFor={name}>{label}</Label>
+      {label ? <Label htmlFor={name}>{label}</Label> : null}
       <Map
         onClick={mapClick}
         height={370}
         showControls
         zoom={zoom}
         layers={layers}
-        markers={currentMarkers || []}
+        markers={markers}
       />
       <div className="flex gap-4">
         <InputField
@@ -113,9 +106,12 @@ const Geolocation = ({
           clearFieldAction={clearCoordinates}
           value={currentLatitude ?? ''}
           label={<Translate>Latitude</Translate>}
-          id="lat"
-          name={`${name}[lat]`}
+          id={name}
+          name={`${name}.lat`}
           type="number"
+          min={LATITUDE_MIN}
+          max={LATITUDE_MAX}
+          step="any"
           autoComplete="off"
         />
         <InputField
@@ -126,9 +122,12 @@ const Geolocation = ({
           hasErrors={hasErrors}
           clearFieldAction={clearCoordinates}
           value={currentLongitude ?? ''}
-          id="lon"
-          name={`${name}[lon]`}
+          id={`${name}.lon`}
+          name={`${name}.lon`}
           type="number"
+          min={LONGITUDE_MIN}
+          max={LONGITUDE_MAX}
+          step="any"
           autoComplete="off"
         />
       </div>
