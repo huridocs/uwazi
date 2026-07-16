@@ -209,14 +209,7 @@ const fixtures: Fixtures[] = [
   },
   {
     property: metadata[16],
-    expected: [
-      { value: 'nested.tag.1', label: 'Nested tag 1' },
-      {
-        value: 'nested.tag.2',
-        label: 'Nested tag 2',
-        parent: { value: 'nested.group', label: 'Nested group' },
-      },
-    ],
+    expected: [{ value: 'shared-parent' }],
   },
 ];
 

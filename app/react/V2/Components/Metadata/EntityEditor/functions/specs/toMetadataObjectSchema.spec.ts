@@ -2,6 +2,34 @@ import { formatMetadataForForm } from '../formatMetadataForForm.js';
 import { entity, fixtures } from './fixtures.js';
 import { toMetadataObjectSchema } from '../toMetadataObjectSchema.js';
 
+describe('formatMetadataForForm', () => {
+  it('should keep inherited relationship rows with nested values', () => {
+    const property = fixtures.find(fixture => fixture.property.name === 'inherited_tags')?.property;
+    if (!property) {
+      throw new Error('inherited_tags fixture missing');
+    }
+
+    const formValues = formatMetadataForForm([property], entity.metadata)[property.name] ?? [];
+
+    expect(formValues).toEqual([
+      {
+        value: 'shared-parent',
+        label: 'Parent entity',
+        type: 'entity',
+        inheritedType: 'multiselect',
+        inheritedValue: [
+          { value: 'nested.tag.1', label: 'Nested tag 1' },
+          {
+            value: 'nested.tag.2',
+            label: 'Nested tag 2',
+            parent: { value: 'nested.group', label: 'Nested group' },
+          },
+        ],
+      },
+    ]);
+  });
+});
+
 describe('toMetadataObjectSchema', () => {
   it.each(fixtures)(
     'should format $property.type metadata from form values for $property.name',
