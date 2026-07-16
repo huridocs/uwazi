@@ -34,6 +34,7 @@ type Tenant = {
     v2CreateUser?: boolean;
     v2DeleteUser?: boolean;
     v2GetUsers?: boolean;
+    v2UpdateUser?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

@@ -2,7 +2,7 @@ import { Db, ObjectId } from 'mongodb';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { UsersDataSource } from '#api/core/application/contracts/UsersDataSource.js';
 import { PUBLIC_USER_ID, User } from '#api/core/domain/user/User.js';
-import { EmailInUse, UsernameExists } from '#api/core/domain/user/errors.js';
+import { EmailInUse, UsernameExists, UserNotFound } from '#api/core/domain/user/errors.js';
 import { Result } from '#api/core/libs/Result.js';
 import { MongoDataSource } from '../common/MongoDataSource.js';
 import { UserDBO } from './UserDBO.js';
@@ -39,6 +39,16 @@ class MongoUsersDataSource extends MongoDataSource<UserDBO> implements UsersData
     return Result.ok(true);
   }
 
+  async getById(id: string) {
+    const result = await this.dao.getById(id);
+
+    if (result.isError()) {
+      return Result.fail(new UserNotFound(id));
+    }
+
+    return Result.ok(MongoUsersMapper.toDomain(result.getData()));
+  }
+
   async countActiveUsers(): Promise<number> {
     const collection = this.getCollection<UserDBO>();
     const count = await collection.countDocuments({
@@ -50,6 +60,15 @@ class MongoUsersDataSource extends MongoDataSource<UserDBO> implements UsersData
 
   async insert(user: User): Promise<void> {
     await this.getCollection<UserDBO>().insertOne(MongoUsersMapper.toDBO(user));
+  }
+
+  async update(user: User): Promise<void> {
+    const dbo = MongoUsersMapper.toDBO(user);
+    const { _id, ...updates } = dbo;
+    await this.getCollection<UserDBO>().updateOne(
+      { _id, deletedAt: { $exists: false } },
+      { $set: updates }
+    );
   }
 
   async delete(userIds: string[]): Promise<number> {
