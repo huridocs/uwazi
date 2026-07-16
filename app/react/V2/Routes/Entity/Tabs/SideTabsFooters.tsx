@@ -17,7 +17,7 @@ type SideTabsFootersProps = {
 
 const SideTabsFooters = ({ activeTabId: urlActiveTabId, mainDocument }: SideTabsFootersProps) => {
   const { activeTabId: atomActiveTabId } = useTabGroup('entity-side');
-  const activeTabId = atomActiveTabId ?? urlActiveTabId;
+  const activeTabId = atomActiveTabId || urlActiveTabId;
 
   if (!activeTabId) return null;
 

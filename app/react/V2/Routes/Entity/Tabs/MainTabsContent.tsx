@@ -25,7 +25,7 @@ const MainTabsContent = ({
   pagePlaintext,
 }: MainTabsContentProps) => {
   const { activeTabId: atomActiveTabId } = useTabGroup('entity-main');
-  const activeTabId = atomActiveTabId ?? urlActiveTabId;
+  const activeTabId = atomActiveTabId || urlActiveTabId;
   const { focusDocumentPanel, relationshipsOnMain } = useEntityTabNavigation();
 
   let content: ReactNode = null;
