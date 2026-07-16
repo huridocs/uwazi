@@ -53,6 +53,6 @@ describe('ServerThesaurusService', () => {
     const [data, error] = await service.upsert({ name: 'Colors', values: [] });
 
     expect(data).toBeUndefined();
-    expect(error?.message).toContain('not implemented on server');
+    expect(error?.message).toContain('Not implemented');
   });
 });
