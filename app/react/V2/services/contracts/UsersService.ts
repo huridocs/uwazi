@@ -4,6 +4,11 @@ import type { ServiceRequestOptions } from './ServiceRequestOptions.js';
 
 type UserInput = User & { rowId?: string };
 
+type TwoFactorSecret = {
+  otpauth: string;
+  secret: string;
+};
+
 /**
  * Users domain service.
  *
@@ -14,6 +19,7 @@ type UserInput = User & { rowId?: string };
 interface UsersService {
   getAll(options?: ServiceRequestOptions): Promise<ApiResponse<User[]>>;
   getCurrent(options?: ServiceRequestOptions): Promise<ApiResponse<User>>;
+  get2FASecret(options?: ServiceRequestOptions): Promise<ApiResponse<TwoFactorSecret>>;
   upsert(
     user: UserInput,
     currentPassword: string,
@@ -38,6 +44,7 @@ interface UsersService {
     currentPassword: string,
     options?: ServiceRequestOptions
   ): Promise<ApiResponse<unknown>>;
+  enable2FA(token: string, options?: ServiceRequestOptions): Promise<ApiResponse<unknown>>;
 }
 
-export type { UsersService, UserInput };
+export type { UsersService, UserInput, TwoFactorSecret };
