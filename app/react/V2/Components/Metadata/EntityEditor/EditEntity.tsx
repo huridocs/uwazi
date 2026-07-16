@@ -8,7 +8,10 @@ import { Entity } from '#V2/api/entities/types.js';
 import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js';
 import { lookup as lookupEntities } from '#V2/api/search/index.js';
 import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
-import { filterReferencedPendingAttachments } from '#shared/entitySave/mediaMetadata.js';
+import {
+  filterReferencedPendingAttachments,
+  extractUploadIdFromMediaValue,
+} from '#shared/entitySave/mediaMetadata.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { thesauriAtom } from '#V2/atoms/thesauriAtom.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
@@ -346,6 +349,27 @@ const EditEntity = ({
     removePendingAttachment,
   } = useEntityMediaUpload(entity, selectedTemplate);
 
+  const mediaPropertyNames = useMemo(
+    () =>
+      new Set(
+        metadataProperties
+          .filter(property => property.type === 'image' || property.type === 'media')
+          .map(property => property.name)
+      ),
+    [metadataProperties]
+  );
+
+  const removePendingAttachmentIfUnused = (fileLocalID: string) => {
+    const formMetadata = getValues('metadata');
+    const stillReferenced = [...mediaPropertyNames].some(name => {
+      const rawValue = formMetadata?.[name]?.[0]?.value;
+      return typeof rawValue === 'string' && extractUploadIdFromMediaValue(rawValue) === fileLocalID;
+    });
+    if (!stillReferenced) {
+      removePendingAttachment(fileLocalID);
+    }
+  };
+
   const isMetadataReady = metadataProperties.every(
     property => metadata?.[property.name] !== undefined
   );
@@ -442,11 +466,6 @@ const EditEntity = ({
         values.metadata,
         metadataProperties,
         entity?.metadata
-      );
-      const mediaPropertyNames = new Set(
-        metadataProperties
-          .filter(property => property.type === 'image' || property.type === 'media')
-          .map(property => property.name)
       );
       const referencedPending = filterReferencedPendingAttachments(
         pendingAttachments,
@@ -740,7 +759,7 @@ const EditEntity = ({
                   pendingAttachments={pendingAttachments}
                   entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
                   onRegisterPendingAttachment={registerPendingAttachment}
-                  onRemovePendingAttachment={removePendingAttachment}
+                  onRemovePendingAttachment={removePendingAttachmentIfUnused}
                   key={property._id}
                 />
               );
@@ -759,7 +778,7 @@ const EditEntity = ({
                   pendingAttachments={pendingAttachments}
                   entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
                   onRegisterPendingAttachment={registerPendingAttachment}
-                  onRemovePendingAttachment={removePendingAttachment}
+                  onRemovePendingAttachment={removePendingAttachmentIfUnused}
                   key={property._id}
                 />
               );

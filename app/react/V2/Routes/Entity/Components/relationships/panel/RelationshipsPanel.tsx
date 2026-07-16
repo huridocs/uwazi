@@ -15,6 +15,7 @@ import {
   useRelationshipsPanelUi,
   useRelationshipsSelectionActions,
   useEntityOverlay,
+  useEntityWriteAuthorized,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 import { useGroupLabelContext } from '../hooks/useGroupLabelContext.js';
@@ -38,6 +39,7 @@ const RelationshipsPanel = ({
   const { setFiltersDrawerOpen } = useRelationshipsPanelUi();
   const { setSelectedRelationshipIds, setRelationshipsEditMode } =
     useRelationshipsSelectionActions();
+  const canWrite = useEntityWriteAuthorized();
 
   const { openEntityOverlay } = useEntityOverlay();
   const {
@@ -101,7 +103,7 @@ const RelationshipsPanel = ({
         activeRelationshipId={activeRelationshipId ?? undefined}
         onClick={handleRelationshipClick}
         onView={handleViewClick}
-        onDelete={handleDeleteClick}
+        onDelete={canWrite ? handleDeleteClick : undefined}
       />
     );
   };

@@ -1,7 +1,14 @@
 /* eslint-disable max-statements */
+
+import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { PostgresTable } from '../PostgresTable.js';
+import { PostgresTransactionManager } from '../PostgresTransactionManager.js';
+import { SyncLogWriter } from '../SyncLogWriter.js';
 
 const DEFAULT_TENANT = 'tenant-a';
 
@@ -11,9 +18,35 @@ type TestRow = {
   values: Record<string, unknown>[];
 };
 
-const createTable = (tenantId = DEFAULT_TENANT) => new PostgresTable('thesauri', tenantId);
+const managerFor = (tenantId: string) =>
+  new PostgresTransactionManager(PostgresDB.knex, tenantId, LoggerFactory.forTests());
+
+const createTable = (tenantId = DEFAULT_TENANT) =>
+  PostgresTable.for<TestRow>({
+    tableName: 'thesauri',
+    tenantId,
+    transactionManager: managerFor(tenantId),
+  });
 
 const jsonVal = (v: unknown) => JSON.stringify(v);
+
+const SYNC_NAMESPACE = 'test_thesauri';
+
+const getSyncDb = () => getConnection();
+
+const createTableWithSync = (
+  tenantId = DEFAULT_TENANT,
+  syncDb = getSyncDb(),
+  namespace = SYNC_NAMESPACE
+) =>
+  PostgresTable.for<TestRow>({
+    tableName: 'thesauri',
+    tenantId,
+    transactionManager: managerFor(tenantId),
+    syncWriter: new SyncLogWriter(syncDb, namespace),
+  });
+
+const getSyncLogs = async () => getSyncDb().collection('updatelogs').find({}).toArray();
 
 beforeAll(async () => {
   await testingEnvironment.setUp({}, { postgres: true });
@@ -80,7 +113,7 @@ describe('PostgresTable', () => {
       const table = createTable();
       await table.insert({ _id: 'id-1', name: 'test-find', values: jsonVal([]) });
 
-      const row = await table.query<TestRow>().where({ _id: 'id-1' }).first();
+      const row = await table.where({ _id: 'id-1' }).first();
 
       expect(row).toBeDefined();
       expect(row!._id).toBe('id-1');
@@ -90,7 +123,7 @@ describe('PostgresTable', () => {
     it('should return undefined when no row matches', async () => {
       const table = createTable();
 
-      const row = await table.query<TestRow>().where({ _id: 'nonexistent' }).first();
+      const row = await table.where({ _id: 'nonexistent' }).first();
 
       expect(row).toBeUndefined();
     });
@@ -101,7 +134,7 @@ describe('PostgresTable', () => {
 
       await tableA.insert({ _id: 'shared-id', name: 'tenant A data', values: jsonVal([]) });
 
-      const rowFromB = await tableB.query<TestRow>().where({ _id: 'shared-id' }).first();
+      const rowFromB = await tableB.where({ _id: 'shared-id' }).first();
 
       expect(rowFromB).toBeUndefined();
     });
@@ -113,7 +146,7 @@ describe('PostgresTable', () => {
       await table.insert({ _id: 'find-all-1', name: 'first', values: jsonVal([]) });
       await table.insert({ _id: 'find-all-2', name: 'second', values: jsonVal([]) });
 
-      const rows = await table.query<TestRow>().all();
+      const rows = await table.all();
 
       expect(rows).toHaveLength(2);
     });
@@ -123,7 +156,7 @@ describe('PostgresTable', () => {
       await table.insert({ _id: 'filter-1', name: 'alpha', values: jsonVal([]) });
       await table.insert({ _id: 'filter-2', name: 'beta', values: jsonVal([]) });
 
-      const rows = await table.query<TestRow>().where({ name: 'alpha' }).all();
+      const rows = await table.where({ name: 'alpha' }).all();
 
       expect(rows).toHaveLength(1);
       expect(rows[0]._id).toBe('filter-1');
@@ -135,7 +168,7 @@ describe('PostgresTable', () => {
       await table.insert({ _id: 'in-2', name: 'beta', values: jsonVal([]) });
       await table.insert({ _id: 'in-3', name: 'gamma', values: jsonVal([]) });
 
-      const rows = await table.query<TestRow>().whereIn('_id', ['in-1', 'in-3']).all();
+      const rows = await table.whereIn('_id', ['in-1', 'in-3']).all();
 
       expect(rows).toHaveLength(2);
       expect(rows.map((r: TestRow) => r._id).sort()).toEqual(['in-1', 'in-3']);
@@ -149,7 +182,7 @@ describe('PostgresTable', () => {
       await tableA.insert({ _id: 'iso-2', name: 'A2', values: jsonVal([]) });
       await tableB.insert({ _id: 'iso-3', name: 'B', values: jsonVal([]) });
 
-      const rowsFromA = await tableA.query<TestRow>().all();
+      const rowsFromA = await tableA.all();
 
       expect(rowsFromA).toHaveLength(2);
       expect(rowsFromA.every((r: TestRow) => r.name.startsWith('A'))).toBe(true);
@@ -162,14 +195,14 @@ describe('PostgresTable', () => {
       await table.insert({ _id: 'fid-1', name: 'alpha', values: jsonVal([]) });
       await table.insert({ _id: 'fid-2', name: 'beta', values: jsonVal([]) });
 
-      const rows = await table.query<TestRow>().where({ name: 'alpha' }).select(['_id']).all();
+      const rows = await table.where({ name: 'alpha' }).select(['_id']).all();
 
       expect(rows.map(r => r._id)).toEqual(['fid-1']);
     });
 
     it('should return empty array when nothing matches', async () => {
       const table = createTable();
-      const rows = await table.query<TestRow>().where({ _id: 'nonexistent' }).select(['_id']).all();
+      const rows = await table.where({ _id: 'nonexistent' }).select(['_id']).all();
       expect(rows).toEqual([]);
     });
 
@@ -179,17 +212,13 @@ describe('PostgresTable', () => {
 
       await tableA.insert({ _id: 'shared-id', name: 'A data', values: jsonVal([]) });
 
-      const rows = await tableB.query<TestRow>().where({ _id: 'shared-id' }).select(['_id']).all();
+      const rows = await tableB.where({ _id: 'shared-id' }).select(['_id']).all();
       expect(rows).toEqual([]);
     });
 
     it('should return empty array when nothing matches', async () => {
       const table = createTable();
-      const rows = await table
-        .query<{ _id: string }>()
-        .where({ _id: 'nonexistent' })
-        .select(['_id'])
-        .all();
+      const rows = await table.where({ _id: 'nonexistent' }).select(['_id']).all();
       expect(rows).toEqual([]);
     });
 
@@ -199,21 +228,13 @@ describe('PostgresTable', () => {
 
       await tableA.insert({ _id: 'shared-id', name: 'A data', values: jsonVal([]) });
 
-      const rows = await tableB
-        .query<{ _id: string }>()
-        .where({ _id: 'shared-id' })
-        .select(['_id'])
-        .all();
+      const rows = await tableB.where({ _id: 'shared-id' }).select(['_id']).all();
       expect(rows).toEqual([]);
     });
 
     it('should return empty array when nothing matches', async () => {
       const table = createTable();
-      const rows = await table
-        .query<Pick<TestRow, '_id'>>()
-        .where({ _id: 'nonexistent' })
-        .select(['_id'])
-        .all();
+      const rows = await table.where({ _id: 'nonexistent' }).select(['_id']).all();
       expect(rows).toEqual([]);
     });
 
@@ -223,11 +244,7 @@ describe('PostgresTable', () => {
 
       await tableA.insert({ _id: 'shared-id', name: 'A data', values: jsonVal([]) });
 
-      const rows = await tableB
-        .query<Pick<TestRow, '_id'>>()
-        .where({ _id: 'shared-id' })
-        .select(['_id'])
-        .all();
+      const rows = await tableB.where({ _id: 'shared-id' }).select(['_id']).all();
       expect(rows).toEqual([]);
     });
   });
@@ -238,7 +255,7 @@ describe('PostgresTable', () => {
       await table.insert({ _id: 'ct-1', name: 'first-count', values: jsonVal([]) });
       await table.insert({ _id: 'ct-2', name: 'second-count', values: jsonVal([]) });
 
-      const count = await table.query<TestRow>().count();
+      const count = await table.count();
 
       expect(count).toBe(2);
     });
@@ -249,7 +266,7 @@ describe('PostgresTable', () => {
       await table.insert({ _id: 'ctw-2', name: 'alpha-ct-2', values: jsonVal([]) });
       await table.insert({ _id: 'ctw-3', name: 'beta-ct', values: jsonVal([]) });
 
-      const count = await table.query<TestRow>().where({ name: 'alpha-ct' }).count();
+      const count = await table.where({ name: 'alpha-ct' }).count();
 
       expect(count).toBe(1);
     });
@@ -259,7 +276,7 @@ describe('PostgresTable', () => {
       await table.insert({ _id: 'ne-1', name: 'alpha-ne', values: jsonVal([]) });
       await table.insert({ _id: 'ne-2', name: 'beta-ne', values: jsonVal([]) });
 
-      const count = await table.query<TestRow>().whereNot('_id', 'ne-1').count();
+      const count = await table.whereNot('_id', 'ne-1').count();
 
       expect(count).toBe(1);
     });
@@ -267,7 +284,7 @@ describe('PostgresTable', () => {
     it('should return 0 when nothing matches', async () => {
       const table = createTable();
 
-      const count = await table.query<TestRow>().where({ _id: 'nonexistent' }).count();
+      const count = await table.where({ _id: 'nonexistent' }).count();
 
       expect(count).toBe(0);
     });
@@ -279,7 +296,7 @@ describe('PostgresTable', () => {
 
       await table.upsert({ _id: 'ups-1', name: 'inserted', values: jsonVal([]) });
 
-      const row = await table.query<TestRow>().where({ _id: 'ups-1' }).first();
+      const row = await table.where({ _id: 'ups-1' }).first();
       expect(row).toBeDefined();
       expect(row!.name).toBe('inserted');
     });
@@ -290,7 +307,7 @@ describe('PostgresTable', () => {
 
       await table.upsert({ _id: 'ups-2', name: 'updated', values: jsonVal([]) });
 
-      const row = await table.query<TestRow>().where({ _id: 'ups-2' }).first();
+      const row = await table.where({ _id: 'ups-2' }).first();
       expect(row!.name).toBe('updated');
     });
 
@@ -301,8 +318,8 @@ describe('PostgresTable', () => {
       await tableA.insert({ _id: 'cross-ups', name: 'A', values: jsonVal([]) });
       await tableB.upsert({ _id: 'cross-ups', name: 'B', values: jsonVal([]) });
 
-      const rowA = await tableA.query<TestRow>().where({ _id: 'cross-ups' }).first();
-      const rowB = await tableB.query<TestRow>().where({ _id: 'cross-ups' }).first();
+      const rowA = await tableA.where({ _id: 'cross-ups' }).first();
+      const rowB = await tableB.where({ _id: 'cross-ups' }).first();
 
       expect(rowA!.name).toBe('A');
       expect(rowB!.name).toBe('B');
@@ -314,9 +331,9 @@ describe('PostgresTable', () => {
       const table = createTable();
       await table.insert({ _id: 'up-1', name: 'old', values: jsonVal([]) });
 
-      await table.query().where({ _id: 'up-1' }).update({ name: 'new' });
+      await table.where({ _id: 'up-1' }).update({ name: 'new' });
 
-      const row = await table.query<TestRow>().where({ _id: 'up-1' }).first();
+      const row = await table.where({ _id: 'up-1' }).first();
       expect(row!.name).toBe('new');
     });
 
@@ -326,9 +343,9 @@ describe('PostgresTable', () => {
 
       await tableA.insert({ _id: 'cross-tenant', name: 'original', values: jsonVal([]) });
 
-      await tableB.query().where({ _id: 'cross-tenant' }).update({ name: 'hacked' });
+      await tableB.where({ _id: 'cross-tenant' }).update({ name: 'hacked' });
 
-      const row = await tableA.query<TestRow>().where({ _id: 'cross-tenant' }).first();
+      const row = await tableA.where({ _id: 'cross-tenant' }).first();
       expect(row!.name).toBe('original');
     });
   });
@@ -338,9 +355,9 @@ describe('PostgresTable', () => {
       const table = createTable();
       await table.insert({ _id: 'del-1', name: 'temp', values: jsonVal([]) });
 
-      await table.query().where({ _id: 'del-1' }).delete();
+      await table.where({ _id: 'del-1' }).delete();
 
-      const count = await table.query<TestRow>().count();
+      const count = await table.count();
       expect(count).toBe(0);
     });
 
@@ -350,9 +367,9 @@ describe('PostgresTable', () => {
 
       await tableA.insert({ _id: 'protected', name: 'keep me', values: jsonVal([]) });
 
-      await tableB.query().where({ _id: 'protected' }).delete();
+      await tableB.where({ _id: 'protected' }).delete();
 
-      const row = await tableA.query<TestRow>().where({ _id: 'protected' }).first();
+      const row = await tableA.where({ _id: 'protected' }).first();
       expect(row).toBeDefined();
     });
   });
@@ -364,7 +381,7 @@ describe('PostgresTable', () => {
       await table.insert({ _id: 'chain-2', name: 'alpha', values: jsonVal([]) });
       await table.insert({ _id: 'chain-3', name: 'beta', values: jsonVal([]) });
 
-      const rows = await table.query<TestRow>().orderBy('name', 'asc').all();
+      const rows = await table.orderBy('name', 'asc').all();
 
       expect(rows.map((r: TestRow) => r.name)).toEqual(['alpha', 'beta', 'zeta']);
     });
@@ -375,7 +392,7 @@ describe('PostgresTable', () => {
       await table.insert({ _id: 'l-2', name: 'b', values: jsonVal([]) });
       await table.insert({ _id: 'l-3', name: 'c', values: jsonVal([]) });
 
-      const rows = await table.query<TestRow>().orderBy('name').limit(2).all();
+      const rows = await table.orderBy('name').limit(2).all();
 
       expect(rows).toHaveLength(2);
     });
@@ -386,7 +403,7 @@ describe('PostgresTable', () => {
       await table.insert({ _id: 'o-2', name: 'b', values: jsonVal([]) });
       await table.insert({ _id: 'o-3', name: 'c', values: jsonVal([]) });
 
-      const rows = await table.query<TestRow>().orderBy('name').offset(1).all();
+      const rows = await table.orderBy('name').offset(1).all();
 
       expect(rows).toHaveLength(2);
       expect(rows[0].name).toBe('b');
@@ -404,6 +421,21 @@ describe('PostgresTable', () => {
           PRIMARY KEY ("_id", "tenant_id")
         )
       `);
+      await testingPG.pool!.query('ALTER TABLE "thesauri_categories" ENABLE ROW LEVEL SECURITY');
+      await testingPG.pool!.query(`
+        DO $$
+        BEGIN
+          IF NOT EXISTS (
+            SELECT 1 FROM pg_policies
+            WHERE tablename = 'thesauri_categories' AND policyname = 'tenant_isolation'
+          ) THEN
+            CREATE POLICY tenant_isolation ON "thesauri_categories"
+              USING (tenant_id = current_tenant())
+              WITH CHECK (tenant_id = current_tenant());
+          END IF;
+        END;
+        $$
+      `);
     });
 
     beforeEach(async () => {
@@ -415,7 +447,11 @@ describe('PostgresTable', () => {
     });
 
     const createCategoryTable = (tenantId = DEFAULT_TENANT) =>
-      new PostgresTable('thesauri_categories', tenantId);
+      PostgresTable.for<TestRow & { label: string }>({
+        tableName: 'thesauri_categories',
+        tenantId,
+        transactionManager: managerFor(tenantId),
+      });
 
     it('should join thesauri with categories and enforce tenant_id on the base table', async () => {
       const thesauriTable = createTable();
@@ -558,42 +594,325 @@ describe('PostgresTable', () => {
   });
 
   describe('raw', () => {
-    it('should execute raw SQL with tenant_id filter', async () => {
+    it('should execute raw SQL scoped to the current tenant', async () => {
       const table = createTable('tenant-a');
       await table.insert({ _id: 'raw-1', name: 'before', values: jsonVal([]) });
 
-      await table.raw('UPDATE "thesauri" SET name = ? WHERE "_id" = ? AND "tenant_id" = ?', [
-        'after',
-        'raw-1',
-        'tenant-a',
-      ]);
+      await table.raw('UPDATE "thesauri" SET name = ? WHERE "_id" = ?', ['after', 'raw-1']);
 
-      const row = await table.query<TestRow>().where({ _id: 'raw-1' }).first();
+      const row = await table.where({ _id: 'raw-1' }).first();
       expect(row!.name).toBe('after');
     });
 
-    it('should throw when tenant_id filter is missing', async () => {
-      const table = createTable('tenant-a');
-
-      await expect(async () =>
-        table.raw('UPDATE "thesauri" SET name = "x" WHERE "_id" = ?', ['raw-2'])
-      ).rejects.toThrow('missing a tenant_id filter');
-    });
-
-    it('should enforce tenant_id — cannot affect rows from other tenants via raw', async () => {
+    it('should enforce tenant isolation via RLS — cannot affect rows from other tenants via raw', async () => {
       const tableA = createTable('tenant-a');
       const tableB = createTable('tenant-b');
 
       await tableA.insert({ _id: 'protected-raw', name: 'keep me', values: jsonVal([]) });
       await tableB.insert({ _id: 'protected-raw', name: 'other', values: jsonVal([]) });
 
-      await tableB.raw(
-        'UPDATE "thesauri" SET name = \'hacked\' WHERE "_id" = ? AND "tenant_id" = ?',
-        ['protected-raw', 'tenant-b']
-      );
+      await tableB.raw('UPDATE "thesauri" SET name = \'hacked\' WHERE "_id" = ?', [
+        'protected-raw',
+      ]);
 
-      const rowA = await tableA.query<TestRow>().where({ _id: 'protected-raw' }).first();
+      const rowA = await tableA.where({ _id: 'protected-raw' }).first();
       expect(rowA!.name).toBe('keep me');
+    });
+  });
+
+  describe('sync logs', () => {
+    let syncDb: ReturnType<typeof getSyncDb>;
+    let _id: () => string;
+
+    beforeAll(() => {
+      syncDb = getSyncDb();
+      _id = () => new ObjectId().toHexString();
+    });
+
+    beforeEach(async () => {
+      await syncDb.collection('updatelogs').deleteMany({});
+    });
+
+    describe('insert', () => {
+      it('should write a sync log after insert', async () => {
+        const table = createTableWithSync();
+        const rowId = _id();
+
+        await table.insert({ _id: rowId, name: 'alpha', values: jsonVal([]) });
+
+        const logs = await getSyncLogs();
+        expect(logs).toHaveLength(1);
+        expect(logs[0].namespace).toBe(SYNC_NAMESPACE);
+        expect(logs[0].mongoId.toString()).toBe(rowId);
+        expect(logs[0].deleted).toBe(false);
+      });
+
+      it('should write sync logs for every inserted row (array)', async () => {
+        const table = createTableWithSync();
+        const m1 = _id();
+        const m2 = _id();
+
+        await table.insert([
+          { _id: m1, name: 'a', values: jsonVal([]) },
+          { _id: m2, name: 'b', values: jsonVal([]) },
+        ]);
+
+        const logs = await getSyncLogs();
+        expect(logs).toHaveLength(2);
+        const ids = logs.map(l => l.mongoId.toString()).sort();
+        expect(ids).toEqual([m1, m2].sort());
+      });
+
+      it('should NOT write sync logs when no syncWriter is configured', async () => {
+        const table = createTable();
+
+        await table.insert({ _id: _id(), name: 'no-sync', values: jsonVal([]) });
+
+        const logs = await getSyncLogs();
+        expect(logs).toHaveLength(0);
+      });
+    });
+
+    describe('upsert', () => {
+      it('should write a sync log on insert path of upsert', async () => {
+        const table = createTableWithSync();
+        const u1 = _id();
+
+        await table.upsert({ _id: u1, name: 'ups', values: jsonVal([]) });
+
+        const logs = await getSyncLogs();
+        expect(logs).toHaveLength(1);
+        expect(logs[0].mongoId.toString()).toBe(u1);
+      });
+
+      it('should upsert the same sync log on update path (no duplicate entries)', async () => {
+        const table = createTableWithSync();
+        const u2 = _id();
+
+        await table.insert({ _id: u2, name: 'first', values: jsonVal([]) });
+        await syncDb.collection('updatelogs').deleteMany({});
+
+        await table.upsert({ _id: u2, name: 'second', values: jsonVal([]) });
+
+        const logs = await getSyncLogs();
+        expect(logs).toHaveLength(1);
+        expect(logs[0].mongoId.toString()).toBe(u2);
+        expect(logs[0].deleted).toBe(false);
+      });
+    });
+
+    describe('update', () => {
+      it('should upsert sync logs for every affected row', async () => {
+        const table = createTableWithSync();
+        const i1 = _id();
+        const i2 = _id();
+        await table.insert({ _id: i1, name: 'alpha', values: jsonVal([]) });
+        await table.insert({ _id: i2, name: 'beta', values: jsonVal([]) });
+        await syncDb.collection('updatelogs').deleteMany({});
+
+        await table.whereIn('_id', [i1, i2]).update({
+          values: jsonVal([{ id: 'v1', label: 'Updated' }]),
+        });
+
+        const logs = await getSyncLogs();
+        expect(logs).toHaveLength(2);
+        const ids = logs.map(l => l.mongoId.toString()).sort();
+        expect(ids).toEqual([i1, i2].sort());
+        expect(logs.every(l => l.deleted === false)).toBe(true);
+      });
+
+      it('should not write sync logs when nothing is updated', async () => {
+        const table = createTableWithSync();
+        const i3 = _id();
+        await table.insert({ _id: i3, name: 'only', values: jsonVal([]) });
+        await syncDb.collection('updatelogs').deleteMany({});
+
+        await table.where({ name: 'nonexistent' }).update({ name: 'x' });
+
+        const logs = await getSyncLogs();
+        expect(logs).toHaveLength(0);
+      });
+
+      it('should update an existing sync log (upsert) instead of creating a duplicate', async () => {
+        const table = createTableWithSync();
+        const i4 = _id();
+        await table.insert({ _id: i4, name: 'orig', values: jsonVal([]) });
+
+        await table.where({ _id: i4 }).update({ name: 'new' });
+
+        const logs = await getSyncLogs();
+        expect(logs).toHaveLength(1);
+        expect(logs[0].mongoId.toString()).toBe(i4);
+        expect(logs[0].deleted).toBe(false);
+      });
+    });
+
+    describe('delete', () => {
+      it('should write sync logs with deleted=true for affected rows', async () => {
+        const table = createTableWithSync();
+        const d1 = _id();
+        await table.insert({ _id: d1, name: 'gone', values: jsonVal([]) });
+        await syncDb.collection('updatelogs').deleteMany({});
+
+        await table.where({ _id: d1 }).delete();
+
+        const logs = await getSyncLogs();
+        expect(logs).toHaveLength(1);
+        expect(logs[0].mongoId.toString()).toBe(d1);
+        expect(logs[0].deleted).toBe(true);
+      });
+
+      it('should not write sync logs when nothing is deleted', async () => {
+        const table = createTableWithSync();
+        const d2 = _id();
+        await table.insert({ _id: d2, name: 'stay', values: jsonVal([]) });
+        await syncDb.collection('updatelogs').deleteMany({});
+
+        await table.where({ _id: '000000000000000000000000' }).delete();
+
+        const logs = await getSyncLogs();
+        expect(logs).toHaveLength(0);
+      });
+
+      it('should update an existing sync log to deleted=true when deleting a previously updated row', async () => {
+        const table = createTableWithSync();
+        const d3 = _id();
+        await table.insert({ _id: d3, name: 'temp', values: jsonVal([]) });
+        await table.where({ _id: d3 }).update({ name: 'changed' });
+        await syncDb.collection('updatelogs').deleteMany({});
+
+        await table.where({ _id: d3 }).delete();
+
+        const logs = await getSyncLogs();
+        expect(logs).toHaveLength(1);
+        expect(logs[0].mongoId.toString()).toBe(d3);
+        expect(logs[0].deleted).toBe(true);
+      });
+    });
+
+    describe('tenant isolation', () => {
+      it('should not leak sync logs across tenants', async () => {
+        const tableA = createTableWithSync('tenant-a');
+        const tableB = createTableWithSync('tenant-b');
+        const idA = _id();
+        const idB = _id();
+
+        await tableA.insert({ _id: idA, name: 'A', values: jsonVal([]) });
+        await tableB.insert({ _id: idB, name: 'B', values: jsonVal([]) });
+
+        const logs = await getSyncLogs();
+        expect(logs).toHaveLength(2);
+        const ids = logs.map(l => l.mongoId.toString()).sort();
+        expect(ids).toEqual([idA, idB].sort());
+      });
+    });
+  });
+
+  describe('immutability', () => {
+    it('should allow divergent chains from the same base table', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'im-1', name: 'alpha', values: jsonVal([]) });
+      await table.insert({ _id: 'im-2', name: 'beta', values: jsonVal([]) });
+
+      const chainA = table.where({ name: 'alpha' });
+      const chainB = table.where({ name: 'beta' });
+
+      const [rowsA, rowsB] = await Promise.all([chainA.all(), chainB.all()]);
+      expect(rowsA).toHaveLength(1);
+      expect(rowsA[0]._id).toBe('im-1');
+      expect(rowsB).toHaveLength(1);
+      expect(rowsB[0]._id).toBe('im-2');
+    });
+
+    it('should not cross-contaminate when reusing the base table', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'cc-1', name: 'one', values: jsonVal([]) });
+      await table.insert({ _id: 'cc-2', name: 'two', values: jsonVal([]) });
+
+      await table.where({ _id: 'cc-1' }).update({ name: 'changed' });
+      const row = await table.where({ _id: 'cc-1' }).first();
+      expect(row!.name).toBe('changed');
+
+      const all = await table.all();
+      expect(all).toHaveLength(2);
+    });
+  });
+
+  describe('case #2 — shared transaction via pgTransactionManager.run()', () => {
+    it('should roll back when the run callback throws', async () => {
+      const manager = managerFor('tenant-a');
+
+      await expect(
+        manager.run(async () => {
+          await manager.withConnection(async trx => {
+            await trx('thesauri').insert({
+              _id: 'trx-2',
+              name: 'visible',
+              values: JSON.stringify([]),
+              tenant_id: 'tenant-a',
+            });
+            const visible = await trx('thesauri').where({ _id: 'trx-2' }).first();
+            expect(visible).toBeDefined();
+            throw new Error('boom');
+          });
+        })
+      ).rejects.toThrow('boom');
+
+      const rows = await testingPG.getAllFrom('thesauri');
+      const ids = rows.filter(r => r.tenant_id === 'tenant-a').map(r => r._id);
+      expect(ids).not.toContain('trx-2');
+    });
+
+    it('should commit PostgresTable writes inside a run', async () => {
+      const manager = managerFor('tenant-a');
+      const tableA = PostgresTable.for<TestRow>({
+        tableName: 'thesauri',
+        tenantId: 'tenant-a',
+        transactionManager: manager,
+      });
+
+      await manager.run(async () => {
+        await tableA.insert({ _id: 'trx-1', name: 'committed', values: jsonVal([]) });
+      });
+
+      const rows = await testingPG.getAllFrom('thesauri');
+      const ids = rows.filter(r => r.tenant_id === 'tenant-a').map(r => r._id);
+      expect(ids).toContain('trx-1');
+    });
+
+    it('should roll back PostgresTable writes when the run throws', async () => {
+      const manager = managerFor('tenant-a');
+      const tableA = PostgresTable.for<TestRow>({
+        tableName: 'thesauri',
+        tenantId: 'tenant-a',
+        transactionManager: manager,
+      });
+
+      await expect(
+        manager.run(async () => {
+          await tableA.insert({ _id: 'trx-3', name: 'rollback', values: jsonVal([]) });
+          throw new Error('boom');
+        })
+      ).rejects.toThrow('boom');
+
+      const rows = await testingPG.getAllFrom('thesauri');
+      const ids = rows.filter(r => r.tenant_id === 'tenant-a').map(r => r._id);
+      expect(ids).not.toContain('trx-3');
+    });
+
+    it('should see uncommitted PostgresTable writes within the same run', async () => {
+      const manager = managerFor('tenant-a');
+      const tableA = PostgresTable.for<TestRow>({
+        tableName: 'thesauri',
+        tenantId: 'tenant-a',
+        transactionManager: manager,
+      });
+
+      await manager.run(async () => {
+        await tableA.insert({ _id: 'trx-4', name: 'inside', values: jsonVal([]) });
+        const visible = await tableA.where({ _id: 'trx-4' }).first();
+        expect(visible).toBeDefined();
+      });
     });
   });
 });

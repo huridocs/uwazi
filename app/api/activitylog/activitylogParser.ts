@@ -22,7 +22,6 @@ const ParsedActions: { [key: string]: EntryValue } = {
   'POST/api/upload': { desc: 'Uploaded document', method: Methods.Create },
   'POST/api/reupload': { desc: 'Re-uploaded document' },
   'POST/api/customisation/upload': { desc: 'Uploaded custom file', method: Methods.Create },
-  'POST/api/import': { desc: 'Imported entities from file', method: Methods.Create },
   'POST/api/public': {
     desc: 'Created entity coming from a public form',
     method: Methods.Create,

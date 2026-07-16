@@ -30,7 +30,7 @@ const emitProgressAndResponse = (superAgent, response) => {
   superAgent.emit('response', response);
 };
 
-const mockSuperAgent = (url = `${APIURL}import`) => {
+const mockSuperAgent = (url = `${APIURL}files/upload/document`) => {
   const mockUpload = superagent.post(url);
   spyOn(mockUpload, 'field').and.returnValue(mockUpload);
   spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
@@ -51,33 +51,6 @@ describe('uploadsActions', () => {
   });
 
   afterEach(() => backend.restore());
-
-  describe('showImportPanel()', () => {
-    it('should activate the flag in the state', () => {
-      const dispatch = jasmine.createSpy('dispatch');
-      actions.showImportPanel()(dispatch);
-      expect(dispatch).toHaveBeenCalledWith({ type: 'showImportPanel/SET', value: true });
-    });
-  });
-
-  describe('closeImportPanel()', () => {
-    it('should deactivate the flag in the state', () => {
-      const dispatch = jasmine.createSpy('dispatch');
-      actions.closeImportPanel()(dispatch);
-      expect(dispatch).toHaveBeenCalledWith({ type: 'showImportPanel/SET', value: false });
-    });
-  });
-
-  describe('closeImportProgress()', () => {
-    it('should deactivate the flag in the state', () => {
-      const dispatch = jasmine.createSpy('dispatch');
-      actions.closeImportProgress()(dispatch);
-      expect(dispatch).toHaveBeenCalledWith({ type: 'importError/SET', value: {} });
-      expect(dispatch).toHaveBeenCalledWith({ type: 'importProgress/SET', value: 0 });
-      expect(dispatch).toHaveBeenCalledWith({ type: 'importEnd/SET', value: false });
-      expect(dispatch).toHaveBeenCalledWith({ type: 'importStart/SET', value: false });
-    });
-  });
 
   describe('enterUploads()', () => {
     it('should return a ENTER_UPLOADS_SECTION', () => {
@@ -118,28 +91,6 @@ describe('uploadsActions', () => {
             done();
           })
           .catch(done.fail);
-      });
-    });
-
-    describe('importData', () => {
-      it('should upload a file and then import the data', done => {
-        const mockUpload = mockSuperAgent();
-
-        const expectedActions = [
-          { type: 'importUploadProgress/SET', value: 65 },
-          { type: 'importUploadProgress/SET', value: 75 },
-          { type: 'importUploadProgress/SET', value: 0 },
-        ];
-        const store = mockStore({});
-        const file = getMockFile();
-
-        store.dispatch(actions.importData([file], '123')).then(() => {
-          expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
-          expect(store.getActions()).toEqual(expectedActions);
-          done();
-        });
-
-        emitProgressAndResponse(mockUpload, { text: JSON.stringify({ test: 'test' }), body: 'ok' });
       });
     });
 

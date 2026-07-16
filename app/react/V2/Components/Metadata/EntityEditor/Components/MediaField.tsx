@@ -292,9 +292,13 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
           const hasValue = rawValue.trim().length > 0;
           const { showError, message } = getFieldErrorState(fieldState);
 
-          const releaseCurrentUpload = (keepUploadId?: string) => {
-            if (isUploadId(currentUrl) && currentUrl !== keepUploadId) {
-              onRemovePendingAttachment(currentUrl);
+          const releaseUploadIfReplaced = (previousUrl: string, nextValue: string) => {
+            if (!isUploadId(previousUrl)) {
+              return;
+            }
+            const nextParsedUrl = parseFieldValue(nextValue).url;
+            if (previousUrl !== nextParsedUrl) {
+              onRemovePendingAttachment(previousUrl);
             }
           };
 
@@ -303,29 +307,31 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
             localFile?: File,
             nextTimelinks: EditableTimelink[] = timelinks
           ) => {
+            const previousUrl = currentUrl;
             if (localFile) {
               const attachment = await registerMediaAttachment(entitySharedId, localFile);
-              releaseCurrentUpload();
+              const { fileLocalID } = attachment;
+              if (!fileLocalID) {
+                return;
+              }
               onRegisterPendingAttachment(attachment);
-              const fileLocalID = attachment.fileLocalID ?? attachment._id;
-              mediaField.onChange(
-                mode === 'media' ? encodeTimelinksValue(fileLocalID, nextTimelinks) : fileLocalID
-              );
+              const nextValue =
+                mode === 'media' ? encodeTimelinksValue(fileLocalID, nextTimelinks) : fileLocalID;
+              mediaField.onChange(nextValue);
+              releaseUploadIfReplaced(previousUrl, nextValue);
               return;
             }
 
-            releaseCurrentUpload(nextUrl);
-            if (mode === 'media') {
-              mediaField.onChange(encodeTimelinksValue(nextUrl, nextTimelinks));
-              return;
-            }
-
-            mediaField.onChange(nextUrl);
+            const nextValue =
+              mode === 'media' ? encodeTimelinksValue(nextUrl, nextTimelinks) : nextUrl;
+            mediaField.onChange(nextValue);
+            releaseUploadIfReplaced(previousUrl, nextValue);
           };
 
           const handleUnlink = () => {
-            releaseCurrentUpload();
+            const previousUrl = currentUrl;
             mediaField.onChange('');
+            releaseUploadIfReplaced(previousUrl, '');
           };
 
           const handleTimelinksChange = (nextTimelinks: EditableTimelink[]) => {

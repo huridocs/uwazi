@@ -236,6 +236,7 @@ Copy Highlighted,คัดลอกสิ่งที่ถูกเน้นส
 Copy link,คัดลอกลิงค์
 Copy properties to this entity from,คัดลอกคุณสมบัติไปยังรายการนี้ จาก
 Copy to clipboard,Copy to clipboard
+Could not add media. Please try again.,Could not add media. Please try again.
 Could not be processed,Could not be processed
 Could not create entity,Could not create entity
 Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
@@ -544,25 +545,20 @@ ID:,ID:
 Image doesn't match the required size.,Image doesn't match the required size.
 Import,นำเข้า
 Import asset,Import asset
-Import completed,Import completed. Number of entities created:
 Import CSV,นำเข้า CSV
 Import failed. Review details below.,Import failed. Review details below.
 Import finished successfully.,Import finished successfully.
 Import finished with errors. Review details below.,Import finished with errors. Review details below.
-Import instructions,คำแนะนำการนำเข้าข้อมูล
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.
 Import theme instance file,Import theme instance file
 Import was cancelled.,Import was cancelled.
-Imported entities from file,Imported entities from file
 Imported translations from file,Imported translations from file
-Importing data in progress,การนำเข้าข้อมูลที่กำลังดำเนินอยู่
 in,ใน
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,In OCR queue
 in this document,in this document
 Incoming,Incoming
-Indexing entities may take a few minutes,การจัดทำดัชนีรายการอาจใช้เวลาสักครู่
 Info,ข้อมูล
 Information extraction training,Information extraction training
 Inherit,Inherit
@@ -774,6 +770,7 @@ Normal view,มุมมองปกติ
 Not already been use as source template in another extractor,Not already been use as source template in another extractor
 Not already been use as target template,Not already been use as target template
 Not Found,Not Found
+Nothing here yet.,Nothing here yet.
 Nothing selected,Nothing selected
 Notifications,Notifications
 Obsolete,Obsolete
@@ -1166,8 +1163,6 @@ Templates,แม่แบบ
 Templates:,Templates:
 Text,ข้อความ
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
-The import process threw an error:,กระบวนการนำเข้าเกิดความผิดพลาด
-The import process threw some warnings:,The import process threw some warnings:
 "The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process."
@@ -1311,7 +1306,6 @@ Updated translations,Updated translations
 Updated user,Updated user
 Updating template properties across,Updating template properties across
 Updating…,Updating…
-Upload a ZIP or CSV file.,นำเข้าไฟล์ zip หรือ csv
 Upload and select file,นำเข้าและเลือกไฟล์
 Upload from computer,นำเข้าจากคอมพิวเตอร์
 Upload image,Upload image
@@ -1323,7 +1317,6 @@ Uploaded document,Uploaded document
 Uploaded file,Uploaded file
 Uploading,การอัพโหลด
 Uploading ...,นำเข้า...
-Uploading file,นำเข้าไฟล์
 Uploads,อัปโหลด
 URL,url
 Use,ใช้

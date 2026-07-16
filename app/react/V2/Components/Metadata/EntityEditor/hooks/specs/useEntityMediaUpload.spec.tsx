@@ -19,7 +19,10 @@ const pendingFile = (fileLocalID: string): ClientFile => ({
 describe('useEntityMediaUpload', () => {
   it('keeps entityAttachments free of pending uploads', () => {
     const { result } = renderHook(() =>
-      useEntityMediaUpload({ sharedId: 'entity1', attachments: [{ filename: 'saved.pdf' }] }, 't1')
+      useEntityMediaUpload(
+        { sharedId: 'entity1', attachments: [{ _id: 'a1', filename: 'saved.pdf' }] },
+        't1'
+      )
     );
 
     act(() => {

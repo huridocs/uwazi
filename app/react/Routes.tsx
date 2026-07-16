@@ -26,10 +26,12 @@ import {
 import { Dashboard, dashboardLoader } from '#V2/Routes/Settings/Dashboard/Dashboard.js';
 import {
   EditThesaurus,
-  thesauriLoader,
+  createThesauriLoader,
+  createEditThesaurusLoader,
   ThesauriList,
-  editThesaurusLoader,
 } from '#app/V2/Routes/Settings/Thesauri/index.js';
+import { httpServices } from '#V2/services/http/index.js';
+import type { V2Services } from '#V2/services/types.js';
 import { MenuConfig, menuConfigloader } from '#V2/Routes/Settings/MenuConfig/MenuConfig.js';
 import {
   RelationshipTypes,
@@ -186,7 +188,8 @@ const getRoutesLayout = (
   settings: ClientSettings | undefined,
   indexElement: React.ReactNode,
   headers?: IncomingHttpHeaders,
-  defaultToLibrary?: boolean
+  defaultToLibrary?: boolean,
+  services: V2Services = httpServices
 ) => (
   <Route errorElement={<RouteErrorBoundary />}>
     <Route
@@ -349,12 +352,16 @@ const getRoutesLayout = (
       </Route>
 
       <Route path="thesauri">
-        <Route index element={adminsOnlyRoute(<ThesauriList />)} loader={thesauriLoader(headers)} />
+        <Route
+          index
+          element={adminsOnlyRoute(<ThesauriList />)}
+          loader={createThesauriLoader(services)(headers)}
+        />
         <Route path="new" element={adminsOnlyRoute(<EditThesaurus />)} />
         <Route
           path="edit/:_id"
           element={adminsOnlyRoute(<EditThesaurus />)}
-          loader={editThesaurusLoader(headers)}
+          loader={createEditThesaurusLoader(services)(headers)}
         />
       </Route>
       <Route
@@ -424,13 +431,14 @@ const getRoutes = (
   settings: ClientSettings | undefined,
   userId: string | undefined,
   headers?: IncomingHttpHeaders,
-  indexComponents?: IndexComponents
+  indexComponents?: IndexComponents,
+  services: V2Services = httpServices
 ) => {
   const descriptor = getIndexDescriptor(settings, userId);
   const indexElement = buildIndexElement(descriptor, indexComponents);
   const { parameters } = descriptor;
   const { defaultToLibrary } = descriptor;
-  const layout = getRoutesLayout(settings, indexElement, headers, defaultToLibrary);
+  const layout = getRoutesLayout(settings, indexElement, headers, defaultToLibrary, services);
   const languageKeys = settings?.languages?.map(lang => lang.key) || [];
   return createRoutesFromElements(
     <Route

@@ -28,16 +28,6 @@ describe('LibraryFooter', () => {
     }
   );
 
-  it('should dispatch an action to open the import panel', () => {
-    spyOn(uploadActions, 'showImportPanel').and.returnValue(async () => Promise.resolve());
-    const props = { storeKey: 'library' };
-    const component = renderConnected(LibraryFooter, props, {});
-
-    const createButton = component.find({ icon: 'import-csv' }).parent();
-    createButton.simulate('click');
-    expect(uploadActions.showImportPanel).toHaveBeenCalled();
-  });
-
   describe('open/close actions', () => {
     let component: ShallowWrapper;
     it('should not have footer and open button as closed at the same time', () => {

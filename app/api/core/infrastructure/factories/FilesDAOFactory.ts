@@ -9,8 +9,11 @@ class FilesDAOFactory {
     const tenant = ExecutionContext.currentTenant;
 
     if (tenant.featureFlags?.postgresFiles) {
+      const pgTM = ExecutionContext.postgresTransactionManager;
+
       return new PostgresFilesDAO({
         tenantId: tenant.name,
+        pgTransactionManager: pgTM,
       }) as any as MongoFilesDAO;
     }
 

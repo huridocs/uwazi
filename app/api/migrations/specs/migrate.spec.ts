@@ -12,6 +12,9 @@ jest.mock('#api/infrastructure/PostgresDB.js', () => ({
     pool: jest.fn().mockReturnValue({
       query: jest.fn().mockResolvedValue({ rows: [{ delta: 15 }] }),
     }),
+    adminPool: jest.fn().mockReturnValue({
+      query: jest.fn().mockResolvedValue({ rows: [{ delta: 15 }] }),
+    }),
   },
 }));
 

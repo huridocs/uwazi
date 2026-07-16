@@ -21,7 +21,7 @@ const Component = ({
       <div
         className="h-full overflow-auto"
         role="region"
-        aria-label="Scrollable pane content"
+        aria-label="Pane 1 content"
         // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- scrollable-region-focusable
         tabIndex={0}
       >
@@ -39,7 +39,7 @@ const Component = ({
       <div
         className="min-w-96 overflow-x-auto"
         role="region"
-        aria-label="Scrollable pane content"
+        aria-label="Pane 2 content"
         // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- scrollable-region-focusable
         tabIndex={0}
       >
@@ -57,7 +57,7 @@ const Component = ({
       <div
         className="h-full overflow-auto"
         role="region"
-        aria-label="Scrollable pane content"
+        aria-label="Pane 3 content"
         // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- scrollable-region-focusable
         tabIndex={0}
       >

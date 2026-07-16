@@ -4,6 +4,7 @@ import { Translate } from '#app/I18N/index.js';
 import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
 import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 import {
+  EntityWriteAuthorization,
   useDocumentPdf,
   useRelationshipsActions,
   useRelationshipsSelection,
@@ -61,7 +62,7 @@ const RelationshipsActionBar = () => {
   }, [documentPdfSelection, focusRelationshipsPanel, openCreateRelationship]);
 
   return (
-    <>
+    <EntityWriteAuthorization>
       <div className="flex w-full items-center justify-between gap-2">
         {!editMode ? (
           <Button
@@ -141,7 +142,7 @@ const RelationshipsActionBar = () => {
           onCancelClick={() => !isDeleting && setConfirmDelete(false)}
         />
       )}
-    </>
+    </EntityWriteAuthorization>
   );
 };
 

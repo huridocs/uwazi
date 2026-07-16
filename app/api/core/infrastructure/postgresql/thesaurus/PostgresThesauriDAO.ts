@@ -1,19 +1,20 @@
-import { PostgresDataSource } from '../common/PostgresDataSource.js';
+import { PostgresDataSource, PostgresDataSourceDeps } from '../common/PostgresDataSource.js';
 import { ThesaurusRow } from './PostgresThesaurusMapper.js';
 
-class PostgresThesauriDAO extends PostgresDataSource {
-  protected tableName = 'thesauri';
-
-  constructor(deps: { tenantId: string }) {
-    super({ tenantId: deps.tenantId });
+class PostgresThesauriDAO extends PostgresDataSource<ThesaurusRow> {
+  constructor(deps: Pick<PostgresDataSourceDeps, 'tenantId' | 'pgTransactionManager'>) {
+    super('thesauri', {
+      tenantId: deps.tenantId,
+      pgTransactionManager: deps.pgTransactionManager,
+    });
   }
 
   async get(ids?: string[]): Promise<ThesaurusRow[]> {
     if (ids && ids.length) {
-      return this.table.query<ThesaurusRow>().whereIn('_id', ids).all();
+      return this.table.whereIn('_id', ids).all();
     }
 
-    return this.table.query<ThesaurusRow>().all();
+    return this.table.all();
   }
 }
 

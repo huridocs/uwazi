@@ -14,6 +14,9 @@ describe('wrapEntityMetadata', () => {
       { name: 'media1', type: 'media' },
       { name: 'media2', type: 'media' },
       { name: 'media3', type: 'media' },
+      { name: 'location', type: 'geolocation' },
+      { name: 'website', type: 'link' },
+      { name: 'period', type: 'daterange' },
     ],
   };
   it('should return entity as is if there is no metadata', () => {
@@ -60,6 +63,58 @@ describe('wrapEntityMetadata', () => {
           fileLocalID: 'k3rutmyxrdr',
         },
       ],
+    });
+  });
+
+  it('should preserve geolocation, link and daterange object values', () => {
+    const entity = {
+      title: 'A title',
+      metadata: {
+        location: [{ lat: 40.7128, lon: -74.006, label: '' }],
+        website: { label: 'Uwazi', url: 'https://uwazi.io' },
+        period: { from: 1681257600, to: 1682467200 },
+      },
+    };
+
+    expect(wrapEntityMetadata(entity, template).metadata).toEqual({
+      location: [{ value: { lat: 40.7128, lon: -74.006, label: '' } }],
+      website: [{ value: { label: 'Uwazi', url: 'https://uwazi.io' } }],
+      period: [{ value: { from: 1681257600, to: 1682467200 } }],
+    });
+  });
+
+  it('should not remap non-media values that match an attachment fileLocalID', () => {
+    const entity = {
+      title: 'A title',
+      metadata: { text: 'k3rutmyxrdr', image: 'k3rutmyxrdr' },
+      attachments: [
+        {
+          originalname: 'image.jpeg',
+          fileLocalID: 'k3rutmyxrdr',
+          type: 'attachment',
+        },
+      ],
+    };
+
+    expect(wrapEntityMetadata(entity, template).metadata).toEqual({
+      text: [{ value: 'k3rutmyxrdr' }],
+      image: [{ value: '', attachment: 0 }],
+    });
+  });
+
+  it('should preserve siblings on already-wrapped metadata entries', () => {
+    const entity = {
+      title: 'A title',
+      metadata: {
+        image: [{ value: '', attachment: 0, timeLinks: '{"timelinks":{}}' }],
+        text: [{ value: 'keep-me', label: 'Label' }],
+      },
+      attachments: [{ fileLocalID: 'img1', type: 'attachment' }],
+    };
+
+    expect(wrapEntityMetadata(entity, template).metadata).toEqual({
+      image: [{ value: '', attachment: 0, timeLinks: '{"timelinks":{}}' }],
+      text: [{ value: 'keep-me', label: 'Label' }],
     });
   });
 
@@ -298,6 +353,42 @@ describe('prepareMetadataAndFiles', () => {
     expect(wrappedEntity.attachments.length).toBe(1);
     expect(wrappedEntity.attachments[0]).toBeInstanceOf(File);
     expect(wrappedEntity.attachments[0]).toBe(imageFile);
+  });
+
+  it('should preserve timelinks from public-form blob media values', async () => {
+    const videoFile = new File([Buffer.from('video content').toString('base64')], 'clip.mp4', {
+      type: 'video/mp4',
+    });
+    template.properties = [
+      ...template.properties,
+      { _id: 'media1', label: 'Media', type: 'media', name: 'media' },
+    ];
+
+    const entity = {
+      title: 'Public form video',
+      metadata: {
+        media: {
+          data: '(blob:http://localhost:3000/12345678-1234-1234-1234-123456789abc, {"timelinks":{"00:00:13":"Check point 1"}})',
+          originalFile: videoFile,
+        },
+      },
+    };
+
+    const mediaProperties = template.properties.filter(
+      prop => prop.type === 'image' || prop.type === 'media'
+    );
+    const wrappedEntity = await prepareMetadataAndFiles(entity, [], template, mediaProperties);
+
+    expect(wrappedEntity.metadata).toEqual({
+      media: [
+        {
+          value: '',
+          attachment: 0,
+          timeLinks: '{"timelinks":{"00:00:13":"Check point 1"}}',
+        },
+      ],
+    });
+    expect(wrappedEntity.attachments).toEqual([videoFile]);
   });
 
   it('should handle images from URLs without storing a file object', async () => {

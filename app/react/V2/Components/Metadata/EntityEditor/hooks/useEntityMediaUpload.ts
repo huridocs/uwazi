@@ -3,6 +3,9 @@ import type { ClientFile } from '#app/istore.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { revokeHTMLMediaView } from '#shared/fileUploadUtils.js';
 
+type EntityMediaSource = Pick<Entity, 'sharedId'> &
+  Partial<Pick<Entity, 'attachments' | 'documents'>>;
+
 const revokePending = (attachments: ClientFile[]) => {
   attachments.forEach(attachment => {
     if (attachment.fileLocalID) {
@@ -11,7 +14,7 @@ const revokePending = (attachments: ClientFile[]) => {
   });
 };
 
-const useEntityMediaUpload = (entity?: Entity, templateId?: string) => {
+const useEntityMediaUpload = (entity?: EntityMediaSource, templateId?: string) => {
   const [pendingAttachments, setPendingAttachments] = useState<ClientFile[]>([]);
   const pendingRef = useRef(pendingAttachments);
   pendingRef.current = pendingAttachments;

@@ -51,7 +51,7 @@ const EditEntityComponent = ({
     limit?: number;
   }) => Promise<{ value: string; label: string }[]>;
 }) => {
-  const [savedEntity, setSavedEntity] = useState<EntitySaveInput>(entity);
+  const [savedEntity, setSavedEntity] = useState<Entity | EntitySaveInput>(entity);
 
   const store = createStore();
   store.set(settingsAtom, { mapLayers: ['Streets', 'Hybrid', 'Satellite'] });
