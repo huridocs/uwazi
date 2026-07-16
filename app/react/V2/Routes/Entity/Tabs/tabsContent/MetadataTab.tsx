@@ -111,7 +111,7 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
   };
 
   return (
-    <div className="h-full min-h-0 flex-1 overflow-y-auto py-3">
+    <div className="h-full min-h-0 flex-1 overflow-y-auto px-4 py-3">
       {!isEditing && <MetadataDisplay entity={entity} />}
       {isEditing && (
         <>
