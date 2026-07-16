@@ -116,6 +116,7 @@ const Geolocation = ({
           type="number"
           min={LATITUDE_MIN}
           max={LATITUDE_MAX}
+          step="any"
           autoComplete="off"
         />
         <InputField
@@ -131,6 +132,7 @@ const Geolocation = ({
           type="number"
           min={LONGITUDE_MIN}
           max={LONGITUDE_MAX}
+          step="any"
           autoComplete="off"
         />
       </div>
