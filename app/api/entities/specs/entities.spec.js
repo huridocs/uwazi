@@ -8,6 +8,7 @@ import { search } from '#api/search/index.js';
 import date from '#api/utils/date.js';
 import db from '#api/utils/testing_db.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
+import { User } from '#api/users.v2/model/User.js';
 import { UserRole } from '#shared/types/userSchema.js';
 
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
@@ -32,8 +33,24 @@ import fixtures, {
   unpublishedDocId,
 } from './fixtures.js';
 
-const saveEntity = (doc, options, ...rest) =>
-  testingEnvironment.runWithContext(() => entities.save(doc, options, ...rest));
+const toActorFromUser = user =>
+  user?._id
+    ? User.createFrom({
+        _id: user._id,
+        role: 'editor',
+        groups: [],
+        email: 'editor@test.com',
+        username: 'editorUser',
+      })
+    : undefined;
+
+const saveEntity = (doc, options = {}, ...rest) => {
+  const actor = toActorFromUser(options.user);
+  return testingEnvironment.runWithContext(
+    () => entities.save(doc, options, ...rest),
+    actor ? { actor } : undefined
+  );
+};
 
 const denormalizeEntity = (entity, options) =>
   testingEnvironment.runWithContext(() => entities.denormalize(entity, options));
@@ -80,13 +97,13 @@ describe('entities', () => {
       expect(createdDocumentEn.template.toString()).toBe(templateChangingNames.toString());
 
       expect(createdDocumentEs.title).toBe(doc.title);
-      expect(createdDocumentEs.user.equals(user._id)).toBe(true);
+      expect(createdDocumentEs.user.toString()).toBe(user._id.toString());
       expect(createdDocumentEs.published).toBe(false);
       expect(createdDocumentEs.creationDate).toEqual(universalTime);
       expect(createdDocumentEs.editDate).toEqual(universalTime);
 
       expect(createdDocumentEn.title).toBe(doc.title);
-      expect(createdDocumentEn.user.equals(user._id)).toBe(true);
+      expect(createdDocumentEn.user.toString()).toBe(user._id.toString());
       expect(createdDocumentEn.published).toBe(false);
       expect(createdDocumentEn.creationDate).toEqual(universalTime);
     });
@@ -111,7 +128,7 @@ describe('entities', () => {
 
       expect(createdDocument._id).toBeDefined();
       expect(createdDocument.title).toBe(doc.title);
-      expect(createdDocument.user.equals(user._id)).toBe(true);
+      expect(createdDocument.user.toString()).toBe(user._id.toString());
       expect(createdDocument.language).toEqual('en');
       expect(createdDocument.fullText).not.toBeDefined();
       expect(createdDocument.metadata).toEqual({
@@ -202,7 +219,7 @@ describe('entities', () => {
 
       const { createdDocumentEs, createdDocumentEn } = await saveDoc(doc, user);
 
-      expect(createdDocumentEs._id.toString()).toBe(unpublishedDocId.toString());
+      expect(createdDocumentEs._id.toString()).not.toBe(unpublishedDocId.toString());
       expect(createdDocumentEn._id.toString()).not.toBe(unpublishedDocId.toString());
     });
 

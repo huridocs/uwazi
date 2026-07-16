@@ -251,6 +251,12 @@ Implemented rule in this pass:
 - Migrate remaining behavior-heavy `entities.save` test suites (not setup-only):
   - `app/api/entities/specs/entities.spec.js`
   - `app/api/entities/specs/denormalization.spec.ts`
+- Migration note for `denormalization.spec.ts`:
+  - direct replacement of `entities.save(...)` with `EntityFacade.update(...)` caused broad denormalization regressions (missing inherited labels/values and translation mismatches).
+  - keep this suite on legacy `entities.save` until dedicated fixture/context alignment is done for V2 listeners + multi-language translation semantics.
+- `entities.save` façade status:
+  - create path no longer force-falls back when a `user._id` exists.
+  - update path still force-falls back for `_id` payloads (`LEGACY_UPDATE_REQUIRED`) because removing it breaks denormalization semantics used by legacy suites.
 - After each behavior migration chunk, re-attempt removing update fallback in `entities.save`:
   - remove `shouldForceLegacyUpdate`
   - remove update-side `isLegacyCompatibilityError` fallback branch
@@ -320,3 +326,24 @@ Given CSV V2 is now enabled for all tenants, we may include full CSV V1 retireme
 - TS fix verification:
   - `app/api/suggestions/specs/eventListeners.spec.ts` (21/21)
   - `app/api/utils/specs/withTransaction.spec.ts` (16/16)
+- check-types verification (post-install):
+  - `yarn check-types` passed (0 errors)
+  - fixed targeted CI errors:
+    - `app/api/core/application/specs/DeleteTemplate.spec.ts` (`countByTemplate` spy aligned to `templates`)
+    - `app/api/suggestions/specs/suggestions.spec.ts` (listener registry typing check for subclass constructors)
+- denormalization migration attempt:
+  - attempted to move `app/api/entities/specs/denormalization.spec.ts` from `entities.save` to `EntityFacade.update`.
+  - result: 11/12 tests failed due behavioral drift in denormalization/translations.
+  - action taken: reverted this migration attempt; suite back to green (`12/12`).
+- create-path fallback cleanup:
+  - removed forced create fallback gate in `entities.save` (`shouldForceLegacyCreate` path).
+  - create now attempts V2 first, then legacy only on compatibility errors.
+  - aligned legacy `entities.spec.js` create assertions to V2 semantics.
+  - IMPORTANT follow-up:
+    - restored strict user-id equality assertions (`createdDocument*.user.toString() === user._id.toString()`), replacing temporary weaker assertions.
+    - adjusted `saveEntity` test helper in `entities.spec.js` to pass `options.user` as `runWithContext` actor, avoiding random default actor IDs and making user ownership assertions deterministic.
+  - create-with-`_id` expectation now reflects V2 create behavior (generated IDs, not legacy `_id` preservation on create).
+  - verification:
+    - `app/api/entities/specs/entities.spec.js` (59/59)
+    - `app/api/entities/specs/denormalization.spec.ts` (12/12)
+    - `yarn check-types` passed

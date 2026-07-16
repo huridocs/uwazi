@@ -345,8 +345,6 @@ const isLegacyCompatibilityError = error => {
   );
 };
 
-const shouldForceLegacyCreate = (doc, user = {}) => Boolean(doc?._id || user?._id);
-
 const shouldForceLegacyUpdate = doc => Boolean(doc?._id);
 
 const withDocuments = async (entities, documentsFullText) => {
@@ -456,17 +454,13 @@ export default {
       }
       doc.metadata = doc.metadata || {};
       try {
-        if (shouldForceLegacyCreate(doc, user)) {
-          throw new Error('LEGACY_CREATE_REQUIRED');
-        }
-
         const createdEntity = await EntityFacade.create(
           normalizeLegacyEntityForFacade(this.sanitize(doc, docTemplate)),
           language
         );
         sharedId = createdEntity.sharedId;
       } catch (error) {
-        if (error?.message !== 'LEGACY_CREATE_REQUIRED' && !isLegacyCompatibilityError(error)) {
+        if (!isLegacyCompatibilityError(error)) {
           throw error;
         }
         await this.createEntity(
