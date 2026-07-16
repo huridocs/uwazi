@@ -15,7 +15,7 @@ import {
 
 const defaultValue = { lat: '', lon: '', label: '' };
 
-export class Geolocation extends Component {
+class Geolocation extends Component {
   constructor(props) {
     super(props);
     this.latChange = this.latChange.bind(this);
@@ -152,6 +152,14 @@ Geolocation.defaultProps = {
 };
 
 Geolocation.propTypes = {
-  value: PropTypes.arrayOf(PropTypes.object),
+  value: PropTypes.arrayOf(
+    PropTypes.shape({
+      lat: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+      lon: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+      label: PropTypes.string,
+    })
+  ),
   onChange: PropTypes.func.isRequired,
 };
+
+export { Geolocation };

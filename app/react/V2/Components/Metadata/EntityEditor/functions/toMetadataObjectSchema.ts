@@ -21,13 +21,14 @@ const coerceCoordinate = (value: unknown): number | undefined => {
   return undefined;
 };
 
-const hasLatLonKeys = (value: Record<string, unknown>) => 'lat' in value || 'lon' in value;
+const hasLatLonKeys = (value: Record<string, unknown>) =>
+  'lat' in value || 'lon' in value || 'latitude' in value || 'longitude' in value;
 
 const toLatLonValue = (
   value: Record<string, unknown>
 ): { lat: number; lon: number; label?: string } | null => {
-  const lat = coerceCoordinate(value.lat);
-  const lon = coerceCoordinate(value.lon);
+  const lat = coerceCoordinate(value.lat ?? value.latitude);
+  const lon = coerceCoordinate(value.lon ?? value.longitude);
   if (lat === undefined || lon === undefined) {
     return null;
   }

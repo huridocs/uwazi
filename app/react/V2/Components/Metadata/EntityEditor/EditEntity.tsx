@@ -245,16 +245,27 @@ const formatMetadataForEntity = (
       const sourceValues = syncedMetadata[mainName] ?? [];
 
       otherNames.forEach(name => {
-        const siblingProperty = metadataProperties.find(candidate => candidate.name === name);
-        if (siblingProperty?.inherited) {
-          return;
-        }
         syncedMetadata[name] = sourceValues;
       });
     });
 
   return metadataProperties.reduce<NonNullable<Entity['metadata']>>((acc, property) => {
     if (property.inherited) {
+      if (property.type === 'relationship') {
+        const editableSibling = metadataProperties.find(
+          candidate =>
+            candidate.type === 'relationship' &&
+            !candidate.inherited &&
+            candidate.content === property.content &&
+            candidate.relationType === property.relationType
+        );
+        if (editableSibling) {
+          acc[property.name] = (syncedMetadata[editableSibling.name] ?? []).map(
+            toMetadataObjectSchema
+          );
+          return acc;
+        }
+      }
       acc[property.name] = [...(originalMetadata?.[property.name] ?? [])];
       return acc;
     }
@@ -464,10 +475,6 @@ const EditEntity = ({
         const sourceValues = metadata?.[mainName] ?? [];
 
         otherNames.forEach(name => {
-          const siblingProperty = metadataProperties.find(candidate => candidate.name === name);
-          if (siblingProperty?.inherited) {
-            return;
-          }
           const targetValues = metadata?.[name] ?? [];
           if (JSON.stringify(targetValues) !== JSON.stringify(sourceValues)) {
             setValue(`metadata.${name}`, sourceValues);
@@ -664,14 +671,15 @@ const EditEntity = ({
               return (
                 <>
                   {property._id === firstEditableRelationshipId ? (
-                    <h3
+                    <p
                       key={`relationships-heading-${property._id}`}
                       className="pt-2 text-xs font-semibold uppercase tracking-wide text-ink-tertiary"
                     >
                       <Translate>Relationships</Translate>
-                    </h3>
+                    </p>
                   ) : null}
                   <RelationshipField<EditEntityFormValues>
+                    context={activeTemplate?._id ?? ''}
                     label={property.label}
                     field={`metadata.${fieldName}`}
                     registerOptions={{ required: property.required }}
@@ -783,7 +791,7 @@ const EditEntity = ({
                 <GeolocationField<EditEntityFormValues>
                   context={activeTemplate?._id ?? ''}
                   label={property.label}
-                  field={`metadata.${property.name}.0.value`}
+                  field={`metadata.${property.name}`}
                   registerOptions={{ required: property.required }}
                   disabled={disabled}
                   key={property._id}

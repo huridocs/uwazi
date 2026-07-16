@@ -22,6 +22,7 @@ type RelationshipInheritColumn = {
 
 type RelationshipFieldEditorProps = {
   title: string;
+  translationContext?: string;
   relationLabel?: string;
   targetTemplateId?: string;
   values: MetadataValue[];
@@ -52,6 +53,7 @@ const inheritedCellValue = (
 
 const RelationshipFieldEditor = ({
   title,
+  translationContext = 'System',
   relationLabel,
   targetTemplateId,
   values,
@@ -126,7 +128,9 @@ const RelationshipFieldEditor = ({
       <div className="flex flex-col gap-0.5">
         <div className="flex items-center gap-1.5">
           <LinkIcon className="h-3.5 w-3.5 text-carbon" aria-hidden />
-          <span className="text-sm font-bold text-ink">{title}</span>
+          <span className="text-sm font-bold text-ink">
+            <Translate context={translationContext}>{title}</Translate>
+          </span>
         </div>
         {relationLabel ? <RelationCaption relationLabel={relationLabel} /> : null}
       </div>
@@ -146,7 +150,7 @@ const RelationshipFieldEditor = ({
                   >
                     <span className="inline-flex items-center gap-1">
                       <LinkIcon className="h-2.5 w-2.5 text-carbon" aria-hidden />
-                      {column.label}
+                      <Translate context={translationContext}>{column.label}</Translate>
                     </span>
                   </th>
                 ))}

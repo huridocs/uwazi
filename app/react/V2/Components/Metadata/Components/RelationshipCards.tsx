@@ -29,25 +29,27 @@ const RelationshipCards = ({
   return (
     <>
       <div className="mt-2 flex w-full min-w-0 basis-full items-center">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
+        <p className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
           <Translate>Relationships</Translate>
-        </h3>
+        </p>
       </div>
-      {visibleFields.map(data => {
-        const templateProperty = templatePropertyById.get(data._id);
-        return (
-          <Relationship
-            key={data._id}
-            values={data.values}
-            label={data.label}
-            translationContext={translationContext}
-            hideLabel={data.hideLabel}
-            className={FULL_ROW_METADATA_FIELD_LAYOUT}
-            relationTypeId={templateProperty?.relationType}
-            targetTemplateId={data.relationShipTarget || templateProperty?.content}
-          />
-        );
-      })}
+      <dl className="flex min-w-0 flex-wrap gap-3">
+        {visibleFields.map(data => {
+          const templateProperty = templatePropertyById.get(data._id);
+          return (
+            <Relationship
+              key={data._id}
+              values={data.values}
+              label={data.label}
+              translationContext={translationContext}
+              hideLabel={data.hideLabel}
+              className={FULL_ROW_METADATA_FIELD_LAYOUT}
+              relationTypeId={templateProperty?.relationType}
+              targetTemplateId={data.relationShipTarget || templateProperty?.content}
+            />
+          );
+        })}
+      </dl>
     </>
   );
 };

@@ -49,7 +49,7 @@ describe('Metadata Display', () => {
     });
 
     it('renders authorized relationship links with correct hrefs', () => {
-      cy.contains('h3', 'Relationships').should('exist');
+      cy.contains('Relationships').should('exist');
       cy.contains('dt', 'Relationship with inheritance').should('exist');
       cy.contains('via').should('exist');
       cy.contains('linked').should('exist');

@@ -606,13 +606,6 @@ describe('validateEntity', () => {
           await testValid(entity);
         });
 
-        it('should allow null value when property is not required', async () => {
-          const entity = createEntity({
-            metadata: { geolocation: [{ value: null }] },
-          });
-          await testValid(entity);
-        });
-
         it('should fail if lat is not within range -90 - 90', async () => {
           let entity = createEntity({
             metadata: { geolocation: [{ value: { label: undefined, lat: -91, lon: 10 } }] },

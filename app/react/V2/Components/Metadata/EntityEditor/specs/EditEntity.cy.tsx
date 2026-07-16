@@ -140,8 +140,8 @@ describe('Entity edit', () => {
     });
 
     it('should check the geolocation field', () => {
-      cy.get('input[name="metadata.location_on_map.0.value[lat]"]').should('have.value', '40.7128');
-      cy.get('input[name="metadata.location_on_map.0.value[lon]"]').should('have.value', '-74.006');
+      cy.get('input[name="metadata.location_on_map.lat"]').should('have.value', '40.7128');
+      cy.get('input[name="metadata.location_on_map.lon"]').should('have.value', '-74.006');
     });
 
     it('should render the image field preview', () => {
@@ -206,14 +206,8 @@ describe('Entity edit', () => {
         selectSearchSelectOption('template', 'Event Report');
         cy.get('textarea[id="metadata.report.0.value"]').should('exist');
         selectSearchSelectOption('template', 'Documents');
-        cy.get('input[name="metadata.location_on_map.0.value[lat]"]').should(
-          'have.value',
-          '40.7128'
-        );
-        cy.get('input[name="metadata.location_on_map.0.value[lon]"]').should(
-          'have.value',
-          '-74.006'
-        );
+        cy.get('input[name="metadata.location_on_map.lat"]').should('have.value', '40.7128');
+        cy.get('input[name="metadata.location_on_map.lon"]').should('have.value', '-74.006');
         [
           { id: 'metadata.date_range.0.value.from', value: '2024-01-01' },
           { id: 'metadata.date_range.0.value.to', value: '2024-01-02' },

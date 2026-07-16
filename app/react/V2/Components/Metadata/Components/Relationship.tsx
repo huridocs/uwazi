@@ -47,49 +47,49 @@ const Relationship = ({
 
   return (
     <MetadataCard className={className ?? COMPACT_METADATA_FIELD_LAYOUT}>
-      <div className="flex items-center gap-1.5">
+      <dt className="flex items-center gap-1.5">
         <LinkIcon className="h-3.5 w-3.5 shrink-0 text-carbon" aria-hidden="true" />
-        <dt>
-          <Translate
-            className={hideLabel ? 'sr-only' : 'text-sm font-bold leading-tight text-ink'}
-            context={translationContext}
-          >
-            {label}
-          </Translate>
-        </dt>
-      </div>
-      <RelationCaption relationLabel={relationLabel} />
-      <dd className="mt-1 flex flex-wrap gap-1.5">
-        {values.map((value, index) => {
-          const itemKey = value._id || `${label}-${index}`;
-          const pill = (
-            <span className="inline-flex max-w-full items-center gap-1.5">
-              {value.icon?._id && <CountryFlag id={value.icon._id} />}
-              <TemplatePill
-                templateId={value.templateId || targetTemplateId || ''}
-                label={value.title}
-              />
-            </span>
-          );
+        <Translate
+          className={hideLabel ? 'sr-only' : 'text-sm font-bold leading-tight text-ink'}
+          context={translationContext}
+        >
+          {label}
+        </Translate>
+      </dt>
+      <dd className="mt-1 flex flex-col gap-1.5">
+        <RelationCaption relationLabel={relationLabel} />
+        <div className="flex flex-wrap gap-1.5">
+          {values.map((value, index) => {
+            const itemKey = value._id || `${label}-${index}`;
+            const pill = (
+              <span className="inline-flex max-w-full items-center gap-1.5">
+                {value.icon?._id && <CountryFlag id={value.icon._id} />}
+                <TemplatePill
+                  templateId={value.templateId || targetTemplateId || ''}
+                  label={value.title}
+                />
+              </span>
+            );
 
-          if (value.authorized === false) {
-            return <span key={itemKey}>{pill}</span>;
-          }
+            if (value.authorized === false) {
+              return <span key={itemKey}>{pill}</span>;
+            }
 
-          return (
-            <I18NLinkV2
-              key={itemKey}
-              className="max-w-full rounded-md transition-opacity hover:opacity-80"
-              to={`${DEFAULT_ENTITY_BASE_PATH}${value._id}`}
-              target="_blank"
-              rel="noreferrer"
-              localized={false}
-              title={value.title}
-            >
-              {pill}
-            </I18NLinkV2>
-          );
-        })}
+            return (
+              <I18NLinkV2
+                key={itemKey}
+                className="max-w-full rounded-md transition-opacity hover:opacity-80"
+                to={`${DEFAULT_ENTITY_BASE_PATH}${value._id}`}
+                target="_blank"
+                rel="noreferrer"
+                localized={false}
+                title={value.title}
+              >
+                {pill}
+              </I18NLinkV2>
+            );
+          })}
+        </div>
       </dd>
     </MetadataCard>
   );

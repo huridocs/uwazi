@@ -88,6 +88,14 @@ describe('toMetadataObjectSchema', () => {
 
     expect(
       toMetadataObjectSchema({
+        value: { latitude: '45.5', longitude: '5.8' },
+      })
+    ).toEqual({
+      value: { lat: 45.5, lon: 5.8 },
+    });
+
+    expect(
+      toMetadataObjectSchema({
         value: { lat: 45.5, lon: undefined, label: '' },
       })
     ).toEqual({ value: null });

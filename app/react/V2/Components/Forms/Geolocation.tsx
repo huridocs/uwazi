@@ -7,6 +7,8 @@ import {
   LATITUDE_MIN,
   LONGITUDE_MAX,
   LONGITUDE_MIN,
+  clampLatitude,
+  clampLongitude,
   isValidLatitude,
   isValidLongitude,
   parseCoordinate,
@@ -19,7 +21,6 @@ interface GeolocationProps {
   label?: string;
   className?: string;
   disabled?: boolean;
-  startingPoint?: { lat: number; lon: number };
   zoom?: number;
   layers?: Layer[];
   hasErrors?: boolean;
@@ -44,7 +45,6 @@ const Geolocation = ({
 }: GeolocationProps) => {
   const [currentLatitude, setCurrentLatitude] = useState(value?.lat);
   const [currentLongitude, setCurrentLongitude] = useState(value?.lon);
-  const [currentMarkers, setCurrentMarkers] = useState<Marker[] | undefined>(undefined);
 
   useEffect(() => {
     setCurrentLatitude(value?.lat);
@@ -52,13 +52,15 @@ const Geolocation = ({
   }, [value?.lat, value?.lon]);
 
   const latChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const nextLat = parseCoordinate(e.target.value);
+    const parsed = parseCoordinate(e.target.value);
+    const nextLat = parsed === undefined ? undefined : clampLatitude(parsed);
     setCurrentLatitude(nextLat);
     onChange?.({ lat: nextLat, lon: currentLongitude });
   };
 
   const lonChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const nextLon = parseCoordinate(e.target.value);
+    const parsed = parseCoordinate(e.target.value);
+    const nextLon = parsed === undefined ? undefined : clampLongitude(parsed);
     setCurrentLongitude(nextLon);
     onChange?.({ lat: currentLatitude, lon: nextLon });
   };
@@ -69,26 +71,19 @@ const Geolocation = ({
     onChange?.({ lat: undefined, lon: undefined });
   };
 
-  useEffect(() => {
-    if (isValidLatitude(currentLatitude) && isValidLongitude(currentLongitude)) {
-      setCurrentMarkers([
-        {
-          latitude: currentLatitude,
-          longitude: currentLongitude,
-          properties: {},
-        },
-      ]);
-      return;
-    }
-    setCurrentMarkers(undefined);
-  }, [currentLatitude, currentLongitude]);
+  const markers: Marker[] =
+    isValidLatitude(currentLatitude) && isValidLongitude(currentLongitude)
+      ? [{ latitude: currentLatitude, longitude: currentLongitude, properties: {} }]
+      : [];
 
   const mapClick = ({ lngLat }: { lngLat: [number, number] }) => {
     if (disabled) return;
     const [lon, lat] = lngLat;
-    setCurrentLatitude(lat);
-    setCurrentLongitude(lon);
-    onChange?.({ lat, lon });
+    const nextLat = clampLatitude(lat);
+    const nextLon = clampLongitude(lon);
+    setCurrentLatitude(nextLat);
+    setCurrentLongitude(nextLon);
+    onChange?.({ lat: nextLat, lon: nextLon });
   };
 
   return (
@@ -100,7 +95,7 @@ const Geolocation = ({
         showControls
         zoom={zoom}
         layers={layers}
-        markers={currentMarkers || []}
+        markers={markers}
       />
       <div className="flex gap-4">
         <InputField
@@ -111,8 +106,8 @@ const Geolocation = ({
           clearFieldAction={clearCoordinates}
           value={currentLatitude ?? ''}
           label={<Translate>Latitude</Translate>}
-          id="lat"
-          name={`${name}[lat]`}
+          id={`${name}.lat`}
+          name={`${name}.lat`}
           type="number"
           min={LATITUDE_MIN}
           max={LATITUDE_MAX}
@@ -127,8 +122,8 @@ const Geolocation = ({
           hasErrors={hasErrors}
           clearFieldAction={clearCoordinates}
           value={currentLongitude ?? ''}
-          id="lon"
-          name={`${name}[lon]`}
+          id={`${name}.lon`}
+          name={`${name}.lon`}
           type="number"
           min={LONGITUDE_MIN}
           max={LONGITUDE_MAX}

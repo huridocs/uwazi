@@ -1,6 +1,8 @@
 /**
  * @jest-environment jsdom
  */
+import React from 'react';
+import { Translate } from '#app/I18N/index.js';
 import { getFieldErrorState } from '../fieldErrorState.js';
 
 describe('getFieldErrorState', () => {
@@ -17,6 +19,6 @@ describe('getFieldErrorState', () => {
   it('returns showError and custom message for validate errors', () => {
     const state = getFieldErrorState({ error: { type: 'validate', message: 'Invalid range' } });
     expect(state.showError).toBe(true);
-    expect(state.message).toBe('Invalid range');
+    expect(state.message).toEqual(React.createElement(Translate, null, 'Invalid range'));
   });
 });

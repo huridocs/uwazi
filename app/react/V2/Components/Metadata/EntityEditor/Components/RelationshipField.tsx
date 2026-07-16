@@ -14,6 +14,7 @@ type RelationshipInheritColumn = {
 };
 
 type RelationshipFieldProps<TFormValues extends FieldValues = FieldValues> = {
+  context?: string;
   label: string;
   field: Path<TFormValues>;
   registerOptions?: RegisterOptions<TFormValues, Path<TFormValues>>;
@@ -26,6 +27,7 @@ type RelationshipFieldProps<TFormValues extends FieldValues = FieldValues> = {
 };
 
 const RelationshipField = <TFormValues extends FieldValues = FieldValues>({
+  context = 'System',
   label,
   field,
   registerOptions,
@@ -56,6 +58,7 @@ const RelationshipField = <TFormValues extends FieldValues = FieldValues>({
           <>
             <RelationshipFieldEditor
               title={label}
+              translationContext={context}
               relationLabel={relationLabel}
               targetTemplateId={targetTemplateId}
               values={(fieldController.value as MetadataValue[] | undefined) ?? []}

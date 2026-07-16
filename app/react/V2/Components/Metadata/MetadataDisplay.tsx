@@ -181,38 +181,40 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
   const translationContext = entityTemplate._id || '';
 
   return (
-    <dl className="flex min-w-0 flex-wrap gap-3">
-      {typeof entity.creationDate === 'number' && (
-        <Date
-          values={[
-            {
-              value: entity.creationDate,
-            },
-          ]}
-          label="Creation Date"
-          translationContext="System"
-        />
-      )}
+    <>
+      <dl className="flex min-w-0 flex-wrap gap-3">
+        {typeof entity.creationDate === 'number' && (
+          <Date
+            values={[
+              {
+                value: entity.creationDate,
+              },
+            ]}
+            label="Creation Date"
+            translationContext="System"
+          />
+        )}
 
-      {typeof entity.editDate === 'number' && (
-        <Date
-          values={[
-            {
-              value: entity.editDate,
-            },
-          ]}
-          label="Edit Date"
-          translationContext="System"
-        />
-      )}
+        {typeof entity.editDate === 'number' && (
+          <Date
+            values={[
+              {
+                value: entity.editDate,
+              },
+            ]}
+            label="Edit Date"
+            translationContext="System"
+          />
+        )}
 
-      {renderMetadataFields(otherFields)}
+        {renderMetadataFields(otherFields)}
+      </dl>
       <RelationshipCards
         fields={relationshipFields}
         translationContext={translationContext}
         templatePropertyById={templatePropertyById}
       />
-    </dl>
+    </>
   );
 };
 
