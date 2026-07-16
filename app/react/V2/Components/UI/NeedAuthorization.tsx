@@ -50,4 +50,4 @@ const NeedAuthorization = ({ children, roles, orWriteAccessTo }: PropTypes) => {
   return authorized ? <>{children}</> : null;
 };
 
-export { NeedAuthorization };
+export { NeedAuthorization, checkRole, checkWritePermissions };

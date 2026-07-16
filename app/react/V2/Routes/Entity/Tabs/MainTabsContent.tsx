@@ -40,7 +40,7 @@ const MainTabsContent = ({
       break;
     case MAIN_TAB.METADATA:
       content = (
-        <div className="flex min-h-0 flex-1 flex-col px-3">
+        <div className="flex min-h-0 flex-1 flex-col">
           <MetadataTab entity={entity} />
         </div>
       );
@@ -69,7 +69,9 @@ const MainTabsContent = ({
       role="tabpanel"
       id={`entity-main-panel-${activeTabId}`}
       aria-labelledby={`entity-main-tab-${activeTabId}`}
-      className="flex h-full min-h-0 w-full flex-col bg-warm"
+      className={`flex h-full min-h-0 w-full flex-col ${
+        activeTabId === MAIN_TAB.METADATA ? 'bg-paper' : 'bg-warm'
+      }`}
     >
       {content}
       {activeTabId === MAIN_TAB.RELATIONSHIPS && <RelationshipsFiltersDrawer />}

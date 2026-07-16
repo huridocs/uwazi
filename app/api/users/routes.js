@@ -1,5 +1,4 @@
 import { validation } from '#api/utils/index.js';
-import { userSchema } from '#shared/types/userSchema.js';
 import { needsAuthorization, validatePasswordMiddleWare } from '../auth/index.js';
 import users from './users.js';
 import { tenants } from '#api/tenants/index.js';
@@ -7,26 +6,6 @@ import { tenants } from '#api/tenants/index.js';
 const getDomain = req => `${req.protocol}://${tenants.current().domain}`;
 
 export default app => {
-  app.post(
-    '/api/users',
-    needsAuthorization(['admin', 'editor', 'collaborator']),
-    validatePasswordMiddleWare,
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        body: userSchema,
-      },
-      required: ['body'],
-    }),
-
-    (req, res, next) => {
-      users
-        .save(req.body, req.user, getDomain(req))
-        .then(response => res.json(response))
-        .catch(next);
-    }
-  );
-
   app.post(
     '/api/users/unlock',
     needsAuthorization(),
