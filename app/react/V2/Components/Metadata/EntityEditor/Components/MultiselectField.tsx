@@ -33,9 +33,9 @@ const MultiselectField = <TFormValues extends FieldValues = FieldValues>({
     disabled={disabled}
     hideFilters={hideFilters}
     getSelectedValues={getMetadataSelectedValues}
-    onSelectedValuesChange={selectedValues =>
+    onSelectedValuesChange={(selectedValues, availableOptions) =>
       selectedValues.map(value => {
-        const option = getOptionInfo(value, options);
+        const option = getOptionInfo(value, availableOptions);
 
         return {
           value,

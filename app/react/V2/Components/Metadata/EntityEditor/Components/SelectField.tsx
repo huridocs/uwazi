@@ -34,14 +34,14 @@ const SelectField = <TFormValues extends FieldValues = FieldValues>({
     hideFilters={hideFilters}
     singleSelect
     getSelectedValues={getMetadataSelectedValues}
-    onSelectedValuesChange={selectedValues => {
+    onSelectedValuesChange={(selectedValues, availableOptions) => {
       const selectedValue = selectedValues[0];
 
       if (!selectedValue) {
         return [];
       }
 
-      const option = getOptionInfo(selectedValue, options);
+      const option = getOptionInfo(selectedValue, availableOptions);
 
       return [
         {

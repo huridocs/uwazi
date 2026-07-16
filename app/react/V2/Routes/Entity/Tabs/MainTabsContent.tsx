@@ -25,7 +25,7 @@ const MainTabsContent = ({
   pagePlaintext,
 }: MainTabsContentProps) => {
   const { activeTabId: atomActiveTabId } = useTabGroup('entity-main');
-  const activeTabId = atomActiveTabId ?? urlActiveTabId;
+  const activeTabId = atomActiveTabId || urlActiveTabId;
   const { focusDocumentPanel, relationshipsOnMain } = useEntityTabNavigation();
 
   let content: ReactNode = null;
@@ -47,7 +47,7 @@ const MainTabsContent = ({
       break;
     case MAIN_TAB.RELATIONSHIPS:
       content = (
-        <div className="flex min-h-0 flex-1 flex-col px-3 pt-2">
+        <div className="flex min-h-0 flex-1 flex-col px-4 pt-2">
           <RelationshipsPanel
             focusDocumentOnSelect={relationshipsOnMain}
             onFocusDocument={focusDocumentPanel}
