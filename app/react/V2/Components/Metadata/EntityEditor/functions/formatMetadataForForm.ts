@@ -14,6 +14,7 @@ type FormMetadataProperty = {
   style?: string;
   inherited?: boolean;
   inheritedType?: MetadataValue['inheritedType'];
+  inherit?: { property?: string; type?: MetadataValue['inheritedType'] };
 };
 
 const formatMetadataForForm = (

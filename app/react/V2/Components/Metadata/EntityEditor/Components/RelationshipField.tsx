@@ -8,6 +8,11 @@ import { EntityFieldError, getFieldErrorState } from '../functions/fieldErrorSta
 import { RelationshipFieldEditor } from './RelationshipFieldEditor.js';
 import { EntityField } from './EntityField.js';
 
+type RelationshipInheritColumn = {
+  label: string;
+  cellsByEntityId?: Record<string, string | undefined>;
+};
+
 type RelationshipFieldProps<TFormValues extends FieldValues = FieldValues> = {
   label: string;
   field: Path<TFormValues>;
@@ -16,7 +21,8 @@ type RelationshipFieldProps<TFormValues extends FieldValues = FieldValues> = {
   lookupSearch?: (search: string) => Promise<MultiselectListOption[]>;
   targetTemplateId?: string;
   relationTypeId?: string;
-  inheritColumnLabels?: string[];
+  inheritColumns?: RelationshipInheritColumn[];
+  onEditSource?: (entityId: string, label: string) => void;
 };
 
 const RelationshipField = <TFormValues extends FieldValues = FieldValues>({
@@ -27,7 +33,8 @@ const RelationshipField = <TFormValues extends FieldValues = FieldValues>({
   lookupSearch,
   targetTemplateId,
   relationTypeId,
-  inheritColumnLabels = [],
+  inheritColumns = [],
+  onEditSource,
 }: RelationshipFieldProps<TFormValues>) => {
   const { control, getFieldState, formState } = useFormContext<TFormValues>();
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
@@ -38,8 +45,6 @@ const RelationshipField = <TFormValues extends FieldValues = FieldValues>({
     () => relationshipTypes.find(type => type._id === relationTypeId)?.name,
     [relationTypeId, relationshipTypes]
   );
-
-  const columns = inheritColumnLabels.map(columnLabel => ({ label: columnLabel }));
 
   return (
     <EntityField>
@@ -55,8 +60,9 @@ const RelationshipField = <TFormValues extends FieldValues = FieldValues>({
               targetTemplateId={targetTemplateId}
               values={(fieldController.value as MetadataValue[] | undefined) ?? []}
               onChange={fieldController.onChange}
-              columns={columns}
+              columns={inheritColumns}
               lookupSearch={lookupSearch}
+              onEditSource={onEditSource}
               disabled={disabled}
               searchId={String(field)}
             />
@@ -69,3 +75,4 @@ const RelationshipField = <TFormValues extends FieldValues = FieldValues>({
 };
 
 export { RelationshipField };
+export type { RelationshipInheritColumn };

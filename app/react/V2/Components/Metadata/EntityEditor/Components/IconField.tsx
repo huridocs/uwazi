@@ -83,7 +83,9 @@ type IconFieldProps = {
 };
 
 const IconField = ({ disabled = false }: IconFieldProps) => {
-  const { control, setValue } = useFormContext<IconFieldFormValues>();
+  const { control, setValue, watch } = useFormContext<IconFieldFormValues>();
+  const showIcon = watch('showIcon');
+  const selectorDisabled = disabled || !showIcon;
 
   const clearIcon = () => {
     setValue('showIcon', false);
@@ -106,10 +108,12 @@ const IconField = ({ disabled = false }: IconFieldProps) => {
             placeholder="Select icon..."
             groups={iconSelectGroups}
             value={selectionFromIcon(field.value)}
-            disabled={disabled}
+            disabled={selectorDisabled}
             onChange={selectedValue => {
               field.onChange(iconFromSelection(selectedValue));
-              setValue('showIcon', Boolean(selectedValue));
+              if (selectedValue) {
+                setValue('showIcon', true);
+              }
             }}
           />
         )}

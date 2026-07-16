@@ -16,6 +16,7 @@ import type { MultiselectListOption } from '#V2/Components/Forms/index.js';
 
 type RelationshipInheritColumn = {
   label: string;
+  cellsByEntityId?: Record<string, string | undefined>;
 };
 
 type RelationshipFieldEditorProps = {
@@ -26,14 +27,22 @@ type RelationshipFieldEditorProps = {
   onChange: (values: MetadataValue[]) => void;
   columns?: RelationshipInheritColumn[];
   lookupSearch?: (search: string) => Promise<MultiselectListOption[]>;
+  onEditSource?: (entityId: string, label: string) => void;
   disabled?: boolean;
   searchId?: string;
 };
 
-const inheritedCellValue = (row: MetadataValue, columnIndex: number): string | undefined => {
+const inheritedCellValue = (
+  row: MetadataValue,
+  column: RelationshipInheritColumn,
+  entityId: string
+): string | undefined => {
+  if (column.cellsByEntityId) {
+    return column.cellsByEntityId[entityId];
+  }
   const inherited = row.inheritedValue;
   if (!inherited?.length) return undefined;
-  const item = inherited[columnIndex];
+  const item = inherited[0];
   if (!item) return undefined;
   const { label } = item;
   if (typeof label === 'string' && label.length > 0) return label;
@@ -48,6 +57,7 @@ const RelationshipFieldEditor = ({
   onChange,
   columns = [],
   lookupSearch,
+  onEditSource,
   disabled = false,
   searchId,
 }: RelationshipFieldEditorProps) => {
@@ -169,8 +179,8 @@ const RelationshipFieldEditor = ({
                           label={row.label ?? entityId}
                         />
                       </td>
-                      {columns.map((column, columnIndex) => {
-                        const cell = inheritedCellValue(row, columnIndex);
+                      {columns.map(column => {
+                        const cell = inheritedCellValue(row, column, entityId);
                         return (
                           <td
                             key={`${entityId}-${column.label}`}
@@ -188,7 +198,8 @@ const RelationshipFieldEditor = ({
                         <div className="flex items-center justify-end gap-0.5">
                           <button
                             type="button"
-                            disabled={disabled}
+                            disabled={disabled || !onEditSource}
+                            onClick={() => onEditSource?.(entityId, row.label ?? entityId)}
                             title={t('System', 'Edit at source', null, false)}
                             className="flex h-6 cursor-pointer items-center gap-1 rounded px-1.5 text-[11px] font-medium text-ink-secondary transition-colors hover:bg-warm disabled:cursor-not-allowed disabled:opacity-60"
                           >

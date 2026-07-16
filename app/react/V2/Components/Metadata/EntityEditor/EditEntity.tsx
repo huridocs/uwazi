@@ -63,6 +63,7 @@ type EditEntityProps = {
   onSave?: (editedEntity: EntitySaveInput) => void | Promise<void>;
   disabled?: boolean;
   errors?: EditEntityErrors;
+  onEditSource?: (entityId: string, label: string, templateId?: string) => void;
   relationshipLookup?: (params: {
     search: string;
     template?: string;
@@ -84,7 +85,7 @@ const mapTemplateProperty = (property: {
   content?: string;
   relationType?: string;
   style?: string;
-  inherit?: { type?: Properties['inheritedType'] };
+  inherit?: { property?: string; type?: Properties['inheritedType'] };
 }): Properties => ({
   _id: String(property._id ?? property.name),
   type: property.type,
@@ -96,6 +97,7 @@ const mapTemplateProperty = (property: {
   style: property.style,
   inherited: Boolean(property.inherit),
   inheritedType: property.inherit?.type,
+  inherit: property.inherit,
 });
 
 const DEFAULT_RELATIONSHIP_LOOKUP_LIMIT = 50;
@@ -243,6 +245,10 @@ const formatMetadataForEntity = (
       const sourceValues = syncedMetadata[mainName] ?? [];
 
       otherNames.forEach(name => {
+        const siblingProperty = metadataProperties.find(candidate => candidate.name === name);
+        if (siblingProperty?.inherited) {
+          return;
+        }
         syncedMetadata[name] = sourceValues;
       });
     });
@@ -275,12 +281,72 @@ const thesaurusToOptions = (
       })),
     })) || [];
 
+const inheritedCellText = (
+  values: { value?: unknown; inheritedValue?: { label?: string; value?: unknown }[] }[] | undefined,
+  entityId: string
+): string | undefined => {
+  const row = values?.find(value => String(value.value ?? '') === entityId);
+  if (!row?.inheritedValue?.length) return undefined;
+  const parts = row.inheritedValue
+    .map(item => {
+      if (typeof item.label === 'string' && item.label.length > 0) return item.label;
+      return typeof item.value === 'string' ? item.value : undefined;
+    })
+    .filter((part): part is string => Boolean(part));
+  return parts.length > 0 ? parts.join(', ') : undefined;
+};
+
+const inheritColumnLabel = (
+  property: Properties,
+  templates: { _id: string; properties?: { _id?: string; label: string }[] }[]
+): string => {
+  const inheritPropertyId = property.inherit?.property;
+  if (inheritPropertyId && property.content) {
+    const targetTemplate = templates.find(template => template._id === property.content);
+    const inheritedProperty = targetTemplate?.properties?.find(
+      candidate => candidate._id === inheritPropertyId
+    );
+    if (inheritedProperty?.label) return inheritedProperty.label;
+  }
+  return property.label;
+};
+
+const buildInheritColumns = (
+  property: DisplayProperty,
+  metadataProperties: Properties[],
+  templates: { _id: string; properties?: { _id?: string; label: string }[] }[],
+  sourceMetadata?: Entity['metadata']
+) =>
+  metadataProperties
+    .filter(
+      candidate =>
+        candidate.type === 'relationship' &&
+        candidate.inherited &&
+        candidate.content === property.content &&
+        candidate.relationType === property.relationType
+    )
+    .map(candidate => {
+      const values = sourceMetadata?.[candidate.name];
+      const cellsByEntityId: Record<string, string | undefined> = {};
+      (values ?? []).forEach(row => {
+        const entityId = String(row.value ?? '');
+        if (entityId) {
+          cellsByEntityId[entityId] = inheritedCellText(values, entityId);
+        }
+      });
+      return {
+        label: inheritColumnLabel(candidate, templates),
+        cellsByEntityId,
+      };
+    });
+
 const EditEntity = ({
   formId,
   entity,
   onSave,
   disabled = false,
   errors,
+  onEditSource,
   relationshipLookup = defaultRelationshipLookup,
 }: EditEntityProps) => {
   const templates = useAtomValue(templatesAtom);
@@ -363,7 +429,9 @@ const EditEntity = ({
     const formMetadata = getValues('metadata');
     const stillReferenced = [...mediaPropertyNames].some(name => {
       const rawValue = formMetadata?.[name]?.[0]?.value;
-      return typeof rawValue === 'string' && extractUploadIdFromMediaValue(rawValue) === fileLocalID;
+      return (
+        typeof rawValue === 'string' && extractUploadIdFromMediaValue(rawValue) === fileLocalID
+      );
     });
     if (!stillReferenced) {
       removePendingAttachment(fileLocalID);
@@ -394,13 +462,17 @@ const EditEntity = ({
         const sourceValues = metadata?.[mainName] ?? [];
 
         otherNames.forEach(name => {
+          const siblingProperty = metadataProperties.find(candidate => candidate.name === name);
+          if (siblingProperty?.inherited) {
+            return;
+          }
           const targetValues = metadata?.[name] ?? [];
           if (JSON.stringify(targetValues) !== JSON.stringify(sourceValues)) {
             setValue(`metadata.${name}`, sourceValues);
           }
         });
       });
-  }, [displayProperties, metadata, setValue]);
+  }, [displayProperties, metadata, metadataProperties, setValue]);
 
   const relationshipLookupCache = useMemo(
     () => new Map<string, MultiselectListOption[]>(),
@@ -581,15 +653,12 @@ const EditEntity = ({
 
             if (property.type === 'relationship') {
               const fieldName = property.groupedRelationshipNames?.[0] ?? property.name;
-              const inheritColumnLabels =
-                property.groupedRelationshipNames && property.groupedRelationshipNames.length > 1
-                  ? property.groupedRelationshipNames.slice(1).map(name => {
-                      const groupedProperty = metadataProperties.find(
-                        metadataProperty => metadataProperty.name === name
-                      );
-                      return groupedProperty?.label ?? name;
-                    })
-                  : [];
+              const inheritColumns = buildInheritColumns(
+                property,
+                metadataProperties,
+                templates,
+                entity?.metadata
+              );
               return (
                 <>
                   {property._id === firstEditableRelationshipId ? (
@@ -607,7 +676,12 @@ const EditEntity = ({
                     disabled={disabled}
                     targetTemplateId={property.content}
                     relationTypeId={property.relationType}
-                    inheritColumnLabels={inheritColumnLabels}
+                    inheritColumns={inheritColumns}
+                    onEditSource={
+                      onEditSource
+                        ? (entityId, label) => onEditSource(entityId, label, property.content)
+                        : undefined
+                    }
                     lookupSearch={async search => {
                       const selectedValues = metadata?.[fieldName] ?? [];
                       const lookedUp = await relationshipLookup({

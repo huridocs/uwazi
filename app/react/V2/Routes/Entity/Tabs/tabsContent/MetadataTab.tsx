@@ -7,7 +7,10 @@ import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.js';
 import { EditEntity, type EditEntityErrors } from '#V2/Components/Metadata/EntityEditor/index.js';
 import { apiValidationsToEditEntityErrors } from '#V2/Components/Metadata/EntityEditor/functions/editEntityErrors.js';
-import { useMetadataEditing } from '#V2/Routes/Entity/Components/context/index.js';
+import {
+  useMetadataEditing,
+  useEntityOverlay,
+} from '#V2/Routes/Entity/Components/context/index.js';
 import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
 import { useServices } from '#V2/services/index.js';
 import type { EntitySaveInput } from '#V2/services/index.js';
@@ -28,6 +31,7 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
     setSaveError,
     registerCancelEdit,
   } = useMetadataEditing();
+  const { openEntityOverlayTarget } = useEntityOverlay();
   const revalidator = useRevalidator();
   const savingRef = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
@@ -122,6 +126,13 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
             onSave={onSave}
             disabled={isSaving}
             errors={editErrors}
+            onEditSource={(sharedId, title, templateId) =>
+              openEntityOverlayTarget({
+                sharedId,
+                title,
+                templateId: templateId ?? '',
+              })
+            }
           />
         </>
       )}
