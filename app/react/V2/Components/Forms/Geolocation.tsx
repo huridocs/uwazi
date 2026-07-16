@@ -88,7 +88,7 @@ const Geolocation = ({
 
   return (
     <div className={className}>
-      <Label htmlFor={name}>{label}</Label>
+      {label ? <Label htmlFor={name}>{label}</Label> : null}
       <Map
         onClick={mapClick}
         height={370}
@@ -106,7 +106,7 @@ const Geolocation = ({
           clearFieldAction={clearCoordinates}
           value={currentLatitude ?? ''}
           label={<Translate>Latitude</Translate>}
-          id={`${name}.lat`}
+          id={name}
           name={`${name}.lat`}
           type="number"
           min={LATITUDE_MIN}

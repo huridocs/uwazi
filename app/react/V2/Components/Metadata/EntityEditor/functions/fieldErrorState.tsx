@@ -24,7 +24,7 @@ const getFieldErrorState = (fieldState: FieldErrorSource): FieldErrorState => {
 };
 
 type EntityFieldLabelProps = {
-  htmlFor: string;
+  htmlFor?: string;
   context: string;
   label: string;
   required?: boolean;

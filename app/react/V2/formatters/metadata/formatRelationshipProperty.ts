@@ -18,6 +18,7 @@ const mapRelationshipValue = (metadataValue: MetadataValue) => {
     metadataValue?.icon && typeof metadataValue.icon === 'object' ? metadataValue.icon : undefined;
   const templateId =
     typeof metadataValue?.type === 'string' &&
+    metadataValue.type !== 'entity' &&
     metadataValue.type !== 'relationship' &&
     metadataValue.type !== 'newRelationship'
       ? metadataValue.type
