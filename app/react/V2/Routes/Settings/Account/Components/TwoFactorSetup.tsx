@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { api } from '#app/utils/api.js';
 import { useRevalidator } from 'react-router';
-
-import { RequestParams } from '#app/utils/RequestParams.js';
 import { Button, Card, CopyValueInput, Sidepanel } from '#V2/Components/UI/index.js';
 import { t, Translate } from '#app/I18N/index.js';
 import loadable from '@loadable/component';
 import { InputField } from '#V2/Components/Forms/index.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { useServices } from '#V2/services/index.js';
 
 const QRCodeSVG = loadable(
   async () => import(/* webpackChunkName: "qrcode.react" */ 'qrcode.react'),
@@ -22,27 +20,36 @@ interface TwoFactorSetupProps {
 }
 
 const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
+  const { users: usersService } = useServices();
   const [token, setToken] = useState('');
-  const [_secret, setSecret] = useState('');
-  const [_otpauth, setOtpauth] = useState('');
+  const [secret, setSecret] = useState('');
+  const [otpauth, setOtpauth] = useState('');
   const { notify } = useRequestStatus();
   const revalidator = useRevalidator();
   const [tokenError, setTokenError] = useState(false);
 
   useEffect(() => {
-    if (isOpen && !_secret) {
-      api
-        .post('auth2fa-secret')
-        .then((resp: Response) => resp.json)
-        .then(({ otpauth, secret }: { otpauth: string; secret: string }) => {
-          setSecret(secret);
-          setOtpauth(otpauth);
-        })
-        .catch((error: Error) => {
-          throw error;
-        });
-    }
-  }, [isOpen, _secret]);
+    if (!isOpen || secret) return;
+
+    const loadSecret = async () => {
+      const [data, error] = await usersService.get2FASecret();
+
+      if (error) {
+        notify(
+          'error',
+          t('System', 'An error occurred', null, false),
+          undefined,
+          error.detail ?? error.message
+        );
+        return;
+      }
+
+      setSecret(data.secret);
+      setOtpauth(data.otpauth);
+    };
+
+    loadSecret().catch(() => undefined);
+  }, [isOpen, secret, usersService, notify]);
 
   const tokenChange = (value: string) => {
     setToken(value);
@@ -52,17 +59,26 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
   };
 
   const enable2fa = async () => {
-    try {
-      await api.post('auth2fa-enable', new RequestParams({ token }));
-      await revalidator.revalidate();
-      closePanel();
-      notify('success', t('System', '2FA Enabled', null, false));
-    } catch (error) {
+    const [, error] = await usersService.enable2FA(token);
+
+    if (error) {
       if (error.status === 409) {
         setTokenError(true);
+        return;
       }
-      throw error;
+
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        error.detail ?? error.message
+      );
+      return;
     }
+
+    await revalidator.revalidate();
+    closePanel();
+    notify('success', t('System', '2FA Enabled', null, false));
   };
 
   return (
@@ -104,7 +120,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
           <Card className="mb-4 sm:col-span-1" title={<Translate>QR Code</Translate>}>
             <div className="flex justify-center">
               <QRCodeSVG
-                value={_otpauth}
+                value={otpauth}
                 level="Q"
                 includeMargin={false}
                 size={180}
@@ -117,7 +133,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
           </Card>
           <Card className="mb-4 sm:col-span-3" title={<Translate>Secret keys</Translate>}>
             <CopyValueInput
-              value={_secret}
+              value={secret}
               className="w-full mb-4"
               label={
                 <>
