@@ -5,9 +5,8 @@ import { useRevalidator } from 'react-router';
 import { t, Translate } from '#app/I18N/index.js';
 import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
 import { InputField, MultiSelect } from '#V2/Components/Forms/index.js';
-import { UserGroupSchema } from '#shared/types/userGroupType.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
-import { useServices } from '#V2/services/index.js';
+import { useServices, type UserGroupInput } from '#V2/services/index.js';
 import { User, Group } from '../types.js';
 
 interface GroupFormSidepanelProps {
@@ -53,7 +52,13 @@ const GroupFormSidepanel = ({
   const revalidator = useRevalidator();
   const { notify } = useRequestStatus();
 
-  const defaultValues = selectedGroup || ({ name: '', members: [] } as UserGroupSchema);
+  const defaultValues =
+    selectedGroup ||
+    ({
+      name: '',
+      members: [],
+      rowId: 'NEW',
+    } as Group);
 
   const {
     register,
@@ -70,10 +75,14 @@ const GroupFormSidepanel = ({
     setShowSidepanel(false);
   };
 
-  const formSubmit = async (data: UserGroupSchema) => {
-    const formattedData = {
-      ...data,
-      members: data.members.map(member => ({ refId: member.refId })),
+  const formSubmit = async (data: Group) => {
+    const formattedData: UserGroupInput = {
+      _id: data._id,
+      name: data.name,
+      members: data.members.map(member => ({
+        refId: member.refId,
+        username: member.username ?? '',
+      })),
     };
 
     const [, error] = await userGroupsService.upsert(formattedData);
@@ -132,7 +141,10 @@ const GroupFormSidepanel = ({
                 onChange={selected =>
                   setValue(
                     'members',
-                    selected.map(s => ({ refId: s })),
+                    selected.map(s => {
+                      const user = users?.find(u => u._id === s);
+                      return { refId: s, username: user?.username ?? '' };
+                    }),
                     { shouldDirty: true }
                   )
                 }

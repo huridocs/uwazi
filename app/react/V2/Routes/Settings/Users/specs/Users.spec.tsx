@@ -1,11 +1,13 @@
 /**
  * @jest-environment jsdom
  */
+import type { LoaderFunctionArgs } from 'react-router';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react/pure';
 import { Users } from '../Users.js';
 import { createUsersLoader } from '../createUsersLoader.js';
 import { createTestServices } from '#V2/testing/createTestServices.js';
 import { renderRoute } from '#V2/testing/renderRoute.js';
+import type { Group, User } from '../types.js';
 import { createUsersSettingsTree } from './mountUsersSettings.js';
 import { groups, users } from './fixtures.js';
 
@@ -24,11 +26,11 @@ describe('Settings Users', () => {
         userGroups: { getAll: getAllGroupsMock },
       });
 
-      const result = await createUsersLoader(testServices)({})({
+      const result = (await createUsersLoader(testServices)({})({
         params: {},
         request: new Request('http://test/settings/users'),
         context: {},
-      });
+      } as unknown as LoaderFunctionArgs)) as { users: User[]; groups: Group[] };
 
       expect(getAllUsersMock).toHaveBeenCalledWith({ headers: {} });
       expect(getAllGroupsMock).toHaveBeenCalledWith({ headers: {} });
