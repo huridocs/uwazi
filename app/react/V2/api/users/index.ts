@@ -1,8 +1,7 @@
-import { IncomingHttpHeaders } from 'http';
-import { UsersAPI } from '#app/Users/UsersAPI.js';
-import { api } from '#app/utils/api.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
+import type { IncomingHttpHeaders } from 'http';
 import { ClientUserGroupSchema, ClientUserSchema } from '#app/apiResponseTypes.js';
+import type { ApiResponse } from '#V2/api/ApiResponse.js';
+import { apiClient } from '#V2/api/client.js';
 
 const prepareUser = (user: ClientUserSchema & { rowId?: string }) => {
   const preparedUser = { ...user };
@@ -20,192 +19,153 @@ const prepareUser = (user: ClientUserSchema & { rowId?: string }) => {
 // Encode password to base64 to avoid special characters in the password
 const encodePassword = (password: string) => Buffer.from(password).toString('base64');
 
+const requestHeaders = (
+  headers?: IncomingHttpHeaders,
+  currentPassword?: string
+): Record<string, string> | undefined => {
+  const mapped = Object.fromEntries(
+    Object.entries(headers ?? {}).filter((entry): entry is [string, string] => {
+      const [, value] = entry;
+      return typeof value === 'string';
+    })
+  );
+
+  if (currentPassword) {
+    mapped.authorization = `Basic ${encodePassword(currentPassword)}`;
+  }
+
+  return Object.keys(mapped).length > 0 ? mapped : undefined;
+};
+
 const newUser = async (
   user: ClientUserSchema,
   currentPassword: string,
   headers?: IncomingHttpHeaders
-) => {
-  try {
-    const createdUser = prepareUser(user);
-    const requestParams = new RequestParams(createdUser, {
-      ...headers,
-      authorization: `Basic ${encodePassword(currentPassword)}`,
-    });
-    const response = await UsersAPI.new(requestParams);
-    return response;
-  } catch (e) {
-    return e;
-  }
-};
+): Promise<ApiResponse<unknown>> =>
+  apiClient.postJson('users/new', prepareUser(user), {
+    headers: requestHeaders(headers, currentPassword),
+  });
 
 const updateUser = async (
   user: ClientUserSchema,
   currentPassword: string,
   headers?: IncomingHttpHeaders
-) => {
-  try {
-    const updatedUser = prepareUser(user);
-
-    const requestParams = new RequestParams(updatedUser, {
-      ...headers,
-      authorization: `Basic ${encodePassword(currentPassword)}`,
-    });
-
-    const response = await UsersAPI.save(requestParams);
-    return response;
-  } catch (e) {
-    return e;
-  }
-};
+): Promise<ApiResponse<unknown>> =>
+  apiClient.postJson('users', prepareUser(user), {
+    headers: requestHeaders(headers, currentPassword),
+  });
 
 const deleteUser = async (
   users: ClientUserSchema[],
   currentPassword: string,
   headers?: IncomingHttpHeaders
-) => {
-  try {
-    const requestParams = new RequestParams(
-      { ids: users.map(user => user._id) },
-      {
-        ...headers,
-        authorization: `Basic ${encodePassword(currentPassword)}`,
-      }
-    );
-    const response = await UsersAPI.delete(requestParams);
-    return response;
-  } catch (e) {
-    return e;
-  }
-};
+): Promise<ApiResponse<unknown>> =>
+  apiClient.deleteJson(
+    'users',
+    { ids: users.map(user => user._id) },
+    {
+      headers: requestHeaders(headers, currentPassword),
+    }
+  );
 
 const saveGroup = async (
   group: ClientUserGroupSchema & { rowId?: string },
   headers?: IncomingHttpHeaders
-) => {
-  try {
-    const { rowId, ...groupToSave } = group;
-    const requestParams = new RequestParams(groupToSave, headers);
-    const response = await api.post('usergroups', requestParams);
-    return response.json;
-  } catch (e) {
-    return e;
-  }
+): Promise<ApiResponse<unknown>> => {
+  const { rowId, ...groupToSave } = group;
+  return apiClient.postJson('usergroups', groupToSave, {
+    headers: requestHeaders(headers),
+  });
 };
 
-const deleteGroup = async (groups: ClientUserGroupSchema[], headers?: IncomingHttpHeaders) => {
-  try {
-    const requestParams = new RequestParams(
-      { ids: groups.map(group => group._id) as string[] },
-      headers
-    );
-    const response = await api.delete('usergroups', requestParams);
-    return response.json;
-  } catch (e) {
-    return e;
-  }
-};
+const deleteGroup = async (
+  groups: ClientUserGroupSchema[],
+  headers?: IncomingHttpHeaders
+): Promise<ApiResponse<unknown>> =>
+  apiClient.deleteJson(
+    'usergroups',
+    { ids: groups.map(group => group._id) as string[] },
+    { headers: requestHeaders(headers) }
+  );
 
 const unlockAccount = async (
   user: ClientUserSchema,
   currentPassword: string,
   headers?: IncomingHttpHeaders
-) => {
-  try {
-    const requestParams = new RequestParams(
-      { _id: user._id },
-      {
-        ...headers,
-        authorization: `Basic ${encodePassword(currentPassword)}`,
-      }
-    );
-    const response = await UsersAPI.unlockAccount(requestParams);
-    return response;
-  } catch (e) {
-    return e;
-  }
-};
+): Promise<ApiResponse<unknown>> =>
+  apiClient.postJson(
+    'users/unlock',
+    { _id: user._id },
+    {
+      headers: requestHeaders(headers, currentPassword),
+    }
+  );
 
 const resetPassword = async (
   data: ClientUserSchema | ClientUserSchema[],
   headers?: IncomingHttpHeaders
-) => {
-  try {
-    if (Array.isArray(data)) {
-      const response = await Promise.all(
-        data.map(user => {
-          const requestParams = new RequestParams({ email: user.email }, headers);
-          return api.post('recoverpassword', requestParams);
-        })
-      );
-      return response;
-    }
+): Promise<ApiResponse<unknown>> => {
+  const payloads = Array.isArray(data)
+    ? data.map(user => ({ email: user.email }))
+    : [{ email: data.email }];
 
-    const requestParams = new RequestParams({ email: data.email }, headers);
-    const response = await api.post('recoverpassword', requestParams);
-    return response;
-  } catch (e) {
-    return e;
-  }
+  const responses = await Promise.all(
+    payloads.map(async payload =>
+      apiClient.postJson('recoverpassword', payload, { headers: requestHeaders(headers) })
+    )
+  );
+
+  const error = responses.find(([, responseError]) => responseError)?.[1];
+  if (error) return [undefined as never, error];
+
+  return [responses.map(([responseData]) => responseData)];
 };
 
 const reset2FA = async (
   data: ClientUserSchema | ClientUserSchema[],
   currentPassword: string,
   headers?: IncomingHttpHeaders
-) => {
-  try {
-    const headersWithAuth = {
-      ...headers,
-      authorization: `Basic ${encodePassword(currentPassword)}`,
-    };
+): Promise<ApiResponse<unknown>> => {
+  const payloads = Array.isArray(data)
+    ? data.map(user => ({ _id: user._id }))
+    : [{ _id: data._id }];
+  const authHeaders = requestHeaders(headers, currentPassword);
 
-    if (Array.isArray(data)) {
-      const response = await Promise.all(
-        data.map(user => {
-          const requestParams = new RequestParams({ _id: user._id }, { ...headersWithAuth });
-          return api.post('auth2fa-reset', requestParams);
-        })
-      );
-      return response;
-    }
+  const responses = await Promise.all(
+    payloads.map(async payload =>
+      apiClient.postJson('auth2fa-reset', payload, { headers: authHeaders })
+    )
+  );
 
-    const requestParams = new RequestParams({ _id: data._id }, { ...headersWithAuth });
-    const response = await api.post('auth2fa-reset', requestParams);
-    return response;
-  } catch (e) {
-    return e;
-  }
+  const error = responses.find(([, responseError]) => responseError)?.[1];
+  if (error) return [undefined as never, error];
+
+  return [responses.map(([responseData]) => responseData)];
 };
 
-const get = async (headers?: IncomingHttpHeaders): Promise<ClientUserSchema[]> => {
-  try {
-    const requestParams = new RequestParams({}, headers);
-    const response = await UsersAPI.get(requestParams);
-    return response;
-  } catch (e) {
-    return e;
-  }
-};
+const get = async (headers?: IncomingHttpHeaders): Promise<ApiResponse<ClientUserSchema[]>> =>
+  apiClient.getJson('users', {}, { headers: requestHeaders(headers) });
 
-const getCurrentUser = async (headers?: IncomingHttpHeaders) => {
-  try {
-    const requestParams = new RequestParams({}, headers);
-    const response = await UsersAPI.currentUser(requestParams);
-    return response;
-  } catch (e) {
-    return e;
-  }
-};
+const getCurrentUser = async (
+  headers?: IncomingHttpHeaders
+): Promise<ApiResponse<ClientUserSchema>> =>
+  apiClient.getJson('user', {}, { headers: requestHeaders(headers) });
 
-const getUserGroups = async (headers?: IncomingHttpHeaders): Promise<ClientUserGroupSchema[]> => {
-  try {
-    const requestParams = new RequestParams({}, headers);
-    const response = await api.get('usergroups', requestParams);
-    return response.json;
-  } catch (e) {
-    return e;
-  }
-};
+const getUserGroups = async (
+  headers?: IncomingHttpHeaders
+): Promise<ApiResponse<ClientUserGroupSchema[]>> =>
+  apiClient.getJson('usergroups', {}, { headers: requestHeaders(headers) });
+
+const get2FASecret = async (
+  headers?: IncomingHttpHeaders
+): Promise<ApiResponse<{ otpauth: string; secret: string }>> =>
+  apiClient.postJson('auth2fa-secret', {}, { headers: requestHeaders(headers) });
+
+const enable2FA = async (
+  token: string,
+  headers?: IncomingHttpHeaders
+): Promise<ApiResponse<unknown>> =>
+  apiClient.postJson('auth2fa-enable', { token }, { headers: requestHeaders(headers) });
 
 export {
   get,
@@ -219,4 +179,6 @@ export {
   resetPassword,
   reset2FA,
   getCurrentUser,
+  get2FASecret,
+  enable2FA,
 };
