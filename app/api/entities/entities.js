@@ -330,21 +330,6 @@ const normalizeLegacyEntityForFacade = entity => ({
   attachments: normalizeAttachments(entity.attachments),
 });
 
-const isLegacyCompatibilityError = error => {
-  const message = (error?.message || '').toString();
-
-  return (
-    error?.name === 'ZodError' ||
-    error?.name === 'BSONError' ||
-    error?.name === 'EntityTranslationDoesNotExistError' ||
-    message.includes('Translation for language') ||
-    message.includes('EntityTranslationDoesNotExistError') ||
-    message.includes('Transaction already in progress') ||
-    message.includes('hex string must be 24 characters') ||
-    message.includes('toHexString')
-  );
-};
-
 const withDocuments = async (entities, documentsFullText) => {
   const sharedIds = entities.map(entity => entity.sharedId);
   const allFiles = await FilesDAOFactory.default().getByEntitySharedIds(sharedIds, {
@@ -410,8 +395,15 @@ export default {
 
     if (doc.sharedId) {
       const docLanguage = doc.language || language;
-      const currentDoc =
-        (await this.getById(doc.sharedId, docLanguage)) || (await this.getById(doc.sharedId));
+      const [languageDocWithFiles] = await this.getUnrestrictedWithDocuments(
+        { sharedId: doc.sharedId, language: docLanguage },
+        '+permissions'
+      );
+      const [anyLanguageDocWithFiles] = await this.getUnrestrictedWithDocuments(
+        { sharedId: doc.sharedId },
+        '+permissions'
+      );
+      const currentDoc = languageDocWithFiles || anyLanguageDocWithFiles;
       if (!currentDoc) {
         throw new Error(`entity does not exists: ${doc.sharedId}`);
       }
@@ -425,17 +417,10 @@ export default {
         language: sanitized.language || currentDoc.language || docLanguage,
         title: sanitized.title || currentDoc.title,
       };
-      try {
-        await EntityFacade.update(
-          normalizeLegacyEntityForFacade(merged),
-          merged.language || language
-        );
-      } catch (error) {
-        if (!isLegacyCompatibilityError(error)) {
-          throw error;
-        }
-        await this.updateEntity(this.sanitize(doc, template), template);
-      }
+      await EntityFacade.update(
+        normalizeLegacyEntityForFacade(merged),
+        merged.language || language
+      );
     } else {
       const [{ languages }, defaultTemplate] = await Promise.all([
         settings.get(),
@@ -446,24 +431,15 @@ export default {
         doc.template = defaultTemplate?._id;
         docTemplate = defaultTemplate;
       }
-      doc.metadata = doc.metadata || {};
-      try {
-        const createdEntity = await EntityFacade.create(
-          normalizeLegacyEntityForFacade(this.sanitize(doc, docTemplate)),
-          language
-        );
-        sharedId = createdEntity.sharedId;
-      } catch (error) {
-        if (!isLegacyCompatibilityError(error)) {
-          throw error;
-        }
-        await this.createEntity(
-          this.sanitize(doc, docTemplate),
-          [language, languages],
-          sharedId,
-          docTemplate
-        );
+      if (doc._id) {
+        delete doc._id;
       }
+      doc.metadata = doc.metadata || {};
+      const createdEntity = await EntityFacade.create(
+        normalizeLegacyEntityForFacade(this.sanitize(doc, docTemplate)),
+        language
+      );
+      sharedId = createdEntity.sharedId;
     }
 
     const [entity] = includeDocuments

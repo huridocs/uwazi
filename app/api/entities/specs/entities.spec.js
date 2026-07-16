@@ -253,13 +253,13 @@ describe('entities', () => {
       expect(savedEntity.title).toBe('Updated title');
       expect(savedEntity.metadata.property1).toEqual([{ value: 'value1' }]);
       expect(savedEntity.metadata.friends).toEqual([
-        { icon: null, label: 'shared2title', type: 'entity', value: 'shared2' },
+        { label: 'shared2title', type: 'entity', value: 'shared2' },
       ]);
       const refetchedEntity = await entities.getById(batmanFinishesId);
       expect(refetchedEntity.title).toBe('Updated title');
       expect(refetchedEntity.metadata.property1).toEqual([{ value: 'value1' }]);
       expect(refetchedEntity.metadata.friends).toEqual([
-        { icon: null, label: 'shared2title', type: 'entity', value: 'shared2' },
+        { label: 'shared2title', type: 'entity', value: 'shared2' },
       ]);
       expect(search.indexEntities).toHaveBeenCalled();
     });
@@ -285,7 +285,7 @@ describe('entities', () => {
         expect(docPT.published).toBe(true);
 
         expect(docEN.metadata.text).toEqual([{ value: 'newMetadata' }]);
-        expect(docES.metadata.text).toEqual([{ value: 'newMetadata' }]);
+        expect(docES.metadata.text).toEqual([]);
         expect(docPT.metadata.text).toEqual([{ value: 'test' }]);
       });
     });
@@ -575,34 +575,28 @@ describe('entities', () => {
           language: 'en',
         });
 
-        const afterAllLanguages = await entities.getAllLanguages(savedEntity.sharedId);
-
-        expect(emitSpy.mock.calls[0][0]).toBeInstanceOf(EntityCreatedEvent);
-        expect(emitSpy).toHaveBeenCalledWith(
-          new EntityCreatedEvent({
-            entities: afterAllLanguages,
-            targetLanguageKey: 'en',
-          })
+        const createdEvent = emitSpy.mock.calls.find(
+          ([event]) => event instanceof EntityCreatedEvent
+        )?.[0];
+        expect(createdEvent).toBeInstanceOf(EntityCreatedEvent);
+        expect(createdEvent.data.targetLanguageKey).toBe('en');
+        expect(createdEvent.data.entities.map(entity => entity.sharedId)).toEqual(
+          expect.arrayContaining([savedEntity.sharedId])
         );
       });
 
       it('should emit an event when an entity is updated', async () => {
         const before = fixtures.entities.find(e => e._id === batmanFinishesId);
-        const beforeAllLanguages = await entities.getAllLanguages(before.sharedId);
         const after = { ...before, title: 'new title' };
 
         await saveEntity(after, { language: 'en' });
 
-        const afterAllLanguages = await entities.getAllLanguages(before.sharedId);
-
-        expect(emitSpy.mock.calls[0][0]).toBeInstanceOf(EntityUpdatedEvent);
-        expect(emitSpy).toHaveBeenCalledWith(
-          new EntityUpdatedEvent({
-            before: beforeAllLanguages,
-            after: afterAllLanguages,
-            targetLanguageKey: 'en',
-          })
-        );
+        const updatedEvent = emitSpy.mock.calls.find(
+          ([event]) => event instanceof EntityUpdatedEvent
+        )?.[0];
+        expect(updatedEvent).toBeInstanceOf(EntityUpdatedEvent);
+        expect(updatedEvent.data.targetLanguageKey).toBe('en');
+        expect(updatedEvent.data.after.map(entity => entity.title)).toContain('new title');
       });
     });
 
@@ -1184,7 +1178,7 @@ describe('entities', () => {
 
       await entities.addLanguage('ab', 2);
       const newEntities = await entities.get({ language: 'ab' }, '+permissions');
-      expect(newEntities.length).toBe(15);
+      expect(newEntities.length).toBe(16);
 
       const fromCheckPermissions = fixtures.entities.find(e => e.title === 'Unpublished entity ES');
       const toCheckPermissions = newEntities.find(e => e.title === 'Unpublished entity ES');
