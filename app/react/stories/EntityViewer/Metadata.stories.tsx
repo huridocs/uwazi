@@ -95,7 +95,11 @@ const MetadataDisplayComponent = ({
     <div className="tw-content">
       <BrowserRouter>
         <Provider store={store}>
-          <EntityScopedProvider key={storyReadyEntity.sharedId} entity={storyReadyEntity}>
+          <EntityScopedProvider
+            key={storyReadyEntity.sharedId}
+            entity={storyReadyEntity}
+            language={storyReadyEntity.language ?? 'en'}
+          >
             <MetadataEditingProvider>
               <Panel>
                 <Panel.Body>

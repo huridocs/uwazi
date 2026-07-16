@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { TabButtons } from '#V2/Components/UI/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { countEntityRelationships } from '#V2/formatters/index.js';
-import { TabLabel } from '../Components/shared/index.js';
+import { EntityLanguageBar, TabLabel } from '../Components/shared/index.js';
 import { MAIN_TAB } from './tabIds.js';
 
 type TabsMainButtonsProps = {
@@ -49,13 +49,18 @@ const TabsMainButtons = ({
   }, [entity, mainDocument?.filename]);
 
   return (
-    <TabButtons
-      groupId="entity-main"
-      buttons={buttons}
-      activeTabId={activeTabId}
-      onTabChange={onTabChange}
-      tabListAriaLabel="Entity primary"
-    />
+    <div className="flex items-center justify-between gap-3">
+      <div className="min-w-0 overflow-x-auto">
+        <TabButtons
+          groupId="entity-main"
+          buttons={buttons}
+          activeTabId={activeTabId}
+          onTabChange={onTabChange}
+          tabListAriaLabel="Entity primary"
+        />
+      </div>
+      <EntityLanguageBar />
+    </div>
   );
 };
 

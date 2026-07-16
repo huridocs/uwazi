@@ -8,6 +8,7 @@ import {
   DocumentViewModeSelect,
   DocumentSelectionFloatingMenu,
 } from '#V2/Routes/Entity/Components/document/index.js';
+import { useEntityLanguage } from '#V2/Routes/Entity/Components/context/index.js';
 import { useDocumentPdfView } from '../hooks/useDocumentPdfView.js';
 import { useRailInset } from '../hooks/useRailInset.js';
 
@@ -44,6 +45,7 @@ const DocumentTab = ({
   } = useDocumentPdfView({ mainDocument, entity });
 
   const isMobile = useIsMobile();
+  const { isRtl } = useEntityLanguage();
   const [pdfScrollRoot, setPdfScrollRoot] = useState<HTMLDivElement | null>(null);
   const [pageHeight, setPageHeight] = useState<number | undefined>();
   const { railInsetRight, measureRailInset } = useRailInset(pdfScrollRoot, !isRaw);
@@ -102,6 +104,7 @@ const DocumentTab = ({
           className="absolute inset-0 overflow-y-auto pl-1 pr-[60px] scrollbar-gutter-stable"
         >
           <PDF
+            key={mainDocument._id || filename}
             fileUrl={`/api/files/${filename}`}
             size={{ height: '100%', width: '100%' }}
             scrollRoot={pdfScrollRoot}
@@ -136,7 +139,7 @@ const DocumentTab = ({
       <div
         className={`min-h-0 flex-1 overflow-auto rounded-md bg-warm ${isRaw ? 'block' : 'hidden'}`}
       >
-        <PlainText text={pagePlaintext || ''} />
+        <PlainText text={pagePlaintext || ''} dir={isRtl ? 'rtl' : 'ltr'} />
       </div>
     </div>
   );

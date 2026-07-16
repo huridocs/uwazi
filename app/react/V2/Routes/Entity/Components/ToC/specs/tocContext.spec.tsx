@@ -30,7 +30,9 @@ const toc: TocSchema[] = [
 ];
 
 const wrapper = ({ children }: { children: ReactNode }) => (
-  <EntityScopedProvider entity={entity}>{children}</EntityScopedProvider>
+  <EntityScopedProvider entity={entity} language={entity.language ?? 'en'}>
+    {children}
+  </EntityScopedProvider>
 );
 
 const useTocTestState = () => ({

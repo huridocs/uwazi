@@ -69,7 +69,11 @@ const renderRelationshipsPanel = ({
       path: '/',
       element: (
         <Provider store={store}>
-          <EntityScopedProvider key={entity.sharedId} entity={entity}>
+          <EntityScopedProvider
+            key={entity.sharedId}
+            entity={entity}
+            language={entity.language ?? 'en'}
+          >
             <PdfControllerSetup pdf={pdf} />
             <RelationshipsPanel
               focusDocumentOnSelect={focusDocumentOnSelect}
