@@ -1,4 +1,9 @@
-import { getAccessibleColorPair, mixHex } from '#shared/utils/contrast.js';
+import {
+  getAccessibleColorPair,
+  getAccessibleForegroundOnBackground,
+  mixHex,
+  WCAG_AA_LARGE_UI,
+} from '#shared/utils/contrast.js';
 import { LEGACY_BUTTON_VALUES, getAccessibleForeground } from '#V2/theme/buttonThemeShared.js';
 import { getPresetValue } from '#V2/theme/themePresetUtils.js';
 import type { ThemeRoles } from '#V2/theme/themeRoles.js';
@@ -44,10 +49,11 @@ const getStatusButtonContext = (
     LEGACY_BUTTON_VALUES.success,
     roles.feedback.success
   );
-  const successSolidForeground = getAccessibleForeground(
+  const successSolidForeground = getAccessibleForegroundOnBackground(
     successSolidBackground,
-    roles.text.onSolid
-  );
+    '#FFFFFF',
+    WCAG_AA_LARGE_UI
+  ).foreground;
   const successDisabledBackground = getPresetValue(
     presetId,
     LEGACY_BUTTON_VALUES.successDisabled,
