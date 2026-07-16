@@ -16,7 +16,7 @@ HTMLCollection [
             Select
           </span>
           <input
-            class="h-4 w-4 shrink-0 cursor-pointer rounded-sm border border-(--color-theme-control-border) bg-(--color-theme-control-bg) [accent-color:var(--color-theme-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-hidden focus-visible:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]"
+            class="h-3.5 w-3.5 shrink-0 cursor-pointer rounded disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-carbon/30 accent-ink"
             id="thesaurus3"
             type="checkbox"
           />
@@ -79,7 +79,7 @@ HTMLCollection [
             Select
           </span>
           <input
-            class="h-4 w-4 shrink-0 cursor-pointer rounded-sm border border-(--color-theme-control-border) bg-(--color-theme-control-bg) [accent-color:var(--color-theme-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-hidden focus-visible:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]"
+            class="h-3.5 w-3.5 shrink-0 cursor-pointer rounded disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-carbon/30 accent-ink"
             id="thesaurus1"
             type="checkbox"
           />
@@ -142,7 +142,7 @@ HTMLCollection [
             Select
           </span>
           <input
-            class="h-4 w-4 shrink-0 cursor-pointer rounded-sm border border-(--color-theme-control-border) bg-(--color-theme-control-bg) [accent-color:var(--color-theme-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-hidden focus-visible:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]"
+            class="h-3.5 w-3.5 shrink-0 cursor-pointer rounded disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-carbon/30 accent-ink"
             disabled=""
             id="thesaurus2"
             type="checkbox"
@@ -219,7 +219,7 @@ exports[`Settings Thesauri ThesauriList Thesaurus deletion should show the selec
     class="flex items-center gap-2"
   >
     <button
-      class="px-3 py-1.5 text-xs border rounded-md font-medium transition-colors disabled:cursor-not-allowed focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)] border-emphasis bg-emphasis text-(--color-theme-feedback-danger-fg) enabled:hover:opacity-90 disabled:opacity-60"
+      class="px-3 py-1.5 text-xs border rounded-md font-medium transition-colors disabled:cursor-not-allowed focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)] border-button-danger bg-button-danger text-button-danger-fg enabled:hover:opacity-90 disabled:opacity-60"
       data-testid="thesaurus-delete-link"
       type="button"
     >

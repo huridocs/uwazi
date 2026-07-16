@@ -6,7 +6,14 @@ import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.js';
 import { MetadataDisplayFooter } from '#app/V2/Routes/Entity/Components/index.js';
 import { MetadataEditingProvider } from '#V2/Routes/Entity/Components/context/MetadataEditingContext.js';
-import { localeAtom, settingsAtom, templatesAtom, translationsAtom } from '#V2/atoms/index.js';
+import { EntityScopedProvider } from '#V2/Routes/Entity/Components/context/index.js';
+import {
+  localeAtom,
+  settingsAtom,
+  templatesAtom,
+  translationsAtom,
+  userAtom,
+} from '#V2/atoms/index.js';
 import { Entity, MetadataSchema } from '#V2/api/entities/types.js';
 import { apiEntity, templates } from '../fixtures/MetadataDisplayFixtures.js';
 
@@ -23,6 +30,7 @@ const MetadataDisplayComponent = ({
   store.set(settingsAtom, { mapLayers: ['Streets', 'Hybrid', 'Satellite'] });
   store.set(templatesAtom, templates);
   store.set(localeAtom, locale);
+  store.set(userAtom, { _id: 'admin1', role: 'admin', email: 'admin@uwazi.io', username: 'admin' });
   store.set(translationsAtom, [
     {
       locale: 'en',
@@ -87,16 +95,18 @@ const MetadataDisplayComponent = ({
     <div className="tw-content">
       <BrowserRouter>
         <Provider store={store}>
-          <MetadataEditingProvider>
-            <Panel>
-              <Panel.Body>
-                <MetadataDisplay entity={storyReadyEntity} />
-              </Panel.Body>
-              <Panel.Footer>
-                <MetadataDisplayFooter />
-              </Panel.Footer>
-            </Panel>
-          </MetadataEditingProvider>
+          <EntityScopedProvider key={storyReadyEntity.sharedId} entity={storyReadyEntity}>
+            <MetadataEditingProvider>
+              <Panel>
+                <Panel.Body>
+                  <MetadataDisplay entity={storyReadyEntity} />
+                </Panel.Body>
+                <Panel.Footer>
+                  <MetadataDisplayFooter />
+                </Panel.Footer>
+              </Panel>
+            </MetadataEditingProvider>
+          </EntityScopedProvider>
         </Provider>
       </BrowserRouter>
     </div>

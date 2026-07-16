@@ -14,6 +14,8 @@ export { GrabDoubleIcon } from './GrabDoubleIcon.js';
 export { CustomPropertyIcon } from './CustomPropertyIcon.js';
 export { CountryFlag } from './CoutryFlags.js';
 export { AudioWaveformIcon } from './AudioWaveformIcon.js';
+export { SplineIcon } from './SplineIcon.js';
+export { PencilStrokeIcon, Trash2StrokeIcon, PlusStrokeIcon } from './LucideStrokeIcons.js';
 export {
   CircleDotIcon,
   LayoutListIcon,

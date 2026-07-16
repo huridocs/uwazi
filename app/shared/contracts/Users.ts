@@ -42,6 +42,10 @@ type DeleteUserResponse = {
 
 type GetUsersResponse = User[];
 
+type UpdateUserRequest = User;
+
+type UpdateUserResponse = { user: Required<Pick<User, '_id' | 'email' | 'role' | 'username'>> };
+
 export type {
   User,
   GetUsersResponse,
@@ -50,4 +54,6 @@ export type {
   DeleteUserRequest,
   DeleteUserResponse,
   UserGroup,
+  UpdateUserRequest,
+  UpdateUserResponse,
 };

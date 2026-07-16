@@ -1,11 +1,12 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { useFetcher } from 'react-router';
+import { useRevalidator } from 'react-router';
 import { t, Translate } from '#app/I18N/index.js';
 import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
 import { InputField, MultiSelect } from '#V2/Components/Forms/index.js';
-import { UserGroupSchema } from '#shared/types/userGroupType.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { useServices, type UserGroupInput } from '#V2/services/index.js';
 import { User, Group } from '../types.js';
 
 interface GroupFormSidepanelProps {
@@ -47,9 +48,17 @@ const GroupFormSidepanel = ({
   groups,
   users,
 }: GroupFormSidepanelProps) => {
-  const fetcher = useFetcher();
+  const { userGroups: userGroupsService } = useServices();
+  const revalidator = useRevalidator();
+  const { notify } = useRequestStatus();
 
-  const defaultValues = selectedGroup || ({ name: '', members: [] } as UserGroupSchema);
+  const defaultValues =
+    selectedGroup ||
+    ({
+      name: '',
+      members: [],
+      rowId: 'NEW',
+    } as Group);
 
   const {
     register,
@@ -66,21 +75,33 @@ const GroupFormSidepanel = ({
     setShowSidepanel(false);
   };
 
-  const formSubmit = async (data: UserGroupSchema) => {
-    const formData = new FormData();
-    const formattedData = {
-      ...data,
-      members: data.members.map(member => ({ refId: member.refId })),
+  const formSubmit = async (data: Group) => {
+    const formattedData: UserGroupInput = {
+      _id: data._id,
+      name: data.name,
+      members: data.members.map(member => ({
+        refId: member.refId,
+        username: member.username ?? '',
+      })),
     };
 
-    if (data._id) {
-      formData.set('intent', 'edit-group');
-    } else {
-      formData.set('intent', 'new-group');
+    const [, error] = await userGroupsService.upsert(formattedData);
+
+    if (error) {
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        error.detail ?? error.message
+      );
+      return;
     }
 
-    formData.set('data', JSON.stringify(formattedData));
-    await fetcher.submit(formData, { method: 'post' });
+    notify(
+      'success',
+      data._id ? t('System', 'Group updated', null, false) : t('System', 'Group saved', null, false)
+    );
+    await revalidator.revalidate();
     closeSidepanel();
   };
 
@@ -120,7 +141,10 @@ const GroupFormSidepanel = ({
                 onChange={selected =>
                   setValue(
                     'members',
-                    selected.map(s => ({ refId: s })),
+                    selected.map(s => {
+                      const user = users?.find(u => u._id === s);
+                      return { refId: s, username: user?.username ?? '' };
+                    }),
                     { shouldDirty: true }
                   )
                 }

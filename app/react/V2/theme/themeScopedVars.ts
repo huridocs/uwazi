@@ -9,6 +9,7 @@ import { getActionThemeVars, getDerivedThemeVars } from '#V2/theme/themeBaseVars
 import { getThemeRoles, getThemeRoleVars } from '#V2/theme/themeRoles.js';
 import { getPresetId, type ResolvedThemeVars, toCompatibilityVars } from '#V2/theme/themes.js';
 import { getTypographyThemeVars } from './typographyThemeVars.js';
+import { getLayoutThemeVars } from './layoutThemeVars.js';
 
 const getScopedThemeVars = (
   presetId: ReturnType<typeof getPresetId>,
@@ -28,6 +29,7 @@ const getScopedThemeVars = (
     ...getCardThemeVars(presetId, resolved, roles),
     ...getBannerThemeVars(presetId, resolved, roles),
     ...getTypographyThemeVars(),
+    ...getLayoutThemeVars(presetId),
   };
 };
 
