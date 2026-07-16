@@ -57,6 +57,41 @@ const seedLoaderCache = (entity: Entity, language: string, mainDocument?: FileTy
   }
 };
 
+const resolveMainDocument = (
+  sharedId: string,
+  nextLanguage: string,
+  documents: Entity['documents'],
+  defaultLanguage?: string
+) => {
+  const cached = entityLoaderCache.getMainDocument(sharedId, nextLanguage);
+  const nextMainDocument = cached ?? getMainDocument(documents, nextLanguage, defaultLanguage);
+  if (nextMainDocument) {
+    entityLoaderCache.setMainDocument(sharedId, nextLanguage, nextMainDocument);
+  }
+  return nextMainDocument;
+};
+
+const fetchEntityForLanguage = async (sharedId: string, nextLanguage: string) => {
+  const cached = entityLoaderCache.getEntity(sharedId, nextLanguage, {
+    requireRelationships: true,
+  });
+  if (cached) {
+    return cached;
+  }
+
+  const [fetched, error] = await httpServices.entities.getBySharedId(sharedId, {
+    language: nextLanguage,
+    omitRelationships: false,
+  });
+  if (error || !fetched?.[0]?._id) {
+    return undefined;
+  }
+
+  const [nextEntity] = fetched;
+  entityLoaderCache.setEntity(sharedId, nextLanguage, nextEntity);
+  return nextEntity;
+};
+
 type EntityLanguageProviderProps = {
   loaderEntity: Entity;
   initialLanguage: string;
@@ -74,7 +109,7 @@ const EntityLanguageProvider = ({
 }: EntityLanguageProviderProps) => {
   const { setEntity } = useEntityContext();
   const settings = useAtomValue(settingsAtom);
-  const languages = settings.languages ?? [];
+  const languages = useMemo(() => settings.languages ?? [], [settings.languages]);
   const defaultLanguage = languages.find(language => language.default)?.key;
 
   const [language, setLanguageState] = useState(initialLanguage);
@@ -113,47 +148,33 @@ const EntityLanguageProvider = ({
         return;
       }
 
-      const cachedMainDocument = entityLoaderCache.getMainDocument(sharedId, nextLanguage);
       const documents =
         entityLoaderCache.getEntity(sharedId, languageRef.current)?.documents ??
         entityLoaderCache.getEntity(sharedId, nextLanguage)?.documents ??
         loaderEntity.documents;
 
-      const nextMainDocument =
-        cachedMainDocument ?? getMainDocument(documents, nextLanguage, defaultLanguage);
-
-      if (nextMainDocument) {
-        entityLoaderCache.setMainDocument(sharedId, nextLanguage, nextMainDocument);
-      }
-
+      const nextMainDocument = resolveMainDocument(
+        sharedId,
+        nextLanguage,
+        documents,
+        defaultLanguage
+      );
       setMainDocument(nextMainDocument);
       setLanguageState(nextLanguage);
 
-      let nextEntity = entityLoaderCache.getEntity(sharedId, nextLanguage, {
-        requireRelationships: true,
-      });
-
+      const nextEntity = await fetchEntityForLanguage(sharedId, nextLanguage);
       if (!nextEntity) {
-        const [fetched, error] = await httpServices.entities.getBySharedId(sharedId, {
-          language: nextLanguage,
-          omitRelationships: false,
-        });
-        if (error || !fetched?.[0]?._id) {
-          return;
-        }
-        [nextEntity] = fetched;
-        entityLoaderCache.setEntity(sharedId, nextLanguage, nextEntity);
+        return;
       }
 
-      const reconciledMainDocument =
-        entityLoaderCache.getMainDocument(sharedId, nextLanguage) ??
-        getMainDocument(nextEntity.documents, nextLanguage, defaultLanguage);
-
-      if (reconciledMainDocument) {
-        entityLoaderCache.setMainDocument(sharedId, nextLanguage, reconciledMainDocument);
-        if (reconciledMainDocument._id !== nextMainDocument?._id) {
-          setMainDocument(reconciledMainDocument);
-        }
+      const reconciledMainDocument = resolveMainDocument(
+        sharedId,
+        nextLanguage,
+        nextEntity.documents,
+        defaultLanguage
+      );
+      if (reconciledMainDocument?._id !== nextMainDocument?._id) {
+        setMainDocument(reconciledMainDocument);
       }
 
       setEntity(nextEntity);
@@ -174,7 +195,7 @@ const EntityLanguageProvider = ({
       return;
     }
 
-    void applyLanguageRef.current(languageRef.current);
+    applyLanguageRef.current(languageRef.current).catch(() => undefined);
   }, [loaderEntity, initialLanguage, initialMainDocument, initialPagePlaintext]);
 
   const setLanguage = useCallback(

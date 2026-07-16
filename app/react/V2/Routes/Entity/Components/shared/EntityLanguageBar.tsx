@@ -87,7 +87,7 @@ const EntityLanguageBar = () => {
       disabled={isLoading}
       variant={isMobile ? 'menu' : 'pill'}
       onSelect={() => {
-        void setLanguage(lang.key);
+        setLanguage(lang.key).catch(() => undefined);
         setOpen(false);
       }}
     />
@@ -109,7 +109,7 @@ const EntityLanguageBar = () => {
         </button>
         {open ? (
           <div
-            className="absolute end-0 top-full z-30 mt-1 min-w-20 overflow-hidden rounded-md border border-border bg-paper shadow-md"
+            className="absolute inset-e-0 top-full z-30 mt-1 min-w-20 overflow-hidden rounded-md border border-border bg-paper shadow-md"
             role="listbox"
             aria-label="Language selection"
           >

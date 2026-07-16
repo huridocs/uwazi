@@ -276,7 +276,7 @@ const PDF = ({
       cancelled = true;
       isReady.current = false;
       pageVisibility.clear();
-      void loadingTask.destroy?.();
+      Promise.resolve(loadingTask.destroy?.()).catch(() => undefined);
     };
   }, [fileUrl]);
 
