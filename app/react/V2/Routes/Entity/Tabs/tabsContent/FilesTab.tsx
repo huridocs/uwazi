@@ -26,9 +26,8 @@ const FilesTab = () => {
   );
 
   return (
-    <div className="flex h-full flex-1 flex-col gap-4 bg-warm p-3">
+    <div className="flex h-full min-h-0 flex-1 flex-col gap-4 overflow-auto bg-warm p-3">
       <FilesTableSection
-        sectionId="primary"
         title="Primary documents"
         rows={primaryRows}
         selectedRowIds={selectedRowIds}
@@ -37,7 +36,6 @@ const FilesTab = () => {
         onFocusRow={onFocus}
       />
       <FilesTableSection
-        sectionId="supporting"
         title="Supporting files"
         rows={supportingRows}
         selectedRowIds={selectedRowIds}

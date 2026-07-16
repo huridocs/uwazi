@@ -4,6 +4,7 @@ import { Translate } from '#app/I18N/index.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { InputField, Select } from '#V2/Components/Forms/index.js';
 import { Button } from '#V2/Components/UI/index.js';
+import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
 import { fileLanguageSelectOptions } from './fileLanguageOptions.js';
 import { fileSupportsLanguage } from './fileUploadHelpers.js';
 import { EntityFileRow } from './types.js';
@@ -50,23 +51,25 @@ const FileDetailsEditor = ({
         <p className={readOnlyFieldClass}>
           <Translate>File details</Translate>
         </p>
-        <Button
-          variant="primary"
-          size="small"
-          onClick={async () =>
-            row.raw._id
-              ? onSave({
-                  _id: row.raw._id,
-                  originalname,
-                  language: showLanguage ? language || undefined : undefined,
-                })
-              : Promise.resolve()
-          }
-          className="inline-flex items-center gap-1"
-        >
-          <CheckIcon className="h-4 w-4" />
-          <Translate>Done</Translate>
-        </Button>
+        <EntityWriteAuthorization>
+          <Button
+            variant="primary"
+            size="small"
+            onClick={async () =>
+              row.raw._id
+                ? onSave({
+                    _id: row.raw._id,
+                    originalname,
+                    language: showLanguage ? language || undefined : undefined,
+                  })
+                : Promise.resolve()
+            }
+            className="inline-flex items-center gap-1"
+          >
+            <CheckIcon className="h-4 w-4" />
+            <Translate>Done</Translate>
+          </Button>
+        </EntityWriteAuthorization>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2">
