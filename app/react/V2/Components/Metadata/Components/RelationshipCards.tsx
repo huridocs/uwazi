@@ -11,12 +11,18 @@ type RelationshipCardsProps = {
   templatePropertyById: Map<string, ClientProperty>;
 };
 
+const hasLinkedEntities = (field: RelationshipMetadataProperty): boolean =>
+  Array.isArray(field.values) &&
+  field.values.length > 0 &&
+  field.values.every(value => typeof value === 'object' && value !== null && 'title' in value);
+
 const RelationshipCards = ({
   fields,
   translationContext,
   templatePropertyById,
 }: RelationshipCardsProps) => {
-  if (!fields.length) {
+  const visibleFields = fields.filter(hasLinkedEntities);
+  if (!visibleFields.length) {
     return null;
   }
 
@@ -27,7 +33,7 @@ const RelationshipCards = ({
           <Translate>Relationships</Translate>
         </h3>
       </div>
-      {fields.map(data => {
+      {visibleFields.map(data => {
         const templateProperty = templatePropertyById.get(data._id);
         return (
           <Relationship

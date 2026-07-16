@@ -23,6 +23,46 @@ type DerivedRelationshipsSectionProps = {
   properties: FormMetadataProperty[];
 };
 
+const hasDisplayableValues = (data: MetadataProperty): boolean => {
+  if (data.type === 'relationship') {
+    return (
+      Array.isArray(data.values) &&
+      data.values.length > 0 &&
+      data.values.every(value => typeof value === 'object' && value !== null && 'title' in value)
+    );
+  }
+
+  if (data.type === 'select' || data.type === 'multiselect') {
+    return Boolean(data.values?.length);
+  }
+
+  if (data.type === 'markdown') {
+    return (data.values ?? []).some(value => Boolean(value.value));
+  }
+
+  if (data.type === 'link') {
+    return (data.values ?? []).some(value => Boolean(value.value));
+  }
+
+  if (data.type === 'text' || data.type === 'generatedid' || data.type === 'numeric') {
+    return (data.values ?? []).some(
+      value => value.value !== '' && value.value !== undefined && value.value !== null
+    );
+  }
+
+  if (
+    data.type === 'date' ||
+    data.type === 'daterange' ||
+    data.type === 'multidate' ||
+    data.type === 'multidaterange' ||
+    data.type === 'geolocation'
+  ) {
+    return Boolean(data.values?.length);
+  }
+
+  return false;
+};
+
 const renderField = (
   data: MetadataProperty,
   translationContext: string,
@@ -143,7 +183,7 @@ const DerivedRelationshipsSection = ({ entity, properties }: DerivedRelationship
   );
 
   const fields = useMemo(
-    () => metadata.filter(field => derivedNames.has(field.name)),
+    () => metadata.filter(field => derivedNames.has(field.name) && hasDisplayableValues(field)),
     [derivedNames, metadata]
   );
 
