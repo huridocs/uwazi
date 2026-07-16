@@ -458,6 +458,45 @@ describe('Entity view', () => {
         'true'
       );
     });
+
+    it('should render the Files tab when the entity has no files', async () => {
+      const entityNoFiles = {
+        ...sampleEntity,
+        documents: [],
+        attachments: [],
+      } as EntityType;
+
+      render(
+        <TestRouterContext
+          loaderData={{ entity: entityNoFiles, mainDocument: undefined, pagePlaintext: '' }}
+        >
+          <TestAtomStoreProvider
+            initialValues={[
+              [templatesAtom, sampleTemplate],
+              [userAtom, { _id: '1', role: 'admin', name: 'admin' }],
+            ]}
+          >
+            <Entity />
+          </TestAtomStoreProvider>
+        </TestRouterContext>
+      );
+
+      await checkEntityRendered();
+
+      const tablists = screen.getAllByTestId('tabs-comp');
+      const mainTabs = within(tablists[0]);
+      expect(mainTabs.getByRole('tab', { name: /Files/ })).toBeInTheDocument();
+
+      fireEvent.click(mainTabs.getByRole('tab', { name: /Files/ }));
+
+      await waitFor(() => {
+        expect(mainTabs.getByRole('tab', { name: /Files/ })).toHaveAttribute(
+          'aria-selected',
+          'true'
+        );
+        expect(screen.getByRole('button', { name: 'Add file' })).toBeInTheDocument();
+      });
+    });
   });
 
   describe('search tab', () => {

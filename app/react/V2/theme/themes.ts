@@ -35,6 +35,8 @@ type ThemeAssets = {
 type LegacySemanticVarKey =
   | '--accent-primary'
   | '--accent-supporting'
+  | '--accent-blue'
+  | '--accent-seal'
   | '--accent-emphasis'
   | '--bg-primary'
   | '--bg-surface'
@@ -51,7 +53,9 @@ type LegacySemanticVarKey =
   | '--border-primary-64'
   | '--border-soft-64'
   | '--accent-supporting-tint'
+  | '--accent-blue-tint'
   | '--accent-emphasis-tint'
+  | '--accent-seal-tint'
   | '--success'
   | '--success-light'
   | '--warning'
@@ -201,6 +205,7 @@ const getThemeAssetPresetId = (
   return currentPreset === 'legacy' ? 'legacy' : 'default';
 };
 
+/* eslint-disable max-params -- theme asset lookup mirrors preset API surface */
 const getThemeAsset = (
   themeAssets: ThemeAssets | undefined,
   themeVars: ThemeVarsInput,
@@ -227,6 +232,7 @@ const getThemeAsset = (
 
   return preset ?? normalizedFallback ?? '';
 };
+/* eslint-enable max-params */
 
 const getPresetPair = (presetId: ThemePresetId): Record<ThemeMode, EditableThemeVars> => ({
   light: { ...PRESET_DEFINITIONS[presetId].sourceModes.light },
@@ -347,7 +353,11 @@ const COMPATIBILITY_VAR_ENTRIES: Array<
 > = [
   ['--accent-primary', '--color-theme-accent-primary'],
   ['--accent-supporting', '--color-theme-accent-supporting'],
+  ['--accent-blue', '--color-theme-accent-supporting'],
+  ['--accent-seal', '--color-theme-accent-emphasis'],
   ['--accent-emphasis', '--color-theme-accent-emphasis'],
+  ['--accent-blue-tint', '--color-theme-accent-supporting-tint'],
+  ['--accent-seal-tint', '--color-theme-accent-emphasis-tint'],
   ['--bg-primary', '--color-theme-bg-primary'],
   ['--bg-surface', '--color-theme-bg-surface'],
   ['--bg-warm', '--color-theme-bg-warm'],
