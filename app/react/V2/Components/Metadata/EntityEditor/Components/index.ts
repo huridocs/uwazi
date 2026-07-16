@@ -1,5 +1,4 @@
 export { EntityField } from './EntityField.js';
-export { DerivedRelationshipsSection } from './DerivedRelationshipsSection.js';
 export { TextField } from './TextField.js';
 export { TitleField } from './TitleField.js';
 export { IconField } from './IconField.js';

@@ -1,5 +1,5 @@
 /* eslint-disable max-lines, max-statements */
-import React, { useEffect, useMemo } from 'react';
+import React, { Fragment, useEffect, useMemo } from 'react';
 import { FieldErrors, FormProvider, useForm } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { t, Translate } from '#app/I18N/index.js';
@@ -33,7 +33,6 @@ import {
   NestedField,
   MediaField,
   PreviewField,
-  DerivedRelationshipsSection,
 } from './Components/index.js';
 import { EMPTY_ICON, hasEntityIcon, type EntityIcon } from './Components/IconField.js';
 import { MultiselectListOption } from '../../Forms/index.js';
@@ -133,7 +132,7 @@ const groupRelationshipProperties = (properties: Properties[]): DisplayProperty[
   const groupedProperties = new Map<string, DisplayProperty>();
 
   properties.forEach(property => {
-    if (property.type !== 'relationship' || property.inherited) {
+    if (property.type !== 'relationship') {
       groupedProperties.set(property._id, property);
       return;
     }
@@ -228,8 +227,7 @@ const focusAndScrollToInvalidField = (path?: string) => {
 
 const formatMetadataForEntity = (
   metadata: EditEntityFormValues['metadata'],
-  metadataProperties: Properties[],
-  originalMetadata?: Entity['metadata']
+  metadataProperties: Properties[]
 ): Entity['metadata'] => {
   const syncedMetadata = { ...metadata };
 
@@ -250,26 +248,6 @@ const formatMetadataForEntity = (
     });
 
   return metadataProperties.reduce<NonNullable<Entity['metadata']>>((acc, property) => {
-    if (property.inherited) {
-      if (property.type === 'relationship') {
-        const editableSibling = metadataProperties.find(
-          candidate =>
-            candidate.type === 'relationship' &&
-            !candidate.inherited &&
-            candidate.content === property.content &&
-            candidate.relationType === property.relationType
-        );
-        if (editableSibling) {
-          acc[property.name] = (syncedMetadata[editableSibling.name] ?? []).map(
-            toMetadataObjectSchema
-          );
-          return acc;
-        }
-      }
-      acc[property.name] = [...(originalMetadata?.[property.name] ?? [])];
-      return acc;
-    }
-
     const mapped = (syncedMetadata[property.name] ?? []).map(toMetadataObjectSchema);
     acc[property.name] =
       property.type === 'geolocation' ? mapped.filter(entry => entry.value !== null) : mapped;
@@ -409,12 +387,8 @@ const EditEntity = ({
     () => activeTemplate?.properties?.map(mapTemplateProperty) || [],
     [activeTemplate]
   );
-  const derivedProperties = useMemo(
-    () => metadataProperties.filter(property => property.inherited),
-    [metadataProperties]
-  );
   const displayProperties = useMemo(
-    () => groupRelationshipProperties(metadataProperties.filter(property => !property.inherited)),
+    () => groupRelationshipProperties(metadataProperties),
     [metadataProperties]
   );
   const firstEditableRelationshipId = displayProperties.find(
@@ -543,11 +517,7 @@ const EditEntity = ({
   const submit = handleSubmit(
     async values => {
       if (!entity) return;
-      const formattedMetadata = formatMetadataForEntity(
-        values.metadata,
-        metadataProperties,
-        entity?.metadata
-      );
+      const formattedMetadata = formatMetadataForEntity(values.metadata, metadataProperties);
       const referencedPending = filterReferencedPendingAttachments(
         pendingAttachments,
         formattedMetadata,
@@ -599,10 +569,6 @@ const EditEntity = ({
         />
         {isMetadataReady &&
           displayProperties.map(property => {
-            if (property.inherited) {
-              return undefined;
-            }
-
             if (property.type === 'text' || property.type === 'generatedid') {
               return (
                 <TextField<EditEntityFormValues>
@@ -669,12 +635,9 @@ const EditEntity = ({
                 entity?.metadata
               );
               return (
-                <>
+                <Fragment key={property._id}>
                   {property._id === firstEditableRelationshipId ? (
-                    <p
-                      key={`relationships-heading-${property._id}`}
-                      className="pt-2 text-xs font-semibold uppercase tracking-wide text-ink-tertiary"
-                    >
+                    <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
                       <Translate>Relationships</Translate>
                     </p>
                   ) : null}
@@ -715,9 +678,8 @@ const EditEntity = ({
                         !search.trim()
                       );
                     }}
-                    key={property._id}
                   />
-                </>
+                </Fragment>
               );
             }
 
@@ -881,9 +843,6 @@ const EditEntity = ({
 
             return undefined;
           })}
-        {entity && derivedProperties.length > 0 ? (
-          <DerivedRelationshipsSection entity={entity} properties={derivedProperties} />
-        ) : null}
       </form>
     </FormProvider>
   );
