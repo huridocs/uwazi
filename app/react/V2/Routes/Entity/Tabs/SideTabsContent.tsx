@@ -24,7 +24,7 @@ const SideTabsContent = ({
   pagePlaintext,
 }: SideTabsContentProps) => {
   const { activeTabId: atomActiveTabId } = useTabGroup('entity-side');
-  const activeTabId = atomActiveTabId ?? urlActiveTabId;
+  const activeTabId = atomActiveTabId || urlActiveTabId;
 
   if (!activeTabId) return null;
 

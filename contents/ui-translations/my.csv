@@ -23,6 +23,7 @@ Account updated,Account updated
 Accuracy,Accuracy
 Accuracy tooltip,Accuracy is defined by the amount of matches vs mismatches for labeled samples that have been processed.
 Action,လုပ်ဆောင်ချက်
+Actions,Actions
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
@@ -36,6 +37,7 @@ Add as,Add as
 Add data source,Add data source
 Add date,ရက်စွဲ ထည့်ရန်
 Add entities / documents,ဖြည့်သွင်းချက်များ / စာရွက်စာတမ်းများ ထည့်ရန်
+Add entity,Add entity
 Add entity type,Add entity type
 Add Extractor,Add Extractor
 Add extractor,Add extractor
@@ -384,6 +386,7 @@ Duration,Duration
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
 Earlier,Earlier
 Edit,တည်းဖြတ်ရန်
+Edit at source,Edit at source
 Edit Extractor,Edit Extractor
 Edit File,Edit File
 Edit group,Edit group
@@ -564,6 +567,8 @@ Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,ဂုဏ်သတ္တိကို အမွေဆက်ခံရန်
 Inherit type,Inherit type
+"Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
+inherits,inherits
 Input,Input
 Install,Install
 Install Language(s),Install Language(s)
@@ -608,6 +613,7 @@ Languages installed successfully,Languages installed successfully
 Last updated,Last updated
 Last updated from collection:,Last updated from collection:
 Latitude,လတ္တီကျု
+Latitude must be between -90 and 90,Latitude must be between -90 and 90
 Learn more,ပိုမိုလေ့လာရန်
 Legend,ဒဏ္ဍာရီ
 Lengthy reindex process,Lengthy reindex process
@@ -629,6 +635,7 @@ Login button,လော့ဂ်အင်ဝင်ရန် ခလုတ်
 Login failed,လော့ဂ်အင်ဝင်၍ မရပါ
 Logout,ထွက်ရန်
 Longitude,လောင်ဂျီကျု
+Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,နိမ့်သော
 Manage site settings and configuration,ဝက်ဘ်ဆိုက် ဆက်တင်များနှင့် စနစ်တည်ဆောက်ပုံကို စီမံခန့်ခွဲရန်
@@ -721,6 +728,7 @@ No,မရှိပါ
 No attachments,တွဲချိတ်မှုများ မရှိပါ
 No chart types match your search.,No chart types match your search.
 No common filters,အသုံးများသော စစ်ထုတ်မှု မရှိပါ
+No connected entities yet.,No connected entities yet.
 No Connections,ချိတ်ဆက်မှု မရှိပါ
 No Connections description,Connections are the direct relationships between this document and other documents and entities.
 No context,No context
@@ -735,6 +743,7 @@ No icon / flag,အိုင်ကွန် / အလံ မရှိပါ
 No items available,No items available
 No Label,တံဆိပ် မရှိပါ
 No label,No label
+No matching entities.,No matching entities.
 No media selected,No media selected
 No options,No options
 No options found,ရွေးချယ်စရာ မရှိပါ
@@ -948,6 +957,7 @@ Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,ဖယ်ရှားရန်
+Remove from connection,Remove from connection
 Remove from training set,Remove from training set
 remove icon,အိုင်ကွန် ဖယ်ရှားရန်
 Removed language,Removed language
@@ -1001,6 +1011,7 @@ Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordin
 Search,ရှာဖွေရန်
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
 Search entities...,Search entities...
+Search entities…,Search entities…
 Search item,အိုင်တမ် ရှာရန်
 Search related entities or documents,သက်ဆိုင်ရာ ဖြည့်သွင်းချက် သို့မဟုတ် စာရွက်စာတမ်းများကို ရှာရန်
 Search relationships,Search relationships
@@ -1349,6 +1360,7 @@ Value cannot be transformed to the correct type,Value cannot be transformed to t
 values,values
 Verify,မှန်ကန်ကြောင်း စစ်ဆေးရန်
 Verifying...,မှန်ကန်ကြောင်း စစ်ဆေးဆဲ...
+via,via
 View,ကြည့်ရန်
 view,ကြည့်ရန်
 View entities,View entities

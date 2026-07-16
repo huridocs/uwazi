@@ -23,6 +23,7 @@ Account updated,Account updated
 Accuracy,Accuracy
 Accuracy tooltip,Accuracy is defined by the amount of matches vs mismatches for labeled samples that have been processed.
 Action,Eylem
+Actions,Actions
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
@@ -36,6 +37,7 @@ Add as,Add as
 Add data source,Add data source
 Add date,Tarih ekle
 Add entities / documents,Varlık/Döküman ekle
+Add entity,Add entity
 Add entity type,Add entity type
 Add Extractor,Add Extractor
 Add extractor,Add extractor
@@ -384,6 +386,7 @@ Duration,Duration
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
 Earlier,Earlier
 Edit,Düzenle
+Edit at source,Edit at source
 Edit Extractor,Edit Extractor
 Edit File,Edit File
 Edit group,Edit group
@@ -564,6 +567,8 @@ Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,Inherit property
 Inherit type,Inherit type
+"Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
+inherits,inherits
 Input,Input
 Install,Install
 Install Language(s),Install Language(s)
@@ -608,6 +613,7 @@ Languages installed successfully,Languages installed successfully
 Last updated,Last updated
 Last updated from collection:,Last updated from collection:
 Latitude,Enlem
+Latitude must be between -90 and 90,Latitude must be between -90 and 90
 Learn more,Daha fazla bilgi edin
 Legend,Gösterge
 Lengthy reindex process,Lengthy reindex process
@@ -629,6 +635,7 @@ Login button,Giriş
 Login failed,Giriş başarısız
 Logout,Çıkış
 Longitude,Boylam
+Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,düşük
 Manage site settings and configuration,Site ayarlarını ve yapılandırmasını yönetin
@@ -721,6 +728,7 @@ No,Hayır
 No attachments,Ek yok
 No chart types match your search.,No chart types match your search.
 No common filters,Ortak filtre yok
+No connected entities yet.,No connected entities yet.
 No Connections,Bağlantı yok
 No Connections description,Connections are the direct relationships between this document and other documents and entities.
 No context,No context
@@ -735,6 +743,7 @@ No icon / flag,Simge/İşaret yok
 No items available,No items available
 No Label,Etiket yok
 No label,No label
+No matching entities.,No matching entities.
 No media selected,No media selected
 No options,No options
 No options found,Seçenek bulunamadı
@@ -948,6 +957,7 @@ Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Kaldır
+Remove from connection,Remove from connection
 Remove from training set,Remove from training set
 remove icon,simgeyi kaldır
 Removed language,Removed language
@@ -1001,6 +1011,7 @@ Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordin
 Search,Ara
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
 Search entities...,Search entities...
+Search entities…,Search entities…
 Search item,Öğe ara
 Search related entities or documents,İlgili varlıkları veya belgeleri arayın
 Search relationships,Search relationships
@@ -1349,6 +1360,7 @@ Value cannot be transformed to the correct type,Value cannot be transformed to t
 values,values
 Verify,Doğrula
 Verifying...,Doğrulanıyor...
+via,via
 View,Görüntüle
 view,Görüntüle
 View entities,View entities

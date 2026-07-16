@@ -1,34 +1,31 @@
 import React from 'react';
 import { FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
-import { InputField } from '#V2/Components/Forms/index.js';
-import { getFieldErrorState } from '../functions/fieldErrorState.js';
+import { Textarea } from '#V2/Components/Forms/index.js';
+import { getFieldErrorMessage } from '../functions/fieldErrorMessage.js';
 import { EntityField } from './EntityField.js';
 
-type TextFieldProps<TFormValues extends FieldValues = FieldValues> = {
+type TitleFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
   label: string;
   field: Path<TFormValues>;
-  type: 'text' | 'number';
   registerOptions?: RegisterOptions<TFormValues, Path<TFormValues>>;
   disabled?: boolean;
 };
 
-const TextField = <TFormValues extends FieldValues = FieldValues>({
+const TitleField = <TFormValues extends FieldValues = FieldValues>({
   context,
   label,
   field,
   registerOptions,
   disabled,
-  type,
-}: TextFieldProps<TFormValues>) => {
+}: TitleFieldProps<TFormValues>) => {
   const { register, getFieldState, formState } = useFormContext<TFormValues>();
   const fieldState = getFieldState(field, formState);
-  const { showError, message } = getFieldErrorState(fieldState);
 
   return (
     <EntityField>
-      <InputField
+      <Textarea
         id={field}
         label={
           <>
@@ -36,10 +33,11 @@ const TextField = <TFormValues extends FieldValues = FieldValues>({
             {registerOptions?.required && '*'}
           </>
         }
-        type={type}
         disabled={disabled}
-        hasErrors={showError}
-        errorMessage={message}
+        hasErrors={fieldState.invalid}
+        errorMessage={getFieldErrorMessage(fieldState.error)}
+        rows={2}
+        resize="none"
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...register(field, registerOptions)}
       />
@@ -47,4 +45,4 @@ const TextField = <TFormValues extends FieldValues = FieldValues>({
   );
 };
 
-export { TextField };
+export { TitleField };

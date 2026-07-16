@@ -14,7 +14,7 @@ type MainTabsFootersProps = {
 
 const MainTabsFooters = ({ activeTabId: urlActiveTabId, mainDocument }: MainTabsFootersProps) => {
   const { activeTabId: atomActiveTabId } = useTabGroup('entity-main');
-  const activeTabId = atomActiveTabId ?? urlActiveTabId;
+  const activeTabId = atomActiveTabId || urlActiveTabId;
 
   switch (activeTabId) {
     case MAIN_TAB.DOCUMENT:

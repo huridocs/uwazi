@@ -51,9 +51,9 @@ const Image = ({
         }
 
         return (
-          <dd className="w-full rounded-md bg-(--color-theme-surface-warm)">
+          <dd className="w-full min-w-0 max-w-full overflow-hidden rounded-md bg-(--color-theme-surface-warm)">
             <img
-              className="m-auto max-h-96"
+              className="m-auto max-h-96 max-w-full"
               style={{
                 objectFit: imageStyle ?? 'fill',
               }}

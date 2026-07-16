@@ -193,6 +193,54 @@ describe('formatRelationshipProperty', () => {
     });
   });
 
+  it('should not treat metadata type entity as templateId', () => {
+    const property = {
+      _id: ids.property.nearbyIncidentsRel,
+      name: 'nearby_incidents',
+      label: 'Nearby incidents',
+      type: 'relationship',
+      inherited: false,
+      relationShipTarget: ids.template.incidents,
+    } as BaseMetadataProperty;
+
+    const withEntityType = {
+      nearby_incidents: [
+        {
+          value: ids.entity.incidentMainStreet,
+          label: 'Traffic Accident - Main Street',
+          type: 'entity',
+        },
+        {
+          value: ids.entity.incidentDowntown,
+          label: 'Fire Incident - Downtown',
+          type: ids.template.people,
+        },
+      ],
+    };
+
+    expect(formatRelationshipProperty(property, withEntityType)).toEqual({
+      _id: ids.property.nearbyIncidentsRel,
+      name: 'nearby_incidents',
+      label: 'Nearby incidents',
+      mode: 'related',
+      type: 'relationship',
+      values: [
+        {
+          _id: ids.entity.incidentMainStreet,
+          title: 'Traffic Accident - Main Street',
+        },
+        {
+          _id: ids.entity.incidentDowntown,
+          title: 'Fire Incident - Downtown',
+          templateId: ids.template.people,
+        },
+      ],
+      inherited: false,
+      inheritedType: undefined,
+      relationShipTarget: ids.template.incidents,
+    });
+  });
+
   it('should pass through authorized false when present on stored metadata (search / permissions row)', () => {
     const restricted = {
       restricted_links: [

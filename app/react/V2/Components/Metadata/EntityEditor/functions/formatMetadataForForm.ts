@@ -1,6 +1,6 @@
-import { PropertySchema } from '#shared/types/commonTypes.js';
+import type { MetadataObjectSchema, PropertySchema } from '#shared/types/commonTypes.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
 import { Entity } from '#V2/api/entities/types.js';
-import { resolvePropertyMetadataValues } from '#V2/formatters/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 
 type FormMetadataProperty = {
@@ -14,14 +14,34 @@ type FormMetadataProperty = {
   style?: string;
   inherited?: boolean;
   inheritedType?: MetadataValue['inheritedType'];
+  inherit?: { property?: string; type?: MetadataValue['inheritedType'] };
 };
+
+const PROPERTY_TYPES = new Set<string>(Object.values(propertyTypes));
+
+const isInheritedType = (value: unknown): value is NonNullable<MetadataValue['inheritedType']> =>
+  typeof value === 'string' && PROPERTY_TYPES.has(value);
+
+const toFormMetadataValue = (entry: MetadataObjectSchema): MetadataValue => ({
+  value: entry.value,
+  ...(typeof entry.label === 'string' ? { label: entry.label } : {}),
+  ...(entry.parent ? { parent: entry.parent } : {}),
+  ...(typeof entry.type === 'string' ? { type: entry.type } : {}),
+  ...(entry.icon !== undefined ? { icon: entry.icon } : {}),
+  ...(typeof entry.color === 'string' ? { color: entry.color } : {}),
+  ...(entry.authorized === false ? { authorized: false } : {}),
+  ...(isInheritedType(entry.inheritedType) ? { inheritedType: entry.inheritedType } : {}),
+  ...(entry.inheritedValue
+    ? { inheritedValue: entry.inheritedValue.map(toFormMetadataValue) }
+    : {}),
+});
 
 const formatMetadataForForm = (
   templateProperties: FormMetadataProperty[],
   entityMetadata?: Entity['metadata']
 ): Record<string, MetadataValue[]> =>
   templateProperties.reduce<Record<string, MetadataValue[]>>((acc, property) => {
-    acc[property.name] = resolvePropertyMetadataValues(property, entityMetadata);
+    acc[property.name] = (entityMetadata?.[property.name] ?? []).map(toFormMetadataValue);
     return acc;
   }, {});
 
