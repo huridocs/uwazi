@@ -1,26 +1,20 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useRef, useState } from 'react';
-import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
+import { useLoaderData, useRevalidator } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { ClientUserSchema } from '#app/apiResponseTypes.js';
-import { FetchResponseError } from '#shared/JSONRequest.js';
 import { validEmailFormat } from '#V2/shared/formatHelpers.js';
 import { t, Translate } from '#app/I18N/index.js';
-import { updateUser, getCurrentUser } from '#V2/api/users/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
 import { Button, Card, ConfirmationModal } from '#V2/Components/UI/index.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
-import { TwoFactorSetup } from './Components/TwoFactorSetup.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
-
-const accountLoader =
-  (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () =>
-    getCurrentUser(headers);
+import { useServices } from '#V2/services/index.js';
+import { TwoFactorSetup } from './Components/TwoFactorSetup.js';
 
 const Account = () => {
   const userAccount = useLoaderData() as ClientUserSchema;
+  const { users: usersService } = useServices();
   const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
   const [confirmationModal, setConfirmationModal] = useState(false);
   const passwordConfirmation = useRef<string>();
@@ -46,15 +40,14 @@ const Account = () => {
     const { passwordConfirm, ...userData } = data;
     userData.password = userData.password ? userData.password : userAccount.password;
 
-    const response = await updateUser(userData, currentPassword);
+    const [, error] = await usersService.upsert(userData, currentPassword);
 
-    if (response instanceof FetchResponseError) {
-      const message = response.json?.prettyMessage ? response.json.prettyMessage : response.message;
+    if (error) {
       notify(
         'error',
         t('System', 'An error occurred', null, false),
         undefined,
-        message || undefined
+        error.detail ?? error.message
       );
     } else {
       notify('success', t('System', 'Account updated', null, false));
@@ -236,4 +229,4 @@ const Account = () => {
   );
 };
 
-export { Account, accountLoader };
+export { Account };

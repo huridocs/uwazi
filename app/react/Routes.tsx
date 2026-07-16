@@ -10,7 +10,7 @@ import { LibraryTable } from './Library/LibraryTable.js';
 import { Preserve } from '#V2/Routes/Settings/Preserve/Preserve.js';
 import { Settings } from '#V2/Routes/Settings/Settings.js';
 import { Login } from './Users/Login.js';
-import { Users, usersLoader, userAction } from '#V2/Routes/Settings/Users/Users.js';
+import { Users, createUsersLoader } from '#V2/Routes/Settings/Users/index.js';
 import { Collection, collectionLoader } from '#V2/Routes/Settings/Collection/Collection.js';
 import { ViewerRoute } from './Viewer/ViewerRoute.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
@@ -38,7 +38,7 @@ import {
   relationshipTypesLoader,
 } from '#V2/Routes/Settings/RelationshipTypes/RelationshipTypes.js';
 import { LanguagesList, languagesListLoader } from '#V2/Routes/Settings/Languages/LanguagesList.js';
-import { Account, accountLoader } from '#V2/Routes/Settings/Account/Account.js';
+import { Account, createAccountLoader } from '#V2/Routes/Settings/Account/index.js';
 import { IXdashboardLoader, IXDashboard } from '#V2/Routes/Settings/IX/IXDashboard.js';
 import { IXSuggestions, IXSuggestionsLoader } from '#V2/Routes/Settings/IX/IXSuggestions.js';
 import {
@@ -228,7 +228,7 @@ const getRoutesLayout = (
     <Route path="setpassword/:key" element={<ResetPassword />} />
     <Route path="unlockaccount/:username/:code" element={<UnlockAccount />} />
     <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
-      <Route path="account" element={<Account />} loader={accountLoader(headers)} />
+      <Route path="account" element={<Account />} loader={createAccountLoader(services)(headers)} />
       <Route
         path="dashboard"
         element={adminsOnlyRoute(<Dashboard />)}
@@ -247,8 +247,7 @@ const getRoutesLayout = (
       <Route
         path="users"
         element={adminsOnlyRoute(<Users />)}
-        loader={usersLoader(headers)}
-        action={userAction()}
+        loader={createUsersLoader(services)(headers)}
       />
       <Route path="preserve" element={adminsOnlyRoute(<Preserve />)} />
       <Route path="pages">

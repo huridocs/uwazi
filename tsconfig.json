@@ -37,6 +37,7 @@
     "external_modules",
     "database",
     "e2e",
+    "playwright",
     "scripts/scripts.v2/*",
     "scripts/elasticSearch/*"
   ],
