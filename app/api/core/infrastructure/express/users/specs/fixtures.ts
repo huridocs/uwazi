@@ -36,4 +36,4 @@ const fixtures: DBFixture = {
   ],
 };
 
-export { fixtures, f };
+export { fixtures, f, PUBLIC_USER_ID };
