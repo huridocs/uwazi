@@ -1,5 +1,6 @@
-/* eslint-disable max-lines */
+/* eslint-disable max-statements */
 import entities from '#api/entities/index.js';
+import { search } from '#api/search/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import db, { DBFixture } from '#api/utils/testing_db.js';
 
@@ -29,17 +30,13 @@ describe('Denormalize relationships', () => {
   const factory = getFixturesFactory();
   const createTranslationDBO = factory.v2.database.translationDBO;
 
-  const saveEntity = async (entityData: any, language: string = 'en') => {
-    await testingEnvironment.runWithContext(async () =>
-      entities.save(entityData, { language, user: {} }, true)
-    );
-  };
-
   const modifyEntity = async (id: string, entityData: EntitySchema, language: string = 'en') => {
-    await saveEntity(
-      { _id: factory.id(`${id}-${language}`), sharedId: id, ...entityData, language },
-      language
-    );
+    await testingEnvironment.runWithContext(async () => {
+      const doc = { _id: factory.id(`${id}-${language}`), sharedId: id, ...entityData, language };
+      const template = await entities.getEntityTemplate(doc, language);
+      await entities.updateEntity(entities.sanitize(doc, template), template, true);
+      await search.indexEntities({ sharedId: id }, '+fullText');
+    });
   };
 
   afterAll(async () => testingEnvironment.tearDown());

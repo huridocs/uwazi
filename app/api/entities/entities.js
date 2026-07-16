@@ -345,8 +345,6 @@ const isLegacyCompatibilityError = error => {
   );
 };
 
-const shouldForceLegacyUpdate = doc => Boolean(doc?._id);
-
 const withDocuments = async (entities, documentsFullText) => {
   const sharedIds = entities.map(entity => entity.sharedId);
   const allFiles = await FilesDAOFactory.default().getByEntitySharedIds(sharedIds, {
@@ -428,16 +426,12 @@ export default {
         title: sanitized.title || currentDoc.title,
       };
       try {
-        if (shouldForceLegacyUpdate(doc)) {
-          throw new Error('LEGACY_UPDATE_REQUIRED');
-        }
-
         await EntityFacade.update(
           normalizeLegacyEntityForFacade(merged),
           merged.language || language
         );
       } catch (error) {
-        if (error?.message !== 'LEGACY_UPDATE_REQUIRED' && !isLegacyCompatibilityError(error)) {
+        if (!isLegacyCompatibilityError(error)) {
           throw error;
         }
         await this.updateEntity(this.sanitize(doc, template), template);

@@ -678,14 +678,14 @@ describe('entities', () => {
           [commonProperty1.name]: [{ value: 'any_text_spanish_1' }],
           [commonProperty2.name]: [{ value: 0 }],
           [commonProperty3.name]: [{ value: 4321 }],
-          [exclusiveTemplateB1.name]: [{ value: 'any_text' }],
+          [exclusiveTemplateB1.name]: [],
         });
 
         expect(editedPt.metadata).toEqual({
           [commonProperty1.name]: [{ value: 'any_text_spanish_1' }],
           [commonProperty2.name]: [{ value: 0 }],
           [commonProperty3.name]: [{ value: 4321 }],
-          [exclusiveTemplateB1.name]: [{ value: 'any_text' }],
+          [exclusiveTemplateB1.name]: [],
         });
       });
     });

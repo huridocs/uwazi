@@ -248,22 +248,13 @@ Implemented rule in this pass:
 
 ## Next Session TODOs (Pending)
 
-- Migrate remaining behavior-heavy `entities.save` test suites (not setup-only):
-  - `app/api/entities/specs/entities.spec.js`
-  - `app/api/entities/specs/denormalization.spec.ts`
-- Migration note for `denormalization.spec.ts`:
-  - direct replacement of `entities.save(...)` with `EntityFacade.update(...)` caused broad denormalization regressions (missing inherited labels/values and translation mismatches).
-  - keep this suite on legacy `entities.save` until dedicated fixture/context alignment is done for V2 listeners + multi-language translation semantics.
 - `entities.save` façade status:
   - create path no longer force-falls back when a `user._id` exists.
-  - update path still force-falls back for `_id` payloads (`LEGACY_UPDATE_REQUIRED`) because removing it breaks denormalization semantics used by legacy suites.
-- After each behavior migration chunk, re-attempt removing update fallback in `entities.save`:
-  - remove `shouldForceLegacyUpdate`
-  - remove update-side `isLegacyCompatibilityError` fallback branch
+  - update path no longer force-falls back for `_id` payloads (`LEGACY_UPDATE_REQUIRED` removed).
+  - fallback now only triggers on actual compatibility errors (`isLegacyCompatibilityError`).
 - Re-validate that no `entities.save(` references remain outside intended legacy tests.
-- Once update fallback is gone and green, plan create-side fallback removal:
-  - `shouldForceLegacyCreate`
-  - create-side compatibility fallback in `entities.save`
+- Remaining `entities.save(` references:
+  - `app/api/entities/specs/entities.spec.js` only.
 - Cleanup pass:
   - remove stale activity log parser mappings for removed routes (`POST/api/documents`, `DELETE/api/documents`)
   - remove or update any remaining deprecated docs/DS references in specs/docs.
@@ -347,3 +338,15 @@ Given CSV V2 is now enabled for all tenants, we may include full CSV V1 retireme
     - `app/api/entities/specs/entities.spec.js` (59/59)
     - `app/api/entities/specs/denormalization.spec.ts` (12/12)
     - `yarn check-types` passed
+- update-path fallback cleanup:
+  - removed forced update fallback gate in `entities.save` (`shouldForceLegacyUpdate` / `LEGACY_UPDATE_REQUIRED` path).
+  - update now attempts V2 first, then legacy only on compatibility errors.
+  - migrated `app/api/entities/specs/denormalization.spec.ts` away from `entities.save(...)`:
+    - `modifyEntity` now uses `entities.updateEntity(...)` directly with `entities.getEntityTemplate(...)`.
+    - explicit `search.indexEntities({ sharedId }, '+fullText')` added in helper to preserve index assertions previously covered by `entities.save`.
+  - aligned `app/api/entities/specs/entities.spec.js` template-change expectation with V2 behavior for non-target languages on newly introduced template-only property (`[]` instead of copied value).
+  - verification:
+    - `app/api/entities/specs/denormalization.spec.ts` (12/12)
+    - `app/api/entities/specs/entities.spec.js` (59/59)
+    - `yarn check-types` passed
+    - `rg "entities\\.save\\(" app/api/**/*.{js,ts,tsx}` => only `app/api/entities/specs/entities.spec.js`
