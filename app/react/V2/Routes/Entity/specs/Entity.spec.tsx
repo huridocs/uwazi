@@ -12,7 +12,9 @@ import {
 import { settingsAtom, templatesAtom, userAtom } from '#V2/atoms/index.js';
 import * as utils from '#app/utils/index.js';
 import * as files from '#V2/api/files/index.js';
+import * as searchApi from '#V2/api/search/index.js';
 import { Entity } from '../Entity.js';
+import { entityLoaderCache } from '../EntityLoaderCache.js';
 
 jest.mock('#V2/Components/PDFViewer', () => ({
   ...jest.requireActual('#V2/Components/PDFViewer'),
@@ -39,9 +41,10 @@ global.ResizeObserver = ResizeObserverMock as typeof ResizeObserver;
 const sampleEntity: Partial<EntityType> = {
   _id: 'ent1',
   sharedId: 'shared1',
+  language: 'en',
   title: 'Sample Entity',
   template: 'template1',
-  documents: [{ filename: 'file.pdf', _id: '1' }],
+  documents: [{ filename: 'file.pdf', _id: '1', language: 'eng' }],
   metadata: {},
 };
 
@@ -70,6 +73,7 @@ const selectPlainTextView = (container?: HTMLElement) => {
 describe('Entity view', () => {
   afterEach(() => {
     jest.clearAllMocks();
+    entityLoaderCache.invalidateAll();
     mediaMock.restore();
     mediaMock = setupMatchMediaMock();
   });
@@ -529,17 +533,20 @@ describe('Entity view', () => {
     });
 
     it('should show seach results', async () => {
-      const snippets = {
+      const snippetsData = {
         data: [
           {
-            id: 's1',
+            _id: 's1',
             snippets: {
+              count: 2,
               metadata: [{ field: 'title', texts: ['<b>Match title</b>'] }],
               fullText: [{ page: 3, text: 'Excerpt <b>match</b>' }],
             },
           },
         ],
-      } as any;
+      };
+      entityLoaderCache.setSearchResults('shared1', 'en:1', 'search', snippetsData);
+      jest.spyOn(searchApi, 'snippets').mockResolvedValue(snippetsData);
 
       render(
         <TestRouterContext
@@ -547,9 +554,8 @@ describe('Entity view', () => {
             entity: sampleEntity,
             mainDocument: sampleMainDocument,
             pagePlaintext: '',
-            searchResults: snippets,
           }}
-          initialEntries={['/?s=search']}
+          initialEntries={['/?s=search&searchTerm=search']}
         >
           <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
             <Entity />

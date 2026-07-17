@@ -1,38 +1,111 @@
-/* eslint-disable react/no-array-index-key */
-import React, { useMemo, useState } from 'react';
-import { useLoaderData, useSearchParams } from 'react-router';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { useForm, Controller } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { t, Translate } from '#app/I18N/index.js';
+import { snippets } from '#V2/api/search/index.js';
+import { SnippetsSearchResponse } from '#V2/api/types.js';
 import { templatesAtom } from '#V2/atoms/index.js';
+import {
+  useDocumentPdf,
+  useEntityLanguage,
+  useEntityScopedEntity,
+} from '#V2/Routes/Entity/Components/context/index.js';
+import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { SEARCH_PARAM } from '../../urlParams.js';
-import { LoaderResponse } from '../../types.js';
 import { NoSearch, NoResults } from './BlankState.js';
-import { getFieldName, parseSnippetToNodes } from './searchUtils.js';
-import { useDocumentPdf } from '#V2/Routes/Entity/Components/context/index.js';
+import { SearchSnippetList } from './SearchSnippetList.js';
+import { isSnippetsResponse, scopeResultsToDocument } from './searchUtils.js';
 
 type FormValues = {
   search: string;
 };
 
 const SearchView = () => {
-  const { searchResults, entity } = useLoaderData<LoaderResponse>() || {};
+  const entity = useEntityScopedEntity();
+  const { language, mainDocument } = useEntityLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
-  const initial = new URLSearchParams(searchParams).get(SEARCH_PARAM) || '';
+  const initial = searchParams.get(SEARCH_PARAM) || '';
+  const searchTerm = initial.trim();
   const templates = useAtomValue(templatesAtom);
   const { pdfController: mainPdfController } = useDocumentPdf();
+  const [searchResults, setSearchResults] = useState<SnippetsSearchResponse | undefined>();
+  const [activeSnippet, setActiveSnippet] = useState<string | null>(null);
+  const requestSeq = useRef(0);
+  const documentFilename = mainDocument?.filename;
+  const cacheKeyLanguage = `${language}:${mainDocument?._id ?? ''}`;
 
   const template = useMemo(
-    () => templates.find(temp => temp._id === entity?.template),
-    [entity, templates]
+    () => templates.find(temp => temp._id === entity.template),
+    [entity.template, templates]
   );
 
-  const { control, handleSubmit } = useForm<FormValues>({
+  const { control, handleSubmit, reset } = useForm<FormValues>({
     defaultValues: { search: initial },
   });
 
-  const [activeSnippet, setActiveSnippet] = useState<string | null>(null);
+  useEffect(() => {
+    reset({ search: initial });
+  }, [initial, reset]);
+
+  useEffect(() => {
+    setActiveSnippet(null);
+    mainPdfController?.deactivateSnippet();
+  }, [mainDocument?._id, mainPdfController]);
+
+  useEffect(() => {
+    if (!searchTerm || !entity.sharedId) {
+      setSearchResults(undefined);
+      return undefined;
+    }
+
+    const seq = requestSeq.current + 1;
+    requestSeq.current = seq;
+    setSearchResults(undefined);
+
+    const load = async () => {
+      const cached = entityLoaderCache.getSearchResults(
+        entity.sharedId,
+        cacheKeyLanguage,
+        searchTerm
+      );
+      if (cached) {
+        if (seq === requestSeq.current) {
+          setSearchResults(scopeResultsToDocument(cached, documentFilename));
+        }
+        return;
+      }
+
+      const results = await snippets(
+        { sharedId: entity.sharedId, searchString: searchTerm, limit: 0 },
+        { 'Content-Language': language }
+      );
+
+      if (seq !== requestSeq.current) return;
+
+      if (!isSnippetsResponse(results)) {
+        setSearchResults({ data: [] });
+        return;
+      }
+
+      entityLoaderCache.setSearchResults(entity.sharedId, cacheKeyLanguage, searchTerm, results);
+      setSearchResults(scopeResultsToDocument(results, documentFilename));
+    };
+
+    load().catch(() => {
+      if (seq === requestSeq.current) setSearchResults({ data: [] });
+    });
+
+    return undefined;
+  }, [
+    searchTerm,
+    language,
+    cacheKeyLanguage,
+    entity.sharedId,
+    mainDocument?._id,
+    documentFilename,
+  ]);
 
   const onSubmit = async (data: FormValues) => {
     const params = new URLSearchParams(searchParams);
@@ -53,7 +126,9 @@ const SearchView = () => {
         text: pageText.text,
         page: pageText.page,
       });
+      return;
     }
+    mainPdfController?.deactivateSnippet();
   };
 
   return (
@@ -87,85 +162,22 @@ const SearchView = () => {
         </div>
       </form>
       <div className="grow overflow-y-auto px-1">
-        {!searchResults && <NoSearch />}
-        {searchResults?.data && searchResults.data.length < 1 ? (
-          <NoResults />
-        ) : (
-          <div className="flex flex-col gap-3 pt-1">
-            {searchResults?.data.map((entry, i) => {
-              const { metadata, fullText } = entry.snippets;
-
-              if (!metadata?.length && !fullText?.length) {
-                return undefined;
-              }
-
-              return (
-                <div key={`entry-${i}`} className="flex flex-col gap-4">
-                  {metadata?.length ? (
-                    <>
-                      <dl className="grid gap-y-2">
-                        {metadata.map((m, j) => (
-                          <div
-                            key={`metadata-${i}-${j}`}
-                            className="rounded-md border border-border/40 bg-paper p-3"
-                          >
-                            <dt className="text-sm font-bold text-ink">
-                              <Translate context={entity?.template || ''}>
-                                {getFieldName(m.field, template)}
-                              </Translate>
-                            </dt>
-                            {m.texts.map((text, k) => (
-                              <dd
-                                key={`metadata-${i}-${j}-${k}`}
-                                className="text-sm font-medium text-ink"
-                              >
-                                {parseSnippetToNodes(text)}
-                              </dd>
-                            ))}
-                          </div>
-                        ))}
-                      </dl>
-                      <hr className="w-full" />
-                    </>
-                  ) : null}
-
-                  {fullText?.length
-                    ? fullText.map((pageText, j) => {
-                        const snippetKey = `${i}-${j}`;
-                        const isActive = activeSnippet === snippetKey;
-                        const snippetClass = [
-                          'rounded-md border p-3 cursor-pointer hover:bg-warm transition',
-                          isActive ? 'border-border bg-selected' : 'border-border/40 bg-paper',
-                        ].join(' ');
-
-                        return (
-                          <div
-                            key={snippetKey}
-                            role="button"
-                            tabIndex={0}
-                            aria-pressed={isActive}
-                            onClick={() => activateSnippet(snippetKey, pageText)}
-                            onKeyDown={e => {
-                              if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault();
-                                activateSnippet(snippetKey, pageText);
-                              }
-                            }}
-                            className={snippetClass}
-                          >
-                            <p className="mb-4 px-2">{parseSnippetToNodes(pageText.text)}</p>
-                            <p className="float-right font-bold">
-                              {t('System', 'Page', null, false)} {pageText.page}
-                            </p>
-                          </div>
-                        );
-                      })
-                    : null}
-                </div>
-              );
-            })}
-          </div>
-        )}
+        {!searchResults && searchTerm ? (
+          <p className="text-sm text-ink-muted">
+            <Translate>Loading</Translate>
+          </p>
+        ) : null}
+        {!searchResults && !searchTerm ? <NoSearch /> : null}
+        {searchResults?.data && searchResults.data.length < 1 ? <NoResults /> : null}
+        {searchResults && searchResults.data.length > 0 ? (
+          <SearchSnippetList
+            results={searchResults}
+            entityTemplateId={entity.template || ''}
+            template={template}
+            activeSnippet={activeSnippet}
+            onActivate={activateSnippet}
+          />
+        ) : null}
       </div>
     </div>
   );
