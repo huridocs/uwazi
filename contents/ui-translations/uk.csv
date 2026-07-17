@@ -351,6 +351,8 @@ Direction,Direction
 Disable,Вимкнути
 Disable highlights,Вимкнути підсвічування
 Disabled 2FA,Відключений 2FA
+Discard and leave,Discard and leave
+Discard and switch,Discard and switch
 Discard changes,Відмінити зміни
 Discard changes?,Відкинути зміни?
 Dismiss,Звільнити.
@@ -1304,6 +1306,7 @@ Unknown entity,Unknown entity
 Unknown template,Unknown template
 Unlink,Роз'єднати зв'язок.
 Unlock account,Розблокувати обліковий запис
+Unsaved changes,Unsaved changes
 Unsupported OCR language,Непідтримувана мова оптичного розпізнавання символів
 Untitled,Untitled
 Untranslated Terms,Неперекладені терміни
@@ -1398,6 +1401,10 @@ You can create metadata templates in,Ви можете створювати ша
                   button.","You can start by selecting text in the document and clicking the ""Add to ToC""
                   button."
 You do not have write permission on all entities,You do not have write permission on all entities
+You have unsaved changes. Discard them and leave this page? This action cannot be undone.,You have unsaved changes. Discard them and leave this page? This action cannot be undone.
+"You have unsaved changes. Discard them and switch language? This action cannot be
+              undone.","You have unsaved changes. Discard them and switch language? This action cannot be
+              undone."
 You have unsaved changes. Do you want to continue?,У вас є незбережені зміни. Ви хочете продовжити?
 You should activate this feature for enhanced account security,Ви маєте активувати цю функцію для посилення безпеки облікового запису
 You should activate this feature for enhanced account security.,Вам слід активувати цю функцію для посилення безпеки акаунта.

@@ -350,6 +350,8 @@ Direction,Direction
 Disable,Απενεργοποίηση
 Disable highlights,Απενεργοποίηση επισημάνσεων
 Disabled 2FA,Απενεργοποιημένο 2FA
+Discard and leave,Discard and leave
+Discard and switch,Discard and switch
 Discard changes,Απόρριψη αλλαγών
 Discard changes?,Απόρριψη αλλαγών;
 Dismiss,Απόκρυψη
@@ -1303,6 +1305,7 @@ Unknown entity,Unknown entity
 Unknown template,Unknown template
 Unlink,Αποσύνδεση
 Unlock account,Ξεκλείδωμα λογαριασμού
+Unsaved changes,Unsaved changes
 Unsupported OCR language,Μη υποστηριζόμενη γλώσσα OCR
 Untitled,Untitled
 Untranslated Terms,Αμετάφραστοι όροι
@@ -1397,6 +1400,10 @@ You can create metadata templates in,Μπορείτε να δημιουργήσ�
                   button.","You can start by selecting text in the document and clicking the ""Add to ToC""
                   button."
 You do not have write permission on all entities,You do not have write permission on all entities
+You have unsaved changes. Discard them and leave this page? This action cannot be undone.,You have unsaved changes. Discard them and leave this page? This action cannot be undone.
+"You have unsaved changes. Discard them and switch language? This action cannot be
+              undone.","You have unsaved changes. Discard them and switch language? This action cannot be
+              undone."
 You have unsaved changes. Do you want to continue?,Έχετε μη αποθηκευμένες αλλαγές. Θέλετε να συνεχίσετε;
 You should activate this feature for enhanced account security,Θα πρέπει να ενεργοποιήσετε αυτή τη λειτουργία για αυξημένη ασφάλεια λογαριασμού
 You should activate this feature for enhanced account security.,Θα πρέπει να ενεργοποιήσετε αυτή τη λειτουργία για αυξημένη ασφάλεια λογαριασμού.
