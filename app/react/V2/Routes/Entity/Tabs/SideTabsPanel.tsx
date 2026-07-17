@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { useMetadataEditing } from '../Components/context/index.js';
 import { getSideTabButtons, type FilesSideTabsOptions } from './sideTabSets.js';
+import { isMetadataHostDirty } from './metadataTabSession.js';
 import { SIDE_TAB, type MainTabId, type SideTabId } from './tabIds.js';
 import { TabsSideButtons } from './TabsSideButtons.js';
 import { SideTabsContent } from './SideTabsContent.js';
@@ -28,8 +29,8 @@ const SideTabsPanel = ({
   pagePlaintext,
   filesSideTabs,
 }: SideTabsPanelProps) => {
-  const { isDirty, isEditing, editingHost } = useMetadataEditing();
-  const metadataDirty = (isDirty || isEditing) && editingHost === 'side';
+  const { isDirty, editingHost } = useMetadataEditing();
+  const metadataDirty = isMetadataHostDirty(isDirty, editingHost, 'side');
   const sideButtons = useMemo(
     () =>
       getSideTabButtons({

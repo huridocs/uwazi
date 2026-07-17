@@ -71,14 +71,14 @@ const EntityView = ({ searchResults }: EntityViewProps) => {
   });
   const { activeTabId: atomMainTabId } = useTabGroup('entity-main');
   const mainTabId = isValidMainTab(atomMainTabId) ? atomMainTabId : activeMainTab;
-  const { isEditing, isDirty, isSaving, cancelEdit } = useMetadataEditing();
+  const { isEditing, isDirty, isSaving, editingHost, cancelEdit } = useMetadataEditing();
   const showMainPaneHeader = !(mainTabId === MAIN_TAB.METADATA && isEditing);
 
   return (
     <>
       <FilesDeleteConfirmationModal />
       <AddFileModal />
-      <BlockDirtyNavigation when={isEditing && isDirty && !isSaving} onDiscard={cancelEdit} />
+      <BlockDirtyNavigation when={isEditing && (isDirty || isSaving)} onDiscard={cancelEdit} />
       <div className="h-full min-h-0" dir={isRtl ? 'rtl' : 'ltr'}>
         <PaneLayout defaultRatios={[0.62, 0.38]} className="bg-parchment text-ink">
           <PaneLayout.Pane>
@@ -114,7 +114,7 @@ const EntityView = ({ searchResults }: EntityViewProps) => {
               </div>
             </div>
           </PaneLayout.Pane>
-          <PaneLayout.Pane key={isEditing ? 'side-editing' : mainTabId}>
+          <PaneLayout.Pane key={editingHost === 'side' ? 'side-editing' : mainTabId}>
             <SideTabsPanel
               activeMainTab={mainTabId}
               activeSideTab={activeSideTab}

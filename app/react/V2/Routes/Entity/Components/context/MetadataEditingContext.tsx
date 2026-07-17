@@ -50,12 +50,7 @@ const MetadataEditingProvider = ({ children }: { children: React.ReactNode }) =>
   }, []);
 
   const cancelEdit = useCallback(() => {
-    if (cancelEditRef.current) {
-      cancelEditRef.current();
-      setIsDirty(false);
-      setEditingHost(null);
-      return;
-    }
+    cancelEditRef.current?.();
     setSaveError(undefined);
     setIsDirty(false);
     setIsEditing(false);

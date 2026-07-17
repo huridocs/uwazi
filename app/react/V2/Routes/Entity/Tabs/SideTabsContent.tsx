@@ -2,7 +2,8 @@ import React, { type ReactNode } from 'react';
 import { useTabGroup } from '#V2/Components/UI/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { useMetadataEditing } from '../Components/context/index.js';
-import { SIDE_TAB, type SideTabId } from './tabIds.js';
+import { SIDE_TAB, isValidSideTab, type SideTabId } from './tabIds.js';
+import { keepMetadataTab, resolveActiveTabId } from './metadataTabSession.js';
 import { DocumentTab } from './tabsContent/DocumentTab.js';
 import { MetadataTab } from './tabsContent/MetadataTab.js';
 import { ToCTab } from './tabsContent/ToCTab.js';
@@ -25,10 +26,11 @@ const SideTabsContent = ({
   pagePlaintext,
 }: SideTabsContentProps) => {
   const { activeTabId: atomActiveTabId } = useTabGroup('entity-side');
-  const activeTabId = atomActiveTabId || urlActiveTabId;
+  const resolvedTabId = resolveActiveTabId(atomActiveTabId, urlActiveTabId);
+  const activeTabId = isValidSideTab(resolvedTabId) ? resolvedTabId : urlActiveTabId;
   const { isEditing, editingHost } = useMetadataEditing();
   const metadataActive = activeTabId === SIDE_TAB.METADATA;
-  const keepMetadata = metadataActive || (isEditing && editingHost === 'side');
+  const keepMetadata = keepMetadataTab(Boolean(metadataActive), isEditing, editingHost, 'side');
 
   if (!activeTabId && !keepMetadata) return null;
 

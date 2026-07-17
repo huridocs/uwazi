@@ -4,6 +4,7 @@ import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { countEntityRelationships } from '#V2/formatters/index.js';
 import { useMetadataEditing } from '../Components/context/index.js';
 import { EntityLanguageBar, TabLabel } from '../Components/shared/index.js';
+import { isMetadataHostDirty } from './metadataTabSession.js';
 import { MAIN_TAB } from './tabIds.js';
 
 type TabsMainButtonsProps = {
@@ -13,8 +14,8 @@ type TabsMainButtonsProps = {
 };
 
 const TabsMainButtons = ({ entity, mainDocument, onTabChange }: TabsMainButtonsProps) => {
-  const { isDirty, isEditing, editingHost } = useMetadataEditing();
-  const metadataDirty = (isDirty || isEditing) && editingHost === 'main';
+  const { isDirty, editingHost } = useMetadataEditing();
+  const metadataDirty = isMetadataHostDirty(isDirty, editingHost, 'main');
   const buttons = useMemo(() => {
     const items = [];
     const filesCount = (entity.documents?.length || 0) + (entity.attachments?.length || 0);

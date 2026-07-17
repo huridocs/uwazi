@@ -92,6 +92,9 @@ const EntityLanguageBar = () => {
       setPendingLanguage(nextLanguage);
       return;
     }
+    if (isEditing) {
+      cancelEdit();
+    }
     setLanguage(nextLanguage).catch(() => undefined);
   };
 
