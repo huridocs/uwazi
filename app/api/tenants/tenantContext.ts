@@ -31,10 +31,10 @@ type Tenant = {
     postgresTemplates?: boolean;
     aiAssistant?: boolean;
     aiAssistantServiceUrl?: string;
-    v2CreateUser?: boolean;
-    v2DeleteUser?: boolean;
-    v2GetUsers?: boolean;
-    v2UpdateUser?: boolean;
+    v2UsersCreate?: boolean;
+    v2UsersDelete?: boolean;
+    v2UsersGet?: boolean;
+    v2UsersUpdate?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

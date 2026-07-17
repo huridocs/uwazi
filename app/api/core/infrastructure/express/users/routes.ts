@@ -17,7 +17,7 @@ export const userRoutes = (app: Application) => {
     validatePasswordMiddleWare,
     async (req: Request, res: Response, next: NextFunction) => {
       // for legacy reasons, should be removed one the flag is gone
-      if (tenants.current().featureFlags?.v2CreateUser) {
+      if (tenants.current().featureFlags?.v2UsersCreate) {
         next();
       } else {
         await validation.validateRequest({
@@ -36,7 +36,7 @@ export const userRoutes = (app: Application) => {
     needsAuthorization(['admin', 'editor', 'collaborator']),
     validatePasswordMiddleWare,
     async (req: Request, res: Response, next: NextFunction) => {
-      if (tenants.current().featureFlags?.v2UpdateUser) {
+      if (tenants.current().featureFlags?.v2UsersUpdate) {
         next();
       } else {
         await validation.validateRequest({
@@ -60,7 +60,7 @@ export const userRoutes = (app: Application) => {
     '/api/users',
     needsAuthorization(),
     async (_req: Request, res: Response, next: NextFunction) => {
-      if (tenants.current().featureFlags?.v2GetUsers) {
+      if (tenants.current().featureFlags?.v2UsersGet) {
         next();
       } else {
         users

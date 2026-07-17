@@ -23,7 +23,7 @@ describe('V1 / V2 Users DAO consistency', () => {
   describe.each(configs)('$name', ({ v2 }) => {
     beforeEach(() => {
       testingTenants.mockCurrentTenant({
-        featureFlags: v2 ? { v2GetUsers: true } : {},
+        featureFlags: v2 ? { v2UsersGet: true } : {},
       });
     });
 
