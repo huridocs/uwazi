@@ -72,7 +72,6 @@ enum ItemTypes {
 type ClientFeatureFlags = {
   paragraphExtraction?: boolean;
   themeCustomization?: boolean;
-  dataViz?: boolean;
   newHeader?: boolean;
   v2GetEntity?: boolean;
   aiAssistant?: boolean;
