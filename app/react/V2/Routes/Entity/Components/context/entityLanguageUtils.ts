@@ -42,8 +42,9 @@ const resolveMainDocument = (
   documents: Entity['documents'],
   defaultLanguage?: string
 ) => {
-  const cached = entityLoaderCache.getMainDocument(sharedId, nextLanguage);
-  const nextMainDocument = cached ?? getMainDocument(documents, nextLanguage, defaultLanguage);
+  const nextMainDocument =
+    getMainDocument(documents, nextLanguage, defaultLanguage) ??
+    entityLoaderCache.getMainDocument(sharedId, nextLanguage);
   if (nextMainDocument) {
     entityLoaderCache.setMainDocument(sharedId, nextLanguage, nextMainDocument);
   }
@@ -136,10 +137,37 @@ const revalidateUiLanguage = (
   };
 };
 
+type SyncLoaderLanguageMode = 'adopt-loader' | 'match-loader-docs' | 'keep-ui';
+
+const resolveSyncMode = ({
+  loaderLanguageChanged,
+  pendingAdopt,
+  preserveUiLanguage,
+  loaderLanguage,
+  uiLanguage,
+}: {
+  loaderLanguageChanged: boolean;
+  pendingAdopt: boolean;
+  preserveUiLanguage: boolean;
+  loaderLanguage: string;
+  uiLanguage: string;
+}): { mode: SyncLoaderLanguageMode; pendingAdopt: boolean } => {
+  if ((loaderLanguageChanged || pendingAdopt) && preserveUiLanguage) {
+    return { mode: 'keep-ui', pendingAdopt: true };
+  }
+  if (loaderLanguageChanged || pendingAdopt) {
+    return { mode: 'adopt-loader', pendingAdopt: false };
+  }
+  if (loaderLanguage === uiLanguage) {
+    return { mode: 'match-loader-docs', pendingAdopt: false };
+  }
+  return { mode: 'keep-ui', pendingAdopt: false };
+};
+
 const syncLoaderLanguage = ({
+  mode,
   loaderEntity,
   loaderLanguage,
-  loaderLanguageChanged,
   initialMainDocument,
   initialPagePlaintext,
   languageRef,
@@ -149,9 +177,9 @@ const syncLoaderLanguage = ({
   applyLanguage,
   fallbackToLoader,
 }: {
+  mode: SyncLoaderLanguageMode;
   loaderEntity: Entity;
   loaderLanguage: string;
-  loaderLanguageChanged: boolean;
   initialMainDocument?: FileType;
   initialPagePlaintext?: string;
   languageRef: MutableRefObject<string>;
@@ -162,15 +190,18 @@ const syncLoaderLanguage = ({
   fallbackToLoader: () => void;
 }) => {
   seedLoaderCache(loaderEntity, loaderLanguage, initialMainDocument);
-  if (loaderLanguageChanged) {
+
+  if (mode === 'adopt-loader') {
     fallbackToLoader();
     return undefined;
   }
-  if (loaderLanguage === languageRef.current) {
+
+  if (mode === 'match-loader-docs') {
     setMainDocument(initialMainDocument);
     setPagePlaintext(initialPagePlaintext);
     return undefined;
   }
+
   return isLoadingRef.current
     ? undefined
     : revalidateUiLanguage(applyLanguage, languageRef.current, fallbackToLoader);
@@ -183,6 +214,12 @@ export {
   fetchEntityForLanguage,
   resolvePlaintext,
   applyLanguageSnapshot,
+  resolveSyncMode,
   syncLoaderLanguage,
 };
-export type { LanguageSnapshot, LanguageSnapshotSetters, ApplyLanguageResult };
+export type {
+  LanguageSnapshot,
+  LanguageSnapshotSetters,
+  ApplyLanguageResult,
+  SyncLoaderLanguageMode,
+};

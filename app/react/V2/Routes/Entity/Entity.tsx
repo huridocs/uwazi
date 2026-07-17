@@ -72,7 +72,11 @@ const EntityView = ({ searchResults }: EntityViewProps) => {
   const { activeTabId: atomMainTabId } = useTabGroup('entity-main');
   const mainTabId = isValidMainTab(atomMainTabId) ? atomMainTabId : activeMainTab;
   const { isEditing, isDirty, isSaving, editingHost, cancelEdit } = useMetadataEditing();
-  const showMainPaneHeader = !(mainTabId === MAIN_TAB.METADATA && isEditing);
+  const showMainPaneHeader = !(
+    mainTabId === MAIN_TAB.METADATA &&
+    isEditing &&
+    editingHost === 'main'
+  );
 
   return (
     <>

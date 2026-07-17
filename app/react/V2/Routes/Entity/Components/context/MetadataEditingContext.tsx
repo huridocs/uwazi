@@ -53,6 +53,7 @@ const MetadataEditingProvider = ({ children }: { children: React.ReactNode }) =>
     cancelEditRef.current?.();
     setSaveError(undefined);
     setIsDirty(false);
+    setIsSaving(false);
     setIsEditing(false);
     setEditingHost(null);
   }, []);

@@ -58,7 +58,7 @@ const LanguageOption = ({
 
 const EntityLanguageBar = () => {
   const { language, languages, isLoading, setLanguage } = useEntityLanguage();
-  const { isEditing, isDirty, cancelEdit } = useMetadataEditing();
+  const { isEditing, isDirty, isSaving, cancelEdit } = useMetadataEditing();
   const isMobile = useIsMobile();
   const [open, setOpen] = useState(false);
   const [pendingLanguage, setPendingLanguage] = useState<string>();
@@ -85,7 +85,7 @@ const EntityLanguageBar = () => {
 
   const requestLanguage = (nextLanguage: string) => {
     setOpen(false);
-    if (nextLanguage === language) {
+    if (nextLanguage === language || isSaving) {
       return;
     }
     if (isEditing && isDirty) {
@@ -108,12 +108,13 @@ const EntityLanguageBar = () => {
     setLanguage(nextLanguage).catch(() => undefined);
   };
 
+  const languageDisabled = isLoading || isSaving;
   const options = languages.map(lang => (
     <LanguageOption
       key={lang.key}
       langKey={lang.key}
       isActive={lang.key === language}
-      disabled={isLoading}
+      disabled={languageDisabled}
       variant={isMobile ? 'menu' : 'pill'}
       onSelect={() => requestLanguage(lang.key)}
     />
@@ -127,7 +128,7 @@ const EntityLanguageBar = () => {
             type="button"
             aria-label="Language"
             aria-expanded={open}
-            disabled={isLoading}
+            disabled={languageDisabled}
             onClick={() => setOpen(value => !value)}
             className="flex items-center gap-1 rounded-md bg-warm px-3 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment disabled:opacity-60"
           >

@@ -26,26 +26,26 @@ const EntityScopedProvider = ({
   children,
 }: EntityScopedProviderProps) => (
   <EntityProvider entity={entity}>
-    <EntityLanguageProvider
-      loaderEntity={entity}
-      initialLanguage={language}
-      initialMainDocument={mainDocument}
-      initialPagePlaintext={pagePlaintext}
-    >
-      <RelationshipsProvider>
-        <RelationshipsSelectionProvider>
-          <RelationshipsPanelFiltersProvider>
-            <DocumentInteractionProvider>
-              <TocProvider>
-                <MetadataEditingProvider>
+    <MetadataEditingProvider>
+      <EntityLanguageProvider
+        loaderEntity={entity}
+        initialLanguage={language}
+        initialMainDocument={mainDocument}
+        initialPagePlaintext={pagePlaintext}
+      >
+        <RelationshipsProvider>
+          <RelationshipsSelectionProvider>
+            <RelationshipsPanelFiltersProvider>
+              <DocumentInteractionProvider>
+                <TocProvider>
                   <EntityOverlayProvider>{children}</EntityOverlayProvider>
-                </MetadataEditingProvider>
-              </TocProvider>
-            </DocumentInteractionProvider>
-          </RelationshipsPanelFiltersProvider>
-        </RelationshipsSelectionProvider>
-      </RelationshipsProvider>
-    </EntityLanguageProvider>
+                </TocProvider>
+              </DocumentInteractionProvider>
+            </RelationshipsPanelFiltersProvider>
+          </RelationshipsSelectionProvider>
+        </RelationshipsProvider>
+      </EntityLanguageProvider>
+    </MetadataEditingProvider>
   </EntityProvider>
 );
 

@@ -1,19 +1,16 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
-import { useSearchParams } from 'react-router';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { t } from '#app/I18N/index.js';
 import type { Entity, FileType } from '#V2/api/entities/types.js';
 import { notify } from '#V2/utils/notifyBridge.js';
-import { entityLoaderCache } from '../../../EntityLoaderCache.js';
-import { PAGE_PARAM, VIEW_MODE_PARAM } from '../../../urlParams.js';
 import {
   applyLanguageSnapshot,
   fetchEntityForLanguage,
   resolveMainDocument,
   resolvePlaintext,
-  syncLoaderLanguage,
   type ApplyLanguageResult,
   type LanguageSnapshotSetters,
 } from '../entityLanguageUtils.js';
+import { useLoaderLanguageSync, useSyncPagePlaintext } from './useEntityLanguageSync.js';
 
 type UseEntityLanguageStateParams = {
   loaderEntity: Entity;
@@ -30,7 +27,11 @@ const useApplyLanguage = (
   setters: LanguageSnapshotSetters
 ) => {
   const applyGenerationRef = useRef(0);
-  return useCallback(
+  const invalidateApply = useCallback(() => {
+    applyGenerationRef.current += 1;
+  }, []);
+
+  const applyLanguage = useCallback(
     // eslint-disable-next-line max-statements
     async (nextLanguage: string): Promise<ApplyLanguageResult> => {
       const { sharedId } = loaderEntity;
@@ -65,98 +66,37 @@ const useApplyLanguage = (
     },
     [loaderEntity, defaultLanguage, setters]
   );
+
+  return { applyLanguage, invalidateApply };
 };
 
-const useLoaderLanguageSync = ({
-  loaderEntity,
-  loaderLanguage,
-  initialMainDocument,
-  initialPagePlaintext,
-  languageRef,
-  isLoadingRef,
-  setMainDocument,
-  setPagePlaintext,
-  applyLanguage,
-  fallbackToLoader,
-}: {
-  loaderEntity: Entity;
-  loaderLanguage: string;
-  initialMainDocument?: FileType;
-  initialPagePlaintext?: string;
-  languageRef: MutableRefObject<string>;
-  isLoadingRef: MutableRefObject<boolean>;
-  setMainDocument: (document: FileType | undefined) => void;
-  setPagePlaintext: (text: string | undefined) => void;
-  applyLanguage: (nextLanguage: string) => Promise<ApplyLanguageResult>;
-  fallbackToLoader: () => void;
-}) => {
-  const prevLoaderLanguageRef = useRef(loaderLanguage);
-  useEffect(() => {
-    const loaderLanguageChanged = prevLoaderLanguageRef.current !== loaderLanguage;
-    prevLoaderLanguageRef.current = loaderLanguage;
-    return syncLoaderLanguage({
-      loaderEntity,
-      loaderLanguage,
-      loaderLanguageChanged,
-      initialMainDocument,
-      initialPagePlaintext,
-      languageRef,
-      isLoadingRef,
-      setMainDocument,
-      setPagePlaintext,
-      applyLanguage,
-      fallbackToLoader,
-    });
-  }, [
-    loaderEntity,
-    loaderLanguage,
-    initialMainDocument,
-    initialPagePlaintext,
-    languageRef,
-    isLoadingRef,
+const useLanguageLocalState = (
+  initialLanguage: string,
+  initialMainDocument: FileType | undefined,
+  initialPagePlaintext: string | undefined
+) => {
+  const [language, setLanguageState] = useState(initialLanguage);
+  const [mainDocument, setMainDocument] = useState(initialMainDocument);
+  const [pagePlaintext, setPagePlaintext] = useState(initialPagePlaintext);
+  const [isLoading, setIsLoading] = useState(false);
+  const languageRef = useRef(language);
+  const isLoadingRef = useRef(isLoading);
+  languageRef.current = language;
+  isLoadingRef.current = isLoading;
+  return {
+    language,
+    mainDocument,
+    pagePlaintext,
+    isLoading,
+    setLanguageState,
     setMainDocument,
     setPagePlaintext,
-    applyLanguage,
-    fallbackToLoader,
-  ]);
+    setIsLoading,
+    languageRef,
+    isLoadingRef,
+  };
 };
 
-const useSyncPagePlaintext = ({
-  mainDocument,
-  setPagePlaintext,
-}: {
-  mainDocument?: FileType;
-  setPagePlaintext: (text: string | undefined) => void;
-}) => {
-  const [searchParams] = useSearchParams();
-  const pageParam = searchParams.get(PAGE_PARAM) || '1';
-  const isRawView = searchParams.get(VIEW_MODE_PARAM) === 'true';
-
-  useEffect(() => {
-    let cancelled = false;
-    if (!isRawView || !mainDocument?._id) {
-      setPagePlaintext(undefined);
-      return () => {
-        cancelled = true;
-      };
-    }
-
-    setPagePlaintext(entityLoaderCache.getPlaintext(mainDocument._id, Number(pageParam)));
-    resolvePlaintext(mainDocument)
-      .then(text => {
-        if (!cancelled) setPagePlaintext(text);
-      })
-      .catch(() => {
-        if (!cancelled) setPagePlaintext(undefined);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [mainDocument, pageParam, isRawView, setPagePlaintext]);
-};
-
-// eslint-disable-next-line max-statements
 const useEntityLanguageState = ({
   loaderEntity,
   initialLanguage,
@@ -166,21 +106,29 @@ const useEntityLanguageState = ({
   setEntity,
 }: UseEntityLanguageStateParams) => {
   const loaderLanguage = loaderEntity.language || initialLanguage;
-  const [language, setLanguageState] = useState(initialLanguage);
-  const [mainDocument, setMainDocument] = useState(initialMainDocument);
-  const [pagePlaintext, setPagePlaintext] = useState(initialPagePlaintext);
-  const [isLoading, setIsLoading] = useState(false);
-  const languageRef = useRef(language);
-  const isLoadingRef = useRef(isLoading);
-  languageRef.current = language;
-  isLoadingRef.current = isLoading;
-
+  const {
+    language,
+    mainDocument,
+    pagePlaintext,
+    isLoading,
+    setLanguageState,
+    setMainDocument,
+    setPagePlaintext,
+    setIsLoading,
+    languageRef,
+    isLoadingRef,
+  } = useLanguageLocalState(initialLanguage, initialMainDocument, initialPagePlaintext);
   const setters: LanguageSnapshotSetters = useMemo(
     () => ({ setLanguageState, setEntity, setMainDocument, setPagePlaintext }),
-    [setEntity]
+    [setEntity, setLanguageState, setMainDocument, setPagePlaintext]
   );
-  const applyLanguage = useApplyLanguage(loaderEntity, defaultLanguage, setters);
+  const { applyLanguage, invalidateApply } = useApplyLanguage(
+    loaderEntity,
+    defaultLanguage,
+    setters
+  );
   const fallbackToLoader = useCallback(() => {
+    invalidateApply();
     applyLanguageSnapshot(
       {
         language: loaderLanguage,
@@ -190,7 +138,14 @@ const useEntityLanguageState = ({
       },
       setters
     );
-  }, [loaderLanguage, loaderEntity, initialMainDocument, initialPagePlaintext, setters]);
+  }, [
+    invalidateApply,
+    loaderLanguage,
+    loaderEntity,
+    initialMainDocument,
+    initialPagePlaintext,
+    setters,
+  ]);
   const setLanguage = useCallback(
     async (nextLanguage: string) => {
       if (nextLanguage === languageRef.current || isLoadingRef.current) return;
@@ -203,7 +158,7 @@ const useEntityLanguageState = ({
         setIsLoading(false);
       }
     },
-    [applyLanguage]
+    [applyLanguage, languageRef, isLoadingRef, setIsLoading]
   );
 
   useLoaderLanguageSync({
@@ -217,6 +172,7 @@ const useEntityLanguageState = ({
     setPagePlaintext,
     applyLanguage,
     fallbackToLoader,
+    invalidateApply,
   });
   useSyncPagePlaintext({ mainDocument, setPagePlaintext });
 
