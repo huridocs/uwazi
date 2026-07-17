@@ -8,7 +8,7 @@ import { CreateUserUseCaseFactory } from '../../factories/CreateUserUseCaseFacto
 class CreateUserController extends AbstractController<CreateUserRequest> {
   protected async handle(): Promise<void> {
     const domain = `${this.request.protocol}://${ExecutionContext.tenant.domain}`;
-    if (ExecutionContext.tenant.featureFlags?.v2CreateUser) {
+    if (ExecutionContext.tenant.featureFlags?.v2UsersCreate) {
       const startTime = Date.now();
       try {
         const input = CreateUserInputSchema.parse({ ...this.request.body, domain });
