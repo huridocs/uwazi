@@ -148,37 +148,21 @@ const EntityLanguageProvider = ({
         return;
       }
 
-      const documents =
-        entityLoaderCache.getEntity(sharedId, languageRef.current)?.documents ??
-        entityLoaderCache.getEntity(sharedId, nextLanguage)?.documents ??
-        loaderEntity.documents;
-
-      const nextMainDocument = resolveMainDocument(
-        sharedId,
-        nextLanguage,
-        documents,
-        defaultLanguage
-      );
-      setMainDocument(nextMainDocument);
-      setLanguageState(nextLanguage);
-
       const nextEntity = await fetchEntityForLanguage(sharedId, nextLanguage);
       if (!nextEntity) {
         return;
       }
 
-      const reconciledMainDocument = resolveMainDocument(
+      const nextMainDocument = resolveMainDocument(
         sharedId,
         nextLanguage,
         nextEntity.documents,
         defaultLanguage
       );
-      if (reconciledMainDocument?._id !== nextMainDocument?._id) {
-        setMainDocument(reconciledMainDocument);
-      }
-
+      setMainDocument(nextMainDocument);
+      setLanguageState(nextLanguage);
       setEntity(nextEntity);
-      setPagePlaintext(await resolvePlaintext(reconciledMainDocument ?? nextMainDocument));
+      setPagePlaintext(await resolvePlaintext(nextMainDocument));
     },
     [loaderEntity, defaultLanguage, setEntity, resolvePlaintext]
   );
@@ -191,12 +175,19 @@ const EntityLanguageProvider = ({
 
     if (loaderLanguage === languageRef.current) {
       setMainDocument(initialMainDocument);
-      setPagePlaintext(initialPagePlaintext);
       return;
     }
 
     applyLanguageRef.current(languageRef.current).catch(() => undefined);
-  }, [loaderEntity, initialLanguage, initialMainDocument, initialPagePlaintext]);
+  }, [loaderEntity, initialLanguage, initialMainDocument]);
+
+  useEffect(() => {
+    const loaderLanguage = loaderEntity.language || initialLanguage;
+    if (loaderLanguage !== languageRef.current) {
+      return;
+    }
+    setPagePlaintext(initialPagePlaintext);
+  }, [initialPagePlaintext, loaderEntity.language, initialLanguage]);
 
   const setLanguage = useCallback(
     async (nextLanguage: string) => {

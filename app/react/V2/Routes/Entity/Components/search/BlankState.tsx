@@ -28,4 +28,14 @@ const NoResults = () => (
   />
 );
 
-export { NoSearch, NoResults };
+const SearchError = () => (
+  <BlankState
+    icon={
+      <MagnifyingGlassIcon className="h-7 w-7 text-ink rounded-full bg-[color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] p-1" />
+    }
+    title={<Translate>An error occurred</Translate>}
+    description={<Translate>This search could not be completed. Try again later.</Translate>}
+  />
+);
+
+export { NoSearch, NoResults, SearchError };

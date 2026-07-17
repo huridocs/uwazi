@@ -215,6 +215,9 @@ const PDF = ({
     let cancelled = false;
 
     const handleLoading = (taskData: { loaded: number; total: number; percent: number }) => {
+      if (cancelled) {
+        return;
+      }
       if (taskData.percent < 100) {
         setLoading({ isLoading: true, progress: taskData.percent });
       } else {

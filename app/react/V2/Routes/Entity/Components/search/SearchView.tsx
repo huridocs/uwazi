@@ -1,22 +1,18 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useForm, Controller } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { t, Translate } from '#app/I18N/index.js';
-import { snippets } from '#V2/api/search/index.js';
-import { SnippetsSearchResponse } from '#V2/api/types.js';
 import { templatesAtom } from '#V2/atoms/index.js';
 import {
   useDocumentPdf,
   useEntityLanguage,
   useEntityScopedEntity,
 } from '#V2/Routes/Entity/Components/context/index.js';
-import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { SEARCH_PARAM } from '../../urlParams.js';
-import { NoSearch, NoResults } from './BlankState.js';
-import { SearchSnippetList } from './SearchSnippetList.js';
-import { isSnippetsResponse, scopeResultsToDocument } from './searchUtils.js';
+import { SearchResultsPanel } from './SearchResultsPanel.js';
+import { useEntitySearchSnippets } from './useEntitySearchSnippets.js';
 
 type FormValues = {
   search: string;
@@ -30,11 +26,14 @@ const SearchView = () => {
   const searchTerm = initial.trim();
   const templates = useAtomValue(templatesAtom);
   const { pdfController: mainPdfController } = useDocumentPdf();
-  const [searchResults, setSearchResults] = useState<SnippetsSearchResponse | undefined>();
   const [activeSnippet, setActiveSnippet] = useState<string | null>(null);
-  const requestSeq = useRef(0);
-  const documentFilename = mainDocument?.filename;
-  const cacheKeyLanguage = `${language}:${mainDocument?._id ?? ''}`;
+  const { searchResults, searchError } = useEntitySearchSnippets({
+    searchTerm,
+    sharedId: entity.sharedId,
+    language,
+    mainDocumentId: mainDocument?._id,
+    documentFilename: mainDocument?.filename,
+  });
 
   const template = useMemo(
     () => templates.find(temp => temp._id === entity.template),
@@ -53,59 +52,6 @@ const SearchView = () => {
     setActiveSnippet(null);
     mainPdfController?.deactivateSnippet();
   }, [mainDocument?._id, mainPdfController]);
-
-  useEffect(() => {
-    if (!searchTerm || !entity.sharedId) {
-      setSearchResults(undefined);
-      return undefined;
-    }
-
-    const seq = requestSeq.current + 1;
-    requestSeq.current = seq;
-    setSearchResults(undefined);
-
-    const load = async () => {
-      const cached = entityLoaderCache.getSearchResults(
-        entity.sharedId,
-        cacheKeyLanguage,
-        searchTerm
-      );
-      if (cached) {
-        if (seq === requestSeq.current) {
-          setSearchResults(scopeResultsToDocument(cached, documentFilename));
-        }
-        return;
-      }
-
-      const results = await snippets(
-        { sharedId: entity.sharedId, searchString: searchTerm, limit: 0 },
-        { 'Content-Language': language }
-      );
-
-      if (seq !== requestSeq.current) return;
-
-      if (!isSnippetsResponse(results)) {
-        setSearchResults({ data: [] });
-        return;
-      }
-
-      entityLoaderCache.setSearchResults(entity.sharedId, cacheKeyLanguage, searchTerm, results);
-      setSearchResults(scopeResultsToDocument(results, documentFilename));
-    };
-
-    load().catch(() => {
-      if (seq === requestSeq.current) setSearchResults({ data: [] });
-    });
-
-    return undefined;
-  }, [
-    searchTerm,
-    language,
-    cacheKeyLanguage,
-    entity.sharedId,
-    mainDocument?._id,
-    documentFilename,
-  ]);
 
   const onSubmit = async (data: FormValues) => {
     const params = new URLSearchParams(searchParams);
@@ -162,22 +108,15 @@ const SearchView = () => {
         </div>
       </form>
       <div className="grow overflow-y-auto px-1">
-        {!searchResults && searchTerm ? (
-          <p className="text-sm text-ink-muted">
-            <Translate>Loading</Translate>
-          </p>
-        ) : null}
-        {!searchResults && !searchTerm ? <NoSearch /> : null}
-        {searchResults?.data && searchResults.data.length < 1 ? <NoResults /> : null}
-        {searchResults && searchResults.data.length > 0 ? (
-          <SearchSnippetList
-            results={searchResults}
-            entityTemplateId={entity.template || ''}
-            template={template}
-            activeSnippet={activeSnippet}
-            onActivate={activateSnippet}
-          />
-        ) : null}
+        <SearchResultsPanel
+          searchError={searchError}
+          searchResults={searchResults}
+          searchTerm={searchTerm}
+          entityTemplateId={entity.template || ''}
+          template={template}
+          activeSnippet={activeSnippet}
+          onActivate={activateSnippet}
+        />
       </div>
     </div>
   );
