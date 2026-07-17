@@ -6,6 +6,8 @@ import {
   resolvePlaintext,
 } from './entityLanguageUtils.js';
 
+type ApplyLanguageResult = 'applied' | 'stale' | 'failed';
+
 type LanguageSetters = {
   setEntity: (entity: Entity) => void;
   setMainDocument: (document: FileType | undefined) => void;
@@ -13,14 +15,22 @@ type LanguageSetters = {
   setPagePlaintext: (text: string | undefined) => void;
 };
 
-const commitLanguageState = (
-  sharedId: string,
-  nextLanguage: string,
-  nextEntity: Entity,
-  defaultLanguage: string | undefined,
-  { setEntity, setMainDocument, setLanguageState }: Omit<LanguageSetters, 'setPagePlaintext'>
-  // eslint-disable-next-line max-params
-) => {
+type ApplyDeps = LanguageSetters & { sharedId: string | undefined; defaultLanguage?: string };
+
+const commitLanguageState = ({
+  sharedId,
+  nextLanguage,
+  nextEntity,
+  defaultLanguage,
+  setEntity,
+  setMainDocument,
+  setLanguageState,
+}: {
+  sharedId: string;
+  nextLanguage: string;
+  nextEntity: Entity;
+  defaultLanguage?: string;
+} & Omit<LanguageSetters, 'setPagePlaintext'>) => {
   const nextMainDocument = resolveMainDocument(
     sharedId,
     nextLanguage,
@@ -33,42 +43,49 @@ const commitLanguageState = (
   return nextMainDocument;
 };
 
+const fetchCurrentEntity = async (
+  sharedId: string | undefined,
+  nextLanguage: string,
+  isCurrent: () => boolean
+): Promise<{ status: ApplyLanguageResult; entity?: Entity }> => {
+  if (!sharedId) {
+    return { status: 'failed' };
+  }
+  const entity = await fetchEntityForLanguage(sharedId, nextLanguage);
+  if (!isCurrent()) {
+    return { status: 'stale' };
+  }
+  if (!entity) {
+    return { status: 'failed' };
+  }
+  return { status: 'applied', entity };
+};
+
 const applyEntityLanguage = async (
   nextLanguage: string,
   isCurrent: () => boolean,
-  {
-    sharedId,
-    defaultLanguage,
-    setEntity,
-    setMainDocument,
-    setLanguageState,
-    setPagePlaintext,
-  }: LanguageSetters & { sharedId: string | undefined; defaultLanguage?: string }
-) => {
-  if (!sharedId) {
-    return;
+  deps: ApplyDeps
+): Promise<ApplyLanguageResult> => {
+  const fetched = await fetchCurrentEntity(deps.sharedId, nextLanguage, isCurrent);
+  if (fetched.status !== 'applied' || !fetched.entity || !deps.sharedId) {
+    return fetched.status;
   }
 
-  const nextEntity = await fetchEntityForLanguage(sharedId, nextLanguage);
-  if (!isCurrent() || !nextEntity) {
-    return;
-  }
-
-  const nextMainDocument = commitLanguageState(
-    sharedId,
+  const nextMainDocument = commitLanguageState({
+    sharedId: deps.sharedId,
     nextLanguage,
-    nextEntity,
-    defaultLanguage,
-    {
-      setEntity,
-      setMainDocument,
-      setLanguageState,
-    }
-  );
+    nextEntity: fetched.entity,
+    defaultLanguage: deps.defaultLanguage,
+    setEntity: deps.setEntity,
+    setMainDocument: deps.setMainDocument,
+    setLanguageState: deps.setLanguageState,
+  });
   const nextPlaintext = await resolvePlaintext(nextMainDocument);
-  if (isCurrent()) {
-    setPagePlaintext(nextPlaintext);
+  if (!isCurrent()) {
+    return 'stale';
   }
+  deps.setPagePlaintext(nextPlaintext);
+  return 'applied';
 };
 
 const useApplyEntityLanguage = ({
@@ -82,10 +99,10 @@ const useApplyEntityLanguage = ({
   const applyGenerationRef = useRef(0);
 
   return useCallback(
-    async (nextLanguage: string) => {
+    async (nextLanguage: string): Promise<ApplyLanguageResult> => {
       applyGenerationRef.current += 1;
       const generation = applyGenerationRef.current;
-      await applyEntityLanguage(nextLanguage, () => generation === applyGenerationRef.current, {
+      return applyEntityLanguage(nextLanguage, () => generation === applyGenerationRef.current, {
         sharedId: loaderEntity.sharedId,
         defaultLanguage,
         setEntity,
@@ -99,3 +116,4 @@ const useApplyEntityLanguage = ({
 };
 
 export { useApplyEntityLanguage };
+export type { ApplyLanguageResult };

@@ -25,6 +25,7 @@ const useEntitySearchSnippets = ({
   // eslint-disable-next-line max-statements
   useEffect(() => {
     if (!searchTerm || !sharedId) {
+      requestSeq.current += 1;
       setSearchResults(undefined);
       setSearchError(false);
       return undefined;
