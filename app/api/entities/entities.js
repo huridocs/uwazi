@@ -377,7 +377,7 @@ export default {
   createEntity,
   getEntityTemplate,
   async save(_doc, { user, language }, options = {}) {
-    const { updateRelationships = true, index = true, includeDocuments = true } = options;
+    const { updateRelationships = true, includeDocuments = true } = options;
 
     await validateEntity(_doc);
     await savePropertySelections(_doc);
@@ -393,7 +393,9 @@ export default {
     let docTemplate = template;
     doc.editDate = date.currentUTC();
 
-    if (doc.sharedId) {
+    const isUpdate = Boolean(doc.sharedId);
+
+    if (isUpdate) {
       const docLanguage = doc.language || language;
       const [languageDocWithFiles] = await this.getUnrestrictedWithDocuments(
         { sharedId: doc.sharedId, language: docLanguage },
@@ -443,12 +445,8 @@ export default {
       ? await this.getUnrestrictedWithDocuments({ sharedId, language }, '+permissions')
       : await this.getUnrestricted({ sharedId, language }, '+permissions');
 
-    if (updateRelationships) {
+    if (updateRelationships && !isUpdate) {
       await relationships.saveEntityBasedReferences(entity, language, docTemplate);
-    }
-
-    if (index) {
-      await search.indexEntities({ sharedId }, '+fullText');
     }
 
     return entity;

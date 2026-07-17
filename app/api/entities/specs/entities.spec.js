@@ -12,10 +12,13 @@ import { User } from '#api/users.v2/model/User.js';
 import { UserRole } from '#shared/types/userSchema.js';
 
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
 import entities from '../entities.js';
 
 import { EntityCreatedEvent } from '../events/EntityCreatedEvent.js';
@@ -50,6 +53,21 @@ const saveEntity = (doc, options = {}, ...rest) => {
     () => entities.save(doc, options, ...rest),
     actor ? { actor } : undefined
   );
+};
+
+const saveEntityWithEventing = (doc, options = {}, ...rest) => {
+  const actor = toActorFromUser(options.user);
+  const jobsDispatcher = new SyncDispatcherForTests({
+    [ProcessRelationshipAfterEntityUpdatedListener.asJob().name]: async () =>
+      new ProcessRelationshipAfterEntityUpdatedListener({}),
+  });
+  return testingEnvironment.runWithContext(() => entities.save(doc, options, ...rest), {
+    ...(actor ? { actor } : {}),
+    factories: {
+      eventEmitter: EventEmitterFactory.default,
+      jobsDispatcher: () => jobsDispatcher,
+    },
+  });
 };
 
 const denormalizeEntity = (entity, options) =>
@@ -461,7 +479,7 @@ describe('entities', () => {
 
         existing.metadata.friends.push({ value: 'id1' }, { value: 'id2' });
         existing.metadata.enemies.push({ value: 'shared1' });
-        await saveEntity(existing, { user, language: 'en' });
+        await saveEntityWithEventing(existing, { user, language: 'en' });
 
         const updatedRelationships = await relationships.getByDocument('relSaveTest', 'en');
         expect(updatedRelationships.map(r => r.entityData.title).sort()).toEqual([
@@ -491,7 +509,7 @@ describe('entities', () => {
 
         existing.metadata.friends = [];
         existing.metadata.enemies = [];
-        await saveEntity(existing, { user, language: 'en' });
+        await saveEntityWithEventing(existing, { user, language: 'en' });
 
         const updatedRelationships = await relationships.getByDocument('relSaveTest', 'en');
         expect(updatedRelationships.length).toBe(0);
