@@ -5,7 +5,7 @@ import type { Entity, FileType } from '#V2/api/entities/types.js';
 import { settingsAtom } from '#V2/atoms/index.js';
 import { resolveRtl } from './entityLanguageUtils.js';
 import { useEntityContext } from './EntityContext.js';
-import { useEntityLanguageState } from './useEntityLanguageState.js';
+import { useEntityLanguageState } from './hooks/useEntityLanguageState.js';
 
 type EntityLanguageContextValue = {
   language: string;

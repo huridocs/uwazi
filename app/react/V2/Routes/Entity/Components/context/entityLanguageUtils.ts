@@ -1,3 +1,4 @@
+import type { MutableRefObject } from 'react';
 import type { LanguagesListSchema } from '#shared/types/commonTypes.js';
 import { availableLanguages } from '#shared/language/index.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
@@ -7,6 +8,8 @@ import { getMainDocument } from '#V2/formatters/index.js';
 import { httpServices } from '#V2/services/http/index.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { PAGE_PARAM, VIEW_MODE_PARAM } from '../../urlParams.js';
+
+type ApplyLanguageResult = 'applied' | 'stale' | 'failed';
 
 const resolveRtl = (languageKey: string, languages: LanguagesListSchema): boolean => {
   const fromSettings = languages.find(language => language.key === languageKey)?.rtl;
@@ -111,6 +114,68 @@ const applyLanguageSnapshot = (snapshot: LanguageSnapshot, setters: LanguageSnap
   setters.setPagePlaintext(snapshot.pagePlaintext);
 };
 
+const revalidateUiLanguage = (
+  applyLanguage: (nextLanguage: string) => Promise<ApplyLanguageResult>,
+  language: string,
+  fallbackToLoader: () => void
+) => {
+  let cancelled = false;
+  applyLanguage(language)
+    .then(result => {
+      if (!cancelled && result === 'failed') {
+        fallbackToLoader();
+      }
+    })
+    .catch(() => {
+      if (!cancelled) {
+        fallbackToLoader();
+      }
+    });
+  return () => {
+    cancelled = true;
+  };
+};
+
+const syncLoaderLanguage = ({
+  loaderEntity,
+  loaderLanguage,
+  loaderLanguageChanged,
+  initialMainDocument,
+  initialPagePlaintext,
+  languageRef,
+  isLoadingRef,
+  setMainDocument,
+  setPagePlaintext,
+  applyLanguage,
+  fallbackToLoader,
+}: {
+  loaderEntity: Entity;
+  loaderLanguage: string;
+  loaderLanguageChanged: boolean;
+  initialMainDocument?: FileType;
+  initialPagePlaintext?: string;
+  languageRef: MutableRefObject<string>;
+  isLoadingRef: MutableRefObject<boolean>;
+  setMainDocument: (document: FileType | undefined) => void;
+  setPagePlaintext: (text: string | undefined) => void;
+  applyLanguage: (nextLanguage: string) => Promise<ApplyLanguageResult>;
+  fallbackToLoader: () => void;
+}) => {
+  seedLoaderCache(loaderEntity, loaderLanguage, initialMainDocument);
+  if (loaderLanguageChanged) {
+    fallbackToLoader();
+    return undefined;
+  }
+  if (loaderLanguage === languageRef.current) {
+    setMainDocument(initialMainDocument);
+    setPagePlaintext(initialPagePlaintext);
+    return undefined;
+  }
+  return isLoadingRef.current
+    ? undefined
+    : revalidateUiLanguage(applyLanguage, languageRef.current, fallbackToLoader);
+};
+
 export {
   resolveRtl,
   seedLoaderCache,
@@ -118,5 +183,6 @@ export {
   fetchEntityForLanguage,
   resolvePlaintext,
   applyLanguageSnapshot,
+  syncLoaderLanguage,
 };
-export type { LanguageSnapshot, LanguageSnapshotSetters };
+export type { LanguageSnapshot, LanguageSnapshotSetters, ApplyLanguageResult };

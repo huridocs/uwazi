@@ -4,7 +4,7 @@ import type {
   RelationshipsPanelSort,
   RelationshipsPanelView,
   RelationshipsPanelZoom,
-} from './types.js';
+} from '../types.js';
 
 const useRelationshipsPanelFilterSlices = () => {
   const [search, setSearch] = useState('');
