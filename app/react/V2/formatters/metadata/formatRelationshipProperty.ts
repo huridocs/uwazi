@@ -8,6 +8,7 @@ import {
 type MetadataValue = {
   value?: unknown;
   label?: string;
+  type?: string;
   authorized?: false;
   icon?: { _id?: string; label?: string } | string;
 };
@@ -15,10 +16,18 @@ type MetadataValue = {
 const mapRelationshipValue = (metadataValue: MetadataValue) => {
   const icon =
     metadataValue?.icon && typeof metadataValue.icon === 'object' ? metadataValue.icon : undefined;
+  const templateId =
+    typeof metadataValue?.type === 'string' &&
+    metadataValue.type !== 'entity' &&
+    metadataValue.type !== 'relationship' &&
+    metadataValue.type !== 'newRelationship'
+      ? metadataValue.type
+      : undefined;
 
   return {
     _id: String(metadataValue?.value || ''),
     title: metadataValue?.label || '',
+    ...(templateId && { templateId }),
     ...(typeof metadataValue?.authorized === 'boolean' && {
       authorized: metadataValue.authorized,
     }),

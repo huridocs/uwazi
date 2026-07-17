@@ -28,12 +28,14 @@ describe('editEntityErrors', () => {
       relationType: 'rel1',
     },
     { _id: '5', type: 'nested', name: 'violations_table', label: 'Violations' },
+    { _id: '6', type: 'geolocation', name: 'location_on_map', label: 'Location' },
   ];
 
   it('should map metadata property types to form field paths', () => {
     expect(getMetadataFieldPath(properties[0])).toBe('metadata.simple_text.0.value');
     expect(getMetadataFieldPath(properties[1])).toBe('metadata.status_selection');
     expect(getMetadataFieldPath(properties[4])).toBe('metadata.violations_table');
+    expect(getMetadataFieldPath(properties[5])).toBe('metadata.location_on_map');
   });
 
   it('should map grouped relationship errors to the primary field path', () => {

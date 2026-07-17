@@ -1,8 +1,10 @@
 import React from 'react';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
-import { InputError } from '#V2/Components/Forms/InputError.js';
-import { getFieldErrorMessage } from '../functions/fieldErrorMessage.js';
+import { InputField } from '#V2/Components/Forms/index.js';
+import { Label } from '#V2/Components/Forms/Label.js';
+import { EntityFieldError, getFieldErrorState } from '../functions/fieldErrorState.js';
+import { EntityField } from './EntityField.js';
 
 type LinkFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
@@ -23,7 +25,7 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
   const required = Boolean(registerOptions?.required);
 
   return (
-    <div className="text-ink bg-(--bg-surface)">
+    <EntityField>
       <Controller
         control={control}
         name={field}
@@ -38,7 +40,7 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
           },
         }}
         render={({ field: fieldValue, fieldState }) => {
-          const { label: urlLabel, url } = (fieldValue.value as {
+          const { label: linkLabel, url } = (fieldValue.value as {
             url: string;
             label?: string;
           }) || {
@@ -46,70 +48,54 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
             url: '',
           };
 
-          const showRequiredError = Boolean(fieldState.error);
-          const valueInputClassName = `block w-full rounded-lg border p-2.5 text-sm ${
-            showRequiredError
-              ? 'border-(--color-theme-control-border-error) bg-(--color-theme-control-bg-error) text-(--color-theme-control-text-error) focus:border-(--color-theme-control-border-error) focus:[box-shadow:0_0_0_4px_var(--color-theme-control-error-ring)]'
-              : 'border-(--color-theme-control-border) bg-(--color-theme-control-bg)'
-          }`;
+          const { showError, message } = getFieldErrorState(fieldState);
 
           return (
             <>
-              <div
-                className={`font-bold mb-2 ${
-                  showRequiredError ? 'text-(--color-theme-control-text-error)' : ''
-                }`}
-              >
-                <Translate className="" context={context}>
-                  {label}
-                </Translate>
+              <Label htmlFor={`${field}.url`} hasErrors={showError}>
+                <Translate context={context}>{label}</Translate>
                 {registerOptions?.required && '*'}
-              </div>
-              <div className="flex flex-col md:flex-row gap-2">
-                <div className="flex flex-row items-center gap-1 md:w-1/3">
-                  <label htmlFor={`${field}.label`} className="font-medium text-sm">
-                    <Translate>Label</Translate>:
-                  </label>
-                  <input
+              </Label>
+              <div className="flex flex-col gap-2 md:flex-row">
+                <div className="md:w-1/3">
+                  <InputField
                     id={`${field}.label`}
+                    label={<Translate>Label</Translate>}
                     type="text"
                     disabled={disabled}
                     name={`${fieldValue.name}.label`}
-                    value={urlLabel}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      fieldValue.onChange({ ...fieldValue.value, label: e.target.value })
-                    }
+                    value={linkLabel}
+                    hasErrors={showError}
                     onBlur={fieldValue.onBlur}
-                    className={valueInputClassName}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                      fieldValue.onChange({ ...fieldValue.value, label: event.target.value })
+                    }
                   />
                 </div>
-                <div className="flex flex-row items-center gap-1 md:w-2/3">
-                  <label htmlFor={`${field}.url`} className="font-medium text-sm">
-                    <Translate>URL</Translate>:
-                  </label>
-                  <input
+                <div className="md:w-2/3">
+                  <InputField
                     id={`${field}.url`}
+                    label={<Translate>URL</Translate>}
                     type="url"
                     disabled={disabled}
                     name={`${fieldValue.name}.url`}
                     ref={fieldValue.ref}
                     value={url}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      fieldValue.onChange({ ...fieldValue.value, url: e.target.value })
-                    }
+                    placeholder="https://"
+                    hasErrors={showError}
                     onBlur={fieldValue.onBlur}
-                    className={valueInputClassName}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                      fieldValue.onChange({ ...fieldValue.value, url: event.target.value })
+                    }
                   />
                 </div>
               </div>
-              {showRequiredError ? (
-                <InputError>{getFieldErrorMessage(fieldState.error)}</InputError>
-              ) : null}
+              <EntityFieldError showError={showError} message={message} />
             </>
           );
         }}
       />
-    </div>
+    </EntityField>
   );
 };
 

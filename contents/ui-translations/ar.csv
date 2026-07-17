@@ -23,6 +23,7 @@ Account updated,Account updated
 Accuracy,Accuracy
 Accuracy tooltip,Accuracy is defined by the amount of matches vs mismatches for labeled samples that have been processed.
 Action,عمل/ إجراء
+Actions,Actions
 Activate,Activate
 Activated,Activated
 Active languages,اللغات النشطة
@@ -36,6 +37,7 @@ Add as,Add as
 Add data source,Add data source
 Add date,إضافة تاريخ
 Add entities / documents,إضافة كيانات (أو إدخالات)/ مستندات
+Add entity,Add entity
 Add entity type,Add entity type
 Add Extractor,Add Extractor
 Add extractor,Add extractor
@@ -383,6 +385,7 @@ Duration,المدة
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
 Earlier,Earlier
 Edit,تحرير
+Edit at source,Edit at source
 Edit Extractor,Edit Extractor
 Edit File,Edit File
 Edit group,Edit group
@@ -563,6 +566,8 @@ Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,وراثة خاصية
 Inherit type,Inherit type
+"Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
+inherits,inherits
 Input,Input
 Install,Install
 Install Language(s),Install Language(s)
@@ -607,6 +612,7 @@ Languages installed successfully,Languages installed successfully
 Last updated,Last updated
 Last updated from collection:,Last updated from collection:
 Latitude,خط العرض
+Latitude must be between -90 and 90,Latitude must be between -90 and 90
 Learn more,اعرف المزيد
 Legend,مفتاح مصطلحات الخريطة
 Lengthy reindex process,Lengthy reindex process
@@ -628,6 +634,7 @@ Login button,زر تسجيل الدخول
 Login failed,فشل عملية الدخول
 Logout,تسجيل خروج
 Longitude,خط الطول
+Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,منخفض/ أدنى/ قليل/ صغير
 Manage site settings and configuration,إدارة إعدادات الموقع
@@ -720,6 +727,7 @@ No,لا
 No attachments,لا توجد مرفقات
 No chart types match your search.,No chart types match your search.
 No common filters,لا مشترك بين قوائم التصفيه
+No connected entities yet.,No connected entities yet.
 No Connections,لا اتصالات
 No Connections description,الاتصالات هل العلاقات المباشرة بين تلك الوثيقة و الوثائق والكيانات الاخرد
 No context,No context
@@ -734,6 +742,7 @@ No icon / flag,لا توجد أيقونة/ علامة
 No items available,No items available
 No Label,لا تسمية
 No label,No label
+No matching entities.,No matching entities.
 No media selected,No media selected
 No options,No options
 No options found,لم يتم العثور على خيارات
@@ -947,6 +956,7 @@ Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,إزالة
+Remove from connection,Remove from connection
 Remove from training set,Remove from training set
 remove icon,إزالة الأيقونة
 Removed language,Removed language
@@ -1000,6 +1010,7 @@ Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordin
 Search,ابحث
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
 Search entities...,Search entities...
+Search entities…,Search entities…
 Search item,البحث عن بند
 Search related entities or documents,البحث عن الكيانات أو المستندات ذات الصلة
 Search relationships,Search relationships
@@ -1348,6 +1359,7 @@ Value cannot be transformed to the correct type,Value cannot be transformed to t
 values,values
 Verify,تحقق
 Verifying...,تحقق..
+via,via
 View,عرض
 view,عرض
 View entities,View entities
