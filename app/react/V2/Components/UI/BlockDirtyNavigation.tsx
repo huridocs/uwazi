@@ -1,29 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useBlocker } from 'react-router';
-import { Translate } from '#app/I18N/index.js';
-import { ConfirmationModal } from './ConfirmationModal.js';
+import { DirtyDiscardModal } from './DirtyDiscardModal.js';
 
 type BlockDirtyNavigationProps = {
   when: boolean;
   onDiscard?: () => void;
-  header?: React.ReactNode;
-  body?: React.ReactNode;
-  acceptButton?: React.ReactNode;
-  cancelButton?: React.ReactNode;
 };
 
-const BlockDirtyNavigation = ({
-  when,
-  onDiscard,
-  header = <Translate>Unsaved changes</Translate>,
-  body = (
-    <Translate>
-      You have unsaved changes. Discard them and leave this page? This action cannot be undone.
-    </Translate>
-  ),
-  acceptButton = <Translate>Discard and leave</Translate>,
-  cancelButton = <Translate>Cancel</Translate>,
-}: BlockDirtyNavigationProps) => {
+const BlockDirtyNavigation = ({ when, onDiscard }: BlockDirtyNavigationProps) => {
   const [showModal, setShowModal] = useState(false);
   const blocker = useBlocker(when);
 
@@ -38,18 +22,14 @@ const BlockDirtyNavigation = ({
   }
 
   return (
-    <ConfirmationModal
-      header={header}
-      body={body}
-      acceptButton={acceptButton}
-      cancelButton={cancelButton}
-      dangerStyle
-      onAcceptClick={() => {
+    <DirtyDiscardModal
+      action="leave"
+      onDiscard={() => {
         setShowModal(false);
         onDiscard?.();
         blocker.proceed?.();
       }}
-      onCancelClick={() => {
+      onCancel={() => {
         setShowModal(false);
         blocker.reset?.();
       }}

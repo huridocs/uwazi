@@ -44,6 +44,8 @@ export { NeedAuthorization } from './NeedAuthorization.js';
 export { ConfirmNavigationModal } from './ConfirmNavigationModal.js';
 export { BlockDirtyNavigation } from './BlockDirtyNavigation.js';
 export type { BlockDirtyNavigationProps } from './BlockDirtyNavigation.js';
+export { DirtyDiscardModal } from './DirtyDiscardModal.js';
+export type { DirtyDiscardAction, DirtyDiscardModalProps } from './DirtyDiscardModal.js';
 export { Truncate } from './Truncate.js';
 export { VerticalDrawer } from './VerticalDrawer.js';
 export { BlankState } from './BlankState.js';

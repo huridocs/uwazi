@@ -90,10 +90,33 @@ const resolvePlaintext = async (document: FileType | undefined) => {
   return response;
 };
 
+type LanguageSnapshot = {
+  language: string;
+  entity: Entity;
+  mainDocument?: FileType;
+  pagePlaintext?: string;
+};
+
+type LanguageSnapshotSetters = {
+  setLanguageState: (language: string) => void;
+  setEntity: (entity: Entity) => void;
+  setMainDocument: (document: FileType | undefined) => void;
+  setPagePlaintext: (text: string | undefined) => void;
+};
+
+const applyLanguageSnapshot = (snapshot: LanguageSnapshot, setters: LanguageSnapshotSetters) => {
+  setters.setMainDocument(snapshot.mainDocument);
+  setters.setLanguageState(snapshot.language);
+  setters.setEntity(snapshot.entity);
+  setters.setPagePlaintext(snapshot.pagePlaintext);
+};
+
 export {
   resolveRtl,
   seedLoaderCache,
   resolveMainDocument,
   fetchEntityForLanguage,
   resolvePlaintext,
+  applyLanguageSnapshot,
 };
+export type { LanguageSnapshot, LanguageSnapshotSetters };

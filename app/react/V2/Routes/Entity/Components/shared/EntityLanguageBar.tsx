@@ -1,8 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useRef, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import { Translate } from '#app/I18N/index.js';
-import { ConfirmationModal } from '#V2/Components/UI/index.js';
+import { DirtyDiscardModal } from '#V2/Components/UI/index.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { useEntityLanguage } from '../context/EntityLanguageContext.js';
 import { useMetadataEditing } from '../context/MetadataEditingContext.js';
@@ -86,7 +85,7 @@ const EntityLanguageBar = () => {
 
   const requestLanguage = (nextLanguage: string) => {
     setOpen(false);
-    if (nextLanguage === language || isLoading) {
+    if (nextLanguage === language) {
       return;
     }
     if (isEditing && isDirty) {
@@ -152,19 +151,10 @@ const EntityLanguageBar = () => {
         </div>
       )}
       {pendingLanguage ? (
-        <ConfirmationModal
-          header={<Translate>Unsaved changes</Translate>}
-          body={
-            <Translate>
-              You have unsaved changes. Discard them and switch language? This action cannot be
-              undone.
-            </Translate>
-          }
-          acceptButton={<Translate>Discard and switch</Translate>}
-          cancelButton={<Translate>Cancel</Translate>}
-          dangerStyle
-          onAcceptClick={discardAndSwitch}
-          onCancelClick={() => setPendingLanguage(undefined)}
+        <DirtyDiscardModal
+          action="switch"
+          onDiscard={discardAndSwitch}
+          onCancel={() => setPendingLanguage(undefined)}
         />
       ) : null}
     </>
