@@ -381,7 +381,6 @@ const EditEntity = ({
 
   useEffect(() => {
     onDirtyChange?.(isDirty);
-    return () => onDirtyChange?.(false);
   }, [isDirty, onDirtyChange]);
 
   const activeTemplate = useMemo(

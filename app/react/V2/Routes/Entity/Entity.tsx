@@ -4,7 +4,7 @@ import { useAtomValue } from 'jotai';
 import { useLoaderData } from 'react-router';
 import { Translate } from '#app/I18N/index.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
-import { BlockDirtyNavigation } from '#V2/Components/UI/index.js';
+import { BlockDirtyNavigation, useTabGroup } from '#V2/Components/UI/index.js';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import { localeAtom } from '#V2/atoms/index.js';
 import { SnippetsSearchResponse } from '#V2/api/types.js';
@@ -28,6 +28,7 @@ import {
   MainTabsFooters,
   SideTabsPanel,
   MAIN_TAB,
+  isValidMainTab,
 } from './Tabs/index.js';
 import { useEntityViewTabs } from './Tabs/hooks/useEntityViewTabs.js';
 import { LoaderResponse } from './types.js';
@@ -68,8 +69,10 @@ const EntityView = ({ searchResults }: EntityViewProps) => {
     searchResults,
     filesSideTabs,
   });
+  const { activeTabId: atomMainTabId } = useTabGroup('entity-main');
+  const mainTabId = isValidMainTab(atomMainTabId) ? atomMainTabId : activeMainTab;
   const { isEditing, isDirty, isSaving, cancelEdit } = useMetadataEditing();
-  const showMainPaneHeader = !(activeMainTab === MAIN_TAB.METADATA && isEditing);
+  const showMainPaneHeader = !(mainTabId === MAIN_TAB.METADATA && isEditing);
 
   return (
     <>
@@ -88,33 +91,32 @@ const EntityView = ({ searchResults }: EntityViewProps) => {
                   <TabsMainButtons
                     entity={entity}
                     mainDocument={mainDocument}
-                    activeTabId={activeMainTab}
                     onTabChange={onMainTabChange}
                   />
                 </div>
                 {showMainPaneHeader ? (
                   <EntityMainPaneHeader
                     entity={entity}
-                    showDocumentViewMode={activeMainTab === MAIN_TAB.DOCUMENT && hasMainDocument}
+                    showDocumentViewMode={mainTabId === MAIN_TAB.DOCUMENT && hasMainDocument}
                   />
                 ) : null}
               </div>
               <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
                 <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
                   <MainTabsContent
-                    activeTabId={activeMainTab}
+                    activeTabId={mainTabId}
                     entity={entity}
                     mainDocument={mainDocument}
                     pagePlaintext={pagePlaintext}
                   />
                 </div>
-                <MainTabsFooters activeTabId={activeMainTab} mainDocument={mainDocument} />
+                <MainTabsFooters activeTabId={mainTabId} mainDocument={mainDocument} />
               </div>
             </div>
           </PaneLayout.Pane>
-          <PaneLayout.Pane key={activeMainTab}>
+          <PaneLayout.Pane key={isEditing ? 'side-editing' : mainTabId}>
             <SideTabsPanel
-              activeMainTab={activeMainTab}
+              activeMainTab={mainTabId}
               activeSideTab={activeSideTab}
               onSideTabChange={onSideTabChange}
               entity={entity}

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useSetAtom } from 'jotai';
 import { useSearchParams } from 'react-router';
-import { tabGroupsAtom } from '#V2/Components/UI/Tabs/tabsAtoms.js';
+import { mergeTabGroup, tabGroupsAtom } from '#V2/Components/UI/Tabs/tabsAtoms.js';
 import { Entity as EntityType } from '#V2/api/entities/types.js';
 import { SnippetsSearchResponse } from '#V2/api/types.js';
 import { MAIN_TAB_PARAM, SIDE_TAB_PARAM } from '../../urlParams.js';
@@ -96,6 +96,54 @@ const useEntityViewTabs = ({
     return undefined;
   }, [searchParams, sideTabButtons]);
 
+  const mainTabParam = searchParams.get(MAIN_TAB_PARAM);
+  const sideTabParam = searchParams.get(SIDE_TAB_PARAM);
+
+  // Seed tab atoms from window.location (not mutated useSearchParams — can desync with useBlocker).
+  // Re-run when URL search params change (e.g. back/forward) so atoms stay aligned with the address bar.
+  useEffect(() => {
+    const syncTabsFromLocation = () => {
+      const params = new URLSearchParams(window.location.search);
+      const mainFromUrl = params.get(MAIN_TAB_PARAM);
+      const sideFromUrl = params.get(SIDE_TAB_PARAM);
+      const mainId =
+        isValidMainTab(mainFromUrl) && mainTabIds.has(mainFromUrl) ? mainFromUrl : activeMainTab;
+      const sideButtons = getSideTabButtons({
+        activeMainTab: mainId,
+        entity,
+        hasMainDocument,
+        mainDocumentId,
+        filesSideTabs,
+      });
+      const sideId =
+        (isValidSideTab(sideFromUrl) && sideButtons.some(button => button.id === sideFromUrl)
+          ? sideFromUrl
+          : sideButtons[0]?.id) || '';
+
+      setTabGroups(prev => {
+        let next = mergeTabGroup(prev, 'entity-main', { activeTabId: mainId });
+        if (sideId) {
+          next = mergeTabGroup(next, 'entity-side', { activeTabId: sideId });
+        }
+        return next;
+      });
+    };
+
+    syncTabsFromLocation();
+    window.addEventListener('popstate', syncTabsFromLocation);
+    return () => window.removeEventListener('popstate', syncTabsFromLocation);
+  }, [
+    entity,
+    activeMainTab,
+    mainTabParam,
+    sideTabParam,
+    hasMainDocument,
+    mainDocumentId,
+    filesSideTabs,
+    mainTabIds,
+    setTabGroups,
+  ]);
+
   useEffect(() => {
     const raw = searchParams.get(SIDE_TAB_PARAM);
     if (!raw || !isValidSideTab(raw)) return;
@@ -118,51 +166,52 @@ const useEntityViewTabs = ({
     (selectedMainTab: string) => {
       if (!isValidMainTab(selectedMainTab)) return;
 
-      const next = new URLSearchParams(searchParams.toString());
-      if (selectedMainTab !== activeMainTab) {
-        const nextSideButtons = getSideTabButtons({
-          activeMainTab: selectedMainTab,
-          entity,
-          hasMainDocument,
-          mainDocumentId,
-          filesSideTabs,
-        });
-        const rawS = next.get(SIDE_TAB_PARAM);
-        const sStillValid =
-          Boolean(rawS) &&
-          isValidSideTab(rawS) &&
-          nextSideButtons.some(button => button.id === rawS);
-        if (!sStillValid) {
-          next.delete(SIDE_TAB_PARAM);
-        }
-      }
-      next.set(MAIN_TAB_PARAM, selectedMainTab);
-
-      setSearchParams(next, { replace: true, preventScrollReset: true });
+      setSearchParams(
+        prev => {
+          const next = new URLSearchParams(prev);
+          if (selectedMainTab !== activeMainTab) {
+            const nextSideButtons = getSideTabButtons({
+              activeMainTab: selectedMainTab,
+              entity,
+              hasMainDocument,
+              mainDocumentId,
+              filesSideTabs,
+            });
+            const rawS = next.get(SIDE_TAB_PARAM);
+            const sStillValid =
+              Boolean(rawS) &&
+              isValidSideTab(rawS) &&
+              nextSideButtons.some(button => button.id === rawS);
+            if (!sStillValid) {
+              next.delete(SIDE_TAB_PARAM);
+            }
+          }
+          next.set(MAIN_TAB_PARAM, selectedMainTab);
+          return next;
+        },
+        { replace: true, preventScrollReset: true }
+      );
     },
-    [
-      activeMainTab,
-      searchParams,
-      setSearchParams,
-      entity,
-      hasMainDocument,
-      mainDocumentId,
-      filesSideTabs,
-    ]
+    [activeMainTab, setSearchParams, entity, hasMainDocument, mainDocumentId, filesSideTabs]
   );
 
   const onSideTabChange = useCallback(
     (selectedSideTab: string) => {
       if (!isValidSideTab(selectedSideTab)) return;
 
-      const next = new URLSearchParams(searchParams.toString());
-      next.set(SIDE_TAB_PARAM, selectedSideTab);
-      if (!next.get(MAIN_TAB_PARAM)) {
-        next.set(MAIN_TAB_PARAM, activeMainTab);
-      }
-      setSearchParams(next, { replace: true, preventScrollReset: true });
+      setSearchParams(
+        prev => {
+          const next = new URLSearchParams(prev);
+          next.set(SIDE_TAB_PARAM, selectedSideTab);
+          if (!next.get(MAIN_TAB_PARAM)) {
+            next.set(MAIN_TAB_PARAM, activeMainTab);
+          }
+          return next;
+        },
+        { replace: true, preventScrollReset: true }
+      );
     },
-    [activeMainTab, searchParams, setSearchParams]
+    [activeMainTab, setSearchParams]
   );
 
   return {

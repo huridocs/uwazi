@@ -2,22 +2,19 @@ import React, { useMemo } from 'react';
 import { TabButtons } from '#V2/Components/UI/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { countEntityRelationships } from '#V2/formatters/index.js';
+import { useMetadataEditing } from '../Components/context/index.js';
 import { EntityLanguageBar, TabLabel } from '../Components/shared/index.js';
 import { MAIN_TAB } from './tabIds.js';
 
 type TabsMainButtonsProps = {
   entity: EntityType;
   mainDocument?: FileType;
-  activeTabId: string;
   onTabChange: (tabId: string) => void;
 };
 
-const TabsMainButtons = ({
-  entity,
-  mainDocument,
-  activeTabId,
-  onTabChange,
-}: TabsMainButtonsProps) => {
+const TabsMainButtons = ({ entity, mainDocument, onTabChange }: TabsMainButtonsProps) => {
+  const { isDirty, isEditing, editingHost } = useMetadataEditing();
+  const metadataDirty = (isDirty || isEditing) && editingHost === 'main';
   const buttons = useMemo(() => {
     const items = [];
     const filesCount = (entity.documents?.length || 0) + (entity.attachments?.length || 0);
@@ -32,7 +29,7 @@ const TabsMainButtons = ({
 
     items.push({
       id: MAIN_TAB.METADATA,
-      label: <TabLabel text="Metadata" />,
+      label: <TabLabel text="Metadata" dirty={metadataDirty} />,
     });
 
     items.push({
@@ -46,7 +43,7 @@ const TabsMainButtons = ({
     });
 
     return items;
-  }, [entity, mainDocument?.filename, mainDocument?._id]);
+  }, [entity, mainDocument?.filename, mainDocument?._id, metadataDirty]);
 
   return (
     <div className="flex items-center justify-between gap-3">
@@ -54,7 +51,6 @@ const TabsMainButtons = ({
         <TabButtons
           groupId="entity-main"
           buttons={buttons}
-          activeTabId={activeTabId}
           onTabChange={onTabChange}
           tabListAriaLabel="Entity primary"
         />

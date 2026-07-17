@@ -106,7 +106,7 @@ const MetadataDisplayComponent = ({
                   <MetadataDisplay entity={storyReadyEntity} />
                 </Panel.Body>
                 <Panel.Footer>
-                  <MetadataDisplayFooter />
+                  <MetadataDisplayFooter host="main" />
                 </Panel.Footer>
               </Panel>
             </MetadataEditingProvider>

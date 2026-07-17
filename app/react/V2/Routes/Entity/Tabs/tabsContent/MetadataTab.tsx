@@ -10,6 +10,9 @@ import { apiValidationsToEditEntityErrors } from '#V2/Components/Metadata/Entity
 import {
   useMetadataEditing,
   useEntityOverlay,
+  useEntityContext,
+  useEntityLanguage,
+  type MetadataEditingHost,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
 import { useServices } from '#V2/services/index.js';
@@ -17,19 +20,24 @@ import type { EntitySaveInput } from '#V2/services/index.js';
 
 type MetadataTabProps = {
   entity: Entity;
+  host: MetadataEditingHost;
 };
 
-const MetadataTab = ({ entity }: MetadataTabProps) => {
+const MetadataTab = ({ entity, host }: MetadataTabProps) => {
   const { entities } = useServices();
   const templates = useAtomValue(templatesAtom);
+  const { setEntity } = useEntityContext();
+  const { language } = useEntityLanguage();
   const {
     isEditing,
     isSaving,
     saveError,
+    editingHost,
     setIsEditing,
     setIsSaving,
     setIsDirty,
     setSaveError,
+    setEditingHost,
     registerCancelEdit,
   } = useMetadataEditing();
   const { openEntityOverlayTarget } = useEntityOverlay();
@@ -38,9 +46,16 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
   const abortRef = useRef<AbortController | null>(null);
   const mountedRef = useRef(true);
   const [editErrors, setEditErrors] = useState<EditEntityErrors>();
+  const isOwner = isEditing && editingHost === host;
 
   useEffect(() => {
     mountedRef.current = true;
+    if (!isOwner) {
+      return () => {
+        mountedRef.current = false;
+      };
+    }
+
     const unregister = registerCancelEdit(() => {
       abortRef.current?.abort();
       abortRef.current = null;
@@ -49,6 +64,7 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
       setSaveError(undefined);
       setIsSaving(false);
       setIsEditing(false);
+      setEditingHost(null);
     });
 
     return () => {
@@ -56,7 +72,7 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
       abortRef.current?.abort();
       unregister();
     };
-  }, [registerCancelEdit, setIsEditing, setIsSaving, setSaveError]);
+  }, [isOwner, registerCancelEdit, setIsEditing, setIsSaving, setSaveError, setEditingHost]);
 
   const handleUpsertError = (
     error: NonNullable<Awaited<ReturnType<typeof entities.upsert>>[1]>
@@ -68,10 +84,17 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
     if (!fieldErrors) setSaveError(error.detail ?? error.message);
   };
 
-  const completeSave = async () => {
+  const completeSave = async (saved: Entity) => {
+    const savedLanguage = saved.language || language;
     entityLoaderCache.invalidateEntity(entity.sharedId);
+    entityLoaderCache.setEntity(entity.sharedId, savedLanguage, saved);
+    setEntity(saved);
     await revalidator.revalidate();
-    if (mountedRef.current) setIsEditing(false);
+    if (mountedRef.current) {
+      setIsDirty(false);
+      setIsEditing(false);
+      setEditingHost(null);
+    }
   };
 
   // eslint-disable-next-line max-statements
@@ -103,7 +126,7 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
       }
       if (!data) return;
 
-      await completeSave();
+      await completeSave(data);
     } finally {
       abortRef.current = null;
       savingRef.current = false;
@@ -113,8 +136,8 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
 
   return (
     <div className="h-full min-h-0 flex-1 overflow-y-auto px-4 py-3">
-      {!isEditing && <MetadataDisplay entity={entity} />}
-      {isEditing && (
+      {!isOwner && <MetadataDisplay entity={entity} />}
+      {isOwner && (
         <>
           {saveError && (
             <p className="mb-3 text-sm text-red-600" role="alert">

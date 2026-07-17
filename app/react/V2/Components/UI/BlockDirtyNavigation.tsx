@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useBlocker } from 'react-router';
 import { DirtyDiscardModal } from './DirtyDiscardModal.js';
 
@@ -8,16 +8,18 @@ type BlockDirtyNavigationProps = {
 };
 
 const BlockDirtyNavigation = ({ when, onDiscard }: BlockDirtyNavigationProps) => {
-  const [showModal, setShowModal] = useState(false);
-  const blocker = useBlocker(when);
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      when && currentLocation.pathname !== nextLocation.pathname
+  );
 
   useEffect(() => {
-    if (blocker.state === 'blocked') {
-      setShowModal(true);
+    if (!when && blocker.state === 'blocked') {
+      blocker.reset?.();
     }
-  }, [blocker]);
+  }, [when, blocker]);
 
-  if (!showModal || blocker.state !== 'blocked') {
+  if (blocker.state !== 'blocked') {
     return null;
   }
 
@@ -25,14 +27,10 @@ const BlockDirtyNavigation = ({ when, onDiscard }: BlockDirtyNavigationProps) =>
     <DirtyDiscardModal
       action="leave"
       onDiscard={() => {
-        setShowModal(false);
         onDiscard?.();
         blocker.proceed?.();
       }}
-      onCancel={() => {
-        setShowModal(false);
-        blocker.reset?.();
-      }}
+      onCancel={() => blocker.reset?.()}
     />
   );
 };
