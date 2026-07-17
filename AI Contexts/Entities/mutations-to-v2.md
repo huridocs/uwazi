@@ -254,7 +254,7 @@ Target: decide if synchronous side effects in `entities.save` can be removed now
 | --- | --- | --- | --- | --- |
 | `search.indexEntities(...)` after save | Yes | `app/api/core/infrastructure/mongodb/entity/MongoEntitiesDataSource.ts` registers `transactionManager.onCommitted(...)` and indexes all modified sharedIds. | Yes (implemented) | Removed synchronous reindexing from `entities.save`; indexing now relies on V2 commit hooks. |
 | `relationships.saveEntityBasedReferences(...)` on update | Yes | `EntitiesService.update` emits `EntityUpdatedEvent` through async event emitter; `ProcessRelationshipAfterEntityUpdatedListener` (queued as job in `queueRegistry.ts`) calls `saveEntityBasedReferences`. | Yes for update path (implemented) | Removed synchronous update-path relationship sync from `entities.save`; tests now run listener jobs via sync dispatcher abstraction. |
-| `relationships.saveEntityBasedReferences(...)` on create | Not proven | No equivalent `EntityCreated` relationship listener/job found; `EntityCreatedEvent` listeners currently observed are suggestions/automatic translation, not relationship sync. | No (not yet) | Keep until create-path ownership is explicitly implemented in V2 or create payloads are guaranteed to not depend on immediate relationship metadata sync. |
+| `relationships.saveEntityBasedReferences(...)` on create | Yes | `EntitiesService.insert` calls `dispatcher.syncRelationships(...)`; `DispatcherAdapter` dispatches `RelationshipSyncJob`; job executes `saveEntityBasedReferences`; job is registered in `queueRegistry.ts`. | Yes (implemented) | Removed synchronous create-path relationship sync from `entities.save`; tests now validate create-side sync via explicit `RelationshipSyncJob` execution in test flow. |
 
 ### Clarification on Flags and "Done" Semantics
 
@@ -293,8 +293,7 @@ Target: decide if synchronous side effects in `entities.save` can be removed now
 - `entities.save` façade status:
   - compatibility fallback branches were removed; save now delegates persistence through V2 facade paths only.
   - still pending to make it a thin wrapper:
-    - remove synchronous `relationships.saveEntityBasedReferences(...)` from create path in `save` once V2 create-path ownership is implemented/confirmed.
-    - remove now-obsolete compatibility flags (`updateRelationships`, `index`, `includeDocuments`) from `save` when no runtime path depends on them.
+    - remove now-obsolete compatibility flags (`includeDocuments`) from `save` when no runtime path depends on them.
 - Re-validate that no `entities.save(` references remain outside intended legacy tests.
 - Remaining `entities.save(` references:
   - `app/api/entities/specs/entities.spec.js` only.
@@ -302,7 +301,7 @@ Target: decide if synchronous side effects in `entities.save` can be removed now
   - remove stale activity log parser mappings for removed routes (`POST/api/documents`, `DELETE/api/documents`)
   - remove or update any remaining deprecated docs/DS references in specs/docs.
 - Explicit checks requested:
-  - verify whether create-path synchronous relationship side-effects in `save` are truly redundant with V2 workers/listeners (do not infer from old tests alone).
+  - verify whether any remaining synchronous side-effects in `save` are truly redundant with V2 workers/listeners (do not infer from old tests alone).
   - treat legacy i18n `entities.addLanguage/removeLanguage` path as "done enough" when `v2Languages` flag fully bypasses it for all tenants and old flag path is removed.
   - relationships migration remains a special-case long pole due to ongoing redesign (not a simple V1->old-V2 move).
 
@@ -410,8 +409,9 @@ Given CSV V2 is now enabled for all tenants, we may include full CSV V1 retireme
     - `rg "entities\\.save\\(" app/api/**/*.{js,ts,tsx}` => only `app/api/entities/specs/entities.spec.js`
 - side-effect cleanup in `entities.save` (current pass):
   - removed synchronous `search.indexEntities(...)` from `entities.save`.
-  - removed synchronous `relationships.saveEntityBasedReferences(...)` for update path in `entities.save`; kept create-path sync for now.
-  - updated `app/api/entities/specs/entities.spec.js` to assert update-side relationship sync via V2 async listener path using sync dispatcher abstraction:
+  - removed synchronous `relationships.saveEntityBasedReferences(...)` for both update and create paths in `entities.save`.
+  - updated `app/api/entities/specs/entities.spec.js` to assert relationship sync via V2 async mechanisms:
     - `EventEmitterFactory.default` + `SyncDispatcherForTests` + `ProcessRelationshipAfterEntityUpdatedListener.asJob()`.
+    - explicit `RelationshipSyncJob` execution for create-path verification.
   - verification:
     - `app/api/entities/specs/entities.spec.js` (59/59)

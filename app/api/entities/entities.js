@@ -377,7 +377,7 @@ export default {
   createEntity,
   getEntityTemplate,
   async save(_doc, { user, language }, options = {}) {
-    const { updateRelationships = true, includeDocuments = true } = options;
+    const { includeDocuments = true } = options;
 
     await validateEntity(_doc);
     await savePropertySelections(_doc);
@@ -444,10 +444,6 @@ export default {
     const [entity] = includeDocuments
       ? await this.getUnrestrictedWithDocuments({ sharedId, language }, '+permissions')
       : await this.getUnrestricted({ sharedId, language }, '+permissions');
-
-    if (updateRelationships && !isUpdate) {
-      await relationships.saveEntityBasedReferences(entity, language, docTemplate);
-    }
 
     return entity;
   },

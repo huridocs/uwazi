@@ -19,6 +19,7 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
+import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
 import entities from '../entities.js';
 
 import { EntityCreatedEvent } from '../events/EntityCreatedEvent.js';
@@ -60,6 +61,10 @@ const saveEntityWithEventing = (doc, options = {}, ...rest) => {
   const jobsDispatcher = new SyncDispatcherForTests({
     [ProcessRelationshipAfterEntityUpdatedListener.asJob().name]: async () =>
       new ProcessRelationshipAfterEntityUpdatedListener({}),
+    [RelationshipSyncJob.name]: async () =>
+      new RelationshipSyncJob({
+        relationships,
+      }),
   });
   return testingEnvironment.runWithContext(() => entities.save(doc, options, ...rest), {
     ...(actor ? { actor } : {}),
@@ -67,6 +72,17 @@ const saveEntityWithEventing = (doc, options = {}, ...rest) => {
       eventEmitter: EventEmitterFactory.default,
       jobsDispatcher: () => jobsDispatcher,
     },
+  });
+};
+
+const runRelationshipSyncJob = async ({ sharedId, language, entityTemplateId, userId }) => {
+  const job = new RelationshipSyncJob({ relationships });
+  await job.handleDispatch(async () => {}, {
+    sharedId,
+    targetLanguage: language,
+    templateId: entityTemplateId,
+    tenantName: testingTenants.current().name,
+    userId,
   });
 };
 
@@ -444,9 +460,15 @@ describe('entities', () => {
             enemies: [{ value: 'shared1' }],
           },
         };
-        const user = { _id: db.id() };
+        const user = { _id: adminId };
 
         const createdEntity = await saveEntity(entity, { user, language: 'es' });
+        await runRelationshipSyncJob({
+          sharedId: createdEntity.sharedId,
+          language: 'es',
+          entityTemplateId: createdEntity.template.toString(),
+          userId: user._id.toString(),
+        });
 
         const createdRelationships = await relationships.getByDocument(
           createdEntity.sharedId,
