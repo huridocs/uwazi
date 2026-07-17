@@ -6,7 +6,7 @@ import { entityLoaderCache } from '../../../EntityLoaderCache.js';
 import { resolveMainDocument, resolveSyncMode } from '../entityLanguageUtils.js';
 
 describe('resolveSyncMode', () => {
-  it('keeps UI and marks pending adopt when loader language changes while dirty/saving', () => {
+  it('seeds only and marks pending adopt when dirty/saving', () => {
     expect(
       resolveSyncMode({
         loaderLanguageChanged: true,
@@ -15,7 +15,17 @@ describe('resolveSyncMode', () => {
         loaderLanguage: 'es',
         uiLanguage: 'en',
       })
-    ).toEqual({ mode: 'keep-ui', pendingAdopt: true });
+    ).toEqual({ mode: 'seed-only', pendingAdopt: true });
+
+    expect(
+      resolveSyncMode({
+        loaderLanguageChanged: false,
+        pendingAdopt: false,
+        preserveUiLanguage: true,
+        loaderLanguage: 'en',
+        uiLanguage: 'es',
+      })
+    ).toEqual({ mode: 'seed-only', pendingAdopt: false });
   });
 
   it('adopts loader when language changed and UI can be replaced', () => {

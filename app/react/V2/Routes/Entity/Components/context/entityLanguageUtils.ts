@@ -137,7 +137,7 @@ const revalidateUiLanguage = (
   };
 };
 
-type SyncLoaderLanguageMode = 'adopt-loader' | 'match-loader-docs' | 'keep-ui';
+type SyncLoaderLanguageMode = 'adopt-loader' | 'match-loader-docs' | 'keep-ui' | 'seed-only';
 
 const resolveSyncMode = ({
   loaderLanguageChanged,
@@ -152,8 +152,11 @@ const resolveSyncMode = ({
   loaderLanguage: string;
   uiLanguage: string;
 }): { mode: SyncLoaderLanguageMode; pendingAdopt: boolean } => {
-  if ((loaderLanguageChanged || pendingAdopt) && preserveUiLanguage) {
-    return { mode: 'keep-ui', pendingAdopt: true };
+  if (preserveUiLanguage) {
+    return {
+      mode: 'seed-only',
+      pendingAdopt: loaderLanguageChanged || pendingAdopt,
+    };
   }
   if (loaderLanguageChanged || pendingAdopt) {
     return { mode: 'adopt-loader', pendingAdopt: false };
@@ -164,6 +167,7 @@ const resolveSyncMode = ({
   return { mode: 'keep-ui', pendingAdopt: false };
 };
 
+// eslint-disable-next-line max-statements
 const syncLoaderLanguage = ({
   mode,
   loaderEntity,
@@ -190,6 +194,10 @@ const syncLoaderLanguage = ({
   fallbackToLoader: () => void;
 }) => {
   seedLoaderCache(loaderEntity, loaderLanguage, initialMainDocument);
+
+  if (mode === 'seed-only') {
+    return undefined;
+  }
 
   if (mode === 'adopt-loader') {
     fallbackToLoader();

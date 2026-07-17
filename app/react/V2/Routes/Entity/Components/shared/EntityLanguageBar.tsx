@@ -101,7 +101,7 @@ const EntityLanguageBar = () => {
   const discardAndSwitch = () => {
     const nextLanguage = pendingLanguage;
     setPendingLanguage(undefined);
-    if (!nextLanguage) {
+    if (!nextLanguage || isSaving) {
       return;
     }
     cancelEdit();
