@@ -160,7 +160,7 @@ describe('public dataviz embed routes', () => {
     await settings.save({ ...current, private: false });
   });
 
-  it('should return 503 when a query chart has no snapshot', async () => {
+  it('should return 503 when a snapshot chart has no snapshot', async () => {
     const queryChart = await testingEnvironment.runWithContext(async () => {
       const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
       const create = new CreateDatavizUseCase(
@@ -185,7 +185,7 @@ describe('public dataviz embed routes', () => {
         },
         chart: { type: 'pie' },
         appearance: { colorMode: 'theme' },
-        refresh: { refreshMode: 'live' },
+        refresh: { refreshMode: 'snapshot_manual' },
       });
 
       await DatavizFactory.snapshotsDataSource().deleteByDatavizId(created.id);

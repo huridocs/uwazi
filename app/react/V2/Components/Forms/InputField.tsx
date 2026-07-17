@@ -31,6 +31,7 @@ interface InputFieldProps {
   onBlur?: ChangeEventHandler<HTMLInputElement>;
   min?: string | number;
   max?: string | number;
+  step?: string | number;
 }
 
 const cx = (...classes: Array<string | false | undefined>) => classes.filter(Boolean).join(' ');
@@ -80,6 +81,7 @@ const InputField = React.forwardRef(
       onBlur = noop,
       min,
       max,
+      step,
     }: InputFieldProps,
     ref: Ref<HTMLInputElement>
   ) => {
@@ -116,6 +118,7 @@ const InputField = React.forwardRef(
             placeholder={placeholder}
             min={min}
             max={max}
+            step={step}
           />
           {showClearButton && (
             <button

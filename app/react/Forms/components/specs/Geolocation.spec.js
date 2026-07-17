@@ -51,14 +51,10 @@ describe('Geolocation', () => {
       expectOnChangeCallWhenInputSimulation('19', 19);
     });
 
-    it('with an angle lower than -89.99999 degrees the value should be replace by -89.99999 degrees', () => {
-      expectOnChangeCallWhenInputSimulation('-91', -89.99999);
-      expectOnChangeCallWhenInputSimulation('-120.34', -89.99999);
-      expectOnChangeCallWhenInputSimulation('-90', -89.99999);
-      expectOnChangeCallWhenInputSimulation('-89.999991', -89.99999);
-    });
-
-    it('with an angle greater than 90 degrees the value should be replace by 90 degrees', () => {
+    it('should clamp latitude to the WGS 84 / ISO 6709 range [-90, 90]', () => {
+      expectOnChangeCallWhenInputSimulation('-91', -90);
+      expectOnChangeCallWhenInputSimulation('-120.34', -90);
+      expectOnChangeCallWhenInputSimulation('-90', -90);
       expectOnChangeCallWhenInputSimulation('91', 90);
       expectOnChangeCallWhenInputSimulation('120.34', 90);
     });
@@ -75,6 +71,24 @@ describe('Geolocation', () => {
       lonInput.simulate('change', { target: { value: '28' } });
       expect(props.onChange).toHaveBeenCalledWith([
         { lat: 32.18, lon: 28, label: 'home' },
+        props.value[1],
+      ]);
+    });
+
+    it('should clamp longitude to the WGS 84 / ISO 6709 range [-180, 180]', () => {
+      lonInput.simulate('change', { target: { value: '-181' } });
+      expect(props.onChange).toHaveBeenCalledWith([
+        { lat: 32.18, lon: -180, label: 'home' },
+        props.value[1],
+      ]);
+      lonInput.simulate('change', { target: { value: '181' } });
+      expect(props.onChange).toHaveBeenCalledWith([
+        { lat: 32.18, lon: 180, label: 'home' },
+        props.value[1],
+      ]);
+      lonInput.simulate('change', { target: { value: '-180' } });
+      expect(props.onChange).toHaveBeenCalledWith([
+        { lat: 32.18, lon: -180, label: 'home' },
         props.value[1],
       ]);
     });
