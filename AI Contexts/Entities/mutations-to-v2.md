@@ -8,7 +8,7 @@ Move legacy entity mutations from `app/api/entities/entities.js` to V2-backed pa
 
 ### Current status (plainly)
 
-We are **not** at the target yet. `entities.js save` is still a hybrid compatibility layer (V2-first + V1 fallback), not a thin façade.
+We are **not** at the target yet. `entities.js save` now routes mutations through V2 only, but it is still an orchestration-heavy legacy wrapper (not yet a thin façade).
 
 ### 1) What still uses old logic today (runtime)
 
@@ -16,16 +16,16 @@ We are **not** at the target yet. `entities.js save` is still a hybrid compatibi
 
 - none identified (runtime path now migrated; remaining references are test-only)
 
-#### B) Legacy fallback path still inside `entities.js save`
+#### B) `entities.js save` still contains non-trivial legacy orchestration
 
 Inside `app/api/entities/entities.js`, `save` still contains:
 
-- legacy coercion/normalization (`normalizeLegacyEntityForFacade`)
-- forced-legacy conditions (`shouldForceLegacyCreate`, `shouldForceLegacyUpdate`)
-- compatibility-error fallback (`isLegacyCompatibilityError`)
-- fallback writes via old internals (`createEntity` / `updateEntity`)
+- legacy-oriented input preparation and sanitization (`validateEntity`, `sanitize`, defaults)
+- update-time merge/readback logic (loads current entity with files, then merges into update payload)
+- synchronous post-write orchestration (`relationships.saveEntityBasedReferences`, `search.indexEntities`)
+- legacy compatibility options (`updateRelationships`, `index`, `includeDocuments`)
 
-So even when routed to V2, the function can still drop to old V1 persistence logic.
+So while persistence now goes through V2 facade calls, `save` is still not the thin "if create/update -> delegate" boundary we want.
 
 #### C) V1-only persistence still callable in entities module
 
@@ -37,18 +37,22 @@ This means old write paths are still alive and reachable.
 
 ### 2) Key blockers preventing "save = V2 only"
 
-1. **Legacy payload shape mismatch**
-   - Existing callers still pass legacy-shaped docs (`_id`, legacy user/doc fields, mixed metadata shape, etc.).
-   - V2 contracts are stricter; current bridge/fallback absorbs this mismatch.
+1. **Thin-boundary goal not finished in `save`**
+   - `save` still does more than dispatching to `EntityFacade.create/update`.
+   - This keeps V1 behavior and V2 behavior coupled in the same wrapper.
 
-2. **Side effects currently coupled to legacy save**
+2. **Side effects currently coupled to legacy `save`**
    - Relationship denormalization/update (`relationships.saveEntityBasedReferences`)
    - Search indexing calls
    - includeDocuments hydration behavior after write
    - property selections handling
-   - These are intertwined with current `save` flow, so removing fallback requires explicit relocation/ownership decisions.
+   - Key open question: if V2/event workers already guarantee these asynchronously, these synchronous calls should be removed and tests adapted to V2 async semantics.
 
-3. **Suggestions flow migration must preserve side effects**
+3. **Runtime V1 mutators still reachable outside `save`**
+- `updateMetdataFromRelationships` still reaches V1 `updateEntity`.
+- Language mutation methods (`addLanguage`/`removeLanguage`) are still used by legacy i18n path when `v2Languages` is not active.
+
+4. **Suggestions flow migration must preserve side effects**
    - Suggestions acceptance now uses `EntityFacade.update`.
    - Relationship reference sync and explicit search indexing call were reintroduced in that flow to preserve previous behavior.
 
@@ -56,7 +60,8 @@ This means old write paths are still alive and reachable.
 
 - `generatedToc` is now part of V2 core update contract (`UpdateEntity` schema/mapper/use case).
 - `tocService` and `files.tocReviewed` now call `EntityFacade.update(...)` with `generatedToc`.
-- To preserve compatibility with legacy template rows in TOC flows, `EntityFacade.update` includes a narrow fallback for generatedToc-only updates when template mapping crashes.
+- `EntityFacade.update` still contains a narrow generatedToc fallback that performs direct Mongo update + reindex when template mapping crashes.
+- This fallback should be treated as temporary inconsistency until legacy template data is fixed or explicitly excluded from V2 path.
 
 ### 4) Team decisions needed (explicit)
 
@@ -71,6 +76,10 @@ This means old write paths are still alive and reachable.
 
 4. **Cutover policy**
    - Big-bang removal of fallback, or phased (update path first, then create path).
+
+5. **V2 async side-effect contract**
+   - Confirm authoritative ownership for denormalization and indexing in V2 (event listeners/jobs/hooks).
+   - If confirmed, remove synchronous side-effect calls from `entities.save` and adapt tests to wait/assert async processing (or use sync worker abstractions in tests).
 
 ### 5) Proposed execution plan (recommended)
 
@@ -128,7 +137,8 @@ Status update:
 - `entities.js save` only orchestrates:
   - choose create/update
   - call V2 (`EntityFacade.create` / `EntityFacade.update`)
-  - no V1 fallback branches
+  - no extra synchronous side-effect orchestration in wrapper
+  - no legacy compatibility behavior flags
 - No reachable runtime path from `entities.save` to legacy V1 persistence methods.
 - Deprecated documents compatibility surface either removed or explicitly deferred with owner + date.
 - Deprecated metadata update bridge resolved (removed).
@@ -148,7 +158,7 @@ Status update:
 
 | Mutator | Previous Implementation | Current Status | Decision |
 | --- | --- | --- | --- |
-| `save` | V1 `createEntity` / `updateEntity` writes via `entitiesModel` | migrated (hybrid) | Delegates to `EntityFacade.create` / `EntityFacade.update` with legacy fallback for incompatible payloads |
+| `save` | V1 `createEntity` / `updateEntity` writes via `entitiesModel` | migrated (V2-only persistence) | Delegates to `EntityFacade.create` / `EntityFacade.update`, but still has legacy orchestration/flags/side-effects in wrapper |
 | `delete` | Deprecated V1 delete path | kept (deprecated) | Restored for backward compatibility wrappers |
 | `updateMetadataValues` (deprecated DS method) | V1 `entities.save` bridge | deleted | Removed from deprecated DS contract + mongo implementation |
 | `entitySavingManager.saveEntity` | Wrapper around `entities.save` | deleted | File removed (no runtime importers) |
@@ -163,21 +173,21 @@ Status update:
 - TOC/files generatedToc updates now resolve and set a real actor from DB before invoking V2 update:
   - priority: current ExecutionContext actor -> entity author (`entity.user`) -> write-permitted user ids on entity -> existing admin user
   - no synthetic user ids are created.
-- `entities.save` now normalizes legacy docs before V2 delegation and falls back to legacy mutation path when V2 rejects legacy-shaped payloads (compatibility guard).
+- `entities.save` routes create/update persistence through V2 facade methods (no legacy persistence fallback in save path).
 - `title` remains required in core update schema.
-- legacy-sensitive fallback orchestration still stays in `entities.js`.
+- legacy-compatible orchestration (sync side effects + options) still stays in `entities.js` and is pending cleanup.
 
 ## Compatibility Issue (Current)
 
-`entities.save` legacy behavior differed from strict V2 behavior in some save scenarios. This is now addressed with explicit legacy-boundary fallback rules.
+`entities.save` no longer falls back to legacy persistence, but still mixes dispatching and orchestration concerns.
 
 - fixed cases included:
   - legacy user/id preservation expectations on create with explicit `_id` / `user`
   - update flows involving relationship denormalization and language translation assumptions
   - template-change metadata carry-over parity in legacy update paths
 
-Current state remains a hybrid bridge: V2-first delegation with guarded fallback for legacy-shaped payloads.
-`generatedToc` is now handled in V2 core update path.
+Current state is V2-only persistence with a still-heavy wrapper.
+`generatedToc` is handled in V2 core update path, but a temporary direct-Mongo fallback remains in `EntityFacade.update` for legacy-template crash scenarios.
 
 ### Additional Compatibility Guardrails Added (CSV/template legacy shapes)
 
@@ -202,16 +212,16 @@ Important (historical):
 
 ## Boundary Rule (Important)
 
-Legacy compatibility fallbacks must stay in legacy boundaries only:
+Legacy compatibility handling must stay in legacy boundaries only:
 
 - allowed: `app/api/entities/entities.js` (legacy facade/adapter boundary)
 - not allowed: core/domain/use case code under `app/api/core/**`
 
 Implemented rule in this pass:
 
-- fallback logic is only in `entities.js` save facade
-- core V2 code changes are limited to shape compatibility (`Schemas`, mapper, use case input), not legacy branching/fallback orchestration
-- fallback trigger was tightened incrementally as deprecated callers were removed.
+- `entities.save` no longer routes writes to V1 create/update.
+- core V2 code changes are limited to contract support (`Schemas`, mapper, use case input), not broad legacy branching.
+- temporary generatedToc fallback in `EntitiesFacade.update` is now the remaining exception to remove.
 - numeric empty-value expectation was explicitly standardized in specs to canonical normalized output (`[]`, not `undefined`)
 
 ## Deprecated Wrapper/Route Cleanup
@@ -236,6 +246,28 @@ Implemented rule in this pass:
   - relationship denormalization is queued through `EntityUpdatedEvent:ProcessRelationshipAfterEntityUpdatedListener` jobs.
   - indexing is triggered by V2 datasource commit hooks (`search.indexEntities({ sharedId: { $in: [...] } })`).
 
+## Safe-to-Remove Matrix (Current Evidence)
+
+Target: decide if synchronous side effects in `entities.save` can be removed now.
+
+| Concern in `entities.save` | V2 equivalent already in place? | Evidence | Safe to remove now? | Notes |
+| --- | --- | --- | --- | --- |
+| `search.indexEntities(...)` after save | Yes | `app/api/core/infrastructure/mongodb/entity/MongoEntitiesDataSource.ts` registers `transactionManager.onCommitted(...)` and indexes all modified sharedIds. | Yes (with test updates) | Tests asserting synchronous indexing from `entities.save` should be migrated to V2 commit/event semantics. |
+| `relationships.saveEntityBasedReferences(...)` on update | Yes | `EntitiesService.update` emits `EntityUpdatedEvent` through async event emitter; `ProcessRelationshipAfterEntityUpdatedListener` (queued as job in `queueRegistry.ts`) calls `saveEntityBasedReferences`. | Yes for update path (with test updates) | This is async by design; tests should assert listener/job effects, not immediate sync side effects. |
+| `relationships.saveEntityBasedReferences(...)` on create | Not proven | No equivalent `EntityCreated` relationship listener/job found; `EntityCreatedEvent` listeners currently observed are suggestions/automatic translation, not relationship sync. | No (not yet) | Keep until create-path ownership is explicitly implemented in V2 or create payloads are guaranteed to not depend on immediate relationship metadata sync. |
+
+### Clarification on Flags and "Done" Semantics
+
+- `updateRelationships`, `index`, `includeDocuments` currently behave as legacy compatibility controls in `entities.save`.
+- They are acceptable as transitional debt if fully bypassed by runtime (feature-flag cutover complete) and then removed.
+- By this rule, flagged legacy i18n paths (`entities.addLanguage/removeLanguage`) can be considered done once `v2Languages` is universal and old branches are deleted.
+
+### Clarification on `generatedToc` Core vs Fallback
+
+- `generatedToc` is part of V2 update contract (`Schemas` + mapper + `UpdateEntity`).
+- Remaining inconsistency: `EntityFacade.update` still has a narrow generatedToc fallback performing direct Mongo update + reindex when legacy template mapping crashes.
+- This should be treated as temporary compatibility code to remove after template/data compatibility cleanup.
+
 ## Remaining Validation Checklist
 
 - Run focused tests for:
@@ -259,15 +291,21 @@ Implemented rule in this pass:
   - Do not "fix" this in facade; if behavior changes, it must be an explicit core contract decision.
 
 - `entities.save` façade status:
-  - create path no longer force-falls back when a `user._id` exists.
-  - update path no longer force-falls back for `_id` payloads.
-  - compatibility fallback branches were removed from `entities.save`; save now delegates through V2 facade paths only.
+  - compatibility fallback branches were removed; save now delegates persistence through V2 facade paths only.
+  - still pending to make it a thin wrapper:
+    - remove synchronous `relationships.saveEntityBasedReferences(...)` from `save` once V2 async ownership is confirmed.
+    - remove synchronous `search.indexEntities(...)` from `save` once V2 async ownership is confirmed.
+    - remove `updateRelationships`, `index`, `includeDocuments` options from `save` when no non-flagged runtime path depends on them.
 - Re-validate that no `entities.save(` references remain outside intended legacy tests.
 - Remaining `entities.save(` references:
   - `app/api/entities/specs/entities.spec.js` only.
 - Cleanup pass:
   - remove stale activity log parser mappings for removed routes (`POST/api/documents`, `DELETE/api/documents`)
   - remove or update any remaining deprecated docs/DS references in specs/docs.
+- Explicit checks requested:
+  - verify whether synchronous relationship/index side-effects in `save` are truly redundant with V2 workers/listeners (do not infer from old tests alone).
+  - treat legacy i18n `entities.addLanguage/removeLanguage` path as "done enough" when `v2Languages` flag fully bypasses it for all tenants and old flag path is removed.
+  - relationships migration remains a special-case long pole due to ongoing redesign (not a simple V1->old-V2 move).
 
 ## Cleanup TODOs (Pending Deletion Assessment)
 
