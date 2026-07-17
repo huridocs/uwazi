@@ -23,7 +23,7 @@ Account updated,Account updated
 Accuracy,Accuracy
 Accuracy tooltip,Accuracy is defined by the amount of matches vs mismatches for labeled samples that have been processed.
 Action,Acción
-Actions,Actions
+Actions,Acciones
 Activate,Activate
 Activated,Activated
 Active languages,Idiomas activos
@@ -37,8 +37,8 @@ Add as,Add as
 Add data source,Add data source
 Add date,Añadir fecha
 Add entities / documents,Añadir entidades / documentos
-Add entity,Add entity
-Add entity type,Add entity type
+Add entity,Añadir entidad
+Add entity type,Añadir tipo de entidad
 Add Extractor,Add Extractor
 Add extractor,Add extractor
 Add file,Añadir archivo
@@ -384,14 +384,14 @@ Duration,Duración
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
 Earlier,Más temprano
 Edit,Editar
-Edit at source,Edit at source
-Edit Extractor,Edit Extractor
-Edit File,Edit File
-Edit group,Edit group
-Edit item,Edit item
+Edit at source,Editar en la fuente
+Edit Extractor,Editar Extractor
+Edit File,Editar archivo
+Edit group,Editar grupo
+Edit item,Editar elemento
 Edit metadata of entities,Editar metadatos de entidades
-Edit theme,Edit theme
-Edit user,Edit user
+Edit theme,Editar tema
+Edit user,Editar usuario
 Editor,Editor
 editor,Editor
 Editors,Editors
@@ -490,8 +490,8 @@ Forgot Password?,¿Has olvidado tu contraseña?
 Forms and email configuration,Configuración de formularios y correo electrónico
 From,From
 From all suggestions,From all suggestions
-From computer,From computer
-From files,From files
+From computer,Desde el dispositivo
+From files,Desde archivos
 From previous step,From previous step
 From selection,From selection
 From:,Desde:
@@ -565,7 +565,7 @@ Information extraction training,Entrenamiento de extracción de información
 Inherit,Heredar
 Inherit property,Heredar propiedad
 Inherit type,Tipo de herencia
-"Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
+"Inherited values are read-only. Change the connection above, or edit the source entity.","Los valores heredados son de solo lectura. Cambia la conexión anterior, o edita la entidad fuente."
 inherits,inherits
 Input,Entrada
 Install,Instalar
@@ -611,7 +611,7 @@ Languages installed successfully,Languages installed successfully
 Last updated,Última actualización
 Last updated from collection:,Last updated from collection:
 Latitude,Latitud
-Latitude must be between -90 and 90,Latitude must be between -90 and 90
+Latitude must be between -90 and 90,Latitud debe estar entre -90 y 90
 Learn more,Aprender más
 Legend,Leyenda
 Lengthy reindex process,Proceso de reindexación largo
@@ -633,7 +633,7 @@ Login button,Inicio de Sesión
 Login failed,Error de inicio de sesión
 Logout,Cerrar Sesión
 Longitude,Longitud
-Longitude must be between -180 and 180,Longitude must be between -180 and 180
+Longitude must be between -180 and 180,Longitud debe estar entre -180 y 180
 Lost connection to the server. Your changes may be lost,Se perdió la conexión con el servidor. Los cambios pueden perderse
 low,bajo
 Manage site settings and configuration,Administrar la configuración del sitio
@@ -726,7 +726,7 @@ No,No
 No attachments,Sin adjuntos
 No chart types match your search.,No chart types match your search.
 No common filters,No existen filtros comunes
-No connected entities yet.,No connected entities yet.
+No connected entities yet.,Todavía no hay entidades conectadas.
 No Connections,No existen relaciones
 No Connections description,Las conexiones son las relaciones directas entre este documento y otros documentos y entidades.
 No context,No context
@@ -741,7 +741,7 @@ No icon / flag,Sin icono / bandera
 No items available,No items available
 No Label,No existe etiqueta
 No label,No label
-No matching entities.,No matching entities.
+No matching entities.,Ninguna coincidencia encontrada.
 No media selected,No media selected
 No options,No options
 No options found,Opciones no encontradas
@@ -762,6 +762,7 @@ No templates available to add.,No templates available to add.
 No text match,Sin coincidencias de texto
 No text match description,Puedes escribir algo diferente en la barra de búsqueda para obtener algunos resultados.
 No timelinks added,No timelinks added
+No translation in,Sin traducción en
 No type,Sin tipo
 No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,No valid target template available
@@ -955,7 +956,7 @@ Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Eliminar
-Remove from connection,Remove from connection
+Remove from connection,Eliminar de la conexión
 Remove from training set,Eliminar del conjunto de entrenamiento
 remove icon,eliminar ícono
 Removed language,Idioma eliminado
@@ -999,7 +1000,7 @@ Save the visualization before refreshing.,Save the visualization before refreshi
 Save the visualization to get embed code.,Save the visualization to get embed code.
 Save your work to make change permanent,Guarda tu trabajo para que el cambio sea permanente
 Saved successfully.,Guardado exitoso.
-Saved with warnings,Saved with warnings
+Saved with warnings,Guardado con advertencias
 Saving,Saving
 Saving...,Saving...
 Scanning,Scanning
@@ -1009,7 +1010,7 @@ Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordin
 Search,Buscar
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
 Search entities...,Buscar entidades...
-Search entities…,Search entities…
+Search entities…,Buscar entidades…
 Search item,Buscar elemento
 Search related entities or documents,Buscar entidades o documentos relacionados
 Search relationships,Buscar relaciones
@@ -1238,6 +1239,7 @@ This property will be shown using all the width available.,Esta propiedad se mos
 This property will be shown without the label,This property will be shown without the label
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
+This search could not be completed. Try again later.,Esta búsqueda no pudo completarse. Intenta nuevamente más tarde.
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,esta plantilla
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
@@ -1357,7 +1359,7 @@ Value cannot be transformed to the correct type,Value cannot be transformed to t
 values,values
 Verify,Verificar
 Verifying...,Verificando
-via,via
+via,a través de
 View,Ver
 view,Ver
 View entities,Ver entidades

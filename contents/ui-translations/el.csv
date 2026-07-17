@@ -765,6 +765,7 @@ No templates available to add.,No templates available to add.
 No text match,Δεν υπάρχει αντιστοιχία κειμένου
 No text match description,Μπορείτε να πληκτρολογήσετε κάτι διαφορετικό στο πλαίσιο αναζήτησης για να λάβετε αποτελέσματα.
 No timelinks added,No timelinks added
+No translation in,No translation in
 No type,Κανένας τύπος
 No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,Δεν υπάρχει διαθέσιμο έγκυρο πρότυπο στόχου
@@ -1242,6 +1243,7 @@ This property will be shown using all the width available.,Αυτή η ιδιό�
 This property will be shown without the label,Αυτή η ιδιότητα θα εμφανίζεται χωρίς την ετικέτα
 This property will be the default filter in the library for this template.,Αυτή η ιδιότητα θα είναι το προεπιλεγμένο φίλτρο στη βιβλιοθήκη για αυτό το πρότυπο.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","Αυτή η ιδιότητα θα χρησιμοποιηθεί για το φιλτράρισμα των αποτελεσμάτων βιβλιοθήκης. Όταν οι ιδιότητες ταιριάζουν σε όνομα και τύπο πεδίου με άλλους τύπους οντοτήτων, θα συνδυαστούν για φιλτράρισμα."
+This search could not be completed. Try again later.,This search could not be completed. Try again later.
 This table of contents was automatically created by the system.,Αυτός ο πίνακας περιεχομένων δημιουργήθηκε αυτόματα από το σύστημα.
 this template,αυτό το πρότυπο
 This template is in use by existing entities and cannot be deleted.,Αυτό το πρότυπο χρησιμοποιείται από υπάρχουσες οντότητες και δεν μπορεί να διαγραφεί.
