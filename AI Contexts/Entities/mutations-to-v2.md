@@ -22,8 +22,7 @@ Inside `app/api/entities/entities.js`, `save` still contains:
 
 - legacy-oriented input preparation and sanitization (`validateEntity`, `sanitize`, defaults)
 - update-time merge/readback logic (loads current entity with files, then merges into update payload)
-- synchronous post-write orchestration (`relationships.saveEntityBasedReferences`, `search.indexEntities`)
-- legacy compatibility options (`updateRelationships`, `index`, `includeDocuments`)
+- include-documents hydration/readback behavior after write
 
 So while persistence now goes through V2 facade calls, `save` is still not the thin "if create/update -> delegate" boundary we want.
 
@@ -41,12 +40,10 @@ This means old write paths are still alive and reachable.
    - `save` still does more than dispatching to `EntityFacade.create/update`.
    - This keeps V1 behavior and V2 behavior coupled in the same wrapper.
 
-2. **Side effects currently coupled to legacy `save`**
-   - Relationship denormalization/update (`relationships.saveEntityBasedReferences`)
-   - Search indexing calls
+2. **Legacy orchestration still coupled to `save`**
    - includeDocuments hydration behavior after write
    - property selections handling
-   - Key open question: if V2/event workers already guarantee these asynchronously, these synchronous calls should be removed and tests adapted to V2 async semantics.
+   - update-time payload merge from current persisted entity (file preservation path)
 
 3. **Runtime V1 mutators still reachable outside `save`**
 - `updateMetdataFromRelationships` still reaches V1 `updateEntity`.
@@ -258,7 +255,7 @@ Target: decide if synchronous side effects in `entities.save` can be removed now
 
 ### Clarification on Flags and "Done" Semantics
 
-- `updateRelationships`, `index`, `includeDocuments` currently behave as legacy compatibility controls in `entities.save`.
+- `includeDocuments` previously acted as a legacy compatibility control in `entities.save` and has now been removed.
 - They are acceptable as transitional debt if fully bypassed by runtime (feature-flag cutover complete) and then removed.
 - By this rule, flagged legacy i18n paths (`entities.addLanguage/removeLanguage`) can be considered done once `v2Languages` is universal and old branches are deleted.
 
@@ -295,7 +292,7 @@ Target: decide if synchronous side effects in `entities.save` can be removed now
 - `entities.save` façade status:
   - compatibility fallback branches were removed; save now delegates persistence through V2 facade paths only.
   - still pending to make it a thin wrapper:
-    - remove now-obsolete compatibility flags (`includeDocuments`) from `save` when no runtime path depends on them.
+    - reduce read/merge orchestration to a minimal adapter (or migrate remaining tests away from `entities.save` entirely).
 - Re-validate that no `entities.save(` references remain outside intended legacy tests.
 - Remaining `entities.save(` references:
   - `app/api/entities/specs/entities.spec.js` only.
@@ -427,3 +424,8 @@ Given CSV V2 is now enabled for all tenants, we may include full CSV V1 retireme
   - verification:
     - `app/api/toc_generation/specs/tocService.spec.ts` (all passing)
     - `app/api/files/specs/routes.spec.ts` (all passing)
+- final `entities.save` option cleanup:
+  - removed `includeDocuments` option from `entities.save`; save now always returns hydrated entity with files.
+  - removed last legacy test call passing a third-argument flag.
+  - verification:
+    - `app/api/entities/specs/entities.spec.js` (59/59)

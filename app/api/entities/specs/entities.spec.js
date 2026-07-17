@@ -564,7 +564,7 @@ describe('entities', () => {
       };
       const user = { _id: db.id() };
 
-      await saveEntity(doc, { user, language: 'es' }, false);
+      await saveEntity(doc, { user, language: 'es' });
       expect(entities.updateMetdataFromRelationships).not.toHaveBeenCalled();
     });
 
