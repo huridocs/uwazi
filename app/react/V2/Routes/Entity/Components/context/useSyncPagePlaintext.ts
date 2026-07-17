@@ -33,7 +33,7 @@ const useSyncPagePlaintext = ({
           setPagePlaintext(text);
           return;
         }
-        if (loaderLanguage === uiLanguage) {
+        if (loaderLanguage === uiLanguage && isRawView) {
           setPagePlaintext(initialPagePlaintext);
         }
       })

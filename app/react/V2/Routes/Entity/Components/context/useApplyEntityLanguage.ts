@@ -17,32 +17,6 @@ type LanguageSetters = {
 
 type ApplyDeps = LanguageSetters & { sharedId: string | undefined; defaultLanguage?: string };
 
-const commitLanguageState = ({
-  sharedId,
-  nextLanguage,
-  nextEntity,
-  defaultLanguage,
-  setEntity,
-  setMainDocument,
-  setLanguageState,
-}: {
-  sharedId: string;
-  nextLanguage: string;
-  nextEntity: Entity;
-  defaultLanguage?: string;
-} & Omit<LanguageSetters, 'setPagePlaintext'>) => {
-  const nextMainDocument = resolveMainDocument(
-    sharedId,
-    nextLanguage,
-    nextEntity.documents,
-    defaultLanguage
-  );
-  setMainDocument(nextMainDocument);
-  setLanguageState(nextLanguage);
-  setEntity(nextEntity);
-  return nextMainDocument;
-};
-
 const fetchCurrentEntity = async (
   sharedId: string | undefined,
   nextLanguage: string,
@@ -61,6 +35,27 @@ const fetchCurrentEntity = async (
   return { status: 'applied', entity };
 };
 
+const commitAppliedLanguage = ({
+  nextLanguage,
+  nextEntity,
+  nextMainDocument,
+  nextPlaintext,
+  setMainDocument,
+  setLanguageState,
+  setEntity,
+  setPagePlaintext,
+}: LanguageSetters & {
+  nextLanguage: string;
+  nextEntity: Entity;
+  nextMainDocument: FileType | undefined;
+  nextPlaintext: string | undefined;
+}) => {
+  setMainDocument(nextMainDocument);
+  setLanguageState(nextLanguage);
+  setEntity(nextEntity);
+  setPagePlaintext(nextPlaintext);
+};
+
 const applyEntityLanguage = async (
   nextLanguage: string,
   isCurrent: () => boolean,
@@ -71,20 +66,27 @@ const applyEntityLanguage = async (
     return fetched.status;
   }
 
-  const nextMainDocument = commitLanguageState({
-    sharedId: deps.sharedId,
+  const nextMainDocument = resolveMainDocument(
+    deps.sharedId,
     nextLanguage,
-    nextEntity: fetched.entity,
-    defaultLanguage: deps.defaultLanguage,
-    setEntity: deps.setEntity,
-    setMainDocument: deps.setMainDocument,
-    setLanguageState: deps.setLanguageState,
-  });
+    fetched.entity.documents,
+    deps.defaultLanguage
+  );
   const nextPlaintext = await resolvePlaintext(nextMainDocument);
   if (!isCurrent()) {
     return 'stale';
   }
-  deps.setPagePlaintext(nextPlaintext);
+
+  commitAppliedLanguage({
+    nextLanguage,
+    nextEntity: fetched.entity,
+    nextMainDocument,
+    nextPlaintext,
+    setMainDocument: deps.setMainDocument,
+    setLanguageState: deps.setLanguageState,
+    setEntity: deps.setEntity,
+    setPagePlaintext: deps.setPagePlaintext,
+  });
   return 'applied';
 };
 
