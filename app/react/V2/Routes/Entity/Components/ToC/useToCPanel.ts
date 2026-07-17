@@ -208,7 +208,7 @@ const useToCPanel = ({ toc, file }: UseToCPanelParams) => {
   const { setTocState } = useTocStateActions();
   const { pdfController: mainPdfController } = useDocumentPdf();
 
-  useToCSync(toc, file?._id, setToc, resetToc);
+  useToCSync(toc, file?._id ? String(file._id) : undefined, setToc, resetToc);
 
   const handlers = useToCPanelHandlers({
     toc,
