@@ -1,14 +1,13 @@
 import React, { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { useAtomValue } from 'jotai';
-import { t } from '#app/I18N/index.js';
 import type { LanguagesListSchema } from '#shared/types/commonTypes.js';
 import type { Entity, FileType } from '#V2/api/entities/types.js';
 import { settingsAtom } from '#V2/atoms/index.js';
-import { notify } from '#V2/utils/notifyBridge.js';
 import { resolveRtl } from './entityLanguageUtils.js';
 import { useApplyEntityLanguage } from './useApplyEntityLanguage.js';
 import type { ApplyLanguageResult } from './useApplyEntityLanguage.js';
 import { useEntityContext } from './EntityContext.js';
+import { useEntityLanguageActions } from './useEntityLanguageActions.js';
 import { useRevalidateEntityLanguage } from './useRevalidateEntityLanguage.js';
 import { useSyncPagePlaintext } from './useSyncPagePlaintext.js';
 
@@ -48,7 +47,6 @@ const EntityLanguageProvider = ({
   const [language, setLanguageState] = useState(initialLanguage);
   const [mainDocument, setMainDocument] = useState(initialMainDocument);
   const [pagePlaintext, setPagePlaintext] = useState(initialPagePlaintext);
-  const [isLoading, setIsLoading] = useState(false);
   const languageRef = useRef(language);
   languageRef.current = language;
   const applyLanguageRef = useRef<(nextLanguage: string) => Promise<ApplyLanguageResult>>(
@@ -65,17 +63,29 @@ const EntityLanguageProvider = ({
   });
   applyLanguageRef.current = applyLanguage;
 
-  const fallbackToLoader = useCallback(() => {
-    setLanguageState(loaderLanguage);
-    setMainDocument(initialMainDocument);
-    setEntity(loaderEntity);
-  }, [loaderLanguage, initialMainDocument, loaderEntity, setEntity]);
+  const {
+    isLoading,
+    isLoadingRef,
+    fallbackToLoader,
+    setLanguage: applySetLanguage,
+  } = useEntityLanguageActions({
+    applyLanguage,
+    loaderLanguage,
+    loaderEntity,
+    initialMainDocument,
+    initialPagePlaintext,
+    setLanguageState,
+    setMainDocument,
+    setEntity,
+    setPagePlaintext,
+  });
 
   useRevalidateEntityLanguage({
     loaderEntity,
     loaderLanguage,
     initialMainDocument,
     languageRef,
+    isLoadingRef,
     applyLanguageRef,
     setMainDocument,
     fallbackToLoader,
@@ -90,22 +100,8 @@ const EntityLanguageProvider = ({
   });
 
   const setLanguage = useCallback(
-    async (nextLanguage: string) => {
-      if (nextLanguage === languageRef.current || isLoading) {
-        return;
-      }
-
-      setIsLoading(true);
-      try {
-        const result = await applyLanguage(nextLanguage);
-        if (result === 'failed') {
-          notify(t('System', 'An error occurred', null, false), 'error');
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [applyLanguage, isLoading]
+    async (nextLanguage: string) => applySetLanguage(nextLanguage, languageRef.current),
+    [applySetLanguage]
   );
 
   const value = useMemo(

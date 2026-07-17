@@ -28,6 +28,7 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
     saveError,
     setIsEditing,
     setIsSaving,
+    setIsDirty,
     setSaveError,
     registerCancelEdit,
   } = useMetadataEditing();
@@ -121,11 +122,13 @@ const MetadataTab = ({ entity }: MetadataTabProps) => {
             </p>
           )}
           <EditEntity
+            key={entity._id}
             formId="edit-entity-form"
             entity={entity}
             onSave={onSave}
             disabled={isSaving}
             errors={editErrors}
+            onDirtyChange={setIsDirty}
             onEditSource={(sharedId, title, templateId) =>
               openEntityOverlayTarget({
                 sharedId,

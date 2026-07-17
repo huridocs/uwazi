@@ -1,8 +1,11 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useRef, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
+import { Translate } from '#app/I18N/index.js';
+import { ConfirmationModal } from '#V2/Components/UI/index.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 import { useEntityLanguage } from '../context/EntityLanguageContext.js';
+import { useMetadataEditing } from '../context/MetadataEditingContext.js';
 
 type LanguageOptionProps = {
   langKey: string;
@@ -56,8 +59,10 @@ const LanguageOption = ({
 
 const EntityLanguageBar = () => {
   const { language, languages, isLoading, setLanguage } = useEntityLanguage();
+  const { isEditing, isDirty, cancelEdit } = useMetadataEditing();
   const isMobile = useIsMobile();
   const [open, setOpen] = useState(false);
+  const [pendingLanguage, setPendingLanguage] = useState<string>();
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -79,6 +84,28 @@ const EntityLanguageBar = () => {
     return null;
   }
 
+  const requestLanguage = (nextLanguage: string) => {
+    setOpen(false);
+    if (nextLanguage === language || isLoading) {
+      return;
+    }
+    if (isEditing && isDirty) {
+      setPendingLanguage(nextLanguage);
+      return;
+    }
+    setLanguage(nextLanguage).catch(() => undefined);
+  };
+
+  const discardAndSwitch = () => {
+    const nextLanguage = pendingLanguage;
+    setPendingLanguage(undefined);
+    if (!nextLanguage) {
+      return;
+    }
+    cancelEdit();
+    setLanguage(nextLanguage).catch(() => undefined);
+  };
+
   const options = languages.map(lang => (
     <LanguageOption
       key={lang.key}
@@ -86,44 +113,61 @@ const EntityLanguageBar = () => {
       isActive={lang.key === language}
       disabled={isLoading}
       variant={isMobile ? 'menu' : 'pill'}
-      onSelect={() => {
-        setLanguage(lang.key).catch(() => undefined);
-        setOpen(false);
-      }}
+      onSelect={() => requestLanguage(lang.key)}
     />
   ));
 
-  if (isMobile) {
-    return (
-      <div ref={menuRef} className="relative shrink-0">
-        <button
-          type="button"
-          aria-label="Language"
-          aria-expanded={open}
-          disabled={isLoading}
-          onClick={() => setOpen(value => !value)}
-          className="flex items-center gap-1 rounded-md bg-warm px-3 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment disabled:opacity-60"
-        >
-          {language.toUpperCase()}
-          <ChevronDownIcon className="size-2.5 text-ink-tertiary" />
-        </button>
-        {open ? (
-          <div
-            className="absolute inset-e-0 top-full z-30 mt-1 min-w-20 overflow-hidden rounded-md border border-border bg-paper shadow-md"
-            role="listbox"
-            aria-label="Language selection"
-          >
-            {options}
-          </div>
-        ) : null}
-      </div>
-    );
-  }
-
   return (
-    <div className="flex shrink-0 items-center gap-1" role="group" aria-label="Language selection">
-      {options}
-    </div>
+    <>
+      {isMobile ? (
+        <div ref={menuRef} className="relative shrink-0">
+          <button
+            type="button"
+            aria-label="Language"
+            aria-expanded={open}
+            disabled={isLoading}
+            onClick={() => setOpen(value => !value)}
+            className="flex items-center gap-1 rounded-md bg-warm px-3 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment disabled:opacity-60"
+          >
+            {language.toUpperCase()}
+            <ChevronDownIcon className="size-2.5 text-ink-tertiary" />
+          </button>
+          {open ? (
+            <div
+              className="absolute inset-e-0 top-full z-30 mt-1 min-w-20 overflow-hidden rounded-md border border-border bg-paper shadow-md"
+              role="listbox"
+              aria-label="Language selection"
+            >
+              {options}
+            </div>
+          ) : null}
+        </div>
+      ) : (
+        <div
+          className="flex shrink-0 items-center gap-1"
+          role="group"
+          aria-label="Language selection"
+        >
+          {options}
+        </div>
+      )}
+      {pendingLanguage ? (
+        <ConfirmationModal
+          header={<Translate>Unsaved changes</Translate>}
+          body={
+            <Translate>
+              You have unsaved changes. Discard them and switch language? This action cannot be
+              undone.
+            </Translate>
+          }
+          acceptButton={<Translate>Discard and switch</Translate>}
+          cancelButton={<Translate>Cancel</Translate>}
+          dangerStyle
+          onAcceptClick={discardAndSwitch}
+          onCancelClick={() => setPendingLanguage(undefined)}
+        />
+      ) : null}
+    </>
   );
 };
 

@@ -4,6 +4,7 @@ import { useAtomValue } from 'jotai';
 import { useLoaderData } from 'react-router';
 import { Translate } from '#app/I18N/index.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
+import { BlockDirtyNavigation } from '#V2/Components/UI/index.js';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import { localeAtom } from '#V2/atoms/index.js';
 import { SnippetsSearchResponse } from '#V2/api/types.js';
@@ -67,13 +68,14 @@ const EntityView = ({ searchResults }: EntityViewProps) => {
     searchResults,
     filesSideTabs,
   });
-  const { isEditing } = useMetadataEditing();
+  const { isEditing, isDirty, isSaving, cancelEdit } = useMetadataEditing();
   const showMainPaneHeader = !(activeMainTab === MAIN_TAB.METADATA && isEditing);
 
   return (
     <>
       <FilesDeleteConfirmationModal />
       <AddFileModal />
+      <BlockDirtyNavigation when={isEditing && isDirty && !isSaving} onDiscard={cancelEdit} />
       <div className="h-full min-h-0" dir={isRtl ? 'rtl' : 'ltr'}>
         <PaneLayout defaultRatios={[0.62, 0.38]} className="bg-parchment text-ink">
           <PaneLayout.Pane>

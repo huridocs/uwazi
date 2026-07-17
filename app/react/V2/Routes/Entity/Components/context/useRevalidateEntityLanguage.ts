@@ -8,6 +8,7 @@ const useRevalidateEntityLanguage = ({
   loaderLanguage,
   initialMainDocument,
   languageRef,
+  isLoadingRef,
   applyLanguageRef,
   setMainDocument,
   fallbackToLoader,
@@ -16,6 +17,7 @@ const useRevalidateEntityLanguage = ({
   loaderLanguage: string;
   initialMainDocument?: FileType;
   languageRef: MutableRefObject<string>;
+  isLoadingRef: MutableRefObject<boolean>;
   applyLanguageRef: MutableRefObject<(nextLanguage: string) => Promise<ApplyLanguageResult>>;
   setMainDocument: (document: FileType | undefined) => void;
   fallbackToLoader: () => void;
@@ -25,6 +27,10 @@ const useRevalidateEntityLanguage = ({
 
     if (loaderLanguage === languageRef.current) {
       setMainDocument(initialMainDocument);
+      return undefined;
+    }
+
+    if (isLoadingRef.current) {
       return undefined;
     }
 
@@ -50,6 +56,7 @@ const useRevalidateEntityLanguage = ({
     loaderLanguage,
     initialMainDocument,
     languageRef,
+    isLoadingRef,
     applyLanguageRef,
     setMainDocument,
     fallbackToLoader,

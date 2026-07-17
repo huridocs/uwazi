@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useRevalidator } from 'react-router';
 import { t } from '#app/I18N/index.js';
 import type { TocSchema } from '#shared/types/commonTypes.js';
@@ -63,12 +63,19 @@ const saveToc = async ({ file, toc, revalidate, onError, onSuccess }: SaveTocPar
 
 const useToCSync = (
   toc: TocSchema[] | undefined,
+  fileId: string | undefined,
   setToc: ReturnType<typeof useTocActions>['setToc'],
   resetToc: ReturnType<typeof useTocActions>['reset']
 ) => {
+  const previousFileId = useRef(fileId);
+
   useEffect(() => {
+    if (previousFileId.current !== fileId) {
+      previousFileId.current = fileId;
+      resetToc();
+    }
     setToc(toc);
-  }, [toc, setToc]);
+  }, [fileId, toc, setToc, resetToc]);
 
   useEffect(
     () => () => {
@@ -201,7 +208,7 @@ const useToCPanel = ({ toc, file }: UseToCPanelParams) => {
   const { setTocState } = useTocStateActions();
   const { pdfController: mainPdfController } = useDocumentPdf();
 
-  useToCSync(toc, setToc, resetToc);
+  useToCSync(toc, file?._id, setToc, resetToc);
 
   const handlers = useToCPanelHandlers({
     toc,

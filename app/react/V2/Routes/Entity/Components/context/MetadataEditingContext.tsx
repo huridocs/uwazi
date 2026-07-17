@@ -1,9 +1,15 @@
 import React, { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
 
-type MetadataEditingState = { isEditing: boolean; isSaving: boolean; saveError?: string };
+type MetadataEditingState = {
+  isEditing: boolean;
+  isSaving: boolean;
+  isDirty: boolean;
+  saveError?: string;
+};
 type MetadataEditingActions = {
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
   setIsSaving: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsDirty: React.Dispatch<React.SetStateAction<boolean>>;
   setSaveError: React.Dispatch<React.SetStateAction<string | undefined>>;
   registerCancelEdit: (handler: () => void) => () => void;
   cancelEdit: () => void;
@@ -15,6 +21,7 @@ const MetadataEditingActionsContext = createContext<MetadataEditingActions | nul
 const MetadataEditingProvider = ({ children }: { children: React.ReactNode }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
   const [saveError, setSaveError] = useState<string>();
   const cancelEditRef = useRef<(() => void) | null>(null);
 
@@ -28,18 +35,27 @@ const MetadataEditingProvider = ({ children }: { children: React.ReactNode }) =>
   const cancelEdit = useCallback(() => {
     if (cancelEditRef.current) {
       cancelEditRef.current();
+      setIsDirty(false);
       return;
     }
     setSaveError(undefined);
+    setIsDirty(false);
     setIsEditing(false);
   }, []);
 
   const state = useMemo(
-    () => ({ isEditing, isSaving, saveError }),
-    [isEditing, isSaving, saveError]
+    () => ({ isEditing, isSaving, isDirty, saveError }),
+    [isEditing, isSaving, isDirty, saveError]
   );
   const actions = useMemo(
-    () => ({ setIsEditing, setIsSaving, setSaveError, registerCancelEdit, cancelEdit }),
+    () => ({
+      setIsEditing,
+      setIsSaving,
+      setIsDirty,
+      setSaveError,
+      registerCancelEdit,
+      cancelEdit,
+    }),
     [registerCancelEdit, cancelEdit]
   );
 

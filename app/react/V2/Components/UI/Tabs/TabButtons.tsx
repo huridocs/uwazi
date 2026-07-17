@@ -67,7 +67,9 @@ const TabButtons = ({
                 selected ? activeClass : inactiveClass,
               ].join(' ')}
               onClick={() => {
-                selectTab(button.id);
+                if (activeTabId === undefined) {
+                  selectTab(button.id);
+                }
                 onTabChange?.(button.id);
               }}
             >
