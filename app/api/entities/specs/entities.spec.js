@@ -264,8 +264,8 @@ describe('entities', () => {
       expect(search.indexEntities).toHaveBeenCalled();
     });
 
-    describe('when other languages have no metadata', () => {
-      it('should replicate metadata being saved', async () => {
+    describe('when updating translatable metadata and other languages have no metadata (intentional V2 paradigm shift)', () => {
+      it('should update only target language metadata without fallback to other languages', async () => {
         const doc = {
           _id: batmanFinishesId,
           sharedId: 'shared',
