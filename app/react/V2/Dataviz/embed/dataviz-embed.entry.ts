@@ -106,11 +106,11 @@ const buildEmbedDataUrl = (
   return `/api/public/dataviz/${encodeURIComponent(id)}/data${query ? `?${query}` : ''}`;
 };
 
-const initDatavizEmbed = () => {
+export const initDatavizEmbed = (): (() => void) | undefined => {
   const root = document.getElementById('dataviz-embed-root');
   const bootstrap = window.__DATAVIZ_EMBED__;
   if (!root || !bootstrap?.id) {
-    return;
+    return undefined;
   }
 
   const kind = root.dataset.kind ?? 'echarts';
@@ -119,17 +119,19 @@ const initDatavizEmbed = () => {
   let debounceTimer: ReturnType<typeof setTimeout> | undefined;
   let requestId = 0;
 
+  const onResize = () => {
+    chart?.resize();
+  };
+
   if (kind === 'echarts') {
     const option = window.__DATAVIZ_CHART_OPTION__;
     const echartsGlobal = window.echarts;
     if (!option || !echartsGlobal) {
-      return;
+      return undefined;
     }
     chart = echartsGlobal.init(root);
     chart.setOption(option);
-    window.addEventListener('resize', () => {
-      chart?.resize();
-    });
+    window.addEventListener('resize', onResize);
   }
 
   const renderPayload = (payload: DatavizEmbedPayload) => {
@@ -181,7 +183,7 @@ const initDatavizEmbed = () => {
     }, REFRESH_DEBOUNCE_MS);
   };
 
-  window.addEventListener('message', (event: MessageEvent) => {
+  const onMessage = (event: MessageEvent) => {
     if (!isAllowedOrigin(event.origin, bootstrap.allowedOrigins)) {
       return;
     }
@@ -195,13 +197,25 @@ const initDatavizEmbed = () => {
     }
     filtersByProperty = next;
     scheduleRefresh();
-  });
+  };
+
+  window.addEventListener('message', onMessage);
+
+  return () => {
+    clearTimeout(debounceTimer);
+    window.removeEventListener('message', onMessage);
+    window.removeEventListener('resize', onResize);
+  };
 };
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initDatavizEmbed);
-} else {
-  initDatavizEmbed();
-}
+const shouldAutoInit = process.env.__testingEnvironment !== 'true';
 
-export {};
+if (shouldAutoInit) {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      initDatavizEmbed();
+    });
+  } else {
+    initDatavizEmbed();
+  }
+}
