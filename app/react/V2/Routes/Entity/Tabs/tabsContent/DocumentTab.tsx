@@ -7,6 +7,7 @@ import {
   PlainText,
   DocumentViewModeSelect,
   DocumentSelectionFloatingMenu,
+  DocumentLanguageFallbackNotice,
 } from '#V2/Routes/Entity/Components/document/index.js';
 import { useEntityLanguage } from '#V2/Routes/Entity/Components/context/index.js';
 import { useDocumentPdfView } from '../hooks/useDocumentPdfView.js';
@@ -97,49 +98,52 @@ const DocumentTab = ({
           <DocumentViewModeSelect />
         </div>
       ) : null}
-      <div className={`relative min-h-0 flex-1 rounded-md ${isRaw ? 'hidden' : 'block'}`}>
-        <div
-          ref={setPdfScrollRoot}
-          data-testid="pdf-scroll-container"
-          className="absolute inset-0 overflow-y-auto pl-1 pr-[60px] scrollbar-gutter-stable"
-        >
-          <PDF
-            key={mainDocument._id || filename}
-            fileUrl={`/api/files/${filename}`}
-            size={{ height: '100%', width: '100%' }}
-            scrollRoot={pdfScrollRoot}
-            onSelect={handleTextSelect}
-            onDeselect={handleTextDeselect}
-            onPageChange={handlePageChange}
-            onHighlightClick={handleHighlightClick}
-            onPdfReady={handlePdfReady}
-          />
+      <div className="relative min-h-0 flex-1 overflow-hidden">
+        <DocumentLanguageFallbackNotice document={mainDocument} />
+        <div className={`relative h-full min-h-0 rounded-md ${isRaw ? 'hidden' : 'block'}`}>
+          <div
+            ref={setPdfScrollRoot}
+            data-testid="pdf-scroll-container"
+            className="absolute inset-0 overflow-y-auto pl-1 pr-[60px] scrollbar-gutter-stable"
+          >
+            <PDF
+              key={mainDocument._id || filename}
+              fileUrl={`/api/files/${filename}`}
+              size={{ height: '100%', width: '100%' }}
+              scrollRoot={pdfScrollRoot}
+              onSelect={handleTextSelect}
+              onDeselect={handleTextDeselect}
+              onPageChange={handlePageChange}
+              onHighlightClick={handleHighlightClick}
+              onPdfReady={handlePdfReady}
+            />
+          </div>
+          {!isMobile && (
+            <RelationshipsDisplay
+              entity={entity}
+              document={mainDocument}
+              currentPage={pageNumber}
+              pageHeight={pageHeight}
+              railInsetRight={railInsetRight}
+              activeRelationshipId={activeRelationshipId}
+              onPointClick={handleRailPointClick}
+              onClusterClick={handleClusterClick}
+              onMoreClick={handleClusterMoreClick}
+            />
+          )}
+          {selectedText && userIsAdminOrEditor && !isRaw ? (
+            <DocumentSelectionFloatingMenu
+              selection={selectedText}
+              onCreateRelationship={() => handleCreateRelationship(selectedText)}
+              onAddToToC={() => handleAddToToC(selectedText)}
+            />
+          ) : null}
         </div>
-        {!isMobile && (
-          <RelationshipsDisplay
-            entity={entity}
-            document={mainDocument}
-            currentPage={pageNumber}
-            pageHeight={pageHeight}
-            railInsetRight={railInsetRight}
-            activeRelationshipId={activeRelationshipId}
-            onPointClick={handleRailPointClick}
-            onClusterClick={handleClusterClick}
-            onMoreClick={handleClusterMoreClick}
-          />
-        )}
-        {selectedText && userIsAdminOrEditor && !isRaw ? (
-          <DocumentSelectionFloatingMenu
-            selection={selectedText}
-            onCreateRelationship={() => handleCreateRelationship(selectedText)}
-            onAddToToC={() => handleAddToToC(selectedText)}
-          />
-        ) : null}
-      </div>
-      <div
-        className={`min-h-0 flex-1 overflow-auto rounded-md bg-warm ${isRaw ? 'block' : 'hidden'}`}
-      >
-        <PlainText text={pagePlaintext || ''} dir={isRtl ? 'rtl' : 'ltr'} />
+        <div
+          className={`h-full min-h-0 overflow-auto rounded-md bg-warm ${isRaw ? 'block' : 'hidden'}`}
+        >
+          <PlainText text={pagePlaintext || ''} dir={isRtl ? 'rtl' : 'ltr'} />
+        </div>
       </div>
     </div>
   );
