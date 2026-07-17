@@ -7,7 +7,6 @@ import { getPagePlaintext } from '#V2/api/files/index.js';
 import { getMainDocument } from '#V2/formatters/index.js';
 import { httpServices } from '#V2/services/http/index.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
-import { PAGE_PARAM, VIEW_MODE_PARAM } from '../../urlParams.js';
 
 type ApplyLanguageResult = 'applied' | 'stale' | 'failed';
 
@@ -19,11 +18,9 @@ const resolveRtl = (languageKey: string, languages: LanguagesListSchema): boolea
   return Boolean(availableLanguages.find(language => language.key === languageKey)?.rtl);
 };
 
-const getClientSearchParam = (key: string): string | null => {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-  return new URLSearchParams(window.location.search).get(key);
+type PlaintextQuery = {
+  isRaw: boolean;
+  page: number;
 };
 
 const seedLoaderCache = (entity: Entity, language: string, mainDocument?: FileType) => {
@@ -72,25 +69,22 @@ const fetchEntityForLanguage = async (sharedId: string, nextLanguage: string) =>
   return nextEntity;
 };
 
-// eslint-disable-next-line max-statements
-const resolvePlaintext = async (document: FileType | undefined) => {
-  const isRaw = getClientSearchParam(VIEW_MODE_PARAM) === 'true';
-  if (!isRaw || !document?._id) {
+const resolvePlaintext = async (document: FileType | undefined, query: PlaintextQuery) => {
+  if (!query.isRaw || !document?._id) {
     return undefined;
   }
 
-  const page = Number(getClientSearchParam(PAGE_PARAM) || '1');
-  const cached = entityLoaderCache.getPlaintext(document._id, page);
+  const cached = entityLoaderCache.getPlaintext(document._id, query.page);
   if (cached !== undefined) {
     return cached;
   }
 
-  const response = await getPagePlaintext(document._id, page);
+  const response = await getPagePlaintext(document._id, query.page);
   if (response instanceof FetchResponseError) {
     return undefined;
   }
 
-  entityLoaderCache.setPlaintext(document._id, page, response);
+  entityLoaderCache.setPlaintext(document._id, query.page, response);
   return response;
 };
 
@@ -230,4 +224,5 @@ export type {
   LanguageSnapshotSetters,
   ApplyLanguageResult,
   SyncLoaderLanguageMode,
+  PlaintextQuery,
 };

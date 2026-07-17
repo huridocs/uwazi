@@ -50,8 +50,7 @@ const useEntityTabUrlSync = ({
   }, [entity.sharedId, setTabGroups]);
 
   useEffect(() => {
-    const syncTabsFromLocation = () => {
-      const params = new URLSearchParams(window.location.search);
+    const syncTabsFromParams = (params: URLSearchParams) => {
       const mainFromUrl = params.get(MAIN_TAB_PARAM);
       const mainId =
         isValidMainTab(mainFromUrl) && mainTabIds.has(mainFromUrl) ? mainFromUrl : activeMainTab;
@@ -73,14 +72,18 @@ const useEntityTabUrlSync = ({
       });
     };
 
-    syncTabsFromLocation();
-    window.addEventListener('popstate', syncTabsFromLocation);
-    return () => window.removeEventListener('popstate', syncTabsFromLocation);
+    syncTabsFromParams(searchParams);
+    const onPopState = () => {
+      syncTabsFromParams(new URLSearchParams(window.location.search));
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
   }, [
     entity,
     activeMainTab,
     mainTabParam,
     sideTabParam,
+    searchParams,
     hasMainDocument,
     mainDocumentId,
     filesSideTabs,

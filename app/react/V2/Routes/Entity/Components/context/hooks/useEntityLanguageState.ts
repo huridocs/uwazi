@@ -1,7 +1,9 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { t } from '#app/I18N/index.js';
 import type { Entity, FileType } from '#V2/api/entities/types.js';
 import { notify } from '#V2/utils/notifyBridge.js';
+import { PAGE_PARAM, VIEW_MODE_PARAM } from '../../../urlParams.js';
 import {
   applyLanguageSnapshot,
   fetchEntityForLanguage,
@@ -26,6 +28,7 @@ const useApplyLanguage = (
   defaultLanguage: string | undefined,
   setters: LanguageSnapshotSetters
 ) => {
+  const [searchParams] = useSearchParams();
   const applyGenerationRef = useRef(0);
   const invalidateApply = useCallback(() => {
     applyGenerationRef.current += 1;
@@ -50,7 +53,10 @@ const useApplyLanguage = (
         nextEntity.documents,
         defaultLanguage
       );
-      const nextPlaintext = await resolvePlaintext(nextMainDocument);
+      const nextPlaintext = await resolvePlaintext(nextMainDocument, {
+        isRaw: searchParams.get(VIEW_MODE_PARAM) === 'true',
+        page: Number(searchParams.get(PAGE_PARAM) || '1'),
+      });
       if (!isCurrent()) return 'stale';
 
       applyLanguageSnapshot(
@@ -64,7 +70,7 @@ const useApplyLanguage = (
       );
       return 'applied';
     },
-    [loaderEntity, defaultLanguage, setters]
+    [loaderEntity, defaultLanguage, setters, searchParams]
   );
 
   return { applyLanguage, invalidateApply };

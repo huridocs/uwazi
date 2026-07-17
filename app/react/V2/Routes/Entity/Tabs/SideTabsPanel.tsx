@@ -48,7 +48,11 @@ const SideTabsPanel = ({
     <div className="relative flex h-full min-h-0 min-w-0 w-full flex-col gap-3 overflow-hidden border-l border-border-soft">
       <EntityOverlay />
       <div className="shrink-0 px-3 pt-2.5">
-        <TabsSideButtons buttons={sideButtons} onTabChange={onSideTabChange} />
+        <TabsSideButtons
+          buttons={sideButtons}
+          activeTabId={activeSideTab}
+          onTabChange={onSideTabChange}
+        />
       </div>
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <div className="min-h-0 flex-1 grow overflow-hidden px-3">

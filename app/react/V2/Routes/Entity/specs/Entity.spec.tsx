@@ -275,18 +275,6 @@ describe('Entity view', () => {
     });
 
     it('should preserve active side tab when switching to a main tab that supports it', async () => {
-      render(
-        <TestRouterContext
-          loaderData={{ entity: sampleEntity, mainDocument: sampleMainDocument, pagePlaintext: '' }}
-        >
-          <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
-            <Entity />
-          </TestAtomStoreProvider>
-        </TestRouterContext>
-      );
-
-      await checkEntityRendered();
-
       let tablists = screen.getAllByTestId('tabs-comp');
       let mainTabs = within(tablists[0]);
       let sideTabs = within(tablists[1]);
@@ -322,18 +310,6 @@ describe('Entity view', () => {
     });
 
     it('should reset side tab when switching main tab drops an unsupported side id', async () => {
-      render(
-        <TestRouterContext
-          loaderData={{ entity: sampleEntity, mainDocument: sampleMainDocument, pagePlaintext: '' }}
-        >
-          <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
-            <Entity />
-          </TestAtomStoreProvider>
-        </TestRouterContext>
-      );
-
-      await checkEntityRendered();
-
       let tablists = screen.getAllByTestId('tabs-comp');
       let mainTabs = within(tablists[0]);
       let sideTabs = within(tablists[1]);

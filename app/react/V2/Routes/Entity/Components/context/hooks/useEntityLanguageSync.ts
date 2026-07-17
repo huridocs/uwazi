@@ -104,15 +104,21 @@ const useSyncPagePlaintext = ({
 
   useEffect(() => {
     let cancelled = false;
-    if (!isRawView || !mainDocument?._id) {
+    if (!mainDocument?._id) {
       setPagePlaintext(undefined);
       return () => {
         cancelled = true;
       };
     }
+    if (!isRawView) {
+      return () => {
+        cancelled = true;
+      };
+    }
 
-    setPagePlaintext(entityLoaderCache.getPlaintext(mainDocument._id, Number(pageParam)));
-    resolvePlaintext(mainDocument)
+    const page = Number(pageParam);
+    setPagePlaintext(entityLoaderCache.getPlaintext(mainDocument._id, page));
+    resolvePlaintext(mainDocument, { isRaw: true, page })
       .then(text => {
         if (!cancelled) setPagePlaintext(text);
       })
