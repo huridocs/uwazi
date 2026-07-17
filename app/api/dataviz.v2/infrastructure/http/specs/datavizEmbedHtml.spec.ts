@@ -86,6 +86,7 @@ describe('GET /embed/dataviz/:id HTML', () => {
     expect(response.status).toBe(200);
     expect(String(response.headers['content-type']).includes('html')).toBe(true);
     expect(response.text).toContain('__DATAVIZ_CHART_OPTION__');
+    expect(response.text).toContain('__DATAVIZ_EMBED__');
     expect(response.text).toContain('echarts.min.js');
     expect(response.text).toContain('dataviz-embed');
     expect(response.text).not.toContain('main.js');
