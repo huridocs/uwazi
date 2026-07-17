@@ -34,7 +34,7 @@ const appWithEditorUser: Application = setUpApp(
 describe('POST /api/users', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures);
-    testingTenants.changeCurrentTenant({ featureFlags: { v2UpdateUser: true } });
+    testingTenants.changeCurrentTenant({ featureFlags: { v2UsersUpdate: true } });
   });
 
   afterAll(async () => {
