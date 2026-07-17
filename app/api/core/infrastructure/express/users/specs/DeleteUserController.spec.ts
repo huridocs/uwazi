@@ -28,7 +28,7 @@ const app: Application = setUpApp(
 describe('DELETE /api/users', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
-    testingTenants.changeCurrentTenant({ featureFlags: { v2DeleteUser: true } });
+    testingTenants.changeCurrentTenant({ featureFlags: { v2UsersDelete: true } });
   });
 
   afterAll(async () => {
@@ -123,7 +123,7 @@ describe('DELETE /api/users', () => {
         ],
         usergroups: [],
       });
-      testingTenants.changeCurrentTenant({ featureFlags: { v2DeleteUser: true } });
+      testingTenants.changeCurrentTenant({ featureFlags: { v2UsersDelete: true } });
 
       const response = await request(app)
         .delete('/api/users')

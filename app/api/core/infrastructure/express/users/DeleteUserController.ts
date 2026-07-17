@@ -30,7 +30,7 @@ const DeleteUsersInputSchema = z.object({
 class DeleteUserController extends AbstractController<DeleteUserRequest> {
   // eslint-disable-next-line max-statements
   protected async handle(): Promise<void> {
-    if (ExecutionContext.tenant.featureFlags?.v2DeleteUser) {
+    if (ExecutionContext.tenant.featureFlags?.v2UsersDelete) {
       const startTime = Date.now();
       try {
         const input = DeleteUsersInputSchema.parse(this.request.query);
