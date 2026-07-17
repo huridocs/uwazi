@@ -134,7 +134,6 @@ export const config = {
       testing: DEV_FLAG_TESTING === 'true' || false,
       v2CSVImport: FEATURE_FLAG_V2_CSV_IMPORT === 'true' || false,
       dataViz: FEATURE_FLAG_DATA_VIZ === 'true' || false,
-      v2GetEntity: false,
       v2Languages: false,
       postgresFiles: false,
       postgresThesauri: false,

@@ -4,7 +4,6 @@ import { elastic } from '#api/search/index.js';
 import { search } from '#api/search/search.js';
 import date from '#api/utils/date.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 import { User } from '#api/users.v2/model/User.js';
 import * as searchLimitsConfig from '#shared/config.js';
@@ -1545,36 +1544,21 @@ describe('search', () => {
     });
   });
 
-  describe('relationship permissions (v2GetEntity feature flag)', () => {
-    it('should not call applyRelationshipPermissions when the flag is disabled', async () => {
-      const mockService = { applyRelationshipPermissions: jest.fn() };
-      jest.spyOn(EntitiesQueryServiceFactory, 'default').mockReturnValue(mockService);
-
-      await searchEntities({ ids: [ids.batmanFinishes] }, 'en');
-
-      expect(mockService.applyRelationshipPermissions).not.toHaveBeenCalled();
-    });
-
-    it('should call applyRelationshipPermissions when the v2GetEntity flag is enabled', async () => {
+  describe('relationship permissions (EntitiesQueryService)', () => {
+    it('should always call applyRelationshipPermissions', async () => {
       const user = userFactory.mockEditorUser();
 
-      testingTenants.mockCurrentTenant({ featureFlags: { v2GetEntity: true } });
+      const mockService = {
+        applyRelationshipPermissions: jest.fn().mockResolvedValue(undefined),
+      };
+      jest.spyOn(EntitiesQueryServiceFactory, 'default').mockReturnValue(mockService);
 
-      try {
-        const mockService = {
-          applyRelationshipPermissions: jest.fn().mockResolvedValue(undefined),
-        };
-        jest.spyOn(EntitiesQueryServiceFactory, 'default').mockReturnValue(mockService);
+      const { rows } = await searchEntities({ ids: [ids.batmanFinishes] }, 'en');
 
-        const { rows } = await searchEntities({ ids: [ids.batmanFinishes] }, 'en');
-
-        expect(mockService.applyRelationshipPermissions).toHaveBeenCalledWith(
-          rows,
-          User.createFrom(user)
-        );
-      } finally {
-        testingTenants.restoreCurrentFn();
-      }
+      expect(mockService.applyRelationshipPermissions).toHaveBeenCalledWith(
+        rows,
+        User.createFrom(user)
+      );
     });
   });
 

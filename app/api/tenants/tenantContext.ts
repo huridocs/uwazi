@@ -24,7 +24,6 @@ type Tenant = {
     v2CSVImport?: boolean;
     dataViz?: boolean;
     themeCustomization?: boolean;
-    v2GetEntity?: boolean;
     newHeader?: boolean;
     v2Languages?: boolean;
     postgresThesauri?: boolean;

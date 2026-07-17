@@ -75,7 +75,6 @@ type ClientFeatureFlags = {
   v2CSVImport?: boolean;
   dataViz?: boolean;
   newHeader?: boolean;
-  v2GetEntity?: boolean;
   aiAssistant?: boolean;
 };
 

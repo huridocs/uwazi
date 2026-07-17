@@ -1,4 +1,5 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { z } from 'zod';
 import { EntityNotFoundError } from '../../../domain/entity/errors.js';
 import { EntitiesQueryServiceFactory } from '../../factories/EntitiesQueryServiceFactory.js';
@@ -41,7 +42,7 @@ class GetEntityController extends AbstractController<any> {
         }
 
         resolvedSharedId = entity.sharedId;
-        resolvedLanguage = entity.language;
+        resolvedLanguage = entity.language as LanguageISO6391;
       }
 
       if (!resolvedSharedId) {
