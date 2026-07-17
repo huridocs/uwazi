@@ -11,9 +11,6 @@ import { CreateEntityUseCaseFactory } from '../factories/CreateEntityUseCaseFact
 import { LoggerFactory } from '../factories/LoggerFactory.js';
 import { ExpressEntityMapper } from '../express/entity/ExpressEntityMapper.js';
 import { UpdateEntityUseCaseFactory } from '../factories/UpdateEntityUseCaseFactory.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import date from '#api/utils/date.js';
-import { search } from '#api/search/index.js';
 
 type RequestContext = {
   logger: ReturnType<typeof LoggerFactory.default>;
@@ -97,21 +94,6 @@ export class EntityFacade {
     });
   }
 
-  private static isGeneratedTocLegacyTemplateError(dto: UpdateEntityRequest, error: unknown) {
-    if (typeof dto.generatedToc === 'undefined') {
-      return false;
-    }
-    if (!dto.sharedId) {
-      return false;
-    }
-    const message = error instanceof Error ? error.message : '';
-    return (
-      message.includes("Cannot read properties of null (reading 'toHexString')") ||
-      message.includes("Cannot read properties of undefined (reading 'map')") ||
-      message.includes('Template has the missing Property')
-    );
-  }
-
   static async create(
     dto: CreateEntityDTO,
     targetLanguage: LanguageISO6391,
@@ -132,7 +114,6 @@ export class EntityFacade {
     }
   }
 
-  // eslint-disable-next-line max-statements
   static async update(
     dto: UpdateEntityRequest,
     targetLanguage: LanguageISO6391,
@@ -151,29 +132,6 @@ export class EntityFacade {
       this.logUpdateSuccess(context, dto, entity);
       return entity;
     } catch (error) {
-      if (this.isGeneratedTocLegacyTemplateError(dto, error)) {
-        await getConnection()
-          .collection('entities')
-          .updateMany(
-            { sharedId: dto.sharedId },
-            {
-              $set: {
-                generatedToc: dto.generatedToc,
-                editDate: date.currentUTC(),
-              },
-            }
-          );
-        await search.indexEntities({ sharedId: dto.sharedId }, '+fullText');
-        context.logger.info('Entity generatedToc updated with legacy template fallback', {
-          requestId: context.requestId,
-          namespace: 'Entity_Update',
-          durationMs: this.durationMs(context.startTime),
-          success: true,
-          sharedId: dto.sharedId,
-          generatedToc: dto.generatedToc,
-        });
-        return { sharedId: dto.sharedId, template: { id: { toString: () => '' } } } as any;
-      }
       this.logUpdateError(context, dto, error);
       throw error;
     }

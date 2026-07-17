@@ -139,6 +139,13 @@ export const files = {
 
     const [entity] = await entities.get({ sharedId: updatedFile.entity }, '+permissions');
     await ensureEntityActor(entity);
+    const template = entity.template?.toString?.();
+    if (!template) {
+      LoggerFactory.default().info(
+        `Skipping generatedToc entity update for sharedId ${entity.sharedId}: entity is missing template`
+      );
+      return FileMappers.toDBO(updatedFile);
+    }
 
     const documents = (entity.documents || [])
       .filter(
@@ -167,7 +174,7 @@ export const files = {
         sharedId: entity.sharedId,
         language: entity.language,
         title: entity.title,
-        template: entity.template?.toString?.(),
+        template,
         generatedToc,
         documents,
         attachments,

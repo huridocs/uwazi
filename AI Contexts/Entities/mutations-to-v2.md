@@ -265,8 +265,10 @@ Target: decide if synchronous side effects in `entities.save` can be removed now
 ### Clarification on `generatedToc` Core vs Fallback
 
 - `generatedToc` is part of V2 update contract (`Schemas` + mapper + `UpdateEntity`).
-- Remaining inconsistency: `EntityFacade.update` still has a narrow generatedToc fallback performing direct Mongo update + reindex when legacy template mapping crashes.
-- This should be treated as temporary compatibility code to remove after template/data compatibility cleanup.
+- `EntityFacade.update` legacy generatedToc fallback (direct Mongo + reindex) has now been removed.
+- Current strict-V2 guardrail:
+  - TOC/files generatedToc flows now skip entity-level generatedToc update when entity template is missing, and log the condition.
+  - This avoids reintroducing persistence fallbacks while keeping TOC file processing resilient for legacy malformed entities.
 
 ## Remaining Validation Checklist
 
@@ -415,3 +417,13 @@ Given CSV V2 is now enabled for all tenants, we may include full CSV V1 retireme
     - explicit `RelationshipSyncJob` execution for create-path verification.
   - verification:
     - `app/api/entities/specs/entities.spec.js` (59/59)
+- generatedToc strict-V2 cleanup:
+  - removed generatedToc fallback from `app/api/core/infrastructure/facades/EntitiesFacade.ts` (no direct Mongo/index writes on update errors).
+  - added strict guardrails in:
+    - `app/api/toc_generation/tocService.ts`
+    - `app/api/files/files.ts`
+  - behavior:
+    - when entity template is missing, skip entity-level generatedToc update and continue processing file-level TOC state.
+  - verification:
+    - `app/api/toc_generation/specs/tocService.spec.ts` (all passing)
+    - `app/api/files/specs/routes.spec.ts` (all passing)

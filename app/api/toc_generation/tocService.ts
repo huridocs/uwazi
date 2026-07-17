@@ -43,14 +43,22 @@ const ensureEntityActor = async (entity: EntityWithFilesSchema) => {
   ExecutionContext.actor = User.createFrom(actorInDb);
 };
 
+// eslint-disable-next-line max-statements
 const toEntityUpdatePayload = (
   entity: EntityWithFilesSchema,
   generatedToc: boolean
-): UpdateEntityRequest => {
+): UpdateEntityRequest | null => {
   const { sharedId, language, title } = entity;
+  const template = entity.template?.toString?.();
   const entityId = entity._id?.toString();
   if (!entityId || !sharedId || !language || !title) {
     throw new Error(`Missing required entity fields for generatedToc update on ${entity.sharedId}`);
+  }
+  if (!template) {
+    legacyLogger.info(
+      `Skipping generatedToc entity update for sharedId ${sharedId}: entity is missing template`
+    );
+    return null;
   }
 
   const documents = (entity.documents || [])
@@ -79,7 +87,7 @@ const toEntityUpdatePayload = (
     sharedId,
     language,
     title,
-    template: entity.template?.toString?.(),
+    template,
     generatedToc,
     documents,
     attachments,
@@ -98,7 +106,9 @@ const saveToc = async (_file: FileType, toc: TocSchema[]) => {
   const [entity] = await entities.get({ sharedId: _file.entity }, '+permissions');
   await ensureEntityActor(entity);
   const payload = toEntityUpdatePayload(entity, true);
-  await EntityFacade.update(payload, payload.language as LanguageISO6391);
+  if (payload) {
+    await EntityFacade.update(payload, payload.language as LanguageISO6391);
+  }
 };
 
 const generateToc = async (
