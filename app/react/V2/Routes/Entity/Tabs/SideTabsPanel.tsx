@@ -33,9 +33,10 @@ const SideTabsPanel = ({
         activeMainTab,
         entity,
         hasMainDocument: Boolean(mainDocument?.filename),
+        mainDocumentId: mainDocument?._id,
         filesSideTabs,
       }),
-    [activeMainTab, entity, mainDocument?.filename, filesSideTabs]
+    [activeMainTab, entity, mainDocument?.filename, mainDocument?._id, filesSideTabs]
   );
 
   return (

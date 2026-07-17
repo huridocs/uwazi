@@ -63,6 +63,7 @@ const EntityView = ({ searchResults }: EntityViewProps) => {
   const { activeMainTab, activeSideTab, onMainTabChange, onSideTabChange } = useEntityViewTabs({
     entity,
     hasMainDocument,
+    mainDocumentId: mainDocument?._id,
     searchResults,
     filesSideTabs,
   });

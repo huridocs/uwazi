@@ -23,6 +23,7 @@ type FilesSideTabs = {
 type UseEntityViewTabsParams = {
   entity: EntityType;
   hasMainDocument: boolean;
+  mainDocumentId?: string;
   searchResults?: SnippetsSearchResponse;
   filesSideTabs: FilesSideTabs;
 };
@@ -30,6 +31,7 @@ type UseEntityViewTabsParams = {
 const useEntityViewTabs = ({
   entity,
   hasMainDocument,
+  mainDocumentId,
   searchResults,
   filesSideTabs,
 }: UseEntityViewTabsParams) => {
@@ -70,9 +72,10 @@ const useEntityViewTabs = ({
         activeMainTab,
         entity,
         hasMainDocument,
+        mainDocumentId,
         filesSideTabs,
       }),
-    [activeMainTab, entity, hasMainDocument, filesSideTabs]
+    [activeMainTab, entity, hasMainDocument, mainDocumentId, filesSideTabs]
   );
 
   const activeSideTab = useMemo<SideTabId | undefined>(() => {
@@ -121,6 +124,7 @@ const useEntityViewTabs = ({
           activeMainTab: selectedMainTab,
           entity,
           hasMainDocument,
+          mainDocumentId,
           filesSideTabs,
         });
         const rawS = next.get(SIDE_TAB_PARAM);
@@ -136,7 +140,15 @@ const useEntityViewTabs = ({
 
       setSearchParams(next, { replace: true, preventScrollReset: true });
     },
-    [activeMainTab, searchParams, setSearchParams, entity, hasMainDocument, filesSideTabs]
+    [
+      activeMainTab,
+      searchParams,
+      setSearchParams,
+      entity,
+      hasMainDocument,
+      mainDocumentId,
+      filesSideTabs,
+    ]
   );
 
   const onSideTabChange = useCallback(

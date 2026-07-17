@@ -21,7 +21,7 @@ const TabsMainButtons = ({
   const buttons = useMemo(() => {
     const items = [];
     const filesCount = (entity.documents?.length || 0) + (entity.attachments?.length || 0);
-    const relationshipsCount = countEntityRelationships(entity);
+    const relationshipsCount = countEntityRelationships(entity, mainDocument?._id);
 
     if (mainDocument?.filename) {
       items.push({
@@ -46,7 +46,7 @@ const TabsMainButtons = ({
     });
 
     return items;
-  }, [entity, mainDocument?.filename]);
+  }, [entity, mainDocument?.filename, mainDocument?._id]);
 
   return (
     <div className="flex items-center justify-between gap-3">

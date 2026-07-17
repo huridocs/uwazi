@@ -15,6 +15,7 @@ type GetSideTabButtonsParams = {
   activeMainTab: MainTabId;
   entity?: EntityType;
   hasMainDocument: boolean;
+  mainDocumentId?: string;
   filesSideTabs?: FilesSideTabsOptions;
 };
 
@@ -22,10 +23,11 @@ const getSideTabButtons = ({
   activeMainTab,
   entity,
   hasMainDocument,
+  mainDocumentId,
   filesSideTabs,
 }: GetSideTabButtonsParams): TabButtonDef[] => {
   const buttons: TabButtonDef[] = [];
-  const relationshipsCount = entity ? countEntityRelationships(entity) : 0;
+  const relationshipsCount = entity ? countEntityRelationships(entity, mainDocumentId) : 0;
   const relationshipsTabLabel = <TabLabel text="Relationships" count={relationshipsCount} />;
 
   const pushMetadata = () => {

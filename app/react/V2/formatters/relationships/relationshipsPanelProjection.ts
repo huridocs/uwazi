@@ -48,8 +48,8 @@ const projectRelationshipsPanel = (entity: Entity): RelationshipsPanelProjection
   return { markers, stats: computeStats(markers, entity.sharedId) };
 };
 
-const countEntityRelationships = (entity: Entity): number =>
-  projectRelationshipMarkers(entity).length;
+const countEntityRelationships = (entity: Entity, documentId?: string): number =>
+  filterMarkersForDocument(projectRelationshipMarkers(entity), documentId, entity.sharedId).length;
 
 const markerHaystack = (
   marker: RelationshipMarker,

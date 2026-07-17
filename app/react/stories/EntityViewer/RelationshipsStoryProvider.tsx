@@ -53,6 +53,7 @@ const RelationshipsStoryProvider = ({
         key={entity.sharedId}
         entity={entity}
         language={entity.language ?? locale}
+        mainDocument={entity.documents?.[0]}
       >
         {children}
       </EntityScopedProvider>

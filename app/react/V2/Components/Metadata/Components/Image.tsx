@@ -44,14 +44,17 @@ const Image = ({
 
         if (hasError) {
           return (
-            <dd>
+            <dd key={image.value || index}>
               <Translate>Error loading your image</Translate>
             </dd>
           );
         }
 
         return (
-          <dd className="w-full min-w-0 max-w-full overflow-hidden rounded-md bg-(--color-theme-surface-warm)">
+          <dd
+            key={image.value || index}
+            className="w-full min-w-0 max-w-full overflow-hidden rounded-md bg-(--color-theme-surface-warm)"
+          >
             <img
               className="m-auto max-h-96 max-w-full"
               style={{
@@ -59,7 +62,6 @@ const Image = ({
               }}
               src={image.value}
               alt={image.alt}
-              key={image.value}
               onError={() => setErrorIndices(prevErrors => prevErrors.add(index))}
             />
           </dd>
