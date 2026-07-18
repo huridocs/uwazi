@@ -12,6 +12,7 @@ export { getMainDocument } from './files/getMainDocument.js';
 export { formatRelationships } from './relationships/formatRelationships.js';
 export {
   projectRelationshipMarkers,
+  filterMarkersForDocument,
   projectRelationshipsPanel,
   filterAndSortMarkers,
   computeStats,

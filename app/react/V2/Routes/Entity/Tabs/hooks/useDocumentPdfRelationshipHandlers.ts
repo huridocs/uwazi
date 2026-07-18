@@ -6,10 +6,12 @@ import type { Entity as EntityType } from '#V2/api/entities/types.js';
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import {
   filterAndSortMarkers,
+  filterMarkersForDocument,
   projectRelationshipMarkers,
 } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
 import {
   useDocumentRelationshipNav,
+  useEntityLanguage,
   useRelationshipsPanelFacetFilters,
   useRelationshipsPanelFilterInputs,
   useRelationshipsPanelSearch,
@@ -29,6 +31,7 @@ function useDocumentPdfRelationshipHandlers({
   mainPdfController,
 }: UseDocumentPdfRelationshipHandlersParams) {
   const { setScrollToRelationshipPanel } = useDocumentRelationshipNav();
+  const { mainDocument } = useEntityLanguage();
   const { activeClusterRefIds, setActiveClusterRefIds, setRelTypeFilters, setEntityTypeFilters } =
     useRelationshipsPanelFacetFilters();
   const { setSearch } = useRelationshipsPanelSearch();
@@ -49,9 +52,13 @@ function useDocumentPdfRelationshipHandlers({
   const findMarkerById = useCallback(
     (relationshipId: string): RelationshipMarker | undefined => {
       if (!entity) return undefined;
-      return projectRelationshipMarkers(entity).find(marker => marker._id === relationshipId);
+      return filterMarkersForDocument(
+        projectRelationshipMarkers(entity),
+        mainDocument?._id,
+        entity.sharedId
+      ).find(marker => marker._id === relationshipId);
     },
-    [entity]
+    [entity, mainDocument?._id]
   );
 
   const clearVisibilityFilters = useCallback(() => {

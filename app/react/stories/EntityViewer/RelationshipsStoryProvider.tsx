@@ -49,7 +49,12 @@ const RelationshipsStoryProvider = ({
 
   return (
     <Provider store={store}>
-      <EntityScopedProvider key={entity.sharedId} entity={entity}>
+      <EntityScopedProvider
+        key={entity.sharedId}
+        entity={entity}
+        language={entity.language ?? locale}
+        mainDocument={entity.documents?.[0]}
+      >
         {children}
       </EntityScopedProvider>
     </Provider>

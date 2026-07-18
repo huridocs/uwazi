@@ -5,7 +5,7 @@ import type {
   RelationshipsPanelView,
   RelationshipsPanelZoom,
 } from './types.js';
-import { useRelationshipsPanelFilterSlices } from './useRelationshipsPanelFilterSlices.js';
+import { useRelationshipsPanelFilterSlices } from './hooks/useRelationshipsPanelFilterSlices.js';
 
 type SearchSlice = { search: string; setSearch: React.Dispatch<React.SetStateAction<string>> };
 type SortSlice = {
