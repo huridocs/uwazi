@@ -9,7 +9,6 @@ import {
   useDocumentPdfActions,
   useDocumentRelationshipNav,
 } from '#V2/Routes/Entity/Components/context/index.js';
-import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 import { RelationshipsPanel } from '../../panel/RelationshipsPanel.js';
 import { RelationshipsFiltersDrawer } from '../../filters/RelationshipsFiltersDrawer.js';
 import { entityWithRelations } from '../fixtures/entityWithRelations.js';
@@ -42,8 +41,7 @@ const PdfControllerSetup = ({ pdf }: { pdf: PdfMocks }) => {
 
 // eslint-disable-next-line react/no-multi-comp
 const SelectionState = () => {
-  const { activeRelationshipId } = useActiveRelationshipHighlight();
-  const { scrollToRelationshipPanel } = useDocumentRelationshipNav();
+  const { activeRelationshipId, scrollToRelationshipPanel } = useDocumentRelationshipNav();
   return (
     <div
       data-testid="selection-state"
@@ -69,7 +67,11 @@ const renderRelationshipsPanel = ({
       path: '/',
       element: (
         <Provider store={store}>
-          <EntityScopedProvider key={entity.sharedId} entity={entity}>
+          <EntityScopedProvider
+            key={entity.sharedId}
+            entity={entity}
+            language={entity.language ?? 'en'}
+          >
             <PdfControllerSetup pdf={pdf} />
             <RelationshipsPanel
               focusDocumentOnSelect={focusDocumentOnSelect}

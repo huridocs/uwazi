@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 import React, { ReactNode } from 'react';
+import { MemoryRouter } from 'react-router';
 import { act, renderHook } from '@testing-library/react';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
 import type { TocSchema } from '#shared/types/commonTypes.js';
@@ -30,7 +31,11 @@ const toc: TocSchema[] = [
 ];
 
 const wrapper = ({ children }: { children: ReactNode }) => (
-  <EntityScopedProvider entity={entity}>{children}</EntityScopedProvider>
+  <MemoryRouter>
+    <EntityScopedProvider entity={entity} language={entity.language ?? 'en'}>
+      {children}
+    </EntityScopedProvider>
+  </MemoryRouter>
 );
 
 const useTocTestState = () => ({

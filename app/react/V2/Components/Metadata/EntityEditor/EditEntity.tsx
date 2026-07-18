@@ -62,6 +62,7 @@ type EditEntityProps = {
   onSave?: (editedEntity: EntitySaveInput) => void | Promise<void>;
   disabled?: boolean;
   errors?: EditEntityErrors;
+  onDirtyChange?: (isDirty: boolean) => void;
   onEditSource?: (entityId: string, label: string, templateId?: string) => void;
   relationshipLookup?: (params: {
     search: string;
@@ -337,6 +338,7 @@ const EditEntity = ({
   onSave,
   disabled = false,
   errors,
+  onDirtyChange,
   onEditSource,
   relationshipLookup = defaultRelationshipLookup,
 }: EditEntityProps) => {
@@ -372,9 +374,14 @@ const EditEntity = ({
     },
   });
 
-  const { handleSubmit, watch, reset, getValues, setValue, setError } = formContext;
+  const { handleSubmit, watch, reset, getValues, setValue, setError, formState } = formContext;
+  const { isDirty } = formState;
   const selectedTemplate = watch('template');
   const metadata = watch('metadata');
+
+  useEffect(() => {
+    onDirtyChange?.(isDirty);
+  }, [isDirty, onDirtyChange]);
 
   const activeTemplate = useMemo(
     () =>
