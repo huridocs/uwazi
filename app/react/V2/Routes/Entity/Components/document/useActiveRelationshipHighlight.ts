@@ -92,10 +92,15 @@ const useActiveRelationshipHighlight = () => {
   }, [pdfControllerRef, selectedMarkerRef, setActiveRelationshipId]);
 
   useEffect(() => {
+    if (!activeRelationshipId) {
+      selectedMarkerRef.current = null;
+      clearRelationshipPdfHighlights(mainPdfController);
+      return;
+    }
     const marker = selectedMarkerRef.current;
-    if (!marker || !mainPdfController) return;
+    if (!marker || marker._id !== activeRelationshipId || !mainPdfController) return;
     syncPdfWithMarker(marker, colorOf, mainPdfController);
-  }, [mainPdfController, colorOf, selectedMarkerRef]);
+  }, [activeRelationshipId, mainPdfController, colorOf, selectedMarkerRef]);
 
   return { activeRelationshipId, selectRelationship, clearRelationshipSelection };
 };
