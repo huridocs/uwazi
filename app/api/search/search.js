@@ -305,7 +305,7 @@ const _getAggregationDictionary = async (
   if (property.type === 'relationship' || property.type === propertyTypes.newRelationship) {
     const entitiesSharedId = aggregation.buckets.map(bucket => bucket.key);
 
-    const bucketEntities = tenants.current().featureFlags?.postgresEntities
+    const bucketEntities = PostgresEntitiesDAOFactory.isEnabled()
       ? await PostgresEntitiesDAOFactory.default().getSharedIdLabelInfo(entitiesSharedId, language)
       : await entitiesModel.getUnrestricted(
           { sharedId: { $in: entitiesSharedId }, language },

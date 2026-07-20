@@ -13,6 +13,7 @@ type EntityFilters = {
   sharedIds?: string[];
   language?: string;
   template?: string;
+  metadataValueIn?: { property: string; value: string }[];
 };
 
 type GetByIdsWithDocumentsOptions = {
@@ -63,6 +64,13 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> {
 
     if (filters.template) {
       q = q.where({ template: filters.template });
+    }
+
+    if (filters.metadataValueIn && filters.metadataValueIn.length > 0) {
+      q = q.whereJsonSupersetOfAny(
+        'metadata',
+        filters.metadataValueIn.map(({ property, value }) => ({ [property]: [{ value }] }))
+      );
     }
 
     return q;

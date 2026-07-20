@@ -12,16 +12,18 @@ import { getTenantESMapping } from '#api/tenants/tenantESMapping.js';
 import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory.js';
 import { elastic } from './elastic.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
-import { tenants } from '#api/tenants/index.js';
 import { PostgresEntitiesDAOFactory } from '#api/core/infrastructure/factories/PostgresEntitiesDAOFactory.js';
 
 const PromisePool = PromisePoolModule.default ?? PromisePoolModule;
 
 class IndexError extends Error {}
 
-const postgresEntitiesEnabled = () => Boolean(tenants.current().featureFlags?.postgresEntities);
+class UnsupportedQueryError extends Error {}
 
-const entityFiltersFromQuery = query => {
+const FLAT_FILTER_KEYS = ['language', 'template', 'sharedId', '_id'];
+const METADATA_VALUE_PATH = /^metadata\.([^.]+)\.value$/;
+
+const flatFiltersFrom = query => {
   const filters = {};
   if (query.language) filters.language = query.language;
   if (query.template) filters.template = query.template;
@@ -30,6 +32,53 @@ const entityFiltersFromQuery = query => {
   if (query._id?.$in) filters.ids = query._id.$in;
   else if (query._id) filters._id = query._id;
   return filters;
+};
+
+const metadataValueInFromOr = orClauses =>
+  orClauses.map(clause => {
+    const keys = Object.keys(clause);
+    const match = keys.length === 1 && keys[0].match(METADATA_VALUE_PATH);
+    if (!match) {
+      throw new UnsupportedQueryError(
+        `Unsupported $or clause in indexEntities query: ${JSON.stringify(clause)}`
+      );
+    }
+    return { property: match[1], value: clause[keys[0]] };
+  });
+
+const flatFiltersFromAndClause = clause => {
+  const unsupportedKeys = Object.keys(clause).filter(k => !FLAT_FILTER_KEYS.includes(k));
+  if (unsupportedKeys.length > 0) {
+    throw new UnsupportedQueryError(
+      `Unsupported $and clause in indexEntities query: ${JSON.stringify(clause)}`
+    );
+  }
+  return flatFiltersFrom(clause);
+};
+
+// Translates the Mongo query shapes real callers of search.indexEntities use into Postgres
+// filters. Postgres cannot execute Mongo queries as a fallback (see
+// plans/fix-postgres-entities-search-parity.md - no tenant data sync between backends
+// exists yet), so any shape outside what's explicitly handled here throws instead of
+// silently matching every entity in the tenant.
+const entityFiltersFromQuery = query => {
+  if (query.$and) {
+    return query.$and.reduce(
+      (filters, clause) =>
+        clause.$or
+          ? { ...filters, metadataValueIn: metadataValueInFromOr(clause.$or) }
+          : { ...filters, ...flatFiltersFromAndClause(clause) },
+      {}
+    );
+  }
+
+  const unsupportedKeys = Object.keys(query).filter(k => !FLAT_FILTER_KEYS.includes(k));
+  if (unsupportedKeys.length > 0) {
+    throw new UnsupportedQueryError(
+      `Unsupported indexEntities query shape: ${JSON.stringify(query)}`
+    );
+  }
+  return flatFiltersFrom(query);
 };
 
 const preprocessEntitiesToIndex = async entitiesToIndex => {
@@ -122,7 +171,7 @@ const bulkIndex = async (docs, _action = 'index') => {
 const getEntitiesToIndex = async (query, stepBach, limit, select) => {
   const documentsFullText = Boolean(select && select.includes('+fullText'));
 
-  if (postgresEntitiesEnabled()) {
+  if (PostgresEntitiesDAOFactory.isEnabled()) {
     return PostgresEntitiesDAOFactory.default().getByIdsWithDocuments(stepBach, {
       limit,
       documentsFullText,
@@ -144,7 +193,7 @@ const bulkIndexAndCallback = async assets => {
 };
 
 const getSteps = async (query, limit) => {
-  const allIds = postgresEntitiesEnabled()
+  const allIds = PostgresEntitiesDAOFactory.isEnabled()
     ? await PostgresEntitiesDAOFactory.default().getIds(entityFiltersFromQuery(query))
     : await entities.getWithoutDocuments(query, '_id');
   return [...Array(Math.ceil(allIds.length / limit))].map((_v, i) =>
@@ -193,7 +242,7 @@ const indexEntities = async ({
   batchCallback = () => {},
   searchInstance,
 }) => {
-  const totalRows = postgresEntitiesEnabled()
+  const totalRows = PostgresEntitiesDAOFactory.isEnabled()
     ? await PostgresEntitiesDAOFactory.default().count(entityFiltersFromQuery(query))
     : await entities.count(query);
   return indexBatch(totalRows, {
@@ -221,4 +270,12 @@ const reindexAll = async (tmpls, searchInstance) => {
   return indexEntities({ query: {}, select: '+fullText', searchInstance });
 };
 
-export { IndexError, bulkIndex, indexEntities, updateMapping, reindexAll, resetIndex };
+export {
+  IndexError,
+  UnsupportedQueryError,
+  bulkIndex,
+  indexEntities,
+  updateMapping,
+  reindexAll,
+  resetIndex,
+};

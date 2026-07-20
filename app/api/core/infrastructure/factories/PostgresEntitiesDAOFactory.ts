@@ -4,6 +4,10 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { PostgresFilesDAO } from '../postgresql/files/PostgresFilesDAO.js';
 
 class PostgresEntitiesDAOFactory {
+  static isEnabled(): boolean {
+    return Boolean(ExecutionContext.currentTenant.featureFlags?.postgresEntities);
+  }
+
   static default(): PostgresEntitiesDAO {
     const tenant = ExecutionContext.currentTenant;
     const pgTransactionManager = ExecutionContext.postgresTransactionManager;
