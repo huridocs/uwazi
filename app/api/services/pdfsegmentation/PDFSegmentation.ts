@@ -1,3 +1,6 @@
+import path from 'path';
+import { Readable } from 'stream';
+import urljoin from 'url-join';
 import { storage, uploadsPath } from '#api/files/index.js';
 import { FileNotFound } from '#api/files/FileNotFound.js';
 import { filesModel } from '#api/files/filesModel.js';
@@ -5,14 +8,11 @@ import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskMana
 import settings from '#api/settings/settings.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { handleError } from '#api/utils/index.js';
-import path from 'path';
 import request from '#shared/JSONRequest.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { FileType } from '#shared/types/fileType.js';
 import { SegmentationType } from '#shared/types/segmentationType.js';
 import { Settings } from '#shared/types/settingsType.js';
-import { Readable } from 'stream';
-import urljoin from 'url-join';
 import { SegmentationModel } from './segmentationModel.js';
 
 class PDFSegmentation {
