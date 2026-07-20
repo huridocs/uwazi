@@ -267,6 +267,45 @@ Target: decide if synchronous side effects in `entities.save` can be removed now
   - TOC/files generatedToc flows now skip entity-level generatedToc update when entity template is missing, and log the condition.
   - This avoids reintroducing persistence fallbacks while keeping TOC file processing resilient for legacy malformed entities.
 
+## Deletion Readiness Checklist (Current)
+
+### Remove now (ready)
+
+- `entities.save` synchronous side-effects:
+  - removed sync indexing from `save`.
+  - removed sync relationship sync from `save` (create + update).
+- `EntityFacade.update` generatedToc direct Mongo/index fallback:
+  - removed.
+- `entities.save` legacy options:
+  - `includeDocuments` removed.
+- Runtime callers of `entities.save`:
+  - `app/api/**` now only shows `app/api/entities/specs/entities.spec.js` (legacy test suite).
+
+### Keep for now (explicitly deferred)
+
+- `app/api/entities/specs/entities.spec.js` using `entities.save`:
+  - intentional while this suite remains the V1 contract suite.
+- V1 mutators in `app/api/entities/entities.js` other than `save`:
+  - `updateMetdataFromRelationships`
+  - `addLanguage`
+  - `removeLanguage`
+- Legacy i18n branch invoking V1 language mutators when `v2Languages` is not active.
+
+### Unblock conditions for deferred removals
+
+- Remove `entities.spec.js` dependency on `entities.save` only when:
+  - we either retire this V1 suite, or split/migrate it into explicit V2 suites with equivalent intent.
+- Remove V1 language mutators only when:
+  - `v2Languages` is universal and legacy branch is deleted.
+- Remove remaining V1 mutator surface only when:
+  - relationships redesign path defines replacement ownership for legacy metadata update behaviors.
+
+### Explicit decision (locked)
+
+- Entities without template are invalid and must be skipped in generatedToc entity updates.
+- No auto-repair/fallback assignment is allowed for missing template entities, because template ownership cannot be inferred safely.
+- Keep strict behavior: log and skip entity-level generatedToc update; do not reintroduce mutation-path fallback for this case.
+
 ## Remaining Validation Checklist
 
 - Run focused tests for:
