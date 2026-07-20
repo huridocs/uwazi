@@ -86,6 +86,14 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     return this.chain(this.qb.clone().whereNot(column, value));
   }
 
+  whereNull(column: string): PostgresTable<TRow> {
+    return this.chain(this.qb.clone().whereNull(column));
+  }
+
+  whereNotNull(column: string): PostgresTable<TRow> {
+    return this.chain(this.qb.clone().whereNotNull(column));
+  }
+
   whereIn(column: string, values: Knex.Value[]): PostgresTable<TRow> {
     return this.chain(this.qb.clone().whereIn(column, values));
   }
