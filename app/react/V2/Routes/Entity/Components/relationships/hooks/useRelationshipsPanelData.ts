@@ -10,7 +10,7 @@ import {
   useEntityScopedEntity,
   useRelationshipsPanelFilterInputs,
 } from '#V2/Routes/Entity/Components/context/index.js';
-import { useEntityRelationshipMarkers } from './useEntityRelationshipMarkers.js';
+import { useEntityRelationshipMarkers } from './useDocumentRelationships.js';
 
 const useRelationshipsPanelData = () => {
   const entity = useEntityScopedEntity();

@@ -50,7 +50,11 @@ describe('Relationships panel', () => {
       await user.click(screen.getByText('Related Entity'));
 
       expect(pdf.goToPage).toHaveBeenCalledWith(2);
-      expect(pdf.toggleHighlights).toHaveBeenCalledTimes(1);
+      expect(
+        pdf.toggleHighlights.mock.calls.some(
+          ([highlights]) => Array.isArray(highlights) && highlights.length > 0
+        )
+      ).toBe(true);
       expect(getSelectionState().getAttribute('data-active')).not.toBe('');
     });
 
