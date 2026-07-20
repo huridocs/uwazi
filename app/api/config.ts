@@ -145,6 +145,7 @@ export const config = {
       v2Languages: false,
       postgresFiles: false,
       postgresThesauri: false,
+      postgresEntities: false,
       postgresTemplates: false,
       newHeader: NEW_HEADER === 'true' || false,
       aiAssistant: FEATURE_FLAG_AI_ASSISTANT === 'true' || false,

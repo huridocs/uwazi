@@ -162,7 +162,7 @@ const testingEnvironment = {
       await testingPG.setFixtures(
         Object.fromEntries(
           Object.entries(fixtures)
-            .filter(([table]) => ['dictionaries', 'templates', 'files'].includes(table))
+            .filter(([table]) => ['dictionaries', 'templates', 'files', 'entities'].includes(table))
             .map(([table, fixture]) => [
               table === 'dictionaries' ? 'thesauri' : table,
               fixture.map((f: any) => JSON.parse(JSON.stringify(ObjectUtils.sanitize(f, ['__v'])))),

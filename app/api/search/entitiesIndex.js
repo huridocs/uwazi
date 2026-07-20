@@ -12,10 +12,25 @@ import { getTenantESMapping } from '#api/tenants/tenantESMapping.js';
 import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory.js';
 import { elastic } from './elastic.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { tenants } from '#api/tenants/index.js';
+import { PostgresEntitiesDAOFactory } from '#api/core/infrastructure/factories/PostgresEntitiesDAOFactory.js';
 
 const PromisePool = PromisePoolModule.default ?? PromisePoolModule;
 
 class IndexError extends Error {}
+
+const postgresEntitiesEnabled = () => Boolean(tenants.current().featureFlags?.postgresEntities);
+
+const entityFiltersFromQuery = query => {
+  const filters = {};
+  if (query.language) filters.language = query.language;
+  if (query.template) filters.template = query.template;
+  if (query.sharedId?.$in) filters.sharedIds = query.sharedId.$in;
+  else if (query.sharedId) filters.sharedId = query.sharedId;
+  if (query._id?.$in) filters.ids = query._id.$in;
+  else if (query._id) filters._id = query._id;
+  return filters;
+};
 
 const preprocessEntitiesToIndex = async entitiesToIndex => {
   const transactionManager = TransactionManagerFactory.default();
@@ -105,11 +120,20 @@ const bulkIndex = async (docs, _action = 'index') => {
 };
 
 const getEntitiesToIndex = async (query, stepBach, limit, select) => {
+  const documentsFullText = Boolean(select && select.includes('+fullText'));
+
+  if (postgresEntitiesEnabled()) {
+    return PostgresEntitiesDAOFactory.default().getByIdsWithDocuments(stepBach, {
+      limit,
+      documentsFullText,
+    });
+  }
+
   const thisQuery = { ...query };
   thisQuery._id = { $in: stepBach };
   return entities.getUnrestrictedWithDocuments(thisQuery, '+permissions', {
     limit,
-    documentsFullText: select && select.includes('+fullText'),
+    documentsFullText,
   });
 };
 
@@ -120,7 +144,9 @@ const bulkIndexAndCallback = async assets => {
 };
 
 const getSteps = async (query, limit) => {
-  const allIds = await entities.getWithoutDocuments(query, '_id');
+  const allIds = postgresEntitiesEnabled()
+    ? await PostgresEntitiesDAOFactory.default().getIds(entityFiltersFromQuery(query))
+    : await entities.getWithoutDocuments(query, '_id');
   return [...Array(Math.ceil(allIds.length / limit))].map((_v, i) =>
     allIds.slice(i * limit, (i + 1) * limit)
   );
@@ -167,7 +193,9 @@ const indexEntities = async ({
   batchCallback = () => {},
   searchInstance,
 }) => {
-  const totalRows = await entities.count(query);
+  const totalRows = postgresEntitiesEnabled()
+    ? await PostgresEntitiesDAOFactory.default().count(entityFiltersFromQuery(query))
+    : await entities.count(query);
   return indexBatch(totalRows, {
     query,
     select,

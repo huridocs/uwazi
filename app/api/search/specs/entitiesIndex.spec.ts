@@ -2,6 +2,8 @@ import { legacyLogger } from '#api/log/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import db from '#api/utils/testing_db.js';
 import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 import { UserRole } from '#shared/types/userSchema.js';
@@ -86,6 +88,74 @@ describe('entitiesIndex', () => {
           permissions: [{ refId: 'user1', type: PermissionType.USER, level: AccessLevels.WRITE }],
         }),
       ]);
+    });
+  });
+
+  describe('indexEntities by query (postgresEntities flag on)', () => {
+    const factory = getFixturesFactory({ convertIdToString: true, postgresDefaults: true });
+
+    const pgFixtures = {
+      templates: [factory.template('t1', [])],
+      entities: [
+        factory.entity('e1', 't1', {}, { language: 'en', title: 'Entity One' }),
+        factory.entity('e2', 't1', {}, { language: 'en', title: 'Entity Two' }),
+        factory.entity('e3', 't1', {}, { language: 'en', title: 'Entity Three' }),
+      ],
+    };
+
+    beforeAll(async () => {
+      // Enables Postgres fixture mirroring before the first beforeEach runs -
+      // otherwise the very first test's fixtures never make it into Postgres.
+      // Pass the file's own elasticIndex constant explicitly so this never
+      // resets/regenerates testingEnvironment.elasticIndex for the rest of the file.
+      await testingEnvironment.setUp({}, { elasticIndex, postgres: true });
+    });
+
+    beforeEach(async () => {
+      await testingEnvironment.setUp(pgFixtures, { elasticIndex, postgres: true });
+      testingTenants.changeCurrentTenant({
+        featureFlags: { postgresEntities: true, postgresFiles: true },
+      });
+      // setUp's own reindex ran with the flag still off (indexing every entity via Mongo);
+      // clear the index so each test only sees what it indexes itself.
+      await elasticTesting.resetIndex();
+    });
+
+    it('indexes every entity when the query is empty', async () => {
+      await testingEnvironment.runWithContext(async () => search.indexEntities({}));
+      await elasticTesting.refresh();
+
+      const indexed = await elasticTesting.getIndexedEntities();
+      expect(indexed.map(e => e.title)).toEqual(['Entity One', 'Entity Three', 'Entity Two']);
+    });
+
+    it('only indexes the entity matching a sharedId filter', async () => {
+      await testingEnvironment.runWithContext(async () => search.indexEntities({ sharedId: 'e1' }));
+      await elasticTesting.refresh();
+
+      const indexed = await elasticTesting.getIndexedEntities();
+      expect(indexed.map(e => e.title)).toEqual(['Entity One']);
+    });
+
+    it('only indexes the entities matching a sharedId.$in filter', async () => {
+      await testingEnvironment.runWithContext(async () =>
+        search.indexEntities({ sharedId: { $in: ['e1', 'e2'] } })
+      );
+      await elasticTesting.refresh();
+
+      const indexed = await elasticTesting.getIndexedEntities();
+      expect(indexed.map(e => e.title)).toEqual(['Entity One', 'Entity Two']);
+    });
+
+    it('only indexes the entities matching an _id.$in filter', async () => {
+      const ids = [factory.idString('e2-en'), factory.idString('e3-en')];
+      await testingEnvironment.runWithContext(async () =>
+        search.indexEntities({ _id: { $in: ids } })
+      );
+      await elasticTesting.refresh();
+
+      const indexed = await elasticTesting.getIndexedEntities();
+      expect(indexed.map(e => e.title)).toEqual(['Entity Three', 'Entity Two']);
     });
   });
 
