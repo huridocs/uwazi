@@ -13,7 +13,7 @@ import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationMod
 import { EnforcedWithId } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
 import { emitToTenant } from '#api/socketio/setupSockets.js';
-import { filesModel } from '#api/files/filesModel.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import entities from '#api/entities/entities.js';
 import settings from '#api/settings/settings.js';
 import request from '#shared/JSONRequest.js';
@@ -490,14 +490,17 @@ class InformationExtraction {
       xmlname: rawSuggestion.xml_file_name,
     });
 
-    if (!segmentation) {
+    if (!segmentation?.fileID) {
       return null;
     }
-    const [file] = await filesModel.get({ _id: segmentation.fileID });
+    const dao = FilesDAOFactory.default();
+    const fileResult = await dao.getById(segmentation.fileID.toString());
 
-    if (!file) {
+    if (fileResult.isError()) {
       return null;
     }
+
+    const file = fileResult.getDataOrThrow();
 
     return this._getEntityFromFile(file);
   };

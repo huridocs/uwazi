@@ -35,7 +35,12 @@ class PostgresFilesDAO extends PostgresDataSource<FilesRow> {
       const hasInclusions = entries.some(([, v]) => v === 1);
 
       if (hasInclusions) {
-        return entries.filter(([, v]) => v === 1).map(([k]) => k);
+        const columns = entries.filter(([, v]) => v === 1).map(([k]) => k);
+        const idExplicitlyExcluded = entries.some(([k, v]) => k === '_id' && v === 0);
+        if (!columns.includes('_id') && !idExplicitlyExcluded) {
+          columns.unshift('_id');
+        }
+        return columns;
       }
 
       const excludes = new Set(entries.filter(([, v]) => v === 0).map(([k]) => k));
@@ -115,8 +120,20 @@ class PostgresFilesDAO extends PostgresDataSource<FilesRow> {
     for (const [key, value] of Object.entries(query)) {
       if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
         const obj = value as Record<string, unknown>;
+        if ('$exists' in obj) {
+          if (obj.$exists) {
+            qb = qb.whereNotNull(key);
+          } else {
+            qb = qb.whereNull(key);
+          }
+          continue;
+        }
         if ('$in' in obj) {
           qb = qb.whereIn(key, obj.$in as Knex.Value[]);
+          continue;
+        }
+        if ('$nin' in obj) {
+          qb = qb.whereNotIn(key, obj.$nin as Knex.Value[]);
           continue;
         }
       }

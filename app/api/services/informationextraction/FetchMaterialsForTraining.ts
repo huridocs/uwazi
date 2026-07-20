@@ -5,7 +5,7 @@ import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 import entitiesModel from '#api/entities/entitiesModel.js';
-import { filesModel } from '#api/files/filesModel.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
 import { ensure } from '#shared/tsUtils.js';
 import { EntitySchema } from '#shared/types/entityType.js';
@@ -93,14 +93,16 @@ const buildPdfMaterialsForFiles = async (
 
   const targetProperty = await IXServices.getTargetProperty({ extractor });
 
-  const files = await filesModel.get(
+  const dao = FilesDAOFactory.default();
+  const files = await dao.getByQuery(
     {
       _id: { $in: fileIds },
       type: 'document',
-      filename: { $exists: true },
       language: { $exists: true },
     },
-    'propertySelections entity language filename'
+    {
+      projection: { propertySelections: 1, entity: 1, language: 1, filename: 1 },
+    }
   );
 
   const segs = await SegmentationModel.get(
