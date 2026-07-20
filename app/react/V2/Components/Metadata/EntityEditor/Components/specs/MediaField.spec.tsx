@@ -1,8 +1,7 @@
-/* eslint-disable react/no-multi-comp */
 /**
  * @jest-environment jsdom
  */
-/* eslint-disable react/jsx-props-no-spreading, no-param-reassign */
+/* eslint-disable react/no-multi-comp, react/jsx-props-no-spreading, no-param-reassign */
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { FormProvider, useForm } from 'react-hook-form';
