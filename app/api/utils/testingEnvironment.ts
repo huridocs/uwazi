@@ -47,7 +47,12 @@ const ENTITY_POSTGRES_DEFAULTS = {
 };
 
 const sanitizeEntityForPostgres = (entity: Record<string, unknown>) => {
-  const cleaned = ObjectUtils.sanitize(entity, ['__v', 'obsoleteMetadata']);
+  const cleaned = ObjectUtils.sanitize(entity, [
+    '__v',
+    'obsoleteMetadata',
+    'public',
+    'mongoLanguage',
+  ]);
   return { ...ENTITY_POSTGRES_DEFAULTS, ...cleaned };
 };
 
