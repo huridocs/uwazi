@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp, max-lines */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ArrowUpTrayIcon,
   LinkSlashIcon,
@@ -12,7 +12,7 @@ import { Translate } from '#app/I18N/index.js';
 import type { ClientFile } from '#app/istore.js';
 import { FileType } from '#shared/types/fileType.js';
 import { registerMediaAttachment } from '#shared/entitySave/legacyMetadata.js';
-import { isUploadId } from '#shared/entitySave/mediaMetadata.js';
+import { isUploadId, parseMediaSourceUrl } from '#shared/entitySave/mediaMetadata.js';
 import { resolveMediaDisplayUrl } from '#shared/entitySave/resolveMediaDisplayUrl.js';
 import { Button, MediaPlayer } from '#V2/Components/UI/index.js';
 import { MediaPickerModal } from './MediaPickerModal.js';
@@ -45,7 +45,37 @@ type MediaFieldProps<TFormValues extends FieldValues = FieldValues> = {
   imageStyle?: 'contain' | 'cover' | 'fill';
 };
 
+const TIMELINK_LABEL_MAX = 40;
+
 const padTimePart = (value: string) => value.padStart(2, '0');
+
+const clampTimePart = (value: string, max?: number) => {
+  if (value === '') {
+    return '';
+  }
+
+  const parsed = Number(value);
+  if (Number.isNaN(parsed) || parsed < 0) {
+    return '0';
+  }
+
+  const floored = Math.floor(parsed);
+  return String(max !== undefined ? Math.min(floored, max) : floored);
+};
+
+const secondsToTimelink = (currentTime: number): EditableTimelink => {
+  const hours = Math.floor(currentTime / 3600);
+  const remainingSeconds = currentTime - hours * 3600;
+  const minutes = Math.floor(remainingSeconds / 60);
+  const seconds = Math.floor(remainingSeconds % 60);
+
+  return {
+    hh: padTimePart(String(hours)),
+    mm: padTimePart(String(minutes)),
+    ss: padTimePart(String(seconds)),
+    label: '',
+  };
+};
 
 const parseTimelinksFromValue = (value: string): EditableTimelink[] => {
   const match = value.match(/^\(([^,]+),\s*({.*})\)$/);
@@ -76,9 +106,8 @@ const parseFieldValue = (value?: string) => {
   }
 
   if (value.startsWith('(')) {
-    const match = value.match(/^\(([^,]+),/);
     return {
-      url: match ? match[1].trim() : value,
+      url: parseMediaSourceUrl(value),
       timelinks: parseTimelinksFromValue(value),
     };
   }
@@ -94,7 +123,7 @@ const encodeTimelinksValue = (url: string, timelinks: EditableTimelink[]) => {
   const timelinksObj = timelinks.reduce<Record<string, string>>(
     (current, timelink) => ({
       ...current,
-      [`${padTimePart(timelink.hh)}:${padTimePart(timelink.mm)}:${padTimePart(timelink.ss)}`]:
+      [`${padTimePart(timelink.hh || '0')}:${padTimePart(timelink.mm || '0')}:${padTimePart(timelink.ss || '0')}`]:
         timelink.label,
     }),
     {}
@@ -104,18 +133,12 @@ const encodeTimelinksValue = (url: string, timelinks: EditableTimelink[]) => {
 };
 
 const timelinkToSeconds = (timelink: EditableTimelink) =>
-  Number(timelink.hh) * 3600 + Number(timelink.mm) * 60 + Number(timelink.ss);
-
-const emptyTimelink = (): EditableTimelink => ({
-  hh: '00',
-  mm: '00',
-  ss: '00',
-  label: '',
-});
+  Number(timelink.hh || 0) * 3600 + Number(timelink.mm || 0) * 60 + Number(timelink.ss || 0);
 
 type MediaFieldPreviewProps = {
   url: string;
   timelinks: EditableTimelink[];
+  valueKey: string;
   disabled?: boolean;
   onTimelinksChange: (timelinks: EditableTimelink[]) => void;
 };
@@ -123,32 +146,68 @@ type MediaFieldPreviewProps = {
 const MediaFieldPreview = ({
   url,
   timelinks,
+  valueKey,
   disabled,
   onTimelinksChange,
 }: MediaFieldPreviewProps) => {
   const playerRef = React.useRef<PlayerInstance>(null);
+  const [localTimelinks, setLocalTimelinks] = useState(timelinks);
+  const [playing, setPlaying] = useState(false);
 
-  const handleSeek = (timelink: EditableTimelink) => {
-    playerRef.current?.seekTo(timelinkToSeconds(timelink), 'seconds');
+  useEffect(() => {
+    setLocalTimelinks(timelinks);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- sync from committed valueKey only
+  }, [valueKey]);
+
+  const commitTimelinks = (next: EditableTimelink[]) => {
+    setLocalTimelinks(next);
+    onTimelinksChange(next);
   };
 
-  const updateTimelink = (index: number, patch: Partial<EditableTimelink>) => {
-    onTimelinksChange(
-      timelinks.map((item, itemIndex) => (itemIndex === index ? { ...item, ...patch } : item))
+  const handlePlay = (timelink: EditableTimelink) => {
+    playerRef.current?.seekTo(timelinkToSeconds(timelink), 'seconds');
+    setPlaying(true);
+  };
+
+  const updateLocalTimelink = (index: number, patch: Partial<EditableTimelink>) => {
+    setLocalTimelinks(current =>
+      current.map((item, itemIndex) => (itemIndex === index ? { ...item, ...patch } : item))
     );
   };
 
+  const commitTimePart = (index: number, part: 'hh' | 'mm' | 'ss') => {
+    const next = localTimelinks.map((item, itemIndex) =>
+      itemIndex === index ? { ...item, [part]: padTimePart(item[part] || '0') } : item
+    );
+    commitTimelinks(next);
+  };
+
+  const commitLabel = () => {
+    commitTimelinks(localTimelinks);
+  };
+
   const removeTimelink = (index: number) => {
-    onTimelinksChange(timelinks.filter((_item, itemIndex) => itemIndex !== index));
+    commitTimelinks(localTimelinks.filter((_item, itemIndex) => itemIndex !== index));
   };
 
   const addTimelink = () => {
-    onTimelinksChange([...timelinks, emptyTimelink()]);
+    const currentTime = playerRef.current?.getCurrentTime() ?? 0;
+    commitTimelinks([...localTimelinks, secondsToTimelink(currentTime)]);
   };
 
   return (
     <div className="flex flex-col gap-4">
-      <MediaPlayer className="m-auto" playerRef={playerRef} url={url} width={500} height={300} />
+      <MediaPlayer
+        className="m-auto"
+        playerRef={playerRef}
+        url={url}
+        width={500}
+        height={300}
+        playing={playing}
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+        onClickPreview={() => setPlaying(true)}
+      />
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-2">
@@ -167,13 +226,13 @@ const MediaFieldPreview = ({
           </Button>
         </div>
 
-        {timelinks.length === 0 ? (
+        {localTimelinks.length === 0 ? (
           <p className="text-sm text-ink-secondary">
             <Translate>No timelinks added</Translate>
           </p>
         ) : (
           <ul className="flex flex-col gap-2">
-            {timelinks.map((timelink, index) => (
+            {localTimelinks.map((timelink, index) => (
               <li
                 // eslint-disable-next-line react/no-array-index-key
                 key={`timelink-${index}`}
@@ -182,48 +241,61 @@ const MediaFieldPreview = ({
                 <button
                   type="button"
                   className="inline-flex items-center gap-1 text-sm"
-                  onClick={() => handleSeek(timelink)}
+                  onClick={() => handlePlay(timelink)}
                   aria-label={`${timelink.hh}:${timelink.mm}:${timelink.ss}`}
                 >
                   <PlayIcon className="w-4 h-4" />
                 </button>
                 <input
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={2}
+                  type="number"
+                  step={1}
+                  min={0}
                   disabled={disabled}
                   value={timelink.hh}
-                  onChange={event => updateTimelink(index, { hh: event.target.value })}
-                  className="w-10 rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-1 text-center text-sm"
+                  onChange={event =>
+                    updateLocalTimelink(index, { hh: clampTimePart(event.target.value) })
+                  }
+                  onBlur={() => commitTimePart(index, 'hh')}
+                  className="w-14 rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-1 text-center text-sm"
                   aria-label="Hours"
                 />
                 <span>:</span>
                 <input
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={2}
+                  type="number"
+                  step={1}
+                  min={0}
+                  max={59}
                   disabled={disabled}
                   value={timelink.mm}
-                  onChange={event => updateTimelink(index, { mm: event.target.value })}
-                  className="w-10 rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-1 text-center text-sm"
+                  onChange={event =>
+                    updateLocalTimelink(index, { mm: clampTimePart(event.target.value, 59) })
+                  }
+                  onBlur={() => commitTimePart(index, 'mm')}
+                  className="w-14 rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-1 text-center text-sm"
                   aria-label="Minutes"
                 />
                 <span>:</span>
                 <input
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={2}
+                  type="number"
+                  step={1}
+                  min={0}
+                  max={59}
                   disabled={disabled}
                   value={timelink.ss}
-                  onChange={event => updateTimelink(index, { ss: event.target.value })}
-                  className="w-10 rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-1 text-center text-sm"
+                  onChange={event =>
+                    updateLocalTimelink(index, { ss: clampTimePart(event.target.value, 59) })
+                  }
+                  onBlur={() => commitTimePart(index, 'ss')}
+                  className="w-14 rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-1 text-center text-sm"
                   aria-label="Seconds"
                 />
                 <input
                   type="text"
                   disabled={disabled}
+                  maxLength={TIMELINK_LABEL_MAX}
                   value={timelink.label}
-                  onChange={event => updateTimelink(index, { label: event.target.value })}
+                  onChange={event => updateLocalTimelink(index, { label: event.target.value })}
+                  onBlur={commitLabel}
                   placeholder="Label"
                   className="min-w-32 flex-1 rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-1 text-sm"
                 />
@@ -388,6 +460,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
                     <MediaFieldPreview
                       url={previewUrl}
                       timelinks={timelinks}
+                      valueKey={rawValue}
                       disabled={disabled}
                       onTimelinksChange={handleTimelinksChange}
                     />
