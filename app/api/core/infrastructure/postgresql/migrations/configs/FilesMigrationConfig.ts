@@ -21,9 +21,9 @@ export const FilesMigrationConfig: MigrationConfig = {
       entity: doc.entity || null,
       status: doc.status || null,
       language: doc.language || null,
-      totalPages: doc.totalPages || null,
+      totalPages: doc.totalPages ?? null,
+      generatedToc: doc.generatedToc ?? null,
       fullText: doc.fullText || null,
-      generatedToc: doc.generatedToc || null,
       propertySelections: doc.propertySelections || null,
       toc: doc.toc || null,
 
