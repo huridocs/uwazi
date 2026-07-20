@@ -92,7 +92,7 @@ describe('entitiesIndex', () => {
   });
 
   describe('indexEntities by query (postgresEntities flag on)', () => {
-    const factory = getFixturesFactory({ convertIdToString: true, postgresDefaults: true });
+    const factory = getFixturesFactory({ convertIdToString: true });
 
     const pgFixtures = {
       templates: [factory.template('t1', [])],

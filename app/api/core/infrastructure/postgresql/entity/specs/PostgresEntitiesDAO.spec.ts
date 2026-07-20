@@ -5,7 +5,7 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { PostgresEntitiesDAOFactory } from '../../../factories/PostgresEntitiesDAOFactory.js';
 import type { PostgresEntitiesDAO } from '../PostgresEntitiesDAO.js';
 
-const factory = getFixturesFactory({ convertIdToString: true, postgresDefaults: true });
+const factory = getFixturesFactory({ convertIdToString: true });
 
 const baseFixtures = {
   templates: [factory.template('t1', [factory.property('text_prop', 'text')])],

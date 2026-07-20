@@ -104,12 +104,11 @@ const thesaurusNestedValues = (rootValue: string, children: Array<string>) => {
 type FixturesFactoryConfig = {
   convertIdToString?: boolean;
   tenantId?: string;
-  postgresDefaults?: boolean;
 };
 
 function getFixturesFactory(config?: FixturesFactoryConfig) {
   const idMapper = getIdMapper();
-  const { convertIdToString = false, tenantId, postgresDefaults = false } = config || {};
+  const { convertIdToString = false, tenantId } = config || {};
 
   return Object.freeze({
     id: idMapper,
@@ -154,7 +153,6 @@ function getFixturesFactory(config?: FixturesFactoryConfig) {
         ...(template ? { template: idMapper(template) } : {}),
         metadata,
         language,
-        ...(postgresDefaults ? { published: true, creationDate: 1000, editDate: 2000 } : {}),
         ...props,
       };
     },
