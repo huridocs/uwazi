@@ -235,7 +235,7 @@ export default {
   },
 
   async get(query, select) {
-    if (tenants.current().featureFlags?.v2GetUsers) {
+    if (tenants.current().featureFlags?.v2UsersGet) {
       const users = await UsersDAOFactory.default().get(query);
       return users;
     }
@@ -250,7 +250,7 @@ export default {
   },
 
   async getById(id, select = '', includeGroups = false, includeDeleted = false) {
-    if (tenants.current().featureFlags?.v2GetUsers) {
+    if (tenants.current().featureFlags?.v2UsersGet) {
       const includePassword = typeof select === 'string' && select.includes('+password');
 
       const result = await UsersDAOFactory.default().getById(id.toString(), {

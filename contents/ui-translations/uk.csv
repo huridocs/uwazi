@@ -351,6 +351,8 @@ Direction,Direction
 Disable,Вимкнути
 Disable highlights,Вимкнути підсвічування
 Disabled 2FA,Відключений 2FA
+Discard and leave,Discard and leave
+Discard and switch,Discard and switch
 Discard changes,Відмінити зміни
 Discard changes?,Відкинути зміни?
 Dismiss,Звільнити.
@@ -766,6 +768,7 @@ No templates available to add.,No templates available to add.
 No text match,"Немає тексту, що збігається"
 No text match description,"Ви можете ввести щось інше в поле пошуку, щоб отримати деякі результати."
 No timelinks added,No timelinks added
+No translation in,No translation in
 No type,Немає типу
 No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,Відсутній правильний шаблон цілі
@@ -1243,6 +1246,7 @@ This property will be shown using all the width available.,Ця властиві
 This property will be shown without the label,Ця властивість буде показана без мітки
 This property will be the default filter in the library for this template.,Ця властивість буде фільтром за замовчуванням у бібліотеці для цього шаблону.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","Ця властивість буде використовуватися для фільтрації результатів бібліотеки. Якщо властивості збігаються за назвою та типом поля з іншими типами сутностей, вони будуть об'єднані для фільтрації."
+This search could not be completed. Try again later.,This search could not be completed. Try again later.
 This table of contents was automatically created by the system.,Цей зміст був автоматично створений системою.
 this template,цей шаблон
 This template is in use by existing entities and cannot be deleted.,Цей шаблон використовується існуючими організаціями і не може бути видалений.
@@ -1302,6 +1306,7 @@ Unknown entity,Unknown entity
 Unknown template,Unknown template
 Unlink,Роз'єднати зв'язок.
 Unlock account,Розблокувати обліковий запис
+Unsaved changes,Unsaved changes
 Unsupported OCR language,Непідтримувана мова оптичного розпізнавання символів
 Untitled,Untitled
 Untranslated Terms,Неперекладені терміни
@@ -1396,6 +1401,10 @@ You can create metadata templates in,Ви можете створювати ша
                   button.","You can start by selecting text in the document and clicking the ""Add to ToC""
                   button."
 You do not have write permission on all entities,You do not have write permission on all entities
+You have unsaved changes. Discard them and leave this page? This action cannot be undone.,You have unsaved changes. Discard them and leave this page? This action cannot be undone.
+"You have unsaved changes. Discard them and switch language? This action cannot be
+              undone.","You have unsaved changes. Discard them and switch language? This action cannot be
+              undone."
 You have unsaved changes. Do you want to continue?,У вас є незбережені зміни. Ви хочете продовжити?
 You should activate this feature for enhanced account security,Ви маєте активувати цю функцію для посилення безпеки облікового запису
 You should activate this feature for enhanced account security.,Вам слід активувати цю функцію для посилення безпеки акаунта.

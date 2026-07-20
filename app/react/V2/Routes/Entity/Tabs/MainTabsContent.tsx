@@ -1,7 +1,9 @@
 import React, { type ReactNode } from 'react';
 import { useTabGroup } from '#V2/Components/UI/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
-import { MAIN_TAB, type MainTabId } from './tabIds.js';
+import { useMetadataEditing } from '../Components/context/index.js';
+import { MAIN_TAB, isValidMainTab, type MainTabId } from './tabIds.js';
+import { keepMetadataTab, resolveActiveTabId } from './metadataTabSession.js';
 import { useEntityTabNavigation } from './hooks/useEntityTabNavigation.js';
 import { DocumentTab } from './tabsContent/DocumentTab.js';
 import { MetadataTab } from './tabsContent/MetadataTab.js';
@@ -25,8 +27,12 @@ const MainTabsContent = ({
   pagePlaintext,
 }: MainTabsContentProps) => {
   const { activeTabId: atomActiveTabId } = useTabGroup('entity-main');
-  const activeTabId = atomActiveTabId || urlActiveTabId;
+  const resolvedTabId = resolveActiveTabId(atomActiveTabId, urlActiveTabId);
+  const activeTabId = isValidMainTab(resolvedTabId) ? resolvedTabId : urlActiveTabId;
   const { focusDocumentPanel, relationshipsOnMain } = useEntityTabNavigation();
+  const { isEditing, editingHost } = useMetadataEditing();
+  const metadataActive = activeTabId === MAIN_TAB.METADATA;
+  const keepMetadata = keepMetadataTab(metadataActive, isEditing, editingHost, 'main');
 
   let content: ReactNode = null;
 
@@ -39,11 +45,6 @@ const MainTabsContent = ({
       }
       break;
     case MAIN_TAB.METADATA:
-      content = (
-        <div className="flex min-h-0 flex-1 flex-col">
-          <MetadataTab entity={entity} />
-        </div>
-      );
       break;
     case MAIN_TAB.RELATIONSHIPS:
       content = (
@@ -62,18 +63,21 @@ const MainTabsContent = ({
       break;
   }
 
-  if (!content) return null;
+  if (!content && !keepMetadata) return null;
 
   return (
     <div
       role="tabpanel"
       id={`entity-main-panel-${activeTabId}`}
       aria-labelledby={`entity-main-tab-${activeTabId}`}
-      className={`flex h-full min-h-0 w-full flex-col ${
-        activeTabId === MAIN_TAB.METADATA ? 'bg-paper' : 'bg-warm'
-      }`}
+      className={`flex h-full min-h-0 w-full flex-col ${metadataActive ? 'bg-paper' : 'bg-warm'}`}
     >
-      {content}
+      {keepMetadata ? (
+        <div className={metadataActive ? 'flex min-h-0 flex-1 flex-col' : 'hidden'}>
+          <MetadataTab entity={entity} host="main" />
+        </div>
+      ) : null}
+      {!metadataActive ? content : null}
       {activeTabId === MAIN_TAB.RELATIONSHIPS && <RelationshipsFiltersDrawer />}
     </div>
   );
