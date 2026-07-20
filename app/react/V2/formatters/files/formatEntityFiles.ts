@@ -1,3 +1,4 @@
+import { parseMediaSourceUrl } from '#shared/entitySave/mediaMetadata.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { ClientTemplateSchema } from '#V2/shared/types.js';
 import { getMimetypeFromUrl } from '#V2/shared/formatHelpers.js';
@@ -23,12 +24,18 @@ const formatEntityFiles = (
   const metadataFiles: EntityFile[] = ownFileProperties.flatMap(property => {
     const value = entity.metadata?.[property.name]?.[0]?.value as string | undefined;
 
-    if (!value || value.startsWith('http://') || value.startsWith('https://')) {
+    if (!value) {
       return [];
     }
 
-    const filename = value.split('/').pop() || '';
-    const mimetype = getMimetypeFromUrl(value);
+    const fileUrl = parseMediaSourceUrl(value);
+
+    if (fileUrl.startsWith('http://') || fileUrl.startsWith('https://')) {
+      return [];
+    }
+
+    const filename = fileUrl.split('/').pop() || '';
+    const mimetype = getMimetypeFromUrl(fileUrl);
 
     return [{ fileType: property.type as 'image' | 'media', file: { filename, mimetype } }];
   });

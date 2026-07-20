@@ -1,18 +1,12 @@
 import { mimeTypeFromUrl } from '#api/files/extensionHelper.js';
 import type { ClientFile } from '#app/istore.js';
+import { parseMediaSourceUrl } from '#shared/entitySave/mediaMetadata.js';
 import { FileType } from '#shared/types/fileType.js';
 
 type MediaPickerMode = 'image' | 'media';
 type MediaPickerAttachment = FileType | ClientFile;
 
-const extractMediaUrl = (value?: string) => {
-  if (!value) {
-    return '';
-  }
-
-  const match = value.match(/^\(([^,]+),/);
-  return match ? match[1].trim() : value;
-};
+const extractMediaUrl = (value?: string) => (value ? parseMediaSourceUrl(value) : '');
 
 const getAttachmentUrl = (attachment: MediaPickerAttachment) =>
   attachment.url || (attachment.filename ? `/api/files/${attachment.filename}` : '');
