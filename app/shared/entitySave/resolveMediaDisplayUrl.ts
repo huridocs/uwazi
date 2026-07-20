@@ -1,7 +1,7 @@
 import type { ClientFile } from '#app/istore.js';
 import { prepareHTMLMediaView } from '#shared/fileUploadUtils.js';
 import type { FileType } from '#shared/types/fileType.js';
-import { isUploadId } from './mediaMetadata.js';
+import { isUploadId, parseMediaSourceUrl } from './mediaMetadata.js';
 
 const getAttachmentUrl = (file: FileType) =>
   file.url || (file.filename ? `/api/files/${file.filename}` : '');
@@ -31,10 +31,7 @@ const resolveTimelinkUrl = (
   rawValue: string,
   attachments: ReadonlyArray<FileType | ClientFile>
 ): string => {
-  const id = rawValue.match(/^\(([^,]+),/)?.[1]?.trim();
-  if (!id) {
-    return rawValue;
-  }
+  const id = parseMediaSourceUrl(rawValue);
   return resolveUploadIdUrl(id, attachments) ?? id;
 };
 
