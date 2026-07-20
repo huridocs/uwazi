@@ -5,6 +5,7 @@ import type {
   DatavizDefinition,
   DatavizDataDTO,
   DatavizEmbedPayload,
+  DatavizRuntimeFilter,
 } from '#shared/types/datavizSchema.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
@@ -97,15 +98,22 @@ const refreshSnapshot = async (
 const getPublicEmbedData = async (
   id: string,
   locale?: string,
+  externalFilters?: DatavizRuntimeFilter[],
   headers?: IncomingHttpHeaders
 ): Promise<DatavizEmbedPayload | FetchResponseError> => {
   try {
     const response = await api.get(
       `public/dataviz/${id}/data`,
-      new RequestParams(locale ? { locale } : {}, {
-        ...headers,
-        ...(locale ? { 'Content-Language': locale } : {}),
-      })
+      new RequestParams(
+        {
+          ...(locale ? { locale } : {}),
+          ...(externalFilters?.length ? { externalFilters: JSON.stringify(externalFilters) } : {}),
+        },
+        {
+          ...headers,
+          ...(locale ? { 'Content-Language': locale } : {}),
+        }
+      )
     );
     return response.json;
   } catch (e) {
