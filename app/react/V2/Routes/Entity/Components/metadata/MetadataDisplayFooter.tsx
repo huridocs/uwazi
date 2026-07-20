@@ -5,16 +5,23 @@ import { Button } from '#V2/Components/UI/index.js';
 import {
   EntityWriteAuthorization,
   useMetadataEditing,
+  type MetadataEditingHost,
 } from '#V2/Routes/Entity/Components/context/index.js';
 
 const iconClass = 'h-4 w-4 shrink-0';
 
-const MetadataDisplayFooter = () => {
-  const { isEditing, isSaving, cancelEdit, setIsEditing } = useMetadataEditing();
+type MetadataDisplayFooterProps = {
+  host: MetadataEditingHost;
+};
+
+const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
+  const { isEditing, isSaving, editingHost, cancelEdit, startEditing } = useMetadataEditing();
+  const isOwner = isEditing && editingHost === host;
+  const otherHostEditing = isEditing && editingHost !== null && editingHost !== host;
 
   return (
     <EntityWriteAuthorization>
-      {isEditing ? (
+      {isOwner ? (
         <div className="flex w-full items-center justify-end gap-3">
           <Button type="button" variant="warm" onClick={cancelEdit}>
             <Translate>Cancel</Translate>
@@ -29,7 +36,8 @@ const MetadataDisplayFooter = () => {
             <Button
               variant="warm"
               className="inline-flex items-center gap-1.5"
-              onClick={() => setIsEditing(true)}
+              onClick={() => startEditing(host)}
+              disabled={otherHostEditing}
             >
               <PencilSquareIcon className={iconClass} />
               <Translate>Edit</Translate>

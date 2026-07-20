@@ -5,16 +5,23 @@ const TabLabel = ({
   text,
   icon,
   count,
+  dirty,
 }: {
   text: string;
   icon?: React.ReactElement;
   count?: number;
+  dirty?: boolean;
 }) => (
   <span className="inline-flex max-w-full items-center justify-center gap-1 md:justify-start">
     <Translate className="sr-only md:not-sr-only">{text}</Translate>
     {icon ? (
       <span className="inline-flex shrink-0 md:hidden" aria-hidden="true">
         {icon}
+      </span>
+    ) : null}
+    {dirty ? (
+      <span className="shrink-0 font-semibold text-ink" aria-hidden="true">
+        *
       </span>
     ) : null}
     {count !== undefined && (

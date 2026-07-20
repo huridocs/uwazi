@@ -71,6 +71,10 @@ global.IntersectionObserver = jest.fn().mockImplementation((cb: IntersectionObse
 
 global.ResizeObserver = ResizeObserverMock;
 
+beforeEach(() => {
+  mockGetDocument.mockReset();
+});
+
 function makeResolvedPdf(numPages = 4) {
   return {
     promise: Promise.resolve({
@@ -80,6 +84,7 @@ function makeResolvedPdf(numPages = 4) {
         .mockResolvedValue({ getViewport: () => ({ width: 100, height: 200, scale: 1 }) }),
     }),
     onProgress: jest.fn(),
+    destroy: jest.fn(),
   };
 }
 
@@ -87,11 +92,12 @@ describe('PDF', () => {
   it('should show a loading message', async () => {
     let resolveDoc: (value: PDFDocumentProxy) => void;
 
-    const loadingTask: Partial<PDFDocumentLoadingTask> = {
+    const loadingTask: Partial<PDFDocumentLoadingTask> & { destroy: jest.Mock } = {
       promise: new Promise<PDFDocumentProxy>(res => {
         resolveDoc = res;
       }),
       onProgress: jest.fn() as PDFDocumentLoadingTask['onProgress'],
+      destroy: jest.fn(),
     };
 
     mockGetDocument.mockReturnValueOnce(loadingTask);

@@ -31,7 +31,11 @@ const renderRelationshipsActionBar = () => {
       path: '/',
       element: (
         <Provider store={store}>
-          <EntityScopedProvider key={entityWithRelations.sharedId} entity={entityWithRelations}>
+          <EntityScopedProvider
+            key={entityWithRelations.sharedId}
+            entity={entityWithRelations}
+            language={entityWithRelations.language ?? 'en'}
+          >
             <PdfControllerSetup />
             <RelationshipsPanel />
             <RelationshipsActionBar />

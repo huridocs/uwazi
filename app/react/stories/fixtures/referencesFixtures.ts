@@ -17,7 +17,7 @@ const PERSON_RELATION_TEMPLATE = '6a0c5d0784b3eaec97612923';
 
 const mainEntityDocuments: FileType[] = [
   {
-    _id: '1',
+    _id: FILE_ID,
     originalname: 'sample.pdf',
     filename: '1.pdf',
     mimetype: 'application/pdf',

@@ -3,7 +3,7 @@ import { Square3Stack3DIcon, DocumentIcon } from '@heroicons/react/24/outline';
 import throttle from 'lodash/throttle.js';
 import { Translate } from '#app/I18N/index.js';
 import { Entity, FileType } from '#V2/api/entities/types.js';
-import { projectRelationshipMarkers } from '#V2/formatters/index.js';
+import { filterMarkersForDocument, projectRelationshipMarkers } from '#V2/formatters/index.js';
 import {
   splitMarkersByAnchor,
   groupRelationships,
@@ -49,7 +49,11 @@ const RelationshipsDisplay = ({
   const markerLayerRef = useRef<HTMLDivElement>(null);
   const [markerLayerHeight, setMarkerLayerHeight] = useState(0);
 
-  const markers = useMemo<RelationshipMarker[]>(() => projectRelationshipMarkers(entity), [entity]);
+  const markers = useMemo<RelationshipMarker[]>(
+    () =>
+      filterMarkersForDocument(projectRelationshipMarkers(entity), document._id, entity.sharedId),
+    [document._id, entity]
+  );
 
   const anchoredMarkers = useMemo(() => splitMarkersByAnchor(markers).anchored, [markers]);
 
