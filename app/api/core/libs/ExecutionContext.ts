@@ -7,6 +7,7 @@ import { IdGenerator } from '../application/contracts/IdGenerator.js';
 import { EventEmitter } from './eventEmitter/EventEmitter.js';
 import { Logger } from './logger/contracts/Logger.js';
 import { PostgresTransactionManager } from '../infrastructure/postgresql/common/PostgresTransactionManager.js';
+import { TelemetryCollector } from './logger/TelemetryCollector.js';
 
 type DependencyFactories = {
   [K in keyof Dependencies]: () => Dependencies[K];
@@ -19,6 +20,7 @@ type Dependencies = {
   jobsDispatcher: JobsDispatcher;
   idGenerator: IdGenerator;
   logger: Logger;
+  telemetryCollector: TelemetryCollector;
 };
 
 type Context = {
@@ -48,6 +50,10 @@ class ExecutionContext extends AsyncLocalStorage<Context> {
 
   get transactionManager(): TransactionManager {
     return this.getOrInitialize('transactionManager');
+  }
+
+  get telemetryCollector(): TelemetryCollector {
+    return this.getOrInitialize('telemetryCollector');
   }
 
   get postgresTransactionManager(): PostgresTransactionManager {

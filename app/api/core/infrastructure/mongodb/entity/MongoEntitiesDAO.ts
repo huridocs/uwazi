@@ -9,6 +9,7 @@ import { MongoDataSource, MongoDSOptions } from '../common/MongoDataSource.js';
 import { FileDBO } from '../files/schemas/FilesTypes.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { MongoFilesDAO } from '../files/MongoFilesDAO.js';
+import { TimedMethod } from '#api/core/libs/logger/TimedMethodDecorator.js';
 
 type GetWithFilesMatch = {
   language?: LanguageISO6391;
@@ -48,6 +49,7 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> {
     };
   }
 
+  @TimedMethod('MongoEntitiesDAO.getWithFiles')
   async getWithFiles($match: GetWithFilesMatch): Promise<EntityWithFiles[]> {
     if (this.filesDAO) {
       return this.getWithFilesInMemory($match);

@@ -1,9 +1,9 @@
+/* eslint-disable max-statements */
 /* eslint-disable no-console */
 
 import './initSentryEarly.js';
 import compression from 'compression';
 import express from 'express';
-import promBundle from 'express-prom-bundle';
 
 import helmet from 'helmet';
 import { Server } from 'http';
@@ -43,6 +43,8 @@ import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/
 import { embedFrameHeaders } from './api/middleware/embedFrameHeaders.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
+import { metricsMiddleware } from '#api/core/infrastructure/express/middlewares/MetricsMiddleware.js';
+import { registerMetricsRoutes } from '#api/core/infrastructure/express/MetricsRoute.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -50,19 +52,9 @@ const __dirname = dirname(__filename);
 mongoose.Promise = Promise;
 
 const app = express();
-const metricsMiddleware = promBundle({
-  includeMethod: false,
-  includePath: false,
-  customLabels: {
-    port: config.PORT,
-    env: config.ENVIRONMENT,
-  },
-  promClient: {
-    collectDefaultMetrics: {},
-  },
-});
 
 app.use(metricsMiddleware);
+registerMetricsRoutes(app);
 routesErrorHandler(app);
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 app.use(embedFrameHeaders);
@@ -143,7 +135,6 @@ app.use(requestIdMiddleware);
 
 console.info('==> Connecting to', maskMongoPassword(config.DBHOST));
 
-// eslint-disable-next-line max-statements
 DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
   await Redis.connect();
   await tenants.setupTenants();

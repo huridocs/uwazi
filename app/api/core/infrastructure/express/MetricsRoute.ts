@@ -1,5 +1,5 @@
 import { Application } from 'express';
-import { collectNodeProcessMetrics, registry } from 'api/core/libs/logger/PrometheusCollector';
+import { collectNodeProcessMetrics, registry } from '#api/core/libs/logger/PrometheusCollector.js';
 
 export const registerMetricsRoutes = (app: Application) => {
   collectNodeProcessMetrics();

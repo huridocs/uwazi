@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import { TelemetryCollector } from '../TelemetryCollector';
+import { TelemetryCollector } from '../TelemetryCollector.js';
 
 describe('TelemetryCollector', () => {
   let dateNowSpy: jest.SpyInstance;
