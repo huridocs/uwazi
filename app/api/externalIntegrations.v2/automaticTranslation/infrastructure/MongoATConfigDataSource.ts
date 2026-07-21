@@ -1,14 +1,14 @@
-import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
-import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
-import { CommonProperty } from 'api/core/domain/template/CommonProperty';
-import { Property } from 'api/core/domain/template/Property';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { CommonProperty } from '#api/core/domain/template/CommonProperty.js';
+import { Property } from '#api/core/domain/template/Property.js';
 import { Db } from 'mongodb';
-import { Settings as SettingsType } from 'shared/types/settingsType';
-import { ATConfigDataSource } from '../contracts/ATConfigDataSource';
-import { ATGateway } from '../contracts/ATGateway';
-import { ATConfig, ATTemplateConfig } from '../model/ATConfig';
+import { Settings as SettingsType } from '#shared/types/settingsType.js';
+import { ATConfigDataSource } from '../contracts/ATConfigDataSource.js';
+import { ATGateway } from '../contracts/ATGateway.js';
+import { ATConfig, ATTemplateConfig } from '../model/ATConfig.js';
 
 export class MongoATConfigDataSource
   extends MongoDataSource<SettingsType>
@@ -39,7 +39,7 @@ export class MongoATConfigDataSource
     const settings = await this.getCollection().findOne();
     const rawConfig = settings?.features?.automaticTranslation ?? { active: false };
 
-    const validProperties = await this.templates.getAllTextProperties().all();
+    const validProperties = await this.templates.getAllTextProperties();
     const configuredLanguages = await this.settings.getLanguageKeys();
     const supportedLanguages = await this.automaticTranslation.supportedLanguages();
 

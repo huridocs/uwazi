@@ -1,10 +1,9 @@
 import mongoose from 'mongoose';
-import { instanceModel } from 'api/odm';
-import { PageType } from 'shared/types/pageType';
+import { instanceModel } from '#api/odm/index.js';
+import { PageType } from '#shared/types/pageType.js';
 
 const propsWithDBSpecifics = {
   creationDate: { type: Number, select: false },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'users', select: false },
 };
 
 const mongoSchema = new mongoose.Schema(propsWithDBSpecifics, {

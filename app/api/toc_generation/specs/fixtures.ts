@@ -1,4 +1,4 @@
-import { testingDB, DBFixture } from 'api/utils/testing_db';
+import { testingDB, DBFixture } from '#api/utils/testing_db.js';
 
 const templateId = testingDB.id();
 
@@ -43,6 +43,9 @@ const fixtures: DBFixture = {
       language: 'spa',
       originalname: 'originalPdf1.pdf',
       type: 'document',
+      mimetype: 'application/pdf',
+      status: 'ready',
+      totalPages: 1,
     },
     {
       _id: testingDB.id(),
@@ -54,6 +57,8 @@ const fixtures: DBFixture = {
       type: 'custom',
       filename: 'background.jpg',
       language: 'spa',
+      originalname: 'background.jpg',
+      mimetype: 'image/jpeg',
     },
     {
       _id: testingDB.id(),
@@ -62,6 +67,9 @@ const fixtures: DBFixture = {
       language: 'spa',
       originalname: 'originalPdf2.pdf',
       toc: [{}],
+      mimetype: 'application/pdf',
+      status: 'ready',
+      totalPages: 1,
     },
     {
       _id: testingDB.id(),
@@ -71,6 +79,9 @@ const fixtures: DBFixture = {
       filename: 'pdf3.pdf',
       toc: [],
       originalname: 'originalPdf4.pdf',
+      mimetype: 'application/pdf',
+      status: 'ready',
+      totalPages: 1,
     },
     {
       _id: testingDB.id(),
@@ -79,6 +90,9 @@ const fixtures: DBFixture = {
       language: 'eng',
       originalname: 'originalPdf5.pdf',
       type: 'document',
+      mimetype: 'application/pdf',
+      status: 'ready',
+      totalPages: 1,
     },
   ],
 };

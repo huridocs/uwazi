@@ -3,14 +3,14 @@
  */
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { ContextCell } from '../ContextCell';
+import { ContextCell } from '../ContextCell.js';
 import {
   basicMatching,
   multipleMatching,
   multipleMatchInMatching,
   noMatching,
   plainText,
-} from './HTMLFixtures';
+} from './HTMLFixtures.js';
 
 describe('ContextCell', () => {
   it('should not render script tags', () => {
@@ -44,10 +44,10 @@ describe('ContextCell', () => {
     );
 
     expect(screen.getAllByText('Some primary text', { exact: false })[0].className).toBe(
-      'ix_matching_paragraph text-black px-1'
+      'ix_matching_paragraph px-1 text-ink'
     );
     expect(screen.getAllByText('with matching')[0].className).toBe(
-      'ix_match bg-[#FFE29A] text-black'
+      'ix_match bg-[#FFE29A] text-ink'
     );
   });
 
@@ -71,7 +71,7 @@ describe('ContextCell', () => {
       render(<ContextCell text={noMatching} />);
       expect(
         screen.getByText('Duis volutpat leo eu interdum euismod. Maecenas lu...').className
-      ).toBe('ix_paragraph text-gray-500');
+      ).toBe('ix_paragraph text-ink-muted');
     });
   });
 

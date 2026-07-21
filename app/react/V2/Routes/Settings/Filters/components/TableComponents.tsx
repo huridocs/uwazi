@@ -2,10 +2,10 @@
 import React from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
-import { Translate } from 'app/I18N';
-import { Button } from 'V2/Components/UI';
-import { sidepanelAtom } from './sidepanelAtom';
-import { Filter } from './helpers';
+import { Translate } from '#app/I18N/index.js';
+import { Button } from '#V2/Components/UI/index.js';
+import { sidepanelAtom } from './sidepanelAtom.js';
+import { Filter } from './helpers.js';
 
 const columnHelper = createColumnHelper<Filter>();
 
@@ -23,8 +23,7 @@ const ActionCell = ({ cell, row }: CellContext<Filter, any>) => {
   if (row.originalSubRows) {
     return (
       <Button
-        styling="outline"
-        color="primary"
+        variant="secondary"
         className="leading-3"
         onClick={() => {
           if (action) {

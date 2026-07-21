@@ -1,13 +1,12 @@
 /* eslint-disable max-lines */
-import entities from 'api/entities';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import db, { DBFixture } from 'api/utils/testing_db';
+import entities from '#api/entities/index.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import db, { DBFixture } from '#api/utils/testing_db.js';
 
-import translations from 'api/i18n/translations';
-import thesauris from 'api/thesauri';
-import { elasticTesting } from 'api/utils/elastic_testing';
-import { EntitySchema } from 'shared/types/entityType';
-import { getFixturesFactory } from '../../utils/fixturesFactory';
+import translations from '#api/i18n/translations.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { getFixturesFactory } from '../../utils/fixturesFactory.js';
 
 const load = async (data: DBFixture, index?: string) =>
   testingEnvironment.setUp(
@@ -30,11 +29,16 @@ describe('Denormalize relationships', () => {
   const factory = getFixturesFactory();
   const createTranslationDBO = factory.v2.database.translationDBO;
 
+  const saveEntity = async (entityData: any, language: string = 'en') => {
+    await testingEnvironment.runWithContext(async () =>
+      entities.save(entityData, { language, user: {} }, true)
+    );
+  };
+
   const modifyEntity = async (id: string, entityData: EntitySchema, language: string = 'en') => {
-    await entities.save(
+    await saveEntity(
       { _id: factory.id(`${id}-${language}`), sharedId: id, ...entityData, language },
-      { language, user: {} },
-      true
+      language
     );
   };
 
@@ -341,47 +345,6 @@ describe('Denormalize relationships', () => {
         },
       ]);
     });
-
-    it('should update and index denormalized properties when thesauri label changes (should ignore null inheritedValues)', async () => {
-      await modifyEntity('B1', {
-        metadata: { multiselect: [{ value: 'T2' }, { value: 'T3' }] },
-      });
-      await modifyEntity('B2', {
-        metadata: { multiselect: [{ value: 'T1' }] },
-      });
-
-      await modifyEntity('A1', {
-        metadata: {
-          relationship: [
-            factory.metadataValue('B1'),
-            factory.metadataValue('B2'),
-            factory.metadataValue('entityWithNoValueSelected'),
-          ],
-        },
-      });
-
-      await thesauris.save(factory.thesauri('thesauri', [['T1', 'new 1'], 'T2', ['T3', 'new 3']]));
-
-      await elasticTesting.refresh();
-      const results = await elasticTesting.getIndexedEntities();
-
-      const A1 = results.find(r => r.sharedId === 'A1');
-
-      expect(A1?.metadata?.relationship).toMatchObject([
-        {
-          inheritedValue: [
-            { value: 'T2', label: 'T2' },
-            { value: 'T3', label: 'new 3' },
-          ],
-        },
-        {
-          inheritedValue: [{ value: 'T1', label: 'new 1' }],
-        },
-        {
-          inheritedValue: [],
-        },
-      ]);
-    });
   });
 
   describe('inherited relationship', () => {
@@ -666,30 +629,32 @@ describe('Denormalize relationships', () => {
     });
 
     it('should update entities when translating thesauri values', async () => {
-      await translations.save({
-        locale: 'es',
-        contexts: [
-          {
-            id: factory.id('Numbers').toString(),
-            label: 'Numbers',
-            values: [
-              {
-                key: 'One',
-                value: 'Uno',
-              },
-              {
-                key: 'Two',
-                value: 'Dos',
-              },
-              {
-                key: 'Numbers',
-                value: 'Números',
-              },
-            ],
-            type: 'Thesaurus',
-          },
-        ],
-      });
+      await testingEnvironment.runWithContext(async () =>
+        translations.save({
+          locale: 'es',
+          contexts: [
+            {
+              id: factory.id('Numbers').toString(),
+              label: 'Numbers',
+              values: [
+                {
+                  key: 'One',
+                  value: 'Uno',
+                },
+                {
+                  key: 'Two',
+                  value: 'Dos',
+                },
+                {
+                  key: 'Numbers',
+                  value: 'Números',
+                },
+              ],
+              type: 'Thesaurus',
+            },
+          ],
+        })
+      );
       await elasticTesting.refresh();
       const results = await elasticTesting.getIndexedEntities();
       const englishEntity = results.find(r => r.sharedId === 'A1' && r.language === 'en');

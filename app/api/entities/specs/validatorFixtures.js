@@ -1,5 +1,5 @@
-import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
-import db from 'api/utils/testing_db';
+import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+import db from '#api/utils/testing_db.js';
 
 const templateId = db.id();
 const simpleTemplateId = db.id();
@@ -59,53 +59,6 @@ export default {
         { _id: db.id(), name: 'multiselect', type: 'multiselect', content: dictionary2 },
         { _id: db.id(), name: 'relationship', type: 'relationship', content: simpleTemplateId },
         { _id: db.id(), name: 'relationship2', type: 'relationship', content: simpleTemplateId },
-        {
-          _id: db.id(),
-          name: 'newRelationship',
-          type: 'newRelationship',
-          query: [
-            {
-              types: [db.id()],
-              direction: 'out',
-              match: [
-                {
-                  templates: [simpleTemplateId],
-                  traverse: [],
-                },
-              ],
-            },
-          ],
-          targetTemplates: [simpleTemplateId],
-        },
-        {
-          _id: db.id(),
-          name: 'newRelationship2',
-          type: 'newRelationship',
-          query: [
-            {
-              types: [db.id()],
-              direction: 'out',
-              match: [
-                {
-                  templates: [],
-                  traverse: [
-                    {
-                      types: [db.id()],
-                      direction: 'out',
-                      match: [
-                        {
-                          templates: [simpleTemplateId],
-                          traverse: [],
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-          targetTemplates: false,
-        },
         {
           _id: db.id(),
           name: 'media',

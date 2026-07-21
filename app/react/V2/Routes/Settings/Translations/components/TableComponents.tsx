@@ -2,9 +2,9 @@
 import React from 'react';
 import { Link } from 'react-router';
 import { CellContext } from '@tanstack/react-table';
-import { Translate } from 'app/I18N';
-import { Button, Pill } from 'V2/Components/UI';
-import { TranslationContext } from '../TranslationsList';
+import { Translate } from '#app/I18N/index.js';
+import { Button, Pill } from '#V2/Components/UI/index.js';
+import { TranslationContext } from '../TranslationsList.js';
 
 const LabelHeader = () => <Translate>Name</Translate>;
 const TypeHeader = () => <Translate>Type</Translate>;
@@ -12,7 +12,7 @@ const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
 
 const RenderButton = ({ cell }: CellContext<TranslationContext, any>) => (
   <Link to={`edit/${cell.row.original.id}`}>
-    <Button styling="light" className="leading-4">
+    <Button variant="ghost" className="leading-4">
       <Translate>Translate</Translate>
     </Button>
   </Link>

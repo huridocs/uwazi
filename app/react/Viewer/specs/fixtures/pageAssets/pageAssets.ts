@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
-import { ClientTemplateSchema } from 'app/istore';
+import { ClientTemplateSchema } from '#app/istore.js';
 import Immutable from 'immutable';
-import { EntitySchema } from 'shared/types/entityType';
-import { IImmutable } from 'shared/types/Immutable';
-import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { IImmutable } from '#shared/types/Immutable.js';
+import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 
 const test1Attachments = [
   {

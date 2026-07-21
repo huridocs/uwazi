@@ -1,6 +1,6 @@
-import api from 'app/utils/api';
+import { api } from '#app/utils/api.js';
 
-export default {
+const UsersAPI = {
   save(requestParams) {
     return api.post('users', requestParams).then(response => response.json);
   },
@@ -29,3 +29,4 @@ export default {
     return api.delete('users', requestParams).then(response => response.json);
   },
 };
+export { UsersAPI };

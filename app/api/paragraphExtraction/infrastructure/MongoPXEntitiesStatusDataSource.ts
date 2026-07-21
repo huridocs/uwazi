@@ -4,22 +4,22 @@ import { Db, MongoServerError, ObjectId } from 'mongodb';
 import {
   MongoDataSource,
   MongoDSOptions,
-} from 'api/core/infrastructure/mongodb/common/MongoDataSource';
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
+} from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 
-import { ResultSet } from 'api/core/application/contracts/ResultSet';
-import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
-import { OperationalError } from 'api/common.v2/errors/OperationalError';
+import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
+import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
+import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 import {
   CreateInput,
   GetExistingInput,
   PXEntitiesStatusDataSource,
-} from '../domain/PXEntitiesStatusDataSource';
-import { EntityStatus, PXEntityStatusModel } from '../domain/PXEntityStatusModel';
-import { MongoPXEntityStatusDBO } from './MongoPXEntityStatusDBO';
-import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
-import { PXValidationError } from '../domain/PXValidationError';
+} from '../domain/PXEntitiesStatusDataSource.js';
+import { EntityStatus, PXEntityStatusModel } from '../domain/PXEntityStatusModel.js';
+import { MongoPXEntityStatusDBO } from './MongoPXEntityStatusDBO.js';
+import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService.js';
+import { PXValidationError } from '../domain/PXValidationError.js';
 
 export const mongoPXEntitiesStatusCollection = 'px_entities_status';
 

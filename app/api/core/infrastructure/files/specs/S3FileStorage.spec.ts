@@ -9,19 +9,19 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { config } from 'api/config';
-import { FileAttachment } from 'api/core/domain/files/FileAttachment';
-import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
-import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
-import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { S3Error } from 'api/files/S3Storage';
-import { Tenant } from 'api/tenants/tenantContext';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingTenants } from 'api/utils/testingTenants';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { config } from '#api/config.js';
+import { FileAttachment } from '#api/core/domain/files/FileAttachment.js';
+import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
+import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
+import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
+import { S3Error } from '#api/files/S3Storage.js';
+import { Tenant } from '#api/tenants/tenantContext.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { Readable } from 'node:stream';
-import { S3FileStorage } from '../S3FileStorage';
+import { S3FileStorage } from '../S3FileStorage.js';
 
 const f = getFixturesFactory();
 
@@ -35,7 +35,9 @@ describe('S3FileStorage', () => {
     const buffer = await new Promise<Buffer>((resolve, reject) => {
       const _buf: Buffer[] = [];
       (s3File.Body as Readable).on('data', (chunk: any) => _buf.push(chunk));
-      (s3File.Body as Readable).on('end', () => resolve(Buffer.concat(_buf)));
+      (s3File.Body as Readable).on('end', () =>
+        resolve(Buffer.concat(_buf as unknown as Uint8Array[]))
+      );
       (s3File.Body as Readable).on('error', (err: unknown) => reject(err));
     });
     return buffer.toString('utf8');
@@ -68,6 +70,7 @@ describe('S3FileStorage', () => {
       attachments: 'test-tenant/attachments',
       customUploads: 'test-tenant/customUploads',
       activityLogs: 'test-tenant/log',
+      domain: 'test-tenant',
     };
 
     testingTenants.mockCurrentTenant(tenant);
@@ -137,7 +140,7 @@ describe('S3FileStorage', () => {
   describe('getPath', () => {
     it.each([
       {
-        file: new ProcessedPDF({
+        file: new PDFDocument({
           id: 'id',
           entity: 'entity',
           language: 'ab',
@@ -149,6 +152,7 @@ describe('S3FileStorage', () => {
           originalname: 'original.pdf',
           fullText: {},
           generatedToc: false,
+          status: 'ready',
           content: new DiskFile('fake/path').toContent(),
         }),
         expected: 'test-tenant/documents/document',

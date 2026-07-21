@@ -1,19 +1,9 @@
 import { ObjectId } from 'mongodb';
-import { PropertySchema } from 'shared/types/commonTypes';
-import { TemplateSchema } from 'shared/types/templateType';
-import { TraverseQueryDBO } from './RelationshipsQueryDBO';
-
-export interface RelationshipPropertyDBO {
-  _id: ObjectId;
-  type: 'newRelationship';
-  name: string;
-  label: string;
-  query: TraverseQueryDBO[];
-  denormalizedProperty?: string;
-}
+import { PropertySchema } from '#shared/types/commonTypes.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 
 export interface TemplateDBO extends TemplateSchema {
   _id: ObjectId;
-  properties: (PropertySchema | RelationshipPropertyDBO)[];
+  properties: PropertySchema[];
   commonProperties: [PropertySchema, ...PropertySchema[]];
 }

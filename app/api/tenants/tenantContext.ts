@@ -1,7 +1,7 @@
-import { config } from 'api/config';
-import { handleError } from 'api/utils';
-import { appContext } from 'api/utils/AppContext';
-import { TenantDocument, TenantsModel, DBTenant, tenantsModel } from './tenantsModel';
+import { config } from '#api/config.js';
+import { handleError } from '#api/utils/index.js';
+import { appContext } from '#api/utils/AppContext.js';
+import { TenantDocument, TenantsModel, DBTenant, tenantsModel } from './tenantsModel.js';
 
 type TenantFeatureFlags = keyof NonNullable<Required<Tenant>['featureFlags']>;
 
@@ -13,19 +13,31 @@ type Tenant = {
   attachments: string;
   customUploads: string;
   activityLogs: string;
+  domain: string;
   featureFlags?: {
     s3Storage?: boolean;
     esReplicas?: number;
     sync?: boolean;
     deactivateTestJob?: boolean;
     paragraphExtraction?: boolean;
-    v2UpdateEntity?: boolean;
     fileCacheHeaders?: boolean;
-    v2CSVImport?: boolean;
-    v2UpdateThesaurus?: boolean;
+    themeCustomization?: boolean;
+    v2GetEntity?: boolean;
+    newHeader?: boolean;
+    v2Languages?: boolean;
+    postgresThesauri?: boolean;
+    postgresFiles?: boolean;
+    postgresTemplates?: boolean;
+    aiAssistant?: boolean;
+    aiAssistantServiceUrl?: string;
+    v2UsersCreate?: boolean;
+    v2UsersDelete?: boolean;
+    v2UsersGet?: boolean;
+    v2UsersUpdate?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;
+  maintenance?: boolean;
 };
 
 class Tenants {
@@ -97,14 +109,27 @@ class Tenants {
   }
 
   add(tenant: DBTenant) {
-    this.tenants[tenant.name] = { ...this.defaultTenant, ...tenant };
+    this.tenants[tenant.name] = {
+      ...this.defaultTenant,
+      ...tenant,
+      featureFlags: { ...this.defaultTenant.featureFlags, ...tenant.featureFlags },
+    };
   }
 
   getTenantsForFeatureFlag(featureFlag: TenantFeatureFlags) {
     return Object.values(this.tenants).filter(tenant => tenant?.featureFlags?.[featureFlag]);
   }
+
+  async setMaintenance(tenantName: string, maintenance: boolean) {
+    if (this.model) {
+      await this.model.setMaintenance(tenantName, maintenance);
+    }
+    if (this.tenants[tenantName]) {
+      this.tenants[tenantName].maintenance = maintenance;
+    }
+  }
 }
 
 const tenants = new Tenants(config.defaultTenant);
-export { tenants };
+export { tenants, Tenants };
 export type { Tenant, TenantFeatureFlags };

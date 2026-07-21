@@ -1,7 +1,7 @@
 import React from 'react';
-import { Translate } from 'app/I18N';
+import { Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
-import { uploadProgressAtom } from './uploadProgressAtom';
+import { uploadProgressAtom } from './uploadProgressAtom.js';
 
 type UploadProgressProps = {
   queueLength: number;

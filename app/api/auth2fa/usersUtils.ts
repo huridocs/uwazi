@@ -1,8 +1,8 @@
 import * as otplib from 'otplib';
 
-import settingsModel from 'api/settings';
-import usersModel, { User } from 'api/users/usersModel';
-import { createError } from 'api/utils';
+import settingsModel from '#api/settings/index.js';
+import usersModel, { User } from '#api/users/usersModel.js';
+import { createError } from '#api/utils/index.js';
 
 const checkUserExists = (user: User) => {
   if (!user) {
@@ -11,7 +11,7 @@ const checkUserExists = (user: User) => {
 };
 
 const getUser = async (user: User, options?: string) => {
-  const [dbUser] = await usersModel.get({ _id: user._id }, options);
+  const [dbUser] = await usersModel.get({ _id: user._id, deletedAt: { $exists: false } }, options);
   checkUserExists(dbUser);
   return dbUser;
 };

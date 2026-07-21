@@ -1,6 +1,6 @@
 //eslint-disable-next-line node/no-restricted-import
 import * as fs from 'fs';
-import csv from 'api/csv/csv';
+import csv from '#api/csv/csv.js';
 
 const updateTranslation = (currentTranslation, keysToUpdate, loc) => {
   const translation = { ...currentTranslation };

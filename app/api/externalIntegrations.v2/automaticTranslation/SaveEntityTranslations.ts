@@ -1,9 +1,10 @@
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
-import { Logger } from 'api/core/libs/logger/contracts/Logger';
-import { Entity } from 'api/entities.v2/model/Entity';
-import { TranslationResult } from './types/TranslationResult';
-import { Validator } from './infrastructure/Validator';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { TranslationResult } from './types/TranslationResult.js';
+import { Validator } from './infrastructure/Validator.js';
 
 export class SaveEntityTranslations {
   static AITranslatedText = '(AI translated)';
@@ -14,20 +15,26 @@ export class SaveEntityTranslations {
 
   private templatesDS: TemplatesDataSource;
 
+  private transactionManager: TransactionManager;
+
   private validator: Validator<TranslationResult>;
 
+  // eslint-disable-next-line max-params
   constructor(
     templatesDS: TemplatesDataSource,
     entitiesDS: EntitiesDataSource,
+    transactionManager: TransactionManager,
     validator: Validator<TranslationResult>,
     logger: Logger
   ) {
     this.entitiesDS = entitiesDS;
     this.templatesDS = templatesDS;
+    this.transactionManager = transactionManager;
     this.validator = validator;
     this.logger = logger;
   }
 
+  // eslint-disable-next-line max-statements
   async execute(translationResult: TranslationResult | unknown) {
     this.validator.ensure(translationResult);
 
@@ -38,40 +45,63 @@ export class SaveEntityTranslations {
       return;
     }
 
-    const entities = this.entitiesDS.getByIds([entitySharedId]);
+    const entityResult = await this.entitiesDS.getById(entitySharedId);
+    if (entityResult.isError()) {
+      this.logger.info(
+        `[AT] - Entity with sharedId ${entitySharedId} does not exist (trying to save a translation coming from AT service)`
+      );
+      return;
+    }
+    const entity = entityResult.getDataOrThrow();
 
-    await entities.forEach(async entity => {
-      const translation = translationResult.translations.find(t => t.language === entity.language);
+    for (const translation of translationResult.translations) {
       if (translation?.success === false) {
         this.logger.error(
-          `[AT]
-- Translation error
-- ${translation.error_message}
-- ${JSON.stringify({ entityId: entity._id, language: entity.language, [property.name]: translation.text })}`
+          `[AT] - Translation error - ${translation.error_message} - ${JSON.stringify({
+            entityId: entity.sharedId,
+            language: translation.language,
+            [property.name]: translation.text,
+          })}`
         );
-      }
-      if (translation?.success && property) {
+      } else if (translation?.success && property) {
         const textTranslated = `${SaveEntityTranslations.AITranslatedText} ${translation.text}`;
-        await this.entitiesDS.updateEntity(entity.setPropertyValue(property, textTranslated));
+
+        const propertyAssignment = entity.template.createPropertyAssignment(property.name, {
+          value: [{ value: textTranslated }],
+        });
+
+        entity.setPropertyAssignments(
+          [propertyAssignment],
+          translation.language as LanguageISO6391,
+          false
+        );
 
         this.logger.info(
-          // eslint-disable-next-line max-len
-          `[AT] - Property saved on DB - ${JSON.stringify({ entityId: entity._id, language: entity.language, [property.name]: translation.text })}`
+          `[AT] - Property saved on DB - ${JSON.stringify({
+            entityId: entity.sharedId,
+            language: translation.language,
+            [property.name]: translation.text,
+          })}`
         );
       }
+    }
+
+    await this.transactionManager.run(async () => {
+      await this.entitiesDS.update(entity);
     });
   }
 
   private async getProperty(entitySharedId: string, propertyId: string) {
-    const entity = await this.entitiesDS.getByIds([entitySharedId]).first();
-    if (!entity) {
+    const entityResult = await this.entitiesDS.getById(entitySharedId);
+    if (entityResult.isError()) {
       this.logger.info(
-        `[AT] - Entity with sharedId ${entitySharedId} does not exist (trying to save a translation comming from AT service)`
+        `[AT] - Entity with sharedId ${entitySharedId} does not exist (trying to save a translation coming from AT service)`
       );
       return null;
     }
 
-    const template = await this.getTemplate(entity);
+    const entity = entityResult.getDataOrThrow();
+    const template = (await this.templatesDS.getById(entity.template.id)).getDataOrThrow();
 
     const property = template.getPropertyById(propertyId);
     if (!property) {
@@ -79,11 +109,5 @@ export class SaveEntityTranslations {
     }
 
     return property;
-  }
-
-  private async getTemplate(entity: Entity) {
-    const template = (await this.templatesDS.getById(entity.template)).getDataOrThrow();
-
-    return template;
   }
 }

@@ -1,10 +1,10 @@
-import { Request, NextFunction, Response } from 'express';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { UserSchema } from 'shared/types/userType';
-import { UserRole } from 'shared/types/userSchema';
-import { encryptPassword } from '../encryptPassword';
-import { validatePasswordMiddleWare } from '../validatePasswordMiddleWare';
+import type { Request, NextFunction, Response } from 'express';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { encryptPassword } from '../encryptPassword.js';
+import { validatePasswordMiddleWare } from '../validatePasswordMiddleWare.js';
+import { UserDBO } from '#api/core/infrastructure/mongodb/user/UserDBO.js';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -17,8 +17,10 @@ describe('validatePasswordMiddleWare', () => {
   };
 
   const res = mockResponse();
-  const users: UserSchema[] = [];
+  const users: UserDBO[] = [];
   const next: NextFunction = jest.fn();
+
+  const encodePassword = (password: string) => Buffer.from(password).toString('base64');
 
   const createRequest = (request: Partial<Request>): Request =>
     <Request>{
@@ -32,20 +34,20 @@ describe('validatePasswordMiddleWare', () => {
     users.push(
       ...[
         {
-          ...fixturesFactory.user(
-            'admin',
-            UserRole.ADMIN,
-            'admin@test.com',
-            await encryptPassword('admin1234')
-          ),
+          ...fixturesFactory.user({
+            username: 'admin',
+            role: UserRole.ADMIN,
+            email: 'admin@test.com',
+            password: await encryptPassword('admin1234'),
+          }),
         },
         {
-          ...fixturesFactory.user(
-            'editor',
-            UserRole.EDITOR,
-            'editor@test.com',
-            await encryptPassword('editor1234')
-          ),
+          ...fixturesFactory.user({
+            username: 'editor',
+            role: UserRole.EDITOR,
+            email: 'editor@test.com',
+            password: await encryptPassword('editor1234'),
+          }),
         },
       ]
     );
@@ -72,7 +74,7 @@ describe('validatePasswordMiddleWare', () => {
     const request = createRequest({
       user: { _id: users[0]._id, username: users[0].username, role: users[0].role },
       body: { username: 'a_new_user', role: 'collaborator', email: 'collaborator@huridocs.org' },
-      headers: { authorization: 'Basic wrongPass' },
+      headers: { authorization: `Basic ${encodePassword('wrongPass')}` },
     });
 
     await validatePasswordMiddleWare(request, res, next);
@@ -86,7 +88,7 @@ describe('validatePasswordMiddleWare', () => {
     const emptyPasswordRequest = createRequest({
       user: { _id: users[0]._id, username: users[0].username, role: users[0].role },
       body: { username: 'a_new_user', role: 'collaborator', email: 'collaborator@huridocs.org' },
-      headers: { authorization: 'Basic ' },
+      headers: { authorization: `Basic ${encodePassword('')}` },
     });
 
     const noAuthHeaderRequest = createRequest({
@@ -112,7 +114,7 @@ describe('validatePasswordMiddleWare', () => {
     const request = createRequest({
       user: { _id: users[1]._id, username: users[1].username, role: users[1].role },
       body: { _id: users[1]._id, username: users[1].username, role: users[1].role },
-      headers: { authorization: 'Basic editor1234' },
+      headers: { authorization: `Basic ${encodePassword('editor1234')}` },
     });
 
     await validatePasswordMiddleWare(request, res, next);

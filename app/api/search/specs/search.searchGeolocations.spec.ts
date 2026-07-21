@@ -1,10 +1,10 @@
-import db from 'api/utils/testing_db';
-import { search } from 'api/search/search';
-import { EntitySchema } from 'shared/types/entityType';
+import db from '#api/utils/testing_db.js';
+import { search } from '#api/search/search.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
-import inheritanceFixtures, { ids } from './fixturesInheritance';
-import { fixturesTimeOut } from './fixtures_elastic';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import inheritanceFixtures, { ids } from './fixturesInheritance.js';
+import { fixturesTimeOut } from './fixtures_elastic.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 describe('search.searchGeolocations', () => {
   const user = { _id: 'u1' };
@@ -19,7 +19,9 @@ describe('search.searchGeolocations', () => {
   });
 
   it('should include all geolocation finds, inheriting metadata', async () => {
-    const results = await search.searchGeolocations({ order: 'asc', sort: 'sharedId' }, 'en', user);
+    const results = await testingEnvironment.runWithContext(async () =>
+      search.searchGeolocations({ order: 'asc', sort: 'sharedId' }, 'en', user)
+    );
     expect(results.totalRows).toBe(8);
     expect(results.rows).toMatchObject([
       {
@@ -287,10 +289,12 @@ describe('search.searchGeolocations', () => {
   });
 
   it('should allow filtering as in normal search', async () => {
-    const results = await search.searchGeolocations(
-      { types: [ids.template3], order: 'asc', sort: 'sharedId' },
-      'en',
-      user
+    const results = await testingEnvironment.runWithContext(async () =>
+      search.searchGeolocations(
+        { types: [ids.template3], order: 'asc', sort: 'sharedId' },
+        'en',
+        user
+      )
     );
     expect(results.totalRows).toBe(3);
     expect(results.rows).toMatchObject([
@@ -450,9 +454,8 @@ describe('search.searchGeolocations', () => {
   });
 
   it('should use inherited and denormalized metadata even if request is not authenticated', async () => {
-    const results = await search.searchGeolocations(
-      { types: [ids.template3], order: 'asc', sort: 'sharedId' },
-      'en'
+    const results = await testingEnvironment.runWithContext(async () =>
+      search.searchGeolocations({ types: [ids.template3], order: 'asc', sort: 'sharedId' }, 'en')
     );
 
     const entity = results.rows.find(
@@ -497,7 +500,9 @@ describe('search.searchGeolocations', () => {
   it('should return empty results if there are no templates with geolocation fields', async () => {
     const tplWithoutGeolocation = inheritanceFixtures.templates.find(t => t._id === ids.template5);
     await db.clearAllAndLoad({ ...inheritanceFixtures, templates: [tplWithoutGeolocation] });
-    const results = await search.searchGeolocations({ order: 'asc', sort: 'sharedId' }, 'en', user);
+    const results = await testingEnvironment.runWithContext(async () =>
+      search.searchGeolocations({ order: 'asc', sort: 'sharedId' }, 'en', user)
+    );
     expect(results.rows.length).toBe(0);
     expect(results.totalRows).toBe(0);
   });

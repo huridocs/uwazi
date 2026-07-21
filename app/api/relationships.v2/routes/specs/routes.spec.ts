@@ -1,19 +1,19 @@
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import request from 'supertest';
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { setUpApp } from 'api/utils/testingRoutes';
-import testingDB, { DBFixture } from 'api/utils/testing_db';
-import { UserRole } from 'shared/types/userSchema';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import routes from '../routes';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import routes from '../routes.js';
 
 const URL = '/api/v2/relationships';
 
 const factory = getFixturesFactory();
 
-const adminUser = factory.user('admin', UserRole.ADMIN, 'admin');
+const adminUser = factory.user({ username: 'admin', role: UserRole.ADMIN, email: 'admin' });
 
 const fixtures: DBFixture = {
   templates: [factory.template('template1')],

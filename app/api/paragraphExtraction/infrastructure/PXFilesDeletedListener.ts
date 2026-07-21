@@ -1,20 +1,20 @@
-import { featureFlaggedHandler } from 'api/common.v2/utils/featureFlaggedHandler';
-import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
-import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
-import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { FileMappers } from 'api/core/infrastructure/mongodb/files/FilesMappers';
-import { EventsBus } from 'api/core/libs/eventsbus';
-import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { ObjectId } from 'mongodb';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
-import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
+import { featureFlaggedHandler } from '#api/common.v2/utils/featureFlaggedHandler.js';
+import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { FileMappers } from '#api/core/infrastructure/mongodb/files/FilesMappers.js';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
+import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory.js';
 
 type Dependencies = {
   entitiesStatusDS: PXEntitiesStatusDataSource;
@@ -40,8 +40,10 @@ export class PXFilesDeletedListener {
       mongoTransactionManager,
     });
 
-    const filesDS = FilesDataSourceFactory.default(mongoTransactionManager);
-    const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
+    const filesDS = FilesDataSourceFactory.default({ transactionManager: mongoTransactionManager });
+    const settingsDS = SettingsDataSourceFactory.default({
+      transactionManager: mongoTransactionManager,
+    });
     const fileStorage = FileStorageFactory.default();
 
     this.dependencies = { entitiesStatusDS, filesDS, settingsDS, fileStorage };
@@ -51,14 +53,15 @@ export class PXFilesDeletedListener {
     sharedId: string,
     installedLanguages: LanguageISO6391[]
   ) {
-    const documentsInInstalledLanguages = await this.dependencies.filesDS
-      .getProcessedDocsForEntity(sharedId)
-      .all();
+    const documentsInInstalledLanguages =
+      await this.dependencies.filesDS.getProcessedDocsForEntity(sharedId);
 
-    return documentsInInstalledLanguages.filter(d => installedLanguages.includes(d.language));
+    return documentsInInstalledLanguages.filter(
+      d => d.language !== undefined && installedLanguages.includes(d.language)
+    );
   }
 
-  private async getInitialData(deletedDocuments: ProcessedPDF[]) {
+  private async getInitialData(deletedDocuments: PDFDocument[]) {
     const entityStatus = await this.dependencies.entitiesStatusDS.getExisting({
       entitySharedId: deletedDocuments[0].entity,
     });
@@ -80,7 +83,7 @@ export class PXFilesDeletedListener {
   }
 
   // eslint-disable-next-line max-statements
-  private async onDocumentsDeleted(deletedDocuments: ProcessedPDF[]) {
+  private async onDocumentsDeleted(deletedDocuments: PDFDocument[]) {
     const { entityStatus, documentsInInstalledLanguages, installedLanguages } =
       await this.getInitialData(deletedDocuments);
 
@@ -88,8 +91,8 @@ export class PXFilesDeletedListener {
       return;
     }
 
-    const deletedDocumentsInInstalledLanguage = deletedDocuments.filter(d =>
-      installedLanguages.includes(d.language)
+    const deletedDocumentsInInstalledLanguage = deletedDocuments.filter(
+      d => d.language !== undefined && installedLanguages.includes(d.language)
     );
 
     if (!deletedDocumentsInInstalledLanguage.length) {
@@ -145,7 +148,7 @@ export class PXFilesDeletedListener {
     }
 
     await this.onDocumentsDeleted(
-      deletedDocuments.filter((d): d is ProcessedPDF => d instanceof ProcessedPDF)
+      deletedDocuments.filter((d): d is PDFDocument => d instanceof PDFDocument)
     );
   }
 

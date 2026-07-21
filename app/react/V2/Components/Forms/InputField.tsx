@@ -1,8 +1,14 @@
+/* eslint-disable react/require-default-props */
 import React, { ChangeEventHandler, Ref } from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
-import { Translate } from 'app/I18N';
-import { InputError } from './InputError';
-import { Label } from './Label';
+import { Translate } from '#app/I18N/index.js';
+import { InputError } from './InputError.js';
+import { Label } from './Label.js';
+
+type InputFieldType =
+  'text' | 'email' | 'password' | 'number' | 'date' | 'datetime-local' | 'search' | 'url' | 'file';
+
+type FieldState = { disabled?: boolean; hasError?: boolean };
 
 interface InputFieldProps {
   id: string;
@@ -14,16 +20,43 @@ interface InputFieldProps {
   errorMessage?: string | React.ReactNode;
   value?: string | number;
   className?: string;
-  type?: 'text' | 'email' | 'password' | 'number' | 'date' | 'datetime-local' | 'search' | 'file';
+  type?: InputFieldType;
   autoComplete?: 'on' | 'off';
   preText?: string | React.ReactNode;
   name?: string;
-  clearFieldAction?: () => any;
+  clearFieldAction?: () => void;
   icon?: React.ReactNode;
   onChange?: ChangeEventHandler<HTMLInputElement>;
   onSelect?: ChangeEventHandler<HTMLInputElement>;
   onBlur?: ChangeEventHandler<HTMLInputElement>;
+  min?: string | number;
+  max?: string | number;
+  step?: string | number;
 }
+
+const cx = (...classes: Array<string | false | undefined>) => classes.filter(Boolean).join(' ');
+
+const searchReset =
+  '[&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden';
+
+const inputBase =
+  'w-full rounded-lg border border-border bg-paper px-3 py-2 text-sm text-ink placeholder:text-ink-muted focus:border-carbon/40 focus:outline-none focus:ring-2 focus:ring-carbon/20';
+
+const inputClass = (state: FieldState, ...extra: Array<string | false | undefined>) =>
+  cx(
+    inputBase,
+    state.hasError && 'border-emphasis bg-seal-tint text-seal',
+    state.disabled && 'cursor-not-allowed bg-warm text-ink-muted',
+    ...extra
+  );
+
+const clearButtonClass =
+  'absolute right-0 top-px w-fit rounded-r-lg p-2.5 text-sm font-medium hover:cursor-pointer focus:outline-hidden enabled:hover:text-carbon disabled:text-ink-muted';
+
+const preTextClass =
+  'inline-flex items-center rounded-e-0 rounded-s-md border border-r-0 border-border bg-vellum px-3 text-sm text-ink';
+
+const noop = () => undefined;
 
 const InputField = React.forwardRef(
   (
@@ -43,44 +76,28 @@ const InputField = React.forwardRef(
       name = '',
       clearFieldAction,
       icon,
-      onChange = () => {},
-      onSelect = () => {},
-      onBlur = () => {},
+      onChange = noop,
+      onSelect = noop,
+      onBlur = noop,
+      min,
+      max,
+      step,
     }: InputFieldProps,
-    ref: Ref<any>
+    ref: Ref<HTMLInputElement>
   ) => {
-    let fieldStyles = 'border-gray-300 border text-gray-900 focus:ring-primary-500 bg-gray-50';
-    let clearFieldStyles = 'enabled:hover:text-primary-700 text-gray-900';
-
-    if (hasErrors || errorMessage) {
-      fieldStyles =
-        'border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700';
-      clearFieldStyles = 'enabled:hover:text-error-700 text-error-900';
-    }
-
+    const state: FieldState = { disabled, hasError: Boolean(hasErrors || errorMessage) };
     const hasValue = value !== undefined && value !== null && value !== '';
+    const hasClearOrIcon = Boolean(clearFieldAction || icon);
     const showClearButton = Boolean(clearFieldAction) && (hasValue || !icon);
     const showIcon = icon && (!clearFieldAction || !hasValue);
 
-    if (clearFieldAction || icon) {
-      fieldStyles = `${fieldStyles} pr-10`;
-    }
-
     return (
       <div className={className}>
-        <Label
-          htmlFor={id}
-          hideLabel={!label || hideLabel}
-          hasErrors={Boolean(hasErrors || errorMessage)}
-        >
+        <Label htmlFor={id} hideLabel={!label || hideLabel} hasErrors={state.hasError}>
           {label}
         </Label>
         <div className="relative flex w-full">
-          {preText && (
-            <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-e-0 rounded-s-md">
-              {preText}
-            </span>
-          )}
+          {preText && <span className={preTextClass}>{preText}</span>}
           <input
             type={type}
             autoComplete={autoComplete}
@@ -92,14 +109,16 @@ const InputField = React.forwardRef(
             ref={ref}
             disabled={disabled}
             value={value}
-            className={`${fieldStyles} disabled:text-gray-500 block flex-1 w-full text-sm ${
-              type !== 'file' ? 'p-2.5' : ''
-            } ${preText ? 'rounded-none rounded-e-lg' : 'rounded-lg'} ${
-              type === 'search'
-                ? '[&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden'
-                : ''
-            }`}
+            className={inputClass(
+              state,
+              hasClearOrIcon && 'pr-10',
+              Boolean(preText) && 'rounded-none rounded-e-md',
+              type === 'search' && searchReset
+            )}
             placeholder={placeholder}
+            min={min}
+            max={max}
+            step={step}
           />
           {showClearButton && (
             <button
@@ -107,15 +126,14 @@ const InputField = React.forwardRef(
               onClick={clearFieldAction}
               disabled={disabled}
               data-testid="clear-field-button"
-              className={`${clearFieldStyles} top-px disabled:text-gray-500 absolute p-2.5 right-0 text-sm font-medium rounded-r-lg
-             focus:outline-hidden`}
+              className={clearButtonClass}
             >
               <XMarkIcon className="w-5" />
               <Translate className="sr-only">Clear</Translate>
             </button>
           )}
           {showIcon && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+            <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
               {icon}
             </div>
           )}
@@ -127,3 +145,4 @@ const InputField = React.forwardRef(
 );
 
 export { InputField };
+export type { InputFieldType };

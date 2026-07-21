@@ -1,4 +1,4 @@
-import { Fixtures } from '../types';
+import { Fixtures } from '../types.js';
 
 const faultyLinks = [
   {

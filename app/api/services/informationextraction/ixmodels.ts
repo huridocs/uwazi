@@ -1,10 +1,10 @@
 import { ObjectId } from 'mongodb';
-import { Suggestions } from 'api/suggestions/suggestions';
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import { ModelStatus } from 'shared/types/IXModelSchema';
-import { IXModelType } from 'shared/types/IXModelType';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
-import { IXModelsModel as model } from './IXModelsModel';
+import { Suggestions } from '#api/suggestions/suggestions.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { ModelStatus } from '#shared/types/IXModelSchema.js';
+import { IXModelType } from '#shared/types/IXModelType.js';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
+import { IXModelsModel as model } from './IXModelsModel.js';
 
 const DEFAULT_MAX_SUGGESTIONS_SIZE = 1000;
 
@@ -29,16 +29,28 @@ const initializeFindRunQueue = async (modelId: ObjectIdSchema, sharedIds: string
   const [current] = await model.get({ _id: modelId });
   const { extractorId } = current;
 
-  // Trim pre-processed (already has ready, non-obsolete and non-error suggestion)
-  const alreadySuggested = (await IXSuggestionsModel.db.distinct('entityId', {
-    extractorId,
-    entityId: { $in: sharedIds },
-    date: { $ne: null },
-    'state.obsolete': { $ne: true },
-    'state.error': { $ne: true },
-  })) as string[];
-  const alreadySet = new Set(alreadySuggested);
-  const pendingIds = sharedIds.filter(id => !alreadySet.has(id));
+  // Trim pre-processed sharedIds only when they are fully healthy.
+  // Keep IDs pending when:
+  // - they have any obsolete suggestion, OR
+  // - they have no valid non-obsolete/non-error suggestion yet.
+  const [validNonObsoleteIds, obsoleteIds] = (await Promise.all([
+    IXSuggestionsModel.db.distinct('entityId', {
+      extractorId,
+      entityId: { $in: sharedIds },
+      date: { $ne: null },
+      'state.obsolete': { $ne: true },
+      'state.error': { $ne: true },
+    }),
+    IXSuggestionsModel.db.distinct('entityId', {
+      extractorId,
+      entityId: { $in: sharedIds },
+      date: { $ne: null },
+      'state.obsolete': true,
+    }),
+  ])) as [string[], string[]];
+  const validSet = new Set(validNonObsoleteIds);
+  const obsoleteSet = new Set(obsoleteIds);
+  const pendingIds = sharedIds.filter(id => obsoleteSet.has(id) || !validSet.has(id));
 
   // Establish a run timestamp for this selection
   const runTimestamp = Date.now();

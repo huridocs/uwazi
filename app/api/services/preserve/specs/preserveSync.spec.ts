@@ -1,28 +1,28 @@
-import { config } from 'api/config';
-import { generateFileName, testingUploadPaths } from 'api/files/filesystem';
-import { storage } from 'api/files/storage';
-import { legacyLogger } from 'api/log';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { elastic, search } from 'api/search';
-import { tenants } from 'api/tenants';
-import { Tenant } from 'api/tenants/tenantContext';
-import thesauri from 'api/thesauri';
-import db from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
 import backend from 'fetch-mock';
 import path from 'path';
 import qs from 'qs';
-import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
-import { FileType } from 'shared/types/fileType';
 import { URL } from 'url';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 import { ApiResponse } from '@elastic/elasticsearch';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
-import { preserveSync } from '../preserveSync';
-import { preserveSyncModel } from '../preserveSyncModel';
-import { anotherTemplateId, fixtures, templateId, thesauri1Id, user } from './fixtures';
+import { generateFileName, testingUploadPaths } from '#api/files/filesystem.js';
+import { storage } from '#api/files/storage.js';
+import { legacyLogger } from '#api/log/index.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { elastic, search } from '#api/search/index.js';
+import { tenants } from '#api/tenants/index.js';
+import { Tenant } from '#api/tenants/tenantContext.js';
+import thesauri from '#api/core/v1_layer/thesauri/index.js';
+import db from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { EntitySchema, EntityWithFilesSchema } from '#shared/types/entityType.js';
+import { FileType } from '#shared/types/fileType.js';
+
+import { preserveSync } from '../preserveSync.js';
+import { preserveSyncModel } from '../preserveSyncModel.js';
+import { anotherTemplateId, fixtures, templateId, thesauri1Id, user } from './fixtures.js';
 
 const getEntitiesWithFiles = async () => {
   const entities = await testingEnvironment.db.getAllFrom('entities');
@@ -88,7 +88,8 @@ describe('preserveSync', () => {
       dbName: db.dbName,
       indexName: 'preserveSync_index',
       ...(await testingUploadPaths()),
-      featureFlags: config.defaultTenant.featureFlags,
+      featureFlags: { postgresThesauri: false },
+      domain: 'test-tenant',
     };
 
     tenants.add(tenant1);
@@ -334,7 +335,9 @@ describe('preserveSync', () => {
     it('should save url and source properties based on the evidence url', async () => {
       await tenants.run(async () => {
         permissionsContext.setCommandContext();
-        const importedThesauri = await thesauri.getById(thesauri1Id);
+        const importedThesauri = await testingEnvironment.runWithContext(async () =>
+          thesauri.getById(thesauri1Id)
+        );
         expect(importedThesauri).toMatchObject({
           values: [
             { label: 'www.url1test.org' },

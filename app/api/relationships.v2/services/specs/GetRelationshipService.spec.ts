@@ -1,17 +1,18 @@
-import { MongoPermissionsDataSource } from 'api/authorization.v2/database/MongoPermissionsDataSource';
-import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
-import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
-import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource';
-import { MongoSettingsDataSource } from 'api/core/infrastructure/mongodb/MongoSettingsDataSource';
-import { MongoTemplatesDataSource } from 'api/core/infrastructure/mongodb/template/MongoTemplatesDataSource';
-import { User } from 'api/users.v2/model/User';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DBFixture } from 'api/utils/testing_db';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { GetRelationshipService } from '../GetRelationshipService';
+import { MongoPermissionsDataSource } from '#api/authorization.v2/database/MongoPermissionsDataSource.js';
+import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
+import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
+import { MongoDeprecatedEntitiesDataSource } from '#api/entities.v2/database/MongoDeprecatedEntitiesDataSource.js';
+import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
+import { MongoRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource.js';
+import { User } from '#api/users.v2/model/User.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { GetRelationshipService } from '../GetRelationshipService.js';
 
 const fixtureFactory = getFixturesFactory();
 
@@ -52,13 +53,17 @@ const createService = (_user?: User) => {
   const transactionManager = TransactionManagerFactory.default();
   const relationshipsDS = new MongoRelationshipsDataSource(connection, transactionManager);
   const relationshipTypesDS = new MongoRelationshipTypesDataSource(connection, transactionManager);
-  const templatesDS = new MongoTemplatesDataSource(connection, transactionManager);
-  const settingsDS = new MongoSettingsDataSource(connection, transactionManager);
+  const templatesDS = new MongoTemplatesDataSource({
+    db: connection,
+    transactionManager,
+    dao: new MongoTemplatesDAO({ db: connection, transactionManager }),
+  });
+  const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
   const authService = new AuthorizationService(
     new MongoPermissionsDataSource(connection, transactionManager),
     user
   );
-  const entitiesDS = new MongoEntitiesDataSource(
+  const entitiesDS = new MongoDeprecatedEntitiesDataSource(
     connection,
     templatesDS,
     settingsDS,

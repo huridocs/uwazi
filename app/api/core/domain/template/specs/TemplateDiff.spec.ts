@@ -1,8 +1,9 @@
-import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';
-import { Property } from 'api/core/domain/template/Property';
-import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
-import { TemplateDiff } from '../TemplateDiff';
-import { GenerateIdProperty } from '../GenerateIdProperty';
+import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder.js';
+import { Property } from '#api/core/domain/template/Property.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { TemplateDiff } from '../TemplateDiff.js';
+import { GenerateIdProperty } from '../GenerateIdProperty.js';
+import { TextProperty } from '../TextProperty.js';
 
 describe('TemplateDiff', () => {
   it('should detect new properties', () => {
@@ -298,5 +299,53 @@ describe('TemplateDiff', () => {
 
     const diffWithGen = new TemplateDiff(base, withNewProp);
     expect(diffWithGen.hasAnyPostProcessChanges()).toBe(true);
+  });
+
+  describe('hasFilterablePropertyChanges', () => {
+    const buildBase = () =>
+      TemplateBuilder.aTemplate({ id: 'template1', name: 'Template 1' })
+        .withProperties([
+          new TextProperty({ id: 'p1', label: 'Text', template: 'template1', filter: false }),
+          new TextProperty({ id: 'p2', label: 'Other', template: 'template1', filter: false }),
+        ])
+        .build();
+
+    it('returns false when filter is unchanged', () => {
+      const base = buildBase();
+      const same = TemplateBuilder.from(base).build();
+      expect(new TemplateDiff(base, same).hasFilterablePropertyChanges()).toBe(false);
+    });
+
+    it('returns true when filter is toggled on an existing property', () => {
+      const base = buildBase();
+      const updated = TemplateBuilder.from(base)
+        .withProperties([
+          new TextProperty({ id: 'p1', label: 'Text', template: 'template1', filter: true }),
+          new TextProperty({ id: 'p2', label: 'Other', template: 'template1', filter: false }),
+        ])
+        .build();
+      expect(new TemplateDiff(base, updated).hasFilterablePropertyChanges()).toBe(true);
+    });
+
+    it('returns false when a filterable property is deleted (no common property to compare)', () => {
+      const base = buildBase();
+      const updated = TemplateBuilder.from(base)
+        .withProperties([
+          new TextProperty({ id: 'p2', label: 'Other', template: 'template1', filter: false }),
+        ])
+        .build();
+      expect(new TemplateDiff(base, updated).hasFilterablePropertyChanges()).toBe(false);
+    });
+
+    it('returns false when a new filterable property is added', () => {
+      const base = buildBase();
+      const updated = TemplateBuilder.from(base)
+        .withProperties([
+          ...base.properties,
+          new TextProperty({ id: 'p3', label: 'New', template: 'template1', filter: true }),
+        ])
+        .build();
+      expect(new TemplateDiff(base, updated).hasFilterablePropertyChanges()).toBe(false);
+    });
   });
 });

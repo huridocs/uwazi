@@ -1,9 +1,9 @@
-import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
+import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { z } from 'zod';
-import { PropertyTypeInvalidTypeError } from './errors';
-import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
-import { PropertyTypeEnum } from './PropertyType';
-import { DateEntry, PropertyAssignment } from './PropertyValue';
+import { PropertyTypeInvalidTypeError } from './errors.js';
+import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty.js';
+import { PropertyTypeEnum } from './PropertyType.js';
+import { DateEntry, PropertyAssignment } from './PropertyValue.js';
 
 type Props = {
   type?: PropertyTypeEnum.Date;
@@ -53,11 +53,8 @@ class DateProperty extends FilterableProperty {
     };
   }
 
-  validatePropertyAssignment(
-    { value }: PropertyAssignment<DateEntry>,
-    shouldValidateForRequired = false
-  ): void {
-    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
+  validatePropertyAssignment({ value }: PropertyAssignment<DateEntry>): void {
+    createSchema(this.required).parse(value);
   }
 }
 

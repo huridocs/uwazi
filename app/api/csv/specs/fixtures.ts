@@ -1,14 +1,15 @@
-import db, { DBFixture } from 'api/utils/testing_db';
-import { propertyTypes } from 'shared/propertyTypes';
-import { templateUtils } from 'api/core/v1_layer/templates';
-import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import db, { DBFixture } from '#api/utils/testing_db.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
+import { templateUtils } from '#api/core/v1_layer/templates/index.js';
+import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 const template1Id = db.id();
 const thesauri1Id = db.id();
 const templateToRelateId = db.id();
 
-const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
+const f = getFixturesFactory();
+const createTranslationDBO = f.v2.database.translationDBO;
 
 const translationsV2: TranslationDBO[] = [
   createTranslationDBO('value1', 'value1', 'en', {
@@ -21,7 +22,7 @@ const translationsV2: TranslationDBO[] = [
     type: 'Thesaurus',
     label: 'thesauri 1',
   }),
-  createTranslationDBO('value3', 'value3', 'en', {
+  createTranslationDBO('Value3', 'Value3', 'en', {
     id: thesauri1Id.toString(),
     type: 'Thesaurus',
     label: 'thesauri 1',
@@ -40,10 +41,9 @@ const fixtures: DBFixture = {
       name: 'template to relate',
       properties: [],
     },
-    {
-      _id: template1Id,
-      name: 'base template',
-      properties: [
+    f.template(
+      'base template',
+      [
         {
           _id: db.id(),
           type: propertyTypes.text,
@@ -61,13 +61,7 @@ const fixtures: DBFixture = {
           type: propertyTypes.select,
           label: 'select label',
           name: templateUtils.safeName('select label'),
-          content: thesauri1Id,
-        },
-        {
-          _id: db.id(),
-          type: 'non_defined_type',
-          label: 'not defined type',
-          name: templateUtils.safeName('not defined type'),
+          content: thesauri1Id.toString(),
         },
         {
           _id: db.id(),
@@ -88,7 +82,8 @@ const fixtures: DBFixture = {
           name: templateUtils.safeName('auto id'),
         },
       ],
-    },
+      { _id: template1Id }
+    ),
   ],
 
   dictionaries: [
@@ -109,7 +104,7 @@ const fixtures: DBFixture = {
           id: db.id().toString(),
         },
         {
-          label: ' value4 ',
+          label: 'value4',
           id: db.id().toString(),
         },
       ],

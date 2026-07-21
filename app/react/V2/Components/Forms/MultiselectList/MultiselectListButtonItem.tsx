@@ -1,7 +1,7 @@
 import React from 'react';
-import { Translate } from 'app/I18N';
-import { MultiselectListOption } from './MultiselectList';
-import { Pill } from '../../UI/Pill';
+import { Translate } from '#app/I18N/index.js';
+import { MultiselectListOption } from './MultiselectList.js';
+import { Pill } from '../../UI/Pill.js';
 
 interface MultiselectListButtonItemProps {
   item: MultiselectListOption;
@@ -24,10 +24,10 @@ const MultiselectListButtonItem = ({
     <li key={item.value} className={`${itemClassName ?? 'bg-gray-50 rounded-lg mb-4'}`}>
       <button
         type="button"
-        className={`w-full flex text-left p-2.5 border ${borderSyles} rounded-lg items-center`}
+        className={`w-full flex gap-4 text-left p-2.5 border ${borderSyles} rounded-lg items-center`}
         onClick={onClick}
       >
-        <span className="flex-1">{item.label}</span>
+        <span className="grow">{item.label}</span>
         <div className="flex-1">
           <Pill className="float-right" color={selected ? 'green' : 'primary'}>
             {selected ? <Translate>Selected</Translate> : <Translate>Select</Translate>}

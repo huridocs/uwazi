@@ -1,16 +1,27 @@
-import { EventsBus } from 'api/core/libs/eventsbus';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DBFixture } from 'api/utils/testing_db';
-import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
-
 import { ObjectId } from 'mongodb';
-import { tenants } from 'api/tenants';
-import { PXEntityUpdatedListener } from '../PXEntityUpdatedListener';
-import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO';
-import { MongoExtractorBuilder } from './MongoPXExtractorBuilder';
-import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource';
-import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
+
+import { tenants } from '#api/tenants/index.js';
+import { PXEntityUpdatedListener } from '../PXEntityUpdatedListener.js';
+import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO.js';
+import { MongoExtractorBuilder } from './MongoPXExtractorBuilder.js';
+import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource.js';
+import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource.js';
+
+type TestConfig = {
+  name: string;
+  usePostgres: boolean;
+};
+
+const testConfigs: TestConfig[] = [
+  { name: 'Mongo', usePostgres: false },
+  { name: 'Postgres', usePostgres: true },
+];
 
 const languages = ['en', 'es'];
 
@@ -88,9 +99,8 @@ const createSut = () => {
 };
 
 describe('PXEntityUpdatedListener', () => {
-  beforeEach(async () => {
-    await testingEnvironment.setUp(createFixtures());
-    tenants.current().featureFlags!.paragraphExtraction = true;
+  beforeAll(async () => {
+    await testingEnvironment.setUp(createFixtures(), { postgres: true });
   });
 
   afterAll(async () => {
@@ -98,142 +108,158 @@ describe('PXEntityUpdatedListener', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe('given templated was updated', () => {
-    it('should do nothing if feature flag not enabled', async () => {
-      await testingEnvironment.setFixtures({
-        ...createFixtures(),
-        files: [...document1En],
+  describe.each(testConfigs)('$name', ({ usePostgres }) => {
+    beforeEach(async () => {
+      testingTenants.changeCurrentTenant({
+        featureFlags: { postgresFiles: usePostgres },
       });
-
-      tenants.current().featureFlags!.paragraphExtraction = false;
-
-      const { eventsBus } = createSut();
-
-      await eventsBus.emit(
-        new EntityUpdatedEvent({
-          before: entity1.map(e => ({ ...e, template: template._id })),
-          after: entity1,
-          targetLanguageKey: 'en',
-        })
-      );
-
-      const entitiesStatus = await testingEnvironment.db.getAllFrom(
-        mongoPXEntitiesStatusCollection
-      );
-
-      expect(entitiesStatus).toMatchObject([]);
+      await testingEnvironment.setFixtures(createFixtures());
+      tenants.current().featureFlags!.paragraphExtraction = true;
     });
 
-    it('should create EntityStatus as new if source Entity can be used for extraction', async () => {
-      await testingEnvironment.setFixtures({
-        ...createFixtures(),
-        files: [...document1En],
+    describe('given templated was updated', () => {
+      it('should do nothing if feature flag not enabled', async () => {
+        await testingEnvironment.setFixtures({
+          ...createFixtures(),
+          files: [...document1En],
+        });
+
+        tenants.current().featureFlags!.paragraphExtraction = false;
+
+        const { eventsBus } = createSut();
+
+        await eventsBus.emit(
+          new EntityUpdatedEvent({
+            before: entity1.map(e => ({ ...e, template: template._id })),
+            after: entity1,
+            targetLanguageKey: 'en',
+          })
+        );
+
+        const entitiesStatus = await testingEnvironment.db.getAllFrom(
+          mongoPXEntitiesStatusCollection
+        );
+
+        expect(entitiesStatus).toMatchObject([]);
       });
 
-      const { eventsBus } = createSut();
+      it('should create EntityStatus as new if source Entity can be used for extraction', async () => {
+        await testingEnvironment.setFixtures({
+          ...createFixtures(),
+          files: [...document1En],
+        });
 
-      await eventsBus.emit(
-        new EntityUpdatedEvent({
-          before: entity1.map(e => ({ ...e, template: template._id })),
-          after: entity1,
-          targetLanguageKey: 'en',
-        })
-      );
+        const { eventsBus } = createSut();
 
-      const entitiesStatus = await testingEnvironment.db.getAllFrom(
-        mongoPXEntitiesStatusCollection
-      );
+        await testingEnvironment.runWithContext(async () => {
+          await eventsBus.emit(
+            new EntityUpdatedEvent({
+              before: entity1.map(e => ({ ...e, template: template._id })),
+              after: entity1,
+              targetLanguageKey: 'en',
+            })
+          );
+        });
 
-      expect(entitiesStatus).toMatchObject([
-        {
-          _id: expect.any(ObjectId),
-          status: EntityStatus.New,
-          entitySharedId: entity1[0].sharedId,
-          extractorId: extractor._id,
-        },
-      ]);
+        const entitiesStatus = await testingEnvironment.db.getAllFrom(
+          mongoPXEntitiesStatusCollection
+        );
+
+        expect(entitiesStatus).toMatchObject([
+          {
+            _id: expect.any(ObjectId),
+            status: EntityStatus.New,
+            entitySharedId: entity1[0].sharedId,
+            extractorId: extractor._id,
+          },
+        ]);
+      });
+
+      it('should delete EntityStatus if source Entity can not be used for extraction', async () => {
+        await testingEnvironment.setFixtures({
+          ...createFixtures(),
+          [mongoPXEntitiesStatusCollection]: [entityStatus1, entityStatus2],
+        });
+
+        const { eventsBus } = createSut();
+
+        await testingEnvironment.runWithContext(async () => {
+          await eventsBus.emit(
+            new EntityUpdatedEvent({
+              before: entity1,
+              after: entity1.map(e => ({ ...e, template: template._id })),
+              targetLanguageKey: 'en',
+            })
+          );
+        });
+
+        const entitiesStatus = await testingEnvironment.db.getAllFrom(
+          mongoPXEntitiesStatusCollection
+        );
+
+        expect(entitiesStatus).toHaveLength(1);
+        expect(entitiesStatus).not.toMatchObject([entityStatus1]);
+      });
+
+      it('should delete old EntityStatus and create new if Entity can be use for extraction', async () => {
+        await testingEnvironment.setFixtures({
+          ...createFixtures(),
+          [mongoPXEntitiesStatusCollection]: [entityStatus1, entityStatus2, entityStatus3],
+          files: [...document1En],
+        });
+
+        const { eventsBus } = createSut();
+
+        await testingEnvironment.runWithContext(async () => {
+          await eventsBus.emit(
+            new EntityUpdatedEvent({
+              before: entity1,
+              after: entity1.map(e => ({ ...e, template: sourceTemplate2._id })),
+              targetLanguageKey: 'en',
+            })
+          );
+        });
+
+        const entitiesStatus = await testingEnvironment.db.getAllFrom(
+          mongoPXEntitiesStatusCollection
+        );
+
+        expect(entitiesStatus).toMatchObject([
+          entityStatus2,
+          entityStatus3,
+          {
+            _id: expect.any(ObjectId),
+            status: EntityStatus.New,
+            entitySharedId: entity1[0].sharedId,
+            extractorId: extractor2._id,
+          },
+        ]);
+      });
     });
 
-    it('should delete EntityStatus if source Entity can not be used for extraction', async () => {
-      await testingEnvironment.setFixtures({
-        ...createFixtures(),
-        [mongoPXEntitiesStatusCollection]: [entityStatus1, entityStatus2],
+    describe('given template was not updated', () => {
+      it('should no nothing', async () => {
+        await testingEnvironment.setFixtures({
+          ...createFixtures(),
+          [mongoPXEntitiesStatusCollection]: [entityStatus1],
+        });
+
+        const { eventsBus } = createSut();
+
+        await eventsBus.emit(
+          new EntityUpdatedEvent({
+            after: entity1,
+            before: entity1.map(e => ({ ...e, template: new ObjectId(e.template?.toString()) })),
+            targetLanguageKey: 'en',
+          })
+        );
+
+        const entitiesStatus = await testingEnvironment.db.getAllFrom(
+          mongoPXEntitiesStatusCollection
+        );
+
+        expect(entitiesStatus).toEqual([entityStatus1]);
       });
-
-      const { eventsBus } = createSut();
-
-      await eventsBus.emit(
-        new EntityUpdatedEvent({
-          before: entity1,
-          after: entity1.map(e => ({ ...e, template: template._id })),
-          targetLanguageKey: 'en',
-        })
-      );
-
-      const entitiesStatus = await testingEnvironment.db.getAllFrom(
-        mongoPXEntitiesStatusCollection
-      );
-
-      expect(entitiesStatus).toHaveLength(1);
-      expect(entitiesStatus).not.toMatchObject([entityStatus1]);
-    });
-
-    it('should delete old EntityStatus and create new if Entity can be use for extraction', async () => {
-      await testingEnvironment.setFixtures({
-        ...createFixtures(),
-        [mongoPXEntitiesStatusCollection]: [entityStatus1, entityStatus2, entityStatus3],
-        files: [...document1En],
-      });
-
-      const { eventsBus } = createSut();
-
-      await eventsBus.emit(
-        new EntityUpdatedEvent({
-          before: entity1,
-          after: entity1.map(e => ({ ...e, template: sourceTemplate2._id })),
-          targetLanguageKey: 'en',
-        })
-      );
-
-      const entitiesStatus = await testingEnvironment.db.getAllFrom(
-        mongoPXEntitiesStatusCollection
-      );
-
-      expect(entitiesStatus).toMatchObject([
-        entityStatus2,
-        entityStatus3,
-        {
-          _id: expect.any(ObjectId),
-          status: EntityStatus.New,
-          entitySharedId: entity1[0].sharedId,
-          extractorId: extractor2._id,
-        },
-      ]);
-    });
-  });
-
-  describe('given template was not updated', () => {
-    it('should no nothing', async () => {
-      await testingEnvironment.setFixtures({
-        ...createFixtures(),
-        [mongoPXEntitiesStatusCollection]: [entityStatus1],
-      });
-
-      const { eventsBus } = createSut();
-
-      await eventsBus.emit(
-        new EntityUpdatedEvent({
-          after: entity1,
-          before: entity1.map(e => ({ ...e, template: new ObjectId(e.template?.toString()) })),
-          targetLanguageKey: 'en',
-        })
-      );
-
-      const entitiesStatus = await testingEnvironment.db.getAllFrom(
-        mongoPXEntitiesStatusCollection
-      );
-
-      expect(entitiesStatus).toEqual([entityStatus1]);
     });
   });
 });

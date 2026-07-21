@@ -1,7 +1,6 @@
-import db, { DBFixture } from 'api/utils/testing_db';
-import { UserSchema } from 'shared/types/userType';
-import { UserRole } from 'shared/types/userSchema';
-import { FileType } from 'shared/types/fileType';
+import db, { DBFixture } from '#api/utils/testing_db.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { FileType } from '#shared/types/fileType.js';
 
 const template1Id = db.id();
 const template2Id = db.id();
@@ -10,7 +9,7 @@ const entity2Id = db.id();
 const entity3Id = db.id();
 const mainPdfFileId = db.id();
 
-const editorUser: UserSchema = {
+const editorUser = {
   _id: db.id(),
   email: 'user1@test.test',
   role: UserRole.EDITOR,

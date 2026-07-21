@@ -1,8 +1,8 @@
 import React from 'react';
-import { fromJS as Immutable } from 'immutable';
+import Immutable from 'immutable';
 import { shallow } from 'enzyme';
-import { ItemFooter } from 'app/Layout/Lists';
-import { UploadEntityStatus, mapStateToProps } from '../UploadEntityStatus';
+import { ItemFooter } from '#app/Layout/Lists.js';
+import { UploadEntityStatusView, mapStateToProps } from '../UploadEntityStatus.js';
 
 describe('UploadEntityStatus', () => {
   describe('render', () => {
@@ -14,7 +14,7 @@ describe('UploadEntityStatus', () => {
     });
 
     const render = () => {
-      component = shallow(<UploadEntityStatus {...props} />);
+      component = shallow(<UploadEntityStatusView {...props} />);
     };
 
     it('should not render anything on null status', () => {
@@ -50,11 +50,11 @@ describe('UploadEntityStatus', () => {
 
     beforeEach(() => {
       store = {
-        progress: Immutable({ docId: 30 }),
-        user: Immutable({ _id: 'batId' }),
+        progress: Immutable.fromJS({ docId: 30 }),
+        user: Immutable.fromJS({ _id: 'batId' }),
       };
 
-      doc = Immutable({
+      doc = Immutable.fromJS({
         _id: '123',
         sharedId: 'docId',
         template: 'template',
@@ -65,8 +65,8 @@ describe('UploadEntityStatus', () => {
 
     describe('when progress is 0', () => {
       it('should return uploading props', () => {
-        store.progress = Immutable({ docId: 0 });
-        doc = doc.set('documents', Immutable([]));
+        store.progress = Immutable.fromJS({ docId: 0 });
+        doc = doc.set('documents', Immutable.fromJS([]));
         const props = mapStateToProps(store, { doc });
         expect(props.status).toBe('processing');
         expect(props.message).toBe('Uploading...');
@@ -76,8 +76,8 @@ describe('UploadEntityStatus', () => {
 
     describe('when status is processing', () => {
       it('should return processing props', () => {
-        doc = doc.set('documents', Immutable([{ status: 'processing' }]));
-        store.progress = Immutable({});
+        doc = doc.set('documents', Immutable.fromJS([{ status: 'processing' }]));
+        store.progress = Immutable.fromJS({});
         const props = mapStateToProps(store, { doc });
         expect(props.status).toBe('processing');
         expect(props.message).toBe('Processing...');
@@ -87,8 +87,8 @@ describe('UploadEntityStatus', () => {
 
     describe('when is a document, with failed status', () => {
       it('should return error props', () => {
-        doc = doc.set('documents', Immutable([{ status: 'failed' }]));
-        store.progress = Immutable({});
+        doc = doc.set('documents', Immutable.fromJS([{ status: 'failed' }]));
+        store.progress = Immutable.fromJS({});
         const props = mapStateToProps(store, { doc });
         expect(props.status).toBe('danger');
         expect(props.message).toBe('Conversion failed');
@@ -97,7 +97,7 @@ describe('UploadEntityStatus', () => {
 
     describe('when ready document with out template', () => {
       it('should return No type selected props', () => {
-        doc = doc.set('documents', Immutable([{ status: 'ready' }]));
+        doc = doc.set('documents', Immutable.fromJS([{ status: 'ready' }]));
         doc = doc.set('template', null);
         const props = mapStateToProps(store, { doc });
         expect(props.status).toBe('warning');
@@ -108,7 +108,7 @@ describe('UploadEntityStatus', () => {
     describe('when documents is not set', () => {
       it('should return empty props', () => {
         doc = doc.set('documents', null);
-        store.progress = Immutable({});
+        store.progress = Immutable.fromJS({});
         const props = mapStateToProps(store, { doc });
         expect(props).toEqual({});
       });
@@ -117,8 +117,8 @@ describe('UploadEntityStatus', () => {
     describe('when is uploaded, processed and with template', () => {
       it('should return empty props', () => {
         doc = doc.set('template', '1');
-        doc = doc.set('documents', Immutable([{ status: 'ready' }]));
-        store.progress = Immutable({});
+        doc = doc.set('documents', Immutable.fromJS([{ status: 'ready' }]));
+        store.progress = Immutable.fromJS({});
         const props = mapStateToProps(store, { doc });
         expect(props).toEqual({});
       });

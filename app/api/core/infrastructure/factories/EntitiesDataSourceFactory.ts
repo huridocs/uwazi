@@ -1,11 +1,32 @@
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { MongoEntitiesDataSource } from '#api/core/infrastructure/mongodb/entity/MongoEntitiesDataSource.js';
+import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+
+type Overrides = Partial<
+  Omit<ConstructorParameters<typeof MongoEntitiesDataSource>[0], 'transactionManager'>
+> & {
+  transactionManager?: TransactionManager;
+};
 
 export class EntitiesDataSourceFactory {
-  static default(transactionManager: MongoTransactionManager): MultiLanguageEntityDataSource {
+  static default(overrides?: Overrides): EntitiesDataSource {
     const db = getConnection();
-    return new MongoMultiLanguageEntityDataSource(db, transactionManager);
+    const mongoTM = (overrides?.transactionManager ??
+      ExecutionContext.transactionManager) as MongoTransactionManager;
+
+    const { transactionManager: _ignored, ...restOverrides } = overrides ?? {};
+
+    const templatesDAO = TemplatesDAOFactory.default();
+
+    return new MongoEntitiesDataSource({
+      db,
+      transactionManager: mongoTM,
+      templatesDAO,
+      ...restOverrides,
+    });
   }
 }

@@ -1,15 +1,22 @@
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
+import { ThesauriService } from '#api/core/application/ThesauriService.js';
+import translations from '#api/i18n/translations.js';
 import {
   CsvImportThesauriAppliedValue,
   CsvImportThesauriValues,
-} from '../../domain/CsvImportThesauriValues';
-import { ThesauriRepository } from '../contracts/ThesauriRepository';
-import { TranslationsRepository } from '../contracts/TranslationsRepository';
-import { CsvThesauriValuesDiff, ThesauriDiffResult } from './CsvThesauriValuesDiff';
+} from '../../domain/CsvImportThesauriValues.js';
+import { CsvThesauriValuesDiff, ThesauriDiffResult } from './CsvThesauriValuesDiff.js';
+import {
+  appendValuesToThesaurus,
+  getThesaurusById,
+  getThesaurusSchemaById,
+  toSchema,
+} from './PendingThesauriThesaurusGateway.js';
+import { collectAppliedValuesFromPending } from './PendingThesauriAppliedValuesCollector.js';
 
 type Deps = {
-  thesauriRepo: ThesauriRepository;
-  translationsRepo: TranslationsRepository;
+  thesauriDS: ThesauriDataSource;
+  thesauriService: ThesauriService;
 };
 
 type ApplyResult = {
@@ -20,63 +27,37 @@ type ApplyResult = {
 class PendingThesauriValuesApplier {
   constructor(private deps: Deps) {}
 
-  private static extractAppliedValues(
-    thesaurus: ThesaurusSchema,
-    descriptors: ThesauriDiffResult['createdDescriptors']
-  ): CsvImportThesauriAppliedValue[] {
-    const roots = new Map<string, any>();
-    (thesaurus.values || []).forEach(root => {
-      if (root?.label) {
-        roots.set(root.label, root);
-      }
-    });
-
-    return descriptors
-      .map(descriptor => {
-        if (!descriptor.parentLabel) {
-          const root = roots.get(descriptor.label);
-          if (root?.id) {
-            return {
-              label: descriptor.label,
-              valueId: root.id,
-            };
-          }
-          return undefined;
-        }
-        const parent = roots.get(descriptor.parentLabel);
-        const child = parent?.values?.find((value: any) => value.label === descriptor.label);
-        if (child?.id) {
-          return {
-            label: descriptor.label,
-            parentLabel: descriptor.parentLabel,
-            valueId: child.id,
-          };
-        }
-        return undefined;
-      })
-      .filter(Boolean) as CsvImportThesauriAppliedValue[];
-  }
-
-  async apply(pendingDoc: CsvImportThesauriValues): Promise<ApplyResult> {
-    const existingThesaurus = await this.deps.thesauriRepo.getById(pendingDoc.thesaurusId);
+  // eslint-disable-next-line max-statements
+  async apply(
+    pendingDoc: CsvImportThesauriValues,
+    executionContext: { tenantName: string; userId: string }
+  ): Promise<ApplyResult> {
+    const existingThesaurus = await getThesaurusSchemaById(
+      this.deps.thesauriDS,
+      pendingDoc.thesaurusId
+    );
     const diff = CsvThesauriValuesDiff.diff(pendingDoc, existingThesaurus);
 
     let appliedValues: CsvImportThesauriAppliedValue[] = [];
     let updatedThesaurus = existingThesaurus;
 
     if (diff.valuesToAppend.length) {
-      updatedThesaurus = await this.deps.thesauriRepo.appendValues(
-        pendingDoc.thesaurusId,
-        diff.valuesToAppend
-      );
-      if (Object.keys(diff.translations).length) {
-        await this.deps.translationsRepo.updateEntries(pendingDoc.thesaurusId, diff.translations);
+      const currentThesaurus = await getThesaurusById(this.deps.thesauriDS, pendingDoc.thesaurusId);
+      const updatedThesaurusDomain = appendValuesToThesaurus(currentThesaurus, diff.valuesToAppend);
+
+      await this.deps.thesauriService.update(updatedThesaurusDomain, {
+        tenantName: executionContext.tenantName,
+        actorId: executionContext.userId,
+      });
+
+      if (Object.keys(diff.translations).length > 0) {
+        await translations.updateEntries(pendingDoc.thesaurusId, diff.translations);
       }
-      appliedValues = PendingThesauriValuesApplier.extractAppliedValues(
-        updatedThesaurus,
-        diff.createdDescriptors
-      );
+
+      updatedThesaurus = toSchema(updatedThesaurusDomain);
     }
+
+    appliedValues = collectAppliedValuesFromPending(pendingDoc, updatedThesaurus);
 
     return { diff, appliedValues };
   }

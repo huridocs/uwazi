@@ -1,48 +1,104 @@
-import api from 'app/utils/api';
-import { ClientThesaurus } from 'app/apiResponseTypes';
-import { RequestParams } from 'app/utils/RequestParams';
-import { IncomingHttpHeaders } from 'http';
-import { httpRequest } from 'shared/superagent';
+import type { IncomingHttpHeaders } from 'http';
+import type { Thesaurus, ThesaurusInput } from '#shared/contracts/Thesaurus.js';
+import type { ApiResponse } from '#V2/api/ApiResponse.js';
+import { apiClient } from '#V2/api/client.js';
 
-const get = async (
-  params: { _id?: string },
+const requestHeaders = (headers?: IncomingHttpHeaders): Record<string, string> | undefined => {
+  const mapped = Object.fromEntries(
+    Object.entries(headers ?? {}).filter((entry): entry is [string, string] => {
+      const [, value] = entry;
+      return typeof value === 'string';
+    })
+  );
+  return Object.keys(mapped).length > 0 ? mapped : undefined;
+};
+
+const isThesaurus = (value: unknown): value is Thesaurus =>
+  typeof value === 'object' &&
+  value !== null &&
+  '_id' in value &&
+  typeof (value as { _id: unknown })._id === 'string' &&
+  'name' in value &&
+  typeof (value as { name: unknown }).name === 'string';
+
+const getAll = async (headers?: IncomingHttpHeaders): Promise<ApiResponse<Thesaurus[]>> => {
+  const [data, error] = await apiClient.getJson<{ rows: Thesaurus[] }>(
+    'dictionaries',
+    {},
+    { headers: requestHeaders(headers) }
+  );
+
+  if (error) {
+    return [undefined as never, error];
+  }
+
+  return [data?.rows ?? []];
+};
+
+const getById = async (
+  id: string,
   headers?: IncomingHttpHeaders
-): Promise<ClientThesaurus[]> => {
-  const requestParams = new RequestParams(params, headers);
-  const response = (await api.get('dictionaries', requestParams)) as {
-    json: { rows: ClientThesaurus[] };
-  };
-  return response.json.rows;
+): Promise<ApiResponse<Thesaurus | undefined>> => {
+  const [data, error] = await apiClient.getJson<{ rows: Thesaurus[] }>(
+    'dictionaries',
+    { _id: id },
+    { headers: requestHeaders(headers) }
+  );
+
+  if (error) {
+    return [undefined, error];
+  }
+
+  return [data?.rows?.find(isThesaurus)];
 };
 
-const save = async (
-  thesaurus: Omit<ClientThesaurus, '_id'> & { _id?: string }
-): Promise<ClientThesaurus> => {
-  const requestParams = new RequestParams(thesaurus);
-  const response = (await api.post('thesauris', requestParams)) as {
-    json: ClientThesaurus;
-  };
-  return response.json;
+const upsert = async (
+  thesaurus: ThesaurusInput,
+  headers?: IncomingHttpHeaders
+): Promise<ApiResponse<Thesaurus>> => {
+  const [data, error] = await apiClient.postJson<Thesaurus>('thesauris', thesaurus, {
+    headers: requestHeaders(headers),
+  });
+
+  if (error) {
+    return [undefined as never, error];
+  }
+
+  if (isThesaurus(data)) {
+    return [data];
+  }
+
+  return [undefined as never];
 };
 
-const deleteThesauri = async (params: { _id: string }): Promise<{ ok: boolean }> => {
-  const requestParams = new RequestParams(params);
-  const response = (await api.delete('thesauris', requestParams)) as { json: { ok: boolean } };
-  return response.json;
+const remove = async (id: string, headers?: IncomingHttpHeaders): Promise<ApiResponse<void>> => {
+  const [, error] = await apiClient.deleteJson(
+    'thesauris',
+    { _id: id },
+    {
+      headers: requestHeaders(headers),
+    }
+  );
+
+  if (error) {
+    return [undefined as never, error];
+  }
+
+  return [undefined];
 };
 
-const importThesaurus = async (
-  thesaurus: Omit<ClientThesaurus, '_id'> & { _id?: string },
-  file: File
-) => {
-  const headers = {
-    Accept: 'application/json',
-    'X-Requested-With': 'XMLHttpRequest',
-  };
-  const fields = {
-    thesauri: JSON.stringify(thesaurus),
-  };
-  return httpRequest('thesauris', fields, headers, file);
-};
+const importFromFile = async (
+  thesaurus: ThesaurusInput,
+  file: File,
+  headers?: IncomingHttpHeaders
+): Promise<ApiResponse<Thesaurus>> =>
+  apiClient.postMultipart<Thesaurus>(
+    'thesauris',
+    {
+      fields: [{ name: 'thesauri', value: JSON.stringify(thesaurus) }],
+      files: [{ name: 'file', file, filename: file.name }],
+    },
+    { headers: requestHeaders(headers) }
+  );
 
-export { get, save, deleteThesauri, importThesaurus };
+export { getAll, getById, upsert, remove, importFromFile };

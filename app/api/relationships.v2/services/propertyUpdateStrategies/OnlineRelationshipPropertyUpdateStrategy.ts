@@ -1,7 +1,7 @@
-import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
-import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { RelationshipPropertyUpdateStrategy as Strategy } from './RelationshipPropertyUpdateStrategy';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
+import { DeprecatedEntitiesDataSource } from '#api/entities.v2/contracts/DeprecatedEntitiesDataSource.js';
+import { RelationshipPropertyUpdateStrategy as Strategy } from './RelationshipPropertyUpdateStrategy.js';
 
 interface IndexEntitiesCallback {
   (sharedIds: string[]): Promise<void>;
@@ -16,13 +16,13 @@ export class OnlineRelationshipPropertyUpdateStrategy implements Strategy {
 
   private transactionManager: TransactionManager;
 
-  private entitiesDataSource: EntitiesDataSource;
+  private entitiesDataSource: DeprecatedEntitiesDataSource;
 
   constructor(
     indexEntities: IndexEntitiesCallback,
     updater: EntityRelationshipsUpdateService,
     transactionManager: TransactionManager,
-    entitiesDataSource: EntitiesDataSource
+    entitiesDataSource: DeprecatedEntitiesDataSource
   ) {
     this.indexEntities = indexEntities;
     this.updater = updater;

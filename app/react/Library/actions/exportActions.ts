@@ -1,16 +1,16 @@
-import { List } from 'immutable';
+import Immutable from 'immutable';
 
 import superagent from 'superagent';
-import { actions } from 'app/BasicReducer';
-import { notify } from 'app/Notifications/actions/notificationsActions';
-import { t } from 'app/I18N';
+import { actions } from '#app/BasicReducer/index.js';
+import { notify } from '#app/Notifications/actions/notificationsActions.js';
+import { t } from '#app/I18N/index.js';
 import { Dispatch } from 'redux';
-import { IImmutable } from 'shared/types/Immutable';
-import { CaptchaValue } from 'shared/types/Captcha';
-import { EntitySchema } from 'shared/types/entityType';
-import { CsvExportBody } from 'shared/types/searchParameterType';
-import { processFilters } from './libraryActions';
-import { ExportStore } from '../reducers/ExportStoreType';
+import { IImmutable } from '#shared/types/Immutable.js';
+import { CaptchaValue } from '#shared/types/Captcha.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { CsvExportBody } from '#shared/types/searchParameterType.js';
+import { processFilters } from './libraryActions.js';
+import { ExportStore } from '../reducers/ExportStoreType.js';
 
 export function triggerLocalDownload(content: string, fileName: string) {
   const url: string = window.URL.createObjectURL(new Blob([content]));
@@ -39,14 +39,42 @@ export function exportEnd() {
   };
 }
 
+function extractUtf8FileName(contentDisposition: string) {
+  const utf8FileNameMatch = contentDisposition.match(/filename\*\s*=\s*([^;]+)/i);
+  if (!utf8FileNameMatch) {
+    return null;
+  }
+
+  const removeDoubleQuotes = utf8FileNameMatch[1].trim().replace(/^"|"$/g, '');
+  const removeUTF8Lang = removeDoubleQuotes.replace(/^[^']*'[^']*'/, '');
+  try {
+    return decodeURIComponent(removeUTF8Lang);
+  } catch (_error) {
+    return null;
+  }
+}
+
+function extractAsciiFileName(contentDisposition: string) {
+  const getFilename = contentDisposition.match(/filename\s*=\s*"?([^";]+)"?/i);
+  return getFilename?.[1].trim() || null;
+}
+
 function extractFileName(contentDisposition: string) {
-  const startIndex = contentDisposition.indexOf('filename="') + 10;
-  const endIndex = contentDisposition.length - 1;
-  return contentDisposition.substring(startIndex, endIndex);
+  if (!contentDisposition) {
+    return 'export.csv';
+  }
+
+  const hasUtf8FileName = /filename\*/i.test(contentDisposition);
+
+  if (hasUtf8FileName) {
+    return extractUtf8FileName(contentDisposition) || 'export.csv';
+  }
+
+  return extractAsciiFileName(contentDisposition) || 'export.csv';
 }
 
 const requestHandler = (
-  _params: CsvExportBody & { ids?: List<string> },
+  _params: CsvExportBody & { ids?: Immutable.List<string> },
   dispatch: Dispatch<any>,
   captcha?: CaptchaValue
 ) => {

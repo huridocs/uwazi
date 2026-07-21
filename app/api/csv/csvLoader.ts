@@ -1,176 +1,20 @@
-import { ObjectId } from 'mongodb';
-import { groupBy } from 'lodash';
+import translations from '#api/i18n/index.js';
+import settings from '#api/settings/index.js';
+import thesauri from '#api/core/v1_layer/thesauri/index.js';
+import { TranslationType } from '#shared/translationType.js';
+import { ensure } from '#shared/tsUtils.js';
+import { LanguageSchema, ObjectIdSchema } from '#shared/types/commonTypes.js';
+import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 
-import translations from 'api/i18n';
-import { EnforcedWithId } from 'api/odm';
-import settings from 'api/settings';
-import templates from 'api/core/v1_layer/templates';
-import thesauri from 'api/thesauri';
-import { EventEmitter } from 'events';
+import csv, { CSVRow, validateFormat, ValidateFormatOptions } from './csv.js';
+import importFile from './importFile.js';
+import { thesauriFromStream } from './importThesauri.js';
 
-import { objectIndex } from 'shared/data_utils/objectIndex';
-import { TranslationType } from 'shared/translationType';
-import { ensure } from 'shared/tsUtils';
-import { LanguageSchema, ObjectIdSchema } from 'shared/types/commonTypes';
-import { TemplateSchema } from 'shared/types/templateType';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
-
-import { arrangeThesauri } from './arrangeThesauri';
-import csv, { CSVRow, validateFormat, ValidateFormatOptions } from './csv';
-import { extractEntity, toSafeName } from './entityRow';
-import { FullyIndexedTranslations, importEntity, translateEntity } from './importEntity';
-import importFile from './importFile';
-import { thesauriFromStream } from './importThesauri';
-import { validateColumns } from './validateColumns';
-
-const readResources = async (
-  templateId: ObjectId | string
-): Promise<{
-  template: EnforcedWithId<TemplateSchema>;
-  newNameGeneration: boolean;
-  availableLanguages: string[];
-  defaultLanguage: string;
-  dateFormat: string | undefined;
-}> => {
-  const template = await templates.getById(templateId);
-  if (!template) {
-    throw new Error('template not found!');
-  }
-  const { newNameGeneration = false, languages, dateFormat } = await settings.get();
-  const availableLanguages: string[] = ensure<LanguageSchema[]>(languages).map(
-    (language: LanguageSchema) => language.key
-  );
-  const defaultLanguage = languages?.find((l: LanguageSchema) => l.default)?.key;
-  if (!defaultLanguage) throw new Error('default language not found!');
-
-  return {
-    template,
-    newNameGeneration,
-    availableLanguages,
-    defaultLanguage,
-    dateFormat,
-  };
-};
-
-const getTranslations = async (): Promise<FullyIndexedTranslations> =>
-  objectIndex(
-    await translations.get({}),
-    tr => tr.locale || '',
-    tr =>
-      objectIndex(
-        tr.contexts || [],
-        c => c.id || '',
-        c => c.values
-      )
-  );
-
-export class CSVLoader extends EventEmitter {
+export class CSVLoader {
   stopOnError: boolean;
 
-  _errors: { [k: number]: Error };
-
   constructor(options = { stopOnError: true }) {
-    super();
-    this._errors = {};
     this.stopOnError = options.stopOnError;
-  }
-
-  errors() {
-    return this._errors;
-  }
-
-  throwErrors() {
-    if (Object.keys(this._errors).length === 1) {
-      const firstKey = Object.keys(this._errors)[0];
-      throw this._errors[Number(firstKey)];
-    }
-
-    if (Object.keys(this._errors).length) {
-      throw new Error('multiple errors ocurred !');
-    }
-  }
-
-  async load(
-    csvPath: string,
-    templateId: ObjectId | string,
-    options = { language: 'en', user: {} }
-  ) {
-    const { template, newNameGeneration, availableLanguages, defaultLanguage, dateFormat } =
-      await readResources(templateId);
-    const file = importFile(csvPath);
-    const { headersWithoutLanguage, languagesPerHeader } = await validateColumns(
-      file,
-      template,
-      availableLanguages,
-      defaultLanguage,
-      newNameGeneration
-    );
-    const propNameToThesauriId = await arrangeThesauri(
-      file,
-      template,
-      newNameGeneration,
-      headersWithoutLanguage,
-      languagesPerHeader,
-      defaultLanguage
-    );
-    const indexedTranslations = await getTranslations();
-
-    const warnings: Array<{ property: string; value: string; reason: string; index: number }> = [];
-    const feedbackCallback = (
-      warning: { property: string; value: string; reason: string },
-      index: number
-    ) => {
-      warnings.push({ ...warning, index });
-    };
-    await csv(await file.readStream(), this.stopOnError)
-      .onRow(async (row: CSVRow, index: number) => {
-        const { rawEntity, rawTranslations } = extractEntity(
-          row,
-          availableLanguages,
-          options.language,
-          defaultLanguage,
-          propNameToThesauriId,
-          newNameGeneration
-        );
-        if (rawEntity) {
-          const entity = await importEntity(rawEntity, template, file, {
-            ...options,
-            dateFormat,
-            feedbackCallback: error => feedbackCallback(error, index),
-          });
-
-          await translateEntity(
-            entity,
-            rawTranslations,
-            template,
-            file,
-            propNameToThesauriId,
-            indexedTranslations,
-            dateFormat
-          );
-          this.emit('entityLoaded', entity);
-        }
-      })
-      .onError(async (e: Error, row: CSVRow, index: number) => {
-        this._errors[index] = e;
-        this.emit('loadError', e, toSafeName(row), index);
-      })
-      .read();
-
-    if (warnings.length > 0) {
-      const groupedWarnings = groupBy(warnings, warning => warning.reason);
-      Object.keys(groupedWarnings).forEach(key => {
-        groupedWarnings[key] = groupedWarnings[key].map(warning => ({
-          index: warning.index,
-          property: warning.property,
-          value: warning.value,
-          reason: '',
-        }));
-      });
-      this.emit('rowExceptions', groupedWarnings);
-    }
-
-    this.throwErrors();
   }
 
   /* eslint-disable class-methods-use-this */

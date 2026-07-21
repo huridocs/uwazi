@@ -1,15 +1,14 @@
-import { ArrayUtils } from 'api/common.v2/utils/Array'; // Todo
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource'; // Todo
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource'; // Todo
-import { DefaultTemplateDeletionError, TemplateInUseError } from '../domain/template/errors';
-import { TemplateDeletedEvent } from '../domain/template/events/TemplateDeletedEvent';
-import { TemplateUpdatedEvent } from '../domain/template/events/TemplateUpdatedEvent';
-import { TemplatesDataSource } from './contracts/TemplatesDataSource';
-import { AbstractUseCase } from '../libs/UseCase';
-import { TemplatePostProcessService } from './TemplatePostProcessService';
-import { MongoTemplateMapper } from '../infrastructure/mongodb/template/MongoTemplateMapper';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js'; // Todo
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
+import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js'; // Todo
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js'; // Todo
+import { DefaultTemplateDeletionError, TemplateInUseError } from '../domain/template/errors.js';
+import { TemplateDeletedEvent } from '../domain/template/events/TemplateDeletedEvent.js';
+import { TemplateUpdatedEvent } from '../domain/template/events/TemplateUpdatedEvent.js';
+import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
+import { AbstractUseCase } from '../libs/UseCase.js';
+import { TemplatePostProcessService } from './TemplatePostProcessService.js';
+import { MongoTemplateMapper } from '../infrastructure/mongodb/template/MongoTemplateMapper.js';
 
 type Input = {
   templateId: string;
@@ -19,10 +18,9 @@ type Output = Input;
 
 type Deps = {
   templatesDS: TemplatesDataSource;
-  entitiesDS: EntitiesDataSource;
   translationsDS: TranslationsDataSource;
   settingsDS: SettingsDataSource;
-  multiLanguageEntitiesDS: MultiLanguageEntityDataSource;
+  multiLanguageEntitiesDS: EntitiesDataSource;
 };
 
 class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
@@ -36,7 +34,8 @@ class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
       throw new DefaultTemplateDeletionError();
     }
 
-    const hasEntities = await this.deps.entitiesDS.anyExistsForTemplate(templateToBeDeleted.id);
+    const hasEntities =
+      (await this.deps.multiLanguageEntitiesDS.countByTemplateId(templateToBeDeleted.id)) > 0;
 
     if (hasEntities) {
       throw new TemplateInUseError();
@@ -44,7 +43,7 @@ class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
 
     const service = new TemplatePostProcessService({
       ...this.deps,
-      jobsDispatcher: this.jobsDispatcher,
+      dispatcher: this.dispatcher,
       entitiesDS: this.deps.multiLanguageEntitiesDS,
     });
 

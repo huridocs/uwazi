@@ -1,9 +1,9 @@
 import { IncomingHttpHeaders } from 'http';
-import api from 'app/utils/api';
-import { RequestParams } from 'app/utils/RequestParams';
-import { FetchResponseError } from 'shared/JSONRequest';
-import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
-import { ConnectionSchema } from 'shared/types/connectionType';
+import { TextSelection } from '@huridocs/react-text-selection-handler';
+import { api } from '#app/utils/api.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
+import { ConnectionSchema } from '#shared/types/connectionType.js';
 
 type TextReferenceParams = {
   sourceEntitySharedId: string;
@@ -77,6 +77,48 @@ const buildTargetRelationship = (params: TextReferenceParams): TargetRelationshi
   return targetRelationship;
 };
 
+type EntityRelationshipParams = {
+  sourceEntitySharedId: string;
+  targetEntitySharedId: string;
+  relationshipType: string;
+  targetFileId?: string;
+  targetSelection?: TextSelection;
+};
+
+const saveEntityRelationship = async (
+  params: EntityRelationshipParams,
+  headers?: IncomingHttpHeaders
+): Promise<unknown | FetchResponseError> => {
+  try {
+    const sourceRelationship = {
+      entity: params.sourceEntitySharedId,
+      template: null,
+    };
+    const targetRelationship = buildTargetRelationship({
+      sourceEntitySharedId: params.sourceEntitySharedId,
+      sourceFileId: '',
+      sourceSelection: { text: '', selectionRectangles: [] },
+      targetEntitySharedId: params.targetEntitySharedId,
+      relationshipType: params.relationshipType,
+      ...(params.targetFileId && { targetFileId: params.targetFileId }),
+      ...(params.targetSelection && { targetSelection: params.targetSelection }),
+    });
+
+    const requestParams = new RequestParams(
+      {
+        delete: [],
+        save: [[sourceRelationship, targetRelationship]],
+      },
+      headers
+    );
+
+    const response = await api.post('relationships/bulk', requestParams);
+    return response.json;
+  } catch (e) {
+    return e;
+  }
+};
+
 const saveTextReference = async (
   params: TextReferenceParams,
   headers?: IncomingHttpHeaders
@@ -108,4 +150,17 @@ const saveTextReference = async (
   }
 };
 
-export { saveTextReference, type TextReferenceParams };
+const deleteReference = async (
+  referenceId: string,
+  headers?: IncomingHttpHeaders
+): Promise<unknown | FetchResponseError> => {
+  try {
+    const requestParams = new RequestParams({ _id: referenceId }, headers);
+    const response = await api.delete('references', requestParams);
+    return response.json;
+  } catch (e) {
+    return e;
+  }
+};
+
+export { saveTextReference, saveEntityRelationship, deleteReference, type TextReferenceParams };

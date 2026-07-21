@@ -1,16 +1,16 @@
-import authMiddleware from 'api/auth/authMiddleware';
-import csvExporter, { SearchResults } from 'api/csv/csvExporter';
-import * as filesystem from 'api/files/filesystem';
-import { search } from 'api/search';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { NextFunction, Request, Response } from 'express';
+import authMiddleware from '#api/auth/authMiddleware.js';
+import csvExporter, { SearchResults } from '#api/csv/csvExporter.js';
+import * as filesystem from '#api/files/filesystem.js';
+import { search } from '#api/search/index.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import type { NextFunction, Request, Response } from 'express';
 import { Writable } from 'stream';
 import request from 'supertest';
 
-import { User } from 'api/users/usersModel';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DBFixture } from 'api/utils/testing_db';
-import routes from '../exportRoutes';
+import { User } from '#api/users/usersModel.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import routes from '../exportRoutes.js';
 
 jest.mock('api/csv/csvExporter');
 jest.mock('../../auth/authMiddleware.ts');
@@ -83,7 +83,10 @@ describe('export routes', () => {
 
       const app = setUpApp(
         routes,
-        fakeRequestAugmenterMiddleware({ username: 'someuser' }, 'somelanguage')
+        fakeRequestAugmenterMiddleware(
+          { username: 'someuser', role: 'admin', _id: 'admin' },
+          'somelanguage'
+        )
       );
 
       const res = await request(app)
@@ -96,6 +99,8 @@ describe('export routes', () => {
       expect(res.header['content-disposition'].match(/^attachment; filename=(.*)/)).not.toBe(null);
       expect(search.search).toHaveBeenCalledWith(queryParams, 'somelanguage', {
         username: 'someuser',
+        role: 'admin',
+        _id: 'admin',
       });
       expect(exportMock.mock.calls[0]).toEqual([
         { rows: ['searchresults'] },

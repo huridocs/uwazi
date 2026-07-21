@@ -1,17 +1,17 @@
 /* eslint-disable max-statements */
-import { legacyLogger } from 'api/log';
-import { createError } from 'api/utils';
-
-import { errors as elasticErrors } from '@elastic/elasticsearch';
-import { OperationalError } from 'api/common.v2/errors/OperationalError';
-import { S3Error } from 'api/files/S3Storage';
-import { IXValidationError } from 'api/services/informationextraction/IXValidationError';
-import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
-import { appContext } from 'api/utils/AppContext';
 import util from 'node:util';
-import { DomainError } from 'api/core/domain/error/DomainError';
-import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
-import { handleError, prettifyError } from '../handleError';
+import { z } from 'zod';
+import { errors as elasticErrors } from '@elastic/elasticsearch';
+import { legacyLogger } from '#api/log/index.js';
+import { createError } from '#api/utils/index.js';
+import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
+import { S3Error } from '#api/files/S3Storage.js';
+import { IXValidationError } from '#api/services/informationextraction/IXValidationError.js';
+import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
+import { appContext } from '#api/utils/AppContext.js';
+import { DomainError } from '#api/core/domain/error/DomainError.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { handleError, prettifyError } from '../handleError.js';
 
 const contextRequestId = '1234';
 
@@ -254,6 +254,18 @@ original error: {
       expect(error.code).toBe(400);
       const expectedPrettymessage = 'hello\na property: an error';
       expect(error.prettyMessage).toEqual(expectedPrettymessage);
+    });
+
+    describe('when error is a ZodError', () => {
+      it('should be a 422 info logLevel and logged as info', () => {
+        try {
+          z.string().url().parse('not-a-valid-url');
+        } catch (e) {
+          const error = handleError(e);
+          expect(error).toMatchObject({ code: 422, logLevel: 'debug' });
+          expect(legacyLogger.debug).toHaveBeenCalled();
+        }
+      });
     });
   });
 

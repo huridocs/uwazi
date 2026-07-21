@@ -1,19 +1,19 @@
 /* eslint-disable global-require */
 /* eslint-disable max-statements */
 import moment from 'moment';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { testingTenants } from 'api/utils/testingTenants';
-import { ExternalDummyService } from 'api/services/tasksmanager/specs/ExternalDummyService';
-import * as setupSockets from 'api/socketio/setupSockets';
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import entitiesModel from 'api/entities/entitiesModel';
-import { InformationExtraction } from '../InformationExtraction';
-import { factory, fixtures } from './fixtures';
-import { IXModelsModel } from '../IXModelsModel';
-import { ExtractionKey } from '../ExtractionKey';
-import { IXWebSocketEvents } from '../WebSocketEvents';
-import { NoEntitiesForTraining } from '../TrainModelForText';
-import { getEntitiesForTraining } from '../ixMaterials';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { ExternalDummyService } from '#api/services/tasksmanager/specs/ExternalDummyService.js';
+import * as setupSockets from '#api/socketio/setupSockets.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import entitiesModel from '#api/entities/entitiesModel.js';
+import { InformationExtraction } from '../InformationExtraction.js';
+import { factory, fixtures } from './fixtures.js';
+import { IXModelsModel } from '../IXModelsModel.js';
+import { ExtractionKey } from '../ExtractionKey.js';
+import { IXWebSocketEvents } from '../WebSocketEvents.js';
+import { NoEntitiesForTraining } from '../TrainModelForText.js';
+import { getEntitiesForTraining } from '../ixMaterials.js';
 
 jest.mock('api/socketio/setupSockets');
 jest.mock('api/services/tasksmanager/TaskManager.ts');
@@ -105,7 +105,9 @@ describe('Information Extraction: Extracting from text source', () => {
 
   describe('when training the model', () => {
     it('should not send xmls', async () => {
-      await informationExtraction.trainModel(factory.id('sourceTextExtractor1'));
+      await testingEnvironment.runWithContext(async () =>
+        informationExtraction.trainModel(factory.id('sourceTextExtractor1'))
+      );
 
       expect(IXExternalService.materialsFileParams).toEqual(undefined);
       expect(IXExternalService.files.length).toBe(0);
@@ -118,7 +120,9 @@ describe('Information Extraction: Extracting from text source', () => {
         language: 'other' as any,
       });
 
-      await informationExtraction.trainModel(factory.id('sourceTextExtractor1'));
+      await testingEnvironment.runWithContext(async () =>
+        informationExtraction.trainModel(factory.id('sourceTextExtractor1'))
+      );
 
       expect(IXExternalService.materials.length).toBe(2);
       expect(IXExternalService.materials.find(m => m.source_text === 'text 1')).toEqual({
@@ -144,8 +148,8 @@ describe('Information Extraction: Extracting from text source', () => {
       const extractionKeyA17 = ExtractionKey.create({ entitySharedId: 'A17', language: 'en' });
       const extractionKeyA18 = ExtractionKey.create({ entitySharedId: 'A18', language: 'en' });
 
-      await informationExtraction.trainModel(
-        factory.id('extractor_target_multiselect_source_text')
+      await testingEnvironment.runWithContext(async () =>
+        informationExtraction.trainModel(factory.id('extractor_target_multiselect_source_text'))
       );
 
       const suggestion1 = IXExternalService.materials.find(
@@ -198,7 +202,9 @@ describe('Information Extraction: Extracting from text source', () => {
 
       const extractorId = factory.id('extractor_target_select_source_text');
 
-      await informationExtraction.trainModel(extractorId);
+      await testingEnvironment.runWithContext(async () =>
+        informationExtraction.trainModel(extractorId)
+      );
 
       const suggestion3 = IXExternalService.materials.find(m => m.entity_name === extraction3.key);
 
@@ -226,7 +232,9 @@ describe('Information Extraction: Extracting from text source', () => {
 
       const extractorId = factory.id('extractor_target_title_source_text');
 
-      await informationExtraction.trainModel(extractorId);
+      await testingEnvironment.runWithContext(async () =>
+        informationExtraction.trainModel(extractorId)
+      );
 
       const suggestion1 = IXExternalService.materials.find(m => m.entity_name === extraction1.key);
 
@@ -246,8 +254,8 @@ describe('Information Extraction: Extracting from text source', () => {
       const extractionKeyA21 = ExtractionKey.create({ entitySharedId: 'A21', language: 'en' });
       const extractionKeyA22 = ExtractionKey.create({ entitySharedId: 'A22', language: 'en' });
 
-      await informationExtraction.trainModel(
-        factory.id('extractor_target_relationship_source_text')
+      await testingEnvironment.runWithContext(async () =>
+        informationExtraction.trainModel(factory.id('extractor_target_relationship_source_text'))
       );
 
       const suggestion1 = IXExternalService.materials.find(
@@ -299,7 +307,9 @@ describe('Information Extraction: Extracting from text source', () => {
         language: 'other' as any,
       });
 
-      await informationExtraction.trainModel(factory.id('extractor_target_date_source_text'));
+      await testingEnvironment.runWithContext(async () =>
+        informationExtraction.trainModel(factory.id('extractor_target_date_source_text'))
+      );
 
       const suggestion1 = IXExternalService.materials.find(
         m => m.entity_name === extractionKeyEn.key
@@ -341,7 +351,9 @@ describe('Information Extraction: Extracting from text source', () => {
       });
       const extractorId = factory.id('extractor_target_rich_text_source_text');
 
-      await informationExtraction.trainModel(extractorId);
+      await testingEnvironment.runWithContext(async () =>
+        informationExtraction.trainModel(extractorId)
+      );
 
       const suggestion1En = IXExternalService.materials.find(
         m => m.entity_name === extractionKey1En.key

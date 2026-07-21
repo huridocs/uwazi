@@ -1,9 +1,10 @@
 import { Db, Document } from 'mongodb';
-import { DocumentTracker } from 'api/core/infrastructure/mongodb/documentTracker/DocumentTracker';
-import { BulkWriteStream } from './BulkWriteStream';
-import { MongoTransactionManager } from './MongoTransactionManager';
-import { SessionScopedCollection } from './SessionScopedCollection';
-import { SyncedCollection } from './SyncedCollection';
+import { DocumentTracker } from '#api/core/infrastructure/mongodb/documentTracker/DocumentTracker.js';
+import { BulkWriteStream } from './BulkWriteStream.js';
+import { MongoTransactionManager } from './MongoTransactionManager.js';
+import { SessionScopedCollection } from './SessionScopedCollection.js';
+import { SyncedCollection } from './SyncedCollection.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 export interface MongoDSOptions {
   useSyncedCollection?: boolean;
@@ -12,7 +13,7 @@ export interface MongoDSOptions {
 export abstract class MongoDataSource<TSchema extends Document = Document> {
   protected documentTracker: DocumentTracker;
 
-  private db: Db;
+  protected db: Db;
 
   protected abstract collectionName: string;
 
@@ -20,9 +21,13 @@ export abstract class MongoDataSource<TSchema extends Document = Document> {
 
   private useSyncedCollection: boolean;
 
-  constructor(db: Db, transactionManager: MongoTransactionManager, options: MongoDSOptions = {}) {
+  constructor(
+    db: Db,
+    transactionManager: MongoTransactionManager | TransactionManager,
+    options: MongoDSOptions = {}
+  ) {
     this.db = db;
-    this.transactionManager = transactionManager;
+    this.transactionManager = transactionManager as MongoTransactionManager;
     this.useSyncedCollection =
       options.useSyncedCollection !== undefined ? options.useSyncedCollection : true;
     this.documentTracker = new DocumentTracker();

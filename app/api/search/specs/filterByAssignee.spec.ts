@@ -1,11 +1,14 @@
-import { search } from 'api/search/search';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
-import { AggregationBucket, Aggregations } from 'shared/types/aggregations';
-import { UserSchema } from 'shared/types/userType';
-import { EntitySchema } from '../../../shared/types/entityType';
-import { fixturesTimeOut } from './fixtures_elastic';
-import { group1, permissionsLevelFixtures, users } from './permissionsFiltersFixtures';
+import { search } from '#api/search/search.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
+import { AggregationBucket, Aggregations } from '#shared/types/aggregations.js';
+import { UserSchema } from '#shared/types/userType.js';
+import { EntitySchema } from '../../../shared/types/entityType.js';
+import { fixturesTimeOut } from './fixtures_elastic.js';
+import { group1, permissionsLevelFixtures, users } from './permissionsFiltersFixtures.js';
+
+const searchWithContext = async (query: any, language: string, user?: any) =>
+  testingEnvironment.runWithContext(async () => search.search(query, language, user));
 
 describe('Permissions filters', () => {
   const userFactory = new UserInContextMockFactory();
@@ -38,7 +41,7 @@ describe('Permissions filters', () => {
             includeUnpublished: true,
           };
 
-          const { rows } = await search.search(query, 'es', users.adminUser);
+          const { rows } = await searchWithContext(query, 'es', users.adminUser);
 
           expect(rows.map((r: EntitySchema) => r.title)).toEqual(expected);
         }
@@ -63,7 +66,7 @@ describe('Permissions filters', () => {
           includeUnpublished: true,
         };
 
-        const { rows } = await search.search(query, 'es', users.adminUser);
+        const { rows } = await searchWithContext(query, 'es', users.adminUser);
 
         expect(rows.map((r: EntitySchema) => r.title)).toEqual(expected);
       });
@@ -87,7 +90,7 @@ describe('Permissions filters', () => {
             includeUnpublished: true,
           };
 
-          const { rows } = await search.search(query, 'es', user);
+          const { rows } = await searchWithContext(query, 'es', user);
 
           expect(rows.map((r: EntitySchema) => r.title)).toEqual(expected);
         }
@@ -104,7 +107,7 @@ describe('Permissions filters', () => {
           includeUnpublished: true,
         };
 
-        const { rows } = await search.search(query, 'es');
+        const { rows } = await searchWithContext(query, 'es');
 
         expect(rows.map((r: EntitySchema) => r.title)).toEqual(['entPublic1', 'entPublic2']);
       });
@@ -118,7 +121,7 @@ describe('Permissions filters', () => {
         },
       };
 
-      await search.search(query, 'es', users.adminUser);
+      await searchWithContext(query, 'es', users.adminUser);
 
       query = {
         customFilters: {
@@ -126,7 +129,7 @@ describe('Permissions filters', () => {
         },
       };
 
-      await search.search(query, 'es', users.adminUser);
+      await searchWithContext(query, 'es', users.adminUser);
     });
   });
 
@@ -136,7 +139,7 @@ describe('Permissions filters', () => {
       flags: string[],
       aggregationKeys: string[]
     ): Promise<AggregationBucket[][]> => {
-      const response = await search.search(
+      const response = await searchWithContext(
         flags.reduce((params, flag) => ({ ...params, [flag]: true }), {}),
         'es',
         user

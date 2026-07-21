@@ -1,18 +1,18 @@
 /* eslint-disable max-statements */
-import { ArrayUtils } from 'api/common.v2/utils/Array'; // Todo
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
-import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
-import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
-import { RelationsV1Collection } from 'api/relationships/RelationsV1Collection'; // Todo
-import { cloneDeep } from 'lodash';
-import { search } from 'api/search';
-import { EntitySchema } from 'shared/types/entityType';
-import { TemplatesDataSource } from './contracts/TemplatesDataSource';
-import { applicationEventsBus } from '../libs/eventsbus';
-import { TransactionManager } from './contracts/TransactionManager';
-import { UseCase } from '../libs/UseCase';
-import { MongoEntityMapper } from '../infrastructure/mongodb/entity/MongoEntityMapper';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js'; // Todo
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
+import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
+import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
+import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { RelationsV1Collection } from '#api/relationships/RelationsV1Collection.js'; // Todo
+import cloneDeep from 'lodash/cloneDeep.js';
+import { search } from '#api/search/index.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
+import { applicationEventsBus } from '../libs/eventsbus/index.js';
+import { TransactionManager } from './contracts/TransactionManager.js';
+import { UseCase } from '../libs/UseCase.js';
+import { MongoEntityMapper } from '../infrastructure/mongodb/entity/MongoEntityMapper.js';
 
 type Input = {
   entitiesIds: string[];
@@ -23,6 +23,7 @@ type Input = {
   renamedProperties: { [oldName: string]: string };
   templateId: string;
   fullReindex: boolean;
+  resaveForFilterChange: boolean;
   onAllEntitiesDenormalized: () => void;
   onProgress: (progress: { active: boolean; totalJobs: number; completedJobs: number }) => void;
 };
@@ -30,7 +31,7 @@ type Input = {
 type Output = any;
 
 type Dependencies = {
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   relationshipsV1DS: MongoRelationshipsV1DataSource;
   templatesDS: TemplatesDataSource;
   filesDS: FilesDataSource;
@@ -49,6 +50,7 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
     renamedProperties,
     templateId,
     fullReindex,
+    resaveForFilterChange,
     onAllEntitiesDenormalized,
     onProgress,
   }: Input) {
@@ -56,12 +58,15 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
       await search.indexEntities({ sharedId: { $in: entitiesIds } }, '+fullText', 10);
     }
     await this.dependencies.transactionManager.run(async () => {
+      if (resaveForFilterChange) {
+        await this.dependencies.entitiesDS.touchEntitiesBySharedIds(entitiesIds);
+      }
       if (Object.keys(renamedProperties).length) {
-        await this.dependencies.filesDS.renameExtractedMetadata(renamedProperties, entitiesIds);
+        await this.dependencies.filesDS.renamePropertySelections(renamedProperties, entitiesIds);
         await this.dependencies.entitiesDS.renameMetadataProperties(renamedProperties, entitiesIds);
       }
       if (deletedProperties.length) {
-        await this.dependencies.filesDS.deleteExtractedMetadata(deletedProperties, entitiesIds);
+        await this.dependencies.filesDS.deletePropertySelections(deletedProperties, entitiesIds);
         await this.dependencies.entitiesDS.deleteMetadataProperties(deletedProperties, entitiesIds);
       }
 
@@ -69,13 +74,13 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
         const entities = await (
           await this.dependencies.entitiesDS.getEntitiesBySharedIds(entitiesIds)
         ).all();
-        const relationshipProps = await this.dependencies.templatesDS
-          .getV1RelationshipPropertiesByIds(modifiedRelationshipsProps)
-          .all();
+        const relationshipProps =
+          await this.dependencies.templatesDS.getV1RelationshipPropertiesByIds(
+            modifiedRelationshipsProps
+          );
 
-        const generatedIdProps = await this.dependencies.templatesDS
-          .getGeneratedIdPropertiesByIds(newGeneratedIdProps)
-          .all();
+        const generatedIdProps =
+          await this.dependencies.templatesDS.getGeneratedIdPropertiesByIds(newGeneratedIdProps);
         const modifiedEntities = cloneDeep(entities);
 
         if (relationshipProps.length) {

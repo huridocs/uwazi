@@ -1,9 +1,9 @@
-import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';
-import { SelectProperty } from 'api/core/domain/template/select/SelectProperty';
-import { MultiSelectProperty } from 'api/core/domain/template/select/MultiSelectProperty';
-import { CsvHeaderAnalyzer } from '../CsvHeaderAnalyzer';
-import { CsvThesauriPendingValuesBuilder } from '../CsvThesauriPendingValuesBuilder';
-import { CsvImportRow } from '../../../domain/CsvImportRow';
+import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder.js';
+import { SelectProperty } from '#api/core/domain/template/select/SelectProperty.js';
+import { MultiSelectProperty } from '#api/core/domain/template/select/MultiSelectProperty.js';
+import { CsvHeaderAnalyzer } from '../CsvHeaderAnalyzer.js';
+import { CsvThesauriPendingValuesBuilder } from '../CsvThesauriPendingValuesBuilder.js';
+import { CsvImportRow } from '../../../domain/CsvImportRow.js';
 
 const TEMPLATE_ID = 'template-id';
 const IMPORT_ID = 'import-id';
@@ -50,7 +50,7 @@ describe('CsvThesauriPendingValuesBuilder', () => {
     const rows: CsvImportRow[] = [
       CsvImportRow.create({
         importId: IMPORT_ID,
-        index: 0,
+        rowIndex: 0,
         headers,
         values: ['entity-1', 'Apple'],
       }),
@@ -83,7 +83,7 @@ describe('CsvThesauriPendingValuesBuilder', () => {
     const rows: CsvImportRow[] = [
       CsvImportRow.create({
         importId: IMPORT_ID,
-        index: 0,
+        rowIndex: 0,
         headers,
         values: ['entity-1', 'Fruits::Apple'],
       }),
@@ -109,7 +109,7 @@ describe('CsvThesauriPendingValuesBuilder', () => {
     const rows: CsvImportRow[] = [
       CsvImportRow.create({
         importId: IMPORT_ID,
-        index: 0,
+        rowIndex: 0,
         headers,
         values: ['entity-1', 'Invalid::'],
       }),
@@ -137,7 +137,7 @@ describe('CsvThesauriPendingValuesBuilder', () => {
     const rows: CsvImportRow[] = [
       CsvImportRow.create({
         importId: IMPORT_ID,
-        index: 0,
+        rowIndex: 0,
         headers,
         values: ['entity-1', 'Apple', 'Manzana'],
       }),
@@ -162,7 +162,7 @@ describe('CsvThesauriPendingValuesBuilder', () => {
     const rows: CsvImportRow[] = [
       CsvImportRow.create({
         importId: IMPORT_ID,
-        index: 0,
+        rowIndex: 0,
         headers,
         values: ['entity-1', 'Apple|Orange', 'Manzana'],
       }),

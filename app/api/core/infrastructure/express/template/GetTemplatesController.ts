@@ -1,22 +1,19 @@
-import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
-import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type RequestDto = void;
+import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
+import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 
 type ResponseDto = {
-  rows: TemplateDBO[];
+  rows: TemplateSchema[];
 };
 
 class GetTemplatesController extends AbstractController {
   protected async handle(): Promise<void> {
-    const db = getConnection();
-    const templatesCol = db.collection<TemplateDBO>('templates');
+    const dao = TemplatesDAOFactory.default();
+    const templates = await dao.get();
 
-    const templates = await templatesCol.find().toArray();
-
-    const response: ResponseDto = { rows: templates };
+    const response: ResponseDto = {
+      rows: templates.map(template => ({ ...template, _id: template._id.toString() })),
+    };
 
     this.response.json(response);
   }

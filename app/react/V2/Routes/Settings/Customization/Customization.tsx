@@ -1,34 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { LoaderFunction, useBlocker, useLoaderData } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
-import { useSetAtom } from 'jotai';
-import { FetchResponseError } from 'shared/JSONRequest';
-import { ClientSettings } from 'app/apiResponseTypes';
-import { Translate } from 'app/I18N';
-import * as settingsAPI from 'V2/api/settings';
-import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Button, Tabs } from 'app/V2/Components/UI';
-import { CodeEditor } from 'app/V2/Components/CodeEditor';
-import { ConfirmNavigationModal } from 'V2/Components/UI';
-import { notificationAtom } from 'app/V2/atoms';
+import { ClientSettings } from '#app/apiResponseTypes.js';
+import { t, Translate } from '#app/I18N/index.js';
+import * as settingsAPI from '#V2/api/settings/index.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
+import { Button, Tabs, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
+import { CodeEditor } from '#V2/Components/CodeEditor/index.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 type LoaderResponse = Pick<ClientSettings, 'allowcustomJS' | 'customCSS' | 'customJS'>;
 
 const customisationLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<LoaderResponse> =>
   async () => {
-    const { allowcustomJS, customCSS, customJS } = await settingsAPI.get(headers);
-    return { allowcustomJS, customCSS, customJS };
+    const [settings] = await settingsAPI.get(headers);
+    if (settings) {
+      const { allowcustomJS, customCSS, customJS } = settings;
+      return { allowcustomJS, customCSS, customJS };
+    }
+    return {};
   };
 
 const Customisation = () => {
   const { allowcustomJS, customCSS, customJS } = useLoaderData() as LoaderResponse;
-  const [newCSS, setNewCSS] = useState<string | undefined>(undefined);
-  const [newJS, setNewJS] = useState<string | undefined>(undefined);
+  const [cssContent, setCssContent] = useState<string | undefined>(undefined);
+  const [jsContent, setJsContent] = useState<string | undefined>(undefined);
   const [showModal, setShowModal] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const blocker = useBlocker(hasChanges);
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
 
   useEffect(() => {
     if (blocker.state === 'blocked') {
@@ -37,20 +38,16 @@ const Customisation = () => {
   }, [blocker]);
 
   const handleSave = async () => {
-    if (newCSS || newJS) {
-      const response = await settingsAPI.save({ customCSS: newCSS, customJS: newJS });
+    if (hasChanges) {
+      const [, error] = await settingsAPI.save({
+        customCSS: cssContent,
+        customJS: jsContent,
+      });
 
-      if (response instanceof FetchResponseError) {
-        setNotifications({
-          type: 'error',
-          text: <Translate>An error occurred</Translate>,
-          details: response.message,
-        });
+      if (error) {
+        notify('error', t('System', 'An error occurred', null, false), undefined, error.message);
       } else {
-        setNotifications({
-          type: 'success',
-          text: <Translate>Saved successfully.</Translate>,
-        });
+        notify('success', t('System', 'Saved successfully.', null, false));
         setHasChanges(false);
       }
     }
@@ -63,15 +60,19 @@ const Customisation = () => {
 
         <SettingsContent.Body>
           {allowcustomJS ? (
-            <Tabs unmountTabs={false} tabListClassName="md:w-2/3 w-full">
+            <Tabs
+              groupId="settings-customization"
+              unmountTabs={false}
+              tabListClassName="md:w-2/3 w-full"
+            >
               <Tabs.Tab id="css" label={<Translate>Custom CSS</Translate>}>
                 <CodeEditor
                   language="css"
                   intialValue={customCSS}
-                  onMount={editor => {
+                  onMount={(editor: any) => {
                     editor.getModel()?.onDidChangeContent(() => {
                       setHasChanges(true);
-                      setNewCSS(editor.getValue());
+                      setCssContent(editor.getValue());
                     });
                   }}
                 />
@@ -81,10 +82,10 @@ const Customisation = () => {
                 <CodeEditor
                   language="javascript"
                   intialValue={customJS}
-                  onMount={editor => {
+                  onMount={(editor: any) => {
                     editor.getModel()?.onDidChangeContent(() => {
                       setHasChanges(true);
-                      setNewJS(editor.getValue());
+                      setJsContent(editor.getValue());
                     });
                   }}
                 />
@@ -97,10 +98,10 @@ const Customisation = () => {
                 <CodeEditor
                   language="css"
                   intialValue={customCSS}
-                  onMount={editor => {
+                  onMount={(editor: any) => {
                     editor.getModel()?.onDidChangeContent(() => {
                       setHasChanges(true);
-                      setNewCSS(editor.getValue());
+                      setCssContent(editor.getValue());
                     });
                   }}
                 />
@@ -110,12 +111,7 @@ const Customisation = () => {
         </SettingsContent.Body>
 
         <SettingsContent.Footer className="text-end">
-          <Button
-            styling="solid"
-            color="success"
-            disabled={!hasChanges}
-            onClick={async () => handleSave()}
-          >
+          <Button variant="success" disabled={!hasChanges} onClick={async () => handleSave()}>
             <Translate>Save</Translate>
           </Button>
         </SettingsContent.Footer>

@@ -1,15 +1,15 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useState } from 'react';
 import 'cypress-axe';
-import { mount } from '@cypress/react18';
+import { mount } from 'cypress/react';
 import { composeStories } from '@storybook/react';
-import * as stories from 'app/stories/Forms/MultiselectList.stories';
+import * as stories from '#app/stories/Forms/MultiselectList.stories.js';
 import {
   MultiselectList,
   MultiselectListOption,
   defaultSearch,
-} from '../MultiselectList/MultiselectList';
-import { specialCharacters, pizzas, salads } from './fixtures';
+} from '../MultiselectList/MultiselectList.js';
+import { specialCharacters, pizzas, salads } from './fixtures.js';
 
 const BasicTestComponent = () => {
   const [items, setItems] = useState(pizzas);
@@ -372,7 +372,7 @@ describe('MultiselectList.cy.tsx', { viewportWidth: 450, viewportHeight: 650 }, 
           <MultiselectList onChange={() => {}} items={[]} />
         </div>
       );
-      cy.get('ul').should('have.class', 'w-full grow px-2 pt-2 overflow-y-auto');
+      cy.get('ul').should('have.class', 'w-full grow overflow-y-auto px-2 pt-2');
     });
   });
 

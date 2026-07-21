@@ -1,7 +1,7 @@
 import Ajv from 'ajv';
-import { objectIdSchema, tocSchema, extractedMetadataSchema } from 'shared/types/commonSchemas';
-import { wrapValidator } from 'shared/tsUtils';
-import { FileType } from './fileType';
+import { objectIdSchema, tocSchema, propertySelectionSchema } from '#shared/types/commonSchemas.js';
+import { wrapValidator } from '#shared/tsUtils.js';
+import { FileType } from './fileType.js';
 
 const emitSchemaTypes = true;
 
@@ -21,7 +21,7 @@ const fileSchema = {
   type: 'object',
   additionalProperties: false,
   title: 'FileType',
-  definitions: { objectIdSchema, tocSchema, extractedMetadataSchema },
+  definitions: { objectIdSchema, tocSchema, propertySelectionSchema },
   properties: {
     _id: objectIdSchema,
     entity: { type: 'string', minLength: 1 },
@@ -49,7 +49,7 @@ const fileSchema = {
       type: 'array',
       items: tocSchema,
     },
-    extractedMetadata: { type: 'array', items: extractedMetadataSchema },
+    propertySelections: { type: 'array', items: propertySelectionSchema },
   },
 };
 

@@ -5,8 +5,8 @@ import React from 'react';
 import { RenderResult, fireEvent, screen, act } from '@testing-library/react';
 import fetchMock from 'fetch-mock';
 
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import MarkdownMedia from '../MarkdownMedia';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
+import { MarkdownMedia } from '../MarkdownMedia.js';
 
 let playerRef: { current: { seekTo: any; getCurrentTime: () => number } };
 
@@ -155,9 +155,12 @@ describe('MarkdownMedia', () => {
       });
       const editTimeLink = async (inputs: HTMLElement[], field: string, value: string) => {
         await act(async () => {
-          fireEvent.change(inputs.find(x => (x as HTMLInputElement).name === field)!, {
-            target: { value },
-          });
+          fireEvent.change(
+            inputs.find(x => (x as HTMLInputElement).name === field)!,
+            {
+              target: { value },
+            }
+          );
         });
       };
 

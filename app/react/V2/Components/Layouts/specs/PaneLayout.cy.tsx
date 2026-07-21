@@ -1,9 +1,12 @@
+/// <reference types="cypress" />
+/// <reference types="cypress-real-events" />
+/// <reference path="../../../../../../cypress/cypress.d.ts" />
 import React from 'react';
 import 'cypress-axe';
-import { mount } from '@cypress/react18';
+import { mount } from 'cypress/react';
 import { composeStories } from '@storybook/react';
-import * as stories from 'app/stories/Layouts/PaneLayout.stories';
-import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
+import * as stories from '#app/stories/Layouts/PaneLayout.stories.js';
+import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
 
 const { Basic } = composeStories(stories);
 
@@ -22,6 +25,10 @@ describe('PaneLayout', () => {
     it('should be accessible', () => {
       render();
       cy.injectAxe();
+      cy.get('button[aria-label]')
+        .first()
+        .should('have.attr', 'type', 'button')
+        .and('have.class', 'w-1');
       cy.checkA11y();
     });
 
@@ -29,7 +36,7 @@ describe('PaneLayout', () => {
       render();
       cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 407px;');
       cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 407px;');
-      cy.realDrag(cy.get('div[role="separator"]'), 50, 0);
+      cy.realDrag(cy.get('button[aria-label]'), 50, 0);
       cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 467px;');
       cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 347px;');
     });
@@ -38,7 +45,7 @@ describe('PaneLayout', () => {
       render();
       cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 407px;');
       cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 407px;');
-      cy.realDrag(cy.get('div[role="separator"]'), 298, 0);
+      cy.realDrag(cy.get('button[aria-label]'), 298, 0);
       //resizing will fail if it exceeds the minwidth in cypress.
       cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 407px;');
       cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 407px;');
@@ -48,10 +55,11 @@ describe('PaneLayout', () => {
       render({ localStorageKey: 'cypressComponentTest' });
       cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 407px;');
       cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 407px;');
-      cy.realDrag(cy.get('div[role="separator"]'), 50, 0);
+      cy.realDrag(cy.get('button[aria-label]'), 50, 0);
       cy.getAllLocalStorage().then(result => {
+        const host = Object.keys(result)[0];
         expect(result).to.deep.equal({
-          'http://localhost:8080': {
+          [host]: {
             cypressComponentTest: '[0.3799837266069976,0.2823433685923515,0.33116354759967453]',
           },
         });
@@ -102,7 +110,7 @@ describe('PaneLayout', () => {
       cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 491.6px;');
       cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 737.4px;');
 
-      cy.realDrag(cy.get('div[role="separator"]'), 100, 0);
+      cy.realDrag(cy.get('button[aria-label]'), 100, 0);
 
       cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 600px;');
       cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 629px;');

@@ -1,68 +1,60 @@
 import React, { useMemo, useState } from 'react';
-import { IncomingHttpHeaders } from 'http';
-import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
-import { useSetAtom, useAtomValue } from 'jotai';
-import { Translate } from 'app/I18N';
-import * as ThesauriAPI from 'app/V2/api/thesauri';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Button, ConfirmationModal } from 'app/V2/Components/UI';
-import { notificationAtom, templatesAtom } from 'app/V2/atoms';
-import { ClientThesaurus, Template } from 'app/apiResponseTypes';
-import { handleUnexpectedError } from 'app/V2/shared/errorUtils';
-import { ThesauriTable } from './components/ThesauriTable';
-import type { ThesauriRow } from './components/ThesauriTable';
-
-const thesauriLoader =
-  (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () =>
-    ThesauriAPI.get({}, headers);
+import { Link, useLoaderData, useRevalidator } from 'react-router';
+import { useAtomValue } from 'jotai';
+import { t, Translate } from '#app/I18N/index.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
+import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
+import { templatesAtom } from '#V2/atoms/index.js';
+import { ClientThesaurus } from '#app/apiResponseTypes.js';
+import { useServices } from '#V2/services/index.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { ThesauriTable } from './components/ThesauriTable.js';
+import type { ThesauriRow } from './components/ThesauriTable.js';
 
 const ThesauriList = () => {
   const revalidator = useRevalidator();
   const thesauri = useLoaderData() as ClientThesaurus[];
-  const setNotifications = useSetAtom(notificationAtom);
+  const { thesauri: thesaurusService } = useServices();
+  const { notify } = useRequestStatus();
   const templates = useAtomValue(templatesAtom);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [currentThesauri, setCurrentThesauri] = useState<ThesauriRow[]>([]);
   const [selectedThesauri, setSelectedThesauri] = useState<ThesauriRow[]>([]);
 
-  useMemo(() => {
-    setCurrentThesauri(
+  const currentThesauri = useMemo(
+    () =>
       thesauri.map(thesaurus => {
-        const templatesUsingIt = templates
-          .map(t => {
-            const usingIt = t.properties?.some(
-              (property: any) => property.content === thesaurus._id
-            );
-            return usingIt ? t : null;
-          })
-          .filter(t => t) as Template[];
+        const templatesUsingIt = templates.filter(templateItem =>
+          templateItem.properties?.some(property => property.content === thesaurus._id)
+        );
+
         return {
           ...thesaurus,
-          rowId: thesaurus._id,
+          rowId: thesaurus._id!,
           templates: templatesUsingIt,
-          disableRowSelection: Boolean(templatesUsingIt.length),
-        } as ThesauriRow;
-      })
-    );
-  }, [thesauri, templates]);
+          disableRowSelection: templatesUsingIt.length > 0,
+        };
+      }),
+    [thesauri, templates]
+  );
 
   const deleteSelectedThesauri = async () => {
-    try {
-      const requests = selectedThesauri.map(async thesaurus =>
-        ThesauriAPI.deleteThesauri({ _id: thesaurus._id })
+    const ids = selectedThesauri.map(item => item._id).filter((id): id is string => Boolean(id));
+    const [, error] = await thesaurusService.delete(ids);
+
+    if (error) {
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        error.detail ?? error.message
       );
-      await Promise.all(requests);
-      setNotifications({
-        type: 'success',
-        text: <Translate>Thesauri deleted</Translate>,
-      });
-    } catch (e) {
-      handleUnexpectedError(e, 'Error deleting thesaurus');
-    } finally {
-      await revalidator.revalidate();
-      setShowConfirmationModal(false);
+    } else {
+      notify('success', t('System', 'Thesauri deleted', null, false));
+      setSelectedThesauri([]);
     }
+
+    await revalidator.revalidate();
+    setShowConfirmationModal(false);
   };
 
   return (
@@ -77,13 +69,13 @@ const ThesauriList = () => {
             />
           </div>
         </SettingsContent.Body>
-        <SettingsContent.Footer className="bg-primary-50" highlighted>
+        <SettingsContent.Footer highlighted={selectedThesauri.length > 0}>
           {selectedThesauri.length ? (
             <div className="flex items-center gap-2">
               <Button
                 type="button"
                 onClick={() => setShowConfirmationModal(true)}
-                color="error"
+                variant="danger"
                 data-testid="thesaurus-delete-link"
               >
                 <Translate>Delete</Translate>
@@ -125,4 +117,4 @@ const ThesauriList = () => {
   );
 };
 
-export { ThesauriList, thesauriLoader };
+export { ThesauriList };

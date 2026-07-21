@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import { CreateEntitySchema } from '../Schemas';
+import { CreateEntitySchema, UpdateEntitySchema } from '../Schemas.js';
 
 describe('CreateEntitySchema', () => {
   it('should parse all property types correctly (happy path)', () => {
@@ -66,5 +66,32 @@ describe('CreateEntitySchema', () => {
       label: 'Example',
       url: 'https://example.com',
     });
+  });
+});
+
+describe('UpdateEntitySchema', () => {
+  it('should parse property selections when provided', () => {
+    const input = {
+      _id: 'entity123',
+      sharedId: 'shared123',
+      language: 'en',
+      title: 'Updated Title',
+      propertySelections: {
+        fileID: 'file123',
+        selections: [
+          {
+            name: 'title',
+            selection: {
+              text: 'Selected title',
+              selectionRectangles: [{ top: 1, left: 2, width: 3, height: 4, page: '1' }],
+            },
+          },
+        ],
+      },
+    };
+
+    const result = UpdateEntitySchema.parse(input);
+
+    expect(result.propertySelections).toEqual(input.propertySelections);
   });
 });

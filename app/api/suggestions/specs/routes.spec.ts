@@ -1,21 +1,22 @@
 /* eslint-disable max-statements */
+import type { Application, NextFunction, Request, Response } from 'express';
 import request from 'supertest';
-import { Application, NextFunction, Request, Response } from 'express';
+import { ObjectId } from 'mongodb';
 
-import entities from 'api/entities';
-import { search } from 'api/search';
+import entities from '#api/entities/index.js';
+import { search } from '#api/search/index.js';
+import { suggestionsRoutes } from '#api/suggestions/routes.js';
 import {
   factory,
   fixtures,
   shared6enId,
   stateFilterFixtures,
   suggestionSharedId6Title,
-} from 'api/suggestions/specs/fixtures';
-import { suggestionsRoutes } from 'api/suggestions/routes';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { iosocket, setUpApp, TestEmitSources } from 'api/utils/testingRoutes';
+} from '#api/suggestions/specs/fixtures.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { iosocket, setUpApp, TestEmitSources } from '#api/utils/testingRoutes.js';
 import waitForExpect from 'wait-for-expect';
-import { Suggestions } from '../suggestions';
+import { Suggestions } from '../suggestions.js';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -35,11 +36,11 @@ jest.mock('api/services/informationextraction/InformationExtraction', () => ({
   },
 }));
 
-let user: { username: string; role: string } | undefined;
+let user: { _id: string; username: string; role: string } | undefined;
 const getUser = () => user;
 
 beforeEach(async () => {
-  user = { username: 'user 1', role: 'admin' };
+  user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
   jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
 });
 

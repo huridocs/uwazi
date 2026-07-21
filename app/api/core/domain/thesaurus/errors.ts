@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
-import { DomainError } from '../error/DomainError';
-import { AJVObject, ValidationError } from '../error/ValidationError';
+import { DomainError } from '../error/DomainError.js';
+import { AJVObject, ValidationError } from '../error/ValidationError.js';
 
 export class ThesaurusNotFoundError extends DomainError {
   constructor(thesaurusId: string) {
@@ -25,6 +25,15 @@ export class ThesaurusNameAlreadyExistsError extends ValidationError {
       keyword: 'thesaurus.thesaurus_with_name_duplicated_error',
       instancePath: '',
     };
+  }
+}
+
+export class ThesaurusInUseError extends DomainError {
+  constructor(templateCount: number) {
+    super(
+      `Cannot delete thesaurus with ${templateCount} associated templates. Please remove the related templates first.`,
+      'thesaurus.in_use'
+    );
   }
 }
 

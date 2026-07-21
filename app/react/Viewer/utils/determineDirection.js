@@ -1,4 +1,4 @@
-import { LanguageUtils, availableLanguages } from 'shared/language';
+import { LanguageUtils, availableLanguages } from '#shared/language/index.js';
 
 export default ({ language }) => {
   const languageKey = LanguageUtils.fromISO639_3(language).ISO639_1;

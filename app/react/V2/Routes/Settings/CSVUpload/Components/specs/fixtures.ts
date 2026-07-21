@@ -1,0 +1,279 @@
+import type { Template } from '#app/apiResponseTypes.js';
+import { ClientTranslationSchema } from '#app/istore.js';
+import { CsvImportStatus } from '#V2/api/csv/index.js';
+import type { CsvImportListRow } from '#V2/api/csv/index.js';
+
+const csvImportsList: CsvImportListRow[] = [
+  {
+    id: 'csv-import-1',
+    status: CsvImportStatus.Queued,
+    templateId: 'template-people',
+    file: {
+      originalName: 'people.csv',
+      mimeType: 'text/csv',
+      size: 24576,
+    },
+    createdAt: 1712496000000,
+    updatedAt: 1712496000000,
+  },
+  {
+    id: 'csv-import-2',
+    status: CsvImportStatus.Processing,
+    templateId: 'template-cases',
+    file: {
+      originalName: 'cases.zip',
+      mimeType: 'application/zip',
+      size: 132481,
+    },
+    createdAt: 1712582400000,
+    updatedAt: 1712582700000,
+    progress: {
+      totalRows: 120,
+      processedRows: 48,
+      lastProcessedRow: 48,
+      batchSize: 25,
+    },
+    stats: {
+      entitiesCreated: 44,
+      entitiesUpdated: 2,
+      rowsProcessed: 48,
+      rowsFailed: 1,
+    },
+    extraction: {
+      sourceType: 'zip',
+      originalUploadSizeBytes: 132481,
+      extractedFilesCount: 3,
+      totalFilesInZip: 3,
+      files: [
+        {
+          filename: 'cases.csv',
+          sizeBytes: 58124,
+          compressedSizeBytes: 14672,
+        },
+        {
+          filename: 'sources.csv',
+          sizeBytes: 19012,
+          compressedSizeBytes: 5401,
+        },
+        {
+          filename: 'metadata.json',
+          sizeBytes: 312,
+          compressedSizeBytes: 204,
+        },
+      ],
+    },
+  },
+  {
+    id: 'csv-import-3',
+    status: CsvImportStatus.Completed,
+    templateId: 'template-events',
+    file: {
+      originalName: 'events.csv',
+      mimeType: 'text/csv',
+      size: 88912,
+    },
+    createdAt: 1712668800000,
+    updatedAt: 1712669400000,
+    progress: {
+      totalRows: 86,
+      processedRows: 86,
+      lastProcessedRow: 86,
+      batchSize: 50,
+    },
+    stats: {
+      thesaurusValuesObserved: 18,
+      thesaurusValuesCreated: 4,
+      thesauriTouched: 2,
+      relationshipValuesObserved: 9,
+      relationshipValuesCreated: 3,
+      entitiesCreated: 84,
+      entitiesUpdated: 1,
+      rowsProcessed: 86,
+      rowsFailed: 0,
+    },
+    extraction: {
+      sourceType: 'csv',
+      originalUploadSizeBytes: 88912,
+      extractedFilesCount: 1,
+      files: [
+        {
+          filename: 'events.csv',
+          sizeBytes: 88912,
+        },
+      ],
+    },
+  },
+  {
+    id: 'csv-import-4',
+    status: CsvImportStatus.Failed,
+    templateId: 'template-documents',
+    file: {
+      originalName: 'documents.csv',
+      mimeType: 'text/csv',
+      size: 43711,
+    },
+    createdAt: 1712755200000,
+    updatedAt: 1712755500000,
+    progress: {
+      totalRows: 60,
+      processedRows: 17,
+      lastProcessedRow: 18,
+      batchSize: 20,
+    },
+    stats: {
+      entitiesCreated: 15,
+      entitiesUpdated: 0,
+      rowsProcessed: 17,
+      rowsFailed: 2,
+    },
+    failure: {
+      message: 'Template validation failed for row 18',
+      retryable: true,
+      at: 1712755500000,
+      stage: 'validation',
+      code: 'invalid_template_value',
+    },
+    rowErrors: [
+      {
+        importId: 'csv-import-4',
+        rowIndex: 16,
+        message: 'Relationship value could not be resolved to an existing entity.',
+        code: 'RELATIONSHIP_NOT_FOUND',
+        property: 'related_case',
+        rawValue: 'CASE-404',
+        createdAt: 1712755400000,
+      },
+      {
+        importId: 'csv-import-4',
+        rowIndex: 17,
+        message: 'Referenced file was not found in the import package.',
+        code: 'FILE_NOT_FOUND',
+        property: 'file',
+        rawValue: 'missing.pdf',
+        createdAt: 1712755450000,
+      },
+    ],
+  },
+];
+
+const csvImportsListWithErrors: CsvImportListRow[] = [
+  {
+    id: '1',
+    templateId: 'template-cases',
+    file: { originalName: 'thesaurus.csv', mimeType: 'text/csv', size: 24 },
+    status: CsvImportStatus.ImportEntitiesDone,
+    createdAt: 1712496000000,
+    updatedAt: 1712496000000,
+    rowErrors: [],
+    stats: {
+      thesaurusValuesObserved: 0,
+      thesaurusValuesCreated: 0,
+      thesauriTouched: 0,
+      relationshipValuesObserved: 0,
+      relationshipValuesCreated: 0,
+      rowsProcessed: 3,
+      rowsFailed: 3,
+      entitiesCreated: 0,
+      entitiesUpdated: 0,
+    },
+    progress: { totalRows: 3, processedRows: 3, lastProcessedRow: 2, batchSize: 10 },
+    extraction: {
+      sourceType: 'csv',
+      originalUploadSizeBytes: 24,
+      extractedFilesCount: 1,
+      files: [{ filename: 'thesaurus.csv', sizeBytes: 24 }],
+    },
+  },
+  {
+    id: '2',
+    templateId: 'template-cases',
+    file: { originalName: 'persons.csv', mimeType: 'text/csv', size: 130 },
+    status: CsvImportStatus.ImportEntitiesDone,
+    createdAt: 1712496000000,
+    updatedAt: 1712496000000,
+    rowErrors: [
+      {
+        importId: '2',
+        rowIndex: 2,
+        message: 'Invalid value for "dob". Expected number, received nan',
+        code: 'VALUE_INVALID_FORMAT',
+        property: 'dob',
+        rawValue: 'aldakjshdksaljd',
+        createdAt: 1712496000000,
+      },
+      {
+        importId: '2',
+        rowIndex: 4,
+        message: 'Invalid value for "dob". Expected number, received nan',
+        code: 'VALUE_INVALID_FORMAT',
+        property: 'dob',
+        rawValue: 'aldakjshdksaljd',
+        createdAt: 1712496000000,
+      },
+    ],
+    stats: {
+      thesaurusValuesObserved: 0,
+      thesaurusValuesCreated: 0,
+      thesauriTouched: 0,
+      relationshipValuesObserved: 0,
+      relationshipValuesCreated: 0,
+      rowsProcessed: 5,
+      rowsFailed: 2,
+      entitiesCreated: 3,
+      entitiesUpdated: 1,
+    },
+    progress: { totalRows: 5, processedRows: 5, lastProcessedRow: 4, batchSize: 10 },
+    extraction: {
+      sourceType: 'csv',
+      originalUploadSizeBytes: 130,
+      extractedFilesCount: 1,
+      files: [{ filename: 'persons.csv', sizeBytes: 130 }],
+    },
+  },
+];
+
+const templates: Template[] = [
+  {
+    _id: 'template-people',
+    name: 'People',
+    color: '#1D4ED8',
+  },
+  {
+    _id: 'template-cases',
+    name: 'Cases',
+    color: '#B45309',
+  },
+  {
+    _id: 'template-events',
+    name: 'Events',
+    color: '#047857',
+  },
+  {
+    _id: 'template-documents',
+    name: 'Documents',
+    color: '#7C3AED',
+  },
+];
+
+const translations: ClientTranslationSchema[] = [
+  {
+    locale: 'en',
+    contexts: [
+      { id: 'template-people', values: { People: 'People' } },
+      { id: 'template-cases', values: { Cases: 'Cases' } },
+      { id: 'template-events', values: { Events: 'Events' } },
+      { id: 'template-documents', values: { Documents: 'Documents' } },
+    ],
+  },
+  {
+    locale: 'es',
+    contexts: [
+      { id: 'template-people', values: { People: 'Personas' } },
+      { id: 'template-cases', values: { Cases: 'Casos' } },
+      { id: 'template-events', values: { Events: 'Eventos' } },
+      { id: 'template-documents', values: { Documents: 'Documentos' } },
+    ],
+  },
+];
+
+export { csvImportsList, csvImportsListWithErrors, templates, translations };

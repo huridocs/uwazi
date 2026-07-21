@@ -1,12 +1,12 @@
 /* eslint-disable max-statements */
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB from 'api/utils/testing_db';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import testingDB from '#api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
-import { DefaultTestingQueueAdapter } from 'api/core/libs/queue/configuration/factories';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { createTestJob } from './fixtures';
-import { JobDBO } from '../MongoQueueAdapter';
+import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { createTestJob } from './fixtures.js';
+import { JobDBO } from '../MongoQueueAdapter.js';
 
 const OTHER_QUEUE_JOB = {
   _id: new ObjectId(),
@@ -60,6 +60,37 @@ it('should create a job in the given queue with the given message', async () => 
       },
     },
   ]);
+});
+
+it('should not pick a job pushed with a future lockedUntil until it expires', async () => {
+  const adapter = DefaultTestingQueueAdapter();
+  let NOW_VALUE = 1000;
+  jest.spyOn(Date, 'now').mockImplementation(() => NOW_VALUE);
+
+  await adapter.pushJob({
+    queue: 'queue name',
+    name: 'delayed job',
+    params: {},
+    namespace: 'namespace',
+    lockedUntil: NOW_VALUE + 5000,
+    options: {
+      maxRetries: 3,
+      lockWindow: 500,
+    },
+  });
+
+  let result = await adapter.pickJob('queue name');
+  expect(result).toBe(null);
+
+  NOW_VALUE = 6001;
+  result = await adapter.pickJob('queue name');
+
+  expect(result).toMatchObject({
+    name: 'delayed job',
+    namespace: 'namespace',
+    lockedUntil: NOW_VALUE + 500,
+    retryCount: 1,
+  });
 });
 
 it('should return null if no jobs in the queue', async () => {
@@ -620,6 +651,31 @@ describe('deleteByParams', () => {
     expect(after).toEqual(TestUtils.arrayIncludesObjects([{ _id: factory.id('locked_job') }]));
   });
 
+  it('should cancel jobs with future lockedUntil via cancelByParams', async () => {
+    const adapter = DefaultTestingQueueAdapter();
+    const NOW_VALUE = 1000;
+    jest.spyOn(Date, 'now').mockReturnValue(NOW_VALUE);
+
+    await testingEnvironment.setFixtures({
+      jobs: [
+        {
+          _id: factory.id('locked_job'),
+          namespace: 'tenant1',
+          queue: 'queue1',
+          name: 'scheduled_job',
+          params: { datavizId: 'dv1' },
+          lockedUntil: NOW_VALUE + 5000,
+          retryCount: 0,
+        },
+      ] as JobDBO[],
+    });
+
+    await adapter.cancelByParams('scheduled_job', { datavizId: 'dv1' }, 'tenant1');
+
+    const after = await testingEnvironment.db.getAllFrom('jobs');
+    expect(after).toHaveLength(0);
+  });
+
   it('should delete jobs matching a single numeric param', async () => {
     const adapter = DefaultTestingQueueAdapter();
 
@@ -781,5 +837,61 @@ describe('deleteByParams', () => {
         { _id: factory.id('job1_6') },
       ])
     );
+  });
+});
+
+describe('countByName', () => {
+  const factory = getFixturesFactory();
+
+  beforeEach(async () => {
+    await testingEnvironment.setFixtures({
+      jobs: [
+        {
+          _id: factory.id('job_a_1'),
+          namespace: 'tenant1',
+          queue: 'queue1',
+          name: 'jobA',
+          params: {},
+          lockedUntil: 0,
+          retryCount: 0,
+        },
+        {
+          _id: factory.id('job_a_2'),
+          namespace: 'tenant1',
+          queue: 'queue1',
+          name: 'jobA',
+          params: {},
+          lockedUntil: 0,
+          retryCount: 0,
+        },
+        {
+          _id: factory.id('job_b_1'),
+          namespace: 'tenant1',
+          queue: 'queue1',
+          name: 'jobB',
+          params: {},
+          lockedUntil: 0,
+          retryCount: 0,
+        },
+        {
+          _id: factory.id('job_a_other_tenant'),
+          namespace: 'tenant2',
+          queue: 'queue1',
+          name: 'jobA',
+          params: {},
+          lockedUntil: 0,
+          retryCount: 0,
+        },
+      ] as JobDBO[],
+    });
+  });
+
+  it('should count jobs by name and namespace', async () => {
+    const adapter = DefaultTestingQueueAdapter();
+
+    expect(await adapter.countByName('jobA', 'tenant1')).toBe(2);
+    expect(await adapter.countByName('jobB', 'tenant1')).toBe(1);
+    expect(await adapter.countByName('jobA', 'tenant2')).toBe(1);
+    expect(await adapter.countByName('jobA', 'tenant3')).toBe(0);
   });
 });

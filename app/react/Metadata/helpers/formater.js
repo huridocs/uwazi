@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
 import { DateTime } from 'luxon';
 import Immutable from 'immutable';
-import { advancedSort } from 'app/utils/advancedSort';
-import { store } from 'app/store';
-import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
+import { advancedSort } from '#app/utils/advancedSort.js';
+import { store } from '#app/store.js';
+import nestedProperties from '#app/Templates/components/ViolatedArticlesNestedProperties.js';
 
 const prepareRelatedEntity = (options, propValue, templates, property) => {
   const relation =
@@ -143,7 +143,7 @@ const getPropertyType = (propertyName, templates) => {
   return 'text';
 };
 
-export default {
+const formater = {
   formatDateRange(daterange = {}) {
     let from = '';
     let to = '';
@@ -160,6 +160,7 @@ export default {
     return `${from} ~ ${to}`;
   },
 
+  // eslint-disable-next-line max-statements
   getSelectOptions(option, thesaurus, doc) {
     let value = '';
     let originalValue = '';
@@ -187,7 +188,15 @@ export default {
         : relatedEntity;
     }
 
-    return { value, originalValue, url, icon, parent, relatedEntity };
+    return {
+      value,
+      originalValue,
+      url,
+      icon,
+      parent,
+      relatedEntity,
+      ...(option?.authorized === false ? { authorized: false } : {}),
+    };
   },
 
   multimedia(property, [{ value }], type) {
@@ -253,14 +262,13 @@ export default {
   },
 
   preview(property, _value, _thesauri, { doc }) {
-    const defaultDoc = doc.defaultDoc || {};
     return {
       ...this.multimedia(
         property,
-        [{ value: defaultDoc._id ? `/api/files/${defaultDoc._id}.jpg` : null }],
+        [{ value: doc.preview ? `/api/files/${doc.preview}` : null }],
         'image'
       ),
-      ...(defaultDoc?.status ? { status: defaultDoc.status } : {}),
+      ...(doc?.status ? { status: doc.status } : {}),
     };
   },
 
@@ -612,4 +620,4 @@ export default {
   },
 };
 
-export { propertyValueFormatter };
+export { propertyValueFormatter, formater };

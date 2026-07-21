@@ -1,6 +1,6 @@
 import React from 'react';
-import { Translate, I18NLinkV2 as I18NLink } from 'app/I18N';
-import { Button } from 'V2/Components/UI';
+import { Translate, I18NLinkV2 as I18NLink } from '#app/I18N/index.js';
+import { Button } from '#V2/Components/UI/index.js';
 
 interface TemplatesEditorFooterProps {
   selected: string[];
@@ -25,22 +25,22 @@ export const TemplatesEditorFooter = ({
     <div className="flex gap-2 items-center">
       {selected.length === 0 ? (
         <>
-          <Button color="primary" onClick={onAddProperty}>
+          <Button variant="primary" onClick={onAddProperty}>
             <Translate>Add property</Translate>
           </Button>
-          <Button color="primary" styling="outline" onClick={onAddThesaurus}>
+          <Button variant="secondary" onClick={onAddThesaurus}>
             <Translate>Add thesaurus</Translate>
           </Button>
-          <Button color="primary" styling="outline" onClick={onAddRelationshipType}>
+          <Button variant="secondary" onClick={onAddRelationshipType}>
             <Translate>Add relationship type</Translate>
           </Button>
         </>
       ) : (
         <>
-          <Button color="error" onClick={onDelete}>
+          <Button variant="danger" onClick={onDelete}>
             <Translate>Remove</Translate>
           </Button>
-          <span className="text-gray-700">
+          <span className="text-ink-secondary">
             <Translate>Selected</Translate> {selected.length}
           </span>
         </>
@@ -48,11 +48,11 @@ export const TemplatesEditorFooter = ({
     </div>
     <div className="flex gap-2">
       <I18NLink to="/settings/templates">
-        <Button styling="outline">
+        <Button variant="secondary">
           <Translate>Cancel</Translate>
         </Button>
       </I18NLink>
-      <Button color="success" onClick={onSave} disabled={disableSave}>
+      <Button variant="success" onClick={onSave} disabled={disableSave}>
         <Translate>Save</Translate>
       </Button>
     </div>

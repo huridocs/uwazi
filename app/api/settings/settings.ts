@@ -1,21 +1,21 @@
-import translations from 'api/i18n/translations';
+import translations from '#api/i18n/translations.js';
 
 import {
   Settings,
   SettingsLinkSchema,
   SettingsFilterSchema,
   SettingsSublinkSchema,
-} from 'shared/types/settingsType';
-import { ensure } from 'shared/tsUtils';
-import { LanguageSchema, LatLonSchema, ObjectIdSchema } from 'shared/types/commonTypes';
+} from '#shared/types/settingsType.js';
+import { ensure } from '#shared/tsUtils.js';
+import { LanguageSchema, LatLonSchema, ObjectIdSchema } from '#shared/types/commonTypes.js';
 
-import { validateSettings } from 'shared/types/settingsSchema';
-import { ContextType } from 'shared/translationSchema';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { TemplateFacade } from 'api/core/infrastructure/facades/TemplateFacade';
-import { settingsModel } from './settingsModel';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
+import { validateSettings } from '#shared/types/settingsSchema.js';
+import { ContextType } from '#shared/translationSchema.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
+import { settingsModel } from './settingsModel.js';
+import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
+import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
 
 const DEFAULT_MAP_STARTING_POINT: LatLonSchema[] = [{ lon: 6, lat: 46 }];
 
@@ -160,11 +160,11 @@ export default {
     const result = await settingsModel.save({ ...settings, _id: currentSettings._id });
 
     if (!currentSettings.newNameGeneration && settings.newNameGeneration) {
-      const db = getConnection();
-      const templatesCol = db.collection<TemplateDBO>('templates');
+      const dao = TemplatesDAOFactory.default();
+      const templates = (await dao.get()) as TemplateDBO[];
       const defaultLanguage = currentSettings?.languages?.find(l => l.default)?.key!;
 
-      await ArrayUtils.sequentialFor(await templatesCol.find().toArray(), async template => {
+      await ArrayUtils.sequentialFor(templates, async (template: any) => {
         await TemplateFacade.update({ ...template, reindex: false }, defaultLanguage);
       });
     }

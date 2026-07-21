@@ -1,20 +1,18 @@
-import { ResultSet } from 'api/core/application/contracts/ResultSet';
-import { GenerateIdProperty } from 'api/core/domain/template/GenerateIdProperty';
-import { ResultType } from 'api/core/libs/Result';
+import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
+import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty.js';
+import { ResultType } from '#api/core/libs/Result.js';
 import {
   DefaultTemplateNotFoundError,
   TemplateDoesNotExistError,
-} from 'api/core/domain/template/errors';
-import { Property } from '../../domain/template/Property';
-import { RelationshipProperty } from '../../domain/template/RelationshipProperty';
-import { Template } from '../../domain/template/Template';
-import { V1RelationshipProperty } from '../../domain/template/V1RelationshipProperty';
+} from '#api/core/domain/template/errors.js';
+import { Property } from '../../domain/template/Property.js';
+import { Template } from '../../domain/template/Template.js';
+import { V1RelationshipProperty } from '../../domain/template/V1RelationshipProperty.js';
 
 export interface TemplatesDataSource {
   updateMapping(template: Template, reset?: boolean): Promise<void>;
   getAll(): ResultSet<Template>;
   getAllTemplatesIds(): ResultSet<string>;
-  getAllRelationshipProperties(): ResultSet<RelationshipProperty>;
   getV1RelationshipPropertiesByIds(ids?: string[]): ResultSet<V1RelationshipProperty>;
   getGeneratedIdPropertiesByIds(ids?: string[]): ResultSet<GenerateIdProperty>;
   getAllProperties(): ResultSet<Property>;

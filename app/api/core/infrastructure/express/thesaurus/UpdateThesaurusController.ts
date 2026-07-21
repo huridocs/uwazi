@@ -1,12 +1,12 @@
-import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
+import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { z } from 'zod';
-import { UpdateThesaurusUseCaseInput } from 'api/core/application/UpdateThesaurus';
-import { CSVLoader } from 'api/csv';
+import { UpdateThesaurusUseCaseInput } from '#api/core/application/UpdateThesaurus.js';
+import { CSVLoader } from '#api/csv/index.js';
 import { ObjectId } from 'mongodb';
-import { LoggerFactory } from '../../factories/LoggerFactory';
-import { ThesaurusDBO } from '../../mongodb/thesauri/ThesaurusDBO';
-import { MongoThesaurusMapper } from '../../mongodb/thesauri/MongoThesaurusMapper';
-import { UpdateThesaurusUseCaseFactory } from '../../factories/UpdateThesaurusUseCaseFactory';
+import { LoggerFactory } from '../../factories/LoggerFactory.js';
+import { ThesaurusDBO } from '../../mongodb/thesauri/ThesaurusDBO.js';
+import { MongoThesaurusMapper } from '../../mongodb/thesauri/MongoThesaurusMapper.js';
+import { UpdateThesaurusUseCaseFactory } from '../../factories/UpdateThesaurusUseCaseFactory.js';
 
 const ValueEntrySchema = z.object({
   label: z.string(),
@@ -78,9 +78,11 @@ class UpdateThesaurusController extends AbstractController<RequestDto> {
          */
 
         const loader = new CSVLoader();
-        response = (await loader.loadThesauri(this.request.file.path, new ObjectId(output.id), {
+
+        const loaded = await loader.loadThesauri(this.request.file.path, output.id, {
           language: this.language,
-        })) as ThesaurusDBO;
+        });
+        response = { ...loaded, _id: new ObjectId(loaded._id) };
       }
 
       this.response.json(response);

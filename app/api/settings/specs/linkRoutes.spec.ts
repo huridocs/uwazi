@@ -1,29 +1,33 @@
+import { ObjectId } from 'mongodb';
 import request from 'supertest';
 
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { UserRole } from 'shared/types/userSchema';
-import { UserSchema } from 'shared/types/userType';
-import { expectedLinks, linkFixtures, newLinks } from './fixtures';
-import settingsRoutes from '../routes';
-import settings from '../settings';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { UserSchema } from '#shared/types/userType.js';
+import { expectedLinks, linkFixtures, newLinks } from './fixtures.js';
+import settingsRoutes from '../routes.js';
+import settings from '../settings.js';
 
 let currentUser: UserSchema;
 
 const adminUser = {
+  _id: new ObjectId(),
   username: 'admin',
   role: UserRole.ADMIN,
   email: 'user@test.com',
 };
 
 const editor = {
+  _id: new ObjectId(),
   username: 'editor',
   role: UserRole.EDITOR,
   email: 'editor@test.com',
 };
 
 const collaborator = {
+  _id: new ObjectId(),
   username: 'collaborator',
   role: UserRole.COLLABORATOR,
   email: 'collab@test.com',

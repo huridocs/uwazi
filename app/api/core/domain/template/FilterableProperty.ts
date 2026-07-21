@@ -1,4 +1,4 @@
-import { Context, Property, PropertyProps } from 'api/core/domain/template/Property';
+import { Context, Property, PropertyProps } from '#api/core/domain/template/Property.js';
 
 type Props = {
   filter?: boolean;

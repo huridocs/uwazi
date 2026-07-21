@@ -1,13 +1,13 @@
-import settings from 'api/settings/settings';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { testingTenants } from 'api/utils/testingTenants';
-import { Application, NextFunction, Request, Response } from 'express';
-// eslint-disable-next-line node/no-restricted-import
-import privateInstanceMiddleware from 'api/auth/privateInstanceMiddleware';
+import type { Application, NextFunction, Request, Response } from 'express';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
-import uploadRoutes from '../routes';
+import settings from '#api/settings/settings.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+
+import privateInstanceMiddleware from '#api/auth/privateInstanceMiddleware.js';
+import uploadRoutes from '../routes.js';
 import {
   adminUser,
   collabInGroupUser,
@@ -20,7 +20,7 @@ import {
   mainDocument1,
   restrictedFileName,
   writerUser,
-} from './fixtures';
+} from './fixtures.js';
 
 const setAppWithUser = (routes: any, user: any) => {
   testingEnvironment.setPermissions(user);

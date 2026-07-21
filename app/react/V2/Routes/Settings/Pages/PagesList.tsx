@@ -3,14 +3,13 @@ import React, { useState } from 'react';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 import { IncomingHttpHeaders } from 'http';
-import { useSetAtom } from 'jotai';
-import { I18NLinkV2 as I18NLink, Translate } from 'app/I18N';
-import * as pagesAPI from 'V2/api/pages';
-import { Button, ConfirmationModal, Table } from 'app/V2/Components/UI';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Page } from 'app/V2/shared/types';
-import { notificationAtom, notificationAtomType } from 'app/V2/atoms';
-import { FetchResponseError } from 'shared/JSONRequest';
+import { I18NLinkV2 as I18NLink, Translate, t } from '#app/I18N/index.js';
+import * as pagesAPI from '#V2/api/pages/index.js';
+import { Button, ConfirmationModal, Table } from '#app/V2/Components/UI/index.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import { Page } from '#app/V2/shared/types.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import {
   EntityViewHeader,
   YesNoPill,
@@ -20,7 +19,7 @@ import {
   UrlCell,
   ActionHeader,
   List,
-} from './components/PageListTable';
+} from './components/PageListTable.js';
 
 type TablePage = Page & { rowId: string };
 
@@ -29,15 +28,6 @@ const pagesListLoader =
   async () =>
     (await pagesAPI.get(headers)).map(page => ({ ...page, rowId: page._id }));
 
-const deletionNotification: (hasErrors: boolean) => notificationAtomType = hasErrors => ({
-  type: !hasErrors ? 'success' : 'error',
-  text: !hasErrors ? (
-    <Translate>Deleted successfully.</Translate>
-  ) : (
-    <Translate>An error occurred</Translate>
-  ),
-});
-
 const columnHelper = createColumnHelper<TablePage>();
 
 const PagesList = () => {
@@ -45,7 +35,7 @@ const PagesList = () => {
   const [showModal, setShowModal] = useState(false);
   const pages = useLoaderData() as TablePage[];
   const revalidator = useRevalidator();
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
 
   const deleteSelected = async () => {
     setShowModal(false);
@@ -54,7 +44,11 @@ const PagesList = () => {
       sharedIds.map(async sharedId => pagesAPI.deleteBySharedId(sharedId!))
     );
     const hasErrors = result.find(res => res instanceof FetchResponseError) !== undefined;
-    setNotifications(deletionNotification(hasErrors));
+    if (hasErrors) {
+      notify('error', t('System', 'An error occurred', null, false));
+    } else {
+      notify('success', t('System', 'Deleted successfully.', null, false));
+    }
     await revalidator.revalidate();
   };
 
@@ -95,9 +89,7 @@ const PagesList = () => {
             data={pages}
             enableSelections
             header={
-              <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
-                Pages
-              </Translate>
+              <Translate className="text-left text-base font-semibold text-ink">Pages</Translate>
             }
             onSelect={({ selectedRows }) => {
               setSelectedPages(pages.filter(page => page.rowId in selectedRows));
@@ -105,13 +97,13 @@ const PagesList = () => {
             defaultSorting={[{ id: 'title', desc: false }]}
           />
         </SettingsContent.Body>
-        <SettingsContent.Footer className={selectedPages.length ? 'bg-primary-50' : ''}>
+        <SettingsContent.Footer highlighted={selectedPages.length > 0}>
           {selectedPages.length > 0 && (
             <div className="flex items-center gap-2">
               <Button
                 type="button"
                 onClick={confirmDeletion}
-                color="error"
+                variant="danger"
                 data-testid="delete-page-btn"
               >
                 <Translate>Delete</Translate>
@@ -124,7 +116,7 @@ const PagesList = () => {
             <div className="flex justify-between w-full">
               <div className="flex gap-2">
                 <I18NLink to="/settings/pages/new">
-                  <Button styling="solid" color="primary" type="button">
+                  <Button variant="primary" type="button">
                     <Translate>Add page</Translate>
                   </Button>
                 </I18NLink>

@@ -1,5 +1,6 @@
 NaN.optimized
 node_modules
+.eslintcache
 .DS_Store
 .vscode/*
 .history/*
@@ -61,6 +62,12 @@ tenants/*
 .cursor/*
 .browsers/*
 
+# Yarn Berry
+.yarn/install-state.gz
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+
 # Webpack cache
 .webpack-cache/
 .webpack/
@@ -72,3 +79,7 @@ app/api/csv.v2/application/jobs/specs/uploads_intermediate/
 app/api/csv.v2/application/jobs/specs/tmp/
 app/api/csv.v2/specs/uploads/
 app/api/csv.v2/specs/uploads_intermediate/
+
+# Playwright outputs
+test-results/
+playwright-report/

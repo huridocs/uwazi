@@ -1,22 +1,23 @@
 /* eslint-disable max-statements */
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { elasticClient } from 'api/search/elastic';
-import db from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { TemplateSchema } from 'shared/types/templateType';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { elasticClient } from '#api/search/elastic.js';
+import db from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 import {
   TemplateUpdatedData,
   TemplateUpdatedEvent,
-} from '../../../domain/template/events/TemplateUpdatedEvent';
-import templates from '../templates';
-import fixtures, {
+} from '../../../domain/template/events/TemplateUpdatedEvent.js';
+import templates from '../templates.js';
+import {
+  fixtures,
   factory,
   swapTemplate,
   templateToBeEditedId,
   thesauriId1,
-} from './fixtures/fixtures';
+} from './fixtures/fixtures.js';
 
 async function updateTemplate(template: TemplateSchema, language = 'en') {
   return templates.save(template, language, true, false);
@@ -45,8 +46,10 @@ describe('templates', () => {
 
       toSave.name = 'changed name';
 
-      await templates.save(toSave, 'en');
-      const [edited] = await templates.get(templateToBeEditedId);
+      await testingEnvironment.runWithContext(async () => {
+        await templates.save(toSave, 'en');
+      });
+      const [edited] = await templates.get([templateToBeEditedId.toString()]);
       expect(edited.name).toBe('changed name');
     });
 
@@ -55,7 +58,7 @@ describe('templates', () => {
         _id: templateToBeEditedId,
         name: 'changed name',
       });
-      const template1 = await updateTemplate(edited);
+      const template1 = await testingEnvironment.runWithContext(async () => updateTemplate(edited));
       expect(template1.name).toBe('changed name');
     });
 
@@ -87,7 +90,7 @@ describe('templates', () => {
       applicationEventsBus.on(TemplateUpdatedEvent, async data => {
         emitedEventData = data;
       });
-      await updateTemplate(template, 'en');
+      await testingEnvironment.runWithContext(async () => updateTemplate(template));
 
       const [currentTemplate] = await db
         .mongodb!.collection('templates')
@@ -117,7 +120,7 @@ describe('templates', () => {
       );
 
       try {
-        await updateTemplate(changedTemplate);
+        await testingEnvironment.runWithContext(async () => updateTemplate(changedTemplate));
         throw new Error('properties have swaped names, should have failed with an error');
       } catch (error) {
         expect(error.message).toContain('Properties cannot swap names');
@@ -137,7 +140,7 @@ describe('templates', () => {
 
       const mapping = await elasticClient.indices.getMapping({ index: elasticIndex });
 
-      await updateTemplate(template);
+      await testingEnvironment.runWithContext(async () => updateTemplate(template));
 
       await elasticClient.indices.refresh({ index: elasticIndex });
 
@@ -154,10 +157,12 @@ describe('templates', () => {
 
     it('should update translations when name of the template changes', async () => {
       const { _id, ...newTemplate } = factory.template('new template', []);
-      const testTemplate = await updateTemplate(newTemplate);
+      const testTemplate = await testingEnvironment.runWithContext(async () =>
+        updateTemplate(newTemplate)
+      );
 
       testTemplate.name = 'changed name';
-      await updateTemplate(testTemplate);
+      await testingEnvironment.runWithContext(async () => updateTemplate(testTemplate));
 
       const dbTranslations = await DefaultTranslationsDataSource(
         TransactionManagerFactory.default()
@@ -172,10 +177,10 @@ describe('templates', () => {
     it('should update translations with the name of the title property, and remove old custom value', async () => {
       const testTemplate = factory.template('template to be edited');
       testTemplate!.commonProperties![0].label = 'First New Title';
-      await updateTemplate(testTemplate);
+      await testingEnvironment.runWithContext(async () => updateTemplate(testTemplate));
 
       testTemplate!.commonProperties![0].label = 'Second New Title';
-      await updateTemplate(testTemplate);
+      await testingEnvironment.runWithContext(async () => updateTemplate(testTemplate));
 
       const dbTranslations = await DefaultTranslationsDataSource(
         TransactionManagerFactory.default()
@@ -193,7 +198,9 @@ describe('templates', () => {
         { name: 'label_1', label: 'label 1', type: 'text' },
         { name: 'label_2', label: 'label 2', type: 'text' },
       ]);
-      const template1 = await updateTemplate(newTemplate);
+      const template1 = await testingEnvironment.runWithContext(async () =>
+        updateTemplate(newTemplate)
+      );
       let dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
         .getAll()
         .all();
@@ -207,7 +214,7 @@ describe('templates', () => {
       template1.properties.pop();
       template1.properties.push({ name: 'label_3', label: 'label 3', type: 'text' });
       template1.commonProperties[0].label = 'new title label';
-      await updateTemplate(template1);
+      await testingEnvironment.runWithContext(async () => updateTemplate(template1));
 
       dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
         .getAll()
@@ -229,7 +236,9 @@ describe('templates', () => {
 
     it('should update translations handling duplicate values properly', async () => {
       const { _id, ...newTemplate } = factory.template('Country');
-      let template1 = await updateTemplate(newTemplate);
+      let template1 = await testingEnvironment.runWithContext(async () =>
+        updateTemplate(newTemplate)
+      );
       let dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
         .getAll()
         .all();
@@ -237,7 +246,7 @@ describe('templates', () => {
       expect(dbTranslations.filter(t => t.key === 'Country' && t.language === 'en').length).toBe(1);
 
       template1.commonProperties![0].label = 'Country name';
-      template1 = await updateTemplate(template1);
+      template1 = await testingEnvironment.runWithContext(async () => updateTemplate(template1));
 
       dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
         .getAll()
@@ -249,7 +258,7 @@ describe('templates', () => {
       ).toBe(1);
 
       template1.commonProperties![0].label = 'Country';
-      template1 = await updateTemplate(template1);
+      template1 = await testingEnvironment.runWithContext(async () => updateTemplate(template1));
 
       dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
         .getAll()
@@ -261,7 +270,7 @@ describe('templates', () => {
       ).toBe(0);
 
       template1.name = 'Country template';
-      template1 = await updateTemplate(template1);
+      template1 = await testingEnvironment.runWithContext(async () => updateTemplate(template1));
 
       dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
         .getAll()

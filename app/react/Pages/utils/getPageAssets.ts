@@ -1,10 +1,13 @@
-import { risonDecodeOrIgnore } from 'app/utils';
-import { get, has, uniq } from 'lodash';
-import api from 'app/Search/SearchAPI';
-import { markdownDatasets } from 'app/Markdown';
-import { RequestParams } from 'app/utils/RequestParams';
-import PagesAPI from '../PagesAPI';
-import pageItemLists from './pageItemLists';
+import { risonDecodeOrIgnore } from '#app/utils/index.js';
+import get from 'lodash/get.js';
+import has from 'lodash/has.js';
+import uniq from 'lodash/uniq.js';
+import { SearchAPI as api } from '#app/Search/SearchAPI.js';
+import { markdownDatasets } from '#app/Markdown/index.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { resolvePageForClient } from '#shared/pages/pageContent.js';
+import { PagesAPI } from '../PagesAPI.js';
+import pageItemLists from './pageItemLists.js';
 
 type Query = { filters: {}; types: string[]; limit?: string };
 
@@ -83,16 +86,23 @@ const replaceDynamicProperties = (pageContent?: string, datasets?: any) => {
 const getPageAssets = async (
   requestParams: RequestParams,
   additionalDatasets?: {},
-  localDatasets?: {}
+  localDatasets?: {},
+  options?: { contentMode?: 'draft' | 'published' }
 ) => {
-  const page = await PagesAPI.getById(requestParams);
+  const contentMode = options?.contentMode ?? 'published';
+  const pageParams = requestParams;
+  const rawPage = await PagesAPI.getById(pageParams);
+  const mode = contentMode === 'draft' ? 'draft' : 'published';
+  const page = resolvePageForClient(rawPage, mode);
+  const metadata = page.metadata ?? { content: '', script: '', css: '' };
+  page.metadata = metadata;
 
-  const { content, errors } = replaceDynamicProperties(page.metadata?.content, localDatasets);
-  page.metadata.content = content;
+  const { content, errors } = replaceDynamicProperties(metadata.content, localDatasets);
+  metadata.content = content;
 
-  const listsData = prepareLists(page.metadata.content, requestParams);
+  const listsData = prepareLists(metadata.content ?? '', requestParams);
 
-  const dataSets = markdownDatasets.fetch(page.metadata.content, requestParams.onlyHeaders(), {
+  const dataSets = markdownDatasets.fetch(metadata.content ?? '', requestParams.onlyHeaders(), {
     additionalDatasets,
   });
 

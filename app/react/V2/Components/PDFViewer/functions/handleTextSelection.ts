@@ -1,9 +1,9 @@
-import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
-import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
-import { Highlights } from '../../../Routes/Settings/IX/types';
+import { TextSelection } from '@huridocs/react-text-selection-handler';
+import { PropertySelectionSchema } from '#shared/types/commonTypes.js';
+import { Highlights } from '../../../Routes/Settings/IX/types.js';
 
 const getHighlightsFromFile = (
-  selections: ExtractedMetadataSchema[],
+  selections: PropertySelectionSchema[],
   property: string,
   color: string = 'lightyellow'
 ): Highlights => {
@@ -98,9 +98,9 @@ const getHighlightsFromSelection = (
 
 const updateFileSelection = (
   property: { name: string; id?: string },
-  currentSelections?: ExtractedMetadataSchema[],
+  currentSelections?: PropertySelectionSchema[],
   newSelection?: TextSelection
-): ExtractedMetadataSchema[] => {
+): PropertySelectionSchema[] => {
   const result = currentSelections || [];
 
   if (!newSelection) {
@@ -164,7 +164,7 @@ const updateFileSelection = (
 
 const deleteFileSelection = (
   property: { name: string; id?: string },
-  currentSelections?: ExtractedMetadataSchema[]
+  currentSelections?: PropertySelectionSchema[]
 ) => {
   if (!currentSelections) {
     return [];

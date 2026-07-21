@@ -3,10 +3,10 @@
  */
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { TestAtomStoreProvider } from 'V2/testing';
-import { translationsAtom, inlineEditAtom, localeAtom } from 'V2/atoms';
-import { Translate } from '../Translate';
-import { translations } from './fixtures';
+import { TestAtomStoreProvider } from '#V2/testing/index.js';
+import { translationsAtom, inlineEditAtom, localeAtom } from '#V2/atoms/index.js';
+import { Translate } from '../Translate.js';
+import { translations } from './fixtures.js';
 
 let initialValues: any[];
 
@@ -44,6 +44,17 @@ describe('Translate', () => {
       children: 'Fallback',
     });
     expect(getByText('Fallback')).toBeInTheDocument();
+  });
+
+  it('should render children when translations atom is undefined', () => {
+    initialValues = [
+      [translationsAtom, undefined],
+      [localeAtom, 'en'],
+      [inlineEditAtom, { inlineEdit: false, context: '', translationKey: '' }],
+    ];
+
+    const { getByText } = renderWithAtoms({ children: 'Save' });
+    expect(getByText('Save')).toBeInTheDocument();
   });
 
   it('renders bold markdown', () => {

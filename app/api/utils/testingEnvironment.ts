@@ -1,25 +1,61 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-statements */
 // eslint-disable-next-line node/no-restricted-import
 import { copyFile } from 'fs/promises';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-import { cleanupTestUploadedPaths, createDirIfNotExists, setupTestUploadedPaths } from 'api/files';
-import { FileType } from 'api/migrations/migrations/172-files_detect_and_assign_mimetype/types';
-import { appContext } from 'api/utils/AppContext';
-import { elasticTesting } from 'api/utils/elastic_testing';
-import testingDB, { DBFixture } from 'api/utils/testing_db';
-import { testingTenants } from 'api/utils/testingTenants';
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
-import path from 'path';
-import { UserSchema } from 'shared/types/userType';
+import { ObjectId } from 'mongodb';
+import {
+  cleanupTestUploadedPaths,
+  createDirIfNotExists,
+  setupTestUploadedPaths,
+} from '#api/files/index.js';
+import { FileType } from '#api/migrations/migrations/172-files_detect_and_assign_mimetype/types.js';
+import { ExecutionContext, ExecutionContextDeps } from '#api/core/libs/ExecutionContext.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
+import {
+  DefaultDispatcher,
+  DefaultTestingQueueAdapter,
+} from '#api/core/libs/queue/configuration/factories.js';
+import { appContext } from '#api/utils/AppContext.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
+import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
+import { testingPG } from '#api/utils/testing_pg.js';
+import type { PGFixture } from '#api/utils/testing_pg.js';
+import { User } from '#api/users.v2/model/User.js';
+import { UserSchema } from '#shared/types/userType.js';
+import { ObjectUtils } from '#api/common.v2/utils/Object.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 let appContextGetMock: jest.SpyInstance<unknown, [key: string], any>;
 let appContextSetMock: jest.SpyInstance<unknown, [key: string, value: unknown], any>;
 
+type SetUpOptions = {
+  elasticIndex?: string | boolean;
+  postgres?: boolean;
+};
+
 const testingEnvironment = {
   elasticIndex: '',
   uploadSubPath: '',
+  pgEnabled: false,
   userInContextMockFactory: new UserInContextMockFactory(),
 
-  async setUp(fixtures?: DBFixture, elasticIndex?: string | boolean) {
+  async setUp(fixtures?: DBFixture, options?: string | boolean | SetUpOptions) {
+    const { elasticIndex, postgres } =
+      options === undefined || typeof options === 'string' || typeof options === 'boolean'
+        ? { elasticIndex: options, postgres: false }
+        : options;
+
     if (!elasticIndex) {
       this.elasticIndex = '';
     }
@@ -28,6 +64,10 @@ const testingEnvironment = {
     this.setFakeContext();
     await this.setFixtures(fixtures);
     await this.setElastic(elasticIndex);
+    if (postgres && !this.pgEnabled) {
+      await testingPG.connect();
+      this.pgEnabled = true;
+    }
   },
 
   testingFilesPath(fileName: string) {
@@ -73,6 +113,7 @@ const testingEnvironment = {
       name: name || testingDB.dbName || 'defaultDB',
       dbName: testingDB.dbName || name || 'defaultDB',
       indexName: 'index',
+      domain: '127.0.0.1',
     });
     await setupTestUploadedPaths(subPath);
     this.uploadSubPath = subPath;
@@ -109,9 +150,25 @@ const testingEnvironment = {
     }
   },
 
-  async setFixtures(fixtures?: DBFixture) {
+  async setFixtures(fixtures?: DBFixture, pgFixtures?: PGFixture) {
     if (fixtures) {
       await testingDB.setupFixturesAndContext(fixtures);
+    }
+    if (pgFixtures && this.pgEnabled) {
+      await testingPG.setFixtures(pgFixtures);
+    }
+
+    if (this.pgEnabled && fixtures) {
+      await testingPG.setFixtures(
+        Object.fromEntries(
+          Object.entries(fixtures)
+            .filter(([table]) => ['dictionaries', 'templates', 'files'].includes(table))
+            .map(([table, fixture]) => [
+              table === 'dictionaries' ? 'thesauri' : table,
+              fixture.map((f: any) => JSON.parse(JSON.stringify(ObjectUtils.sanitize(f, ['__v'])))),
+            ])
+        )
+      );
     }
   },
 
@@ -128,6 +185,9 @@ const testingEnvironment = {
     }
   },
 
+  /**
+   * @deprecated Use runWithContext instead, which includes tenant and actor in the ExecutionContext.
+   */
   setPermissions(user?: UserSchema) {
     if (!user) {
       this.userInContextMockFactory.mockEditorUser();
@@ -138,6 +198,58 @@ const testingEnvironment = {
 
   resetPermissions() {
     this.userInContextMockFactory.restore();
+  },
+
+  /**
+   * Runs `fn` inside an ExecutionContext populated with test defaults.
+   * Defaults: editor actor, tenant derived from testingDB, standard factory stubs.
+   * Any field in `overrides` is deeply merged: `factories` keys are merged individually.
+   */
+  runWithContext<T>(
+    fn: () => T,
+    overrides?: Omit<Partial<ExecutionContextDeps>, 'factories'> & {
+      factories?: Partial<ExecutionContextDeps['factories']>;
+    }
+  ): T {
+    const tenant =
+      testingTenants.current() ||
+      (testingTenants.createTenant({
+        name: testingDB.dbName || 'defaultDB',
+        dbName: testingDB.dbName || 'defaultDB',
+        indexName: 'index',
+        domain: '127.0.0.1',
+      }) as ReturnType<typeof testingTenants.createTenant> & { domain: string });
+
+    const defaultActor = User.createFrom({
+      _id: new ObjectId(),
+      role: 'editor',
+      groups: [],
+      email: 'editor@test.com',
+      username: 'editorUser',
+    });
+
+    const defaultFactories: ExecutionContextDeps['factories'] = {
+      transactionManager: TransactionManagerFactory.default,
+      postgresTransactionManager: PostgresTransactionManagerFactory.default,
+      eventEmitter: EventEmitterFactory.forTesting,
+      jobsDispatcher: () =>
+        DefaultDispatcher(
+          tenant.name,
+          ExecutionContext.transactionManager,
+          undefined,
+          DefaultTestingQueueAdapter(ExecutionContext.transactionManager)
+        ),
+      idGenerator: IdGeneratorFactory.default,
+      logger: LoggerFactory.default,
+    };
+
+    const context: ExecutionContextDeps = {
+      tenant: overrides?.tenant ?? tenant,
+      actor: overrides?.actor ?? defaultActor,
+      factories: { ...defaultFactories, ...overrides?.factories },
+    };
+
+    return ExecutionContext.run(context, fn);
   },
 
   setRequestId(requestId: string = '1234') {
@@ -155,11 +267,22 @@ const testingEnvironment = {
         console.warn(`Failed to cleanup Elasticsearch index ${this.elasticIndex}:`, error.message);
       }
     }
+    if (this.pgEnabled) {
+      await testingPG.disconnect();
+      this.pgEnabled = false;
+    }
     await testingDB.disconnect();
   },
 
   db: {
     async getAllFrom(collectionName: string) {
+      if (
+        testingEnvironment.pgEnabled &&
+        testingTenants.current().featureFlags?.postgresFiles &&
+        ['files', 'templates', 'thesauri'].includes(collectionName)
+      ) {
+        return testingPG.getAllFrom(collectionName);
+      }
       if (!testingDB.mongodb) {
         throw new Error('Testing mongodb not connected');
       }
@@ -168,6 +291,18 @@ const testingEnvironment = {
 
     getCollection(collectionName: string) {
       return testingDB.mongodb?.collection(collectionName);
+    },
+  },
+
+  pg: {
+    async getAllFrom<T extends Record<string, unknown> = Record<string, unknown>>(
+      table: string
+    ): Promise<T[]> {
+      return testingPG.getAllFrom<T>(table);
+    },
+
+    get pool() {
+      return testingPG.pool;
     },
   },
 };

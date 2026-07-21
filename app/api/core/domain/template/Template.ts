@@ -1,20 +1,20 @@
 /* eslint-disable max-lines */
-import { objectIndex } from 'shared/data_utils/objectIndex';
-import { Validator } from 'api/core/domain/Validator';
-import { TemplateWithDuplicatedPropertyValidator } from 'api/core/domain/template/templateValidator/TemplateWithDuplicatedPropertyValidator';
+import { objectIndex } from '#shared/data_utils/objectIndex.js';
+import { Validator } from '#api/core/domain/Validator.js';
+import { TemplateWithDuplicatedPropertyValidator } from '#api/core/domain/template/templateValidator/TemplateWithDuplicatedPropertyValidator.js';
 import {
   DefaultTemplateConflictError,
   PropertyNotFoundError,
   PropertyNotFoundInTemplateError,
-} from 'api/core/domain/template/errors';
-import { ValidationError } from 'api/common.v2/validation/ValidationError';
-import { Result } from 'api/core/libs/Result';
-import { CreatePropertyAssignmentInput, Property, PropertyUpdateInfo } from './Property';
-import { V1RelationshipProperty } from './V1RelationshipProperty';
-import { CommonProperty } from './CommonProperty';
-import { PropertyType } from './PropertyType';
-import { TemplateWithMissingCommonPropertyValidator } from './templateValidator/TemplateWithMissingCommonPropertyValidator';
-import { PropertyAssignment } from './PropertyValue';
+} from '#api/core/domain/template/errors.js';
+import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
+import { Result } from '#api/core/libs/Result.js';
+import { CreatePropertyAssignmentInput, Property, PropertyUpdateInfo } from './Property.js';
+import { V1RelationshipProperty } from './V1RelationshipProperty.js';
+import { CommonProperty } from './CommonProperty.js';
+import { PropertyType } from './PropertyType.js';
+import { TemplateWithMissingCommonPropertyValidator } from './templateValidator/TemplateWithMissingCommonPropertyValidator.js';
+import { PropertyAssignment } from './PropertyValue.js';
 
 type CloneProps = {
   name?: string;
@@ -270,7 +270,7 @@ class Template {
       props.commonProperties || this.commonProperties,
       props.color || this.color,
       props.default ?? this.isDefault,
-      props.entityViewPage || this.entityViewPage
+      props.entityViewPage ?? this.entityViewPage
     );
 
     template.processing = this.processing;

@@ -6,9 +6,9 @@ import {
   TrashIcon,
   CheckIcon,
 } from '@heroicons/react/24/outline';
-import { TriangleIcon } from '../../../../Components/UI/TriangleIcon';
-import type { ProcessedTocEntry } from './types';
-import { DeleteConfirmation } from './DeleteConfirmation';
+import { TriangleIcon } from '#V2/Components/UI/TriangleIcon.js';
+import type { ProcessedTocEntry } from './types.js';
+import { DeleteConfirmation } from './DeleteConfirmation.js';
 
 const getPageNumber = (entry: { selectionRectangles?: Array<{ page?: string }> }) => {
   const page = entry.selectionRectangles?.find(rect => rect.page)?.page;
@@ -90,24 +90,24 @@ type EditControlsProps = {
 };
 
 const renderEditControls = (props: EditControlsProps): React.ReactNode => (
-  <div className="flex items-center gap-0.5 flex-shrink-0">
+  <div className="flex items-center gap-0.5 shrink-0">
     <button
       type="button"
       onClick={props.handleDecreaseIndentation}
       disabled={props.isFirstEntry || !props.canDecreaseIndentation}
-      className="w-[20px] h-[20px] rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-400 transition"
+      className="w-[20px] h-[20px] rounded hover:bg-(--color-theme-surface-warm) disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus:ring-1 focus:ring-(--color-theme-control-border-focus) transition"
       aria-label="Decrease indentation"
     >
-      <ChevronLeftIcon className="w-4 h-4 text-gray-600" />
+      <ChevronLeftIcon className="w-4 h-4 text-ink-secondary" />
     </button>
     <button
       type="button"
       onClick={props.handleIncreaseIndentation}
       disabled={props.isFirstEntry || !props.canIncreaseIndentation}
-      className="w-[20px] h-[20px] rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-400 transition"
+      className="w-[20px] h-[20px] rounded hover:bg-(--color-theme-surface-warm) disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus:ring-1 focus:ring-(--color-theme-control-border-focus) transition"
       aria-label="Increase indentation"
     >
-      <ChevronRightIcon className="w-4 h-4 text-gray-600" />
+      <ChevronRightIcon className="w-4 h-4 text-ink-secondary" />
     </button>
   </div>
 );
@@ -137,13 +137,13 @@ const renderExpandButton = (props: ExpandButtonProps): React.ReactNode => {
           props.toggleExpand(props.itemIndex);
         }
       }}
-      className="flex-shrink-0 p-0.5 rounded focus:outline-none focus:ring-1 focus:ring-indigo-400 transition cursor-pointer min-w-[20px] h-[20px] items-center justify-center"
+      className="shrink-0 p-0.5 rounded focus:outline-none focus:ring-1 focus:ring-(--color-theme-control-border-focus) transition cursor-pointer min-w-[20px] h-[20px] items-center justify-center"
       aria-label={props.isExpanded ? 'Collapse section' : 'Expand section'}
       aria-expanded={props.isExpanded}
     >
       <TriangleIcon
         isExpanded={props.isExpanded}
-        className={props.isExpanded ? 'text-gray-700' : 'text-gray-400'}
+        className={props.isExpanded ? 'text-ink-secondary' : 'text-ink-muted'}
       />
     </button>
   );
@@ -158,7 +158,7 @@ type RightSideContentProps = {
 const renderRightSideContent = (props: RightSideContentProps): React.ReactNode => (
   <div className="relative flex items-center gap-2">
     {typeof props.pageNumber === 'number' && !props.isEditMode && (
-      <p className="text-xs font-medium text-gray-500 whitespace-nowrap flex-shrink-0">
+      <p className="text-micro font-medium text-ink-muted whitespace-nowrap shrink-0">
         {props.pageNumber}
       </p>
     )}
@@ -168,7 +168,7 @@ const renderRightSideContent = (props: RightSideContentProps): React.ReactNode =
         triggerButton={
           <button
             type="button"
-            className="w-[20px] h-[20px] rounded hover:bg-red-100 focus:outline-none focus:ring-1 focus:ring-red-400 transition cursor-pointer"
+            className="w-[20px] h-[20px] rounded hover:bg-[color-mix(in_srgb,var(--color-theme-feedback-danger)_18%,transparent)] focus:outline-none focus:ring-1 focus:ring-(--color-theme-feedback-danger) transition cursor-pointer"
             aria-label="Delete entry"
           >
             <TrashIcon className="w-4 h-4 stroke-error-500" />
@@ -240,12 +240,10 @@ export const ToCItem = ({
   };
 
   const interactiveProps = getInteractiveProps(isInteractive, handleEntryClick);
-  const topLevelClasses = item.isTopLevel
-    ? 'bg-gray-100 shadow-sm hover:bg-gray-200'
-    : 'hover:bg-gray-50';
+  const topLevelClasses = item.isTopLevel ? 'bg-selected hover:bg-warm' : 'hover:bg-warm';
   const baseClasses = `flex items-center justify-between gap-4 py-1.5 pr-2 transition ${
     isInteractive ? 'cursor-pointer' : ''
-  } focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-inset rounded`;
+  } focus:outline-none focus:ring-2 focus:ring-(--color-theme-control-border-focus) focus:ring-inset rounded`;
 
   // Edit mode controls
   const editControls = {
@@ -300,7 +298,7 @@ export const ToCItem = ({
   const renderLabel = () => {
     if (isEditMode && isEditingLabel) {
       return (
-        <div className="flex-1 min-w-0 flex items-center gap-1">
+        <div className="flex-1 min-w-0 flex items-cente  gap-1">
           <input
             ref={inputRef}
             type="text"
@@ -308,7 +306,7 @@ export const ToCItem = ({
             onChange={e => setEditedLabel(e.target.value)}
             onKeyDown={handleLabelKeyDown}
             onClick={e => e.stopPropagation()}
-            className="flex-1 text-sm font-semibold text-gray-900 px-2 h-5 leading-5 pt-0 pb-0 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-400 bg-white"
+            className="flex-1 text-sm font-semibold text-ink px-2 h-5 leading-5 pt-0 pb-0 border border-[color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] rounded focus:outline-none focus:ring-2 focus:ring-(--color-theme-control-border-focus) bg-(--color-theme-surface-raised)"
           />
           <button
             type="button"
@@ -316,10 +314,10 @@ export const ToCItem = ({
               e.stopPropagation();
               handleLabelSave();
             }}
-            className="rounded hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-primary-400 transition cursor-pointer flex-shrink-0"
+            className="rounded hover:bg-(--color-theme-surface-warm) focus:outline-none focus:ring-1 focus:ring-(--color-theme-control-border-focus) transition cursor-pointer shrink-0"
             aria-label="Save label"
           >
-            <CheckIcon className="w-4 h-4 text-gray-600" />
+            <CheckIcon className="w-4 h-4 text-ink-secondary" />
           </button>
         </div>
       );
@@ -327,7 +325,7 @@ export const ToCItem = ({
     if (isEditMode) {
       return (
         <div
-          className="text-sm font-semibold text-gray-900 truncate cursor-text"
+          className="text-sm font-semibold text-ink truncate cursor-text"
           onClick={handleLabelClick}
           onKeyDown={e => {
             if (e.key === 'Enter' || e.key === ' ') {
@@ -343,7 +341,7 @@ export const ToCItem = ({
         </div>
       );
     }
-    return <p className="text-sm font-semibold text-gray-900 truncate">{label}</p>;
+    return <p className="text-sm font-semibold text-ink trunc te">{label}</p>;
   };
 
   return (
@@ -354,7 +352,7 @@ export const ToCItem = ({
       className={`${baseClasses} ${topLevelClasses}`}
       style={{ paddingLeft }}
     >
-      <div className="flex items-center gap-1 flex-1 min-w-0">
+      <div className="flex items-center gap-1 flex-1 min-w 0">
         {isEditMode
           ? renderEditControls({
               isEditMode,

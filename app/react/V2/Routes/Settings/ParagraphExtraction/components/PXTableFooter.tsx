@@ -1,8 +1,8 @@
 import React from 'react';
 import { useLocation, useSearchParams } from 'react-router';
-import { PaginationState, Paginator } from 'V2/Components/UI';
-import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
-import { PAGE_SIZE } from '../Loaders';
+import { PaginationState, Paginator } from '#V2/Components/UI/index.js';
+import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
+import { PAGE_SIZE } from '../Loaders.js';
 
 const PXTableFooter = ({
   total = 0,

@@ -1,35 +1,37 @@
-import { ProcessingPDF } from 'api/core/domain/files/ProcessingPDF';
-import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
-import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { EntityDBO } from 'api/entities.v2/database/schemas/EntityTypes';
-import { files, storage } from 'api/files';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import relationships from 'api/relationships/relationships';
-import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager';
-import settings from 'api/settings/settings';
-import { emitToTenant } from 'api/socketio/setupSockets';
-import { tenants } from 'api/tenants/tenantContext';
-import users from 'api/users/users';
-import createError from 'api/utils/Error';
-import { handleError } from 'api/utils/handleError';
+/* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
-import request from 'shared/JSONRequest';
-import { LanguageUtils } from 'shared/language';
-import { FileType } from 'shared/types/fileType';
 import { Readable } from 'stream';
 import urljoin from 'url-join';
-import { EnforcedWithId } from '../../odm/model';
-import { OcrRecord, OcrStatus } from './ocrModel';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
+import { storage } from '#api/files/index.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import relationships from '#api/relationships/relationships.js';
+import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
+import settings from '#api/settings/settings.js';
+import { emitToTenant } from '#api/socketio/setupSockets.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import users from '#api/users/users.js';
+import createError from '#api/utils/Error.js';
+import { handleError } from '#api/utils/handleError.js';
+import request from '#shared/JSONRequest.js';
+import { LanguageUtils } from '#shared/language/index.js';
+import { FileType } from '#shared/types/fileType.js';
+import { EnforcedWithId } from '../../odm/model.js';
+import { OcrRecord, OcrStatus } from './ocrModel.js';
 import {
   createForFile,
   getForSourceFile,
   getForSourceOrTargetFile,
   markError,
   markReady,
-} from './ocrRecords';
+} from './ocrRecords.js';
 
 interface OcrSettings {
   url: string;
@@ -114,10 +116,16 @@ const saveResultFile = async (message: ResultsMessage, originalFile: FileType) =
   });
 
   const fileId = IdGeneratorFactory.default().generate();
-  const processingPDF = inputFile.toEntityFile(originalFile.entity!, fileId) as ProcessingPDF;
+  const processingPDF = inputFile.toEntityFile(originalFile.entity!, fileId) as PDFDocument;
 
   const transactionManager = TransactionManagerFactory.default();
-  const filesService = FilesServiceFactory.default(transactionManager);
+  const filesService = FilesServiceFactory.default(
+    {},
+    {
+      userId: permissionsContext.getUserInContext()?._id?.toString(),
+      tenantName: tenants.current().name,
+    }
+  );
 
   await filesService.storeFiles([processingPDF]);
 
@@ -142,7 +150,14 @@ const processFiles = async (
 
     const resultFile = await saveResultFile(message, originalFile);
 
-    await files.save({ _id: originalFile._id, type: 'attachment' });
+    const filesService = FilesServiceFactory.default(
+      {},
+      {
+        userId: permissionsContext.getUserInContext()?._id?.toString(),
+        tenantName: tenants.current().name,
+      }
+    );
+    await filesService.demoteToAttachment(originalFile._id.toHexString());
 
     await markReady(record, resultFile as EnforcedWithId<FileType>);
     await relationships.swapTextReferencesFile(
@@ -167,7 +182,9 @@ const handleOcrError = async (
 const processResults = async (message: ResultsMessage): Promise<void> => {
   await tenants.run(async () => {
     try {
-      const [originalFile] = await files.get({ filename: message.params!.filename });
+      const originalFile = (
+        await FilesDAOFactory.default().getByFilename(message.params!.filename)
+      ).getDataOrThrow();
       const [record] = await getForSourceFile(originalFile);
 
       if (!record) return;

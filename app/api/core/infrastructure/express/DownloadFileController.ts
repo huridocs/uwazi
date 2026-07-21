@@ -1,20 +1,23 @@
-import { createError } from 'api/utils';
-
-import { AbstractController, Dependencies } from 'api/common.v2/infrastructure/AbstractController';
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { BaseFile } from 'api/core/domain/files/BaseFile';
-import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
-import { fileDBO } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
-import { tenants } from 'api/tenants';
-import { User } from 'api/users.v2/model/User';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { z } from 'zod';
 import { pipeline } from 'stream/promises';
-import { FilesDataSourceFactory } from '../factories/FilesDataSourceFactory';
-import { TransactionManagerFactory } from '../factories/TransactionManagerFactory';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
-import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker';
-import { OperationalError } from 'api/common.v2/errors/OperationalError';
+
+import { createError } from '#api/utils/index.js';
+import {
+  AbstractController,
+  Dependencies,
+} from '#api/common.v2/infrastructure/AbstractController.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { BaseFile } from '#api/core/domain/files/BaseFile.js';
+import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
+import { FileDBO } from '#api/core/infrastructure/mongodb/files/schemas/FilesTypes.js';
+import { tenants } from '#api/tenants/index.js';
+import { User } from '#api/users.v2/model/User.js';
+import { FilesDataSourceFactory } from '../factories/FilesDataSourceFactory.js';
+import { TransactionManagerFactory } from '../factories/TransactionManagerFactory.js';
+import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker.js';
+import { ClientAbortedRequestError } from '#api/common.v2/errors/ClientAbortedRequestError.js';
 
 const timestampToHTTPDate = (timestamp: number): string => new Date(timestamp).toUTCString();
 
@@ -28,11 +31,11 @@ const requestSchema = z.object({
 });
 
 type Deps = Dependencies & {
-  typesAllowed: fileDBO['type'][];
+  typesAllowed: FileDBO['type'][];
 };
 
 class DownloadFileController extends AbstractController {
-  private typesAllowed: fileDBO['type'][];
+  private typesAllowed: FileDBO['type'][];
 
   private fileStorage: FileStorage;
 
@@ -43,7 +46,7 @@ class DownloadFileController extends AbstractController {
     this.fileStorage = FileStorageFactory.default();
   }
 
-  static customHandler(typesAllowed: fileDBO['type'][]) {
+  static customHandler(typesAllowed: FileDBO['type'][]) {
     return async (request: Request, response: Response) =>
       new DownloadFileController({
         request,
@@ -80,15 +83,14 @@ class DownloadFileController extends AbstractController {
       await pipeline(fileContents.read(), this.response);
     } catch (e) {
       if (e.code === 'ERR_STREAM_PREMATURE_CLOSE' && this.request.aborted) {
-        throw new OperationalError('Client aborted the request', { cause: e });
+        throw new ClientAbortedRequestError('Client aborted file download', { cause: e });
       }
       throw e;
     }
   }
 
   private async getFile(filename: string) {
-    const transactionManager = TransactionManagerFactory.default();
-    const filesDS = FilesDataSourceFactory.default(transactionManager);
+    const filesDS = FilesDataSourceFactory.default();
 
     const fileResult = await filesDS.getByFilename(filename, this.typesAllowed);
 
@@ -166,13 +168,7 @@ class DownloadFileController extends AbstractController {
     return (
       await entityPermissionChecker.checkReadPermission(
         file.entity,
-        this.request.user
-          ? User.createFrom({
-              id: this.request.user._id.toString(),
-              role: this.request.user.role,
-              groups: (this.request.user.groups || []).map(g => g._id.toString()),
-            })
-          : undefined
+        User.createFrom(this.request.user)
       )
     ).getDataOrThrow();
   }

@@ -2,30 +2,33 @@
 /* eslint-disable max-lines */
 import _ from 'lodash';
 
-import templatesAPI from 'api/core/v1_layer/templates';
-import settings from 'api/settings';
-import relationtypes from 'api/relationtypes';
-import entities from 'api/entities/entities';
-import { createError } from 'api/utils';
+import templatesAPI from '#api/core/v1_layer/templates/index.js';
+import settings from '#api/settings/index.js';
+import relationtypes from '#api/relationtypes/index.js';
+import entities from '#api/entities/entities.js';
+import { createError } from '#api/utils/index.js';
 
 import { ObjectId } from 'mongodb';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import model from './model';
-import { generateNames } from '../utils/templateUtils';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import model from './model.js';
+import { generateNames } from '#api/utils/templateUtils.js';
 
-import { filterRelevantRelationships, groupRelationships } from './groupByRelationships';
+import { filterRelevantRelationships, groupRelationships } from './groupByRelationships.js';
 import {
   processRelationshipCollection,
   getEntityReferencesByRelationshipTypes,
   guessRelationshipPropertyHub,
-} from './relationshipsHelpers';
-import { validateConnectionSchema } from './validateConnectionSchema';
-import { relationshipsSearch } from './relationshipsSearch';
+} from './relationshipsHelpers.js';
+import { validateConnectionSchema } from './validateConnectionSchema.js';
+import { relationshipsSearch } from './relationshipsSearch.js';
+import { ValidationError } from '#api/core/domain/error/ValidationError.js';
 
 function excludeRefs(template) {
   delete template.refs;
   return template;
 }
+
+class RequiredParameters extends ValidationError {}
 
 function getPropertiesToBeConnections(template) {
   const props = [];
@@ -396,7 +399,10 @@ export default {
 
   async search(entitySharedId, query, language, user) {
     if (!entitySharedId || !language) {
-      throw new Error('entitySharedId and language are required');
+      throw new RequiredParameters(
+        'entitySharedId and language are required',
+        'relationships.search.required_parameters'
+      );
     }
 
     return relationshipsSearch(entitySharedId, query, language, user);

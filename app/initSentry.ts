@@ -1,23 +1,18 @@
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import * as Sentry from '@sentry/node';
-import * as Tracing from '@sentry/tracing';
-import { config } from 'api/config';
-
-let sentryWasInitialized = false;
+import { init, isInitialized } from '@sentry/node-core/light';
+import { config } from '#api/config.js';
 
 export function initSentry() {
-  if (config.sentry.dsn && !sentryWasInitialized) {
-    Sentry.init({
+  if (config.sentry.dsn && !isInitialized()) {
+    init({
       release: config.VERSION,
       dsn: config.sentry.dsn,
       environment: config.ENVIRONMENT,
-      integrations: [
-        Sentry.httpIntegration({ tracing: true }),
-        new Tracing.Integrations.Mongo({ useMongoose: true }),
+      integrations: defaults => [
+        ...defaults.filter(i => i.name !== 'Redis'),
         nodeProfilingIntegration(),
       ],
       tracesSampleRate: config.sentry.tracesSampleRate,
     });
-    sentryWasInitialized = true;
   }
 }

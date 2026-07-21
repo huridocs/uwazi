@@ -1,6 +1,6 @@
-import settings from '../settings';
+import settings from '../settings/index.js';
 
-const allowedRoutes = ['login', 'setpassword/', 'unlockaccount/'];
+const allowedRoutes = ['login', 'setpassword/', 'unlockaccount/', 'embed/'];
 const allowedRoutesMatch = new RegExp(allowedRoutes.join('|'));
 
 const allowedApiCalls = [

@@ -3,12 +3,12 @@ import {
   CreatePropertyAssignmentInput,
   Property,
   PropertyProps,
-} from 'api/core/domain/template/Property';
+} from '#api/core/domain/template/Property.js';
 import { z } from 'zod';
-import { PropertyName } from './PropertyName';
-import { PropertyTypeInvalidTypeError } from './errors';
-import { PropertyTypeEnum } from './PropertyType';
-import { GeolocationEntry, PropertyAssignment } from './PropertyValue';
+import { PropertyName } from './PropertyName.js';
+import { PropertyTypeInvalidTypeError } from './errors.js';
+import { PropertyTypeEnum } from './PropertyType.js';
+import { GeolocationEntry, PropertyAssignment } from './PropertyValue.js';
 
 type Props = {
   type?: PropertyTypeEnum.Geolocation;
@@ -62,11 +62,8 @@ class GeolocationProperty extends Property {
     };
   }
 
-  validatePropertyAssignment(
-    { value }: PropertyAssignment<GeolocationEntry>,
-    shouldValidateForRequired = false
-  ): void {
-    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
+  validatePropertyAssignment({ value }: PropertyAssignment<GeolocationEntry>): void {
+    createSchema(this.required).parse(value);
   }
 }
 

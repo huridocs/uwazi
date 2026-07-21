@@ -1,9 +1,9 @@
 import React from 'react';
 import { shallow, render } from 'enzyme';
 
-import PagesContext from '../Context';
+import { Context as PagesContext } from '../Context.js';
 import { mapStateToProps, ValueComponent } from '../Value.js';
-import markdownDatasets from '../../markdownDatasets';
+import markdownDatasets from '../../markdownDatasets.js';
 
 let undefinedValue;
 

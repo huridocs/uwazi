@@ -1,9 +1,9 @@
-import { Application, NextFunction, Request, Response } from 'express';
-import { setUpApp } from 'api/utils/testingRoutes';
-import statsRoutes from '../routes';
+import type { Application, NextFunction, Request, Response } from 'express';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import statsRoutes from '../routes.js';
 import request from 'supertest';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { fixtures } from './fixtures';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { fixtures } from './fixtures.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -23,7 +23,10 @@ describe('Stats routes', () => {
 
   describe('GET /api/stats', () => {
     it('returns the aggregated stats', async () => {
-      const { body } = await request(app).get('/api/stats').expect(200);
+      const { body } = await request(app)
+        .get('/api/stats')
+        .set('content-language', 'en')
+        .expect(200);
 
       expect(body).toEqual({
         users: {
@@ -32,7 +35,7 @@ describe('Stats routes', () => {
           editor: expect.any(Number),
           collaborator: expect.any(Number),
         },
-        entities: { total: expect.any(Number) },
+        entities: { total: 5 },
         files: { total: expect.any(Number) },
         storage: { total: expect.any(Number) },
       });

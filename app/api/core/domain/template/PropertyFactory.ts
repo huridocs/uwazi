@@ -1,26 +1,25 @@
-import { Context, Property } from 'api/core/domain/template/Property';
+import { Context, Property } from '#api/core/domain/template/Property.js';
 import {
   V1RelationshipProperty,
   V1RelationshipPropertyProps,
-} from 'api/core/domain/template/V1RelationshipProperty';
-import { UnhandledPropertyTypeError } from './errors';
-import { TextProperty, TextPropertyProps } from './TextProperty';
-import { NumericProperty, NumericPropertyProps } from './NumericProperty';
-import { PreviewProperty, PreviewPropertyProps } from './PreviewProperty';
-import { MultiDateProperty, MultiDatePropertyProps } from './MultiDateProperty';
-import { MultiDateRangeProperty, MultiDateRangePropertyProps } from './MultiDateRangeProperty';
-import { MediaProperty, MediaPropertyProps } from './MediaProperty';
-import { MarkdownProperty, MarkdownPropertyProps } from './MarkdownProperty';
-import { LinkProperty, LinkPropertyProps } from './LinkProperty';
-import { ImageProperty, ImagePropertyProps } from './ImageProperty';
-import { GeolocationProperty, GeolocationPropertyProps } from './GeoLocationProperty';
-import { DateRangeProperty, DateRangePropertyProps } from './DateRangeProperty';
-import { DateProperty, DatePropertyProps } from './DateProperty';
-import { GenerateIdProperty, GenerateIdPropertyProps } from './GenerateIdProperty';
-import { SelectProperty, SelectPropertyProps } from './select/SelectProperty';
-import { MultiSelectProperty, MultiSelectPropertyProps } from './select/MultiSelectProperty';
-import { NestedProperty, NestedPropertyProps } from './NestedProperty';
-import { RelationshipPropertyProps } from './RelationshipProperty';
+} from '#api/core/domain/template/V1RelationshipProperty.js';
+import { UnhandledPropertyTypeError } from './errors.js';
+import { TextProperty, TextPropertyProps } from './TextProperty.js';
+import { NumericProperty, NumericPropertyProps } from './NumericProperty.js';
+import { PreviewProperty, PreviewPropertyProps } from './PreviewProperty.js';
+import { MultiDateProperty, MultiDatePropertyProps } from './MultiDateProperty.js';
+import { MultiDateRangeProperty, MultiDateRangePropertyProps } from './MultiDateRangeProperty.js';
+import { MediaProperty, MediaPropertyProps } from './MediaProperty.js';
+import { MarkdownProperty, MarkdownPropertyProps } from './MarkdownProperty.js';
+import { LinkProperty, LinkPropertyProps } from './LinkProperty.js';
+import { ImageProperty, ImagePropertyProps } from './ImageProperty.js';
+import { GeolocationProperty, GeolocationPropertyProps } from './GeoLocationProperty.js';
+import { DateRangeProperty, DateRangePropertyProps } from './DateRangeProperty.js';
+import { DateProperty, DatePropertyProps } from './DateProperty.js';
+import { GenerateIdProperty, GenerateIdPropertyProps } from './GenerateIdProperty.js';
+import { SelectProperty, SelectPropertyProps } from './select/SelectProperty.js';
+import { MultiSelectProperty, MultiSelectPropertyProps } from './select/MultiSelectProperty.js';
+import { NestedProperty, NestedPropertyProps } from './NestedProperty.js';
 
 type CreateInput =
   | TextPropertyProps
@@ -39,8 +38,7 @@ type CreateInput =
   | V1RelationshipPropertyProps
   | NestedPropertyProps
   | ImagePropertyProps
-  | MediaPropertyProps
-  | RelationshipPropertyProps;
+  | MediaPropertyProps;
 
 class PropertyFactory {
   static create(input: CreateInput, context: Context): Property {

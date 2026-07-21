@@ -1,10 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router';
 import { Row } from '@tanstack/react-table';
-import { Translate } from 'app/I18N';
-import { Table } from 'V2/Components/UI';
-import { ClientThesaurus, Template } from 'app/apiResponseTypes';
-import { columnsThesauri } from './TableComponents';
+import { Translate } from '#app/I18N/index.js';
+import { Table } from '#V2/Components/UI/index.js';
+import { ClientThesaurus, Template } from '#app/apiResponseTypes.js';
+import { columnsThesauri } from './TableComponents.js';
 
 interface ThesauriRow extends ClientThesaurus {
   rowId: string;
@@ -34,7 +34,7 @@ const ThesauriTable = ({ currentThesauri, setSelectedThesauri }: ThesauriTablePr
       enableSelections
       header={
         <div className="flex flex-col items-start gap-1">
-          <h2 className="text-base font-semibold text-left text-gray-900 bg-white">
+          <h2 className="text-left text-base font-semibold text-ink">
             <Translate>Thesauri</Translate>
           </h2>
         </div>

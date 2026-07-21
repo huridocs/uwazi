@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import superagent from 'superagent';
-import { UploadService } from '../UploadService';
+import { UploadService } from '../UploadService.js';
 
 const file1 = new File(['File 1 contents'], 'file1.txt', {
   type: 'text/plain',

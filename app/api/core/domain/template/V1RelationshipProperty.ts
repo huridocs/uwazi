@@ -1,17 +1,22 @@
 import {
   FilterableProperty,
   FilterablePropertyProps,
-} from 'api/core/domain/template/FilterableProperty';
+} from '#api/core/domain/template/FilterableProperty.js';
 import {
   PropertyInheritedTypeMismatchError,
   InvalidPropertyComparisonTypeError,
-} from 'api/core/domain/template/errors';
+} from '#api/core/domain/template/errors.js';
 import { z } from 'zod';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { Context, CreatePropertyAssignmentInput, Property, PropertyUpdateInfo } from './Property';
-import { PropertyType, PropertyTypeEnum } from './PropertyType';
-import { RelationshipEntry, RelationshipPropertyAssignment } from './PropertyValue';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import {
+  Context,
+  CreatePropertyAssignmentInput,
+  Property,
+  PropertyUpdateInfo,
+} from './Property.js';
+import { PropertyType, PropertyTypeEnum } from './PropertyType.js';
+import { RelationshipEntry, RelationshipPropertyAssignment } from './PropertyValue.js';
 
 type Inherit = {
   property: string;
@@ -147,11 +152,8 @@ class V1RelationshipProperty extends FilterableProperty {
     };
   }
 
-  validatePropertyAssignment(
-    property: RelationshipPropertyAssignment,
-    shouldValidateForRequired = false
-  ): void {
-    createSchema(shouldValidateForRequired ? this.required : false).parse(property);
+  validatePropertyAssignment(property: RelationshipPropertyAssignment): void {
+    createSchema(this.required).parse(property);
   }
 
   static create(props: Omit<Props, 'type'>, context?: Context) {

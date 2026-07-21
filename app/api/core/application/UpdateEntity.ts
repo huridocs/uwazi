@@ -1,16 +1,18 @@
-import { Entity, EntityIcon } from 'api/core/domain/entity/Entity';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { AbstractUseCase } from '../libs/UseCase';
-import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorService';
-import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
-import { InputFile } from '../infrastructure/files/InputFile';
-import { FilesService } from './FilesService';
-import { TemplatesDataSource } from './contracts/TemplatesDataSource';
-import { FilesDataSource } from './contracts/FilesDataSource';
-import { BaseFile } from '../domain/files/BaseFile';
-import { EntitiesService } from './EntitiesService';
+import { Entity, EntityIcon } from '#api/core/domain/entity/Entity.js';
+import { LanguageISO6391, PropertySelectionSchema } from '#shared/types/commonTypes.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { AbstractUseCase } from '../libs/UseCase.js';
+import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
+import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
+import { InputFile } from '../infrastructure/files/InputFile.js';
+import { FilesService } from './FilesService.js';
+import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
+import { FilesDataSource } from './contracts/FilesDataSource.js';
+import { SettingsDataSource } from './contracts/SettingsDataSource.js';
+import { BaseFile } from '../domain/files/BaseFile.js';
+import { PDFDocument } from '../domain/files/PDFDocument.js';
+import { EntitiesService } from './EntitiesService.js';
 
 type Input = {
   sharedId: string;
@@ -21,17 +23,22 @@ type Input = {
   templateId?: string;
   uploadedFiles?: InputFile[];
   files?: { id: string; originalname: string }[];
+  propertySelections?: {
+    fileId: string;
+    selections: PropertySelectionSchema[];
+  };
 };
 
 type Output = Entity;
 
 type Deps = {
   propertyAssignmentCreatorServiceStrategy: PropertyAssignmentCreatorServiceStrategy;
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   entitiesService: EntitiesService;
   fileService: FilesService;
   templatesDS: TemplatesDataSource;
   filesDS: FilesDataSource;
+  settingsDS: SettingsDataSource;
 };
 
 class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
@@ -61,28 +68,49 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
       f.toEntityFile(entity.sharedId, this.idGenerator.generate())
     );
 
-    const existingFiles = await this.deps.filesDS.getByEntitiesIds([entity.sharedId]).all();
+    const existingFiles = await this.deps.filesDS.getByEntitiesIds([entity.sharedId]);
 
-    const [keptFiles, removedFiles] = ArrayUtils.splitInTwo(existingFiles, f =>
+    const [keptFiles, removedFiles] = ArrayUtils.splitInTwo(existingFiles, (f: BaseFile) =>
       (input.files || []).some(file => file.id === f.id)
     );
 
     const updatedFiles: BaseFile[] = [];
 
     if (input.files) {
-      keptFiles.forEach(keptFile => {
+      keptFiles.forEach((keptFile: BaseFile) => {
         const update = input.files!.find(file => file.id === keptFile.id);
         if (!update) return;
 
-        updatedFiles.push(keptFile.update({ originalname: update.originalname }));
+        const newProps: { originalname: string; propertySelections?: PropertySelectionSchema[] } = {
+          originalname: update.originalname,
+        };
+
+        if (keptFile.id === input.propertySelections?.fileId) {
+          newProps.propertySelections = input.propertySelections.selections;
+        }
+
+        updatedFiles.push(keptFile.update(newProps));
       });
     }
+
+    const removedPDFIds = removedFiles
+      .filter((f): f is PDFDocument => f instanceof PDFDocument && f.isReady())
+      .map(f => f.id);
+
+    const allEntityThumbnails = await this.deps.filesDS.getThumbnails([entity.sharedId]);
+    const remainingThumbnails = allEntityThumbnails.filter(
+      t => !removedPDFIds.some(id => t.filename === `${id}.jpg`)
+    );
+
+    const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
+    entity.setPreview(remainingThumbnails, defaultLanguage);
 
     await this.deps.fileService.storeFiles(filesCreated);
 
     await this.transactionManager.run(async () => {
-      await this.deps.entitiesService.upsert(entity, {
+      await this.deps.entitiesService.update([entity], {
         actorId: this.actorId,
+        actor: this.getActor(),
         targetLanguage: input.language,
       });
       await this.deps.fileService.insert(filesCreated);
@@ -95,4 +123,4 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
 }
 
 export { UpdateEntityUseCase };
-export type { Input as UpdateEntityUseCaseInput, Deps as UpdateEntityUseCaseDeps };
+export type { Input as UpdateEntityUseCaseInput };

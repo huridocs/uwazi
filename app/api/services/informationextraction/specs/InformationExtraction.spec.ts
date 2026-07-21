@@ -1,30 +1,30 @@
 /* eslint-disable global-require */
 /* eslint-disable max-statements */
-/* eslint-disable max-lines */
+
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 
 import { ObjectId } from 'mongodb';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { testingTenants } from 'api/utils/testingTenants';
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import * as setupSockets from 'api/socketio/setupSockets';
-import { sortByStrings } from 'shared/data_utils/objectSorting';
-import { PropertyTypeSchema } from 'shared/types/commonTypes';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import * as setupSockets from '#api/socketio/setupSockets.js';
+import { sortByStrings } from '#shared/data_utils/objectSorting.js';
+import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
 
-import testingDB from 'api/utils/testing_db';
-import entities from 'api/entities';
-import { EnforcedWithId } from 'api/odm';
-import settings from 'api/settings';
-import { Suggestions } from 'api/suggestions/suggestions';
-import { LanguageUtils } from 'shared/language';
-import { IXExtractorType } from 'shared/types/extractorType';
-import { FileType } from 'shared/types/fileType';
-import { IXSuggestionType } from 'shared/types/suggestionType';
-import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
-import { filesModel } from 'api/files/filesModel';
-import { factory, fixtures } from './fixtures';
+import testingDB from '#api/utils/testing_db.js';
+import entities from '#api/entities/index.js';
+import { EnforcedWithId } from '#api/odm/index.js';
+import settings from '#api/settings/index.js';
+import { Suggestions } from '#api/suggestions/suggestions.js';
+import { LanguageUtils } from '#shared/language/index.js';
+import { IXExtractorType } from '#shared/types/extractorType.js';
+import { FileType } from '#shared/types/fileType.js';
+import { IXSuggestionType } from '#shared/types/suggestionType.js';
+import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
+import { filesModel } from '#api/files/filesModel.js';
+import { factory, fixtures } from './fixtures.js';
 import {
   CommonSuggestion,
   IXResultsMessage,
@@ -32,12 +32,12 @@ import {
   RawSuggestion,
   TextSelectionSuggestion,
   ValuesSelectionSuggestion,
-} from '../InformationExtraction';
-import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
-import { IXModelsModel } from '../IXModelsModel';
-import { Extractors } from '../ixextractors';
-import { IXWebSocketEvents } from '../WebSocketEvents';
-import { FileWithAggregation, NoFilesForTraining, NoLabeledEntities } from '../ixMaterials';
+} from '../InformationExtraction.js';
+import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService.js';
+import { IXModelsModel } from '../IXModelsModel.js';
+import { Extractors } from '../ixextractors.js';
+import { IXWebSocketEvents } from '../WebSocketEvents.js';
+import { FileWithAggregation, NoFilesForTraining, NoLabeledEntities } from '../ixMaterials.js';
 
 let informationExtractionForJob: InformationExtraction;
 jest.mock('api/services/tasksmanager/TaskManager.ts');
@@ -178,7 +178,7 @@ describe('InformationExtraction', () => {
       uploadedDocuments: `${__dirname}/uploads/`,
     });
     IXExternalService.reset();
-    jest.resetAllMocks();
+    jest.clearAllMocks();
     // eslint-disable-next-line no-empty-function
     jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
   });
@@ -207,7 +207,7 @@ describe('InformationExtraction', () => {
         entity,
         language,
         segmentation: {},
-        extractedMetadata: [],
+        propertySelections: [],
         propertyType: propertyType || 'text',
       },
       extractor
@@ -257,7 +257,9 @@ describe('InformationExtraction', () => {
     });
 
     it('should send xmls (multiselect)', async () => {
-      await informationExtraction.trainModel(factory.id('extractorWithMultiselect'));
+      await testingEnvironment.runWithContext(async () =>
+        informationExtraction.trainModel(factory.id('extractorWithMultiselect'))
+      );
 
       const xmlG = await readDocument('G');
       const xmlH = await readDocument('H');
@@ -321,7 +323,7 @@ describe('InformationExtraction', () => {
       });
     });
 
-    it('should send labeled (target Property has value and none extractedMetadata)', async () => {
+    it('should send labeled (target Property has value and no property selections)', async () => {
       await informationExtraction.trainModel(factory.id('extractor_source_pdf_target_text'));
 
       expect(IXExternalService.materials.length).toBe(2);
@@ -357,7 +359,9 @@ describe('InformationExtraction', () => {
     });
 
     it('should send labeled data (multiselect)', async () => {
-      await informationExtraction.trainModel(factory.id('extractorWithMultiselect'));
+      await testingEnvironment.runWithContext(async () =>
+        informationExtraction.trainModel(factory.id('extractorWithMultiselect'))
+      );
 
       expect(IXExternalService.materials.length).toBe(2);
       expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentG.xml')).toEqual({
@@ -525,7 +529,9 @@ describe('InformationExtraction', () => {
     });
 
     it('should start the task to train the model (multiselect)', async () => {
-      await informationExtraction.trainModel(factory.id('extractorWithMultiselect'));
+      await testingEnvironment.runWithContext(async () =>
+        informationExtraction.trainModel(factory.id('extractorWithMultiselect'))
+      );
 
       expect(informationExtractionForJob.taskManager?.startTask).toHaveBeenCalledWith({
         params: {
@@ -1092,7 +1098,7 @@ describe('InformationExtraction', () => {
         type: 'document',
         language: 'en',
         entity: 'entity1',
-        extractedMetadata: [],
+        propertySelections: [],
       });
 
       await filesModel.save({
@@ -1101,7 +1107,7 @@ describe('InformationExtraction', () => {
         type: 'document',
         language: 'en',
         entity: 'entity2',
-        extractedMetadata: [],
+        propertySelections: [],
       });
 
       await IXSuggestionsModel.save({
@@ -1259,7 +1265,7 @@ describe('InformationExtraction', () => {
         type: 'document',
         language: 'en',
         entity: 'entity1',
-        extractedMetadata: [],
+        propertySelections: [],
       });
 
       await filesModel.save({
@@ -1268,7 +1274,7 @@ describe('InformationExtraction', () => {
         type: 'document',
         language: 'en',
         entity: 'entity3',
-        extractedMetadata: [],
+        propertySelections: [],
       });
 
       await IXSuggestionsModel.save({
@@ -1347,7 +1353,7 @@ describe('InformationExtraction', () => {
         type: 'document',
         language: 'en',
         entity: 'entity1',
-        extractedMetadata: [],
+        propertySelections: [],
       });
 
       await filesModel.save({
@@ -1356,7 +1362,7 @@ describe('InformationExtraction', () => {
         type: 'document',
         language: 'en',
         entity: 'entity2',
-        extractedMetadata: [],
+        propertySelections: [],
       });
 
       // F1: only non-ready segmentation
@@ -1471,7 +1477,7 @@ describe('InformationExtraction', () => {
         type: 'document',
         language: 'en',
         entity: 'entity1',
-        extractedMetadata: [],
+        propertySelections: [],
       });
 
       await filesModel.save({
@@ -1480,7 +1486,7 @@ describe('InformationExtraction', () => {
         type: 'document',
         language: 'en',
         entity: 'entity2',
-        extractedMetadata: [],
+        propertySelections: [],
       });
 
       await SegmentationModel.save({
@@ -1912,6 +1918,42 @@ describe('InformationExtraction', () => {
       });
       expect(suggestions.length).toBe(1);
       expect(suggestions[0].language).toBe('en');
+    });
+
+    it('should skip PDF results when original suggestion is missing', async () => {
+      const orphanSuggestionText = 'should_not_create_malformed_suggestion';
+
+      setIXServiceResults([
+        {
+          text: orphanSuggestionText,
+          xml_file_name: 'documentA.xml',
+          segment_text: 'segment_for_missing_original',
+        },
+      ]);
+
+      await IXSuggestionsModel.delete({
+        extractorId: factory.id('prop1extractor'),
+        entityId: 'A1',
+        fileId: factory.id('F1'),
+      });
+
+      await informationExtraction.processResults({
+        params: { id: factory.id('prop1extractor').toString() },
+        tenant: 'tenant1',
+        task: 'suggestions',
+        success: true,
+        data_url: 'http://localhost:1234/suggestions_results',
+      });
+
+      const malformedSuggestions = await testingDB
+        .mongodb!.collection('ixsuggestions')
+        .find({
+          suggestedValue: orphanSuggestionText,
+          extractorId: { $exists: false },
+        })
+        .toArray();
+
+      expect(malformedSuggestions).toHaveLength(0);
     });
 
     it('should store failed suggestions', async () => {

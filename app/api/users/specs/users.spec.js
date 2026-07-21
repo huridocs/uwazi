@@ -1,21 +1,18 @@
-/* eslint-disable max-lines */
 /* eslint-disable max-statements */
-
-import { createError } from 'api/utils';
-import mailer from 'api/utils/mailer';
-import db from 'api/utils/testing_db';
-import * as random from 'shared/uniqueID';
-
-import { comparePasswords, encryptPassword } from 'api/auth/encryptPassword';
-import * as usersUtils from 'api/auth2fa/usersUtils';
-import { settingsModel } from 'api/settings/settingsModel';
-import userGroups from 'api/usergroups/userGroups';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import * as unlockCode from '../generateUnlockCode';
-import passwordRecoveriesModel from '../passwordRecoveriesModel';
+import { createError } from '#api/utils/index.js';
+import mailer from '#api/utils/mailer.js';
+import db from '#api/utils/testing_db.js';
+import * as random from '#shared/uniqueID.js';
+import { comparePasswords, encryptPassword } from '#api/auth/encryptPassword.js';
+import * as usersUtils from '#api/auth2fa/usersUtils.js';
+import { settingsModel } from '#api/settings/settingsModel.js';
+import userGroups from '#api/usergroups/userGroups.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
+import * as unlockCode from '../generateUnlockCode.js';
+import passwordRecoveriesModel from '../passwordRecoveriesModel.js';
 import users from '../users.js';
-import usersModel from '../usersModel';
-import { PUBLIC_USER_ID } from '../publicUser';
+import usersModel from '../usersModel.js';
 import fixtures, {
   blockedUserId,
   expectedKey,
@@ -53,9 +50,9 @@ describe('Users', () => {
     it('should not save a null password on update', async () => {
       const user = { _id: recoveryUserId, role: 'admin' };
 
-      const [userInDb] = await users.get(recoveryUserId, '+password');
+      const [userInDb] = await users.get({ _id: recoveryUserId }, '+password');
       await users.save(user, { _id: userId, role: 'admin' });
-      const [updatedUser] = await users.get(recoveryUserId, '+password');
+      const [updatedUser] = await users.get({ _id: recoveryUserId }, '+password');
 
       expect(updatedUser.password.toString()).toBe(userInDb.password.toString());
     });
@@ -79,6 +76,7 @@ describe('Users', () => {
       expect(membership1).not.toBeUndefined();
       expect(membership2).not.toBeUndefined();
     };
+
     it('should update the membership of the saved user', async () => {
       currentUser = { _id: 'user2', role: 'admin' };
       const userToUpdate = {
@@ -88,6 +86,7 @@ describe('Users', () => {
       const updatedUser = await users.save(userToUpdate, currentUser);
       await assertUserMembership(updatedUser);
     });
+
     it('should remove all groups if user has not any', async () => {
       currentUser = { _id: 'user2', role: 'admin' };
       const userToUpdate = {
@@ -151,6 +150,20 @@ describe('Users', () => {
           expect(error).toEqual(createError('Can not change your own role', 403));
         }
       });
+    });
+
+    it('should not allow saving to a deleted user', async () => {
+      await usersModel.db.updateOne({ _id: userId }, { $set: { deletedAt: new Date() } });
+
+      try {
+        await users.save(
+          { _id: userId.toString(), username: 'updated' },
+          { _id: 'user2', role: 'admin' }
+        );
+        fail('should throw error');
+      } catch (error) {
+        expect(error).toEqual(createError('User not found', 404));
+      }
     });
 
     describe('newUser', () => {
@@ -266,6 +279,24 @@ describe('Users', () => {
           message: 'Usernames can not contain spaces.',
         });
       });
+
+      it('should allow creating a user with the same username as a soft-deleted user', async () => {
+        await usersModel.db.updateOne({ _id: userId }, { $set: { deletedAt: new Date() } });
+        const newUser = await users.newUser(
+          { username: 'username', email: 'unique@email.com', role: 'editor' },
+          domain
+        );
+        expect(newUser.username).toBe('username');
+      });
+
+      it('should allow creating a user with the same email as a soft-deleted user', async () => {
+        await usersModel.db.updateOne({ _id: userId }, { $set: { deletedAt: new Date() } });
+        const newUser = await users.newUser(
+          { username: 'unique_username', email: 'test@email.com', role: 'editor' },
+          domain
+        );
+        expect(newUser.email).toBe('test@email.com');
+      });
     });
   });
 
@@ -323,6 +354,16 @@ describe('Users', () => {
       }
     });
 
+    it('should throw error if user is deleted', async () => {
+      await usersModel.save({ ...testUser, deletedAt: new Date() });
+      try {
+        await testLogin('someuser1', 'password');
+        fail('should throw error');
+      } catch (e) {
+        expect(e).toEqual(createError('Invalid username or password', 401));
+      }
+    });
+
     it('should throw error if password is incorrect and increment failedLogins', async () => {
       try {
         await createUserAndTestLogin('someuser1', 'incorrect');
@@ -354,14 +395,35 @@ describe('Users', () => {
       }
     });
 
-    it('after locking account, it should send user and email with the unlock link', async () => {
-      testUser.failedLogins = 5;
-      try {
-        await createUserAndTestLogin('someuser1', 'incorrect');
-        fail('should throw error');
-      } catch (e) {
-        expect(mailer.send.mock.calls[0]).toMatchSnapshot();
-      }
+    describe('after locking account', () => {
+      it('should send user and email with the unlock link', async () => {
+        testUser.failedLogins = 5;
+        try {
+          await createUserAndTestLogin('someuser1', 'incorrect');
+          fail('should throw error');
+        } catch (e) {
+          expect(mailer.send.mock.calls[0]).toMatchSnapshot();
+        }
+      });
+
+      it('should validate domain url before blocking the user', async () => {
+        testUser.failedLogins = 5;
+        try {
+          await usersModel.save(testUser);
+          await users.login(
+            { username: 'someuser1', password: 'incorrect' },
+            'http://host.domain\">http://host.domain</a></p><h1>injected html</h1>'
+          );
+          fail('should throw error');
+        } catch (e) {
+          expect(e.message).toBe('Invalid URL');
+        }
+
+        const dbUser = (await testingEnvironment.db.getAllFrom('users')).find(
+          u => u.username === testUser.username
+        );
+        expect(dbUser.failedLogins).toBe(5);
+      });
     });
 
     it('should prevent login if account is locked when credentials are correct', async () => {
@@ -533,6 +595,17 @@ describe('Users', () => {
         expect(user.accountUnlockCode).toBe('code');
       }
     });
+
+    it('should throw error if user is soft-deleted', async () => {
+      const deletedUser = { ...testUser, deletedAt: new Date() };
+      await usersModel.save(deletedUser);
+      try {
+        await testUnlock('someuser1', 'code');
+        fail('should throw error');
+      } catch (e) {
+        expect(e).toEqual(createError('Invalid username or unlock code', 403));
+      }
+    });
   });
 
   describe('simpleUnlock', () => {
@@ -572,8 +645,12 @@ describe('Users', () => {
       const expectedMailOptions = {
         from: emailSender,
         to: 'test@email.com',
-        subject: 'Password set',
-        text: `To set your password click on the following link:\ndomain/setpassword/${key}\nThis link will be valid for 24 hours.`,
+        subject: 'Password recovery',
+        text:
+          'Your username is: username\n' +
+          'To set your password click on the following link:\n' +
+          `domain/setpassword/${key}\n` +
+          'This link will be valid for 24 hours.',
       };
       expect(mailer.send).toHaveBeenCalledWith(expectedMailOptions);
     });
@@ -647,6 +724,14 @@ describe('Users', () => {
         expect(response.length).toBe(0);
       });
     });
+
+    describe('when the user is soft-deleted', () => {
+      it('should return nothing', async () => {
+        await usersModel.db.updateOne({ _id: userId }, { $set: { deletedAt: new Date() } });
+        const response = await users.recoverPassword('test@email.com', 'domain');
+        expect(response).toBe(undefined);
+      });
+    });
   });
 
   describe('resetPassword', () => {
@@ -680,6 +765,22 @@ describe('Users', () => {
       expect(user.failedLogins).toBe(undefined);
       expect(user.accountLocked).toBe(undefined);
       expect(user.accountUnlockCode).toBe(undefined);
+    });
+
+    it('should fail for a soft-deleted user', async () => {
+      await usersModel.db.updateOne({ _id: recoveryUserId }, { $set: { deletedAt: new Date() } });
+      const keyBefore = await passwordRecoveriesModel.get({ key: expectedKey });
+      expect(keyBefore.length).toBe(1);
+
+      try {
+        await users.resetPassword({ key: expectedKey, password: '1234' });
+        fail('should throw error');
+      } catch (error) {
+        expect(error).toEqual(createError('User not found', 404));
+      }
+
+      const keyAfter = await passwordRecoveriesModel.get({ key: expectedKey });
+      expect(keyAfter.length).toBe(1);
     });
   });
 
@@ -801,6 +902,12 @@ describe('Users', () => {
       const user = await users.getById(db.id(), '-password', true);
       expect(user).toBe(null);
     });
+
+    it('should return null for a deleted user', async () => {
+      await usersModel.db.updateOne({ _id: userId }, { $set: { deletedAt: new Date() } });
+      const user = await users.getById(userId);
+      expect(user).toBeNull();
+    });
   });
 
   describe('get', () => {
@@ -816,6 +923,13 @@ describe('Users', () => {
       expect(userList.length).toBe(6);
       expect(userList[0].groups[0].name).toBe('Group 2');
       expect(userList[1].groups[0].name).toBe('Group 1');
+    });
+
+    it('should exclude soft-deleted users from results', async () => {
+      await usersModel.db.updateOne({ _id: userId }, { $set: { deletedAt: new Date() } });
+      const userList = await users.get();
+      expect(userList.length).toBe(5);
+      expect(userList.find(u => u._id.toString() === userId.toString())).toBeUndefined();
     });
   });
 

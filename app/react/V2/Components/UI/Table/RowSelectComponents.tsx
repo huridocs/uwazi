@@ -1,9 +1,9 @@
 /* eslint-disable react/no-multi-comp */
-/* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useRef } from 'react';
-import { Row, Table } from '@tanstack/react-table';
-import { Translate } from 'app/I18N';
-import { Tooltip } from 'flowbite-react';
+import { Row, Table, HeaderContext } from '@tanstack/react-table';
+import { Translate } from '#app/I18N/index.js';
+import { checkboxInputClassName } from '#V2/Components/Forms/Checkbox.js';
+import { Tooltip } from '#V2/Components/UI/Tooltip.js';
 
 const IndeterminateCheckboxRow = <
   T extends { rowId: string; disableRowSelection?: string | boolean | React.ReactNode },
@@ -17,15 +17,12 @@ const IndeterminateCheckboxRow = <
   const disabled = !row.getCanSelect();
   const onChange = row.getToggleSelectedHandler();
   const disableReason = row.original.disableRowSelection;
-  useEffect(() => {
-    ref.current.checked = Boolean(checked);
-  }, [ref, checked]);
 
   const checkbox = (
     <input
       type="checkbox"
       ref={ref}
-      className="bg-gray-50 rounded-sm border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+      className={checkboxInputClassName}
       disabled={disabled}
       onChange={onChange}
       key={row.id}
@@ -38,11 +35,7 @@ const IndeterminateCheckboxRow = <
     <label>
       <Translate className="sr-only">Select</Translate>
       {disabled && typeof disableReason !== 'boolean' ? (
-        <Tooltip
-          content={<div className="text-xs text-gray-600 w-40">{disableReason}</div>}
-          // eslint-disable-next-line react/style-prop-object
-          style="light"
-        >
+        <Tooltip content={<div className="w-40 text-xs text-ink-secondary">{disableReason}</div>}>
           <span>{checkbox}</span>
         </Tooltip>
       ) : (
@@ -53,16 +46,23 @@ const IndeterminateCheckboxRow = <
 };
 
 // eslint-disable-next-line comma-spacing
-const IndeterminateCheckboxHeader = <T,>({ table }: { table: Table<T> }) => {
+const IndeterminateCheckboxHeader = <T,>({
+  table,
+  checkboxId = 'checkbox-header',
+}: {
+  table: Table<T>;
+  checkboxId?: string;
+}) => {
   const ref = useRef<HTMLInputElement>(null!);
   const checked = table.getIsAllRowsSelected();
   const indeterminate = table.getIsSomeRowsSelected();
   const onChange = table.getToggleAllRowsSelectedHandler();
 
   useEffect(() => {
-    ref.current.checked = Boolean(checked);
-    ref.current.indeterminate = Boolean(indeterminate && !checked);
-  }, [ref, indeterminate, checked]);
+    if (ref.current) {
+      ref.current.indeterminate = Boolean(indeterminate && !checked);
+    }
+  }, [indeterminate, checked]);
 
   return (
     <label>
@@ -70,13 +70,25 @@ const IndeterminateCheckboxHeader = <T,>({ table }: { table: Table<T> }) => {
       <input
         type="checkbox"
         ref={ref}
-        className="bg-gray-50 rounded-sm border-gray-300 cursor-pointer"
+        className={checkboxInputClassName}
+        checked={checked}
         onChange={onChange}
-        key="checkbox-header"
-        id="checkbox-header"
+        key={checkboxId}
+        id={checkboxId}
       />
     </label>
   );
 };
 
-export { IndeterminateCheckboxRow, IndeterminateCheckboxHeader };
+const IndeterminateCheckboxHeaderCell = <T extends unknown>({
+  table,
+  column,
+}: HeaderContext<T, unknown>) => {
+  const checkboxId =
+    (column.columnDef.meta as { selectAllCheckboxId?: string } | undefined)?.selectAllCheckboxId ??
+    'checkbox-header';
+
+  return <IndeterminateCheckboxHeader table={table} checkboxId={checkboxId} />;
+};
+
+export { IndeterminateCheckboxRow, IndeterminateCheckboxHeader, IndeterminateCheckboxHeaderCell };

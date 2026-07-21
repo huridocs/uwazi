@@ -1,6 +1,8 @@
 /* eslint-disable max-statements */
 import 'cypress-axe';
-import { clearCookiesAndLogin } from '../helpers/login';
+import { clearCookiesAndLogin } from '../helpers/login.js';
+import { dismissModalIfVisible } from '../helpers/pageEditor.js';
+import { logA11yViolations } from '../../support/helpers/a11y.js';
 
 describe('Relationship Types configuration', () => {
   before(() => {
@@ -12,7 +14,7 @@ describe('Relationship Types configuration', () => {
   });
 
   it('should have no detectable accessibility violations on load', () => {
-    cy.checkA11y();
+    cy.checkA11y(undefined, undefined, logA11yViolations);
   });
 
   beforeEach(() => {
@@ -22,21 +24,18 @@ describe('Relationship Types configuration', () => {
 
   it('tests add types', () => {
     cy.getByTestId('relationship-types-add').click();
-    cy.checkA11y();
+    cy.checkA11y(undefined, undefined, logA11yViolations);
     cy.get('#relationship-type-name').click();
     cy.get('#relationship-type-name').type('Parent');
 
     cy.getByTestId('relationship-type-form-submit').click();
     cy.wait('@fetchTypes');
-    cy.contains('Dismiss').click();
-
     cy.getByTestId('relationship-types-add').click();
     cy.get('#relationship-type-name').click();
     cy.get('#relationship-type-name').type('Son');
 
     cy.getByTestId('relationship-type-form-submit').click();
     cy.wait('@fetchTypes');
-    cy.contains('Dismiss').click();
   });
 
   it('tests Edit', () => {
@@ -46,24 +45,23 @@ describe('Relationship Types configuration', () => {
     cy.getByTestId('relationship-type-form-submit').click();
 
     cy.wait('@fetchTypes');
-    cy.contains('Dismiss').click();
   });
 
   it('tests delete', () => {
     cy.get('tbody tr:nth-of-type(1) input').click();
 
     cy.getByTestId('relationship-types-delete').click();
-    cy.checkA11y();
+    cy.checkA11y(undefined, undefined, logA11yViolations);
     cy.getByTestId('cancel-button').click();
 
     cy.getByTestId('relationship-types-delete').click();
     cy.getByTestId('accept-button').click();
     cy.wait('@fetchTypes');
-    cy.contains('Dismiss').click();
   });
 
   it('test cant delete when in use', () => {
-    cy.contains('span', 'Templates').click();
+    dismissModalIfVisible();
+    cy.get('nav[aria-label="Settings navigation"] a[href*="settings/templates"]').click();
     cy.contains('[data-testid="settings-content-header"]', 'Templates');
     cy.contains('Edit').click();
     cy.contains('[data-testid="settings-content-header"]', 'Document');
@@ -76,7 +74,7 @@ describe('Relationship Types configuration', () => {
 
     cy.contains('Save').click();
     cy.wait('@fetchtemplates');
-    cy.contains('span', 'Relationship types').click();
+    cy.get('nav[aria-label="Settings navigation"] a[href*="settings/relationship-types"]').click();
 
     cy.get('tbody tr:nth-of-type(1) input').should('be.disabled');
   });

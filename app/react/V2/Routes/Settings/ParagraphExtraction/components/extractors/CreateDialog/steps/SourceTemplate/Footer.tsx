@@ -1,8 +1,8 @@
 import React from 'react';
-import { Button } from 'V2/Components/UI';
-import { Translate } from 'app/I18N';
+import { Button } from '#V2/Components/UI/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { useCreateExtractorContext } from '../../CreateExtractorContext';
+import { useCreateExtractorContext } from '../../CreateExtractorContext.js';
 
 const Footer = () => {
   const { setStep, sourceTemplateId } = useCreateExtractorContext();
@@ -10,7 +10,7 @@ const Footer = () => {
 
   return (
     <>
-      <Button styling="light" onClick={() => setStep(1)} className="grow">
+      <Button variant="ghost" onClick={() => setStep(1)} className="grow">
         <Translate>Back</Translate>
       </Button>
       <Button

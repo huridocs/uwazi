@@ -1,0 +1,303 @@
+name: E2E Playwright IX
+
+on:
+  workflow_call:
+
+env:
+  REGISTRY: ghcr.io
+  # GHCR package keeps the historical cypress-e2e name; image is the shared E2E runner.
+  E2E_RUNNER_IMAGE: ${{ github.repository }}-cypress-e2e
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  e2e-playwright-ix:
+    runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/${{ github.repository }}-cypress-e2e:latest
+      options: --ipc=host
+    name: e2e-playwright (${{ matrix.name }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: ix
+            spec: 'playwright/e2e/ix-lifecycle.contract.spec.ts'
+          - name: px
+            spec: 'playwright/e2e/paragraph-extraction.contract.spec.ts'
+    services:
+      elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.18.0-amd64
+        ports:
+          - 9200/tcp
+        options: >-
+          --memory=2g
+          --memory-swap=2g
+          --memory-swappiness=0
+          -e="discovery.type=single-node"
+          -e="xpack.security.enabled=false"
+          -e="ES_JAVA_OPTS=-Xms1g -Xmx1g"
+          -e="cluster.routing.allocation.disk.threshold_enabled=false"
+          -e="logger.level=WARN"
+          -e="ingest.geoip.downloader.enabled=false"
+          --health-cmd="curl -f http://localhost:9200"
+          --health-interval=10s
+          --health-timeout=10s
+          --health-retries=10
+      redis:
+        image: redis:6.0-alpine
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start MongoDB replica set
+        run: /usr/local/bin/setup-mongo-replica.sh
+
+      - name: Setup Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}-${{ hashFiles('patches/**') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Cache Yarn
+        uses: actions/cache@v4
+        with:
+          path: ~/.yarn/berry
+          key: ${{ runner.os }}-yarn-cache-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-cache-
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: install dependencies
+        run: yarn install
+        env:
+          YARN_ENABLE_HARDENED_MODE: '0'
+
+      - name: Get Playwright version
+        id: playwright-version
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
+
+      - name: Install Playwright browsers (cache miss)
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Install Playwright OS deps (cache hit)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+
+      - name: Clone dummy services
+        uses: actions/checkout@v4
+        with:
+          repository: huridocs/dummy_extractor_services
+          path: dummy_extractor_services
+
+      - name: Forward ports for container networking
+        run: |
+          echo "Setting up port forwarding for container networking..."
+
+          if ! command -v socat >/dev/null 2>&1 || ! command -v nc >/dev/null 2>&1; then
+            echo "Installing socat and netcat..."
+            apt-get update -qq && apt-get install -y socat netcat-openbsd
+          fi
+
+          REDIS_IP=""
+          ELASTICSEARCH_IP=""
+
+          for ip in $(seq 1 10); do
+            test_ip="172.18.0.$ip"
+            if [ "$test_ip" != "172.18.0.2" ]; then
+              if nc -z $test_ip 6379 2>/dev/null; then
+                REDIS_IP="$test_ip"
+                echo "Found Redis at $REDIS_IP:6379"
+                break
+              fi
+            fi
+          done
+
+          for ip in $(seq 1 10); do
+            test_ip="172.18.0.$ip"
+            if [ "$test_ip" != "172.18.0.2" ]; then
+              if nc -z $test_ip 9200 2>/dev/null; then
+                ELASTICSEARCH_IP="$test_ip"
+                echo "Found Elasticsearch at $ELASTICSEARCH_IP:9200"
+                break
+              fi
+            fi
+          done
+
+          if [ -n "$REDIS_IP" ]; then
+            nohup socat TCP-LISTEN:6379,fork,reuseaddr TCP:$REDIS_IP:6379 > socat-redis.log 2>&1 &
+          else
+            nohup socat TCP-LISTEN:6379,fork,reuseaddr TCP:redis:6379 > socat-redis.log 2>&1 &
+          fi
+
+          if [ -n "$ELASTICSEARCH_IP" ]; then
+            nohup socat TCP-LISTEN:9200,fork,reuseaddr TCP:$ELASTICSEARCH_IP:9200 > socat-elasticsearch.log 2>&1 &
+          else
+            nohup socat TCP-LISTEN:9200,fork,reuseaddr TCP:elasticsearch:9200 > socat-elasticsearch.log 2>&1 &
+          fi
+
+          sleep 2
+          nc -z localhost 6379
+          curl -s --connect-timeout 5 http://localhost:9200/_cluster/health >/dev/null
+
+      - name: Setup dummy services
+        working-directory: dummy_extractor_services
+        run: |
+          set -e
+          python3.11 -m venv .venv
+          make install_venv
+
+          . .venv/bin/activate
+          PYTHONUNBUFFERED=1 setsid nohup bash -c 'make start_inside_docker' > logs.log 2>&1 &
+          disown || true
+
+          echo "Waiting for gunicorn HTTP servers..."
+          sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/info
+          wget --waitretry=5 --retry-connrefused -v http://localhost:5056/info
+
+          if ! command -v redis-cli >/dev/null 2>&1; then
+            echo "Installing redis-tools..."
+            apt-get update -qq && apt-get install -y redis-tools
+          fi
+
+          echo "Waiting for dummy workers to register Redis queues..."
+          STREAMS=0
+          for i in $(seq 1 30); do
+            STREAMS=$(redis-cli -h localhost -p 6379 KEYS 'rsmq:*' 2>/dev/null | wc -l)
+            if [ "$STREAMS" -gt 0 ]; then
+              echo "Found $STREAMS Redis queue keys after ${i}s"
+              break
+            fi
+            sleep 1
+          done
+          if [ "$STREAMS" -eq 0 ]; then
+            echo "ERROR: dummy workers did not register any Redis queues"
+            cat logs.log
+            exit 1
+          fi
+
+          echo "=== dummy services processes ==="
+          if ! ps -ef | grep -E "gunicorn|worker_(metadata|paragraphs|translations)" | grep -v grep; then
+            echo "ERROR: dummy services processes not running"
+            cat logs.log
+            exit 1
+          fi
+
+      - name: Wait For and Download Artifact
+        run: |
+          apt-get update -qq && apt-get install -y jq unzip
+          i=1
+          while [ $i -le 60 ]; do
+            echo "Attempt $i: Checking for artifact..."
+            ARTIFACT_URL=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" \
+              | jq -r '.artifacts[] | select(.name=="prod") | .archive_download_url')
+            if [ -n "$ARTIFACT_URL" ]; then
+              mkdir -p ./prod
+              curl -s -L -o artifact.zip \
+                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                -H "Accept: application/vnd.github.v3+json" \
+                "$ARTIFACT_URL"
+              unzip -q artifact.zip -d ./prod
+              echo "Artifact downloaded and unzipped successfully."
+              exit 0
+            fi
+            sleep 20
+            i=$(expr $i + 1)
+          done
+          echo "Timed out waiting for artifact."
+          exit 1
+        timeout-minutes: 6
+
+      - name: Restore fixtures
+        env:
+          DBHOST: localhost:27017
+          ELASTICSEARCH_URL: http://localhost:9200
+          DATABASE_NAME: uwazi_e2e
+          INDEX_NAME: uwazi_e2e
+          TRANSPILED: true
+        run: yarn e2e-fixtures
+
+      - name: Configure IX settings
+        run: yarn ix-config
+        env:
+          DBHOST: localhost:27017
+          DATABASE_NAME: uwazi_e2e
+
+      - name: start Uwazi
+        env:
+          DBHOST: localhost:27017
+          ELASTICSEARCH_URL: http://localhost:9200
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+          EXTERNAL_SERVICES: true
+          FEATURE_FLAG_PARAGRAPH_EXTRACTION: true
+          DATABASE_NAME: uwazi_e2e
+          INDEX_NAME: uwazi_e2e
+        run: .github/scripts/start-uwazi.sh
+
+      - name: Run Playwright spec - ${{ matrix.name }}
+        run: yarn playwright test ${{ matrix.spec }} --workers=1
+        timeout-minutes: 30
+        env:
+          DBHOST: localhost:27017
+          ELASTICSEARCH_URL: http://localhost:9200
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+          EXTERNAL_SERVICES: true
+          FEATURE_FLAG_PARAGRAPH_EXTRACTION: true
+          TRANSPILED: true
+
+      - name: Upload dummy services log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-${{ matrix.name }}-dummy-services-log
+          path: dummy_extractor_services/logs.log
+          if-no-files-found: ignore
+
+      - name: Upload Playwright test-results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-${{ matrix.name }}-test-results
+          path: test-results/
+          if-no-files-found: ignore
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-${{ matrix.name }}-report
+          path: playwright-report/
+          if-no-files-found: ignore
+
+      - name: Upload Uwazi logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-${{ matrix.name }}-logs
+          path: .github/logs/
+          if-no-files-found: ignore

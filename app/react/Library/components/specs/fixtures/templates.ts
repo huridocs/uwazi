@@ -1,4 +1,4 @@
-import { ClientTemplateSchema } from 'V2/shared/types';
+import { ClientTemplateSchema } from '#V2/shared/types.js';
 
 const template1: ClientTemplateSchema = {
   properties: [],
@@ -42,26 +42,4 @@ const template2: ClientTemplateSchema = {
   _id: '2',
 };
 
-const template3: ClientTemplateSchema = {
-  properties: [],
-  commonProperties: [
-    {
-      _id: '3.1',
-      label: 'Template 3 title',
-      name: 'title',
-      type: 'text',
-      generatedId: true,
-    },
-    {
-      _id: '3.2',
-      label: 'Date added',
-      name: 'creationDate',
-      type: 'date',
-    },
-  ],
-  name: 'Template1',
-  default: true,
-  _id: '1',
-};
-
-export { template1, template2, template3 };
+export { template1, template2 };

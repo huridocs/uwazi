@@ -1,16 +1,16 @@
 /* eslint-disable max-classes-per-file */
-import { EntityDBO } from 'api/entities.v2/database/schemas/EntityTypes';
-import { Entity, EntityIcon } from 'api/core/domain/entity/Entity';
 import { ObjectId } from 'mongodb';
-import { Template } from 'api/core/domain/template/Template';
-import { EntityTranslationProps } from 'api/core/domain/entity/EntityTranslation';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
-import { PermissionType } from 'api/core/domain/entity/PermissionType';
-import { AccessLevel } from 'api/core/domain/entity/AccessLevel';
-import { TemplateDBO } from '../template/DBOs/TemplateDBO';
-import { LoggerFactory } from '../../factories/LoggerFactory';
-import { MongoTemplateMapper } from '../template/MongoTemplateMapper';
+import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
+import { Entity, EntityIcon } from '#api/core/domain/entity/Entity.js';
+import { Template } from '#api/core/domain/template/Template.js';
+import { EntityTranslationProps } from '#api/core/domain/entity/EntityTranslation.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
+import { TemplateDBO } from '../template/DBOs/TemplateDBO.js';
+import { TemplateRow } from '#api/core/infrastructure/postgresql/template/PostgresTemplateMapper.js';
+import { LoggerFactory } from '../../factories/LoggerFactory.js';
+import { MongoTemplateMapper } from '../template/MongoTemplateMapper.js';
+import { MongoRelationshipMetadataMapper } from './MongoRelationshipMetadataMapper.js';
 
 class MongoEntityLanguageMapper {
   static toDomain(dbo: EntityDBO, template: Template): EntityTranslationProps {
@@ -22,7 +22,7 @@ class MongoEntityLanguageMapper {
       editDate: template.createPropertyAssignment('editDate', { value: [{ value: dbo.editDate }] }),
     };
 
-    const metadata = Object.entries(dbo.metadata).reduce((acc, [name, value]) => {
+    const metadata = Object.entries(dbo.metadata || {}).reduce((acc, [name, value]) => {
       const property = template.getPropertyByName(name);
       if (property.isError()) {
         LoggerFactory.systemLogger().info(
@@ -32,10 +32,15 @@ class MongoEntityLanguageMapper {
         return acc;
       }
 
+      const mappedValue =
+        property.getData().type === 'relationship' && Array.isArray(value)
+          ? MongoRelationshipMetadataMapper.toDomain(value)
+          : value;
+
       return {
         ...acc,
         [name]: {
-          value,
+          value: mappedValue,
           name,
           type: property.getData().type,
           language: dbo.language,
@@ -48,6 +53,7 @@ class MongoEntityLanguageMapper {
       id: dbo._id.toHexString(),
       language: dbo.language as LanguageISO6391,
       metadata,
+      preview: dbo.preview,
     };
   }
 }
@@ -56,14 +62,8 @@ class MongoEntityMapper {
   static toDBO(entity: Entity): EntityDBO[] {
     let icon: EntityDBO['icon'] = { _id: null, type: 'Empty' };
     let user: EntityDBO['user'];
-    const { published, sharedId } = entity;
+    const { sharedId } = entity;
     const template = ObjectId.createFromHexString(entity.template.id);
-
-    const permissions = entity.permissions.accessGrants.map(grant => ({
-      refId: grant.refId,
-      type: grant.type,
-      level: grant.level,
-    }));
 
     if (entity.icon) {
       icon = {
@@ -92,26 +92,30 @@ class MongoEntityMapper {
       generatedToc: entity.generatedToc,
 
       icon,
-      published,
-      permissions,
-      metadata: Object.entries(translation.properties).reduce(
-        (acc, [key, propertyValue]) => ({ ...acc, [key]: propertyValue.value }),
-        {}
-      ),
+      preview: translation.preview,
+      metadata: Object.entries(translation.properties).reduce((acc, [key, propertyValue]) => {
+        if (propertyValue.type === 'relationship') {
+          return {
+            ...acc,
+            [key]: MongoRelationshipMetadataMapper.toDBO(propertyValue.value),
+          };
+        }
+
+        return { ...acc, [key]: propertyValue.value };
+      }, {}),
 
       obsoleteMetadata: [], // Todo: handle obsolete metadata
+      published: undefined as any,
     }));
   }
 
-  static toDomain(entityDbo: EntityDBO[], templateDbo: TemplateDBO): Entity {
-    const template = MongoTemplateMapper.toDomain(templateDbo);
+  static toDomain(entityDbo: EntityDBO[], templateDbo: TemplateDBO | TemplateRow): Entity {
+    const template = MongoTemplateMapper.toDomain({
+      ...templateDbo,
+      _id: new ObjectId(templateDbo._id),
+    });
     const userId = entityDbo[0].user?.toHexString();
-    const { sharedId, published, generatedToc } = entityDbo[0];
-    const permissions = entityDbo[0].permissions?.map(permission => ({
-      refId: permission.refId.toString(),
-      type: permission.type as PermissionType,
-      level: permission.level as AccessLevel,
-    }));
+    const { sharedId, generatedToc } = entityDbo[0];
 
     let icon: EntityIcon | undefined;
 
@@ -127,10 +131,8 @@ class MongoEntityMapper {
       generatedToc,
       template,
       sharedId,
-      published,
       icon,
       userId,
-      permissions,
       translations: entityDbo.map(dbo => MongoEntityLanguageMapper.toDomain(dbo, template)),
     });
   }

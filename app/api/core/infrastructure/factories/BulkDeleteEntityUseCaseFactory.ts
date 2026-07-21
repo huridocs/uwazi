@@ -1,21 +1,21 @@
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants/tenantContext';
-import { BulkDeleteEntityUseCase } from 'api/core/application/BulkDeleteEntity';
-import { EntitiesServiceFactory } from './EntitiesServiceFactory';
+import { BulkDeleteEntityUseCase } from '#api/core/application/BulkDeleteEntity.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
+import { EntitiesServiceFactory } from './EntitiesServiceFactory.js';
 
 class BulkDeleteEntityUseCaseFactory {
-  static default() {
-    const transactionManager = TransactionManagerFactory.default();
+  static default(overrides?: Partial<ConstructorParameters<typeof BulkDeleteEntityUseCase>[0]>) {
+    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
 
-    const entitiesService = EntitiesServiceFactory.default({ transactionManager });
+    const entitiesService = EntitiesServiceFactory.default({ transactionManager, ...overrides });
 
     const useCase = new BulkDeleteEntityUseCase(
       {
         transactionManager,
         entitiesService,
+        ...overrides,
       },
-      { actor: permissionsContext.getUserInContext()!, tenant: tenants.current()! }
+      { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant }
     );
 
     return useCase;

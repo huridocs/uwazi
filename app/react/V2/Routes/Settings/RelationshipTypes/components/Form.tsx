@@ -1,11 +1,11 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 
-import { Translate } from 'app/I18N';
-import { InputField } from 'app/V2/Components/Forms';
+import { Translate } from '#app/I18N/index.js';
+import { InputField } from '#app/V2/Components/Forms/index.js';
 import { useForm } from 'react-hook-form';
-import { Button, Card } from 'app/V2/Components/UI';
-import { Relationships } from './TableComponents';
+import { Button, Card } from '#app/V2/Components/UI/index.js';
+import { Relationships } from './TableComponents.js';
 
 interface FormProps {
   closePanel: () => void;
@@ -49,7 +49,7 @@ const Form = ({ closePanel, submit, relationtype, currentTypes }: FormProps) => 
       </form>
       <div className="flex absolute bottom-0 gap-2 px-4 py-3 w-full">
         <Button
-          styling="light"
+          variant="ghost"
           onClick={closePanel}
           className="grow"
           data-testid="relationship-type-form-cancel"

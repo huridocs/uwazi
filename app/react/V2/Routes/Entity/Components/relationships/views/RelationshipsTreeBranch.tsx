@@ -1,0 +1,117 @@
+import React, {
+  Children,
+  isValidElement,
+  useState,
+  type ReactElement,
+  type ReactNode,
+} from 'react';
+import { CollapsibleSectionHeader } from '#V2/Components/UI/CollapsibleSectionHeader.js';
+import { useExpandCollapseSignals } from '../hooks/useExpandCollapseSignals.js';
+
+type TreeLine = 'only' | 'first' | 'middle' | 'last';
+
+const getTreeLine = (index: number, count: number): TreeLine => {
+  if (count <= 1) return 'only';
+  if (index === 0) return 'first';
+  if (index === count - 1) return 'last';
+  return 'middle';
+};
+
+const treeLineBeforeClass: Record<TreeLine, string> = {
+  only: 'before:top-0 before:h-[18px]',
+  first: 'before:top-0 before:bottom-0',
+  middle: 'before:top-0 before:bottom-0',
+  last: 'before:top-0 before:h-[18px]',
+};
+
+const treeNodeBaseClass = [
+  'relative pl-5',
+  "before:absolute before:left-0 before:w-0 before:border-l before:border-border-soft before:content-['']",
+  "after:absolute after:left-0 after:top-[18px] after:w-[22px] after:border-t after:border-border-soft after:content-['']",
+].join(' ');
+
+type RelationshipsTreeNodeProps = {
+  children: ReactNode;
+  treeLine?: TreeLine;
+};
+
+const treeConnectorDotClass =
+  'pointer-events-none absolute z-[2] size-[5px] -translate-x-1/2 -translate-y-1/2 rounded-full';
+
+const RelationshipsTreeNode = ({ children, treeLine = 'only' }: RelationshipsTreeNodeProps) => (
+  <div className={`${treeNodeBaseClass} ${treeLineBeforeClass[treeLine]}`}>
+    <span
+      aria-hidden
+      className={treeConnectorDotClass}
+      style={{
+        left: 0,
+        top: '1.125rem',
+        backgroundColor: 'var(--color-theme-border-soft, #d1d5db)',
+      }}
+    />
+    {children}
+  </div>
+);
+
+type RelationshipsTreeBranchProps = {
+  title: ReactNode;
+  color?: string;
+  count: number;
+  markerIds: string[];
+  defaultExpanded?: boolean;
+  children: ReactNode;
+};
+
+// eslint-disable-next-line react/no-multi-comp
+const RelationshipsTreeBranch = ({
+  title,
+  color,
+  count,
+  markerIds,
+  defaultExpanded = true,
+  children,
+}: RelationshipsTreeBranchProps) => {
+  const [expanded, setExpanded] = useState(defaultExpanded);
+  useExpandCollapseSignals(setExpanded, markerIds);
+
+  const items = Children.toArray(children);
+
+  return (
+    <div>
+      <CollapsibleSectionHeader
+        variant="tree"
+        title={title}
+        expanded={expanded}
+        onToggle={() => setExpanded(current => !current)}
+        color={color}
+        count={count}
+      />
+      {expanded && items.length > 0 && (
+        <div className="ml-[14px]">
+          {items.map((child, index) => {
+            const line = getTreeLine(index, items.length);
+            if (
+              isValidElement(child) &&
+              (child as ReactElement<RelationshipsTreeBranchProps>).type === RelationshipsTreeBranch
+            ) {
+              return (
+                <RelationshipsTreeNode key={child.key ?? index} treeLine={line}>
+                  {child}
+                </RelationshipsTreeNode>
+              );
+            }
+            return (
+              // eslint-disable-next-line react/no-array-index-key
+              <RelationshipsTreeNode key={index} treeLine={line}>
+                {child}
+              </RelationshipsTreeNode>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export type { TreeLine };
+export { RelationshipsTreeBranch, RelationshipsTreeNode, getTreeLine };

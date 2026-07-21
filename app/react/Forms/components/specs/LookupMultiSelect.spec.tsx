@@ -6,7 +6,7 @@ import React from 'react';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
-import { LookupMultiSelect, LookupMultiSelectProps } from '../LookupMultiSelect';
+import { LookupMultiSelect, LookupMultiSelectProps } from '../LookupMultiSelect.js';
 
 describe('LookupMultiSelect (React Testing Library)', () => {
   let props: Partial<LookupMultiSelectProps>;
@@ -275,6 +275,78 @@ describe('LookupMultiSelect (React Testing Library)', () => {
       expect(screen.getByLabelText('Option1')).toBeInTheDocument();
       expect(screen.getByLabelText('Option6')).toBeInTheDocument();
     });
+  });
+
+  it('should update displayed aggregation counts when props.options change with the same lookup ref', async () => {
+    const lookup = jest.fn(async () => ({
+      options: [{ label: 'Organization 001', value: 'org-1', results: 999 }],
+      count: 1,
+    }));
+
+    const initialOptions = [
+      { label: 'Organization 001', value: 'org-1', results: 400 },
+      { label: 'Organization 002', value: 'org-2', results: 300 },
+    ];
+
+    const { rerender } = render(
+      <LookupMultiSelect options={initialOptions} lookup={lookup} value={[]} onChange={jest.fn()} />
+    );
+
+    await waitFor(() => expect(lookup).toHaveBeenCalledWith(''));
+    expect(screen.getByText('400')).toBeInTheDocument();
+    expect(screen.getByText('300')).toBeInTheDocument();
+
+    rerender(
+      <LookupMultiSelect
+        options={[
+          { label: 'Organization 001', value: 'org-1', results: 40 },
+          { label: 'Organization 002', value: 'org-2', results: 30 },
+        ]}
+        lookup={lookup}
+        value={[]}
+        onChange={jest.fn()}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('40')).toBeInTheDocument();
+      expect(screen.getByText('30')).toBeInTheDocument();
+    });
+    expect(screen.queryByText('400')).not.toBeInTheDocument();
+    expect(screen.queryByText('300')).not.toBeInTheDocument();
+  });
+
+  it('should update displayed labels when props.options labels change with same value/results', async () => {
+    const lookup = jest.fn(async () => ({
+      options: [{ label: 'Colombia', value: 'country-colombia', results: 1 }],
+      count: 1,
+    }));
+
+    const { rerender } = render(
+      <LookupMultiSelect
+        options={[{ label: 'Colombia', value: 'country-colombia', results: 1 }]}
+        lookup={lookup}
+        value={[]}
+        onChange={jest.fn()}
+      />
+    );
+
+    await waitFor(() => expect(lookup).toHaveBeenCalledWith(''));
+    expect(screen.getByLabelText('Colombia')).toBeInTheDocument();
+
+    rerender(
+      <LookupMultiSelect
+        options={[{ label: 'Colombia Edited', value: 'country-colombia', results: 1 }]}
+        lookup={lookup}
+        value={[]}
+        onChange={jest.fn()}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Colombia Edited')).toBeInTheDocument();
+    });
+    expect(screen.queryByLabelText('Colombia')).not.toBeInTheDocument();
   });
 
   it('should not render a search bar if lookup returns 5 or fewer options', async () => {

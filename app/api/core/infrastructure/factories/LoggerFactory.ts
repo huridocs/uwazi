@@ -1,8 +1,11 @@
-import { StandardLogger } from 'api/core/libs/logger/infrastructure/StandardLogger';
-import { StandardJSONWriter } from 'api/core/libs/logger/infrastructure/writers/StandardJSONWriter';
-import { config } from 'api/config';
-import { DevelopmentWritter } from 'api/core/libs/logger/infrastructure/writers/DevelopmentWriter';
-import { getTenant } from '../mongodb/common/getConnectionForCurrentTenant';
+import { StandardLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
+import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
+import { config } from '#api/config.js';
+import { DevelopmentWritter } from '#api/core/libs/logger/infrastructure/writers/DevelopmentWriter.js';
+import { getTenant } from '../mongodb/common/getConnectionForCurrentTenant.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { LogWriter } from '#api/core/libs/logger/infrastructure/LogWriter.js';
 
 export class LoggerFactory {
   static default(_writer = StandardJSONWriter) {
@@ -12,7 +15,9 @@ export class LoggerFactory {
     }
 
     if (process.env.NODE_ENV === 'test') {
-      return this.fake();
+      writer = () => {
+        // do nothing
+      };
     }
 
     return new StandardLogger(writer, getTenant());
@@ -20,7 +25,7 @@ export class LoggerFactory {
 
   static systemLogger(_writer = StandardJSONWriter) {
     let writer = _writer;
-    if (config.ENVIRONMENT === 'development') {
+    if (config.ENVIRONMENT === 'development' && _writer === StandardJSONWriter) {
       writer = DevelopmentWritter;
     }
 
@@ -32,11 +37,35 @@ export class LoggerFactory {
       customUploads: 'N/a',
       indexName: 'N/a',
       uploadedDocuments: 'N/a',
+      domain: 'N/a',
+    });
+  }
+
+  static forTests() {
+    return TestUtils.mockClass<Logger>({
+      critical: jest.fn(),
+      debug: jest.fn(),
+      error: jest.fn(),
+      info: jest.fn(),
+      warning: jest.fn(),
     });
   }
 
   static fake() {
     // eslint-disable-next-line no-empty-function
     return new StandardLogger(() => {}, getTenant());
+  }
+
+  static migrationLogger(writer: LogWriter): Logger {
+    return new StandardLogger(writer, {
+      name: 'Migration Logger',
+      dbName: 'N/a',
+      activityLogs: 'N/a',
+      attachments: 'N/a',
+      customUploads: 'N/a',
+      indexName: 'N/a',
+      uploadedDocuments: 'N/a',
+      domain: 'N/a',
+    });
   }
 }

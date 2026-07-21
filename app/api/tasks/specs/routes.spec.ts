@@ -1,8 +1,9 @@
-import { setUpApp } from 'api/utils/testingRoutes';
-import { NextFunction } from 'express';
-import { Task, TaskProvider } from 'shared/tasks/tasks';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import type { Application, NextFunction } from 'express';
+import { Task, TaskProvider } from '#shared/tasks/tasks.js';
 import request from 'supertest';
-import testRoute from '../routes';
+import testRoute from '../routes.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -29,8 +30,17 @@ class TestTask extends Task {
 }
 TaskProvider.registerClass('TestTask', TestTask);
 
+let app: Application;
+
 describe('task routes', () => {
-  const app = setUpApp(testRoute);
+  beforeAll(async () => {
+    await testingEnvironment.setUp({});
+    app = setUpApp(testRoute);
+  });
+
+  afterAll(async () => {
+    await testingEnvironment.tearDown();
+  });
 
   describe('GET', () => {
     it('should return empty for undefined task', async () => {

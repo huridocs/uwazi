@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Icon } from 'UI';
-import { t } from 'app/I18N';
-import { useIsMobile } from 'app/V2/CustomHooks/useIsMobile';
-import { Menu } from './Menu';
-import { SiteName } from './SiteName';
+import { Icon } from '#UI/index.js';
+import { t } from '#app/I18N/index.js';
+import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
+import { RequestStatus } from '#V2/Components/UI/Notifications/RequestStatus.js';
+import { Menu } from './Menu.js';
+import { SiteName } from './SiteName.js';
 
 const LegacyHeader = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -12,7 +13,7 @@ const LegacyHeader = () => {
     setShowMenu(visible);
   };
 
-  const isMobile = useIsMobile(1024);
+  const isMobile = useIsMobile(1024) || false;
 
   let MenuButtonIcon = 'bars';
   let navClass = 'menuNav';
@@ -45,8 +46,21 @@ const LegacyHeader = () => {
             <SiteName />
           </div>
         </h1>
-        <Menu toggleMobileMenu={toggleMobileMenu} className={navClass} />
-        <div className="nprogress-container" />
+        {isMobile && (
+          <div
+            className="tw-content"
+            style={{
+              height: '50px',
+              display: 'flex',
+              alignItems: 'center',
+              float: 'right',
+              minWidth: '48px',
+            }}
+          >
+            <RequestStatus />
+          </div>
+        )}
+        <Menu toggleMobileMenu={toggleMobileMenu} className={navClass} isMobile={isMobile} />
       </header>
     </>
   );

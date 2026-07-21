@@ -1,9 +1,9 @@
-import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
+import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { z } from 'zod';
-import { PropertyTypeInvalidTypeError } from './errors';
-import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
-import { PropertyTypeEnum } from './PropertyType';
-import { MarkdownEntry, PropertyAssignment } from './PropertyValue';
+import { PropertyTypeInvalidTypeError } from './errors.js';
+import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty.js';
+import { PropertyTypeEnum } from './PropertyType.js';
+import { MarkdownEntry, PropertyAssignment } from './PropertyValue.js';
 
 type Props = {
   type?: PropertyTypeEnum.Markdown;
@@ -53,11 +53,8 @@ class MarkdownProperty extends FilterableProperty {
     };
   }
 
-  validatePropertyAssignment(
-    { value }: PropertyAssignment<MarkdownEntry>,
-    shouldValidateForRequired = false
-  ): void {
-    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
+  validatePropertyAssignment({ value }: PropertyAssignment<MarkdownEntry>): void {
+    createSchema(this.required).parse(value);
   }
 }
 

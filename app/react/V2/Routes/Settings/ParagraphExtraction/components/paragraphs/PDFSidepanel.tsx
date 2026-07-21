@@ -1,14 +1,14 @@
 import React from 'react';
-import { Translate } from 'app/I18N';
-import { availableLanguages } from 'shared/language';
-import { ClientEntitySchema } from 'app/istore';
-import { Button, Sidepanel } from 'V2/Components/UI';
-import { PDF } from 'V2/Components/PDFViewer';
+import { Translate } from '#app/I18N/index.js';
+import { availableLanguages } from '#shared/language/index.js';
+import { Entity } from '#V2/api/entities/types.js';
+import { Button, Sidepanel } from '#V2/Components/UI/index.js';
+import { PDF } from '#V2/Components/PDFViewer/index.js';
 
 interface PDFSidepanelSidepanelProps {
   showSidepanel: boolean;
   setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
-  entity?: ClientEntitySchema;
+  entity?: Entity;
 }
 
 const PDFSidepanel = ({ showSidepanel, setShowSidepanel, entity }: PDFSidepanelSidepanelProps) => {
@@ -29,10 +29,10 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, entity }: PDFSidepanelS
         {mainDocument && <PDF fileUrl={`/api/files/${mainDocument.filename}`} />}
       </Sidepanel.Body>
       <Sidepanel.Footer>
-        <div className="sticky bottom-0 flex justify-end gap-2 px-4 py-2 bg-white border border-b-0 border-l-0 border-r-0 border-gray-200 border-t">
+        <div className="sticky bottom-0 flex justify-end gap-2 border border-b-0 border-l-0 border-r-0 border-t px-4 py-2 bg-(--color-theme-surface-raised) border-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)]">
           <Button
             type="button"
-            styling="outline"
+            variant="secondary"
             onClick={() => {
               setShowSidepanel(false);
             }}

@@ -1,28 +1,18 @@
 /* eslint-disable max-statements */
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { PathManager } from 'api/core/infrastructure/files/PathManager';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
-import { PDFService } from 'api/core/infrastructure/services/PDFService';
-import { EventsBus } from 'api/core/libs/eventsbus';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { elastic } from 'api/search';
-import { tenants } from 'api/tenants';
-import { appContext } from 'api/utils/AppContext';
-import { elasticTesting } from 'api/utils/elastic_testing';
-import { testingTenants } from 'api/utils/testingTenants';
-import { BulkCleanupEntityUseCase } from '../BulkCleanupEntity';
-import { FileStorage } from '../contracts/FileStorage';
-import { FilesService } from '../FilesService';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
+import { BulkCleanupEntityUseCaseFactory } from '#api/core/infrastructure/factories/BulkCleanupEntityUseCaseFactory.js';
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { MongoEntitiesDataSource } from '#api/core/infrastructure/mongodb/entity/MongoEntitiesDataSource.js';
+import { elastic } from '#api/search/index.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
+import { FilesService } from '../FilesService.js';
 
 const factory = getFixturesFactory();
 
@@ -165,60 +155,38 @@ const fixtures: DBFixture = {
 type CreateSutProps = {
   filesService?: FilesService;
   relationshipsDS?: MongoRelationshipsV1DataSource;
-  entitiesDS?: MongoMultiLanguageEntityDataSource;
+  entitiesDS?: MongoEntitiesDataSource;
 };
 
 const createSut = (props?: CreateSutProps) => {
-  const transactionManager = TransactionManagerFactory.default();
-  const idGenerator = IdGeneratorFactory.default();
-  const relationshipsDS =
-    props?.relationshipsDS ??
-    new MongoRelationshipsV1DataSource(getConnection(), transactionManager);
-  const entitiesDS =
-    props?.entitiesDS ??
-    new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
-  const filesDS = FilesDataSourceFactory.default(transactionManager);
-
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
-  const fileStorage = TestUtils.mockClass<FileStorage>({
-    removeFile: jest.fn().mockResolvedValue(undefined),
+  const jobsDispatcher = TestUtils.mockClass<Dispatcher>({
+    deleteFilesFromStorage: jest.fn().mockResolvedValue(undefined),
+    postProcessPDFs: jest.fn().mockResolvedValue(undefined),
+    syncRelationships: jest.fn().mockResolvedValue(undefined),
+    cleanupEntities: jest.fn().mockResolvedValue(undefined),
+    postProcessTemplateEntities: jest
+      .fn()
+      .mockImplementation(async (callback: (dispatch: jest.Mock) => Promise<void>) => {
+        await callback(jest.fn());
+      }),
   });
-  const filesIO = TestUtils.mockClass<FileContentsIO>({});
-  const pdfService = TestUtils.mockClass<PDFService>({});
 
-  const dispatchMock = jest.fn();
-  const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
-    dispatchMany: async callback => {
-      await callback(dispatchMock);
-    },
-  });
-
-  const filesService =
-    props?.filesService ??
-    new FilesService({
-      pathManager: new PathManager({ tenant: tenants.current() }),
-      filesDS,
-      fileStorage,
-      idGenerator,
-      jobsDispatcher,
-      pdfService,
-      filesIO,
-      relV1DS: relationshipsDS,
-      transactionManager,
+  const { sut } = testingEnvironment.runWithContext(() => {
+    const defaultFilesService = FilesServiceFactory.default({
       eventBus,
+      jobsDispatcher,
     });
-
-  const sut = new BulkCleanupEntityUseCase({
-    relationshipsDS,
-    entitiesDS,
-    idGenerator,
-    transactionManager,
-    eventBus,
-    jobsDispatcher,
-    filesService,
+    return {
+      sut: BulkCleanupEntityUseCaseFactory.default({
+        filesService: defaultFilesService,
+        eventBus,
+        ...props,
+      }),
+    };
   });
 
-  return { sut, eventBus, dispatchMock };
+  return { sut, eventBus, jobsDispatcher };
 };
 
 describe('BulkCleanupEntityUseCase', () => {
@@ -325,11 +293,7 @@ describe('BulkCleanupEntityUseCase', () => {
   });
 
   it('should delete files associated with the deleted entities', async () => {
-    testingTenants.changeCurrentTenant({
-      uploadedDocuments: '/tenant/uploads',
-      attachments: '/tenant/uploads',
-    });
-    const { sut, dispatchMock } = createSut();
+    const { sut, jobsDispatcher } = createSut();
 
     const input = {
       sharedIds: ['sharedId1', 'sharedId2', 'sharedId3'],
@@ -343,7 +307,11 @@ describe('BulkCleanupEntityUseCase', () => {
       expect.objectContaining({ _id: factory.id('file_1_sharedId4'), entity: 'sharedId4' }),
     ]);
 
-    expect(dispatchMock).toHaveBeenCalledTimes(7);
+    expect(jobsDispatcher.deleteFilesFromStorage).toHaveBeenCalledWith(
+      expect.arrayContaining([expect.any(String)])
+    );
+    const [paths] = (jobsDispatcher.deleteFilesFromStorage as jest.Mock).mock.calls[0];
+    expect(paths).toHaveLength(7);
   });
 
   it('should emit EntityDeletedEvent for each sharedId', async () => {
@@ -433,35 +401,31 @@ describe('BulkCleanupEntityUseCase', () => {
   });
 
   it('should revert if deleting references on entities fails', async () => {
-    await appContext.run(async () => {
-      const mockedEntitiesDS = TestUtils.mockClass<MongoMultiLanguageEntityDataSource>({
-        deleteReferencesToSharedIds: jest
-          .fn()
-          .mockRejectedValue(new Error('Reference deletion failed')),
-      });
-
-      const { sut } = createSut({ entitiesDS: mockedEntitiesDS });
-
-      const input = {
-        sharedIds: ['sharedId1', 'sharedId2', 'sharedId3'],
-      };
-
-      const relationshipsBefore = await testingEnvironment.db.getAllFrom('connections');
-      const entitiesBefore = await testingEnvironment.db.getAllFrom('entities');
-      const entity2Before = entitiesBefore.filter((e: any) => e.sharedId === 'entity2');
-
-      await expect(sut.execute(input)).rejects.toThrow('Reference deletion failed');
-
-      const relationshipsAfter = await testingEnvironment.db.getAllFrom('connections');
-      expect(relationshipsAfter).toEqual(relationshipsBefore);
-
-      const entitiesAfter = await testingEnvironment.db.getAllFrom('entities');
-      const entity2After = entitiesAfter.filter((e: any) => e.sharedId === 'entity2');
-      expect(entity2After[0]?.metadata.selectProp).toEqual(entity2Before[0]?.metadata.selectProp);
-      expect(entity2After[0]?.metadata.relationProp).toEqual(
-        entity2Before[0]?.metadata.relationProp
-      );
+    const mockedEntitiesDS = TestUtils.mockClass<MongoEntitiesDataSource>({
+      deleteReferencesToSharedIds: jest
+        .fn()
+        .mockRejectedValue(new Error('Reference deletion failed')),
     });
+
+    const { sut } = createSut({ entitiesDS: mockedEntitiesDS });
+
+    const input = {
+      sharedIds: ['sharedId1', 'sharedId2', 'sharedId3'],
+    };
+
+    const relationshipsBefore = await testingEnvironment.db.getAllFrom('connections');
+    const entitiesBefore = await testingEnvironment.db.getAllFrom('entities');
+    const entity2Before = entitiesBefore.filter((e: any) => e.sharedId === 'entity2');
+
+    await expect(sut.execute(input)).rejects.toThrow('Reference deletion failed');
+
+    const relationshipsAfter = await testingEnvironment.db.getAllFrom('connections');
+    expect(relationshipsAfter).toEqual(relationshipsBefore);
+
+    const entitiesAfter = await testingEnvironment.db.getAllFrom('entities');
+    const entity2After = entitiesAfter.filter((e: any) => e.sharedId === 'entity2');
+    expect(entity2After[0]?.metadata.selectProp).toEqual(entity2Before[0]?.metadata.selectProp);
+    expect(entity2After[0]?.metadata.relationProp).toEqual(entity2Before[0]?.metadata.relationProp);
   });
 
   it('should throw when input is invalid', async () => {

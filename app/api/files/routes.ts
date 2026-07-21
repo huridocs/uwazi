@@ -1,21 +1,21 @@
 /* eslint-disable max-statements */
-/* eslint-disable max-lines */
-import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
-import needsAuthorization from 'api/auth/authMiddleware';
-import { DownloadFileController } from 'api/core/infrastructure/express/DownloadFileController';
-import { EntityFileUploadController } from 'api/core/infrastructure/express/files/EntityFileUploadController';
-import { FileDeleteController } from 'api/core/infrastructure/express/files/FileDeleteController';
-import { UploadMiddleware } from 'api/core/infrastructure/express/middlewares/UploadMiddleware';
-import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
-import entities from 'api/entities';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { Application } from 'express';
-import { EntitySchema } from 'shared/types/entityType';
-import { fileSchema } from 'shared/types/fileSchema';
-import { FileType } from 'shared/types/fileType';
-import { UserSchema } from 'shared/types/userType';
-import { createError, validation } from '../utils';
-import { files } from './files';
+import type { Application } from 'express';
+import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
+import needsAuthorization from '#api/auth/authMiddleware.js';
+import { DownloadFileController } from '#api/core/infrastructure/express/DownloadFileController.js';
+import { EntityFileUploadController } from '#api/core/infrastructure/express/files/EntityFileUploadController.js';
+import { FileDeleteController } from '#api/core/infrastructure/express/files/FileDeleteController.js';
+import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import entities from '#api/entities/index.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { fileSchema } from '#shared/types/fileSchema.js';
+import { FileType } from '#shared/types/fileType.js';
+import { UserSchema } from '#shared/types/userType.js';
+import { validation } from '../utils/index.js';
+import { files } from './files.js';
+import { MutateFileController } from '#api/core/infrastructure/express/files/MutateFileController.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 
 const checkEntityPermission = async (
   file: FileType,
@@ -23,7 +23,7 @@ const checkEntityPermission = async (
   level: 'read' | 'write' = 'read'
 ): Promise<boolean> => {
   if (['admin'].includes(user?.role || '')) return true;
-  const [fileInDB] = await files.get({ _id: file._id });
+  const fileInDB = (await FilesDAOFactory.default().getById(file._id!.toString())).getData(null);
 
   if (!fileInDB || (fileInDB.type === 'custom' && level === 'write')) {
     return false;
@@ -34,7 +34,7 @@ const checkEntityPermission = async (
   }
 
   const relatedEntities: EntitySchema[] = await entities.get(
-    { sharedId: fileInDB.entity },
+    { sharedId: fileInDB.entity! },
     '_id, permissions',
     { withoutDocuments: true }
   );
@@ -64,6 +64,8 @@ const filterByEntityPermissions = async (fileList: FileType[]): Promise<FileType
     .then((arr: { sharedId: string }[]) => new Set(arr.map(e => e.sharedId)));
   return fileList.filter(f => !f.entity || allowedSharedIds.has(f.entity));
 };
+
+export { checkEntityPermission };
 
 export default (app: Application) => {
   app.post(
@@ -104,15 +106,7 @@ export default (app: Application) => {
         body: fileSchema,
       },
     }),
-    async (req, res) => {
-      if (
-        !(await checkEntityPermission(req.body, permissionsContext.getUserInContext(), 'write'))
-      ) {
-        throw createError('file not found', 404);
-      }
-      const result = await files.save(req.body);
-      res.json(result);
-    }
+    MutateFileController.createHandler()
   );
 
   app.post(
@@ -178,7 +172,14 @@ export default (app: Application) => {
       },
     }),
     async (req, res) => {
-      res.json(await filterByEntityPermissions(await files.get(req.query)));
+      const query: Record<string, unknown> = {};
+      if (typeof req.query._id === 'string') {
+        query._id = req.query._id;
+      }
+      if (typeof req.query.type === 'string') {
+        query.type = req.query.type;
+      }
+      res.json(await filterByEntityPermissions(await FilesDAOFactory.default().getByQuery(query)));
     }
   );
 };

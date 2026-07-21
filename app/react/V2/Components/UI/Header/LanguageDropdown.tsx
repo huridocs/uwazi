@@ -1,13 +1,13 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React from 'react';
 import { useAtom, useAtomValue } from 'jotai';
 import { useLocation } from 'react-router';
 import { ChevronDownIcon, ChevronUpIcon, LanguageIcon } from '@heroicons/react/20/solid';
-import { LanguagesListSchema } from 'shared/types/commonTypes';
-import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
-import { inlineEditAtom, localeAtom, settingsAtom } from 'V2/atoms';
-import { Translate } from 'app/I18N';
-import { useIsMobile } from 'app/V2/CustomHooks/useIsMobile';
-import { NeedAuthorization } from 'V2/Components/UI';
+import { LanguagesListSchema } from '#shared/types/commonTypes.js';
+import { inlineEditAtom, localeAtom, settingsAtom } from '#V2/atoms/index.js';
+import { Translate } from '#app/I18N/index.js';
+import { useIsMobile } from '#app/V2/CustomHooks/useIsMobile.js';
+import { NeedAuthorization } from '#V2/Components/UI/index.js';
+import { BaseDropdown } from './BaseDropdown.js';
 
 interface LanguageDropdownProps {
   className?: string;
@@ -21,9 +21,7 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({ className = 
   const locale = useAtomValue(localeAtom);
   const { languages: languageList } = useAtomValue(settingsAtom);
   const location = useLocation();
-
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = React.useState(false);
 
   const selectedLanguage = getSelectedLanguage(locale, languageList);
 
@@ -45,24 +43,17 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({ className = 
     return `${newPath}${searchParams}`;
   };
 
-  const handleClickOutside = useCallback(() => {
-    setDropdownOpen(false);
-  }, []);
-
   const isTablet = useIsMobile(768);
 
-  useOnClickOutsideElement<HTMLDivElement>(dropdownRef, handleClickOutside);
-
-  const handleMainClick = () => {
+  const handleMainClick = (event: React.MouseEvent) => {
     if (inlineEditState.inlineEdit) {
+      event.preventDefault();
       setInlineEditState({
         inlineEdit: false,
         translationKey: '',
         context: '',
       });
-      return;
     }
-    setDropdownOpen(!dropdownOpen);
   };
 
   const handleLiveTranslateToggle = () => {
@@ -78,66 +69,55 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({ className = 
     return null;
   }
 
-  return (
-    <div className={`relative ${className}`} ref={dropdownRef}>
-      <div
-        className={[
-          'flex items-center py-2',
-          'border-b-2',
-          inlineEditState.inlineEdit
-            ? 'border-green-700 hover:border-green-700'
-            : 'border-transparent hover:border-primary-600',
-        ].join(' ')}
-      >
-        <button
-          type="button"
-          id="language-menu-button"
-          className={[
-            'flex items-center gap-1 text-base font-medium transition-colors rounded-sm p-2',
-            inlineEditState.inlineEdit
-              ? 'bg-green-50 text-green-700'
-              : 'text-gray-900 hover:text-primary-600',
-          ].join(' ')}
-          onClick={handleMainClick}
-          aria-expanded={dropdownOpen}
-          aria-haspopup="menu"
-          aria-controls={dropdownOpen ? 'language-menu' : undefined}
-          onKeyDown={e => {
-            if (e.key === 'ArrowDown' && !dropdownOpen) {
-              e.preventDefault();
-              setDropdownOpen(true);
-            }
-          }}
-        >
-          {inlineEditState.inlineEdit ? (
-            <span className="flex items-center gap-1">
-              <LanguageIcon className="h-4 w-4" />
-              <Translate>Live translate</Translate>
-            </span>
-          ) : (
-            <span className={`${isTablet ? 'uppercase' : ''}`}>
-              {isTablet ? selectedLanguage?.key : selectedLanguage?.localized_label}
-            </span>
-          )}
-          {dropdownOpen ? (
-            <ChevronUpIcon className="h-4 w-4" />
-          ) : (
-            <ChevronDownIcon className="h-4 w-4" />
-          )}
-        </button>
-      </div>
+  const trigger = (
+    <button
+      type="button"
+      id="language-menu-button"
+      className={[
+        'header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-[0.8125rem] font-medium transition-colors',
+        inlineEditState.inlineEdit ? 'header-bar-button-active' : '',
+      ].join(' ')}
+      aria-expanded={dropdownOpen}
+      aria-haspopup="menu"
+      aria-controls={dropdownOpen ? 'language-menu' : undefined}
+      onClick={handleMainClick}
+      onKeyDown={e => {
+        if (e.key === 'ArrowDown' && !dropdownOpen) {
+          e.preventDefault();
+          setDropdownOpen(true);
+        }
+      }}
+    >
+      {inlineEditState.inlineEdit ? (
+        <span className="flex items-center gap-1.5">
+          <LanguageIcon className="h-3.5 w-3.5" />
+          <Translate>Live translate</Translate>
+        </span>
+      ) : (
+        <span className={isTablet ? 'uppercase' : ''}>
+          {isTablet ? selectedLanguage?.key : selectedLanguage?.localized_label}
+        </span>
+      )}
+      {dropdownOpen ? (
+        <ChevronUpIcon className="h-3.5 w-3.5" />
+      ) : (
+        <ChevronDownIcon className="h-3.5 w-3.5" />
+      )}
+    </button>
+  );
 
-      <ul
+  return (
+    <BaseDropdown
+      trigger={trigger}
+      className={className}
+      isOpen={dropdownOpen}
+      onToggle={setDropdownOpen}
+      align="right"
+    >
+      <div
         id="language-menu"
-        role="menu"
-        aria-labelledby="language-menu-button"
-        tabIndex={-1}
-        className={`${
-          dropdownOpen
-            ? 'absolute top-full left-0 mt-1 min-w-max bg-white border border-gray-200 rounded-md shadow-lg z-50'
-            : 'absolute left-[-9999px] top-0 w-0 h-0 overflow-hidden'
-        }`}
-        aria-hidden={!dropdownOpen}
+        role="none"
+        className="py-1"
         onKeyDown={e => {
           if (e.key === 'Escape') {
             e.stopPropagation();
@@ -160,12 +140,12 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({ className = 
           const roundedClasses = getRoundedClasses(isFirst, isLast);
 
           return (
-            <li key={language._id as string} role="none">
+            <li key={String(language._id ?? language.key)} role="none">
               <a
                 href={url}
                 role="menuitem"
-                className={`block px-4 py-2 text-sm transition-colors duration-200 hover:bg-gray-100 ${roundedClasses} ${
-                  locale === language.key ? 'bg-primary-50 text-primary-600' : 'text-gray-700'
+                className={`header-bar-panel-item block px-3 py-2 text-xs font-medium transition-colors ${roundedClasses} ${
+                  locale === language.key ? 'header-bar-panel-item-active' : ''
                 }`}
                 tabIndex={dropdownOpen ? 0 : -1}
               >
@@ -174,26 +154,24 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({ className = 
             </li>
           );
         })}
-        <NeedAuthorization roles={['admin', 'editor']}>
+        <NeedAuthorization roles={['admin']}>
           <li role="none">
             <button
               role="menuitem"
-              className={`w-full flex items-center gap-2 px-4 py-2 text-sm text-left transition-colors duration-200 
-                hover:bg-gray-100 rounded-b-md ${
-                  inlineEditState.inlineEdit
-                    ? 'bg-green-50 text-green-700 hover:bg-green-100'
-                    : 'bg-yellow-50 text-yellow-700 hover:bg-yellow-100'
-                }`}
+              className={[
+                'header-bar-panel-item flex w-full items-center gap-2 rounded-b-md px-3 py-2 text-left text-xs font-medium transition-colors',
+                inlineEditState.inlineEdit ? 'header-bar-panel-item-active' : '',
+              ].join(' ')}
               type="button"
               onClick={handleLiveTranslateToggle}
               tabIndex={dropdownOpen ? 0 : -1}
             >
-              <LanguageIcon className="h-4 w-4" />
+              <LanguageIcon className="h-3.5 w-3.5" />
               <Translate>Live translate</Translate>
             </button>
           </li>
         </NeedAuthorization>
-      </ul>
-    </div>
+      </div>
+    </BaseDropdown>
   );
 };

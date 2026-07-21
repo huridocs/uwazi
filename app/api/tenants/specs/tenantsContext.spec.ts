@@ -1,19 +1,27 @@
 import { Db } from 'mongodb';
-import testingDB from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { config } from 'api/config';
-import { tenants } from '../tenantContext';
-import { tenantsModel } from '../tenantsModel';
+import testingDB from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { config } from '#api/config.js';
+import { tenants } from '../tenantContext.js';
+import { tenantsModel } from '../tenantsModel.js';
 
 describe('tenantsContext', () => {
   describe('add', () => {
     it('should add defaults to tenant added', async () => {
-      tenants.add({ name: 'test-tenant', dbName: 'test-tenant-db' });
+      tenants.add({
+        name: 'test-tenant',
+        dbName: 'test-tenant-db',
+        featureFlags: { themeCustomization: true },
+      });
       await tenants.run(async () => {
         expect(tenants.current()).toMatchObject({
           ...config.defaultTenant,
           name: 'test-tenant',
           dbName: 'test-tenant-db',
+          featureFlags: {
+            ...config.defaultTenant.featureFlags,
+            themeCustomization: true,
+          },
         });
       }, 'test-tenant');
     });

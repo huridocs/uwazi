@@ -1,3 +1,4 @@
-import './LogEntityCreatedListener';
-import './DenormalizeEntityUpdatedListener';
-import './ProcessRelationshipAfterEntityUpdatedListener';
+import './DenormalizeEntityUpdatedListener.js';
+import './ProcessRelationshipAfterEntityUpdatedListener.js';
+import '#api/pages.v2/infrastructure/listeners/AddLanguagePagesListener.js';
+import '#api/pages.v2/infrastructure/listeners/DeleteLanguagePagesListener.js';

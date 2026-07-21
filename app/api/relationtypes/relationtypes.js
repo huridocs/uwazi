@@ -1,11 +1,11 @@
-import translations from 'api/i18n/translations';
-import relationships from 'api/relationships/relationships';
-import templates from 'api/core/v1_layer/templates';
-import { createError } from 'api/utils';
-import { ContextType } from 'shared/translationSchema';
-import { generateNames, getUpdatedNames, getDeletedProperties } from '../utils/templateUtils';
-import model from './model';
-import * as v2 from './v2_support';
+import translations from '#api/i18n/translations.js';
+import relationships from '#api/relationships/relationships.js';
+import templates from '#api/core/v1_layer/templates/index.js';
+import { createError } from '#api/utils/index.js';
+import { ContextType } from '#shared/translationSchema.js';
+import { generateNames, getUpdatedNames, getDeletedProperties } from '#api/utils/templateUtils.js';
+import model from './model.js';
+import * as v2 from '#api/relationships.v2/relationtypes/v2_support.js';
 
 const checkDuplicated = relationtype =>
   model.get().then(response => {

@@ -1,15 +1,15 @@
-import { EnforcedWithId } from 'api/odm';
-import templatesModel from 'api/core/v1_layer/templates/templatesModel';
-import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
-import { IXExtractorType } from 'shared/types/extractorType';
-import { ModelStatus } from 'shared/types/IXModelSchema';
-import { EntitySchema } from 'shared/types/entityType';
-import { FileType } from 'shared/types/fileType';
-import { propertyIsMultiValued } from 'shared/getIXSuggestionState';
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import { IXModelType } from 'shared/types/IXModelType';
-import { TemplateSchema } from 'shared/types/templateType';
-import ixmodels, { DEFAULT_MAX_SUGGESTIONS_SIZE } from './ixmodels';
+import { EnforcedWithId } from '#api/odm/index.js';
+import templates from '#api/core/v1_layer/templates/templates.js';
+import { ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';
+import { IXExtractorType } from '#shared/types/extractorType.js';
+import { ModelStatus } from '#shared/types/IXModelSchema.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { FileType } from '#shared/types/fileType.js';
+import { propertyIsMultiValued } from '#shared/getIXSuggestionState.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { IXModelType } from '#shared/types/IXModelType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
+import ixmodels, { DEFAULT_MAX_SUGGESTIONS_SIZE } from './ixmodels.js';
 
 type GetTargetPropertyInput = {
   extractor: IXExtractorType;
@@ -37,7 +37,7 @@ type SaveModelProcessOptions = {
 
 export class IXServices {
   static async getTargetProperty({ extractor }: GetTargetPropertyInput) {
-    const template = await templatesModel.getById(extractor.templates[0]);
+    const template = await templates.getById(extractor.templates[0]);
     const property =
       extractor.property === 'title'
         ? template?.commonProperties?.find(p => p.name === extractor.property)
@@ -141,7 +141,7 @@ export class IXServices {
 
   static extractLabeledValueFromFile({ file, targetProperty }: ExtractLabelTextForPDFInput) {
     return (
-      file.extractedMetadata?.find(m => m.name === targetProperty.name)?.selection?.text || null
+      file.propertySelections?.find(m => m.name === targetProperty.name)?.selection?.text || null
     );
   }
 

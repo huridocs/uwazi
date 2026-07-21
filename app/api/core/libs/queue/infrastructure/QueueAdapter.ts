@@ -1,4 +1,4 @@
-import { Params } from '../application/contracts/Dispatchable';
+import { Params } from '../application/contracts/Dispatchable.js';
 
 export interface Job {
   id: string;
@@ -15,13 +15,19 @@ export interface Job {
   };
 }
 
+export type PushJobInput = Omit<Job, 'id' | 'createdAt' | 'retryCount' | 'lockedUntil'> & {
+  lockedUntil?: number;
+};
+
 export interface QueueAdapter {
-  pushJob(job: Omit<Job, 'id' | 'lockedUntil' | 'createdAt' | 'retryCount'>): Promise<string>;
-  pushJobs(jobs: Omit<Job, 'id' | 'lockedUntil' | 'createdAt' | 'retryCount'>[]): Promise<string[]>;
+  pushJob(job: PushJobInput): Promise<string>;
+  pushJobs(jobs: PushJobInput[]): Promise<string[]>;
   pickJob(queueName: string): Promise<Job | null>;
   renewJobLock(job: Job): Promise<void>;
   markJobAsFailed(job: Job): Promise<Job>;
   updateLockWindow(job: Job, newLockWindow: number): Promise<Job>;
   deleteJob(job: Job): Promise<void>;
   deleteByParams(jobName: string, params: Partial<Params>, tenantName: string): Promise<void>;
+  cancelByParams(jobName: string, params: Partial<Params>, tenantName: string): Promise<void>;
+  countByName(jobName: string, tenantName: string): Promise<number>;
 }

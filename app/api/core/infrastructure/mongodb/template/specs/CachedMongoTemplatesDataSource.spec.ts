@@ -1,9 +1,9 @@
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DBFixture } from 'api/utils/testing_db';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { CachedMongoTemplatesDataSource } from '../CachedMongoTemplatesDataSource';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { CachedMongoTemplatesDataSource } from '../CachedMongoTemplatesDataSource.js';
 
 const factory = getFixturesFactory();
 
@@ -15,22 +15,36 @@ const fixtures: DBFixture = {
   templates: [template1, template2, defaultTemplate],
 };
 
-beforeEach(async () => {
-  await testingEnvironment.setUp(fixtures);
-});
+import { MongoTemplatesDAO } from '../MongoTemplatesDAO.js';
 
-afterAll(async () => {
-  await testingEnvironment.tearDown();
-});
+const createSut = () => {
+  const transactionManager = TransactionManagerFactory.default();
+  const db = getConnection();
+  const dao = new MongoTemplatesDAO({ db, transactionManager });
+  const sut = new CachedMongoTemplatesDataSource({
+    db,
+    transactionManager,
+    dao,
+  });
+
+  return { sut, transactionManager };
+};
 
 describe('CachedMongoTemplatesDataSource', () => {
+  beforeEach(async () => {
+    await testingEnvironment.setUp(fixtures);
+  });
+
+  afterAll(async () => {
+    await testingEnvironment.tearDown();
+  });
+
   describe('getById()', () => {
     it('should cache the result on first call and return same instance on second call', async () => {
-      const transactionManager = TransactionManagerFactory.default();
-      const dataSource = new CachedMongoTemplatesDataSource(getConnection(), transactionManager);
+      const { sut } = createSut();
 
-      const result1 = await dataSource.getById(template1._id.toString());
-      const result2 = await dataSource.getById(template1._id.toString());
+      const result1 = await sut.getById(template1._id.toString());
+      const result2 = await sut.getById(template1._id.toString());
 
       expect(result1).toBe(result2);
       expect(result1.isOk()).toBe(true);
@@ -38,11 +52,10 @@ describe('CachedMongoTemplatesDataSource', () => {
     });
 
     it('should cache different templates separately', async () => {
-      const transactionManager = TransactionManagerFactory.default();
-      const dataSource = new CachedMongoTemplatesDataSource(getConnection(), transactionManager);
+      const { sut } = createSut();
 
-      const result1 = await dataSource.getById(template1._id.toString());
-      const result2 = await dataSource.getById(template2._id.toString());
+      const result1 = await sut.getById(template1._id.toString());
+      const result2 = await sut.getById(template2._id.toString());
 
       expect(result1).not.toBe(result2);
       expect(result1.isOk()).toBe(true);
@@ -53,16 +66,15 @@ describe('CachedMongoTemplatesDataSource', () => {
     });
 
     it('should clear cache after transaction commit', async () => {
-      const transactionManager = TransactionManagerFactory.default();
-      const dataSource = new CachedMongoTemplatesDataSource(getConnection(), transactionManager);
+      const { sut, transactionManager } = createSut();
 
-      const result1 = await dataSource.getById(template1._id.toString());
+      const result1 = await sut.getById(template1._id.toString());
 
       await transactionManager.run(async () => {
         await Promise.resolve();
       });
 
-      const result2 = await dataSource.getById(template1._id.toString());
+      const result2 = await sut.getById(template1._id.toString());
 
       expect(result1).not.toBe(result2);
       expect(result1.isOk()).toBe(true);
@@ -73,15 +85,14 @@ describe('CachedMongoTemplatesDataSource', () => {
     });
 
     it('should not cache errors for non-existent templates', async () => {
-      const transactionManager = TransactionManagerFactory.default();
-      const dataSource = new CachedMongoTemplatesDataSource(getConnection(), transactionManager);
+      const { sut } = createSut();
 
       const nonExistentId = factory.id('nonexistent').toString();
 
-      const result1 = await dataSource.getById(nonExistentId);
+      const result1 = await sut.getById(nonExistentId);
       expect(result1.isError()).toBe(true);
 
-      const result2 = await dataSource.getById(nonExistentId);
+      const result2 = await sut.getById(nonExistentId);
       expect(result2.isError()).toBe(true);
 
       expect(result1).not.toBe(result2);
@@ -90,11 +101,10 @@ describe('CachedMongoTemplatesDataSource', () => {
 
   describe('getDefaultTemplate()', () => {
     it('should cache default template on first call', async () => {
-      const transactionManager = TransactionManagerFactory.default();
-      const dataSource = new CachedMongoTemplatesDataSource(getConnection(), transactionManager);
+      const { sut } = createSut();
 
-      const result1 = await dataSource.getDefaultTemplate();
-      const result2 = await dataSource.getDefaultTemplate();
+      const result1 = await sut.getDefaultTemplate();
+      const result2 = await sut.getDefaultTemplate();
 
       expect(result1).toBe(result2);
       expect(result1.isOk()).toBe(true);
@@ -102,16 +112,15 @@ describe('CachedMongoTemplatesDataSource', () => {
     });
 
     it('should clear default template cache after transaction commit', async () => {
-      const transactionManager = TransactionManagerFactory.default();
-      const dataSource = new CachedMongoTemplatesDataSource(getConnection(), transactionManager);
+      const { sut, transactionManager } = createSut();
 
-      const result1 = await dataSource.getDefaultTemplate();
+      const result1 = await sut.getDefaultTemplate();
 
       await transactionManager.run(async () => {
         await Promise.resolve();
       });
 
-      const result2 = await dataSource.getDefaultTemplate();
+      const result2 = await sut.getDefaultTemplate();
 
       expect(result1).not.toBe(result2);
       expect(result1.isOk()).toBe(true);
@@ -122,11 +131,10 @@ describe('CachedMongoTemplatesDataSource', () => {
     });
 
     it('should cache default template separately from regular templates', async () => {
-      const transactionManager = TransactionManagerFactory.default();
-      const dataSource = new CachedMongoTemplatesDataSource(getConnection(), transactionManager);
+      const { sut } = createSut();
 
-      const defaultResult = await dataSource.getDefaultTemplate();
-      const byIdResult = await dataSource.getById(defaultTemplate._id.toString());
+      const defaultResult = await sut.getDefaultTemplate();
+      const byIdResult = await sut.getById(defaultTemplate._id.toString());
 
       expect(defaultResult.isOk()).toBe(true);
       expect(byIdResult.isOk()).toBe(true);
@@ -139,13 +147,12 @@ describe('CachedMongoTemplatesDataSource', () => {
         templates: [template1, template2],
       });
 
-      const transactionManager = TransactionManagerFactory.default();
-      const dataSource = new CachedMongoTemplatesDataSource(getConnection(), transactionManager);
+      const { sut } = createSut();
 
-      const result1 = await dataSource.getDefaultTemplate();
+      const result1 = await sut.getDefaultTemplate();
       expect(result1.isError()).toBe(true);
 
-      const result2 = await dataSource.getDefaultTemplate();
+      const result2 = await sut.getDefaultTemplate();
       expect(result2.isError()).toBe(true);
 
       expect(result1).not.toBe(result2);

@@ -1,8 +1,8 @@
 import { Db } from 'mongodb';
-import { MongoTransactionManager } from '../common/MongoTransactionManager';
-import { MongoThesauriDataSourceV2 } from './MongoThesauriDataSourceV2';
+import { MongoTransactionManager } from '../common/MongoTransactionManager.js';
+import { MongoThesauriDataSource } from './MongoThesauriDataSource.js';
 
-export class CachedMongoThesauriDataSource extends MongoThesauriDataSourceV2 {
+export class CachedMongoThesauriDataSource extends MongoThesauriDataSource {
   private cache = new Map<string, any>();
 
   constructor(db: Db, transactionManager: MongoTransactionManager) {

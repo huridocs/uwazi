@@ -1,27 +1,27 @@
-import { files } from 'api/files';
-import { uniqBy } from 'lodash';
-import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
-import { EntitySchema } from 'shared/types/entityType';
-import { FileType } from 'shared/types/fileType';
+import uniqBy from 'lodash/uniqBy.js';
+import { files } from '#api/files/index.js';
+import { PropertySelectionSchema } from '#shared/types/commonTypes.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { FileType } from '#shared/types/fileType.js';
 
-interface EntityWithExtractedMetadata extends EntitySchema {
-  __extractedMetadata?: { fileID: string; selections: ExtractedMetadataSchema[] };
+interface EntityWithPropertySelections extends EntitySchema {
+  propertySelections?: { fileID: string; selections: PropertySelectionSchema[] };
 }
 
 const updateSelections = (
-  newSelections: ExtractedMetadataSchema[],
-  storedSelections: ExtractedMetadataSchema[]
+  newSelections: PropertySelectionSchema[],
+  storedSelections: PropertySelectionSchema[]
 ) => {
   const merged = newSelections.concat(storedSelections);
   const selections = uniqBy(merged, 'name');
   return selections;
 };
 
-const prepareSelections = (entity: EntityWithExtractedMetadata, file: FileType) => {
-  let selections = entity.__extractedMetadata?.selections || [];
+const prepareSelections = (entity: EntityWithPropertySelections, file: FileType) => {
+  let selections = entity.propertySelections?.selections || [];
 
-  if (file.extractedMetadata) {
-    selections = updateSelections(selections, file.extractedMetadata).filter(
+  if (file.propertySelections) {
+    selections = updateSelections(selections, file.propertySelections).filter(
       selection => !selection.deleteSelection
     );
   }
@@ -30,11 +30,11 @@ const prepareSelections = (entity: EntityWithExtractedMetadata, file: FileType) 
 };
 
 const selectionsHaveChanged = (
-  fileExtractedMetadata: ExtractedMetadataSchema[],
-  selections: ExtractedMetadataSchema[]
+  filePropertySelections: PropertySelectionSchema[],
+  selections: PropertySelectionSchema[]
 ) => {
-  if (fileExtractedMetadata.length === selections.length) {
-    const hasChanges = fileExtractedMetadata.filter(
+  if (filePropertySelections.length === selections.length) {
+    const hasChanges = filePropertySelections.filter(
       (extractedData, index) => extractedData.selection?.text !== selections[index].selection?.text
     );
     return hasChanges.length > 0;
@@ -42,24 +42,24 @@ const selectionsHaveChanged = (
   return true;
 };
 
-const saveSelections = async (entity: EntityWithExtractedMetadata) => {
+const savePropertySelections = async (entity: EntityWithPropertySelections) => {
   let mainDocument: FileType[] = [];
 
-  if (entity.__extractedMetadata?.fileID) {
+  if (entity.propertySelections?.fileID) {
     mainDocument = await files.get({
-      _id: entity.__extractedMetadata.fileID,
+      _id: entity.propertySelections.fileID,
     });
   }
 
   if (mainDocument.length > 0) {
     const selections = prepareSelections(entity, mainDocument[0]);
 
-    if (selectionsHaveChanged(mainDocument[0].extractedMetadata || [], selections)) {
-      return files.save({ _id: mainDocument[0]._id, extractedMetadata: selections });
+    if (selectionsHaveChanged(mainDocument[0].propertySelections || [], selections)) {
+      return files.save({ _id: mainDocument[0]._id, propertySelections: selections });
     }
   }
 
   return null;
 };
 
-export { saveSelections };
+export { savePropertySelections };

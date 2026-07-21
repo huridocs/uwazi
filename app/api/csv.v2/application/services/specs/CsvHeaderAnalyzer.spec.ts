@@ -1,9 +1,9 @@
-import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';
-import { TextProperty } from 'api/core/domain/template/TextProperty';
-import { NumericProperty } from 'api/core/domain/template/NumericProperty';
-import { SelectProperty } from 'api/core/domain/template/select/SelectProperty';
-import { CsvHeaderAnalyzer } from '../CsvHeaderAnalyzer';
-import { CsvHeaderAnalyzerError } from '../CsvHeaderAnalyzerError';
+import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder.js';
+import { TextProperty } from '#api/core/domain/template/TextProperty.js';
+import { NumericProperty } from '#api/core/domain/template/NumericProperty.js';
+import { SelectProperty } from '#api/core/domain/template/select/SelectProperty.js';
+import { CsvHeaderAnalyzer } from '../CsvHeaderAnalyzer.js';
+import { CsvHeaderAnalyzerError } from '../CsvHeaderAnalyzerError.js';
 
 const TEMPLATE_ID = 'template-id';
 const AVAILABLE_LANGUAGES = ['en', 'es'];
@@ -217,6 +217,30 @@ describe('CsvHeaderAnalyzer', () => {
               expect.objectContaining({
                 reason: 'UnknownProperty',
                 property: 'unknown_field',
+              }),
+            ])
+          );
+        }
+      );
+    });
+
+    it('should throw when files column uses language suffixes', () => {
+      const template = buildTemplate();
+      const headers = ['files__en', 'files__es'];
+
+      expectAnalyzerError(
+        () =>
+          CsvHeaderAnalyzer.analyze(headers, template, {
+            availableLanguages: AVAILABLE_LANGUAGES,
+            defaultLanguage: DEFAULT_LANGUAGE,
+            newNameGeneration: false,
+          }),
+        error => {
+          expect(error.issues).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                reason: 'UnknownProperty',
+                property: 'files',
               }),
             ])
           );

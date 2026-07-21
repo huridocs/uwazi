@@ -3,25 +3,22 @@
 import * as fs from 'fs/promises';
 import path from 'path';
 
-import { tenants } from 'api/tenants/tenantContext';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
-import { PathManager } from 'api/core/infrastructure/files/PathManager';
-import { CsvImportDomain, CsvImportStatus } from 'api/csv.v2/domain/CsvImport';
-import { createTestingZip } from 'api/csv/specs/helpers';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { CsvExtractUploadedZipJob } from 'api/csv.v2/application/jobs/CsvExtractUploadedZipJob';
-import { CsvImportFileNormalizer } from 'api/csv.v2/application/services/CsvImportFileNormalizer';
-import { CsvImportRowsStager } from 'api/csv.v2/application/services/CsvImportRowsStager';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { CsvPreflightJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler';
-import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
-import { CsvExtractUploadedZipJobHandler } from '../CsvExtractUploadedZipJobHandler';
-import { CSVImportEntitiesFactories } from '../../factories/CSVImportEntitiesFactories';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
+import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
+import { createTestingZip } from '#api/csv.v2/specs/helpers/createTestingZip.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
+import { CsvPreflightJobHandler } from '../CsvPreflightJobHandler.js';
+import { CsvCleanupImportFilesJobHandler } from '../CsvCleanupImportFilesJobHandler.js';
+import { CsvImportDomain, CsvImportStatus } from '#api/csv.v2/domain/CsvImport.js';
+import { CsvExtractUploadedZipJobHandler } from '../CsvExtractUploadedZipJobHandler.js';
+import { CsvExtractUploadedZipJobFactory } from '../../factories/CsvExtractUploadedZipJobFactory.js';
 
 describe('CsvExtractUploadedZipJob (integration)', () => {
   const createdImportIds: string[] = [];
@@ -53,26 +50,16 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
 
   const setUp = () => {
     const transactionManager = TransactionManagerFactory.default();
-    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
-    const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
     const tenant = tenants.current();
     const pathManager = new PathManager({ tenant });
     const fileStorage = new FileSystemStorage(pathManager);
-    const fileNormalizer = new CsvImportFileNormalizer({
-      fileStorage,
-      filesIO: new FileContentsIO(),
-    });
-    const rowsStager = new CsvImportRowsStager({ fileStorage });
     const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
       dispatch: jest.fn().mockResolvedValue(undefined),
       dispatchMany: jest.fn().mockResolvedValue(undefined),
     }) as jest.Mocked<JobsDispatcher>;
-    const useCase = new CsvExtractUploadedZipJob({
-      csvImportsDS,
-      fileNormalizer,
-      rowsStager,
-      rowsDS,
+    const { useCase, csvImportsDS } = CsvExtractUploadedZipJobFactory.build({
       transactionManager,
+      fileStorage,
       jobsDispatcher,
     });
     const sockets = TestUtils.mockClass<V1WebSocketsWrapper>({
@@ -188,7 +175,6 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     const { csvImportsDS, fileStorage, job, jobsDispatcher } = setUp();
     const f = getFixturesFactory();
     const id = f.idString('zip-error-last-retry');
-    const userId = f.idString('uploader-error');
     const destination = `csv-imports/${id}`;
     const zipFilename = 'upload.zip';
 
@@ -208,7 +194,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
         id,
         templateId: 't1',
         file: { originalName: 'upload.zip', mimeType: 'application/zip', size: 10 },
-        createdBy: userId,
+        createdBy: f.idString('uploader-error'),
       }),
       `${destination}/${zipFilename}`
     );
@@ -229,6 +215,10 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
         at: expect.any(Number),
       })
     );
-    expect(jobsDispatcher.dispatch).not.toHaveBeenCalled();
+    expect(jobsDispatcher.dispatch).toHaveBeenCalledWith(CsvCleanupImportFilesJobHandler, {
+      tenantName: tenants.current().name,
+      userId: expect.any(String),
+      importId: id,
+    });
   });
 });

@@ -1,19 +1,19 @@
 import { ObjectId } from 'mongodb';
 
-import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
-import { Property } from 'api/core/domain/template/Property';
-import { RelationshipProperty } from 'api/core/domain/template/RelationshipProperty';
-import { RelationshipDBOType } from 'api/relationships.v2/database/schemas/relationshipTypes';
-import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
+import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
+import { Property } from '#api/core/domain/template/Property.js';
+import { RelationshipProperty } from '#api/relationships.v2/model/RelationshipProperty.js';
+import { RelationshipDBOType } from '#api/relationships.v2/database/schemas/relationshipTypes.js';
+import { MatchQueryNode } from '#api/relationships.v2/model/MatchQueryNode.js';
 import {
   EntityPointer,
   ReadableEntityPointer,
   ReadableRelationship,
   Relationship,
-} from 'api/relationships.v2/model/Relationship';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { EntityPermissions, Entry } from 'api/authorization.v2/model/EntityPermissions';
-import { PropertyType } from 'api/core/domain/template/PropertyType';
+} from '#api/relationships.v2/model/Relationship.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { EntityPermissions, Entry } from '#api/authorization.v2/model/EntityPermissions.js';
+import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 
 type idMapperFunction = (id: string) => ObjectId;
 

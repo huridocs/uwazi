@@ -1,16 +1,72 @@
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
-import { MongoTemplatesDataSource } from '../mongodb/template/MongoTemplatesDataSource';
-import { CachedMongoTemplatesDataSource } from '../mongodb/template/CachedMongoTemplatesDataSource';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { PostgresTemplatesDataSource } from '#api/core/infrastructure/postgresql/template/PostgresTemplatesDataSource.js';
+import { MongoTemplatesDataSource } from '../mongodb/template/MongoTemplatesDataSource.js';
+import { CachedMongoTemplatesDataSource } from '../mongodb/template/CachedMongoTemplatesDataSource.js';
+import { MongoTemplatesDAO } from '../mongodb/template/MongoTemplatesDAO.js';
+import { PostgresTemplatesDAO } from '#api/core/infrastructure/postgresql/template/PostgresTemplatesDAO.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { TemplatesDAOFactory } from './TemplatesDAOFactory.js';
+
+type Overrides = Partial<
+  Omit<ConstructorParameters<typeof MongoTemplatesDataSource>[0], 'transactionManager'>
+> & {
+  transactionManager?: TransactionManager;
+};
 
 export class TemplatesDataSourceFactory {
-  static default(transactionManager: MongoTransactionManager) {
+  static default(overrides?: Overrides) {
+    const tenant = ExecutionContext.currentTenant;
     const db = getConnection();
-    return new MongoTemplatesDataSource(db, transactionManager);
+    const mongoTM = (overrides?.transactionManager ??
+      ExecutionContext.transactionManager) as MongoTransactionManager;
+    const { transactionManager: _ignored, ...restOverrides } = overrides ?? {};
+
+    if (tenant.featureFlags?.postgresTemplates) {
+      const dao = TemplatesDAOFactory.default() as PostgresTemplatesDAO;
+      return new PostgresTemplatesDataSource({
+        tenantId: tenant.name,
+        mongoDb: db,
+        transactionManager: mongoTM,
+        pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        dao,
+      });
+    }
+
+    const dao = TemplatesDAOFactory.default() as MongoTemplatesDAO;
+    return new MongoTemplatesDataSource({
+      db,
+      transactionManager: mongoTM,
+      dao,
+      ...restOverrides,
+    });
   }
 
-  static cached(transactionManager: MongoTransactionManager) {
+  static cached(overrides?: Overrides) {
+    const tenant = ExecutionContext.currentTenant;
     const db = getConnection();
-    return new CachedMongoTemplatesDataSource(db, transactionManager);
+    const mongoTM = (overrides?.transactionManager ??
+      ExecutionContext.transactionManager) as MongoTransactionManager;
+    const { transactionManager: _ignored, ...restOverrides } = overrides ?? {};
+
+    if (tenant.featureFlags?.postgresTemplates) {
+      const dao = TemplatesDAOFactory.default() as PostgresTemplatesDAO;
+      return new PostgresTemplatesDataSource({
+        tenantId: tenant.name,
+        mongoDb: db,
+        transactionManager: mongoTM,
+        pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        dao,
+      });
+    }
+
+    const dao = TemplatesDAOFactory.default() as MongoTemplatesDAO;
+    return new CachedMongoTemplatesDataSource({
+      db,
+      transactionManager: mongoTM,
+      dao,
+      ...restOverrides,
+    });
   }
 }

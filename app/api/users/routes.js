@@ -1,50 +1,11 @@
-import { parseQuery, validation } from 'api/utils';
-import { userSchema } from 'shared/types/userSchema';
-import { needsAuthorization, validatePasswordMiddleWare } from '../auth';
-import users from './users';
-import { PUBLIC_USER_ID } from './publicUser';
+import { validation } from '#api/utils/index.js';
+import { needsAuthorization, validatePasswordMiddleWare } from '../auth/index.js';
+import users from './users.js';
+import { tenants } from '#api/tenants/index.js';
 
-const getDomain = req => `${req.protocol}://${req.get('host')}`;
+const getDomain = req => `${req.protocol}://${tenants.current().domain}`;
+
 export default app => {
-  app.post(
-    '/api/users',
-    needsAuthorization(['admin', 'editor', 'collaborator']),
-    validatePasswordMiddleWare,
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        body: userSchema,
-      },
-      required: ['body'],
-    }),
-
-    (req, res, next) => {
-      users
-        .save(req.body, req.user, getDomain(req))
-        .then(response => res.json(response))
-        .catch(next);
-    }
-  );
-
-  app.post(
-    '/api/users/new',
-    needsAuthorization(),
-    validatePasswordMiddleWare,
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        body: userSchema,
-      },
-      required: ['body'],
-    }),
-    (req, res, next) => {
-      users
-        .newUser(req.body, getDomain(req))
-        .then(response => res.json(response))
-        .catch(next);
-    }
-  );
-
   app.post(
     '/api/users/unlock',
     needsAuthorization(),
@@ -137,47 +98,6 @@ export default app => {
     (req, res, next) => {
       users
         .resetPassword(req.body)
-        .then(response => res.json(response))
-        .catch(next);
-    }
-  );
-
-  app.get('/api/users', needsAuthorization(), (_req, res, next) => {
-    users
-      .get({}, '+groups +failedLogins +accountLocked')
-      .then(response => {
-        const filteredUsers = response.filter(
-          user => user._id.toString() !== PUBLIC_USER_ID.toString()
-        );
-        res.json(filteredUsers);
-      })
-      .catch(next);
-  });
-
-  app.delete(
-    '/api/users',
-    needsAuthorization(),
-    parseQuery,
-    validatePasswordMiddleWare,
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        query: {
-          type: 'object',
-          additionalProperties: false,
-          required: ['ids'],
-          properties: {
-            ids: { oneOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }] },
-          },
-        },
-      },
-      required: ['query'],
-    }),
-    (req, res, next) => {
-      const { ids } = req.query;
-      const idsArray = Array.isArray(ids) ? ids : [ids];
-      users
-        .delete(idsArray, req.user)
         .then(response => res.json(response))
         .catch(next);
     }

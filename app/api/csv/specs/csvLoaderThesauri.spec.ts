@@ -1,17 +1,16 @@
-import translations from 'api/i18n';
-import settings from 'api/settings';
-import thesauri from 'api/thesauri';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-
-import { IndexedContextValues } from 'api/i18n/translations';
-import { WithId } from 'api/odm';
 import { ObjectId } from 'mongodb';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { CSVLoader } from '../csvLoader';
-import { fixtures, thesauri1Id } from './fixtures';
-import { mockCsvFileReadStream } from './helpers';
 
-const getTranslation = async (lang: string, id: ObjectId) =>
+import translations from '#api/i18n/index.js';
+import { IndexedContextValues } from '#api/i18n/translations.js';
+import settings from '#api/settings/index.js';
+import thesauri from '#api/core/v1_layer/thesauri/index.js';
+import { saveThesauri } from '#api/core/v1_layer/thesauri/specs/testHelpers.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { CSVLoader } from '../csvLoader.js';
+import { fixtures, thesauri1Id } from './fixtures.js';
+import { mockCsvFileReadStream } from './helpers.js';
+
+const getTranslation = async (lang: string, id: string | ObjectId) =>
   ((await translations.get()).find(t => t.locale === lang)?.contexts || []).find(
     c => c?.id === id?.toString()
   )?.values || ({} as IndexedContextValues);
@@ -19,10 +18,13 @@ const getTranslation = async (lang: string, id: ObjectId) =>
 describe('csvLoader thesauri', () => {
   const loader = new CSVLoader();
 
+  const loadThesauri = async (...args: Parameters<CSVLoader['loadThesauri']>) =>
+    testingEnvironment.runWithContext(async () => loader.loadThesauri(...args));
+
   afterAll(async () => testingEnvironment.tearDown());
 
-  let thesauriId: ObjectId;
-  let result: WithId<ThesaurusSchema>;
+  let thesauriId: string;
+  let result: any;
   describe('load thesauri', () => {
     beforeAll(async () => {
       await testingEnvironment.setUp(fixtures);
@@ -33,7 +35,7 @@ describe('csvLoader thesauri', () => {
       await settings.addLanguage({ key: 'fr', label: 'french' });
       await translations.addLanguage('fr');
 
-      const { _id } = await thesauri.save({
+      const { _id } = await saveThesauri({
         name: 'thesauri2Id',
         values: [{ label: 'existing value' }],
       });
@@ -47,13 +49,15 @@ describe('csvLoader thesauri', () => {
 
       thesauriId = _id;
       const mockedFile = mockCsvFileReadStream(csv);
-      result = await loader.loadThesauri('mockedFileFromString', _id, { language: 'en' });
+      result = await loadThesauri('mockedFileFromString', _id, { language: 'en' });
       mockedFile.mockRestore();
     });
 
     it('should set thesauri values using the language passed and ignore blank values', async () => {
-      const thesaurus = await thesauri.getById(thesauriId);
-      expect(thesaurus!.values!.map(v => v.label)).toEqual([
+      const thesaurus = await testingEnvironment.runWithContext(async () =>
+        thesauri.getById(thesauriId)
+      );
+      expect(thesaurus!.values!.map((v: { label: string }) => v.label)).toEqual([
         'existing value',
         'value 1',
         'value 2',
@@ -62,8 +66,13 @@ describe('csvLoader thesauri', () => {
     });
 
     it('should return the updated thesaurus', async () => {
-      const thesaurus = await thesauri.getById(thesauriId);
-      expect(thesaurus).toEqual(result);
+      const thesaurus = await testingEnvironment.runWithContext(async () =>
+        thesauri.getById(thesauriId)
+      );
+      expect(thesaurus.name).toEqual(result.name);
+      expect(thesaurus.values!.map((v: { label: string }) => v.label)).toEqual(
+        result.values.map((v: { label: string }) => v.label)
+      );
     });
 
     it('should translate thesauri values to english', async () => {
@@ -110,14 +119,14 @@ describe('csvLoader thesauri', () => {
                    new value, nuevo valor, nouvelle valeur`;
 
       const mockedFile = mockCsvFileReadStream(csv);
-      const updated = await loader.loadThesauri('mockedFileFromString', thesauri1Id, {
+      const updated = await loadThesauri('mockedFileFromString', thesauri1Id, {
         language: 'en',
       });
-      expect(updated!.values!.map(v => v.label)).toEqual([
+      expect(updated!.values!.map((v: { label: string }) => v.label)).toEqual([
         'value1',
         'value2',
         'Value3',
-        ' value4 ',
+        'value4',
         'new value',
       ]);
       mockedFile.mockRestore();
@@ -131,20 +140,18 @@ describe('csvLoader thesauri', () => {
                    "normal value", "valor normal", "valeur normale"`;
 
       const mockedFile = mockCsvFileReadStream(csv);
-      const updated = await loader.loadThesauri('mockedFileFromString', thesauri1Id, {
+      const updated = await loadThesauri('mockedFileFromString', thesauri1Id, {
         language: 'en',
       });
 
-      // Should sanitize spaces and normalize empty patterns
-      expect(updated!.values!.map(v => v.label)).toEqual([
+      expect(updated!.values!.map((v: { label: string }) => v.label)).toEqual([
         'value1',
         'value2',
         'Value3',
-        ' value4 ',
+        'value4',
         'new value',
-        'value with spaces', // trimmed
-        'normal value', // normal value preserved
-        // N/A and null should be normalized to empty strings and not added
+        'value with spaces',
+        'normal value',
       ]);
       mockedFile.mockRestore();
     });
@@ -152,7 +159,7 @@ describe('csvLoader thesauri', () => {
     it('should use default language for internal values', async () => {
       await settings.setDefaultLanguage('es');
 
-      const { _id } = await thesauri.save({
+      const { _id } = await saveThesauri({
         name: 'colorsThesaurus',
         values: [{ label: 'existing color' }],
       });
@@ -164,11 +171,11 @@ describe('csvLoader thesauri', () => {
 
       const mockedFile = mockCsvFileReadStream(csv);
 
-      result = await loader.loadThesauri('mockedFileFromString', _id, {
+      result = await loadThesauri('mockedFileFromString', _id, {
         language: 'en',
       });
 
-      expect(result!.values!.map(v => v.label)).toEqual([
+      expect(result!.values!.map((v: { label: string }) => v.label)).toEqual([
         'existing color',
         'Blanco',
         'Negro',
@@ -201,7 +208,7 @@ describe('csvLoader thesauri', () => {
     it('should fall back to request language when default language is not in CSV', async () => {
       await settings.setDefaultLanguage('fr');
 
-      const { _id } = await thesauri.save({
+      const { _id } = await saveThesauri({
         name: 'fallbackThesaurus2',
         values: [{ label: 'existing value' }],
       });
@@ -213,11 +220,11 @@ describe('csvLoader thesauri', () => {
 
       const mockedFile = mockCsvFileReadStream(csv);
 
-      result = await loader.loadThesauri('mockedFileFromString', _id, {
+      result = await loadThesauri('mockedFileFromString', _id, {
         language: 'en',
       });
 
-      expect(result!.values!.map(v => v.label)).toEqual([
+      expect(result!.values!.map((v: { label: string }) => v.label)).toEqual([
         'existing value',
         'White',
         'Black',
@@ -232,7 +239,7 @@ describe('csvLoader thesauri', () => {
     it('should fall back to first available column when neither default nor request language is in CSV', async () => {
       await settings.setDefaultLanguage('fr');
 
-      const { _id } = await thesauri.save({
+      const { _id } = await saveThesauri({
         name: 'fallbackThesaurus3',
         values: [{ label: 'existing value' }],
       });
@@ -244,11 +251,11 @@ describe('csvLoader thesauri', () => {
 
       const mockedFile = mockCsvFileReadStream(csv);
 
-      result = await loader.loadThesauri('mockedFileFromString', _id, {
+      result = await loadThesauri('mockedFileFromString', _id, {
         language: 'en',
       });
 
-      expect(result!.values!.map(v => v.label)).toEqual([
+      expect(result!.values!.map((v: { label: string }) => v.label)).toEqual([
         'existing value',
         'Blanco',
         'Negro',
@@ -262,7 +269,7 @@ describe('csvLoader thesauri', () => {
 
     describe('nesting', () => {
       it('should allow nesting thesauri by prefixing the children', async () => {
-        const { _id } = await thesauri.save({ name: 'nestedThesauri' });
+        const { _id } = await saveThesauri({ name: 'nestedThesauri' });
 
         const csv = `English, Spanish, French
         value1, valor1, valeur1
@@ -271,7 +278,7 @@ describe('csvLoader thesauri', () => {
         value4, valor4, valeur4`;
 
         const mockedFile = mockCsvFileReadStream(csv);
-        const updated = await loader.loadThesauri('mockedFileFromString', _id, {
+        const updated = await loadThesauri('mockedFileFromString', _id, {
           language: 'en',
         });
 
@@ -315,14 +322,14 @@ describe('csvLoader thesauri', () => {
       });
 
       it('should sanitize nested thesaurus values (parent and child values)', async () => {
-        const { _id } = await thesauri.save({ name: 'sanitizedNestedThesauri' });
+        const { _id } = await saveThesauri({ name: 'sanitizedNestedThesauri' });
 
         const csv = `English, Spanish, French
           parent with spaces  ,   padre con espacios  ,   parent avec espaces  
         -   child with spaces  , -   hijo con espacios  , -   enfant avec espaces  `;
 
         const mockedFile = mockCsvFileReadStream(csv);
-        const updated = await loader.loadThesauri('mockedFileFromString', _id, {
+        const updated = await loadThesauri('mockedFileFromString', _id, {
           language: 'en',
         });
 
@@ -357,7 +364,7 @@ describe('csvLoader thesauri', () => {
       });
 
       it('should allow updating an existing thesauri', async () => {
-        const { _id } = await thesauri.save({
+        const { _id } = await saveThesauri({
           name: 'existingNestedThesauri',
           values: [
             {
@@ -374,16 +381,18 @@ describe('csvLoader thesauri', () => {
           ],
         });
 
-        await translations.updateEntries(_id.toString(), {
-          es: {
-            value11: 'valor11',
-            value2: 'valor2',
-          },
-          fr: {
-            value11: 'valeur11',
-            value2: 'valeur2',
-          },
-        });
+        await testingEnvironment.runWithContext(async () =>
+          translations.updateEntries(_id.toString(), {
+            es: {
+              value11: 'valor11',
+              value2: 'valor2',
+            },
+            fr: {
+              value11: 'valeur11',
+              value2: 'valeur2',
+            },
+          })
+        );
 
         const csv = `English, Spanish, French
         value1, different translation for value1, valeur1
@@ -391,7 +400,7 @@ describe('csvLoader thesauri', () => {
         value3, valor3, valeur3`;
 
         const mockedFile = mockCsvFileReadStream(csv);
-        const updated = await loader.loadThesauri('mockedFileFromString', _id, {
+        const updated = await loadThesauri('mockedFileFromString', _id, {
           language: 'en',
         });
 
@@ -439,7 +448,7 @@ describe('csvLoader thesauri', () => {
       });
 
       it('should throw error if csv has nesting inconsistencies across langs', async () => {
-        const { _id } = await thesauri.save({ name: 'nestedThesauri2' });
+        const { _id } = await saveThesauri({ name: 'nestedThesauri2' });
 
         const csv = `English, Spanish, French
         value1, valor1, valeur1
@@ -449,7 +458,7 @@ describe('csvLoader thesauri', () => {
 
         const mockedFile = mockCsvFileReadStream(csv);
         try {
-          await loader.loadThesauri('mockedFileFromString', _id, {
+          await loadThesauri('mockedFileFromString', _id, {
             language: 'en',
           });
           fail('should throw error');
@@ -460,14 +469,14 @@ describe('csvLoader thesauri', () => {
       });
 
       it('should throw error if csv has nesting without parent', async () => {
-        const { _id } = await thesauri.save({ name: 'nestedThesauri3' });
+        const { _id } = await saveThesauri({ name: 'nestedThesauri3' });
 
         const csv = `English, Spanish, French
         - value2, - valor2,  -valeur2`;
 
         const mockedFile = mockCsvFileReadStream(csv);
         try {
-          await loader.loadThesauri('mockedFileFromString', _id, {
+          await loadThesauri('mockedFileFromString', _id, {
             language: 'en',
           });
           fail('should throw error');

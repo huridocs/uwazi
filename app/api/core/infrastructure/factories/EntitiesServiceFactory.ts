@@ -1,60 +1,71 @@
-import { EntitiesService, EntitiesServiceDeps } from 'api/core/application/EntitiesService';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { tenants } from 'api/tenants';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { search } from 'api/search';
-import { EventEmitterFactory } from 'api/core/libs/eventEmitter/EventEmitterFactory';
-import { TransactionManagerFactory } from './TransactionManagerFactory';
-import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager';
-import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
-import { SettingsDataSourceFactory } from './SettingsDataSourceFactory';
-import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory';
+import { EntitiesService, EntitiesServiceDeps } from '#api/core/application/EntitiesService.js';
+import { tenants } from '#api/tenants/index.js';
+import { applicationEventsBus, EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { TransactionManagerFactory } from './TransactionManagerFactory.js';
+import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
+import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
+import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker.js';
+import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
+import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
+import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
+import { EntityAccessPolicyDataSourceFactory } from './EntityAccessPolicyDataSourceFactory.js';
 
 class EntitiesServiceFactory {
   static default(deps?: Partial<EntitiesServiceDeps>) {
-    const transactionManager = deps?.transactionManager ?? TransactionManagerFactory.default();
+    const transactionManager = deps?.transactionManager ?? ExecutionContext.transactionManager;
 
-    const dispatcher =
-      deps?.dispatcher ?? DefaultDispatcher(tenants.current().name, transactionManager);
-
-    const entitiesDS =
-      deps?.entitiesDS ??
-      EntitiesDataSourceFactory.default(transactionManager as MongoTransactionManager);
-
-    const entityPermissionChecker =
-      deps?.entityPermissionChecker ??
-      new MongoEntityPermissionChecker(
-        getConnection(),
-        transactionManager as MongoTransactionManager
-      );
-
-    const eventBus = deps?.eventBus ?? applicationEventsBus;
-
-    const searchInstance = deps?.search ?? search;
-
-    const settingsDS =
-      deps?.settingsDS ??
-      SettingsDataSourceFactory.default(transactionManager as MongoTransactionManager);
-
-    const templatesDS =
-      deps?.templatesDS ??
-      TemplatesDataSourceFactory.default(transactionManager as MongoTransactionManager);
-
-    const eventEmitter = deps?.eventEmitter ?? EventEmitterFactory.default();
+    const { eventEmitter, jobsDispatcher } = ExecutionContext;
 
     return new EntitiesService({
       eventEmitter,
-      dispatcher,
-      entitiesDS,
-      entityPermissionChecker,
-      eventBus,
-      search: searchInstance,
-      settingsDS,
-      templatesDS,
+      dispatcher: new DispatcherAdapter(jobsDispatcher),
+      entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
+      entityPermissionChecker: new MongoEntityPermissionChecker(
+        getConnection(),
+        transactionManager as MongoTransactionManager
+      ),
+      eventBus: applicationEventsBus,
+      settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
+      templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
       transactionManager,
+      entityAccessPolicyDS: EntityAccessPolicyDataSourceFactory.default({
+        transactionManager: transactionManager as MongoTransactionManager,
+      }),
+      ...deps,
     });
+  }
+
+  static forTesting(_deps?: Partial<EntitiesServiceDeps>) {
+    const transactionManager = TransactionManagerFactory.default();
+
+    const deps: EntitiesServiceDeps = {
+      eventEmitter: EventEmitterFactory.forTesting(),
+      templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
+      dispatcher: new DispatcherAdapter(
+        DefaultDispatcher(tenants.current().name, transactionManager)
+      ),
+      entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
+      entityPermissionChecker: new MongoEntityPermissionChecker(
+        getConnection(),
+        transactionManager as MongoTransactionManager
+      ),
+      eventBus: TestUtils.mockClass<EventsBus>({
+        clear: jest.fn(),
+        emit: jest.fn(),
+        on: jest.fn(),
+      }),
+      settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
+      transactionManager,
+      entityAccessPolicyDS: EntityAccessPolicyDataSourceFactory.default(),
+      ..._deps,
+    };
+
+    return [new EntitiesService(deps), deps] as const;
   }
 }
 

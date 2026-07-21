@@ -1,38 +1,4 @@
-import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
-import { ObjectId } from 'mongodb';
-import { PermissionSchema } from 'shared/types/permissionType';
-
-type IconDBO = {
-  _id: string | null;
-  label?: string;
-  type: string;
-};
-
-export interface EntityDBO {
-  _id: ObjectId;
-  sharedId: string;
-  language: string; // Todo: should be LanguageISO6391
-  template: ObjectId;
-  title: string;
-  icon?: IconDBO;
-  metadata: Record<string, { value: string | number; label?: string }[]>;
-  obsoleteMetadata: string[];
-  user?: ObjectId;
-  published: boolean;
-  creationDate: number;
-  editDate: number;
-
-  mongoLanguage?: string; // Todo: needs to be mapped and implemented
-  generatedToc?: boolean; // Todo: needs to be mapped and implemented
-  permissions?: PermissionSchema[];
-  __v?: number;
-}
-
-export interface EntityJoinTemplate extends EntityDBO {
-  joinedTemplate: {
-    properties: { name: string; type: string; query: any; denormalizedProperty?: string }[];
-  }[];
-}
+import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 
 export type MultiLanguageEntityDBO = {
   sharedId: string;
@@ -40,9 +6,4 @@ export type MultiLanguageEntityDBO = {
     [language: string]: EntityDBO;
   };
   template: string;
-};
-
-export type EntityTemplateAggregation = {
-  template: TemplateDBO;
-  entities: EntityDBO[];
 };

@@ -1,4 +1,4 @@
-import { Thesaurus } from '../Thesaurus';
+import { Thesaurus } from '../Thesaurus.js';
 
 describe('Thesaurus', () => {
   it('should create a new thesaurus', () => {
@@ -330,22 +330,6 @@ describe('Thesaurus', () => {
         hashedValuesByLabel: expect.any(Object),
         before: expect.any(Object),
       });
-    });
-
-    it('should throw if updated thesaurus values id is missing', () => {
-      const thesaurus = Thesaurus.create({
-        name: 'Countries',
-        values: [{ label: 'USA' }, { label: 'Canada' }],
-      });
-
-      expect(() =>
-        thesaurus.update({
-          values: [
-            { ...thesaurus.values[0], id: 'changed' },
-            { ...thesaurus.values[1], id: 'changed' },
-          ],
-        })
-      ).toThrow();
     });
   });
 });

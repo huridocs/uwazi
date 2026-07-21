@@ -1,4 +1,4 @@
-import { Template } from 'api/core/domain/template/Template';
+import { Template } from '#api/core/domain/template/Template.js';
 
 interface TranslationService {
   /**
@@ -18,6 +18,7 @@ interface TranslationService {
    */
   createTemplateTranslation(template: Template): Promise<void>;
   updateTemplateTranslation(currentTemplate: Template, updatedTemplate: Template): Promise<void>;
+  importPredefined(locale: string): Promise<void>;
 }
 
 export type { TranslationService };

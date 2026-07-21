@@ -1,6 +1,6 @@
-import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
-import { RelationshipProperty } from 'api/core/domain/template/RelationshipProperty';
-import { EntitySchema } from 'shared/types/entityType';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { RelationshipProperty } from '#api/relationships.v2/model/RelationshipProperty.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
 export class ElasticEntityMapper {
   private templateDS: TemplatesDataSource;
@@ -10,7 +10,7 @@ export class ElasticEntityMapper {
   }
 
   async toElastic(entity: EntitySchema) {
-    const properties = await this.templateDS.getAllProperties().all();
+    const properties = await this.templateDS.getAllProperties();
     const metadata: { [propertyName: string]: any } = {};
 
     Object.entries(entity.metadata || {}).forEach(([propertyName, values]) => {

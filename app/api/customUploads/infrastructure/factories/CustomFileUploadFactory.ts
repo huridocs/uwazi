@@ -1,11 +1,10 @@
-import { CustomFileUpload } from 'api/customUploads/application/CustomFileUpload';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
-import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
-import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
+import { CustomFileUpload } from '#api/customUploads/application/CustomFileUpload.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 
 export class CustomFileUploadFactory {
   static default(transactionManager: MongoTransactionManager) {
@@ -13,13 +12,13 @@ export class CustomFileUploadFactory {
       {
         transactionManager,
         idGenerator: IdGeneratorFactory.default(),
-        filesDS: FilesDataSourceFactory.default(transactionManager),
+        filesDS: FilesDataSourceFactory.default(),
         fileStorage: FileStorageFactory.default(),
         eventBus: applicationEventsBus,
       },
       {
-        actor: permissionsContext.getUserInContext()!,
-        tenant: tenants.current(),
+        actor: ExecutionContext.actor,
+        tenant: ExecutionContext.tenant,
       }
     );
   }

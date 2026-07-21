@@ -1,8 +1,8 @@
-import { Tenant } from 'api/tenants/tenantContext';
-import { IXExtractorType } from 'shared/types/extractorType';
-import { SettingsLinkSchema } from 'shared/types/settingsType';
-import { Property, Template } from 'app/apiResponseTypes';
-import { ClientPropertySchema } from 'app/istore';
+import type { PageDraft, PageRelease } from '#shared/types/pageType.js';
+import { IXExtractorType } from '#shared/types/extractorType.js';
+import { SettingsLinkSchema } from '#shared/types/settingsType.js';
+import { Property, Template } from '#app/apiResponseTypes.js';
+import { ClientPropertySchema } from '#app/istore.js';
 
 interface ClientIXExtractorType extends Omit<IXExtractorType, '_id'> {
   _id?: string;
@@ -39,9 +39,14 @@ type ILink = Omit<SettingsLinkSchema, 'sublinks'> & {
   sublinks: [ISublink];
 };
 
+type PageLocaleForm = {
+  title: string;
+  draft?: PageDraft;
+};
+
 type Page = {
   _id?: string;
-  title: string;
+  title?: string;
   language?: string;
   sharedId?: string;
   creationDate?: number;
@@ -49,9 +54,14 @@ type Page = {
     _id?: string;
     content?: string;
     script?: string;
+    css?: string;
   };
-  user?: string;
+  locales?: Record<string, PageLocaleForm>;
+  draft?: PageDraft;
+  releases?: PageRelease[];
+  releasesByLocale?: Record<string, PageRelease[]>;
   entityView?: boolean;
+  markdownSupport?: boolean;
 };
 
 enum ItemTypes {
@@ -59,9 +69,13 @@ enum ItemTypes {
   ROW = 'row',
 }
 
-type FeatureFlags = Tenant['featureFlags'] & {};
-
-type ClientFeatureFlags = Pick<FeatureFlags, 'paragraphExtraction'>;
+type ClientFeatureFlags = {
+  paragraphExtraction?: boolean;
+  themeCustomization?: boolean;
+  newHeader?: boolean;
+  v2GetEntity?: boolean;
+  aiAssistant?: boolean;
+};
 
 type ClientProperty = Property & {
   _id?: string;
@@ -81,8 +95,9 @@ export type {
   IDraggable,
   DraggableValue,
   Page,
+  PageLocaleForm,
   TranslationValue,
-  ClientFeatureFlags,
   ClientTemplateSchema,
   ClientProperty,
+  ClientFeatureFlags,
 };

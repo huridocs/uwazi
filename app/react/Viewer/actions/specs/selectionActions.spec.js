@@ -1,5 +1,5 @@
-import * as actions from 'app/Viewer/actions/selectionActions';
-import * as types from 'app/Viewer/actions/actionTypes';
+import * as actions from '#app/Viewer/actions/selectionActions.js';
+import * as types from '#app/Viewer/actions/actionTypes.js';
 
 describe('selectionActions', () => {
   describe('setSelection()', () => {

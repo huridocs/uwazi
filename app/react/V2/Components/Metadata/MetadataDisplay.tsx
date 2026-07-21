@@ -1,198 +1,220 @@
-import React, { Fragment, useCallback } from 'react';
-import { Translate } from 'app/I18N';
-import { Entity, MetadataProperty } from 'V2/domain';
-import { Panel } from 'V2/Components/Layouts/Panel';
-import { Button } from 'V2/Components/UI';
-import { Date } from './Date';
-import { Geolocation } from './Geolocation';
-import { Relationship } from './Relationship';
-import { Media } from './Media';
-import { Image } from './Image';
-import { SimpleValue } from './SimpleValue';
-import { Title } from './Title';
-import { Markdown } from './Markdown';
-import { Select } from './Select';
-import { MetadataCard } from './MetadataCard';
-import { TemplateLabel } from './TemplateLabel';
-import { LinkProperty } from './LinkProperty';
+import React, { useCallback, useMemo } from 'react';
+import { useAtomValue } from 'jotai';
+import { Translate } from '#app/I18N/index.js';
+import { templatesAtom } from '#V2/atoms/templatesAtom.js';
+import { Entity } from '#V2/api/entities/types.js';
+import {
+  Date,
+  SimpleValue,
+  Select,
+  Geolocation,
+  RelationshipCards,
+  Markdown,
+  LinkProperty,
+  Image,
+  Media,
+} from './Components/index.js';
+import type { MetadataProperty, RelationshipMetadataProperty } from '#V2/formatters/types.js';
+import { useFormatMetadata } from './hooks/useFormatMetadata.js';
+import { buildTemplatePropertyById } from './buildTemplatePropertyById.js';
+import { metadataGridClassForProperty } from './metadataPropertyLayout.js';
 
 type MetadataDisplayProps = {
   entity: Entity;
 };
 
+const isRelationshipProperty = (data: MetadataProperty): data is RelationshipMetadataProperty =>
+  data.type === 'relationship';
+
 const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
-  const templateId = entity?.template?._id!;
+  const templates = useAtomValue(templatesAtom);
 
-  const renderMetadataProperty = useCallback(
-    // eslint-disable-next-line max-statements
-    (data: MetadataProperty) => {
-      const translationContext = templateId;
+  const { entityTemplate, metadata } = useFormatMetadata(entity, templates, {
+    groupGeolocationProperties: true,
+  });
 
-      if (data.type === 'text' || data.type === 'generatedid' || data.type === 'numeric') {
-        return (
-          <SimpleValue
-            values={data.values}
-            label={data.label}
-            translationContext={translationContext}
-          />
-        );
-      }
-
-      if (
-        data.type === 'date' ||
-        data.type === 'daterange' ||
-        data.type === 'multidate' ||
-        data.type === 'multidaterange'
-      ) {
-        return (
-          <Date values={data.values} label={data.label} translationContext={translationContext} />
-        );
-      }
-
-      if (data.type === 'geolocation') {
-        return (
-          <Geolocation
-            markers={data.values}
-            label={data.label}
-            translationContext={translationContext}
-          />
-        );
-      }
-
-      if (data.type === 'media') {
-        return (
-          <Media values={data.values} label={data.label} translationContext={translationContext} />
-        );
-      }
-
-      if (data.type === 'image' || data.type === 'preview') {
-        return (
-          <Image
-            values={data.values}
-            label={data.label}
-            translationContext={translationContext}
-            imageStyle={data.properties?.style === 'contain' ? 'contain' : 'cover'}
-          />
-        );
-      }
-
-      if (data.type === 'markdown') {
-        return (
-          <Markdown
-            values={data.values}
-            label={data.label}
-            translationContext={translationContext}
-          />
-        );
-      }
-
-      if (data.type === 'select' || data.type === 'multiselect') {
-        return (
-          <Select values={data.values} label={data.label} translationContext={translationContext} />
-        );
-      }
-
-      if (data.type === 'link') {
-        return (
-          <LinkProperty
-            values={data.values}
-            label={data.label}
-            translationContext={translationContext}
-            hideLabel={data.properties?.hideLabel}
-          />
-        );
-      }
-
-      if (data.type === 'relationship') {
-        if (data.properties?.inherited && data.properties.inheritedProperty) {
-          const inheritedType = data.properties.inheritedProperty.type;
-          const { properties, ...restData } = data;
-          const reformattedData = {
-            ...restData,
-            ...properties.inheritedProperty,
-            name: data.name,
-            label: data.label,
-            transtalatedLabel: data.translatedLabel,
-            type: inheritedType,
-          };
-          return renderMetadataProperty(reformattedData as MetadataProperty);
-        }
-        return (
-          <Relationship
-            values={Array.isArray(data.values) ? data.values : []}
-            label={data.label}
-            translationContext={translationContext}
-          />
-        );
-      }
-
-      return undefined;
-    },
-    [templateId]
+  const templatePropertyById = useMemo(
+    () => buildTemplatePropertyById(entityTemplate?.properties),
+    [entityTemplate?.properties]
   );
 
-  if (!entity) {
+  const { relationshipFields, otherFields } = useMemo(() => {
+    const relationships: RelationshipMetadataProperty[] = [];
+    const others: MetadataProperty[] = [];
+    metadata.forEach(field => {
+      if (isRelationshipProperty(field)) {
+        relationships.push(field);
+      } else {
+        others.push(field);
+      }
+    });
+    return { relationshipFields: relationships, otherFields: others };
+  }, [metadata]);
+
+  const renderMetadataFields = useCallback(
+    (fields: MetadataProperty[]) => {
+      const translationContext = entityTemplate?._id || '';
+
+      return fields.map(data => {
+        if (data.type === 'text' || data.type === 'generatedid' || data.type === 'numeric') {
+          return (
+            <SimpleValue
+              key={data._id}
+              values={data.values}
+              label={data.label}
+              translationContext={translationContext}
+              hideLabel={data.hideLabel}
+              className={metadataGridClassForProperty(data, templatePropertyById.get(data._id))}
+            />
+          );
+        }
+
+        if (
+          data.type === 'date' ||
+          data.type === 'daterange' ||
+          data.type === 'multidate' ||
+          data.type === 'multidaterange'
+        ) {
+          return (
+            <Date
+              key={data._id}
+              values={data.values}
+              label={data.label}
+              translationContext={translationContext}
+              hideLabel={data.hideLabel}
+              className={metadataGridClassForProperty(data, templatePropertyById.get(data._id))}
+            />
+          );
+        }
+
+        if (data.type === 'geolocation') {
+          const isGroup = Boolean(data.propertyGroup?.length);
+          return (
+            <Geolocation
+              key={data._id}
+              markers={data.values}
+              label={data.label}
+              isGroup={isGroup}
+              translationContext={translationContext}
+              hideLabel={!isGroup && data.hideLabel}
+              className={metadataGridClassForProperty(data, templatePropertyById.get(data._id))}
+            />
+          );
+        }
+
+        if (data.type === 'select' || data.type === 'multiselect') {
+          return (
+            <Select
+              key={data._id}
+              values={data}
+              label={data.label}
+              translationContext={translationContext}
+              hideLabel={data.hideLabel}
+              className={metadataGridClassForProperty(data, templatePropertyById.get(data._id))}
+            />
+          );
+        }
+
+        if (data.type === 'markdown') {
+          return (
+            <Markdown
+              key={data._id}
+              values={data.values}
+              label={data.label}
+              translationContext={translationContext}
+              hideLabel={data.hideLabel}
+              className={metadataGridClassForProperty(data, templatePropertyById.get(data._id))}
+            />
+          );
+        }
+
+        if (data.type === 'link') {
+          return (
+            <LinkProperty
+              key={data._id}
+              values={data.values}
+              label={data.label}
+              translationContext={translationContext}
+              hideLabel={data.hideLabel}
+              className={metadataGridClassForProperty(data, templatePropertyById.get(data._id))}
+            />
+          );
+        }
+
+        if (data.type === 'media') {
+          return (
+            <Media
+              key={data._id}
+              values={data.values}
+              label={data.label}
+              translationContext={translationContext}
+              hideLabel={data.hideLabel}
+              className={metadataGridClassForProperty(data, templatePropertyById.get(data._id))}
+            />
+          );
+        }
+
+        if (data.type === 'image' || data.type === 'preview') {
+          return (
+            <Image
+              key={data._id}
+              values={data.values}
+              label={data.label}
+              translationContext={translationContext}
+              imageStyle={data.style}
+              hideLabel={data.hideLabel}
+              className={metadataGridClassForProperty(data, templatePropertyById.get(data._id))}
+            />
+          );
+        }
+
+        return undefined;
+      });
+    },
+    [entityTemplate?._id, templatePropertyById]
+  );
+
+  if (!entity || !entityTemplate) {
     return <Translate>NO DATA AVAILABLE</Translate>;
   }
 
+  const translationContext = entityTemplate._id || '';
+
   return (
-    <Panel>
-      <Panel.Body>
-        <dl className="flex flex-col gap-4">
-          <MetadataCard className="bg-gray-50">
-            <dt className="sr-only">
-              <Translate>Template</Translate>
-            </dt>
-            <dd>
-              <TemplateLabel
-                label={entity.template?.label || ''}
-                color={entity.template?.color}
-                templateId={templateId}
-              />
-            </dd>
-            <Title
-              label="Title"
-              title={entity.title}
-              translationContext={templateId}
-              iconId={entity.icon?._id}
-            />
-          </MetadataCard>
+    <>
+      <dl className="flex min-w-0 flex-wrap gap-3">
+        {typeof entity.creationDate === 'number' && (
+          <Date
+            values={[
+              {
+                value: entity.creationDate,
+              },
+            ]}
+            label="Creation Date"
+            translationContext="System"
+          />
+        )}
 
-          {entity.creationDate && (
-            <Date
-              values={entity.creationDate.values}
-              label="Creation Date"
-              translationContext="System"
-            />
-          )}
+        {typeof entity.editDate === 'number' && (
+          <Date
+            values={[
+              {
+                value: entity.editDate,
+              },
+            ]}
+            label="Edit Date"
+            translationContext="System"
+          />
+        )}
 
-          {entity.editDate && (
-            <Date values={entity.editDate.values} label="Edit Date" translationContext="System" />
-          )}
-
-          {entity.metadata.map((data, index) => (
-            <Fragment key={data?.name || data?.label || index}>
-              {renderMetadataProperty(data)}
-            </Fragment>
-          ))}
-        </dl>
-      </Panel.Body>
-      <Panel.Footer>
-        <div className="flex flex-row items-center justify-between w-full">
-          <div className="flex gap-2">
-            <Button styling="outline">
-              <Translate>Edit</Translate>
-            </Button>
-            <Button styling="outline">
-              <Translate>Share</Translate>
-            </Button>
-          </div>
-          <Button styling="solid" color="error">
-            <Translate>Delete</Translate>
-          </Button>
-        </div>
-      </Panel.Footer>
-    </Panel>
+        {renderMetadataFields(otherFields)}
+      </dl>
+      <RelationshipCards
+        fields={relationshipFields}
+        translationContext={translationContext}
+        templatePropertyById={templatePropertyById}
+      />
+    </>
   );
 };
 

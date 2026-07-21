@@ -1,70 +1,84 @@
+/* eslint-disable no-continue */
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
 
-import { files } from 'api/files/files';
-import { EnforcedWithId } from 'api/odm';
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import templates from 'api/core/v1_layer/templates';
-import { syncedPromiseLoop } from 'shared/data_utils/promiseUtils';
-import { ExtractedMetadataSchema, ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
-import { FileType } from 'shared/types/fileType';
-import { IXSuggestionAggregation, IXSuggestionType } from 'shared/types/suggestionType';
-import { objectIndex } from 'shared/data_utils/objectIndex';
+import { EnforcedWithId, UwaziFilterQuery } from '#api/odm/index.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import templates from '#api/core/v1_layer/templates/index.js';
+import { ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';
+import { BaseFile } from '#api/core/domain/files/BaseFile.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { IXSuggestionAggregation, IXSuggestionType } from '#shared/types/suggestionType.js';
+import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import {
   getSegmentedFilesIds,
-  propertyTypeIsWithoutExtractedMetadata,
-} from 'api/services/informationextraction/ixMaterials';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { IXModelType } from 'shared/types/IXModelType';
-import { registerEventListeners } from './eventListeners';
-import { updateStates } from './updateState';
+  propertyTypeIsWithoutPropertySelections,
+} from '#api/services/informationextraction/ixMaterials.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { IXModelType } from '#shared/types/IXModelType.js';
+import { registerEventListeners } from './eventListeners.js';
+import { updateStates } from './updateState.js';
 import {
   AcceptedSuggestion,
   SuggestionAcceptanceError,
   updateEntitiesWithSuggestion,
-} from './updateEntities';
+} from './updateEntities.js';
 
-const updateExtractedMetadata = async (
+const updatePropertySelections = async (
   suggestions: IXSuggestionType[],
   property: PropertySchema
 ) => {
-  if (propertyTypeIsWithoutExtractedMetadata(property.type)) return;
+  if (propertyTypeIsWithoutPropertySelections(property.type)) return;
 
-  const fetchedFiles = await files.get({ _id: { $in: suggestions.map(s => s.fileId) } });
-  const suggestionsByFileId = objectIndex(
-    suggestions,
-    s => s.fileId?.toString() || '',
-    s => s
+  const filesDS = FilesDataSourceFactory.default();
+  const filesService = FilesServiceFactory.default();
+  const transactionManager = TransactionManagerFactory.default();
+
+  const suggestionFileIds = suggestions.map(s => s.fileId).filter(Boolean);
+  if (!suggestionFileIds.length) return;
+
+  const fetchedFiles = await filesDS.getByIds(suggestionFileIds as string[]);
+  const filesById = objectIndex(
+    fetchedFiles,
+    f => f.id.toString() || '',
+    f => f
   );
 
-  await syncedPromiseLoop(fetchedFiles, async (file: EnforcedWithId<FileType>) => {
-    const suggestion = suggestionsByFileId[file._id.toString()];
-    file.extractedMetadata = file.extractedMetadata ? file.extractedMetadata : [];
+  const updatedFiles: BaseFile[] = [];
 
-    const extractedMetadata = file.extractedMetadata.find(
-      (em: any) => em.name === suggestion.propertyName
-    ) as ExtractedMetadataSchema;
+  for (const suggestion of suggestions) {
+    const fileId = suggestion.fileId?.toString();
+    if (!fileId) continue;
 
-    if (!extractedMetadata) {
-      file.extractedMetadata.push({
-        name: suggestion.propertyName,
-        timestamp: Date(),
-        selection: {
-          text: suggestion.suggestedText || suggestion.suggestedValue?.toString(),
-          selectionRectangles: suggestion.selectionRectangles,
+    const file = filesById[fileId];
+    if (!file) continue;
+
+    const updated = file.update({
+      propertySelections: [
+        {
+          name: suggestion.propertyName,
+          timestamp: Date(),
+          selection: {
+            text: suggestion.suggestedText || suggestion.suggestedValue?.toString(),
+            selectionRectangles: suggestion.selectionRectangles,
+          },
         },
-      });
-    } else {
-      extractedMetadata.timestamp = Date();
-      extractedMetadata.selection = {
-        text: suggestion.suggestedText || suggestion.suggestedValue?.toString(),
-        selectionRectangles: suggestion.selectionRectangles,
-      };
-    }
+      ],
+    });
 
-    await files.save(file);
-  });
+    if (updated.hasChanged) {
+      updatedFiles.push(updated);
+    }
+  }
+
+  if (updatedFiles.length > 0) {
+    await transactionManager.run(async () => {
+      await filesService.bulkUpsert(updatedFiles);
+    });
+  }
 };
 
 const propertyTypesWithAllLanguages = new Set(['numeric', 'date', 'select', 'multiselect']);
@@ -371,7 +385,7 @@ const Suggestions = {
       $set: { 'state.obsolete': true, 'state.match': null },
     }),
 
-  markSuggestionsWithoutSegmentation: async (query: any) => {
+  markSuggestionsWithoutSegmentation: async (query: UwaziFilterQuery<IXSuggestionType>) => {
     const segmentedFilesIds = await getSegmentedFilesIds();
     await IXSuggestionsModel.updateMany(
       {
@@ -447,7 +461,7 @@ const Suggestions = {
     const allLanguage = needsAllLanguages(property.type);
 
     await updateEntitiesWithSuggestion(allLanguage, acceptedSuggestions, suggestions, property);
-    await updateExtractedMetadata(suggestions, property);
+    await updatePropertySelections(suggestions, property);
   },
 
   deleteByEntityId: async (sharedId: string) => {

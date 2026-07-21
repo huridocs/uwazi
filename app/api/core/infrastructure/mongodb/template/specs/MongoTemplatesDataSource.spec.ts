@@ -1,29 +1,13 @@
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
-import { Property } from 'api/core/domain/template/Property';
-import { RelationshipProperty } from 'api/core/domain/template/RelationshipProperty';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { MongoTemplatesDataSource } from '../MongoTemplatesDataSource';
-import { mapPropertyQuery } from '../QueryMapper';
+import { ObjectId } from 'mongodb';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { Property } from '#api/core/domain/template/Property.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { MongoTemplatesDataSource } from '../MongoTemplatesDataSource.js';
 
 const factory = getFixturesFactory();
-
-const createDBRelationshipQuery = (index: number) => [
-  {
-    types: [factory.id(`type${index}`)],
-    direction: 'out' as const,
-    match: [
-      {
-        templates: [factory.id(`template${index}`)],
-      },
-    ],
-  },
-];
-
-const createRelationshipQuery = (index: number) =>
-  mapPropertyQuery(createDBRelationshipQuery(index));
 
 const fixtures = {
   templates: [
@@ -31,27 +15,27 @@ const fixtures = {
       {
         _id: factory.id('relationshipProp1'),
         name: 'relationshipProp1',
-        type: 'newRelationship',
+        type: 'relationship',
         label: 'relationshipProp1',
-        query: createDBRelationshipQuery(1),
+        relationType: factory.id('rel1').toString(),
       },
     ]),
     factory.template('template2', [
       {
         _id: factory.id('relationshipProp2'),
         name: 'relationshipProp2',
-        type: 'newRelationship',
+        type: 'relationship',
         label: 'relationshipProp2',
-        query: createDBRelationshipQuery(2),
+        relationType: factory.id('rel1').toString(),
       },
     ]),
     factory.template('template3', [
       {
         _id: factory.id('relationshipProp3'),
         name: 'relationshipProp3',
-        type: 'newRelationship',
+        type: 'relationship',
         label: 'relationshipProp3',
-        query: createDBRelationshipQuery(3),
+        relationType: factory.id('rel1').toString(),
       },
     ]),
     factory.template('template4', [
@@ -73,17 +57,31 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
+import { MongoTemplatesDAO } from '../MongoTemplatesDAO.js';
+
+const createSut = () => {
+  const db = getConnection();
+  const transactionManager = TransactionManagerFactory.default();
+  const dao = new MongoTemplatesDAO({ db, transactionManager });
+  const sut = new MongoTemplatesDataSource({
+    db,
+    transactionManager,
+    dao,
+  });
+
+  return { sut, transactionManager };
+};
+
 describe('getAllProperties()', () => {
   it('should return all the properties properly typed', async () => {
-    const dataSource = new MongoTemplatesDataSource(
-      getConnection(),
-      TransactionManagerFactory.default()
-    );
-    const result = await dataSource.getAllProperties().all();
+    const { sut } = createSut();
+
+    const result = await sut.getAllProperties();
+
     expect(result.length).toBe(4);
-    expect(result[0]).toBeInstanceOf(RelationshipProperty);
-    expect(result[1]).toBeInstanceOf(RelationshipProperty);
-    expect(result[2]).toBeInstanceOf(RelationshipProperty);
+    expect(result[0]).toBeInstanceOf(V1RelationshipProperty);
+    expect(result[1]).toBeInstanceOf(V1RelationshipProperty);
+    expect(result[2]).toBeInstanceOf(V1RelationshipProperty);
     expect(result[3]).toBeInstanceOf(Property);
     expect(result.map(p => ({ template: p.template.toString(), name: p.name }))).toMatchObject([
       {
@@ -106,45 +104,15 @@ describe('getAllProperties()', () => {
   });
 });
 
-describe('when requesting the relationship properties configured in the system', () => {
-  it('should return all the relationship properties', async () => {
-    const dataSource = new MongoTemplatesDataSource(
-      getConnection(),
-      TransactionManagerFactory.default()
-    );
-    const result = await dataSource.getAllRelationshipProperties().all();
-    expect(result.length).toBe(3);
-    result.forEach(property => {
-      expect(property).toBeInstanceOf(RelationshipProperty);
-      expect(property.query[0]).toBeInstanceOf(TraversalQueryNode);
-    });
-    expect(result).toMatchObject([
-      {
-        name: 'relationshipProp1',
-        query: createRelationshipQuery(1),
-        template: factory.id('template1').toHexString(),
-      },
-      {
-        name: 'relationshipProp2',
-        query: createRelationshipQuery(2),
-        template: factory.id('template2').toHexString(),
-      },
-      {
-        name: 'relationshipProp3',
-        query: createRelationshipQuery(3),
-        template: factory.id('template3').toHexString(),
-      },
-    ]);
-  });
-});
-
 describe('when requesting a property by name', () => {
   let tds: MongoTemplatesDataSource;
   const props: { [name: string]: Property } = {};
 
   beforeAll(async () => {
-    tds = new MongoTemplatesDataSource(getConnection(), TransactionManagerFactory.default());
-    props.newRelationship = await tds.getPropertyByName('relationshipProp2');
+    const { sut } = createSut();
+    tds = sut;
+
+    props.relationship = await tds.getPropertyByName('relationshipProp2');
     props.text = await tds.getPropertyByName('textprop');
   });
 
@@ -156,8 +124,8 @@ describe('when requesting a property by name', () => {
     },
     {
       name: 'relationshipProp2',
-      type: 'newRelationship',
-      expectedClass: RelationshipProperty,
+      type: 'relationship',
+      expectedClass: V1RelationshipProperty,
     },
   ])(
     'should return one matching property properly typed: $type',
@@ -168,22 +136,16 @@ describe('when requesting a property by name', () => {
       expect(prop.type).toEqual(type);
     }
   );
-
-  it('should cache the map', () => {
-    // eslint-disable-next-line dot-notation
-    expect(tds['_nameToPropertyMap']).not.toBeUndefined();
-  });
 });
 
 describe('getByIds()', () => {
   it('should return the templates', async () => {
-    const dataSource = new MongoTemplatesDataSource(
-      getConnection(),
-      TransactionManagerFactory.default()
-    );
-    const result = await dataSource
-      .getByIds([factory.id('template1').toString(), factory.id('template2').toString()])
-      .all();
+    const { sut } = createSut();
+
+    const result = await sut.getByIds([
+      factory.id('template1').toString(),
+      factory.id('template2').toString(),
+    ]);
     expect(result).toMatchObject([
       {
         id: factory.id('template1').toString(),
@@ -199,11 +161,9 @@ describe('getByIds()', () => {
 
 describe('getByNames()', () => {
   it('should return the templates', async () => {
-    const dataSource = new MongoTemplatesDataSource(
-      getConnection(),
-      TransactionManagerFactory.default()
-    );
-    const result = await dataSource.getByNames(['template1', 'template3']).all();
+    const { sut } = createSut();
+
+    const result = await sut.getByNames(['template1', 'template3']);
 
     expect(result).toMatchObject([
       {
@@ -220,14 +180,59 @@ describe('getByNames()', () => {
 
 describe('getById()', () => {
   it('should return the template', async () => {
-    const dataSource = new MongoTemplatesDataSource(
-      getConnection(),
-      TransactionManagerFactory.default()
-    );
-    const result = await dataSource.getById(factory.id('template1').toString());
+    const { sut } = createSut();
+
+    const result = await sut.getById(factory.id('template1').toString());
     expect(result.getData()).toMatchObject({
       id: factory.id('template1').toString(),
       name: 'template1',
     });
+  });
+});
+
+describe('countByThesauri()', () => {
+  const thesaurusId = factory.id('thesaurus_1').toHexString();
+  const otherThesaurusId = factory.id('thesaurus_2').toHexString();
+
+  beforeAll(async () => {
+    const db = getConnection();
+    await db.collection('templates').insertMany([
+      {
+        _id: factory.id('template_with_thesauri'),
+        name: 'template_with_thesauri',
+        properties: [
+          {
+            type: 'select',
+            content: thesaurusId,
+            name: 'country',
+            label: 'Country',
+          },
+        ],
+      },
+      {
+        _id: factory.id('template_with_other_thesauri'),
+        name: 'template_with_other_thesauri',
+        properties: [
+          {
+            type: 'select',
+            content: otherThesaurusId,
+            name: 'country',
+            label: 'Country',
+          },
+        ],
+      },
+    ]);
+  });
+
+  it('should return templates count referencing the thesaurus', async () => {
+    const { sut } = createSut();
+    const count = await sut.countByThesauri(thesaurusId);
+    expect(count).toBe(1);
+  });
+
+  it('should return 0 when no templates reference the thesaurus', async () => {
+    const { sut } = createSut();
+    const count = await sut.countByThesauri(new ObjectId().toHexString());
+    expect(count).toBe(0);
   });
 });

@@ -1,17 +1,21 @@
-import settings from 'api/settings';
-import templates from 'api/core/v1_layer/templates';
-import { objectIndex } from 'shared/data_utils/objectIndex';
-import { CurrentValue, getSuggestionState, SuggestionValues } from 'shared/getIXSuggestionState';
-import { propertyIsMultiselect, propertyIsRelationship } from 'shared/propertyTypes';
-import { LanguagesListSchema, PropertyTypeSchema } from 'shared/types/commonTypes';
-import { IXExtractorModel } from 'api/services/informationextraction/IXExtractorModel';
-import { IXSuggestionsModel } from './IXSuggestionsModel';
+import settings from '#api/settings/index.js';
+import templates from '#api/core/v1_layer/templates/index.js';
+import { objectIndex } from '#shared/data_utils/objectIndex.js';
+import {
+  CurrentValue,
+  getSuggestionState,
+  SuggestionValues,
+} from '#shared/getIXSuggestionState.js';
+import { propertyIsMultiselect, propertyIsRelationship } from '#shared/propertyTypes.js';
+import { LanguagesListSchema, PropertyTypeSchema } from '#shared/types/commonTypes.js';
+import { IXExtractorModel } from '#api/services/informationextraction/IXExtractorModel.js';
+import { IXSuggestionsModel } from './IXSuggestionsModel.js';
 import {
   getCurrentValueStage,
   getEntityStage,
   getFileStage,
   getLabeledValueStage,
-} from './pipelineStages';
+} from './pipelineStages.js';
 
 type SuggestionsAggregationResult = Omit<SuggestionValues, 'currentValue'> & {
   _id: any;
@@ -113,10 +117,10 @@ export const postProcessCurrentValues = (
 ) => suggestions.map(s => postProcessCurrentValue(s, propertyType));
 
 // eslint-disable-next-line max-statements
-export const updateStates = async (query: any) => {
+export const updateStates = async (query: Record<string, unknown>) => {
   const { languages } = await settings.get();
   const propertyTypes = objectIndex(
-    (await templates.get({})).map(t => t.properties || []).flat(),
+    (await templates.get()).map(t => t.properties || []).flat(),
     p => p.name,
     p => p.type
   );

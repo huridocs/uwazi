@@ -1,12 +1,12 @@
-import { EventsBus } from 'api/core/libs/eventsbus';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { UserSchema } from 'shared/types/userType';
-import { Tenant } from 'api/tenants/tenantContext';
-import { User } from 'api/users.v2/model/User';
-import { TransactionManager } from '../application/contracts/TransactionManager';
-import { IdGenerator } from '../application/contracts/IdGenerator';
-import { Logger } from './logger/contracts/Logger';
-import { EventEmitter } from './eventEmitter/EventEmitter';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { Tenant } from '#api/tenants/tenantContext.js';
+import { User } from '#api/users.v2/model/User.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { TransactionManager } from '../application/contracts/TransactionManager.js';
+import { IdGenerator } from '../application/contracts/IdGenerator.js';
+import { Dispatcher } from '../application/contracts/Dispatcher.js';
+import { Logger } from './logger/contracts/Logger.js';
+import { EventEmitter } from './eventEmitter/EventEmitter.js';
 
 interface UseCase<Input, Output, Args extends any[] = []> {
   execute(input: Input, ...args: Args): Promise<Output>;
@@ -15,20 +15,24 @@ interface UseCase<Input, Output, Args extends any[] = []> {
 type Deps<ExtendedDeps> = {
   transactionManager?: TransactionManager;
   eventBus?: EventsBus;
-  jobsDispatcher?: JobsDispatcher;
+  dispatcher?: Dispatcher;
   idGenerator?: IdGenerator;
   logger?: Logger;
   eventEmitter?: EventEmitter;
 } & ExtendedDeps;
 
 type Context = {
-  actor: UserSchema; // Using legacy User for now.
+  actor?: User; // Optional to support unauthenticated requests
   tenant: Tenant; // Using legacy Tenant for now
+  targetLanguage?: LanguageISO6391;
 };
 
-abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}, Args extends any[] = []>
-  implements UseCase<Input, Output, Args>
-{
+abstract class AbstractUseCase<
+  Input,
+  Output,
+  ExtendedDeps = {},
+  Args extends any[] = [],
+> implements UseCase<Input, Output, Args> {
   constructor(
     protected deps: Deps<ExtendedDeps>,
     private context?: Context
@@ -43,21 +47,28 @@ abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}, Args extends an
   }
 
   protected get actor() {
-    const id = this.context?.actor?._id?.toString();
+    const id = this.context?.actor?._id;
     return id ? { id } : undefined;
   }
 
   protected getActor(): User {
-    return User.createFrom({
-      id: this.context?.actor?._id?.toString(),
-      role: this.context?.actor?.role,
-      groups: (this.context?.actor?.groups || []).map(g => g._id.toString()),
-    });
+    return this.context?.actor ?? User.createFrom(null);
+  }
+
+  protected get targetLanguage() {
+    if (!this.context?.targetLanguage) {
+      throw new Error(`Target language was not found. ${JSON.stringify(this.context)}`);
+    }
+
+    return this.context.targetLanguage;
   }
 
   protected get actorId() {
-    if (!this.context?.actor?._id) {
+    if (!this.context?.actor) {
       throw new Error(`Actor was not found. ${JSON.stringify(this.context)}`);
+    }
+    if (this.context.actor.isAnonymous()) {
+      throw new Error(`Actor is anonymous (not logged in). ${JSON.stringify(this.context)}`);
     }
 
     return this.context.actor._id.toString();
@@ -103,12 +114,12 @@ abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}, Args extends an
     return this.deps.eventEmitter;
   }
 
-  protected get jobsDispatcher(): JobsDispatcher {
-    if (!this.deps.jobsDispatcher) {
-      throw new Error('JobsDispatcher dependency not provided');
+  protected get dispatcher(): Dispatcher {
+    if (!this.deps.dispatcher) {
+      throw new Error('Dispatcher dependency not provided');
     }
 
-    return this.deps.jobsDispatcher;
+    return this.deps.dispatcher;
   }
 
   abstract execute(input: Input, ...args: Args): Promise<Output>;

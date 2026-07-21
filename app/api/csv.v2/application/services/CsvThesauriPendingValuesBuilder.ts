@@ -1,15 +1,15 @@
 /* eslint-disable max-lines */
-import { Template } from 'api/core/domain/template/Template';
-import { Property } from 'api/core/domain/template/Property';
-import { PropertyName } from 'api/core/domain/template/PropertyName';
-import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils';
-import { CsvImportRow } from '../../domain/CsvImportRow';
-import { HeaderAnalysis } from './CsvHeaderAnalyzer';
+import { Template } from '#api/core/domain/template/Template.js';
+import { Property } from '#api/core/domain/template/Property.js';
+import { PropertyName } from '#api/core/domain/template/PropertyName.js';
+import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
+import { CsvImportRow } from '../../domain/CsvImportRow.js';
+import { HeaderAnalysis } from './CsvHeaderAnalyzer.js';
 import {
   CsvThesauriPendingValues,
   CsvThesauriPendingEntry,
   CsvThesauriPendingIssue,
-} from '../../domain/CsvThesauriPendingValues';
+} from '../../domain/CsvThesauriPendingValues.js';
 
 type BuildParams = {
   importId: string;
@@ -187,7 +187,7 @@ export class CsvThesauriPendingValuesBuilder {
               property: property.name,
               reason: 'Invalid thesaurus value format',
               value,
-              row: row.index,
+              row: row.rowIndex,
               type: 'parse',
             })
           );
@@ -229,7 +229,7 @@ export class CsvThesauriPendingValuesBuilder {
                   property: property.name,
                   reason: `Invalid format for language "${lang}"`,
                   value,
-                  row: row.index,
+                  row: row.rowIndex,
                   type: 'parse',
                 })
               );
@@ -242,7 +242,7 @@ export class CsvThesauriPendingValuesBuilder {
                   property: property.name,
                   reason: `Language "${lang}" value does not match default language cardinality`,
                   value: langValue,
-                  row: row.index,
+                  row: row.rowIndex,
                   type: 'translation',
                 });
                 return;
@@ -266,7 +266,7 @@ export class CsvThesauriPendingValuesBuilder {
                 property: property.name,
                 reason: `Language "${lang}" has fewer values (${parsed.labels.length}) than the default language (${labels.length}).`,
                 value: langValue,
-                row: row.index,
+                row: row.rowIndex,
                 type: 'translation',
               });
             }

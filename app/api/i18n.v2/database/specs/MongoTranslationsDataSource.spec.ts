@@ -1,11 +1,11 @@
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { DuplicatedKeyError } from 'api/common.v2/errors/DuplicatedKeyError';
-import { Translation } from 'api/i18n.v2/model/Translation';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB, { DBFixture } from 'api/utils/testing_db';
-import { MongoTranslationsDataSource } from '../../database/MongoTranslationsDataSource';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { DuplicatedKeyError } from '#api/common.v2/errors/DuplicatedKeyError.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { Translation } from '#api/i18n.v2/model/Translation.js';
+import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+import { MongoTranslationsDataSource } from '../../database/MongoTranslationsDataSource.js';
 
 const fixtures: DBFixture = {
   translationsV2: [],
@@ -29,6 +29,10 @@ beforeEach(async () => {
 
 afterAll(async () => {
   await testingEnvironment.tearDown();
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 
 const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
@@ -90,6 +94,69 @@ describe('MongoTranslationsDataSource', () => {
           ])
         ).rejects.toEqual(new Error('db error'));
       });
+    });
+  });
+
+  describe('cloneForLanguage()', () => {
+    const systemContext = { id: 'System', type: 'Uwazi UI' as const, label: 'User Interface' };
+
+    beforeEach(async () => {
+      await testingEnvironment.setUp({
+        ...fixtures,
+        translationsV2: [
+          createTranslationDBO('Search', 'Search', 'en', systemContext),
+          createTranslationDBO('Filters', 'Filters', 'en', systemContext),
+        ],
+      });
+    });
+
+    it('should clone all source-language translations into the target language', async () => {
+      const sut = new MongoTranslationsDataSource(
+        getConnection(),
+        TransactionManagerFactory.default()
+      );
+      await sut.cloneForLanguage('en', 'es');
+
+      const cloned = await testingDB
+        .mongodb!.collection('translationsV2')
+        .find({ language: 'es' })
+        .toArray();
+      expect(cloned).toHaveLength(2);
+      expect(cloned.map((t: any) => t.key).sort()).toEqual(['Filters', 'Search']);
+    });
+
+    it('should be idempotent: calling twice does not create duplicates', async () => {
+      const sut = new MongoTranslationsDataSource(
+        getConnection(),
+        TransactionManagerFactory.default()
+      );
+      await sut.cloneForLanguage('en', 'es');
+      await sut.cloneForLanguage('en', 'es');
+
+      const cloned = await testingDB
+        .mongodb!.collection('translationsV2')
+        .find({ language: 'es' })
+        .toArray();
+      expect(cloned).toHaveLength(2);
+    });
+
+    it('should not overwrite translations that already exist in the target language', async () => {
+      await testingDB
+        .mongodb!.collection('translationsV2')
+        .insertOne(createTranslationDBO('Search', 'Buscar', 'es', systemContext));
+
+      const sut = new MongoTranslationsDataSource(
+        getConnection(),
+        TransactionManagerFactory.default()
+      );
+      await sut.cloneForLanguage('en', 'es');
+
+      const esSearch = await testingDB.mongodb!.collection('translationsV2').findOne({
+        language: 'es',
+        key: 'Search',
+        'context.id': 'System',
+      });
+      expect(esSearch?.value).toBe('Buscar');
     });
   });
 });

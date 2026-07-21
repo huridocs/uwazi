@@ -2,14 +2,14 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
-import { ClientTemplateSchema, IStore } from 'app/istore';
-import formatter from 'app/Metadata/helpers/formater';
-import { safeName } from 'shared/propertyNames';
-import { showByType } from 'app/Metadata/components/Metadata';
-import { Translate } from 'app/I18N';
-import { IImmutable } from 'shared/types/Immutable';
-import { ensure } from 'shared/tsUtils';
-import { errorCollector } from '../utils';
+import { ClientTemplateSchema, IStore } from '#app/istore.js';
+import { formater as formatter } from '#app/Metadata/helpers/formater.js';
+import { safeName } from '#shared/propertyNames.js';
+import { showByType } from '#app/Metadata/components/Metadata.js';
+import { Translate } from '#app/I18N/index.js';
+import { IImmutable } from '#shared/types/Immutable.js';
+import { ensure } from '#shared/tsUtils.js';
+import { errorCollector } from '../utils.js';
 
 interface Options {
   formattedEntity: any;

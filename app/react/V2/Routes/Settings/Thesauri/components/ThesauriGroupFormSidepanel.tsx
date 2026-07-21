@@ -1,14 +1,15 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
-import { isEmpty, last } from 'lodash';
+import isEmpty from 'lodash/isEmpty.js';
+import last from 'lodash/last.js';
 import CheckCircleIcon from '@heroicons/react/20/solid/CheckCircleIcon';
-import { Translate } from 'app/I18N';
-import { InputField } from 'V2/Components/Forms';
-import { Button, Card, Sidepanel } from 'V2/Components/UI';
-import uniqueID from 'shared/uniqueID';
-import { ThesaurusRow } from './TableComponents';
-import { emptyThesaurus, sanitizeThesaurusLabel } from '../helpers';
+import { Translate } from '#app/I18N/index.js';
+import { InputField } from '#V2/Components/Forms/index.js';
+import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
+import uniqueID from '#shared/uniqueID.js';
+import { ThesaurusRow } from './TableComponents.js';
+import { emptyThesaurus, sanitizeThesaurusLabel } from '../helpers.js';
 
 interface ThesauriGroupFormSidepanelProps {
   closePanel: () => void;
@@ -114,7 +115,14 @@ const ThesauriGroupFormSidepanel = ({
       >
         <Sidepanel.Body>
           {value && value.label === '' && (
-            <div className="p-4 mb-4 border rounded-md shadow-md border-gray-50 bg-primary-100 text-primary-700">
+            <div
+              className="mb-4 rounded-md border p-4 shadow-md"
+              style={{
+                backgroundColor: 'var(--color-theme-info-banner-bg)',
+                borderColor: 'var(--color-theme-info-banner-border)',
+                color: 'var(--color-theme-info-banner-fg)',
+              }}
+            >
               <div className="flex items-center w-full gap-1 text-base font-semibold">
                 <div className="w-5 h-5 text-sm">
                   <CheckCircleIcon />
@@ -151,7 +159,7 @@ const ThesauriGroupFormSidepanel = ({
         <Sidepanel.Footer className="bottom-0 px-4 py-3">
           <div className="flex gap-2">
             <Button
-              styling="light"
+              variant="ghost"
               onClick={closePanel}
               className="grow"
               data-testid="thesaurus-form-cancel"

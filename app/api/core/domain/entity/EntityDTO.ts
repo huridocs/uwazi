@@ -1,8 +1,7 @@
-import { EntityIcon } from './Entity';
-import { AccessGrant } from './EntityPermission';
-import { EntityTranslationProps } from './EntityTranslation';
+import { EntityIcon } from './Entity.js';
+import { EntityTranslationProps } from './EntityTranslation.js';
 
-/**
+/**s
  * Data Transfer Object representing an Entity.
  * This was created to represent an Entity as a simple key/value object.
  *
@@ -13,8 +12,6 @@ type EntityDTO = {
   sharedId: string;
   translations: EntityTranslationProps[];
   templateId: string;
-  permissions: AccessGrant[];
-  published: boolean;
   userId?: string;
   icon?: EntityIcon;
   generatedToc?: boolean;

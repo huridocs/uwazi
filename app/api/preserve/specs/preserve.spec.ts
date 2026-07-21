@@ -1,11 +1,11 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import settings from 'api/settings';
-import templates from 'api/core/v1_layer/templates';
-import thesauri from 'api/thesauri';
-import request from 'shared/JSONRequest';
-import { PreserveConfig } from 'shared/types/settingsType.js';
-import fixtures, { userId1, userId2 } from './fixtures';
-import { Preserve } from '../preserve';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import settings from '#api/settings/index.js';
+import templates from '#api/core/v1_layer/templates/index.js';
+import thesauri from '#api/core/v1_layer/thesauri/index.js';
+import request from '#shared/JSONRequest.js';
+import { PreserveConfig } from '#shared/types/settingsType.js';
+import fixtures, { userId1, userId2 } from './fixtures.js';
+import { Preserve } from '../preserve.js';
 
 describe('Preserve', () => {
   const user = { _id: userId1 };
@@ -28,7 +28,7 @@ describe('Preserve', () => {
   describe('setup()', () => {
     describe('pass', () => {
       it('should create a thesauri, template and a config when no config is found.', async () => {
-        await Preserve.setup('en', user);
+        await testingEnvironment.runWithContext(async () => Preserve.setup('en', user));
         const savedSettings: any = await settings.get({});
         const configs: PreserveConfig['config'] = savedSettings.features.preserve.config;
         const config = configs.find(conf => conf.user!.toString() === user._id.toString());
@@ -48,14 +48,16 @@ describe('Preserve', () => {
           },
         ]);
         const thesauriId = template?.properties?.find(prop => prop.type === 'select')?.content;
-        const thesaurus = await thesauri.getById(thesauriId);
+        const thesaurus = await testingEnvironment.runWithContext(async () =>
+          thesauri.getById(thesauriId)
+        );
         expect(thesaurus?.name).toBe('Preserve');
       });
 
       it('should not create template if another configs exists in the DB', async () => {
-        const savedTemplates = await templates.get({});
-        await Preserve.setup('en', { _id: userId2 });
-        const templatesAfterSetup = await templates.get({});
+        const savedTemplates = await templates.get();
+        await testingEnvironment.runWithContext(async () => Preserve.setup('en', { _id: userId2 }));
+        const templatesAfterSetup = await templates.get();
         expect(savedTemplates.length).toEqual(templatesAfterSetup.length);
         const savedSettings: any = await settings.get({});
         const savedConfigs = savedSettings.features.preserve.config;

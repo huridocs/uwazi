@@ -1,309 +1,357 @@
 /* eslint-disable max-statements */
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { MongoThesauriDataSourceV2 } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDataSourceV2';
-import {
-  getConnection,
-  getSharedConnection,
-} from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { tenants } from 'api/tenants';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { ThesaurusDBO } from 'api/core/infrastructure/mongodb/thesauri/ThesaurusDBO';
 import { ObjectId } from 'mongodb';
-import { UserSchema } from 'shared/types/userType';
+
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import {
-  ThesaurusNotFoundError,
   ThesaurusNameAlreadyExistsError,
-} from 'api/core/domain/thesaurus/errors';
-import { JobDBO } from 'api/core/libs/queue/infrastructure/MongoQueueAdapter';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { Result } from 'api/core/libs/Result';
-import { MongoThesaurusMapper } from 'api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper';
-import { UpdateThesaurusUseCase } from '../UpdateThesaurus';
-import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService';
-import { ThesauriDataSource } from '../contracts/ThesauriDataSource';
-import { factory, fixtures } from './UpdateThesaurusFixtures';
-import { ThesauriService } from '../ThesauriService';
+  ThesaurusNotFoundError,
+} from '#api/core/domain/thesaurus/errors.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
+import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { tenants } from '#api/tenants/index.js';
+import { User } from '#api/users.v2/model/User.js';
+import { ThesauriService } from '../ThesauriService.js';
+import { UpdateThesaurusUseCase } from '../UpdateThesaurus.js';
+import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
+import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService.js';
+import { factory, fixtures } from './UpdateThesaurusFixtures.js';
 
 type CreateSutProps = {
   thesauriDS?: ThesauriDataSource;
   thesaurusTranslationService?: ThesaurusTranslationService;
-  jobsDispatcher?: JobsDispatcher;
+  dispatcher?: Dispatcher;
 };
 
-const createSut = (props?: CreateSutProps) => {
-  const tenant = tenants.current();
-  const actor: UserSchema = {
-    _id: factory.id('user1'),
-    username: 'username',
-    email: 'email@email.com',
-    role: 'admin',
-  };
-
-  const transactionManager = TransactionManagerFactory.default();
-  const jobsDispatcher =
-    props?.jobsDispatcher ?? DefaultDispatcher(tenant.name, transactionManager);
-
-  const thesauriDS =
-    props?.thesauriDS ?? new MongoThesauriDataSourceV2(getConnection(), transactionManager);
-  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-  const translationsDS = DefaultTranslationsDataSource(transactionManager);
-  const thesaurusTranslationService =
-    props?.thesaurusTranslationService ??
-    new ThesaurusTranslationService({
-      settingsDS,
-      translationsDS,
-    });
-
-  const thesauriService = new ThesauriService({
-    jobsDispatcher,
-    thesauriDS,
-    thesaurusTranslationService,
-  });
-
-  const sut = new UpdateThesaurusUseCase(
-    {
-      thesauriDS,
-      thesaurusTranslationService,
-      jobsDispatcher,
-      transactionManager,
-      thesauriService,
-    },
-    { tenant, actor }
-  );
-
-  return { sut };
+type TestConfig = {
+  name: string;
+  postgresThesauri: boolean;
+  getThesauri: () => Promise<Record<string, unknown>[]>;
 };
+
+const testConfigs: TestConfig[] = [
+  {
+    name: 'Mongo',
+    postgresThesauri: false,
+    getThesauri: async () => testingEnvironment.db.getAllFrom('dictionaries'),
+  },
+  {
+    name: 'Postgres',
+    postgresThesauri: true,
+    getThesauri: async () =>
+      testingEnvironment.pg
+        .getAllFrom('thesauri')
+        .then(rows => rows.map(({ tenant_id: _, ...rest }) => rest)),
+  },
+];
 
 describe('UpdateThesaurusUseCase', () => {
-  const getJobs = async () => getSharedConnection().collection('jobs').find().toArray();
-  const getThesaurusById = async (_id: ObjectId) =>
-    testingEnvironment.db!.getCollection('dictionaries')!.findOne({
-      _id,
-    }) as Promise<ThesaurusDBO>;
-
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures);
-  });
-
-  beforeEach(async () => {
-    await testingEnvironment.setFixtures(fixtures);
-    await getSharedConnection().collection('jobs').deleteMany({});
+    await testingEnvironment.setUp(fixtures, { postgres: true });
   });
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should update thesaurus', async () => {
-    const { sut } = createSut();
+  describe.each(testConfigs)('$name', ({ postgresThesauri, getThesauri }) => {
+    const getJobs = async () => testingEnvironment.db.getCollection('jobs')!.find().toArray();
 
-    const before = await getThesaurusById(factory.id('countries'));
+    const createSut = (props?: CreateSutProps) =>
+      testingEnvironment.runWithContext(
+        () => {
+          const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
 
-    await sut.execute({
-      id: before._id.toString(),
-      name: 'Updated Countries',
-      values: [
-        { ...before.values[0], label: 'USA Updated' },
-        { label: 'Brazil Created' },
-        {
-          ...before.values[2],
-          label: 'Europe Updated',
-          values: [before.values[2].values![0], { label: 'France Created' }],
+          const dispatcher =
+            props?.dispatcher ?? new DispatcherAdapter(ExecutionContext.jobsDispatcher);
+
+          const thesauriDS =
+            props?.thesauriDS ?? ThesauriDataSourceFactory.default({ transactionManager });
+          const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+          const translationsDS = DefaultTranslationsDataSource(transactionManager);
+          const thesaurusTranslationService =
+            props?.thesaurusTranslationService ??
+            new ThesaurusTranslationService({
+              settingsDS,
+              translationsDS,
+            });
+          const thesauriService = new ThesauriService({
+            dispatcher,
+            thesauriDS,
+            thesaurusTranslationService,
+          });
+
+          const sut = new UpdateThesaurusUseCase(
+            {
+              thesauriDS,
+              thesaurusTranslationService,
+              dispatcher,
+              transactionManager,
+              thesauriService,
+            },
+            { tenant: ExecutionContext.tenant, actor: ExecutionContext.actor }
+          );
+
+          return { sut };
         },
-      ],
+        {
+          actor: User.createFrom({
+            _id: factory.id('user1'),
+            username: 'username',
+            email: 'email@email.com',
+            role: 'admin',
+            groups: [],
+          }),
+          ...(postgresThesauri
+            ? {
+                tenant: {
+                  ...testingTenants.current(),
+                  featureFlags: { postgresThesauri: true },
+                },
+              }
+            : {}),
+        }
+      );
+
+    beforeEach(async () => {
+      await testingEnvironment.setFixtures(fixtures);
+      await testingEnvironment.db.getCollection('jobs')!.deleteMany({});
     });
 
-    const jobs = await getJobs();
-    const after = await getThesaurusById(factory.id('countries'));
-    const translations = await testingEnvironment.db.getAllFrom('translationsV2');
+    it('should update thesaurus', async () => {
+      const { sut } = createSut();
 
-    expect(after).toEqual({
-      _id: before._id,
-      name: 'Updated Countries',
-      values: [
-        { id: before.values[0].id, label: 'USA Updated' },
-        { id: expect.any(String), label: 'Brazil Created' },
-        {
-          id: before.values[2].id,
-          label: 'Europe Updated',
-          values: [
-            { id: before.values[2].values![0].id, label: 'France' },
-            { id: expect.any(String), label: 'France Created' },
-          ],
-        },
-      ],
-    });
+      const thesauri = await getThesauri();
+      const before = thesauri.find((t: any) => t.name === 'Countries')! as any;
 
-    expect(translations).toEqual([
-      {
-        _id: expect.any(ObjectId),
-        context: {
-          type: 'Thesaurus',
-          label: 'Updated Countries',
-          id: before._id.toString(),
-        },
-        key: 'Updated Countries',
-        language: 'en',
-        value: 'Updated Countries',
-      },
-      {
-        _id: expect.any(ObjectId),
-        context: {
-          type: 'Thesaurus',
-          label: 'Updated Countries',
-          id: before._id.toString(),
-        },
-        key: 'USA Updated',
-        language: 'en',
-        value: 'USA Updated',
-      },
-      {
-        _id: expect.any(ObjectId),
-        context: {
-          type: 'Thesaurus',
-          label: 'Updated Countries',
-          id: before._id.toString(),
-        },
-        key: 'Europe Updated',
-        language: 'en',
-        value: 'Europe Updated',
-      },
-      {
-        _id: expect.any(ObjectId),
-        context: {
-          type: 'Thesaurus',
-          label: 'Updated Countries',
-          id: before._id.toString(),
-        },
-        key: 'France',
-        language: 'en',
-        value: 'France',
-      },
-      {
-        _id: expect.any(ObjectId),
-        context: {
-          type: 'Thesaurus',
-          label: 'Updated Countries',
-          id: before._id.toString(),
-        },
-        key: 'Updated Countries',
-        language: 'es',
-        value: 'Countries ES',
-      },
-      {
-        _id: expect.any(ObjectId),
-        context: {
-          type: 'Thesaurus',
-          label: 'Updated Countries',
-          id: before._id.toString(),
-        },
-        key: 'USA Updated',
-        language: 'es',
-        value: 'USA ES',
-      },
-      {
-        _id: expect.any(ObjectId),
-        context: {
-          type: 'Thesaurus',
-          label: 'Updated Countries',
-          id: before._id.toString(),
-        },
-        key: 'Europe Updated',
-        language: 'es',
-        value: 'Europe ES',
-      },
-      {
-        _id: expect.any(ObjectId),
-        context: {
-          type: 'Thesaurus',
-          label: 'Updated Countries',
-          id: before._id.toString(),
-        },
-        key: 'France',
-        language: 'es',
-        value: 'France ES',
-      },
-      {
-        _id: expect.any(ObjectId),
-        key: 'Brazil Created',
-        value: 'Brazil Created',
-        language: 'en',
-        context: {
-          type: 'Thesaurus',
-          label: 'Updated Countries',
-          id: before._id.toString(),
-        },
-      },
-      {
-        _id: expect.any(ObjectId),
-        key: 'France Created',
-        value: 'France Created',
-        language: 'en',
-        context: {
-          type: 'Thesaurus',
-          label: 'Updated Countries',
-          id: before._id.toString(),
-        },
-      },
-      {
-        _id: expect.any(ObjectId),
-        key: 'Brazil Created',
-        value: 'Brazil Created',
-        language: 'es',
-        context: {
-          type: 'Thesaurus',
-          label: 'Updated Countries',
-          id: before._id.toString(),
-        },
-      },
-      {
-        _id: expect.any(ObjectId),
-        key: 'France Created',
-        value: 'France Created',
-        language: 'es',
-        context: {
-          type: 'Thesaurus',
-          label: 'Updated Countries',
-          id: before._id.toString(),
-        },
-      },
-    ]);
-
-    expect(jobs.length).toBe(1);
-    expect(jobs).toMatchObject([
-      {
-        _id: expect.any(ObjectId),
-        name: 'DenormalizeThesaurusEntitiesHandler',
-        params: {
-          tenantName: tenants.current().name,
-          thesaurusId: before._id.toString(),
-          userId: factory.id('user1').toString(),
-        },
-      },
-    ]);
-  });
-
-  it('should throw when thesaurus does not exists', async () => {
-    const { sut } = createSut();
-
-    await expect(
-      sut.execute({
-        id: new ObjectId().toString(),
+      await sut.execute({
+        id: before._id.toString(),
         name: 'Updated Countries',
-        values: [],
-      })
-    ).rejects.toThrow(ThesaurusNotFoundError);
-  });
+        values: [
+          { ...before.values[0], label: 'USA Updated' },
+          { label: 'Brazil Created' },
+          {
+            ...before.values[2],
+            label: 'Europe Updated',
+            values: [before.values[2].values![0], { label: 'France Created' }],
+          },
+          { id: 'created_on_the_client', label: 'Created on the client' },
+        ],
+      });
 
-  it('should delete and re-dispatch denormalization jobs for the updated thesaurus', async () => {
-    await getSharedConnection()
-      .collection<JobDBO>('jobs')
-      .insertMany([
+      const jobs = await getJobs();
+      const after = (await getThesauri()).find((t: any) => t.name === 'Updated Countries')!;
+      const translations = await testingEnvironment.db.getAllFrom('translationsV2');
+
+      expect(after).toEqual({
+        _id: before._id,
+        name: 'Updated Countries',
+        values: [
+          { id: before.values[0].id, label: 'USA Updated' },
+          { id: expect.any(String), label: 'Brazil Created' },
+          {
+            id: before.values[2].id,
+            label: 'Europe Updated',
+            values: [
+              { id: before.values[2].values![0].id, label: 'France' },
+              { id: expect.any(String), label: 'France Created' },
+            ],
+          },
+          { id: 'created_on_the_client', label: 'Created on the client' },
+        ],
+      });
+
+      expect(translations).toEqual([
+        {
+          _id: expect.any(ObjectId),
+          context: {
+            type: 'Thesaurus',
+            label: 'Updated Countries',
+            id: before._id.toString(),
+          },
+          key: 'Updated Countries',
+          language: 'en',
+          value: 'Updated Countries',
+        },
+        {
+          _id: expect.any(ObjectId),
+          context: {
+            type: 'Thesaurus',
+            label: 'Updated Countries',
+            id: before._id.toString(),
+          },
+          key: 'USA Updated',
+          language: 'en',
+          value: 'USA Updated',
+        },
+        {
+          _id: expect.any(ObjectId),
+          context: {
+            type: 'Thesaurus',
+            label: 'Updated Countries',
+            id: before._id.toString(),
+          },
+          key: 'Europe Updated',
+          language: 'en',
+          value: 'Europe Updated',
+        },
+        {
+          _id: expect.any(ObjectId),
+          context: {
+            type: 'Thesaurus',
+            label: 'Updated Countries',
+            id: before._id.toString(),
+          },
+          key: 'France',
+          language: 'en',
+          value: 'France',
+        },
+        {
+          _id: expect.any(ObjectId),
+          context: {
+            type: 'Thesaurus',
+            label: 'Updated Countries',
+            id: before._id.toString(),
+          },
+          key: 'Updated Countries',
+          language: 'es',
+          value: 'Countries ES',
+        },
+        {
+          _id: expect.any(ObjectId),
+          context: {
+            type: 'Thesaurus',
+            label: 'Updated Countries',
+            id: before._id.toString(),
+          },
+          key: 'USA Updated',
+          language: 'es',
+          value: 'USA ES',
+        },
+        {
+          _id: expect.any(ObjectId),
+          context: {
+            type: 'Thesaurus',
+            label: 'Updated Countries',
+            id: before._id.toString(),
+          },
+          key: 'Europe Updated',
+          language: 'es',
+          value: 'Europe ES',
+        },
+        {
+          _id: expect.any(ObjectId),
+          context: {
+            type: 'Thesaurus',
+            label: 'Updated Countries',
+            id: before._id.toString(),
+          },
+          key: 'France',
+          language: 'es',
+          value: 'France ES',
+        },
+        {
+          _id: expect.any(ObjectId),
+          key: 'Brazil Created',
+          value: 'Brazil Created',
+          language: 'en',
+          context: {
+            type: 'Thesaurus',
+            label: 'Updated Countries',
+            id: before._id.toString(),
+          },
+        },
+        {
+          _id: expect.any(ObjectId),
+          key: 'France Created',
+          value: 'France Created',
+          language: 'en',
+          context: {
+            type: 'Thesaurus',
+            label: 'Updated Countries',
+            id: before._id.toString(),
+          },
+        },
+        {
+          _id: expect.any(ObjectId),
+          key: 'Created on the client',
+          value: 'Created on the client',
+          language: 'en',
+          context: {
+            type: 'Thesaurus',
+            label: 'Updated Countries',
+            id: before._id.toString(),
+          },
+        },
+        {
+          _id: expect.any(ObjectId),
+          key: 'Brazil Created',
+          value: 'Brazil Created',
+          language: 'es',
+          context: {
+            type: 'Thesaurus',
+            label: 'Updated Countries',
+            id: before._id.toString(),
+          },
+        },
+        {
+          _id: expect.any(ObjectId),
+          key: 'France Created',
+          value: 'France Created',
+          language: 'es',
+          context: {
+            type: 'Thesaurus',
+            label: 'Updated Countries',
+            id: before._id.toString(),
+          },
+        },
+        {
+          _id: expect.any(ObjectId),
+          key: 'Created on the client',
+          value: 'Created on the client',
+          language: 'es',
+          context: {
+            type: 'Thesaurus',
+            label: 'Updated Countries',
+            id: before._id.toString(),
+          },
+        },
+      ]);
+
+      expect(jobs.length).toBe(1);
+      expect(jobs).toMatchObject([
+        {
+          _id: expect.any(ObjectId),
+          name: 'DenormalizeThesaurusEntitiesHandler',
+          params: {
+            tenantName: tenants.current().name,
+            thesaurusId: before._id.toString(),
+            userId: factory.id('user1').toString(),
+          },
+        },
+      ]);
+    });
+
+    it('should throw when thesaurus does not exists', async () => {
+      const { sut } = createSut();
+
+      await expect(
+        sut.execute({
+          id: new ObjectId().toString(),
+          name: 'Updated Countries',
+          values: [],
+        })
+      ).rejects.toThrow(ThesaurusNotFoundError);
+    });
+
+    it('should delete and re-dispatch denormalization jobs for the updated thesaurus', async () => {
+      await testingEnvironment.db.getCollection('jobs')!.insertMany([
         {
           _id: factory.id('job_1'),
           namespace: tenants.current().name,
@@ -363,209 +411,249 @@ describe('UpdateThesaurusUseCase', () => {
         },
       ]);
 
-    const { sut } = createSut();
+      const { sut } = createSut();
 
-    await sut.execute({
-      id: factory.id('countries').toString(),
-      name: 'Updated Countries',
-      values: [],
+      await sut.execute({
+        id: factory.id('countries').toString(),
+        name: 'Updated Countries',
+        values: [],
+      });
+
+      const jobs = await getJobs();
+
+      expect(jobs).toHaveLength(3);
+
+      expect(jobs).toEqual(
+        TestUtils.arrayIncludesObjects([
+          { _id: factory.id('job_1') },
+          { _id: factory.id('job_3') },
+          {
+            name: 'DenormalizeThesaurusEntitiesHandler',
+            params: expect.objectContaining({
+              thesaurusId: factory.id('countries').toString(),
+              tenantName: tenants.current().name,
+            }),
+          },
+        ])
+      );
     });
 
-    const jobs = await getJobs();
-
-    expect(jobs).toHaveLength(3);
-
-    expect(jobs).toEqual(
-      TestUtils.arrayIncludesObjects([
-        { _id: factory.id('job_1') },
-        { _id: factory.id('job_3') },
-        {
-          name: 'DenormalizeThesaurusEntitiesHandler',
-          params: expect.objectContaining({
-            thesaurusId: factory.id('countries').toString(),
-            tenantName: tenants.current().name,
-          }),
+    it('should revert when thesaurus update fails', async () => {
+      const thesaurus = await testingEnvironment.runWithContext(
+        async () => {
+          const tm = ExecutionContext.transactionManager as MongoTransactionManager;
+          return ThesauriDataSourceFactory.default({ transactionManager: tm })
+            .getById(factory.id('countries').toString())
+            .then(r => r.getDataOrThrow());
         },
-      ])
-    );
-  });
+        postgresThesauri
+          ? { tenant: { ...testingTenants.current(), featureFlags: { postgresThesauri: true } } }
+          : undefined
+      );
 
-  it('should revert when thesaurus update fails', async () => {
-    const thesaurus = await new MongoThesauriDataSourceV2(
-      getConnection(),
-      TransactionManagerFactory.default()
-    )
-      .getById(factory.id('countries').toString())
-      .then(r => r.getDataOrThrow());
+      const thesauriDS = TestUtils.mockClass<ThesauriDataSource>({
+        getById: jest.fn().mockResolvedValue({
+          getDataOrThrow: jest.fn().mockReturnValue(thesaurus),
+        }),
+        exists: jest.fn().mockResolvedValue({ getDataOrThrow: jest.fn() }),
+        update: jest.fn().mockRejectedValue(new Error('update error')),
+      });
 
-    const thesauriDS = TestUtils.mockClass<ThesauriDataSource>({
-      getById: jest.fn().mockResolvedValue({
-        getDataOrThrow: jest.fn().mockReturnValue(thesaurus),
-      }),
-      exists: jest.fn().mockResolvedValue({ getDataOrThrow: jest.fn() }),
-      update: jest.fn().mockRejectedValue(new Error('update error')),
+      const { sut } = createSut({ thesauriDS });
+
+      const thesauri = await getThesauri();
+      const thesaurusBefore = thesauri.find((t: any) => t.name === 'Countries')!;
+      const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
+      const jobsBefore = await getJobs();
+
+      await expect(
+        sut.execute({
+          id: factory.id('countries').toString(),
+          name: 'Updated Countries',
+          values: [],
+        })
+      ).rejects.toThrow('update error');
+
+      const thesauriAfter = (await getThesauri()).find((t: any) => t.name === 'Countries')!;
+      const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
+      const jobsAfter = await getJobs();
+
+      expect(thesauriAfter).toEqual(thesaurusBefore);
+      expect(translationsAfter).toEqual(translationsBefore);
+      expect(jobsAfter).toEqual(jobsBefore);
     });
 
-    const { sut } = createSut({ thesauriDS });
+    if (!postgresThesauri) {
+      it('should revert when translations update fails', async () => {
+        const thesaurusTranslationService = TestUtils.mockClass<ThesaurusTranslationService>({
+          update: jest.fn().mockRejectedValue(new Error('translation update error')),
+        });
 
-    const thesaurusBefore = await getThesaurusById(factory.id('countries'));
-    const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
-    const jobsBefore = await getJobs();
+        const { sut } = createSut({ thesaurusTranslationService });
 
-    await expect(
-      sut.execute({
-        id: factory.id('countries').toString(),
-        name: 'Updated Countries',
-        values: [],
-      })
-    ).rejects.toThrow('update error');
+        const thesauri = await getThesauri();
+        const thesaurusBefore = thesauri.find((t: any) => t.name === 'Countries')!;
+        const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
+        const jobsBefore = await getJobs();
 
-    const thesaurusAfter = await getThesaurusById(factory.id('countries'));
-    const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
-    const jobsAfter = await getJobs();
+        await expect(
+          sut.execute({
+            id: factory.id('countries').toString(),
+            name: 'Updated Countries',
+            values: [],
+          })
+        ).rejects.toThrow('translation update error');
 
-    expect(thesaurusAfter).toEqual(thesaurusBefore);
-    expect(translationsAfter).toEqual(translationsBefore);
-    expect(jobsAfter).toEqual(jobsBefore);
-  });
+        const thesauriAfter = (await getThesauri()).find((t: any) => t.name === 'Countries')!;
+        const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
+        const jobsAfter = await getJobs();
 
-  it('should revert when translations update fails', async () => {
-    const thesaurusTranslationService = TestUtils.mockClass<ThesaurusTranslationService>({
-      update: jest.fn().mockRejectedValue(new Error('translation update error')),
+        expect(thesauriAfter).toEqual(thesaurusBefore);
+        expect(translationsAfter).toEqual(translationsBefore);
+        expect(jobsAfter).toEqual(jobsBefore);
+      });
+
+      it('should revert when delete of jobs fails', async () => {
+        const dispatcher = TestUtils.mockClass<Dispatcher>({
+          denormalizeThesaurus: jest.fn().mockRejectedValue(new Error('delete jobs error')),
+        });
+
+        const { sut } = createSut({ dispatcher });
+
+        const thesauri = await getThesauri();
+        const thesaurusBefore = thesauri.find((t: any) => t.name === 'Countries')!;
+        const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
+        const jobsBefore = await getJobs();
+
+        await expect(
+          sut.execute({
+            id: factory.id('countries').toString(),
+            name: 'Updated Countries',
+            values: [],
+          })
+        ).rejects.toThrow('delete jobs error');
+
+        const thesauriAfter = (await getThesauri()).find((t: any) => t.name === 'Countries')!;
+        const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
+        const jobsAfter = await getJobs();
+
+        expect(thesauriAfter).toEqual(thesaurusBefore);
+        expect(translationsAfter).toEqual(translationsBefore);
+        expect(jobsAfter).toEqual(jobsBefore);
+      });
+
+      it('should revert when dispatching of jobs fails', async () => {
+        const dispatcher = TestUtils.mockClass<Dispatcher>({
+          denormalizeThesaurus: jest.fn().mockRejectedValue(new Error('dispatch jobs error')),
+        });
+
+        const { sut } = createSut({ dispatcher });
+
+        const thesauri = await getThesauri();
+        const thesaurusBefore = thesauri.find((t: any) => t.name === 'Countries')!;
+        const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
+        const jobsBefore = await getJobs();
+
+        await expect(
+          sut.execute({
+            id: factory.id('countries').toString(),
+            name: 'Updated Countries',
+            values: [],
+          })
+        ).rejects.toThrow('dispatch jobs error');
+
+        const thesauriAfter = (await getThesauri()).find((t: any) => t.name === 'Countries')!;
+        const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
+        const jobsAfter = await getJobs();
+
+        expect(thesauriAfter).toEqual(thesaurusBefore);
+        expect(translationsAfter).toEqual(translationsBefore);
+        expect(jobsAfter).toEqual(jobsBefore);
+      });
+    }
+
+    it('should persist reordered values without triggering translations or denormalization jobs', async () => {
+      const { sut } = createSut();
+      const thesauri = await getThesauri();
+      const existing = thesauri.find((t: any) => t.name === 'Countries')! as any;
+      const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
+
+      const reorderedValues = [
+        {
+          ...existing.values[2],
+          values: [existing.values[2].values![1], existing.values[2].values![0]],
+        },
+        existing.values[0],
+        existing.values[1],
+      ];
+
+      await sut.execute({
+        id: existing._id.toString(),
+        name: existing.name,
+        values: reorderedValues,
+      });
+
+      const after = (await getThesauri()).find((t: any) => t.name === 'Countries')! as any;
+      const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
+      const jobs = await getJobs();
+
+      expect(after.values.map((value: any) => value.id)).toEqual(
+        reorderedValues.map(value => value.id)
+      );
+      expect(after.values[0].values!.map((value: any) => value.id)).toEqual(
+        reorderedValues[0].values!.map((value: any) => value.id)
+      );
+      expect(translationsAfter).toEqual(translationsBefore);
+      expect(jobs).toHaveLength(0);
     });
 
-    const { sut } = createSut({ thesaurusTranslationService });
+    it('should do nothing when no changes are made', async () => {
+      const { sut } = createSut();
 
-    const thesaurusBefore = await getThesaurusById(factory.id('countries'));
-    const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
-    const jobsBefore = await getJobs();
+      const thesauriBefore = await getThesauri();
+      const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
+      const jobsBefore = await getJobs();
 
-    await expect(
-      sut.execute({
-        id: factory.id('countries').toString(),
-        name: 'Updated Countries',
-        values: [],
-      })
-    ).rejects.toThrow('translation update error');
+      const existing = thesauriBefore.find((t: any) => t.name === 'Countries')! as any;
 
-    const thesaurusAfter = await getThesaurusById(factory.id('countries'));
-    const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
-    const jobsAfter = await getJobs();
+      await sut.execute({
+        id: existing._id.toString(),
+        name: existing.name,
+        values: existing.values,
+      });
 
-    expect(thesaurusAfter).toEqual(thesaurusBefore);
-    expect(translationsAfter).toEqual(translationsBefore);
-    expect(jobsAfter).toEqual(jobsBefore);
-  });
+      const thesauriAfter = await getThesauri();
+      const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
+      const jobsAfter = await getJobs();
 
-  it('should revert when delete of jobs fails', async () => {
-    const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
-      deleteByParams: jest.fn().mockRejectedValue(new Error('delete jobs error')),
+      expect(thesauriAfter).toEqual(thesauriBefore);
+      expect(translationsAfter).toEqual(translationsBefore);
+      expect(jobsAfter).toEqual(jobsBefore);
     });
 
-    const { sut } = createSut({ jobsDispatcher });
+    it('should not allow updating a thesaurus name to an existing name', async () => {
+      const { sut } = createSut();
 
-    const thesaurusBefore = await getThesaurusById(factory.id('countries'));
-    const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
-    const jobsBefore = await getJobs();
+      const thesauri = await getThesauri();
+      const thesaurusBefore = thesauri.find((t: any) => t.name === 'Countries')! as any;
+      const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
+      const jobsBefore = await getJobs();
 
-    await expect(
-      sut.execute({
-        id: factory.id('countries').toString(),
-        name: 'Updated Countries',
-        values: [],
-      })
-    ).rejects.toThrow('delete jobs error');
+      await expect(
+        sut.execute({
+          id: factory.id('countries').toString(),
+          name: 'Fruits',
+          values: thesaurusBefore.values,
+        })
+      ).rejects.toEqual(new ThesaurusNameAlreadyExistsError('Fruits'));
 
-    const thesaurusAfter = await getThesaurusById(factory.id('countries'));
-    const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
-    const jobsAfter = await getJobs();
+      const thesauriAfter = (await getThesauri()).find((t: any) => t.name === 'Countries')! as any;
+      const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
+      const jobsAfter = await getJobs();
 
-    expect(thesaurusAfter).toEqual(thesaurusBefore);
-    expect(translationsAfter).toEqual(translationsBefore);
-    expect(jobsAfter).toEqual(jobsBefore);
-  });
-
-  it('should revert when dispatching of jobs fails', async () => {
-    const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
-      deleteByParams: jest.fn().mockResolvedValue(undefined),
-      dispatch: jest.fn().mockRejectedValue(new Error('dispatch jobs error')),
+      expect(thesauriAfter).toEqual(thesaurusBefore);
+      expect(translationsAfter).toEqual(translationsBefore);
+      expect(jobsAfter).toEqual(jobsBefore);
     });
-
-    const { sut } = createSut({ jobsDispatcher });
-
-    const thesaurusBefore = await getThesaurusById(factory.id('countries'));
-    const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
-    const jobsBefore = await getJobs();
-
-    await expect(
-      sut.execute({
-        id: factory.id('countries').toString(),
-        name: 'Updated Countries',
-        values: [],
-      })
-    ).rejects.toThrow('dispatch jobs error');
-
-    const thesaurusAfter = await getThesaurusById(factory.id('countries'));
-    const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
-    const jobsAfter = await getJobs();
-
-    expect(thesaurusAfter).toEqual(thesaurusBefore);
-    expect(translationsAfter).toEqual(translationsBefore);
-    expect(jobsAfter).toEqual(jobsBefore);
-  });
-
-  it('should do nothing when no changes are made', async () => {
-    const existing = await getThesaurusById(factory.id('countries'));
-
-    const thesauriDS = TestUtils.mockClass<ThesauriDataSource>({
-      getById: jest.fn().mockResolvedValue(Result.ok(MongoThesaurusMapper.toDomain(existing))),
-      update: jest.fn().mockResolvedValue(undefined),
-    });
-
-    const thesaurusTranslationService = TestUtils.mockClass<ThesaurusTranslationService>({
-      update: jest.fn().mockResolvedValue(undefined),
-    });
-
-    const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
-      deleteByParams: jest.fn().mockResolvedValue(undefined),
-      dispatch: jest.fn().mockResolvedValue(undefined),
-    });
-
-    const { sut } = createSut({ thesauriDS, thesaurusTranslationService, jobsDispatcher });
-
-    await sut.execute({
-      id: existing._id.toString(),
-      name: existing.name,
-      values: existing.values,
-    });
-
-    expect(thesauriDS.update).not.toHaveBeenCalled();
-    expect(thesaurusTranslationService.update).not.toHaveBeenCalled();
-    expect(jobsDispatcher.deleteByParams).not.toHaveBeenCalled();
-    expect(jobsDispatcher.dispatch).not.toHaveBeenCalled();
-  });
-
-  it('should not allow updating a thesaurus name to an existing name', async () => {
-    const { sut } = createSut();
-
-    const thesaurusBefore = await getThesaurusById(factory.id('countries'));
-    const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
-    const jobsBefore = await getJobs();
-
-    await expect(
-      sut.execute({
-        id: factory.id('countries').toString(),
-        name: 'Fruits',
-        values: thesaurusBefore.values,
-      })
-    ).rejects.toEqual(new ThesaurusNameAlreadyExistsError('Fruits'));
-
-    const thesaurusAfter = await getThesaurusById(factory.id('countries'));
-    const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
-    const jobsAfter = await getJobs();
-
-    expect(thesaurusAfter).toEqual(thesaurusBefore);
-    expect(translationsAfter).toEqual(translationsBefore);
-    expect(jobsAfter).toEqual(jobsBefore);
   });
 });

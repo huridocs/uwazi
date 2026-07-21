@@ -1,4 +1,4 @@
-import { PropertySchema } from 'shared/types/commonTypes';
+import { PropertySchema } from '#shared/types/commonTypes.js';
 
 function baseQuery(templateID: string, includeUnpublished: boolean, unpublishedOnly: boolean) {
   const query = {

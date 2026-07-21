@@ -1,96 +1,172 @@
-import React from 'react';
-import { useAtomValue } from 'jotai';
-import { t } from 'app/I18N';
-import { I18NLink } from 'app/I18N/I18NLinkV2';
-import { SiteName } from 'app/App/SiteName';
-import { settingsAtom } from '../../../atoms';
-import { Dropdown, DropdownItem } from './Dropdown';
-import { MobileMenuDropdown } from './MobileMenuDropdown';
-import { useIsMobile } from '../../../CustomHooks/useIsMobile';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { ChevronDownIcon } from '@heroicons/react/20/solid';
+import { t, Translate } from '#app/I18N/index.js';
+import { I18NLink } from '#app/I18N/I18NLinkV2.js';
+import { Dropdown, type DropdownItem } from './Dropdown.js';
+import { MoreMenu } from './MoreMenu.js';
 
-const createDropdownItems = (link: any): DropdownItem[] => {
-  const sublinks = link.sublinks || [];
-  return sublinks.map((sublink: any) => ({
-    title: t('Menu', sublink.title),
-    url: sublink.url || '/',
-    isExternal: (sublink.url || '/').startsWith('http'),
-  }));
+type HeaderLink = {
+  _id?: string;
+  localId?: string;
+  title: string;
+  url?: string;
+  type: 'link' | 'group';
+  sublinks?: HeaderLink[];
 };
 
-const linkContainerClasses = [
-  'py-2',
-  'border-b-2',
-  'border-transparent',
-  'hover:border-primary-600',
-  'flex',
-  'items-center',
-].join(' ');
+type MenuLinksProps = {
+  links?: HeaderLink[];
+  className?: string;
+  endOverlapPx?: number;
+};
 
-const linkInnerClasses = [
-  'p-2',
-  'text-gray-700',
-  'hover:text-primary-600',
-  'text-base',
-  'font-medium',
-  'transition-colors',
-  'rounded-xs',
-].join(' ');
+const GAP = 8;
 
-// Use !important to ensure active border overrides base border-transparent
-const activeClasses = '!border-primary-600 !text-primary-600';
+const navButtonClasses =
+  'header-bar-button flex shrink-0 items-center gap-1.5 rounded-md border px-3 py-1 text-[0.8125rem] font-medium transition-colors';
+const activeClasses = 'header-bar-button-active';
+const labelClasses = 'max-w-[12rem] truncate';
 
-const createSimpleLink = (link: any, url: string) => {
+const useIsomorphicLayoutEffect = typeof document !== 'undefined' ? useLayoutEffect : useEffect;
+
+const linkKey = (link: HeaderLink) => String(link._id ?? link.localId ?? link.title);
+const hasContent = (link: HeaderLink) => link.type !== 'group' || (link.sublinks?.length ?? 0) > 0;
+const menuLabel = (title: string): string => t('Menu', title, null, false);
+
+const toDropdownItem = (sublink: HeaderLink): DropdownItem => {
+  const url = sublink.url || '/';
+  return { title: menuLabel(sublink.title), url, isExternal: url.startsWith('http') };
+};
+
+const renderLink = (link: HeaderLink) => {
+  const label = menuLabel(link.title);
+  if (link.type === 'group') {
+    const items = (link.sublinks ?? []).map(toDropdownItem);
+    return <Dropdown key={linkKey(link)} title={label} items={items} />;
+  }
+
+  const url = link.url || '/';
   if (url.startsWith('http')) {
     return (
-      <div key={link._id} className={linkContainerClasses}>
-        <a href={url} className={linkInnerClasses} target="_blank" rel="noreferrer">
-          {t('Menu', link.title)}
-        </a>
-      </div>
+      <a
+        key={linkKey(link)}
+        href={url}
+        className={navButtonClasses}
+        target="_blank"
+        rel="noreferrer"
+      >
+        <span className={labelClasses} title={label}>
+          {label}
+        </span>
+      </a>
     );
   }
+
   return (
-    <div key={link._id} className={linkContainerClasses}>
-      <I18NLink to={url} className={linkInnerClasses} activeClassname={activeClasses}>
-        {t('Menu', link.title)}
-      </I18NLink>
-    </div>
+    <I18NLink
+      key={linkKey(link)}
+      to={url}
+      className={navButtonClasses}
+      activeClassname={activeClasses}
+    >
+      <span className={labelClasses} title={label}>
+        {label}
+      </span>
+    </I18NLink>
   );
 };
 
-const createNavLink = (link: any) => {
-  if (link === undefined) {
-    return null;
-  }
-  const type = link.type || 'link';
+const renderMeasure = (link: HeaderLink) => (
+  <span key={linkKey(link)} className={navButtonClasses}>
+    <span className={labelClasses}>{menuLabel(link.title)}</span>
+    {link.type === 'group' && <ChevronDownIcon className="h-3.5 w-3.5 shrink-0" />}
+  </span>
+);
 
-  if (type === 'link') {
-    const url = link.url || '/';
-    return createSimpleLink(link, url);
-  }
+const MenuLinks = ({ links = [], className = '', endOverlapPx = 0 }: MenuLinksProps) => {
+  const valid = links.filter(hasContent);
+  const measureKey = valid.map(link => `${linkKey(link)}:${menuLabel(link.title)}`).join('\0');
+  const containerRef = useRef<HTMLDivElement>(null);
+  const measureRef = useRef<HTMLDivElement>(null);
+  const moreRef = useRef<HTMLSpanElement>(null);
+  const [visibleCount, setVisibleCount] = useState(0);
+  const [hasMeasured, setHasMeasured] = useState(false);
 
-  const dropdownItems = createDropdownItems(link);
+  const recompute = useCallback(() => {
+    const container = containerRef.current;
+    const measure = measureRef.current;
+    if (!container || !measure) return;
+
+    const widths = Array.from(measure.children)
+      .slice(0, valid.length)
+      .map(child => (child as HTMLElement).offsetWidth);
+    const moreWidth = moreRef.current?.offsetWidth ?? 0;
+    const available = container.clientWidth + endOverlapPx;
+
+    const rowWidth = (count: number, includeMore: boolean) => {
+      if (count === 0) return includeMore ? moreWidth : 0;
+      const itemsWidth = widths
+        .slice(0, count)
+        .reduce((sum, width, index) => sum + width + (index > 0 ? GAP : 0), 0);
+      return includeMore ? itemsWidth + GAP + moreWidth : itemsWidth;
+    };
+
+    let count = 0;
+    for (let candidate = widths.length; candidate >= 0; candidate -= 1) {
+      const needsMore = candidate < widths.length;
+      if (rowWidth(candidate, needsMore) <= available) {
+        count = candidate;
+        break;
+      }
+    }
+
+    setVisibleCount(count);
+    setHasMeasured(true);
+  }, [endOverlapPx, valid.length]);
+
+  useIsomorphicLayoutEffect(() => {
+    recompute();
+    if (typeof ResizeObserver === 'undefined') return undefined;
+    const observer = new ResizeObserver(recompute);
+    const container = containerRef.current;
+    const measure = measureRef.current;
+    if (container) observer.observe(container);
+    if (measure) observer.observe(measure);
+    return () => observer.disconnect();
+  }, [recompute, measureKey]);
+
+  if (!valid.length) return null;
+
+  const visible = hasMeasured ? valid.slice(0, visibleCount) : valid;
+  const overflow = hasMeasured ? valid.slice(visibleCount) : [];
+
   return (
-    <Dropdown key={`dropdown-${link._id}`} title={t('Menu', link.title)} items={dropdownItems} />
-  );
-};
+    <nav
+      ref={containerRef}
+      className={['relative z-0 flex min-w-0 flex-1 items-center gap-2', className]
+        .filter(Boolean)
+        .join(' ')}
+      aria-label="Primary"
+      aria-busy={!hasMeasured}
+    >
+      <div
+        ref={measureRef}
+        aria-hidden="true"
+        className="pointer-events-none invisible absolute left-[-9999px] top-0 flex items-center gap-2"
+      >
+        {valid.map(renderMeasure)}
+        <span ref={moreRef} className={navButtonClasses}>
+          <Translate>More</Translate>
+          <span className="tabular-nums">99</span>
+          <ChevronDownIcon className="h-3.5 w-3.5 shrink-0" />
+        </span>
+      </div>
 
-const MenuLinks = () => {
-  const { links } = useAtomValue(settingsAtom);
-  const navLinks = links?.map(createNavLink)?.filter((v: any) => v !== null);
-  const isMobile = useIsMobile();
-
-  return (
-    <div className={`flex items-center ${isMobile ? 'gap-2' : 'gap-8'}`}>
-      {isMobile && <MobileMenuDropdown links={links} />}
-      <SiteName className="text-xl font-semibold p-2" />
-      {!isMobile && (
-        <nav className="flex items-center gap-1" aria-label="Primary">
-          {navLinks}
-        </nav>
-      )}
-    </div>
+      {visible.map(renderLink)}
+      {overflow.length > 0 && <MoreMenu links={overflow} />}
+    </nav>
   );
 };
 
 export { MenuLinks };
+export type { MenuLinksProps, HeaderLink };

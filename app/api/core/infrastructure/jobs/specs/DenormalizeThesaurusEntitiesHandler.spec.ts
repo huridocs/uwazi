@@ -1,17 +1,14 @@
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { tenants } from 'api/tenants';
 import { ObjectId } from 'mongodb';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { DenormalizeThesaurusEntitiesHandler } from '../DenormalizeThesaurusEntitiesHandler';
-import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory';
-import {
-  getConnection,
-  getSharedConnection,
-} from '../../mongodb/common/getConnectionForCurrentTenant';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { tenants } from '#api/tenants/index.js';
+import { DenormalizeThesaurusEntitiesHandler } from '../DenormalizeThesaurusEntitiesHandler.js';
+import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
+import { getSharedConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
+import { EntitiesDataSourceFactory } from '../../factories/EntitiesDataSourceFactory.js';
 
 const factory = getFixturesFactory();
 
@@ -157,7 +154,9 @@ const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
   const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
 
-  const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
+  const entitiesDS = testingEnvironment.runWithContext(() =>
+    EntitiesDataSourceFactory.default({ transactionManager })
+  );
 
   const sut = new DenormalizeThesaurusEntitiesHandler({ jobsDispatcher, entitiesDS });
 

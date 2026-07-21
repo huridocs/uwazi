@@ -1,11 +1,11 @@
 import { EventEmitter } from 'events';
 import mongoose, { Model, Document } from 'mongoose';
-import { config } from 'api/config';
-import { DB } from 'api/odm/DB';
-import { handleError } from 'api/utils';
 import { ChangeStream, MongoError } from 'mongodb';
+import { config } from '#api/config.js';
+import { DB } from '#api/odm/DB.js';
+import { handleError } from '#api/utils/index.js';
 
-import { Tenant } from './tenantContext';
+import type { Tenant } from './tenantContext.js';
 
 const schemaValidator = {
   $jsonSchema: {
@@ -28,18 +28,31 @@ const mongoSchema = new mongoose.Schema({
   attachments: String,
   customUploads: String,
   activityLogs: String,
+  domain: String,
   featureFlags: {
     s3Storage: Boolean,
     esReplicas: Number,
     sync: Boolean,
     deactivateTestJob: Boolean,
     paragraphExtraction: Boolean,
-    v2UpdateEntity: Boolean,
     fileCacheHeaders: Boolean,
-    v2UpdateThesaurus: Boolean,
+    themeCustomization: Boolean,
+    v2GetEntity: Boolean,
+    v2Languages: Boolean,
+    newHeader: Boolean,
+    postgresThesauri: Boolean,
+    postgresTemplates: Boolean,
+    postgresFiles: Boolean,
+    aiAssistant: Boolean,
+    aiAssistantServiceUrl: String,
+    v2UsersCreate: Boolean,
+    v2UsersDelete: Boolean,
+    v2UsersGet: Boolean,
+    v2UsersUpdate: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,
+  maintenance: Boolean,
 });
 
 type DBTenant = Partial<Tenant> & { name: string };
@@ -131,6 +144,15 @@ class TenantsModel extends EventEmitter {
       );
     }
     return this.model.find({}, Object.keys(mongoSchema.paths)).lean();
+  }
+
+  async setMaintenance(tenantName: string, maintenance: boolean) {
+    if (!this.model) {
+      throw new Error(
+        'tenants model has not been initialized, make sure you called initialize() method'
+      );
+    }
+    await this.model.updateOne({ name: tenantName }, { $set: { maintenance } });
   }
 }
 

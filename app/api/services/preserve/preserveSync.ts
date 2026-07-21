@@ -1,46 +1,35 @@
-import { PropertyAssignmentInput } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService';
-import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
-import { FileAttachment } from 'api/core/domain/files/FileAttachment';
-import { EntitiesDataSourceFactory } from 'api/core/infrastructure/factories/EntitiesDataSourceFactory';
-import { EntitiesServiceFactory } from 'api/core/infrastructure/factories/EntitiesServiceFactory';
-import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
-import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { ThesauriDataSourceFactory } from 'api/core/infrastructure/factories/ThesauriDataSourceFactory';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
-import templates from 'api/core/v1_layer/templates';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { legacyLogger } from 'api/log';
-import { EnforcedWithId } from 'api/odm';
-import settings from 'api/settings';
-import { tenants } from 'api/tenants';
-import thesauri from 'api/thesauri';
-import dictionariesModel from 'api/thesauri/dictionariesModel';
-import users from 'api/users/users';
-import { newThesauriId } from 'api/utils/templateUtils';
+/* eslint-disable max-statements */
 import mimetypes from 'mime-types';
-import { ObjectId } from 'mongodb';
 import path from 'path';
 import qs from 'qs';
-import request from 'shared/JSONRequest';
-import { propertyTypes } from 'shared/propertyTypes';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
-import { PreserveConfig } from 'shared/types/settingsType';
-import { TemplateSchema } from 'shared/types/templateType';
 import { Readable } from 'stream';
-import { preserveSyncModel } from './preserveSyncModel';
+import { PropertyAssignmentInput } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
+import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
+import { FileAttachment } from '#api/core/domain/files/FileAttachment.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import templates from '#api/core/v1_layer/templates/index.js';
+import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
+import { legacyLogger } from '#api/log/index.js';
+import { EnforcedWithId } from '#api/odm/index.js';
+import settings from '#api/settings/index.js';
+import { tenants } from '#api/tenants/index.js';
+import thesauri from '#api/core/v1_layer/thesauri/index.js';
+import users from '#api/users/users.js';
+import { newThesauriId } from '#api/utils/templateUtils.js';
+import request from '#shared/JSONRequest.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
 
-const thesauriValueId = async (thesauriId: ObjectIdSchema, valueLabel: string) => {
-  const [value] = await dictionariesModel.db.aggregate([
-    { $match: { _id: new ObjectId(thesauriId) } },
-    { $unwind: '$values' },
-    { $match: { 'values.label': valueLabel } },
-    { $replaceRoot: { newRoot: '$values' } },
-  ]);
-
-  return value?.id;
-};
+import { PreserveConfig } from '#shared/types/settingsType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
+import { preserveSyncModel } from './preserveSyncModel.js';
 
 const getSourceThesauriId = async (template: EnforcedWithId<TemplateSchema> | null) =>
   (template?.properties || []).find(
@@ -58,15 +47,16 @@ const extractSource = async (
   }
 
   const { hostname } = new URL(evidence.attributes.url);
-  let valueId = await thesauriValueId(sourceProperty.content || '', hostname);
   const contentThesauri = await thesauri.getById(sourceProperty.content);
+  let valueId = contentThesauri?.values?.find(v => v.label === hostname)?.id;
 
   if (!valueId && contentThesauri) {
     valueId = newThesauriId();
-    await dictionariesModel.db.updateOne(
-      { _id: sourceProperty.content },
-      { $push: { values: { label: hostname, id: valueId } } }
-    );
+    await thesauri.save({
+      _id: contentThesauri._id,
+      name: contentThesauri.name,
+      values: [...(contentThesauri.values || []), { label: hostname, id: valueId }],
+    });
   }
 
   return valueId ? { source: [{ value: valueId }] } : {};
@@ -114,9 +104,9 @@ const saveEvidence =
 
       // Set up V2 services
       const transactionManager = TransactionManagerFactory.default();
-      const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
-      const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-      const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
+      const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
+      const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+      const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
       const translationsDS = DefaultTranslationsDataSource(transactionManager);
 
       const propertyAssignmentStrategy = PropertyAssignmentCreatorServiceStrategy.create({
@@ -176,7 +166,7 @@ const saveEvidence =
       const { sharedId } = entity;
 
       const attachments: FileAttachment[] = [];
-      const filesService = FilesServiceFactory.default(transactionManager);
+      const filesService = FilesServiceFactory.default({ transactionManager });
 
       await Promise.all(
         evidence.attributes.downloads.map(async (download: any) => {
@@ -204,11 +194,14 @@ const saveEvidence =
 
       await filesService.storeFiles(attachments);
 
+      const defaultLanguage = await settings.getDefaultLanguage();
+
       await transactionManager.run(async () => {
         await filesService.insert(attachments);
-        await entitiesService.insert(entity, {
+        await entitiesService.insert([entity], {
           tenantName: tenants.current().name,
           actorId: user?._id?.toString() || 'system',
+          targetLanguage: defaultLanguage.key,
         });
       });
 
@@ -223,17 +216,16 @@ const preserveSync = {
   async syncAllTenants() {
     return Object.keys(tenants.tenants).reduce(async (previous, tenantName) => {
       await previous;
-      return tenants.run(async () => {
+      return runInJobContext(tenantName, async () => {
         const { features } = await settings.get({}, 'features.preserve');
         if (features?.preserve) {
           await this.sync(features.preserve);
         }
-      }, tenantName);
+      });
     }, Promise.resolve());
   },
 
   async sync(preserveConfig: PreserveConfig) {
-    // eslint-disable-next-line no-restricted-syntax
     await preserveConfig.config.reduce(async (promise, config) => {
       await promise;
       const preservationSync = await preserveSyncModel.db.findOne({ token: config.token }, {});

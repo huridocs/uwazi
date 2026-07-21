@@ -1,9 +1,9 @@
-import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
-import { ATConfigDataSource } from './contracts/ATConfigDataSource';
-import { GenerateATConfigError } from './errors/generateATErrors';
-import { Validator } from './infrastructure/Validator';
-import { ATTemplateConfig } from './model/ATConfig';
-import { SemanticConfig } from './types/SemanticConfig';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { ATConfigDataSource } from './contracts/ATConfigDataSource.js';
+import { GenerateATConfigError } from './errors/generateATErrors.js';
+import { Validator } from './infrastructure/Validator.js';
+import { ATTemplateConfig } from './model/ATConfig.js';
+import { SemanticConfig } from './types/SemanticConfig.js';
 
 export class GenerateAutomaticTranslationsCofig {
   private atuomaticTranslationConfigDS: ATConfigDataSource;
@@ -25,9 +25,9 @@ export class GenerateAutomaticTranslationsCofig {
   async execute(semanticConfig: SemanticConfig | unknown) {
     this.validator.ensure(semanticConfig);
 
-    const templatesData = await this.templatsDS
-      .getByNames(semanticConfig.templates.map(t => t.template))
-      .all();
+    const templatesData = await this.templatsDS.getByNames(
+      semanticConfig.templates.map(t => t.template)
+    );
 
     const templates = semanticConfig.templates.map(configData => {
       const templateData = templatesData.find(t => t.name === configData.template);

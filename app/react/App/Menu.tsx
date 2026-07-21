@@ -1,26 +1,27 @@
-/* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { useLocation } from 'react-router';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { fromJS } from 'immutable';
-import { wrapDispatch } from 'app/Multireducer';
-import { NeedAuthorization } from 'app/Auth';
-import { I18NLink, I18NLinkV2, I18NMenu, t, Translate } from 'app/I18N';
-import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
-import { showSemanticSearch as showSemanticSearchAction } from 'app/SemanticSearch/actions/actions';
-import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
-import { libraryViewInfo } from 'app/App/libraryViewInfo';
-import { Icon } from 'UI';
-import { actions } from 'app/BasicReducer';
-import { IStore } from 'app/istore';
-import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers';
-import { DropdownMenu } from './DropdownMenu';
+import Immutable from 'immutable';
+import { wrapDispatch } from '#app/Multireducer/index.js';
+import { NeedAuthorization } from '#app/Auth/index.js';
+import { I18NLink, I18NLinkV2, I18NMenu, t, Translate } from '#app/I18N/index.js';
+import { processFilters, encodeSearch } from '#app/Library/actions/libraryActions.js';
+import { libraryViewInfo } from '#app/App/libraryViewInfo.js';
+import { Icon } from '#app/UI/index.js';
+import { actions } from '#app/BasicReducer/index.js';
+import { IStore } from '#app/istore.js';
+import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
+import type { ClientSettingsLinkSchema } from '#app/apiResponseTypes.js';
+import type { IImmutable } from '#shared/types/Immutable.js';
+import { RequestStatus } from '#V2/Components/UI/Notifications/RequestStatus.js';
+import { DropdownMenu } from './DropdownMenu.js';
 
 interface MenuProps {
   className: string;
-  defaultLibraryView: any;
+  defaultLibraryView?: string;
   toggleMobileMenu: (visible: boolean) => void;
+  isMobile: boolean;
 }
 
 const mapStateToProps = (state: IStore) => {
@@ -38,7 +39,6 @@ const mapStateToProps = (state: IStore) => {
 const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
   bindActionCreators(
     {
-      showSemanticSearch: showSemanticSearchAction,
       setSidePanelView: actions.set.bind(null, 'library.sidepanel.view'),
     },
     wrapDispatch(dispatch, 'library')
@@ -48,6 +48,21 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector> & MenuProps;
 
+const isLibraryView = (value: string | undefined): value is keyof typeof libraryViewInfo =>
+  typeof value === 'string' && value in libraryViewInfo;
+
+const legacyBeaconSlotStyle: React.CSSProperties = {
+  marginLeft: 'auto',
+  flexShrink: 0,
+  display: 'flex',
+  alignItems: 'center',
+  padding: '0 8px',
+  minWidth: '48px',
+};
+
+const menuLinkKey = (link: IImmutable<ClientSettingsLinkSchema>, index: number): string =>
+  String(link.get('_id') ?? `${link.get('type') ?? 'link'}-${link.get('title')}-${index}`);
+
 const MenuComponent = ({
   librarySearch,
   libraryFilters,
@@ -55,11 +70,12 @@ const MenuComponent = ({
   className,
   toggleMobileMenu,
   setSidePanelView,
-  showSemanticSearch,
-  links = fromJS([]),
-  defaultLibraryView = 'cards',
+  links = Immutable.fromJS([]),
+  defaultLibraryView,
   privateInstance,
+  isMobile,
 }: mappedProps) => {
+  const resolvedLibraryView = isLibraryView(defaultLibraryView) ? defaultLibraryView : 'cards';
   const hideMobileMenu = () => toggleMobileMenu(false);
 
   const libraryUrl = () => {
@@ -70,8 +86,7 @@ const MenuComponent = ({
     const newParams = processFilters(librarySearch, libraryFilters.toJS());
     newParams.searchTerm = searchTerm;
 
-    // @ts-ignore
-    return `/${libraryViewInfo[defaultLibraryView].url}/${encodeSearch(newParams)}`;
+    return `/${libraryViewInfo[resolvedLibraryView].url}/${encodeSearch(newParams)}`;
   };
 
   const navLinks = links
@@ -85,7 +100,7 @@ const MenuComponent = ({
         const url = link.get('url') || '/';
         if (url.startsWith('http')) {
           return (
-            <li key={link.get('_id')} className="menuNav-item">
+            <li key={menuLinkKey(link, index!)} className="menuNav-item">
               <a href={url} className="btn menuNav-btn" target="_blank" rel="noreferrer">
                 {t('Menu', link.get('title'))}
               </a>
@@ -93,7 +108,7 @@ const MenuComponent = ({
           );
         }
         return (
-          <li key={link.get('_id')} className="menuNav-item">
+          <li key={menuLinkKey(link, index!)} className="menuNav-item">
             <I18NLink
               to={url}
               className="btn menuNav-btn"
@@ -108,9 +123,9 @@ const MenuComponent = ({
 
       return (
         <DropdownMenu
-          link={fromJS(link.toJS())}
+          link={Immutable.fromJS(link.toJS())}
           position={index!}
-          key={index}
+          key={menuLinkKey(link, index!)}
           hideMobileMenu={hideMobileMenu}
         />
       );
@@ -126,24 +141,16 @@ const MenuComponent = ({
       <li className="menuItems">
         <ul className="menuNav-list">{navLinks}</ul>
       </li>
+      {!isMobile && (
+        <li className="menuNav-item only-desktop" style={legacyBeaconSlotStyle}>
+          <div className="tw-content">
+            <RequestStatus />
+          </div>
+        </li>
+      )}
       <I18NMenu />
       <li className="menuActions mobile-menuActions">
         <ul className="menuNav-list">
-          <FeatureToggleSemanticSearch>
-            <li className="menuNav-item semantic-search">
-              <button
-                type="button"
-                onClick={showSemanticSearch}
-                className="menuNav-btn btn btn-default"
-                aria-label={t('System', 'Semantic search', null, false)}
-              >
-                <Icon icon="flask" />
-                <span className="tab-link-tooltip">
-                  <Translate>Semantic search</Translate>
-                </span>
-              </button>
-            </li>
-          </FeatureToggleSemanticSearch>
           {(!privateInstance || (privateInstance === true && user?.get('_id'))) && (
             <li className="menuNav-item">
               <I18NLink
@@ -156,8 +163,7 @@ const MenuComponent = ({
                 activeclassname="active-link"
                 aria-label={t('System', 'Library', null, false)}
               >
-                {/* @ts-expect-error */}
-                <Icon icon={libraryViewInfo[defaultLibraryView].icon} />
+                <Icon icon={libraryViewInfo[resolvedLibraryView].icon} />
                 <span className="tab-link-label">
                   <Translate>Library</Translate>
                 </span>

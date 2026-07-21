@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 /* eslint-disable max-statements */
-import { highlightSnippetInPage, clearSnippets } from '../snippetToHighlight';
+import { highlightSnippetInPage, clearSnippets, tryHighlightAndScroll } from '../handleSnippets.js';
 
 const joinText = (nodes: NodeListOf<Element>): string =>
   Array.from(nodes)
@@ -217,5 +217,39 @@ describe('snippetToHighlight', () => {
     const marks2 = container.querySelectorAll('mark');
     const marks2Text = joinText(marks2);
     expect(marks2Text).toContain('multiple');
+  });
+
+  describe('tryHighlightAndScroll', () => {
+    const originalScrollIntoView = Element.prototype.scrollIntoView;
+
+    afterEach(() => {
+      Element.prototype.scrollIntoView = originalScrollIntoView;
+    });
+
+    it('should return true and scroll when a highlight is found', () => {
+      const scrollIntoView = jest.fn();
+      Element.prototype.scrollIntoView = scrollIntoView;
+
+      const didHighlight = tryHighlightAndScroll(container, {
+        text: 'Page 1 <b>contains</b> some text',
+        page: 1,
+      });
+
+      expect(didHighlight).toBe(true);
+      expect(scrollIntoView).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return false and not scroll when no highlight is found', () => {
+      const scrollIntoView = jest.fn();
+      Element.prototype.scrollIntoView = scrollIntoView;
+
+      const didHighlight = tryHighlightAndScroll(container, {
+        text: 'This snippet does not exist in the page',
+        page: 1,
+      });
+
+      expect(didHighlight).toBe(false);
+      expect(scrollIntoView).not.toHaveBeenCalled();
+    });
   });
 });

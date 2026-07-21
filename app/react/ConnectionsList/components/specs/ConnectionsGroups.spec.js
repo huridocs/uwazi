@@ -1,9 +1,9 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as Immutable } from 'immutable';
+import Immutable from 'immutable';
 
-import { ConnectionsGroups } from '../ConnectionsGroups';
-import ConnectionsGroup from '../ConnectionsGroup';
+import { ConnectionsGroupsView } from '../ConnectionsGroups.js';
+import { ConnectionsGroupConnected as ConnectionsGroup } from '../ConnectionsGroup.js';
 
 describe('ConnectionsGroups', () => {
   let component;
@@ -11,7 +11,7 @@ describe('ConnectionsGroups', () => {
 
   beforeEach(() => {
     props = {
-      connectionsGroups: Immutable([
+      connectionsGroups: Immutable.fromJS([
         { key: 'g1', templates: [{ _id: 't1', count: 1 }] },
         {
           key: 'g2',
@@ -26,7 +26,7 @@ describe('ConnectionsGroups', () => {
   });
 
   const render = () => {
-    component = shallow(<ConnectionsGroups.WrappedComponent {...props} />);
+    component = shallow(<ConnectionsGroupsView {...props} />);
   };
 
   describe('when there are connectionsGroups', () => {
@@ -43,7 +43,7 @@ describe('ConnectionsGroups', () => {
 
   describe('when there are no connectionsGroups', () => {
     it('should render each individual ConnectionsGroup', () => {
-      props.connectionsGroups = Immutable([]);
+      props.connectionsGroups = Immutable.fromJS([]);
       render();
 
       expect(component.find(ConnectionsGroup).length).toBe(0);

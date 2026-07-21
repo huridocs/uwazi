@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
-import { MatchQueryNode } from '../model/MatchQueryNode';
-import { TraversalQueryNode } from '../model/TraversalQueryNode';
+import { MatchQueryNode } from '../model/MatchQueryNode.js';
+import { TraversalQueryNode } from '../model/TraversalQueryNode.js';
 
 const parentDirectionToField = {
   in: 'from',
@@ -74,9 +74,11 @@ const compilers = {
             },
             ...query
               .getMatches()
-              .reduce<
-                object[]
-              >((reduced, nested, nestedIndex) => reduced.concat(compilers.match(nested, nestedIndex, language)), []),
+              .reduce<object[]>(
+                (reduced, nested, nestedIndex) =>
+                  reduced.concat(compilers.match(nested, nestedIndex, language)),
+                []
+              ),
             ...projectAndArrangeTraversals(query.getProjection(), query.getMatches().length),
             ...unwind(query.getMatches().length),
           ],
@@ -116,9 +118,11 @@ const compilers = {
             },
             ...query
               .getTraversals()
-              .reduce<
-                object[]
-              >((reduced, nested, nestedIndex) => reduced.concat(compilers.traversal(nested, nestedIndex, language)), []),
+              .reduce<object[]>(
+                (reduced, nested, nestedIndex) =>
+                  reduced.concat(compilers.traversal(nested, nestedIndex, language)),
+                []
+              ),
             ...projectAndArrangeTraversals({ sharedId: 1, title: 1 }, query.getTraversals().length),
             ...unwind(query.getTraversals().length),
           ],
@@ -150,9 +154,11 @@ const compilers = {
       },
       ...query
         .getTraversals()
-        .reduce<
-          object[]
-        >((reduced, nested, nestedIndex) => reduced.concat(compilers.traversal(nested, nestedIndex, language)), []),
+        .reduce<object[]>(
+          (reduced, nested, nestedIndex) =>
+            reduced.concat(compilers.traversal(nested, nestedIndex, language)),
+          []
+        ),
       ...projectAndArrangeTraversals({ sharedId: 1, title: 1 }, query.getTraversals().length),
       ...unwind(query.getTraversals().length),
     ];

@@ -1,7 +1,12 @@
 import React, { ReactNode } from 'react';
-import { handledErrors } from 'V2/shared/errorUtils';
-import type { RequestError } from 'V2/shared/errorUtils';
-import { ErrorFallback } from './ErrorFallback';
+import {
+  handledErrors,
+  isChunkLoadError,
+  tryChunkErrorReload,
+  normalizeRouteError,
+} from '#V2/shared/errorUtils.js';
+import type { RequestError } from '#V2/shared/errorUtils.js';
+import { ErrorFallback } from './ErrorFallback.js';
 
 interface ErrorBoundaryProps {
   error?: Error | RequestError;
@@ -22,15 +27,14 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryPro
   }
 
   componentDidCatch(e: Error) {
-    const currentError = e as RequestError;
-    this.setState({
-      error: currentError,
-    });
+    if (isChunkLoadError(e) && tryChunkErrorReload()) return;
+    this.setState({ error: e as RequestError });
   }
 
   render() {
-    const currentError = (this.props.error || this.state.error) as RequestError;
-    if (currentError) {
+    const rawError = this.props.error || this.state.error;
+    if (rawError) {
+      const currentError = normalizeRouteError(rawError) as RequestError;
       const error = handledErrors[currentError.status] || {
         ...currentError,
         message: (currentError.message =

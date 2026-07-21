@@ -1,11 +1,11 @@
-import * as entitiesIndex from 'api/search/entitiesIndex';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { Application, NextFunction } from 'express';
-import { TemplateSchema } from 'shared/types/templateType';
+import * as entitiesIndex from '#api/search/entitiesIndex.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import type { Application, NextFunction } from 'express';
+import { TemplateSchema } from '#shared/types/templateType.js';
 import request from 'supertest';
-import templateRoutes from '../routes';
-import { fixtureFactory, fixtures } from './routesFixtures';
+import templateRoutes from '../routes.js';
+import { fixtureFactory, fixtures } from './routesFixtures.js';
 
 jest.mock(
   '../../../../../auth/authMiddleware.ts',
@@ -21,6 +21,7 @@ const emitToCurrentTenantSpy = jest.fn();
 describe('templates routes', () => {
   const app: Application = setUpApp(templateRoutes, (req, _res, next: NextFunction) => {
     req.sockets = { emitToCurrentTenant: emitToCurrentTenantSpy };
+    req.user = { _id: 'admin', role: 'admin', username: 'admin' };
     next();
   });
 

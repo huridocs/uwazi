@@ -1,16 +1,16 @@
-import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { Entity } from 'api/entities.v2/model/Entity';
-import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
-import { RelationshipType } from 'api/relationshiptypes.v2/model/RelationshipType';
-import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
-import { Template } from 'api/core/domain/template/Template';
-import { objectIndex } from 'shared/data_utils/objectIndex';
-import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
-import { Relationship, ReadableRelationship } from '../model/Relationship';
+import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
+import { DeprecatedEntitiesDataSource } from '#api/entities.v2/contracts/DeprecatedEntitiesDataSource.js';
+import { DeprecatedEntity } from '#api/entities.v2/model/Entity.js';
+import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
+import { RelationshipType } from '#api/relationshiptypes.v2/model/RelationshipType.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { Template } from '#api/core/domain/template/Template.js';
+import { objectIndex } from '#shared/data_utils/objectIndex.js';
+import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource.js';
+import { Relationship, ReadableRelationship } from '../model/Relationship.js';
 
 const resolveNames = (
-  allowedEntities: Entity[],
+  allowedEntities: DeprecatedEntity[],
   allowedTemplates: Template[],
   allowedRelTypes: RelationshipType[],
   allowedRelationships: Relationship[]
@@ -49,7 +49,7 @@ class GetRelationshipService {
 
   private authService: AuthorizationService;
 
-  private entitiesDS: EntitiesDataSource;
+  private entitiesDS: DeprecatedEntitiesDataSource;
 
   private templatesDS: TemplatesDataSource;
 
@@ -58,7 +58,7 @@ class GetRelationshipService {
   constructor(
     relationshipsDS: RelationshipsDataSource,
     authService: AuthorizationService,
-    entitiesDS: EntitiesDataSource,
+    entitiesDS: DeprecatedEntitiesDataSource,
     templatesDS: TemplatesDataSource,
     relationshipTypesDS: RelationshipTypesDataSource
   ) {
@@ -74,9 +74,9 @@ class GetRelationshipService {
     const allowedRelationships = await this.authService.filterRelationships(relationships, 'read');
     const allowedSharedIds = Relationship.getSharedIds(allowedRelationships);
     const allowedEntities = await this.entitiesDS.getByIds([...allowedSharedIds]).all();
-    const allowedTemplates = await this.templatesDS
-      .getByIds(allowedEntities.map(entity => entity.template))
-      .all();
+    const allowedTemplates = await this.templatesDS.getByIds(
+      allowedEntities.map(entity => entity.template)
+    );
     const allowedRelTypes = await this.relationshipTypesDS
       .getByIds(allowedRelationships.map(relationship => relationship.type))
       .all();

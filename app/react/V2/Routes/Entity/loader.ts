@@ -1,25 +1,37 @@
 import { LoaderFunction } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
-import { FetchResponseError } from 'shared/JSONRequest';
-import { getStore } from 'shared/atomStore';
-import { isClient } from 'app/utils';
-import { localeAtom } from 'V2/atoms';
-import { getPagePlaintext } from 'V2/api/files';
-import { snippets } from 'V2/api/search';
-import { SnippetsSearchResponse } from 'V2/api/types';
-import { getEntityCompositionUseCase } from 'V2/application/container/singletons';
-import { fullDetailOptions } from 'V2/application/optionsPresets';
-import { entityLoaderCache } from './EntityLoaderCache';
-import { PAGE_PARAM, SEARCH_PARAM, VIEW_MODE_PARAM } from './Components';
-import { LoaderResponse } from './types';
+import { FetchResponseError } from '#shared/JSONRequest.js';
+import { getStore } from '#shared/atomStore/index.js';
+import { isClient } from '#app/utils/index.js';
+import { localeAtom, settingsAtom } from '#app/V2/atoms/index.js';
+import { getPagePlaintext } from '#V2/api/files/index.js';
+import { snippets } from '#V2/api/search/index.js';
+import { SnippetsSearchResponse } from '#V2/api/types.js';
+import { ApiError } from '#shared/apiClient/index.js';
+import type { V2Services } from '#V2/services/types.js';
+import { httpServices } from '#V2/services/http/index.js';
+import { apiErrorToRequestError } from '#V2/shared/errorUtils.js';
+import { getMainDocument } from '#V2/formatters/index.js';
+import { entityLoaderCache } from './EntityLoaderCache.js';
+import { PAGE_PARAM, SEARCH_PARAM, VIEW_MODE_PARAM } from './Components/index.js';
+import { LoaderResponse } from './types.js';
 
-const entityLoader =
+const entityNotFoundError = (sharedId: string) =>
+  new ApiError('Not found', {
+    kind: 'http',
+    status: 404,
+    detail: `Entity ${sharedId} not found`,
+  });
+
+const createEntityLoader =
+  (services: V2Services) =>
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   // eslint-disable-next-line max-statements
   async ({ params, request }): Promise<LoaderResponse> => {
     const entitySharedId = params.sharedId;
     const atomStore = getStore();
     const language = params.lang || atomStore.get(localeAtom);
+    const defaultLanguage = atomStore.get(settingsAtom)?.languages?.find(l => l.default)?.key;
     const { searchParams } = new URL(request.url);
     const currentPage = searchParams.get(PAGE_PARAM) || '1';
     const currentSearchTerm = searchParams.get(SEARCH_PARAM);
@@ -29,51 +41,43 @@ const entityLoader =
       return undefined;
     }
 
-    let entity = entityLoaderCache.getEntity(entitySharedId, language);
+    let entity = entityLoaderCache.getEntity(entitySharedId, language, {
+      requireRelationships: true,
+    });
+    let mainDocument = entityLoaderCache.getMainDocument(entitySharedId, language);
     let pagePlaintext: string | undefined = '';
     let searchResults: SnippetsSearchResponse | undefined;
 
     if (!entity?._id) {
-      const entityCompositionUseCase = await getEntityCompositionUseCase();
+      const [fetchedEntity, error] = await services.entities.getBySharedId(entitySharedId, {
+        language,
+        omitRelationships: false,
+        headers,
+      });
 
-      const composition = await entityCompositionUseCase.composeEntity(
-        entitySharedId,
-        fullDetailOptions,
-        {
-          headers,
-        }
-      );
+      if (error) throw apiErrorToRequestError(error);
 
-      if (!composition.success || !composition.entity) {
-        throw new Response(
-          JSON.stringify({
-            error: 'Failed to load entity',
-            message: composition.error || 'Entity not found',
-            entityId: entitySharedId,
-          }),
-          {
-            status: 404,
-            statusText: 'Entity Not Found',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
+      if (!fetchedEntity?.[0]?._id) {
+        throw apiErrorToRequestError(entityNotFoundError(entitySharedId));
       }
 
-      entity = composition.entity;
+      [entity] = fetchedEntity;
       entityLoaderCache.setEntity(entitySharedId, language, entity);
     }
 
-    if (entity.mainDocument?.[0]._id && (isRaw || !isClient)) {
-      pagePlaintext = entityLoaderCache.getPlaintext(
-        entity.mainDocument[0]._id as string,
-        Number(currentPage)
-      );
+    if (!mainDocument && entity?.sharedId) {
+      mainDocument = getMainDocument(entity.documents, language, defaultLanguage);
+      if (mainDocument) {
+        entityLoaderCache.setMainDocument(entity.sharedId, language, mainDocument);
+      }
+    }
+
+    if (mainDocument?._id && (isRaw || !isClient)) {
+      pagePlaintext = entityLoaderCache.getPlaintext(mainDocument._id, Number(currentPage));
 
       if (!pagePlaintext) {
         const response = await getPagePlaintext(
-          entity.mainDocument[0]._id as string,
+          mainDocument._id,
           Number.parseInt(currentPage, 10),
           headers
         );
@@ -95,16 +99,12 @@ const entityLoader =
           );
         } else {
           pagePlaintext = response;
-          entityLoaderCache.setPlaintext(
-            entity.mainDocument[0]._id as string,
-            Number(currentPage),
-            pagePlaintext
-          );
+          entityLoaderCache.setPlaintext(mainDocument._id, Number(currentPage), pagePlaintext);
         }
       }
     }
 
-    if (currentSearchTerm && entity.sharedId) {
+    if (currentSearchTerm && entity?.sharedId) {
       searchResults = entityLoaderCache.getSearchResults(
         entity.sharedId,
         language,
@@ -130,7 +130,9 @@ const entityLoader =
       }
     }
 
-    return { entity, pagePlaintext, searchResults };
+    return { entity, mainDocument, pagePlaintext, searchResults };
   };
 
-export { entityLoader };
+const entityLoader = createEntityLoader(httpServices);
+
+export { createEntityLoader, entityLoader };

@@ -1,36 +1,33 @@
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { ProcessingPDF } from 'api/core/domain/files/ProcessingPDF';
-import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
-import { Thumbnail } from 'api/core/domain/files/Thumbnail';
-import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
-import { FileCreatedEvent } from 'api/files/events/FileCreatedEvent';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants';
-import date from 'api/utils/date';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { ObjectId } from 'mongodb';
-import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
-import { BaseFile } from '../domain/files/BaseFile';
-import { FileContentsIO } from '../infrastructure/files/FileContentIO';
-import { PDFPostProcessJobHandler } from '../infrastructure/jobs/PDFPostProcessJobHandler';
-import { FileMappers } from '../infrastructure/mongodb/files/FilesMappers';
-import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource';
-import { PDFService } from '../infrastructure/services/PDFService';
-import { EventsBus } from '../libs/eventsbus';
-import { JobsDispatcher } from '../libs/queue/application/contracts/JobsDispatcher';
-import { Result } from '../libs/Result';
-import { IdGenerator } from './contracts/IdGenerator';
-import { TransactionManager } from './contracts/TransactionManager';
-import { DeleteFileFromStorageJobHandler } from '../infrastructure/jobs/DeleteFileFromStorageJobHandler';
-import { PathManager } from '../infrastructure/files/PathManager';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { FileAttachment } from '#api/core/domain/files/FileAttachment.js';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
+import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
+import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
+import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
+import date from '#api/utils/date.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
+import { BaseFile } from '../domain/files/BaseFile.js';
+import { FileContentsIO } from '../infrastructure/files/FileContentIO.js';
+import { FileMappers } from '../infrastructure/mongodb/files/FilesMappers.js';
+import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { PDFService } from '../infrastructure/services/PDFService.js';
+import { EventsBus } from '../libs/eventsbus/index.js';
+import { Dispatcher } from './contracts/Dispatcher.js';
+import { Result } from '../libs/Result.js';
+import { IdGenerator } from './contracts/IdGenerator.js';
+import { TransactionManager } from './contracts/TransactionManager.js';
+import { PathManager } from '../infrastructure/files/PathManager.js';
+import { CannotTransformFileToAttachment } from '../domain/files/errors.js';
 
 type Deps = {
   idGenerator: IdGenerator;
   fileStorage: FileStorage;
   filesDS: FilesDataSource;
-  jobsDispatcher: JobsDispatcher;
+  jobsDispatcher: Dispatcher;
   pdfService: PDFService;
   filesIO: FileContentsIO;
   relV1DS: MongoRelationshipsV1DataSource;
@@ -39,12 +36,20 @@ type Deps = {
   pathManager: PathManager;
 };
 
+type FilesServiceContext = {
+  userId?: string;
+  tenantName?: string;
+};
+
 function isNonEmptyArray<T>(arr: T[]): arr is [T, ...T[]] {
   return arr.length > 0;
 }
 
 class FilesService {
-  constructor(protected deps: Deps) {}
+  constructor(
+    protected deps: Deps,
+    private context: FilesServiceContext = {}
+  ) {}
 
   async storeFiles(files: BaseFile[]) {
     await ArrayUtils.sequentialFor(
@@ -65,49 +70,37 @@ class FilesService {
    * transactionManager.run(). Events are emitted only after the transaction
    * successfully commits to ensure data consistency.
    *
+   * Actor (userId) and tenant (tenantName) are injected at construction time via
+   * FilesServiceFactory, which reads them from ExecutionContext. Do not pass them
+   * as method arguments.
+   *
    * @param files - Array of BaseFile domain objects to insert
-   * @throws {Error} If PDFPostProcess is dispatched but no user context exists
-   *
-   * @example
-   * // For use cases (typical pattern):
-   * await this.transactionManager.run(async () => {
-   *   await this.deps.filesService.insert([file]);
-   * });
-   * // FileCreatedEvent is emitted automatically after commit
-   *
-   * @example
-   * // For external integrations (PreserveSync, etc.):
-   * const transactionManager = TransactionManagerFactory.default();
-   * const filesService = FilesServiceFactory.default(transactionManager);
-   *
-   * // 1. Store files to disk first
-   * await filesService.storeFiles([attachment]);
-   *
-   * // 2. Insert within transaction
-   * await transactionManager.run(async () => {
-   *   await filesService.insert([attachment]);
-   * });
-   * // FileCreatedEvent is emitted automatically after commit
+   * @throws {Error} If PDFDocument files in processing status are inserted but no userId/tenantName in context
    */
   async insert(files: BaseFile[]) {
     if (isNonEmptyArray<BaseFile>(files)) {
       await this.deps.filesDS.bulkCreate(files);
 
-      await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
-        files.forEach(file => {
-          if (file instanceof ProcessingPDF) {
-            const userId = permissionsContext.getUserInContext()?._id?.toString();
-            if (!userId) {
-              throw new Error('PDFPostProcess needs a user Id');
-            }
-            dispatch(PDFPostProcessJobHandler, {
-              tenantName: tenants.current().name,
-              documentId: file.id,
-              userId,
-            });
+      const processingPDFs = files
+        .filter((f): f is PDFDocument => f instanceof PDFDocument && f.isProcessing())
+        .map(f => {
+          const { userId, tenantName } = this.context;
+          if (!userId) {
+            throw new Error('PDFPostProcess needs a user Id');
           }
+          if (!tenantName) {
+            throw new Error('PDFPostProcess needs a tenant name');
+          }
+          return {
+            tenantName,
+            documentId: f.id,
+            userId,
+          };
         });
-      });
+
+      if (processingPDFs.length > 0) {
+        await this.deps.jobsDispatcher.postProcessPDFs(processingPDFs);
+      }
 
       this.deps.transactionManager.onCommitted(async () => {
         await ArrayUtils.sequentialFor(files, async file => {
@@ -130,23 +123,14 @@ class FilesService {
     await this.deps.filesDS.bulkUpdate(_files);
 
     this.deps.transactionManager.onCommitted(async () => {
-      await ArrayUtils.sequentialFor(_files, async file => {
-        const after = file.toDTO();
-        const before = file.previousVersion?.toDTO();
-        if (!before) return;
-
-        await this.deps.eventBus.emit(
-          new FileUpdatedEvent({
-            after,
-            before,
-          })
-        );
-      });
+      await ArrayUtils.sequentialFor(_files, async file =>
+        this.deps.eventBus.emit(FileUpdatedEvent.create(file))
+      );
     });
   }
 
   async deleteEntityFiles(entitySharedIds: string[]) {
-    const files = await this.deps.filesDS.getByEntitiesIds(entitySharedIds).all();
+    const files = await this.deps.filesDS.getByEntitiesIds(entitySharedIds);
     if (isNonEmptyArray(files)) {
       await this.delete(files);
     }
@@ -154,9 +138,12 @@ class FilesService {
 
   async delete(files: BaseFile[]) {
     if (!files.length) return;
-    const thumbnails = await this.deps.filesDS
-      .getThumbnails(files.filter(f => f instanceof ProcessedPDF))
-      .all();
+    const pdfDocuments = files.filter(
+      (f): f is PDFDocument => f instanceof PDFDocument && f.isReady()
+    );
+    const thumbnails = await this.deps.filesDS.getThumbnailsForProcessedPDFs(
+      pdfDocuments.map(f => f.id)
+    );
 
     const allFilesToDelete = [...files, ...thumbnails];
 
@@ -166,20 +153,49 @@ class FilesService {
     await this.deps.relV1DS.deleteByFiles(contentFiles);
 
     this.deps.transactionManager.onCommitted(async () => {
-      await this.deps.eventBus.emit(
-        new FilesDeletedEvent({ files: allFilesToDelete.map(f => FileMappers.toDBO(f)) })
+      await this.deps.eventBus.emit(FilesDeletedEvent.create(allFilesToDelete));
+      await this.deps.jobsDispatcher.deleteFilesFromStorage(
+        contentFiles.map(file => this.deps.pathManager.createPath(file))
       );
-      await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
-        await ArrayUtils.sequentialFor(contentFiles, async file => {
-          dispatch(DeleteFileFromStorageJobHandler, {
-            filePath: this.deps.pathManager.createPath(file),
-          });
-        });
-      });
     });
   }
 
-  async createThumbnail(doc: ProcessedPDF, language: LanguageISO6391) {
+  async demoteToAttachment(fileId: string): Promise<void> {
+    const file = (await this.deps.filesDS.getById(fileId)).getDataOrThrow();
+
+    if (file.type !== 'document') {
+      throw new CannotTransformFileToAttachment(fileId, file.type);
+    }
+
+    const pdfDoc = file as PDFDocument;
+
+    const attachment = new FileAttachment({
+      id: pdfDoc.id,
+      originalname: pdfDoc.originalname,
+      filename: pdfDoc.filename,
+      mimetype: pdfDoc.mimetype,
+      size: pdfDoc.size,
+      creationDate: pdfDoc.creationDate,
+      uploaded: pdfDoc.uploaded,
+      entity: pdfDoc.entity,
+      content: pdfDoc.content,
+    });
+
+    await this.deps.transactionManager.run(async () => {
+      await this.deps.filesDS.replaceFile(attachment);
+
+      this.deps.transactionManager.onCommitted(async () =>
+        this.deps.eventBus.emit(
+          new FileUpdatedEvent({
+            before: FileMappers.toDBO(pdfDoc),
+            after: FileMappers.toDBO(attachment),
+          })
+        )
+      );
+    });
+  }
+
+  async createThumbnail(doc: PDFDocument, language: LanguageISO6391) {
     const thumbnailResult = await this.deps.pdfService.createThumbnail(doc.content);
     if (thumbnailResult.isError()) {
       return thumbnailResult;
@@ -203,4 +219,4 @@ class FilesService {
 }
 
 export { FilesService };
-export type { Deps as FilesServiceDeps };
+export type { Deps as FilesServiceDeps, FilesServiceContext };

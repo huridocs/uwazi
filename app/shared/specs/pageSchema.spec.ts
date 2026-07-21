@@ -1,8 +1,8 @@
-import db from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import db from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { validatePage } from 'shared/types/pageSchema';
-import { PageType } from 'shared/types/pageType';
+import { validatePage } from '#shared/types/pageSchema.js';
+import { PageType } from '#shared/types/pageType.js';
 
 describe('pageSchema', () => {
   let page: PageType;
@@ -43,6 +43,12 @@ describe('pageSchema', () => {
       } catch (e) {
         expect(e.errors[0].message).toContain('This page is in use');
       }
+    });
+
+    it('should accept markdownSupport', async () => {
+      page.markdownSupport = true;
+      const validated = await validatePage(page);
+      expect(validated.markdownSupport).toBe(true);
     });
   });
 });

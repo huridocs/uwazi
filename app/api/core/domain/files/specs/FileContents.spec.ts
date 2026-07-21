@@ -5,7 +5,7 @@ import { readFile, unlink } from 'fs/promises';
 
 import { tmpdir } from 'os';
 import path from 'path';
-import { FileContents } from '../FileContents';
+import { FileContents } from '../FileContents.js';
 
 describe('FileContents', () => {
   const testDir = path.join(tmpdir(), 'fileContents-tests');
@@ -27,8 +27,8 @@ describe('FileContents', () => {
 
   describe('constructor', () => {
     it('should create FileContents with callback object', () => {
-      const streamCallback = jest.fn(async function* streamCallback() {
-        yield Buffer.from('callback content');
+      const streamCallback = jest.fn(async function* contentStream() {
+        yield new Uint8Array(Buffer.from('callback content'));
       });
 
       // eslint-disable-next-line no-new
@@ -42,14 +42,14 @@ describe('FileContents', () => {
     it('should return a file contents asyncIterable', async () => {
       const callbackContent = 'multiple reads content';
       async function* streamCallback() {
-        yield Buffer.from(callbackContent);
+        yield new Uint8Array(Buffer.from(callbackContent));
       }
 
       const fileContents = new FileContents(streamCallback);
 
       let result = '';
       for await (const chunk of fileContents.read()) {
-        result += chunk;
+        result += Buffer.from(chunk).toString();
       }
 
       expect(result).toBe(callbackContent);

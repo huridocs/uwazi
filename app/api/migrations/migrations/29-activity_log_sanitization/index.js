@@ -1,5 +1,8 @@
-import { BODY_REQUIRED_ENDPOINTS, IGNORED_ENDPOINTS } from 'api/activitylog/activitylogMiddleware';
-import date from 'api/utils/date';
+import {
+  BODY_REQUIRED_ENDPOINTS,
+  IGNORED_ENDPOINTS,
+} from '#api/activitylog/activitylogMiddleware.js';
+import date from '#api/utils/date.js';
 
 export default {
   delta: 29,

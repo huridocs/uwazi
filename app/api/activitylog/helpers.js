@@ -1,13 +1,13 @@
-import { availableLanguages } from 'shared/language';
-import { typeParsers } from 'api/activitylog/migrationsParser';
-import templates from 'api/core/v1_layer/templates/templates';
-import entities from 'api/entities/entities';
-import users from 'api/users/users';
-import userGroups from 'api/usergroups/userGroups';
-import { files } from 'api/files';
-import { PermissionType } from 'shared/types/permissionSchema';
-import { Suggestions } from 'api/suggestions/suggestions';
-import { Extractors } from 'api/services/informationextraction/ixextractors';
+import { availableLanguages } from '#shared/language/index.js';
+import { typeParsers } from './migrationsParser.js';
+import templates from '#api/core/v1_layer/templates/templates.js';
+import entities from '#api/entities/entities.js';
+import users from '#api/users/users.js';
+import userGroups from '#api/usergroups/userGroups.js';
+import { PermissionType } from '#shared/types/permissionSchema.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
+import { Suggestions } from '#api/suggestions/suggestions.js';
+import { Extractors } from '#api/services/informationextraction/ixextractors.js';
 
 const formatLanguage = langKey => {
   const lang = availableLanguages.find(({ key }) => key === langKey);
@@ -41,13 +41,16 @@ const loadEntityFromPublicForm = async data => {
 
 const loadTemplate = async data => {
   let templateId = data.template || data._id;
+  let templateData;
 
   if (data.entity) {
     const entity = JSON.parse(data.entity);
     templateId = entity.template;
   }
 
-  const templateData = await templates.getById(templateId);
+  if (templateId) {
+    templateData = await templates.getById(templateId);
+  }
   return { ...data, templateData };
 };
 
@@ -60,7 +63,7 @@ const loadEntity = async data => {
 };
 
 const loadFile = async data => {
-  const [file] = await files.get({ _id: data._id });
+  const file = (await FilesDAOFactory.default().getById(data._id.toString())).getData(null);
   return { ...data, file, title: file ? file.originalname : `id: ${data._id}` };
 };
 

@@ -1,14 +1,16 @@
-import { PropertyAssignment, SelectionEntry } from 'api/core/domain/template/PropertyValue';
-import { SelectProperty } from 'api/core/domain/template/select/SelectProperty';
-import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource';
-import { ThesaurusValue } from 'api/core/domain/thesaurus/Thesaurus';
-import { TranslationCollection } from 'api/i18n.v2/model/TranslationCollection';
-import { SettingsDataSource } from '../contracts/SettingsDataSource';
+import { PropertyAssignment, SelectionEntry } from '#api/core/domain/template/PropertyValue.js';
+import { SelectProperty } from '#api/core/domain/template/select/SelectProperty.js';
+import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
+import { ThesaurusValue } from '#api/core/domain/thesaurus/Thesaurus.js';
+import { TranslationCollection } from '#api/i18n.v2/model/TranslationCollection.js';
+import { SettingsDataSource } from '../contracts/SettingsDataSource.js';
+import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
+import { CreatePropertyAssignmentInput } from './PropertyAssignmentCreatorService.js';
 import {
-  CreatePropertyAssignmentInput,
-  PropertyAssignmentCreatorService,
-} from './PropertyAssignmentCreatorService';
-import { ThesauriDataSource } from '../contracts/ThesauriDataSource';
+  AbstractPropertyAssignmentCreatorService,
+  defaultPropertyAssignmentCreatorServiceContext,
+  PropertyAssignmentCreatorServiceContext,
+} from './AbstractPropertyAssignmentCreatorService.js';
 
 type Deps = {
   settingsDS: SettingsDataSource;
@@ -16,8 +18,13 @@ type Deps = {
   thesauriDS: ThesauriDataSource;
 };
 
-export class SelectPropertyAssignmentCreatorService implements PropertyAssignmentCreatorService {
-  constructor(private deps: Deps) {}
+export class SelectPropertyAssignmentCreatorService extends AbstractPropertyAssignmentCreatorService {
+  constructor(
+    private deps: Deps,
+    context: PropertyAssignmentCreatorServiceContext = defaultPropertyAssignmentCreatorServiceContext
+  ) {
+    super(context);
+  }
 
   // eslint-disable-next-line max-statements
   async create({
@@ -66,7 +73,11 @@ export class SelectPropertyAssignmentCreatorService implements PropertyAssignmen
       });
 
       propertyAssignments.push(
-        template.createPropertyAssignment(property.name, { value, language }, true)
+        template.createPropertyAssignment(
+          property.name,
+          { value, language },
+          this.context.validateRequired
+        )
       );
     });
 

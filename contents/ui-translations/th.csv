@@ -1,17 +1,21 @@
 Key,Thai
-% of sentences above threshold,เปอร์เซ็นต์ของประโยคที่เกินเกณฑ์มาตรฐาน
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
++ Add data source,+ Add data source
++ Add filter,+ Add filter
 + click to select multiple cards.,+ click to select multiple cards.
 2FA,2FA
 2FA Enabled,2FA Enabled
 A default template cannot be deleted.,A default template cannot be deleted.
+A friendly hand for serious work — I'll act in the context shown above.,A friendly hand for serious work — I'll act in the context shown above.
 A generated ID will be the default title.,ID ที่สร้างขึ้นจะเป็นชื่อเริ่มต้น
 A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,จำเป็นต้องใช้อีเมล
+A → Z,A → Z
 Accept,ตกลง
 Accepted suggestion on entity,Accepted suggestion on entity
 Accepting suggestions,Accepting suggestions
+Accessibility checks need attention,Accessibility checks need attention
 Account,บัญชี
 Account locked,Account locked
 Account unlocked successfully,Account unlocked successfully
@@ -19,6 +23,7 @@ Account updated,Account updated
 Accuracy,Accuracy
 Accuracy tooltip,Accuracy is defined by the amount of matches vs mismatches for labeled samples that have been processed.
 Action,เริ่มทำ
+Actions,Actions
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
@@ -28,8 +33,11 @@ Activity Log,บันทึกกิจกรรม
 Add,เพิ่ม
 Add / remove favorite,เพิ่ม / ลบรายการโปรด
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
+Add as,Add as
+Add data source,Add data source
 Add date,เพิ่มวันที่
 Add entities / documents,เพิ่มรายการ / เอกสาร
+Add entity,Add entity
 Add entity type,Add entity type
 Add Extractor,Add Extractor
 Add extractor,Add extractor
@@ -55,6 +63,7 @@ Add to all languages,เพิ่มเข้าไปในทุกภาษ�
 Add to table of contents,เพิ่มลงในสารบัญ
 Add to ToC,Add to ToC
 Add to training set,Add to training set
+Add translation,Add translation
 Add user,เพิ่มผู้ใช้
 add value,add value
 Add/delete users and assign roles,เพิ่ม / ลบผู้ใช้และกำหนดบทบาทผู้ใช้
@@ -65,9 +74,12 @@ added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
 Adding a group and its items.,Adding a group and its items.
 Adding items to the thesauri,Adding items to the thesauri
+Adjust a few colors; secondary text and muted backgrounds update automatically.,Adjust a few colors; secondary text and muted backgrounds update automatically.
 Admin,ผู้ดูแลระบบ
 Administrators and Editors,ผู้ดูแลระบบและผู้แก้ไขข้อมูล
 Admins,Admins
+Advanced colors,Advanced colors
+Advanced ECharts overrides,Advanced ECharts overrides
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?",การเปลี่ยนแปลงทั้งหมดจะหายไปคุณแน่ใจหรือว่าต้องการดำเนินการต่อ?
@@ -76,24 +88,36 @@ All editing options will be disabled.,All editing options will be disabled.
 All of the paragraphs will be deleted,All of the paragraphs will be deleted
 All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
 Allow captcha bypass,Allow captcha bypass
+Allow public embedding without login,Allow public embedding without login
 Already exists,Already exists
 Amount,Amount
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred,An error has occurred
 An error has occurred during data export,An error has occurred during data export
+An error has occurred while installing languages:,An error has occurred while installing languages:
+An error has occurred while uninstalling a language:,An error has occurred while uninstalling a language:
 An error occurred,An error occurred
 Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
+AND OR NOT,AND OR NOT
 Any entity,Any entity
+Appearance,Appearance
 Apply,Apply
 Are you sure you want to continue?,Are you sure you want to continue?
+Are you sure you want to delete,Are you sure you want to delete
+"Are you sure you want to delete the selected visualizations? This action cannot be
+              undone.","Are you sure you want to delete the selected visualizations? This action cannot be
+              undone."
 Are you sure you want to delete this attachment?,Are you sure you want to delete this attachment?
 Are you sure you want to delete this connection?,Are you sure you want to delete this connection?
 Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
 Are you sure you want to delete this file?,Are you sure you want to delete this file?
 Are you sure you want to delete this item?,Are you sure you want to delete this item?
+Are you sure you want to delete this relationship? This action cannot be undone.,Are you sure you want to delete this relationship? This action cannot be undone.
+Are you sure you want to delete this visualization? This action cannot be undone.,Are you sure you want to delete this visualization? This action cannot be undone.
 Are you sure?,Are you sure?
+Ask Bert,Ask Bert
 Attachment,Attachment
 Attachment deleted,Attachment deleted
 Attachment renamed,Attachment renamed
@@ -108,18 +132,25 @@ Automatically generated,สร้างขึ้นโดยอัตโนม�
 Available default translation,Available default translation
 Back,ย้อนกลับ
 Back to,กลับไปยัง
+Back to details,Back to details
 Back to search,กลับไปที่การค้นหา
 Bad Request,Bad Request
 Basic,Basic
+Bert,Bert
+Bidirectional,Bidirectional
 Body,เนื้อหา
+boolean,boolean
 Browse files to upload,เรียกดูไฟล์ที่จะอัปโหลด
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
 Can edit,แก้ไขได้
 Can see,มองเห็นได้
 Can view,มองเห็นได้
 Cancel,ยกเลิก
+cancel csv import,Cancel the import process. This will stop the creation of new entities. Already created entities will not be affected
 Canceling,Canceling
 Canceling...,Canceling...
+Cancelled,Cancelled
+Cannot connect to server,Cannot connect to server
 Cannot find extractor,Cannot find extractor
 Captcha,captcha
 Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
@@ -128,6 +159,8 @@ header ""Bypass-Captcha: true"" is sent along. This option is insecure and can b
 malicious content."
 Cards,บัตร
 Cards view,มุมมองการ์ด
+Category,Category
+Change,Change
 Change password,เปลี่ยนรหัสผ่าน
 Change Password,Change Password
 Changes in the thesaurus will impact all the entities using these values.,Changes in the thesaurus will impact all the entities using these values.
@@ -135,25 +168,42 @@ Changing the type will erase all relationships to this entity.,Changing the type
 Character support description,This option enhances support for non-Latin languages as the default languages of your collection.
 Character support process warning,"This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually."
 Character support revert warning,"After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
+Chart,Chart
+Chart options,Chart options
+Chart theme,Chart theme
+Chart type,Chart type
+Chart type uses a custom view,Chart type uses a custom view
 Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
+Checking which images fit the requirements,Checking which images fit the requirements...
+Choose,Choose
+Choose relation type,Choose relation type
 Choose which data to use for training,Choose which data to use for training
+Chrome header,Chrome header
 Clear,Clear
 Clear all,Clear all
 Clear All,Clear All
+Clear all filters,Clear all filters
 Clear coordinates,ลบจุดพิกัด
 Clear Filters,ล้างตัวกรอง
 Clear PDF selection,Clear PDF selection
+Clear search,Clear search
 Click,Click
 Click here,คลิกที่นี่
 Click to fill,คลิกเพื่อใส่ค่า
 Close,ปิด
+Code,Code
 Collaborator,ผู้ประสานงาน
 Collaborators,Collaborators
 Collapse all,Collapse all
 Collapse All,Collapse All
 Collection,คอลเล็คชั่น
 Collection Name,Collection Name
+Colors,Colors
+Colors come from the server data layer. Preview shows assigned bucket colors when available.,Colors come from the server data layer. Preview shows assigned bucket colors when available.
 Common sources,Common sources
+Completed,Completed
+Completed with errors,Completed with errors
+Config,Config
 Configuration,Configuration
 Configure filters,กำหนดค่าตัวกรอง
 Configure templates,Configure templates
@@ -167,10 +217,10 @@ Confirm deletion of,Confirm deletion of
 Confirm deletion of entity,Confirm deletion of entity
 Confirm deletion of file,Confirm deletion of file
 Confirm new password,ยืนยันรหัสผ่านใหม่
+Confirm your password,Confirm your password
 Connect to a paragraph,เชื่อมต่อย่อหน้า
 Connect to an entity,Connect to an entity
-Connect to document,Connect to document
-Connect to paragraph,Connect to paragraph
+Connect to entity,Connect to entity
 Connected to server,Connected to server
 Connection type,ประเภทการเชื่อมต่อ
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
@@ -180,15 +230,20 @@ Content translations,Content translations
 Context,Context
 Continue,Continue
 Conversion failed,การแปลงล้มเหลว
+Copied,Copied
 Copied to clipboard,Copied to clipboard
+Copy,Copy
 Copy From,คัดลอกจาก
 Copy Highlighted,คัดลอกสิ่งที่ถูกเน้นสี
 Copy link,คัดลอกลิงค์
 Copy properties to this entity from,คัดลอกคุณสมบัติไปยังรายการนี้ จาก
 Copy to clipboard,Copy to clipboard
+Could not add media. Please try again.,Could not add media. Please try again.
 Could not be processed,Could not be processed
+Could not create entity,Could not create entity
 Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
 Could not reach server. Please try again later.,Could not reach server. Please try again later.
+Count,Count
 Create,สร้าง
 CREATE,สร้าง
 Create and edit thesauri,Create and edit thesauri
@@ -199,10 +254,14 @@ Create Entity,สร้างรายการ
 Create Extractor,Create Extractor
 Create group,สร้างกลุ่ม
 Create new entities and upload documents,Create new entities and upload documents
+Create new entity from selection,Create new entity from selection
 Create Reference,Create Reference
+Create relationship,Create relationship
 Create relationship types,Create relationship types
 Create relationships and references,Create relationships and references
 Create table of contents,Create table of contents
+Create visualization,Create visualization
+Created,Created
 Created entity,Created entity
 Created entity coming from a public form,Created entity coming from a public form
 Created page,Created page
@@ -211,7 +270,21 @@ Created relationship,Created relationship
 Created template,Created template
 Created thesaurus,Created thesaurus
 Created user group,Created user group
+Creating entities,Creating entities
+Creating relationships,Creating relationships
+Creating thesauri,Creating thesauri
+CSS,CSS
+csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
+CSV Import,CSV Import
+CSV import cancelled,CSV import cancelled
+CSV import completed,CSV import completed
+CSV import failed,CSV import failed
+CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
+Ctrl K,Ctrl K
 Current Value/Suggestion,Current Value/Suggestion
+"Custom colors are not available for this chart type. Use the chart palette or template
+            colors instead.","Custom colors are not available for this chart type. Use the chart palette or template
+            colors instead."
 Custom component error,เกิดข้อผิดพลาดในส่วนประกอบที่สร้างเอง
 Custom CSS,CSS ที่กำหนดเอง
 Custom Favicon,Custom Favicon
@@ -219,12 +292,27 @@ Custom JS,Custom JS
 Custom landing page,Custom landing page
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
 Custom Uploads,อัปโหลดแบบกำหนดค่าเอง
+Customize,Customize
+Customized,Customized
 Dark,Dark
+Dark Theme,Dark Theme
 Dashboard,Dashboard
+Data may be outdated.,Data may be outdated.
+Data source,Data source
+Data sources,Data sources
+Data visualizations,Data visualizations
+Data was updated recently. You can refresh again in a few seconds.,Data was updated recently. You can refresh again in a few seconds.
+Date,Date
 Date added,เพิ่ม ณ วันที่
 Date format,รูปแบบวันที่
 Date modified,แก้ไข ณ วันที่
+"Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
+                measure over the primary dimension (e.g. max engine size per registration date).","Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
+                measure over the primary dimension (e.g. max engine size per registration date)."
 Day,วัน
+"Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
+          the Chart tab.","Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
+          the Chart tab."
 Default,Default
 Default date format,Default date format
 Default filter,Default filter
@@ -238,6 +326,8 @@ DELETE,ลบ
 Delete entities and documents,Delete entities and documents
 Delete file,Delete file
 Delete language,ลบภาษา
+Delete relationship,Delete relationship
+Delete relationships,Delete relationships
 Delete?,Delete?
 Deleted attachment,Deleted attachment
 Deleted custom file,Deleted custom file
@@ -254,9 +344,13 @@ Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,คำอธิบาย
+Deselect all,Deselect all
+Direction,Direction
 Disable,Disable
 Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
+Discard and leave,Discard and leave
+Discard and switch,Discard and switch
 Discard changes,ยกเลิกการเปลี่ยนแปลง
 Discard changes?,Discard changes?
 Dismiss,Dismiss
@@ -273,8 +367,16 @@ Documentation,เอกสาร
 documents,เอกสาร
 Documents,เอกสาร
 documents.,เอกสาร.
+Done,Done
+Done creating entities,Done creating entities
+Done creating relationships,Done creating relationships
+Done creating thesauri,Done creating thesauri
+Done extracting files,Done extracting files
+Done scanning,Done scanning
 Download,ดาวน์โหลด
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
+Download failed rows,Download failed rows
+Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,นำไฟล์มาวางในหน้าต่างนี้เพื่ออัปโหลด
 Drag row,Drag row
 Drop your files here to upload or,นำไฟล์มาวางที่นี่เพื่ออัปโหลด หรือ
@@ -283,13 +385,16 @@ Duplicated email,อีเมลที่ซ้ำกัน
 Duplicated name,ชื่อที่ซ้ำกัน
 Duplicated username,ชื่อผู้ใช้ที่ซ้ำกัน
 Duration,Duration
+Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
+Earlier,Earlier
 Edit,แก้ไข
-Edit all documents matching this criteria,แก้ไขเอกสารทั้งหมดที่ตรงตามเกณฑ์นี้
+Edit at source,Edit at source
 Edit Extractor,Edit Extractor
 Edit File,Edit File
 Edit group,Edit group
 Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
+Edit theme,Edit theme
 Edit user,Edit user
 Editor,บรรณาธิการ
 editor,บรรณาธิการ
@@ -297,20 +402,28 @@ Editors,Editors
 Email,อีเมล
 Email address,ที่อยู่อีเมล
 Email updated,อัปเดตอีเมล
+Embed,Embed
+Embed in pages,Embed in pages
 Empty,Empty
 Empty group. Drop here to add,Empty group. Drop here to add
 empty property tip,You won't be able to save an entity if this property is empty.
 Enable,Enable
+Enable public embedding to use this chart in external sites on private instances.,Enable public embedding to use this chart in external sites on private instances.
 Enable this page to be used as an entity view page:,เปิดหน้านี้เพื่อใช้เป็นหน้ามุมมองรายการ
 Enter the 6-digit verification code generated by your Authenticator app,Enter the 6-digit verification code generated by your Authenticator app
 Enter your current password to confirm,Enter your current password to confirm
 Entities,รายการ
 entities,รายการ
 Entities across all languages,Entities across all languages
+Entities created,Entities created
+Entities updated,Entities updated
+entities · generated,entities · generated
 Entity,รายการ
+Entity creation stage completed.,Entity creation stage completed.
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
+Entity type,Entity type
 Entity types,ประเภทรายการ
 Entity updated,Entity updated
 Error,ข้อผิดพลาด
@@ -320,34 +433,44 @@ Error loading your image,Error loading your image
 Error saving template.,Error saving template.
 Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
+exact phrase,exact phrase
 Expand all,Expand all
 Expand All,Expand All
-Exploration,ค้นหา
 Export CSV,โหลดเป็น CSV
 Exporting entities to CSV,โหลดรายการเป็น CSV
 Extension Token,Extension Token
+External embed,External embed
 Extract new paragraphs,Extract new paragraphs
 Extract paragraphs,Extract paragraphs
+Extracting files,Extracting files
+Extracting files from uploaded package.,Extracting files from uploaded package.
 Extraction configuration,Extraction configuration
 Extractor Name,Extractor Name
 Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
+Failed,Failed
 Failed to save table of contents,Failed to save table of contents
+Failure details,Failure details
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
 
-1. Upload your icon in Custom Uploads.
-2. Copy its URL.
-3. Choose ""Custom Icon"" and paste the URL in the indicated field.
-4. Reload the page to see your favicon in action."
+1. Upload your icon in Custom Uploads if needed.
+2. Click ""Select favicon image"" and pick a file (images from Custom Uploads only).
+3. Reload the page to see your favicon in action."
+Favicon no images hint,Favicon no images hint
 FEATURED,FEATURED
 File,ไฟล์
 File deleted,File deleted
+File details,File details
+File extraction completed successfully.,File extraction completed successfully.
 File name,File name
+File preview unavailable,File preview unavailable
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
 Fill,ใส่ค่า
+Filter,Filter
+Filter unauthorized relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
 Filters,ตัวกรอง
 Filters AND operator,ตัวกรอง ประเภท และ
 Filters configuration,การกำหนดค่าตัวกรอง
@@ -361,66 +484,98 @@ Find suggestions after training,Find suggestions after training
 Find suggestions for,Find suggestions for
 Find suggestions for selected,Find suggestions for selected
 Finding suggestions,Finding suggestions
-Fine tune,ปรับแต่ง
 Fit,พอดี
 Flag,แฟล็ก
 for,for
 For all entities,For all entities
 For entities with blank values,For entities with blank values
+Forgot Password or Username?,Forgot Password or Username?
 Forgot Password?,ลืมรหัสผ่าน?
 Forms and email configuration,การตั้งค่าแบบฟอร์มและอีเมล
 From,From
 From all suggestions,From all suggestions
+From computer,From computer
+From files,From files
 From previous step,From previous step
+From selection,From selection
+From:,From:
+Full mode,Full mode
 Full width,Full width
 General,ข้อมูลทั่วไป
 General Information,General Information
 Generated ID,Generated ID
 Global CSS,CSS ทั้งหมด
 Global CSS & JS,Global CSS & JS
+Global JS,Global JS
 Google,Google
 Google Analytics,Google Analytics
 Google Analytics ID,ไอดี Google Analytics
 Google Maps,Google Maps
 Group,Group
+Group by:,Group by:
+group expressions,group expressions
 Group Options,Group Options
 Group saved,Group saved
 Group updated,Group updated
+Grouped geolocation properties,Grouped geolocation properties
 Groups,กลุ่ม
+Header and button preview,Header and button preview
+Header bar active background,Header bar active background
+Header bar background,Header bar background
+Header bar divider,Header bar divider
+Header bar hover background,Header bar hover background
+Header bar text,Header bar text
 help,ช่วยเหลือ
 here,here
+"Hi, I'm Bert.","Hi, I'm Bert."
+Hide,Hide
 Hide actions,Hide actions
+Hide details,Hide details
 Hide label,Hide label
+Hide restricted relationships from public,Hide restricted relationships from public
 Hide toolbar,Hide toolbar
+HTML,HTML
 https://yourdomain,https: // yourdomain
+hub,hub
 hubs,ฮับ
 Hybrid,Hybrid
 Icon,ไอคอน
 ID,ID
 ID:,ID:
+"If an account exists with the email you provided, you will receive an email
+                        with instructions to reset your password.","If an account exists with the email you provided, you will receive an email
+                        with instructions to reset your password."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.",หากเป็น URL จากภายนอก กรุณาใช้ URL แบบเต็มเช่น http://www.uwazi.io
 "If you want to continue, please type",ถ้าคุณต้องการดำเนินการต่อ กรุณาพิมพ์
+Image doesn't match the required size.,Image doesn't match the required size.
 Import,นำเข้า
 Import asset,Import asset
-Import completed,Import completed. Number of entities created:
 Import CSV,นำเข้า CSV
-Import instructions,คำแนะนำการนำเข้าข้อมูล
-Imported entities from file,Imported entities from file
+Import failed. Review details below.,Import failed. Review details below.
+Import finished successfully.,Import finished successfully.
+Import finished with errors. Review details below.,Import finished with errors. Review details below.
+Import is currently processing rows.,Import is currently processing rows.
+Import is retrying after an error.,Import is retrying after an error.
+Import theme instance file,Import theme instance file
+Import was cancelled.,Import was cancelled.
 Imported translations from file,Imported translations from file
-Importing data in progress,การนำเข้าข้อมูลที่กำลังดำเนินอยู่
 in,ใน
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,In OCR queue
-Indexing entities may take a few minutes,การจัดทำดัชนีรายการอาจใช้เวลาสักครู่
+in this document,in this document
+Incoming,Incoming
 Info,ข้อมูล
 Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,ก็อปปี้คุณสมบัตินี้
 Inherit type,Inherit type
+"Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
+inherits,inherits
 Input,Input
 Install,Install
 Install Language(s),Install Language(s)
 Install the browser extension.,Install the browser extension.
+Installing languages,Installing languages
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,"If the email address supplied is correct, we will send instructions to reset the password."
 Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
@@ -428,6 +583,7 @@ Invalid captcha,captcha ไม่ถูกต้อง
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
 Invalid form,แบบฟอร์มไม่ถูกต้อง
+Invalid URL,Invalid URL
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,มันอาจจะทำให้แอปใช้ไม่ได้ เขียนโค้ดที่นี่ในกรณีที่คุณเข้าใจสิ่งที่คุณทำเท่านั้น
 it has been logged with request id #,it has been logged with request id #
 Item,Item
@@ -450,16 +606,16 @@ Important: You must use relative URLs. These start with a forward slash and do n
 Language,ภาษา
 Language Code,Language Code
 Language deleted,ลบภาษาแล้ว
-Language Install Start Message,Language installation process initiated. It may take several minutes to complete depending on the size of the collection. Please wait until the installation process is finished.
 Language reset success,Language reset success
-Language Uninstall Start Message,Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.
 Language uninstalled successfully,Language uninstalled successfully
 Language(s),Language(s)
 Language:,Language:
 Languages,ภาษา
 Languages installed successfully,Languages installed successfully
 Last updated,Last updated
+Last updated from collection:,Last updated from collection:
 Latitude,พิกัดละติจูด
+Latitude must be between -90 and 90,Latitude must be between -90 and 90
 Learn more,เรียนรู้เพิ่มเติม
 Legend,กลุ่ม
 Lengthy reindex process,Lengthy reindex process
@@ -467,18 +623,26 @@ Library,ไลบรารี่
 library list view,มุมมองรายการไลบรารี
 library map view,มุมมองแผนที่ไลบรารี
 library table view,มุมมองตารางไลบรารี
+Light,Light
+Light Theme,Light Theme
 Link,Link
 linked,เชื่อมโยงแล้ว
+List renders as a table. Use the options below to filter empty or zero values.,List renders as a table. Use the options below to filter empty or zero values.
+Live preview,Live preview
 Live translate,Live translate
+Load example,Load example
 Loading,Loading
 Login,เข้าสู่ระบบ
 Login button,กดเพื่อเข้าสู่ระบบ
 Login failed,การเข้าสู่ระบบล้มเหลว
 Logout,ออกจากระบบ
 Longitude,พิกัดลองจิจูด
+Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,ต่ำ
 Manage site settings and configuration,จัดการการตั้งค่าไซต์และการกำหนดค่า
+Manual data,Manual data
+Manually set a color,Manually set a color
 Map,แผนที่
 Map api key,Map api key
 Map API key,Map API key
@@ -498,11 +662,15 @@ Maps,แผนที่
 Mark as Reviewed,ได้ตรวจสอบแล้ว
 Mark as reviewed,Mark as reviewed
 Markdown,การทำเครื่องหมาย
+"Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
+          when its content no longer relies on Markdown syntax.","Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
+          when its content no longer relies on Markdown syntax."
 marked and labeled,marked and labeled
 marked for training,marked for training
 Marked for training + all labeled entries,Marked for training + all labeled entries
 Marked for training only,Marked for training only
 Match,Match
+match verbatim,match verbatim
 Matching,Matching
 matching,matching
 Matomo,Matomo
@@ -512,6 +680,9 @@ Message,ข้อความ
 Message sent,Message sent
 Metadata,เมทาดาทา
 Metadata Extraction,ค้นหาเมตาดาต้า
+"Metric shows a single total count. Select Pie, Bar, or another chart type above to
+            configure categories, labels, and slices. Use the Appearance tab for colors.","Metric shows a single total count. Select Pie, Bar, or another chart type above to
+            configure categories, labels, and slices. Use the Appearance tab for colors."
 MIGRATE,MIGRATE
 Minimum,ขั้นต่ำ
 Mismatch,Mismatch
@@ -519,9 +690,12 @@ mismatched passwords,Passwords don't match
 mismatching,mismatching
 Mixed access,การเข้าถึงแบบผสม
 ML TOC,ML TOC
+Modified,Modified
 Month,เดือน
 Months,Months
+More,More
 more options.,ตัวเลือกเพิ่มเติม
+Multi-source mode,Multi-source mode
 Multiple date,Multiple date
 Multiple date range,Multiple date range
 Multiple inherited properties warning ([property 1] affects [property 2]),affects
@@ -532,11 +706,16 @@ Name is required,จำเป็นต้องใส่ชื่อ
 Name is too long,ชื่อยาวเกินไป
 Name is too short,ชื่อสั้นเกินไป
 Narrow down your searches,จำกัด การค้นหาของคุณให้แคบลง
+"Narrow entities before aggregation. With multiple sources, pick the property under the
+        source alias so each filter applies only to that series.","Narrow entities before aggregation. With multiple sources, pick the property under the
+        source alias so each filter applies only to that series."
 Narrow your search,จำกัด การค้นหาของคุณ
 Navigate back,Navigate back
 Navigation menu tool tip part 1,"If it is an internal URL within this website, be sure to delete the first part"
 Navigation menu tool tip part 2,leaving only a relative URL starting with a slash character. Ie. /some_url.
 New,New
+New activity will show up here.,New activity will show up here.
+New conversation,New conversation
 New entity,รายการใหม่
 New group,New group
 New language added,ภาษาใหม่ถูกเพิ่มแล้ว
@@ -549,10 +728,14 @@ New user,New user
 Next,ต่อไป
 No,เลขที่
 No attachments,ไม่พบสิ่งที่แนบมา
+No chart types match your search.,No chart types match your search.
 No common filters,ไม่มีฟิลเตอร์สามัญ
+No connected entities yet.,No connected entities yet.
 No Connections,ไม่มีการเชื่อมต่อ
 No Connections description,Connections are the direct relationships between this document and other documents and entities.
 No context,No context
+No CSVs yet,No CSVs yet
+No data,No data
 NO DATA AVAILABLE,NO DATA AVAILABLE
 NO EXTRACTORS,NO EXTRACTORS
 No files available,No files available
@@ -562,33 +745,46 @@ No icon / flag,ไม่พบ ไอค่อน / สิ่งที่ถู�
 No items available,No items available
 No Label,ไม่มีลาเบล
 No label,No label
+No matching entities.,No matching entities.
+No media selected,No media selected
 No options,No options
 No options found,ไม่พบตัวเลือก
+No page,No page
 No property,ไม่เจอพร๊อพเพอร์ตี้
 No References,ไม่มีการอ้างอิง
 No References description,References are parts of this document related with other documents and entities.
-No relationship types available,No relationship types available
 No Relationships,ไม่มีความสัมพันธ์
 No Relationships description,Relationships are bonds between entities.
+No relationships found,No relationships found
+No relationships to graph,No relationships to graph
+No releases yet,No releases yet
 No results found,No results found
 No table of contents,ไม่มีสารบัญ
 No Table of contents,No Table of contents
 No table of contents description,ไม่มีคำอธิบายสารบัญ
+No templates available to add.,No templates available to add.
 No text match,ไม่มีการจับคู่ข้อความ
 No text match description,You can type something different in the search box to get some results.
+No timelinks added,No timelinks added
+No translation in,No translation in
 No type,ไม่มีประเภท
+No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,No valid target template available
 No value,ไม่มีค่า
 No Value,ไม่มีค่า
+No visualization data available.,No visualization data available.
 "No, cancel","No, cancel"
 Non processed,Non processed
 Non-labeled,Non-labeled
+Non-latin characters support,Non-latin characters support
+None,None
 Normal view,มุมมองปกติ
 Not already been use as source template in another extractor,Not already been use as source template in another extractor
 Not already been use as target template,Not already been use as target template
 Not Found,Not Found
+Nothing here yet.,Nothing here yet.
 Nothing selected,Nothing selected
-Number of sentences above threshold,จำนวนประโยคเกินเกณฑ์ที่กำหนด
+Notifications,Notifications
 Obsolete,Obsolete
 obsolete,obsolete
 OCR,OCR
@@ -602,6 +798,8 @@ OCR PDF,OCR PDF
 of,ของ
 Ok,ตกลง
 OK,ตกลง
+one character,one character
+Only properties with the same name and configuration in every data source are available.,Only properties with the same name and configuration in every data source are available.
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection."
@@ -610,7 +808,9 @@ OK,ตกลง
                 available for selection."
 "Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Open,Open
+Open entity,Open entity
 Open group,Open group
+Open link,Open link
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,กรุณาเปิดแอป Authenticator สำหรับยืนยันรหัสสองทาง บนอุปกรณ์ของคุณ
 Options,Options
@@ -621,9 +821,11 @@ Other,อื่น
 other,อื่น
 Other users will be affected by this action!,Other users will be affected by this action!
 Others,Others
-out of,ออกไปจาก
+Outgoing,Outgoing
+p.,p.
 Page,หน้า
 Page not found,Page not found
+Page published successfully.,Page published successfully.
 Pages,หน้า
 Paragrap number extraction property (numeric),Paragrap number extraction property (numeric)
 Paragraph,Paragraph
@@ -632,6 +834,7 @@ Paragraph Extractor added,Paragraph Extractor added
 Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
 Paragraphs deleted,Paragraphs deleted
+parties,parties
 Password,รหัสผ่าน
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -639,6 +842,8 @@ Password Error,รหัสผ่านผิดพลาด
 Password is too long,รหัสผ่านยาวเกินไป
 Password updated,รหัสผ่านอัปเดตแล้ว
 Passwords do not match,Passwords do not match
+Paste this tag in a page HTML. The chart uses the page language.,Paste this tag in a page HTML. The chart uses the page language.
+Paste URL,Paste URL
 Paste URL here,Paste URL here
 PDF,PDF
 Pending,Pending
@@ -646,17 +851,26 @@ per page,per page
 Permission,สิทธิการเข้าถึง
 Permission on entities explicitly shared with the user,สิทธิการเข้าถึงบนรายการถูกแชร์ให้ผู้ใช้แล้ว
 Permissions,สิทธิการเข้าถึง
+Pick a color,Pick a color
 Plain text,ข้อความธรรมดา
 Please contact an admin for details.,กรุณาติดต่อผู้ดูแลระบบเพื่อดูรายละเอียดเพิ่มเติม
 Please type in,Please type in
 Please type in letters and numbers from the image to start the export.,กรุณาพิมพ์ตัวอักษรและตัวเลขจากภาพเพื่อเริ่มการส่งออก
-Precision,ความแม่นยำ
+Pre-filled from your selection. Edit as needed.,Pre-filled from your selection. Edit as needed.
+Preflight scan completed.,Preflight scan completed.
+Preparing required relationships.,Preparing required relationships.
+Preparing required thesauri values.,Preparing required thesauri values.
 Preserve,Preserve
 Preserve Extension,Preserve Extension
 Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
 Press enter to add,กด Enter เพื่อเพิ่ม
 Preview,ดูตัวอย่าง
+Preview entity,Preview entity
+Preview updates automatically (300ms debounce),Preview updates automatically (300ms debounce)
+Preview updates when the JSON is valid.,Preview updates when the JSON is valid.
 Previous,ก่อนหน้า
+Primary button,Primary button
+Primary document,Primary document
 Primary Documents,เอกสารหลัก
 Priority sorting,เรียงลำดับตามลำดับความสำคัญ
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
@@ -666,7 +880,9 @@ Process,Process
 Process extractor,Process extractor
 Process selected,Process selected
 Processed,Processed
+Processed rows,Processed rows
 Processing,กำลังประมวลผล
+Progress,Progress
 Properties,คุณสมบัติ
 Properties from other templates in the collection using the same label,คุณสมบัติจากเทมเพลตอื่นๆในคอลเลกชันที่อยู่ในประเภทเดียวกัน
 Properties from other templates in the collection using the same label.,Properties from other templates in the collection using the same label.
@@ -692,24 +908,43 @@ property text,Text
 Property type,Property type
 Protection,การป้องกัน
 ProTip!,โปรทิป!
+"Provide chart-ready data as JSON. Each series needs id, label, and a points array with
+              label and value per row. Optional key on points helps stable colors.","Provide chart-ready data as JSON. Each series needs id, label, and a points array with
+              label and value per row. Optional key on points helps stable colors."
 Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
 Public form settings description,Here you can configure the public form destination and the whitelisted templates
 Public Form submit URL,Public Form submit URL
 Public form URL description,"If you have configured a public form and would like a different Uwazi collection to receive the submissions, enter its URL here."
 Public form whitelist description,"If you wish to include Public Forms on your pages, you must white-list the template IDs for which Public Forms are expected."
+Public instance,Public instance
 Publish,เผยแพร่
+Publish release,Publish release
 Published,ตีพิมพ์แล้ว
 QR Code,QR Code
 Query,สืบค้น
+Queued,Queued
 RAW,RAW
+"Re-runs the query against your current collection. Use this after importing
+                        or editing entities—not when changing chart settings (save handles that).","Re-runs the query against your current collection. Use this after importing
+                        or editing entities—not when changing chart settings (save handles that)."
 Re-uploaded document,Re-uploaded document
 Receiving email,Receiving email
 Receiving email description,"If you have a contact form, this is the email address that will receive the form's submissions."
+Recommended,Recommended
 Reference,Reference
 References,การอ้างอิง
+references,references
+References in document,References in document
+Refresh,Refresh
+"Refresh manually when you have added data and cannot wait for the next
+                        scheduled run.","Refresh manually when you have added data and cannot wait for the next
+                        scheduled run."
+Refresh mode,Refresh mode
 Reject,ปฏิเสธ
+Related entities created,Related entities created
 Relation type,Relation type
 Relationship,ความสัมพันธ์
+Relationship created,Relationship created
 Relationship Type,Relationship Type
 Relationship type,Relationship type
 Relationship type created successfully.,Relationship type created successfully.
@@ -719,10 +954,13 @@ Relationship types,ประเภทความสัมพันธ์
 relationships,ความสัมพันธ์
 Relationships,ความสัมพันธ์
 Relationships saved,Relationships saved
+relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,บันทึกประเภทความสัมพันธ์
+Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,ลบ
+Remove from connection,Remove from connection
 Remove from training set,Remove from training set
 remove icon,ลบไอคอน
 Removed language,Removed language
@@ -733,51 +971,84 @@ Request id #,ขอรหัส #
 Request token,Request token
 Required,Required
 Required property,คุณสมบัติที่จำเป็น
+Required relationships were prepared.,Required relationships were prepared.
+Required thesauri values were prepared.,Required thesauri values were prepared.
 Reset,รีเซ็ต
 Reset 2FA,สร้าง 2FA ใหม่
 Reset default translation,Reset default translation
 Reset language,Reset language
 Reset Password,สร้าง รหัสผ่าน ใหม่
 Reset passwords,Reset passwords
+Resize panels,Resize panels
+Restore,Restore
+Restore previous version,Restore previous version
 Restricted,ถูก จำกัด
+Retryable,Retryable
+Retrying,Retrying
 Return to login,กลับไปที่การเข้าสู่ระบบ
 Review,Review
 Reviewed,ตรวจสอบแล้ว
 Role,บทบาท
 Route,เส้นทาง
 Row,Row
+Row density,Row density
+Rows failed,Rows failed
+Rows processed,Rows processed
 Sample,ตัวอย่าง
 Satellite,Satellite
 Save,บันทึก
 Save & Preview,Save & Preview
 Save changes,บันทึกการเปลี่ยนแปลง
 Save password,บันทึกรหัสผ่าน
+Save the visualization before refreshing.,Save the visualization before refreshing.
+Save the visualization to get embed code.,Save the visualization to get embed code.
 Save your work to make change permanent,Save your work to make change permanent
 Saved successfully.,Saved successfully.
+Saved with warnings,Saved with warnings
+Saving,Saving
 Saving...,Saving...
+Scanning,Scanning
+Scanning rows before import.,Scanning rows before import.
+Schedule,Schedule
+Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordinated Universal Time).
 Search,ค้นหา
+"Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
+Search entities...,Search entities...
+Search entities…,Search entities…
 Search item,ค้นหารายการ
-Search not found,ไม่พบการค้นหา
 Search related entities or documents,ค้นหารายการหรือเอกสารที่เกี่ยวข้อง
+Search relationships,Search relationships
 Search relevance,ความเกี่ยวข้องของการค้นหา
 Search text,ข้อความค้นหา
 Search text description,Type something in the search box to get some results.
 Search Tips,เคล็ดลับการค้นหา
+Search tips,Search tips
 Search Tips: boolean,เคล็ดลับการค้นหา: บูลีน
 Search Tips: exact term,เคล็ดลับการค้นหา: คำที่ตรงตัว
 Search Tips: one char wildcard,เคล็ดลับการค้นหา: ตัวอักษรพิเศษ
 Search Tips: proximity,เคล็ดลับการค้นหา: คำใกล้เคียง
 Search Tips: wildcard,เคล็ดลับการค้นหา: ไวลการ์ด
 Searching...,Searching...
+Secondary button,Secondary button
 Secret keys,Secret keys
 Security,Security
 Select,Select
 Select & Search,Select & Search
+"Select a dimension to see supported chart types, or use Metric for a total count.","Select a dimension to see supported chart types, or use Metric for a total count."
+Select a document to connect to a specific paragraph,Select a document to connect to a specific paragraph
+Select a file,Select a file
 Select all,เลือกทั้งหมด
+Select an existing image,Select an existing image
+Select favicon image,Select favicon image
 Select files on your device,เลือกไฟล์บนอุปกรณ์ของคุณ
 Select from computer,Select from computer
+Select relationship,Select relationship
 Select relationship type,เลือกประเภทความสัมพันธ์
+Select site logo image,Select site logo image
+Select target document,Select target document
+Select target entity,Select target entity
 Select target paragraph,เลือกย่อหน้าที่ต้องการ
+Select text in target document,Select text in target document
 Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
 Select the template with the source documents.,Select the template with the source documents.
 Select...,เลือก...
@@ -786,18 +1057,12 @@ selected,เลือกแล้ว
 selected of,ถูกเลือกโดย
 Selected or suggested,Selected or suggested
 Selected templates,Selected templates
-Semantic search,ค้นหาความหมาย
-Semantic Search,ค้นหาความหมาย
-Semantic search minimum sentences help,ความช่วยเหลือเกี่ยวกับ การค้นหาความหมายของประโยคขั้นต่ำ
-Semantic search overview,ภาพรวมเกี่ยวกับการค้นหาความหมาย
-Semantic search results,ผลการค้นหาความหมาย
-Semantic search threshold help,ความช่วยเหลือเกี่ยวกับเกณฑ์การค้นหาความหมาย
 Send,ส่ง
 Send recovery email,ส่งอีเมลการกู้คืน
 Sending email,Sending email
 Sending email description,This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.
 Sending labeled data,Sending labeled data
-Sentences above threshold,ประโยคที่เกินเกณฑ์ที่กำหนด
+Series,Series
 Services,Services
 Set as default,ตั้งเป็นค่าเริ่มต้น
 Set default language,Set default language
@@ -805,6 +1070,8 @@ Set default template,Set default template
 Set the default starting point for your geolocation properties.,ตั้งค่าจุดเริ่มต้นอัตโนมัติสำหรับคุณสมบัติทางภูมิศาสตร์ของคุณ
 Settings,การตั้งค่า
 settings,การตั้งค่า
+Settings navigation active background,Settings navigation active background
+Settings sidebar background,Settings sidebar background
 Settings updated,การตั้งค่าถูกอัปเดตแล้ว
 Share,แบ่งปัน
 Share edit access with other users,Share edit access with other users
@@ -814,27 +1081,43 @@ Shared as editor,แบ่งปันสิทธิ์การแก้ไข
 Shared as viewer,แบ่งปันสิทธิ์การมอง
 Show actions,Show actions
 Show cookie policy,แสดงนโยบายคุกกี้
+Show details,Show details
 Show filters,แสดงตัวกรอง
 Show in cards,Show in cards
+Show less,Show less
 Show more,แสดงมากขึ้น
+Show remaining in panel,Show remaining in panel
 Show toolbar,Show toolbar
 Showing,Showing
 shown of,แสดงโดย
 Sign in,เข้าสู่ระบบ
+Simple mode,Simple mode
 Single relationships must have a hub,Single relationships must have a hub
+Site logo description,"The logo appears in the top bar next to your collection name (about 200×32 pixels).
+
+1. Upload images in Custom Uploads if needed.
+2. Click ""Select site logo image"" and pick a file; only images from Custom Uploads are listed."
+Site logo no images hint,"No image files from Custom Uploads yet. Add PNG, SVG, or JPEG images there first."
 Size,ขนาด
 Skip to main content,Skip to main content
+Some tasks may take a while. Bert will reply when it's done.,Some tasks may take a while. Bert will reply when it's done.
 Something went wrong,มีสิ่งผิดปกติเกิดขึ้น
 Sort,เรียงลำดับ
 Sort ascending,Sort ascending
 Sort by,เรียงลำดับ
 Sort descending,Sort descending
+Sort order,Sort order
+Sort:,Sort:
 sorted by,เรียงลำดับโดย
 Source,Source
+Source entity,Source entity
+Source page,Source page
 Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
 Source's role in the relationship Source-Target.,Source's role in the relationship Source-Target.
+Stage,Stage
+stat*,stat*
 State,State
 Statistics,Statistics
 Stats & Filters,Stats & Filters
@@ -852,25 +1135,35 @@ Suggestion,Suggestion
 Suggestion:,Suggestion:
 Suggestions,คำแนะนำ
 suggestions,suggestions
-Suggestions have been updated,Suggestions have been updated
 Suggestions sent,Suggestions sent
+Suggestions updated,Suggestions updated
+Supported chart types for manual data,Supported chart types for manual data
+Supported chart types for this configuration,Supported chart types for this configuration
+Supporting file,Supporting file
 Supporting files,รองรับไฟล์
 Synced template,Synced template
 Synced Template,Synced Template
 Synced templates cannot be deleted.,Synced templates cannot be deleted.
-syntax to create page content,ไวยากรณ์เพื่อสร้างเนื้อหาของหน้า
 System translations,System translations
 Table,ตาราง
 Table of Contents,สารบัญ
 Table of contents,สารบัญ
 Table of contents saved successfully,Table of contents saved successfully
 Table view,มุมมองตาราง
+Target entity,Target entity
+Target entity type,Target entity type
 Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
 Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
+Target:,Target:
+Tasks,Tasks
 Template,แม่แบบ
 Template changes are being applied to all related entities.,Template changes are being applied to all related entities.
+Template color,Template color
+"Template colors apply when comparing data sources or when the dimension is entity
+              type. Otherwise the chart palette is used as fallback.","Template colors apply when comparing data sources or when the dimension is entity
+              type. Otherwise the chart palette is used as fallback."
 Template conflict,Template conflict
 Template name,Template name
 Template name already exists,Template name already exists
@@ -884,8 +1177,6 @@ Templates,แม่แบบ
 Templates:,Templates:
 Text,ข้อความ
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
-The import process threw an error:,กระบวนการนำเข้าเกิดความผิดพลาด
-The import process threw some warnings:,The import process threw some warnings:
 "The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process."
@@ -893,6 +1184,15 @@ The request could not be processed.,The request could not be processed.
 The source of this template is a sync.,The source of this template is a sync.
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
+Theme and branding,Theme and branding
+Theme colors,Theme colors
+Theme colors imported,Theme colors imported
+Theme favicon,Theme favicon
+Theme instance file invalid,Theme instance file invalid
+Theme logotype,Theme logotype
+Theme presets,Theme presets
+Theme preview,Theme preview
+Then by:,Then by:
 There are no pages enabled for entity view,ไม่มีหน้าที่ถูกตั้งค่าสำหรับมุมมองรายการ
 There are no untranslated terms,There are no untranslated terms
 Thesauri,thesauri
@@ -902,6 +1202,7 @@ Thesauri name,Thesauri name
 thesauri new group desc,thesauri new group desc
 thesauri new item desc,thesauri new item desc
 Thesauri updated.,Thesauri updated.
+Thesauri values created,Thesauri values created
 Thesaurus,Thesaurus
 Thesaurus created successfully.,Thesaurus created successfully.
 Thesaurus name,Thesaurus name
@@ -909,25 +1210,46 @@ Thesaurus name already exists,Thesaurus name already exists
 Thesaurus saved,กลุ่มคำอธิบายที่บันทึกแล้ว
 This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,พื้นที่นี้อนุญาตให้คุณใส่โค้ดจาว่าสคริปได้ มันจะช่วยให้คุณสามารถค้นพบความเป็นไปได้ใหม่ๆ
+This chart type cannot display the current data.,This chart type cannot display the current data.
+"This chart type cannot display the current data. Pick a supported type in the Chart
+              tab.","This chart type cannot display the current data. Pick a supported type in the Chart
+              tab."
+"This chart type has no extra options. Select another chart type above if you need
+            legend, labels, or data filters.","This chart type has no extra options. Select another chart type above if you need
+            legend, labels, or data filters."
 This content is automatically generated,เนื้อหานี้ถูกสร้างขึ้นโดยอัตโนมัติ
 "This entity has no document, you probably want to see the metadata",รายการนี้ไม่มีเอกสาร คุณอาจจะอยากดูข้อมูลเมตาดาตาเพิ่มเติม
 This entity is restricted from public view.,รายการนี้ถูกจำกัดการเข้าถึงแบบสาธารณะ
 This field is required,This field is required
+This file could not be displayed. Try refreshing the page.,This file could not be displayed. Try refreshing the page.
+This file could not be opened. It may be corrupted or not a valid PDF.,This file could not be opened. It may be corrupted or not a valid PDF.
+"This file is currently unavailable. Please contact your administrator if the issue
+                  persists.","This file is currently unavailable. Please contact your administrator if the issue
+                  persists."
+"This file is currently unavailable. Please contact your administrator if the issue
+              persists.","This file is currently unavailable. Please contact your administrator if the issue
+              persists."
 This file type is not supported on media fields,This file type is not supported on media fields
 This group is empty,This group is empty
+This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,This label already exists in this template
 This option will show a notification about the use of cookies in your instance.,ตัวเลือกนี้จะแสดงการแจ้งเตือนเกี่ยวกับการใช้คุ้กกี้ในระบบของคุณ
+This page does not need Markdown,This page does not need Markdown
+"This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
+          lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
+          lists, and other components."
 This property can not be deleted,This property can not be deleted
 This property will appear in the library cards as part of the basic info.,คุณสมบัตินี้จะถูกแสดงในการ์ดไลบรารีและเป็นส่วนหนึ่งของข้อมูลพื้นฐาน
 This property will be shown using all the width available.,คุณสมบัตินี้จะถูกแสดงโดยใช้พื้นที่ทั้งหมดที่มีอยู่
 This property will be shown without the label,This property will be shown without the label
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
+This search could not be completed. Try again later.,This search could not be completed. Try again later.
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
-Threshold,เกณฑ์
 Time,เวลา
+Time (UTC),Time (UTC)
 Timelinks,Timelinks
 Timestamp,Timestamp
 Title,ชื่อหัวข้อ
@@ -939,11 +1261,13 @@ to learn how to add and configure a contact form on a webpage.,to learn how to a
 to learn more about the components.,ในกรณีที่ต้องการเรียนรู้เพิ่มเติมเกี่ยวกับส่วนประกอบ
 to view your authentication code and verify your identity.,ในกรณีที่ต้องการดูรหัสผ่านและยืนยันตัวตน
 Today,Today
+Toggle timeline mode,Toggle timeline mode
 Tools,เครื่องมือ
 total entities,total entities
 Total files,Total files
 total files,total files
 "Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+Total imports,Total imports
 total users,total users
 Train,Train
 Train model,Train model
@@ -957,8 +1281,10 @@ Translations,การแปล
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully
 Translations saved,บันทึกการแปล
-Try adjusting your search terms or check for typos,Try adjusting your search terms or check for typos
 Turn off inline translation,Turn off inline translation
+"Two categorical dimensions enable stacked bar charts (e.g. country with sex
+              breakdown).","Two categorical dimensions enable stacked bar charts (e.g. country with sex
+              breakdown)."
 Two-Factor Authentication,Two-Factor Authentication
 Two-factor authentication enabled,Two-factor authentication enabled
 Two-factor authentication failed.,Two-factor authentication failed.
@@ -967,17 +1293,24 @@ Two-factor verification failed,การตรวจสอบสองขั้�
 Two-step verification,การตรวจสอบสองขั้นตอน
 Two-step verification token required,Two-step verification token required
 Type,ประเภท
+U,U
 "Unable to save, failed response","Unable to save, failed response"
 Unauthorized,ไม่ได้รับอนุญาต
 Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
+Uninstalling language,Uninstalling language
+Unknown entity,Unknown entity
+Unknown template,Unknown template
 Unlink,Unlink
 Unlock account,Unlock account
+Unsaved changes,Unsaved changes
 Unsupported OCR language,Unsupported OCR language
+Untitled,Untitled
 Untranslated Terms,Untranslated Terms
 Update,แก้ไขเมื่อ
 UPDATE,แก้ไขเมื่อ
+Update from collection,Update from collection
 Update success,Update success
 Updated,Updated
 Updated file,Updated file
@@ -988,9 +1321,10 @@ Updated settings,Updated settings
 Updated translations,Updated translations
 Updated user,Updated user
 Updating template properties across,Updating template properties across
-Upload a ZIP or CSV file.,นำเข้าไฟล์ zip หรือ csv
+Updating…,Updating…
 Upload and select file,นำเข้าและเลือกไฟล์
 Upload from computer,นำเข้าจากคอมพิวเตอร์
+Upload image,Upload image
 Upload PDF,นำเข้า PDF
 Upload PDF(s) to create,นำเข้า PDF เพื่อสร้าง
 Uploaded attachment,Uploaded attachment
@@ -999,12 +1333,15 @@ Uploaded document,Uploaded document
 Uploaded file,Uploaded file
 Uploading,การอัพโหลด
 Uploading ...,นำเข้า...
-Uploading file,นำเข้าไฟล์
 Uploads,อัปโหลด
 URL,url
 Use,ใช้
 Use as filter,Use as filter
 Use for training,Use for training
+"Use this iframe on external sites. Change the locale query parameter in the URL if
+                needed.","Use this iframe on external sites. Change the locale query parameter in the URL if
+                needed."
+Use URL,Use URL
 User,ผู้ใช้
 User Action,User Action
 User Role,User Role
@@ -1018,48 +1355,61 @@ Users,ผู้ใช้
 Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using URLs,Using URLs
+Uwazi,Uwazi
 Uwazi is developed by,Uwazi ได้รับการพัฒนาโดย
 Uwazi UI,uwazi ui
+Validating,Validating
+Validating file structure and headers.,Validating file structure and headers.
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
 values,values
 Verify,ตรวจสอบ
 Verifying...,กำลังตรวจสอบ....
+via,via
 View,ดู
 view,ดู
 View entities,View entities
 View entity,View entity
 View in library,ดูในไลบรารี
-View less,View less
-View more,View more
 View page,ดูหน้า
+Visualization data updated from your collection.,Visualization data updated from your collection.
 WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,คำเตือนซ คุณกำลังแก้ไขหลายรายการ ช่องที่ถูกทำเครื่องหมายด้วย
 We can't find the page you're looking for.,We can't find the page you're looking for.
 Welcome to Uwazi,ยินดีต้อนรับสู่ Uwazi
 "Well, this is awkward...",แย่หน่อยนะ...
 Whitelisted templates,Whitelisted templates
+wildcard,wildcard
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
 will be updated with the same value.,จะถูกอัปเดทด้วยค่าเดียวกัน
 Will show the entire media inside the container.,Will show the entire media inside the container.
 with,กับ
 With great power comes great responsibility!,พลังที่ยิ่งใหญ่มากับความรับผิดชอบที่ใหญ่ยิ่ง!
+wom?n,wom?n
+x,x
 x less,ลดขนาดลง
 x more,เพิ่มขนาดขึ้น
 Year,ปี
 Yes,Yes
 You can add one or many items in this form.,You can add one or many items in this form.
-"You can also embed advanced components like maps, charts and entity lists in your page.",นอกจากนี้คุณยังสามารถฝังส่วนประกอบที่ซับซ้อนเช่น แผนที่ แผนภูมิ และลิสต์รายการได้ในหน้าของคุณ
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,คุณสามารถสร้างแม่แบบเมตาดาต้าได้
+"You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
 "You can start by selecting text in the document and clicking the ""Add to ToC""
                   button.","You can start by selecting text in the document and clicking the ""Add to ToC""
                   button."
+You do not have write permission on all entities,You do not have write permission on all entities
+You have unsaved changes. Discard them and leave this page? This action cannot be undone.,You have unsaved changes. Discard them and leave this page? This action cannot be undone.
+"You have unsaved changes. Discard them and switch language? This action cannot be
+              undone.","You have unsaved changes. Discard them and switch language? This action cannot be
+              undone."
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,คุณควรเปิดใช้งานคุณสมบัตินี้เพื่อเพิ่มความปลอกภัยให้กับบัญชีของคุณ
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
 You won't be able to save an entity if this property is empty.,You won't be able to save an entity if this property is empty.
+You're all caught up,You're all caught up
 Your account's security is enhanced with two-factor authentication.,Your account's security is enhanced with two-factor authentication.
+Z → A,Z → A
 Zoom in,ขยายเข้า
 Zoom in library view,ขยายเข้าไปยังมุมมองไลบรารี
 Zoom out,ขยายออก

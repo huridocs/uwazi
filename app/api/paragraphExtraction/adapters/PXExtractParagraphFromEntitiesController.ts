@@ -2,9 +2,9 @@ import { z } from 'zod';
 import {
   AbstractController,
   Dependencies as AbstractControllerDependencies,
-} from 'api/common.v2/infrastructure/AbstractController';
+} from '#api/common.v2/infrastructure/AbstractController.js';
 
-import { PXExtractParagraphsFromEntitiesFactory } from '../infrastructure/PXExtractParagraphsFromEntitiesFactory';
+import { PXExtractParagraphsFromEntitiesFactory } from '../infrastructure/PXExtractParagraphsFromEntitiesFactory.js';
 
 type Dependencies = AbstractControllerDependencies<Request>;
 
@@ -29,7 +29,7 @@ class PXExtractParagraphFromEntitiesController extends AbstractController<Reques
       tenantName: this.tenantName,
     });
 
-    await useCase.execute({ ...dto, userId: this.user._id.toString() });
+    await useCase.execute({ ...dto, userId: this.user._id });
 
     this.ok();
   }

@@ -1,10 +1,10 @@
 /* eslint-disable max-statements */
-import { config } from 'api/config';
-import { Dispatchable } from 'api/core/libs/queue/application/contracts/Dispatchable';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DefaultTestingQueueAdapter } from 'api/core/libs/queue/configuration/factories';
-import { NamespacedDispatcher } from '../NamespacedDispatcher';
-import { JobsRouter } from '../JobsRouter';
+import { config } from '#api/config.js';
+import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
+import { NamespacedDispatcher } from '../NamespacedDispatcher.js';
+import { JobsRouter } from '../JobsRouter.js';
 
 class ExampleJob implements Dispatchable {
   // eslint-disable-next-line class-methods-use-this
@@ -46,4 +46,18 @@ it('should dispatch the job to the configured queue', async () => {
     name: ExampleJob.name,
   });
   expect(result22).toBe(null);
+});
+
+it('should count jobs by name on the configured queue', async () => {
+  const adapter = DefaultTestingQueueAdapter();
+
+  const router = new JobsRouter(name => new NamespacedDispatcher('count-namespace', name, adapter));
+
+  config.queueName = 'queue1';
+  await router.dispatch(ExampleJob, undefined);
+
+  config.queueName = 'queue2';
+  await router.dispatch(ExampleJob, undefined);
+
+  expect(await router.countByName(ExampleJob)).toBe(2);
 });

@@ -2,15 +2,15 @@ import superagent from 'superagent';
 import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 import configureMockStore from 'redux-mock-store';
-import { fromJS } from 'immutable';
-import { APIURL } from 'app/config.js';
-import { actions as basicActions } from 'app/BasicReducer';
-import { actions as metadataActions } from 'app/Metadata';
-import * as actions from 'app/Uploads/actions/uploadsActions';
-import * as libraryTypes from 'app/Library/actions/actionTypes';
-import * as types from 'app/Uploads/actions/actionTypes';
-import entitiesApi from 'app/Entities/EntitiesAPI';
-import { mockID } from 'shared/uniqueID.js';
+import Immutable from 'immutable';
+import { APIURL } from '#app/config.js';
+import { actions as basicActions } from '#app/BasicReducer/index.js';
+import { actions as metadataActions } from '#app/Metadata/index.js';
+import * as actions from '#app/Uploads/actions/uploadsActions.js';
+import * as libraryTypes from '#app/Library/actions/actionTypes.js';
+import * as types from '#app/Uploads/actions/actionTypes.js';
+import { EntitiesAPI as entitiesApi } from '#app/Entities/EntitiesAPI.js';
+import { mockID } from '#shared/uniqueID.js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -30,10 +30,11 @@ const emitProgressAndResponse = (superAgent, response) => {
   superAgent.emit('response', response);
 };
 
-const mockSuperAgent = (url = `${APIURL}import`) => {
+const mockSuperAgent = (url = `${APIURL}files/upload/document`) => {
   const mockUpload = superagent.post(url);
   spyOn(mockUpload, 'field').and.returnValue(mockUpload);
   spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
+  spyOn(mockUpload, 'end').and.returnValue(mockUpload);
   spyOn(superagent, 'post').and.returnValue(mockUpload);
   return mockUpload;
 };
@@ -50,33 +51,6 @@ describe('uploadsActions', () => {
   });
 
   afterEach(() => backend.restore());
-
-  describe('showImportPanel()', () => {
-    it('should activate the flag in the state', () => {
-      const dispatch = jasmine.createSpy('dispatch');
-      actions.showImportPanel()(dispatch);
-      expect(dispatch).toHaveBeenCalledWith({ type: 'showImportPanel/SET', value: true });
-    });
-  });
-
-  describe('closeImportPanel()', () => {
-    it('should deactivate the flag in the state', () => {
-      const dispatch = jasmine.createSpy('dispatch');
-      actions.closeImportPanel()(dispatch);
-      expect(dispatch).toHaveBeenCalledWith({ type: 'showImportPanel/SET', value: false });
-    });
-  });
-
-  describe('closeImportProgress()', () => {
-    it('should deactivate the flag in the state', () => {
-      const dispatch = jasmine.createSpy('dispatch');
-      actions.closeImportProgress()(dispatch);
-      expect(dispatch).toHaveBeenCalledWith({ type: 'importError/SET', value: {} });
-      expect(dispatch).toHaveBeenCalledWith({ type: 'importProgress/SET', value: 0 });
-      expect(dispatch).toHaveBeenCalledWith({ type: 'importEnd/SET', value: false });
-      expect(dispatch).toHaveBeenCalledWith({ type: 'importStart/SET', value: false });
-    });
-  });
 
   describe('enterUploads()', () => {
     it('should return a ENTER_UPLOADS_SECTION', () => {
@@ -117,28 +91,6 @@ describe('uploadsActions', () => {
             done();
           })
           .catch(done.fail);
-      });
-    });
-
-    describe('importData', () => {
-      it('should upload a file and then import the data', done => {
-        const mockUpload = mockSuperAgent();
-
-        const expectedActions = [
-          { type: 'importUploadProgress/SET', value: 65 },
-          { type: 'importUploadProgress/SET', value: 75 },
-          { type: 'importUploadProgress/SET', value: 0 },
-        ];
-        const store = mockStore({});
-        const file = getMockFile();
-
-        store.dispatch(actions.importData([file], '123')).then(() => {
-          expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
-          expect(store.getActions()).toEqual(expectedActions);
-          done();
-        });
-
-        emitProgressAndResponse(mockUpload, { text: JSON.stringify({ test: 'test' }), body: 'ok' });
       });
     });
 
@@ -276,7 +228,7 @@ describe('uploadsActions', () => {
   });
 
   describe('newEntity', () => {
-    const store = mockStore({ templates: fromJS({}) });
+    const store = mockStore({ templates: Immutable.fromJS({}) });
     jest
       .spyOn(metadataActions, 'loadInReduxForm')
       .mockImplementation(() => store.dispatch({ type: 'action' }));

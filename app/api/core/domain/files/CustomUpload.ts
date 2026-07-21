@@ -1,15 +1,14 @@
-import { CustomDBO, CustomDTO } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
-import { BaseFile, FileContentLoader } from './BaseFile';
-import { FileWithContents } from './FileWithContents';
+import { BaseFile, BaseFileProps } from './BaseFile.js';
+import { CustomDTO } from './domainTypes.js';
+import { FileContents } from './FileContents.js';
 
-export class CustomUpload extends FileWithContents {
+type Props = BaseFileProps & { content: FileContents };
+
+export class CustomUpload extends BaseFile<Props> {
   protected _type = 'custom' as const;
 
-  static fromDBO(dbo: CustomDBO, contentLoader: FileContentLoader) {
-    return new CustomUpload({
-      ...BaseFile.dboCommonFields(dbo),
-      content: contentLoader({ type: dbo.type, filename: dbo.filename }),
-    });
+  override get content(): FileContents {
+    return this.props.content;
   }
 
   toDTO(): CustomDTO {

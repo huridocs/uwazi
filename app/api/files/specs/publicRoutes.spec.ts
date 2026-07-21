@@ -1,18 +1,16 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { Application, NextFunction, Request, Response } from 'express';
+import type { Application, NextFunction, Request, Response } from 'express';
 import os from 'os';
 import path from 'path';
 import request from 'supertest';
-
-import { setupTestUploadedPaths, storage } from 'api/files';
-import { search } from 'api/search';
-import mailer from 'api/utils/mailer';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { PUBLIC_USER_ID } from 'api/users/publicUser';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-import { routes } from '../jsRoutes';
-import { fixtures, templateId, writerUser } from './fixtures';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { setupTestUploadedPaths, storage } from '#api/files/index.js';
+import { search } from '#api/search/index.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
+import { fixtures, templateId, writerUser } from './fixtures.js';
+import { routes } from '../jsRoutes.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -34,14 +32,17 @@ describe('public routes', () => {
   beforeEach(async () => {
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     jest.spyOn(Date, 'now').mockReturnValue(1000);
-    await testingEnvironment.setUp(fixtures);
     await setupTestUploadedPaths();
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => testingEnvironment.tearDown());
 
   describe('POST /api/public', () => {
+    // eslint-disable-next-line max-statements
     it('should create the entity and store the files', async () => {
+      testingEnvironment.unsetFakeContext();
+      testingEnvironment.resetPermissions();
       await fs.writeFile(path.join(os.tmpdir(), 'attachment.txt'), 'attachment');
 
       const response = await request(app)
@@ -56,8 +57,9 @@ describe('public routes', () => {
           path.join(os.tmpdir(), 'attachment.txt'),
           'filename with special char ñ.txt'
         )
-        .field('attachments_originalname[0]', 'filename with special char ñ.txt')
-        .expect(200);
+        .field('attachments_originalname[0]', 'filename with special char ñ.txt');
+
+      expect(response).toHaveStatus(200);
 
       const { sharedId } = response.body;
 
@@ -85,36 +87,6 @@ describe('public routes', () => {
         expect.objectContaining({ originalname: '12345.test.pdf', status: 'processing' })
       );
       expect(await storage.fileExists(document.filename!, 'document')).toBe(true);
-    });
-
-    it('should send an email', async () => {
-      jest.spyOn(mailer, 'send').mockImplementation(async () => Promise.resolve());
-      await request(app)
-        .post('/api/public')
-        .field(
-          'email',
-          JSON.stringify({
-            from: 'test',
-            to: 'batman@gotham.com',
-            subject: 'help!',
-            text: 'The joker is back!',
-          })
-        )
-        .field(
-          'entity',
-          JSON.stringify({
-            title: 'test',
-            template: templateId.toString(),
-          })
-        )
-        .expect(200);
-
-      expect(mailer.send).toHaveBeenCalledWith({
-        from: 'test',
-        subject: 'help!',
-        text: 'The joker is back!',
-        to: 'batman@gotham.com',
-      });
     });
 
     it('should set req.user to Public user when not authenticated', async () => {

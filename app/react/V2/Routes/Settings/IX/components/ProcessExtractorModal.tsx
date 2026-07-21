@@ -2,11 +2,11 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect } from 'react';
 import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form';
-import { Translate } from 'app/I18N';
-import { Modal, Button } from 'V2/Components/UI';
-import { Checkbox, InputField, RadioSelect } from 'V2/Components/Forms';
-import { ProcessParameters } from 'V2/api/ix/suggestions';
-import { IXFilters } from '../types';
+import { Translate } from '#app/I18N/index.js';
+import { Modal, Button } from '#V2/Components/UI/index.js';
+import { Checkbox, InputField, RadioSelect } from '#V2/Components/Forms/index.js';
+import { ProcessParameters } from '#V2/api/ix/suggestions.js';
+import { IXFilters } from '../types.js';
 
 type FormData = {
   shouldFind: boolean;
@@ -72,7 +72,7 @@ const ProcessForm = ({ submit }: { submit: (values: FormData) => Promise<void> }
             rules={{ min: 1 }}
             render={({ field }) => (
               <div className="flex gap-2 items-center">
-                <label htmlFor={field.name} className="text-gray-900">
+                <label htmlFor={field.name} className="text-ink">
                   <Translate>Amount</Translate> :
                 </label>
                 <InputField
@@ -356,7 +356,12 @@ const ProcessExtractorModal = ({ close, onTrain, selected }: ProcessExtractorMod
         </FormProvider>
       </Modal.Body>
       <Modal.Footer className="flex justify-between gap-2">
-        <Button disabled={isSubmitting} onClick={() => close()} styling="outline" className="grow">
+        <Button
+          disabled={isSubmitting}
+          onClick={() => close()}
+          variant="secondary"
+          className="grow"
+        >
           <Translate>Cancel</Translate>
         </Button>
         <Button

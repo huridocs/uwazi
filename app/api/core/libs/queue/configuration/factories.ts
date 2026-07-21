@@ -1,17 +1,18 @@
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import {
   getClient,
   getConnection,
   getSharedClient,
   getSharedConnection,
-} from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
-import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
-import { JobsDispatcher } from '../application/contracts/JobsDispatcher';
-import { JobsRouter } from '../infrastructure/JobsRouter';
-import { MongoQueueAdapter } from '../infrastructure/MongoQueueAdapter';
-import { NamespacedDispatcher, QueueOptions } from '../infrastructure/NamespacedDispatcher';
-import { RoundRobinMongoQueueAdapter } from '../infrastructure/RoundRobinQueueAdapter';
+} from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { JobsDispatcher } from '../application/contracts/JobsDispatcher.js';
+import { JobsRouter } from '../infrastructure/JobsRouter.js';
+import { MongoQueueAdapter } from '../infrastructure/MongoQueueAdapter.js';
+import { NamespacedDispatcher, QueueOptions } from '../infrastructure/NamespacedDispatcher.js';
+import { RoundRobinMongoQueueAdapter } from '../infrastructure/RoundRobinQueueAdapter.js';
+import { QueueAdapter } from '../infrastructure/QueueAdapter.js';
 
 export function DefaultQueueAdapter(transactionManager: TransactionManager) {
   return new MongoQueueAdapter(
@@ -45,14 +46,15 @@ export function TestingRoundRobinQueueAdapter() {
 export function DefaultDispatcher(
   tenant: string,
   transactionManager: TransactionManager,
-  queueOptions?: QueueOptions
+  queueOptions?: QueueOptions,
+  queueAdapter?: QueueAdapter
 ) {
   return new JobsRouter(
     queueName =>
       new NamespacedDispatcher(
         tenant,
         queueName,
-        DefaultQueueAdapter(transactionManager),
+        queueAdapter || DefaultQueueAdapter(transactionManager),
         queueOptions
       )
   );
@@ -65,5 +67,9 @@ export function NoOpDispatcher(): JobsDispatcher {
       await callback(async () => {});
     },
     async deleteByParams() {},
+    async cancelByParams() {},
+    async countByName() {
+      return 0;
+    },
   };
 }

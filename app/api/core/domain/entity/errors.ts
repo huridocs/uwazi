@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
-import { DomainError } from '../error/DomainError';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { DomainError } from '../error/DomainError.js';
 
 export class EntityTranslationDoesNotExistError extends DomainError {
   constructor(language: LanguageISO6391, availableLanguages: LanguageISO6391[]) {
@@ -12,11 +12,20 @@ export class EntityTranslationDoesNotExistError extends DomainError {
   }
 }
 
-export class EntityDoesNotExistError extends DomainError {
+export class EntityNotFoundError extends DomainError {
   constructor(sharedId: string) {
     super(
       `Entity with shared ID '${sharedId}' does not exist.`,
       'entity.entity.does_not_exist_error'
+    );
+  }
+}
+
+export class CannotCreateEntityFromNonPDFError extends DomainError {
+  constructor() {
+    super(
+      'Cannot create entity from non-PDF file.',
+      'entity.entity.cannot_create_entity_from_non_pdf_error'
     );
   }
 }
@@ -48,15 +57,6 @@ export class RelationshipTemplateMismatchError extends DomainError {
         ', '
       )}`,
       'entity.entity.relationship_template_mismatch_error'
-    );
-  }
-}
-
-export class DuplicatePermissionsError extends DomainError {
-  constructor() {
-    super(
-      'Permissions should be unique by person/group',
-      'entity.entity.duplicate_permissions_error'
     );
   }
 }

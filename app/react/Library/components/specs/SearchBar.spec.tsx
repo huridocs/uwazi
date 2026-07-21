@@ -6,15 +6,14 @@ import { actions as formActions, formReducer, FormState } from 'react-redux-form
 import { combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
 import { MockStoreEnhanced } from 'redux-mock-store';
-import Immutable, { fromJS } from 'immutable';
+import Immutable from 'immutable';
 import { fireEvent, RenderResult, screen } from '@testing-library/react';
 
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import * as semanticSearchActions from 'app/SemanticSearch/actions/actions';
-import * as libraryActions from 'app/Library/actions/libraryActions';
-import { SearchBar } from 'app/Library/components/SearchBar';
-import { IStore } from 'app/istore';
-import { IImmutable } from 'shared/types/Immutable';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
+import * as libraryActions from '#app/Library/actions/libraryActions.js';
+import { SearchBar } from '#app/Library/components/SearchBar.js';
+import { IStore } from '#app/istore.js';
+import { IImmutable } from '#shared/types/Immutable.js';
 
 describe('SearchBar', () => {
   let renderResult: RenderResult;
@@ -39,11 +38,10 @@ describe('SearchBar', () => {
 
     jest.spyOn(libraryActions, 'searchDocuments');
     jest.spyOn(formActions, 'change');
-    jest.spyOn(semanticSearchActions, 'submitNewSearch');
     state = {
       ...defaultState,
       library: {
-        filters: fromJS({ properties: [] }),
+        filters: Immutable.fromJS({ properties: [] }),
         search: {
           searchTerm: '',
           sort: 'title',

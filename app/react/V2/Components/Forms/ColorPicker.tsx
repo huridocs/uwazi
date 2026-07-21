@@ -1,8 +1,9 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useEffect } from 'react';
 import { Popover } from '@headlessui/react';
-import { InputField } from 'app/V2/Components/Forms';
 import { usePopper } from 'react-popper';
+import { InputField } from '#app/V2/Components/Forms/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 
 type ColorPickerProps = {
   name: string;
@@ -61,11 +62,17 @@ const ColorPicker = ({
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
     placement: 'bottom-start',
-    strategy: 'absolute',
+    strategy: 'fixed',
     modifiers: [
       {
         name: 'offset',
         options: { offset: [0, 8] },
+      },
+      {
+        name: 'preventOverflow',
+        options: {
+          boundary: undefined,
+        },
       },
     ],
   });
@@ -73,36 +80,42 @@ const ColorPicker = ({
   return (
     <div className={`${className}`}>
       <Popover className="relative">
-        {({ close }) => (
+        {() => (
           <>
             <Popover.Button
               ref={setReferenceElement}
-              className="w-[42px] h-[42px] border border-gray-300 cursor-pointer rounded-lg flex items-center justify-center shadow-md transition hover:border-gray-300 bg-gray-100 focus:outline-hidden focus:ring-2 focus:ring-primary-500"
+              className="flex h-10.5 w-10.5 cursor-pointer items-center justify-center rounded-lg border border-(--color-theme-control-border) bg-(--color-theme-control-bg) shadow-md transition focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]"
             >
               <div
                 data-testid="colorpicker-button"
                 className="rounded-md w-6 h-6"
                 style={{ backgroundColor: localValue }}
               />
+              <Translate className="sr-only">Template color</Translate>
             </Popover.Button>
             <Popover.Panel
               ref={setPopperElement}
-              style={styles.popper}
+              style={{
+                ...styles.popper,
+                borderColor:
+                  'color-mix(in srgb, var(--color-theme-border-primary) 40%, transparent)',
+                backgroundColor: 'var(--color-theme-bg-surface)',
+                color: 'var(--color-theme-text-primary)',
+              }}
               {...attributes.popper}
-              className="flex flex-col gap-2 p-2 bg-white rounded-xl shadow-lg w-56 z-20 border border-gray-100"
+              className="z-50 flex w-56 flex-col gap-2 rounded-xl border p-2 shadow-lg"
             >
               <ul
-                className="grid grid-cols-5 grid-rows-2 gap-2 mb-2 p-2"
+                className="grid max-h-44 grid-cols-5 gap-2 overflow-y-auto p-2"
                 data-testid="colorpicker-popover"
               >
                 {options.map((color: string) => (
                   <li key={color}>
                     <button
                       type="button"
-                      className="w-8 h-8 rounded-md flex items-center justify-center focus:outline-hidden focus:ring-2 focus:ring-primary-500"
+                      className="flex h-8 w-8 items-center justify-center rounded-md focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]"
                       onClick={() => {
                         changeColor(color);
-                        close();
                       }}
                     >
                       <span className="sr-only">{color}</span>
@@ -115,7 +128,21 @@ const ColorPicker = ({
                   </li>
                 ))}
               </ul>
+              <label className="flex w-fit cursor-pointer flex-row items-center gap-2 text-ink-secondary">
+                <Translate>Pick a color</Translate>
+                <input
+                  type="color"
+                  className="h-6 w-6 cursor-pointer rounded-md focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]"
+                  data-testid="custom-colorpicker"
+                  value={localValue}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    changeColor(e.target.value);
+                  }}
+                />
+              </label>
               <InputField
+                label={t('System', 'Manually set a color', null, false)}
+                hideLabel
                 id={name}
                 type="text"
                 name={name}
@@ -124,7 +151,7 @@ const ColorPicker = ({
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   changeColor(`#${e.target.value}`);
                 }}
-                className="w-full text-center border border-gray-200 rounded-md focus:border-primary-400 focus:ring-1 focus:ring-primary-200"
+                className="w-full text-center"
                 hasErrors={hasErrors}
               />
             </Popover.Panel>

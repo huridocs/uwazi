@@ -1,13 +1,13 @@
 import {
   Dispatchable,
   HeartbeatCallback,
-} from 'api/core/libs/queue/application/contracts/Dispatchable';
-import { DefaultTestingQueueAdapter } from 'api/core/libs/queue/configuration/factories';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { JobDBO, MongoQueueAdapter } from '../MongoQueueAdapter';
-import { NamespacedDispatcher } from '../NamespacedDispatcher';
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { JobDBO, MongoQueueAdapter } from '../MongoQueueAdapter.js';
+import { NamespacedDispatcher } from '../NamespacedDispatcher.js';
 
 class TestJob implements Dispatchable {
   // eslint-disable-next-line class-methods-use-this
@@ -40,6 +40,40 @@ describe('dispatch', () => {
     const job = await adapter.pickJob('queue name');
     expect(job).toMatchObject({
       id: expect.any(String),
+      name: TestJob.name,
+      params,
+      namespace: 'namespace',
+    });
+  });
+
+  it('should enqueue a job with future lockedUntil that is not pickable immediately', async () => {
+    const dispatcher = new NamespacedDispatcher('namespace', 'queue name', adapter);
+    let NOW_VALUE = 1000;
+    jest.spyOn(Date, 'now').mockImplementation(() => NOW_VALUE);
+
+    const params = { data: { pieceOfData: ['a'] }, aNumber: 1 };
+    await dispatcher.dispatch(TestJob, params, { lockedUntil: NOW_VALUE + 10_000 });
+
+    const notYetPickable = await adapter.pickJob('queue name');
+    expect(notYetPickable).toBe(null);
+
+    NOW_VALUE = 11_001;
+    const job = await adapter.pickJob('queue name');
+    expect(job).toMatchObject({
+      name: TestJob.name,
+      params,
+      namespace: 'namespace',
+    });
+  });
+
+  it('should enqueue a job pickable immediately when no dispatch options are passed', async () => {
+    const dispatcher = new NamespacedDispatcher('namespace', 'queue name', adapter);
+
+    const params = { data: { pieceOfData: ['a'] }, aNumber: 1 };
+    await dispatcher.dispatch(TestJob, params);
+
+    const job = await adapter.pickJob('queue name');
+    expect(job).toMatchObject({
       name: TestJob.name,
       params,
       namespace: 'namespace',
@@ -131,6 +165,19 @@ describe('dispatchMany', () => {
           },
         ])
       );
+    });
+
+    it('should count jobs by name only on the specified namespace', async () => {
+      const dispatcherNamespace1 = new NamespacedDispatcher('namespace_1', 'queue name', adapter);
+      const dispatcherNamespace2 = new NamespacedDispatcher('namespace_2', 'queue name', adapter);
+
+      expect(await dispatcherNamespace1.countByName(TestJob)).toBe(2);
+      expect(await dispatcherNamespace2.countByName(TestJob)).toBe(1);
+      class OtherJob implements Dispatchable {
+        // eslint-disable-next-line class-methods-use-this
+        async handleDispatch(): Promise<void> {}
+      }
+      expect(await dispatcherNamespace1.countByName(OtherJob)).toBe(0);
     });
   });
 });

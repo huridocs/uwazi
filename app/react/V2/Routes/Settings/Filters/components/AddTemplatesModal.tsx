@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import { Translate } from 'app/I18N';
-import { Button, Modal } from 'app/V2/Components/UI';
-import { defaultSearch, MultiselectList, MultiselectListOption } from 'app/V2/Components/Forms';
-import { ClientTemplateSchema } from 'app/istore';
+import { Translate } from '#app/I18N/index.js';
+import { Button, Modal } from '#app/V2/Components/UI/index.js';
+import {
+  defaultSearch,
+  MultiselectList,
+  MultiselectListOption,
+} from '#app/V2/Components/Forms/index.js';
+import { ClientTemplateSchema } from '#app/istore.js';
 
 type AddTemplateModalProps = {
   onCancel: React.Dispatch<React.SetStateAction<boolean>>;
@@ -23,7 +27,7 @@ const AddTemplatesModal = ({ onCancel, onAdd, templates }: AddTemplateModalProps
   return (
     <Modal size="lg">
       <Modal.Header>
-        <h1 className="text-xl font-medium text-gray-900">
+        <h1 className="text-xl font-medium text-ink">
           <Translate>Add entity type</Translate>
         </h1>
         <Modal.CloseButton onClick={() => onCancel(false)} />
@@ -40,7 +44,7 @@ const AddTemplatesModal = ({ onCancel, onAdd, templates }: AddTemplateModalProps
       <Modal.Footer>
         <div className="flex flex-col w-full">
           <div className="flex gap-2">
-            <Button styling="light" onClick={() => onCancel(false)} className="grow">
+            <Button variant="ghost" onClick={() => onCancel(false)} className="grow">
               <Translate>Cancel</Translate>
             </Button>
             <Button

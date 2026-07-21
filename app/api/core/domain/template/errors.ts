@@ -1,12 +1,12 @@
 /* eslint-disable max-lines */
 // eslint-disable-next-line max-classes-per-file
-import { Property } from 'api/core/domain/template/Property';
-import { Template } from 'api/core/domain/template/Template';
-import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
-import { DomainError } from '../error/DomainError';
-import { AJVObject, ValidationError } from '../error/ValidationError';
-import { AbstractSelectProperty } from './select/AbstractSelectProperty';
-import { NestedPropertyProps } from './NestedProperty';
+import { Property } from '#api/core/domain/template/Property.js';
+import { Template } from '#api/core/domain/template/Template.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { DomainError } from '../error/DomainError.js';
+import { AJVObject, ValidationError } from '../error/ValidationError.js';
+import { AbstractSelectProperty } from './select/AbstractSelectProperty.js';
+import { NestedPropertyProps } from './NestedProperty.js';
 
 export class PropertyTypeInvalidTypeError extends DomainError {
   constructor(type: string, propertyName: string) {
@@ -90,9 +90,13 @@ export class InvalidStyleTypeError extends DomainError {
 }
 
 export class TemplateWithDuplicatedPropertyError extends ValidationError {
-  constructor(property: Property) {
+  constructor(property: Property, conflictingProperty?: Property) {
+    const conflictDetails = conflictingProperty
+      ? ` Conflicts: "${conflictingProperty.label}" (${conflictingProperty.type}) and "${property.label}" (${property.type}).`
+      : '';
+
     super(
-      `Template contains duplicate property: [name=${property.name}, type=${property.type}]`,
+      `Template contains duplicate property name: [name=${property.name}].${conflictDetails}`,
       'template.template.template_with_duplicated_property_error'
     );
   }

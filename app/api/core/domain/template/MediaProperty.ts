@@ -1,9 +1,9 @@
-import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
+import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { z } from 'zod';
-import { PropertyTypeInvalidTypeError } from './errors';
-import { AbstractImageProperty, AbstractImagePropertyProps } from './AbstractImageProperty';
-import { PropertyTypeEnum } from './PropertyType';
-import { MediaEntry, PropertyAssignment } from './PropertyValue';
+import { PropertyTypeInvalidTypeError } from './errors.js';
+import { AbstractImageProperty, AbstractImagePropertyProps } from './AbstractImageProperty.js';
+import { PropertyTypeEnum } from './PropertyType.js';
+import { MediaEntry, PropertyAssignment } from './PropertyValue.js';
 
 type Props = {
   type?: PropertyTypeEnum.Media;
@@ -60,11 +60,8 @@ class MediaProperty extends AbstractImageProperty {
     return timeLinks?.length ? `(${path}, ${timeLinks})` : path;
   }
 
-  validatePropertyAssignment(
-    { value }: PropertyAssignment<MediaEntry>,
-    shouldValidateForRequired = false
-  ): void {
-    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
+  validatePropertyAssignment({ value }: PropertyAssignment<MediaEntry>): void {
+    createSchema(this.required).parse(value);
   }
 }
 

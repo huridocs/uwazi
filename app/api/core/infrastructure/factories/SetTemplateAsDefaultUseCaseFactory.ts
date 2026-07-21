@@ -1,15 +1,15 @@
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
-import { SetTemplateAsDefaultUseCase } from 'api/core/application/SetTemplateAsDefault';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { SetTemplateAsDefaultUseCase } from '#api/core/application/SetTemplateAsDefault.js';
 
 class SetTemplateAsDefaultUseCaseFactory {
-  static create() {
+  static default(
+    overrides?: Partial<ConstructorParameters<typeof SetTemplateAsDefaultUseCase>[0]>
+  ) {
     const transactionManager = TransactionManagerFactory.default();
-    const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+    const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
 
-    const useCase = new SetTemplateAsDefaultUseCase({ templatesDS, transactionManager });
-
-    return useCase;
+    return new SetTemplateAsDefaultUseCase({ templatesDS, transactionManager, ...overrides });
   }
 }
 

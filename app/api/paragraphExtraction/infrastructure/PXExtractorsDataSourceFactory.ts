@@ -1,12 +1,13 @@
 import { Db } from 'mongodb';
 
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
-import { MongoPXExtractorsDataSource } from './MongoPXExtractorsDataSource';
-import { PXExtractorsQueryServiceFactory } from './PXExtractorsQueryServiceFactory';
-import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { MongoPXExtractorsDataSource } from './MongoPXExtractorsDataSource.js';
+import { PXExtractorsQueryServiceFactory } from './PXExtractorsQueryServiceFactory.js';
+import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService.js';
 
 type Props = {
   connection?: Db;
@@ -27,10 +28,13 @@ export class PXExtractorsDataSourceFactory {
         transactionManager: mongoTransactionManager,
       });
 
+    const templatesDAO = TemplatesDAOFactory.default();
+
     return new MongoPXExtractorsDataSource(
       connection,
       mongoTransactionManager,
-      extractorsQueryService
+      extractorsQueryService,
+      templatesDAO
     );
   }
 }

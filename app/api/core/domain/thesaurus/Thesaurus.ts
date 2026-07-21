@@ -1,8 +1,7 @@
-import { Id } from 'api/core/libs/Id';
 import { z } from 'zod';
 import uuid from 'node-uuid';
-import { InvalidThesaurusValueIdsError } from './errors';
-import { ThesaurusDiff } from './ThesaurusDiff';
+import { Id } from '#api/core/libs/Id.js';
+import { ThesaurusDiff } from './ThesaurusDiff.js';
 
 type ThesaurusValue = {
   id: string;
@@ -101,8 +100,8 @@ class Thesaurus {
 
   private hashedValuesByLabel = new Map<string, ThesaurusValue>();
 
-  constructor(props: Props) {
-    const parsed = Schema.parse(props);
+  constructor(props: Props, validate = true) {
+    const parsed = validate ? Schema.parse(props) : props;
 
     this.id = parsed.id;
     this.name = parsed.name;
@@ -194,16 +193,6 @@ class Thesaurus {
   }
 
   update({ name, values }: UpdateProps): Thesaurus {
-    if (values) {
-      const unknownIds = values
-        .filter(v => 'id' in v && !this.hashedValuesById.has(v.id))
-        .map(v => (v as ThesaurusValue).id);
-
-      if (unknownIds.length > 0) {
-        throw new InvalidThesaurusValueIdsError(unknownIds);
-      }
-    }
-
     const updated = values?.map(value => this.processValue(value));
 
     return this.clone({ name, values: updated });
@@ -225,11 +214,14 @@ class Thesaurus {
   }
 
   private clone(props: Partial<Props>): Thesaurus {
-    const after = new Thesaurus({
-      id: this.id,
-      name: props.name ?? this.name,
-      values: props.values ?? structuredClone(this.values),
-    });
+    const after = new Thesaurus(
+      {
+        id: this.id,
+        name: props.name ?? this.name,
+        values: props.values ?? structuredClone(this.values),
+      },
+      false
+    );
 
     after.before = this;
 

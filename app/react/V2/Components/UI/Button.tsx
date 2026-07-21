@@ -1,9 +1,21 @@
 import React, { MouseEventHandler } from 'react';
 
+type ButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'danger'
+  | 'ghost'
+  | 'compact'
+  | 'warm'
+  | 'success'
+  | 'dangerSecondary'
+  | 'successSecondary'
+  | 'dangerSubtle'
+  | 'successSubtle';
+
 interface ButtonProps {
   children: string | React.ReactNode;
-  styling?: 'solid' | 'outline' | 'light' | 'action';
-  color?: 'primary' | 'error' | 'success';
+  variant?: ButtonVariant;
   type?: 'submit' | 'button';
   size?: 'small' | 'medium';
   disabled?: boolean;
@@ -15,8 +27,7 @@ interface ButtonProps {
 
 const Button = ({
   children,
-  styling = 'solid',
-  color = 'primary',
+  variant = 'primary',
   type = 'button',
   size,
   disabled,
@@ -25,87 +36,108 @@ const Button = ({
   className = '',
   'data-testid': dataTestid,
 }: ButtonProps) => {
-  let classNames;
-  const textStyles = size === 'medium' ? 'text-sm px-5 py-2.5' : 'text-xs px-3 py-2';
+  const sizeClasses: Record<
+    ButtonVariant,
+    Record<NonNullable<ButtonProps['size']> | 'default', string>
+  > = {
+    primary: {
+      small: 'px-2 py-1.5 text-xs',
+      medium: 'px-4 py-2 text-sm',
+      default: 'px-3 py-1.5 text-xs',
+    },
+    secondary: {
+      small: 'px-2 py-1.5 text-xs',
+      medium: 'px-4 py-2 text-sm',
+      default: 'px-3 py-1.5 text-xs',
+    },
+    danger: {
+      small: 'px-2 py-1.5 text-xs',
+      medium: 'px-4 py-2 text-sm',
+      default: 'px-3 py-1.5 text-xs',
+    },
+    ghost: {
+      small: 'px-2 py-1.5 text-xs',
+      medium: 'px-3 py-1.5 text-xs',
+      default: 'px-3 py-1.5 text-xs',
+    },
+    compact: {
+      small: 'px-2 py-1 text-xs',
+      medium: 'px-3 py-1 text-[0.8125rem]',
+      default: 'px-3 py-1 text-[0.8125rem]',
+    },
+    warm: {
+      small: 'px-2 py-1.5 text-xs',
+      medium: 'px-4 py-2 text-sm',
+      default: 'px-3 py-1.5 text-xs gap-1.5',
+    },
+    success: {
+      small: 'px-2 py-1.5 text-xs',
+      medium: 'px-4 py-2 text-sm',
+      default: 'px-4 py-1.5 text-xs',
+    },
+    dangerSecondary: {
+      small: 'px-2 py-1.5 text-xs',
+      medium: 'px-4 py-2 text-sm',
+      default: 'px-3 py-1.5 text-xs',
+    },
+    successSecondary: {
+      small: 'px-2 py-1.5 text-xs',
+      medium: 'px-4 py-2 text-sm',
+      default: 'px-3 py-1.5 text-xs',
+    },
+    dangerSubtle: {
+      small: 'px-2 py-1.5 text-xs',
+      medium: 'px-3 py-1.5 text-xs',
+      default: 'px-3 py-1.5 text-xs',
+    },
+    successSubtle: {
+      small: 'px-2 py-1.5 text-xs',
+      medium: 'px-3 py-1.5 text-xs',
+      default: 'px-3 py-1.5 text-xs',
+    },
+  };
 
-  let bgColor;
-  let bgDisabled;
-  let border;
-  let borderHover;
-  let text;
-  let textDisabled;
-  let textHover;
-  let borderDisabled;
-  let bgHover;
-  switch (color) {
-    case 'error':
-      bgColor = 'bg-error-900';
-      bgHover = 'enabled:hover:bg-error-950';
-      bgDisabled = ' disabled:bg-error-400';
-      border = 'border-error-900';
-      borderHover = 'enabled:hover:border-error-950';
-      borderDisabled = 'disabled:border-error-400';
-      text = 'text-error-900';
-      textDisabled = 'disabled:text-error-400';
-      textHover = 'enabled:hover:text-error-900';
-      break;
+  const textStyles = size ? sizeClasses[variant][size] : sizeClasses[variant].default;
 
-    case 'success':
-      bgColor = 'bg-success-700';
-      bgHover = 'enabled:hover:bg-success-800';
-      bgDisabled = ' disabled:bg-success-300';
-      border = 'border-success-700';
-      borderHover = 'enabled:hover:border-success-800';
-      borderDisabled = 'disabled:border-success-300';
-      text = 'text-success-700';
-      textDisabled = 'disabled:text-success-300';
-      textHover = 'enabled:hover:text-success-700';
-      break;
-
-    default:
-      bgColor = 'bg-primary-700';
-      bgHover = 'enabled:hover:bg-primary-800';
-      bgDisabled = ' disabled:bg-primary-300';
-      border = 'border-primary-700';
-      borderHover = 'enabled:hover:border-primary-800';
-      borderDisabled = 'disabled:border-primary-300';
-      text = 'text-primary-700';
-      textDisabled = 'disabled:text-primary-300';
-      textHover = 'enabled:hover:text-primary-700';
-      break;
-  }
-
-  switch (styling) {
-    case 'outline':
-      {
-        const outlineHoverBg = (() => {
-          switch (color) {
-            case 'error':
-              return 'enabled:hover:bg-error-50';
-            case 'success':
-              return 'enabled:hover:bg-success-50';
-            default:
-              return 'enabled:hover:bg-primary-50';
-          }
-        })();
-        classNames = `bg-white ${outlineHoverBg} ${text} ${border} ${textDisabled} ${borderDisabled} ${borderHover}`;
-      }
-      break;
-    case 'light':
-      classNames = `bg-white text-gray-700 disabled:text-gray-300 border-gray-200 ${textHover} enabled:hover:bg-primary-50 ${borderHover}`;
-      break;
-    default:
-      classNames = `text-white ${bgColor} ${border} ${bgDisabled} ${borderDisabled} ${bgHover} ${borderHover}`;
-      break;
-  }
+  const variantClasses: Record<ButtonVariant, string> = {
+    primary:
+      'border-ink bg-ink text-parchment enabled:hover:opacity-90 disabled:border-[color-mix(in_srgb,var(--color-theme-action-primary)_45%,transparent)]! disabled:bg-[color-mix(in_srgb,var(--color-theme-action-primary)_45%,var(--color-theme-bg-surface))]! disabled:text-ink!',
+    secondary:
+      'border-border bg-paper text-ink enabled:hover:bg-warm disabled:border-border-soft disabled:bg-paper disabled:text-ink-muted',
+    danger:
+      'border-button-danger bg-button-danger text-button-danger-fg enabled:hover:opacity-90 disabled:opacity-60',
+    ghost:
+      'border-border bg-paper text-ink enabled:hover:bg-warm disabled:border-border-soft disabled:bg-paper disabled:text-ink-muted disabled:opacity-60',
+    compact:
+      'border-border-soft bg-warm text-ink-secondary enabled:hover:bg-vellum enabled:hover:border-border disabled:border-border-soft disabled:text-ink-muted',
+    warm: 'bg-warm text-ink-secondary enabled:hover:bg-parchment enabled:hover:text-ink disabled:bg-vellum disabled:text-ink-muted',
+    success:
+      'border-button-success bg-button-success text-button-success-fg enabled:hover:bg-button-success-hover enabled:hover:border-button-success-hover disabled:opacity-60',
+    dangerSecondary:
+      'border-emphasis bg-transparent text-emphasis enabled:hover:bg-emphasis-tint disabled:border-border-soft disabled:text-ink-muted',
+    successSecondary:
+      'border-success bg-transparent text-success enabled:hover:bg-success-light disabled:border-border-soft disabled:text-ink-muted',
+    dangerSubtle:
+      'border-transparent bg-emphasis-tint text-emphasis enabled:hover:opacity-90 disabled:text-ink-muted',
+    successSubtle:
+      'border-transparent bg-success-light text-success enabled:hover:opacity-90 disabled:text-ink-muted',
+  };
 
   return (
     <button
       type={type === 'submit' ? 'submit' : 'button'}
       onClick={onClick}
       disabled={disabled}
-      className={`${className} ${classNames} ${textStyles} disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-hidden focus:ring-4 focus:ring-indigo-200 `}
+      className={[
+        className,
+        textStyles,
+        variant === 'warm'
+          ? 'border-0 rounded-md font-medium transition-colors disabled:cursor-not-allowed focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]'
+          : 'border rounded-md font-medium transition-colors disabled:cursor-not-allowed focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]',
+        variantClasses[variant],
+      ]
+        .filter(Boolean)
+        .join(' ')}
       form={form}
       data-testid={dataTestid}
     >
@@ -115,4 +147,4 @@ const Button = ({
 };
 
 export { Button };
-export type { ButtonProps };
+export type { ButtonProps, ButtonVariant };

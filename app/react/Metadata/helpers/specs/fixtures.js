@@ -14,6 +14,8 @@ export const doc = {
   file: {
     filename: 'filename.pdf',
   },
+  preview: 'doc2.jpg',
+  status: 'processing',
   defaultDoc: entityDocs[1],
   documents: entityDocs,
   metadata: {
@@ -46,7 +48,7 @@ export const doc = {
     relationship2: [
       { type: 'document', value: 'value1', label: 'Value 1' },
       { type: 'document', value: 'value2', label: 'Value 2' },
-      { type: 'entity', value: 'value4', label: 'Value 4' },
+      { type: 'entity', value: 'value4', label: 'Value 4', authorized: false },
     ],
     relationship3: [
       { value: 'value1', label: 'Value 1', inheritedValue: [{ value: 'how' }] },

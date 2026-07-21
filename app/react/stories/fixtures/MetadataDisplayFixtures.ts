@@ -1,7 +1,6 @@
 /* eslint-disable max-lines */
-import { ClientSettings, ClientThesaurus, Template } from 'app/apiResponseTypes';
-import { ProcessingContext } from 'app/V2/application';
-import { EntitySchema } from 'shared/types/entityType';
+import { ClientSettings, ClientThesaurus, Template } from '#app/apiResponseTypes.js';
+import { Entity } from '#V2/api/entities/types.js';
 
 const thesauri: ClientThesaurus[] = [
   {
@@ -76,7 +75,7 @@ const templates: Template[] = [
       {
         _id: '1.2',
         type: 'markdown',
-        label: 'Markdown field using standar markdown syntax',
+        label: 'Markdown field using standard markdown syntax',
         noLabel: false,
         name: 'markdown_syntax',
       },
@@ -90,16 +89,9 @@ const templates: Template[] = [
       {
         _id: '1.3',
         type: 'date',
-        label: 'Date',
+        label: 'Single Date',
         noLabel: false,
         name: 'single_date',
-      },
-      {
-        _id: '1.4',
-        type: 'geolocation',
-        label: 'Single geolocation property',
-        noLabel: false,
-        name: 'location_of_interest',
       },
       {
         _id: '1.5',
@@ -191,18 +183,11 @@ const templates: Template[] = [
         name: 'video_of_event',
       },
       {
-        _id: '1.16',
-        type: 'geolocation',
-        label: 'Grouped geolocation 1',
-        noLabel: false,
-        name: 'incident_location',
-      },
-      {
         _id: '1.17',
         type: 'geolocation',
-        label: 'Grouped geolocation 2',
+        label: 'Grouped geolocation 1 (own)',
         noLabel: false,
-        name: 'secondary_location',
+        name: 'own_geolocation',
       },
       {
         _id: '1.18',
@@ -252,6 +237,7 @@ const templates: Template[] = [
   {
     _id: 'template2',
     name: 'Event Report',
+    color: '#AF4323',
     commonProperties: [
       {
         _id: '2.1',
@@ -285,19 +271,12 @@ const templates: Template[] = [
         noLabel: false,
         name: 'multiselect',
       },
-      {
-        _id: '2.5',
-        type: 'geolocation',
-        label: 'Geolocation from events',
-        noLabel: false,
-        name: 'geolocationd_geolocation',
-      },
     ],
-    color: '#16bdca',
   },
   {
     _id: 'template3',
     name: 'Geolocated data',
+    color: '10FF65',
     commonProperties: [
       {
         _id: '3.1',
@@ -331,7 +310,6 @@ const templates: Template[] = [
         name: 'geolocationd_geolocation',
       },
     ],
-    color: '#Ad11e0',
   },
 ];
 
@@ -347,12 +325,13 @@ const settings: ClientSettings = {
   ],
 };
 
-const rawEntity: EntitySchema = {
+const apiEntity: Entity = {
   _id: '1',
   language: 'en',
   mongoLanguage: 'en',
   sharedId: 'shared1',
   title: 'Title of the displayed entity',
+  user: 'user',
   icon: {
     _id: 'ECU',
     label: 'Ecuador',
@@ -496,6 +475,13 @@ const rawEntity: EntitySchema = {
         icon: '',
         type: 'entity',
       },
+      {
+        value: 'entity6',
+        label: 'This value should not display',
+        icon: '',
+        authorized: false,
+        type: 'entity',
+      },
     ],
     external_link: [
       {
@@ -508,37 +494,24 @@ const rawEntity: EntitySchema = {
     selected_image: [
       {
         value: '/short-video-thumbnail.jpg',
-        alt: 'Alternative text for image',
       },
     ],
     preview_document: [
       {
         value: '/batman.jpg',
-        alt: 'Alternative text pdf preview',
       },
     ],
     video_of_event: [
       {
         value:
           '(/short-video.mp4, {"timelinks":{"00:00:02":"Timelink 1","00:00:04": "Timelink 2"}})',
-        alt: 'Alternative text',
       },
     ],
-    incident_location: [
+    own_geolocation: [
       {
         value: {
-          lat: 44.33301685687683,
-          lon: 5.998535156250001,
-          label: '',
-        },
-      },
-    ],
-    secondary_location: [
-      {
-        value: {
-          lat: 62.58069554111894,
-          lon: 15.468750000000002,
-          label: '',
+          lat: 40.7128,
+          lon: -74.006,
         },
       },
     ],
@@ -568,7 +541,15 @@ const rawEntity: EntitySchema = {
         label: 'Reporter Location - John Smith',
         icon: '',
         type: 'entity',
-        inheritedValue: [],
+        inheritedValue: [
+          {
+            value: {
+              lat: 42.80157978110818,
+              lon: 9.49267578125,
+              label: 'Reporter Home Address',
+            },
+          },
+        ],
         inheritedType: 'geolocation',
       },
     ],
@@ -625,7 +606,7 @@ const rawEntity: EntitySchema = {
       entity: 'shared1',
       type: 'document',
       filename: 'batman.pdf',
-      originalname: 'Anoying rich kid.pdf',
+      originalname: 'Annoying rich kid.pdf',
       mimetype: 'application/pdf',
       size: 1,
       status: 'ready',
@@ -636,15 +617,4 @@ const rawEntity: EntitySchema = {
   ],
 };
 
-const processingContextBase: Omit<ProcessingContext, 'templates' | 'settings' | 'thesauri'> = {
-  includeTemplate: true,
-  onlyForCards: true,
-  dateFormat: 'LLL d, yyyy',
-  translateLabels: true,
-  language: 'en',
-  translations: [],
-  currentUser: undefined,
-  defaultLanguage: 'en',
-};
-
-export { rawEntity, processingContextBase, thesauri, templates, settings };
+export { apiEntity, thesauri, templates, settings };

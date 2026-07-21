@@ -1,11 +1,11 @@
-import { search } from 'api/search/search';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import { search } from '#api/search/search.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 
-import { AggregationBucket, Aggregations } from 'shared/types/aggregations';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
-import { UserSchema } from 'shared/types/userType';
-import { fixturesTimeOut } from './fixtures_elastic';
+import { AggregationBucket, Aggregations } from '#shared/types/aggregations.js';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
+import { UserSchema } from '#shared/types/userType.js';
+import { fixturesTimeOut } from './fixtures_elastic.js';
 import {
   group1,
   permissionsLevelFixtures,
@@ -13,13 +13,16 @@ import {
   template2Id,
   template3Id,
   users,
-} from './permissionsFiltersFixtures';
+} from './permissionsFiltersFixtures.js';
 
 function getAggregationCountByType(typesBuckets: AggregationBucket[], templateId: ObjectIdSchema) {
   return typesBuckets.find(a => a.key === templateId.toString())?.filtered.doc_count;
 }
 
 // eslint-disable-next-line max-statements
+const searchWithContext = async (query: any, language: string, user?: any) =>
+  testingEnvironment.runWithContext(async () => search.search(query, language, user));
+
 describe('Permissions filters', () => {
   let buckets: AggregationBucket[];
   const user3WithGroups = { ...users.user3, groups: [{ _id: group1.toString() }] };
@@ -47,7 +50,7 @@ describe('Permissions filters', () => {
             unpublished: true,
           };
 
-          const { rows } = await search.search(query, 'es', user);
+          const { rows } = await searchWithContext(query, 'es', user);
           expect(rows[0].permissions).toEqual([
             { level: 'write', refId: users.user2._id.toString(), type: 'user' },
             { level: 'write', refId: users.user3._id.toString(), type: 'user' },
@@ -75,7 +78,7 @@ describe('Permissions filters', () => {
           unpublished: true,
         };
 
-        const { rows } = await search.search(query, 'es', users.user2);
+        const { rows } = await searchWithContext(query, 'es', users.user2);
         expect(rows).toEqual([
           expect.objectContaining({
             permissions: expect.arrayContaining([]),
@@ -95,7 +98,7 @@ describe('Permissions filters', () => {
       userFactory.mock(users.user2);
       const query = { unpublished: true };
 
-      const { rows } = await search.search(query, 'es', users.user2);
+      const { rows } = await searchWithContext(query, 'es', users.user2);
       expect(rows).toEqual([
         expect.objectContaining({ title: 'ent3' }),
         expect.objectContaining({ title: 'ent4' }),
@@ -106,7 +109,7 @@ describe('Permissions filters', () => {
       userFactory.mock(users.user2);
       const query = { searchTerm: 'ent1', unpublished: true };
 
-      const { rows } = await search.search(query, 'es', users.user2);
+      const { rows } = await searchWithContext(query, 'es', users.user2);
       expect(rows).toEqual([]);
     });
   });
@@ -116,7 +119,7 @@ describe('Permissions filters', () => {
       user: UserSchema,
       filters: { unpublished: boolean; includeUnpublished: boolean }
     ): Promise<AggregationBucket[]> => {
-      const response = await search.search(
+      const response = await searchWithContext(
         { aggregatePublishingStatus: true, ...filters },
         'es',
         user
@@ -159,7 +162,7 @@ describe('Permissions filters', () => {
       'should return aggregations of matched entities having into account read permission',
       async ({ user, template1Count, template2Count, template3Count }) => {
         userFactory.mock(user);
-        const response = await search.search({ unpublished: true }, 'es', user);
+        const response = await searchWithContext({ unpublished: true }, 'es', user);
         const typesBuckets = (response.aggregations as Aggregations).all._types.buckets;
         expect(getAggregationCountByType(typesBuckets, template1Id)).toBe(template1Count);
         expect(getAggregationCountByType(typesBuckets, template2Id)).toBe(template2Count);
@@ -171,7 +174,7 @@ describe('Permissions filters', () => {
   describe('public entities', () => {
     describe('when query published and user is a collaborator/editor', () => {
       async function queryAndCheckOnlyPublished(query: {}) {
-        const { rows, aggregations } = await search.search(query, 'es', users.user2);
+        const { rows, aggregations } = await searchWithContext(query, 'es', users.user2);
         const typesBuckets = (aggregations as Aggregations).all._types.buckets;
         expect(rows).toEqual([
           expect.objectContaining({ title: 'entPublic1' }),
@@ -198,7 +201,7 @@ describe('Permissions filters', () => {
       it('should see public and authorized entities', async () => {
         userFactory.mock(users.user2);
         const query = { includeUnpublished: true };
-        const { rows, aggregations } = await search.search(query, 'es', users.user2);
+        const { rows, aggregations } = await searchWithContext(query, 'es', users.user2);
         const typesBuckets = (aggregations as Aggregations).all._types.buckets;
         expect(rows).toEqual([
           expect.objectContaining({ title: 'ent3' }),
@@ -217,7 +220,7 @@ describe('Permissions filters', () => {
         async user => {
           userFactory.mock(user);
           const query = { includeUnpublished: true };
-          const { rows, aggregations } = await search.search(query, 'es', user);
+          const { rows, aggregations } = await searchWithContext(query, 'es', user);
           const typesBuckets = (aggregations as Aggregations).all._types.buckets;
           expect(rows).toEqual([
             expect.objectContaining({ title: 'ent1' }),

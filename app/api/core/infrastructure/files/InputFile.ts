@@ -3,18 +3,18 @@ import { createReadStream, createWriteStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
 import { stat } from 'fs/promises';
 
-import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
-import { mimeTypeFromUrl } from 'api/files/extensionHelper';
-import { generateFileName, temporalFilesPath } from 'api/files/filesystem';
-import date from 'api/utils/date';
+import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
+import { mimeTypeFromUrl } from '#api/files/extensionHelper.js';
+import { generateFileName, temporalFilesPath } from '#api/files/filesystem.js';
+import date from '#api/utils/date.js';
 import path from 'path';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
-import { CustomUpload } from '../../domain/files/CustomUpload';
-import { FileAttachment } from '../../domain/files/FileAttachment';
-import { FileContents } from '../../domain/files/FileContents';
-import { ProcessingPDF } from '../../domain/files/ProcessingPDF';
-import { URLAttachment } from '../../domain/files/URLAttachment';
+import { CustomUpload } from '../../domain/files/CustomUpload.js';
+import { FileAttachment } from '../../domain/files/FileAttachment.js';
+import { FileContents } from '../../domain/files/FileContents.js';
+import { PDFDocument } from '../../domain/files/PDFDocument.js';
+import { URLAttachment } from '../../domain/files/URLAttachment.js';
 
 type FileMetadata = {
   fieldname: string;
@@ -96,14 +96,16 @@ export class InputFile {
 
     switch (this.type) {
       case 'document':
-        return new ProcessingPDF({ ...fileProps, status: 'processing' });
+        return new PDFDocument({ ...fileProps, status: 'processing' });
       case 'attachment':
         return new FileAttachment(fileProps);
-      case 'url_attachment':
-        if (typeof fileProps.url === 'string') {
-          return new URLAttachment({ ...fileProps, url: fileProps.url });
+      case 'url_attachment': {
+        if (typeof fileProps.url !== 'string') {
+          throw new Error('url_attachment needs a url defined');
         }
-        throw new Error('url_attachment needs a url defined');
+        const { content: _, ...urlProps } = fileProps;
+        return new URLAttachment({ ...urlProps, url: fileProps.url });
+      }
       case 'raw':
         throw new Error('raw is not a valid inputFile type to to map to an entityFile');
       default:

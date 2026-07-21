@@ -2,14 +2,14 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
-import { templatesAtom, thesauriAtom, relationshipTypesAtom } from 'V2/atoms';
-import { Table } from 'V2/Components/UI';
-import { propertyIconsSmall } from 'V2/Components/UI/Icons';
-import { Translate, t } from 'app/I18N';
+import { templatesAtom, thesauriAtom, relationshipTypesAtom } from '#V2/atoms/index.js';
+import { Table } from '#V2/Components/UI/index.js';
+import { propertyIconsSmall } from '#V2/Components/UI/Icons.js';
+import { Translate, t } from '#app/I18N/index.js';
 import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';
-import { PropertyTypeSchema } from 'shared/types/commonTypes';
-import { ClientTemplateSchema } from 'V2/shared/types';
-import { translationsKeys } from '../helpers';
+import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
+import { ClientTemplateSchema } from '#V2/shared/types.js';
+import { inheritMatches, optionalIdMatches, translationsKeys } from '../helpers.js';
 
 type MatchingPropRow = {
   templateId: string;
@@ -65,7 +65,7 @@ const ThesauriCellComponent: React.FC<ThesauriCellProps> = ({
   currentContent,
   thesauri,
 }) => {
-  const matches = value === (currentContent || '');
+  const matches = optionalIdMatches(value, currentContent);
   const thesaurus = thesauri.find(thesaurusItem => thesaurusItem._id === value);
   const displayName = thesaurus ? thesaurus.name : value || <Translate>No type</Translate>;
   return <span className={matches ? '' : 'text-error-600'}>{displayName}</span>;
@@ -83,7 +83,7 @@ function thesauriCellRenderer(
 function entitiesCellRenderer(content: string | undefined, templates: ClientTemplateSchema[]) {
   return (cell: CellContext<MatchingPropRow, string | undefined>) => {
     const value = cell.getValue();
-    const matches = value === content || (!content && !value);
+    const matches = optionalIdMatches(value, content);
     const foundTemplate = templates.find(tmpl => tmpl._id === value);
     const displayValue = foundTemplate ? (
       <Translate context={foundTemplate._id} truncate={30}>
@@ -102,17 +102,17 @@ function relationTypeCellRenderer(
 ) {
   return (cell: CellContext<MatchingPropRow, string | undefined>) => {
     const value = cell.getValue();
-    const matches = value === (relationType || '');
+    const matches = optionalIdMatches(value, relationType);
     const relationshipType = relationshipTypes.find(rt => rt._id === value);
     const displayValue = relationshipType ? relationshipType.name : <Translate>No type</Translate>;
     return <span className={matches ? '' : 'text-error-600'}>{displayValue}</span>;
   };
 }
 
-function inheritTypeCellRenderer(inheritType: string | undefined) {
+function inheritTypeCellRenderer(inherit: { property: string; type: string } | undefined) {
   return (cell: CellContext<MatchingPropRow, { type: string } | undefined>) => {
     const value = cell.getValue()?.type as keyof typeof translationsKeys;
-    const matches = value === inheritType || (!inheritType && !value);
+    const matches = inheritMatches(cell.row.original.inherit, inherit);
     return (
       <span className={`flex items-center gap-2 ${matches ? '' : 'text-error-600'}`}>
         {propertyIconsSmall[value]}
@@ -226,7 +226,7 @@ export const MatchingPropertiesTable = ({
       columnHelper.accessor('inherit', {
         id: 'inheritType',
         header: InheritTypeHeader,
-        cell: inheritTypeCellRenderer(inherit?.type),
+        cell: inheritTypeCellRenderer(inherit),
         enableSorting: false,
       })
     );

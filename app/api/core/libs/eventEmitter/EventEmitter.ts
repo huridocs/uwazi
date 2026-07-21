@@ -1,10 +1,7 @@
-import { Event } from './Event';
-import { Listener } from './Listener';
+import { Event } from './Event.js';
 
 interface EventEmitter {
   emit(event: Event<any>): Promise<void>;
-  listen(listener: typeof Listener<any, any>): void;
-  reset(): void;
 }
 
 export type { EventEmitter };

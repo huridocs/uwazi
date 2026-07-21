@@ -1,14 +1,14 @@
-import { IXExtractorType } from 'shared/types/extractorType';
-import { PropertySchema } from 'shared/types/commonTypes';
-import settings from 'api/settings';
+import { IXExtractorType } from '#shared/types/extractorType.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
+import settings from '#api/settings/index.js';
 import { ObjectId } from 'mongodb';
-import entities from 'api/entities';
-import dictionatiesModel from 'api/thesauri/dictionariesModel';
+import entities from '#api/entities/index.js';
+import thesauri from '#api/core/v1_layer/thesauri/index.js';
 import _ from 'lodash';
-import { EnforcedWithId } from 'api/odm';
-import { IXTaskManager, TaskParameters } from './InformationExtraction';
-import { propertyTypeIsSelectOrMultiSelect } from './ixMaterials';
-import { IXServices } from './IXServices';
+import { EnforcedWithId } from '#api/odm/index.js';
+import { IXTaskManager, TaskParameters } from './InformationExtraction.js';
+import { propertyTypeIsSelectOrMultiSelect } from './ixMaterials.js';
+import { IXServices } from './IXServices.js';
 
 type Props = {
   taskManager: IXTaskManager;
@@ -37,8 +37,8 @@ export class IXTaskService {
     };
 
     if (propertyTypeIsSelectOrMultiSelect(targetProperty.type)) {
-      const thesauri = await dictionatiesModel.getById(targetProperty.content);
-      const [groups, rootValues] = _.partition(thesauri?.values || [], r => r.values);
+      const currentThesauri = await thesauri.getById(targetProperty.content);
+      const [groups, rootValues] = _.partition(currentThesauri?.values || [], r => r.values);
       const groupedValues = groups.map(group => group.values || []).flat();
       const allValues = rootValues.concat(groupedValues);
 

@@ -1,33 +1,25 @@
-/* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useRef, useState } from 'react';
-import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
+import { useLoaderData, useRevalidator } from 'react-router';
 import { useForm } from 'react-hook-form';
-import { useSetAtom } from 'jotai';
-import { ClientUserSchema } from 'app/apiResponseTypes';
-import { FetchResponseError } from 'shared/JSONRequest';
-import { validEmailFormat } from 'V2/shared/formatHelpers';
-import { Translate } from 'app/I18N';
-import { updateUser, getCurrentUser } from 'V2/api/users';
-import { notificationAtom } from 'V2/atoms';
-import { InputField } from 'V2/Components/Forms';
-import { Button, Card, ConfirmationModal } from 'V2/Components/UI';
-import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { TwoFactorSetup } from './Components/TwoFactorSetup';
-
-const accountLoader =
-  (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () =>
-    getCurrentUser(headers);
+import { ClientUserSchema } from '#app/apiResponseTypes.js';
+import { validEmailFormat } from '#V2/shared/formatHelpers.js';
+import { t, Translate } from '#app/I18N/index.js';
+import { InputField } from '#V2/Components/Forms/index.js';
+import { Button, Card, ConfirmationModal } from '#V2/Components/UI/index.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { useServices } from '#V2/services/index.js';
+import { TwoFactorSetup } from './Components/TwoFactorSetup.js';
 
 const Account = () => {
   const userAccount = useLoaderData() as ClientUserSchema;
+  const { users: usersService } = useServices();
   const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
   const [confirmationModal, setConfirmationModal] = useState(false);
   const passwordConfirmation = useRef<string>();
   const formSubmit = useRef<HTMLButtonElement>(null);
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const revalidator = useRevalidator();
 
   type AccountForm = ClientUserSchema & { passwordConfirm?: string };
@@ -48,20 +40,17 @@ const Account = () => {
     const { passwordConfirm, ...userData } = data;
     userData.password = userData.password ? userData.password : userAccount.password;
 
-    const response = await updateUser(userData, currentPassword);
+    const [, error] = await usersService.upsert(userData, currentPassword);
 
-    if (response instanceof FetchResponseError) {
-      const message = response.json?.prettyMessage ? response.json.prettyMessage : response.message;
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: message || undefined,
-      });
+    if (error) {
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        error.detail ?? error.message
+      );
     } else {
-      setNotifications({
-        type: 'success',
-        text: <Translate>Account updated</Translate>,
-      });
+      notify('success', t('System', 'Account updated', null, false));
       await revalidator.revalidate();
     }
 
@@ -152,7 +141,7 @@ const Account = () => {
                 color="default"
               >
                 <div className="flex gap-6 items-center">
-                  <Button color="success" disabled className="flex-none">
+                  <Button variant="success" disabled className="flex-none">
                     <Translate>Activated</Translate>
                   </Button>
                   <div className="flex-1 grow">
@@ -170,7 +159,7 @@ const Account = () => {
               >
                 <div className="flex gap-6 items-center">
                   <Button
-                    styling="outline"
+                    variant="secondary"
                     className="flex-none"
                     onClick={() => setIsSidepanelOpen(true)}
                   >
@@ -193,7 +182,7 @@ const Account = () => {
             <a
               href="/logout"
               data-testid="account-logout"
-              className="text-error-900 bg-white enabled:hover:bg-error-50 text-error-900 border-error-900 disabled:text-error-400 disabled:border-error-400 enabled:hover:border-error-950 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
+              className="bg-white enabled:hover:bg-error-50 text-error-900 border-error-900 disabled:text-error-400 disabled:border-error-400 enabled:hover:border-error-950 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
       border focus:outline-hidden focus:ring-4 focus:ring-indigo-200"
             >
               <Translate>Logout</Translate>
@@ -225,7 +214,7 @@ const Account = () => {
           body="Confirm action"
           usePassword
           onCancelClick={() => setConfirmationModal(false)}
-          onAcceptClick={value => {
+          onAcceptClick={(value: any) => {
             if (formSubmit.current) {
               passwordConfirmation.current = value;
               formSubmit.current.disabled = false;
@@ -240,4 +229,4 @@ const Account = () => {
   );
 };
 
-export { Account, accountLoader };
+export { Account };

@@ -1,19 +1,19 @@
-import { storage, uploadsPath } from 'api/files';
-import { FileNotFound } from 'api/files/FileNotFound';
-import { filesModel } from 'api/files/filesModel';
-import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager';
-import settings from 'api/settings/settings';
-import { tenants } from 'api/tenants/tenantContext';
-import { handleError } from 'api/utils';
+import { storage, uploadsPath } from '#api/files/index.js';
+import { FileNotFound } from '#api/files/FileNotFound.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
+import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
+import settings from '#api/settings/settings.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { handleError } from '#api/utils/index.js';
 import path from 'path';
-import request from 'shared/JSONRequest';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
-import { FileType } from 'shared/types/fileType';
-import { SegmentationType } from 'shared/types/segmentationType';
-import { Settings } from 'shared/types/settingsType';
+import request from '#shared/JSONRequest.js';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
+import { FileType } from '#shared/types/fileType.js';
+import { SegmentationType } from '#shared/types/segmentationType.js';
+import { Settings } from '#shared/types/settingsType.js';
 import { Readable } from 'stream';
 import urljoin from 'url-join';
-import { SegmentationModel } from './segmentationModel';
+import { SegmentationModel } from './segmentationModel.js';
 
 class PDFSegmentation {
   static SERVICE_NAME = 'segmentation';
@@ -83,15 +83,17 @@ class PDFSegmentation {
 
     const segmentedFiles = segmentations.map(segmentation => segmentation.fileID);
 
-    const files = (await filesModel.get(
+    const dao = FilesDAOFactory.default();
+    const files = (await dao.getByQuery(
       {
         type: 'document',
-        filename: { $exists: true },
         status: 'ready',
         _id: { $nin: segmentedFiles },
       },
-      'filename',
-      { limit: this.batchSize }
+      {
+        projection: { filename: 1 },
+        limit: this.batchSize,
+      }
     )) as (FileType & { filename: string; _id: ObjectIdSchema })[];
 
     return files.map(file => ({ _id: file._id, filename: file.filename }));

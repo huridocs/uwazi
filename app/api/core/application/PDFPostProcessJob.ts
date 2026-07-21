@@ -1,20 +1,21 @@
-/* eslint-disable max-statements */
-import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { ProcessingFileFailed } from 'api/core/domain/files/errors';
-import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
-import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
-import { FileIsNotAPDF } from '../infrastructure/services/PDFService';
-import { EventsBus } from '../libs/eventsbus';
-import { AbstractUseCase } from '../libs/UseCase';
-import { PDFService } from './contracts/PDFService';
-import { FilesService } from './FilesService';
+import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { ProcessingFileFailed } from '#api/core/domain/files/errors.js';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
+import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
+import { FileIsNotAPDF } from '../infrastructure/services/PDFService.js';
+import { EventsBus } from '../libs/eventsbus/index.js';
+import { AbstractUseCase } from '../libs/UseCase.js';
+import { PDFService } from './contracts/PDFService.js';
+import { FilesService } from './FilesService.js';
+import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 
 type Input = {
   documentId: string;
 };
 
-type Output = ProcessedPDF;
+type Output = PDFDocument;
 
 type Deps = {
   eventBus: EventsBus;
@@ -22,6 +23,8 @@ type Deps = {
   fileStorage: FileStorage;
   pdfService: PDFService;
   filesService: FilesService;
+  entitiesDS: EntitiesDataSource;
+  settingsDS: SettingsDataSource;
 };
 
 export class PDFPostProcessJob extends AbstractUseCase<Input, Output, Deps, [boolean]> {
@@ -32,7 +35,7 @@ export class PDFPostProcessJob extends AbstractUseCase<Input, Output, Deps, [boo
         await this.deps.pdfService.extractText(processingPDF.content)
       ).getDataOrThrow();
 
-      const processedPDF = processingPDF.asProcessed({
+      const processedPDF = processingPDF.processed({
         language: pdfInfo.language.key,
         totalPages: pdfInfo.totalPages,
         fullText: pdfInfo.pages,
@@ -47,6 +50,15 @@ export class PDFPostProcessJob extends AbstractUseCase<Input, Output, Deps, [boo
 
         await this.deps.filesDS.create(thumbnail);
         await this.deps.fileStorage.storeFile(thumbnail);
+
+        const entity = (await this.deps.entitiesDS.getById(processingPDF.entity)).getDataOrThrow();
+
+        entity.setPreview(
+          await this.deps.filesDS.getThumbnails([entity.sharedId]),
+          await this.deps.settingsDS.getDefaultLanguageKey()
+        );
+
+        await this.deps.entitiesDS.update(entity);
       });
 
       await this.eventBus.emit(
@@ -58,13 +70,13 @@ export class PDFPostProcessJob extends AbstractUseCase<Input, Output, Deps, [boo
 
       return processedPDF;
     } catch (e) {
+      const failedPDF = processingPDF.failed();
       if (!retriesLeft || e instanceof FileIsNotAPDF) {
         await this.transactionManager.run(async () => {
-          processingPDF.failed();
-          await this.deps.filesDS.update(processingPDF);
+          await this.deps.filesDS.update(failedPDF);
         });
       }
-      throw new ProcessingFileFailed(processingPDF, e);
+      throw new ProcessingFileFailed(failedPDF, e);
     }
   }
 }

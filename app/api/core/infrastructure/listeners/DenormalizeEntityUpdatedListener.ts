@@ -1,11 +1,11 @@
-import { Listener } from 'api/core/libs/eventEmitter/Listener';
-import { EventEmitterFactory } from 'api/core/libs/eventEmitter/EventEmitterFactory';
-import { EntityUpdatedEvent } from 'api/core/domain/entity/EntityUpdatedEvent';
-import { Entity } from 'api/core/domain/entity/Entity';
-import { denormalizeRelated } from 'api/entities/denormalize';
-import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
-import { MongoEntityMapper } from '../mongodb/entity/MongoEntityMapper';
-import { MongoTemplateMapper } from '../mongodb/template/MongoTemplateMapper';
+import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { EntityUpdatedEvent } from '#api/core/domain/entity/EntityUpdatedEvent.js';
+import { Entity } from '#api/core/domain/entity/Entity.js';
+import { denormalizeRelated } from '#api/entities/denormalize.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { MongoEntityMapper } from '../mongodb/entity/MongoEntityMapper.js';
+import { MongoTemplateMapper } from '../mongodb/template/MongoTemplateMapper.js';
 
 type Deps = {
   templatesDS: TemplatesDataSource;
@@ -16,9 +16,10 @@ class DenormalizeEntityUpdatedListener extends Listener<EntityUpdatedEvent, Deps
   static eventName = EntityUpdatedEvent.name;
 
   async handle(): Promise<void> {
-    const [templateBefore, templateAfter] = await this.deps.templatesDS
-      .getByIds([this.params.before.templateId, this.params.after.templateId])
-      .all();
+    const [templateBefore, templateAfter] = await this.deps.templatesDS.getByIds([
+      this.params.before.templateId,
+      this.params.after.templateId,
+    ]);
 
     const beforeEntity = new Entity({ template: templateBefore, ...this.params.before });
     const afterEntity = new Entity({
@@ -51,7 +52,7 @@ class DenormalizeEntityUpdatedListener extends Listener<EntityUpdatedEvent, Deps
   }
 }
 
-EventEmitterFactory.default().listen(DenormalizeEntityUpdatedListener);
+EventEmitterFactory.registry.register(DenormalizeEntityUpdatedListener);
 
 export { DenormalizeEntityUpdatedListener };
 export type { Deps as DenormalizeEntityUpdatedListenerDeps };

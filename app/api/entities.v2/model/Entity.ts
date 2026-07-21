@@ -1,6 +1,6 @@
-import { CommonProperty } from 'api/core/domain/template/CommonProperty';
-import { Property } from 'api/core/domain/template/Property';
-import { EntityInputModel } from '../types/EntityInputDataType';
+import { CommonProperty } from '#api/core/domain/template/CommonProperty.js';
+import { Property } from '#api/core/domain/template/Property.js';
+import { EntityInputModel } from '../types/EntityInputDataType.js';
 
 type MetadataValue = unknown;
 
@@ -23,7 +23,7 @@ type Icon = {
   type: string;
 };
 
-export class Entity {
+export class DeprecatedEntity {
   readonly _id: string;
 
   readonly sharedId: string;
@@ -61,7 +61,7 @@ export class Entity {
   }
 
   static fromInputModel(inputModel: EntityInputModel) {
-    return new Entity(
+    return new DeprecatedEntity(
       inputModel._id,
       inputModel.sharedId,
       inputModel.language,

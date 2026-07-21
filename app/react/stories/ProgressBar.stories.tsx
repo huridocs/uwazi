@@ -1,6 +1,6 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { ProgressBar } from 'V2/Components/UI';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import { ProgressBar } from '#V2/Components/UI/index.js';
 
 const meta: Meta<typeof ProgressBar> = {
   title: 'Components/ProgressBar',
@@ -21,6 +21,7 @@ const meta: Meta<typeof ProgressBar> = {
     },
   },
 };
+export default meta;
 
 type Story = StoryObj<typeof ProgressBar>;
 
@@ -41,5 +42,3 @@ const Basic: Story = {
 };
 
 export { Basic };
-
-export default meta;

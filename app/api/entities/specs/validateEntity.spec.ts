@@ -1,19 +1,22 @@
-/* eslint-disable max-lines,max-statements */
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+/* eslint-disable max-statements */
 
 import { ErrorObject } from 'ajv';
 import ValidationError from 'ajv/dist/runtime/validation_error';
-import db from 'api/utils/testing_db';
-import { propertyTypes } from 'shared/propertyTypes';
-import { EntitySchema } from 'shared/types/entityType';
-import templates from 'api/core/v1_layer/templates';
-import { TemplateSchema } from 'shared/types/templateType';
-import * as entitiesIndex from 'api/search/entitiesIndex';
-import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
-import fixtures, { templateId, simpleTemplateId, nonExistentId } from './validatorFixtures';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import db from '#api/utils/testing_db.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import templates from '#api/core/v1_layer/templates/index.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
+import * as entitiesIndex from '#api/search/entitiesIndex.js';
+import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+import fixtures, { templateId, simpleTemplateId, nonExistentId } from './validatorFixtures.js';
 
 import { customErrorMessages } from '../validation/metadataValidators.js';
-import { validateEntity } from '../validateEntity';
+import { validateEntity as validateEntityFn } from '../validateEntity.js';
+
+const validateEntity = async (entity: any) =>
+  testingEnvironment.runWithContext(async () => validateEntityFn(entity));
 
 describe('validateEntity', () => {
   beforeEach(async () => {
@@ -183,7 +186,9 @@ describe('validateEntity', () => {
               },
             ],
           };
-          const templateWithRequiredProps = await templates.save(template, 'en');
+          const templateWithRequiredProps = await testingEnvironment.runWithContext(async () =>
+            templates.save(template, 'en')
+          );
 
           let entity = createEntity({ template: templateWithRequiredProps._id });
           await expectError(entity, customErrorMessages.required, ".metadata['name']");
@@ -546,76 +551,6 @@ describe('validateEntity', () => {
             entity,
             customErrorMessages.relationship_values_should_match,
             ".metadata['relationship2']"
-          );
-        });
-      });
-
-      describe('relationship property V2', () => {
-        it('should fail if value is empty string', async () => {
-          const entity = createEntity({
-            metadata: { newRelationship: [{ value: '' }, { value: '' }] },
-          });
-          await expectError(
-            entity,
-            customErrorMessages[propertyTypes.newRelationship],
-            ".metadata['newRelationship']"
-          );
-        });
-
-        it('should not allow foreign ids that do not exists', async () => {
-          const entity = createEntity({
-            metadata: {
-              newRelationship: [
-                { value: 'entity1' },
-                { value: 'non_existent_entity' },
-                { value: 'non_existent_entity2' },
-              ],
-            },
-          });
-
-          await expectError(
-            entity,
-            customErrorMessages.relationship_wrong_foreign_id,
-            ".metadata['newRelationship']",
-            {
-              data: [{ value: 'non_existent_entity' }, { value: 'non_existent_entity2' }],
-            }
-          );
-        });
-
-        it('should not allow foreign ids that belong to diferent template', async () => {
-          const entity = createEntity({
-            language: 'es',
-            metadata: {
-              newRelationship: [{ value: 'entity1' }, { value: 'entity2' }, { value: 'entity3' }],
-            },
-          });
-
-          await expectError(
-            entity,
-            customErrorMessages.relationship_wrong_foreign_id,
-            ".metadata['newRelationship']",
-            {
-              data: [{ value: 'entity2' }],
-            }
-          );
-        });
-
-        it('should not allow to change values if it is read-only', async () => {
-          const entity = createEntity({
-            language: 'es',
-            metadata: {
-              newRelationship2: [{ value: 'entity1' }],
-            },
-          });
-
-          await expectError(
-            entity,
-            customErrorMessages.read_only,
-            ".metadata['newRelationship2']",
-            {
-              data: [{ value: 'entity1' }],
-            }
           );
         });
       });

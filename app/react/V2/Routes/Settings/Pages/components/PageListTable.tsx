@@ -1,12 +1,10 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { kebabCase } from 'lodash';
 import { CellContext } from '@tanstack/react-table';
-import { Button, Pill } from 'app/V2/Components/UI';
-import { I18NLinkV2 as I18NLink, Translate } from 'app/I18N';
-import { TablePage } from '../PagesList';
-
-const getPageUrl = (sharedId: string, title: string) => `page/${sharedId}/${kebabCase(title)}`;
+import { Button, Pill } from '#app/V2/Components/UI/index.js';
+import { I18NLinkV2 as I18NLink, Translate } from '#app/I18N/index.js';
+import { TablePage } from '../PagesList.js';
+import { getPageDraftUrl, getPageUrl } from './pageUrls.js';
 
 const EntityViewHeader = () => <Translate>Entity Page</Translate>;
 const TitleHeader = () => <Translate>Title</Translate>;
@@ -14,18 +12,18 @@ const UrlHeader = () => <Translate>URL</Translate>;
 const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
 
 const ActionCell = ({ cell }: CellContext<TablePage, string>) => {
-  const pageUrl = getPageUrl(cell.getValue(), cell.row.original.title);
+  const pageUrl = getPageUrl(cell.getValue(), cell.row.original.title ?? '');
   const isEntityView = cell.row.original.entityView;
 
   return (
     <div className="flex justify-end gap-2">
       <I18NLink to={`/${pageUrl}`} target="_blank" aria-disabled={isEntityView}>
-        <Button styling="light" disabled={isEntityView}>
+        <Button variant="ghost" disabled={isEntityView}>
           <Translate>View</Translate>
         </Button>
       </I18NLink>
       <I18NLink to={`/settings/pages/edit/${cell.getValue()}`}>
-        <Button styling="light">
+        <Button variant="ghost">
           <Translate>Edit</Translate>
         </Button>
       </I18NLink>
@@ -42,9 +40,7 @@ const YesNoPill = ({ cell }: CellContext<TablePage, boolean>) => {
 };
 
 const UrlCell = ({ cell }: CellContext<TablePage, string>) => {
-  const sharedId = cell.getValue();
-  const { title } = cell.row.original;
-  const url = `/${getPageUrl(sharedId, title)}`;
+  const url = `/${getPageUrl(cell.getValue(), cell.row.original.title ?? '')}`;
   return url;
 };
 
@@ -65,5 +61,6 @@ export {
   ActionHeader,
   UrlCell,
   getPageUrl,
+  getPageDraftUrl,
   List,
 };

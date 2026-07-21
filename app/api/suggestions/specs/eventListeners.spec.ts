@@ -1,22 +1,22 @@
-import entities from 'api/entities';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { EntityDeletedEvent } from 'api/entities/events/EntityDeletedEvent';
-import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { FileCreatedEvent } from 'api/files/events/FileCreatedEvent';
-import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
-import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
-import { search } from 'api/search';
-import { TemplateDeletedEvent } from 'api/core/domain/template/events/TemplateDeletedEvent';
-import { TemplateUpdatedEvent } from 'api/core/domain/template/events/TemplateUpdatedEvent';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import db, { DBFixture, testingDB } from 'api/utils/testing_db';
-import { propertyTypes } from 'shared/propertyTypes';
-import { FileType } from 'shared/types/fileType';
-import { UserRole } from 'shared/types/userSchema';
-import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
-import { registerEventListeners } from '../eventListeners';
-import { Suggestions } from '../suggestions';
+import entities from '#api/entities/index.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { EntityDeletedEvent } from '#api/entities/events/EntityDeletedEvent.js';
+import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
+import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
+import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
+import { search } from '#api/search/index.js';
+import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateDeletedEvent.js';
+import { TemplateUpdatedEvent } from '#api/core/domain/template/events/TemplateUpdatedEvent.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import db, { DBFixture, testingDB } from '#api/utils/testing_db.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
+import { FileType } from '#shared/types/fileType.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
+import { registerEventListeners } from '../eventListeners.js';
+import { Suggestions } from '../suggestions.js';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -274,16 +274,18 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
       expectedSuggestions: [],
     },
   ])('$case', async ({ sharedId, newTemplate, expectedSuggestions }) => {
-    const current = await entities.getById(sharedId, 'en');
-    const toSave = { ...current, template: newTemplate };
-    await entities.save(toSave, { user: adminUser, language: 'en' });
-    const allSuggestions =
-      (await db.mongodb
-        ?.collection('ixsuggestions')
-        .find({}, { sort: { propertyName: 1 } })
-        .toArray()) || [];
-    expect(allSuggestions).toHaveLength(expectedSuggestions.length);
-    expect(allSuggestions).toMatchObject(expectedSuggestions);
+    await testingEnvironment.runWithContext(async () => {
+      const current = await entities.getById(sharedId, 'en');
+      const toSave = { ...current, template: newTemplate };
+      await entities.save(toSave, { user: adminUser, language: 'en' });
+      const allSuggestions =
+        (await db.mongodb
+          ?.collection('ixsuggestions')
+          .find({}, { sort: { propertyName: 1 } })
+          .toArray()) || [];
+      expect(allSuggestions).toHaveLength(expectedSuggestions.length);
+      expect(allSuggestions).toMatchObject(expectedSuggestions);
+    });
   });
 });
 
@@ -561,8 +563,8 @@ describe('On EntityCreatedEvent', () => {
 describe(`On ${FileUpdatedEvent.name}`, () => {
   const fileId = db.id();
 
-  const extractedMetadata = {
-    extractedMetadata: [
+  const propertySelections = {
+    propertySelections: [
       {
         name: 'propertyName',
         selection: {
@@ -583,7 +585,7 @@ describe(`On ${FileUpdatedEvent.name}`, () => {
     language: 'eng',
   };
 
-  it('should not update the ix suggestion state if the extractedMetadata does not change', async () => {
+  it('should not update the ix suggestion state if propertySelections does not change', async () => {
     const updateSpy = jest.spyOn(Suggestions, 'updateStates');
 
     await applicationEventsBus.emit(new FileUpdatedEvent({ before: original, after: original }));
@@ -594,8 +596,8 @@ describe(`On ${FileUpdatedEvent.name}`, () => {
 
     await applicationEventsBus.emit(
       new FileUpdatedEvent({
-        before: { ...original, ...extractedMetadata },
-        after: { ...original, ...extractedMetadata },
+        before: { ...original, ...propertySelections },
+        after: { ...original, ...propertySelections },
       })
     );
 
@@ -608,7 +610,7 @@ describe(`On ${FileUpdatedEvent.name}`, () => {
     const updateSpy = jest.spyOn(Suggestions, 'updateStates');
 
     await applicationEventsBus.emit(
-      new FileUpdatedEvent({ before: original, after: { ...original, ...extractedMetadata } })
+      new FileUpdatedEvent({ before: original, after: { ...original, ...propertySelections } })
     );
 
     expect(updateSpy).not.toHaveBeenCalled();

@@ -1,5 +1,6 @@
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { OcrStatus } from '../../ocrModel';
+import { UserRole } from '#api/core/domain/user/User.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { OcrStatus } from '../../ocrModel.js';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -9,7 +10,7 @@ const fixtures = {
       _id: fixturesFactory.id('user1'),
       username: 'user1',
       email: 'user1@test.com',
-      role: 'admin' as const,
+      role: UserRole.ADMIN,
       password: 'password',
     },
   ],
@@ -39,6 +40,9 @@ const fixtures = {
         'eng'
       ),
       originalname: 'sourceFileOriginalName.pdf',
+      mimetype: 'application/pdf',
+      size: 1000,
+      creationDate: 1000,
     },
     {
       ...fixturesFactory.fileDeprecated(

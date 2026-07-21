@@ -1,29 +1,27 @@
 /* eslint-disable max-lines */
-import { RelationsV1Collection } from 'api/relationships/RelationsV1Collection';
-import { Template } from 'api/core/domain/template/Template';
-import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
-import { IndexTypes } from 'shared/data_utils/objectIndex';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { SharedId } from 'api/core/domain/entity/SharedId';
+import stringify from 'fast-json-stable-stringify';
+import { RelationsV1Collection } from '#api/relationships/RelationsV1Collection.js';
+import { Template } from '#api/core/domain/template/Template.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { IndexTypes } from '#shared/data_utils/objectIndex.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { SharedId } from '#api/core/domain/entity/SharedId.js';
 import {
   PropertyAssignment,
   PropertyValue,
   RelationshipEntry,
   SelectionEntry,
   TextPropertyValue,
-} from 'api/core/domain/template/PropertyValue';
+} from '#api/core/domain/template/PropertyValue.js';
 import {
   EntityTranslation,
   EntityTranslationProps,
-} from 'api/core/domain/entity/EntityTranslation';
-import date from 'api/utils/date';
-import stringify from 'fast-json-stable-stringify';
-import { AccessGrant, EntityPermission } from './EntityPermission';
-import { PermissionType } from './PermissionType';
-import { AccessLevel } from './AccessLevel';
-import { EntityTranslationDoesNotExistError } from './errors';
-import { AbstractSelectProperty } from '../template/select/AbstractSelectProperty';
-import { EntityDTO } from './EntityDTO';
+} from '#api/core/domain/entity/EntityTranslation.js';
+import date from '#api/utils/date.js';
+import { EntityTranslationDoesNotExistError } from './errors.js';
+import { AbstractSelectProperty } from '../template/select/AbstractSelectProperty.js';
+import { EntityDTO } from './EntityDTO.js';
+import { Thumbnail } from '../files/Thumbnail.js';
 
 type CreateInput = {
   languages: LanguageISO6391[];
@@ -43,10 +41,8 @@ type Props = {
   template: Template;
 
   userId?: string;
-  published?: boolean;
   sharedId?: string;
   icon?: Icon;
-  permissions?: AccessGrant[];
   generatedToc?: boolean;
 };
 
@@ -62,15 +58,11 @@ class Entity {
 
   userId?: string;
 
-  published: boolean;
-
   template: Template;
 
   icon?: Icon;
 
   generatedToc?: boolean;
-
-  permissions: EntityPermission;
 
   constructor(private props: Props) {
     this.userId = props.userId;
@@ -78,8 +70,6 @@ class Entity {
     this.icon = props.icon;
 
     this.sharedId = props.sharedId || SharedId.create().value;
-    this.published = props.published || false;
-    this.permissions = new EntityPermission(props.permissions);
 
     this.generatedToc = props?.generatedToc;
     this.translations = this.createTranslations(props.translations);
@@ -101,10 +91,10 @@ class Entity {
     }, {});
   }
 
-  private validatePropertyAssignments(shouldValidateForRequired = false) {
+  private validatePropertyAssignments() {
     this.template.allProperties.forEach(property =>
       this.getPropertyAssignments(property.name).forEach(pa => {
-        property.validatePropertyAssignment(pa, shouldValidateForRequired);
+        property.validatePropertyAssignment(pa);
       })
     );
   }
@@ -137,25 +127,16 @@ class Entity {
       language,
     }));
 
-    const instance = new Entity({ userId, translations, template, icon });
-
-    if (userId) {
-      instance.addGrantForCreator(userId);
-    }
-
-    return instance;
+    return new Entity({ userId, translations, template, icon });
   }
 
   get asDTO(): EntityDTO {
     return {
       sharedId: this.sharedId,
       templateId: this.template.id,
-      published: this.published,
       userId: this.userId,
       icon: this.icon,
       generatedToc: this.generatedToc,
-
-      permissions: this.permissions.accessGrants,
       translations: this.translationsList.map(([_language, translation]) => translation.asDTO),
     };
   }
@@ -226,12 +207,6 @@ class Entity {
     );
   }
 
-  addGrantForCreator(creatorId: string) {
-    this.permissions = new EntityPermission([
-      { refId: creatorId, type: PermissionType.User, level: AccessLevel.Write },
-    ]);
-  }
-
   setPropertyAssignments(
     propertyAssignments: PropertyAssignment[],
     targetLanguage: LanguageISO6391,
@@ -239,7 +214,9 @@ class Entity {
   ) {
     propertyAssignments.forEach(pa => this.setValue(pa, targetLanguage));
 
-    this.validatePropertyAssignments(shouldValidateForRequired);
+    if (shouldValidateForRequired) {
+      this.validatePropertyAssignments();
+    }
   }
 
   /**
@@ -256,7 +233,9 @@ class Entity {
   ) {
     propertyAssignments.forEach(pa => this.setValueInAllLanguages(pa));
 
-    this.validatePropertyAssignments(shouldValidateForRequired);
+    if (shouldValidateForRequired) {
+      this.validatePropertyAssignments();
+    }
   }
 
   changeTemplate(template: Template) {
@@ -322,7 +301,7 @@ class Entity {
             type: 'entity',
             value: item.value,
             label: related.getTitle(language),
-            icon: related.icon,
+            ...(related.icon ? { icon: related.icon } : {}),
             ...(inheritedProp
               ? {
                   inheritedValue: related.getValue(inheritedProp.name, language).value,
@@ -337,6 +316,16 @@ class Entity {
           language
         );
       });
+    });
+  }
+
+  setPreview(thumbnails: Thumbnail[], defaultLanguage: LanguageISO6391): void {
+    this.translationsList.forEach(([language, translation]) => {
+      const match =
+        thumbnails.find(t => t.language === language) ??
+        thumbnails.find(t => t.language === defaultLanguage) ??
+        thumbnails[0];
+      translation.preview = match?.filename;
     });
   }
 }

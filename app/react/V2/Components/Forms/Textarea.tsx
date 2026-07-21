@@ -1,8 +1,11 @@
-import React, { ChangeEventHandler, CSSProperties } from 'react';
+/* eslint-disable react/require-default-props, react/jsx-props-no-spreading */
+import React, { ChangeEventHandler, CSSProperties, Ref } from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
-import { Translate } from 'app/I18N';
-import { InputError } from './InputError';
-import { Label } from './Label';
+import { Translate } from '#app/I18N/index.js';
+import { InputError } from './InputError.js';
+import { Label } from './Label.js';
+
+type FieldState = { disabled?: boolean; hasError?: boolean };
 
 interface TextareaProps {
   id: string;
@@ -15,8 +18,7 @@ interface TextareaProps {
   value?: string;
   className?: string;
   name?: string;
-  ref?: React.Ref<HTMLTextAreaElement>;
-  clearFieldAction?: () => any;
+  clearFieldAction?: () => void;
   onChange?: ChangeEventHandler<HTMLTextAreaElement>;
   onSelect?: ChangeEventHandler<HTMLTextAreaElement>;
   onBlur?: ChangeEventHandler<HTMLTextAreaElement>;
@@ -24,80 +26,85 @@ interface TextareaProps {
   rows?: number;
 }
 
-const Textarea = ({
-  id,
-  label,
-  disabled,
-  hideLabel,
-  placeholder,
-  hasErrors,
-  errorMessage,
-  value,
-  className = '',
-  name = '',
-  ref,
-  clearFieldAction,
-  onChange = () => {},
-  onSelect = () => {},
-  onBlur = () => {},
-  resize = 'none',
-  rows = 4,
-}: TextareaProps) => {
-  let fieldStyles = 'border-gray-300 border text-gray-900 focus:ring-primary-500 bg-gray-50';
-  let clearFieldStyles = 'enabled:hover:text-primary-700 text-gray-900';
+const cx = (...classes: Array<string | false | undefined>) => classes.filter(Boolean).join(' ');
 
-  if (hasErrors || errorMessage) {
-    fieldStyles =
-      'border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700';
-    clearFieldStyles = 'enabled:hover:text-error-700 text-error-900';
-  }
+const textareaBase =
+  'w-full rounded-lg border border-border bg-paper px-3 py-2 text-sm text-ink placeholder:text-ink-muted focus:border-carbon/40 focus:outline-none focus:ring-2 focus:ring-carbon/20';
 
-  if (clearFieldAction) {
-    fieldStyles = `${fieldStyles} pr-10`;
-  }
-
-  return (
-    <div className={className}>
-      <Label
-        htmlFor={id}
-        hideLabel={!label || hideLabel}
-        hasErrors={Boolean(hasErrors || errorMessage)}
-      >
-        {label}
-      </Label>
-      <div className="relative flex w-full">
-        <textarea
-          id={id}
-          onSelect={onSelect}
-          onChange={onChange}
-          onBlur={onBlur}
-          name={name}
-          ref={ref}
-          disabled={disabled}
-          value={value}
-          className={`${fieldStyles} disabled:text-gray-500 block flex-1 w-full text-sm rounded-sm`}
-          rows={rows}
-          placeholder={placeholder}
-          style={{ resize }}
-        />
-        {Boolean(clearFieldAction) && (
-          <button
-            type="button"
-            onClick={clearFieldAction}
-            disabled={disabled}
-            data-testid="clear-field-button"
-            className={`${clearFieldStyles} top-px disabled:text-gray-500 absolute p-2.5 right-0 text-sm font-medium rounded-r-lg
-             focus:outline-hidden`}
-          >
-            <XMarkIcon className="w-5" />
-            <Translate className="sr-only">Clear</Translate>
-          </button>
-        )}
-      </div>
-      {errorMessage && <InputError>{errorMessage}</InputError>}
-    </div>
+const textareaClass = (state: FieldState, hasClear: boolean) =>
+  cx(
+    textareaBase,
+    state.hasError && 'border-emphasis bg-seal-tint text-seal',
+    state.disabled && 'cursor-not-allowed bg-warm text-ink-muted',
+    hasClear && 'pr-10'
   );
-};
+
+const clearButtonClass =
+  'absolute right-0 top-px rounded-r-lg p-2.5 text-sm font-medium focus:outline-hidden enabled:hover:text-carbon disabled:text-ink-muted';
+
+const Textarea = React.forwardRef(
+  (
+    {
+      id,
+      label,
+      disabled,
+      hideLabel,
+      placeholder,
+      hasErrors,
+      errorMessage,
+      value,
+      className = '',
+      name = '',
+      clearFieldAction,
+      onChange,
+      onSelect,
+      onBlur,
+      resize = 'none',
+      rows = 4,
+    }: TextareaProps,
+    ref: Ref<HTMLTextAreaElement>
+  ) => {
+    const state: FieldState = { disabled, hasError: Boolean(hasErrors || errorMessage) };
+    const hasClear = Boolean(clearFieldAction);
+
+    return (
+      <div className={className}>
+        <Label htmlFor={id} hideLabel={!label || hideLabel} hasErrors={state.hasError}>
+          {label}
+        </Label>
+        <div className="relative flex w-full">
+          <textarea
+            id={id}
+            onSelect={onSelect}
+            onChange={onChange}
+            onBlur={onBlur}
+            name={name}
+            ref={ref}
+            disabled={disabled}
+            {...(value !== undefined ? { value } : {})}
+            className={textareaClass(state, hasClear)}
+            rows={rows}
+            placeholder={placeholder}
+            style={{ resize }}
+          />
+          {hasClear && (
+            <button
+              type="button"
+              onClick={clearFieldAction}
+              disabled={disabled}
+              data-testid="clear-field-button"
+              className={clearButtonClass}
+            >
+              <XMarkIcon className="w-5" />
+              <Translate className="sr-only">Clear</Translate>
+            </button>
+          )}
+        </div>
+        {errorMessage && <InputError>{errorMessage}</InputError>}
+      </div>
+    );
+  }
+);
 
 export type { TextareaProps };
 export { Textarea };

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Translate, t } from 'app/I18N';
-import { isString } from 'lodash';
-import { Button, Modal } from '../UI';
-import { modalSizeType } from './Modal';
+import { Translate, t } from '#app/I18N/index.js';
+import isString from 'lodash/isString.js';
+
+import { Button, Modal } from '../UI/index.js';
+import { modalSizeType } from './Modal.js';
 
 type confirmationModalType = {
   size?: modalSizeType;
@@ -18,6 +19,18 @@ type confirmationModalType = {
   dangerStyle?: boolean;
   disabled?: boolean;
 };
+
+type FeedbackStyle = React.CSSProperties;
+
+const confirmFieldClass = [
+  'block w-full rounded-lg border p-2.5 text-sm',
+  'bg-(--color-theme-control-bg)',
+  'border-(--color-theme-control-border)',
+  'text-(--color-theme-control-text)',
+  'focus:border-(--color-theme-control-border-focus)',
+  'focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]',
+  'focus:outline-hidden',
+].join(' ');
 
 const ConfirmationModal = ({
   header,
@@ -35,6 +48,17 @@ const ConfirmationModal = ({
 }: confirmationModalType) => {
   const [inputValue, setInputValue] = useState('');
   const [confirmed, setConfirmed] = useState(!(confirmWord || usePassword));
+  const warningEdge =
+    'color-mix(in srgb, var(--color-theme-feedback-danger, var(--color-theme-danger)) 35%, transparent)';
+  const warningStyle: FeedbackStyle = {
+    backgroundColor: 'var(--color-theme-feedback-danger-tint, var(--color-theme-danger-light))',
+    borderTopColor: warningEdge,
+    borderBottomColor: warningEdge,
+    borderLeftWidth: 4,
+    borderLeftStyle: 'solid',
+    borderLeftColor: 'var(--color-theme-feedback-danger, var(--color-theme-danger))',
+    color: 'var(--color-theme-text-primary)',
+  };
 
   const renderChild = (child: string | React.ReactNode) =>
     isString(child) ? <Translate>{child}</Translate> : child;
@@ -44,22 +68,19 @@ const ConfirmationModal = ({
   return (
     <Modal size={size}>
       <Modal.Header className="border-b-0">
-        <h1 className="text-xl font-medium text-gray-900">{renderChild(header)}</h1>
+        <h1 className="text-xl font-medium text-ink">{renderChild(header)}</h1>
         <Modal.CloseButton onClick={onCancelClick} disabled={disabled} />
       </Modal.Header>
       {warningText && (
-        <div
-          className="p-4 text-sm border-t border-b border-error-300 text-error-800 bg-error-50 top--3"
-          role="alert"
-        >
+        <div className="top--3 border-b border-t p-4 text-sm" role="alert" style={warningStyle}>
           {renderChild(warningText)}
         </div>
       )}
       <Modal.Body>
-        <span className="text-gray-500">{renderChild(body)}</span>
+        <span className="text-ink-secondary">{renderChild(body)}</span>
         {confirmWord && (
           <div className="py-4">
-            <span className="block mb-2 font-medium text-gray-900 text-md">
+            <span className="block mb-2 text-md font-medium text-ink">
               <label htmlFor="confirm-input">
                 <Translate>Please type in</Translate>&nbsp;
               </label>
@@ -67,7 +88,7 @@ const ConfirmationModal = ({
             </span>
             <input
               id="confirm-input"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              className={confirmFieldClass}
               type="text"
               onChange={e => setConfirmed(e.currentTarget.value === wordForConfirmation)}
               data-testid="confirm-input"
@@ -77,14 +98,14 @@ const ConfirmationModal = ({
 
         {usePassword && (
           <div className="py-4">
-            <span className="block mb-2 font-medium text-gray-900 text-md">
+            <span className="block mb-2 text-md font-medium text-ink">
               <label htmlFor="confirm-password">
                 <Translate>Enter your current password to confirm</Translate>&nbsp;
               </label>
             </span>
             <input
               id="confirm-password"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              className={confirmFieldClass}
               type="password"
               autoComplete="off"
               onChange={e => {
@@ -97,7 +118,7 @@ const ConfirmationModal = ({
       </Modal.Body>
       <Modal.Footer>
         <Button
-          styling="light"
+          variant="ghost"
           onClick={onCancelClick}
           className="grow"
           data-testid="cancel-button"
@@ -108,7 +129,7 @@ const ConfirmationModal = ({
         <Button
           onClick={onAcceptClick ? () => onAcceptClick(inputValue || '') : undefined}
           disabled={!confirmed || disabled}
-          color={!warningText && !dangerStyle ? 'primary' : 'error'}
+          variant={!warningText && !dangerStyle ? 'primary' : 'danger'}
           className="grow"
           data-testid="accept-button"
         >

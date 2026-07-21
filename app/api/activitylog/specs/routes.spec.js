@@ -1,10 +1,11 @@
-import { setUpApp } from 'api/utils/testingRoutes';
+import { setUpApp } from '#api/utils/testingRoutes.js';
 import request from 'supertest';
+import { ObjectId } from 'mongodb';
 import qs from 'qs';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { UserRole } from 'shared/types/userSchema';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { UserRole } from '#shared/types/userSchema.js';
 import activitylogRoutes from '../routes.js';
-import activitylog from '../activitylog';
+import activitylog from '../activitylog.js';
 
 jest.mock('../../utils/languageMiddleware.ts', () => (_req, _res, next) => {
   next();
@@ -14,6 +15,7 @@ describe('Activitylog routes', () => {
   let currentUser;
 
   const adminUser = {
+    _id: new ObjectId().toString(),
     username: 'User 1',
     role: UserRole.ADMIN,
     email: 'user@test.com',

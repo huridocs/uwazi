@@ -1,15 +1,15 @@
 /* eslint-disable max-statements */
-import { EnforcedWithId, UwaziFilterQuery } from 'api/odm';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { IXExtractorType } from 'shared/types/extractorType';
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import entitiesModel from 'api/entities/entitiesModel';
-import { filesModel } from 'api/files/filesModel';
-import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
-import { ensure } from 'shared/tsUtils';
 import { ObjectId } from 'mongodb';
-import { EntitySchema } from 'shared/types/entityType';
-import { LanguageUtils } from 'shared/language';
+import { EnforcedWithId, UwaziFilterQuery } from '#api/odm/index.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { IXExtractorType } from '#shared/types/extractorType.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import entitiesModel from '#api/entities/entitiesModel.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
+import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
+import { ensure } from '#shared/tsUtils.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { LanguageUtils } from '#shared/language/index.js';
 import {
   getEntitiesForTraining,
   getFilesForTraining,
@@ -17,10 +17,10 @@ import {
   MAX_TRAINING_FILES_NUMBER,
   MAX_TRAINING_ENTITIES_NUMBER,
   PropertyValue,
-} from './ixMaterials';
-import { IXServices } from './IXServices';
-import { IXModelsModel } from './IXModelsModel';
-import { deriveTrainingPropertyValue } from './propertyValue';
+} from './ixMaterials.js';
+import { IXServices } from './IXServices.js';
+import { IXModelsModel } from './IXModelsModel.js';
+import { deriveTrainingPropertyValue } from './propertyValue.js';
 
 // Stage A — fetch marked for training
 async function getMarkedEntityPairs(extractorId: ObjectId) {
@@ -93,14 +93,16 @@ const buildPdfMaterialsForFiles = async (
 
   const targetProperty = await IXServices.getTargetProperty({ extractor });
 
-  const files = await filesModel.get(
+  const dao = FilesDAOFactory.default();
+  const files = await dao.getByQuery(
     {
       _id: { $in: fileIds },
       type: 'document',
-      filename: { $exists: true },
       language: { $exists: true },
     },
-    'extractedMetadata entity language filename'
+    {
+      projection: { propertySelections: 1, entity: 1, language: 1, filename: 1 },
+    }
   );
 
   const segs = await SegmentationModel.get(
@@ -129,7 +131,7 @@ const buildPdfMaterialsForFiles = async (
         value?: string;
         label?: string;
       }>;
-      const selectionText = f.extractedMetadata?.[0]?.selection?.text;
+      const selectionText = f.propertySelections?.[0]?.selection?.text;
       const entityCurrent = (entityLang?.metadata?.[extractor.property]?.[0]?.value ??
         undefined) as string | number | undefined;
       const propertyValue = deriveTrainingPropertyValue(targetProperty.type, {
@@ -142,7 +144,7 @@ const buildPdfMaterialsForFiles = async (
         _id: f._id,
         entity: ensure<string>(f.entity),
         language: entityLang?.language || ensure<string>(f.language),
-        extractedMetadata: f.extractedMetadata || [],
+        propertySelections: f.propertySelections || [],
         segmentation: seg,
         propertyValue: propertyValue as PropertyValue,
         propertyType: targetProperty.type,

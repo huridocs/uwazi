@@ -1,26 +1,24 @@
 /* eslint-disable max-statements */
-import { Entity } from 'api/core/domain/entity/Entity';
-import { TemplateBuilder } from '../../template/specs/TemplateBuilder';
-import { TextProperty } from '../../template/TextProperty';
-import { NumericProperty } from '../../template/NumericProperty';
-import { DateProperty } from '../../template/DateProperty';
-import { DateRangeProperty } from '../../template/DateRangeProperty';
-import { MultiDateProperty } from '../../template/MultiDateProperty';
-import { MultiDateRangeProperty } from '../../template/MultiDateRangeProperty';
-import { SelectProperty } from '../../template/select/SelectProperty';
-import { MultiSelectProperty } from '../../template/select/MultiSelectProperty';
-import { GeolocationProperty } from '../../template/GeoLocationProperty';
-import { LinkProperty } from '../../template/LinkProperty';
-import { MarkdownProperty } from '../../template/MarkdownProperty';
-import { ImageProperty } from '../../template/ImageProperty';
-import { MediaProperty } from '../../template/MediaProperty';
-import { PreviewProperty } from '../../template/PreviewProperty';
-import { NestedProperty } from '../../template/NestedProperty';
-import { V1RelationshipProperty } from '../../template/V1RelationshipProperty';
-import { EntityTranslation } from '../EntityTranslation';
-import { GenerateIdProperty } from '../../template/GenerateIdProperty';
-import { PermissionType } from '../PermissionType';
-import { AccessLevel } from '../AccessLevel';
+import { Entity } from '#api/core/domain/entity/Entity.js';
+import { TemplateBuilder } from '../../template/specs/TemplateBuilder.js';
+import { TextProperty } from '../../template/TextProperty.js';
+import { NumericProperty } from '../../template/NumericProperty.js';
+import { DateProperty } from '../../template/DateProperty.js';
+import { DateRangeProperty } from '../../template/DateRangeProperty.js';
+import { MultiDateProperty } from '../../template/MultiDateProperty.js';
+import { MultiDateRangeProperty } from '../../template/MultiDateRangeProperty.js';
+import { SelectProperty } from '../../template/select/SelectProperty.js';
+import { MultiSelectProperty } from '../../template/select/MultiSelectProperty.js';
+import { GeolocationProperty } from '../../template/GeoLocationProperty.js';
+import { LinkProperty } from '../../template/LinkProperty.js';
+import { MarkdownProperty } from '../../template/MarkdownProperty.js';
+import { ImageProperty } from '../../template/ImageProperty.js';
+import { MediaProperty } from '../../template/MediaProperty.js';
+import { PreviewProperty } from '../../template/PreviewProperty.js';
+import { NestedProperty } from '../../template/NestedProperty.js';
+import { V1RelationshipProperty } from '../../template/V1RelationshipProperty.js';
+import { EntityTranslation } from '../EntityTranslation.js';
+import { GenerateIdProperty } from '../../template/GenerateIdProperty.js';
 
 const createSampleTemplate = () =>
   TemplateBuilder.aTemplate({ id: 'template-123' })
@@ -132,7 +130,6 @@ describe('Entity', () => {
     });
 
     expect(entity.sharedId).toEqual(expect.any(String));
-    expect(entity.published).toBe(false);
     expect(entity.getTranslation('en').creationDate.value[0].value).toEqual(expect.any(Number));
 
     expect(entity.translations).toEqual({
@@ -140,20 +137,6 @@ describe('Entity', () => {
       es: { ...entityLanguage, id: { value: expect.any(String) }, language: 'es' },
       fr: { ...entityLanguage, id: { value: expect.any(String) }, language: 'fr' },
     });
-  });
-
-  it('should grant access for Entity creator when present', () => {
-    const template = createSampleTemplate();
-
-    const entity = Entity.create({
-      languages: ['en', 'fr', 'es'],
-      template,
-      userId: 'user-456',
-    });
-
-    expect(entity.permissions.accessGrants).toEqual([
-      { refId: 'user-456', type: PermissionType.User, level: AccessLevel.Write },
-    ]);
   });
 
   it('should sync values in all languages when no language is specified', () => {
@@ -1638,10 +1621,8 @@ describe('Entity', () => {
         template: createSampleTemplate(),
         icon: { id: 'id', label: 'label', type: 'emoji' },
         generatedToc: true,
-        published: true,
         sharedId: 'sharedId',
         userId: 'userId',
-        permissions: [],
         translations: [
           { language: 'en', id: 'id_1', metadata: {} },
           { language: 'es', id: 'id_1', metadata: {} },
@@ -1774,16 +1755,6 @@ describe('Entity', () => {
       expect(entity.hasChanged).toBe(false);
 
       entity.changeTemplate(template2);
-
-      expect(entity.hasChanged).toBe(true);
-    });
-
-    it('should return TRUE when permissions are added', () => {
-      const entity = createTestEntity();
-
-      expect(entity.hasChanged).toBe(false);
-
-      entity.addGrantForCreator('user-999');
 
       expect(entity.hasChanged).toBe(true);
     });

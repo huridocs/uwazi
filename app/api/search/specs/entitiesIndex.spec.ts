@@ -1,16 +1,16 @@
-import { legacyLogger } from 'api/log';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { elasticTesting } from 'api/utils/elastic_testing';
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
-import db from 'api/utils/testing_db';
-import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
-import { UserRole } from 'shared/types/userSchema';
-import { EntitySchema } from 'shared/types/entityType';
-import { FileType } from 'shared/types/fileType';
-import { elastic } from '../elastic';
-import { reindexAll, updateMapping } from '../entitiesIndex';
-import { search } from '../search';
-import { fixtures as fixturesForIndexErrors } from './fixtures_elastic_errors';
+import { legacyLogger } from '#api/log/index.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
+import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
+import db from '#api/utils/testing_db.js';
+import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { FileType } from '#shared/types/fileType.js';
+import { elastic } from '../elastic.js';
+import { reindexAll, updateMapping } from '../entitiesIndex.js';
+import { search } from '../search.js';
+import { fixtures as fixturesForIndexErrors } from './fixtures_elastic_errors.js';
 
 const forceIndexingOfNumberBasedProperty = async () => {
   await search.indexEntities({ title: 'Entity with index Problems 1' }, '', 1);
@@ -43,7 +43,9 @@ describe('entitiesIndex', () => {
       await search.indexEntities({ title: 'Entity with index Problems 1' }, '', 1);
       expect(legacyLogger.error).not.toHaveBeenCalled();
       await elasticTesting.refresh();
-      const indexedEntities = await search.search({}, 'en');
+      const indexedEntities = await testingEnvironment.runWithContext(async () =>
+        search.search({}, 'en')
+      );
       expect(indexedEntities.rows.length).toBe(1);
     });
   });

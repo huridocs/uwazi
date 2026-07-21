@@ -1,18 +1,19 @@
-import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager';
-import { tenants } from 'api/tenants';
-import settings from 'api/settings/settings';
-import entities from 'api/entities/entities';
-import templates from 'api/core/v1_layer/templates';
-import relationtypes from 'api/relationtypes';
+import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
+import { tenants } from '#api/tenants/index.js';
+import settings from '#api/settings/settings.js';
+import entities from '#api/entities/entities.js';
+import templates from '#api/core/v1_layer/templates/index.js';
+import relationtypes from '#api/relationtypes/index.js';
 import {
   getTextWithAttachedImages,
   getTwitterImages,
   getTwitterImagesData,
   TwitterImageData,
-} from 'api/services/twitterintegration/getTwitterImages';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { TemplateFacade } from 'api/core/infrastructure/facades/TemplateFacade';
-import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
+} from '#api/services/twitterintegration/getTwitterImages.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
+import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
 
 interface TweetParamsType {
   title: string;
@@ -78,7 +79,7 @@ class TwitterIntegration {
 
     await Promise.all(
       Object.keys(tenants.tenants).map(async tenant => {
-        await tenants.run(async () => {
+        await runInJobContext(tenant, async () => {
           const twitterIntegration = await this.getTwitterIntegrationSettings();
 
           if (!twitterIntegration.hashtagsTemplateName) {
@@ -102,7 +103,7 @@ class TwitterIntegration {
               },
             });
           }
-        }, tenant);
+        });
       })
     );
   };
@@ -185,7 +186,7 @@ class TwitterIntegration {
   };
 
   private getTemplateTweets = async (twitterIntegration: TwitterIntegrationSettingsType) => {
-    const templatesTweet = await templates.get({ name: twitterIntegration.tweetsTemplateName });
+    const templatesTweet = await templates.getByNames([twitterIntegration.tweetsTemplateName]);
 
     if (templatesTweet.length) {
       return templatesTweet[0];
@@ -230,9 +231,7 @@ class TwitterIntegration {
   };
 
   getHashtagsTemplate = async (twitterIntegration: TwitterIntegrationSettingsType) => {
-    const templatesHashtag = await templates.get({
-      name: twitterIntegration.hashtagsTemplateName,
-    });
+    const templatesHashtag = await templates.getByNames([twitterIntegration.hashtagsTemplateName]);
 
     if (templatesHashtag[0]) {
       return templatesHashtag[0];

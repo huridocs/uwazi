@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-import { clearCookiesAndLogin } from '../helpers/login';
+import { clearCookiesAndLogin } from '../helpers/login.js';
 
 describe('Private instance', () => {
   before(() => {
@@ -23,12 +23,11 @@ describe('Private instance', () => {
     cy.contains('a', 'Settings').realClick();
     cy.contains('a', 'Collection').realClick();
     cy.contains('div', 'Public instance').within(() => {
-      cy.get('input[type="checkbox"]').check({ force: true });
-      cy.contains('div', 'Disable');
+      cy.get('[data-testid="toggle"]').check({ force: true });
+      cy.get('[data-testid="toggle"]').should('be.checked');
     });
     cy.contains('button', 'Save').realClick();
     cy.contains('div', 'Settings updated.');
-    cy.contains('button', 'Dismiss').realClick();
   });
 
   it('should logout and still be able to see the library', () => {

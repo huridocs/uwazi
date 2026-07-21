@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
-import { Result } from 'api/core/libs/Result';
-import { CsvPreflightJob } from '../CsvPreflightJob';
-import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport';
+import { Result } from '#api/core/libs/Result.js';
+import { CsvPreflightJobFactory } from '../../../infrastructure/factories/CsvPreflightJobFactory.js';
+import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport.js';
 
 jest.mock('api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob', () => ({
   TemplatePostProcessEntitiesJob: class {},
@@ -9,8 +9,6 @@ jest.mock('api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob', () => (
 jest.mock('api/core/application/TemplatePostProcessService', () => ({
   TemplatePostProcessService: class {},
 }));
-
-const noop = jest.fn();
 
 const createTransactionManager = () =>
   ({
@@ -42,12 +40,15 @@ describe('CsvPreflightJob error handling', () => {
     const csvImportsDS = {
       getById: jest.fn().mockResolvedValue(Result.ok(csvImport)),
       update: jest.fn().mockResolvedValue(undefined),
+      isCancelled: jest.fn().mockResolvedValue(false),
     };
     const rowsDS = {
+      countByImport: jest.fn().mockResolvedValue(10),
       getByImport: jest.fn().mockRejectedValue(new Error('rows explode')),
     };
 
-    const useCase = new CsvPreflightJob({
+    const { useCase } = CsvPreflightJobFactory.build({
+      transactionManager: transactionManager as any,
       csvImportsDS: csvImportsDS as any,
       rowsDS: rowsDS as any,
       templatesDS: { getById: jest.fn() } as any,
@@ -57,22 +58,28 @@ describe('CsvPreflightJob error handling', () => {
         get: jest.fn(),
       } as any,
       thesauriDS: {
-        appendRootLabelsIfMissing: noop,
-        appendNestedLabelsIfMissing: noop,
-      },
+        getById: jest.fn(),
+        exists: jest.fn(),
+        existsById: jest.fn(),
+        create: jest.fn(),
+        update: jest.fn(),
+      } as any,
       thesauriValuesDS: {
+        replacePendingValues: jest.fn(),
+      } as any,
+      relationshipPendingValuesDS: {
         replacePendingValues: jest.fn(),
       } as any,
       jobsDispatcher: {
         dispatch: jest.fn(),
       } as any,
-      transactionManager,
     });
 
     const callbacks = {
       onStart: jest.fn(),
       onSuccess: jest.fn(),
       onError: jest.fn(),
+      onProgress: jest.fn(),
     };
 
     await expect(
@@ -95,7 +102,7 @@ describe('CsvPreflightJob error handling', () => {
     expect(failureUpdate.failure).toEqual(
       expect.objectContaining({
         message: 'rows explode',
-        stage: 'preflight:thesauri',
+        stage: 'preflight:scan',
         retryable: true,
       })
     );

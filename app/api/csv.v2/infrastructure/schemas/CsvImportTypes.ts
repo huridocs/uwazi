@@ -34,5 +34,27 @@ export interface CsvImportDBO {
     thesaurusValuesObserved?: number;
     thesaurusValuesCreated?: number;
     thesauriTouched?: number;
+    entitiesCreated?: number;
+    entitiesUpdated?: number;
+    rowsProcessed?: number;
+    rowsFailed?: number;
   };
+  progress?: {
+    totalRows: number;
+    processedRows: number;
+    lastProcessedRow: number;
+    batchSize: number;
+  };
+  extraction?: {
+    sourceType: 'zip' | 'csv';
+    originalUploadSizeBytes: number;
+    extractedFilesCount: number;
+    totalFilesInZip?: number;
+    files: Array<{
+      filename: string;
+      sizeBytes: number;
+      compressedSizeBytes?: number;
+    }>;
+  };
+  filesCleanup?: 'pending' | 'done' | 'failed';
 }

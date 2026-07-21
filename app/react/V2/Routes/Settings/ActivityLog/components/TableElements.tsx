@@ -2,12 +2,12 @@
 import React from 'react';
 import { DateTime } from 'luxon';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
-import { Tooltip } from 'flowbite-react';
-import { Pill, Button } from 'app/V2/Components/UI';
-import type { PillColor } from 'app/V2/Components/UI';
-import { Translate } from 'app/I18N';
-import { ActivityLogSemanticType } from 'shared/types/activityLogEntryType';
-import { LogEntry } from '../ActivityLogLoader';
+
+import { Pill, Button, Tooltip } from '#V2/Components/UI/index.js';
+import type { PillColor } from '#V2/Components/UI/index.js';
+import { Translate } from '#app/I18N/index.js';
+import { ActivityLogSemanticType } from '#shared/types/activityLogEntryType.js';
+import { LogEntry } from '../ActivityLogLoader.js';
 
 const ActionHeader = () => <Translate>Action</Translate>;
 const UserHeader = () => <Translate>User</Translate>;
@@ -48,8 +48,6 @@ const DescriptionCell = ({ cell }: CellContext<LogEntry, ActivityLogSemanticType
   return (
     <div className="flex">
       <Tooltip
-        // eslint-disable-next-line react/style-prop-object
-        style="light"
         className="max-w-lg max-h-64 min-w-20"
         content={
           <div className="flex-col">
@@ -105,7 +103,7 @@ const TimeCell =
 
 const ViewCell = ({ cell, column }: CellContext<LogEntry, string>) => (
   <Button
-    styling="light"
+    variant="ghost"
     className="leading-4"
     onClick={async () => column.columnDef.meta?.action?.(cell.row)}
   >
@@ -140,7 +138,7 @@ const getActivityLogColumns = (setSelectedEntry: any) => [
     cell: ViewCell,
     meta: {
       action: setSelectedEntry,
-      headerClassName: 'sr-only invisible bg-gray-50 w-1/12',
+      headerClassName: 'sr-only invisible w-1/12 bg-(--color-theme-surface-muted)',
       contentClassName: 'text-center w-1/12',
     },
   }),

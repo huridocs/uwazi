@@ -1,12 +1,12 @@
-import { actions } from 'app/BasicReducer';
+import { actions } from '#app/BasicReducer/index.js';
 import { actions as formActions } from 'react-redux-form';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import Immutable from 'immutable';
-import { IImmutable } from 'shared/types/Immutable';
-import api from 'app/Entities/EntitiesAPI';
-import { ClientFile } from 'app/istore';
-import { updateSelection, updateFormField, deleteSelection } from '../metadataExtractionActions';
+import { IImmutable } from '#shared/types/Immutable.js';
+import { EntitiesAPI as api } from '#app/Entities/EntitiesAPI.js';
+import { ClientFile } from '#app/istore.js';
+import { updateSelection, updateFormField, deleteSelection } from '../metadataExtractionActions.js';
 
 describe('metadataExtractionActions', () => {
   describe('updateFormField', () => {
@@ -87,7 +87,7 @@ describe('metadataExtractionActions', () => {
     beforeEach(() => {
       entityDocument = Immutable.fromJS({
         _id: 'fileId',
-        extractedMetadata: [
+        propertySelections: [
           {
             name: 'title',
             selection: {},
@@ -108,7 +108,7 @@ describe('metadataExtractionActions', () => {
 
       expect(actions.setIn).toHaveBeenCalledWith('viewer/doc', 'defaultDoc', {
         _id: 'fileId',
-        extractedMetadata: [{ name: 'property', propertyID: '1', selection: {} }],
+        propertySelections: [{ name: 'property', propertyID: '1', selection: {} }],
       });
 
       expect(actions.updateIn).toHaveBeenCalledWith(

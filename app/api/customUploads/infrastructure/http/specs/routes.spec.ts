@@ -1,16 +1,16 @@
-import { Application, NextFunction, Request, Response } from 'express';
+import type { Application, NextFunction, Request, Response } from 'express';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { UserSchema } from 'shared/types/userType';
-import { files } from 'api/files/files';
-import { FileType } from 'shared/types/fileType';
-import { customUploadsPath } from 'api/files';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { UserSchema } from '#shared/types/userType.js';
+import { files } from '#api/files/files.js';
+import { FileType } from '#shared/types/fileType.js';
+import { customUploadsPath } from '#api/files/index.js';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-import customUploadsRoutes from '../routes';
-import { adminUser, downloadFixtures, fixtures } from 'api/files/specs/fixtures';
+import customUploadsRoutes from '../routes.js';
+import { adminUser, downloadFixtures, fixtures } from '#api/files/specs/fixtures.js';
 
 jest.mock(
   'api/auth/authMiddleware.ts',
@@ -25,7 +25,7 @@ describe('custom uploads routes', () => {
   const app: Application = setUpApp(
     customUploadsRoutes,
     (req: Request, _res: Response, next: NextFunction) => {
-      (req as any).user = (() => requestMockedUser)();
+      (req as any).user = requestMockedUser;
       next();
     }
   );
@@ -72,7 +72,7 @@ describe('custom uploads routes', () => {
     it('should get the file', async () => {
       const response = await request(app).get(path.join(endpoint, file.filename));
 
-      expect(response.status).toBe(200);
+      expect(response).toHaveStatus(200);
       expect(response.body instanceof Buffer).toBe(true);
     });
 

@@ -1,22 +1,21 @@
 /* eslint-disable max-lines */
-import { WithId } from 'api/odm';
-import translationsModel, { IndexedTranslations } from 'api/i18n/translations';
-import { search } from 'api/search';
-import templates from 'api/core/v1_layer/templates';
-import dictionariesModel from 'api/thesauri/dictionariesModel';
-import { EntitySchema } from 'shared/types/entityType';
-import { TemplateSchema } from 'shared/types/templateType';
-import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
-import translate, { getContext } from 'shared/translate';
+import { WithId } from '#api/odm/index.js';
+import translationsModel, { IndexedTranslations } from '#api/i18n/translations.js';
+import { search } from '#api/search/index.js';
+import templates from '#api/core/v1_layer/templates/index.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
+import { ThesaurusSchema, ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
+import translate, { getContext } from '#shared/translate.js';
 import {
   MetadataSchema,
   MetadataObjectSchema,
   PropertySchema,
   LanguageISO6391,
-} from 'shared/types/commonTypes';
-import { isString } from 'util';
-
-import model from './entitiesModel';
+} from '#shared/types/commonTypes.js';
+const isString = (val: unknown): val is string => typeof val === 'string';
+import model from './entitiesModel.js';
+import thesauri from '#api/core/v1_layer/thesauri/thesauri.js';
 
 interface DenormalizationUpdate {
   propertyName: string;
@@ -81,9 +80,7 @@ const uniqueByNameAndInheritProperty = (updates: DenormalizationUpdate[]) =>
 const oneJumpRelatedProps = async (contentId: string) => {
   const anyEntityOrDocument = '';
   const contentIds = [contentId, anyEntityOrDocument];
-  return (await templates.get({ 'properties.content': { $in: contentIds } })).reduce<
-    PropWithTemplate[]
-  >(
+  return (await templates.getByContents(contentIds)).reduce<PropWithTemplate[]>(
     (props, template) =>
       props.concat(
         (template.properties || [])
@@ -120,7 +117,7 @@ const oneJumpUpdates = async (
 };
 
 const twoJumpsRelatedProps = async (contentId: string) => {
-  const properties: PropertySchema[] = (await templates.get({ 'properties.content': contentId }))
+  const properties: PropertySchema[] = (await templates.getByContent(contentId))
     .reduce<PropertySchema[]>((m, t) => m.concat(t.properties || []), [])
     .filter(p => contentId === p.content?.toString());
 
@@ -128,9 +125,7 @@ const twoJumpsRelatedProps = async (contentId: string) => {
     .map<string | undefined>(p => p._id?.toString())
     .filter<string>(<(v: string | undefined) => v is string>(v => !!v));
 
-  return (await templates.get({ 'properties.inherit.property': { $in: contentIds } })).reduce<
-    PropWithTemplate[]
-  >(
+  return (await templates.getByInheritedProperties(contentIds)).reduce<PropWithTemplate[]>(
     (props, template) =>
       props.concat(
         (template.properties || []).filter(p => contentIds.includes(p.inherit?.property || ''))
@@ -268,7 +263,7 @@ const denormalizeSelectProperty = async (
 ) => {
   const thesaurus = thesauriByKey
     ? thesauriByKey[property.content!]
-    : await dictionariesModel.getById(property.content);
+    : await thesauri.getById(property.content);
   if (!thesaurus) {
     return undefined;
   }

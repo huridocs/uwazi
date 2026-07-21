@@ -1,7 +1,7 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 import { ObjectId } from 'mongodb';
-import { TraverseInputType } from 'shared/types/relationshipsQueryTypes'
+import { TraverseInputType } from './relationshipsQueryTypes.js'
 
 export type LanguageISO6391 =
   | 'ab'
@@ -207,23 +207,6 @@ export interface DateRangeSchema {
   to?: number | null;
 }
 
-export interface ExtractedMetadataSchema {
-  propertyID?: string;
-  name?: string;
-  timestamp?: string;
-  deleteSelection?: boolean;
-  selection?: {
-    text?: string;
-    selectionRectangles?: {
-      top: number;
-      left: number;
-      width: number;
-      height: number;
-      page?: string;
-    }[];
-  };
-}
-
 export type GeolocationSchema = {
   label?: string;
   lat: number;
@@ -248,6 +231,7 @@ export interface LanguageSchema {
   ISO639_1?: LanguageISO6391;
   localized_label?: string;
   translationAvailable?: boolean;
+  installing?: boolean;
 }
 
 export type LanguagesListSchema = {
@@ -261,6 +245,7 @@ export type LanguagesListSchema = {
   ISO639_1?: LanguageISO6391;
   localized_label?: string;
   translationAvailable?: boolean;
+  installing?: boolean;
 }[];
 
 export interface LatLonSchema {
@@ -321,6 +306,23 @@ export interface PropertySchema {
   targetTemplates?: false | string[];
 }
 
+export interface PropertySelectionSchema {
+  propertyID?: string;
+  name?: string;
+  timestamp?: string;
+  deleteSelection?: boolean;
+  selection?: {
+    text?: string;
+    selectionRectangles?: {
+      top: number;
+      left: number;
+      width: number;
+      height: number;
+      page?: string;
+    }[];
+  };
+}
+
 export type PropertyTypeSchema =
   | 'date'
   | 'daterange'
@@ -342,14 +344,7 @@ export type PropertyTypeSchema =
   | 'newRelationship';
 
 export type PropertyValueSchema =
-  | null
-  | string
-  | number
-  | boolean
-  | LinkSchema
-  | DateRangeSchema
-  | LatLonSchema
-  | LatLonSchema[];
+  null | string | number | boolean | LinkSchema | DateRangeSchema | LatLonSchema | LatLonSchema[];
 
 export interface SelectParentSchema {
   label: string;

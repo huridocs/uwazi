@@ -1,14 +1,14 @@
 import React from 'react';
 import { CellContext } from '@tanstack/react-table';
-import { Translate } from 'app/I18N';
+import { Translate } from '#app/I18N/index.js';
 import { Link } from 'react-router';
-import { Button } from 'app/V2/Components/UI';
-import { PXTable } from '../../../types';
+import { Button } from '#V2/Components/UI/index.js';
+import { PXTable } from '../../../types.js';
 
 const ActionCell = ({ cell }: CellContext<PXTable, PXTable['_id']>) => (
   <div className="flex gap-2 justify-end">
     <Link to={`${cell.getValue()}/entities/?page=1`}>
-      <Button className="leading-4" styling="outline">
+      <Button className="leading-4" variant="secondary">
         <Translate>View</Translate>
       </Button>
     </Link>

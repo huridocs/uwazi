@@ -1,21 +1,21 @@
 import { ObjectId } from 'mongodb';
 
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
-import { FileType } from 'api/core/domain/files/FileType';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { FileType as LegacyFileType } from 'shared/types/fileType';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { DeprecatedEntitiesDataSource } from '#api/entities.v2/contracts/DeprecatedEntitiesDataSource.js';
+import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
+import { FileType } from '#api/core/domain/files/FileType.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { FileType as LegacyFileType } from '#shared/types/fileType.js';
 
-import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
-import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
-import { EntityStatus } from '../domain/PXEntityStatusModel';
-import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
-import { PXValidationError } from '../domain/PXValidationError';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
+import { EntityStatus } from '../domain/PXEntityStatusModel.js';
+import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource.js';
+import { PXValidationError } from '../domain/PXValidationError.js';
 
 type Dependencies = {
   entitiesStatusDS: PXEntitiesStatusDataSource;
-  entitiesDS: EntitiesDataSource;
+  entitiesDS: DeprecatedEntitiesDataSource;
   settingsDS: SettingsDataSource;
   extractorsDS: PXExtractorsDataSource;
   filesDS: FilesDataSource;
@@ -86,7 +86,8 @@ export class PXEntityStatusManager {
 
     if (!extractor) {
       throw new PXValidationError(
-        PXValidationError.codes.CANNOT_MANAGE_ENTITY_STATUS_FOR_SOURCE_TEMPLATE_NOT_MATCHING_CRITERIA,
+        PXValidationError.codes
+          .CANNOT_MANAGE_ENTITY_STATUS_FOR_SOURCE_TEMPLATE_NOT_MATCHING_CRITERIA,
         'Cannot manage EntityStatus for a source Entity that does not match Extractor'
       );
     }
@@ -98,9 +99,9 @@ export class PXEntityStatusManager {
 
     if (entityStatus) {
       const documentsInInstalledLanguages = (
-        await this.dependencies.filesDS
-          .getProcessedDocsForEntity(entity.sharedId!, { languages: installedLanguages })
-          .all()
+        await this.dependencies.filesDS.getProcessedDocsForEntity(entity.sharedId!, {
+          languages: installedLanguages,
+        })
       ).reduce(
         (acc, file) => {
           const existingDocument = acc[file.language!];
@@ -116,7 +117,7 @@ export class PXEntityStatusManager {
             [file.language!]: existingDocumentDate < newDocumentDate ? existingDocument : file,
           };
         },
-        {} as Record<string, ProcessedPDF>
+        {} as Record<string, PDFDocument>
       );
 
       const isDocumentUsedForExtraction = Object.values(documentsInInstalledLanguages).some(

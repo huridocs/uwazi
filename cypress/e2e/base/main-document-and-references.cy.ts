@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import {
   clearCookiesAndLogin,
   clickOnCreateEntity,
@@ -85,17 +86,26 @@ describe('text references', () => {
 
   it('should display relationships on the sidepanel', () => {
     cy.contains('a', 'Library').click();
+    cy.intercept('GET', '**/api/references/group_by_connection*').as('groupByConnection');
+    cy.intercept('GET', '**/api/references/search*').as('searchReferences');
     cy.contains(
       '.item-document:nth-child(1)',
       'Artavia Murillo y otros. Resolución de la CorteIDH de 26 de febrero de 2016'
     ).click();
-    cy.get('#tab-relationships').click();
-    cy.contains('#tabpanel-relationships', 'Relacionado a');
-    cy.contains(
-      '.sidepanel-relationship-right-entity',
-      'Artavia Murillo et al. Preliminary Objections, Merits, Reparations and Costs. Judgment. November 28, 2012'
-    );
-    cy.contains('.sidepanel-relationship-right-entity', 'Chile');
+    cy.wait('@groupByConnection');
+    cy.wait('@searchReferences');
+    cy.get('.metadata-sidepanel.is-active').within(() => {
+      cy.get('#tab-relationships').click();
+      cy.get('#tab-relationships').should($tab => {
+        const isActive = $tab.attr('aria-selected') === 'true' || $tab.hasClass('selected');
+        expect(isActive).to.equal(true);
+      });
+      cy.contains(
+        '#tabpanel-relationships .sidepanel-relationship-right-entity',
+        'Artavia Murillo et al. Preliminary Objections, Merits, Reparations and Costs. Judgment. November 28, 2012'
+      );
+      cy.contains('#tabpanel-relationships .sidepanel-relationship-right-entity', 'Chile');
+    });
     cy.get('.metadata-sidepanel.is-active .closeSidepanel').eq(0).click();
   });
 
@@ -133,9 +143,6 @@ describe('text references', () => {
     cy.get('[data-testid=modal]').within(() => {
       cy.contains('Accept').click();
     });
-
-    cy.waitForLegacyNotifications();
-
     cy.get('.metadata-sidepanel.is-active').within(() => {
       cy.contains('Artavia Murillo y otros. Resolución de la CorteIDH de 26 de febrero de 2016');
       cy.contains('Chile').should('not.exist');
@@ -145,9 +152,16 @@ describe('text references', () => {
 
 describe('Entity with main documents', () => {
   it('Should filter by restricted entities', () => {
-    cy.get('.metadata-sidepanel.is-active .closeSidepanel').eq(0).click();
+    cy.get('body').then($body => {
+      if ($body.find('.metadata-sidepanel.is-active .closeSidepanel').length) {
+        cy.get('.metadata-sidepanel.is-active .closeSidepanel').first().click();
+      }
+      if ($body.find('[data-testid="modal"] button:contains("Discard changes")').length) {
+        cy.contains('[data-testid="modal"] button', 'Discard changes').click();
+      }
+    });
     cy.contains('a', 'Library').click();
-    cy.contains('Filters');
+    cy.contains('Filters', { timeout: 20000 });
     selectRestrictedEntities();
     cy.get('.item-document').should('have.length', 6);
   });
@@ -157,7 +171,6 @@ describe('Entity with main documents', () => {
     cy.get('#pdf-upload-button').first().selectFile('./cypress/test_files/valid.pdf', {
       force: true,
     });
-    cy.waitForLegacyNotifications();
     cy.contains('.item-info', 'Mecanismo');
   });
 
@@ -169,7 +182,8 @@ describe('Entity with main documents', () => {
     cy.contains('.file-edit', 'Edit').click();
     cy.get('#language').select('English (English)');
     cy.contains('button', 'Save').click();
-    cy.contains('div.alert', 'File updated').should('be.visible');
+    cy.get('[data-testid="notification-flash"]').should('be.visible');
+    cy.get('[data-testid="notification-flash-title"]').should('contain', 'File updated');
     cy.get('.is-active .closeSidepanel').click();
   });
 
@@ -188,30 +202,29 @@ describe('Entity with main documents', () => {
       force: true,
     });
     saveEntity();
-    cy.waitForLegacyNotifications();
   });
 
+  // eslint-disable-next-line max-statements
   it('should create a reference from main document', () => {
     cy.contains('a', 'Library').click();
     cy.contains('.item-document', 'Entity with main documents').contains('View').click();
-    cy.contains('span', 'La Sentencia de fondo');
-    cy.get('#p3R_mc24 > span:nth-child(2)').realClick({ clickCount: 3 });
-    cy.get('.fa-file', { timeout: 5000 }).then(() => {
-      cy.get('.fa-file').realClick();
-    });
+    cy.contains('span', 'La Sentencia de fondo').should('be.visible');
+    cy.contains('span[role="presentation"]', 'La Sentencia de fondo').setSelection(
+      'La Sentencia de fondo'
+    );
+    cy.get('.fa-file').should('be.visible');
+    cy.get('.fa-file').realClick();
     cy.contains('.create-reference', 'Relacionado a').should('be.visible');
     cy.contains('li.multiselectItem', 'Relacionado a').realClick();
-    cy.get('aside.create-reference input').type('Patrick Robinson', { timeout: 5000 });
-    cy.contains('Tracy Robinson', { timeout: 5000 });
-    cy.contains('.item-name', 'Patrick Robinson', { timeout: 5000 }).realClick();
-    cy.contains('aside.create-reference .btn-success', 'Save', { timeout: 5000 }).click({
-      timeout: 5000,
-    });
+    cy.get('aside.create-reference input').type('Patrick Robinson');
+    cy.contains('.item-name', 'Tracy Robinson');
+    cy.contains('.item-name', 'Patrick Robinson').realClick();
+    cy.contains('aside.create-reference .btn-success', 'Save').click();
     cy.contains('Saved successfully.');
-    cy.get('#p3R_mc0').scrollIntoView();
-    cy.get('.row').toMatchImageSnapshot();
+    cy.get('.row').matchImageSnapshot();
   });
 
+  // eslint-disable-next-line max-statements
   it('should edit the entity and the documents', () => {
     cy.contains('a', 'Library').click();
     cy.contains('.item-document', 'Entity with main documents').click();
@@ -227,7 +240,6 @@ describe('Entity with main documents', () => {
       force: true,
     });
     saveEntity('Entity updated');
-    cy.waitForLegacyNotifications();
     cy.contains('.item-document', 'Entity with main documents').click();
     cy.contains('.file-originalname', 'Renamed file.pdf').should('exist');
     cy.contains('Conversion failed');
@@ -239,7 +251,6 @@ describe('Entity with main documents', () => {
     cy.get('.attachments-list > .attachment:nth-child(2) > button').click();
     cy.contains('button', 'Save').click();
     cy.contains('Entity updated');
-    cy.waitForLegacyNotifications();
     cy.contains('.item-document', 'Entity with main documents').click();
     cy.contains('.file-originalname', 'Renamed file.pdf').should('exist');
     cy.contains('.file-originalname', 'invalid.pdf').should('not.exist');

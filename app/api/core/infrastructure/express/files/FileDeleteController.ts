@@ -1,18 +1,15 @@
-import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
-import { FileDelete } from 'api/core/application/FileDelete';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants';
-import { FilesDataSourceFactory } from '../../factories/FilesDataSourceFactory';
-import { FilesServiceFactory } from '../../factories/FilesServiceFactory';
-import { LoggerFactory } from '../../factories/LoggerFactory';
-import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory';
-import { FileStorageFactory } from '../../files/FileStorageFactory';
-import { DeleteFileFromStorageJobHandler } from '../../jobs/DeleteFileFromStorageJobHandler';
-import { MongoEntityPermissionChecker } from '../../mongodb/entity/MongoEntityPermissionChecker';
-import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant';
+import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
+import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
+import { FileDelete } from '#api/core/application/FileDelete.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
+import { DeleteFileUseCaseFactory } from '../../factories/DeleteFileUseCaseFactory.js';
+import { FilesServiceFactory } from '../../factories/FilesServiceFactory.js';
+import { LoggerFactory } from '../../factories/LoggerFactory.js';
+import { FileStorageFactory } from '../../files/FileStorageFactory.js';
+import { DeleteFileFromStorageJobHandler } from '../../jobs/DeleteFileFromStorageJobHandler.js';
+import { DispatcherAdapter } from '../../jobs/DispatcherAdapter.js';
 
 class FileDeleteController extends AbstractController {
   protected async handle(): Promise<void> {
@@ -48,25 +45,22 @@ class FileDeleteController extends AbstractController {
   }
 
   private useCase() {
-    let transactionManager = TransactionManagerFactory.default();
-    let jobsDispatcher: JobsDispatcher = DefaultDispatcher(this.tenantName, transactionManager);
+    const { transactionManager } = ExecutionContext;
+    let jobsDispatcher: Dispatcher = new DispatcherAdapter(
+      DefaultDispatcher(this.tenantName, transactionManager)
+    );
     if (process.env.NODE_ENV === 'test') {
-      transactionManager = TransactionManagerFactory.fake();
-      jobsDispatcher = new SyncDispatcherForTests({
-        DeleteFileFromStorageJobHandler: async () =>
-          new DeleteFileFromStorageJobHandler({ fileStorage: FileStorageFactory.default() }),
-      });
+      jobsDispatcher = new DispatcherAdapter(
+        new SyncDispatcherForTests({
+          DeleteFileFromStorageJobHandler: async () =>
+            new DeleteFileFromStorageJobHandler({ fileStorage: FileStorageFactory.default() }),
+        })
+      );
     }
 
-    return new FileDelete(
-      {
-        filesDS: FilesDataSourceFactory.default(transactionManager),
-        filesService: FilesServiceFactory.default(transactionManager, { jobsDispatcher }),
-        entityPermissions: new MongoEntityPermissionChecker(getConnection(), transactionManager),
-        transactionManager,
-      },
-      { actor: permissionsContext.getUserInContext()!, tenant: tenants.current() }
-    );
+    return DeleteFileUseCaseFactory.default({
+      filesService: FilesServiceFactory.default({ jobsDispatcher }),
+    });
   }
 }
 

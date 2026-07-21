@@ -1,13 +1,13 @@
 /* eslint-disable max-statements */
-import { Application, NextFunction, Request, Response } from 'express';
+import type { Application, NextFunction, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
-
-import { setUpApp } from 'api/utils/testingRoutes';
-import userGroupRoutes from 'api/usergroups/routes';
-import { testingTenants } from 'api/utils/testingTenants';
 import request, { Response as SuperTestResponse } from 'supertest';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import userGroups from '../userGroups';
+
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import userGroupRoutes from '#api/usergroups/routes.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import userGroups from '../userGroups.js';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -17,7 +17,7 @@ jest.mock(
 );
 
 describe('usergroups routes', () => {
-  let user: { username: string; role: string } | undefined;
+  let user: { _id: string; username: string; role: string } | undefined;
   const defaultUserGroup: any = { _id: 'group1', name: 'group 1', members: [] };
 
   beforeAll(async () => {
@@ -58,7 +58,7 @@ describe('usergroups routes', () => {
     });
 
     it('should query and return an array of existing user groups', async () => {
-      user = { username: 'user 1', role: 'admin' };
+      user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
       const response = await getUserGroups();
       expect(userGroups.get).toHaveBeenCalledWith({});
       expect(response.body).toMatchObject([{ name: 'group1' }]);
@@ -68,7 +68,7 @@ describe('usergroups routes', () => {
   describe('POST', () => {
     describe('validation', () => {
       it('should return a validation error if user group data is not valid', async () => {
-        user = { username: 'user 1', role: 'admin' };
+        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
         const response = await postUserGroup({ name: undefined });
         expect(response.status).toBe(422);
         expect(response.body.validations[0].keyword).toBe('required');
@@ -77,7 +77,7 @@ describe('usergroups routes', () => {
       });
 
       it('should validate a user group that has an undefined user id', async () => {
-        user = { username: 'user 1', role: 'admin' };
+        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
         const response = await postUserGroup({ name: 'group 1', members: [{ _id: undefined }] });
         expect(response.status).toBe(422);
         expect(response.body.validations[0].keyword).toBe('required');
@@ -86,7 +86,7 @@ describe('usergroups routes', () => {
       });
 
       it('should not validate an object with additional properties', async () => {
-        user = { username: 'user 1', role: 'admin' };
+        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
         const response = await postUserGroup({
           name: 'group 1',
           other: 'invalid',
@@ -104,7 +104,7 @@ describe('usergroups routes', () => {
 
   describe('DELETE', () => {
     beforeEach(() => {
-      user = { username: 'user 1', role: 'admin' };
+      user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
       jest.resetAllMocks();
       jest
         .spyOn(userGroups, 'delete')
@@ -149,10 +149,9 @@ describe('usergroups routes', () => {
       'should reject with unauthorized when user has not admin role',
       async (
         endpointCall:
-          | (() => Promise<SuperTestResponse>)
-          | ((args?: any) => Promise<SuperTestResponse>)
+          (() => Promise<SuperTestResponse>) | ((args?: any) => Promise<SuperTestResponse>)
       ) => {
-        user = { username: 'user 1', role: 'editor' };
+        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'editor' };
         const response = await endpointCall();
         expect(response.unauthorized).toBe(true);
       }
@@ -162,8 +161,7 @@ describe('usergroups routes', () => {
       'should reject with unauthorized when there is no user',
       async (
         endpointCall:
-          | (() => Promise<SuperTestResponse>)
-          | ((args?: any) => Promise<SuperTestResponse>)
+          (() => Promise<SuperTestResponse>) | ((args?: any) => Promise<SuperTestResponse>)
       ) => {
         user = undefined;
         const response: request.Response = await endpointCall();
@@ -177,10 +175,9 @@ describe('usergroups routes', () => {
       'should handle server errors',
       async (
         endpointCall:
-          | (() => Promise<SuperTestResponse>)
-          | ((args?: any) => Promise<SuperTestResponse>)
+          (() => Promise<SuperTestResponse>) | ((args?: any) => Promise<SuperTestResponse>)
       ) => {
-        user = { username: 'user 1', role: 'admin' };
+        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
         testingTenants.mockCurrentTenant({ name: 'default' });
         jest.spyOn(userGroups, 'delete').mockImplementation(() => {
           throw new Error('unhandled error');

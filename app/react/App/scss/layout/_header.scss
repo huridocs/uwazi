@@ -13,7 +13,6 @@ header {
   min-height: materials.$header-height;
   justify-content: space-between;
   background: colors.$c-theme;
-  border-bottom: 1px solid colors.$c-grey-light;
 
   h1 {
     float: left;
@@ -21,7 +20,7 @@ header {
     font-family: typography.$f-mono;
     font-weight: 300;
     margin: 0;
-    width: calc(100% - 2 * 54px);
+    width: calc(100% - 254px);
     @media (min-width: 454px) {
       padding: 0 15px;
       width: auto;

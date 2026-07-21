@@ -3,9 +3,9 @@
  */
 import React from 'react';
 import { screen, RenderResult, act, fireEvent } from '@testing-library/react';
-import MediaField from 'app/Forms/components/MediaField';
-import { MediaModalType } from 'app/Metadata/components/MediaModal';
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
+import { MediaField } from '#app/Forms/components/MediaField.js';
+import { MediaModalType } from '#app/Metadata/components/MediaModal.js';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 
 describe('MediaField', () => {
   let renderResult: RenderResult;
@@ -74,6 +74,7 @@ describe('MediaField', () => {
           formField=""
           type={MediaModalType.Image}
           value={null}
+          // eslint-disable-next-line react/jsx-props-no-spreading
           {...{ ...baseProps, ...otherProps }}
         />,
         () => defaultState
@@ -119,6 +120,20 @@ describe('MediaField', () => {
       await render(imageProps);
       renderResult.unmount();
       expect(mockedRevokeObjectURL).toHaveBeenCalledWith('blob:abc');
+    });
+
+    it('should keep the video preview after timelinks are stored on the value', async () => {
+      await render({
+        ...mediaProps,
+        value: {
+          data: '(aoe2t67yrq, {"timelinks":{"00:00:01":"intro"}})',
+          originalFile: baseProps.localAttachments[2],
+        },
+      });
+
+      expect(mockedCreateObjectURL).toHaveBeenCalled();
+      expect(screen.queryByText('This file type is not supported on media fields')).toBeNull();
+      expect(document.querySelector('video, iframe, [class*="react-player"]')).toBeTruthy();
     });
 
     it('should change the media value according with markdownmedia variations', async () => {

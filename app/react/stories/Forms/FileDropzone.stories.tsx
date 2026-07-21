@@ -1,6 +1,6 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react';
-import { FileDropzone } from 'app/V2/Components/Forms';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
+import { FileDropzone } from '#V2/Components/Forms/index.js';
 
 const meta: Meta<typeof FileDropzone> = {
   title: 'Forms/FileDropzone',
@@ -25,6 +25,5 @@ const Basic: Story = {
   },
 };
 
-export { Basic };
-
 export default meta;
+export { Basic };

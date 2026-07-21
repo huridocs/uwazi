@@ -1,6 +1,5 @@
 export { clearCookiesAndLogin } from './login';
 export { selectPublishedEntities, selectRestrictedEntities } from './entitiesFilters';
-export { createUser } from './users';
 export { changeLanguage } from './language';
 export {
   clickOnCreateEntity,
@@ -10,4 +9,4 @@ export {
   saveEntity,
 } from './entities';
 export { editPropertyForExtractor } from './information-extraction';
-export { waitForLegacyNotifications } from './notifications';
+export { createTemplate } from './templates';

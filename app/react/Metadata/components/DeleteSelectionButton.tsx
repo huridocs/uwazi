@@ -1,19 +1,19 @@
 import React from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { uniqBy } from 'lodash';
-import { IImmutable } from 'shared/types/Immutable';
-import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
-import { ClientFile, IStore } from 'app/istore';
-import { Translate } from 'app/I18N';
-import { deleteSelection } from '../actions/metadataExtractionActions';
+import uniqBy from 'lodash/uniqBy.js';
+import { IImmutable } from '#shared/types/Immutable.js';
+import { PropertySelectionSchema } from '#shared/types/commonTypes.js';
+import { ClientFile, IStore } from '#app/istore.js';
+import { Translate } from '#app/I18N/index.js';
+import { deleteSelection } from '../actions/metadataExtractionActions.js';
 
 type deleteSelectionButtonProps = {
   propertyName: string;
   propertyID?: string;
 };
 
-const checkPropertySelections = (property: string, selections?: ExtractedMetadataSchema[]) =>
+const checkPropertySelections = (property: string, selections?: PropertySelectionSchema[]) =>
   selections?.filter(selection => {
     if (selection.deleteSelection) {
       return false;
@@ -43,7 +43,7 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
 const mergeProps = (
   stateProps: {
     entityDocument: IImmutable<ClientFile> | undefined;
-    newSelections: IImmutable<ExtractedMetadataSchema[]> | undefined;
+    newSelections: IImmutable<PropertySelectionSchema[]> | undefined;
   },
   dispatchProps: {
     deleteSelectionAction: (entityDocument: any, propertyName: string, propertyID?: string) => any;
@@ -70,7 +70,7 @@ const DeleteSelectionButtonComponent = ({ onClickFunction, ownProps, stateProps 
   const selections = uniqBy(
     [
       ...(stateProps.newSelections?.toJS() || []),
-      ...(stateProps.entityDocument?.get('extractedMetadata')?.toJS() || []),
+      ...(stateProps.entityDocument?.get('propertySelections')?.toJS() || []),
     ],
     'propertyID'
   );

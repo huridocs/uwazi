@@ -1,14 +1,14 @@
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
-import { UseCase } from 'api/core/libs/UseCase';
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
-import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
+import { UseCase } from '#api/core/libs/UseCase.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 
 import {
   GetExtractorStatusesInput,
   GetExtractorStatusesOutput,
   PXExtractorsQueryService,
-} from '../domain/PXExtractorsQueryService';
+} from '../domain/PXExtractorsQueryService.js';
 
 type PXGetExtractorStatusesOutput = Omit<GetExtractorStatusesOutput, 'rows'> & {
   rows: (GetExtractorStatusesOutput['rows'][0] & {
@@ -23,9 +23,10 @@ type Dependencies = {
   filesDS: FilesDataSource;
 };
 
-class PXGetExtractorStatuses
-  implements UseCase<GetExtractorStatusesInput, PXGetExtractorStatusesOutput>
-{
+class PXGetExtractorStatuses implements UseCase<
+  GetExtractorStatusesInput,
+  PXGetExtractorStatusesOutput
+> {
   constructor(private dependencies: Dependencies) {}
 
   async execute(input: GetExtractorStatusesInput): Promise<PXGetExtractorStatusesOutput> {
@@ -41,11 +42,15 @@ class PXGetExtractorStatuses
       const row = _row;
       await prev;
 
-      const entityValidFiles = await filesDS
-        .getProcessedDocsForEntity(row.entity.sharedId, { languages: installedLanguages })
-        .all();
+      const entityValidFiles = await filesDS.getProcessedDocsForEntity(row.entity.sharedId, {
+        languages: installedLanguages,
+      });
 
-      row.availableFileLanguages = [...new Set(entityValidFiles.map(f => f.language))];
+      row.availableFileLanguages = [
+        ...new Set(
+          entityValidFiles.map(f => f.language).filter((l): l is LanguageISO6391 => l !== undefined)
+        ),
+      ];
 
       const entityParagraphRelationships = await extractorsQueryService
         .getEntityParagraphRelationships({ id: row.entity.sharedId, extractorId: input.id })

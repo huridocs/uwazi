@@ -1,280 +1,169 @@
-/* eslint-disable max-lines */
-import React, { useCallback, useMemo, useRef } from 'react';
-import { useLoaderData, useSearchParams } from 'react-router';
+/* eslint-disable react/no-multi-comp */
+import React, { useMemo } from 'react';
+import { useAtomValue } from 'jotai';
+import { useLoaderData } from 'react-router';
+import { Translate } from '#app/I18N/index.js';
+import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
+import { BlockDirtyNavigation, useTabGroup } from '#V2/Components/UI/index.js';
+import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
+import { localeAtom } from '#V2/atoms/index.js';
+import { SnippetsSearchResponse } from '#V2/api/types.js';
 import {
-  Bars3CenterLeftIcon,
-  DocumentTextIcon,
-  LinkIcon,
-  ListBulletIcon,
-  MagnifyingGlassIcon,
-  PaperClipIcon,
-} from '@heroicons/react/24/outline';
-import { Translate } from 'app/I18N';
-import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
-import { MetadataDisplay } from 'V2/Components/Metadata';
-import { RelationshipPropertyIcon } from 'V2/Components/CustomIcons';
-import { Tabs } from 'V2/Components/UI';
-import {
-  TabLabel,
-  PDFView,
-  ReferencesPanel,
   SearchHintsModal,
-  MAIN_TAB_PARAM,
-  SIDE_TAB_PARAM,
-  SearchResults,
-  ToCPanel,
-  FileList,
-} from './Components';
-import { LoaderResponse } from './types';
+  EntityScopedProvider,
+  EntityFilesProvider,
+  EntityMainPaneHeader,
+  FilesDeleteConfirmationModal,
+  AddFileModal,
+  useEntityFiles,
+  useEntityScopedEntity,
+  useEntityLanguage,
+  useMetadataEditing,
+} from './Components/index.js';
+import { CreateRelationshipModal } from './Components/relationships/create-reference/CreateRelationshipModal.js';
+import { useResetRelationshipsOnDocumentChange } from './Components/relationships/hooks/useDocumentRelationships.js';
+import {
+  TabsMainButtons,
+  MainTabsContent,
+  MainTabsFooters,
+  SideTabsPanel,
+  MAIN_TAB,
+  isValidMainTab,
+} from './Tabs/index.js';
+import { useEntityViewTabs } from './Tabs/hooks/useEntityViewTabs.js';
+import { LoaderResponse } from './types.js';
 
-const MAIN_TABS = {
-  DOCUMENT: 'document',
-  METADATA: 'metadata',
-  RELATIONSHIPS: 'relationships',
-  FILES: 'files',
+type EntityViewProps = {
+  searchResults?: SnippetsSearchResponse;
 };
 
-const SIDE_TABS = {
-  METADATA: 'metadata',
-  TOC: 'toc',
-  REFERENCES: 'references',
-  RELATIONSHIPS: 'relationships',
-  SEARCH: 'search',
+const EntityCreateRelationshipModal = () => {
+  const { mainDocument } = useEntityLanguage();
+  return <CreateRelationshipModal mainDocument={mainDocument} />;
 };
 
-type MainTabId = (typeof MAIN_TABS)[keyof typeof MAIN_TABS];
-type SideTabId = (typeof SIDE_TABS)[keyof typeof SIDE_TABS];
+const EntityFilesFromEntity = ({ children }: { children: React.ReactNode }) => {
+  const entity = useEntityScopedEntity();
+  return <EntityFilesProvider entity={entity}>{children}</EntityFilesProvider>;
+};
 
-const MAIN_TAB_VALUES = new Set(Object.values(MAIN_TABS));
-const SIDE_TAB_VALUES = new Set(Object.values(SIDE_TABS));
+const EntityView = ({ searchResults }: EntityViewProps) => {
+  const entity = useEntityScopedEntity();
+  const { mainDocument, pagePlaintext, isRtl } = useEntityLanguage();
+  useResetRelationshipsOnDocumentChange();
+  const { focusedRow, primaryRows } = useEntityFiles();
+  const hasMainDocument = Boolean(mainDocument?.filename);
 
-const isValidMainTab = (value: string | null): value is MainTabId =>
-  typeof value === 'string' && MAIN_TAB_VALUES.has(value);
+  const filesSideTabs = useMemo(
+    () => ({
+      showTranslationsTab: focusedRow?.category === 'primary',
+      translationsCount: primaryRows.length,
+    }),
+    [focusedRow?.category, primaryRows.length]
+  );
 
-const isValidSideTab = (value: string | null): value is SideTabId =>
-  typeof value === 'string' && SIDE_TAB_VALUES.has(value);
+  const { activeMainTab, activeSideTab, onMainTabChange, onSideTabChange } = useEntityViewTabs({
+    entity,
+    hasMainDocument,
+    mainDocumentId: mainDocument?._id,
+    searchResults,
+    filesSideTabs,
+  });
+  const { activeTabId: atomMainTabId } = useTabGroup('entity-main');
+  const mainTabId = isValidMainTab(atomMainTabId) ? atomMainTabId : activeMainTab;
+  const { isEditing, isDirty, isSaving, editingHost, cancelEdit } = useMetadataEditing();
+  const showMainPaneHeader = !(
+    mainTabId === MAIN_TAB.METADATA &&
+    isEditing &&
+    editingHost === 'main'
+  );
+
+  return (
+    <>
+      <FilesDeleteConfirmationModal />
+      <AddFileModal />
+      <BlockDirtyNavigation when={isEditing && (isDirty || isSaving)} onDiscard={cancelEdit} />
+      <div className="h-full min-h-0" dir={isRtl ? 'rtl' : 'ltr'}>
+        <PaneLayout defaultRatios={[0.62, 0.38]} className="bg-parchment text-ink">
+          <PaneLayout.Pane>
+            <div
+              className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden bg-paper"
+              data-testid="entity-v2"
+            >
+              <div className="shrink-0">
+                <div className="px-4 py-2 md:py-2.5">
+                  <TabsMainButtons
+                    entity={entity}
+                    mainDocument={mainDocument}
+                    onTabChange={onMainTabChange}
+                  />
+                </div>
+                {showMainPaneHeader ? (
+                  <EntityMainPaneHeader
+                    entity={entity}
+                    showDocumentViewMode={mainTabId === MAIN_TAB.DOCUMENT && hasMainDocument}
+                  />
+                ) : null}
+              </div>
+              <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+                <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+                  <MainTabsContent
+                    activeTabId={mainTabId}
+                    entity={entity}
+                    mainDocument={mainDocument}
+                    pagePlaintext={pagePlaintext}
+                  />
+                </div>
+                <MainTabsFooters activeTabId={mainTabId} mainDocument={mainDocument} />
+              </div>
+            </div>
+          </PaneLayout.Pane>
+          <PaneLayout.Pane key={editingHost === 'side' ? 'side-editing' : mainTabId}>
+            <SideTabsPanel
+              activeMainTab={mainTabId}
+              activeSideTab={activeSideTab}
+              onSideTabChange={onSideTabChange}
+              entity={entity}
+              mainDocument={mainDocument}
+              pagePlaintext={pagePlaintext}
+              filesSideTabs={filesSideTabs}
+            />
+          </PaneLayout.Pane>
+        </PaneLayout>
+      </div>
+    </>
+  );
+};
 
 const Entity = () => {
-  const { entity, pagePlaintext, searchResults } = useLoaderData<LoaderResponse>() || {};
-  const [searchParams, setSearchParams] = useSearchParams();
-  const initialSearchResults = useRef(searchResults);
-
-  const mainTabElements = useMemo(() => {
-    const tabs: React.ReactElement[] = [];
-
-    if (entity?.mainDocument?.[0]?.filename) {
-      tabs.push(
-        <Tabs.Tab
-          id={MAIN_TABS.DOCUMENT}
-          key={MAIN_TABS.DOCUMENT}
-          label={<TabLabel text="Document" icon={<DocumentTextIcon className="w-5 h-5" />} />}
-        >
-          <PDFView entity={entity} pagePlaintext={pagePlaintext} />
-        </Tabs.Tab>
-      );
-    }
-
-    tabs.push(
-      <Tabs.Tab
-        id={MAIN_TABS.METADATA}
-        key={MAIN_TABS.METADATA}
-        label={<TabLabel text="Metadata" icon={<Bars3CenterLeftIcon className="w-5 h-5" />} />}
-      >
-        <MetadataDisplay entity={entity as any} />
-      </Tabs.Tab>
-    );
-
-    tabs.push(
-      <Tabs.Tab
-        id={MAIN_TABS.RELATIONSHIPS}
-        key={MAIN_TABS.RELATIONSHIPS}
-        label={
-          <TabLabel text="Relationships" icon={<RelationshipPropertyIcon className="w-5 h-5" />} />
-        }
-      >
-        <span no-translate>Relationships</span>
-      </Tabs.Tab>
-    );
-    if (entity?.mainDocument?.length || entity?.documents?.length || entity?.attachments?.length) {
-      tabs.push(
-        <Tabs.Tab
-          id={MAIN_TABS.FILES}
-          key={MAIN_TABS.FILES}
-          label={<TabLabel text="Files" icon={<PaperClipIcon className="w-5 h-5" />} />}
-        >
-          <FileList entity={entity} />
-        </Tabs.Tab>
-      );
-    }
-
-    return tabs;
-  }, [entity, pagePlaintext]);
-
-  const sideTabsByMain: Record<
-    MainTabId,
-    { id: SideTabId; label: React.ReactNode; content: React.ReactNode }[]
-  > = useMemo(
-    () => ({
-      [MAIN_TABS.DOCUMENT]: [
-        {
-          id: SIDE_TABS.METADATA,
-          label: <TabLabel text="Metadata" icon={<Bars3CenterLeftIcon className="w-5 h-5" />} />,
-          content: entity ? <MetadataDisplay entity={entity} /> : <Translate>Loading</Translate>,
-        },
-        {
-          id: SIDE_TABS.TOC,
-          label: <TabLabel text="ToC" icon={<ListBulletIcon className="w-5 h-5" />} />,
-          content: (
-            <ToCPanel
-              toc={entity?.mainDocument?.[0].toc}
-              generatedToc={entity?.mainDocument?.[0].generatedToc}
-              file={entity?.mainDocument?.[0]}
-            />
-          ),
-        },
-        {
-          id: SIDE_TABS.REFERENCES,
-          label: <TabLabel text="References" icon={<LinkIcon className="w-5 h-5" />} />,
-          content: <ReferencesPanel references={entity?.references} entity={entity} />,
-        },
-        {
-          id: SIDE_TABS.RELATIONSHIPS,
-          label: (
-            <TabLabel
-              text="Relationships"
-              icon={<RelationshipPropertyIcon className="w-5 h-5" />}
-            />
-          ),
-          content: <div no-translate>This content is not yet available</div>,
-        },
-        {
-          id: SIDE_TABS.SEARCH,
-          label: <TabLabel text="Search" icon={<MagnifyingGlassIcon className="w-5 h-5" />} />,
-          content: <SearchResults />,
-        },
-      ],
-      [MAIN_TABS.METADATA]: [
-        {
-          id: SIDE_TABS.RELATIONSHIPS,
-          label: (
-            <TabLabel
-              text="Relationships"
-              icon={<RelationshipPropertyIcon className="w-5 h-5" />}
-            />
-          ),
-          content: <div no-translate>This content is not yet available</div>,
-        },
-        {
-          id: SIDE_TABS.SEARCH,
-          label: <TabLabel text="Search" icon={<MagnifyingGlassIcon className="w-5 h-5" />} />,
-          content: <SearchResults />,
-        },
-      ],
-      [MAIN_TABS.RELATIONSHIPS]: [
-        {
-          id: SIDE_TABS.METADATA,
-          label: <TabLabel text="Metadata" icon={<Bars3CenterLeftIcon className="w-5 h-5" />} />,
-          content: entity ? <MetadataDisplay entity={entity} /> : <Translate>Loading</Translate>,
-        },
-      ],
-      [MAIN_TABS.FILES]: [],
-    }),
-    [entity]
-  );
-
-  const activeMainTab = useMemo<MainTabId>(() => {
-    const mainTab = searchParams.get(MAIN_TAB_PARAM);
-    if (isValidMainTab(mainTab)) {
-      return mainTab;
-    }
-    if (entity?.mainDocument?.[0]?.filename) {
-      return MAIN_TABS.DOCUMENT;
-    }
-    return MAIN_TABS.METADATA;
-  }, [searchParams, entity]);
-
-  const activeSideTab = useMemo<SideTabId | undefined>(() => {
-    const availableTabs = sideTabsByMain[activeMainTab] || [];
-    const sideTab = searchParams.get(SIDE_TAB_PARAM);
-
-    if (isValidSideTab(sideTab)) {
-      return sideTab;
-    }
-
-    if (initialSearchResults.current) {
-      return SIDE_TABS.SEARCH;
-    }
-
-    return availableTabs[0]?.id;
-  }, [searchParams, activeMainTab, sideTabsByMain]);
-
-  const onMainTabChange = useCallback(
-    (selectedMainTab: string) => {
-      const next = new URLSearchParams(searchParams.toString());
-      next.set(MAIN_TAB_PARAM, selectedMainTab);
-
-      const currentSideTab = next.get(SIDE_TAB_PARAM);
-      const newMainTabSideTabs = sideTabsByMain[selectedMainTab];
-      const isSideTabAvailable = newMainTabSideTabs?.some(tab => tab.id === currentSideTab);
-
-      if (currentSideTab && !isSideTabAvailable) {
-        next.delete(SIDE_TAB_PARAM);
-      }
-
-      setSearchParams(next, { replace: true, preventScrollReset: true });
-    },
-    [searchParams, setSearchParams, sideTabsByMain]
-  );
-
-  const onSideTabChange = useCallback(
-    (selectedSideTab: string) => {
-      const next = new URLSearchParams(searchParams.toString());
-      next.set(SIDE_TAB_PARAM, selectedSideTab);
-      if (!next.get(MAIN_TAB_PARAM)) {
-        next.set(MAIN_TAB_PARAM, activeMainTab);
-      }
-      setSearchParams(next, { replace: true, preventScrollReset: true });
-    },
-    [activeMainTab, searchParams, setSearchParams]
-  );
-
-  const sideTabElements = useMemo(
-    () =>
-      sideTabsByMain[activeMainTab]?.map(tab => (
-        <Tabs.Tab id={tab.id} key={tab.id} label={tab.label}>
-          {tab.content}
-        </Tabs.Tab>
-      )),
-    [sideTabsByMain, activeMainTab]
-  );
+  const loaderData = useLoaderData<LoaderResponse>();
+  const locale = useAtomValue(localeAtom);
+  const entity = loaderData?.entity;
+  const mainDocument = loaderData?.mainDocument;
+  const pagePlaintext = loaderData?.pagePlaintext;
+  const searchResults = loaderData?.searchResults;
+  const language = entity?.language || locale;
 
   if (!entity) {
     return <Translate>Loading</Translate>;
   }
 
   return (
-    <div className="tw-content" style={{ width: '100%', height: '100%' }}>
-      <PaneLayout defaultRatios={[0.65, 0.35]} className="bg-white">
-        <PaneLayout.Pane className="h-full">
-          <Tabs unmountTabs={false} initialTabId={activeMainTab} onTabSelected={onMainTabChange}>
-            {mainTabElements}
-          </Tabs>
-        </PaneLayout.Pane>
-        <PaneLayout.Pane className="h-full">
-          <Tabs
-            className="min-w-[300px] overflow-x-auto"
-            unmountTabs={false}
-            initialTabId={activeSideTab}
-            onTabSelected={onSideTabChange}
-            tabListAriaLabel="Side panel tabs"
-          >
-            {sideTabElements}
-          </Tabs>
-        </PaneLayout.Pane>
-      </PaneLayout>
-
-      <SearchHintsModal />
-    </div>
+    <ThemeProvider className="h-full min-h-0">
+      <EntityScopedProvider
+        key={entity.sharedId}
+        entity={entity}
+        language={language}
+        mainDocument={mainDocument}
+        pagePlaintext={pagePlaintext}
+      >
+        <EntityFilesFromEntity>
+          <EntityView searchResults={searchResults} />
+        </EntityFilesFromEntity>
+        <SearchHintsModal />
+        <EntityCreateRelationshipModal />
+      </EntityScopedProvider>
+    </ThemeProvider>
   );
 };
 

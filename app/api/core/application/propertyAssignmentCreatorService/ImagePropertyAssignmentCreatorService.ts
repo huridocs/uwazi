@@ -1,14 +1,12 @@
-import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
-import { ImageProperty } from 'api/core/domain/template/ImageProperty';
-import { AttachmentNotFoundError } from 'api/core/domain/entity/errors';
-import {
-  CreatePropertyAssignmentInput,
-  PropertyAssignmentCreatorService,
-} from './PropertyAssignmentCreatorService';
+import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
+import { ImageProperty } from '#api/core/domain/template/ImageProperty.js';
+import { AttachmentNotFoundError } from '#api/core/domain/entity/errors.js';
+import { CreatePropertyAssignmentInput } from './PropertyAssignmentCreatorService.js';
+import { AbstractPropertyAssignmentCreatorService } from './AbstractPropertyAssignmentCreatorService.js';
 
 type ImageValueInput = { value: string } | { attachment: number };
 
-export class ImagePropertyAssignmentCreatorService implements PropertyAssignmentCreatorService {
+export class ImagePropertyAssignmentCreatorService extends AbstractPropertyAssignmentCreatorService {
   // eslint-disable-next-line max-statements
   async create({
     propertyAssignment,
@@ -38,7 +36,9 @@ export class ImagePropertyAssignmentCreatorService implements PropertyAssignment
       };
     });
 
-    createdAssignments.push(property.createPropertyAssignment({ value: mapped }, true));
+    createdAssignments.push(
+      property.createPropertyAssignment({ value: mapped }, this.context.validateRequired)
+    );
 
     return createdAssignments;
   }

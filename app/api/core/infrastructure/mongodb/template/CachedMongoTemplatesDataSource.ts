@@ -1,13 +1,13 @@
-import { Db } from 'mongodb';
 import {
   DefaultTemplateNotFoundError,
   TemplateDoesNotExistError,
-} from '../../../domain/template/errors';
-import { Template } from '../../../domain/template/Template';
-import { ResultType } from '../../../libs/Result';
-import { MongoDSOptions } from '../common/MongoDataSource';
-import { MongoTransactionManager } from '../common/MongoTransactionManager';
-import { MongoTemplatesDataSource } from './MongoTemplatesDataSource';
+} from '../../../domain/template/errors.js';
+import { Template } from '../../../domain/template/Template.js';
+import { ResultType } from '../../../libs/Result.js';
+import {
+  MongoTemplatesDataSource,
+  MongoTemplatesDataSourceDeps,
+} from './MongoTemplatesDataSource.js';
 
 export class CachedMongoTemplatesDataSource extends MongoTemplatesDataSource {
   private cache = new Map<
@@ -15,9 +15,9 @@ export class CachedMongoTemplatesDataSource extends MongoTemplatesDataSource {
     ResultType<Template, TemplateDoesNotExistError | DefaultTemplateNotFoundError>
   >();
 
-  constructor(db: Db, transactionManager: MongoTransactionManager, options?: MongoDSOptions) {
-    super(db, transactionManager, options);
-    transactionManager.onCommitted(async () => {
+  constructor(deps: MongoTemplatesDataSourceDeps) {
+    super(deps);
+    deps.transactionManager.onCommitted(async () => {
       this.cache.clear();
     });
   }

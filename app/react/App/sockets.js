@@ -1,41 +1,60 @@
-import { actions } from 'app/BasicReducer';
-import { getStore } from 'shared/atomStore';
-import { t } from 'app/I18N';
-import { notificationActions } from 'app/Notifications';
-import { documentProcessed } from 'app/Uploads/actions/uploadsActions';
-import { settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from 'V2/atoms';
-import { store } from '../store';
-import { socket, reconnectSocket } from '../socket';
+import { actions } from '#app/BasicReducer/index.js';
+import { getStore } from '#shared/atomStore/index.js';
+import { t } from '#app/I18N/index.js';
+import { documentProcessed } from '#app/Uploads/actions/uploadsActions.js';
+import { settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from '#V2/atoms/index.js';
+import { mergeClientSettings } from '#V2/atoms/mergeClientSettings.js';
+import { setConnected, endTask, notify as bridgeNotify } from '#V2/utils/notifyBridge.js';
+import { notificationActions } from '#app/Notifications/index.js';
+import { store } from '../store.js';
+import { socket, reconnectSocket } from '../socket.js';
 
-let disconnectNotifyId;
-let disconnectTimeoutMessage;
+let disconnectTimer;
+let wasDisconnectedByOutage = false;
+
 socket.on('disconnect', reason => {
-  if (reason === 'transport close') {
-    if (disconnectNotifyId) {
-      store.dispatch(notificationActions.removeNotification(disconnectNotifyId));
+  // 'io client disconnect' is a deliberate client-side call — not a real outage.
+  if (reason === 'io client disconnect') return;
+
+  // Always attempt to reconnect — socket.io only auto-reconnects for transport-level
+  // disconnects; for any server-initiated disconnect it stops. Polling here covers all cases.
+  const attemptReconnect = () => {
+    if (!socket.connected) {
+      socket.connect();
+      setTimeout(attemptReconnect, 3000);
     }
-    disconnectTimeoutMessage = setTimeout(() => {
-      disconnectNotifyId = store.dispatch(
-        notificationActions.notify(
-          t('System', 'Lost connection to the server. Your changes may be lost', null, false),
-          'danger',
-          false
-        )
-      );
-    }, 8000);
-  }
+  };
+  setTimeout(attemptReconnect, 2000);
+
+  disconnectTimer = setTimeout(() => {
+    wasDisconnectedByOutage = true;
+    setConnected(false);
+    const message = t(
+      'System',
+      'Lost connection to the server. Your changes may be lost',
+      null,
+      false
+    );
+    bridgeNotify(message, 'warning');
+    store.dispatch(notificationActions.notify(message, 'warning'));
+  }, 8000);
 });
 
-socket.io.on('reconnect', () => {
-  clearTimeout(disconnectTimeoutMessage);
-  if (disconnectNotifyId) {
-    store.dispatch(notificationActions.removeNotification(disconnectNotifyId));
-    disconnectNotifyId = store.dispatch(
-      notificationActions.notify(t('System', 'Connected to server', null, false), 'success')
-    );
-    disconnectNotifyId = null;
+// socket.on('connect') fires on every namespace-level connection:
+// both automatic transport reconnects AND manual socket.connect() calls.
+const onRecoveredConnection = () => {
+  clearTimeout(disconnectTimer);
+  setConnected(true);
+  if (wasDisconnectedByOutage) {
+    wasDisconnectedByOutage = false;
+    const message = t('System', 'Connected to server', null, false);
+    bridgeNotify(message, 'success');
+    store.dispatch(notificationActions.notify(message, 'success'));
   }
-});
+};
+
+socket.on('connect', onRecoveredConnection);
+socket.io.on('reconnect', onRecoveredConnection);
 
 socket.on('forceReconnect', () => {
   reconnectSocket();
@@ -63,7 +82,7 @@ socket.on('templateDelete', payload => {
 
 socket.on('updateSettings', settings => {
   const atomStore = getStore();
-  atomStore.set(settingsAtom, settings);
+  atomStore.set(settingsAtom, prev => mergeClientSettings(prev, settings));
 });
 
 socket.on('thesauriChange', thesaurus => {
@@ -114,6 +133,7 @@ socket.on('translationKeysChange', translationsEntries => {
 });
 
 socket.on('translationsInstallDone', () => {
+  endTask('language-install', 'completed');
   store.dispatch(
     notificationActions.notify(
       t('System', 'Languages installed successfully', null, false),
@@ -123,17 +143,14 @@ socket.on('translationsInstallDone', () => {
 });
 
 socket.on('translationsInstallError', errorMessage => {
-  store.dispatch(
-    notificationActions.notify(
-      `${t(
-        'System',
-        'An error has occured while installing languages:',
-        null,
-        false
-      )}\n${errorMessage}`,
-      'danger'
-    )
+  endTask('language-install', 'failed');
+  const message = `${t('System', 'An error has occured while installing languages:', null, false)}
+${errorMessage}`;
+  bridgeNotify(
+    t('System', 'An error has occurred while installing languages:', null, false),
+    'error'
   );
+  store.dispatch(notificationActions.notify(message, 'danger'));
 });
 
 socket.on('translationsDelete', locale => {
@@ -144,6 +161,7 @@ socket.on('translationsDelete', locale => {
 });
 
 socket.on('translationsDeleteDone', () => {
+  endTask('language-uninstall', 'completed');
   store.dispatch(
     notificationActions.notify(
       t('System', 'Language uninstalled successfully', null, false),
@@ -153,17 +171,14 @@ socket.on('translationsDeleteDone', () => {
 });
 
 socket.on('translationsDeleteError', errorMessage => {
-  store.dispatch(
-    notificationActions.notify(
-      `${t(
-        'System',
-        'An error has occured while deleting a language:',
-        null,
-        false
-      )}\n${errorMessage}`,
-      'danger'
-    )
+  endTask('language-uninstall', 'failed');
+  const message = `${t('System', 'An error has occured while deleting a language:', null, false)}
+${errorMessage}`;
+  bridgeNotify(
+    t('System', 'An error has occurred while uninstalling a language:', null, false),
+    'error'
   );
+  store.dispatch(notificationActions.notify(message, 'danger'));
 });
 
 socket.on('documentProcessed', sharedId => {
@@ -173,13 +188,3 @@ socket.on('documentProcessed', sharedId => {
 socket.on('conversionFailed', sharedId => {
   store.dispatch(documentProcessed(sharedId, 'library'));
 });
-
-socket.on('IMPORT_CSV_START', () => store.dispatch(actions.set('importStart', true)));
-socket.on('IMPORT_CSV_PROGRESS', progress =>
-  store.dispatch(actions.set('importProgress', progress))
-);
-socket.on('IMPORT_CSV_ROW_EXCEPTIONS', exceptions =>
-  store.dispatch(actions.set('importRowExceptions', exceptions))
-);
-socket.on('IMPORT_CSV_ERROR', error => store.dispatch(actions.set('importError', error)));
-socket.on('IMPORT_CSV_END', () => store.dispatch(actions.set('importEnd', true)));

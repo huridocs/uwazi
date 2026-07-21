@@ -1,20 +1,21 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-lines */
-import entitiesModel from 'api/entities/entitiesModel';
-import { filesModel } from 'api/files/filesModel';
-import { DataType, models, WithId } from 'api/odm';
-import { settingsModel } from 'api/settings/settingsModel';
-import templatesModel from 'api/core/v1_layer/templates/templatesModel';
-import { UpdateLog } from 'api/updatelogs';
-import { ensure } from 'shared/tsUtils';
-import { EntitySchema } from 'shared/types/entityType';
-import { FileType } from 'shared/types/fileType';
+import sift from 'sift';
+import entitiesModel from '#api/entities/entitiesModel.js';
+import { DataType, models, WithId } from '#api/odm/index.js';
+import { settingsModel } from '#api/settings/settingsModel.js';
+import templates from '#api/core/v1_layer/templates/templates.js';
+import { UpdateLog } from '#api/updatelogs/index.js';
+import { SyncHandlerRegistry } from './SyncHandlerRegistry.js';
+import { ensure } from '#shared/tsUtils.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { FileType } from '#shared/types/fileType.js';
 import {
   Settings,
   SettingsSyncRelationtypesSchema,
   SettingsSyncTemplateSchema,
-} from 'shared/types/settingsType';
-import { TemplateSchema } from 'shared/types/templateType';
-import sift from 'sift';
+} from '#shared/types/settingsType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 
 const noDataFound = 'NO_DATA_FOUND';
 
@@ -50,7 +51,7 @@ interface Options {
 }
 
 const getTemplate = async (template: string) => {
-  const templateData = await templatesModel.getById(template);
+  const templateData = await templates.getById(template);
   if (!templateData?._id) throw new Error('missing id');
   return templateData;
 };
@@ -106,7 +107,12 @@ class ProcessNamespaces {
 
   private async fetchData() {
     const { namespace, mongoId } = this.change;
-    const data = await models[namespace]().getById(mongoId.toString());
+    const odmModel = models[namespace]?.();
+    const handler = odmModel ?? SyncHandlerRegistry.get(namespace);
+    if (!odmModel && !handler) {
+      throw new Error(`No sync handler registered for namespace: ${namespace}`);
+    }
+    const data = await handler!.getById(mongoId.toString());
     if (data) {
       return data;
     }
@@ -169,9 +175,7 @@ class ProcessNamespaces {
       .map(h => (h.template || '').toString())
       .filter(id => this.templatesConfigKeys.includes(id));
 
-    const hubOtherTemplates = await templatesModel.get({
-      _id: { $in: hubWhitelistedTemplateIds },
-    });
+    const hubOtherTemplates = await templates.get(hubWhitelistedTemplateIds);
 
     const belongsToWhitelistedType = this.relationtypesConfig.includes(
       data.template ? data.template.toString() : null
@@ -206,7 +210,7 @@ class ProcessNamespaces {
     }
 
     const { mongoId } = this.change;
-    const data = ensure<WithId<TemplateSchema>>(await templatesModel.getById(mongoId), noDataFound);
+    const data = ensure<WithId<TemplateSchema>>(await templates.getById(mongoId), noDataFound);
 
     if (data.properties) {
       const templateConfigProperties = this.templatesConfig[data._id.toString()].properties;
@@ -259,9 +263,12 @@ class ProcessNamespaces {
   private async connections() {
     const data = await this.fetchData();
     const entityTemplate = await getEntityTemplate(data.entity);
+    if (!entityTemplate) {
+      return { skip: true };
+    }
 
-    const belongsToValidEntity = this.templatesConfigKeys.includes(entityTemplate || '');
-    const templateData = await templatesModel.getById(entityTemplate);
+    const belongsToValidEntity = this.templatesConfigKeys.includes(entityTemplate);
+    const templateData = await templates.getById(entityTemplate);
 
     if (!belongsToValidEntity || !templateData) {
       return { skip: true };
@@ -288,10 +295,8 @@ class ProcessNamespaces {
 
   private async files() {
     const { mongoId } = this.change;
-    const data = ensure<WithId<FileType>>(
-      await filesModel.getById(mongoId, '+fullText'),
-      noDataFound
-    );
+    const handler = SyncHandlerRegistry.get('files')!;
+    const data = ensure<WithId<FileType>>(await handler.getById(mongoId.toString()), noDataFound);
 
     if (data.type === 'custom') {
       return { data };
@@ -299,6 +304,9 @@ class ProcessNamespaces {
 
     if (data.entity) {
       const [entity] = await entitiesModel.get({ sharedId: data.entity });
+      if (!entity) {
+        return { skip: true };
+      }
       const { template } = entity;
       if (template && !this.templatesConfig[template.toString()]?.attachments) {
         return { skip: true };
@@ -330,9 +338,7 @@ class ProcessNamespaces {
   private async translationsV2() {
     const data = await this.fetchData();
     const { context } = data;
-    const templatesData = await templatesModel.get({
-      _id: { $in: this.templatesConfigKeys },
-    });
+    const templatesData = await templates.get(this.templatesConfigKeys);
 
     if (this.assessTranslationApproved(context)) {
       return { data };

@@ -1,16 +1,17 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { MongoTemplatesDataSource } from 'api/core/infrastructure/mongodb/template/MongoTemplatesDataSource';
-import { GenerateAutomaticTranslationsCofig } from '../GenerateAutomaticTranslationConfig';
-import { MongoATConfigDataSource } from '../infrastructure/MongoATConfigDataSource';
-import { GenerateATConfigError } from '../errors/generateATErrors';
-import { SemanticConfig, semanticConfigSchema } from '../types/SemanticConfig';
-import { ValidationError, Validator } from '../infrastructure/Validator';
-import { AutomaticTranslationFactory } from '../AutomaticTranslationFactory';
-import testingDB from 'api/utils/testing_db';
-import { Settings } from 'shared/types/settingsType';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
+import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
+import { GenerateAutomaticTranslationsCofig } from '../GenerateAutomaticTranslationConfig.js';
+import { MongoATConfigDataSource } from '../infrastructure/MongoATConfigDataSource.js';
+import { GenerateATConfigError } from '../errors/generateATErrors.js';
+import { SemanticConfig, semanticConfigSchema } from '../types/SemanticConfig.js';
+import { ValidationError, Validator } from '../infrastructure/Validator.js';
+import { AutomaticTranslationFactory } from '../AutomaticTranslationFactory.js';
+import testingDB from '#api/utils/testing_db.js';
+import { Settings } from '#shared/types/settingsType.js';
 
 const factory = getFixturesFactory();
 
@@ -84,7 +85,14 @@ describe('GenerateAutomaticTranslationConfig', () => {
     );
     generateAutomaticTranslationConfig = new GenerateAutomaticTranslationsCofig(
       automaticTranslationConfigDS,
-      new MongoTemplatesDataSource(getConnection(), TransactionManagerFactory.default()),
+      new MongoTemplatesDataSource({
+        db: getConnection(),
+        transactionManager: TransactionManagerFactory.default(),
+        dao: new MongoTemplatesDAO({
+          db: getConnection(),
+          transactionManager: TransactionManagerFactory.default(),
+        }),
+      }),
       new Validator<SemanticConfig>(semanticConfigSchema)
     );
   });

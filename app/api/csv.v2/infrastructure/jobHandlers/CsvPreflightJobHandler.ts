@@ -1,10 +1,18 @@
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
-} from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
-import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
-import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
-import { CsvPreflightJob } from '../../application/jobs/CsvPreflightJob';
+} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
+import {
+  HeartbeatCallback,
+  JobInfo,
+  Params as DispatchableParams,
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
+import { CsvPreflightJob } from '../../application/jobs/CsvPreflightJob.js';
+import {
+  dispatchCleanupAfterCancelledStage,
+  handleTerminalFailureCleanup,
+} from './CsvCleanupDispatch.js';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;
@@ -20,7 +28,29 @@ export class CsvPreflightJobHandler extends UserAwareDispatchable<Params> {
     super();
   }
 
-  async handle(_heartbeat: HeartbeatCallback, jobInfo?: JobInfo): Promise<void> {
+  private static parseParams(params: DispatchableParams): Params {
+    const { importId, tenantName, userId } = params;
+    if (typeof importId !== 'string') {
+      throw new Error('CsvPreflightJobHandler requires params.importId:string');
+    }
+    if (typeof tenantName !== 'string') {
+      throw new Error('CsvPreflightJobHandler requires params.tenantName:string');
+    }
+    if (typeof userId !== 'string') {
+      throw new Error('CsvPreflightJobHandler requires params.userId:string');
+    }
+    return { importId, tenantName, userId };
+  }
+
+  async handleDispatch(
+    heartbeat: HeartbeatCallback,
+    params: DispatchableParams,
+    jobInfo?: JobInfo
+  ): Promise<void> {
+    return super.handleDispatch(heartbeat, CsvPreflightJobHandler.parseParams(params), jobInfo);
+  }
+
+  async handle(heartbeat: HeartbeatCallback, jobInfo?: JobInfo): Promise<void> {
     const { tenantName } = this;
 
     try {
@@ -30,30 +60,47 @@ export class CsvPreflightJobHandler extends UserAwareDispatchable<Params> {
         userId: this.params.userId,
         callbacks: {
           onStart: ({ importId }: { importId: string }) => {
-            this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:preflight:thesauri:start', {
+            this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:preflight:scan:start', {
               importId,
             });
           },
+          onProgress: ({ importId, processedRows, totalRows }) => {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            heartbeat();
+            this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:preflight:scan:progress', {
+              importId,
+              processedRows,
+              totalRows,
+            });
+          },
           onSuccess: ({ importId }: { importId: string }) => {
-            this.deps.sockets.emitToTenantAdmins(
-              tenantName,
-              'csvImport:preflight:thesauri:success',
-              { importId }
-            );
+            this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:preflight:scan:success', {
+              importId,
+            });
           },
           onError: ({ importId, error }: { importId: string; error: Error }) => {
-            this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:preflight:thesauri:error', {
+            this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:preflight:scan:error', {
               importId,
               message: error.message,
             });
           },
         },
       });
+      await dispatchCleanupAfterCancelledStage({
+        useCase: this.deps.useCase,
+        importId: this.params.importId,
+        tenantName,
+        userId: this.params.userId,
+      });
     } catch (e) {
-      // If this was the last retry attempt, mark as definitively failed.
-      if (jobInfo && jobInfo.retryCount + 1 >= jobInfo.maxRetries) {
-        await this.deps.useCase.markAsFailed(this.params.importId);
-      }
+      await handleTerminalFailureCleanup({
+        useCase: this.deps.useCase,
+        importId: this.params.importId,
+        tenantName,
+        userId: this.params.userId,
+        error: e,
+        jobInfo,
+      });
       throw e;
     }
   }

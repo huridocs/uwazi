@@ -1,4 +1,5 @@
-import { testingDB, DBFixture } from 'api/utils/testing_db';
+import { testingDB, DBFixture } from '#api/utils/testing_db.js';
+import { PUBLIC_USER_ID, UserRole } from '#api/core/domain/user/User.js';
 
 const entity1en = testingDB.id();
 const entity2en = testingDB.id();
@@ -22,13 +23,33 @@ export const fixtures: DBFixture = {
     },
   ],
   users: [
-    { password: 'pass', username: 'admin', email: 'admin@email.com', role: 'admin' },
-    { password: 'pass', username: 'editor', email: 'editor@email.com', role: 'editor' },
     {
+      _id: testingDB.id(),
+      password: 'pass',
+      username: 'admin',
+      email: 'admin@email.com',
+      role: UserRole.ADMIN,
+    },
+    {
+      _id: testingDB.id(),
+      password: 'pass',
+      username: 'editor',
+      email: 'editor@email.com',
+      role: UserRole.EDITOR,
+    },
+    {
+      _id: testingDB.id(),
       password: 'pass',
       username: 'collaborator',
       email: 'collaborator@email.com',
-      role: 'collaborator',
+      role: UserRole.COLLABORATOR,
+    },
+    {
+      _id: PUBLIC_USER_ID,
+      password: 'pass',
+      username: 'PublicUser',
+      email: 'public@uwazi.local',
+      role: UserRole.COLLABORATOR,
     },
   ],
   entities: [
@@ -107,6 +128,8 @@ export const fixtures: DBFixture = {
       _id: testingDB.id(),
       entity: 'entity4SharedId',
       filename: 'entity4SharedId.pdf',
+      originalname: 'entity4SharedId.pdf',
+      mimetype: 'application/pdf',
       language: 'eng',
       type: 'document',
       fullText: {
@@ -118,6 +141,8 @@ export const fixtures: DBFixture = {
       _id: testingDB.id(),
       entity: 'entity5SharedId',
       filename: 'entity5SharedId.pdf',
+      originalname: 'entity5SharedId.pdf',
+      mimetype: 'application/pdf',
       language: 'eng',
       type: 'document',
       fullText: {

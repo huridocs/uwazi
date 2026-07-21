@@ -24,17 +24,15 @@ updates:
       - dependency-name: otplib
       - dependency-name: redux
       - dependency-name: redux-thunk
-      - dependency-name: eslint #6784
       - dependency-name: fetch-mock
       - dependency-name: react-datepicker
       - dependency-name: recharts
       - dependency-name: '@headlessui/react'
       - dependency-name: react-player
-      - dependency-name: '@socket.io/redis-adapter'
       - dependency-name: '@elastic/elasticsearch' #7721
       - dependency-name: 'pdfjs-dist' #8057
 
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 3
     labels:
       - dependencies
     rebase-strategy: disabled
@@ -72,16 +70,33 @@ updates:
         update-types: [minor, patch]
         patterns:
           - '*'
+        exclude-patterns:
+          - '@babel*'
+          - '@storybook*'
+          - '@sentry*'
+          - '@dnd-kit*'
+          - 'socket.io*'
+          - 'eslint-*'
+          - 'express*'
       dev-major-dependencies:
         applies-to: version-updates
         update-types: [major]
         patterns:
           - '*'
+        exclude-patterns:
+          - '@babel*'
+          - '@storybook*'
+          - '@sentry*'
+          - '@dnd-kit*'
+          - 'socket.io*'
+          - 'eslint-*'
+          - 'express*'
   - package-ecosystem: docker
     directory: /
     schedule:
       interval: weekly
     target-branch: production
+    open-pull-requests-limit: 1
     labels:
       - dependencies
     rebase-strategy: disabled

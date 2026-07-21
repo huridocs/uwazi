@@ -1,15 +1,16 @@
-import { Application } from 'express';
+import type { Application } from 'express';
 import request from 'supertest';
 
-import entities from 'api/entities';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { testingDB } from 'api/utils/testing_db';
-import { SearchQuery } from 'shared/types/SearchQueryType';
+import entities from '#api/entities/index.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import { testingDB } from '#api/utils/testing_db.js';
+import { SearchQuery } from '#shared/types/SearchQueryType.js';
 
-import { elasticTesting } from 'api/utils/elastic_testing';
-import { searchRoutes } from '../routes';
-import { setupTestingEnviroment } from './setupTestingEnvironment';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
+import { searchRoutes } from '../routes.js';
+import { setupTestingEnviroment } from './setupTestingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 describe('Sorting', () => {
   const factory = getFixturesFactory();
@@ -74,14 +75,15 @@ describe('Sorting', () => {
           }),
         ],
       },
-      'search.v2.sorting'
+      true
     );
 
-    await entities.save(entityA, { language: 'en', user: {} }, true);
-    await entities.save(entityC, { language: 'en', user: {} }, true);
-    await entities.save(entityZ, { language: 'en', user: {} }, true);
-    await entities.save(entityJ, { language: 'en', user: {} }, true);
-
+    await testingEnvironment.runWithContext(async () => {
+      await entities.save(entityA, { language: 'en', user: {} }, true);
+      await entities.save(entityC, { language: 'en', user: {} }, true);
+      await entities.save(entityZ, { language: 'en', user: {} }, true);
+      await entities.save(entityJ, { language: 'en', user: {} }, true);
+    });
     await elasticTesting.refresh();
   });
 

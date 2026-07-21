@@ -1,7 +1,7 @@
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import db, { DBFixture } from 'api/utils/testing_db';
-import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
-import { UserRole } from 'shared/types/userSchema';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import db, { DBFixture } from '#api/utils/testing_db.js';
+import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
+import { UserRole } from '#shared/types/userSchema.js';
 
 const factory = getFixturesFactory();
 
@@ -23,6 +23,15 @@ const userB = {
   username: 'UserB',
   role: UserRole.EDITOR,
   email: 'userb@domain.org',
+};
+
+const idUserPlusCollab = db.id();
+
+const userPlusCollab = {
+  _id: idUserPlusCollab,
+  username: 'user+collab',
+  role: UserRole.COLLABORATOR,
+  email: 'user+collab@domain.org',
 };
 
 const groupA = {
@@ -152,8 +161,8 @@ const fixtures: DBFixture = {
       language: 'en',
     },
   ],
-  users: [{ ...userA }, { ...userB }],
+  users: [{ ...userA }, { ...userB }, { ...userPlusCollab }],
   usergroups: [{ ...groupA }, { ...groupB }],
 };
 
-export { fixtures, userA, userB, groupA, groupB };
+export { fixtures, userA, userB, userPlusCollab, groupA, groupB };

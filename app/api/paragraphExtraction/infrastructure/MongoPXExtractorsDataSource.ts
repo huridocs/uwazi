@@ -1,18 +1,24 @@
-import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { Db, ObjectId } from 'mongodb';
 
-import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
-import { PXExtractor } from '../domain/PXExtractor';
+import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
+import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
+import { TemplateRow } from '#api/core/infrastructure/postgresql/template/PostgresTemplateMapper.js';
+import { PXExtractor } from '../domain/PXExtractor.js';
 import {
   ExistsInput,
   GetParagraphsIdsInput,
   PXExtractorsDataSource,
-} from '../domain/PXExtractorDataSource';
-import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
-import { PXValidationError } from '../domain/PXValidationError';
-import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource';
-import { MongoPXDenormalizedExtractorDBO, MongoPXExtractorDBO } from './MongoPXExtractorDBO';
+} from '../domain/PXExtractorDataSource.js';
+import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService.js';
+import { PXValidationError } from '../domain/PXValidationError.js';
+import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource.js';
+import { MongoPXExtractorDBO } from './MongoPXExtractorDBO.js';
+import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
+
+// Temporary union type during Mongo -> Postgres migration
+type TemplatesDAO = Awaited<ReturnType<typeof TemplatesDAOFactory.default>>;
 
 export const mongoPXExtractorsCollection = 'px_extractors';
 
@@ -22,13 +28,17 @@ export class MongoPXExtractorsDataSource
 {
   private extractorsQueryService: PXExtractorsQueryService;
 
+  private templatesDAO: TemplatesDAO;
+
   constructor(
     db: Db,
     transactionManager: MongoTransactionManager,
-    extractorsQueryService: PXExtractorsQueryService
+    extractorsQueryService: PXExtractorsQueryService,
+    templatesDAO: TemplatesDAO
   ) {
     super(db, transactionManager);
     this.extractorsQueryService = extractorsQueryService;
+    this.templatesDAO = templatesDAO;
   }
 
   protected collectionName = mongoPXExtractorsCollection;
@@ -48,39 +58,24 @@ export class MongoPXExtractorsDataSource
   }
 
   async getById(extractorId: string): Promise<PXExtractor | undefined> {
-    const extractor = await this.getCollection()
-      .aggregate([
-        {
-          $match: { _id: new ObjectId(extractorId) },
-        },
-        {
-          $lookup: {
-            from: 'templates',
-            localField: 'sourceTemplateId',
-            foreignField: '_id',
-            as: 'sourceTemplate',
-          },
-        },
-        {
-          $lookup: {
-            from: 'templates',
-            localField: 'targetTemplateId',
-            foreignField: '_id',
-            as: 'targetTemplate',
-          },
-        },
-        {
-          $unwind: '$sourceTemplate',
-        },
-        {
-          $unwind: '$targetTemplate',
-        },
-      ])
-      .next();
+    const extractor = await this.getCollection().findOne({
+      _id: new ObjectId(extractorId),
+    });
 
     if (!extractor) return undefined;
 
-    return MongoPXExtractorsDataSource.toDomain(extractor as MongoPXDenormalizedExtractorDBO);
+    const templateIds = [extractor.sourceTemplateId, extractor.targetTemplateId].map(id =>
+      id.toString()
+    );
+    const templateDBOs = await this.templatesDAO.get(templateIds);
+    const templateMap = new Map(templateDBOs.map(t => [t._id.toString(), t]));
+
+    const sourceTemplate = templateMap.get(extractor.sourceTemplateId.toString());
+    const targetTemplate = templateMap.get(extractor.targetTemplateId.toString());
+
+    if (!sourceTemplate || !targetTemplate) return undefined;
+
+    return MongoPXExtractorsDataSource.toDomain(extractor, sourceTemplate, targetTemplate);
   }
 
   async create(extractor: PXExtractor): Promise<void> {
@@ -137,11 +132,21 @@ export class MongoPXExtractorsDataSource
     return paragraphs.map(p => p.entitySharedId);
   }
 
-  static toDomain(dbo: MongoPXDenormalizedExtractorDBO): PXExtractor {
+  static toDomain(
+    dbo: MongoPXExtractorDBO,
+    sourceTemplate: TemplateDBO | TemplateRow,
+    targetTemplate: TemplateDBO | TemplateRow
+  ): PXExtractor {
     return new PXExtractor({
       id: dbo._id.toString(),
-      sourceTemplate: MongoTemplateMapper.toDomain(dbo.sourceTemplate),
-      targetTemplate: MongoTemplateMapper.toDomain(dbo.targetTemplate),
+      sourceTemplate: MongoTemplateMapper.toDomain({
+        ...sourceTemplate,
+        _id: new ObjectId(sourceTemplate._id),
+      }),
+      targetTemplate: MongoTemplateMapper.toDomain({
+        ...targetTemplate,
+        _id: new ObjectId(targetTemplate._id),
+      }),
       paragraphNumberPropertyId: dbo.paragraphNumberPropertyId.toString(),
       paragraphPropertyId: dbo.paragraphPropertyId.toString(),
       sourceRelationshipTypeId: dbo.sourceRelationshipTypeId.toString(),

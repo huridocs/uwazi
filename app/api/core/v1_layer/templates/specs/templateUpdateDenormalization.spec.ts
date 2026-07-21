@@ -1,19 +1,28 @@
 /* eslint-disable max-statements */
-import { ValidationError } from 'api/common.v2/validation/ValidationError';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import entities from 'api/entities/entities.js';
-import { EntityUpdatedData, EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
-import { TemplateSchema } from 'api/migrations/migrations/143-parse-numeric-fields/types';
-import * as setupSockets from 'api/socketio/setupSockets';
-import { elasticTesting } from 'api/utils/elastic_testing';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import testingDB, { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { testingTenants } from 'api/utils/testingTenants';
-import * as idGenerator from 'shared/IDGenerator';
-import { propertyTypes } from 'shared/propertyTypes';
-import { EntitySchema } from 'shared/types/entityType';
-import templates from '../templates';
+import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
+import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
+import entities from '#api/entities/entities.js';
+import { EntityUpdatedData, EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
+import { TemplateSchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
+import * as setupSockets from '#api/socketio/setupSockets.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import * as idGenerator from '#shared/IDGenerator.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import templates from '../templates.js';
 
 const f = getFixturesFactory();
 
@@ -57,7 +66,32 @@ afterAll(async () => {
 
 async function updateTemplate(template: TemplateSchema, fullReindex = false) {
   jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
-  return templates.save(template, 'en', true, fullReindex);
+
+  const transactionManager = TransactionManagerFactory.default();
+  const jobsDispatcher = new SyncDispatcherForTests({
+    TemplatePostProcessEntitiesJob: async () =>
+      new TemplatePostProcessEntitiesJob({
+        useCase: new TemplateUpdateDenormalizeEntitiesBatch({
+          entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
+          relationshipsV1DS: new MongoRelationshipsV1DataSource(
+            getConnection(),
+            transactionManager
+          ),
+          templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
+          transactionManager,
+          filesDS: FilesDataSourceFactory.default(),
+        }),
+        templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
+      }),
+  });
+  return testingEnvironment.runWithContext(
+    async () => templates.save(template, 'en', true, fullReindex),
+    {
+      factories: {
+        jobsDispatcher: () => jobsDispatcher,
+      },
+    }
+  );
 }
 
 const elasticIndex = 'templates_denorm_flow';
@@ -65,9 +99,11 @@ const elasticIndex = 'templates_denorm_flow';
 describe('Templates Update', () => {
   async function setUpFixtures(_fixtures: DBFixture) {
     await testingEnvironment.setUp(_fixtures, elasticIndex);
-    await Promise.all(
-      (_fixtures.entities || []).map(async e => entities.save(e, { language: 'en', user: {} }))
-    );
+    await testingEnvironment.runWithContext(async () => {
+      await Promise.all(
+        (_fixtures.entities || []).map(async e => entities.save(e, { language: 'en', user: {} }))
+      );
+    });
 
     testingTenants.mockCurrentTenant({
       name: testingDB.dbName,
@@ -210,6 +246,33 @@ describe('Templates Update', () => {
   });
 
   describe('templates denormalization scenarios', () => {
+    describe('when toggling filter on a property (no other changes)', () => {
+      it('should update editDate on all entities of that template', async () => {
+        await setUpFixtures(fixtures);
+
+        const entitiesBefore = (await testingEnvironment.db.getAllFrom('entities')).filter(
+          e => e.template?.toString() === f.idString('templateA') && e.language === 'en'
+        );
+        const editDateBefore = entitiesBefore[0].editDate as number;
+
+        await new Promise(r => {
+          setTimeout(r, 10);
+        });
+
+        await updateTemplate(
+          f.template('templateA', [f.property('text_property', 'text', { filter: true })])
+        );
+
+        const entitiesAfter = (await testingEnvironment.db.getAllFrom('entities')).filter(
+          e => e.template?.toString() === f.idString('templateA') && e.language === 'en'
+        );
+
+        entitiesAfter.forEach(entity => {
+          expect(entity.editDate as number).toBeGreaterThan(editDateBefore);
+        });
+      });
+    });
+
     describe('when changing a property name and template contains relationship properties', () => {
       it('should change the name on all entities and reindex', async () => {
         const propertyWithNameChanged = f.property('text_property_b', 'text', {
@@ -700,7 +763,9 @@ describe('Templates Update', () => {
       propertyWithNameChanged,
     ]);
 
-    await expect(async () => templates.save(template, 'en')).rejects.toEqual(
+    await expect(async () =>
+      testingEnvironment.runWithContext(async () => templates.save(template, 'en'))
+    ).rejects.toEqual(
       new ValidationError([
         { path: 'processing', message: 'template is being processed you can not update it yet' },
       ])

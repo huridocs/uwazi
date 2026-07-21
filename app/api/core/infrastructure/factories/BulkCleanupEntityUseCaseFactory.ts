@@ -1,25 +1,23 @@
-import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants/tenantContext';
-import { BulkCleanupEntityUseCase } from 'api/core/application/BulkCleanupEntity';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
-import { FilesServiceFactory } from './FilesServiceFactory';
-import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1DataSource';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { BulkCleanupEntityUseCase } from '#api/core/application/BulkCleanupEntity.js';
+import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1DataSource.js';
+import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
+import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
+import { FilesServiceFactory } from './FilesServiceFactory.js';
 
 class BulkCleanupEntityUseCaseFactory {
-  static default() {
-    const transactionManager = TransactionManagerFactory.default();
-    const tenant = tenants.current();
+  static default(overrides?: Partial<ConstructorParameters<typeof BulkCleanupEntityUseCase>[0]>) {
+    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
     const idGenerator = IdGeneratorFactory.default();
-    const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
+    const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
     const relationshipsDS = new MongoRelationshipsV1DataSource(getConnection(), transactionManager);
     const eventBus = applicationEventsBus;
-    const filesService = FilesServiceFactory.default(transactionManager);
+    const filesService = FilesServiceFactory.default();
 
-    const useCase = new BulkCleanupEntityUseCase(
+    return new BulkCleanupEntityUseCase(
       {
         idGenerator,
         transactionManager,
@@ -27,11 +25,10 @@ class BulkCleanupEntityUseCaseFactory {
         entitiesDS,
         relationshipsDS,
         filesService,
+        ...overrides,
       },
-      { actor: permissionsContext.getUserInContext()!, tenant }
+      { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant }
     );
-
-    return useCase;
   }
 }
 export { BulkCleanupEntityUseCaseFactory };

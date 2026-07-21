@@ -13,7 +13,6 @@
 @use 'elements/item';
 @use 'elements/linkField';
 @use 'elements/panel';
-@use 'elements/pdfViewer';
 @use 'elements/breadcrumbs';
 @use 'elements/draggable';
 @use 'elements/dropdown';
@@ -54,7 +53,6 @@
 @use 'modules/metadata-creator';
 @use 'modules/metadata-view';
 @use 'modules/metadata-extraction';
-@use 'modules/semantic-search';
 @use 'modules/settings';
 @use 'modules/settings-css-js';
 @use 'modules/settings-nav';
@@ -88,6 +86,5 @@
 @use 'vendor/react-datepicker';
 @use 'vendor/recharts';
 @use 'vendor/slideshow';
-@use 'vendor/nprogress';
 @use 'vendor/fa-svg-with-js';
 @use 'vendor/react-widgets';

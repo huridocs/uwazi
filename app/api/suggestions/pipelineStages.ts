@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
-import { LanguagesListSchema } from 'shared/types/commonTypes';
-import { IXSuggestionType, SuggestionCustomFilter } from 'shared/types/suggestionType';
+import { LanguagesListSchema } from '#shared/types/commonTypes.js';
+import { IXSuggestionType, SuggestionCustomFilter } from '#shared/types/suggestionType.js';
 
 export const baseQueryFragment = (extractorId: ObjectId) => {
   const query: FilterQuery<IXSuggestionType> = {
@@ -197,7 +197,7 @@ export const getLabeledValueStage = () => [
         $arrayElemAt: [
           {
             $filter: {
-              input: '$file.extractedMetadata',
+              input: '$file.propertySelections',
               as: 'label',
               cond: {
                 $eq: ['$propertyName', '$$label.name'],

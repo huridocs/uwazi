@@ -1,8 +1,8 @@
-import { Thesaurus, UpdateThesaurusProps } from '../domain/thesaurus/Thesaurus';
-import { AbstractUseCase } from '../libs/UseCase';
-import { ThesauriDataSource } from './contracts/ThesauriDataSource';
-import { ThesauriService } from './ThesauriService';
-import { ThesaurusTranslationService } from './thesaurusTranslationService/ThesaurusTranslationService';
+import { Thesaurus, UpdateThesaurusProps } from '../domain/thesaurus/Thesaurus.js';
+import { AbstractUseCase } from '../libs/UseCase.js';
+import { ThesauriDataSource } from './contracts/ThesauriDataSource.js';
+import { ThesauriService } from './ThesauriService.js';
+import { ThesaurusTranslationService } from './thesaurusTranslationService/ThesaurusTranslationService.js';
 
 type Input = {
   id: string;
@@ -28,7 +28,7 @@ class UpdateThesaurusUseCase extends AbstractUseCase<Input, Output, Deps> {
     });
 
     await this.transactionManager.run(async () =>
-      this.deps.thesauriService.upsert(updated, {
+      this.deps.thesauriService.update(updated, {
         tenantName: this.tenant.name,
         actorId: this.actorId,
       })

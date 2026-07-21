@@ -1,8 +1,9 @@
 /* eslint-disable max-statements */
 import React, { Fragment, ReactNode } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
-import { translationsAtom, inlineEditAtom, localeAtom } from 'V2/atoms';
-import { Truncate } from 'V2/Components/UI/Truncate';
+import { translationsAtom, inlineEditAtom, localeAtom } from '#V2/atoms/index.js';
+import { Truncate } from '#V2/Components/UI/Truncate.js';
+import type { ClientTranslationContextSchema } from '#app/istore.js';
 
 const parseMarkdownMarker = (
   line: string,
@@ -48,15 +49,19 @@ const Translate = ({
   const locale = useAtomValue(localeAtom);
   const [inlineEditState, setInlineEditState] = useAtom(inlineEditAtom);
 
-  const language = translations.find(translation => translation.locale === locale);
+  const language = (translations ?? []).find(
+    (translation: { locale: string }) => translation.locale === locale
+  );
   const activeClassName = inlineEditState.inlineEdit ? 'translation active' : 'translation';
 
-  const translationContext = language?.contexts.find(ctx => ctx.id === context) || { values: {} };
+  const translationContext = language?.contexts.find(
+    (ctx: ClientTranslationContextSchema) => ctx.id === context
+  ) || { values: {} };
   const text = translationContext.values[(translationKey || children)!] || children;
   const lines = text ? text.split('\n') : [];
 
   const renderText = () =>
-    lines.map((line, index) => {
+    lines.map((line: string, index: number) => {
       const boldMatches = parseMarkdownBoldMarker(line);
       const italicMatches = parseMarkdownItalicMarker(line);
       return (

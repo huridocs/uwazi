@@ -1,22 +1,27 @@
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
 import { randomUUID } from 'node:crypto';
-import { CreateEntityDTO, CreateEntitySchema } from '../express/entity/Schemas';
-import { CreateEntityUseCaseFactory } from '../factories/CreateEntityUseCaseFactory';
-import { LoggerFactory } from '../factories/LoggerFactory';
-import { ExpressEntityMapper } from '../express/entity/ExpressEntityMapper';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { CreateEntityDTO, CreateEntitySchema } from '../express/entity/Schemas.js';
+import { CreateEntityUseCaseFactory } from '../factories/CreateEntityUseCaseFactory.js';
+import { LoggerFactory } from '../factories/LoggerFactory.js';
+import { ExpressEntityMapper } from '../express/entity/ExpressEntityMapper.js';
 
 export class EntityFacade {
-  static async create(dto: CreateEntityDTO, inputFiles?: InputFile[]) {
+  static async create(
+    dto: CreateEntityDTO,
+    targetLanguage: LanguageISO6391,
+    inputFiles?: InputFile[]
+  ) {
     const logger = LoggerFactory.default();
     const startTime = Date.now();
     const requestId = randomUUID();
 
     try {
-      const useCase = CreateEntityUseCaseFactory.default();
-
       const parsed = CreateEntitySchema.parse(dto);
 
       const input = ExpressEntityMapper.toEntityCreateInput({ dto: parsed, inputFiles });
+
+      const useCase = CreateEntityUseCaseFactory.default({ targetLanguage });
 
       const entity = await useCase.execute(input);
 
@@ -38,7 +43,7 @@ export class EntityFacade {
     } catch (error) {
       const duration = Date.now() - startTime;
 
-      logger.error(
+      logger.info(
         `Entity creation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         {
           requestId,

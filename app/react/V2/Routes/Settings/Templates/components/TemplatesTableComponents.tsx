@@ -1,11 +1,12 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';
-import { Button, Pill } from 'V2/Components/UI';
 import { StarIcon } from '@heroicons/react/20/solid';
-import { Translate, I18NLinkV2 as I18NLink } from 'app/I18N';
-import { Tooltip } from 'flowbite-react';
-import { TemplateRow } from '../types';
+import { Button, Pill } from '#V2/Components/UI/index.js';
+
+import { Translate, I18NLinkV2 as I18NLink } from '#app/I18N/index.js';
+import { Tooltip } from '#V2/Components/UI/Tooltip.js';
+import { TemplateRow } from '../types.js';
 
 const columnHelper = createColumnHelper<TemplateRow>();
 
@@ -51,17 +52,17 @@ const DefaultButton =
   (handleSetDefault: (row: TemplateRow) => void) =>
   ({ cell }: CellContext<TemplateRow, boolean>) => (
     <Button
-      styling={cell.row.original.default ? 'solid' : 'light'}
+      variant={cell.row.original.default ? 'primary' : 'secondary'}
       onClick={() => handleSetDefault(cell.row.original)}
-      className="leading-4 m-auto"
+      className="m-auto leading-4 border-[0.75px]! border-(--color-theme-action-primary)! text-(--color-theme-action-primary)! disabled:border-(--color-theme-action-primary)! disabled:bg-(--color-theme-action-primary)! disabled:text-(--color-theme-action-primary-fg)!"
       disabled={cell.row.original.default || cell.row.original.synced}
     >
       <Translate className="sr-only">Set as default</Translate>
       <StarIcon
         className={
           cell.row.original.default
-            ? 'w-4 text-white'
-            : 'w-4 text-white stroke-current stroke-gray-300 stroke-2'
+            ? 'w-4 text-(--color-theme-action-primary-fg)'
+            : 'w-4 text-(--color-theme-action-primary)'
         }
       />
     </Button>
@@ -69,7 +70,7 @@ const DefaultButton =
 
 const EditButton = ({ cell }: CellContext<TemplateRow, string>) => (
   <I18NLink to={`/settings/templates/edit/${cell.row.original._id}`} className="px-3 py-1">
-    <Button styling="light" disabled={cell.row.original.synced} className="leading-4">
+    <Button variant="ghost" disabled={cell.row.original.synced} className="leading-4">
       <Translate>Edit</Translate>
     </Button>
   </I18NLink>
@@ -85,14 +86,12 @@ const SyncedTemplateCell = ({ cell }: CellContext<TemplateRow, boolean>) =>
   cell.getValue() ? (
     <Tooltip
       content={
-        <div className="text-xs text-gray-600">
+        <div className="text-xs text-ink-tertiary">
           <Translate>The source of this template is a sync.</Translate>
           <br />
           <Translate>All editing options will be disabled.</Translate>
         </div>
       }
-      // eslint-disable-next-line react/style-prop-object
-      style="light"
     >
       <span className="cursor-help">
         <Translate>Synced template</Translate>

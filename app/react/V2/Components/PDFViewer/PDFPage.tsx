@@ -1,129 +1,162 @@
-/* eslint-disable max-statements */
 import React, { useEffect, useRef, useState } from 'react';
-import { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
+import type { PDFDocumentProxy } from 'pdfjs-dist';
 import { Highlight } from '@huridocs/react-text-selection-handler';
-import { useAtom } from 'jotai';
-import { pdfScaleAtom } from 'V2/atoms';
-import { EventBus, PDFJSViewer, PDFJS } from './pdfjs';
-import { TextHighlight } from './types';
-import { calculateScaling } from './functions/calculateScaling';
-import { adjustSelectionsToScale } from './functions/handleTextSelection';
-import { pdfEventBus } from './events';
+import { TextHighlight } from './types.js';
+import { calculateScaling } from './functions/calculateScaling.js';
+import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
+import { PDFJSViewer, PixelsPerInch } from './pdfjs.js';
+import type { EventBusType } from './pdfjs.js';
 
 interface PDFPageProps {
   pdf: PDFDocumentProxy;
   page: number;
-  eventBus: typeof EventBus.prototype;
+  eventBus: EventBusType;
+  intersectionObserver: IntersectionObserver | null | undefined;
   highlights?: TextHighlight[];
+  onHighlightClick?: (highlightKey: string) => void;
   containerWidth?: number;
+  onScaleChange?: (scale: number) => void;
 }
 
-const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPageProps) => {
+const PDFPageComponent = ({
+  pdf,
+  page,
+  eventBus,
+  intersectionObserver,
+  containerWidth,
+  highlights,
+  onHighlightClick,
+  onScaleChange,
+}: PDFPageProps) => {
   const [error, setError] = useState<string>();
-  const [pdfScale, setPdfScale] = useAtom(pdfScaleAtom);
+  const [pdfScale, setPdfScale] = useState(1);
+  const [pageHeight, setPageHeight] = useState<number>();
+  const [ready, setReady] = useState(false);
   const pageContainerRef = useRef<HTMLDivElement>(null);
   const pageViewerRef = useRef<typeof PDFJSViewer.PDFPageView.prototype | null>(null);
-  const pdfPageRef = useRef<PDFPageProxy | null>(null);
+  const baseViewportSizeRef = useRef<{ width: number; height: number } | null>(null);
 
   useEffect(() => {
-    const currentContainer = pageContainerRef.current;
-    let observer: IntersectionObserver;
-
     pdf
       .getPage(page)
       .then(pdfPage => {
-        if (currentContainer && pdfPage) {
-          pdfPageRef.current = pdfPage;
+        const container = pageContainerRef.current;
+        if (container && pdfPage) {
+          const defaultViewport = pdfPage.getViewport({ scale: 1 });
+          const baseViewportWidth = defaultViewport.width * PixelsPerInch.PDF_TO_CSS_UNITS;
+          const baseViewportHeight = defaultViewport.height * PixelsPerInch.PDF_TO_CSS_UNITS;
 
-          const originalViewport = pdfPage.getViewport({ scale: 1 });
-          const scale = calculateScaling(
-            originalViewport.width * PDFJS.PixelsPerInch.PDF_TO_CSS_UNITS,
-            containerWidth
-          );
-          const defaultViewport = pdfPage.getViewport({ scale });
-
-          setPdfScale(scale);
+          baseViewportSizeRef.current = {
+            width: baseViewportWidth,
+            height: baseViewportHeight,
+          };
 
           const pageViewer = new PDFJSViewer.PDFPageView({
-            container: currentContainer,
+            container,
             id: page,
-            scale,
+            scale: defaultViewport.scale,
             defaultViewport,
             annotationMode: 0,
             eventBus,
+            enableDetailCanvas: false,
           });
 
           pageViewer.setPdfPage(pdfPage);
           pageViewerRef.current = pageViewer;
-
-          const handleIntersection: IntersectionObserverCallback = entries => {
-            const [entry] = entries;
-            if (entry.isIntersecting) {
-              pageViewer.update({ scale: pageViewer.scale });
-
-              if (pageViewer.renderingState !== PDFJSViewer.RenderingStates.RUNNING) {
-                pageViewer
-                  .draw()
-                  .then(() => {
-                    pdfEventBus.dispatch('onPageChange', pdfPage.pageNumber);
-                  })
-                  .catch(e => {
-                    setError(e.message);
-                  });
-              }
-            } else if (pageViewer.renderingState === PDFJSViewer.RenderingStates.FINISHED) {
-              pageViewer.destroy();
-            }
-          };
-
-          observer = new IntersectionObserver(handleIntersection, {
-            root: null,
-            threshold: 0.1,
-          });
-
-          observer.observe(currentContainer);
+          setReady(true);
         }
       })
       .catch((e: Error) => {
         setError(e.message);
       });
-
-    return () => {
-      if (currentContainer && observer) {
-        observer.unobserve(currentContainer);
-      }
-
-      if (pageViewerRef.current) {
-        pageViewerRef.current.destroy();
-      }
-    };
-    // pdf rendering is expensive and we want to make sure there's a single effect that runs only on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [eventBus, page, pdf]);
 
   useEffect(() => {
     const pageViewer = pageViewerRef.current;
-    const pdfPage = pdfPageRef.current;
+    const baseViewportSize = baseViewportSizeRef.current;
 
-    if (pageViewer && pdfPage && containerWidth) {
-      const originalViewport = pdfPage.getViewport({ scale: 1 });
-      const newScale = calculateScaling(
-        originalViewport.width * PDFJS.PixelsPerInch.PDF_TO_CSS_UNITS,
-        containerWidth
-      );
+    if (ready && pageViewer && baseViewportSize) {
+      const newScale = calculateScaling(baseViewportSize.width, containerWidth);
 
       if (Math.abs(pageViewer.scale - newScale) > 0.01) {
+        const previousRenderingState = pageViewer.renderingState;
+        const shouldRedraw = previousRenderingState !== PDFJSViewer.RenderingStates.INITIAL;
+        const nextPageHeight = baseViewportSize.height * newScale;
+        setPageHeight(nextPageHeight);
         setPdfScale(newScale);
+        onScaleChange?.(newScale);
+
         pageViewer.update({ scale: newScale });
 
-        if (pageViewer.renderingState === PDFJSViewer.RenderingStates.FINISHED) {
+        if (shouldRedraw) {
+          if (
+            previousRenderingState === PDFJSViewer.RenderingStates.RUNNING ||
+            previousRenderingState === PDFJSViewer.RenderingStates.PAUSED
+          ) {
+            pageViewer.cancelRendering();
+          }
+
+          pageViewer.reset();
+
           pageViewer.draw().catch((e: Error) => {
             setError(e.message);
           });
         }
       }
     }
-  }, [containerWidth, setPdfScale]);
+  }, [containerWidth, onScaleChange, ready]);
+
+  useEffect(() => {
+    const containerRef = pageContainerRef.current;
+
+    if (containerRef && ready) {
+      intersectionObserver?.observe(containerRef);
+    }
+
+    return () => {
+      if (containerRef && ready) {
+        intersectionObserver?.unobserve(containerRef);
+      }
+    };
+  }, [intersectionObserver, ready]);
+
+  useEffect(() => {
+    if (ready) {
+      eventBus.dispatch('pageready', { pageNumber: page });
+    }
+  }, [eventBus, page, ready]);
+
+  useEffect(() => {
+    const renderPage = ({ pageNumber }: { pageNumber: number }) => {
+      if (pageNumber === page) {
+        const pageViewer = pageViewerRef.current;
+        if (pageViewer?.renderingState === PDFJSViewer.RenderingStates.INITIAL) {
+          pageViewer?.draw().catch(e => {
+            setError(e.message);
+          });
+        }
+      }
+    };
+
+    const unmountPage = ({ pageNumber }: { pageNumber: number }) => {
+      if (pageNumber === page) {
+        const pageViewer = pageViewerRef.current;
+        if (pageViewer?.renderingState === PDFJSViewer.RenderingStates.FINISHED) {
+          pageViewer?.destroy();
+        } else {
+          pageViewer?.cancelRendering();
+        }
+      }
+    };
+
+    eventBus.on('renderpage', renderPage);
+    eventBus.on('unmountpage', unmountPage);
+
+    return () => {
+      eventBus.off('renderpage', renderPage);
+      eventBus.off('unmountpage', unmountPage);
+    };
+  }, [eventBus, page]);
 
   if (error) {
     return <div>{error}</div>;
@@ -132,25 +165,43 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
   return (
     <div
       ref={pageContainerRef}
-      className="relative border mb-4 border-gray-200"
+      style={pageHeight ? { minHeight: `${pageHeight}px` } : undefined}
       data-testid="pdf-page"
+      data-pagenumber={page}
     >
       {highlights?.map(highlight => {
         const scaledHightlight = {
           ...highlight,
           textSelection: adjustSelectionsToScale(highlight.textSelection, pdfScale),
         };
+
+        const highlightKey = `${page}-${scaledHightlight.key}`;
         return (
-          <div key={scaledHightlight.key} data-highlight-key={scaledHightlight.key}>
-            <Highlight
-              textSelection={scaledHightlight.textSelection}
-              color={scaledHightlight.color}
-            />
+          <div
+            key={scaledHightlight.key}
+            data-highlight-key={highlightKey}
+            className={onHighlightClick ? 'cursor-pointer' : undefined}
+            onClick={
+              onHighlightClick
+                ? () => {
+                    onHighlightClick(scaledHightlight.key);
+                  }
+                : undefined
+            }
+          >
+            <div style={{ pointerEvents: onHighlightClick ? 'auto' : 'none' }}>
+              <Highlight
+                textSelection={scaledHightlight.textSelection}
+                color={scaledHightlight.color}
+              />
+            </div>
           </div>
         );
       })}
     </div>
   );
 };
+
+const PDFPage = React.memo(PDFPageComponent);
 
 export { PDFPage };

@@ -1,27 +1,24 @@
-// eslint-disable-next-line node/no-restricted-import
-import fs from 'fs/promises';
-
 /* eslint-disable max-statements */
-import { Application, NextFunction, Request, Response } from 'express';
+import type { Application, NextFunction, Request, Response } from 'express';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 
-import entities from 'api/entities';
-import { fileExistsOnPath } from 'api/files';
-import { search } from 'api/search';
-import { iosocket, setUpApp, socketEmit, TestEmitSources } from 'api/utils/testingRoutes';
-import { FileType } from 'shared/types/fileType';
+import { fileExistsOnPath } from '#api/files/index.js';
+import { search } from '#api/search/index.js';
+import { iosocket, setUpApp, socketEmit, TestEmitSources } from '#api/utils/testingRoutes.js';
+import { FileType } from '#shared/types/fileType.js';
 
-import { PathManager } from 'api/core/infrastructure/files/PathManager';
-import { toEmitEventWith } from 'api/core/libs/eventsbus/eventTesting';
-import { csvImportRoutes } from 'api/csv.v2/infrastructure/http/routes';
-import { tenants } from 'api/tenants';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { UserSchema } from 'shared/types/userType';
-import { FileCreatedEvent } from '../events/FileCreatedEvent';
-import { files } from '../files';
-import uploadRoutes from '../routes';
-import { adminUser, collabUser, fixtures, importTemplate, templateId } from './fixtures';
+import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
+import { toEmitEventWith } from '#api/core/libs/eventsbus/eventTesting.js';
+import { csvImportRoutes } from '#api/csv.v2/infrastructure/http/routes.js';
+import { tenants } from '#api/tenants/index.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { UserSchema } from '#shared/types/userType.js';
+import { FileCreatedEvent } from '../events/FileCreatedEvent.js';
+import { files } from '../files.js';
+import uploadRoutes from '../routes.js';
+import { adminUser, collabUser, fixtures } from './fixtures.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -53,6 +50,7 @@ describe('upload routes', () => {
   beforeAll(async () => {
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     jest.spyOn(Date, 'now').mockReturnValue(1000);
+    jest.spyOn(EventEmitterFactory, 'default').mockReturnValue(EventEmitterFactory.forTesting());
     await testingEnvironment.setUp(fixtures);
   });
 
@@ -295,86 +293,6 @@ describe('upload routes', () => {
           TestEmitSources.currentTenant,
           'sharedId1',
           expect.objectContaining({ status: 'failed' })
-        );
-      });
-    });
-  });
-
-  describe('POST /api/import', () => {
-    it('should import the entried from the csv file', async () => {
-      await socketEmit('IMPORT_CSV_END', async () =>
-        request(app)
-          .post('/api/import')
-          .field('template', importTemplate.toString())
-          .attach('file', `${__dirname}/testing_files/importcsv.csv`)
-      );
-
-      expect(iosocket.emit).toHaveBeenCalledWith('IMPORT_CSV_START', TestEmitSources.session);
-      expect(iosocket.emit).toHaveBeenCalledWith('IMPORT_CSV_PROGRESS', TestEmitSources.session, 1);
-      expect(iosocket.emit).toHaveBeenCalledWith('IMPORT_CSV_PROGRESS', TestEmitSources.session, 2);
-
-      const imported = await entities.get({ template: importTemplate });
-      expect(imported).toEqual([
-        expect.objectContaining({ title: 'imported entity one' }),
-        expect.objectContaining({ title: 'imported entity two' }),
-      ]);
-    });
-
-    it('should emit IMPORT_CSV_ROW_EXCEPTIONS when there are import warnings', async () => {
-      const csvWithWarnings = `title,select_with_spaces,text_label
-imported entity one, " Item2 ", "text with   multiple   spaces"
-imported entity two, "Normal Item", "normal text"
-imported entity three, "  Only spaces"
-imported entity four, "Invalid::Thesaurus::Value, ext with\nnewlines"`;
-
-      const tempCsvPath = `${__dirname}/testing_files/temp_import_with_warnings.csv`;
-      await fs.writeFile(tempCsvPath, csvWithWarnings);
-
-      try {
-        await socketEmit('IMPORT_CSV_END', async () =>
-          request(app)
-            .post('/api/import')
-            .field('template', importTemplate.toString())
-            .attach('file', tempCsvPath)
-        );
-
-        expect(iosocket.emit).toHaveBeenCalledWith('IMPORT_CSV_START', TestEmitSources.session);
-        expect(iosocket.emit).toHaveBeenCalledWith(
-          'IMPORT_CSV_ROW_EXCEPTIONS',
-          TestEmitSources.session,
-          expect.objectContaining({
-            'Sanitized entries skipped in import': expect.arrayContaining([
-              expect.objectContaining({
-                index: expect.any(Number),
-                property: expect.any(String),
-                reason: expect.any(String),
-                value: expect.any(String),
-              }),
-            ]),
-          })
-        );
-
-        const imported = await entities.get({ template: importTemplate });
-        expect(imported.length).toBeGreaterThan(0);
-      } finally {
-        // eslint-disable-next-line no-empty-function
-        await fs.unlink(tempCsvPath).catch(() => {});
-      }
-    });
-
-    describe('on error', () => {
-      it('should emit the error', async () => {
-        await socketEmit('IMPORT_CSV_ERROR', async () =>
-          request(app)
-            .post('/api/import')
-            .field('template', templateId.toString())
-            .attach('file', `${__dirname}/testing_files/import.zip`)
-        );
-
-        expect(iosocket.emit).toHaveBeenCalledWith(
-          'IMPORT_CSV_ERROR',
-          TestEmitSources.session,
-          expect.objectContaining({ code: 500 })
         );
       });
     });

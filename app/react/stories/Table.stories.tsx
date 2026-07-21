@@ -1,10 +1,10 @@
 /* eslint-disable max-lines */
 import React, { useRef, useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
+import { action } from 'storybook/actions';
 import { Cell, createColumnHelper, SortingState } from '@tanstack/react-table';
-import { Button, Table } from 'V2/Components/UI';
-import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fixtures';
+import { Button, Table } from '#V2/Components/UI/index.js';
+import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fixtures.js';
 
 type StoryProps = {
   columnType: string;
@@ -14,6 +14,7 @@ type StoryProps = {
   defaultSorting?: SortingState;
   controlledSorting?: boolean;
   actionFn?: () => void;
+  focusedRowId?: string;
 };
 
 const CustomDateCell = ({ cell }: { cell: Cell<BasicData, number> }) => (
@@ -28,7 +29,7 @@ const ActionCell = ({ cell }: { cell: Cell<BasicData, any> }) => {
     : () => {};
 
   return (
-    <Button type="button" styling="light" onClick={() => actionFn(cell.row.id)}>
+    <Button type="button" variant="ghost" onClick={() => actionFn(cell.row.id)}>
       Action
     </Button>
   );
@@ -92,6 +93,7 @@ const StoryComponent = ({
   defaultSorting,
   actionFn,
   controlledSorting,
+  focusedRowId,
 }: StoryProps) => {
   const [dataState, setDataState] = useState(tableData);
   const [selected, setSelected] = useState({});
@@ -105,7 +107,7 @@ const StoryComponent = ({
   const actions = (
     <div className="flex gap-2">
       <Button
-        styling="outline"
+        variant="secondary"
         onClick={() => {
           setDataState([
             ...currentDataState.current,
@@ -122,7 +124,7 @@ const StoryComponent = ({
         Add new item
       </Button>
       <Button
-        styling="outline"
+        variant="secondary"
         onClick={() => {
           setDataState(currentDataState.current.slice(0, dataState.length - 1));
         }}
@@ -130,7 +132,7 @@ const StoryComponent = ({
         Remove last item
       </Button>
       <Button
-        styling="outline"
+        variant="secondary"
         onClick={() => {
           setDataState(tableData);
         }}
@@ -138,7 +140,7 @@ const StoryComponent = ({
         Reset data
       </Button>
       <Button
-        styling="solid"
+        variant="primary"
         onClick={() => {
           setDataState(currentDataState.current);
           setSelected(currentSelections.current);
@@ -167,6 +169,7 @@ const StoryComponent = ({
           manualSorting={controlledSorting}
           dnd={dnd}
           enableSelections={enableSelections}
+          focusedRowId={focusedRowId}
           header={
             <div className="flex flex-col gap-1 items-start">
               <h2 className="text-lg">Table heading</h2>
@@ -243,6 +246,8 @@ const meta: Meta<StoryProps> = {
   component: StoryComponent,
 };
 
+export default meta;
+
 type Story = StoryObj<StoryProps>;
 
 const Primary: Story = {
@@ -255,6 +260,7 @@ const Primary: Story = {
       defaultSorting={args.defaultSorting}
       actionFn={args.actionFn}
       controlledSorting={args.controlledSorting}
+      focusedRowId={args.focusedRowId}
     />
   ),
 };
@@ -270,6 +276,7 @@ const Basic = {
     sortingFn: undefined,
     actionFn: undefined,
     controlledSorting: false,
+    focusedRowId: undefined,
   },
 };
 
@@ -327,4 +334,3 @@ const Custom = {
 };
 
 export { Basic, BasicWithDisabledDnD, Nested, NestedWithDisabledDnD, Custom };
-export default meta;

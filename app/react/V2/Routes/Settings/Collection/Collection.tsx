@@ -4,29 +4,47 @@ import React from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useForm } from 'react-hook-form';
-import { useSetAtom } from 'jotai';
-import { isUndefined } from 'lodash';
-import { Tooltip } from 'flowbite-react';
+import isUndefined from 'lodash/isUndefined.js';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
-import * as SettingsAPI from 'V2/api/settings';
-import * as TemplatesAPI from 'V2/api/templates';
-import { notificationAtom } from 'app/V2/atoms';
-import { InputField, Select, MultiSelect, Geolocation } from 'app/V2/Components/Forms';
-import { Button, Card } from 'app/V2/Components/UI';
-import { settingsAtom } from 'app/V2/atoms/settingsAtom';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Translate, t } from 'app/I18N';
-import { ClientSettings, Template } from 'app/apiResponseTypes';
-import { FetchResponseError } from 'shared/JSONRequest';
-import * as tips from './collectionSettingsTips';
-import { CollectionOptionToggle } from './CollectionOptionToggle';
+import { useSetAtom } from 'jotai';
+import * as FilesAPI from '#V2/api/files/index.js';
+import * as SettingsAPI from '#V2/api/settings/index.js';
+import * as TemplatesAPI from '#V2/api/templates/index.js';
+import { InputField, Select, MultiSelect, Geolocation } from '#V2/Components/Forms/index.js';
+import { Button, Card, Tooltip } from '#V2/Components/UI/index.js';
+import { mergeClientSettings } from '#V2/atoms/mergeClientSettings.js';
+import { settingsAtom } from '#V2/atoms/settingsAtom.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
+import { Translate, t } from '#app/I18N/index.js';
+import { ClientSettings, Template } from '#app/apiResponseTypes.js';
+import * as tips from './collectionSettingsTips.js';
+import { CollectionOptionToggle } from './CollectionOptionToggle.js';
+import { CustomUploadImagePicker } from './Theming/CustomUploadImagePicker.js';
+import { FileType } from '#shared/types/fileType.js';
+import { ThemeSelectionCard } from './Theming/ThemeSelectionCard.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { faviconImageSizeRule } from './Theming/brandImageUploadRules.js';
+import { isClient } from '#app/utils/index.js';
+
+type SettingsWithThemeFlag = ClientSettings & { themeCustomization?: boolean };
 
 const collectionLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
-    const settings = await SettingsAPI.get(headers);
-    const templates = await TemplatesAPI.get(headers);
-    return { settings, templates };
+    const [raw] = await SettingsAPI.get(headers);
+    const { themeCustomization: themeCustomizationFlag, ...settings } =
+      raw as SettingsWithThemeFlag;
+    const [templates, customFilesRaw] = await Promise.all([
+      TemplatesAPI.get(headers),
+      FilesAPI.getByType('custom', headers),
+    ]);
+    const customUploadFiles = Array.isArray(customFilesRaw) ? customFilesRaw : [];
+    return {
+      settings,
+      templates,
+      themeCustomization: themeCustomizationFlag ?? false,
+      customUploadFiles,
+    };
   };
 
 const dateOptions = () => {
@@ -68,13 +86,15 @@ const dateOptions = () => {
 };
 
 const Collection = () => {
-  const { settings, templates } = useLoaderData() as {
+  const { settings, templates, themeCustomization, customUploadFiles } = useLoaderData() as {
     settings: ClientSettings;
     templates: Template[];
+    themeCustomization: boolean;
+    customUploadFiles: FileType[];
   };
   const { links, custom, ...formData } = settings;
 
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const setSettings = useSetAtom(settingsAtom);
   const revalidator = useRevalidator();
   formData.private = !formData.private;
@@ -87,28 +107,38 @@ const Collection = () => {
     clearErrors,
     formState: { errors },
   } = useForm<ClientSettings>({
-    defaultValues: formData,
+    defaultValues: {
+      ...formData,
+      themeAssets: formData.themeAssets ?? {},
+      themeVars: formData.themeVars ?? {},
+    },
     mode: 'onSubmit',
   });
 
   const submit = async (data: ClientSettings) => {
-    if (!isUndefined(data.newNameGeneration) && !data.newNameGeneration) {
-      delete data.newNameGeneration;
+    const payload = { ...data };
+    if (!isUndefined(payload.newNameGeneration) && !payload.newNameGeneration) {
+      delete payload.newNameGeneration;
     }
-    data.private = !data.private;
-    const response = await SettingsAPI.save(data);
-    if (response instanceof FetchResponseError) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: response.message || undefined,
-      });
+    if (themeCustomization) {
+      const lightLogo = payload.themeAssets?.siteLogo?.light?.trim();
+      const lightFavicon = payload.themeAssets?.favicon?.light?.trim();
+      if (lightLogo) payload.site_logo = lightLogo;
+      if (lightFavicon) payload.favicon = lightFavicon;
+    }
+    payload.private = !payload.private;
+    const { themeCustomization: _, ...rest } = payload as SettingsWithThemeFlag;
+    const [response, error] = await SettingsAPI.save(rest);
+    if (error) {
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        error.message || undefined
+      );
     } else {
-      setSettings(response);
-      setNotifications({
-        type: 'success',
-        text: <Translate>Settings updated</Translate>,
-      });
+      setSettings(prev => mergeClientSettings(prev, response));
+      notify('success', t('System', 'Settings updated', null, false));
     }
     await revalidator.revalidate();
   };
@@ -116,13 +146,8 @@ const Collection = () => {
   const labelWithTip = (label: React.ReactNode, tip: React.ReactNode) => (
     <span className="flex gap-4">
       {label}
-      <Tooltip
-        // eslint-disable-next-line react/style-prop-object
-        style="light"
-        content={tip}
-        placement="right"
-      >
-        <QuestionMarkCircleIcon className="w-5 h-5 text-gray-500" />
+      <Tooltip content={tip} placement="right">
+        <QuestionMarkCircleIcon className="h-5 w-5 text-ink-muted" />
       </Tooltip>
     </span>
   );
@@ -148,8 +173,13 @@ const Collection = () => {
     },
   ];
 
+  const watchedThemeVars = watch('themeVars') ?? {};
+  const watchedThemeAssets = watch('themeAssets') ?? {};
+  const watchedSiteLogo = watch('site_logo');
+  const watchedFavicon = watch('favicon');
+
   return (
-    <div className="w-full h-full overflow-y-auto" data-testid="settings-collection">
+    <div className="w-full h-full" data-testid="settings-collection">
       <SettingsContent>
         <SettingsContent.Header title="Collection" />
         <SettingsContent.Body>
@@ -164,14 +194,31 @@ const Collection = () => {
                     {...register('site_name', { required: true })}
                   />
                 </div>
-                <div className="sm:col-span-1">
-                  <InputField
+                {!themeCustomization ? (
+                  <CustomUploadImagePicker
                     id="favicon"
-                    type="text"
-                    label={<Translate>Custom Favicon</Translate>}
-                    {...register('favicon')}
+                    label={labelWithTip(<Translate>Custom Favicon</Translate>, tips.customFavIcon)}
+                    registerProps={register('favicon')}
+                    value={watch('favicon')}
+                    onChange={v => setValue('favicon', v, { shouldDirty: true })}
+                    files={customUploadFiles}
+                    selectButtonTitle={<Translate>Select favicon image</Translate>}
+                    recommendedSize="16x16 to 512x512 px (square)"
+                    sizeRule={faviconImageSizeRule}
+                    previewWrapperClassName="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded border p-2 bg-[color-mix(in_srgb,var(--color-theme-surface-warm)_70%,var(--color-theme-text-primary))] [background-image:linear-gradient(45deg,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)_25%,transparent_25%,transparent_75%,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)_75%,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)),linear-gradient(45deg,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent)_25%,transparent_25%,transparent_75%,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent)_75%,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent))] [background-size:8px_8px] [background-position:0_0,4px_4px] border-[color-mix(in_srgb,var(--color-theme-text-primary)_30%,var(--color-theme-border-default))]"
                   />
-                </div>
+                ) : null}
+                {themeCustomization && (
+                  <ThemeSelectionCard
+                    themeVars={watchedThemeVars}
+                    onThemeChange={v => setValue('themeVars', v, { shouldDirty: true })}
+                    themeAssets={watchedThemeAssets}
+                    onThemeAssetsChange={v => setValue('themeAssets', v, { shouldDirty: true })}
+                    siteLogo={watchedSiteLogo}
+                    favicon={watchedFavicon}
+                    customUploadFiles={customUploadFiles}
+                  />
+                )}
                 <div className="sm:col-span-1">
                   <Select
                     label={<Translate>Default View</Translate>}
@@ -205,32 +252,55 @@ const Collection = () => {
                 </div>
                 <CollectionOptionToggle
                   valueKey="private"
-                  label="Public instance"
+                  label={
+                    <Translate className="text-sm font-medium text-ink">Public instance</Translate>
+                  }
                   tip={tips.publicSharing}
-                  register={register}
-                  defaultChecked={formData.private}
+                  watch={watch}
+                  setValue={setValue}
                 />
+                {isClient && window.__featureFlags__?.v2GetEntity && (
+                  <CollectionOptionToggle
+                    valueKey="filterUnauthorizedRelated"
+                    label={
+                      <Translate className="text-sm font-medium text-ink">
+                        Hide restricted relationships from public
+                      </Translate>
+                    }
+                    tip={tips.filterUnauthorizedRelated}
+                    watch={watch}
+                    setValue={setValue}
+                  />
+                )}
                 <CollectionOptionToggle
                   valueKey="cookiepolicy"
-                  label="Show cookie policy"
+                  label={
+                    <Translate className="text-sm font-medium text-ink">
+                      Show cookie policy
+                    </Translate>
+                  }
                   tip={tips.cookiePolicy}
-                  register={register}
-                  defaultChecked={formData.cookiepolicy}
+                  watch={watch}
+                  setValue={setValue}
                 />
                 <CollectionOptionToggle
                   valueKey="allowcustomJS"
-                  label="Global JS"
+                  label={<Translate className="text-sm font-medium text-ink">Global JS</Translate>}
                   tip={tips.globalJS}
-                  register={register}
-                  defaultChecked={formData.allowcustomJS}
+                  watch={watch}
+                  setValue={setValue}
                 />
                 {!settings.newNameGeneration && (
                   <CollectionOptionToggle
                     valueKey="newNameGeneration"
-                    label="Non-latin characters support"
+                    label={
+                      <Translate className="text-sm font-medium text-ink">
+                        Non-latin characters support
+                      </Translate>
+                    }
                     tip={tips.characterSupport}
-                    register={register}
-                    defaultChecked={formData.newNameGeneration}
+                    watch={watch}
+                    setValue={setValue}
                   />
                 )}
               </div>
@@ -240,13 +310,8 @@ const Collection = () => {
               title={
                 <span className="flex gap-4">
                   <Translate>Analytics</Translate>
-                  <Tooltip
-                    // eslint-disable-next-line react/style-prop-object
-                    style="light"
-                    content={tips.analytics}
-                    placement="right"
-                  >
-                    <QuestionMarkCircleIcon className="w-5 h-5 text-gray-500" />
+                  <Tooltip content={tips.analytics} placement="right">
+                    <QuestionMarkCircleIcon className="h-5 w-5 text-ink-muted" />
                   </Tooltip>
                 </span>
               }
@@ -272,10 +337,14 @@ const Collection = () => {
               <Card className="mb-4" title={<Translate>Services</Translate>}>
                 <CollectionOptionToggle
                   valueKey="ocrServiceEnabled"
-                  label="Document OCR trigger"
+                  label={
+                    <Translate className="text-sm font-medium text-ink">
+                      Document OCR trigger
+                    </Translate>
+                  }
                   tip={tips.ocrTrigger}
-                  register={register}
-                  defaultChecked={formData.ocrServiceEnabled}
+                  watch={watch}
+                  setValue={setValue}
                 />
               </Card>
             )}
@@ -310,10 +379,14 @@ const Collection = () => {
                 </div>
                 <CollectionOptionToggle
                   valueKey="openPublicEndpoint"
-                  label="Allow captcha bypass"
+                  label={
+                    <Translate className="text-sm font-medium text-ink">
+                      Allow captcha bypass
+                    </Translate>
+                  }
                   tip={tips.openPublicForm}
-                  register={register}
-                  defaultChecked={formData.openPublicEndpoint}
+                  watch={watch}
+                  setValue={setValue}
                 />
                 <div className="sm:col-span-2">
                   <MultiSelect
@@ -322,7 +395,7 @@ const Collection = () => {
                       tips.publicForm[2]
                     )}
                     options={templateOptions}
-                    onChange={newValues => {
+                    onChange={(newValues: any) => {
                       setValue('allowedPublicTemplates', newValues);
                     }}
                     value={settings.allowedPublicTemplates || []}
@@ -357,7 +430,7 @@ const Collection = () => {
                     hasErrors={!!errors.mapLayers}
                     canBeEmpty={false}
                     value={settings.mapLayers?.length ? settings.mapLayers : ['Streets']}
-                    onChange={newValues => {
+                    onChange={(newValues: any) => {
                       clearErrors('mapLayers');
                       if (!newValues.length) {
                         setError(

@@ -1,12 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-import { clearCookiesAndLogin } from '../helpers/login';
-import {
-  clickOnCreateEntity,
-  editPropertyForExtractor,
-  saveEntity,
-  waitForLegacyNotifications,
-} from '../helpers';
+import { clearCookiesAndLogin } from '../helpers/login.js';
+import { clickOnCreateEntity, editPropertyForExtractor, saveEntity } from '../helpers';
 
 describe('PDF display', () => {
   before(() => {
@@ -26,8 +21,12 @@ describe('PDF display', () => {
       cy.get('select[id="property-type"]').select('Text');
 
       cy.contains('aside button', 'Add property').click();
+      //wait for post to api templates and the get to api templates
+      cy.intercept('POST', 'api/templates').as('postTemplate');
+      cy.intercept('GET', 'api/templates').as('getTemplates');
       cy.contains('button', 'Save').click();
-      cy.contains('button', 'Dismiss').click();
+      cy.wait('@postTemplate');
+      cy.wait('@getTemplates');
     });
 
     it('should create and entity with a pdf file', () => {
@@ -39,7 +38,6 @@ describe('PDF display', () => {
         force: true,
       });
       saveEntity();
-      waitForLegacyNotifications();
     });
 
     it('should select the english as the file language', () => {
@@ -49,7 +47,6 @@ describe('PDF display', () => {
         cy.contains('button', 'Save').click();
       });
       cy.get('.metadata-sidepanel.is-active .closeSidepanel').click();
-      waitForLegacyNotifications();
     });
   });
 
@@ -65,8 +62,7 @@ describe('PDF display', () => {
 
     it('should check the document', () => {
       cy.contains('CORTE INTERAMERICANA DE DERECHOS HUMANOS');
-      cy.get('.row').eq(0).toMatchImageSnapshot();
-      cy.get('div[data-region-selector-id="1"]').toMatchSnapshot({ name: 'PDF library render' });
+      cy.get('.row').eq(0).matchImageSnapshot();
     });
 
     it('should paginate forward', () => {
@@ -166,7 +162,6 @@ describe('PDF display', () => {
           );
 
         cy.get('button[type="submit"]').click();
-        cy.get('div.alert-success').click();
       });
 
       it('should navigate to the IX settings screen and create and extractor for the text property', () => {
@@ -181,7 +176,6 @@ describe('PDF display', () => {
           cy.contains('button', 'Create').click();
         });
         cy.contains('td', 'Extractor 1');
-        cy.contains('button', 'Dismiss').click();
       });
     });
 
@@ -210,10 +204,7 @@ describe('PDF display', () => {
         cy.get('#page-2-container .page').should('not.be.empty');
         cy.get('#page-4-container .page').should('be.empty');
 
-        cy.get('#page-7-container').then($page7 => {
-          const page7Top = $page7[0].offsetTop;
-          cy.get('#pdf-container').parent().parent().scrollTo(0, page7Top);
-        });
+        cy.get('#page-7-container').scrollIntoView();
 
         cy.get('#page-7-container').should('exist');
         cy.get('#page-7-container .page').should('not.be.empty');
@@ -253,14 +244,6 @@ describe('PDF display', () => {
         cy.contains('Los escritos de 17 de septiembre y 17 de noviembre de 2010,').should(
           'be.visible'
         );
-      });
-
-      it('should check that can edit and cancel', () => {
-        cy.get('.ContextMenu-bottom .btn').realTouch();
-        cy.contains('.btn', 'Edit').realTouch();
-        cy.get('.highlight-rectangle').toMatchSnapshot({ name: 'responsive selection' });
-        cy.contains('.btn', 'Cancel').realTouch();
-        cy.get('.closeSidepanel').realTouch();
       });
     });
   });

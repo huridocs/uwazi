@@ -1,11 +1,11 @@
-import { createError } from 'api/utils';
 import csvtojson from 'csvtojson';
-import { availableLanguages } from 'shared/language';
-import { LanguageSchema } from 'shared/types/commonTypes';
-import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { Readable } from 'stream';
-import { CSVRow } from './csv';
-import { sanitizeStringValue } from './sanitizationUtils';
+import { createError } from '#api/utils/index.js';
+import { availableLanguages } from '#shared/language/index.js';
+import { LanguageSchema } from '#shared/types/commonTypes.js';
+import { ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
+import { CSVRow } from './csv.js';
+import { sanitizeStringValue } from './sanitizationUtils.js';
 
 type ParsedValue = { nested: boolean; value: string };
 type ParsedRow = Record<string, ParsedValue>;
@@ -101,9 +101,10 @@ const getAvailableLanguageLabels = (rows: ParsedRow[]): Record<string, string> =
   const availableColumns = Object.keys(rows[0] || {});
   return availableLanguages
     .filter((l: LanguageSchema) => availableColumns.includes(l.label))
-    .reduce<
-      Record<string, string>
-    >((map, lang: LanguageSchema) => ({ ...map, [lang.key]: lang.label }), {});
+    .reduce<Record<string, string>>(
+      (map, lang: LanguageSchema) => ({ ...map, [lang.key]: lang.label }),
+      {}
+    );
 };
 
 async function thesauriFromStream(

@@ -1,4 +1,4 @@
-import db from 'api/utils/testing_db';
+import db from '#api/utils/testing_db.js';
 
 export const templateId = db.id();
 export const defaultTemplateName = 'default template';

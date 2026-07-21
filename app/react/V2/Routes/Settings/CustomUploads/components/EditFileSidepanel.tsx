@@ -2,16 +2,14 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useRevalidator } from 'react-router';
-import { useSetAtom } from 'jotai';
-import { FileType } from 'shared/types/fileType';
-import { Translate } from 'app/I18N';
-import { FetchResponseError } from 'shared/JSONRequest';
-import { Button, Card, Sidepanel } from 'V2/Components/UI';
-import { InputField } from 'V2/Components/Forms';
-import { getFileNameAndExtension } from 'V2/shared/formatHelpers';
-import { notificationAtom } from 'V2/atoms';
-import { update } from 'V2/api/files';
-import { CustomUpload } from '../CustomUploads';
+import { t, Translate } from '#app/I18N/index.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
+import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
+import { InputField } from '#V2/Components/Forms/index.js';
+import { getFileNameAndExtension } from '#V2/shared/formatHelpers.js';
+import { update } from '#V2/api/files/index.js';
+import { CustomUpload } from '../CustomUploads.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 type EditFileSidepanelProps = {
   showSidepanel: boolean;
@@ -22,26 +20,7 @@ type EditFileSidepanelProps = {
 const EditFileSidepanel = ({ showSidepanel, closeSidepanel, file }: EditFileSidepanelProps) => {
   const { name, extension } = getFileNameAndExtension(file?.originalname);
   const revalidator = useRevalidator();
-  const setNotifications = useSetAtom(notificationAtom);
-
-  const notify = (response: FileType | FetchResponseError) => {
-    const hasErrors = response instanceof FetchResponseError;
-
-    if (!hasErrors) {
-      setNotifications({
-        type: 'success',
-        text: <Translate>File updated</Translate>,
-      });
-    }
-
-    if (hasErrors) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: response.message,
-      });
-    }
-  };
+  const { notify } = useRequestStatus();
 
   const {
     register,
@@ -57,7 +36,11 @@ const EditFileSidepanel = ({ showSidepanel, closeSidepanel, file }: EditFileSide
     delete updatedFile.rowId;
     const response = await update(updatedFile);
     closeSidepanel();
-    notify(response);
+    if (response instanceof FetchResponseError) {
+      notify('error', t('System', 'An error occurred', null, false), undefined, response.message);
+    } else {
+      notify('success', t('System', 'File updated', null, false));
+    }
     await revalidator.revalidate();
   };
 
@@ -88,7 +71,7 @@ const EditFileSidepanel = ({ showSidepanel, closeSidepanel, file }: EditFileSide
       </form>
       <Sidepanel.Footer>
         <div className="flex gap-2 w-full">
-          <Button className="grow" styling="light" disabled={isSubmitting} onClick={closeSidepanel}>
+          <Button className="grow" variant="ghost" disabled={isSubmitting} onClick={closeSidepanel}>
             <Translate>Cancel</Translate>
           </Button>
           <Button className="grow" type="submit" disabled={isSubmitting} form="file-edit-form">

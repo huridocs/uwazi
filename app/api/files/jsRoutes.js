@@ -1,22 +1,26 @@
-import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
-import { EntityFacade } from 'api/core/infrastructure/facades/EntitiesFacade';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
-import { UploadMiddleware } from 'api/core/infrastructure/express/middlewares/UploadMiddleware';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoEntityDAO } from 'api/core/infrastructure/mongodb/entity/MongoEntityDAO';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import settings from 'api/settings';
-import { PUBLIC_USER_ID } from 'api/users/publicUser';
-import mailer from 'api/utils/mailer';
 import cors from 'cors';
 import proxy from 'express-http-proxy';
-import { publicAPIMiddleware } from '../auth/publicAPIMiddleware';
-import { createError, validation } from '../utils';
+import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
+import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
+import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoEntitiesDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntitiesDAO.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import settings from '#api/settings/index.js';
+import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
+import { publicAPIMiddleware } from '../auth/publicAPIMiddleware.js';
+import { createError } from '../utils/index.js';
+import { User } from '#api/users.v2/model/User.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 const getPublicUser = async () => {
   const usersModel = getConnection().collection('users');
-  const publicUser = await usersModel.findOne({ _id: PUBLIC_USER_ID });
+  const publicUser = await usersModel.findOne({
+    _id: PUBLIC_USER_ID,
+    deletedAt: { $exists: false },
+  });
 
   if (!publicUser) {
     throw createError('Public user not configured. Migration required.', 500);
@@ -43,39 +47,15 @@ const routes = app => {
     (req, _res, next) => {
       try {
         req.body.entity = JSON.parse(req.body.entity);
-        if (req.body.email) {
-          req.body.email = JSON.parse(req.body.email);
-        }
       } catch (err) {
         next(err);
         return;
       }
       next();
     },
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        body: {
-          type: 'object',
-          properties: {
-            email: {
-              type: 'object',
-              properties: {
-                to: { type: 'string' },
-                from: { type: 'string' },
-                text: { type: 'string' },
-                html: { type: 'string' },
-                subject: { type: 'string' },
-              },
-              required: ['to', 'from', 'text', 'subject'],
-            },
-          },
-        },
-      },
-    }),
     async (req, res, next) => {
       const { allowedPublicTemplates } = await settings.get();
-      const { entity, email } = req.body;
+      const { entity } = req.body;
 
       if (entity._id) {
         next(createError('Unauthorized _id property', 403));
@@ -95,17 +75,19 @@ const routes = app => {
         }
 
         permissionsContext.setUserInContext(userForContext);
+        ExecutionContext.actor = User.createFrom(userForContext);
 
-        const result = await EntityFacade.create(entity, req.inputFiles);
+        const result = await EntityFacade.create(entity, req.language, req.inputFiles);
 
-        const entityDAO = new MongoEntityDAO(getConnection(), TransactionManagerFactory.default());
-        const entityWithFiles = await entityDAO
-          .getWithFile({ language: req.language, sharedId: result.sharedId })
-          .next();
-
-        if (email) {
-          await mailer.send(email);
-        }
+        const entityDAO = new MongoEntitiesDAO(
+          getConnection(),
+          TransactionManagerFactory.default(),
+          User.createFrom(userForContext)
+        );
+        const [entityWithFiles] = await entityDAO.getWithFiles({
+          language: req.language,
+          sharedId: result.sharedId,
+        });
 
         res.json(entityWithFiles);
       } catch (error) {

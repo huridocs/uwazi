@@ -1,8 +1,8 @@
 import { Db, ObjectId } from 'mongodb';
-import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
-import { Job, QueueAdapter } from './QueueAdapter';
-import { Params } from '../application/contracts/Dispatchable';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { Job, PushJobInput, QueueAdapter } from './QueueAdapter.js';
+import { Params } from '../application/contracts/Dispatchable.js';
 
 export interface JobDBO {
   _id: ObjectId;
@@ -45,6 +45,33 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
       name: jobName,
       namespace: tenantName,
       lockedUntil: { $lt: Date.now() },
+    });
+  }
+
+  async cancelByParams(
+    jobName: string,
+    params: Partial<Params>,
+    tenantName: string
+  ): Promise<void> {
+    if (Object.keys(params).length === 0) {
+      return;
+    }
+
+    const query = Object.fromEntries(
+      Object.entries(params).map(([key, value]) => [`params.${key}`, value])
+    );
+
+    await this.getCollection().deleteMany({
+      ...query,
+      name: jobName,
+      namespace: tenantName,
+    });
+  }
+
+  async countByName(jobName: string, tenantName: string): Promise<number> {
+    return this.getCollection().countDocuments({
+      name: jobName,
+      namespace: tenantName,
     });
   }
 
@@ -153,31 +180,27 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
     };
   }
 
-  async pushJob(
-    job: Omit<Job, 'id' | 'lockedUntil' | 'createdAt' | 'retryCount'>
-  ): Promise<string> {
+  async pushJob(job: PushJobInput): Promise<string> {
     const result = await this.getCollection().insertOne({
       _id: new ObjectId(),
-      lockedUntil: 0,
       createdAt: Date.now(),
       retryCount: 0,
       failed: false,
       ...job,
+      lockedUntil: job.lockedUntil ?? 0,
     });
 
     return result.insertedId.toHexString();
   }
 
-  async pushJobs(
-    jobs: Omit<Job, 'id' | 'lockedUntil' | 'createdAt' | 'retryCount'>[]
-  ): Promise<string[]> {
+  async pushJobs(jobs: PushJobInput[]): Promise<string[]> {
     const jobsToInsert = jobs.map(job => ({
       _id: new ObjectId(),
-      lockedUntil: 0,
       createdAt: Date.now(),
       retryCount: 0,
       failed: false,
       ...job,
+      lockedUntil: job.lockedUntil ?? 0,
     }));
 
     const result = await this.getCollection().insertMany(jobsToInsert);

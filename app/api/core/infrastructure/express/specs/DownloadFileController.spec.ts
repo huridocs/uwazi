@@ -1,20 +1,20 @@
-import { TestUtils } from 'api/common.v2/utils/Test';
 import { Request, Response } from 'express';
 import { Writable } from 'stream';
-import { tenants } from 'api/tenants';
-import { OperationalError } from 'api/common.v2/errors/OperationalError';
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { FileContents } from 'api/core/domain/files/FileContents';
-import { fileDBO } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
-import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
-import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DownloadFileController } from '../DownloadFileController';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { tenants } from '#api/tenants/index.js';
+import { ClientAbortedRequestError } from '#api/common.v2/errors/ClientAbortedRequestError.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { FileContents } from '#api/core/domain/files/FileContents.js';
+import { FileDBO } from '#api/core/infrastructure/mongodb/files/schemas/FilesTypes.js';
+import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { DownloadFileController } from '../DownloadFileController.js';
 
 type CreateSutProps = {
   filename?: string;
-  typesAllowed?: fileDBO['type'][];
+  typesAllowed?: FileDBO['type'][];
   requestAborted?: boolean;
   fileContents?: FileContents;
   fileExists?: boolean;
@@ -24,7 +24,7 @@ type CreateSutProps = {
 
 const createFailingFileContents = (error: Error) =>
   new FileContents(async function* fileData() {
-    yield Buffer.from('partial data');
+    yield new Uint8Array(Buffer.from('partial data'));
     throw error;
   });
 
@@ -92,8 +92,9 @@ const createSut = (props?: CreateSutProps) => {
   jest.spyOn(TransactionManagerFactory, 'default').mockReturnValue({} as any);
   jest.spyOn(tenants, 'current').mockReturnValue({ featureFlags: {} } as any);
 
-  const MongoEntityPermissionChecker =
-    require('api/core/infrastructure/mongodb/entity/MongoEntityPermissionChecker').MongoEntityPermissionChecker;
+  const {
+    MongoEntityPermissionChecker,
+  } = require('#api/core/infrastructure/mongodb/entity/MongoEntityPermissionChecker');
   jest
     .spyOn(MongoEntityPermissionChecker.prototype, 'checkReadPermission')
     .mockImplementation(mockPermissionChecker.checkReadPermission);
@@ -129,7 +130,7 @@ describe('DownloadFileController', () => {
 
   describe('pipeline error handling', () => {
     describe('when stream fails with ERR_STREAM_PREMATURE_CLOSE', () => {
-      it('should throw OperationalError when request was aborted', async () => {
+      it('should throw ClientAbortedRequestError when request was aborted', async () => {
         const error: any = new Error('Premature close');
         error.code = 'ERR_STREAM_PREMATURE_CLOSE';
 
@@ -140,8 +141,7 @@ describe('DownloadFileController', () => {
 
         const promise = sut.handleAsync();
 
-        await expect(promise).rejects.toThrow(OperationalError);
-        await expect(promise).rejects.toThrow('Client aborted the request');
+        await expect(promise).rejects.toThrow(ClientAbortedRequestError);
       });
 
       it('should re-throw original error when request was NOT aborted', async () => {
@@ -156,7 +156,7 @@ describe('DownloadFileController', () => {
         const promise = sut.handleAsync();
 
         await expect(promise).rejects.toThrow('Premature close');
-        await expect(promise).rejects.not.toThrow(OperationalError);
+        await expect(promise).rejects.not.toThrow(ClientAbortedRequestError);
 
         try {
           await promise;
@@ -178,7 +178,7 @@ describe('DownloadFileController', () => {
         const promise = sut.handleAsync();
 
         await expect(promise).rejects.toThrow('File not found');
-        await expect(promise).rejects.not.toThrow(OperationalError);
+        await expect(promise).rejects.not.toThrow(ClientAbortedRequestError);
 
         try {
           await promise;
@@ -198,7 +198,7 @@ describe('DownloadFileController', () => {
         const promise = sut.handleAsync();
 
         await expect(promise).rejects.toThrow('Permission denied');
-        await expect(promise).rejects.not.toThrow(OperationalError);
+        await expect(promise).rejects.not.toThrow(ClientAbortedRequestError);
 
         try {
           await promise;
@@ -217,7 +217,7 @@ describe('DownloadFileController', () => {
         const promise = sut.handleAsync();
 
         await expect(promise).rejects.toThrow('Generic stream error');
-        await expect(promise).rejects.not.toThrow(OperationalError);
+        await expect(promise).rejects.not.toThrow(ClientAbortedRequestError);
       });
     });
 
@@ -234,7 +234,7 @@ describe('DownloadFileController', () => {
         const promise = sut.handleAsync();
 
         await expect(promise).rejects.toThrow('Connection reset');
-        await expect(promise).rejects.not.toThrow(OperationalError);
+        await expect(promise).rejects.not.toThrow(ClientAbortedRequestError);
 
         try {
           await promise;

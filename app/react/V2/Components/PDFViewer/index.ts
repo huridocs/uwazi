@@ -1,6 +1,6 @@
 import loadable from '@loadable/component';
 
-import * as selectionHandlers from './functions/handleTextSelection';
+import * as selectionHandlers from './functions/handleTextSelection.js';
 
 const PDF = loadable(
   async () => (await import(/* webpackChunkName: "LazyLoadPDF" */ './PDF')).PDF,
@@ -9,7 +9,7 @@ const PDF = loadable(
   }
 );
 
-export type { Snippet } from './events';
-export { pdfEventBus } from './events';
+export type { Snippet, PDFControls } from './PDF.js';
 export { PDF, selectionHandlers };
-export { calculateScaling } from './functions/calculateScaling';
+export { calculateScaling } from './functions/calculateScaling.js';
+export { relationshipToHighlight } from './functions/RelationshipToHighlight.js';

@@ -1,74 +1,41 @@
-import ID from 'shared/uniqueID';
-import { PageType } from 'shared/types/pageType';
-import { validatePage } from 'shared/types/pageSchema';
-import date from 'api/utils/date.js';
-import templates from 'api/core/v1_layer/templates';
-import { createError } from 'api/utils';
-import { UwaziFilterQuery } from 'api/odm';
-import { User } from 'api/users/usersModel';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import templates from '#api/core/v1_layer/templates/index.js';
+import { createError } from '#api/utils/index.js';
+import { PagesDataSourceFactory } from '#api/pages.v2/infrastructure/factories/PagesDataSourceFactory.js';
+import pagesService from './pagesService.js';
+import { toLegacyHttpError } from './legacyHttpErrors.js';
 
-import model from './pagesModel';
-import settings from '../settings';
-
-const assignUserAndDate = (page: PageType, user?: User) => {
-  if (!user) {
-    throw new Error('missing user');
+const withLegacyErrors = async <T>(promise: Promise<T>): Promise<T> => {
+  try {
+    return await promise;
+  } catch (error) {
+    throw toLegacyHttpError(error);
   }
-  return {
-    ...page,
-    user: user._id,
-    creationDate: date.currentUTC(),
-  };
-};
-
-const entityViewSyncing = async (page: PageType) => {
-  const pageInAllLaguangues = await model.get({ sharedId: page.sharedId }, '_id entityView');
-  const updatedPages = pageInAllLaguangues.map(_id => ({
-    ..._id,
-    entityView: page.entityView || false,
-  }));
-  await model.saveMultiple(updatedPages);
 };
 
 export default {
-  // eslint-disable-next-line max-statements
-  async save(_page: PageType, user?: User, language?: string) {
-    await validatePage(_page);
-    let page = { ..._page };
-
-    if (!page.sharedId) {
-      page = assignUserAndDate(page, user);
-    }
-
-    if (page.sharedId) {
-      await entityViewSyncing(page);
-      return model.save(page);
-    }
-
-    const { languages = [] } = await settings.get();
-    const sharedId = ID();
-    const pages = languages.map(lang => ({
-      ...page,
-      language: lang.key,
-      sharedId,
-    }));
-    await model.saveMultiple(pages);
-    return this.getById(sharedId, language);
+  async save(
+    page: Parameters<typeof pagesService.save>[0],
+    user?: Parameters<typeof pagesService.save>[1],
+    language?: Parameters<typeof pagesService.save>[2]
+  ) {
+    return withLegacyErrors(pagesService.save(page, user, language));
   },
 
-  async get(query: UwaziFilterQuery<PageType>, select?: string) {
-    return model.get(query, select);
+  async get(query: Parameters<typeof pagesService.get>[0]) {
+    return withLegacyErrors(pagesService.get(query));
   },
 
-  async getById(sharedId: string, language?: string, select?: string) {
-    const results = await this.get({ sharedId, language }, select);
-    return results[0] ? results[0] : Promise.reject(createError('Page not found', 404));
+  async getById(
+    lookup: Parameters<typeof pagesService.getById>[0],
+    language?: string,
+    mode?: 'editor'
+  ) {
+    return withLegacyErrors(pagesService.getById(lookup, language, mode));
   },
 
   async delete(sharedId: string) {
-    const templatesUsingPage = await templates.get({
-      entityViewPage: sharedId,
-    });
+    const templatesUsingPage = await templates.getByEntityViewPage(sharedId);
     if (templatesUsingPage.length > 0) {
       const templatesTitles = templatesUsingPage.map(template => template.name);
       return Promise.reject(
@@ -80,38 +47,25 @@ export default {
         )
       );
     }
-    return model.delete({ sharedId });
+    return withLegacyErrors(pagesService.delete(sharedId));
   },
 
   async addLanguage(language: string) {
-    const [lanuageTranslationAlreadyExists] = await this.get({ language });
-    if (lanuageTranslationAlreadyExists) {
-      return Promise.resolve();
-    }
-
+    const settings = (await import('../settings/index.js')).default;
     const { languages } = await settings.get();
-
-    const defaultLanguage = languages?.find(l => l.default)?.key;
-
-    const duplicate = async () => {
-      const pages = await this.get({ language: defaultLanguage });
-      const savePages = pages.map(async _page => {
-        const page: PageType = { ..._page, language };
-        delete page._id;
-        delete page.__v;
-        return this.save(page);
-      });
-
-      return Promise.all(savePages);
-    };
-
-    return duplicate();
+    const defaultLanguage = languages?.find(l => l.default)?.key ?? 'en';
+    return withLegacyErrors(
+      pagesService.addLanguage(language as LanguageISO6391, defaultLanguage as LanguageISO6391)
+    );
   },
 
-  // TEST!!!
-  async removeLanguage(language: string) {
-    return model.delete({ language });
+  async removeLanguage(language: LanguageISO6391) {
+    return withLegacyErrors(pagesService.removeLanguage(language));
   },
 
-  count: model.count.bind(model),
+  count: async () => {
+    const pagesDS = PagesDataSourceFactory.default();
+    const all = await pagesDS.getAll();
+    return all.length;
+  },
 };

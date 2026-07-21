@@ -1,8 +1,8 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-len */
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import db from 'api/utils/testing_db';
-import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import db from '#api/utils/testing_db.js';
+import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 
 const fixtureFactory = getFixturesFactory();
 
@@ -76,6 +76,7 @@ export default {
       _id: db.id(),
       entity: 'shared',
       filename: `${uploadId1}.jpg`,
+      originalname: `${uploadId1}.jpg`,
       language: 'en',
       type: 'thumbnail',
       mimetype: 'image/jpeg',
@@ -84,6 +85,7 @@ export default {
       _id: db.id(),
       entity: 'shared',
       filename: `${uploadId2}.jpg`,
+      originalname: `${uploadId2}.jpg`,
       language: 'es',
       type: 'thumbnail',
       mimetype: 'image/jpeg',
@@ -92,6 +94,7 @@ export default {
       _id: uploadId1,
       entity: 'shared',
       filename: '8202c463d6158af8065022d9b5014cc1.pdf',
+      originalname: '8202c463d6158af8065022d9b5014cc1.pdf',
       language: 'en',
       type: 'document',
       mimetype: 'application/pdf',
@@ -105,6 +108,7 @@ export default {
       _id: uploadId2,
       entity: 'shared',
       filename: '8202c463d6158af8065022d9b5014ccb.pdf',
+      originalname: '8202c463d6158af8065022d9b5014ccb.pdf',
       language: 'es',
       type: 'document',
       mimetype: 'application/pdf',
@@ -113,6 +117,7 @@ export default {
     {
       entity: 'shared',
       filename: '8202c463d6158af8065022d9b5014ccc.pdf',
+      originalname: '8202c463d6158af8065022d9b5014ccc.pdf',
       language: 'pt',
       type: 'attachment',
       mimetype: 'application/pdf',
@@ -121,6 +126,7 @@ export default {
       entity: 'shared1',
       language: 'en',
       filename: 'nonexistent.pdf',
+      originalname: 'nonexistent.pdf',
       type: 'document',
       mimetype: 'application/pdf',
       fullText: { 1: 'text' },
@@ -128,6 +134,7 @@ export default {
     {
       entity: 'shared1',
       filename: 'nonexistent.pdf',
+      originalname: 'nonexistent.pdf',
       type: 'document',
       language: 'es',
       mimetype: 'application/pdf',
@@ -135,6 +142,7 @@ export default {
     {
       entity: 'shared1',
       filename: 'nonexistent.pdf',
+      originalname: 'nonexistent.pdf',
       type: 'document',
       mimetype: 'application/pdf',
       language: 'pt',
@@ -142,6 +150,7 @@ export default {
     {
       entity: 'shared10',
       filename: '123.pdf',
+      originalname: '123.pdf',
       type: 'document',
       mimetype: 'application/pdf',
       language: 'pt',
@@ -149,6 +158,7 @@ export default {
     {
       entity: 'multiselect',
       filename: '123.pdf',
+      originalname: '123.pdf',
       type: 'document',
       mimetype: 'application/pdf',
       language: 'en',
@@ -156,6 +166,7 @@ export default {
     {
       entity: 'multiselect',
       filename: '123.pdf',
+      originalname: '123.pdf',
       language: 'es',
       fullText: { 1: 'text' },
       mimetype: 'application/pdf',
@@ -175,6 +186,7 @@ export default {
       _id: entityGetTestFileId2,
       entity: 'entityGetTestEntityIdA',
       filename: 'file2.name',
+      originalname: 'file2.name',
       language: 'en',
       type: 'document',
       mimetype: 'application/pdf',
@@ -183,6 +195,7 @@ export default {
       _id: entityGetTestFileId3,
       entity: 'entityGetTestEntityIdC',
       filename: 'file3.name',
+      originalname: 'file3.name',
       language: 'en',
       mimetype: 'application/pdf',
       type: 'document',
@@ -275,6 +288,7 @@ export default {
       template: templateId,
       title: 'Unpublished entity ES',
       language: 'es',
+      published: false,
       metadata: {
         enemies: [
           { icon: null, label: 'translated1', type: 'entity', value: 'shared2' },
@@ -576,7 +590,7 @@ export default {
     {
       _id: db.id(),
       languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }],
-      featureFlags: { v2UpdateEntity: true },
+      featureFlags: {},
     },
   ],
   templates: [

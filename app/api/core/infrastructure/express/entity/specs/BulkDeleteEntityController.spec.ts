@@ -1,11 +1,11 @@
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { Request, Response } from 'express';
-import { tenants } from 'api/tenants';
-import { BulkDeleteEntityUseCaseFactory } from 'api/core/infrastructure/factories/BulkDeleteEntityUseCaseFactory';
+import type { Request, Response } from 'express';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { tenants } from '#api/tenants/index.js';
+import { BulkDeleteEntityUseCaseFactory } from '#api/core/infrastructure/factories/BulkDeleteEntityUseCaseFactory.js';
 import {
   BulkDeleteEntityController,
   BulkDeleteEntityRequestDto,
-} from '../BulkDeleteEntityController';
+} from '../BulkDeleteEntityController.js';
 
 type CreateSutProps = {
   requestDto?: BulkDeleteEntityRequestDto;
@@ -23,9 +23,10 @@ const createSut = (props?: CreateSutProps) => {
 };
 
 describe('BulkDeleteEntityController', () => {
-  const useCaseExecuteSpy: jest.SpyInstance = jest.fn().mockResolvedValue(undefined);
+  const useCaseExecuteSpy: jest.SpyInstance = jest.fn();
 
   beforeEach(() => {
+    useCaseExecuteSpy.mockResolvedValue({ deletedSharedIds: [] });
     jest.spyOn(tenants, 'current').mockReturnValue({} as any);
 
     jest.spyOn(BulkDeleteEntityUseCaseFactory, 'default').mockReturnValue({

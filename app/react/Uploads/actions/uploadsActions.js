@@ -1,40 +1,20 @@
 import superagent from 'superagent';
 
-import { actions as basicActions } from 'app/BasicReducer';
-import { notificationActions } from 'app/Notifications';
-import { selectSingleDocument } from 'app/Library/actions/libraryActions';
-import * as metadata from 'app/Metadata';
-import * as types from 'app/Uploads/actions/actionTypes';
-import * as libraryTypes from 'app/Library/actions/actionTypes';
-import { RequestParams } from 'app/utils/RequestParams';
-import { t } from 'app/I18N';
+import { actions as basicActions } from '#app/BasicReducer/index.js';
+import { notificationActions } from '#app/Notifications/index.js';
+import { selectSingleDocument } from '#app/Library/actions/libraryActions.js';
+import * as metadata from '#app/Metadata/index.js';
+import * as types from '#app/Uploads/actions/actionTypes.js';
+import * as libraryTypes from '#app/Library/actions/actionTypes.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { t } from '#app/I18N/index.js';
+import { UploadService } from '#V2/api/files/UploadService.js';
 import { APIURL } from '../../config.js';
-import EntitiesApi from '../../Entities/EntitiesAPI';
+import { EntitiesAPI as EntitiesApi } from '../../Entities/EntitiesAPI.js';
 
 export function enterUploads() {
   return {
     type: types.ENTER_UPLOADS_SECTION,
-  };
-}
-
-export function showImportPanel() {
-  return dispatch => {
-    dispatch(basicActions.set('showImportPanel', true));
-  };
-}
-
-export function closeImportPanel() {
-  return dispatch => {
-    dispatch(basicActions.set('showImportPanel', false));
-  };
-}
-
-export function closeImportProgress() {
-  return dispatch => {
-    dispatch(basicActions.set('importProgress', 0));
-    dispatch(basicActions.set('importStart', false));
-    dispatch(basicActions.set('importEnd', false));
-    dispatch(basicActions.set('importError', {}));
   };
 }
 
@@ -61,26 +41,6 @@ export function createDocument(newDoc) {
       dispatch({ type: types.NEW_UPLOAD_DOCUMENT, doc: doc.sharedId });
       dispatch({ type: types.ELEMENT_CREATED, doc });
       return doc;
-    });
-}
-
-export function importData([file], template) {
-  return dispatch =>
-    new Promise(resolve => {
-      superagent
-        .post(`${APIURL}import`)
-        .set('Accept', 'application/json')
-        .set('X-Requested-With', 'XMLHttpRequest')
-        .field('template', template)
-        .attach('file', file, file.name)
-        .on('progress', data => {
-          dispatch(basicActions.set('importUploadProgress', Math.floor(data.percent)));
-        })
-        .on('response', response => {
-          dispatch(basicActions.set('importUploadProgress', 0));
-          resolve(response);
-        })
-        .end();
     });
 }
 
@@ -169,6 +129,38 @@ export function updateMainDocument(docId, file) {
 
 export function uploadDocument(docId, file) {
   return async dispatch => upload(docId, file)(dispatch);
+}
+
+export function createFromPDF(files, onProgress, onFileComplete) {
+  return async dispatch => {
+    const uploadService = new UploadService('createFromPDF');
+
+    uploadService.onProgress((filename, progress) => {
+      onProgress?.(progress, filename);
+    });
+
+    uploadService.onUploadComplete(() => {
+      onFileComplete?.();
+    });
+
+    const responses = await uploadService.upload(files);
+
+    responses.forEach(response => {
+      if (response?.data) {
+        dispatch({
+          type: libraryTypes.ELEMENT_CREATED,
+          doc: response.data,
+          __reducerKey: 'library',
+        });
+      }
+    });
+
+    return responses.length;
+  };
+}
+
+export function uploadAndCreate(files, onProgress, onFileComplete) {
+  return async dispatch => createFromPDF(files, onProgress, onFileComplete)(dispatch);
 }
 
 export function documentProcessed(sharedId, __reducerKey) {

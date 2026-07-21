@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
-import { Sidepanel, Button } from 'V2/Components/UI';
-import { SidePanelProps } from 'app/V2/Components/UI/Sidepanel';
-import { GeneratedContent } from './helpers/GeneratedContent';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
+import { action } from 'storybook/actions';
+import { Sidepanel, Button } from '#V2/Components/UI/index.js';
+import { SidePanelProps } from '#V2/Components/UI/Sidepanel.js';
+import { GeneratedContent } from './helpers/GeneratedContent.js';
 
 const meta: Meta<typeof Sidepanel> = {
   title: 'Components/Sidepanel',
   component: Sidepanel,
 };
+
+export default meta;
 
 const SidePanelContainer = (args: SidePanelProps) => {
   const [showSidepanel, setShowSidepanel] = useState(false);
@@ -100,5 +102,3 @@ const Basic: Story = {
 };
 
 export { Basic };
-
-export default meta;

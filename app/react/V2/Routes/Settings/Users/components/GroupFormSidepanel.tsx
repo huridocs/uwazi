@@ -1,12 +1,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { useFetcher } from 'react-router';
-import { t, Translate } from 'app/I18N';
-import { Button, Card, Sidepanel } from 'V2/Components/UI';
-import { InputField, MultiSelect } from 'V2/Components/Forms';
-import { UserGroupSchema } from 'shared/types/userGroupType';
-import { User, Group } from '../types';
+import { useRevalidator } from 'react-router';
+import { t, Translate } from '#app/I18N/index.js';
+import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
+import { InputField, MultiSelect } from '#V2/Components/Forms/index.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { useServices, type UserGroupInput } from '#V2/services/index.js';
+import { User, Group } from '../types.js';
 
 interface GroupFormSidepanelProps {
   showSidepanel: boolean;
@@ -47,9 +48,17 @@ const GroupFormSidepanel = ({
   groups,
   users,
 }: GroupFormSidepanelProps) => {
-  const fetcher = useFetcher();
+  const { userGroups: userGroupsService } = useServices();
+  const revalidator = useRevalidator();
+  const { notify } = useRequestStatus();
 
-  const defaultValues = selectedGroup || ({ name: '', members: [] } as UserGroupSchema);
+  const defaultValues =
+    selectedGroup ||
+    ({
+      name: '',
+      members: [],
+      rowId: 'NEW',
+    } as Group);
 
   const {
     register,
@@ -66,21 +75,33 @@ const GroupFormSidepanel = ({
     setShowSidepanel(false);
   };
 
-  const formSubmit = async (data: UserGroupSchema) => {
-    const formData = new FormData();
-    const formattedData = {
-      ...data,
-      members: data.members.map(member => ({ refId: member.refId })),
+  const formSubmit = async (data: Group) => {
+    const formattedData: UserGroupInput = {
+      _id: data._id,
+      name: data.name,
+      members: data.members.map(member => ({
+        refId: member.refId,
+        username: member.username ?? '',
+      })),
     };
 
-    if (data._id) {
-      formData.set('intent', 'edit-group');
-    } else {
-      formData.set('intent', 'new-group');
+    const [, error] = await userGroupsService.upsert(formattedData);
+
+    if (error) {
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        error.detail ?? error.message
+      );
+      return;
     }
 
-    formData.set('data', JSON.stringify(formattedData));
-    await fetcher.submit(formData, { method: 'post' });
+    notify(
+      'success',
+      data._id ? t('System', 'Group updated', null, false) : t('System', 'Group saved', null, false)
+    );
+    await revalidator.revalidate();
     closeSidepanel();
   };
 
@@ -93,7 +114,7 @@ const GroupFormSidepanel = ({
     >
       <form onSubmit={handleSubmit(formSubmit)} className="flex flex-col h-full">
         <Sidepanel.Body>
-          <div className="flex flex-col grow gap-4">
+          <div data-testid="group-sidepanel-snapshot" className="flex flex-col gap-4">
             <Card title={<Translate>Group Options</Translate>}>
               <div>
                 <InputField
@@ -112,17 +133,18 @@ const GroupFormSidepanel = ({
               </div>
             </Card>
 
-            <div className="mb-5 rounded-md border border-gray-50 shadow-md">
+            <div className="mb-5 rounded-md border shadow-md border-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] bg-(--color-theme-surface-raised)">
               <MultiSelect
                 label={
-                  <Translate className="block w-full text-base font-semibold bg-gray-50 text-primary-700">
-                    Members
-                  </Translate>
+                  <Translate className="block w-full text-base font-semibold">Members</Translate>
                 }
                 onChange={selected =>
                   setValue(
                     'members',
-                    selected.map(s => ({ refId: s })),
+                    selected.map(s => {
+                      const user = users?.find(u => u._id === s);
+                      return { refId: s, username: user?.username ?? '' };
+                    }),
                     { shouldDirty: true }
                   )
                 }
@@ -137,7 +159,7 @@ const GroupFormSidepanel = ({
         </Sidepanel.Body>
         <Sidepanel.Footer className="px-4 py-3">
           <div className="flex gap-2">
-            <Button className="grow" type="button" styling="outline" onClick={closeSidepanel}>
+            <Button className="grow" type="button" variant="secondary" onClick={closeSidepanel}>
               <Translate>Cancel</Translate>
             </Button>
             <Button className="grow" type="submit">

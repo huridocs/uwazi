@@ -3,7 +3,6 @@
  */
 /* eslint-disable max-statements */
 import React, { act } from 'react';
-import { IncomingHttpHeaders } from 'http';
 import {
   fireEvent,
   RenderResult,
@@ -14,34 +13,37 @@ import {
   cleanup,
 } from '@testing-library/react/pure';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import { has } from 'lodash';
-import { templatesAtom } from 'V2/atoms';
-import { TestAtomStoreProvider } from 'V2/testing';
-import { ThesauriList, thesauriLoader } from '../ThesauriList';
-import { EditThesaurus } from '../EditThesaurus';
-import { editThesaurusLoader } from '../helpers';
-import { savedThesaurus, thesauri } from './fixtures';
+import { templatesAtom } from '#V2/atoms/index.js';
+import { ServicesProvider } from '#V2/services/ServicesProvider.js';
+import { TestAtomStoreProvider } from '#V2/testing/index.js';
+import { createTestServices } from '#V2/testing/createTestServices.js';
+import { createThesauriLoader } from '../createThesauriLoader.js';
+import { createEditThesaurusLoader } from '../createEditThesaurusLoader.js';
+import { ThesauriList } from '../ThesauriList.js';
+import { EditThesaurus } from '../EditThesaurus.js';
+import { savedThesaurus, thesauri } from './fixtures.js';
 
-const deleteFn = jest.fn();
-const saveFn = jest.fn();
-const mockUseLoaderData = jest
-  .fn()
-  .mockImplementation((params, _headers) => (!has(params, '_id') ? thesauri : [savedThesaurus]));
-const mockDeleteThesauri = deleteFn.mockImplementation((_params, _headers) => ({
-  ok: true,
-}));
-const mockSaveThesauri = saveFn.mockImplementation(_params => savedThesaurus);
+const deleteMock = jest.fn().mockResolvedValue([undefined, undefined]);
+const upsertMock = jest.fn().mockImplementation(async () => [savedThesaurus, undefined]);
+const getAllMock = jest.fn().mockResolvedValue([thesauri, undefined]);
+const getByIdMock = jest.fn().mockResolvedValue([savedThesaurus, undefined]);
 
-jest.mock('app/V2/api/thesauri', () => ({
-  ...jest.requireActual('app/V2/api/thesauri'),
-  get: (params: { _id?: string }, headers?: IncomingHttpHeaders) =>
-    mockUseLoaderData(params, headers),
-  deleteThesauri: (params: { _id: string }) => mockDeleteThesauri(params),
-  save: (thesaurus: any) => mockSaveThesauri(thesaurus),
-}));
+const testServices = createTestServices({
+  thesauri: {
+    getAll: getAllMock,
+    getById: getByIdMock,
+    upsert: upsertMock,
+    delete: deleteMock,
+  },
+});
 
 describe('Settings Thesauri', () => {
   beforeEach(() => {
+    jest.clearAllMocks();
+    getAllMock.mockResolvedValue([thesauri, undefined]);
+    getByIdMock.mockResolvedValue([savedThesaurus, undefined]);
+    upsertMock.mockImplementation(async () => [savedThesaurus, undefined]);
+    deleteMock.mockResolvedValue([undefined, undefined]);
     jest.spyOn(console, 'error').mockImplementation(jest.fn());
     jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
@@ -76,18 +78,18 @@ describe('Settings Thesauri', () => {
           index: true,
           path: '/',
           element: <ThesauriList />,
-          loader: thesauriLoader({}),
+          loader: createThesauriLoader(testServices)({}),
         },
         { path: '/settings/thesauri/new', element: <EditThesaurus /> },
         {
           path: '/settings/thesauri/edit/newThesaurus1',
           element: <EditThesaurus />,
-          loader: editThesaurusLoader({}),
+          loader: createEditThesaurusLoader(testServices)({}),
         },
         {
           path: '/edit/newThesaurus1',
           element: <EditThesaurus />,
-          loader: editThesaurusLoader({}),
+          loader: createEditThesaurusLoader(testServices)({}),
         },
       ],
       {
@@ -98,7 +100,9 @@ describe('Settings Thesauri', () => {
     const renderComponent = () =>
       render(
         <TestAtomStoreProvider initialValues={[[templatesAtom, templateAtomValue]]}>
-          <RouterProvider router={router} />
+          <ServicesProvider value={testServices}>
+            <RouterProvider router={router} />
+          </ServicesProvider>
         </TestAtomStoreProvider>
       );
 
@@ -125,7 +129,7 @@ describe('Settings Thesauri', () => {
           within(screen.getByTestId('settings-content-footer')).getByText('Save').parentNode!
         );
       });
-      expect(saveFn).toHaveBeenLastCalledWith(expectedParams);
+      expect(upsertMock).toHaveBeenLastCalledWith(expectedParams);
     };
 
     describe('render existing thesauri', () => {
@@ -171,8 +175,9 @@ describe('Settings Thesauri', () => {
           fireEvent.click(screen.getByTestId('accept-button'));
         });
         await act(async () => {
-          expect(deleteFn).toHaveBeenCalledTimes(2);
-          expect(deleteFn).toHaveBeenLastCalledWith({ _id: 'thesaurus3' });
+          expect(deleteMock).toHaveBeenCalledWith(
+            expect.arrayContaining(['thesaurus1', 'thesaurus3'])
+          );
         });
         await clickOnAction(0, 0, 'checkbox');
       });

@@ -5,11 +5,12 @@
   "compilerOptions": {
     "useUnknownInCatchVariables": false,
     "allowJs": true,
-    "noEmit": true,
+    "noEmit": false,
+    "outDir": "./dist",
     "module": "ES2022",
     "target": "es2022",
     "jsx": "react",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "isolatedModules": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
@@ -17,18 +18,28 @@
     "resolveJsonModule": true,
     "strict": true,
     "baseUrl": ".",
+    "rootDir": ".",
     "paths": {
-      // must match babel.config.json
-      "api/*": ["./app/api/*"],
-      "app/*": ["./app/react/*"],
-      "shared/*": ["./app/shared/*"],
-      "UI": ["./app/react/UI"],
-      "UI/*": ["./app/react/UI/*"],
-      "V2/*": ["./app/react/V2/*"]
+      "#api/*": ["./app/api/*"],
+      "#app/*": ["./app/react/*"],
+      "#shared/*": ["./app/shared/*"],
+      "#UI": ["./app/react/UI"],
+      "#UI/*": ["./app/react/UI/*"],
+      "#V2/*": ["./app/react/V2/*"],
+      "#api/utils/*": ["./app/api/utils/*"],
+      "#app/utils/*": ["./app/react/utils/*"]
     },
     //TODO: solve conflict between @types from react dependencies
     "skipLibCheck": true
   },
-  "include": ["app", "external_modules", "database", "e2e", "scripts/scripts.v2/*"],
+  "include": [
+    "app",
+    "external_modules",
+    "database",
+    "e2e",
+    "playwright",
+    "scripts/scripts.v2/*",
+    "scripts/elasticSearch/*"
+  ],
   "exclude": ["fixtures", "dist", "prod", "**/*.cy.tsx"]
 }

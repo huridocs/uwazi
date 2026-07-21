@@ -3,48 +3,74 @@ import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
 import Immutable from 'immutable';
 
-import { DocumentSidePanel } from 'app/Documents';
-import { actions as actionCreators } from 'app/BasicReducer';
-import { actions } from 'app/Metadata';
-import { deleteDocument, searchSnippets } from 'app/Library/actions/libraryActions';
-import { deleteEntity } from 'app/Entities/actions/actions';
-import { wrapDispatch } from 'app/Multireducer';
-import { entityDefaultDocument } from 'shared/entityDefaultDocument';
-import modals from 'app/Modals';
+import { DocumentSidePanel } from '#app/Documents/components/DocumentSidePanel.js';
+import { actions as actionCreators } from '#app/BasicReducer/index.js';
+import { actions } from '#app/Metadata/index.js';
+import { selectSnippet } from '#app/Viewer/actions/uiActions.js';
+import { deleteDocument, searchSnippets } from '#app/Library/actions/libraryActions.js';
+import { deleteEntity } from '#app/Entities/actions/actions.js';
+import { wrapDispatch } from '#app/Multireducer/index.js';
+import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
+import modals from '#app/Modals/index.js';
 
-import * as connectionsActions from 'app/ConnectionsList/actions/actions';
+import * as connectionsActions from '#app/ConnectionsList/actions/actions.js';
 import {
   getDocumentReferences,
   unselectAllDocuments,
   saveDocument,
-} from '../actions/libraryActions';
-import EntityForm from '../containers/EntityForm';
+} from '../actions/libraryActions.js';
+import { EntityForm } from '../containers/EntityForm.js';
 
 const getTemplates = state => state.templates;
 
 const mapStateToProps = (state, props) => {
-  const library = state[props.storeKey];
+  const library =
+    state[props.storeKey] ||
+    Immutable.fromJS({ ui: { selectedDocuments: [] }, sidepanel: {}, search: {} });
   const doc = library.ui.get('selectedDocuments').first() || Immutable.fromJS({ documents: [] });
-  const defaultLanguage = state.settings.collection.get('languages').find(l => l.get('default'));
+  const defaultLang = state.settings?.collection?.get('languages')?.find(l => l.get('default'));
+  const defaultLanguage = defaultLang ? defaultLang.get('key') : '';
   const file = entityDefaultDocument(
     doc.get('documents') ? doc.get('documents').toJS() : [{}],
     doc.get('language'),
-    defaultLanguage
+    defaultLang
   );
+  const selectedDocument =
+    library.ui.get('selectedDocuments').size === 1
+      ? library.ui.get('selectedDocuments').get(0)
+      : null;
+  const storeState = state[props.storeKey] || {};
+  const sidepanel = storeState.sidepanel || {};
+  const metadataForm = sidepanel.metadataForm || { $form: { pristine: true } };
 
   return {
     open: library.ui.get('selectedDocuments').size === 1,
     doc,
     file,
-    references: library.sidepanel.references,
-    tab: library.sidepanel.tab,
-    docBeingEdited: !!Object.keys(library.sidepanel.metadata).length,
-    searchTerm: library.search.searchTerm,
-    formDirty: !library.sidepanel.metadataForm.$form.pristine,
-    templates: getTemplates(state),
+    references: library.sidepanel?.references,
+    tab: library.sidepanel?.tab,
+    docBeingEdited: !!Object.keys(sidepanel.metadata || {}).length,
+    searchTerm: library.search?.searchTerm,
+    formDirty: !metadataForm.$form?.pristine,
+    templates: getTemplates(state) || Immutable.List(),
     formPath: `${props.storeKey}.sidepanel.metadata`,
+    formData: sidepanel.metadata,
+    formState: metadataForm,
     readOnly: true,
     EntityForm,
+    connectionsGroups: state.relationships?.list?.connectionsGroups || Immutable.List(),
+    excludeConnectionsTab: Boolean(state.relationships?.list?.connectionsGroups?.length),
+    currentSidepanelView: state.library?.sidepanel?.view,
+    selectedDocument,
+    defaultLanguage,
+    newRelationshipsEnabled: !!state.settings?.collection?.get('features')?.get('newRelationships'),
+    snippets:
+      (storeState.sidepanel && typeof storeState.sidepanel.get === 'function'
+        ? storeState.sidepanel.get('snippets')
+        : storeState.sidepanel?.snippets) ||
+      Immutable.fromJS({ count: 0, metadata: [], fullText: [] }),
+    searchParams: storeState.search || {},
+    selectedSnippet: state.documentViewer?.uiState?.get?.('snippet') || Immutable.Map(),
   };
 };
 
@@ -52,6 +78,8 @@ function mapDispatchToProps(dispatch, props) {
   return bindActionCreators(
     {
       loadInReduxForm: actions.loadInReduxForm,
+      clearMetadataSelections: actions.clearMetadataSelections,
+      selectSnippet,
       getDocumentReferences,
       connectionsChanged: connectionsActions.connectionsChanged,
       closePanel: unselectAllDocuments,
@@ -70,4 +98,5 @@ function mapDispatchToProps(dispatch, props) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(DocumentSidePanel);
+const ViewMetadataPanelConnected = connect(mapStateToProps, mapDispatchToProps)(DocumentSidePanel);
+export { ViewMetadataPanelConnected as ViewMetadataPanel };

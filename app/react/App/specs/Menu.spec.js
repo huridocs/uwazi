@@ -1,7 +1,8 @@
 import Immutable from 'immutable';
-import { I18NLink } from 'app/I18N';
-import { renderConnected } from 'app/utils/test/renderConnected';
-import { Menu } from '../Menu';
+import { I18NLink } from '#app/I18N/index.js';
+import { renderConnected } from '#app/utils/test/renderConnected.js';
+import { RequestStatus } from '#V2/Components/UI/Notifications/RequestStatus.js';
+import { Menu } from '../Menu.js';
 
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
@@ -75,6 +76,38 @@ describe('Menu', () => {
     it('returns the expected HTML', () => {
       render();
       expect(component).toMatchSnapshot();
+    });
+
+    it('renders RequestStatus in the beacon slot on desktop', () => {
+      render();
+      expect(component.find(RequestStatus).length).toBe(1);
+    });
+
+    it('omits RequestStatus from the beacon slot on mobile', () => {
+      const storeState = {
+        user,
+        settings: {
+          collection: Immutable.fromJS({
+            links: Immutable.fromJS([]),
+            defaultLibraryView,
+            private: isPrivate,
+          }),
+        },
+        libraryFilters: Immutable.fromJS({ properties: [] }),
+        location: { query: { searchTerm: 'asd' } },
+        library: {
+          search: { sort: 'asc' },
+          filters: Immutable.fromJS({ properties: [] }),
+        },
+      };
+
+      const mobileMenu = renderConnected(
+        Menu,
+        { className: 'menuNav', toggleMobileMenu: () => {}, isMobile: true },
+        storeState
+      );
+
+      expect(mobileMenu.find(RequestStatus).length).toBe(0);
     });
   });
 

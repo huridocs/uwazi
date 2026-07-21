@@ -1,20 +1,20 @@
 import { ObjectId } from 'mongodb';
 
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { EntitiesService } from 'api/core/application/EntitiesService';
-import { PropertyAssignmentInput } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService';
-import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
-import { Logger } from 'api/core/libs/logger/contracts/Logger';
-import { UseCase } from 'api/core/libs/UseCase';
-import relationshipsDS from 'api/relationships';
-import { tenants } from 'api/tenants/tenantContext';
-import { EntitySchema } from 'shared/types/entityType';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { EntitiesService } from '#api/core/application/EntitiesService.js';
+import { PropertyAssignmentInput } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
+import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { UseCase } from '#api/core/libs/UseCase.js';
+import relationshipsDS from '#api/relationships/index.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
-import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
-import { Entity } from 'api/core/domain/entity/Entity';
-import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
-import { ParagraphOutput } from '../domain/PXExtractionService';
-import { PXExtractor } from '../domain/PXExtractor';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { Entity } from '#api/core/domain/entity/Entity.js';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
+import { ParagraphOutput } from '../domain/PXExtractionService.js';
+import { PXExtractor } from '../domain/PXExtractor.js';
 
 type PXCreateParagraphsBatchInput = {
   sourceEntity: Entity;
@@ -49,6 +49,7 @@ class PXCreateParagraphsBatch implements UseCase<PXCreateParagraphsBatchInput, O
     sourceEntity,
     user,
   }: PXCreateParagraphsBatchInput): Promise<Output> {
+    const targetLanguage = paragraphs[0].translations.find(t => t.isMainLanguage);
     const entities: any[] = [];
     const mainParagraphsData: Array<{ entity: any; mainParagraph: any }> = [];
 
@@ -86,7 +87,7 @@ class PXCreateParagraphsBatch implements UseCase<PXCreateParagraphsBatchInput, O
           []
         );
 
-        entity.setPropertyAssignments(processedAssignments, paragraphData.language, true);
+        entity.setPropertyAssignments(processedAssignments, paragraphData.language);
       });
 
       entities.push(entity);
@@ -94,9 +95,10 @@ class PXCreateParagraphsBatch implements UseCase<PXCreateParagraphsBatchInput, O
     });
 
     await this.dependencies.transactionManager.run(async () => {
-      await this.dependencies.entitiesService.bulkInsert(entities, {
+      await this.dependencies.entitiesService.insert(entities, {
         tenantName: tenants.current().name,
         actorId: user._id.toString(),
+        targetLanguage: targetLanguage!.language,
       });
     });
 

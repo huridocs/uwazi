@@ -1,7 +1,13 @@
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
 
 export const factory = getFixturesFactory();
+
+const thesaurus2WithBrazilOnly = {
+  _id: factory.id('thesaurus_2'),
+  name: 'thesaurus_2',
+  values: [{ id: factory.id('thesaurus_2_brazil').toString(), label: 'Brazil' }],
+};
 
 export const fixtures: DBFixture = {
   settings: [
@@ -294,5 +300,20 @@ export const fixtures: DBFixture = {
       hub: factory.id('hub_entity5_entity4'),
       template: factory.id('rel3'),
     },
+  ],
+};
+
+export const fixturesWithDeletedValue: DBFixture = {
+  ...fixtures,
+  dictionaries: [
+    {
+      _id: factory.id('countries'),
+      name: 'Countries',
+      values: [
+        { id: factory.id('countries_canada').toString(), label: 'Canada' },
+        { id: factory.id('countries_france').toString(), label: 'France' },
+      ],
+    },
+    thesaurus2WithBrazilOnly,
   ],
 };

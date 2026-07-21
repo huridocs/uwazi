@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
-import { PermissionSchema } from 'shared/types/permissionType';
-import { EntitySchema } from 'shared/types/entityType';
-import { userAtom } from 'V2/atoms';
-import { ClientUserSchema } from 'app/apiResponseTypes';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
+import { PermissionSchema } from '#shared/types/permissionType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { userAtom } from '#V2/atoms/index.js';
+import { ClientUserSchema } from '#app/apiResponseTypes.js';
 
 type PropTypes = {
   children: React.ReactNode;
@@ -50,4 +50,4 @@ const NeedAuthorization = ({ children, roles, orWriteAccessTo }: PropTypes) => {
   return authorized ? <>{children}</> : null;
 };
 
-export { NeedAuthorization };
+export { NeedAuthorization, checkRole, checkWritePermissions };

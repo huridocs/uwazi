@@ -1,19 +1,24 @@
 /* eslint-disable max-lines */
-import { saveEntity } from 'api/entities/entitySavingManager';
-import { attachmentsPath, fileExistsOnPath, files as filesAPI, uploadsPath } from 'api/files';
-import * as processDocumentApi from 'api/files/processDocument';
-import { search } from 'api/search';
-import db from 'api/utils/testing_db';
-import { advancedSort } from 'app/utils/advancedSort';
+import { saveEntity } from '#api/entities/entitySavingManager.js';
+import {
+  attachmentsPath,
+  fileExistsOnPath,
+  files as filesAPI,
+  uploadsPath,
+} from '#api/files/index.js';
+import * as processDocumentApi from '#api/files/processDocument.js';
+import { search } from '#api/search/index.js';
+import db from '#api/utils/testing_db.js';
+import { advancedSort } from '#app/utils/advancedSort.js';
 import * as os from 'os';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 // eslint-disable-next-line node/no-restricted-import
 import { writeFile } from 'fs/promises';
 import { ObjectId } from 'mongodb';
 import path from 'path';
-import { EntityWithFilesSchema } from 'shared/types/entityType';
-import entities from '../entities';
+import { EntityWithFilesSchema } from '#shared/types/entityType.js';
+import entities from '../entities.js';
 import {
   anotherTextFile,
   editorUser,
@@ -28,7 +33,7 @@ import {
   template1Id,
   template2Id,
   textFile,
-} from './entitySavingManagerFixtures';
+} from './entitySavingManagerFixtures.js';
 
 const validPdfString = `
 %PDF-1.0
@@ -37,6 +42,9 @@ trailer<</Root 1 0 R>>
 `;
 
 const tmpDir = (filename: string) => path.join(os.tmpdir(), filename);
+
+const saveEntityWithContext = async (entity: any, options: any) =>
+  testingEnvironment.runWithContext(async () => saveEntity(entity, options));
 
 describe('entitySavingManager', () => {
   const userInContextMock = new UserInContextMockFactory();
@@ -85,7 +93,7 @@ describe('entitySavingManager', () => {
       it('should create an entity without attachments', async () => {
         const mockedUser = userInContextMock.mockEditorUser();
         const entity = { title: 'newEntity', template: template1Id };
-        const { entity: savedEntity } = await saveEntity(entity, { ...reqData });
+        const { entity: savedEntity } = await saveEntityWithContext(entity, { ...reqData });
 
         expect(savedEntity.permissions).toEqual([
           { level: 'write', refId: mockedUser._id.toString(), type: 'user' },
@@ -99,7 +107,7 @@ describe('entitySavingManager', () => {
           attachments: [{ originalname: 'Google link', url: 'https://google.com' }],
         };
 
-        const { entity: savedEntity } = await saveEntity(entity, {
+        const { entity: savedEntity } = await saveEntityWithContext(entity, {
           ...reqData,
           files: [{ ...file, fieldname: 'attachments[0]' }],
         });
@@ -138,7 +146,7 @@ describe('entitySavingManager', () => {
           template: template1Id,
         };
 
-        const { entity: savedEntity } = await saveEntity(entity, {
+        const { entity: savedEntity } = await saveEntityWithContext(entity, {
           ...reqData,
           files: [{ ...file, fieldname: 'attachments[0]' }],
         });
@@ -176,7 +184,7 @@ describe('entitySavingManager', () => {
           attachments: [{ ...changedFile }, pdfFile],
         };
 
-        const { entity: savedEntity } = await saveEntity(entity, { ...reqData });
+        const { entity: savedEntity } = await saveEntityWithContext(entity, { ...reqData });
 
         expect(savedEntity.attachments).toMatchObject([
           {
@@ -203,7 +211,7 @@ describe('entitySavingManager', () => {
           attachments: [{ ...textFile }],
         };
 
-        const { entity: savedEntity } = await saveEntity(entity, { ...reqData });
+        const { entity: savedEntity } = await saveEntityWithContext(entity, { ...reqData });
 
         expect(savedEntity.attachments).toMatchObject([textFile]);
       });
@@ -223,12 +231,12 @@ describe('entitySavingManager', () => {
       });
 
       it('should continue saving if a file fails to save', async () => {
-        const { entity: savedEntity } = await saveEntity(entity, { ...reqData });
+        const { entity: savedEntity } = await saveEntityWithContext(entity, { ...reqData });
         expect(savedEntity.attachments).toEqual([textFile]);
       });
 
       it('should return an error', async () => {
-        const { errors } = await saveEntity(entity, { ...reqData });
+        const { errors } = await saveEntityWithContext(entity, { ...reqData });
         expect(errors[0]).toBe('Could not save file/s: malformed url');
       });
     });
@@ -247,7 +255,7 @@ describe('entitySavingManager', () => {
           ],
         };
 
-        await saveEntity(entity, { ...reqData });
+        await saveEntityWithContext(entity, { ...reqData });
 
         expect(search.indexEntities).toHaveBeenCalledTimes(2);
       });
@@ -305,7 +313,7 @@ describe('entitySavingManager', () => {
           },
         };
 
-        const { entity: savedEntity } = await saveEntity(entity, {
+        const { entity: savedEntity } = await saveEntityWithContext(entity, {
           ...reqData,
           files: [
             { ...newImageFile, fieldname: 'attachments[0]' },
@@ -348,7 +356,7 @@ describe('entitySavingManager', () => {
           attachments: [anotherTextFile],
         };
 
-        const { entity: savedEntity } = await saveEntity(entity, {
+        const { entity: savedEntity } = await saveEntityWithContext(entity, {
           ...reqData,
           files: [
             { ...newPdfFile, fieldname: 'attachments[0]' },
@@ -388,7 +396,7 @@ describe('entitySavingManager', () => {
           attachments: [anotherTextFile],
         };
 
-        const { entity: savedEntity } = await saveEntity(entity, {
+        const { entity: savedEntity } = await saveEntityWithContext(entity, {
           ...reqData,
           files: [{ ...newPdfFile, fieldname: 'attachments[1]' }],
         });
@@ -420,7 +428,7 @@ describe('entitySavingManager', () => {
           },
         };
 
-        const { entity: savedEntity } = await saveEntity(entity, {
+        const { entity: savedEntity } = await saveEntityWithContext(entity, {
           ...reqData,
           files: [{ ...newPdfFile, fieldname: 'attachments[1]' }],
         });
@@ -437,7 +445,7 @@ describe('entitySavingManager', () => {
       const emiter = jest.fn();
 
       it('should create an entity with main documents', async () => {
-        ({ entity: savedEntity } = await saveEntity(
+        ({ entity: savedEntity } = await saveEntityWithContext(
           { title: 'newEntity', template: template1Id },
           {
             ...reqData,
@@ -467,7 +475,7 @@ describe('entitySavingManager', () => {
             template: template1Id,
           };
 
-          ({ entity: savedEntity } = await saveEntity(entity, {
+          ({ entity: savedEntity } = await saveEntityWithContext(entity, {
             ...reqData,
             files: [{ ...newMainPdfDocument, fieldname: 'documents[0]' }],
             socketEmiter: emiter,
@@ -511,7 +519,7 @@ describe('entitySavingManager', () => {
             attachments: [entity3textFile],
           };
 
-          ({ entity: savedEntity } = await saveEntity(entity, {
+          ({ entity: savedEntity } = await saveEntityWithContext(entity, {
             ...reqData,
             socketEmiter: emiter,
           }));
@@ -534,7 +542,7 @@ describe('entitySavingManager', () => {
             documents: [{ ...changedFile }],
           };
 
-          ({ entity: savedEntity } = await saveEntity(entity, {
+          ({ entity: savedEntity } = await saveEntityWithContext(entity, {
             ...reqData,
             socketEmiter: emiter,
           }));
@@ -564,7 +572,7 @@ describe('entitySavingManager', () => {
             documents: [{ ...changedFile }],
           };
 
-          ({ entity: savedEntity } = await saveEntity(entity, {
+          ({ entity: savedEntity } = await saveEntityWithContext(entity, {
             ...reqData,
             socketEmiter: emiter,
             files: [{ ...newMainPdfDocument, fieldname: 'documents[0]' }],
@@ -588,7 +596,7 @@ describe('entitySavingManager', () => {
         it('should return an error if an existing main document cannot be saved', async () => {
           jest.spyOn(filesAPI, 'save').mockRejectedValueOnce({ error: { name: 'failed' } });
 
-          const { errors } = await saveEntity(
+          const { errors } = await saveEntityWithContext(
             {
               _id: entity3Id,
               sharedId: 'shared3',

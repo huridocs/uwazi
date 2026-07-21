@@ -1,10 +1,10 @@
-import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
+import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
-} from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
-import { emitToTenant } from 'api/socketio/setupSockets';
-import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
+} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
+import { emitToTenant } from '#api/socketio/setupSockets.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 
 type Params = UserAwareDispatchableParams & {
   entitiesIds: string[];
@@ -15,6 +15,7 @@ type Params = UserAwareDispatchableParams & {
   deletedProperties: string[];
   renamedProperties: { [oldName: string]: string };
   fullReindex: boolean;
+  resaveForFilterChange: boolean;
 };
 
 type JobDependencies = {
@@ -37,6 +38,7 @@ export class TemplatePostProcessEntitiesJob extends UserAwareDispatchable<Params
       renamedProperties: this.params.renamedProperties,
       templateId: this.params.templateId,
       fullReindex: this.params.fullReindex,
+      resaveForFilterChange: this.params.resaveForFilterChange,
       onAllEntitiesDenormalized: () =>
         emitToTenant(this.tenantName, 'templateProcessed', { templateId: this.params.templateId }),
       onProgress: (processing: { active: boolean; totalJobs: number; completedJobs: number }) =>

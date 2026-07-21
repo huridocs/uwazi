@@ -1,16 +1,16 @@
 import React, { useMemo, useState } from 'react';
 import { useLoaderData } from 'react-router';
-import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Translate } from 'app/I18N';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
+import { Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
-import { templatesAtom } from 'V2/atoms';
-import { Extractor } from 'V2/shared/ParagraphExtractionTypes';
-import { Button } from 'app/V2/Components/UI';
-import { PXTable } from './types';
-import { formatExtractors } from './utils/formatters';
-import { CreateDialog } from './components/extractors/CreateDialog';
-import { ExtractorsTable } from './components/extractors/Table';
-import { DeleteDialog } from './components/extractors/DeleteDialog';
+import { templatesAtom } from '#V2/atoms/index.js';
+import { Extractor } from '#V2/shared/ParagraphExtractionTypes.js';
+import { Button } from '#V2/Components/UI/index.js';
+import { PXTable } from './types.js';
+import { formatExtractors } from './utils/formatters.js';
+import { CreateDialog } from './components/extractors/CreateDialog/index.js';
+import { ExtractorsTable } from './components/extractors/Table.js';
+import { DeleteDialog } from './components/extractors/DeleteDialog/index.js';
 
 const ParagraphExtractorDashboard = () => {
   const { extractors = [] } = useLoaderData() as {
@@ -51,14 +51,14 @@ const ParagraphExtractorDashboard = () => {
         <SettingsContent.Footer className="flex gap-2" highlighted={selected?.length > 0}>
           {selected?.length ? (
             <div className="flex items-center gap-2 ">
-              <Button color="error" type="button" onClick={() => setdeletedialogIsopen(true)}>
+              <Button variant="danger" type="button" onClick={() => setdeletedialogIsopen(true)}>
                 <Translate>Delete</Translate>
               </Button>
-              <div className="text-gray-500">
+              <div className="text-ink-secondary">
                 <Translate>Selected</Translate>
-                <span className="font-semibold text-gray-900">{selected.length}</span>
+                <span className="font-semibold text-ink">{selected.length}</span>
                 <Translate>of</Translate>
-                <span className="font-semibold text-gray-900">{paragraphExtractorData.length}</span>
+                <span className="font-semibold text-ink">{paragraphExtractorData.length}</span>
               </div>
             </div>
           ) : (

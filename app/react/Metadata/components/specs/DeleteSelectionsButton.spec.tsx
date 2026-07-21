@@ -4,16 +4,16 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { fireEvent, RenderResult, act } from '@testing-library/react';
-import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { ClientFile } from 'app/istore';
-import { DeleteSelectionButton } from '../DeleteSelectionButton';
-import * as actions from '../../actions/metadataExtractionActions';
+import { PropertySelectionSchema } from '#shared/types/commonTypes.js';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
+import { ClientFile } from '#app/istore.js';
+import { DeleteSelectionButton } from '../DeleteSelectionButton.js';
+import * as actions from '../../actions/metadataExtractionActions.js';
 
 describe('Delete selections button', () => {
   let renderResult: RenderResult;
-  let fileSelections: ExtractedMetadataSchema[];
-  let userSelections: ExtractedMetadataSchema[];
+  let fileSelections: PropertySelectionSchema[];
+  let userSelections: PropertySelectionSchema[];
   let entityDocument: ClientFile;
   let propertyName: string;
   let propertyID: string;
@@ -41,7 +41,7 @@ describe('Delete selections button', () => {
     userSelections = [];
     entityDocument = {
       _id: '62f52bdcc6897a159347cf59',
-      extractedMetadata: fileSelections,
+      propertySelections: fileSelections,
     };
   });
 

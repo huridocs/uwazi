@@ -3,23 +3,54 @@
  */
 
 import React from 'react';
-import { render, act, cleanup, RenderResult } from '@testing-library/react';
-import { configMocks, mockIntersectionObserver } from 'jsdom-testing-mocks';
-import { pdfScaleAtom } from 'V2/atoms';
-import { TestAtomStoreProvider } from 'V2/testing';
-import { PDF, PDFProps } from '../PDF';
-import * as helpers from '../functions/helpers';
-import { pdfEventBus } from '../events';
-import * as snippetFuncs from '../functions/snippetToHighlight';
+import { PDFDocumentLoadingTask, PDFDocumentProxy } from 'pdfjs-dist';
+import { act, render, screen, waitFor } from '@testing-library/react';
+import { mockEventBus } from './fixtures.js';
+import { PDF } from '../PDF.jsx';
 
-configMocks({ act });
-const oberserverMock = mockIntersectionObserver();
+const mockGetDocument = jest.fn();
+
+jest.mock('../PDFPage', () => ({
+  PDFPage: ({
+    page,
+    eventBus,
+    containerWidth,
+  }: {
+    page: number;
+    eventBus?: any;
+    containerWidth?: number;
+  }) => {
+    eventBus?.dispatch('pageready', { pageNumber: page });
+    eventBus?.dispatch('pagerendered', { pageNumber: page });
+    return (
+      <div
+        data-testid={`pdf-page-${page}`}
+        data-container-width={String(containerWidth)}
+        data-pagenumber={String(page)}
+      />
+    );
+  },
+}));
+
+jest.mock('../pdfjs.ts', () => ({
+  PDFJS: {
+    getDocument: (...args: any[]) => mockGetDocument(...args),
+  },
+  CMAP_URL: '/legacy_character_maps/',
+  WASM_URL: '/pdfjs_wasm/',
+  EventBus: mockEventBus,
+  PixelsPerInch: { PDF_TO_CSS_UNITS: 1 },
+}));
+
+const observers: Array<IntersectionObserverCallback> = [];
+const resizeObservers: Array<ResizeObserverMock> = [];
 
 class ResizeObserverMock {
   callback: ResizeObserverCallback;
 
-  constructor(callback: ResizeObserverCallback) {
-    this.callback = callback;
+  constructor(cb: ResizeObserverCallback) {
+    this.callback = cb;
+    resizeObservers.push(this);
   }
 
   observe = jest.fn();
@@ -29,398 +60,267 @@ class ResizeObserverMock {
   disconnect = jest.fn();
 }
 
-global.ResizeObserver = ResizeObserverMock as any;
+global.IntersectionObserver = jest.fn().mockImplementation((cb: IntersectionObserverCallback) => {
+  observers.push(cb);
+  return {
+    observe: jest.fn(),
+    unobserve: jest.fn(),
+    disconnect: jest.fn(),
+  } as any;
+});
 
-const highlights: PDFProps['highlights'] = {
-  2: [
-    {
-      key: '2',
-      textSelection: { selectionRectangles: [{ top: 20, width: 100, left: 0, height: 30 }] },
-      color: 'red',
-    },
-  ],
-};
+global.ResizeObserver = ResizeObserverMock;
 
-const mockPageRender = jest.fn();
-const mockPageDestroy = jest.fn();
-const mockPageViewer = jest.fn();
-const mockGetDocument = jest.fn();
+beforeEach(() => {
+  mockGetDocument.mockReset();
+});
 
-const mockPageViewerInstances: any[] = [];
-
-const renderingStates = {
-  INITIAL: 0,
-  RUNNING: 1,
-  PAUSED: 2,
-  FINISHED: 3,
-};
-
-jest.mock('../pdfjs.ts', () => ({
-  EventBus: jest.fn().mockImplementation(() => ({
-    on: jest.fn(),
-    off: jest.fn(),
-    dispatch: jest.fn(),
-  })),
-  PDFJS: {
-    getDocument: jest.fn(args => {
-      mockGetDocument(args);
-      return {
-        promise: Promise.resolve({
-          numPages: 5,
-          getPage: jest.fn(async (pageNum: number) =>
-            Promise.resolve({
-              pageNumber: pageNum,
-              getViewport: () => ({ width: 100, height: 300 }),
-            })
-          ),
-        }),
-      };
+function makeResolvedPdf(numPages = 4) {
+  return {
+    promise: Promise.resolve({
+      numPages,
+      getPage: jest
+        .fn()
+        .mockResolvedValue({ getViewport: () => ({ width: 100, height: 200, scale: 1 }) }),
     }),
-    PixelsPerInch: { PDF_TO_CSS_UNITS: 0.5 },
-  },
-  PDFJSViewer: {
-    PDFPageView: jest.fn().mockImplementation(args => {
-      mockPageViewer(args);
-      const instance = {
-        setPdfPage: jest.fn(),
-        draw: jest.fn().mockImplementation(async () => {
-          mockPageRender();
-          return Promise.resolve();
-        }),
-        destroy: mockPageDestroy,
-        renderingState: 0,
-        scale: args.scale,
-        update: jest.fn(),
-        cancelRendering: jest.fn(),
-      };
-      mockPageViewerInstances.push(instance);
-      return instance;
-    }),
-    RenderingStates: renderingStates,
-  },
-  CMAP_URL: 'legacy_character_maps',
-  events: {
-    ON_PAGE_CHANGE: 'ON_PAGE_CHANGE',
-  },
-}));
+    onProgress: jest.fn(),
+    destroy: jest.fn(),
+  };
+}
 
 describe('PDF', () => {
-  let renderResult: RenderResult;
+  it('should show a loading message', async () => {
+    let resolveDoc: (value: PDFDocumentProxy) => void;
 
-  const renderComponet = () => {
-    renderResult = render(
-      <TestAtomStoreProvider initialValues={[[pdfScaleAtom, 1.5]]}>
-        <PDF fileUrl="url/of/file.pdf" highlights={highlights} />
-      </TestAtomStoreProvider>
-    );
-  };
+    const loadingTask: Partial<PDFDocumentLoadingTask> & { destroy: jest.Mock } = {
+      promise: new Promise<PDFDocumentProxy>(res => {
+        resolveDoc = res;
+      }),
+      onProgress: jest.fn() as PDFDocumentLoadingTask['onProgress'],
+      destroy: jest.fn(),
+    };
 
-  beforeAll(() => {
-    Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
-      configurable: true,
-      value: 100,
+    mockGetDocument.mockReturnValueOnce(loadingTask);
+
+    await act(async () => {
+      await render(<PDF fileUrl="/file.pdf" />);
     });
-  });
 
-  beforeEach(() => {
-    jest.spyOn(helpers, 'triggerScroll');
-    jest.spyOn(window, 'requestAnimationFrame');
-    jest.spyOn(pdfScaleAtom, 'write');
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-    cleanup();
-  });
-
-  afterAll(() => {
-    oberserverMock.cleanup();
-  });
-
-  it('should render the pdf file', async () => {
-    await act(() => {
-      renderComponet();
-    });
-    const { container, getAllByTestId } = renderResult;
-    const page1 = getAllByTestId('pdf-page')[0];
-    await act(() => {
-      oberserverMock.enterNode(page1);
-    });
-    expect(mockGetDocument).toHaveBeenCalledWith({
+    expect(mockGetDocument).toHaveBeenNthCalledWith(1, {
+      url: '/file.pdf',
+      cMapUrl: '/legacy_character_maps/',
       cMapPacked: true,
-      cMapUrl: 'legacy_character_maps',
+      wasmUrl: '/pdfjs_wasm/',
       isEvalSupported: false,
-      url: 'url/of/file.pdf',
     });
-    expect(mockPageViewer).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({
-        annotationMode: 0,
-        defaultViewport: {
-          height: 300,
-          width: 100,
-        },
-        eventBus: expect.any(Object),
-        id: 1,
-        scale: 1.96,
-      })
+
+    expect(screen.getByText(/Loading/)).toBeInTheDocument();
+
+    await act(async () => {
+      resolveDoc({
+        numPages: 4,
+        getPage: jest
+          .fn()
+          .mockResolvedValue({ getViewport: () => ({ width: 100, height: 200, scale: 1 }) }),
+      } as unknown as PDFDocumentProxy);
+      loadingTask.onProgress?.({ percent: 100 });
+    });
+
+    await waitFor(() => expect(screen.queryByText(/Loading/)).not.toBeInTheDocument());
+  });
+
+  it('should render with the expected classnames and styles', async () => {
+    mockGetDocument.mockReturnValueOnce(makeResolvedPdf(1));
+
+    await act(async () => render(<PDF fileUrl="/file.pdf" />));
+
+    await waitFor(() => expect(document.querySelector('#pdf-container')).toBeInTheDocument());
+
+    const container = document.querySelector('#pdf-container');
+    expect(container?.className).toContain('pdfViewer');
+    const containerStyle = container?.getAttribute('style') || '';
+    expect(containerStyle).toContain('height: 100%');
+    expect(containerStyle).toContain('width: 100%');
+    expect(containerStyle).toContain('--page-border: none');
+    expect(containerStyle).toContain('--page-margin: 0');
+
+    const pageContainer = document.querySelector('#page-1-container');
+    expect(pageContainer?.className).toContain('mb-4');
+    await expect(pageContainer?.className).toMatch(/border-color|--color-theme-border/);
+    expect(pageContainer?.className).toContain('relative');
+    await expect(pageContainer?.className).toMatch(/\[border-width:1px\]/);
+  });
+
+  it('should dispatch renderpage for the first page on mount', async () => {
+    mockGetDocument.mockReturnValueOnce(makeResolvedPdf(4));
+
+    const dispatchSpy = jest.spyOn(mockEventBus.prototype, 'dispatch');
+
+    await act(async () => render(<PDF fileUrl="/file.pdf" highlights={{}} />));
+
+    expect(dispatchSpy).toHaveBeenCalledWith('renderpage', { pageNumber: 1 });
+    dispatchSpy.mockRestore();
+  });
+
+  it('should trigger the pdfReady callback after rendering page 1 and unsusbcribe', async () => {
+    const pdfReadySpy = jest.fn();
+    const dispatchSpy = jest.spyOn(mockEventBus.prototype, 'dispatch');
+    const offSpy = jest.spyOn(mockEventBus.prototype, 'off');
+
+    mockGetDocument.mockReturnValueOnce(makeResolvedPdf(4));
+
+    await act(async () =>
+      render(
+        <PDF
+          fileUrl="/file.pdf"
+          highlights={{}}
+          onPdfReady={controls => {
+            pdfReadySpy(controls);
+          }}
+        />
+      )
     );
-    expect(mockPageRender).toHaveBeenCalled();
-    expect(pdfScaleAtom.write).toHaveBeenCalled();
-    expect(container).toMatchSnapshot();
+
+    expect(dispatchSpy).toHaveBeenCalledWith('pagerendered', { pageNumber: 1 });
+    expect(offSpy).toHaveBeenLastCalledWith('pagerendered', expect.any(Function));
+    expect(pdfReadySpy).toHaveBeenCalled();
+    dispatchSpy.mockRestore();
   });
 
-  describe('pdfEventBus', () => {
-    beforeEach(() => {
-      jest.spyOn(pdfEventBus, 'dispatch');
+  it('should call onPageChange and dispatch render/unmount based on intersection', async () => {
+    const onPageChange = jest.fn();
+    mockGetDocument.mockReturnValueOnce(makeResolvedPdf(4));
+
+    const dispatchSpy = jest.spyOn(mockEventBus.prototype, 'dispatch');
+
+    await act(async () => render(<PDF fileUrl="/file.pdf" onPageChange={onPageChange} />));
+
+    await waitFor(() => expect(document.querySelector('#page-1-container')).toBeInTheDocument());
+
+    const target = document.querySelector('#page-3-container') as Element;
+    // neccessary since we are mocking PDFPage component
+    target.setAttribute('data-pagenumber', '3');
+    const observerCallback = observers[observers.length - 1];
+
+    await act(async () => {
+      // Ensure all mount effects have run (onPageChangeReas anyf set)
     });
 
-    it('should dispatch pdfReady event when PDF and containerWidth are ready', async () => {
-      await act(() => {
-        renderComponet();
-      });
-
-      expect(pdfEventBus.dispatch).toHaveBeenCalledWith('pdfReady');
+    act(() => {
+      observerCallback(
+        [{ target, intersectionRatio: 0.5, isIntersecting: true }] as any,
+        {} as any
+      );
     });
 
-    it('should dispatch onPageChange event when a page is rendered', async () => {
-      const dispatchSpy = jest.spyOn(pdfEventBus, 'dispatch');
+    await waitFor(() => expect(onPageChange).toHaveBeenCalledWith(3));
+    await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith('renderpage', { pageNumber: 3 }));
 
-      await act(() => {
-        renderComponet();
-      });
-
-      const { getAllByTestId } = renderResult;
-      const page1 = getAllByTestId('pdf-page')[0];
-
-      await act(() => {
-        oberserverMock.enterNode(page1);
-      });
-
-      expect(mockPageRender).toHaveBeenCalled();
-      expect(dispatchSpy).toHaveBeenCalledWith('onPageChange', 1);
+    act(() => {
+      observerCallback([{ target, intersectionRatio: 0, isIntersecting: false }] as any, {} as any);
     });
 
-    it('should scroll to page when goToPage event is dispatched', async () => {
-      await act(() => {
-        renderComponet();
-      });
+    await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith('unmountpage', { pageNumber: 3 }));
 
-      const { container } = renderResult;
-      const page3Container = container.querySelector('#page-3-container') as HTMLDivElement;
-
-      act(() => {
-        pdfEventBus.dispatch('goToPage', 3);
-      });
-
-      expect(helpers.triggerScroll).toHaveBeenCalledWith({ current: page3Container }, 0);
-    });
-
-    it('should call highlightSnippetInPage when activateSnippet event is dispatched', async () => {
-      const highlightSpy = jest.spyOn(snippetFuncs, 'highlightSnippetInPage');
-
-      await act(() => {
-        renderComponet();
-      });
-
-      const { getAllByTestId } = renderResult;
-      const page1 = getAllByTestId('pdf-page')[0];
-
-      await act(() => {
-        oberserverMock.enterNode(page1);
-      });
-
-      act(() => {
-        pdfEventBus.dispatch('activateSnippet', {
-          text: 'Page 1 <b>contains</b> some text',
-          page: 1,
-        });
-      });
-
-      expect(highlightSpy).toHaveBeenCalled();
-      highlightSpy.mockRestore();
-    });
-
-    it('should call clearSnippets when deactivateSnippet event is dispatched', async () => {
-      const clearSpy = jest.spyOn(snippetFuncs, 'clearSnippets');
-
-      await act(() => {
-        renderComponet();
-      });
-
-      const { getAllByTestId } = renderResult;
-      const page1 = getAllByTestId('pdf-page')[0];
-
-      await act(() => {
-        oberserverMock.enterNode(page1);
-      });
-
-      act(() => {
-        pdfEventBus.dispatch('deactivateSnippet');
-      });
-
-      expect(clearSpy).toHaveBeenCalled();
-      clearSpy.mockRestore();
-    });
-
-    it('should handle multiple PDF instances without listener accumulation', async () => {
-      let unmountInstanceOne: RenderResult['unmount'];
-
-      await act(async () => {
-        const result = render(
-          <TestAtomStoreProvider initialValues={[[pdfScaleAtom, 1.5]]}>
-            <PDF fileUrl="url/of/file1.pdf" highlights={highlights} />
-          </TestAtomStoreProvider>
-        );
-        unmountInstanceOne = result.unmount;
-      });
-
-      await act(async () => {
-        render(
-          <TestAtomStoreProvider initialValues={[[pdfScaleAtom, 1.5]]}>
-            <PDF fileUrl="url/of/file2.pdf" highlights={highlights} />
-          </TestAtomStoreProvider>
-        );
-      });
-
-      unmountInstanceOne!();
-
-      act(() => {
-        pdfEventBus.dispatch('goToPage', 1);
-      });
-
-      expect(helpers.triggerScroll).toHaveBeenCalledTimes(1);
-    });
-
-    it('should scroll to highlight when scrollToHighlight event is dispatched', async () => {
-      await act(() => {
-        renderComponet();
-      });
-
-      const { container, getAllByTestId } = renderResult;
-      const page2 = getAllByTestId('pdf-page')[1];
-
-      await act(async () => {
-        oberserverMock.enterNode(page2);
-      });
-
-      const highlightWrapper = container.querySelector('[data-highlight-key="2"]') as HTMLElement;
-
-      const highlightRectangle = highlightWrapper.querySelector(
-        '.highlight-rectangle'
-      ) as HTMLElement;
-      const scrollIntoViewMock = jest.fn();
-
-      highlightRectangle.scrollIntoView = scrollIntoViewMock;
-
-      act(() => {
-        pdfEventBus.dispatch('scrollToHighlight', '2');
-      });
-
-      expect(scrollIntoViewMock).toHaveBeenCalledWith({
-        behavior: 'smooth',
-        block: 'center',
-      });
-    });
+    dispatchSpy.mockRestore();
   });
 
-  describe('intersection observer', () => {
-    const observerMock = jest.fn();
-    const unobserveMock = jest.fn();
+  it('does not call onPageChange and calls onPdfReady only after PDF is rendered', async () => {
+    const pdfReadySpy = jest.fn();
+    const onPageChange = jest.fn();
 
-    beforeEach(() => {
-      window.IntersectionObserver = jest.fn().mockImplementation(() => ({
-        observe: observerMock,
-        unobserve: unobserveMock,
-      }));
+    let resolveDoc: (value: PDFDocumentProxy) => void;
+
+    const loadingTask: Partial<PDFDocumentLoadingTask> = {
+      promise: new Promise<PDFDocumentProxy>(res => {
+        resolveDoc = res;
+      }),
+      onProgress: jest.fn() as PDFDocumentLoadingTask['onProgress'],
+    };
+
+    mockGetDocument.mockReturnValueOnce(loadingTask);
+
+    await act(async () => {
+      await render(
+        <PDF
+          fileUrl="/file.pdf"
+          highlights={{}}
+          onPageChange={onPageChange}
+          onPdfReady={pdfReadySpy}
+        />
+      );
     });
 
-    it('should set the observers on mount and clear them on unmount', async () => {
-      await act(() => {
-        renderComponet();
-      });
+    expect(pdfReadySpy).not.toHaveBeenCalled();
+    expect(onPageChange).not.toHaveBeenCalled();
 
-      expect(observerMock).toHaveBeenCalledTimes(5);
-
-      cleanup();
-
-      expect(unobserveMock).toHaveBeenCalledTimes(5);
+    await act(async () => {
+      resolveDoc({
+        numPages: 4,
+        getPage: jest
+          .fn()
+          .mockResolvedValue({ getViewport: () => ({ width: 100, height: 200, scale: 1 }) }),
+      } as unknown as PDFDocumentProxy);
+      loadingTask.onProgress?.({ percent: 100 });
     });
+
+    await waitFor(() => expect(pdfReadySpy).toHaveBeenCalled());
+    expect(onPageChange).not.toHaveBeenCalled();
   });
 
-  describe('resize observer', () => {
-    let resizeObserverInstance: ResizeObserverMock | null = null;
+  it('does not call onPageChange when intersection happens before PDF is ready', async () => {
+    const onPageChange = jest.fn();
 
-    beforeEach(() => {
-      jest.clearAllMocks();
-      const OriginalResizeObserver = global.ResizeObserver;
-      global.ResizeObserver = jest.fn().mockImplementation((callback: ResizeObserverCallback) => {
-        resizeObserverInstance = new (OriginalResizeObserver as any)(callback);
-        return resizeObserverInstance;
-      }) as any;
-      mockPageViewerInstances.length = 0;
+    let resolveDoc: (value: PDFDocumentProxy) => void;
+
+    const loadingTask: Partial<PDFDocumentLoadingTask> = {
+      promise: new Promise<PDFDocumentProxy>(res => {
+        resolveDoc = res;
+      }),
+      onProgress: jest.fn() as PDFDocumentLoadingTask['onProgress'],
+    };
+
+    mockGetDocument.mockReturnValueOnce(loadingTask);
+
+    await act(async () => {
+      await render(<PDF fileUrl="/file.pdf" onPageChange={onPageChange} />);
     });
 
-    afterEach(() => {
-      resizeObserverInstance = null;
+    // Prepare a fake target for page 3 and call the last registered observer
+    const target = document.createElement('div');
+    target.setAttribute('data-pagenumber', '3');
+
+    const observerCallback = observers[observers.length - 1];
+
+    // Simulate intersection before PDF is resolved
+    act(() => {
+      observerCallback(
+        [{ target, intersectionRatio: 0.6, isIntersecting: true }] as any,
+        {} as any
+      );
     });
 
-    it('should set up ResizeObserver for the PDF container', async () => {
-      await act(() => {
-        renderComponet();
-      });
+    await waitFor(() => expect(onPageChange).not.toHaveBeenCalled());
 
-      expect(resizeObserverInstance?.observe).toHaveBeenCalledTimes(1);
+    // Make PDF ready
+    await act(async () => {
+      resolveDoc({
+        numPages: 4,
+        getPage: jest
+          .fn()
+          .mockResolvedValue({ getViewport: () => ({ width: 100, height: 200, scale: 1 }) }),
+      } as unknown as PDFDocumentProxy);
+      loadingTask.onProgress?.({ percent: 100 });
     });
 
-    it('should disconnect ResizeObserver on unmount', async () => {
-      await act(() => {
-        renderComponet();
-      });
-
-      cleanup();
-
-      expect(resizeObserverInstance?.disconnect).toHaveBeenCalledTimes(1);
+    // After PDF is ready, the same intersection should trigger onPageChange
+    act(() => {
+      observerCallback(
+        [{ target, intersectionRatio: 0.6, isIntersecting: true }] as any,
+        {} as any
+      );
     });
 
-    it('re-draws when containerWidth changes', async () => {
-      let result: RenderResult;
-      await act(async () => {
-        result = render(
-          <TestAtomStoreProvider initialValues={[[pdfScaleAtom, 1]]}>
-            <PDF fileUrl="url/of/file.pdf" highlights={highlights} />
-          </TestAtomStoreProvider>
-        );
-      });
-
-      const page1 = result!.container.querySelector('[data-testid="pdf-page"]') as HTMLElement;
-
-      await act(() => {
-        oberserverMock.enterNode(page1);
-      });
-
-      const instance = mockPageViewerInstances[mockPageViewerInstances.length - 1];
-      instance.renderingState = renderingStates.FINISHED;
-
-      mockPageRender.mockClear();
-
-      jest.useFakeTimers();
-
-      await act(async () => {
-        const entries: any = [
-          {
-            target: result.container,
-            contentRect: { width: 50 },
-          },
-        ];
-
-        resizeObserverInstance!.callback(entries, resizeObserverInstance as any);
-        jest.advanceTimersByTime(200);
-      });
-
-      jest.useRealTimers();
-
-      expect(mockPageRender).toHaveBeenCalled();
-    });
+    await waitFor(() => expect(onPageChange).toHaveBeenCalledWith(3));
   });
 });

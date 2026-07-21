@@ -41,7 +41,7 @@ function asessCriteriaValid(validTemplates, options) {
         (property.get('type') === 'text' || property.get('type') === 'date');
       currentIsValid = Boolean(
         currentIsValid ||
-          (sortable && `metadata.${property.get('name')}` === options.currentCriteria.sort)
+        (sortable && `metadata.${property.get('name')}` === options.currentCriteria.sort)
       );
     });
 
@@ -49,7 +49,7 @@ function asessCriteriaValid(validTemplates, options) {
   }, false);
 }
 
-export default {
+const prioritySortingCriteria = {
   get: (options = {}) => {
     if (options.override) {
       return options.override;
@@ -116,3 +116,5 @@ export default {
     return sortingDefault;
   },
 };
+
+export { prioritySortingCriteria };

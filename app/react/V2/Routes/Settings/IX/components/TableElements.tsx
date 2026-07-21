@@ -3,27 +3,27 @@
 import React, { useCallback, useState } from 'react';
 import { Cell, CellContext, Row, createColumnHelper } from '@tanstack/react-table';
 import { useAtom } from 'jotai';
-import { get } from 'lodash';
+import get from 'lodash/get.js';
 import { Link, useRevalidator } from 'react-router';
 import { CheckCircleIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
-import { Button, Pill } from 'V2/Components/UI';
-import { EmbededButton } from 'V2/Components/UI/EmbededButton';
-import { ClientTemplateSchema } from 'V2/shared/types';
-import { propertyIcons } from 'V2/Components/UI/Icons';
-import { ClientPropertySchema } from 'app/istore';
-import { Translate } from 'app/I18N';
+import { Button, Pill } from '#V2/Components/UI/index.js';
+import { EmbededButton } from '#V2/Components/UI/EmbededButton.js';
+import { ClientTemplateSchema } from '#V2/shared/types.js';
+import { propertyIcons } from '#V2/Components/UI/Icons.js';
+import { ClientPropertySchema } from '#app/istore.js';
+import { Translate } from '#app/I18N/index.js';
 import {
   TableExtractor,
   TableSuggestion,
   SingleValueSuggestion,
   MultiValueSuggestion,
   SuggestionValue,
-} from '../types';
-import { Dot } from './Dot';
-import { SuggestedValue } from './SuggestedValue';
-import { acceptedSuggestions } from './atoms';
-import { ContextCell } from './ContextCell';
-import { calculateOptimalProportions } from '../helpers/contextHelpers';
+} from '../types.js';
+import { Dot } from './Dot.js';
+import { SuggestedValue } from './SuggestedValue.js';
+import { acceptedSuggestions } from './atoms/index.js';
+import { ContextCell } from './ContextCell.js';
+import { calculateOptimalProportions } from '../helpers/contextHelpers.js';
 
 const extractorColumnHelper = createColumnHelper<TableExtractor>();
 const suggestionColumnHelper = createColumnHelper<TableSuggestion>();
@@ -90,7 +90,7 @@ const PropertyCell = ({ cell }: CellContext<TableExtractor, TableExtractor['prop
   return (
     <div className="flex items-center gap-2">
       <span className="w-5">{propertyIcons[property]}</span>
-      <p className="text-gray-500 whitespace-nowrap">{cell.row.original.propertyLabel}</p>
+      <p className="whitespace-nowrap text-ink-muted">{cell.row.original.propertyLabel}</p>
     </div>
   );
 };
@@ -110,7 +110,7 @@ const RenderParent = ({ suggestion }: { suggestion: MultiValueSuggestion }) => {
   const amountOfMissmatches = ammountOfSuggestions - amountOfMatches;
 
   return (
-    <div className="flex gap-1 text-xs font-bold text-gray-500">
+    <div className="flex gap-1 text-xs font-bold text-ink-tertiary">
       <span>
         {amountOfValues} <Translate>values</Translate>
       </span>
@@ -122,7 +122,7 @@ const RenderParent = ({ suggestion }: { suggestion: MultiValueSuggestion }) => {
         <>
           <span>|</span>
           <span>
-            <span className="text-green-500">{amountOfMatches}</span>{' '}
+            <span className="text-(--color-theme-feedback-success)">{amountOfMatches}</span>{' '}
             <Translate>matching</Translate>
           </span>
         </>
@@ -131,7 +131,7 @@ const RenderParent = ({ suggestion }: { suggestion: MultiValueSuggestion }) => {
         <>
           <span>|</span>
           <span>
-            <span className="text-alert-500">{amountOfMissmatches}</span>{' '}
+            <span className="text-(--color-theme-feedback-warning)">{amountOfMissmatches}</span>{' '}
             <Translate>mismatching</Translate>
           </span>
         </>
@@ -149,9 +149,9 @@ const CurrentValueCell = ({
 }) => {
   if (cell.row.original.state.error) {
     return (
-      <div className="flex gap-1 text-xs font-bold text-gray-500">
+      <div className="flex gap-1 text-xs font-bold text-ink-tertiary">
         <span>
-          <Translate className="text-error-500">Error</Translate>
+          <Translate className="text-(--color-theme-feedback-danger)">Error</Translate>
         </span>
       </div>
     );
@@ -200,6 +200,7 @@ const AcceptButton = ({
         icon={getIcon(color)}
         color={color}
         disabled={isDisabled}
+        data-testid="ix-accept-suggestion"
         onClick={async () => {
           setAccepted(prev => {
             const newSet = new Set(prev || []);
@@ -227,7 +228,7 @@ const TemplatesCell = ({ cell }: CellContext<TableExtractor, TableExtractor['nam
 
 const LinkButton = ({ cell }: CellContext<TableExtractor, TableExtractor['_id']>) => (
   <Link to={`suggestions/${cell.getValue()}`}>
-    <Button className="leading-4" styling="outline">
+    <Button className="leading-4" variant="secondary">
       <Translate>Review</Translate>
     </Button>
   </Link>
@@ -244,7 +245,7 @@ const OpenSidepanelButton = ({
   return (
     <Button
       className="leading-4"
-      styling="light"
+      variant="ghost"
       disabled={!suggestionHasEntity}
       onClick={() => action && action(cell.row.original)}
     >
@@ -304,6 +305,7 @@ const UsedForTrainingCell = ({
     <button
       className="w-full flex justify-center disabled:cursor-not-allowed"
       disabled={disabled}
+      data-testid={usedForTraining ? 'ix-training-set-remove' : 'ix-training-set-add'}
       type="button"
       onClick={handleClick}
     >

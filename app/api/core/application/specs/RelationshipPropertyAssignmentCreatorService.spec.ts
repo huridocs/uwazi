@@ -1,15 +1,14 @@
 /* eslint-disable max-statements */
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
 import { ObjectId } from 'mongodb';
-import { Template } from 'api/core/domain/template/Template';
-import { RelationshipPropertyAssignmentCreatorService } from '../propertyAssignmentCreatorService/RelationshipPropertyAssignmentCreatorService';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
+import { Template } from '#api/core/domain/template/Template.js';
+import { RelationshipPropertyAssignmentCreatorService } from '../propertyAssignmentCreatorService/RelationshipPropertyAssignmentCreatorService.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 
 const factory = getFixturesFactory();
 
@@ -240,6 +239,7 @@ const fixtures: DBFixture = {
         },
       }),
       factory.relationshipProp('rel_prop_no_inherit', 'Document B'),
+      factory.relationshipProp('required_rel', 'Document B', { required: true }),
     ]),
 
     factory.template('Document B', [
@@ -294,7 +294,7 @@ const fixtures: DBFixture = {
               { value: 'banana_id', label: 'Banana' },
             ],
             link: [{ value: 'http://example.com', label: 'Example EN' }],
-            image: [{ value: 'api/files/image.png' }],
+            image: [{ value: '#api/files/image.png' }],
             generatedid: [{ value: 'TIJ5481-7165' }],
             preview: [{ value: '/api/files/preview_EN.jpg' }],
             media: [{ value: '/api/files/video_EN.mp4' }],
@@ -328,7 +328,7 @@ const fixtures: DBFixture = {
               { value: 'banana_id', label: 'Banana in Portuguese' },
             ],
             link: [{ value: 'http://example.com', label: 'Example PT' }],
-            image: [{ value: 'api/files/image.png' }],
+            image: [{ value: '#api/files/image.png' }],
             generatedid: [{ value: 'TIJ5481-7165' }],
             preview: [{ value: '/api/files/preview_PT.jpg' }],
             media: [{ value: '/api/files/video_PT.mp4' }],
@@ -374,9 +374,10 @@ const fixtures: DBFixture = {
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
 
-  const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
-
-  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+  const { entitiesDS, settingsDS } = testingEnvironment.runWithContext(() => ({
+    entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
+    settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
+  }));
 
   const sut = new RelationshipPropertyAssignmentCreatorService({
     entitiesDS,
@@ -435,7 +436,6 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
           {
-            icon: undefined,
             value: 'B2',
             label: 'B2 EN',
             inheritedType: 'text',
@@ -459,7 +459,6 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
           {
-            icon: undefined,
             value: 'B2',
             label: 'B2 PT',
             inheritedType: 'text',
@@ -1102,7 +1101,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
           {
             value: 'B1',
             label: 'B1 EN',
-            inheritedValue: [{ value: 'api/files/image.png' }],
+            inheritedValue: [{ value: '#api/files/image.png' }],
             inheritedType: 'image',
             icon: {
               id: 'iconB1',
@@ -1122,7 +1121,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
           {
             value: 'B1',
             label: 'B1 PT',
-            inheritedValue: [{ value: 'api/files/image.png' }],
+            inheritedValue: [{ value: '#api/files/image.png' }],
             inheritedType: 'image',
             icon: {
               id: 'iconB1',
@@ -1260,7 +1259,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             },
             type: 'entity',
           },
-          { value: 'B2', label: 'B2 EN', icon: undefined, type: 'entity' },
+          { value: 'B2', label: 'B2 EN', type: 'entity' },
         ],
       },
       {
@@ -1279,7 +1278,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             },
             type: 'entity',
           },
-          { value: 'B2', label: 'B2 PT', icon: undefined, type: 'entity' },
+          { value: 'B2', label: 'B2 PT', type: 'entity' },
         ],
       },
     ]);
@@ -1431,5 +1430,31 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
         propertyAssignment: { name: 'text_rel', value: [{ value: 'C1' }] },
       })
     ).rejects.toThrow('expects template');
+  });
+
+  it('should throw when validateRequired is true and a required relationship property has no value', async () => {
+    const transactionManager = TransactionManagerFactory.default();
+    const { entitiesDS, settingsDS } = testingEnvironment.runWithContext(() => ({
+      entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
+      settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
+    }));
+
+    const sut = new RelationshipPropertyAssignmentCreatorService(
+      { entitiesDS, settingsDS },
+      { validateRequired: true }
+    );
+
+    const templateDBO = await testingEnvironment.db
+      .getCollection('templates')!
+      .findOne({ _id: factory.id('Document A') });
+
+    const template = MongoTemplateMapper.toDomain(templateDBO as any);
+
+    await expect(
+      sut.create({
+        template,
+        propertyAssignment: { name: 'required_rel', value: [] },
+      })
+    ).rejects.toThrow('Relationship Property is required');
   });
 });

@@ -1,23 +1,24 @@
-import { WithId } from 'api/odm';
-import settings from 'api/settings';
-import request from 'shared/JSONRequest';
-import createError from 'api/utils/Error';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { User } from 'api/users/usersModel';
-import { PreserveConfig } from 'shared/types/settingsType';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
-import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
-import { TemplateFacade } from 'api/core/infrastructure/facades/TemplateFacade';
-import { ThesauriService } from 'api/core/application/ThesauriService';
-import { ThesauriDataSourceFactory } from 'api/core/infrastructure/factories/ThesauriDataSourceFactory';
-import { ThesaurusTranslationService } from 'api/core/application/thesaurusTranslationService/ThesaurusTranslationService';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { Thesaurus } from 'api/core/domain/thesaurus/Thesaurus';
-import { MongoThesaurusMapper } from 'api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { tenants } from 'api/tenants';
+import { WithId } from '#api/odm/index.js';
+import settings from '#api/settings/index.js';
+import request from '#shared/JSONRequest.js';
+import createError from '#api/utils/Error.js';
+import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
+import { User } from '#api/users/usersModel.js';
+import { PreserveConfig } from '#shared/types/settingsType.js';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
+import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
+import { ThesauriService } from '#api/core/application/ThesauriService.js';
+import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
+import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
+import { MongoThesaurusMapper } from '#api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
+import { tenants } from '../tenants/index.js';
 
 export const Preserve = {
   async setup(language: string, user: User) {
@@ -103,12 +104,14 @@ export const Preserve = {
     const transactionManager = TransactionManagerFactory.default();
 
     const thesauriService = new ThesauriService({
-      thesauriDS: ThesauriDataSourceFactory.default(transactionManager),
+      thesauriDS: ThesauriDataSourceFactory.default({ transactionManager }),
       thesaurusTranslationService: new ThesaurusTranslationService({
-        settingsDS: SettingsDataSourceFactory.default(transactionManager),
+        settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
         translationsDS: DefaultTranslationsDataSource(transactionManager),
       }),
-      jobsDispatcher: DefaultDispatcher(tenants.current().name, transactionManager),
+      dispatcher: new DispatcherAdapter(
+        DefaultDispatcher(tenants.current().name, transactionManager)
+      ),
     });
 
     const thesaurus = Thesaurus.create({

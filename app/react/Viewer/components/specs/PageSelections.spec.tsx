@@ -4,12 +4,10 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { RenderResult } from '@testing-library/react';
-import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { ClientEntitySchema, ClientFile } from 'app/istore';
-import { TestAtomStoreProvider } from 'V2/testing';
-import { pdfScaleAtom } from 'V2/atoms';
-import { PageSelections } from '../PageSelections';
+import { PropertySelectionSchema } from '#shared/types/commonTypes.js';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
+import { ClientEntitySchema, ClientFile } from '#app/istore.js';
+import { PageSelections } from '../PageSelections.js';
 
 const defaultEntityDocument: ClientFile = {
   _id: '62f52bddc6897a159347cf6b',
@@ -19,7 +17,7 @@ const defaultEntityDocument: ClientFile = {
   entity: 'bc3prdymqj',
   filename: '1660234717101q3vq1v0vo7h.pdf',
   language: 'eng',
-  extractedMetadata: [
+  propertySelections: [
     {
       propertyID: '62f290a54dd69a2472936453',
       name: 'my_property',
@@ -62,9 +60,7 @@ describe('Page selections highlights', () => {
     _id: '62f52bdcc6897a159347cf59',
   };
   let file: any | ClientFile;
-  let selections: ExtractedMetadataSchema[];
-  let pdfScalingValue = 1;
-
+  let selections: PropertySelectionSchema[];
   beforeEach(() => {
     file = defaultEntityDocument;
     selections = [];
@@ -85,12 +81,7 @@ describe('Page selections highlights', () => {
         }),
       },
     };
-    ({ renderResult } = renderConnectedContainer(
-      <TestAtomStoreProvider initialValues={[[pdfScaleAtom, pdfScalingValue]]}>
-        <PageSelections />
-      </TestAtomStoreProvider>,
-      () => state
-    ));
+    ({ renderResult } = renderConnectedContainer(<PageSelections />, () => state));
   };
 
   it('should only render when editing the entity and has a document', () => {
@@ -109,8 +100,8 @@ describe('Page selections highlights', () => {
     expect(renderResult.container.children.length).toBe(2);
   });
 
-  it('should adjust selections by the pdf scaling factor', () => {
-    pdfScalingValue = 1.5;
+  it('should render highlights with scale factor 1', () => {
+    // Old viewer uses fixed scale 1 for selections (no pdfScaleAtom)
     render();
     expect(renderResult.baseElement).toMatchSnapshot();
   });

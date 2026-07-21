@@ -1,83 +1,105 @@
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
-import { files } from 'api/files/files';
-import { customUploadsPath } from 'api/files/filesystem';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
 // eslint-disable-next-line node/no-restricted-import
-import { access } from 'fs/promises';
+import { access, copyFile } from 'fs/promises';
+import { tmpdir } from 'os';
 import path from 'path';
-import { CustomFileUploadFactory } from '../../infrastructure/factories/CustomFileUploadFactory';
-import { CustomFileUpload } from '../CustomFileUpload';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { customUploadsPath } from '#api/files/filesystem.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 
-const createInputFile = (filename: string) => {
+import { CustomFileUploadFactory } from '../../infrastructure/factories/CustomFileUploadFactory.js';
+import { CustomFileUpload } from '../CustomFileUpload.js';
+
+type TestConfig = {
+  name: string;
+  usePostgres: boolean;
+};
+
+const testConfigs: TestConfig[] = [
+  { name: 'Mongo', usePostgres: false },
+  { name: 'Postgres', usePostgres: true },
+];
+
+const createInputFile = async (filename: string) => {
   const testFilePath = path.join(__dirname, '../../../files/specs/test.txt');
+  const uniquePath = path.join(tmpdir(), filename);
+  await copyFile(testFilePath, uniquePath);
   return new InputFile(
     {
       fieldname: 'file',
       originalname: filename,
       encoding: '7bit',
       mimetype: 'text/plain',
-      destination: path.dirname(testFilePath),
-      filename: path.basename(testFilePath),
-      path: testFilePath,
+      destination: path.dirname(uniquePath),
+      filename,
+      path: uniquePath,
       size: 5,
     },
     'custom'
   );
 };
 
-beforeAll(async () => {
-  await testingEnvironment.setUp({});
-});
-
-afterAll(async () => {
-  await testingEnvironment.tearDown();
-});
-
 describe('CustomFileUpload', () => {
-  let useCase: CustomFileUpload;
-
-  beforeEach(() => {
-    useCase = CustomFileUploadFactory.default(TransactionManagerFactory.fake());
+  beforeAll(async () => {
+    await testingEnvironment.setUp({}, { postgres: true });
   });
 
-  it('should create a custom file upload', async () => {
-    const inputFile = createInputFile('test-custom.txt');
+  afterAll(async () => {
+    await testingEnvironment.tearDown();
+  });
 
-    const result = await useCase.execute({ uploadedFile: inputFile });
+  describe.each(testConfigs)('$name', ({ usePostgres }) => {
+    let useCase: CustomFileUpload;
 
-    expect(result).toMatchObject({
-      type: 'custom',
-      originalname: 'test-custom.txt',
-      mimetype: 'text/plain',
-      size: 5,
-      _id: expect.any(String),
+    beforeEach(() => {
+      testingTenants.changeCurrentTenant({
+        featureFlags: { postgresFiles: usePostgres },
+      });
+      useCase = testingEnvironment.runWithContext(() =>
+        CustomFileUploadFactory.default(TransactionManagerFactory.fake())
+      );
     });
-  });
 
-  it('should store the file to customUploads directory', async () => {
-    const inputFile = createInputFile('custom-storage-test.txt');
+    it('should create a custom file upload', async () => {
+      const inputFile = await createInputFile('test-custom.txt');
 
-    const result = await useCase.execute({ uploadedFile: inputFile });
+      const result = await useCase.execute({ uploadedFile: inputFile });
 
-    const storedFilePath = customUploadsPath(result.filename!);
-    const fileExists = await access(storedFilePath)
-      .then(() => true)
-      .catch(() => false);
+      expect(result).toMatchObject({
+        type: 'custom',
+        originalname: 'test-custom.txt',
+        mimetype: 'text/plain',
+        size: 5,
+        _id: expect.any(String),
+      });
+    });
 
-    expect(fileExists).toBe(true);
-  });
+    it('should store the file to customUploads directory', async () => {
+      const inputFile = await createInputFile('custom-storage-test.txt');
 
-  it('should create a database record with correct type', async () => {
-    const inputFile = createInputFile('db-test.txt');
+      const result = await useCase.execute({ uploadedFile: inputFile });
 
-    const result = await useCase.execute({ uploadedFile: inputFile });
+      const storedFilePath = customUploadsPath(result.filename!);
+      const fileExists = await access(storedFilePath)
+        .then(() => true)
+        .catch(() => false);
 
-    const [savedFile] = await files.get({ _id: result._id });
-    expect(savedFile).toMatchObject({
-      type: 'custom',
-      originalname: 'db-test.txt',
-      mimetype: 'text/plain',
+      expect(fileExists).toBe(true);
+    });
+
+    it('should create a database record with correct type', async () => {
+      const inputFile = await createInputFile('db-test.txt');
+
+      const result = await useCase.execute({ uploadedFile: inputFile });
+
+      const allFiles = await testingEnvironment.db.getAllFrom('files');
+      const savedFile = allFiles.find(f => f._id!.toString() === result._id)!;
+      expect(savedFile).toMatchObject({
+        type: 'custom',
+        originalname: 'db-test.txt',
+        mimetype: 'text/plain',
+      });
     });
   });
 });

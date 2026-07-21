@@ -1,30 +1,26 @@
-import { FileUploadForEntity } from 'api/core/application/FileUploadForEntity';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager';
-import { FilesServiceFactory } from './FilesServiceFactory';
-import { IdGeneratorFactory } from './IdGeneratorFactory';
+import { FileUploadForEntity } from '#api/core/application/FileUploadForEntity.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
+import { FilesServiceFactory } from './FilesServiceFactory.js';
+import { IdGeneratorFactory } from './IdGeneratorFactory.js';
 
 export class FileUploadForEntityFactory {
-  static default(
-    transactionManager: MongoTransactionManager,
-    depsOverwrite: Partial<ConstructorParameters<typeof FileUploadForEntity>[0]> = {}
-  ) {
+  static default(overrides: Partial<ConstructorParameters<typeof FileUploadForEntity>[0]> = {}) {
+    const { transactionManager } = ExecutionContext;
+
     return new FileUploadForEntity(
       {
         transactionManager,
         idGenerator: IdGeneratorFactory.default(),
-        entitiesDS: new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager),
-        filesService: FilesServiceFactory.default(transactionManager),
+        entitiesDS: EntitiesDataSourceFactory.default(),
+        filesService: FilesServiceFactory.default(),
         eventBus: applicationEventsBus,
-        ...depsOverwrite,
+        ...overrides,
       },
       {
-        actor: permissionsContext.getUserInContext()!,
-        tenant: tenants.current(),
+        actor: ExecutionContext.actor,
+        tenant: ExecutionContext.tenant,
       }
     );
   }

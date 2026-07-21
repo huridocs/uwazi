@@ -1,6 +1,6 @@
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
-import { ExpressEntityMapper } from '../ExpressEntityMapper';
-import { CreateEntityDTO } from '../Schemas';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { ExpressEntityMapper } from '../ExpressEntityMapper.js';
+import { CreateEntityDTO } from '../Schemas.js';
 
 describe('ExpressEntityMapper', () => {
   // eslint-disable-next-line max-statements
@@ -666,6 +666,34 @@ describe('ExpressEntityMapper', () => {
       });
       expect(result.templateId).toBe('template456');
       expect(result.files).toEqual([]);
+    });
+
+    it('should map property selections payload when provided', () => {
+      const dto = {
+        _id: 'entity123',
+        sharedId: 'shared123',
+        language: 'en',
+        title: 'Entity',
+        propertySelections: {
+          fileID: 'file123',
+          selections: [
+            {
+              name: 'title',
+              selection: {
+                text: 'Selected title',
+                selectionRectangles: [{ top: 1, left: 2, width: 3, height: 4, page: '1' }],
+              },
+            },
+          ],
+        },
+      };
+
+      const result = ExpressEntityMapper.toEntityUpdateInput({ dto });
+
+      expect(result.propertySelections).toEqual({
+        fileId: 'file123',
+        selections: dto.propertySelections.selections,
+      });
     });
 
     it('should map icon when provided', () => {

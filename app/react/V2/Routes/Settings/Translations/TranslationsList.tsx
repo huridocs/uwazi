@@ -2,18 +2,18 @@ import React from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { useLoaderData, LoaderFunction } from 'react-router';
 import { createColumnHelper } from '@tanstack/react-table';
-import { Translate } from 'app/I18N';
-import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/istore';
-import { Table } from 'V2/Components/UI';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import * as translationsAPI from 'V2/api/translations/index';
+import { Translate } from '#app/I18N/index.js';
+import { ClientTranslationContextSchema, ClientTranslationSchema } from '#app/istore.js';
+import { Table } from '#V2/Components/UI/index.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import * as translationsAPI from '#V2/api/translations/index.js';
 import {
   ContextPill,
   RenderButton,
   LabelHeader,
   TypeHeader,
   ActionHeader,
-} from './components/TableComponents';
+} from './components/TableComponents.js';
 
 type TranslationContext = ClientTranslationContextSchema & { rowId: string };
 
@@ -76,7 +76,7 @@ const TranslationsList = () => {
               columns={columns}
               data={contexts.systemContexts}
               header={
-                <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+                <Translate className="text-left text-base font-semibold text-ink">
                   System translations
                 </Translate>
               }
@@ -88,7 +88,7 @@ const TranslationsList = () => {
               columns={columns}
               data={contexts.contentContexts}
               header={
-                <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+                <Translate className="text-left text-base font-semibold text-ink">
                   Content translations
                 </Translate>
               }

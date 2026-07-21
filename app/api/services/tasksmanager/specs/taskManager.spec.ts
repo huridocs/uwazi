@@ -1,10 +1,11 @@
 /* eslint-disable max-statements */
 import waitForExpect from 'wait-for-expect';
-import { TaskManager, Service } from 'api/services/tasksmanager/TaskManager';
-import { config } from 'api/config';
-import * as handleError from 'api/utils/handleError.js';
-import { ExternalDummyService } from './ExternalDummyService';
-import { Redis } from 'api/infrastructure/Redis';
+import { TaskManager, Service } from '#api/services/tasksmanager/TaskManager.js';
+import { config } from '#api/config.js';
+import * as handleError from '#api/utils/handleError.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { ExternalDummyService } from './ExternalDummyService.js';
+import { Redis } from '#api/infrastructure/Redis.js';
 
 describe('taskManager', () => {
   let taskManager: TaskManager | undefined;
@@ -13,6 +14,8 @@ describe('taskManager', () => {
   let externalDummyService: ExternalDummyService;
 
   beforeAll(async () => {
+    ['Gabo', 'Rafa', 'Joan', 'Fede', 'Konz'].forEach(name => tenants.add({ name }));
+
     const redisUrl = `redis://${config.redis.host}:${config.redis.port}`;
     service = {
       serviceName: 'KonzNGaboHellKitchen',

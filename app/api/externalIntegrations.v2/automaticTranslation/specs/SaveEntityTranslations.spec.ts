@@ -1,16 +1,17 @@
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB, { DBFixture } from 'api/utils/testing_db';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { createMockLogger } from 'api/core/libs/logger/infrastructure/MockLogger';
-import { Logger } from 'api/core/libs/logger/contracts/Logger';
-import { SaveEntityTranslations } from '../SaveEntityTranslations';
-import { TranslationResult, translationResultSchema } from '../types/TranslationResult';
-import { ValidationError, Validator } from '../infrastructure/Validator';
-import { saveEntityFixtures } from './fixtures/SaveEntity.fixtures';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { SaveEntityTranslations } from '../SaveEntityTranslations.js';
+import { TranslationResult, translationResultSchema } from '../types/TranslationResult.js';
+import { ValidationError, Validator } from '../infrastructure/Validator.js';
+import { saveEntityFixtures } from './fixtures/SaveEntity.fixtures.js';
+import { search } from '#api/search/index.js';
 
 const factory = getFixturesFactory();
 
@@ -23,6 +24,9 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
+const executeWithContext = async (instance: SaveEntityTranslations, input: any) =>
+  testingEnvironment.runWithContext(async () => instance.execute(input));
+
 describe('SaveEntityTranslations', () => {
   let saveEntityTranslations: SaveEntityTranslations;
   let mockLogger: Logger;
@@ -31,8 +35,9 @@ describe('SaveEntityTranslations', () => {
     const transactionManager = TransactionManagerFactory.default();
     mockLogger = createMockLogger();
     saveEntityTranslations = new SaveEntityTranslations(
-      TemplatesDataSourceFactory.default(transactionManager),
-      DefaultEntitiesDataSource(transactionManager),
+      TemplatesDataSourceFactory.default({ transactionManager }),
+      EntitiesDataSourceFactory.default({ transactionManager }),
+      transactionManager,
       new Validator<TranslationResult>(translationResultSchema),
       mockLogger
     );
@@ -40,7 +45,7 @@ describe('SaveEntityTranslations', () => {
 
   it('should validate input has proper shape at runtime', async () => {
     const invalidConfig = { invalid_prop: true };
-    await expect(saveEntityTranslations.execute(invalidConfig)).rejects.toEqual(
+    await expect(executeWithContext(saveEntityTranslations, invalidConfig)).rejects.toEqual(
       new ValidationError('must NOT have additional properties')
     );
   });
@@ -57,7 +62,7 @@ describe('SaveEntityTranslations', () => {
       ],
     };
 
-    await saveEntityTranslations.execute(translationResult);
+    await executeWithContext(saveEntityTranslations, translationResult);
 
     const entities =
       (await testingDB.mongodb?.collection('entities').find({ sharedId: 'entity' }).toArray()) ||
@@ -92,7 +97,7 @@ describe('SaveEntityTranslations', () => {
       ],
     };
 
-    await saveEntityTranslations.execute(translationResult);
+    await executeWithContext(saveEntityTranslations, translationResult);
 
     const entities =
       (await testingDB.mongodb?.collection('entities').find({ sharedId: 'entity' }).toArray()) ||
@@ -111,7 +116,7 @@ describe('SaveEntityTranslations', () => {
     });
   });
 
-  it('should denormalize text property on related entities', async () => {
+  it('should save translated text on the target entity', async () => {
     const fixtures: DBFixture = {
       settings: [
         {
@@ -140,33 +145,18 @@ describe('SaveEntityTranslations', () => {
       translations: [{ text: 'original text', language: 'en', success: true, error_message: '' }],
     };
 
-    await saveEntityTranslations.execute(translationResult);
+    await executeWithContext(saveEntityTranslations, translationResult);
 
     const entities = (await testingDB.mongodb?.collection('entities').find().toArray()) || [];
 
-    expect(entities).toMatchObject([
-      {
-        sharedId: 'A1',
-        metadata: {
-          relationship: [
-            {
-              value: 'B1',
-              label: 'B1title',
-              inheritedValue: [
-                { value: `${SaveEntityTranslations.AITranslatedText} original text` },
-              ],
-            },
-          ],
-        },
+    const b1Entity = entities.find((e: any) => e.sharedId === 'B1');
+    expect(b1Entity).toMatchObject({
+      title: 'B1title',
+      sharedId: 'B1',
+      metadata: {
+        text: [{ value: `${SaveEntityTranslations.AITranslatedText} original text` }],
       },
-      {
-        title: 'B1title',
-        sharedId: 'B1',
-        metadata: {
-          text: [{ value: `${SaveEntityTranslations.AITranslatedText} original text` }],
-        },
-      },
-    ]);
+    });
   });
 
   it('should call Logger.info two times', async () => {
@@ -181,7 +171,7 @@ describe('SaveEntityTranslations', () => {
       ],
     };
 
-    await saveEntityTranslations.execute(translationResult);
+    await executeWithContext(saveEntityTranslations, translationResult);
 
     expect(mockLogger.info).toHaveBeenCalledTimes(2);
   });
@@ -198,7 +188,7 @@ describe('SaveEntityTranslations', () => {
       ],
     };
 
-    await saveEntityTranslations.execute(translationResult);
+    await executeWithContext(saveEntityTranslations, translationResult);
 
     const entities =
       (await testingDB.mongodb?.collection('entities').find({ sharedId: 'entity' }).toArray()) ||
@@ -209,5 +199,23 @@ describe('SaveEntityTranslations', () => {
     });
 
     expect(mockLogger.error).toHaveBeenCalledTimes(1);
+  });
+
+  it('should reindex entity in search after saving translations', async () => {
+    const searchIndexSpy = jest.spyOn(search, 'indexEntities').mockResolvedValue(undefined as any);
+
+    const translationResult: TranslationResult = {
+      key: ['tenant', 'entity', factory.idString('propertyName')],
+      text: 'original text',
+      language_from: 'en',
+      languages_to: ['es'],
+      translations: [{ text: 'texto original', language: 'es', success: true, error_message: '' }],
+    };
+
+    await executeWithContext(saveEntityTranslations, translationResult);
+
+    expect(searchIndexSpy).toHaveBeenCalledWith({ sharedId: { $in: ['entity'] } });
+
+    searchIndexSpy.mockRestore();
   });
 });

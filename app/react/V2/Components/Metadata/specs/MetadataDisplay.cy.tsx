@@ -1,24 +1,21 @@
 import React from 'react';
 import 'cypress-axe';
-import { mount } from '@cypress/react18';
+import { mount } from 'cypress/react';
 import { composeStories } from '@storybook/react';
-import { DEFAULT_ENTITY_BASE_PATH } from 'V2/application/optionsPresets';
-import * as stories from 'app/stories/Metadata.stories';
+import * as stories from '#app/stories/EntityViewer/Metadata.stories.js';
 
 describe('Metadata Display', () => {
   const { Basic } = composeStories(stories);
 
-  // eslint-disable-next-line max-statements
   describe('General', () => {
     beforeEach(() => {
       Basic.args.showGeolocationProperties = false;
       mount(<Basic />);
     });
 
-    it('renders the entity title with the icon', () => {
-      cy.contains('dt', 'Title').should('not.be.visible');
-      cy.contains('dd', 'Title of the displayed entity').should('exist');
-      cy.contains('dd', 'Title of the displayed entity').find('span[role="img"]').should('exist');
+    it('renders creation and edit dates', () => {
+      cy.contains('dt', 'Creation Date').should('exist');
+      cy.contains('dt', 'Edit Date').should('exist');
     });
 
     it('renders a simple text metadata value', () => {
@@ -35,7 +32,7 @@ describe('Metadata Display', () => {
     });
 
     it('renders markdown syntax (bold/italic) content', () => {
-      cy.contains('dt', 'Markdown field using standar markdown syntax').should('exist');
+      cy.contains('dt', 'Markdown field using standard markdown syntax').should('exist');
       cy.contains('strong', 'Bold text').should('exist');
       cy.contains('em', 'italic text').should('exist');
       cy.contains('dd', 'italic text').within(() => {
@@ -51,15 +48,16 @@ describe('Metadata Display', () => {
       cy.contains('span', 'Grouped verbs: verb1').should('exist');
     });
 
-    it('renders relationship links with correct hrefs', () => {
+    it('renders authorized relationship links with correct hrefs', () => {
+      cy.contains('Relationships').should('exist');
       cy.contains('dt', 'Relationship with inheritance').should('exist');
-      cy.contains('a.underline', 'Traffic Accident - Main Street')
-        .should('have.attr', 'href', `${DEFAULT_ENTITY_BASE_PATH}entity4`)
+      cy.contains('via').should('exist');
+      cy.contains('linked').should('exist');
+      cy.contains('a', 'Traffic Accident - Main Street')
+        .should('have.attr', 'href', '/entityv2/entity4')
         .should('have.attr', 'target', '_blank');
-      cy.contains('a.underline', 'Traffic Accident - Main Street')
-        .parent()
-        .find('span[role="img"]')
-        .should('exist');
+      cy.contains('a', 'Traffic Accident - Main Street').find('span[role="img"]').should('exist');
+      cy.contains('This value should not display').should('not.have.attr', 'href');
     });
 
     it('renders external link property as anchor with correct href', () => {
@@ -74,13 +72,13 @@ describe('Metadata Display', () => {
       cy.contains('dt', 'Media with an image').should('exist');
       cy.contains('dt', /Preview of the main document/).should('exist');
 
-      cy.get('img[alt="Alternative text for image"]').should(
+      cy.get('img[alt="/short-video-thumbnail.jpg"]').should(
         'have.attr',
         'src',
         '/short-video-thumbnail.jpg'
       );
 
-      cy.get('img[alt="Anoying rich kid.pdf"]').should('have.attr', 'src', '/batman.jpg');
+      cy.get('img[alt="/batman.jpg"]').should('have.attr', 'src', '/batman.jpg');
     });
 
     it('renders media timelinks as buttons', () => {
@@ -92,11 +90,114 @@ describe('Metadata Display', () => {
 
   describe('accessibility', () => {
     it('should be accessible', () => {
-      Basic.args.showGeolocationProperties = true;
       cy.injectAxe();
       mount(<Basic />);
-      cy.get('div[data-testid="map-container"]').should('exist');
       cy.checkA11y();
+    });
+  });
+
+  describe('dates', () => {
+    it('renders dates with correct locale and format', () => {
+      Basic.args.locale = 'en';
+
+      mount(<Basic />);
+
+      cy.contains('dd', 'Jan 1, 2024').should('exist');
+      cy.contains('dd', 'From Jan 1, 2024 ~ To Jan 2, 2024').should('exist');
+    });
+
+    it('renders dates with russian locale and yyyy-MM-dd format', () => {
+      Basic.args.locale = 'ru';
+
+      mount(<Basic />);
+
+      cy.contains('dd', '1 янв. 2024').should('exist');
+      cy.contains('dd', 'From 1 янв. 2024 г. ~ To 2 янв. 2024 г.').should('exist');
+    });
+  });
+
+  describe('Empty metadata fields', () => {
+    const checkProperties = () => {
+      cy.contains('dd', 'Oct 2, 2025');
+      cy.contains('dd', 'Oct 13, 2025');
+
+      cy.contains('dt', 'A basic simple text').should('not.exist');
+      cy.contains('dt', 'Single Date').should('not.exist');
+      cy.contains('dt', 'Markdown field using sanitized HTML tags').should('not.exist');
+      cy.contains('dt', 'Media with an image').should('not.exist');
+      cy.contains('dt', 'Grouped geolocation 1').should('not.exist');
+      cy.contains('dt', 'External link').should('not.exist');
+      cy.contains('dt', 'Single select').should('not.exist');
+      cy.contains('dt', 'Relationship with inheritance').should('not.exist');
+    };
+
+    it('should not render empty metadata fields', () => {
+      Basic.args.locale = 'en';
+      Basic.args.entity = {
+        _id: '1',
+        language: 'en',
+        mongoLanguage: 'en',
+        sharedId: 'shared1',
+        title: 'Title of the displayed entity',
+        template: 'template1',
+        creationDate: 1759374706197, // Oct 2, 2025
+        editDate: 1760366924144, // Oct 13, 2025
+        metadata: {
+          simple_text: [
+            {
+              value: '',
+            },
+          ],
+          markdown_html: [
+            {
+              value: '',
+            },
+          ],
+          single_date: [],
+          multiple_dates: [],
+          date_range: [],
+          multiple_date_ranges: [],
+          selected_image: [
+            {
+              value: '',
+              alt: '',
+            },
+          ],
+          incident_location: [],
+          external_link: [
+            {
+              value: null,
+            },
+          ],
+          status_selection: [],
+          related_people: [],
+          video_of_event: [{ value: '' }],
+        },
+        user: '',
+      };
+
+      mount(<Basic />);
+
+      checkProperties();
+    });
+
+    it('should not render missing metadata fields', () => {
+      Basic.args.entity = {
+        _id: '1',
+        language: 'en',
+        mongoLanguage: 'en',
+        sharedId: 'shared1',
+        title: 'Title of the displayed entity',
+        template: 'template1',
+        creationDate: 1759374706197, // Oct 2, 2025
+        editDate: 1760366924144, // Oct 13, 2025
+        metadata: {},
+        user: '',
+      };
+
+      mount(<Basic />);
+
+      checkProperties();
     });
   });
 });

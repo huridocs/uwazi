@@ -1,20 +1,20 @@
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource'; // Todo
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';
-import { InheritedPropertyCanNotBeDeleted } from '../domain/template/errors';
-import { TemplateUpdatedEvent } from '../domain/template/events/TemplateUpdatedEvent';
-import { TemplateDiff } from '../domain/template/TemplateDiff';
-import { TemplatesDataSource } from './contracts/TemplatesDataSource';
-import { TranslationService } from '../domain/template/TranslationService';
-import { AbstractUseCase } from '../libs/UseCase';
-import { PropertyCreatorServiceStrategy } from './propertyCreatorService/PropertyCreatorServiceStrategy';
-import { ThesauriDataSource } from './propertyCreatorService/SelectPropertyCreatorService';
-import { UpdateTemplateDTO } from './TemplateDTOs';
-import { TemplatePostProcessService } from './TemplatePostProcessService';
-import { Template } from '../domain/template/Template';
-import { MongoTemplateMapper } from '../infrastructure/mongodb/template/MongoTemplateMapper';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
+import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js'; // Todo
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory.js';
+import { InheritedPropertyCanNotBeDeleted } from '../domain/template/errors.js';
+import { TemplateUpdatedEvent } from '../domain/template/events/TemplateUpdatedEvent.js';
+import { TemplateDiff } from '../domain/template/TemplateDiff.js';
+import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
+import { TranslationService } from '../domain/template/TranslationService.js';
+import { AbstractUseCase } from '../libs/UseCase.js';
+import { PropertyCreatorServiceStrategy } from './propertyCreatorService/PropertyCreatorServiceStrategy.js';
+import { ThesauriDataSource } from './propertyCreatorService/SelectPropertyCreatorService.js';
+import { UpdateTemplateDTO } from './TemplateDTOs.js';
+import { TemplatePostProcessService } from './TemplatePostProcessService.js';
+import { Template } from '../domain/template/Template.js';
+import { MongoTemplateMapper } from '../infrastructure/mongodb/template/MongoTemplateMapper.js';
 
 type Input = UpdateTemplateDTO;
 type Output = Template;
@@ -22,7 +22,7 @@ type Output = Template;
 type Deps = {
   templatesDS: TemplatesDataSource;
   thesauriDS: ThesauriDataSource;
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   translationService: TranslationService;
   settingsDS: SettingsDataSource;
   relationshipTypesDS: RelationshipTypesDataSource;
@@ -42,7 +42,7 @@ class UpdateTemplateUseCase extends AbstractUseCase<Input, Output, Deps, [Contex
 
     const service = new TemplatePostProcessService({
       ...this.deps,
-      jobsDispatcher: this.jobsDispatcher,
+      dispatcher: this.dispatcher,
     });
 
     const currentTemplate = (await this.deps.templatesDS.getById(input.id)).getDataOrThrow();

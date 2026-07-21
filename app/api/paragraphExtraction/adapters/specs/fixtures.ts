@@ -1,12 +1,12 @@
 /* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { UserRole } from 'shared/types/userSchema';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { UserRole } from '#shared/types/userSchema.js';
 
 const f = getFixturesFactory();
 
-const user = f.user('admin', UserRole.ADMIN);
+const user = f.user({ username: 'admin', role: UserRole.ADMIN });
 
 const sourceTemplate = f.template('Source Template');
 

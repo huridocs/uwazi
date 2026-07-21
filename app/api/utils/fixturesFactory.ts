@@ -2,34 +2,35 @@
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
 
-import { testingDB } from 'api/utils/testing_db';
-import { EntitySchema } from 'shared/types/entityType';
-import { FileType } from 'shared/types/fileType';
-import { UserRole } from 'shared/types/userSchema';
-import { UserSchema } from 'shared/types/userType';
-import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
+import { testingDB } from '#api/utils/testing_db.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { FileType } from '#shared/types/fileType.js';
+import { ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
 import {
   PropertySchema,
   MetadataSchema,
   PropertyValueSchema,
   MetadataObjectSchema,
-  ExtractedMetadataSchema,
-} from 'shared/types/commonTypes';
-import { UpdateLog } from 'api/updatelogs';
-import { IXExtractorType } from 'shared/types/extractorType';
-import { IXSuggestionType } from 'shared/types/suggestionType';
-import { WithId } from 'api/odm/model';
-import { TemplateSchema } from 'shared/types/templateType';
-import { getV2FixturesFactoryElements } from 'api/common.v2/testing/fixturesFactory';
-import { IXModelType } from 'shared/types/IXModelType';
-import { PermissionSchema } from 'shared/types/permissionType';
-import { MongoSegmentationBuilder } from 'api/core/infrastructure/mongodb/files/specs/MongoSegmentationBuilder';
-import { LanguageUtils } from 'shared/language';
-import { ConnectionSchema } from 'shared/types/connectionType';
+  PropertySelectionSchema,
+} from '#shared/types/commonTypes.js';
+import { UpdateLog } from '#api/updatelogs/index.js';
+import { IXExtractorType } from '#shared/types/extractorType.js';
+import { IXSuggestionType } from '#shared/types/suggestionType.js';
+import { WithId } from '#api/odm/model.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
+import { getV2FixturesFactoryElements } from '#api/common.v2/testing/fixturesFactory.js';
+import { IXModelType } from '#shared/types/IXModelType.js';
+import { PermissionSchema } from '#shared/types/permissionType.js';
+import { MongoSegmentationBuilder } from '#api/core/infrastructure/mongodb/files/specs/MongoSegmentationBuilder.js';
+import { LanguageUtils } from '#shared/language/index.js';
+import { ConnectionSchema } from '#shared/types/connectionType.js';
+import { User, UserRole } from '#api/core/domain/user/User.js';
 import {
   ProcessedPDFDBO,
   ThumbnailDBO,
-} from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
+} from '#api/core/infrastructure/mongodb/files/schemas/FilesTypes.js';
+import { UserDBO } from '#api/core/infrastructure/mongodb/user/UserDBO.js';
+import { UserGroupDBO } from '#api/core/infrastructure/mongodb/user/UserGroupDBO.js';
 
 type PartialSuggestion = Partial<Omit<IXSuggestionType, 'state'>> & {
   state?: Partial<IXSuggestionType['state']>;
@@ -100,8 +101,14 @@ const thesaurusNestedValues = (rootValue: string, children: Array<string>) => {
   return { id: rootValue, label: rootValue, values: nestedValues };
 };
 
-function getFixturesFactory() {
+type FixturesFactoryConfig = {
+  convertIdToString?: boolean;
+  tenantId?: string;
+};
+
+function getFixturesFactory(config?: FixturesFactoryConfig) {
   const idMapper = getIdMapper();
+  const { convertIdToString = false, tenantId } = config || {};
 
   return Object.freeze({
     id: idMapper,
@@ -127,7 +134,7 @@ function getFixturesFactory() {
       type: PermissionSchema['type'],
       level: PermissionSchema['level']
     ): PermissionSchema => ({
-      refId: idMapper(user),
+      refId: idMapper(user).toString(),
       type,
       level,
     }),
@@ -179,11 +186,11 @@ function getFixturesFactory() {
       });
     },
 
-    fileExtractedMetadata: (
+    filePropertySelection: (
       propertyName: string,
       text: string,
       rectangles = [{ top: 0, left: 0, width: 0, height: 0, page: '1' }]
-    ): ExtractedMetadataSchema => ({
+    ): PropertySelectionSchema => ({
       name: propertyName,
       selection: {
         text,
@@ -231,6 +238,20 @@ function getFixturesFactory() {
         }
       }
 
+      if (convertIdToString) {
+        return {
+          _id: idMapper(id).toString(),
+          tenant_id: tenantId,
+          filename: id,
+          originalname: id,
+          mimetype: 'application/pdf',
+          size: 1024,
+          creationDate: 1000,
+          ...extra,
+          ...fileLanguage,
+        } as unknown as WithId<FileType>;
+      }
+
       return {
         filename: id,
         originalname: id,
@@ -253,7 +274,7 @@ function getFixturesFactory() {
       filename?: string | undefined,
       language: string = 'en',
       originalname: string | undefined = undefined,
-      extractedMetadata: ExtractedMetadataSchema[] = [],
+      propertySelections: PropertySelectionSchema[] = [],
       status: FileType['status'] = undefined
     ): WithId<FileType> => {
       const file: WithId<FileType> = {
@@ -263,7 +284,8 @@ function getFixturesFactory() {
         type,
         filename: filename || id,
         originalname: originalname || filename,
-        extractedMetadata,
+        propertySelections,
+        mimetype: type === 'document' ? 'application/pdf' : undefined,
       };
 
       if (status) {
@@ -384,12 +406,39 @@ function getFixturesFactory() {
       };
     },
 
-    user: (username: string, role?: UserRole, email?: string, password?: string): UserSchema => ({
+    user: ({
       username,
-      _id: idMapper(username),
-      role: role || UserRole.COLLABORATOR,
-      email: email || `${username}@provider.tld`,
+      role,
+      email,
       password,
+      deletedAt,
+    }: {
+      username: string;
+      role: UserRole;
+      email?: string;
+      password?: string;
+      deletedAt?: Date | string | number;
+    }): UserDBO => {
+      const user = new User({
+        _id: idMapper(username).toString(),
+        username,
+        role: role || UserRole.COLLABORATOR,
+        email: email || `${username}@provider.tld`,
+      });
+      return {
+        _id: idMapper(username),
+        username: user.username,
+        role: user.role,
+        email: user.email,
+        password: password || 'hash',
+        ...(deletedAt && { deletedAt: deletedAt as Date }),
+      };
+    },
+
+    usergroup: (name: string, members?: { refId: string }[]): UserGroupDBO => ({
+      _id: idMapper(name),
+      name,
+      members: members ?? [],
     }),
 
     updatelog: (

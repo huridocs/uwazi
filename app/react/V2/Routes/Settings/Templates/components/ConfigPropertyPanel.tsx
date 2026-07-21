@@ -1,14 +1,14 @@
 /* eslint-disable max-lines */
 import React, { useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { Sidepanel } from 'V2/Components/UI/Sidepanel';
-import { t, Translate } from 'app/I18N';
-import { Button } from 'V2/Components/UI/Button';
-import { PropertyTypeSchema } from 'shared/types/commonTypes';
-import { ClientTemplateSchema, ClientProperty } from 'V2/shared/types';
-import { propertyIcons } from 'V2/Components/UI/Icons';
+import { Sidepanel } from '#V2/Components/UI/Sidepanel.js';
+import { t, Translate } from '#app/I18N/index.js';
+import { Button } from '#V2/Components/UI/Button.js';
+import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
+import { ClientTemplateSchema, ClientProperty } from '#V2/shared/types.js';
+import { propertyIcons } from '#V2/Components/UI/Icons.js';
 import { useAtomValue } from 'jotai';
-import { templatesAtom } from 'V2/atoms';
+import { templatesAtom } from '#V2/atoms/index.js';
 import {
   PropertyTypeField,
   LabelField,
@@ -20,13 +20,13 @@ import {
   FilterField,
   StyleField,
   FullWidthField,
-} from './fields';
-import { ThesaurusField } from './fields/ThesaurusField';
-import { RelationshipFields } from './fields/RelationshipFields';
-import { MatchingPropertiesTable } from './MatchingPropertiesTable';
-import { translationsKeys } from '../helpers';
-import { PropertyRow } from '../types';
-import { GeneratedIdField } from './fields/GeneratedIdField';
+} from './fields/index.js';
+import { ThesaurusField } from './fields/ThesaurusField.js';
+import { RelationshipFields } from './fields/RelationshipFields.js';
+import { MatchingPropertiesTable } from './MatchingPropertiesTable.js';
+import { optionalIdMatches, relationshipConfigMatches, translationsKeys } from '../helpers.js';
+import { PropertyRow } from '../types.js';
+import { GeneratedIdField } from './fields/GeneratedIdField.js';
 
 interface ConfigPropertyPanelProps {
   isOpen: boolean;
@@ -172,7 +172,7 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
 
     if (type === 'select' || type === 'multiselect') {
       const hasContentMismatch = matchingProperties.some(
-        (prop: ClientProperty) => prop.content !== content
+        (prop: ClientProperty) => !optionalIdMatches(prop.content, content)
       );
       if (hasContentMismatch) {
         return false;
@@ -182,9 +182,7 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
     if (type === 'relationship') {
       const hasRelationshipMismatch = matchingProperties.some(
         (prop: ClientProperty) =>
-          prop.content !== content ||
-          prop.relationType !== relationType ||
-          JSON.stringify(prop.inherit) !== JSON.stringify(inherit)
+          !relationshipConfigMatches(prop, { content, relationType, inherit })
       );
       if (hasRelationshipMismatch) {
         return false;
@@ -224,14 +222,14 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
               <div className="flex flex-col gap-4">
                 {propertyToEdit ? (
                   <div className="flex flex-col gap-2">
-                    <p className="text-sm font-medium text-gray-700">
+                    <p className="text-sm font-medium text-ink-secondary">
                       <Translate>Type</Translate>
                     </p>
-                    <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-4 py-2 w-full">
-                      <span className="w-5 h-5 text-gray-500">
+                    <div className="flex w-full items-center gap-2 rounded-lg px-4 py-2 bg-(--color-theme-surface-muted)">
+                      <span className="h-5 w-5 text-ink-muted">
                         {propertyIcons[type as keyof typeof propertyIcons]}
                       </span>
-                      <span className="text-sm text-gray-700">
+                      <span className="text-sm text-ink-secondary">
                         {t(
                           'System',
                           translationsKeys[type as keyof typeof translationsKeys] || type,
@@ -280,7 +278,7 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
               </div>
               {!isCommonProperty && (
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-700 mb-2">
+                  <h3 className="mb-2 text-sm font-semibold text-ink-secondary">
                     <Translate>
                       Properties from other templates in the collection using the same label.
                     </Translate>
@@ -299,10 +297,10 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
             </div>
           </Sidepanel.Body>
           <Sidepanel.Footer className="flex justify-end gap-2 p-4 border-t">
-            <Button type="button" styling="outline" onClick={onClose}>
+            <Button type="button" variant="secondary" onClick={onClose}>
               <Translate>Cancel</Translate>
             </Button>
-            <Button type="submit" color="success" disabled={!validateMatchingProperties()}>
+            <Button type="submit" variant="success" disabled={!validateMatchingProperties()}>
               <Translate>{propertyToEdit ? 'Save' : 'Add property'}</Translate>
             </Button>
           </Sidepanel.Footer>

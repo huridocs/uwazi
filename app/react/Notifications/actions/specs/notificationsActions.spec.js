@@ -1,6 +1,11 @@
-import { mockID } from 'shared/uniqueID';
-import * as actions from 'app/Notifications/actions/notificationsActions';
-import * as types from 'app/Notifications/actions/actionTypes';
+import { mockID } from '#shared/uniqueID.js';
+import * as actions from '#app/Notifications/actions/notificationsActions.js';
+import * as types from '#app/Notifications/actions/actionTypes.js';
+import * as notifyBridge from '#V2/utils/notifyBridge.js';
+
+jest.mock('#V2/utils/notifyBridge.js', () => ({
+  notify: jest.fn(),
+}));
 
 describe('notificationsActions', () => {
   describe('async actions', () => {
@@ -36,6 +41,7 @@ describe('notificationsActions', () => {
           type: types.NOTIFY,
           notification: { message: 'message', type: 'type', id: 'unique_id' },
         });
+        expect(notifyBridge.notify).toHaveBeenCalledWith('message', 'type');
         jasmine.clock().tick(1500);
         expect(dispatch).toHaveBeenCalledWith({ type: types.REMOVE_NOTIFICATION, id: 'unique_id' });
       });
@@ -49,6 +55,7 @@ describe('notificationsActions', () => {
             type: types.NOTIFY,
             notification: { message: 'message', type: 'type', id: 'unique_id' },
           });
+          expect(notifyBridge.notify).toHaveBeenCalledWith('message', 'type');
           jasmine.clock().tick(6001);
           expect(dispatch).not.toHaveBeenCalledWith({
             type: types.REMOVE_NOTIFICATION,

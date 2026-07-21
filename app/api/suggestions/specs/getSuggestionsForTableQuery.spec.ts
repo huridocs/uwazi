@@ -1,8 +1,8 @@
 /* eslint-disable max-statements */
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DBFixture } from 'api/utils/testing_db';
-import { factory } from './fixtures';
-import { GetSuggestionsForTableQuery } from '../getSuggestionsForTableQuery/getSuggestionsForTableQuery';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { factory } from './fixtures.js';
+import { GetSuggestionsForTableQuery } from '../getSuggestionsForTableQuery/getSuggestionsForTableQuery.js';
 
 const createSut = () => {
   const sut = new GetSuggestionsForTableQuery();
@@ -534,25 +534,25 @@ const fixtures: DBFixture = {
     factory.document('extractor_source_pdf_target_text_entity_1_pdf_1', {
       language: 'en',
       entity: 'extractor_source_pdf_target_text_entity_1',
-      extractedMetadata: [],
+      propertySelections: [],
     }),
 
     factory.document('extractor_source_pdf_target_text_entity_1_pdf_2', {
       language: 'es',
       entity: 'extractor_source_pdf_target_text_entity_1',
-      extractedMetadata: [{ name: 'target_text', selection: { text: 'labeled_value' } }],
+      propertySelections: [{ name: 'target_text', selection: { text: 'labeled_value' } }],
     }),
 
     factory.document('extractor_source_pdf_target_text_entity_2_pdf_1', {
       language: 'en',
       entity: 'extractor_source_pdf_target_text_entity_2',
-      extractedMetadata: [],
+      propertySelections: [],
     }),
 
     factory.document('extractor_source_pdf_target_multiselect_entity_1_pdf_1', {
       language: 'en',
       entity: 'extractor_source_pdf_target_multiselect_entity_1',
-      extractedMetadata: [],
+      propertySelections: [],
     }),
   ],
 };

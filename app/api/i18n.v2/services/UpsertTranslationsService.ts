@@ -1,9 +1,9 @@
-import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
-import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
-import { Translation } from '../model/Translation';
-import { CreateTranslationsData } from './CreateTranslationsService';
-import { ValidateTranslationsService } from './ValidateTranslationsService';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { TranslationsDataSource } from '../contracts/TranslationsDataSource.js';
+import { Translation } from '../model/Translation.js';
+import { CreateTranslationsData } from './CreateTranslationsService.js';
+import { ValidateTranslationsService } from './ValidateTranslationsService.js';
 
 export class UpsertTranslationsService {
   private translationsDS: TranslationsDataSource;

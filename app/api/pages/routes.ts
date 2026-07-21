@@ -1,15 +1,22 @@
-import { Application, Request } from 'express';
+import type { Application, Request } from 'express';
 
-import { validation } from 'api/utils';
-import needsAuthorization from '../auth/authMiddleware';
-import pages from './pages';
+import { validation } from '#api/utils/index.js';
+import needsAuthorization from '../auth/authMiddleware.js';
+import pages from './pages.js';
+import { toLegacyHttpError } from './legacyHttpErrors.js';
+
+const legacyCatch =
+  (next: (error: unknown) => void) =>
+  (error: unknown): void => {
+    next(toLegacyHttpError(error));
+  };
 
 export default (app: Application) => {
   app.post('/api/pages', needsAuthorization(['admin']), (req, res, next) => {
     pages
       .save(req.body, req.user, req.language)
       .then(response => res.json(response))
-      .catch(next);
+      .catch(legacyCatch(next));
   });
 
   app.get(
@@ -32,7 +39,7 @@ export default (app: Application) => {
       pages
         .get({ ...req.query, language: req.language })
         .then(res.json.bind(res))
-        .catch(next);
+        .catch(legacyCatch(next));
     }
   );
 
@@ -47,16 +54,21 @@ export default (app: Application) => {
             sharedId: {
               type: 'string',
             },
-            slug: {
+            mode: {
               type: 'string',
+              enum: ['editor'],
             },
           },
+          required: ['sharedId'],
         },
       },
       required: ['query'],
     }),
-    (req: Request<{}, {}, {}, { sharedId: string }>, res, next) => {
-      pages.getById(req.query.sharedId, req.language).then(res.json.bind(res)).catch(next);
+    (req: Request<{}, {}, {}, { sharedId: string; mode?: 'editor' }>, res, next) => {
+      pages
+        .getById({ sharedId: req.query.sharedId }, req.language, req.query.mode)
+        .then(res.json.bind(res))
+        .catch(legacyCatch(next));
     }
   );
 
@@ -81,7 +93,7 @@ export default (app: Application) => {
       pages
         .delete(req.query.sharedId)
         .then(response => res.json(response))
-        .catch(next);
+        .catch(legacyCatch(next));
     }
   );
 };

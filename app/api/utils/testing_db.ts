@@ -1,37 +1,37 @@
-import { setupTestUploadedPaths } from 'api/files/filesystem';
-import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
-import { DB } from 'api/odm';
-import { models } from 'api/odm/model';
-import { RelationshipDBOType } from 'api/relationships.v2/database/schemas/relationshipTypes';
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { Db, ObjectId } from 'mongodb';
 import mongoose, { Connection } from 'mongoose';
 import path from 'path';
-import { EntitySchema } from 'shared/types/entityType';
-import { FileType } from 'shared/types/fileType';
-import { PageType } from 'shared/types/pageType';
-import { Settings } from 'shared/types/settingsType';
-import { IXSuggestionType } from 'shared/types/suggestionType';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { UserGroupSchema } from 'shared/types/userGroupType';
-import uniqueID from 'shared/uniqueID';
-import { config } from 'api/config';
-import { UserSchema } from '../../shared/types/userType';
-import { elasticTesting } from './elastic_testing';
-import { testingTenants } from './testingTenants';
+import { setupTestUploadedPaths } from '#api/files/filesystem.js';
+import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
+import { DB } from '#api/odm/index.js';
+import { UserDBO } from '#api/core/infrastructure/mongodb/user/UserDBO.js';
+import { models } from '#api/odm/model.js';
+import { RelationshipDBOType } from '#api/relationships.v2/database/schemas/relationshipTypes.js';
+import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { FileType } from '#shared/types/fileType.js';
+import { PageType } from '#shared/types/pageType.js';
+import { Settings } from '#shared/types/settingsType.js';
+import { IXSuggestionType } from '#shared/types/suggestionType.js';
+import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
+import { UserGroupSchema } from '#shared/types/userGroupType.js';
+import uniqueID from '#shared/uniqueID.js';
+import { config } from '#api/config.js';
+import { elasticTesting } from './elastic_testing.js';
+import { testingTenants } from './testingTenants.js';
 
 mongoose.Promise = Promise;
 let connected = false;
 let mongodb: Db;
 
-export type DBFixture = {
+type DBFixture = {
   files?: FileType[];
   entities?: EntitySchema[];
   dictionaries?: ThesaurusSchema[];
   usergroups?: UserGroupSchema[];
   pages?: PageType[];
   ixsuggestions?: IXSuggestionType[];
-  users?: UserSchema[];
+  users?: UserDBO[];
   settings?: Settings[];
   relationships?: RelationshipDBOType[];
   translationsV2?: TranslationDBO[];
@@ -198,6 +198,6 @@ const testingDB: {
 };
 
 export { testingDB, fixturer };
-
+export type { DBFixture };
 // deprecated, for backward compatibility
 export default testingDB;

@@ -1,2 +1,2 @@
-export { Table } from './Table';
-export type { TableProps, TableRow } from './Table';
+export { Table } from './Table.js';
+export type { TableProps, TableRow } from './Table.js';

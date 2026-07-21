@@ -1,21 +1,22 @@
-import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { CachedTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants/tenantContext';
-import { DenormalizeThesaurusEntitiesUseCase } from 'api/core/application/DenormalizeThesaurusEntities';
-import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory';
-import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory';
+import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { CachedTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { DenormalizeThesaurusEntitiesUseCase } from '#api/core/application/DenormalizeThesaurusEntities.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
+import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
+import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
+import { EntitiesServiceFactory } from './EntitiesServiceFactory.js';
 
 class DenormalizeThesaurusEntitiesUseCaseFactory {
-  static default() {
-    const transactionManager = TransactionManagerFactory.default();
-    const tenant = tenants.current();
+  static default(
+    overrides?: Partial<ConstructorParameters<typeof DenormalizeThesaurusEntitiesUseCase>[0]>
+  ) {
+    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
 
-    const settingsDS = SettingsDataSourceFactory.cached(transactionManager);
-    const thesauriDS = ThesauriDataSourceFactory.cached(transactionManager);
-    const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.cached({ transactionManager });
+    const thesauriDS = ThesauriDataSourceFactory.cached({ transactionManager });
+    const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
     const translationsDS = CachedTranslationsDataSource(transactionManager);
 
     const propertyAssignmentCreatorServiceStrategy =
@@ -26,16 +27,17 @@ class DenormalizeThesaurusEntitiesUseCaseFactory {
         translationsDS,
       });
 
-    const useCase = new DenormalizeThesaurusEntitiesUseCase(
+    return new DenormalizeThesaurusEntitiesUseCase(
       {
+        settingsDS,
         propertyAssignmentCreatorServiceStrategy,
         transactionManager,
         entitiesDS,
+        entitiesService: EntitiesServiceFactory.default(),
+        ...overrides,
       },
-      { actor: permissionsContext.getUserInContext()!, tenant }
+      { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant }
     );
-
-    return useCase;
   }
 }
 

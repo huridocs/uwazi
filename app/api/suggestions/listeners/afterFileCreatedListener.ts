@@ -1,11 +1,12 @@
-import { EventsBus } from 'api/core/libs/eventsbus';
-import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
-import { FileType } from 'shared/types/fileType';
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { inspect } from 'util';
-import { Logger } from 'api/core/libs/logger/contracts/Logger';
-import { CreateBlankSuggestionsFromDocument } from '../useCases/createBlankSuggestionsFromDocument';
-import { IXValidationError } from '../ixValidationError';
+import { ObjectId } from 'mongodb';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
+import { FileType } from '#shared/types/fileType.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { CreateBlankSuggestionsFromDocument } from '../useCases/createBlankSuggestionsFromDocument.js';
+import { IXValidationError } from '../ixValidationError.js';
 
 type Dependencies = {
   settingsDS: SettingsDataSource;
@@ -41,8 +42,13 @@ export class AfterFileUpdatedListener {
   }
 
   private async onFileCreated(file: FileType) {
+    const normalizedFile = {
+      ...file,
+      _id: typeof file._id === 'string' ? ObjectId.createFromHexString(file._id) : file._id,
+    };
+
     try {
-      await this.deps.createBlankSuggestionsFromDocument.execute({ file });
+      await this.deps.createBlankSuggestionsFromDocument.execute({ file: normalizedFile });
     } catch (e) {
       this.deps.logger.info(inspect(e));
       if (e instanceof IXValidationError) return;

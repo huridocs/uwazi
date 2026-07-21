@@ -28,7 +28,10 @@ When continuing work:
 - Architecture: V2 hexagonal, job-processed stages after a quick upload response.
 - Collection: `csv_imports` stores import state and metadata.
 - Storage: Files.v2 under `csv-imports/{importId}`; canonical extracted CSV at `extracted/import.csv`.
-- Routing: `POST /api/import`, admin-only, feature-flagged via `v2CSVImport`.
+- Routing (current baseline, Apr 2026):
+  - `POST /api/import` is admin-only V1 flow.
+  - `POST /api/csvImportEntities` is admin-only V2 flow.
+  - `v2CSVImport` is not used for backend route switching.
 - MVP statuses so far: `queued` → `extracting files` → `files extracted`.
 - Events: Job-scoped session notifications, not tenant-wide broadcasts.
 - **Naming convention (Nov 2025)**: application-layer jobs live in `app/api/csv.v2/application/jobs/*Job.ts` (e.g., `CsvExtractUploadedZipJob`, `CsvPreflightJob`). Queue wrappers now live in `app/api/csv.v2/infrastructure/queue/*JobDispatcher.ts`. References to “job” in this doc always mean the application-layer class unless explicitly stated.
@@ -51,7 +54,7 @@ Whenever this doc or the addenda mention “Job”, assume the application-layer
 
 The legacy flow is executed via the non-v2-flagged route, which directly constructs a `CSVLoader` and processes the upload immediately on the request thread:
 
-- Entry: `app/api/csv.v2/routes/routes.ts` → `v1Import(...)` (when `v2CSVImport` is disabled) → `new CSVLoader().load(...)`.
+- Entry (legacy V1 path): `app/api/csv.v2/infrastructure/http/routes.ts` → `CSVLoader` flow for `/api/import`.
 - Core flow in `app/api/csv/csvLoader.ts`:
   - `validateColumns(...)` (headers/layout validation)
   - `arrangeThesauri(...)` (discover and create missing thesaurus values + update translations)

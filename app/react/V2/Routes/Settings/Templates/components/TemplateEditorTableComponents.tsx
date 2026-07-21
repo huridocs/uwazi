@@ -1,15 +1,15 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { Button } from 'V2/Components/UI/Button';
+import { Button } from '#V2/Components/UI/Button.js';
 import { ColumnDef, createColumnHelper, CellContext } from '@tanstack/react-table';
-import { PropertySchema } from 'shared/types/commonTypes';
-import { Translate } from 'app/I18N/Translate';
-import { propertyIcons } from 'V2/Components/UI/Icons';
-import { Pill } from 'V2/Components/UI';
+import { PropertySchema } from '#shared/types/commonTypes.js';
+import { Translate } from '#app/I18N/Translate.js';
+import { propertyIcons } from '#V2/Components/UI/Icons.js';
+import { Pill } from '#V2/Components/UI/index.js';
 import { LockClosedIcon } from '@heroicons/react/24/outline';
 import { useAtomValue } from 'jotai';
-import { thesauriAtom, templatesAtom, relationshipTypesAtom } from 'V2/atoms';
-import { translationsKeys } from '../helpers';
+import { thesauriAtom, templatesAtom, relationshipTypesAtom } from '#V2/atoms/index.js';
+import { translationsKeys } from '../helpers.js';
 
 type PropertyRow = PropertySchema & {
   rowId: string;
@@ -58,7 +58,7 @@ const TypeCell = ({ cell }: CellContext<PropertyRow, string>) => (
 const ActionsCell =
   (handleEditProperty: (property: PropertyRow) => void) =>
   ({ cell }: CellContext<PropertyRow, any>) => (
-    <Button size="small" styling="light" onClick={() => handleEditProperty(cell.row.original)}>
+    <Button size="small" variant="ghost" onClick={() => handleEditProperty(cell.row.original)}>
       <Translate>Edit</Translate>
     </Button>
   );

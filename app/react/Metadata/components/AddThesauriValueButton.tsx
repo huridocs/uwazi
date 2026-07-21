@@ -1,6 +1,6 @@
-import { Translate } from 'app/I18N';
+import { Translate } from '#app/I18N/index.js';
 import React, { useState } from 'react';
-import AddThesauriValueModal from './AddThesauriValueModal';
+import { AddThesauriValueModal } from './AddThesauriValueModal.js';
 
 interface AddThesauriValueButtonProps {
   values: any[];

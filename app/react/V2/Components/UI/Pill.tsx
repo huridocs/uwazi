@@ -3,16 +3,16 @@ import React from 'react';
 type PillColor = 'primary' | 'gray' | 'yellow' | 'green' | 'blue' | 'red' | 'indigo';
 interface PillProps {
   children: string | React.ReactNode;
-  color: PillColor;
+  color?: PillColor;
   className?: string;
 }
 
-const Pill = ({ children, color = 'gray', className }: PillProps) => {
+const Pill = ({ children, color, className }: PillProps) => {
   let pillColors = '';
 
   switch (color) {
     case 'gray':
-      pillColors = 'bg-gray-100';
+      pillColors = 'bg-(--color-theme-surface-warm) text-ink-secondary';
       break;
 
     case 'yellow':
@@ -32,12 +32,14 @@ const Pill = ({ children, color = 'gray', className }: PillProps) => {
       break;
 
     default:
-      pillColors = 'bg-primary-100 text-primary-800';
+      pillColors = 'bg-(--color-theme-surface-muted) text-ink-secondary';
       break;
   }
   return (
     <span
-      className={`${className} ${pillColors} px-2.5 py-1 rounded-md text-xs `}
+      className={[className, pillColors, 'px-1.5 py-1 rounded-md text-xs font-semibold']
+        .filter(Boolean)
+        .join(' ')}
       data-testid="pill-comp"
     >
       {children}

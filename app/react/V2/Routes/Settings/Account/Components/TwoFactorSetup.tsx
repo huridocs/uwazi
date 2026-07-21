@@ -1,16 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import api from 'app/utils/api';
 import { useRevalidator } from 'react-router';
-import { useSetAtom } from 'jotai';
-
-import { RequestParams } from 'app/utils/RequestParams';
-
-import { notificationAtom } from 'app/V2/atoms';
-
-import { Button, Card, CopyValueInput, Sidepanel } from 'app/V2/Components/UI';
-import { Translate } from 'app/I18N';
+import { Button, Card, CopyValueInput, Sidepanel } from '#V2/Components/UI/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import loadable from '@loadable/component';
-import { InputField } from 'app/V2/Components/Forms';
+import { InputField } from '#V2/Components/Forms/index.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { useServices } from '#V2/services/index.js';
 
 const QRCodeSVG = loadable(
   async () => import(/* webpackChunkName: "qrcode.react" */ 'qrcode.react'),
@@ -25,27 +20,36 @@ interface TwoFactorSetupProps {
 }
 
 const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
+  const { users: usersService } = useServices();
   const [token, setToken] = useState('');
-  const [_secret, setSecret] = useState('');
-  const [_otpauth, setOtpauth] = useState('');
-  const setNotifications = useSetAtom(notificationAtom);
+  const [secret, setSecret] = useState('');
+  const [otpauth, setOtpauth] = useState('');
+  const { notify } = useRequestStatus();
   const revalidator = useRevalidator();
   const [tokenError, setTokenError] = useState(false);
 
   useEffect(() => {
-    if (isOpen && !_secret) {
-      api
-        .post('auth2fa-secret')
-        .then((resp: Response) => resp.json)
-        .then(({ otpauth, secret }: { otpauth: string; secret: string }) => {
-          setSecret(secret);
-          setOtpauth(otpauth);
-        })
-        .catch((error: Error) => {
-          throw error;
-        });
-    }
-  }, [isOpen, _secret]);
+    if (!isOpen || secret) return;
+
+    const loadSecret = async () => {
+      const [data, error] = await usersService.get2FASecret();
+
+      if (error) {
+        notify(
+          'error',
+          t('System', 'An error occurred', null, false),
+          undefined,
+          error.detail ?? error.message
+        );
+        return;
+      }
+
+      setSecret(data.secret);
+      setOtpauth(data.otpauth);
+    };
+
+    loadSecret().catch(() => undefined);
+  }, [isOpen, secret, usersService, notify]);
 
   const tokenChange = (value: string) => {
     setToken(value);
@@ -55,20 +59,26 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
   };
 
   const enable2fa = async () => {
-    try {
-      await api.post('auth2fa-enable', new RequestParams({ token }));
-      await revalidator.revalidate();
-      closePanel();
-      setNotifications({
-        type: 'success',
-        text: <Translate>2FA Enabled</Translate>,
-      });
-    } catch (error) {
+    const [, error] = await usersService.enable2FA(token);
+
+    if (error) {
       if (error.status === 409) {
         setTokenError(true);
+        return;
       }
-      throw error;
+
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        error.detail ?? error.message
+      );
+      return;
     }
+
+    await revalidator.revalidate();
+    closePanel();
+    notify('success', t('System', '2FA Enabled', null, false));
   };
 
   return (
@@ -88,7 +98,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
                   Download a third-party authenticator app from your mobile store.
                 </Translate>
                 &nbsp;
-                <span no-translate className="italic text-gray-500">
+                <span no-translate className="italic text-ink-muted">
                   (Google Authenticator, LastPass Authenticator, Microsoft Authenticator, Authy,
                   etc.)
                 </span>
@@ -101,7 +111,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
               </li>
             </ol>
             <p>
-              <Translate className="italic text-gray-500">
+              <Translate className="italic text-ink-muted">
                 Instructions on how to achieve this will vary according to the app used, please
                 refer to the app's documentation.
               </Translate>
@@ -110,7 +120,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
           <Card className="mb-4 sm:col-span-1" title={<Translate>QR Code</Translate>}>
             <div className="flex justify-center">
               <QRCodeSVG
-                value={_otpauth}
+                value={otpauth}
                 level="Q"
                 includeMargin={false}
                 size={180}
@@ -123,14 +133,14 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
           </Card>
           <Card className="mb-4 sm:col-span-3" title={<Translate>Secret keys</Translate>}>
             <CopyValueInput
-              value={_secret}
+              value={secret}
               className="w-full mb-4"
               label={
                 <>
                   <Translate className="block">
                     You can also enter this secret key into your Authenticator app.
                   </Translate>
-                  <Translate className="block italic text-gray-500">
+                  <Translate className="block italic text-ink-muted">
                     *please keep this key secret and don't share it.
                   </Translate>
                 </>
@@ -160,7 +170,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
       </Sidepanel.Body>
       <Sidepanel.Footer className="px-4 py-3">
         <div className="flex w-full gap-2">
-          <Button styling="light" onClick={closePanel} className="grow">
+          <Button variant="ghost" onClick={closePanel} className="grow">
             <Translate>Cancel</Translate>
           </Button>
           <Button className="grow" disabled={!token} onClick={enable2fa}>

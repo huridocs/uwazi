@@ -1,5 +1,5 @@
-import { FileContents } from 'api/core/domain/files/FileContents';
-import { HttpField } from './HttpField';
+import { FileContents } from '#api/core/domain/files/FileContents.js';
+import { HttpField } from './HttpField.js';
 
 type PostFormDataInput = {
   url: string;
@@ -11,9 +11,21 @@ type GetInput = {
   url: string;
 };
 
+type PostJsonInput = {
+  url: string;
+  body: string | object;
+};
+
+type DeleteJsonInput = {
+  url: string;
+  body?: string | object;
+};
+
 interface HttpClient {
   postFormData<T>(input: PostFormDataInput): Promise<T>;
+  postJson<Response>(input: PostJsonInput): Promise<Response>;
+  delete(input: DeleteJsonInput): Promise<void>;
   get<Response>(input: GetInput): Promise<Response>;
 }
 
-export type { GetInput, HttpClient, PostFormDataInput };
+export type { DeleteJsonInput, GetInput, HttpClient, PostFormDataInput, PostJsonInput };

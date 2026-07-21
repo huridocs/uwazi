@@ -1,8 +1,8 @@
-import { EntityUpdatedEvent } from 'api/core/domain/entity/EntityUpdatedEvent';
-import { Listener } from 'api/core/libs/eventEmitter/Listener';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
+import { EntityUpdatedEvent } from '#api/core/domain/entity/EntityUpdatedEvent.js';
+import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
 
 const factory = getFixturesFactory();
 
@@ -107,6 +107,10 @@ const fixtures: DBFixture = {
 
     factory.template('Related Template', [factory.property('related_text', 'text')]),
 
+    factory.template('Template With Required', [
+      factory.property('required_text', 'text', { required: true }),
+    ]),
+
     factory.template('Full Template', [
       factory.property('text', 'text'),
       factory.property('numeric', 'numeric'),
@@ -142,6 +146,28 @@ const fixtures: DBFixture = {
   entities: [
     ...factory.entityInMultipleLanguages(
       ['en', 'pt'],
+      'required_entity',
+      'Template With Required',
+      {},
+      { title: 'Required Entity' },
+      {
+        en: {
+          title: 'Required Entity EN',
+          metadata: {
+            required_text: [factory.metadataValue('Some required text')],
+          },
+        },
+        pt: {
+          title: 'Required Entity PT',
+          metadata: {
+            required_text: [factory.metadataValue('Some required text')],
+          },
+        },
+      }
+    ),
+
+    ...factory.entityInMultipleLanguages(
+      ['en', 'pt'],
       'entity1',
       'Basic Template',
       {},
@@ -161,7 +187,10 @@ const fixtures: DBFixture = {
       'related_entity',
       'Related Template',
       {},
-      { title: 'Related Entity' },
+      {
+        title: 'Related Entity',
+        icon: { _id: 'related_entity_icon', label: 'Related Entity Icon', type: 'img' },
+      },
       {
         en: {
           title: 'Related Entity EN',
@@ -237,6 +266,14 @@ const fixtures: DBFixture = {
                 inheritedType: 'text',
                 inheritedValue: [factory.metadataValue('Related Text EN')],
               },
+              {
+                value: 'related_entity_2',
+                label: 'Related Entity 2 EN',
+                type: 'entity',
+                inheritedType: 'text',
+                inheritedValue: [factory.metadataValue('Related Text 2 EN')],
+                icon: { _id: 'stale_icon', label: 'Stale Icon', type: 'img' },
+              },
             ],
             nested: [
               factory.metadataValue({
@@ -248,6 +285,8 @@ const fixtures: DBFixture = {
             preview: [],
             media: [factory.metadataValue('https://example.com/video.mp4')],
           },
+          permissions: [],
+          published: false,
         },
         pt: {
           title: 'Full Entity PT',
@@ -279,6 +318,14 @@ const fixtures: DBFixture = {
                 inheritedType: 'text',
                 inheritedValue: [factory.metadataValue('Related Text PT')],
               },
+              {
+                value: 'related_entity_2',
+                label: 'Related Entity 2 PT',
+                type: 'entity',
+                inheritedType: 'text',
+                inheritedValue: [factory.metadataValue('Related Text 2 PT')],
+                icon: { _id: 'stale_icon', label: 'Stale Icon', type: 'img' },
+              },
             ],
             nested: [
               factory.metadataValue({
@@ -290,6 +337,8 @@ const fixtures: DBFixture = {
             preview: [],
             media: [factory.metadataValue('https://example.com/video.mp4')],
           },
+          permissions: [],
+          published: false,
         },
       }
     ),
@@ -310,7 +359,8 @@ const fixtures: DBFixture = {
       entity: 'entity1',
       type: 'thumbnail',
       filename: `${factory.id('entity1_doc1').toHexString()}.jpg`,
-      language: 'en',
+      originalname: 'thumbnail.jpg',
+      language: 'eng',
       mimetype: 'image/jpeg',
       size: 10000,
       creationDate: 1609459200000,
@@ -329,7 +379,8 @@ const fixtures: DBFixture = {
       entity: 'entity1',
       type: 'thumbnail',
       filename: `${factory.id('entity1_doc2').toHexString()}.jpg`,
-      language: 'en',
+      originalname: 'thumbnail.jpg',
+      language: 'eng',
       mimetype: 'image/jpeg',
       size: 12000,
       creationDate: 1609459200000,
@@ -337,7 +388,6 @@ const fixtures: DBFixture = {
     factory.attachment('entity1_attach1', {
       entity: 'entity1',
       originalname: 'Attachment 1.txt',
-      language: 'en',
       mimetype: 'text/plain',
       size: 5000,
       creationDate: 1609459200000,

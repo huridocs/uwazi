@@ -1,0 +1,77 @@
+import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { MultiUpdateEntity } from '#api/core/application/MultiUpdateEntity.js';
+import { MultiUpdateEntityUseCaseFactory } from '../../factories/MultiUpdateEntityUseCaseFactory.js';
+import { MongoEntitiesDAOFactory } from '../../factories/MongoEntitiesDAOFactory.js';
+import { PropertyAssignmentInput } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
+
+type RequestDto = {
+  ids: string[];
+  values: {
+    metadata?: Record<string, unknown[]>;
+    template?: string;
+  };
+};
+
+class MultiUpdateEntityController extends AbstractController<RequestDto> {
+  protected async handle(): Promise<void> {
+    const startTime = Date.now();
+
+    try {
+      const useCase = MultiUpdateEntityUseCaseFactory.default();
+
+      const parsed = MultiUpdateEntity.InputSchema.parse({ ids: this.request.body?.ids || [] });
+      const { values = {} } = this.request.body;
+      const targetLanguage = this.language;
+
+      const propertyAssignments: PropertyAssignmentInput[] | undefined = values.metadata
+        ? (Object.entries(values.metadata).map(([name, value]) => ({
+            name,
+            value,
+          })) as PropertyAssignmentInput[])
+        : undefined;
+
+      const output = await useCase.execute({
+        ids: parsed.ids,
+        targetLanguage,
+        values: {
+          propertyAssignments,
+          templateId: values.template?.toString(),
+        },
+      });
+
+      const sharedIds = [...new Set(output.map(e => e.sharedId))];
+
+      const entityDAO = MongoEntitiesDAOFactory.default({ user: this.user });
+
+      const updatedEntities = await entityDAO.getWithFiles({
+        sharedId: { $in: sharedIds },
+        language: targetLanguage,
+      });
+
+      ExecutionContext.logger.info('MultiUpdateEntity executed successfully', {
+        namespace: 'MultiUpdate_Entity',
+        success: true,
+        durationMs: Date.now() - startTime,
+        count: updatedEntities.length,
+      });
+
+      this.response.json(updatedEntities);
+    } catch (error: unknown) {
+      ExecutionContext.logger.info(
+        `MultiUpdateEntity failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        {
+          namespace: 'MultiUpdate_Entity',
+          success: false,
+          durationMs: Date.now() - startTime,
+          error: JSON.stringify(error),
+          dto: JSON.stringify(this.request.body),
+        }
+      );
+
+      throw error;
+    }
+  }
+}
+
+export { MultiUpdateEntityController };

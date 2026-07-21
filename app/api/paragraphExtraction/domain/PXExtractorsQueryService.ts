@@ -1,9 +1,9 @@
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { ResultSet } from 'api/core/application/contracts/ResultSet';
-import { EntityDBO } from 'api/entities.v2/database/schemas/EntityTypes';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
+import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 
-import { EntityStatus } from './PXEntityStatusModel';
-import { EntityStatusDTO } from '../types';
+import { EntityStatus } from './PXEntityStatusModel.js';
+import { EntityStatusDTO } from '../types.js';
 
 type GetExtractorsOutput = {
   _id: string;

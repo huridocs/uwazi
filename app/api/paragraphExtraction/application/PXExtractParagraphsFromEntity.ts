@@ -1,25 +1,26 @@
 import { ObjectId } from 'mongodb';
 
-import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { IdGenerator } from 'api/core/application/contracts/IdGenerator';
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
-import { Segmentation } from 'api/core/domain/files/Segmentation';
-import { Logger } from 'api/core/libs/logger/contracts/Logger';
-import { AbstractUseCase } from 'api/core/libs/UseCase';
-import { LanguageISO6391, LanguagesListSchema } from 'shared/types/commonTypes';
+import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { Segmentation } from '#api/segmentation.v2/domain/Segmentation.js';
+import { SegmentationDataSource } from '#api/segmentation.v2/application/contracts/SegmentationDataSource.js';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { AbstractUseCase } from '#api/core/libs/UseCase.js';
+import { LanguageISO6391, LanguagesListSchema } from '#shared/types/commonTypes.js';
 
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { Entity } from 'api/core/domain/entity/Entity';
-import { FileContents } from 'api/core/domain/files/FileContents';
-import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { EntitiesService } from 'api/core/application/EntitiesService';
-import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
-import { PXExtractionKey } from '../domain/PXExtractionKey';
-import { PXExtractionService } from '../domain/PXExtractionService';
-import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
-import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { Entity } from '#api/core/domain/entity/Entity.js';
+import { FileContents } from '#api/core/domain/files/FileContents.js';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
+import { EntitiesService } from '#api/core/application/EntitiesService.js';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
+import { PXExtractionKey } from '../domain/PXExtractionKey.js';
+import { PXExtractionService } from '../domain/PXExtractionService.js';
+import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource.js';
+import { PXErrorCode, PXValidationError } from '../domain/PXValidationError.js';
 
 type PXExtractParagraphsFromEntityInput = {
   userId: string;
@@ -32,7 +33,7 @@ type Output = void;
 
 type Deps = {
   extractorsDS: PXExtractorsDataSource;
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   filesDS: FilesDataSource;
   settingsDS: SettingsDataSource;
   extractionService: PXExtractionService;
@@ -42,6 +43,7 @@ type Deps = {
   logger: Logger;
   tenantName: string;
   entitiesService: EntitiesService;
+  segmentationDS: SegmentationDataSource;
 };
 
 export class PXExtractParagraphsFromEntity extends AbstractUseCase<
@@ -78,7 +80,7 @@ export class PXExtractParagraphsFromEntity extends AbstractUseCase<
       });
 
       await this.transactionManager.run(async () =>
-        this.deps.entitiesService.bulkDelete(paragraphs, {
+        this.deps.entitiesService.delete(paragraphs, {
           actor: this.getActor(),
           tenantName: this.tenant.name,
         })
@@ -107,10 +109,10 @@ export class PXExtractParagraphsFromEntity extends AbstractUseCase<
     }
   }
 
-  private static getMainLanguage(documents: ProcessedPDF[], defaultLanguage: LanguageISO6391) {
+  private static getMainLanguage(documents: PDFDocument[], defaultLanguage: LanguageISO6391) {
     const documentsHaveDefaultLanguage = documents.some(d => d.language === defaultLanguage);
 
-    const mainLanguage = documentsHaveDefaultLanguage ? defaultLanguage : documents[0].language;
+    const mainLanguage = documentsHaveDefaultLanguage ? defaultLanguage : documents[0].language!;
 
     return mainLanguage;
   }
@@ -169,7 +171,7 @@ export class PXExtractParagraphsFromEntity extends AbstractUseCase<
     installedLanguages: LanguagesListSchema,
     defaultLanguage: LanguageISO6391
   ) {
-    const documents = await this.deps.filesDS.getProcessedDocsForEntity(entity.sharedId).all();
+    const documents = await this.deps.filesDS.getProcessedDocsForEntity(entity.sharedId);
 
     const filteredDocuments = documents.filter(document =>
       installedLanguages.some(language => language.key === document.language)
@@ -178,9 +180,9 @@ export class PXExtractParagraphsFromEntity extends AbstractUseCase<
     const uniqueByLanguage = Object.values(
       filteredDocuments.reduce(
         (prev, document) => {
-          const existingDocument = prev[document.language];
+          const existingDocument = prev[document.language!];
           if (!existingDocument) {
-            return { ...prev, [document.language]: document };
+            return { ...prev, [document.language!]: document };
           }
 
           const existingDocumentCreationDate = new ObjectId(existingDocument.id).getTimestamp();
@@ -188,11 +190,11 @@ export class PXExtractParagraphsFromEntity extends AbstractUseCase<
 
           return {
             ...prev,
-            [document.language]:
+            [document.language!]:
               existingDocumentCreationDate < documentCreationDate ? existingDocument : document,
           };
         },
-        {} as Record<string, ProcessedPDF>
+        {} as Record<string, PDFDocument>
       )
     );
 
@@ -207,11 +209,11 @@ export class PXExtractParagraphsFromEntity extends AbstractUseCase<
   }
 
   private async getSegmentations(
-    documents: ProcessedPDF[],
+    documents: PDFDocument[],
     entity: Entity,
     defaultLanguage: LanguageISO6391
   ) {
-    const segmentations = await this.deps.filesDS
+    const segmentations = await this.deps.segmentationDS
       .getSegmentations(documents.map(document => document.id))
       .all();
 

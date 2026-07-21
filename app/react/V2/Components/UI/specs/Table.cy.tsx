@@ -1,11 +1,10 @@
-/* eslint-disable max-statements */
 import React from 'react';
 import 'cypress-axe';
-import { mount } from '@cypress/react18';
+import { mount } from 'cypress/react';
 import { composeStories } from '@storybook/react';
-import { map } from 'lodash';
-import * as stories from 'app/stories/Table.stories';
-import { tableWithDisabled } from '../Table/specs/fixtures';
+import map from 'lodash/map.js';
+import * as stories from '#app/stories/Table.stories.js';
+import { tableWithDisabled } from '../Table/specs/fixtures.js';
 
 const { Basic, Nested, Custom, BasicWithDisabledDnD, NestedWithDisabledDnD } =
   composeStories(stories);
@@ -52,7 +51,7 @@ describe('Table', () => {
       cy.contains('th', 'Description').should(
         'have.attr',
         'class',
-        'p-4 text-sm text-gray-500 uppercase border-b bg-blue-700 text-white'
+        'border-b p-4 text-sm uppercase text-section-header bg-blue-700 text-white'
       );
       cy.contains('td', 'Entity 2').should(
         'have.attr',
@@ -67,6 +66,12 @@ describe('Table', () => {
       cy.get('div[class="text-white bg-alert-500"]').should('have.length', 5);
       cy.get('button').should('have.length', 5);
     });
+  });
+
+  it('should highlight the focused row using table focusedRowId prop', () => {
+    Basic.args.focusedRowId = 'A1';
+    mount(<Basic />);
+    cy.contains('tr', 'Entity 1').should('have.class', 'bg-(--color-theme-surface-muted)');
   });
 
   it('should trigger the custom action for the buttons', () => {

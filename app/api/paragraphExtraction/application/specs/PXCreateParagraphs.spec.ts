@@ -1,21 +1,23 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
-import { createMockLogger } from 'api/core/libs/logger/infrastructure/MockLogger';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
-import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
-import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
-import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { EntitySchema } from 'shared/types/entityType';
+import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
+import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
+import { MongoPXExtractorDBO } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
+import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
-import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
-import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
-import { PXCreateParagraphsFactory } from 'api/paragraphExtraction/infrastructure/PXCreateParagraphsFactory';
+import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
+import { PXCreateParagraphsFactory } from '#api/paragraphExtraction/infrastructure/PXCreateParagraphsFactory.js';
+import { spyOnEmit } from '#api/core/libs/eventsbus/eventTesting.js';
+import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 
-import { PXCreateParagraphsInput } from '../PXCreateParagraphs';
+import { PXCreateParagraphsInput } from '../PXCreateParagraphs.js';
 
 const factory = getFixturesFactory();
 
@@ -123,10 +125,17 @@ const createFixtures = (): DBFixture => ({
 });
 
 const setUpUseCase = (batchSize?: number) => {
-  const createParagraphs = PXCreateParagraphsFactory.createDefault(batchSize);
+  const { createParagraphs } = testingEnvironment.runWithContext(() => {
+    const cp = PXCreateParagraphsFactory.createDefault(batchSize);
+    return { createParagraphs: cp };
+  });
   (createParagraphs.createParagraphsBatch as any).dependencies.logger = createMockLogger();
-
-  return { createParagraphs };
+  return {
+    createParagraphs: {
+      execute: async (input: PXCreateParagraphsInput) =>
+        testingEnvironment.runWithContext(async () => createParagraphs.execute(input)),
+    },
+  };
 };
 
 const filterAndSortParagraphs = (paragraphs: EntitySchema[], language: string) =>
@@ -746,6 +755,34 @@ describe('PXCreateParagraphs', () => {
     await expect(promise).rejects.toMatchObject({
       code: PXValidationError.codes.EXTRACTOR_NOT_FOUND,
     });
+  });
+
+  it('should emit EntityCreatedEvent with the paragraph main language as targetLanguage', async () => {
+    const { createParagraphs } = setUpUseCase();
+
+    const spy = spyOnEmit();
+
+    const input: PXCreateParagraphsInput = {
+      entityStatusId: mongoEntityStatus._id.toString(),
+      userId: new ObjectId().toString(),
+      paragraphs: [
+        {
+          paragraphNumber: 1,
+          translations: [
+            { isMainLanguage: false, language: 'en', needsUserReview: false, text: 'en' },
+            { isMainLanguage: true, language: 'es', needsUserReview: false, text: 'es' },
+          ],
+        },
+      ],
+    };
+
+    await createParagraphs.execute(input);
+
+    spy.expectToEmitEventWith(EntityCreatedEvent, {
+      targetLanguageKey: 'es',
+      entities: expect.any(Array),
+    });
+    spy.restore();
   });
 
   it('should execute onParagraphBatchCreated callback on each batch creation', async () => {

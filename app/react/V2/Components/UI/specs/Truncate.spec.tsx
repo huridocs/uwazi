@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { render, screen, act } from '@testing-library/react';
-import { Truncate } from '../Truncate';
+import { Truncate } from '../Truncate.js';
 
 describe('Truncate', () => {
   it.each([

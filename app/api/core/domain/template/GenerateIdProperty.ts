@@ -1,10 +1,10 @@
-import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
-import { generateID } from 'shared/IDGenerator';
+import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
+import { generateID } from '#shared/IDGenerator.js';
 import { z } from 'zod';
-import { PropertyTypeInvalidTypeError } from './errors';
-import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
-import { PropertyTypeEnum } from './PropertyType';
-import { GeneratedIdEntry, PropertyAssignment } from './PropertyValue';
+import { PropertyTypeInvalidTypeError } from './errors.js';
+import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty.js';
+import { PropertyTypeEnum } from './PropertyType.js';
+import { GeneratedIdEntry, PropertyAssignment } from './PropertyValue.js';
 
 type Props = {
   type?: PropertyTypeEnum.GeneratedId;
@@ -53,11 +53,8 @@ class GenerateIdProperty extends FilterableProperty {
     };
   }
 
-  validatePropertyAssignment(
-    { value }: PropertyAssignment<GeneratedIdEntry>,
-    shouldValidateForRequired = false
-  ): void {
-    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
+  validatePropertyAssignment({ value }: PropertyAssignment<GeneratedIdEntry>): void {
+    createSchema(this.required).parse(value);
   }
 }
 

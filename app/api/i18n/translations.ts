@@ -1,23 +1,23 @@
-import { CSVLoader } from 'api/csv';
-import { generateFileName } from 'api/files';
-import { CreateTranslationsData } from 'api/i18n.v2/services/CreateTranslationsService';
-import { DefaultTranslations } from 'api/i18n/defaultTranslations';
-import { legacyLogger } from 'api/log';
-import { EnforcedWithId, WithId } from 'api/odm';
-import settings from 'api/settings/settings';
-import thesauri from 'api/thesauri/thesauri';
-import { prettifyError } from 'api/utils/handleError';
+import { CSVLoader } from '#api/csv/index.js';
+import { generateFileName } from '#api/files/index.js';
+import { CreateTranslationsData } from '#api/i18n.v2/services/CreateTranslationsService.js';
+import { DefaultTranslations } from '#api/i18n/defaultTranslations.js';
+import { legacyLogger } from '#api/log/index.js';
+import { EnforcedWithId, WithId } from '#api/odm/index.js';
+import settings from '#api/settings/settings.js';
+import thesauri from '#api/core/v1_layer/thesauri/thesauri.js';
+import { prettifyError } from '#api/utils/handleError.js';
 import * as os from 'os';
 import path from 'path';
-import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
+import { TranslationContext, TranslationType, TranslationValue } from '#shared/translationType.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
 import { ObjectId } from 'mongodb';
-import { availableLanguages } from 'shared/language';
-import { ContextType } from 'shared/translationSchema';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { availableLanguages } from '#shared/language/index.js';
+import { ContextType } from '#shared/translationSchema.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { pipeline } from 'stream/promises';
-import { TranslationSyO } from 'api/i18n.v2/schemas/TranslationSyO';
+import { TranslationSyO } from '#api/i18n.v2/schemas/TranslationSyO.js';
 import {
   addLanguageV2,
   deleteTranslationsByContextIdV2,
@@ -28,7 +28,19 @@ import {
   updateContextV2,
   upsertTranslationEntries,
   upsertTranslationsV2,
-} from './v2_support';
+} from './v2_support.js';
+
+type ThesaurusOption = {
+  id?: string;
+  label?: string;
+  values?: ThesaurusOption[];
+};
+
+const flattenThesaurusValues = (values: ThesaurusOption[] = []): ThesaurusOption[] =>
+  values.reduce<ThesaurusOption[]>(
+    (allValues, value) => [...allValues, value, ...flattenThesaurusValues(value.values)],
+    []
+  );
 
 function checkForMissingKeys(
   keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } },
@@ -117,6 +129,9 @@ const propagateTranslationInMetadata = async (
 
   if (isPresentInTheComingData && isPresentInTheComingData.type === 'Thesaurus') {
     const thesaurus = await thesauri.getById(context.id);
+    const flattenedThesaurusValues = flattenThesaurusValues(
+      (thesaurus?.values || []) as ThesaurusOption[]
+    );
 
     const valuesChanged: IndexedContextValues = (isPresentInTheComingData.values || []).reduce(
       (changes, value) => {
@@ -129,18 +144,24 @@ const propagateTranslationInMetadata = async (
       {} as IndexedContextValues
     );
 
-    const changesMatchingDictionaryId = Object.keys(valuesChanged)
-      .map(valueChanged => {
-        const valueFound = (thesaurus?.values || []).find(v => v.label === valueChanged);
-        if (valueFound?.id) {
-          return { id: valueFound.id, value: valuesChanged[valueChanged] };
-        }
-        return null;
-      })
-      .filter(a => a) as { id: string; value: string }[];
+    const changesMatchingDictionaryId = Object.keys(valuesChanged).reduce(
+      (changes, valueChanged) => {
+        const matchingValues = flattenedThesaurusValues.filter(v => v.label === valueChanged);
+        const nextChanges = matchingValues
+          .filter(value => value.id)
+          .map(value => ({ id: value.id as string, value: valuesChanged[valueChanged] }));
+
+        return changes.concat(nextChanges);
+      },
+      [] as { id: string; value: string }[]
+    );
+
+    const uniqueChanges = changesMatchingDictionaryId.filter(
+      (change, index, allChanges) => allChanges.findIndex(c => c.id === change.id) === index
+    );
 
     return Promise.all(
-      changesMatchingDictionaryId.map(async change =>
+      uniqueChanges.map(async change =>
         thesauri.renameThesaurusInMetadata(change.id, change.value, context.id, translation.locale)
       )
     );

@@ -1,9 +1,13 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import NeedAuthorization from 'app/Auth/components/NeedAuthorization';
-import { TemplateLabel, SidePanel } from 'app/Layout';
-import { SelectMultiplePanel, mapStateToProps } from '../SelectMultiplePanel';
+import { Translate } from '#app/I18N/index.js';
+import { NeedAuthorization } from '#app/Auth/components/NeedAuthorization.js';
+import { TemplateLabel, SidePanel } from '#app/Layout/index.js';
+import {
+  SelectMultiplePanelView as SelectMultiplePanel,
+  mapStateToProps,
+} from '../SelectMultiplePanel.js';
 
 describe('SelectMultiplePanel', () => {
   let component;
@@ -13,8 +17,22 @@ describe('SelectMultiplePanel', () => {
   beforeEach(() => {
     props = {
       entitiesSelected: Immutable.fromJS([
-        { title: 'A rude awakening', template: '1' },
-        { title: 'A falling star', template: '2' },
+        {
+          title: 'A rude awakening',
+          template: '1',
+          permissions: [
+            { refId: '1', type: 'user', level: 'write' },
+            { refId: '2', type: 'user', level: 'read' },
+          ],
+        },
+        {
+          title: 'A falling star',
+          template: '2',
+          permissions: [
+            { refId: '1', type: 'user', level: 'read' },
+            { refId: '2', type: 'user', level: 'read' },
+          ],
+        },
       ]),
       unselectAllDocuments: jasmine.createSpy('unselectAllDocuments'),
       deleteEntities: jasmine.createSpy('deleteEntities'),
@@ -34,6 +52,7 @@ describe('SelectMultiplePanel', () => {
       template: Immutable.fromJS({ properties: [] }),
       storeKey: 'library',
       mainContext: { confirm: jasmine.createSpy('confirm') },
+      user: Immutable.fromJS({ name: 'user1', _id: '1', role: 'collaborator' }),
     };
   });
 
@@ -53,6 +72,13 @@ describe('SelectMultiplePanel', () => {
     expect(component.find(TemplateLabel).length).toBe(2);
     expect(component.find('.entities-list li span').first().text()).toContain('A rude awakening');
     expect(component.find('.entities-list li span').last().text()).toContain('A falling star');
+  });
+
+  it('should show mixed permissions', () => {
+    render();
+    expect(component.find('li.permissions-warning').find(Translate).dive().text()).toContain(
+      'You do not have write permission on all entities'
+    );
   });
 
   describe('when props.open', () => {
@@ -87,8 +113,22 @@ describe('SelectMultiplePanel', () => {
       render();
       instance.changeTemplate({}, '3');
       const expectedEntities = [
-        { title: 'A rude awakening', template: '3' },
-        { title: 'A falling star', template: '3' },
+        {
+          title: 'A rude awakening',
+          template: '3',
+          permissions: [
+            { refId: '1', type: 'user', level: 'write' },
+            { refId: '2', type: 'user', level: 'read' },
+          ],
+        },
+        {
+          title: 'A falling star',
+          template: '3',
+          permissions: [
+            { refId: '1', type: 'user', level: 'read' },
+            { refId: '2', type: 'user', level: 'read' },
+          ],
+        },
       ];
       const entities = props.updateSelectedEntities.calls.mostRecent().args[0].toJS();
       expect(entities).toEqual(expectedEntities);
@@ -228,8 +268,22 @@ describe('SelectMultiplePanel', () => {
       render();
       const authorization = component.find(NeedAuthorization);
       expect(authorization.props().orWriteAccessTo).toEqual([
-        { title: 'A rude awakening', template: '1' },
-        { title: 'A falling star', template: '2' },
+        {
+          title: 'A rude awakening',
+          template: '1',
+          permissions: [
+            { refId: '1', type: 'user', level: 'write' },
+            { refId: '2', type: 'user', level: 'read' },
+          ],
+        },
+        {
+          title: 'A falling star',
+          template: '2',
+          permissions: [
+            { refId: '1', type: 'user', level: 'read' },
+            { refId: '2', type: 'user', level: 'read' },
+          ],
+        },
       ]);
       expect(authorization.props().roles).toEqual(['admin', 'editor']);
     });

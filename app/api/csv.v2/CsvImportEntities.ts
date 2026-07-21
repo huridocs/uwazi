@@ -1,11 +1,11 @@
-import { AbstractUseCase } from 'api/core/libs/UseCase';
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { tenants } from 'api/tenants/tenantContext';
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
-import { CsvImportsDataSource } from './application/contracts/CsvImportsDataSource';
-import { CsvImportDomain } from './domain/CsvImport';
-import { CsvExtractUploadedZipJobHandler } from './infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler';
+import { AbstractUseCase } from '#api/core/libs/UseCase.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { CsvImportsDataSource } from './application/contracts/CsvImportsDataSource.js';
+import { CsvImportDomain } from './domain/CsvImport.js';
+import { CsvExtractUploadedZipJobHandler } from './infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler.js';
 
 type Deps = {
   csvImportsDS: CsvImportsDataSource;

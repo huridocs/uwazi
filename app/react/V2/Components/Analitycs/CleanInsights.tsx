@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { CleanInsights as CI } from 'clean-insights-sdk';
 import { useAtomValue } from 'jotai';
-import { ciMatomoActiveAtom } from 'V2/atoms';
+import { ciMatomoActiveAtom } from '#V2/atoms/index.js';
 
 // January 1 of 2024 just happens to be a Monday.
 // This makes it a suitable starting period for the weekly

@@ -1,18 +1,19 @@
-import { groupBy } from 'lodash';
+import groupBy from 'lodash/groupBy.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
-import { WithId } from 'api/odm';
-import { files as filesAPI, storage } from 'api/files';
-import { processDocument } from 'api/files/processDocument';
-import { search } from 'api/search';
-import { legacyLogger } from 'api/log';
-import { handleError, prettifyError } from 'api/utils/handleError';
-import { ClientEntitySchema } from 'app/istore';
-import { FileType } from 'shared/types/fileType';
-import { MetadataObjectSchema } from 'shared/types/commonTypes';
-import { EntityWithFilesSchema } from 'shared/types/entityType';
-import { TypeOfFile } from 'shared/types/fileSchema';
-import { FileAttachment } from './entitySavingManager';
+import { WithId } from '#api/odm/index.js';
+import { files as filesAPI, storage } from '#api/files/index.js';
+import { processDocument } from '#api/files/processDocument.js';
+import { search } from '#api/search/index.js';
+import { legacyLogger } from '#api/log/index.js';
+import { handleError, prettifyError } from '#api/utils/handleError.js';
+import { FileType } from '#shared/types/fileType.js';
+import { ClientEntitySchema } from '#app/istore.js';
+import { MetadataObjectSchema } from '#shared/types/commonTypes.js';
+import { EntityWithFilesSchema } from '#shared/types/entityType.js';
+import { TypeOfFile } from '#shared/types/fileSchema.js';
+import { FileAttachment } from './entitySavingManager.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 
 const prepareNewFiles = async (
   entity: EntityWithFilesSchema,
@@ -53,7 +54,7 @@ const prepareNewFiles = async (
 
   if (newUrls && newUrls.length) {
     await Promise.all(
-      newUrls.map(async (url: any) => {
+      newUrls.map(async url => {
         attachments.push({
           ...url,
           entity: updatedEntity.sharedId,
@@ -124,10 +125,10 @@ const processFiles = async (
   );
 
   if (entity._id && (entity.attachments || entity.documents)) {
-    const entityFiles: WithId<FileType>[] = await filesAPI.get(
-      { entity: entity.sharedId, type: { $in: [TypeOfFile.attachment, TypeOfFile.document] } },
-      '_id, originalname, type'
-    );
+    const entityFiles = await FilesDAOFactory.default().getByEntity(entity.sharedId!, {
+      types: [TypeOfFile.attachment, TypeOfFile.document],
+      projection: { _id: 1, originalname: 1, type: 1 },
+    });
 
     await updateDeletedFiles(entityFiles, entity, TypeOfFile.attachment);
     await updateDeletedFiles(entityFiles, entity, TypeOfFile.document);

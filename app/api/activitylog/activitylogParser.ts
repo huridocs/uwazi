@@ -1,6 +1,6 @@
-import * as helpers from 'api/activitylog/helpers';
-import { nameFunc } from 'api/activitylog/helpers';
-import { buildActivityEntry, Methods, EntryValue } from 'api/activitylog/activityLogBuilder';
+import * as helpers from './helpers.js';
+import { nameFunc } from './helpers.js';
+import { buildActivityEntry, Methods, EntryValue } from './activityLogBuilder.js';
 
 const ParsedActions: { [key: string]: EntryValue } = {
   'POST/api/users': {
@@ -22,7 +22,6 @@ const ParsedActions: { [key: string]: EntryValue } = {
   'POST/api/upload': { desc: 'Uploaded document', method: Methods.Create },
   'POST/api/reupload': { desc: 'Re-uploaded document' },
   'POST/api/customisation/upload': { desc: 'Uploaded custom file', method: Methods.Create },
-  'POST/api/import': { desc: 'Imported entities from file', method: Methods.Create },
   'POST/api/public': {
     desc: 'Created entity coming from a public form',
     method: Methods.Create,
@@ -40,6 +39,31 @@ const ParsedActions: { [key: string]: EntryValue } = {
     method: Methods.Create,
     idField: 'sharedId',
     nameField: 'title',
+  },
+  'POST/api/pages/release': {
+    desc: 'Published page release',
+    method: Methods.Update,
+    nameField: 'sharedId',
+    nameFunc: data => {
+      const title = data.title || data.sharedId || '';
+      return data.sharedId ? `${title} (${data.sharedId})` : title;
+    },
+    extra: (data: { version?: number; release_message?: string }) => {
+      const parts: string[] = [];
+      if (data.version != null) {
+        parts.push(`v${data.version}`);
+      }
+      if (data.release_message) {
+        parts.push(`"${data.release_message}"`);
+      }
+      return parts.join(' ');
+    },
+  },
+  'POST/api/pages/restore': {
+    desc: 'Restored page draft from release',
+    method: Methods.Update,
+    nameField: 'sharedId',
+    extra: (data: { version?: number }) => (data.version != null ? `version ${data.version}` : ''),
   },
   'POST/api/templates': {
     desc: 'Created template',

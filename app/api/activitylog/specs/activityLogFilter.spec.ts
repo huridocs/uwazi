@@ -3,7 +3,7 @@ import {
   ActivityLogQueryTime,
   bodyCondition,
   prepareToFromRanges,
-} from '../activityLogFilter';
+} from '../activityLogFilter.js';
 
 describe('activityLogFilter', () => {
   describe('prepareToFromRanges', () => {
@@ -290,18 +290,6 @@ describe('activityLogFilter', () => {
             $or: [
               {
                 $or: [
-                  {
-                    $and: [
-                      {
-                        url: {
-                          $regex: '^\\/api\\/import$',
-                        },
-                      },
-                      {
-                        method: 'POST',
-                      },
-                    ],
-                  },
                   {
                     $and: [
                       {

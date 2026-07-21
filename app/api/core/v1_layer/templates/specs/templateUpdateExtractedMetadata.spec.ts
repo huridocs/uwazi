@@ -1,23 +1,58 @@
-import { files } from 'api/files';
-import * as setupSockets from 'api/socketio/setupSockets';
-import testingDB from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { TemplateSchema } from 'shared/types/templateType';
-import templates from '../templates';
-import fixtures, {
+import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
+import { files } from '#api/files/index.js';
+import * as setupSockets from '#api/socketio/setupSockets.js';
+import testingDB from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
+import templates from '../templates.js';
+import {
+  fixtures,
   propertyA,
   propertyB,
   propertyC,
   propertyD,
-  templateWithExtractedMetadata,
-} from './fixtures/fixtures';
+  templateWithPropertySelections,
+} from './fixtures/fixtures.js';
 
-async function updateTemplate(template: TemplateSchema, language = 'en') {
+async function updateTemplate(template: TemplateSchema) {
   jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
-  return templates.save(template, language, true, false);
+
+  const transactionManager = TransactionManagerFactory.default();
+  const jobsDispatcher = new SyncDispatcherForTests({
+    TemplatePostProcessEntitiesJob: async () =>
+      new TemplatePostProcessEntitiesJob({
+        useCase: new TemplateUpdateDenormalizeEntitiesBatch({
+          entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
+          relationshipsV1DS: new MongoRelationshipsV1DataSource(
+            getConnection(),
+            transactionManager
+          ),
+          templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
+          transactionManager,
+          filesDS: FilesDataSourceFactory.default(),
+        }),
+        templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
+      }),
+  });
+  return testingEnvironment.runWithContext(
+    async () => templates.save(template, 'en', true, false),
+    {
+      factories: {
+        jobsDispatcher: () => jobsDispatcher,
+      },
+    }
+  );
 }
 
-describe('updateExtractedMetadataProperties', () => {
+describe('updatePropertySelectionsProperties', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures, true);
   });
@@ -26,10 +61,10 @@ describe('updateExtractedMetadataProperties', () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should remove deleted template properties from extracted metadata on files', async () => {
+  it('should remove deleted template properties from property selections on files', async () => {
     const templateToUpdate: TemplateSchema = {
-      _id: templateWithExtractedMetadata,
-      name: 'template_with_extracted_metadata',
+      _id: templateWithPropertySelections,
+      name: 'template_with_property_selections',
       commonProperties: [
         {
           _id: testingDB.id(),
@@ -79,11 +114,11 @@ describe('updateExtractedMetadataProperties', () => {
       ],
     };
 
-    await updateTemplate(templateToUpdate, 'en');
+    await updateTemplate(templateToUpdate);
 
     expect((await files.get())[0]).toMatchObject({
       filename: 'file1.pdf',
-      extractedMetadata: [
+      propertySelections: [
         {
           name: 'property_a',
         },
@@ -91,7 +126,7 @@ describe('updateExtractedMetadataProperties', () => {
     });
     expect((await files.get())[1]).toMatchObject({
       filename: 'file2.pdf',
-      extractedMetadata: [
+      propertySelections: [
         {
           name: 'property_a',
         },
@@ -99,14 +134,14 @@ describe('updateExtractedMetadataProperties', () => {
     });
     expect((await files.get())[2]).toMatchObject({
       filename: 'file3.pdf',
-      extractedMetadata: [],
+      propertySelections: [],
     });
   });
 
   it('should rename properties when they get renamed in the templates', async () => {
     const templateWithRenamedProps: TemplateSchema = {
-      _id: templateWithExtractedMetadata,
-      name: 'template_with_extracted_metadata',
+      _id: templateWithPropertySelections,
+      name: 'template_with_property_selections',
       commonProperties: [
         {
           _id: testingDB.id(),
@@ -157,11 +192,11 @@ describe('updateExtractedMetadataProperties', () => {
       ],
     };
 
-    await updateTemplate(templateWithRenamedProps, 'en');
+    await updateTemplate(templateWithRenamedProps);
 
     expect((await files.get())[0]).toMatchObject({
       filename: 'file1.pdf',
-      extractedMetadata: [
+      propertySelections: [
         {
           name: 'property_a',
         },
@@ -175,7 +210,7 @@ describe('updateExtractedMetadataProperties', () => {
     });
     expect((await files.get())[1]).toMatchObject({
       filename: 'file2.pdf',
-      extractedMetadata: [
+      propertySelections: [
         {
           name: 'property_a',
         },
@@ -183,7 +218,7 @@ describe('updateExtractedMetadataProperties', () => {
     });
     expect((await files.get())[2]).toMatchObject({
       filename: 'file3.pdf',
-      extractedMetadata: [],
+      propertySelections: [],
     });
   });
 });

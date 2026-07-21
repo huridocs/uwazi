@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
-import date from 'api/utils/date';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { Id, IdProps } from 'api/core/libs/Id';
+import date from '#api/utils/date.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { Id, IdProps } from '#api/core/libs/Id.js';
 import stringify from 'fast-json-stable-stringify';
 import {
   DateEntry,
@@ -10,13 +10,14 @@ import {
   RelationshipPropertyAssignment,
   SelectPropertyAssignment,
   TextPropertyValue,
-} from '../template/PropertyValue';
-import { PropertyDoesNotExistError, PropertyTypeMismatchOnSetError } from './errors';
-import { PropertyType } from '../template/PropertyType';
+} from '../template/PropertyValue.js';
+import { PropertyDoesNotExistError, PropertyTypeMismatchOnSetError } from './errors.js';
+import { PropertyType } from '../template/PropertyType.js';
 
 type Props = {
   language: LanguageISO6391;
   metadata?: Record<string, PropertyAssignment>;
+  preview?: string;
 } & IdProps;
 
 class EntityTranslation {
@@ -26,10 +27,13 @@ class EntityTranslation {
 
   metadata: Record<string, PropertyAssignment>;
 
+  preview?: string;
+
   constructor(props: Props) {
     this.id = new Id(props);
     this.metadata = props.metadata || {};
     this.language = props.language;
+    this.preview = props.preview;
   }
 
   get properties(): Record<string, PropertyAssignment> {
@@ -53,11 +57,12 @@ class EntityTranslation {
     return this.getValue<DateEntry>('editDate');
   }
 
-  get asDTO(): Required<Props> {
+  get asDTO() {
     return {
       id: this.id.value,
       language: this.language,
       metadata: this.metadata,
+      preview: this.preview,
     };
   }
 

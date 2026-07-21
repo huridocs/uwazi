@@ -1,7 +1,7 @@
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import db, { DBFixture } from 'api/utils/testing_db';
-import { UserRole } from 'shared/types/userSchema';
-import { PUBLIC_USER_ID } from 'api/users/publicUser';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import db, { DBFixture } from '#api/utils/testing_db.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -47,6 +47,8 @@ const mainDoc = {
   mimetype: 'application/pdf',
   type: 'document',
   language: 'eng',
+  status: 'ready',
+  totalPages: 1,
 } as const;
 
 const customPDF = {
@@ -176,9 +178,12 @@ const fixtures: DBFixture = {
       language: 'eng',
     },
     {
+      _id: db.id(),
       entity: 'sharedId1',
+      originalname: 'fileWithoutTocFlag',
       filename: 'fileWithoutTocFlag',
       mimetype: 'application/pdf',
+      type: 'document',
     },
     {
       _id: db.id(),
@@ -187,20 +192,28 @@ const fixtures: DBFixture = {
       type: 'custom',
       mimetype: 'application/pdf',
     },
-    { _id: db.id(), originalname: 'upload2', type: 'document', mimetype: 'application/pdf' },
+    {
+      _id: db.id(),
+      originalname: 'upload2',
+      filename: 'upload2',
+      type: 'document',
+      mimetype: 'application/pdf',
+    },
     {
       _id: db.id(),
       originalname: 'upload3',
-      filename: 'fileWithoutTocFlag',
+      filename: 'upload3',
       type: 'custom',
       mimetype: 'application/pdf',
     },
     {
       _id: externalUrlFileId,
       originalname: 'external url',
+      filename: 'external-image.jpg',
       type: 'attachment',
       url: 'http://example.com/image.jpg',
       mimetype: 'image/jpeg',
+      entity: 'sharedId1',
     },
   ],
   connections: [
@@ -318,6 +331,17 @@ const fixtures: DBFixture = {
       publicFormDestination: 'http://localhost:54321',
       allowedPublicTemplates: [allowedPublicTemplate.toString()],
       openPublicEndpoint: true,
+    },
+  ],
+  segmentations: [
+    {
+      _id: db.id(),
+      fileID: uploadId,
+      filename: mainDocument1,
+      status: 'ready',
+      xmlname: 'english_testing_file.xml',
+      autoexpire: null,
+      segmentation: { page_height: 1, page_width: 1, paragraphs: [] },
     },
   ],
   users: [collabInGroupUser, collabUser, writerUser, adminUser, publicUser],

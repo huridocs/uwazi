@@ -1,4 +1,4 @@
-import { Thesaurus } from './Thesaurus';
+import { Thesaurus } from './Thesaurus.js';
 
 type Props = {
   before: Thesaurus;
@@ -13,6 +13,8 @@ type ThesaurusDiffObject = {
 
 class ThesaurusDiff {
   constructor(private props: Props) {}
+
+  private static readonly ROOT_ORDER_KEY = '__root__';
 
   get before() {
     return this.props.before;
@@ -92,6 +94,27 @@ class ThesaurusDiff {
     return updatedValues;
   }
 
+  private static createValuesOrderMap(values: Thesaurus['values']): Map<string, string[]> {
+    const map = new Map<string, string[]>();
+
+    const walk = (currentValues: Thesaurus['values'], parentId: string) => {
+      map.set(
+        parentId,
+        currentValues.map(value => value.id)
+      );
+
+      currentValues.forEach(value => {
+        if (value.values) {
+          walk(value.values, value.id);
+        }
+      });
+    };
+
+    walk(values, ThesaurusDiff.ROOT_ORDER_KEY);
+
+    return map;
+  }
+
   get addedValues() {
     const beforeIds = this.createValuesIdsSet(this.props.before.values);
 
@@ -133,6 +156,22 @@ class ThesaurusDiff {
       this.updatedValues.length > 0 ||
       this.updatedName !== undefined
     );
+  }
+
+  get hasOrderChanges() {
+    const beforeOrderMap = ThesaurusDiff.createValuesOrderMap(this.props.before.values);
+    const afterOrderMap = ThesaurusDiff.createValuesOrderMap(this.props.after.values);
+
+    for (const [parentId, beforeOrder] of beforeOrderMap.entries()) {
+      const afterOrder = afterOrderMap.get(parentId);
+
+      const hasComparableOrder = afterOrder && beforeOrder.length === afterOrder.length;
+      if (hasComparableOrder && beforeOrder.some((id, index) => id !== afterOrder[index])) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
 

@@ -1,10 +1,10 @@
-import { Entity, EntityIcon } from 'api/core/domain/entity/Entity';
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
-import { AbstractUseCase } from '../libs/UseCase';
-import { EntitiesService } from './EntitiesService';
-import { FilesService } from './FilesService';
-import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorService';
-import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
+import { Entity, EntityIcon } from '#api/core/domain/entity/Entity.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { AbstractUseCase } from '../libs/UseCase.js';
+import { EntitiesService } from './EntitiesService.js';
+import { FilesService } from './FilesService.js';
+import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
+import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 
 type Input = {
   propertyAssignments: PropertyAssignmentInput[];
@@ -44,9 +44,10 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     await this.deps.fileService.storeFiles(documentsOrAttachments);
 
     await this.transactionManager.run(async () => {
-      await this.deps.entitiesService.insert(entity, {
+      await this.deps.entitiesService.insert([entity], {
         actorId: this.actorId,
         tenantName: this.tenant.name,
+        targetLanguage: this.targetLanguage,
       });
 
       await this.deps.fileService.insert(documentsOrAttachments);

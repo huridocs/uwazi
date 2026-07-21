@@ -1,16 +1,27 @@
 import { ObjectId } from 'mongodb';
-import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
-import { EventsBus } from 'api/core/libs/eventsbus';
-import { FileType } from 'shared/types/fileType';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
-import { DBFixture } from 'api/utils/testing_db';
-import { tenants } from 'api/tenants';
-import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';
-import { MongoExtractorBuilder } from './MongoPXExtractorBuilder';
-import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource';
-import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO';
-import { PXFilesDeletedListener } from '../PXFilesDeletedListener';
+import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { FileType } from '#shared/types/fileType.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { tenants } from '#api/tenants/index.js';
+import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource.js';
+import { MongoExtractorBuilder } from './MongoPXExtractorBuilder.js';
+import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource.js';
+import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO.js';
+import { PXFilesDeletedListener } from '../PXFilesDeletedListener.js';
+
+type TestConfig = {
+  name: string;
+  usePostgres: boolean;
+};
+
+const testConfigs: TestConfig[] = [
+  { name: 'Mongo', usePostgres: false },
+  { name: 'Postgres', usePostgres: true },
+];
 
 const { extractor, sourceTemplate, targetTemplate, targetRelationship, sourceRelationship } =
   MongoExtractorBuilder.create().build();
@@ -54,6 +65,8 @@ const customFile = factory.custom_upload('invalid_custom_file', {
   entity: entity.sharedId,
   creationDate: 4,
   status: 'ready',
+  mimetype: 'text/plain',
+  size: 0,
 });
 
 const createFixtures = (): DBFixture => ({
@@ -72,11 +85,9 @@ const createFixtures = (): DBFixture => ({
   ],
 });
 
-// eslint-disable-next-line max-statements
 describe('PXFilesDeletedListener', () => {
-  beforeEach(async () => {
-    await testingEnvironment.setUp(createFixtures());
-    tenants.current().featureFlags!.paragraphExtraction = true;
+  beforeAll(async () => {
+    await testingEnvironment.setUp(createFixtures(), { postgres: true });
   });
 
   afterAll(async () => {
@@ -84,181 +95,209 @@ describe('PXFilesDeletedListener', () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should mark EntityStatus as obsolete', async () => {
-    await testingEnvironment.setFixtures({ ...createFixtures(), files: [documentEn] });
-    const eventBus = new EventsBus();
-    new PXFilesDeletedListener(eventBus).start();
-
-    const files: FileType[] = [documentPt];
-
-    await eventBus.emit(new FilesDeletedEvent({ files }));
-
-    const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
-      mongoPXEntitiesStatusCollection
-    );
-
-    expect(mongoEntitiesStatus).toMatchObject([
-      {
-        status: EntityStatus.Obsolete,
-      },
-    ]);
-  });
-
-  it('should mark EntityStatus as processing_obsolete if there is a processing going on', async () => {
-    await testingEnvironment.setFixtures({
-      ...createFixtures(),
-      files: [documentEn],
-      [mongoPXEntitiesStatusCollection]: [
-        { ...mongoEntityStatus, status: EntityStatus.Processing },
-      ],
+  describe.each(testConfigs)('$name', ({ usePostgres }) => {
+    beforeEach(async () => {
+      testingTenants.changeCurrentTenant({
+        featureFlags: { postgresFiles: usePostgres },
+      });
+      await testingEnvironment.setFixtures(createFixtures());
+      tenants.current().featureFlags!.paragraphExtraction = true;
     });
-    const eventBus = new EventsBus();
-    new PXFilesDeletedListener(eventBus).start();
 
-    const files: FileType[] = [documentPt];
+    it('should mark EntityStatus as obsolete', async () => {
+      await testingEnvironment.setFixtures({ ...createFixtures(), files: [documentEn] });
+      const eventBus = new EventsBus();
+      new PXFilesDeletedListener(eventBus).start();
 
-    await eventBus.emit(new FilesDeletedEvent({ files }));
+      const files: FileType[] = [documentPt];
 
-    const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
-      mongoPXEntitiesStatusCollection
-    );
+      await testingEnvironment.runWithContext(async () => {
+        await eventBus.emit(new FilesDeletedEvent({ files }));
+      });
 
-    expect(mongoEntitiesStatus).toMatchObject([
-      {
-        status: EntityStatus.ProcessingObsolete,
-      },
-    ]);
-  });
+      const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
+        mongoPXEntitiesStatusCollection
+      );
 
-  it('should do nothing if feature flag not enabled', async () => {
-    await testingEnvironment.setFixtures({ ...createFixtures(), files: [documentEn] });
-    tenants.current().featureFlags!.paragraphExtraction = false;
-    const eventBus = new EventsBus();
-    new PXFilesDeletedListener(eventBus).start();
-
-    const files: FileType[] = [documentPt];
-
-    await eventBus.emit(new FilesDeletedEvent({ files }));
-
-    const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
-      mongoPXEntitiesStatusCollection
-    );
-
-    expect(mongoEntitiesStatus).toMatchObject([
-      {
-        status: EntityStatus.Processed,
-      },
-    ]);
-  });
-
-  it('should keep EntityStatus as new', async () => {
-    await testingEnvironment.setFixtures({
-      ...createFixtures(),
-      files: [documentEn],
-      [mongoPXEntitiesStatusCollection]: [{ ...mongoEntityStatus, status: EntityStatus.New }],
+      expect(mongoEntitiesStatus).toMatchObject([
+        {
+          status: EntityStatus.Obsolete,
+        },
+      ]);
     });
-    const eventBus = new EventsBus();
-    new PXFilesDeletedListener(eventBus).start();
 
-    const files: FileType[] = [documentPt];
+    it('should mark EntityStatus as processing_obsolete if there is a processing going on', async () => {
+      await testingEnvironment.setFixtures({
+        ...createFixtures(),
+        files: [documentEn],
+        [mongoPXEntitiesStatusCollection]: [
+          { ...mongoEntityStatus, status: EntityStatus.Processing },
+        ],
+      });
+      const eventBus = new EventsBus();
+      new PXFilesDeletedListener(eventBus).start();
 
-    await eventBus.emit(new FilesDeletedEvent({ files }));
+      const files: FileType[] = [documentPt];
 
-    const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
-      mongoPXEntitiesStatusCollection
-    );
+      await testingEnvironment.runWithContext(async () => {
+        await eventBus.emit(new FilesDeletedEvent({ files }));
+      });
 
-    expect(mongoEntitiesStatus).toMatchObject([
-      {
-        status: EntityStatus.New,
-      },
-    ]);
-  });
+      const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
+        mongoPXEntitiesStatusCollection
+      );
 
-  it('should delete EntityStats if there are no valid Documents for paragraph extraction', async () => {
-    await testingEnvironment.setFixtures({
-      ...createFixtures(),
-      files: [documentEs, customFile],
+      expect(mongoEntitiesStatus).toMatchObject([
+        {
+          status: EntityStatus.ProcessingObsolete,
+        },
+      ]);
     });
-    const eventBus = new EventsBus();
-    new PXFilesDeletedListener(eventBus).start();
 
-    const files: FileType[] = [documentPt];
+    it('should do nothing if feature flag not enabled', async () => {
+      await testingEnvironment.setFixtures({ ...createFixtures(), files: [documentEn] });
+      tenants.current().featureFlags!.paragraphExtraction = false;
+      const eventBus = new EventsBus();
+      new PXFilesDeletedListener(eventBus).start();
 
-    await eventBus.emit(new FilesDeletedEvent({ files }));
+      const files: FileType[] = [documentPt];
 
-    const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
-      mongoPXEntitiesStatusCollection
-    );
+      await testingEnvironment.runWithContext(async () => {
+        await eventBus.emit(new FilesDeletedEvent({ files }));
+      });
 
-    expect(mongoEntitiesStatus).toHaveLength(0);
-  });
+      const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
+        mongoPXEntitiesStatusCollection
+      );
 
-  it('should do nothing if there is no Document on Files deleted event', async () => {
-    const eventBus = new EventsBus();
-    new PXFilesDeletedListener(eventBus).start();
-
-    const files: FileType[] = [customFile];
-
-    await eventBus.emit(new FilesDeletedEvent({ files }));
-
-    const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
-      mongoPXEntitiesStatusCollection
-    );
-
-    expect(mongoEntitiesStatus).toEqual([mongoEntityStatus]);
-  });
-
-  it('should do nothing if there are no Documents in UI languages among Documents deleted', async () => {
-    const eventBus = new EventsBus();
-    new PXFilesDeletedListener(eventBus).start();
-
-    const files: FileType[] = [documentEs, customFile];
-
-    await eventBus.emit(new FilesDeletedEvent({ files }));
-
-    const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
-      mongoPXEntitiesStatusCollection
-    );
-
-    expect(mongoEntitiesStatus).toEqual([mongoEntityStatus]);
-  });
-
-  it('should do nothing if the deleted Document was not the one used to be extracted', async () => {
-    await testingEnvironment.setFixtures({
-      ...createFixtures(),
-      files: [documentPt],
+      expect(mongoEntitiesStatus).toMatchObject([
+        {
+          status: EntityStatus.Processed,
+        },
+      ]);
     });
-    const eventBus = new EventsBus();
-    new PXFilesDeletedListener(eventBus).start();
 
-    const files: FileType[] = [
-      customFile,
-      documentEs,
-      { ...documentEn, language: documentPt.language },
-    ];
+    it('should keep EntityStatus as new', async () => {
+      await testingEnvironment.setFixtures({
+        ...createFixtures(),
+        files: [documentEn],
+        [mongoPXEntitiesStatusCollection]: [{ ...mongoEntityStatus, status: EntityStatus.New }],
+      });
+      const eventBus = new EventsBus();
+      new PXFilesDeletedListener(eventBus).start();
 
-    await eventBus.emit(new FilesDeletedEvent({ files }));
+      const files: FileType[] = [documentPt];
 
-    const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
-      mongoPXEntitiesStatusCollection
-    );
+      await testingEnvironment.runWithContext(async () => {
+        await eventBus.emit(new FilesDeletedEvent({ files }));
+      });
 
-    expect(mongoEntitiesStatus).toEqual([mongoEntityStatus]);
-  });
+      const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
+        mongoPXEntitiesStatusCollection
+      );
 
-  it('should do nothing if the source Entity was not the one used to be extracted', async () => {
-    const eventBus = new EventsBus();
-    new PXFilesDeletedListener(eventBus).start();
+      expect(mongoEntitiesStatus).toMatchObject([
+        {
+          status: EntityStatus.New,
+        },
+      ]);
+    });
 
-    const files: FileType[] = [{ ...documentEn, entity: new ObjectId().toString() }];
+    it('should delete EntityStats if there are no valid Documents for paragraph extraction', async () => {
+      await testingEnvironment.setFixtures({
+        ...createFixtures(),
+        files: [documentEs, customFile],
+      });
+      const eventBus = new EventsBus();
+      new PXFilesDeletedListener(eventBus).start();
 
-    await eventBus.emit(new FilesDeletedEvent({ files }));
+      const files: FileType[] = [documentPt];
 
-    const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
-      mongoPXEntitiesStatusCollection
-    );
+      await testingEnvironment.runWithContext(async () => {
+        await eventBus.emit(new FilesDeletedEvent({ files }));
+      });
 
-    expect(mongoEntitiesStatus).toEqual([mongoEntityStatus]);
+      const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
+        mongoPXEntitiesStatusCollection
+      );
+
+      expect(mongoEntitiesStatus).toHaveLength(0);
+    });
+
+    it('should do nothing if there is no Document on Files deleted event', async () => {
+      const eventBus = new EventsBus();
+      new PXFilesDeletedListener(eventBus).start();
+
+      const files: FileType[] = [customFile];
+
+      await testingEnvironment.runWithContext(async () => {
+        await eventBus.emit(new FilesDeletedEvent({ files }));
+      });
+
+      const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
+        mongoPXEntitiesStatusCollection
+      );
+
+      expect(mongoEntitiesStatus).toEqual([mongoEntityStatus]);
+    });
+
+    it('should do nothing if there are no Documents in UI languages among Documents deleted', async () => {
+      const eventBus = new EventsBus();
+      new PXFilesDeletedListener(eventBus).start();
+
+      const files: FileType[] = [documentEs, customFile];
+
+      await testingEnvironment.runWithContext(async () => {
+        await eventBus.emit(new FilesDeletedEvent({ files }));
+      });
+
+      const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
+        mongoPXEntitiesStatusCollection
+      );
+
+      expect(mongoEntitiesStatus).toEqual([mongoEntityStatus]);
+    });
+
+    it('should do nothing if the deleted Document was not the one used to be extracted', async () => {
+      await testingEnvironment.setFixtures({
+        ...createFixtures(),
+        files: [documentPt],
+      });
+      const eventBus = new EventsBus();
+      new PXFilesDeletedListener(eventBus).start();
+
+      const files: FileType[] = [
+        customFile,
+        documentEs,
+        { ...documentEn, language: documentPt.language },
+      ];
+
+      await testingEnvironment.runWithContext(async () => {
+        await eventBus.emit(new FilesDeletedEvent({ files }));
+      });
+
+      const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
+        mongoPXEntitiesStatusCollection
+      );
+
+      expect(mongoEntitiesStatus).toEqual([mongoEntityStatus]);
+    });
+
+    it('should do nothing if the source Entity was not the one used to be extracted', async () => {
+      const eventBus = new EventsBus();
+      new PXFilesDeletedListener(eventBus).start();
+
+      const files: FileType[] = [{ ...documentEn, entity: new ObjectId().toString() }];
+
+      await testingEnvironment.runWithContext(async () => {
+        await eventBus.emit(new FilesDeletedEvent({ files }));
+      });
+
+      const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
+        mongoPXEntitiesStatusCollection
+      );
+
+      expect(mongoEntitiesStatus).toEqual([mongoEntityStatus]);
+    });
   });
 });

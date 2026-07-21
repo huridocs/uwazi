@@ -1,16 +1,17 @@
-import { Request, Response } from 'express';
-import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
-import { FileUploadForEntity } from 'api/core/application/FileUploadForEntity';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
-import { FilesServiceFactory } from '../../factories/FilesServiceFactory';
-import { FileUploadForEntityFactory } from '../../factories/FileUploadForEntityFactory';
-import { LoggerFactory } from '../../factories/LoggerFactory';
-import { PDFPostProcessJobFactory } from '../../factories/PDFPostProcessJobFactory';
-import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory';
-import { PDFPostProcessJobHandler } from '../../jobs/PDFPostProcessJobHandler';
-import { V1WebSocketsWrapper } from '../../services/V1WebSocketsWrapper';
+import type { Request, Response } from 'express';
+import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
+import { FileUploadForEntity } from '#api/core/application/FileUploadForEntity.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
+import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
+import { DispatcherAdapter } from '../../jobs/DispatcherAdapter.js';
+import { FilesServiceFactory } from '../../factories/FilesServiceFactory.js';
+import { FileUploadForEntityFactory } from '../../factories/FileUploadForEntityFactory.js';
+import { LoggerFactory } from '../../factories/LoggerFactory.js';
+import { PDFPostProcessJobFactory } from '../../factories/PDFPostProcessJobFactory.js';
+import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
+import { PDFPostProcessJobHandler } from '../../jobs/PDFPostProcessJobHandler.js';
+import { V1WebSocketsWrapper } from '../../services/V1WebSocketsWrapper.js';
 
 class EntityFileUploadController extends AbstractController {
   private fileType: 'document' | 'attachment' = 'document';
@@ -78,20 +79,25 @@ class EntityFileUploadController extends AbstractController {
 
   private useCase() {
     let transactionManager = TransactionManagerFactory.default();
-    let jobsDispatcher: JobsDispatcher = DefaultDispatcher(this.tenantName, transactionManager);
+    let jobsDispatcher: Dispatcher = new DispatcherAdapter(
+      DefaultDispatcher(this.tenantName, transactionManager)
+    );
     if (process.env.NODE_ENV === 'test') {
       transactionManager = TransactionManagerFactory.fake();
-      jobsDispatcher = new SyncDispatcherForTests({
-        PDFPostProcessJobHandler: async () =>
-          new PDFPostProcessJobHandler({
-            useCase: PDFPostProcessJobFactory.default(transactionManager),
-            wSockets: new V1WebSocketsWrapper(),
-          }),
-      });
+      jobsDispatcher = new DispatcherAdapter(
+        new SyncDispatcherForTests({
+          PDFPostProcessJobHandler: async () =>
+            new PDFPostProcessJobHandler({
+              useCase: PDFPostProcessJobFactory.default(),
+              wSockets: new V1WebSocketsWrapper(),
+            }),
+        })
+      );
     }
 
-    return FileUploadForEntityFactory.default(transactionManager, {
-      filesService: FilesServiceFactory.default(transactionManager, { jobsDispatcher }),
+    return FileUploadForEntityFactory.default({
+      transactionManager,
+      filesService: FilesServiceFactory.default({ jobsDispatcher, transactionManager }),
     });
   }
 }

@@ -1,17 +1,17 @@
-import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
-import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
-import { DuplicatedKeyError } from 'api/common.v2/errors/DuplicatedKeyError';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
+import { DuplicatedKeyError } from '#api/common.v2/errors/DuplicatedKeyError.js';
 import { AnyBulkWriteOperation, MongoBulkWriteError, OptionalId } from 'mongodb';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import {
   BulkDeleteKeysByContext,
   TranslationsDataSource,
   UpdateKeysByContextProps,
-} from '../contracts/TranslationsDataSource';
-import { TranslationMappers } from '../database/TranslationMappers';
-import { Translation, TranslationContext } from '../model/Translation';
-import { TranslationDBO } from '../schemas/TranslationDBO';
-import { TranslationContextModel } from '../model/TranslationContextModel';
+} from '../contracts/TranslationsDataSource.js';
+import { TranslationMappers } from '../database/TranslationMappers.js';
+import { Translation, TranslationContext } from '../model/Translation.js';
+import { TranslationDBO } from '../schemas/TranslationDBO.js';
+import { TranslationContextModel } from '../model/TranslationContextModel.js';
 
 export class MongoTranslationsDataSource
   extends MongoDataSource<OptionalId<TranslationDBO>>
@@ -139,6 +139,20 @@ export class MongoTranslationsDataSource
         deleteMany: { filter: { 'context.id': contextId, key: { $in: keysToDelete } } },
       }))
     );
+  }
+
+  async cloneForLanguage(from: LanguageISO6391, to: LanguageISO6391): Promise<void> {
+    const cursor = this.getCollection().find({ language: from });
+    const stream = this.createBulkStream();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    for await (const { _id, ...doc } of cursor) {
+      await stream.updateOne(
+        { language: to, key: doc.key, 'context.id': doc.context.id },
+        { $setOnInsert: { ...doc, language: to } },
+        true
+      );
+    }
+    await stream.flush();
   }
 
   async calculateNonexistentKeys(contextId: string, keys: string[]) {

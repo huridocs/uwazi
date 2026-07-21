@@ -37,19 +37,18 @@ declare module '@tanstack/table-core' {
     className?: string;
     headerClassName?: string;
     contentClassName?: string;
+    selectAllCheckboxId?: string;
     data?: any;
   }
 }
 
 declare module 'react-table' {
   export interface Hooks<D extends object = {}>
-    extends UseExpandedHooks<D>,
-      UseGroupByHooks<D>,
-      UseRowSelectHooks<D>,
-      UseSortByHooks<D> {}
+    extends UseExpandedHooks<D>, UseGroupByHooks<D>, UseRowSelectHooks<D>, UseSortByHooks<D> {}
 
   export interface TableOptions<D extends object>
-    extends UseExpandedOptions<D>,
+    extends
+      UseExpandedOptions<D>,
       UseFiltersOptions<D>,
       UseRowSelectOptions<D>,
       UseRowStateOptions<D>,
@@ -58,7 +57,8 @@ declare module 'react-table' {
       UsePaginationOptions<D> {}
 
   export interface TableInstance<D>
-    extends UseColumnOrderInstanceProps<D>,
+    extends
+      UseColumnOrderInstanceProps<D>,
       UseExpandedInstanceProps<D>,
       UseFiltersInstanceProps<D>,
       UseRowSelectInstanceProps<D>,
@@ -68,7 +68,8 @@ declare module 'react-table' {
       UsePaginationInstanceProps<D> {}
 
   export interface TableState<D extends Record<string, unknown> = Record<string, unknown>>
-    extends UseColumnOrderState<D>,
+    extends
+      UseColumnOrderState<D>,
       UseExpandedState<D>,
       UseFiltersState<D>,
       UsePaginationState<D>,
@@ -79,7 +80,8 @@ declare module 'react-table' {
       UsePaginationState<D> {}
 
   export interface ColumnInterface<D extends object = {}>
-    extends UseFiltersColumnOptions<D>,
+    extends
+      UseFiltersColumnOptions<D>,
       UseFiltersColumnOptions<D>,
       UseRowSelectOptions<D>,
       UseGroupByColumnOptions<D>,
@@ -87,7 +89,8 @@ declare module 'react-table' {
       CustomColumn {}
 
   interface Row<D extends object = {}>
-    extends UseExpandedRowProps<D>,
+    extends
+      UseExpandedRowProps<D>,
       UseGroupByRowProps<D>,
       UseRowSelectRowProps<D>,
       UseRowStateRowProps<D>,
@@ -95,11 +98,8 @@ declare module 'react-table' {
       UseSortByColumnProps<D> {}
 
   export interface Cell<D extends object = {}>
-    extends UseGroupByCellProps<D>,
-      UseRowStateCellProps<D> {}
+    extends UseGroupByCellProps<D>, UseRowStateCellProps<D> {}
 
   export interface ColumnInstance<D extends object = {}>
-    extends UseGroupByColumnProps<D>,
-      UseSortByColumnProps<D>,
-      UseFiltersColumnProps<D> {}
+    extends UseGroupByColumnProps<D>, UseSortByColumnProps<D>, UseFiltersColumnProps<D> {}
 }

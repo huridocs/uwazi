@@ -1,0 +1,35 @@
+import React from 'react';
+import { Translate } from '#app/I18N/index.js';
+import { FiltersDrawer } from '#V2/Components/UI/index.js';
+import { RelationshipsFilterDrawerContent } from './RelationshipsFilterDrawerContent.js';
+import {
+  useRelationshipsPanelFacetFilters,
+  useRelationshipsPanelUi,
+} from '#V2/Routes/Entity/Components/context/index.js';
+
+const RelationshipsFiltersDrawer = () => {
+  const { activeFilterCount, clearFilters } = useRelationshipsPanelFacetFilters();
+  const { filtersDrawerOpen, setFiltersDrawerOpen } = useRelationshipsPanelUi();
+
+  return (
+    <FiltersDrawer
+      open={filtersDrawerOpen}
+      onClose={() => setFiltersDrawerOpen(false)}
+      footer={
+        activeFilterCount > 0 ? (
+          <button
+            type="button"
+            onClick={() => clearFilters()}
+            className="cursor-pointer text-micro font-medium text-ink-secondary transition-colors hover:text-ink"
+          >
+            <Translate>Clear all filters</Translate>
+          </button>
+        ) : null
+      }
+    >
+      <RelationshipsFilterDrawerContent />
+    </FiltersDrawer>
+  );
+};
+
+export { RelationshipsFiltersDrawer };

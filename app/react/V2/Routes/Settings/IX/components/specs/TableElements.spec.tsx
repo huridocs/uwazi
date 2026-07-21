@@ -1,8 +1,8 @@
 /**
  * @jest-environment jsdom
  */
-import { TableSuggestion } from '../../types';
-import { calculateOptimalProportions } from '../../helpers/contextHelpers';
+import { TableSuggestion } from '../../types.js';
+import { calculateOptimalProportions } from '../../helpers/contextHelpers.js';
 
 describe('CalculateOptimalProportions', () => {
   it('should have default column widths', () => {
