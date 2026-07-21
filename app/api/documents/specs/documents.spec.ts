@@ -9,7 +9,7 @@ import { mockID } from '#shared/uniqueID.js';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 import { documents } from '../documents.js';
-import { fixtures } from './fixtures.js';
+import { document1, fixtures } from './fixtures.js';
 
 describe('documents', () => {
   beforeEach(async () => {
@@ -34,6 +34,13 @@ describe('documents', () => {
         expect(docs[1].fullText).not.toBeDefined();
         expect(docs[0].title).toBe('Batman finishes');
       });
+    });
+  });
+
+  describe('fullText', () => {
+    it('should return concatenated pages without page markers', async () => {
+      const text = await documents.fullText(document1);
+      expect(text).toBe('page 1\n\npage 2');
     });
   });
 

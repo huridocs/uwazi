@@ -29,6 +29,27 @@ const documents = {
     return document.fullText[page].replace(pageNumberMatch, '');
   },
 
+  async fullText(_id) {
+    if (!_id) {
+      throw createError('document does not exists', 404);
+    }
+
+    const document = (
+      await FilesDAOFactory.default().getById(_id.toString(), { withFullText: true })
+    ).getData(null);
+
+    if (!document || !document.fullText) {
+      throw createError('document does not exists', 404);
+    }
+
+    const pageNumberMatch = /\[\[(\d+)\]\]/g;
+    return Object.keys(document.fullText)
+      .map(Number)
+      .sort((a, b) => a - b)
+      .map(page => document.fullText[page].replace(pageNumberMatch, ''))
+      .join('\n\n');
+  },
+
   get(query, select) {
     return entities.get(query, select);
   },
