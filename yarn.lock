@@ -25097,7 +25097,7 @@ __metadata:
     babel-plugin-transform-react-remove-prop-types: "npm:0.4.24"
     bcryptjs: "npm:^3.0.3"
     big.js: "npm:^7.0.1"
-    body-parser: "npm:1.20.4"
+    body-parser: "npm:1.20.6"
     bootstrap: "npm:3.4.1"
     child-process-promise: "npm:^2.2.1"
     clean-insights-sdk: "npm:^2.6.2"
