@@ -174,6 +174,24 @@ describe('ShareEntityModal', () => {
     expect(await screen.findByText('No people or groups added yet')).toBeInTheDocument();
   });
 
+  it('blocks editing and saving when permissions fail to load', async () => {
+    const user = userEvent.setup();
+    jest.mocked(api.loadGrantedPermissions).mockRejectedValue(new Error('fail'));
+    renderModal();
+
+    expect(await screen.findByText('An error occurred')).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: 'Private' })).toBeDisabled();
+    expect(screen.getByRole('radio', { name: 'Published' })).toBeDisabled();
+    expect(screen.getByPlaceholderText('Username, email or group')).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Add' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Save changes' })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('radio', { name: 'Published' }));
+    expect(api.savePermissions).not.toHaveBeenCalled();
+    expect(screen.queryByRole('button', { name: 'Save changes' })).not.toBeInTheDocument();
+  });
+
   it('shows labeled access, status, and public tip only when switching to published', async () => {
     const user = userEvent.setup();
     renderModal();

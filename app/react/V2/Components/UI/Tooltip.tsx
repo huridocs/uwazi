@@ -17,6 +17,7 @@ const arrowStyleFor = (placement: TooltipProps['placement']) => {
   const edges = arrowEdges[side] ?? arrowEdges.top;
   return {
     light: `bg-white ${edges} border-gray-200`,
+    dark: `bg-gray-900 ${edges} border-gray-700 dark:bg-gray-700`,
     auto: `bg-white ${edges} border-gray-200 dark:border-gray-600 dark:bg-gray-700`,
   };
 };
