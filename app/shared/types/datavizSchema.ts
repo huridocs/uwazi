@@ -3,6 +3,9 @@ export const DATAVIZ_DRAFT_ID = 'dv_new';
 
 export const TEMPLATE_DIMENSION_PROPERTY = '__template__';
 
+/** Custom DOM event name for page-authored Dataviz filters. */
+export const DATAVIZ_FILTER_EVENT = 'uwazi:dataviz-filter';
+
 export type PropertyTypeForDataviz =
   | 'select'
   | 'multiselect'
@@ -20,6 +23,7 @@ export type DatavizFilterOperator =
 
 export type DatavizFilter = {
   id: string;
+  scope?: 'datasource' | 'external';
   sourceAlias?: string;
   property: string;
   propertyType: FilterablePropertyType;
@@ -28,6 +32,37 @@ export type DatavizFilter = {
   values?: string[];
   from?: string | number;
   to?: string | number;
+};
+
+/** Value payload dispatched by page custom JS via `uwazi:dataviz-filter`. */
+export type DatavizRuntimeFilterValue = {
+  min?: number | string;
+  max?: number | string;
+  from?: number | string;
+  to?: number | string;
+  values?: string[];
+  value?: string | number;
+};
+
+/** One accumulated runtime filter sent to the embed API. */
+export type DatavizRuntimeFilter = {
+  property: string;
+  value: DatavizRuntimeFilterValue;
+};
+
+/**
+ * `document.dispatchEvent(new CustomEvent('uwazi:dataviz-filter', { detail }))`
+ *
+ * - `targets`: chart ids to update; omit or `'*'` = all charts on the page
+ * - `property`: default property hint / accumulation key
+ * - `properties`: optional per-chart property override `{ chartA: 'edad', chartB: 'altura' }`
+ * - `value`: filter bounds/values; `null` or `undefined` clears that property slot
+ */
+export type DatavizFilterEventDetail = {
+  targets?: string[] | '*';
+  property?: string;
+  properties?: Record<string, string>;
+  value?: DatavizRuntimeFilterValue | null;
 };
 
 export type DatavizSource = {

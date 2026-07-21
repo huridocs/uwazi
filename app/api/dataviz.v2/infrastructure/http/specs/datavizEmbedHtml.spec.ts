@@ -10,7 +10,6 @@ import { DatavizFactory } from '#api/dataviz.v2/infrastructure/factories/Dataviz
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import type { DatavizScheduler } from '#api/dataviz.v2/application/contracts/DatavizScheduler.js';
 import { MANUAL_DATA_EXAMPLE } from '#shared/dataviz/manualData.js';
-import { tenants } from '#api/tenants/index.js';
 import { CreateDatavizUseCase } from '#api/dataviz.v2/application/useCases/CreateDataviz.js';
 import datavizRoutes from '../routes.js';
 
@@ -71,7 +70,6 @@ describe('GET /embed/dataviz/:id HTML', () => {
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
-    tenants.current().featureFlags!.dataViz = true;
     const created = await createManualDataviz();
     datavizId = created.id;
   });
@@ -86,6 +84,7 @@ describe('GET /embed/dataviz/:id HTML', () => {
     expect(response.status).toBe(200);
     expect(String(response.headers['content-type']).includes('html')).toBe(true);
     expect(response.text).toContain('__DATAVIZ_CHART_OPTION__');
+    expect(response.text).toContain('__DATAVIZ_EMBED__');
     expect(response.text).toContain('echarts.min.js');
     expect(response.text).toContain('dataviz-embed');
     expect(response.text).not.toContain('main.js');
