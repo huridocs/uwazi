@@ -1,7 +1,7 @@
 {
   "packageManager": "yarn@4.13.0",
   "name": "uwazi",
-  "version": "1.229.0-rc430",
+  "version": "1.229.0-rc431",
   "type": "module",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
@@ -71,6 +71,7 @@
     "dump-db": "node --no-experimental-fetch scripts/bash.js ./database/dump_db.sh",
     "restore-db": "node --no-experimental-fetch scripts/bash.js ./database/restore_db.sh",
     "fixtures": "node --no-experimental-fetch scripts/bash.js ./uwazi-fixtures/restore.sh",
+    "provision-postgres": "node --no-experimental-fetch scripts/bash.js ./database/provision_postgres.sh",
     "add-migration": "./node_modules/.bin/plop --plopfile ./app/api/migrations/plopfile.cjs migration",
     "migrate": "node ./scripts/runner.js ./scripts/migrate.js",
     "migrate-and-reindex": "node ./scripts/runner.js ./scripts/migrate_and_reindex.js",

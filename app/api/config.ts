@@ -15,8 +15,8 @@ const PostgresEnvSchema = z
     POSTGRES_HOST: z.string().default('127.0.0.1'),
     POSTGRES_PORT: z.coerce.number().default(5432),
     POSTGRES_DB: z.string().default('uwazi_development'),
-    POSTGRES_USER: z.string().default('uwazi'),
-    POSTGRES_PASSWORD: z.string().default('uwazi'),
+    POSTGRES_USER: z.string().default('migrator_user'),
+    POSTGRES_PASSWORD: z.string().default('migrator_user'),
     POSTGRES_APP_USER: z.string().default('app_user'),
     POSTGRES_APP_PASSWORD: z.string().default('app_user'),
   })
