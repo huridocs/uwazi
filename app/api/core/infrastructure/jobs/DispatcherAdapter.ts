@@ -7,6 +7,8 @@ import {
   DenormalizeThesaurusParams,
   CloneLanguageEntitiesParams,
   DeleteLanguageEntitiesParams,
+  SendRecoveryEmailParams,
+  SendAccountLockedEmailParams,
 } from '#api/core/application/contracts/Dispatcher.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { BulkCleanupEntityJob } from './BulkCleanupEntityJob.js';
@@ -21,6 +23,8 @@ import {
   SendWelcomeEmailHandler,
   SendWelcomeEmailHandlerParams,
 } from './SendWelcomeEmailHandler.js';
+import { SendRecoveryEmailHandler } from './SendRecoveryEmailHandler.js';
+import { SendAccountLockedEmailHandler } from './SendAccountLockedEmailHandler.js';
 
 class DispatcherAdapter implements Dispatcher {
   constructor(private jobsDispatcher: JobsDispatcher) {}
@@ -74,6 +78,14 @@ class DispatcherAdapter implements Dispatcher {
 
   async sendWelcomeEmail(params: SendWelcomeEmailHandlerParams): Promise<void> {
     await this.jobsDispatcher.dispatch(SendWelcomeEmailHandler, params);
+  }
+
+  async sendRecoveryEmail(params: SendRecoveryEmailParams): Promise<void> {
+    await this.jobsDispatcher.dispatch(SendRecoveryEmailHandler, params as any);
+  }
+
+  async sendAccountLockedEmail(params: SendAccountLockedEmailParams): Promise<void> {
+    await this.jobsDispatcher.dispatch(SendAccountLockedEmailHandler, params as any);
   }
 }
 
