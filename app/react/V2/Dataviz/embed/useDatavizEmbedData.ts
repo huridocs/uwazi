@@ -1,59 +1,93 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { localeAtom } from '#V2/atoms/index.js';
 import { getPublicEmbedData } from '#V2/api/dataviz/index.js';
-import type { DatavizEmbedPayload } from '#shared/types/datavizSchema.js';
+import type { DatavizEmbedPayload, DatavizRuntimeFilter } from '#shared/types/datavizSchema.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
+
+const REFRESH_DEBOUNCE_MS = 150;
 
 type UseDatavizEmbedDataResult = {
   payload: DatavizEmbedPayload | null;
-  loading: boolean;
+  /** First load with no data yet. */
+  initialLoading: boolean;
+  /** Refetch in progress; previous payload is kept for smooth updates. */
+  refreshing: boolean;
   error: string | null;
 };
 
-const useDatavizEmbedData = (id: string): UseDatavizEmbedDataResult => {
+const useDatavizEmbedData = (
+  id: string,
+  externalFilters?: DatavizRuntimeFilter[]
+): UseDatavizEmbedDataResult => {
   const locale = useAtomValue(localeAtom);
   const [payload, setPayload] = useState<DatavizEmbedPayload | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const requestId = useRef(0);
+  const payloadRef = useRef<DatavizEmbedPayload | null>(null);
+  payloadRef.current = payload;
 
   useEffect(() => {
     let cancelled = false;
+    let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 
-    const load = async () => {
-      setLoading(true);
+    const load = async (currentRequest: number) => {
+      const hasPayload = payloadRef.current !== null;
+      if (hasPayload) {
+        setRefreshing(true);
+      } else {
+        setInitialLoading(true);
+      }
       setError(null);
 
-      const result = await getPublicEmbedData(id, locale);
+      const result = await getPublicEmbedData(id, locale, externalFilters);
 
-      if (cancelled) {
+      if (cancelled || currentRequest !== requestId.current) {
         return;
       }
 
       if (result instanceof FetchResponseError) {
-        setPayload(null);
+        if (!hasPayload) {
+          setPayload(null);
+        }
         setError(result.message || 'Unable to load visualization');
-        setLoading(false);
+        setInitialLoading(false);
+        setRefreshing(false);
         return;
       }
 
       setPayload(result);
-      setLoading(false);
+      setError(null);
+      setInitialLoading(false);
+      setRefreshing(false);
     };
 
-    load().catch(() => {
-      if (!cancelled) {
+    requestId.current += 1;
+    const currentRequest = requestId.current;
+
+    debounceTimer = setTimeout(() => {
+      load(currentRequest).catch(() => {
+        if (cancelled || currentRequest !== requestId.current) {
+          return;
+        }
+        if (!payloadRef.current) {
+          setPayload(null);
+        }
         setError('Unable to load visualization');
-        setLoading(false);
-      }
-    });
+        setInitialLoading(false);
+        setRefreshing(false);
+      });
+    }, REFRESH_DEBOUNCE_MS);
 
     return () => {
       cancelled = true;
+      clearTimeout(debounceTimer);
     };
-  }, [id, locale]);
+  }, [id, locale, JSON.stringify(externalFilters ?? [])]);
 
-  return { payload, loading, error };
+  return { payload, initialLoading, refreshing, error };
 };
 
 export { useDatavizEmbedData };

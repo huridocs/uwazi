@@ -4,7 +4,6 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
-import { tenants } from '#api/tenants/index.js';
 import datavizRoutes from '../routes.js';
 
 jest.mock(
@@ -136,7 +135,6 @@ describe('public dataviz embed integration', () => {
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
-    tenants.current().featureFlags!.dataViz = true;
   });
 
   afterAll(async () => {

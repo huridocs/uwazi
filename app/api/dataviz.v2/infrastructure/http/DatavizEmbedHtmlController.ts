@@ -18,10 +18,18 @@ class DatavizEmbedHtmlController extends DatavizController {
 
   protected async handle(): Promise<void> {
     const useCase = DatavizFactory.getPublicEmbedUseCase({ targetLanguage: this.language });
-    const payload = await useCase.execute({ id: this.request.params.id! });
+    const id = this.request.params.id!;
+    const payload = await useCase.execute({ id });
+    const parentOrigin =
+      typeof this.request.query.parentOrigin === 'string'
+        ? this.request.query.parentOrigin
+        : undefined;
+
     const html = renderDatavizEmbedHtml({
       payload,
       language: this.language,
+      datavizId: id,
+      parentOrigin,
       embedScriptUrl: resolveDatavizEmbedScriptUrl(),
     });
     this.response.status(200).type('html').send(html);
