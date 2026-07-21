@@ -5,6 +5,14 @@ const UPLOAD_ID_PATTERN = /^[a-zA-Z\d_]+$/;
 
 const isUploadId = (value: string) => UPLOAD_ID_PATTERN.test(value);
 
+const parseMediaSourceUrl = (value: string): string => {
+  if (!value.startsWith('(')) {
+    return value;
+  }
+
+  return value.match(/^\(([^,]+),/)?.[1]?.trim() || value;
+};
+
 type AttachmentLike = {
   fileLocalID?: string;
   serializedFile?: string;
@@ -71,8 +79,8 @@ const extractUploadIdFromMediaValue = (rawValue: string): string | undefined => 
     return undefined;
   }
   if (rawValue.startsWith('(')) {
-    const id = rawValue.match(/^\(([^,]+),/)?.[1]?.trim();
-    return id && isUploadId(id) ? id : undefined;
+    const id = parseMediaSourceUrl(rawValue);
+    return isUploadId(id) ? id : undefined;
   }
   return isUploadId(rawValue) ? rawValue : undefined;
 };
@@ -158,5 +166,6 @@ export {
   isUploadId,
   mapMediaMetadataForSave,
   mapMediaValue,
+  parseMediaSourceUrl,
   resolveMetadataAttachmentIndex,
 };

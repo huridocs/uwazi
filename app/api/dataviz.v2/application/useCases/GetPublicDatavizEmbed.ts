@@ -1,4 +1,4 @@
-import type { DatavizEmbedPayload } from '#shared/types/datavizSchema.js';
+import type { DatavizEmbedPayload, DatavizRuntimeFilter } from '#shared/types/datavizSchema.js';
 import type { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import type { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { DatavizDataSource } from '#api/dataviz.v2/application/contracts/DatavizDataSource.js';
@@ -10,6 +10,7 @@ import { resolveDatavizRenderSnapshot } from '#api/dataviz.v2/application/servic
 
 type Input = {
   id: string;
+  externalFilters?: DatavizRuntimeFilter[];
 };
 
 type Output = DatavizEmbedPayload;
@@ -23,7 +24,7 @@ type Deps = {
 };
 
 class GetPublicDatavizEmbedUseCase extends AbstractUseCase<Input, Output, Deps> {
-  async execute({ id }: Input): Promise<Output> {
+  async execute({ id, externalFilters }: Input): Promise<Output> {
     const settings = await this.deps.settingsDS.get();
 
     const datavizResult = await this.deps.datavizDS.getById(id);
@@ -44,6 +45,7 @@ class GetPublicDatavizEmbedUseCase extends AbstractUseCase<Input, Output, Deps> 
         dataviz,
         locale: this.targetLanguage,
         defaultLocale,
+        externalFilters,
       },
       {
         snapshotsDS: this.deps.snapshotsDS,
