@@ -12,7 +12,7 @@ import { getTenantESMapping } from '#api/tenants/tenantESMapping.js';
 import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory.js';
 import { elastic } from './elastic.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
-import { PostgresEntitiesDAOFactory } from '#api/core/infrastructure/factories/PostgresEntitiesDAOFactory.js';
+import { PostgresUnrestrictedEntitiesQueryFactory } from '#api/core/infrastructure/factories/PostgresUnrestrictedEntitiesQueryFactory.js';
 
 const PromisePool = PromisePoolModule.default ?? PromisePoolModule;
 
@@ -171,8 +171,8 @@ const bulkIndex = async (docs, _action = 'index') => {
 const getEntitiesToIndex = async (query, stepBach, limit, select) => {
   const documentsFullText = Boolean(select && select.includes('+fullText'));
 
-  if (PostgresEntitiesDAOFactory.isEnabled()) {
-    return PostgresEntitiesDAOFactory.default().getByIdsWithDocuments(stepBach, {
+  if (PostgresUnrestrictedEntitiesQueryFactory.isEnabled()) {
+    return PostgresUnrestrictedEntitiesQueryFactory.default().getByIdsWithDocuments(stepBach, {
       limit,
       documentsFullText,
     });
@@ -193,8 +193,8 @@ const bulkIndexAndCallback = async assets => {
 };
 
 const getSteps = async (query, limit) => {
-  const allIds = PostgresEntitiesDAOFactory.isEnabled()
-    ? await PostgresEntitiesDAOFactory.default().getIds(entityFiltersFromQuery(query))
+  const allIds = PostgresUnrestrictedEntitiesQueryFactory.isEnabled()
+    ? await PostgresUnrestrictedEntitiesQueryFactory.default().getIds(entityFiltersFromQuery(query))
     : await entities.getWithoutDocuments(query, '_id');
   return [...Array(Math.ceil(allIds.length / limit))].map((_v, i) =>
     allIds.slice(i * limit, (i + 1) * limit)
@@ -242,8 +242,8 @@ const indexEntities = async ({
   batchCallback = () => {},
   searchInstance,
 }) => {
-  const totalRows = PostgresEntitiesDAOFactory.isEnabled()
-    ? await PostgresEntitiesDAOFactory.default().count(entityFiltersFromQuery(query))
+  const totalRows = PostgresUnrestrictedEntitiesQueryFactory.isEnabled()
+    ? await PostgresUnrestrictedEntitiesQueryFactory.default().count(entityFiltersFromQuery(query))
     : await entities.count(query);
   return indexBatch(totalRows, {
     query,

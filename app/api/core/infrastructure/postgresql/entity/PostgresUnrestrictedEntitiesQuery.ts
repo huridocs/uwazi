@@ -31,7 +31,7 @@ type Deps = PostgresDataSourceDeps & {
   filesDAO: PostgresFilesDAO;
 };
 
-class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> {
+class PostgresUnrestrictedEntitiesQuery extends PostgresDataSource<EntityRow> {
   private filesDAO: PostgresFilesDAO;
 
   constructor(deps: Deps) {
@@ -148,4 +148,4 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> {
 }
 
 export type { EntityFilters, GetByIdsWithDocumentsOptions, LabelInfo };
-export { PostgresEntitiesDAO };
+export { PostgresUnrestrictedEntitiesQuery };

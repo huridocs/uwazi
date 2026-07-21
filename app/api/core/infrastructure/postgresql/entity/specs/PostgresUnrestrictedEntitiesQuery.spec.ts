@@ -2,8 +2,8 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { PostgresEntitiesDAOFactory } from '../../../factories/PostgresEntitiesDAOFactory.js';
-import type { PostgresEntitiesDAO } from '../PostgresEntitiesDAO.js';
+import { PostgresUnrestrictedEntitiesQueryFactory } from '../../../factories/PostgresUnrestrictedEntitiesQueryFactory.js';
+import type { PostgresUnrestrictedEntitiesQuery } from '../PostgresUnrestrictedEntitiesQuery.js';
 
 const factory = getFixturesFactory({ convertIdToString: true });
 
@@ -32,10 +32,10 @@ const baseFixtures = {
   ],
 };
 
-const createSut = (): PostgresEntitiesDAO =>
-  testingEnvironment.runWithContext(() => PostgresEntitiesDAOFactory.default());
+const createSut = (): PostgresUnrestrictedEntitiesQuery =>
+  testingEnvironment.runWithContext(() => PostgresUnrestrictedEntitiesQueryFactory.default());
 
-describe('PostgresEntitiesDAO', () => {
+describe('PostgresUnrestrictedEntitiesQuery', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({}, { postgres: true });
   });

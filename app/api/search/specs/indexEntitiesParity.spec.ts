@@ -2,7 +2,7 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
-import { PostgresEntitiesDAOFactory } from '#api/core/infrastructure/factories/PostgresEntitiesDAOFactory.js';
+import { PostgresUnrestrictedEntitiesQueryFactory } from '#api/core/infrastructure/factories/PostgresUnrestrictedEntitiesQueryFactory.js';
 import { search } from '../search.js';
 
 const factory = getFixturesFactory({ convertIdToString: true });
@@ -126,13 +126,13 @@ describe('indexEntities parity: Mongo vs Postgres', () => {
     expect(postgresResult).toEqual(mongoResult);
   });
 
-  it('PostgresEntitiesDAOFactory throws when postgresEntities is on but postgresFiles is off', async () => {
+  it('PostgresUnrestrictedEntitiesQueryFactory throws when postgresEntities is on but postgresFiles is off', async () => {
     testingTenants.changeCurrentTenant({
       featureFlags: { postgresEntities: true, postgresFiles: false },
     });
 
     expect(() =>
-      testingEnvironment.runWithContext(() => PostgresEntitiesDAOFactory.default())
+      testingEnvironment.runWithContext(() => PostgresUnrestrictedEntitiesQueryFactory.default())
     ).toThrow();
   });
 
