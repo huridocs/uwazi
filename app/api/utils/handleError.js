@@ -174,8 +174,8 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
 const getErrorMessage = (data, error) => {
   const originalError = data.original || error;
   const prettyMessage = data.requestId
-    ? `requestId: ${data.requestId} ${data.prettyMessage}`
-    : data.prettyMessage;
+    ? `requestId: ${data.requestId} ${data.prettyMessage} ${error.stack}`
+    : data.prettyMessage + error.stack;
 
   if (originalError instanceof Error) {
     const extendedError = appendOriginalError(prettyMessage, originalError);
