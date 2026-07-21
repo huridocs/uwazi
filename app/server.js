@@ -3,6 +3,7 @@
 import './initSentryEarly.js';
 import compression from 'compression';
 import express from 'express';
+import promBundle from 'express-prom-bundle';
 
 import helmet from 'helmet';
 import { Server } from 'http';
