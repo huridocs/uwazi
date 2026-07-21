@@ -5,7 +5,6 @@ import { PropertyType } from 'api/core/domain/template/PropertyType';
 import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { InputFile } from 'api/core/infrastructure/files/InputFile';
-import { TimedMethod } from 'api/core/libs/logger/TimedMethodDecorator';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
 import { SelectPropertyAssignmentCreatorService } from './SelectPropertyAssignmentCreatorService';
 import { RelationshipPropertyAssignmentCreatorService } from './RelationshipPropertyAssignmentCreatorService';
@@ -52,7 +51,6 @@ class PropertyAssignmentCreatorServiceStrategy {
     }
   }
 
-  @TimedMethod('property_assignment_creator_service_bulk_create')
   async bulkCreate(
     propertyAssignments: PropertyAssignmentInput[],
     template: Template,

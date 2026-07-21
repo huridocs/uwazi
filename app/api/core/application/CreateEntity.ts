@@ -5,7 +5,6 @@ import { EntitiesService } from './EntitiesService';
 import { FilesService } from './FilesService';
 import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorService';
 import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
-import { TimedMethod } from '../libs/logger/TimedMethodDecorator';
 
 type Input = {
   propertyAssignments: PropertyAssignmentInput[];
@@ -23,7 +22,6 @@ type Deps = {
 };
 
 class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
-  @TimedMethod('create_entity_use_case')
   async execute(input: Input): Promise<Output> {
     const entity = await this.deps.entitiesService.create({
       templateId: input.templateId,

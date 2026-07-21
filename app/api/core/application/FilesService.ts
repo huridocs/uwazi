@@ -25,7 +25,6 @@ import { IdGenerator } from './contracts/IdGenerator';
 import { TransactionManager } from './contracts/TransactionManager';
 import { DeleteFileFromStorageJobHandler } from '../infrastructure/jobs/DeleteFileFromStorageJobHandler';
 import { PathManager } from '../infrastructure/files/PathManager';
-import { TimedMethod } from '../libs/logger/TimedMethodDecorator';
 
 type Deps = {
   idGenerator: IdGenerator;
@@ -47,7 +46,6 @@ function isNonEmptyArray<T>(arr: T[]): arr is [T, ...T[]] {
 class FilesService {
   constructor(protected deps: Deps) {}
 
-  @TimedMethod('files_service_store_files')
   async storeFiles(files: BaseFile[]) {
     await ArrayUtils.sequentialFor(
       files.filter(f => f.hasContent()),

@@ -66,22 +66,6 @@ services:
       - ./storage/minio:/data
     command: server /data --console-address :9001
 
-  prometheus:
-    image: prom/prometheus:latest
-    ports:
-      - '9090:9090'
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-
-  grafana:
-    image: grafana/grafana:latest
-    ports:
-      - '3001:3000'
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-
 volumes:
   esdata01:
     driver: local

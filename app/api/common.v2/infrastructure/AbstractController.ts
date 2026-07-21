@@ -6,6 +6,12 @@ import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { tenants } from 'api/tenants';
 import { User } from 'api/users/usersModel';
 import { ValidationError } from 'api/core/domain/error/ValidationError';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { DependenciesContext } from 'api/core/libs/DependenciesContext';
+import { EventEmitterFactory } from 'api/core/libs/eventEmitter/EventEmitterFactory';
+import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 
 export type Dependencies<RequestBody = any> = {
   response: Response;
@@ -51,6 +57,21 @@ export abstract class AbstractController<RequestBody = any> {
     return async (request: Request, response: Response) => {
       /* @ts-ignore - 'this' is a constructor, so 'new' is valid*/
       const instance = new this({ request, response }) as AbstractController;
+
+      const tenant = tenants.current();
+      const transactionManager = TransactionManagerFactory.default();
+      const eventEmitter = EventEmitterFactory.default();
+      const idGenerator = IdGeneratorFactory.default();
+      const jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
+      const logger = LoggerFactory.default();
+
+      DependenciesContext.attachContext(instance, 'handleAsync', {
+        transactionManager,
+        eventEmitter,
+        idGenerator,
+        jobsDispatcher,
+        logger,
+      });
 
       return instance.handleAsync();
     };
