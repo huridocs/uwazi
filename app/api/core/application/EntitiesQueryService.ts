@@ -29,6 +29,40 @@ type Deps = {
   relationshipsDataSource: MongoRelationshipsV1DataSource;
 };
 
+type GetEntityPerformance = {
+  entityLoadMs: number;
+  permFilterMs: number;
+  relationsMs: number;
+  relatedCount: number;
+  relationshipPropValueCount: number;
+};
+
+type GetEntityResult = {
+  entity: GetEntityResponseDTO;
+  phases: GetEntityPerformance;
+};
+
+function countRelationshipPropValues(
+  entityDBOs: EntityDBO[],
+  templatePropsMap: Map<string, Set<string>>
+): number {
+  let count = 0;
+
+  for (const entityDBO of entityDBOs) {
+    const relationshipProps = templatePropsMap.get(entityDBO.template.toString());
+    if (relationshipProps) {
+      for (const propName of relationshipProps) {
+        const values = entityDBO.metadata?.[propName];
+        if (Array.isArray(values)) {
+          count += values.length;
+        }
+      }
+    }
+  }
+
+  return count;
+}
+
 class EntitiesQueryService {
   constructor(private deps: Deps) {}
 
@@ -41,22 +75,27 @@ class EntitiesQueryService {
     includeRelationships: boolean;
     includePermissions: boolean;
     user: User;
-  }): Promise<GetEntityResponseDTO> {
+  }): Promise<GetEntityResult> {
     const { sharedId, language, includeRelationships, includePermissions, user } = input;
     const isAuthenticated = !user.isAnonymous();
 
+    const entityLoadStart = performance.now();
     const [entity] = await this.deps.entityDAO.getWithFiles({
       sharedId,
       language,
     });
+    const entityLoadMs = performance.now() - entityLoadStart;
 
     if (!entity) {
       throw new EntityNotFoundError(sharedId);
     }
 
-    await this.applyRelationshipPermissions([entity], user);
+    const permFilterStart = performance.now();
+    const relationshipPropValueCount = await this.applyRelationshipPermissions([entity], user);
+    const permFilterMs = performance.now() - permFilterStart;
 
     let filteredRelations: RelationDTO[] = [];
+    const relationsStart = performance.now();
     if (includeRelationships) {
       const includeUnpublished = isAuthenticated;
       const relations = (await this.deps.relationshipsDataSource.getByEntity(
@@ -69,6 +108,7 @@ class EntitiesQueryService {
         ? relations
         : relations.filter(rel => rel.entityData?.published !== false);
     }
+    const relationsMs = performance.now() - relationsStart;
 
     this.applyPermissionsFieldSecurity(entity, user, includePermissions);
 
@@ -79,16 +119,26 @@ class EntitiesQueryService {
       ...(includeRelationships && { relations: filteredRelations }),
     };
 
-    return response;
+    return {
+      entity: response,
+      phases: {
+        entityLoadMs,
+        permFilterMs,
+        relationsMs,
+        relatedCount: filteredRelations.length,
+        relationshipPropValueCount,
+      },
+    };
   }
 
   /**
    * Applies relationship permissions to entity metadata based on user permissions.
    * Mutates entity metadata in-place by filtering or marking inaccessible relationship references.
+   * @returns count of relationship property values after filtering
    */
-  async applyRelationshipPermissions(entityDBOs: EntityDBO[], user: User): Promise<void> {
+  async applyRelationshipPermissions(entityDBOs: EntityDBO[], user: User): Promise<number> {
     if (entityDBOs.length === 0) {
-      return;
+      return 0;
     }
 
     const templatePropsMap = await this.loadTemplateRelationshipProperties(entityDBOs);
@@ -103,6 +153,8 @@ class EntitiesQueryService {
       filterUnauthorized,
       user
     );
+
+    return countRelationshipPropValues(entityDBOs, templatePropsMap);
   }
 
   private applyPermissionsFieldSecurity(
@@ -277,4 +329,4 @@ class EntitiesQueryService {
 }
 
 export { EntitiesQueryService };
-export type { Deps as EntitiesQueryServiceDeps };
+export type { Deps as EntitiesQueryServiceDeps, GetEntityPerformance, GetEntityResult };

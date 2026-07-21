@@ -34,6 +34,10 @@ type Tenant = {
     v2UsersDelete?: boolean;
     v2UsersGet?: boolean;
     v2UsersUpdate?: boolean;
+    logPerformanceEntities?: {
+      enabled?: boolean;
+      thresholdMs?: number;
+    };
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

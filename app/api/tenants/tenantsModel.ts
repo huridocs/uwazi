@@ -49,6 +49,10 @@ const mongoSchema = new mongoose.Schema({
     v2UsersDelete: Boolean,
     v2UsersGet: Boolean,
     v2UsersUpdate: Boolean,
+    logPerformanceEntities: {
+      enabled: Boolean,
+      thresholdMs: Number,
+    },
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,

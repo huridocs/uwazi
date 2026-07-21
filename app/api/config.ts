@@ -151,6 +151,10 @@ export const config = {
       v2UsersDelete: false,
       v2UsersGet: false,
       v2UsersUpdate: false,
+      logPerformanceEntities: {
+        enabled: false,
+        thresholdMs: 500,
+      },
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',
