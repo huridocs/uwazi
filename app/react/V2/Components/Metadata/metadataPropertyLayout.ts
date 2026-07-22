@@ -39,7 +39,7 @@ const metadataGridClassForProperty = (
   if (usesTemplateFullWidthGrid(data, templateField)) {
     return FULL_ROW_METADATA_FIELD_LAYOUT;
   }
-  if (data.type === 'markdown' || data.type === 'geolocation') {
+  if (data.type === 'markdown' || data.type === 'geolocation' || data.type === 'media') {
     return FULL_ROW_METADATA_FIELD_LAYOUT;
   }
   if (isLongTextProperty(data)) {

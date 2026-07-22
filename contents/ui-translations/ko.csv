@@ -23,6 +23,7 @@ Account updated,Account updated
 Accuracy,Accuracy
 Accuracy tooltip,Accuracy is defined by the amount of matches vs mismatches for labeled samples that have been processed.
 Action,활동
+Actions,Actions
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
@@ -36,6 +37,7 @@ Add as,Add as
 Add data source,Add data source
 Add date,날짜 추가
 Add entities / documents,엔티티/문서 추가
+Add entity,Add entity
 Add entity type,Add entity type
 Add Extractor,Add Extractor
 Add extractor,Add extractor
@@ -236,6 +238,7 @@ Copy Highlighted,하이라이트 복사
 Copy link,링크 복사
 Copy properties to this entity from,이 엔티티의 속성 복사
 Copy to clipboard,Copy to clipboard
+Could not add media. Please try again.,Could not add media. Please try again.
 Could not be processed,Could not be processed
 Could not create entity,Could not create entity
 Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
@@ -346,6 +349,8 @@ Direction,Direction
 Disable,Disable
 Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
+Discard and leave,Discard and leave
+Discard and switch,Discard and switch
 Discard changes,변경 취소
 Discard changes?,Discard changes?
 Dismiss,Dismiss
@@ -383,6 +388,7 @@ Duration,Duration
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
 Earlier,Earlier
 Edit,편집
+Edit at source,Edit at source
 Edit Extractor,Edit Extractor
 Edit File,Edit File
 Edit group,Edit group
@@ -544,30 +550,27 @@ ID:,ID:
 Image doesn't match the required size.,Image doesn't match the required size.
 Import,업로드
 Import asset,Import asset
-Import completed,Import completed. Number of entities created:
 Import CSV,CSV 업로드
 Import failed. Review details below.,Import failed. Review details below.
 Import finished successfully.,Import finished successfully.
 Import finished with errors. Review details below.,Import finished with errors. Review details below.
-Import instructions,업로드 가이드라인
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.
 Import theme instance file,Import theme instance file
 Import was cancelled.,Import was cancelled.
-Imported entities from file,Imported entities from file
 Imported translations from file,Imported translations from file
-Importing data in progress,데이터 업로드 중
 in,안
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,OCR 대기 중
 in this document,in this document
 Incoming,Incoming
-Indexing entities may take a few minutes,엔티티 색인 작업에는 몇 분이 소요될 수 있습니다.
 Info,정보
 Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,속성 이어받기
 Inherit type,Inherit type
+"Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
+inherits,inherits
 Input,Input
 Install,Install
 Install Language(s),Install Language(s)
@@ -612,6 +615,7 @@ Languages installed successfully,Languages installed successfully
 Last updated,Last updated
 Last updated from collection:,Last updated from collection:
 Latitude,위도
+Latitude must be between -90 and 90,Latitude must be between -90 and 90
 Learn more,더 알아보기
 Legend,범례
 Lengthy reindex process,Lengthy reindex process
@@ -628,11 +632,13 @@ Live preview,Live preview
 Live translate,Live translate
 Load example,Load example
 Loading,Loading
+Local time,Local time
 Login,로그인
 Login button,로그인 버튼
 Login failed,로그인 실패
 Logout,로그아웃
 Longitude,경도
+Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,낮게
 Manage site settings and configuration,사이트 설정 및 구성 관리
@@ -725,6 +731,7 @@ No,아니오
 No attachments,첨부파일 없음
 No chart types match your search.,No chart types match your search.
 No common filters,공통 필터 없음
+No connected entities yet.,No connected entities yet.
 No Connections,커넥션 없음
 No Connections description,Connections are the direct relationships between this document and other documents and entities.
 No context,No context
@@ -739,6 +746,7 @@ No icon / flag,아이콘/플래그 없음
 No items available,No items available
 No Label,라벨 없음
 No label,No label
+No matching entities.,No matching entities.
 No media selected,No media selected
 No options,No options
 No options found,검색된 옵션 없음
@@ -759,6 +767,7 @@ No templates available to add.,No templates available to add.
 No text match,일치하는 텍스트 없음
 No text match description,You can type something different in the search box to get some results.
 No timelinks added,No timelinks added
+No translation in,No translation in
 No type,유형 없음
 No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,No valid target template available
@@ -774,6 +783,7 @@ Normal view,일반 뷰
 Not already been use as source template in another extractor,Not already been use as source template in another extractor
 Not already been use as target template,Not already been use as target template
 Not Found,Not Found
+Nothing here yet.,Nothing here yet.
 Nothing selected,Nothing selected
 Notifications,Notifications
 Obsolete,Obsolete
@@ -951,6 +961,7 @@ Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,제거
+Remove from connection,Remove from connection
 Remove from training set,Remove from training set
 remove icon,아이콘 제거
 Removed language,Removed language
@@ -1004,6 +1015,7 @@ Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordin
 Search,검색
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
 Search entities...,Search entities...
+Search entities…,Search entities…
 Search item,아이템 검색
 Search related entities or documents,연결된 엔티티 및 문서 검색
 Search relationships,Search relationships
@@ -1166,8 +1178,6 @@ Templates,템플릿
 Templates:,Templates:
 Text,텍스트
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
-The import process threw an error:,업로드 과정에서 오류가 발생했습니다:
-The import process threw some warnings:,The import process threw some warnings:
 "The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process."
@@ -1235,6 +1245,7 @@ This property will be shown using all the width available.,디스플레이 가�
 This property will be shown without the label,This property will be shown without the label
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
+This search could not be completed. Try again later.,This search could not be completed. Try again later.
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
@@ -1294,6 +1305,7 @@ Unknown entity,Unknown entity
 Unknown template,Unknown template
 Unlink,Unlink
 Unlock account,Unlock account
+Unsaved changes,Unsaved changes
 Unsupported OCR language,OCR 지원되지 않는 언어
 Untitled,Untitled
 Untranslated Terms,Untranslated Terms
@@ -1311,7 +1323,6 @@ Updated translations,Updated translations
 Updated user,Updated user
 Updating template properties across,Updating template properties across
 Updating…,Updating…
-Upload a ZIP or CSV file.,ZIP 혹은 CSV 파일 업로드
 Upload and select file,업로드 및 파일 선택
 Upload from computer,컴퓨터에서 업로드
 Upload image,Upload image
@@ -1323,7 +1334,6 @@ Uploaded document,Uploaded document
 Uploaded file,Uploaded file
 Uploading,업로드 중
 Uploading ...,업로드 중
-Uploading file,파일 업로드 중
 Uploads,업로드
 URL,URL
 Use,사용
@@ -1356,6 +1366,7 @@ Value cannot be transformed to the correct type,Value cannot be transformed to t
 values,values
 Verify,검증
 Verifying...,검증 중
+via,via
 View,보기
 view,보기
 View entities,View entities
@@ -1389,6 +1400,10 @@ You can create metadata templates in,메타데이터 템플릿을 작성할 수 
                   button.","You can start by selecting text in the document and clicking the ""Add to ToC""
                   button."
 You do not have write permission on all entities,You do not have write permission on all entities
+You have unsaved changes. Discard them and leave this page? This action cannot be undone.,You have unsaved changes. Discard them and leave this page? This action cannot be undone.
+"You have unsaved changes. Discard them and switch language? This action cannot be
+              undone.","You have unsaved changes. Discard them and switch language? This action cannot be
+              undone."
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,계정 보안 향상이 필요한 경우 이 기능을 활성화해야 합니다.
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.

@@ -113,6 +113,7 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
       // eslint-disable-next-line no-await-in-loop
       const buckets = await this.aggregateSource({
         query,
+        externalFilters: context.externalFilters,
         source,
         sourceIndex,
         sourceTemplateId: source.templateId,
@@ -204,6 +205,7 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
       // eslint-disable-next-line no-await-in-loop
       const count = await this.countSourceEntities({
         query,
+        externalFilters: context.externalFilters,
         source,
         sourceIndex,
         sourceTemplateId: source.templateId,
@@ -246,6 +248,7 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
 
   private async countSourceEntities(params: {
     query: DatavizQuery;
+    externalFilters?: DatavizFilter[];
     source: DatavizQuery['sources'][number];
     sourceIndex: number;
     sourceTemplateId: string;
@@ -253,10 +256,23 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
     permissionMatch: object;
     timeoutMs: number;
   }): Promise<number> {
-    const { query, source, sourceIndex, sourceTemplateId, language, permissionMatch, timeoutMs } =
-      params;
+    const {
+      query,
+      externalFilters,
+      source,
+      sourceIndex,
+      sourceTemplateId,
+      language,
+      permissionMatch,
+      timeoutMs,
+    } = params;
 
-    const sourceFilters = this.filtersForSource(query.filters, source, sourceIndex);
+    const sourceFilters = this.mergeSourceFilters(
+      query.filters,
+      externalFilters,
+      source,
+      sourceIndex
+    );
     const match: Record<string, unknown> = {
       template: ObjectId.createFromHexString(sourceTemplateId),
       language,
@@ -281,6 +297,7 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
 
   private async aggregateSource(params: {
     query: DatavizQuery;
+    externalFilters?: DatavizFilter[];
     source: DatavizQuery['sources'][number];
     sourceIndex: number;
     sourceTemplateId: string;
@@ -293,6 +310,7 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
   }): Promise<RawBucket[]> {
     const {
       query,
+      externalFilters,
       source,
       sourceIndex,
       sourceTemplateId,
@@ -304,7 +322,12 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
       timeoutMs,
     } = params;
 
-    const sourceFilters = this.filtersForSource(query.filters, source, sourceIndex);
+    const sourceFilters = this.mergeSourceFilters(
+      query.filters,
+      externalFilters,
+      source,
+      sourceIndex
+    );
 
     const match: Record<string, unknown> = {
       template: ObjectId.createFromHexString(sourceTemplateId),
@@ -449,9 +472,61 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
     );
   }
 
+  private mergeSourceFilters(
+    queryFilters: DatavizFilter[] | undefined,
+    externalFilters: DatavizFilter[] | undefined,
+    source: DatavizSource,
+    sourceIndex: number
+  ): DatavizFilter[] {
+    return [
+      ...this.filtersForSource(queryFilters, source, sourceIndex),
+      ...this.filtersForSource(externalFilters, source, sourceIndex),
+    ];
+  }
+
+  private buildExternalDateRangeMatch(filter: DatavizFilter, path: string): object {
+    const from = this.filterBound(filter, 'from');
+    const to = this.filterBound(filter, 'to');
+
+    if (filter.propertyType === 'date' || filter.propertyType === 'multidate') {
+      if (from !== undefined && to !== undefined) {
+        return { [`${path}.value`]: { $elemMatch: { $gte: from, $lte: to } } };
+      }
+      if (from !== undefined) {
+        return { [`${path}.value`]: { $elemMatch: { $gte: from } } };
+      }
+      if (to !== undefined) {
+        return { [`${path}.value`]: { $elemMatch: { $lte: to } } };
+      }
+    }
+
+    if (filter.propertyType === 'daterange' || filter.propertyType === 'multidaterange') {
+      const rangeMatch: Record<string, unknown> = {};
+      if (to !== undefined) {
+        rangeMatch.from = { $lte: to };
+      }
+      if (from !== undefined) {
+        rangeMatch.to = { $gte: from };
+      }
+      return { [`${path}.value`]: { $elemMatch: rangeMatch } };
+    }
+
+    return {};
+  }
+
   private buildFilterMatch(filters: DatavizFilter[] = []): object[] {
     return filters.map(filter => {
       const path = this.metadataPath(filter.property);
+
+      if (
+        filter.scope === 'external' &&
+        (filter.propertyType === 'date' ||
+          filter.propertyType === 'multidate' ||
+          filter.propertyType === 'daterange' ||
+          filter.propertyType === 'multidaterange')
+      ) {
+        return this.buildExternalDateRangeMatch(filter, path);
+      }
 
       switch (filter.operator) {
         case 'eq':

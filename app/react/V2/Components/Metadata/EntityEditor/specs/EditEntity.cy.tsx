@@ -10,8 +10,11 @@ const selectSearchSelectOption = (fieldId: string, optionLabel: string) => {
   cy.contains('[role="option"]', optionLabel).click();
 };
 
-const waitForRelationshipLookup = () => {
-  cy.get('input[id="entity2"]', { timeout: 10000 }).should('exist');
+const titleField = () => cy.get('textarea[id="title"]');
+
+const openRelationshipSearch = (fieldTitle: string, fieldId: string) => {
+  cy.contains(fieldTitle).closest('div.space-y-1\\.5').contains('button', 'Add entity').click();
+  cy.get(`input[id="${fieldId}"]`).should('exist');
 };
 
 describe('Entity edit', () => {
@@ -27,7 +30,7 @@ describe('Entity edit', () => {
     });
 
     it('should display current template and title', () => {
-      cy.get('input[id="title"]').should('have.value', 'Title of the entity');
+      titleField().should('have.value', 'Title of the entity');
       cy.get('[id="template"]').should('contain', 'Documents');
     });
 
@@ -108,19 +111,21 @@ describe('Entity edit', () => {
           { id: 'thes.g.1', checked: true },
         ],
       },
-      {
-        field: 'Related people',
-        values: [
-          { id: 'entity2', checked: true },
-          { id: 'entity3', checked: true },
-        ],
-      },
     ].forEach(({ field, values }) => {
       it(`should check the selected values in ${field} field`, () => {
         values.forEach(({ id, checked }) => {
           cy.get(`input[id="${id}"]`).should(checked ? 'be.checked' : 'not.be.checked');
         });
       });
+    });
+
+    it('should check the selected values in Related people field', () => {
+      cy.contains('Owner / Residents')
+        .closest('div.space-y-1\\.5')
+        .within(() => {
+          cy.contains('Maria Rodriguez - Witness').should('exist');
+          cy.contains('John Smith - Reporter').should('exist');
+        });
     });
 
     it('should check the link field', () => {
@@ -135,8 +140,8 @@ describe('Entity edit', () => {
     });
 
     it('should check the geolocation field', () => {
-      cy.get('input[name="metadata.location_on_map.0.value[lat]"]').should('have.value', '40.7128');
-      cy.get('input[name="metadata.location_on_map.0.value[lon]"]').should('have.value', '-74.006');
+      cy.get('input[name="metadata.location_on_map.lat"]').should('have.value', '40.7128');
+      cy.get('input[name="metadata.location_on_map.lon"]').should('have.value', '-74.006');
     });
 
     it('should render the image field preview', () => {
@@ -201,14 +206,8 @@ describe('Entity edit', () => {
         selectSearchSelectOption('template', 'Event Report');
         cy.get('textarea[id="metadata.report.0.value"]').should('exist');
         selectSearchSelectOption('template', 'Documents');
-        cy.get('input[name="metadata.location_on_map.0.value[lat]"]').should(
-          'have.value',
-          '40.7128'
-        );
-        cy.get('input[name="metadata.location_on_map.0.value[lon]"]').should(
-          'have.value',
-          '-74.006'
-        );
+        cy.get('input[name="metadata.location_on_map.lat"]').should('have.value', '40.7128');
+        cy.get('input[name="metadata.location_on_map.lon"]').should('have.value', '-74.006');
         [
           { id: 'metadata.date_range.0.value.from', value: '2024-01-01' },
           { id: 'metadata.date_range.0.value.to', value: '2024-01-02' },
@@ -227,8 +226,8 @@ describe('Entity edit', () => {
           </ThemeProvider>
         );
 
-        cy.get('input[id="title"]').clear();
-        cy.get('input[id="title"]').type('A new title');
+        titleField().clear();
+        titleField().type('A new title');
         cy.get('input[id="metadata.single_date.0.value"]').type('1999-11-30');
         cy.get('input[id="metadata.multiple_date_ranges.0.value.from"]').type('1950-03-01');
         cy.get('input[id="metadata.multiple_date_ranges.0.value.to"]').type('1950-03-30');
@@ -296,37 +295,42 @@ describe('Entity edit', () => {
           <Basic />
         </ThemeProvider>
       );
-      waitForRelationshipLookup();
+      cy.contains('Owner / Residents').should('exist');
     });
 
     it('should render grouped Owner / Residents as a single relationship field', () => {
       cy.contains('Owner / Residents').should('exist');
-      cy.get('[id="metadata.related_people"]').should('exist');
-      cy.get('[id="metadata.related_residents"]').should('not.exist');
+      cy.contains('Maria Rodriguez - Witness').should('exist');
+      cy.contains('button', 'Add entity').should('exist');
+      cy.contains('label', 'Related residents').should('not.exist');
     });
 
     it('should render Witnesses as a separate relationship field', () => {
       cy.contains('Witnesses').should('exist');
-      cy.get('[id="metadata.related_witnesses"]').should('exist');
-      cy.get('input[id="entity4"]').should('be.checked');
+      cy.contains('Ana Diaz - Observer').should('exist');
     });
 
     it('should filter relationship options when searching the lookup', () => {
-      cy.get('[id="metadata.related_people"]').closest('.h-52').as('ownerField');
-      cy.get('@ownerField').find('ul input[type="checkbox"]').should('have.length.above', 10);
+      openRelationshipSearch('Owner / Residents', 'metadata.related_people');
       cy.get('input[id="metadata.related_people"]').type('Lucia Torres');
-      cy.get('@ownerField')
-        .find('ul input[type="checkbox"]', { timeout: 10000 })
-        .should('have.length', 3);
-      cy.get('@ownerField').find('input[id="entity6"]').should('exist');
-      cy.get('@ownerField').find('input[id="entity10"]').should('not.exist');
+      cy.contains('button', 'Lucia Torres - Resident').should('exist');
+      cy.contains('button', 'Diego Morales - Resident').should('not.exist');
     });
 
     it('should select and deselect relationship entities', () => {
-      cy.get('input[id="entity6"]').check();
-      cy.get('input[id="entity6"]').should('be.checked');
-      cy.get('input[id="entity2"]').uncheck();
-      cy.get('input[id="entity2"]').should('not.be.checked');
+      openRelationshipSearch('Owner / Residents', 'metadata.related_people');
+      cy.contains('button', 'Lucia Torres - Resident').click();
+      cy.contains('Owner / Residents')
+        .closest('div.space-y-1\\.5')
+        .within(() => {
+          cy.contains('Lucia Torres - Resident').should('exist');
+          cy.contains('Maria Rodriguez - Witness')
+            .closest('tr')
+            .find('button[title="Remove from connection"]')
+            .click();
+          cy.contains('Maria Rodriguez - Witness').should('not.exist');
+          cy.contains('Lucia Torres - Resident').should('exist');
+        });
     });
 
     it('should sync grouped relationship fields on save', () => {
@@ -336,13 +340,10 @@ describe('Entity edit', () => {
           <Basic onSave={saveSpy} />
         </ThemeProvider>
       );
-      waitForRelationshipLookup();
+      cy.contains('Owner / Residents').should('exist');
 
-      cy.get('[id="metadata.related_people"]')
-        .closest('.h-52')
-        .within(() => {
-          cy.get('input[id="entity6"]').check();
-        });
+      openRelationshipSearch('Owner / Residents', 'metadata.related_people');
+      cy.contains('button', 'Lucia Torres - Resident').click();
       cy.contains('button', 'Save').click();
 
       cy.get('@saveSpy').should('have.been.calledOnce');
@@ -367,7 +368,7 @@ describe('Entity edit', () => {
         </ThemeProvider>
       );
 
-      cy.get('input[id="title"]').parent().parent().contains('*');
+      titleField().parent().parent().contains('*');
     });
 
     it('should block save and show validation errors when required fields are empty', () => {
@@ -392,7 +393,7 @@ describe('Entity edit', () => {
       );
 
       cy.contains('button', 'Save').click();
-      cy.get('input[id="title"]').should('have.focus');
+      titleField().should('have.focus');
     });
   });
 

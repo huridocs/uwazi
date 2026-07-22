@@ -212,13 +212,22 @@ const PDF = ({
   ]);
 
   useEffect(() => {
+    let cancelled = false;
+
     const handleLoading = (taskData: { loaded: number; total: number; percent: number }) => {
+      if (cancelled) {
+        return;
+      }
       if (taskData.percent < 100) {
         setLoading({ isLoading: true, progress: taskData.percent });
       } else {
         setLoading({ isLoading: false, progress: 0 });
       }
     };
+
+    setPDF(undefined);
+    setError(undefined);
+    setLoading({ isLoading: true, progress: 0 });
 
     const loadingTask = PDFJS.getDocument({
       url: fileUrl,
@@ -232,9 +241,14 @@ const PDF = ({
 
     loadingTask.promise
       .then(file => {
-        setPDF(file);
+        if (!cancelled) {
+          setPDF(file);
+        }
       })
       .catch(e => {
+        if (cancelled) {
+          return;
+        }
         if (e.status === 404) {
           setError(
             <Translate>
@@ -262,8 +276,10 @@ const PDF = ({
     pageRefsMap.current = {};
 
     return () => {
+      cancelled = true;
       isReady.current = false;
       pageVisibility.clear();
+      Promise.resolve(loadingTask.destroy?.()).catch(() => undefined);
     };
   }, [fileUrl]);
 

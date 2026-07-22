@@ -6,7 +6,6 @@ import { Icon } from '#app/UI/index.js';
 import { PreserveIcon } from '#app/Layout/PreserveIcon.js';
 import { FeatureToggle } from '#V2/Components/UI/FeatureToggle.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
-import { isClient } from '#app/utils/index.js';
 
 const SettingsNavigation = () => {
   const settings = useAtomValue(settingsAtom);
@@ -36,11 +35,7 @@ const SettingsNavigation = () => {
               <li>{renderLink('settings/collection', <Translate>Collection</Translate>)}</li>
               <li>{renderLink('settings/navlinks', <Translate>Menu</Translate>)}</li>
               <li>{renderLink('settings/pages', <Translate>Pages</Translate>)}</li>
-              {isClient && window.__featureFlags__?.dataViz && (
-                <li>
-                  {renderLink('settings/dataviz', <Translate>Data visualizations</Translate>)}
-                </li>
-              )}
+              <li>{renderLink('settings/dataviz', <Translate>Data visualizations</Translate>)}</li>
               <li>{renderLink('settings/languages', <Translate>Languages</Translate>)}</li>
               <li>{renderLink('settings/translations', <Translate>Translations</Translate>)}</li>
               <li>{renderLink('settings/filters', <Translate>Filters</Translate>)}</li>
@@ -126,11 +121,9 @@ const SettingsNavigation = () => {
               <li>{renderLink('settings/custom-uploads', <Translate>Uploads</Translate>)}</li>
             </>
           </NeedAuthorization>
-          {isClient && window.__featureFlags__?.v2CSVImport && (
-            <NeedAuthorization roles={['admin']}>
-              <li>{renderLink('/settings/csv', <Translate>Import CSV</Translate>)}</li>
-            </NeedAuthorization>
-          )}
+          <NeedAuthorization roles={['admin']}>
+            <li>{renderLink('/settings/csv', <Translate>Import CSV</Translate>)}</li>
+          </NeedAuthorization>
           <li>
             <a
               href="https://uwazi.io/page/9852italrtk/support"

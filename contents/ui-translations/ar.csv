@@ -23,6 +23,7 @@ Account updated,Account updated
 Accuracy,Accuracy
 Accuracy tooltip,Accuracy is defined by the amount of matches vs mismatches for labeled samples that have been processed.
 Action,عمل/ إجراء
+Actions,Actions
 Activate,Activate
 Activated,Activated
 Active languages,اللغات النشطة
@@ -36,6 +37,7 @@ Add as,Add as
 Add data source,Add data source
 Add date,إضافة تاريخ
 Add entities / documents,إضافة كيانات (أو إدخالات)/ مستندات
+Add entity,Add entity
 Add entity type,Add entity type
 Add Extractor,Add Extractor
 Add extractor,Add extractor
@@ -235,6 +237,7 @@ Copy Highlighted,نسخ المظلل
 Copy link,نسخ الرابط
 Copy properties to this entity from,انسخ الخصائص إلى هذا الكيان (الإدخال) من
 Copy to clipboard,Copy to clipboard
+Could not add media. Please try again.,Could not add media. Please try again.
 Could not be processed,لا يمكن معالجتها
 Could not create entity,Could not create entity
 Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
@@ -345,6 +348,8 @@ Direction,Direction
 Disable,Disable
 Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
+Discard and leave,Discard and leave
+Discard and switch,Discard and switch
 Discard changes,تجاهل التغييرات
 Discard changes?,Discard changes?
 Dismiss,Dismiss
@@ -382,6 +387,7 @@ Duration,المدة
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
 Earlier,Earlier
 Edit,تحرير
+Edit at source,Edit at source
 Edit Extractor,Edit Extractor
 Edit File,Edit File
 Edit group,Edit group
@@ -543,30 +549,27 @@ ID:,ID:
 Image doesn't match the required size.,Image doesn't match the required size.
 Import,استيراد
 Import asset,Import asset
-Import completed,Import completed. Number of entities created:
 Import CSV,استيراد ملف القيم المفصولة بفواصل
 Import failed. Review details below.,Import failed. Review details below.
 Import finished successfully.,Import finished successfully.
 Import finished with errors. Review details below.,Import finished with errors. Review details below.
-Import instructions,استيراد التعليمات
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.
 Import theme instance file,Import theme instance file
 Import was cancelled.,Import was cancelled.
-Imported entities from file,Imported entities from file
 Imported translations from file,Imported translations from file
-Importing data in progress,جاري استيراد البيانات
 in,في
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,جاري التعرف الضوئي علي الحروف
 in this document,in this document
 Incoming,Incoming
-Indexing entities may take a few minutes,قد تستغرق فهرسة الكيانات (الإدخالات) بضع دقائق
 Info,معلومات
 Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,وراثة خاصية
 Inherit type,Inherit type
+"Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
+inherits,inherits
 Input,Input
 Install,Install
 Install Language(s),Install Language(s)
@@ -611,6 +614,7 @@ Languages installed successfully,Languages installed successfully
 Last updated,Last updated
 Last updated from collection:,Last updated from collection:
 Latitude,خط العرض
+Latitude must be between -90 and 90,Latitude must be between -90 and 90
 Learn more,اعرف المزيد
 Legend,مفتاح مصطلحات الخريطة
 Lengthy reindex process,Lengthy reindex process
@@ -627,11 +631,13 @@ Live preview,Live preview
 Live translate,Live translate
 Load example,Load example
 Loading,Loading
+Local time,Local time
 Login,تسجيل الدخول
 Login button,زر تسجيل الدخول
 Login failed,فشل عملية الدخول
 Logout,تسجيل خروج
 Longitude,خط الطول
+Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,منخفض/ أدنى/ قليل/ صغير
 Manage site settings and configuration,إدارة إعدادات الموقع
@@ -724,6 +730,7 @@ No,لا
 No attachments,لا توجد مرفقات
 No chart types match your search.,No chart types match your search.
 No common filters,لا مشترك بين قوائم التصفيه
+No connected entities yet.,No connected entities yet.
 No Connections,لا اتصالات
 No Connections description,الاتصالات هل العلاقات المباشرة بين تلك الوثيقة و الوثائق والكيانات الاخرد
 No context,No context
@@ -738,6 +745,7 @@ No icon / flag,لا توجد أيقونة/ علامة
 No items available,No items available
 No Label,لا تسمية
 No label,No label
+No matching entities.,No matching entities.
 No media selected,No media selected
 No options,No options
 No options found,لم يتم العثور على خيارات
@@ -758,6 +766,7 @@ No templates available to add.,No templates available to add.
 No text match,لا يوجد نص تطابق
 No text match description,يمكنك كتابه نص مختلف للحصول على بعض النتائج
 No timelinks added,No timelinks added
+No translation in,No translation in
 No type,لا نوع
 No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,No valid target template available
@@ -773,6 +782,7 @@ Normal view,معاينة عادية
 Not already been use as source template in another extractor,Not already been use as source template in another extractor
 Not already been use as target template,Not already been use as target template
 Not Found,Not Found
+Nothing here yet.,Nothing here yet.
 Nothing selected,Nothing selected
 Notifications,Notifications
 Obsolete,Obsolete
@@ -950,6 +960,7 @@ Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,إزالة
+Remove from connection,Remove from connection
 Remove from training set,Remove from training set
 remove icon,إزالة الأيقونة
 Removed language,Removed language
@@ -1003,6 +1014,7 @@ Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordin
 Search,ابحث
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
 Search entities...,Search entities...
+Search entities…,Search entities…
 Search item,البحث عن بند
 Search related entities or documents,البحث عن الكيانات أو المستندات ذات الصلة
 Search relationships,Search relationships
@@ -1165,8 +1177,6 @@ Templates,قوالب
 Templates:,Templates:
 Text,نص
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
-The import process threw an error:,نتج عن عملية الاستيراد الخطأ التالي:
-The import process threw some warnings:,The import process threw some warnings:
 "The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process."
@@ -1234,6 +1244,7 @@ This property will be shown using all the width available.,ستظهر هذه ا�
 This property will be shown without the label,This property will be shown without the label
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
+This search could not be completed. Try again later.,This search could not be completed. Try again later.
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
@@ -1293,6 +1304,7 @@ Unknown entity,Unknown entity
 Unknown template,Unknown template
 Unlink,Unlink
 Unlock account,Unlock account
+Unsaved changes,Unsaved changes
 Unsupported OCR language,لغة الOCR غير مدعومة
 Untitled,Untitled
 Untranslated Terms,Untranslated Terms
@@ -1310,7 +1322,6 @@ Updated translations,Updated translations
 Updated user,Updated user
 Updating template properties across,Updating template properties across
 Updating…,Updating…
-Upload a ZIP or CSV file.,حمل ملف مضطغوط بامتداد ZIP أو ملف القيم المفصولة بفواصل
 Upload and select file,حمل الملف واختره
 Upload from computer,حمل من الحاسوب
 Upload image,Upload image
@@ -1322,7 +1333,6 @@ Uploaded document,Uploaded document
 Uploaded file,Uploaded file
 Uploading,جاري التحميل
 Uploading ...,تحميل...
-Uploading file,تحميل الملف
 Uploads,تحميلات
 URL,عنوان URL
 Use,استخدام
@@ -1355,6 +1365,7 @@ Value cannot be transformed to the correct type,Value cannot be transformed to t
 values,values
 Verify,تحقق
 Verifying...,تحقق..
+via,via
 View,عرض
 view,عرض
 View entities,View entities
@@ -1388,6 +1399,10 @@ You can create metadata templates in,يمكنك إنشاء قوالب البيا
                   button.","You can start by selecting text in the document and clicking the ""Add to ToC""
                   button."
 You do not have write permission on all entities,You do not have write permission on all entities
+You have unsaved changes. Discard them and leave this page? This action cannot be undone.,You have unsaved changes. Discard them and leave this page? This action cannot be undone.
+"You have unsaved changes. Discard them and switch language? This action cannot be
+              undone.","You have unsaved changes. Discard them and switch language? This action cannot be
+              undone."
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,يجب عليك تفعيل هذه الميزة لتحقيق تأمين أفضل للحساب
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.

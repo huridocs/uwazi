@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { createStore, Provider } from 'jotai';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { render } from '@testing-library/react';
-import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
+import { relationshipTypesAtom, templatesAtom, userAtom } from '#V2/atoms/index.js';
 import {
   EntityScopedProvider,
   useDocumentPdfActions,
@@ -22,6 +22,7 @@ const PdfControllerSetup = () => {
 
 const renderRelationshipsActionBar = () => {
   const store = createStore();
+  store.set(userAtom, { _id: '1', role: 'admin', username: 'admin', email: 'admin@example.com' });
   store.set(relationshipTypesAtom, [{ _id: 'relA', name: 'Related' }]);
   store.set(templatesAtom, [{ _id: 'template1', color: '#faca15', name: 'Entity' }]);
 
@@ -30,7 +31,11 @@ const renderRelationshipsActionBar = () => {
       path: '/',
       element: (
         <Provider store={store}>
-          <EntityScopedProvider key={entityWithRelations.sharedId} entity={entityWithRelations}>
+          <EntityScopedProvider
+            key={entityWithRelations.sharedId}
+            entity={entityWithRelations}
+            language={entityWithRelations.language ?? 'en'}
+          >
             <PdfControllerSetup />
             <RelationshipsPanel />
             <RelationshipsActionBar />

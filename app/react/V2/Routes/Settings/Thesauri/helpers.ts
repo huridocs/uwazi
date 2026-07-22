@@ -1,15 +1,11 @@
 import { SetStateAction } from 'react';
-import { LoaderFunction } from 'react-router';
-import { IncomingHttpHeaders } from 'http';
 import { Row, RowSelectionState } from '@tanstack/react-table';
 import assign from 'lodash/assign.js';
 import isEqual from 'lodash/isEqual.js';
 import orderBy from 'lodash/orderBy.js';
 import remove from 'lodash/remove.js';
 import { ClientThesaurus, ClientThesaurusValue } from '#app/apiResponseTypes.js';
-import { get as getThesauri } from '#V2/api/thesauri/index.js';
 import { ThesaurusSchema, ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
-import { httpRequest } from '#shared/superagent.js';
 import uniqueID from '#shared/uniqueID.js';
 import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
 import { ThesaurusRow } from './components/TableComponents.js';
@@ -59,26 +55,6 @@ const sanitizeThesauri = (thesaurus: ThesaurusSchema) => {
     });
   return sanitizedThesauri;
 };
-
-const importThesaurus = async (
-  thesaurus: ThesaurusSchema,
-  file: File
-): Promise<ThesaurusSchema> => {
-  const headers = {
-    Accept: 'application/json',
-    'X-Requested-With': 'XMLHttpRequest',
-  };
-  const fields = {
-    thesauri: JSON.stringify(thesaurus),
-  };
-
-  return (await httpRequest('thesauris', fields, headers, file)) as ThesaurusSchema;
-};
-
-const editThesaurusLoader =
-  (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params: { _id } }) =>
-    (await getThesauri({ _id }, headers))[0];
 
 const emptyThesaurus = () => ({
   label: '',
@@ -198,9 +174,7 @@ const compareThesaurus = (
 export {
   sanitizeThesaurusValues,
   sanitizeThesauri,
-  importThesaurus,
   addSelection,
-  editThesaurusLoader,
   emptyThesaurus,
   thesaurusAsRow,
   removeItem,

@@ -1,17 +1,23 @@
 /* eslint-disable max-lines, max-statements */
-import React, { useEffect, useMemo } from 'react';
+import React, { Fragment, useEffect, useMemo } from 'react';
 import { FieldErrors, FormProvider, useForm } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
-import { t } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
 import { Entity } from '#V2/api/entities/types.js';
+import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js';
 import { lookup as lookupEntities } from '#V2/api/search/index.js';
+import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
+import {
+  filterReferencedPendingAttachments,
+  extractUploadIdFromMediaValue,
+} from '#shared/entitySave/mediaMetadata.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { thesauriAtom } from '#V2/atoms/thesauriAtom.js';
-import { resolvePropertyMetadataValues } from '#V2/formatters/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import {
   TextField,
+  TitleField,
   IconField,
   SelectField,
   TemplateField,
@@ -40,6 +46,7 @@ import {
   getFirstEditEntityErrorPath,
   type EditEntityErrors,
 } from './functions/editEntityErrors.js';
+import { useEntityMediaUpload } from './hooks/useEntityMediaUpload.js';
 
 type EditEntityFormValues = {
   title: Entity['title'];
@@ -52,9 +59,11 @@ type EditEntityFormValues = {
 type EditEntityProps = {
   formId: string;
   entity?: Entity;
-  onSave?: (editedEntity: Entity) => void | Promise<void>;
+  onSave?: (editedEntity: EntitySaveInput) => void | Promise<void>;
   disabled?: boolean;
   errors?: EditEntityErrors;
+  onDirtyChange?: (isDirty: boolean) => void;
+  onEditSource?: (entityId: string, label: string, templateId?: string) => void;
   relationshipLookup?: (params: {
     search: string;
     template?: string;
@@ -66,6 +75,30 @@ type Properties = FormMetadataProperty;
 type DisplayProperty = Properties & {
   groupedRelationshipNames?: string[];
 };
+
+const mapTemplateProperty = (property: {
+  _id?: string;
+  name: string;
+  type: Properties['type'];
+  label: string;
+  required?: boolean;
+  content?: string;
+  relationType?: string;
+  style?: string;
+  inherit?: { property?: string; type?: Properties['inheritedType'] };
+}): Properties => ({
+  _id: String(property._id ?? property.name),
+  type: property.type,
+  name: property.name,
+  label: property.label,
+  required: property.required,
+  content: property.content,
+  relationType: property.relationType,
+  style: property.style,
+  inherited: Boolean(property.inherit),
+  inheritedType: property.inherit?.type,
+  inherit: property.inherit,
+});
 
 const DEFAULT_RELATIONSHIP_LOOKUP_LIMIT = 50;
 
@@ -173,7 +206,7 @@ const focusAndScrollToInvalidField = (path?: string) => {
     return;
   }
 
-  fieldElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  scrollIntoView(fieldElement, { behavior: 'smooth', block: 'center' });
 
   if ('focus' in fieldElement && typeof fieldElement.focus === 'function') {
     fieldElement.focus();
@@ -216,7 +249,9 @@ const formatMetadataForEntity = (
     });
 
   return metadataProperties.reduce<NonNullable<Entity['metadata']>>((acc, property) => {
-    acc[property.name] = (syncedMetadata[property.name] ?? []).map(toMetadataObjectSchema);
+    const mapped = (syncedMetadata[property.name] ?? []).map(toMetadataObjectSchema);
+    acc[property.name] =
+      property.type === 'geolocation' ? mapped.filter(entry => entry.value !== null) : mapped;
     return acc;
   }, {});
 };
@@ -238,24 +273,64 @@ const thesaurusToOptions = (
       })),
     })) || [];
 
-const relationshipToOptions = (
-  property: Properties,
-  metadata?: Entity['metadata']
-): MultiselectListOption[] => {
-  const relationshipValues = resolvePropertyMetadataValues(property, metadata);
-
-  if (!Array.isArray(relationshipValues)) {
-    return [];
-  }
-
-  return relationshipValues
-    .filter(value => value?.value && value.label && value.authorized !== false)
-    .map(value => ({
-      label: value.label as string,
-      searchLabel: value.label as string,
-      value: value.value as string,
-    }));
+const inheritedCellText = (
+  values: { value?: unknown; inheritedValue?: { label?: string; value?: unknown }[] }[] | undefined,
+  entityId: string
+): string | undefined => {
+  const row = values?.find(value => String(value.value ?? '') === entityId);
+  if (!row?.inheritedValue?.length) return undefined;
+  const parts = row.inheritedValue
+    .map(item => {
+      if (typeof item.label === 'string' && item.label.length > 0) return item.label;
+      return typeof item.value === 'string' ? item.value : undefined;
+    })
+    .filter((part): part is string => Boolean(part));
+  return parts.length > 0 ? parts.join(', ') : undefined;
 };
+
+const inheritColumnLabel = (
+  property: Properties,
+  templates: { _id: string; properties?: { _id?: string; label: string }[] }[]
+): string => {
+  const inheritPropertyId = property.inherit?.property;
+  if (inheritPropertyId && property.content) {
+    const targetTemplate = templates.find(template => template._id === property.content);
+    const inheritedProperty = targetTemplate?.properties?.find(
+      candidate => candidate._id === inheritPropertyId
+    );
+    if (inheritedProperty?.label) return inheritedProperty.label;
+  }
+  return property.label;
+};
+
+const buildInheritColumns = (
+  property: DisplayProperty,
+  metadataProperties: Properties[],
+  templates: { _id: string; properties?: { _id?: string; label: string }[] }[],
+  sourceMetadata?: Entity['metadata']
+) =>
+  metadataProperties
+    .filter(
+      candidate =>
+        candidate.type === 'relationship' &&
+        candidate.inherited &&
+        candidate.content === property.content &&
+        candidate.relationType === property.relationType
+    )
+    .map(candidate => {
+      const values = sourceMetadata?.[candidate.name];
+      const cellsByEntityId: Record<string, string | undefined> = {};
+      (values ?? []).forEach(row => {
+        const entityId = String(row.value ?? '');
+        if (entityId) {
+          cellsByEntityId[entityId] = inheritedCellText(values, entityId);
+        }
+      });
+      return {
+        label: inheritColumnLabel(candidate, templates),
+        cellsByEntityId,
+      };
+    });
 
 const EditEntity = ({
   formId,
@@ -263,6 +338,8 @@ const EditEntity = ({
   onSave,
   disabled = false,
   errors,
+  onDirtyChange,
+  onEditSource,
   relationshipLookup = defaultRelationshipLookup,
 }: EditEntityProps) => {
   const templates = useAtomValue(templatesAtom);
@@ -291,23 +368,20 @@ const EditEntity = ({
       metadata: formatMetadataForForm(
         templates
           .find(template => template._id === entity?.template)
-          ?.properties?.map(property => ({
-            _id: String(property._id ?? property.name),
-            type: property.type,
-            name: property.name,
-            label: property.label,
-            required: property.required,
-            content: property.content,
-            relationType: property.relationType,
-          })) || [],
+          ?.properties?.map(mapTemplateProperty) || [],
         entity?.metadata
       ),
     },
   });
 
-  const { handleSubmit, watch, reset, getValues, setValue, setError } = formContext;
+  const { handleSubmit, watch, reset, getValues, setValue, setError, formState } = formContext;
+  const { isDirty } = formState;
   const selectedTemplate = watch('template');
   const metadata = watch('metadata');
+
+  useEffect(() => {
+    onDirtyChange?.(isDirty);
+  }, [isDirty, onDirtyChange]);
 
   const activeTemplate = useMemo(
     () =>
@@ -317,28 +391,46 @@ const EditEntity = ({
   );
 
   const metadataProperties = useMemo(
-    () =>
-      activeTemplate?.properties?.map(property => ({
-        _id: String(property._id ?? property.name),
-        type: property.type,
-        name: property.name,
-        label: property.label,
-        required: property.required,
-        content: property.content,
-        relationType: property.relationType,
-        style: property.style,
-      })) || [],
+    () => activeTemplate?.properties?.map(mapTemplateProperty) || [],
     [activeTemplate]
   );
   const displayProperties = useMemo(
     () => groupRelationshipProperties(metadataProperties),
     [metadataProperties]
   );
+  const firstEditableRelationshipId = displayProperties.find(
+    property => property.type === 'relationship'
+  )?._id;
 
-  const entityAttachments = useMemo(
-    () => [...(entity?.attachments ?? []), ...(entity?.documents ?? [])],
-    [entity?.attachments, entity?.documents]
+  const {
+    entityAttachments,
+    pendingAttachments,
+    registerPendingAttachment,
+    removePendingAttachment,
+  } = useEntityMediaUpload(entity, selectedTemplate);
+
+  const mediaPropertyNames = useMemo(
+    () =>
+      new Set(
+        metadataProperties
+          .filter(property => property.type === 'image' || property.type === 'media')
+          .map(property => property.name)
+      ),
+    [metadataProperties]
   );
+
+  const removePendingAttachmentIfUnused = (fileLocalID: string) => {
+    const formMetadata = getValues('metadata');
+    const stillReferenced = [...mediaPropertyNames].some(name => {
+      const rawValue = formMetadata?.[name]?.[0]?.value;
+      return (
+        typeof rawValue === 'string' && extractUploadIdFromMediaValue(rawValue) === fileLocalID
+      );
+    });
+    if (!stillReferenced) {
+      removePendingAttachment(fileLocalID);
+    }
+  };
 
   const isMetadataReady = metadataProperties.every(
     property => metadata?.[property.name] !== undefined
@@ -370,10 +462,11 @@ const EditEntity = ({
           }
         });
       });
-  }, [displayProperties, metadata, setValue]);
+  }, [displayProperties, metadata, metadataProperties, setValue]);
 
   const relationshipLookupCache = useMemo(
     () => new Map<string, MultiselectListOption[]>(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [entity?._id, activeTemplate?._id]
   );
 
@@ -383,16 +476,27 @@ const EditEntity = ({
     lookedUpOptions: MultiselectListOption[] = [],
     includeCachedOptions = true
   ): Promise<MultiselectListOption[]> => {
-    const selectedOptions = selectedValues
-      .filter(value => value?.value)
-      .map(value => ({
-        label: (value.label as string) || String(value.value),
-        searchLabel: ((value.label as string) || String(value.value)).toLowerCase(),
-        value: String(value.value),
-      }));
-
     const cacheKey = `${property.content ?? ''}::${property.relationType ?? ''}`;
     const cachedOptions = includeCachedOptions ? (relationshipLookupCache.get(cacheKey) ?? []) : [];
+    const selectedOptions = selectedValues
+      .filter(value => value?.value)
+      .map(value => {
+        const valueId = String(value.value);
+        const cached = cachedOptions.find(option => option.value === valueId);
+        const lookedUp = lookedUpOptions.find(option => option.value === valueId);
+        const label =
+          (typeof value.label === 'string' ? value.label : undefined) ||
+          (typeof cached?.label === 'string' ? cached.label : undefined) ||
+          (typeof lookedUp?.label === 'string' ? lookedUp.label : undefined) ||
+          valueId;
+
+        return {
+          label,
+          searchLabel: label.toLowerCase(),
+          value: valueId,
+        };
+      });
+
     const merged = [...selectedOptions, ...cachedOptions, ...lookedUpOptions].filter(
       (option, index, options) => options.findIndex(other => other.value === option.value) === index
     );
@@ -420,13 +524,21 @@ const EditEntity = ({
   const submit = handleSubmit(
     async values => {
       if (!entity) return;
-      await onSave?.({
+      const formattedMetadata = formatMetadataForEntity(values.metadata, metadataProperties);
+      const referencedPending = filterReferencedPendingAttachments(
+        pendingAttachments,
+        formattedMetadata,
+        mediaPropertyNames
+      );
+      const entityToSave = {
         ...entity,
         title: values.title || entity.title,
         template: values.template || entity.template,
         icon: (values.showIcon ? values.icon : EMPTY_ICON) as Entity['icon'],
-        metadata: formatMetadataForEntity(values.metadata, metadataProperties),
-      });
+        metadata: formattedMetadata,
+        attachments: [...(entity.attachments ?? []), ...referencedPending],
+      };
+      await onSave?.(entityToSave);
     },
     invalidErrors => {
       const firstErrorPath = findFirstErrorPath(invalidErrors);
@@ -440,15 +552,15 @@ const EditEntity = ({
       <form
         id={formId}
         onSubmit={submit}
-        className="flex flex-col gap-6 h-full w-full bg(--color-theme-bg-surface)"
+        className="flex w-full flex-col gap-3 font-sans text-base text-ink"
+        data-testid="entity-edit-form"
       >
-        <TextField<EditEntityFormValues>
+        <TitleField<EditEntityFormValues>
           context="System"
           label="Title"
           field="title"
           registerOptions={{ required: true }}
           disabled={disabled}
-          type="text"
         />
 
         <IconField disabled={disabled} />
@@ -523,39 +635,58 @@ const EditEntity = ({
 
             if (property.type === 'relationship') {
               const fieldName = property.groupedRelationshipNames?.[0] ?? property.name;
+              const inheritColumns = buildInheritColumns(
+                property,
+                metadataProperties,
+                templates,
+                entity?.metadata
+              );
               return (
-                <RelationshipField<EditEntityFormValues>
-                  context={activeTemplate?._id ?? ''}
-                  label={property.label}
-                  field={`metadata.${fieldName}`}
-                  registerOptions={{ required: property.required }}
-                  disabled={disabled}
-                  options={relationshipToOptions(property, entity?.metadata)}
-                  lookupSearch={async search => {
-                    const selectedValues = metadata?.[fieldName] ?? [];
-                    const lookedUp = await relationshipLookup({
-                      search,
-                      template: property.content,
-                      limit: DEFAULT_RELATIONSHIP_LOOKUP_LIMIT,
-                    });
-                    const lookedUpOptions = lookedUp.map(option => ({
-                      label: option.label,
-                      searchLabel: option.label,
-                      value: option.value,
-                    }));
-                    return relationshipLookupSearch(
-                      property,
-                      selectedValues,
-                      lookedUpOptions.filter(
-                        option =>
-                          !search.trim() ||
-                          option.searchLabel.toLowerCase().includes(search.trim().toLowerCase())
-                      ),
-                      !search.trim()
-                    );
-                  }}
-                  key={property._id}
-                />
+                <Fragment key={property._id}>
+                  {property._id === firstEditableRelationshipId ? (
+                    <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
+                      <Translate>Relationships</Translate>
+                    </p>
+                  ) : null}
+                  <RelationshipField<EditEntityFormValues>
+                    context={activeTemplate?._id ?? ''}
+                    label={property.label}
+                    field={`metadata.${fieldName}`}
+                    registerOptions={{ required: property.required }}
+                    disabled={disabled}
+                    targetTemplateId={property.content}
+                    relationTypeId={property.relationType}
+                    inheritColumns={inheritColumns}
+                    onEditSource={
+                      onEditSource
+                        ? (entityId, label) => onEditSource(entityId, label, property.content)
+                        : undefined
+                    }
+                    lookupSearch={async search => {
+                      const selectedValues = metadata?.[fieldName] ?? [];
+                      const lookedUp = await relationshipLookup({
+                        search,
+                        template: property.content,
+                        limit: DEFAULT_RELATIONSHIP_LOOKUP_LIMIT,
+                      });
+                      const lookedUpOptions = lookedUp.map(option => ({
+                        label: option.label,
+                        searchLabel: option.label,
+                        value: option.value,
+                      }));
+                      return relationshipLookupSearch(
+                        property,
+                        selectedValues,
+                        lookedUpOptions.filter(
+                          option =>
+                            !search.trim() ||
+                            option.searchLabel.toLowerCase().includes(search.trim().toLowerCase())
+                        ),
+                        !search.trim()
+                      );
+                    }}
+                  />
+                </Fragment>
               );
             }
 
@@ -629,7 +760,7 @@ const EditEntity = ({
                 <GeolocationField<EditEntityFormValues>
                   context={activeTemplate?._id ?? ''}
                   label={property.label}
-                  field={`metadata.${property.name}.0.value`}
+                  field={`metadata.${property.name}`}
                   registerOptions={{ required: property.required }}
                   disabled={disabled}
                   key={property._id}
@@ -678,6 +809,10 @@ const EditEntity = ({
                   registerOptions={{ required: property.required }}
                   disabled={disabled}
                   attachments={entityAttachments}
+                  pendingAttachments={pendingAttachments}
+                  entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
+                  onRegisterPendingAttachment={registerPendingAttachment}
+                  onRemovePendingAttachment={removePendingAttachmentIfUnused}
                   key={property._id}
                 />
               );
@@ -693,6 +828,10 @@ const EditEntity = ({
                   registerOptions={{ required: property.required }}
                   disabled={disabled}
                   attachments={entityAttachments}
+                  pendingAttachments={pendingAttachments}
+                  entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
+                  onRegisterPendingAttachment={registerPendingAttachment}
+                  onRemovePendingAttachment={removePendingAttachmentIfUnused}
                   key={property._id}
                 />
               );

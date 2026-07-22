@@ -35,23 +35,24 @@ const mongoSchema = new mongoose.Schema({
     sync: Boolean,
     deactivateTestJob: Boolean,
     paragraphExtraction: Boolean,
-    v2CSVImport: Boolean,
-    dataViz: Boolean,
     fileCacheHeaders: Boolean,
     themeCustomization: Boolean,
-    v2GetEntity: Boolean,
     v2Languages: Boolean,
     newHeader: Boolean,
     postgresThesauri: Boolean,
     postgresTemplates: Boolean,
+    postgresEntities: Boolean,
+    postgresFiles: Boolean,
     aiAssistant: Boolean,
     aiAssistantServiceUrl: String,
-    v2CreateUser: Boolean,
-    v2DeleteUser: Boolean,
-    v2GetUsers: Boolean,
+    v2UsersCreate: Boolean,
+    v2UsersDelete: Boolean,
+    v2UsersGet: Boolean,
+    v2UsersUpdate: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,
+  maintenance: Boolean,
 });
 
 type DBTenant = Partial<Tenant> & { name: string };
@@ -143,6 +144,15 @@ class TenantsModel extends EventEmitter {
       );
     }
     return this.model.find({}, Object.keys(mongoSchema.paths)).lean();
+  }
+
+  async setMaintenance(tenantName: string, maintenance: boolean) {
+    if (!this.model) {
+      throw new Error(
+        'tenants model has not been initialized, make sure you called initialize() method'
+      );
+    }
+    await this.model.updateOne({ name: tenantName }, { $set: { maintenance } });
   }
 }
 

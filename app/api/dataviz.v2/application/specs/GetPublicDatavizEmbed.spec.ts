@@ -68,6 +68,8 @@ const createSut = (queryExecutor = createMockQueryExecutor()) =>
                 datavizDS: DatavizFactory.dataSource(),
                 snapshotsDS: DatavizFactory.snapshotsDataSource(),
                 settingsDS: SettingsDataSourceFactory.default({ transactionManager: tm }),
+                queryExecutor,
+                templatesDS: TemplatesDataSourceFactory.default(),
               },
               { actor, tenant: ExecutionContext.tenant, targetLanguage: 'en' }
             );
@@ -76,6 +78,7 @@ const createSut = (queryExecutor = createMockQueryExecutor()) =>
       }),
       datavizDS: DatavizFactory.dataSource(),
       snapshotsDS: DatavizFactory.snapshotsDataSource(),
+      queryExecutor,
     };
   });
 
@@ -219,8 +222,9 @@ describe('GetPublicDatavizEmbedUseCase', () => {
     );
   });
 
-  it('should reject live query charts without a snapshot on the public path', async () => {
-    const { create, getPublicEmbed, snapshotsDS } = createSut();
+  it('should execute live query when no snapshot exists on the public path', async () => {
+    const queryExecutor = createMockQueryExecutor();
+    const { create, getPublicEmbed, snapshotsDS } = createSut(queryExecutor);
     const dataviz = await create.execute({
       name: 'Live without snapshot',
       query: {
@@ -234,14 +238,18 @@ describe('GetPublicDatavizEmbedUseCase', () => {
     });
 
     await snapshotsDS.deleteByDatavizId(dataviz.id);
+    const callsAfterCreate = (queryExecutor.execute as jest.Mock).mock.calls.length;
 
-    await expect(getPublicEmbed().execute({ id: dataviz.id })).rejects.toThrow(
-      DatavizSnapshotUnavailableError
-    );
+    const payload = await getPublicEmbed().execute({ id: dataviz.id });
+
+    expect(queryExecutor.execute).toHaveBeenCalledTimes(callsAfterCreate + 1);
+    expect(payload.data.series).toHaveLength(1);
+    expect(payload.chart.type).toBe('pie');
   });
 
-  it('should serve snapshot data for live charts on the public path without executing queries', async () => {
-    const { create, getPublicEmbed } = createSut();
+  it('should execute live query for live charts instead of serving the saved snapshot', async () => {
+    const queryExecutor = createMockQueryExecutor();
+    const { create, getPublicEmbed } = createSut(queryExecutor);
     const dataviz = await create.execute({
       name: 'Live with snapshot',
       query: {
@@ -254,8 +262,61 @@ describe('GetPublicDatavizEmbedUseCase', () => {
       refresh: { refreshMode: 'live' },
     });
 
+    const callsAfterCreate = (queryExecutor.execute as jest.Mock).mock.calls.length;
+    (queryExecutor.execute as jest.Mock).mockImplementation(async (_query, context) => ({
+      ...mockSnapshotData,
+      datavizId: context.datavizId ?? 'pending',
+      series: [{ id: 'main', label: 'Series', points: [{ key: 'b', label: 'Live B', value: 9 }] }],
+    }));
+
     const payload = await getPublicEmbed().execute({ id: dataviz.id });
 
+    expect(queryExecutor.execute).toHaveBeenCalledTimes(callsAfterCreate + 1);
+    expect(payload.data.series[0].points[0].label).toBe('Live B');
+    expect(payload.chart.type).toBe('pie');
+  });
+
+  it('should reject snapshot charts without a snapshot on the public path', async () => {
+    const { create, getPublicEmbed, snapshotsDS } = createSut();
+    const dataviz = await create.execute({
+      name: 'Snapshot without snapshot',
+      query: {
+        sources: [{ templateId: '507f1f77bcf86cd799439011' }],
+        dimensions: [{ property: 'title', propertyType: 'select' }],
+        measures: [{ aggregation: 'count', countMode: 'all' }],
+      },
+      chart: { type: 'pie' },
+      appearance: { colorMode: 'theme' },
+      refresh: { refreshMode: 'snapshot_manual' },
+    });
+
+    await snapshotsDS.deleteByDatavizId(dataviz.id);
+
+    await expect(getPublicEmbed().execute({ id: dataviz.id })).rejects.toThrow(
+      DatavizSnapshotUnavailableError
+    );
+  });
+
+  it('should serve snapshot data for snapshot charts without executing queries again', async () => {
+    const queryExecutor = createMockQueryExecutor();
+    const { create, getPublicEmbed } = createSut(queryExecutor);
+    const dataviz = await create.execute({
+      name: 'Snapshot with snapshot',
+      query: {
+        sources: [{ templateId: '507f1f77bcf86cd799439011' }],
+        dimensions: [{ property: 'title', propertyType: 'select' }],
+        measures: [{ aggregation: 'count', countMode: 'all' }],
+      },
+      chart: { type: 'pie' },
+      appearance: { colorMode: 'theme' },
+      refresh: { refreshMode: 'snapshot_manual' },
+    });
+
+    const callsAfterCreate = (queryExecutor.execute as jest.Mock).mock.calls.length;
+
+    const payload = await getPublicEmbed().execute({ id: dataviz.id });
+
+    expect(queryExecutor.execute).toHaveBeenCalledTimes(callsAfterCreate);
     expect(payload.data.series).toHaveLength(1);
     expect(payload.chart.type).toBe('pie');
   });

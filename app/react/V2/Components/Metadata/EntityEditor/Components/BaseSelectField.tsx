@@ -8,9 +8,9 @@ import {
   type SearchSelectGroup,
   type SearchSelectOption,
 } from '#V2/Components/Forms/index.js';
-import { InputError } from '#V2/Components/Forms/InputError.js';
 import { defaultSearch } from '#V2/Components/Forms/MultiselectList/MultiselectList.js';
-import { getFieldErrorMessage } from '../functions/fieldErrorMessage.js';
+import { EntityFieldError, getFieldErrorState } from '../functions/fieldErrorState.js';
+import { EntityField } from './EntityField.js';
 
 const toSearchSelectOptions = (options: MultiselectListOption[]) => {
   const searchOptions: SearchSelectOption[] = [];
@@ -50,7 +50,7 @@ type BaseSelectFieldProps<TFormValues extends FieldValues = FieldValues> = {
   hideFilters?: boolean;
   lookupSearch?: (search: string) => Promise<MultiselectListOption[]>;
   getSelectedValues: (value: unknown) => string[];
-  onSelectedValuesChange: (selectedValues: string[]) => unknown;
+  onSelectedValuesChange: (selectedValues: string[], options: MultiselectListOption[]) => unknown;
 };
 
 const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
@@ -98,51 +98,60 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
     };
   }, [lookupSearch]);
 
-  const renderLabel = (invalid: boolean) => (
-    <div className={`font-semibold ${invalid ? 'text-(--color-theme-control-text-error)' : ''}`}>
-      <Translate className="" context={context}>
-        {label}
-      </Translate>
+  const labelContent = (
+    <>
+      <Translate context={context}>{label}</Translate>
       {registerOptions?.required && '*'}
-    </div>
+    </>
   );
 
   return (
-    <Controller
-      control={control}
-      name={field}
-      rules={registerOptions}
-      render={({ field: fieldController, fieldState }) => {
-        if (singleSelect) {
-          const selectedValue = getSelectedValues(fieldController.value)[0] ?? '';
+    <EntityField>
+      <Controller
+        control={control}
+        name={field}
+        rules={registerOptions}
+        render={({ field: fieldController, fieldState }) => {
+          const { showError, message } = getFieldErrorState(fieldState);
+
+          if (singleSelect) {
+            const selectedValue = getSelectedValues(fieldController.value)[0] ?? '';
+
+            return (
+              <div>
+                <SearchSelect
+                  id={field}
+                  label={labelContent}
+                  options={searchSelectOptions.options}
+                  groups={searchSelectOptions.groups}
+                  value={selectedValue}
+                  disabled={disabled}
+                  hasErrors={showError}
+                  onChange={value => {
+                    if (disabled) {
+                      return;
+                    }
+
+                    fieldController.onChange(
+                      onSelectedValuesChange(
+                        value ? [value] : [],
+                        lookupSearch ? optionsState : options
+                      )
+                    );
+                  }}
+                />
+                <EntityFieldError showError={showError} message={message} />
+              </div>
+            );
+          }
 
           return (
-            <SearchSelect
-              id={field}
-              label={renderLabel(fieldState.invalid)}
-              options={searchSelectOptions.options}
-              groups={searchSelectOptions.groups}
-              value={selectedValue}
-              disabled={disabled}
-              hasErrors={fieldState.invalid}
-              onChange={value => {
-                if (disabled) {
-                  return;
-                }
-
-                fieldController.onChange(onSelectedValuesChange(value ? [value] : []));
-              }}
-            />
-          );
-        }
-
-        return (
-          <div>
-            <div className="h-52">
+            <div>
               <MultiselectList
                 id={field}
+                panel
                 checkboxes
-                label={renderLabel(fieldState.invalid)}
+                label={labelContent}
                 items={optionsState}
                 onSearch={async search => {
                   if (lookupSearch) {
@@ -159,19 +168,19 @@ const BaseSelectField = <TFormValues extends FieldValues = FieldValues>({
                     return;
                   }
 
-                  fieldController.onChange(onSelectedValuesChange(selectedValues));
+                  fieldController.onChange(
+                    onSelectedValuesChange(selectedValues, lookupSearch ? optionsState : options)
+                  );
                 }}
-                hasErrors={fieldState.invalid}
+                hasErrors={showError}
                 hideFilters={hideFilters}
               />
+              <EntityFieldError showError={showError} message={message} />
             </div>
-            {fieldState.invalid && (
-              <InputError>{getFieldErrorMessage(fieldState.error)}</InputError>
-            )}
-          </div>
-        );
-      }}
-    />
+          );
+        }}
+      />
+    </EntityField>
   );
 };
 

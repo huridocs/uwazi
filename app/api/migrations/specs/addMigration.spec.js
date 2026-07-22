@@ -1,4 +1,6 @@
-const plopfile = require('../plopfile.cjs');
+const fs = require('fs');
+
+const plopfilePath = require.resolve('../plopfile.cjs');
 
 const createFakePlop = () => {
   const helpers = {};
@@ -17,10 +19,28 @@ const createFakePlop = () => {
 
 describe('add-migration generator', () => {
   let plop;
+  let readdirSyncSpy;
 
   beforeEach(() => {
+    delete require.cache[plopfilePath];
+
+    readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(dirPath => {
+      if (dirPath.includes('postgresql/schema_migrations')) {
+        return ['001-a.sql', '002-b.sql', '003-c.sql'];
+      }
+      if (dirPath.includes('migrations/migrations')) {
+        return ['100-x', '101-y'];
+      }
+      return [];
+    });
+
+    const plopfile = require(plopfilePath);
     plop = createFakePlop();
     plopfile(plop);
+  });
+
+  afterEach(() => {
+    readdirSyncSpy.mockRestore();
   });
 
   it('should register a migration generator', () => {
@@ -85,13 +105,12 @@ describe('add-migration generator', () => {
   });
 
   it('should calculate nextSchemaDelta based on existing schema migrations', () => {
-    expect(plop.helpers.nextSchemaDelta()).toBe(4);
+    expect(plop.helpers.nextSchemaDelta()).toBe('004');
   });
 
   it('should calculate nextMigrationDelta based on existing tenant migrations', () => {
     const nextMigrationDelta = plop.helpers.nextMigrationDelta();
-    expect(Number.isInteger(nextMigrationDelta)).toBe(true);
-    expect(nextMigrationDelta).toBeGreaterThan(0);
+    expect(nextMigrationDelta).toBe(102);
   });
 
   it('should provide latestPgSchemaDelta for tenant migration requiresSchema', () => {

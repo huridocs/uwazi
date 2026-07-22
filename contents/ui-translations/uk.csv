@@ -23,6 +23,7 @@ Account updated,Обліковий запис оновлено
 Accuracy,Точність
 Accuracy tooltip,"Точність визначається кількістю збігів та розбіжностей для мічених зразків, які були оброблені."
 Action,Дія
+Actions,Actions
 Activate,Активувати
 Activated,Активовано
 Active languages,Активні мови
@@ -36,6 +37,7 @@ Add as,Add as
 Add data source,Add data source
 Add date,Додати дату
 Add entities / documents,Додати об'єкти/документи
+Add entity,Add entity
 Add entity type,Додати тип сутності
 Add Extractor,Додати екстрактор
 Add extractor,Додати екстрактор
@@ -238,6 +240,7 @@ Copy Highlighted,Копію виділено
 Copy link,Скопіювати посилання
 Copy properties to this entity from,Скопіювати властивості до цього об'єкта з
 Copy to clipboard,Скопіювати в буфер обміну
+Could not add media. Please try again.,Could not add media. Please try again.
 Could not be processed,Не вдалось обробити
 Could not create entity,Could not create entity
 Could not detect the area for the selected text,"Не вдалося виявити область для виділеного тексту, спробуйте виділити ще раз."
@@ -348,6 +351,8 @@ Direction,Direction
 Disable,Вимкнути
 Disable highlights,Вимкнути підсвічування
 Disabled 2FA,Відключений 2FA
+Discard and leave,Discard and leave
+Discard and switch,Discard and switch
 Discard changes,Відмінити зміни
 Discard changes?,Відкинути зміни?
 Dismiss,Звільнити.
@@ -385,6 +390,7 @@ Duration,Duration
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
 Earlier,Earlier
 Edit,Редагувати
+Edit at source,Edit at source
 Edit Extractor,Редагувати витягач
 Edit File,Редагувати файл
 Edit group,Група редагування
@@ -546,30 +552,27 @@ ID:,ПОСВІДЧЕННЯ ОСОБИ:
 Image doesn't match the required size.,Image doesn't match the required size.
 Import,Імпортувати
 Import asset,Імпортний актив
-Import completed,Імпорт завершено. Кількість створених сутностей:
 Import CSV,Імпортувати CSV
 Import failed. Review details below.,Import failed. Review details below.
 Import finished successfully.,Import finished successfully.
 Import finished with errors. Review details below.,Import finished with errors. Review details below.
-Import instructions,Інструкції з імпортування
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.
 Import theme instance file,Import theme instance file
 Import was cancelled.,Import was cancelled.
-Imported entities from file,Імпортовані сутності з файлу
 Imported translations from file,Імпортовані переклади з файлу
-Importing data in progress,Імпортування даних під час виконання
 in,в
 "In a group, either all relationships must have a hub or none of them.","У групі або всі відносини повинні мати центр, або жоден з них."
 In OCR queue,У черзі на оптичне розпізнавання символів
 in this document,in this document
 Incoming,Incoming
-Indexing entities may take a few minutes,Індексація об'єктів може тривати декілька хвилин
 Info,Інформація
 Information extraction training,Тренінг з вилучення інформації
 Inherit,Успадковувати
 Inherit property,Запозичити властивість
 Inherit type,Тип успадкування
+"Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
+inherits,inherits
 Input,Вхідні дані
 Install,Встановити
 Install Language(s),Мову(и) інсталяції
@@ -614,6 +617,7 @@ Languages installed successfully,Languages installed successfully
 Last updated,Останнє оновлення
 Last updated from collection:,Last updated from collection:
 Latitude,Широта
+Latitude must be between -90 and 90,Latitude must be between -90 and 90
 Learn more,Дізнатися більше
 Legend,Підпис
 Lengthy reindex process,Тривалий процес реіндексації
@@ -630,11 +634,13 @@ Live preview,Live preview
 Live translate,Прямий переклад
 Load example,Load example
 Loading,Завантаження
+Local time,Local time
 Login,Увійти
 Login button,Кнопка входу
 Login failed,Помилка авторизації
 Logout,Вийти
 Longitude,Довгота
+Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lost connection to the server. Your changes may be lost,Втрачено зв'язок з сервером. Ваші зміни можуть бути втрачені
 low,низький
 Manage site settings and configuration,Керування сайтом і конфігурація
@@ -727,6 +733,7 @@ No,Ні
 No attachments,Немає вкладень
 No chart types match your search.,No chart types match your search.
 No common filters,Немає спільних фільтрів
+No connected entities yet.,No connected entities yet.
 No Connections,Немає зв'язків
 No Connections description,Зв'язки - це прямі відносини між цим документом та іншими документами і сутностями.
 No context,Без контексту
@@ -741,6 +748,7 @@ No icon / flag,Немає піктограми / прапорця
 No items available,Немає товарів у наявності
 No Label,Немає мітки
 No label,Без етикетки
+No matching entities.,No matching entities.
 No media selected,No media selected
 No options,Без варіантів
 No options found,Варіантів не знайдено
@@ -761,6 +769,7 @@ No templates available to add.,No templates available to add.
 No text match,"Немає тексту, що збігається"
 No text match description,"Ви можете ввести щось інше в поле пошуку, щоб отримати деякі результати."
 No timelinks added,No timelinks added
+No translation in,No translation in
 No type,Немає типу
 No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,Відсутній правильний шаблон цілі
@@ -776,6 +785,7 @@ Normal view,Нормальний вигляд
 Not already been use as source template in another extractor,Не використовувався як вихідний шаблон в іншому екстракторі
 Not already been use as target template,Ще не використовувався як цільовий шаблон
 Not Found,Не знайдено
+Nothing here yet.,Nothing here yet.
 Nothing selected,Нічого не вибрано
 Notifications,Notifications
 Obsolete,Застарілий
@@ -953,6 +963,7 @@ Release message,Release message
 remaining files,решта файлів
 Remote Server Unreachable,Віддалений сервер недоступний
 Remove,Видалити
+Remove from connection,Remove from connection
 Remove from training set,Видалити з тренувального набору
 remove icon,видалити піктограму
 Removed language,Вилучена мова
@@ -1006,6 +1017,7 @@ Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordin
 Search,Шукати
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
 Search entities...,Search entities...
+Search entities…,Search entities…
 Search item,Шукати предмет
 Search related entities or documents,Шукати взаємопов'язані об'єкти та документи
 Search relationships,Search relationships
@@ -1168,8 +1180,6 @@ Templates,Шаблони
 Templates:,Шаблони:
 Text,Текст
 Text references limit warning,Кількість текстових посилань тимчасово обмежена до 300. Наразі ми працюємо над виправленням цієї проблеми.
-The import process threw an error:,Процес імпортування видав помилку:
-The import process threw some warnings:,Під час імпорту з'явилося кілька попереджень:
 "The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process.","Процес вилучення абзаців успішно розпочато. Перевірте стовпчик Статус
               для отримання інформації про хід процесу."
@@ -1237,6 +1247,7 @@ This property will be shown using all the width available.,Ця властиві
 This property will be shown without the label,Ця властивість буде показана без мітки
 This property will be the default filter in the library for this template.,Ця властивість буде фільтром за замовчуванням у бібліотеці для цього шаблону.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","Ця властивість буде використовуватися для фільтрації результатів бібліотеки. Якщо властивості збігаються за назвою та типом поля з іншими типами сутностей, вони будуть об'єднані для фільтрації."
+This search could not be completed. Try again later.,This search could not be completed. Try again later.
 This table of contents was automatically created by the system.,Цей зміст був автоматично створений системою.
 this template,цей шаблон
 This template is in use by existing entities and cannot be deleted.,Цей шаблон використовується існуючими організаціями і не може бути видалений.
@@ -1296,6 +1307,7 @@ Unknown entity,Unknown entity
 Unknown template,Unknown template
 Unlink,Роз'єднати зв'язок.
 Unlock account,Розблокувати обліковий запис
+Unsaved changes,Unsaved changes
 Unsupported OCR language,Непідтримувана мова оптичного розпізнавання символів
 Untitled,Untitled
 Untranslated Terms,Неперекладені терміни
@@ -1313,7 +1325,6 @@ Updated translations,Оновлені переклади
 Updated user,Оновлений користувач
 Updating template properties across,Оновлення властивостей шаблону в усіх
 Updating…,Updating…
-Upload a ZIP or CSV file.,Завантажити ZIP або CSV файл.
 Upload and select file,Завантажити й вибрати файл
 Upload from computer,Завантажити з комп'ютера
 Upload image,Upload image
@@ -1325,7 +1336,6 @@ Uploaded document,Завантажений документ
 Uploaded file,Завантажений файл
 Uploading,Виконується завантаження
 Uploading ...,Завантаження...
-Uploading file,Завантаження файлу
 Uploads,Завантаження
 URL,URL
 Use,Використати
@@ -1358,6 +1368,7 @@ Value cannot be transformed to the correct type,Значення не може �
 values,значення
 Verify,Верифікувати
 Verifying...,Верифікування...
+via,via
 View,Переглянути
 view,переглянути
 View entities,Перегляд сутностей
@@ -1391,6 +1402,10 @@ You can create metadata templates in,Ви можете створювати ша
                   button.","You can start by selecting text in the document and clicking the ""Add to ToC""
                   button."
 You do not have write permission on all entities,You do not have write permission on all entities
+You have unsaved changes. Discard them and leave this page? This action cannot be undone.,You have unsaved changes. Discard them and leave this page? This action cannot be undone.
+"You have unsaved changes. Discard them and switch language? This action cannot be
+              undone.","You have unsaved changes. Discard them and switch language? This action cannot be
+              undone."
 You have unsaved changes. Do you want to continue?,У вас є незбережені зміни. Ви хочете продовжити?
 You should activate this feature for enhanced account security,Ви маєте активувати цю функцію для посилення безпеки облікового запису
 You should activate this feature for enhanced account security.,Вам слід активувати цю функцію для посилення безпеки акаунта.

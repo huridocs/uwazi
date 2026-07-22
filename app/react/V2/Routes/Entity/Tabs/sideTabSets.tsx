@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  Bars3CenterLeftIcon,
-  DocumentTextIcon,
-  LanguageIcon,
-  ListBulletIcon,
-  MagnifyingGlassIcon,
-} from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
-import { RelationshipPropertyIcon } from '#V2/Components/CustomIcons/index.js';
 import type { TabButtonDef } from '#V2/Components/UI/index.js';
 import type { Entity as EntityType } from '#V2/api/entities/types.js';
 import { countEntityRelationships } from '#V2/formatters/index.js';
@@ -23,30 +15,28 @@ type GetSideTabButtonsParams = {
   activeMainTab: MainTabId;
   entity?: EntityType;
   hasMainDocument: boolean;
+  mainDocumentId?: string;
   filesSideTabs?: FilesSideTabsOptions;
+  metadataDirty?: boolean;
 };
 
 const getSideTabButtons = ({
   activeMainTab,
   entity,
   hasMainDocument,
+  mainDocumentId,
   filesSideTabs,
+  metadataDirty,
 }: GetSideTabButtonsParams): TabButtonDef[] => {
   const buttons: TabButtonDef[] = [];
-  const relationshipsCount = entity ? countEntityRelationships(entity) : 0;
-  const relationshipsTabLabel = (
-    <TabLabel
-      text="Relationships"
-      icon={<RelationshipPropertyIcon className="h-5 w-5" />}
-      count={relationshipsCount}
-    />
-  );
+  const relationshipsCount = entity ? countEntityRelationships(entity, mainDocumentId) : 0;
+  const relationshipsTabLabel = <TabLabel text="Relationships" count={relationshipsCount} />;
 
   const pushMetadata = () => {
     if (!entity) return;
     buttons.push({
       id: SIDE_TAB.METADATA,
-      label: <TabLabel text="Metadata" icon={<Bars3CenterLeftIcon className="h-5 w-5" />} />,
+      label: <TabLabel text="Metadata" dirty={metadataDirty} />,
     });
   };
 
@@ -54,7 +44,7 @@ const getSideTabButtons = ({
     if (!hasMainDocument) return;
     buttons.push({
       id: SIDE_TAB.DOCUMENT,
-      label: <TabLabel text="Document" icon={<DocumentTextIcon className="h-5 w-5" />} />,
+      label: <TabLabel text="Document" />,
     });
   };
 
@@ -64,7 +54,7 @@ const getSideTabButtons = ({
       buttons.push(
         {
           id: SIDE_TAB.TOC,
-          label: <TabLabel text="ToC" icon={<ListBulletIcon className="h-5 w-5" />} />,
+          label: <TabLabel text="ToC" />,
         },
         {
           id: SIDE_TAB.RELATIONSHIPS,
@@ -72,7 +62,7 @@ const getSideTabButtons = ({
         },
         {
           id: SIDE_TAB.SEARCH,
-          label: <TabLabel text="Search" icon={<MagnifyingGlassIcon className="h-5 w-5" />} />,
+          label: <TabLabel text="Search" />,
         }
       );
       break;
@@ -85,7 +75,7 @@ const getSideTabButtons = ({
         },
         {
           id: SIDE_TAB.SEARCH,
-          label: <TabLabel text="Search" icon={<MagnifyingGlassIcon className="h-5 w-5" />} />,
+          label: <TabLabel text="Search" />,
         }
       );
       break;
@@ -95,11 +85,11 @@ const getSideTabButtons = ({
       buttons.push(
         {
           id: SIDE_TAB.TOC,
-          label: <TabLabel text="ToC" icon={<ListBulletIcon className="h-5 w-5" />} />,
+          label: <TabLabel text="ToC" />,
         },
         {
           id: SIDE_TAB.SEARCH,
-          label: <TabLabel text="Search" icon={<MagnifyingGlassIcon className="h-5 w-5" />} />,
+          label: <TabLabel text="Search" />,
         }
       );
       break;
@@ -111,13 +101,7 @@ const getSideTabButtons = ({
       if (filesSideTabs?.showTranslationsTab) {
         buttons.push({
           id: SIDE_TAB.TRANSLATIONS,
-          label: (
-            <TabLabel
-              text="Translations"
-              icon={<LanguageIcon className="h-5 w-5" />}
-              count={filesSideTabs.translationsCount}
-            />
-          ),
+          label: <TabLabel text="Translations" count={filesSideTabs.translationsCount} />,
         });
       }
       break;

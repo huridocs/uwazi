@@ -6,6 +6,7 @@ type ButtonVariant =
   | 'danger'
   | 'ghost'
   | 'compact'
+  | 'warm'
   | 'success'
   | 'dangerSecondary'
   | 'successSecondary'
@@ -64,10 +65,15 @@ const Button = ({
       medium: 'px-3 py-1 text-[0.8125rem]',
       default: 'px-3 py-1 text-[0.8125rem]',
     },
+    warm: {
+      small: 'px-2 py-1.5 text-xs',
+      medium: 'px-4 py-2 text-sm',
+      default: 'px-3 py-1.5 text-xs gap-1.5',
+    },
     success: {
       small: 'px-2 py-1.5 text-xs',
       medium: 'px-4 py-2 text-sm',
-      default: 'px-3 py-1.5 text-xs',
+      default: 'px-4 py-1.5 text-xs',
     },
     dangerSecondary: {
       small: 'px-2 py-1.5 text-xs',
@@ -99,13 +105,14 @@ const Button = ({
     secondary:
       'border-border bg-paper text-ink enabled:hover:bg-warm disabled:border-border-soft disabled:bg-paper disabled:text-ink-muted',
     danger:
-      'border-emphasis bg-emphasis text-(--color-theme-feedback-danger-fg) enabled:hover:opacity-90 disabled:opacity-60',
+      'border-button-danger bg-button-danger text-button-danger-fg enabled:hover:opacity-90 disabled:opacity-60',
     ghost:
       'border-border bg-paper text-ink enabled:hover:bg-warm disabled:border-border-soft disabled:bg-paper disabled:text-ink-muted disabled:opacity-60',
     compact:
       'border-border-soft bg-warm text-ink-secondary enabled:hover:bg-vellum enabled:hover:border-border disabled:border-border-soft disabled:text-ink-muted',
+    warm: 'bg-warm text-ink-secondary enabled:hover:bg-parchment enabled:hover:text-ink disabled:bg-vellum disabled:text-ink-muted',
     success:
-      'border-success bg-success text-(--color-theme-feedback-success-fg) enabled:hover:bg-[color-mix(in_srgb,var(--color-theme-success)_92%,black)]! enabled:hover:border-[color-mix(in_srgb,var(--color-theme-success)_92%,black)]! disabled:opacity-60',
+      'border-button-success bg-button-success text-button-success-fg enabled:hover:bg-button-success-hover enabled:hover:border-button-success-hover disabled:opacity-60',
     dangerSecondary:
       'border-emphasis bg-transparent text-emphasis enabled:hover:bg-emphasis-tint disabled:border-border-soft disabled:text-ink-muted',
     successSecondary:
@@ -124,7 +131,9 @@ const Button = ({
       className={[
         className,
         textStyles,
-        'border rounded-md font-medium transition-colors disabled:cursor-not-allowed focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]',
+        variant === 'warm'
+          ? 'border-0 rounded-md font-medium transition-colors disabled:cursor-not-allowed focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]'
+          : 'border rounded-md font-medium transition-colors disabled:cursor-not-allowed focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]',
         variantClasses[variant],
       ]
         .filter(Boolean)

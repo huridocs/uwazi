@@ -1,9 +1,9 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
-import { getFieldErrorMessage } from '../functions/fieldErrorMessage.js';
+import { getFieldErrorState } from '../functions/fieldErrorState.js';
+import { EntityField } from './EntityField.js';
 
 type TextFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
@@ -24,26 +24,26 @@ const TextField = <TFormValues extends FieldValues = FieldValues>({
 }: TextFieldProps<TFormValues>) => {
   const { register, getFieldState, formState } = useFormContext<TFormValues>();
   const fieldState = getFieldState(field, formState);
+  const { showError, message } = getFieldErrorState(fieldState);
 
   return (
-    <div className="text-ink bg-(--bg-surface)">
+    <EntityField>
       <InputField
         id={field}
         label={
-          <div className="font-bold">
-            <Translate className="" context={context}>
-              {label}
-            </Translate>
+          <>
+            <Translate context={context}>{label}</Translate>
             {registerOptions?.required && '*'}
-          </div>
+          </>
         }
         type={type}
         disabled={disabled}
-        hasErrors={fieldState.invalid}
-        errorMessage={getFieldErrorMessage(fieldState.error)}
+        hasErrors={showError}
+        errorMessage={message}
+        // eslint-disable-next-line react/jsx-props-no-spreading
         {...register(field, registerOptions)}
       />
-    </div>
+    </EntityField>
   );
 };
 

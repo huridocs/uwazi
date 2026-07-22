@@ -17,6 +17,7 @@ import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFac
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
 import {
   DefaultDispatcher,
   DefaultTestingQueueAdapter,
@@ -37,6 +38,23 @@ const __dirname = dirname(__filename);
 
 let appContextGetMock: jest.SpyInstance<unknown, [key: string], any>;
 let appContextSetMock: jest.SpyInstance<unknown, [key: string, value: unknown], any>;
+
+const ENTITY_POSTGRES_DEFAULTS = {
+  published: false,
+  creationDate: 0,
+  editDate: 0,
+  template: '',
+};
+
+const sanitizeEntityForPostgres = (entity: Record<string, unknown>) => {
+  const cleaned = ObjectUtils.sanitize(entity, [
+    '__v',
+    'obsoleteMetadata',
+    'public',
+    'mongoLanguage',
+  ]);
+  return { ...ENTITY_POSTGRES_DEFAULTS, ...cleaned };
+};
 
 type SetUpOptions = {
   elasticIndex?: string | boolean;
@@ -161,10 +179,13 @@ const testingEnvironment = {
       await testingPG.setFixtures(
         Object.fromEntries(
           Object.entries(fixtures)
-            .filter(([table]) => ['dictionaries', 'templates', 'files'].includes(table))
+            .filter(([table]) => ['dictionaries', 'templates', 'files', 'entities'].includes(table))
             .map(([table, fixture]) => [
               table === 'dictionaries' ? 'thesauri' : table,
-              fixture.map((f: any) => JSON.parse(JSON.stringify(ObjectUtils.sanitize(f, ['__v'])))),
+              fixture.map((f: any) => {
+                const sanitized = JSON.parse(JSON.stringify(ObjectUtils.sanitize(f, ['__v'])));
+                return table === 'entities' ? sanitizeEntityForPostgres(sanitized) : sanitized;
+              }),
             ])
         )
       );
@@ -229,6 +250,7 @@ const testingEnvironment = {
 
     const defaultFactories: ExecutionContextDeps['factories'] = {
       transactionManager: TransactionManagerFactory.default,
+      postgresTransactionManager: PostgresTransactionManagerFactory.default,
       eventEmitter: EventEmitterFactory.forTesting,
       jobsDispatcher: () =>
         DefaultDispatcher(

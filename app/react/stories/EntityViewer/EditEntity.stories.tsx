@@ -11,6 +11,7 @@ import {
 } from '#V2/atoms/index.js';
 import { Translate } from '#app/I18N/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
+import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js';
 import { EditEntity, type EditEntityErrors } from '#V2/Components/Metadata/EntityEditor/index.js';
 import { Button } from '#V2/Components/UI/index.js';
 import { apiEntity, templates, thesauri } from '../fixtures/EditEntityFixtures.js';
@@ -40,7 +41,7 @@ const EditEntityComponent = ({
   errors,
 }: {
   entity: Entity;
-  onSave: (savedEntity: Entity) => void;
+  onSave: (savedEntity: EntitySaveInput) => void;
   locale?: string;
   templatesForStory?: typeof templates;
   errors?: EditEntityErrors;
@@ -50,7 +51,7 @@ const EditEntityComponent = ({
     limit?: number;
   }) => Promise<{ value: string; label: string }[]>;
 }) => {
-  const [savedEntity, setSavedEntity] = useState(entity);
+  const [savedEntity, setSavedEntity] = useState<Entity | EntitySaveInput>(entity);
 
   const store = createStore();
   store.set(settingsAtom, { mapLayers: ['Streets', 'Hybrid', 'Satellite'] });
@@ -137,11 +138,9 @@ const EditEntityComponent = ({
     );
   };
 
-  const handleSave = (updatedEntity?: Entity) => {
-    if (updatedEntity) {
-      onSave?.(updatedEntity);
-      setSavedEntity(updatedEntity);
-    }
+  const handleSave = (updatedEntity: EntitySaveInput) => {
+    onSave?.(updatedEntity);
+    setSavedEntity(updatedEntity);
   };
 
   return (

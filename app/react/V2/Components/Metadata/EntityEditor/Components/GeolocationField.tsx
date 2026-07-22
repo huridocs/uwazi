@@ -1,7 +1,17 @@
 import React from 'react';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
-import { Translate } from '#app/I18N/index.js';
 import { Geolocation } from '#V2/Components/Forms/index.js';
+import {
+  isFiniteNumber,
+  validateGeolocationValue,
+} from '#V2/Components/Forms/geolocationCoordinates.js';
+import type { MetadataValue } from '#V2/formatters/types.js';
+import {
+  EntityFieldError,
+  EntityFieldLabel,
+  getFieldErrorState,
+} from '../functions/fieldErrorState.js';
+import { EntityField } from './EntityField.js';
 
 type GeolocationFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
@@ -10,6 +20,27 @@ type GeolocationFieldProps<TFormValues extends FieldValues = FieldValues> = {
   registerOptions?: RegisterOptions<TFormValues, Path<TFormValues>>;
   disabled?: boolean;
 };
+
+type GeolocationValue = {
+  lat?: number;
+  lon?: number;
+  label?: string;
+};
+
+const coordsFromValue = (value: unknown): GeolocationValue => {
+  if (!value || typeof value !== 'object') {
+    return {};
+  }
+  const record = value as GeolocationValue & { latitude?: number; longitude?: number };
+  return {
+    lat: record.lat ?? record.latitude,
+    lon: record.lon ?? record.longitude,
+    label: typeof record.label === 'string' ? record.label : undefined,
+  };
+};
+
+const coordsFromEntries = (entries: MetadataValue[] | undefined): GeolocationValue =>
+  coordsFromValue(entries?.[0]?.value);
 
 const GeolocationField = <TFormValues extends FieldValues = FieldValues>({
   context,
@@ -22,74 +53,60 @@ const GeolocationField = <TFormValues extends FieldValues = FieldValues>({
   const required = Boolean(registerOptions?.required);
 
   return (
-    <div className="text-ink bg-(--bg-surface)">
+    <EntityField>
       <Controller
         control={control}
         name={field}
         rules={{
           ...registerOptions,
           validate: value => {
-            if (!required) {
-              return true;
-            }
-
-            if (!value) {
-              return 'Required';
-            }
-
-            const { lat, lon } = value as {
-              lat?: number;
-              lon?: number;
-            };
-
-            return typeof lat === 'number' && typeof lon === 'number' ? true : 'Required';
+            const coords = coordsFromEntries(value as MetadataValue[] | undefined);
+            return validateGeolocationValue(coords, required);
           },
         }}
         render={({ field: geolocationField, fieldState }) => {
-          const { lat, lon } =
-            geolocationField.value && typeof geolocationField.value === 'object'
-              ? (geolocationField.value as {
-                  lat?: number;
-                  lon?: number;
-                })
-              : {};
-
-          const showRequiredError = Boolean(fieldState.error);
+          const entries = (geolocationField.value as MetadataValue[] | undefined) ?? [];
+          const { lat, lon, label: pointLabel } = coordsFromEntries(entries);
+          const { showError, message } = getFieldErrorState(fieldState);
 
           return (
             <>
-              <div
-                className={`font-bold mb-2 ${
-                  showRequiredError ? 'text-(--color-theme-control-text-error)' : ''
-                }`}
-              >
-                <Translate className="" context={context}>
-                  {label}
-                </Translate>
-                {registerOptions?.required && '*'}
-              </div>
+              <EntityFieldLabel
+                htmlFor={geolocationField.name}
+                context={context}
+                label={label}
+                required={required}
+                showError={showError}
+              />
               <Geolocation
                 name={geolocationField.name}
                 disabled={disabled}
                 value={{ lat, lon }}
-                hasErrors={showRequiredError}
+                hasErrors={showError}
                 onChange={({ lat: nextLat, lon: nextLon }) => {
-                  geolocationField.onChange({
-                    lat: nextLat,
-                    lon: nextLon,
-                  });
+                  if (!isFiniteNumber(nextLat) && !isFiniteNumber(nextLon)) {
+                    geolocationField.onChange([]);
+                    return;
+                  }
+                  const rest = entries.slice(1);
+                  geolocationField.onChange([
+                    {
+                      value: {
+                        lat: nextLat,
+                        lon: nextLon,
+                        label: pointLabel ?? '',
+                      },
+                    },
+                    ...rest,
+                  ]);
                 }}
               />
-              {showRequiredError ? (
-                <div className="mt-2 text-sm text-(--color-theme-control-text-error)">
-                  <Translate>This field is required</Translate>
-                </div>
-              ) : null}
+              <EntityFieldError showError={showError} message={message} />
             </>
           );
         }}
       />
-    </div>
+    </EntityField>
   );
 };
 

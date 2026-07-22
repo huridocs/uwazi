@@ -4,7 +4,6 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
-import { tenants } from '#api/tenants/index.js';
 import datavizRoutes from '../routes.js';
 
 jest.mock(
@@ -106,6 +105,28 @@ const scatterQueryChart = {
   refresh: { refreshMode: 'snapshot_manual' },
 };
 
+const livePieQueryChart = {
+  name: 'Live pie embed',
+  query: {
+    sources: [{ templateId: templateId.toString(), alias: 'cars' }],
+    dimensions: [
+      {
+        property: 'engine_size',
+        propertyType: 'numeric',
+        bucketStrategy: 'terms',
+        sort: 'key_asc',
+        maxBuckets: 10,
+      },
+    ],
+    measures: [{ aggregation: 'count', countMode: 'all' }],
+    language: 'en',
+    limit: 50,
+  },
+  chart: { type: 'pie' },
+  appearance: { colorMode: 'theme' },
+  refresh: { refreshMode: 'live' as const },
+};
+
 describe('public dataviz embed integration', () => {
   const app: Application = setUpApp(datavizRoutes, (req, _res, next) => {
     req.user = { _id: 'adminUser', role: 'admin' };
@@ -114,7 +135,6 @@ describe('public dataviz embed integration', () => {
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
-    tenants.current().featureFlags!.dataViz = true;
   });
 
   afterAll(async () => {
@@ -174,5 +194,72 @@ describe('public dataviz embed integration', () => {
       .expect(503);
 
     expect(embedResponse.body.code).toBe('DATAVIZ_SNAPSHOT_UNAVAILABLE');
+  });
+
+  it('should re-query the collection for live charts on each public embed load', async () => {
+    const createResponse = await request(app)
+      .post('/api/dataviz')
+      .send(livePieQueryChart)
+      .expect(200);
+    const datavizId = createResponse.body.id as string;
+
+    const firstEmbed = await request(app)
+      .get(`/api/public/dataviz/${datavizId}/data`)
+      .query({ locale: 'en' })
+      .expect(200);
+
+    expect(firstEmbed.body.data.meta.totalEntities).toBe(3);
+
+    await testingEnvironment.runWithContext(async () => {
+      const { getConnection } =
+        await import('#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js');
+      const db = getConnection();
+      await db.collection('entities').insertOne({
+        _id: factory.id('car4'),
+        sharedId: 'car_shared_4',
+        language: 'en',
+        template: templateId,
+        title: 'Car 4',
+        published: true,
+        metadata: {
+          registration_date: [{ value: 804863301 }],
+          engine_size: [{ value: 2.5 }],
+        },
+      });
+    });
+
+    const secondEmbed = await request(app)
+      .get(`/api/public/dataviz/${datavizId}/data`)
+      .query({ locale: 'en' })
+      .expect(200);
+
+    expect(secondEmbed.body.data.meta.totalEntities).toBe(4);
+  });
+
+  it('should still serve live charts when the saved snapshot was removed', async () => {
+    const createResponse = await request(app)
+      .post('/api/dataviz')
+      .send({
+        ...livePieQueryChart,
+        name: 'Live without snapshot',
+      })
+      .expect(200);
+
+    const datavizId = createResponse.body.id as string;
+
+    await testingEnvironment.runWithContext(async () => {
+      const snapshotsDS = (
+        await import('#api/dataviz.v2/infrastructure/factories/DatavizFactory.js')
+      ).DatavizFactory.snapshotsDataSource();
+      await snapshotsDS.deleteByDatavizId(datavizId);
+    });
+
+    const embedResponse = await request(app)
+      .get(`/api/public/dataviz/${datavizId}/data`)
+      .query({ locale: 'en' })
+      .expect(200);
+
+    expect(embedResponse.body.data.series).toHaveLength(1);
+    expect(embedResponse.body.data.meta.totalEntities).toBeGreaterThan(0);
   });
 });

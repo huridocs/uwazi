@@ -10,7 +10,7 @@ import { LibraryTable } from './Library/LibraryTable.js';
 import { Preserve } from '#V2/Routes/Settings/Preserve/Preserve.js';
 import { Settings } from '#V2/Routes/Settings/Settings.js';
 import { Login } from './Users/Login.js';
-import { Users, usersLoader, userAction } from '#V2/Routes/Settings/Users/Users.js';
+import { Users, createUsersLoader } from '#V2/Routes/Settings/Users/index.js';
 import { Collection, collectionLoader } from '#V2/Routes/Settings/Collection/Collection.js';
 import { ViewerRoute } from './Viewer/ViewerRoute.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
@@ -26,17 +26,19 @@ import {
 import { Dashboard, dashboardLoader } from '#V2/Routes/Settings/Dashboard/Dashboard.js';
 import {
   EditThesaurus,
-  thesauriLoader,
+  createThesauriLoader,
+  createEditThesaurusLoader,
   ThesauriList,
-  editThesaurusLoader,
 } from '#app/V2/Routes/Settings/Thesauri/index.js';
+import { httpServices } from '#V2/services/http/index.js';
+import type { V2Services } from '#V2/services/types.js';
 import { MenuConfig, menuConfigloader } from '#V2/Routes/Settings/MenuConfig/MenuConfig.js';
 import {
   RelationshipTypes,
   relationshipTypesLoader,
 } from '#V2/Routes/Settings/RelationshipTypes/RelationshipTypes.js';
 import { LanguagesList, languagesListLoader } from '#V2/Routes/Settings/Languages/LanguagesList.js';
-import { Account, accountLoader } from '#V2/Routes/Settings/Account/Account.js';
+import { Account, createAccountLoader } from '#V2/Routes/Settings/Account/index.js';
 import { IXdashboardLoader, IXDashboard } from '#V2/Routes/Settings/IX/IXDashboard.js';
 import { IXSuggestions, IXSuggestionsLoader } from '#V2/Routes/Settings/IX/IXSuggestions.js';
 import {
@@ -186,7 +188,8 @@ const getRoutesLayout = (
   settings: ClientSettings | undefined,
   indexElement: React.ReactNode,
   headers?: IncomingHttpHeaders,
-  defaultToLibrary?: boolean
+  defaultToLibrary?: boolean,
+  services: V2Services = httpServices
 ) => (
   <Route errorElement={<RouteErrorBoundary />}>
     <Route
@@ -225,7 +228,7 @@ const getRoutesLayout = (
     <Route path="setpassword/:key" element={<ResetPassword />} />
     <Route path="unlockaccount/:username/:code" element={<UnlockAccount />} />
     <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
-      <Route path="account" element={<Account />} loader={accountLoader(headers)} />
+      <Route path="account" element={<Account />} loader={createAccountLoader(services)(headers)} />
       <Route
         path="dashboard"
         element={adminsOnlyRoute(<Dashboard />)}
@@ -244,8 +247,7 @@ const getRoutesLayout = (
       <Route
         path="users"
         element={adminsOnlyRoute(<Users />)}
-        loader={usersLoader(headers)}
-        action={userAction()}
+        loader={createUsersLoader(services)(headers)}
       />
       <Route path="preserve" element={adminsOnlyRoute(<Preserve />)} />
       <Route path="pages">
@@ -349,12 +351,16 @@ const getRoutesLayout = (
       </Route>
 
       <Route path="thesauri">
-        <Route index element={adminsOnlyRoute(<ThesauriList />)} loader={thesauriLoader(headers)} />
+        <Route
+          index
+          element={adminsOnlyRoute(<ThesauriList />)}
+          loader={createThesauriLoader(services)(headers)}
+        />
         <Route path="new" element={adminsOnlyRoute(<EditThesaurus />)} />
         <Route
           path="edit/:_id"
           element={adminsOnlyRoute(<EditThesaurus />)}
-          loader={editThesaurusLoader(headers)}
+          loader={createEditThesaurusLoader(services)(headers)}
         />
       </Route>
       <Route
@@ -424,13 +430,14 @@ const getRoutes = (
   settings: ClientSettings | undefined,
   userId: string | undefined,
   headers?: IncomingHttpHeaders,
-  indexComponents?: IndexComponents
+  indexComponents?: IndexComponents,
+  services: V2Services = httpServices
 ) => {
   const descriptor = getIndexDescriptor(settings, userId);
   const indexElement = buildIndexElement(descriptor, indexComponents);
   const { parameters } = descriptor;
   const { defaultToLibrary } = descriptor;
-  const layout = getRoutesLayout(settings, indexElement, headers, defaultToLibrary);
+  const layout = getRoutesLayout(settings, indexElement, headers, defaultToLibrary, services);
   const languageKeys = settings?.languages?.map(lang => lang.key) || [];
   return createRoutesFromElements(
     <Route

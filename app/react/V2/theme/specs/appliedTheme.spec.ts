@@ -1,6 +1,6 @@
 import { appliedTheme, getCustomThemeVars } from '#V2/theme/themes.js';
 import { PRESET_DEFINITIONS } from '#V2/theme/tokens.js';
-import { checkContrast } from '#shared/utils/contrast.js';
+import { checkContrast, WCAG_AA_LARGE_UI } from '#shared/utils/contrast.js';
 
 describe('appliedTheme', () => {
   it('uses legacy preset and ignores stored vars when customization pipeline is off', () => {
@@ -40,12 +40,12 @@ describe('appliedTheme', () => {
     );
 
     expect(resolved['--color-theme-danger']).toBe('#FFFFFF');
-    expect(checkContrast('#FFFFFF', resolved['--color-theme-feedback-danger-fg']).passesAA).toBe(
-      true
-    );
-    expect(checkContrast('#FFFFFF', resolved['--color-theme-feedback-success-fg']).passesAA).toBe(
-      true
-    );
+    expect(
+      checkContrast('#FFFFFF', resolved['--color-theme-feedback-danger-fg']).ratio
+    ).toBeGreaterThan(WCAG_AA_LARGE_UI);
+    expect(
+      checkContrast('#FFFFFF', resolved['--color-theme-feedback-success-fg']).ratio
+    ).toBeGreaterThan(WCAG_AA_LARGE_UI);
   });
 
   it('stores source color overrides without derived color rows', () => {

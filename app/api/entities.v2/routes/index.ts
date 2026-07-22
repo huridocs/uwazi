@@ -1,6 +1,7 @@
 import type { Application, Request } from 'express';
 import { validation } from '#api/utils/index.js';
-import entities from '#api/entities/entities.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
+import { User } from '#api/users.v2/model/User.js';
 
 const entitiesRoutes = (app: Application) => {
   app.get(
@@ -20,9 +21,10 @@ const entitiesRoutes = (app: Application) => {
     }),
     async (req: Request, res) => {
       const { templateId } = req.query;
-      const language = req.language || 'en';
 
-      const count = await entities.countByTemplate(templateId as string, language);
+      const count = await EntitiesDAOFactory.default({
+        user: User.createFrom(req.user),
+      }).countByTemplate(templateId as string);
       res.json(count);
       res.status(200);
     }

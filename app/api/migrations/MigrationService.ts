@@ -1,17 +1,21 @@
+/* eslint-disable max-statements */
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { Connection, ConnectOptions } from 'mongoose';
 import { DB } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
 import { config } from '#api/config.js';
-import { PostgresDB, PostgresConnectionConfig } from '#api/infrastructure/PostgresDB.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
+import { MigrationHumanReadableWriter } from '#api/core/libs/logger/infrastructure/writers/MigrationHumanReadableWriter.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
@@ -50,12 +54,6 @@ type DBConnector = {
   disconnect: () => Promise<void>;
 };
 
-type PostgresConnector = {
-  connect: (cfg?: PostgresConnectionConfig) => any;
-  disconnect: () => Promise<void>;
-  pool: () => any;
-};
-
 type TenantsManager = {
   setupTenants: () => Promise<void>;
   run: (fn: () => Promise<void>, tenantName?: string) => Promise<void>;
@@ -69,12 +67,13 @@ type LoggerFactoryFn = (options: { async: boolean; structuredLogs: boolean }) =>
 
 type MigrationServiceDeps = {
   db: DBConnector;
-  postgresDB: PostgresConnector;
+  postgresDB: typeof PostgresDB;
   tenants: TenantsManager;
   createDispatcher: DispatcherFactory;
   createLogger: LoggerFactoryFn;
   pgMigratorFactory: (pool: any) => PgMigrator;
   transactionManagerFactory: () => any;
+  postgresTransactionManagerFactory: () => any;
   eventEmitterFactory: () => any;
   idGeneratorFactory: () => any;
 };
@@ -100,9 +99,12 @@ const createDefaultLogger: LoggerFactoryFn = (options: {
   structuredLogs: boolean;
 }) => {
   if (options.async) {
-    return LoggerFactory.systemLogger(StandardJSONWriter);
+    return LoggerFactory.systemLogger(withFeature(StandardJSONWriter, 'migration'));
   }
-  return LoggerFactory.migrationLogger(options.structuredLogs);
+  if (options.structuredLogs) {
+    return LoggerFactory.migrationLogger(withFeature(StandardJSONWriter, 'migration'));
+  }
+  return LoggerFactory.migrationLogger(MigrationHumanReadableWriter);
 };
 
 const createDefaultPgMigrator = (pool: any) => new PgMigrator(PG_MIGRATIONS_DIR, pool);
@@ -115,6 +117,7 @@ const defaultDeps: MigrationServiceDeps = {
   createLogger: createDefaultLogger,
   pgMigratorFactory: createDefaultPgMigrator,
   transactionManagerFactory: TransactionManagerFactory.default,
+  postgresTransactionManagerFactory: PostgresTransactionManagerFactory.default,
   eventEmitterFactory: EventEmitterFactory.default,
   idGeneratorFactory: IdGeneratorFactory.default,
 };
@@ -124,7 +127,6 @@ class MigrationService {
 
   async run(options: { async: boolean; structuredLogs: boolean }): Promise<MigrationRunResult> {
     await this.deps.db.connect(config.DBHOST, config.DBAUTH);
-    this.deps.postgresDB.connect();
 
     await this.deps.tenants.setupTenants();
 
@@ -148,6 +150,7 @@ class MigrationService {
       {
         factories: {
           transactionManager: this.deps.transactionManagerFactory,
+          postgresTransactionManager: this.deps.postgresTransactionManagerFactory,
           jobsDispatcher: () => dispatcher,
           eventEmitter: this.deps.eventEmitterFactory,
           idGenerator: this.deps.idGeneratorFactory,
@@ -162,8 +165,7 @@ class MigrationService {
       }
     );
 
-    const pgPool = this.deps.postgresDB.pool();
-    const pgMigrator = this.deps.pgMigratorFactory(pgPool);
+    const pgMigrator = this.deps.pgMigratorFactory(this.deps.postgresDB.adminPool());
     const schemaVersion = await pgMigrator.getCurrentVersion();
 
     await this.deps.db.disconnect();

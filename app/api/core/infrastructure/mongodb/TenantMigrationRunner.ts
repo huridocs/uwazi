@@ -11,6 +11,7 @@ export type TenantPendingMigrations = {
 };
 
 export interface TenantMigrationRunner {
+  tenantExists(tenant: Tenant): Promise<boolean>;
   getPendingMigrations(tenant: Tenant, schemaVersion: number): Promise<TenantPendingMigrations>;
   migrateDelta(
     tenant: Tenant,

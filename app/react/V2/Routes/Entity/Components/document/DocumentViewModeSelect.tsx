@@ -12,15 +12,15 @@ type ViewMode = 'raw' | 'normal';
 const DocumentViewModeSelect = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { pdfController: pdfControls } = useDocumentPdf();
-  const [hydrated, setHydrated] = useState(false);
+  const [ready, setReady] = useState(false);
   const [open, setOpen] = useState(false);
   const initialPage = useRef(Number.parseInt(searchParams.get(PAGE_PARAM) || '1', 10));
 
   useEffect(() => {
-    setHydrated(true);
+    setReady(true);
   }, []);
 
-  const isRaw = !isClient || !hydrated || searchParams.get(VIEW_MODE_PARAM) === 'true';
+  const isRaw = !isClient || !ready || searchParams.get(VIEW_MODE_PARAM) === 'true';
 
   const selectMode = useCallback(
     (value: ViewMode) => {

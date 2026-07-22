@@ -38,7 +38,11 @@ const createPanelScopeRouter = (entity: Entity) => {
       path: '/',
       element: (
         <Provider store={store}>
-          <EntityScopedProvider key={entity.sharedId} entity={entity}>
+          <EntityScopedProvider
+            key={entity.sharedId}
+            entity={entity}
+            language={entity.language ?? 'en'}
+          >
             <RelationshipsPanel />
             <RelationshipsFiltersDrawer />
           </EntityScopedProvider>

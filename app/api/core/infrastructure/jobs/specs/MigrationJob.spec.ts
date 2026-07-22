@@ -3,6 +3,7 @@ import { MigrationJob } from '#api/core/infrastructure/jobs/MigrationJob.js';
 import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { tenants } from '#api/tenants/tenantContext.js';
 import testingDB from '#api/utils/testing_db.js';
 import { PgMigrator } from '../../postgresql/PgMigrator.js';
 
@@ -48,6 +49,7 @@ type MigrationCatalogueEntry = {
 const createFakeRunner = (options: {
   migrations: MigrationCatalogueEntry[];
   failDelta?: number;
+  tenantExists?: boolean;
 }): TenantMigrationRunner => {
   const dbForTenant = (tenant: { dbName: string }) => testingDB.db(tenant.dbName);
 
@@ -57,7 +59,15 @@ const createFakeRunner = (options: {
   };
 
   return {
-    async getPendingMigrations(tenant, schemaVersion) {
+    async tenantExists(_tenant: { dbName: string }) {
+      return options.tenantExists !== false;
+    },
+
+    async getPendingMigrations(tenant: { dbName: string }, schemaVersion: number) {
+      if (options.tenantExists === false) {
+        return { runnable: [], blocked: null };
+      }
+
       const applied = await appliedDeltas(tenant);
       const pending = options.migrations.filter(migration => !applied.has(migration.delta));
       const runnable: MigrationCatalogueEntry[] = [];
@@ -74,7 +84,13 @@ const createFakeRunner = (options: {
       return { runnable, blocked };
     },
 
-    async migrateDelta(tenant, delta, schemaVersion) {
+    async migrateDelta(
+      tenant: { dbName: string },
+      delta: number,
+      schemaVersion: number
+    ): Promise<
+      import('#api/core/infrastructure/mongodb/TenantMigrationRunner.js').TenantMigrationResult
+    > {
       const migration = options.migrations.find(m => m.delta === delta);
       if (!migration) {
         return { status: 'done' };
@@ -131,10 +147,22 @@ const createJobFactory = (deps: {
   logger?: ReturnType<typeof createMockLogger>;
   reindexTenant?: jest.Mock;
   heartbeat?: jest.Mock;
+  tenantsManager?: any;
 }) => {
   const dispatcherRegistry: MigrationRegistry = {};
   const heartbeat = deps.heartbeat || jest.fn();
   const dispatcher = createTestDispatcher(dispatcherRegistry, heartbeat);
+
+  const tenantsManager = deps.tenantsManager || {
+    tenants: { default: { name: 'default', dbName: testingDB.dbName } },
+    current() {
+      return this.tenants.default;
+    },
+    async run(fn: () => Promise<void>, tenantName = 'default') {
+      return tenants.run(fn, tenantName);
+    },
+    async setMaintenance(_tenantName: string, _maintenance: boolean) {},
+  };
 
   dispatcherRegistry.MigrationJob = async () =>
     new MigrationJob({
@@ -143,6 +171,7 @@ const createJobFactory = (deps: {
       logger: deps.logger || createMockLogger(),
       dispatcher,
       reindexTenant: deps.reindexTenant || jest.fn(),
+      tenantsManager,
     });
 
   return { dispatcher, registry: dispatcherRegistry, heartbeat };
@@ -265,10 +294,21 @@ describe('MigrationJob', () => {
 
     const logger = createMockLogger();
     const reindexTenant = jest.fn();
+    const setMaintenance = jest.fn();
     const { dispatcher } = createJobFactory({
       logger,
       reindexTenant,
       runner: createFakeRunner({ migrations: defaultCatalogue }),
+      tenantsManager: {
+        tenants: { default: { name: 'default', dbName: testingDB.dbName } },
+        current() {
+          return this.tenants.default;
+        },
+        async run(fn: () => Promise<void>, tenantName = 'default') {
+          return tenants.run(fn, tenantName);
+        },
+        setMaintenance,
+      },
     });
 
     await dispatcher.dispatch(MigrationJob, {
@@ -277,6 +317,8 @@ describe('MigrationJob', () => {
     });
 
     expect(reindexTenant).toHaveBeenCalledTimes(1);
+    expect(setMaintenance).toHaveBeenCalledWith('default', true);
+    expect(setMaintenance).toHaveBeenCalledWith('default', false);
   });
 
   it('should not reindex when reindex flag is false', async () => {
@@ -485,5 +527,24 @@ describe('MigrationJob', () => {
 
     expect(reindexTenant).toHaveBeenCalledTimes(1);
     expect(heartbeat).toHaveBeenCalledTimes(5);
+  });
+
+  it('should skip reindex for tenants that do not exist', async () => {
+    const heartbeat = jest.fn();
+    const reindexTenant = jest.fn();
+    const pgMigrator = new FakePgMigrator({ currentVersion: 100 });
+    const { dispatcher } = createJobFactory({
+      heartbeat,
+      reindexTenant,
+      pgMigrator,
+      runner: createFakeRunner({ migrations: defaultCatalogue, tenantExists: false }),
+    });
+
+    await dispatcher.dispatch(MigrationJob, {
+      reindex: false,
+      results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
+    });
+
+    expect(reindexTenant).not.toHaveBeenCalled();
   });
 });

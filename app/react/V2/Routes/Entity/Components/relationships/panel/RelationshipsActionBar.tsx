@@ -4,13 +4,14 @@ import { Translate } from '#app/I18N/index.js';
 import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
 import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 import {
+  EntityWriteAuthorization,
   useDocumentPdf,
   useRelationshipsActions,
   useRelationshipsSelection,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useEntityTabNavigation } from '#V2/Routes/Entity/Tabs/hooks/useEntityTabNavigation.js';
 import { useRelationshipBulkDelete } from '../hooks/useRelationshipBulkDelete.js';
-import { useEntityRelationshipMarkers } from '../hooks/useEntityRelationshipMarkers.js';
+import { useEntityRelationshipMarkers } from '../hooks/useDocumentRelationships.js';
 
 const RelationshipsActionBar = () => {
   const sourceMarkers = useEntityRelationshipMarkers();
@@ -61,7 +62,7 @@ const RelationshipsActionBar = () => {
   }, [documentPdfSelection, focusRelationshipsPanel, openCreateRelationship]);
 
   return (
-    <>
+    <EntityWriteAuthorization>
       <div className="flex w-full items-center justify-between gap-2">
         {!editMode ? (
           <Button
@@ -141,7 +142,7 @@ const RelationshipsActionBar = () => {
           onCancelClick={() => !isDeleting && setConfirmDelete(false)}
         />
       )}
-    </>
+    </EntityWriteAuthorization>
   );
 };
 

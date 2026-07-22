@@ -243,6 +243,30 @@
   background-color: var(--color-theme-success);
 }
 
+@utility bg-button-success {
+  background-color: var(--color-theme-button-success-bg, var(--color-theme-success));
+}
+
+@utility bg-button-success-hover {
+  background-color: var(--color-theme-button-success-hover-bg);
+}
+
+@utility border-button-success {
+  border-color: var(--color-theme-button-success-border, var(--color-theme-success));
+}
+
+@utility bg-button-danger {
+  background-color: var(--color-theme-button-danger-bg, var(--color-theme-accent-emphasis));
+}
+
+@utility border-button-danger {
+  border-color: var(--color-theme-button-danger-border, var(--color-theme-accent-emphasis));
+}
+
+@utility border-button-success-hover {
+  border-color: var(--color-theme-button-success-hover-bg);
+}
+
 @utility bg-success-light {
   background-color: var(--color-theme-success-light);
 }
@@ -283,6 +307,30 @@
   color: var(--color-theme-accent-supporting);
 }
 
+@utility text-carbon {
+  color: var(--color-theme-accent-supporting);
+}
+
+@utility bg-carbon {
+  background-color: var(--color-theme-accent-supporting);
+}
+
+@utility bg-carbon-tint {
+  background-color: var(--color-theme-accent-supporting-tint);
+}
+
+@utility border-carbon {
+  border-color: var(--color-theme-accent-supporting);
+}
+
+@utility accent-carbon {
+  accent-color: var(--color-theme-accent-supporting);
+}
+
+@utility accent-ink {
+  accent-color: var(--color-theme-accent-primary);
+}
+
 @utility text-emphasis {
   color: var(--color-theme-accent-emphasis);
 }
@@ -291,12 +339,36 @@
   color: var(--color-theme-success);
 }
 
+@utility text-feedback-success-fg {
+  color: var(--color-theme-feedback-success-fg, #ffffff);
+}
+
+@utility text-button-success-fg {
+  color: var(--color-theme-button-success-fg, var(--color-theme-feedback-success-fg, #ffffff));
+}
+
+@utility text-feedback-danger-fg {
+  color: var(--color-theme-feedback-danger-fg, #ffffff);
+}
+
+@utility text-button-danger-fg {
+  color: var(--color-theme-button-danger-fg, var(--color-theme-feedback-danger-fg, #ffffff));
+}
+
 @utility text-warning {
   color: var(--color-theme-warning);
 }
 
 @utility text-emphasis-solid-foreground {
   color: var(--color-theme-accent-emphasis-solid-foreground);
+}
+
+@utility text-seal {
+  color: var(--color-theme-accent-emphasis);
+}
+
+@utility bg-seal-tint {
+  background-color: var(--color-theme-accent-emphasis-tint);
 }
 
 @utility border-ink {
@@ -559,28 +631,20 @@ header button svg:not([class*='notification-kind-icon']),
 }
 .tw-content .header-bar[data-uwazi-header] .header-bar-button,
 .tw-content .header-bar[data-uwazi-header] .header-bar-icon-button {
-  background-color: transparent;
+  background-color: var(--color-theme-chrome-app-bar-hover, var(--color-theme-bg-warm, #f5f3f0));
   color: var(--color-theme-chrome-app-bar-fg, var(--color-theme-text-secondary, #333333));
-  border-color: var(
-    --color-theme-chrome-app-bar-separator,
-    var(--color-theme-border-soft, #d1d5db)
-  );
 }
 .tw-content .header-bar[data-uwazi-header] .header-bar-button:hover,
 .tw-content .header-bar[data-uwazi-header] .header-bar-button:focus-visible,
 .tw-content .header-bar[data-uwazi-header] .header-bar-icon-button:hover,
 .tw-content .header-bar[data-uwazi-header] .header-bar-icon-button:focus-visible {
-  background-color: var(--color-theme-chrome-app-bar-hover, var(--color-theme-bg-warm, #f9fafb));
+  background-color: var(--color-theme-chrome-app-bar-active, var(--color-theme-bg-parchment, #ede9e4));
   color: var(--color-theme-chrome-app-bar-fg, var(--color-theme-text-primary, #1a1a1a));
 }
 .tw-content .header-bar[data-uwazi-header] .header-bar-button-active,
 .tw-content .header-bar[data-uwazi-header] .header-bar-panel-item-active {
-  background-color: var(--color-theme-chrome-app-bar-active, var(--color-theme-bg-muted, #f3f4f6));
+  background-color: var(--color-theme-chrome-app-bar-active, var(--color-theme-bg-parchment, #ede9e4));
   color: var(--color-theme-chrome-app-bar-fg, var(--color-theme-text-primary, #1a1a1a));
-  border-color: var(
-    --color-theme-chrome-app-bar-separator,
-    var(--color-theme-border-primary, #e5e7eb)
-  );
 }
 .tw-content .header-bar[data-uwazi-header] .header-bar-separator {
   background-color: var(

@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
+import { useMetadataEditing } from '../Components/context/index.js';
 import { getSideTabButtons, type FilesSideTabsOptions } from './sideTabSets.js';
+import { isMetadataHostDirty } from './metadataTabSession.js';
 import { SIDE_TAB, type MainTabId, type SideTabId } from './tabIds.js';
 import { TabsSideButtons } from './TabsSideButtons.js';
 import { SideTabsContent } from './SideTabsContent.js';
@@ -27,15 +29,19 @@ const SideTabsPanel = ({
   pagePlaintext,
   filesSideTabs,
 }: SideTabsPanelProps) => {
+  const { isDirty, editingHost } = useMetadataEditing();
+  const metadataDirty = isMetadataHostDirty(isDirty, editingHost, 'side');
   const sideButtons = useMemo(
     () =>
       getSideTabButtons({
         activeMainTab,
         entity,
         hasMainDocument: Boolean(mainDocument?.filename),
+        mainDocumentId: mainDocument?._id,
         filesSideTabs,
+        metadataDirty,
       }),
-    [activeMainTab, entity, mainDocument?.filename, filesSideTabs]
+    [activeMainTab, entity, mainDocument?.filename, mainDocument?._id, filesSideTabs, metadataDirty]
   );
 
   return (

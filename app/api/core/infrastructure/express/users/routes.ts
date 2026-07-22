@@ -7,6 +7,7 @@ import users from '#api/users/users.js';
 import { CreateUserController } from './CreateUserController.js';
 import { DeleteUserController } from './DeleteUserController.js';
 import { GetUsersController } from './GetUsersController.js';
+import { UpdateUserController } from './UpdateUserController.js';
 import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 
 export const userRoutes = (app: Application) => {
@@ -16,7 +17,7 @@ export const userRoutes = (app: Application) => {
     validatePasswordMiddleWare,
     async (req: Request, res: Response, next: NextFunction) => {
       // for legacy reasons, should be removed one the flag is gone
-      if (tenants.current().featureFlags?.v2CreateUser) {
+      if (tenants.current().featureFlags?.v2UsersCreate) {
         next();
       } else {
         await validation.validateRequest({
@@ -30,6 +31,25 @@ export const userRoutes = (app: Application) => {
     },
     CreateUserController.createHandler()
   );
+  app.post(
+    '/api/users',
+    needsAuthorization(['admin', 'editor', 'collaborator']),
+    validatePasswordMiddleWare,
+    async (req: Request, res: Response, next: NextFunction) => {
+      if (tenants.current().featureFlags?.v2UsersUpdate) {
+        next();
+      } else {
+        await validation.validateRequest({
+          type: 'object',
+          properties: {
+            body: userSchema,
+          },
+          required: ['body'],
+        })(req, res, next);
+      }
+    },
+    UpdateUserController.createHandler()
+  );
   app.delete(
     '/api/users',
     needsAuthorization(),
@@ -40,7 +60,7 @@ export const userRoutes = (app: Application) => {
     '/api/users',
     needsAuthorization(),
     async (_req: Request, res: Response, next: NextFunction) => {
-      if (tenants.current().featureFlags?.v2GetUsers) {
+      if (tenants.current().featureFlags?.v2UsersGet) {
         next();
       } else {
         users

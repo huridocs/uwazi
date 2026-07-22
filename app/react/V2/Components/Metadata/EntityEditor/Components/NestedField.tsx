@@ -2,13 +2,14 @@ import React from 'react';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
 import { Textarea } from '#V2/Components/Forms/index.js';
-import { getFieldErrorMessage } from '../functions/fieldErrorMessage.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import {
   markdownFromMetadataValues,
   metadataValuesFromMarkdown,
   nestedFieldHasValue,
 } from '../functions/nestedFieldUtils.js';
+import { getFieldErrorState } from '../functions/fieldErrorState.js';
+import { EntityField } from './EntityField.js';
 
 type NestedFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
@@ -29,7 +30,7 @@ const NestedField = <TFormValues extends FieldValues = FieldValues>({
   const required = Boolean(registerOptions?.required);
 
   return (
-    <div className="text-ink bg-(--bg-surface)">
+    <EntityField>
       <Controller
         control={control}
         name={field}
@@ -44,6 +45,7 @@ const NestedField = <TFormValues extends FieldValues = FieldValues>({
           },
         }}
         render={({ field: fieldController, fieldState }) => {
+          const { showError, message } = getFieldErrorState(fieldState);
           const markdownValue = markdownFromMetadataValues(
             fieldController.value as MetadataValue[]
           );
@@ -52,16 +54,10 @@ const NestedField = <TFormValues extends FieldValues = FieldValues>({
             <Textarea
               id={field}
               label={
-                <div
-                  className={`font-bold ${
-                    fieldState.invalid ? 'text-(--color-theme-control-text-error)' : ''
-                  }`}
-                >
-                  <Translate className="" context={context}>
-                    {label}
-                  </Translate>
+                <>
+                  <Translate context={context}>{label}</Translate>
                   {registerOptions?.required && '*'}
-                </div>
+                </>
               }
               value={markdownValue}
               onChange={event => {
@@ -71,14 +67,14 @@ const NestedField = <TFormValues extends FieldValues = FieldValues>({
               name={fieldController.name}
               ref={fieldController.ref}
               disabled={disabled}
-              hasErrors={fieldState.invalid}
-              errorMessage={getFieldErrorMessage(fieldState.error)}
+              hasErrors={showError}
+              errorMessage={message}
               rows={8}
             />
           );
         }}
       />
-    </div>
+    </EntityField>
   );
 };
 

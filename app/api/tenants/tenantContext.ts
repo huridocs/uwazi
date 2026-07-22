@@ -21,23 +21,23 @@ type Tenant = {
     deactivateTestJob?: boolean;
     paragraphExtraction?: boolean;
     fileCacheHeaders?: boolean;
-    v2CSVImport?: boolean;
-    dataViz?: boolean;
     themeCustomization?: boolean;
-    v2GetEntity?: boolean;
     newHeader?: boolean;
     v2Languages?: boolean;
     postgresThesauri?: boolean;
     postgresFiles?: boolean;
     postgresTemplates?: boolean;
+    postgresEntities?: boolean;
     aiAssistant?: boolean;
     aiAssistantServiceUrl?: string;
-    v2CreateUser?: boolean;
-    v2DeleteUser?: boolean;
-    v2GetUsers?: boolean;
+    v2UsersCreate?: boolean;
+    v2UsersDelete?: boolean;
+    v2UsersGet?: boolean;
+    v2UsersUpdate?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;
+  maintenance?: boolean;
 };
 
 class Tenants {
@@ -119,8 +119,17 @@ class Tenants {
   getTenantsForFeatureFlag(featureFlag: TenantFeatureFlags) {
     return Object.values(this.tenants).filter(tenant => tenant?.featureFlags?.[featureFlag]);
   }
+
+  async setMaintenance(tenantName: string, maintenance: boolean) {
+    if (this.model) {
+      await this.model.setMaintenance(tenantName, maintenance);
+    }
+    if (this.tenants[tenantName]) {
+      this.tenants[tenantName].maintenance = maintenance;
+    }
+  }
 }
 
 const tenants = new Tenants(config.defaultTenant);
-export { tenants };
+export { tenants, Tenants };
 export type { Tenant, TenantFeatureFlags };

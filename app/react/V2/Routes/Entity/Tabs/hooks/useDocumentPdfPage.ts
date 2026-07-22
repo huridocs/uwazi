@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { isClient } from '#app/utils/index.js';
 import type { PDFControls } from '#V2/Components/PDFViewer/index.js';
@@ -8,7 +8,7 @@ import { PAGE_PARAM, VIEW_MODE_PARAM } from '../../urlParams.js';
 type UseDocumentPdfPageParams = {
   mainDocument: FileType;
   mainPdfController: PDFControls | null | undefined;
-  setPdfController: (controls: PDFControls) => void;
+  setPdfController: (controls: PDFControls | null) => void;
 };
 
 function useDocumentPdfPage({
@@ -17,10 +17,36 @@ function useDocumentPdfPage({
   setPdfController,
 }: UseDocumentPdfPageParams) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [ready, setReady] = useState(false);
   const page = searchParams.get(PAGE_PARAM) || '1';
   const pageNumber = Number.parseInt(page || '1', 10);
   const initialPage = useRef<number>(pageNumber);
-  const isRaw = !isClient || searchParams.get(VIEW_MODE_PARAM) === 'true';
+  const documentIdRef = useRef(mainDocument._id);
+  const isRaw = !isClient || !ready || searchParams.get(VIEW_MODE_PARAM) === 'true';
+
+  useEffect(() => {
+    setReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (documentIdRef.current === mainDocument._id) {
+      return;
+    }
+    documentIdRef.current = mainDocument._id;
+    initialPage.current = 1;
+    setPdfController(null);
+    if (searchParams.get(PAGE_PARAM) === '1') {
+      return;
+    }
+    setSearchParams(
+      prev => {
+        const next = new URLSearchParams(prev);
+        next.set(PAGE_PARAM, '1');
+        return next;
+      },
+      { replace: true, preventScrollReset: true }
+    );
+  }, [mainDocument._id, searchParams, setPdfController, setSearchParams]);
 
   const getPageSearchParams = useCallback(
     (pageParam: number | string) => {

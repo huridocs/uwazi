@@ -11,22 +11,26 @@ import { Property } from '#api/core/domain/template/Property.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
+import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
 import { resetIndex, updateMapping } from '#api/search/entitiesIndex.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { PostgresTemplatesDAO } from './PostgresTemplatesDAO.js';
 import { PostgresTemplateMapper } from './PostgresTemplateMapper.js';
+import type { TemplateRow } from './PostgresTemplateMapper.js';
 
 type Deps = {
   tenantId: string;
   mongoDb: Db;
   transactionManager: TransactionManager;
   dao: PostgresTemplatesDAO;
+  pgTransactionManager: PostgresTransactionManager;
 };
 
-export class PostgresTemplatesDataSource extends PostgresDataSource implements TemplatesDataSource {
-  protected tableName = 'templates';
-
+export class PostgresTemplatesDataSource
+  extends PostgresDataSource<TemplateRow>
+  implements TemplatesDataSource
+{
   private dao: PostgresTemplatesDAO;
 
   private transactionManager: TransactionManager;
@@ -34,8 +38,9 @@ export class PostgresTemplatesDataSource extends PostgresDataSource implements T
   private templatesMutated = new Set<string>();
 
   constructor(deps: Deps) {
-    super({
+    super('templates', {
       tenantId: deps.tenantId,
+      pgTransactionManager: deps.pgTransactionManager,
       sync: { syncDb: deps.mongoDb, syncNamespace: 'templates' },
     });
 
@@ -239,23 +244,20 @@ export class PostgresTemplatesDataSource extends PostgresDataSource implements T
   }
 
   async completeProcessing(templateId: string) {
-    await this.table.query().where({ _id: templateId }).update({ processing: null });
+    await this.table.where({ _id: templateId }).update({ processing: null });
   }
 
   async update(template: Template): Promise<void> {
     const dbo = PostgresTemplateMapper.toDBO(template);
-    await this.table
-      .query()
-      .where({ _id: dbo._id })
-      .update({
-        name: dbo.name,
-        properties: JSON.stringify(dbo.properties),
-        commonProperties: JSON.stringify(dbo.commonProperties),
-        color: dbo.color ?? null,
-        default: dbo.default,
-        entityViewPage: dbo.entityViewPage ?? null,
-        processing: dbo.processing ? JSON.stringify(dbo.processing) : null,
-      });
+    await this.table.where({ _id: dbo._id }).update({
+      name: dbo.name,
+      properties: JSON.stringify(dbo.properties),
+      commonProperties: JSON.stringify(dbo.commonProperties),
+      color: dbo.color ?? null,
+      default: dbo.default,
+      entityViewPage: dbo.entityViewPage ?? null,
+      processing: dbo.processing ? JSON.stringify(dbo.processing) : null,
+    });
     this.templatesMutated.add(template.id);
   }
 
@@ -326,7 +328,7 @@ export class PostgresTemplatesDataSource extends PostgresDataSource implements T
   }
 
   async delete(templateId: string): Promise<void> {
-    await this.table.query().where({ _id: templateId }).delete();
+    await this.table.where({ _id: templateId }).delete();
   }
 
   async bulkUpdate(templates: Template[]): Promise<void> {
