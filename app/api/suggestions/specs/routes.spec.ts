@@ -114,19 +114,13 @@ describe('POST /api/suggestions/train', () => {
 
 describe('POST /api/suggestions/accept', () => {
   const expectEntityReindexed = (sharedId: string) => {
-    const { calls } = (search.indexEntities as jest.Mock).mock;
-    const hasExpectedCall = calls.some(
-      ([query]) =>
-        query &&
-        typeof query === 'object' &&
-        'sharedId' in query &&
-        query.sharedId &&
-        typeof query.sharedId === 'object' &&
-        '$in' in query.sharedId &&
-        Array.isArray(query.sharedId.$in) &&
-        query.sharedId.$in.includes(sharedId)
+    expect(search.indexEntities).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sharedId: expect.objectContaining({
+          $in: expect.arrayContaining([sharedId]),
+        }),
+      })
     );
-    expect(hasExpectedCall).toBe(true);
   };
 
   const suggestionsSuccess = async () =>
