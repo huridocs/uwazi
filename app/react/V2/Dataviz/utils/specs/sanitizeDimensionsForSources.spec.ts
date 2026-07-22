@@ -1,6 +1,7 @@
+import type { ClientTemplateSchema } from '#app/istore.js';
 import { sanitizeDimensionsForSources } from '../sanitizeDimensionsForSources.js';
 
-const sharedTemplates = [
+const sharedTemplates: ClientTemplateSchema[] = [
   {
     _id: 'tpl-a',
     name: 'A',
@@ -42,6 +43,11 @@ describe('sanitizeDimensionsForSources', () => {
   });
 
   it('should drop the secondary dimension when it is not shared across sources', () => {
+    const templates: ClientTemplateSchema[] = [
+      { _id: 'tpl-a', name: 'A', properties: [{ name: 'edad', label: 'Edad', type: 'numeric' }] },
+      { _id: 'tpl-b', name: 'B', properties: [{ name: 'edad', label: 'Edad', type: 'numeric' }] },
+    ];
+
     const dimensions = sanitizeDimensionsForSources(
       [
         { property: 'edad', propertyType: 'numeric' },
@@ -51,10 +57,7 @@ describe('sanitizeDimensionsForSources', () => {
         { templateId: 'tpl-a', alias: 'a' },
         { templateId: 'tpl-b', alias: 'b' },
       ],
-      [
-        { _id: 'tpl-a', name: 'A', properties: [{ name: 'edad', label: 'Edad', type: 'numeric' }] },
-        { _id: 'tpl-b', name: 'B', properties: [{ name: 'edad', label: 'Edad', type: 'numeric' }] },
-      ]
+      templates
     );
 
     expect(dimensions).toEqual([{ property: 'edad', propertyType: 'numeric' }]);

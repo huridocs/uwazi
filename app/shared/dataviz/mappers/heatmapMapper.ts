@@ -1,4 +1,5 @@
-import type { EChartsOption } from 'echarts';
+import type { CallbackDataParams } from 'echarts/types/dist/shared.js';
+import type { EChartsOption, VisualMapComponentOption } from 'echarts';
 import { isDatavizMissingBucketKey } from '#shared/dataviz/missingBucket.js';
 import type { DatavizChartConfig } from '#shared/types/datavizSchema.js';
 import type { DatavizAppearance } from '#shared/types/datavizSchema.js';
@@ -16,6 +17,14 @@ import {
   isCompareBreakdownChart,
   type SecondaryColumn,
 } from '#shared/dataviz/rendering/compareBreakdownChart.js';
+
+const formatHeatmapCellLabel = (params: CallbackDataParams): string => {
+  const raw = params.value;
+  if (Array.isArray(raw)) {
+    return String(raw[2] ?? '');
+  }
+  return String(raw ?? '');
+};
 
 type HeatmapMapperContext = ResolveColorContext;
 
@@ -111,7 +120,7 @@ const buildVisualMapStub = (
   minValue: number,
   maxValue: number,
   seriesIndex = 0
-): NonNullable<EChartsOption['visualMap']> => ({
+): VisualMapComponentOption => ({
   show: false,
   min: minValue,
   max: maxValue,
@@ -184,8 +193,8 @@ const mapCompareBreakdownHeatmap = (
   const grids: NonNullable<EChartsOption['grid']> = [];
   const xAxes: NonNullable<EChartsOption['xAxis']> = [];
   const yAxes: NonNullable<EChartsOption['yAxis']> = [];
-  const series: NonNullable<EChartsOption['series']> = [];
-  const visualMaps: NonNullable<EChartsOption['visualMap']> = [];
+  const seriesPanels: object[] = [];
+  const visualMaps: VisualMapComponentOption[] = [];
 
   panels.forEach((panel, index) => {
     const top = index * (panelHeight + panelGap);
@@ -228,7 +237,7 @@ const mapCompareBreakdownHeatmap = (
       axisLabel: { color: appearance.themeColors?.foreground, interval: 0 },
     });
     visualMaps.push(buildVisualMapStub(minValue, maxValue, index));
-    series.push({
+    seriesPanels.push({
       name: sourceLabel,
       type: 'heatmap',
       xAxisIndex: index,
@@ -240,8 +249,7 @@ const mapCompareBreakdownHeatmap = (
             show: true,
             opacity: 1,
             color: appearance.themeColors?.foreground ?? '#1a1a1a',
-            formatter: (params: { value?: [number, number, number] }) =>
-              String(params.value?.[2] ?? ''),
+            formatter: formatHeatmapCellLabel,
           }
         : undefined,
       emphasis: {
@@ -274,7 +282,7 @@ const mapCompareBreakdownHeatmap = (
     xAxis: xAxes,
     yAxis: yAxes,
     visualMap: visualMaps,
-    series,
+    series: seriesPanels as EChartsOption['series'],
   } as EChartsOption;
 };
 
@@ -362,8 +370,7 @@ export const mapHeatmapOption = (
               show: true,
               opacity: 1,
               color: appearance.themeColors?.foreground ?? '#1a1a1a',
-              formatter: (params: { value?: [number, number, number] }) =>
-                String(params.value?.[2] ?? ''),
+              formatter: formatHeatmapCellLabel,
             }
           : undefined,
         emphasis: {
