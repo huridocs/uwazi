@@ -101,7 +101,7 @@ const EntityOverlay = () => {
         >
           <div className="flex min-w-0 items-center gap-2">
             <div
-              className="h-2 w-2 shrink-0 rounded-[2px]"
+              className="h-2 w-2 shrink-0 rounded-xs"
               style={{ backgroundColor: templateColor }}
             />
             <span id={titleId} className="truncate text-sm font-bold text-ink">
