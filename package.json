@@ -176,7 +176,6 @@
     "echarts-for-react": "^3.0.6",
     "express": "4.22.2",
     "express-http-proxy": "^2.1.2",
-    "express-prom-bundle": "^8.0.0",
     "express-session": "^1.19.0",
     "fast-json-stable-stringify": "^2.1.0",
     "filesize": "10.1.6",

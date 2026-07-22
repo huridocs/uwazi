@@ -13373,19 +13373,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-prom-bundle@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "express-prom-bundle@npm:8.0.0"
-  dependencies:
-    "@types/express": "npm:^5.0.0"
-    on-finished: "npm:^2.3.0"
-    url-value-parser: "npm:^2.0.0"
-  peerDependencies:
-    prom-client: ">=15.0.0"
-  checksum: 10c0/778406611bbecbd2e407a55279fe45c19b04b11e91f4629c447a8fb14418f9c23d60294563ab0d40c6b6f4ec0f6387723846e1464b2f2984ce42d97287d32eec
-  languageName: node
-  linkType: hard
-
 "express-session@npm:^1.19.0":
   version: 1.19.0
   resolution: "express-session@npm:1.19.0"
@@ -19205,7 +19192,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"on-finished@npm:^2.3.0, on-finished@npm:^2.4.1, on-finished@npm:~2.4.1":
+"on-finished@npm:^2.4.1, on-finished@npm:~2.4.1":
   version: 2.4.1
   resolution: "on-finished@npm:2.4.1"
   dependencies:
@@ -24908,13 +24895,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"url-value-parser@npm:^2.0.0":
-  version: 2.1.0
-  resolution: "url-value-parser@npm:2.1.0"
-  checksum: 10c0/a0a8214cdeae2c99991e9959514d008e5c5fe4a96901640eff379b187b88502ba1cfaae44f2cd0d85b981970affc1fa20f14bce5e72dc600c2474318f19eac7b
-  languageName: node
-  linkType: hard
-
 "url@npm:^0.11.4":
   version: 0.11.4
   resolution: "url@npm:0.11.4"
@@ -25149,7 +25129,6 @@ __metadata:
     eslint-plugin-storybook: "npm:10.5.0"
     express: "npm:4.22.2"
     express-http-proxy: "npm:^2.1.2"
-    express-prom-bundle: "npm:^8.0.0"
     express-session: "npm:^1.19.0"
     fast-json-stable-stringify: "npm:^2.1.0"
     fetch-mock: "npm:^9.11.0"
