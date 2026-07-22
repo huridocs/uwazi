@@ -8,7 +8,6 @@ import { search } from '#api/search/index.js';
 import date from '#api/utils/date.js';
 import db from '#api/utils/testing_db.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
-import { User } from '#api/users.v2/model/User.js';
 import { UserRole } from '#shared/types/userSchema.js';
 
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
@@ -21,6 +20,7 @@ import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
 import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
 import entities from '../entities.js';
+import { saveEntityV2Adapter, toActorFromUser } from './saveEntityV2Adapter.js';
 
 import { EntityCreatedEvent } from '../events/EntityCreatedEvent.js';
 import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent.js';
@@ -32,31 +32,12 @@ import fixtures, {
   syncPropertiesEntityId,
   templateChangingNames,
   templateId,
-  templateWithEntityAsThesauri,
   unpublishedDocId,
 } from './fixtures.js';
 
-const toActorFromUser = user =>
-  user?._id
-    ? User.createFrom({
-        _id: user._id,
-        role: 'editor',
-        groups: [],
-        email: 'editor@test.com',
-        username: 'editorUser',
-      })
-    : undefined;
+const saveEntity = (doc, options = {}) => saveEntityV2Adapter(doc, options);
 
-const saveEntity = (doc, options = {}, ...rest) => {
-  const actor = toActorFromUser(options.user);
-  return testingEnvironment.runWithContext(
-    () => entities.save(doc, options, ...rest),
-    actor ? { actor } : undefined
-  );
-};
-
-const saveEntityWithEventing = (doc, options = {}, ...rest) => {
-  const actor = toActorFromUser(options.user);
+const saveEntityWithEventing = (doc, options = {}) => {
   const jobsDispatcher = new SyncDispatcherForTests({
     [ProcessRelationshipAfterEntityUpdatedListener.asJob().name]: async () =>
       new ProcessRelationshipAfterEntityUpdatedListener({}),
@@ -65,8 +46,7 @@ const saveEntityWithEventing = (doc, options = {}, ...rest) => {
         relationships,
       }),
   });
-  return testingEnvironment.runWithContext(() => entities.save(doc, options, ...rest), {
-    ...(actor ? { actor } : {}),
+  return saveEntityV2Adapter(doc, options, {
     factories: {
       eventEmitter: EventEmitterFactory.default,
       jobsDispatcher: () => jobsDispatcher,
@@ -1079,15 +1059,6 @@ describe('entities', () => {
       expect(docs[3].title).toBe('Batman finishes');
     });
   });
-  describe('removeValuesFromEntities', () => {
-    it('should remove values of properties passed on all entities having that property', async () => {
-      await entities.removeValuesFromEntities(['multiselect'], templateWithEntityAsThesauri);
-      const _entities = await entities.get({ template: templateWithEntityAsThesauri });
-      expect(_entities[0].metadata.multiselect).toEqual([]);
-      expect(search.indexEntities).toHaveBeenCalled();
-    });
-  });
-
   describe('validation', () => {
     it('should validate on save', async () => {
       const entity = {

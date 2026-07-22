@@ -11,6 +11,7 @@ import translations from '#api/i18n/translations.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { getFixturesFactory } from '../../utils/fixturesFactory.js';
+import { saveEntityV2Adapter } from './saveEntityV2Adapter.js';
 
 const load = async (data: DBFixture, index?: string) =>
   testingEnvironment.setUp(
@@ -70,7 +71,7 @@ describe('Denormalize relationships', () => {
 
         const beforeByLanguage = await entities.getAllLanguages(id);
         const doc = { _id: factory.id(`${id}-${language}`), sharedId: id, ...entityData, language };
-        await entities.save(doc, { language, user: { _id: db.id() } });
+        await saveEntityV2Adapter(doc, { language, user: { _id: db.id() } });
 
         const afterByLanguage = await entities.getAllLanguages(id);
         const template = await entities.getEntityTemplate(afterByLanguage[0], language);

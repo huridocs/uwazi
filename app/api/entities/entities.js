@@ -1,22 +1,14 @@
-/* eslint-disable max-lines */
 /* eslint-disable no-param-reassign,max-statements */
 
-import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
-import { files } from '#api/files/index.js';
 import relationships from '#api/relationships/relationships.js';
-import { search } from '#api/search/index.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
 import date from '#api/utils/date.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import ID from '#shared/uniqueID.js';
 
-import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { denormalizeMetadata } from './denormalize.js';
 import model from './entitiesModel.js';
-import { EntityDeletedEvent } from './events/EntityDeletedEvent.js';
-import { savePropertySelections } from './metadataExtraction/saveSelections.js';
-import { deleteRelatedNewRelationships } from './v2_support.js';
 import { validateEntity } from './validateEntity.js';
 
 async function getEntityTemplate(doc, language) {
@@ -94,52 +86,6 @@ function sanitize(doc, template) {
   return Object.assign(doc, { metadata });
 }
 
-const asStringId = value => {
-  if (value === null || value === undefined) {
-    return value;
-  }
-
-  return typeof value === 'string' ? value : value.toString();
-};
-
-const normalizeIcon = icon => {
-  if (!icon) {
-    return icon;
-  }
-
-  return {
-    ...icon,
-    _id: icon._id === null ? null : asStringId(icon._id),
-  };
-};
-
-const normalizeDocuments = (documents = []) =>
-  documents
-    .filter(document => document?.originalname)
-    .map(document => ({
-      ...document,
-      _id: asStringId(document._id),
-    }))
-    .filter(document => document._id);
-
-const normalizeAttachments = (attachments = []) =>
-  attachments
-    .filter(attachment => attachment?.originalname)
-    .map(attachment => ({
-      ...attachment,
-      _id: attachment._id ? asStringId(attachment._id) : undefined,
-    }));
-
-const normalizeLegacyEntityForFacade = entity => ({
-  ...entity,
-  _id: asStringId(entity._id),
-  user: asStringId(entity.user),
-  template: asStringId(entity.template),
-  icon: normalizeIcon(entity.icon),
-  documents: normalizeDocuments(entity.documents),
-  attachments: normalizeAttachments(entity.attachments),
-});
-
 const withDocuments = async (entities, documentsFullText) => {
   const sharedIds = entities.map(entity => entity.sharedId);
   const allFiles = await FilesDAOFactory.default().getByEntitySharedIds(sharedIds, {
@@ -184,77 +130,6 @@ export default {
   denormalizeMetadata,
   sanitize,
   getEntityTemplate,
-  async save(_doc, { user, language }) {
-    await validateEntity(_doc);
-    await savePropertySelections(_doc);
-    const doc = _doc;
-
-    if (!doc.sharedId) {
-      doc.user = user._id;
-      doc.creationDate = date.currentUTC();
-      doc.published = false;
-    }
-    let sharedId = doc.sharedId || ID();
-    const template = await this.getEntityTemplate(doc, language);
-    let docTemplate = template;
-    doc.editDate = date.currentUTC();
-
-    const isUpdate = Boolean(doc.sharedId);
-
-    if (isUpdate) {
-      const docLanguage = doc.language || language;
-      const [languageDocWithFiles] = await this.getUnrestrictedWithDocuments(
-        { sharedId: doc.sharedId, language: docLanguage },
-        '+permissions'
-      );
-      const [anyLanguageDocWithFiles] = await this.getUnrestrictedWithDocuments(
-        { sharedId: doc.sharedId },
-        '+permissions'
-      );
-      const currentDoc = languageDocWithFiles || anyLanguageDocWithFiles;
-      if (!currentDoc) {
-        throw new Error(`entity does not exists: ${doc.sharedId}`);
-      }
-
-      const sanitized = this.sanitize(doc, template);
-      const merged = {
-        ...currentDoc,
-        ...sanitized,
-        _id: sanitized._id || currentDoc._id,
-        sharedId: sanitized.sharedId || currentDoc.sharedId,
-        language: sanitized.language || currentDoc.language || docLanguage,
-        title: sanitized.title || currentDoc.title,
-      };
-      await EntityFacade.update(
-        normalizeLegacyEntityForFacade(merged),
-        merged.language || language
-      );
-    } else {
-      const defaultTemplate = await templates.getDefaultTemplate();
-
-      if (!doc.template) {
-        doc.template = defaultTemplate?._id;
-        docTemplate = defaultTemplate;
-      }
-      if (doc._id) {
-        delete doc._id;
-      }
-      doc.metadata = doc.metadata || {};
-      const createdEntity = await EntityFacade.create(
-        normalizeLegacyEntityForFacade(this.sanitize(doc, docTemplate)),
-        language
-      );
-      sharedId = createdEntity.sharedId;
-    }
-
-    const [entity] = await this.getUnrestrictedWithDocuments(
-      { sharedId, language },
-      '+permissions'
-    );
-
-    return entity;
-  },
-
   async denormalize(_doc, { user, language }) {
     await validateEntity(_doc);
     const doc = _doc;
@@ -350,109 +225,6 @@ export default {
     const queryLimit = limit ? { limit } : {};
     const entities = await model.get(query, ['title', 'icon', 'file', 'sharedId'], queryLimit);
     return entities;
-  },
-
-  /** Handle property deletion and renames. */
-  async deleteIndexes(sharedIds) {
-    const deleteIndexBatch = (offset, totalRows) => {
-      const limit = 200;
-      if (offset >= totalRows) {
-        return Promise.resolve();
-      }
-      return this.get({ sharedId: { $in: sharedIds } }, null, { skip: offset, limit })
-        .then(entities => search.bulkDelete(entities))
-        .then(() => deleteIndexBatch(offset + limit, totalRows));
-    };
-
-    return this.count({ sharedId: { $in: sharedIds } }).then(totalRows =>
-      deleteIndexBatch(0, totalRows)
-    );
-  },
-
-  /**
-   * @deprecated
-   * This method is deprecated and should not be used anymore.
-   */
-  async delete(sharedId, deleteIndex = true) {
-    const docs = await this.get({ sharedId });
-    if (!docs.length) {
-      return docs;
-    }
-    if (deleteIndex) {
-      await Promise.all(docs.map(doc => search.delete(doc)));
-    }
-    try {
-      await model.delete({ sharedId });
-    } catch (e) {
-      await search.indexEntities({ sharedId }, '+fullText');
-      throw e;
-    }
-    await Promise.all([
-      relationships.delete({ entity: sharedId }, null, false),
-      files.delete({ entity: sharedId }),
-      this.deleteRelatedEntityFromMetadata(docs[0]),
-    ]);
-
-    await applicationEventsBus.emit(new EntityDeletedEvent({ entity: docs }));
-
-    await deleteRelatedNewRelationships(sharedId);
-
-    return docs;
-  },
-
-  async removeValuesFromEntities(properties, template) {
-    const query = { template, $or: [] };
-    const changes = {};
-
-    properties.forEach(prop => {
-      const propQuery = {};
-      propQuery[`metadata.${prop}`] = { $exists: true };
-      query.$or.push(propQuery);
-      changes[`metadata.${prop}`] = [];
-    });
-
-    const entitiesToReindex = await this.get(query, { _id: 1 });
-    await model.updateMany(query, { $set: changes });
-    return search.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } });
-  },
-
-  /** Propagate the deletion metadata.value id to all entity metadata. */
-  async deleteFromMetadata(deletedId, propertyContent, propTypes) {
-    const contentOrEmpty = [propertyContent, ''];
-    const allTemplates = await templates.getByContentsOrUnrestrictedRelationship(contentOrEmpty);
-    const allProperties = allTemplates.reduce((m, t) => m.concat(t.properties), []);
-    const properties = allProperties.filter(p => propTypes.includes(p.type));
-    const query = { $or: [] };
-    const changes = {};
-    const contentMatches = p =>
-      (p.content && p.content.toString() === propertyContent.toString()) ||
-      p.content === '' ||
-      (p.type === propertyTypes.relationship && typeof p.content === 'undefined');
-    query.$or = properties
-      .filter(p => propertyContent && contentMatches(p))
-      .map(property => {
-        const p = {};
-        p[`metadata.${property.name}.value`] = deletedId;
-        changes[`metadata.${property.name}`] = { value: deletedId };
-        return p;
-      });
-    if (!query.$or.length) {
-      return;
-    }
-    const entities = await this.get(query, { _id: 1 });
-    await model.updateMany(query, { $pull: changes });
-    if (entities.length > 0) {
-      await search.indexEntities({ _id: { $in: entities.map(e => e._id.toString()) } }, null, 1000);
-    }
-  },
-
-  /** Propagate the deletion of a related entity to all entity metadata. */
-  async deleteRelatedEntityFromMetadata(deletedEntity) {
-    await this.deleteFromMetadata(deletedEntity.sharedId, deletedEntity.template, [
-      propertyTypes.select,
-      propertyTypes.multiselect,
-      propertyTypes.relationship,
-    ]);
   },
 
   count: model.count.bind(model),
