@@ -19,8 +19,12 @@ const httpRequestDuration = new Histogram({
   registers: [registry],
   labelNames: ['method', 'route', 'env'],
 
-  //        50ms 100ms 250ms 500ms 750ms 1s 2.5s 5s 10s
-  buckets: [0.05, 0.1, 0.25, 0.5, 0.75, 1, 2.5, 5, 10],
+  // 10ms: fast API endpoints (version, health)
+  // 50ms-250ms: typical API calls, small queries
+  // 500ms-1s: SSR rendering, heavier queries
+  // 2.5s-10s: bulk operations, aggregations
+  // 30s-60s: exports, large file operations
+  buckets: [0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60],
 });
 
 const collectNodeProcessMetrics = () => collectDefaultMetrics({ register: registry });

@@ -13,7 +13,7 @@ import { S3Error } from '#api/files/S3Storage.js';
 import { legacyLogger } from '#api/log/index.js';
 import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
 import { IXValidationError } from '#api/services/informationextraction/IXValidationError.js';
-import { appContext } from '#api/utils/AppContext.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { createError } from '#api/utils/index.js';
 import { FileNotFound as FileNotFoundV2 } from '../core/domain/files/errors.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
@@ -199,7 +199,8 @@ const sendLog = (data, error, errorOptions) => {
 
 function setRequestId(result) {
   try {
-    return { ...result, requestId: appContext.get('requestId') };
+    const correlationId = ExecutionContext.getStore() ? ExecutionContext.correlationId : undefined;
+    return { ...result, requestId: correlationId };
   } catch (err) {
     return { ...result, tenantError: err };
   }

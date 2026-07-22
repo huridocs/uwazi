@@ -28,6 +28,7 @@ type Context = {
   instances?: Partial<Dependencies>;
   tenant?: Tenant;
   actor?: User;
+  correlationId?: string;
 };
 
 class ExecutionContext extends AsyncLocalStorage<Context> {
@@ -104,6 +105,14 @@ class ExecutionContext extends AsyncLocalStorage<Context> {
       throw new Error('ExecutionContext is not initialized');
     }
     store.actor = user;
+  }
+
+  get correlationId(): string {
+    const correlationId = this.getStore()?.correlationId;
+
+    if (!correlationId) throw new Error('Correlation Id is not set');
+
+    return correlationId;
   }
 
   attachContext<T extends Object>(anInstance: T, method: keyof T, deps: Context): void {

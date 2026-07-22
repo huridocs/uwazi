@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { NextFunction, Request, Response } from 'express';
 import { tenants } from '#api/tenants/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
@@ -17,6 +18,7 @@ const dependenciesContextMiddleware = (
 ) => {
   const tenant = tenants.current();
   const actor = User.createFrom(request.user);
+  const correlationId = randomUUID();
 
   response.on('finish', () => {
     ExecutionContext.telemetryCollector.add({
@@ -35,6 +37,7 @@ const dependenciesContextMiddleware = (
     {
       tenant,
       actor,
+      correlationId,
       factories: {
         transactionManager: TransactionManagerFactory.default,
         postgresTransactionManager: PostgresTransactionManagerFactory.default,

@@ -16,7 +16,6 @@ import { close } from '@sentry/node-core/light';
 import { registerEventListeners } from '#api/eventListeners.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
-import { requestIdMiddleware } from '#api/utils/requestIdMiddleware.js';
 import { Redis } from '#api/infrastructure/Redis.js';
 import { maskMongoPassword } from '#api/utils/maskMongoPassword.js';
 import { elasticClient } from '#api/search/elastic.js';
@@ -131,7 +130,6 @@ app.use(appContextMiddleware);
 // this middleware should go just before any other that accesses to db
 app.use(multitenantMiddleware);
 app.use(maintenanceMiddleware);
-app.use(requestIdMiddleware);
 
 console.info('==> Connecting to', maskMongoPassword(config.DBHOST));
 

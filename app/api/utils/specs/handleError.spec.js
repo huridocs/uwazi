@@ -8,7 +8,7 @@ import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 import { S3Error } from '#api/files/S3Storage.js';
 import { IXValidationError } from '#api/services/informationextraction/IXValidationError.js';
 import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
-import { appContext } from '#api/utils/AppContext.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DomainError } from '#api/core/domain/error/DomainError.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { handleError, prettifyError } from '../handleError.js';
@@ -24,7 +24,8 @@ describe('handleError', () => {
     jest.resetAllMocks();
     jest.spyOn(legacyLogger, 'error').mockImplementation(() => {});
     jest.spyOn(legacyLogger, 'debug').mockImplementation(() => {});
-    jest.spyOn(appContext, 'get').mockReturnValue(contextRequestId);
+    jest.spyOn(ExecutionContext, 'getStore').mockReturnValue({});
+    jest.spyOn(ExecutionContext, 'correlationId', 'get').mockReturnValue(contextRequestId);
   });
 
   describe('errors by type', () => {
@@ -360,15 +361,15 @@ original error: {
 });
 
 describe('handleError without context', () => {
-  it('should append a tenant error message to the original error', () => {
+  it('should degrade gracefully with no requestId and no tenant error', () => {
     jest.restoreAllMocks();
     jest.spyOn(legacyLogger, 'error').mockImplementation(() => {});
     const error = handleError(new Error('original error message'));
     expect(error.prettyMessage).toEqual('A server side error has occurred');
+    expect(error.requestId).toBeUndefined();
+    expect(error.tenantError).toBeUndefined();
     expect(legacyLogger.error).toHaveBeenCalledWith(
-      expect.stringMatching(
-        /\nError: original error message[\w\W]*Accessing nonexistent async context/
-      ),
+      expect.stringMatching(/^\nError: original error message/),
       {}
     );
   });

@@ -16,6 +16,7 @@ import { ExecutionContext, ExecutionContextDeps } from '#api/core/libs/Execution
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
 import {
@@ -241,6 +242,7 @@ const testingEnvironment = {
         ),
       idGenerator: IdGeneratorFactory.default,
       logger: LoggerFactory.default,
+      telemetryCollector: () => new TelemetryCollector('test'),
     };
 
     const context: ExecutionContextDeps = {

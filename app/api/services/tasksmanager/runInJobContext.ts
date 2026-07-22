@@ -5,6 +5,7 @@ import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGenerat
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
+import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 
 const runInJobContext = async (tenantName: string, fn: () => Promise<void>): Promise<void> => {
@@ -20,6 +21,7 @@ const runInJobContext = async (tenantName: string, fn: () => Promise<void>): Pro
           eventEmitter: () => EventEmitterFactory.default(),
           idGenerator: IdGeneratorFactory.default,
           logger: LoggerFactory.default,
+          telemetryCollector: () => new TelemetryCollector('queue_job'),
         },
       },
       fn
