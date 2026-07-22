@@ -10,7 +10,6 @@ import { entitiesRoutes } from '..';
 describe('entities countByTemplate V2 routes', () => {
   const factory = getFixturesFactory();
   const createTemplate = factory.template;
-  const createEntity = factory.entity;
 
   const app = setUpApp(entitiesRoutes, (req, _res, next) => {
     req.user = {
@@ -39,15 +38,29 @@ describe('entities countByTemplate V2 routes', () => {
         ],
         templates: [template1, template2],
         entities: [
-          createEntity('Entity 1 EN', 'Template 1', {}, { language: 'en' }),
-          createEntity('Entity 2 EN', 'Template 1', {}, { language: 'en' }),
-          createEntity('Entity 3 EN', 'Template 1', {}, { language: 'en' }),
-          createEntity('Entity 4 EN', 'Template 2', {}, { language: 'en' }),
-          createEntity('Entity 5 EN', 'Template 2', {}, { language: 'en' }),
-          createEntity('Entity 1 ES', 'Template 1', {}, { language: 'es' }),
-          createEntity('Entity 2 ES', 'Template 1', {}, { language: 'es' }),
-          createEntity('Entity 3 ES', 'Template 2', {}, { language: 'es' }),
-          createEntity('Entity 1 FR', 'Template 1', {}, { language: 'fr' }),
+          ...factory.entityInMultipleLanguages(
+            ['en', 'es', 'fr'],
+            'entity_1',
+            'Template 1',
+            {},
+            {}
+          ),
+          ...factory.entityInMultipleLanguages(
+            ['en', 'es', 'fr'],
+            'entity_2',
+            'Template 1',
+            {},
+            {}
+          ),
+          ...factory.entityInMultipleLanguages(
+            ['en', 'es', 'fr'],
+            'entity_3',
+            'Template 1',
+            {},
+            {}
+          ),
+          ...factory.entityInMultipleLanguages(['en', 'es'], 'entity_4', 'Template 2', {}, {}),
+          ...factory.entityInMultipleLanguages(['en', 'es'], 'entity_5', 'Template 2', {}, {}),
         ],
       },
       'index_entities_v2_count_by_template'
@@ -59,7 +72,7 @@ describe('entities countByTemplate V2 routes', () => {
   });
 
   describe('GET /api/v2/entities/count_by_template', () => {
-    it('should return count of entities for a specific template in the request language', async () => {
+    it('should return the unique entity count for a template across all languages', async () => {
       const response = await request(app)
         .get('/api/v2/entities/count_by_template')
         .query({ templateId: template1._id.toString() })
@@ -69,54 +82,14 @@ describe('entities countByTemplate V2 routes', () => {
       expect(response.body).toBe(3);
     });
 
-    it('should return count of entities for a specific template in Spanish language', async () => {
-      const response = await request(app)
-        .get('/api/v2/entities/count_by_template')
-        .query({ templateId: template1._id.toString() })
-        .set('Accept-Language', 'es');
-
-      expect(response.status).toBe(200);
-      expect(response.body).toBe(2);
-    });
-
-    it('should return count of entities for a specific template in French language', async () => {
-      const response = await request(app)
-        .get('/api/v2/entities/count_by_template')
-        .query({ templateId: template1._id.toString() })
-        .set('Accept-Language', 'fr');
-
-      expect(response.status).toBe(200);
-      expect(response.body).toBe(1);
-    });
-
-    it('should return count of entities for template2 in English', async () => {
-      const response = await request(app)
-        .get('/api/v2/entities/count_by_template')
-        .query({ templateId: template2._id.toString() })
-        .set('Accept-Language', 'en');
-
-      expect(response.status).toBe(200);
-      expect(response.body).toBe(2);
-    });
-
-    it('should return count of entities for template2 in Spanish', async () => {
+    it('should return the unique entity count for template2 across all languages', async () => {
       const response = await request(app)
         .get('/api/v2/entities/count_by_template')
         .query({ templateId: template2._id.toString() })
         .set('Accept-Language', 'es');
 
       expect(response.status).toBe(200);
-      expect(response.body).toBe(1);
-    });
-
-    it('should return 0 for template with no entities in the specified language', async () => {
-      const response = await request(app)
-        .get('/api/v2/entities/count_by_template')
-        .query({ templateId: template2._id.toString() })
-        .set('Accept-Language', 'fr');
-
-      expect(response.status).toBe(200);
-      expect(response.body).toBe(0);
+      expect(response.body).toBe(2);
     });
 
     it('should return 0 for non-existent template', async () => {
@@ -152,7 +125,7 @@ describe('entities countByTemplate V2 routes', () => {
       );
     });
 
-    it('should use default language when Accept-Language header is not provided', async () => {
+    it('should not depend on Accept-Language header', async () => {
       const response = await request(app)
         .get('/api/v2/entities/count_by_template')
         .query({ templateId: template1._id.toString() });

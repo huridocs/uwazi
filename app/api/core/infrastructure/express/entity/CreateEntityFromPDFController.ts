@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { InputFile } from '../../files/InputFile.js';
 import { CreateEntityFromPDFUseCaseFactory } from '../../factories/CreateEntityFromPDFUseCaseFactory.js';
-import { MongoEntitiesDAOFactory } from '../../factories/MongoEntitiesDAOFactory.js';
+import { EntitiesDAOFactory } from '../../factories/EntitiesDAOFactory.js';
 import { CreateEntityFromPDFResponse } from '#shared/contracts/Entities.js';
 import { EntityWithFilesSchema } from '#shared/types/entityType.js';
 
@@ -29,7 +29,7 @@ class CreateEntityFromPDFController extends AbstractController<Request> {
 
     const output = await useCase.execute({ templateId: body.templateId, inputFile: body.file });
 
-    const entitiesDAO = MongoEntitiesDAOFactory.default();
+    const entitiesDAO = EntitiesDAOFactory.default();
 
     const [entityWithFiles] = await entitiesDAO.getWithFiles({
       sharedId: output.sharedId,

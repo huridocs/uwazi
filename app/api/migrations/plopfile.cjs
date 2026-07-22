@@ -39,7 +39,7 @@ module.exports = (plop) => {
     }
 
     const pgMigrationsDir = path.join(__dirname, '../core/infrastructure/postgresql/schema_migrations');
-    currentSchemaDelta = getLatestDelta(pgMigrationsDir) + 1;
+    currentSchemaDelta = String(getLatestDelta(pgMigrationsDir) + 1).padStart(3, '0');
     return currentSchemaDelta;
   });
 
