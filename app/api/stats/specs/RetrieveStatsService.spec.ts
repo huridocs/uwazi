@@ -6,6 +6,9 @@ import testingDB from '#api/utils/testing_db.js';
 import { elastic } from '#api/search/elastic.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { MongoEntitiesDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntitiesDAO.js';
+import { User } from '#api/users.v2/model/User.js';
 
 type TestConfig = {
   name: string;
@@ -48,9 +51,14 @@ describe('RetrieveStats', () => {
     });
 
     const createSut = () =>
-      testingEnvironment.runWithContext(
-        () => new RetrieveStatsService(db, FilesDAOFactory.default())
-      );
+      testingEnvironment.runWithContext(() => {
+        const entitiesDAO = new MongoEntitiesDAO(
+          db,
+          TransactionManagerFactory.default(),
+          new User('admin', 'admin', [])
+        );
+        return new RetrieveStatsService(db, FilesDAOFactory.default(), entitiesDAO);
+      });
 
     it('calculates the aggregated stats when collection has files', async () => {
       const stats = await createSut().execute('en');

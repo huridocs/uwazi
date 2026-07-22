@@ -3,14 +3,14 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { V1WebSocketsWrapper } from '../services/V1WebSocketsWrapper.js';
 import { DeleteLanguageEntitiesJob } from '../jobs/DeleteLanguageEntitiesJob.js';
-import { MongoEntitiesDAOFactory } from './MongoEntitiesDAOFactory.js';
+import { EntitiesDAOFactory } from './EntitiesDAOFactory.js';
 
 class DeleteLanguageEntitiesJobFactory {
   static default(
     overrides?: Partial<ConstructorParameters<typeof DeleteLanguageEntitiesJob>[0]>
   ): DeleteLanguageEntitiesJob {
     const transactionManager = TransactionManagerFactory.default() as MongoTransactionManager;
-    const entityDAO = MongoEntitiesDAOFactory.default({
+    const entityDAO = EntitiesDAOFactory.default({
       transactionManager,
       user: User.createFrom(null),
     });
