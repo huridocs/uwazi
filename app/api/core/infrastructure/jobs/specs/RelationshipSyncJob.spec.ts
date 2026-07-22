@@ -65,12 +65,14 @@ describe('RelationshipSyncJob', () => {
     const { sut, saveEntityBasedReferencesSpy } = createSut();
     const templateId = factory.id('Document');
 
-    await sut.handleDispatch(async () => Promise.resolve(), {
-      sharedId: 'entity_1',
-      targetLanguage: 'en',
-      templateId: templateId.toHexString(),
-      tenantName: tenants.current().name,
-      userId: permissionsContext.getUserInContext()!._id?.toString()!,
+    await testingEnvironment.runWithContext(async () => {
+      await sut.handleDispatch(async () => Promise.resolve(), {
+        sharedId: 'entity_1',
+        targetLanguage: 'en',
+        templateId: templateId.toHexString(),
+        tenantName: tenants.current().name,
+        userId: permissionsContext.getUserInContext()!._id?.toString()!,
+      });
     });
 
     const template = await testingEnvironment.db
@@ -89,13 +91,15 @@ describe('RelationshipSyncJob', () => {
     const templateId = factory.id('Document');
 
     await expect(
-      sut.handleDispatch(async () => Promise.resolve(), {
-        sharedId: 'non_existent_entity',
-        targetLanguage: 'en',
-        templateId: templateId.toHexString(),
-        tenantName: tenants.current().name,
-        userId: permissionsContext.getUserInContext()!._id?.toString()!,
-      })
+      testingEnvironment.runWithContext(async () =>
+        sut.handleDispatch(async () => Promise.resolve(), {
+          sharedId: 'non_existent_entity',
+          targetLanguage: 'en',
+          templateId: templateId.toHexString(),
+          tenantName: tenants.current().name,
+          userId: permissionsContext.getUserInContext()!._id?.toString()!,
+        })
+      )
     ).rejects.toThrow(new NonRetryableJobError(new EntityNotFoundError('non_existent_entity')));
 
     expect(saveEntityBasedReferencesSpy).not.toHaveBeenCalled();
