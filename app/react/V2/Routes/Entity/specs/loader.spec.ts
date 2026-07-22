@@ -4,7 +4,6 @@
 import type { LoaderFunctionArgs } from 'react-router';
 import { ApiError } from '#shared/apiClient/index.js';
 import * as files from '#V2/api/files/index.js';
-import * as search from '#V2/api/search/index.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { getStore } from '#shared/atomStore/index.js';
@@ -13,7 +12,6 @@ import { createEntityLoader } from '../loader.js';
 import { entityLoaderCache } from '../EntityLoaderCache.js';
 
 jest.mock('#V2/api/files/index.js');
-jest.mock('#V2/api/search/index.js');
 
 describe('Entity loader with cache integration', () => {
   let mockEntity: Partial<Entity>;
@@ -36,7 +34,7 @@ describe('Entity loader with cache integration', () => {
     };
 
     getBySharedId = jest.fn().mockResolvedValue([[mockEntity as Entity]]);
-    jest.spyOn(files, 'getPagePlaintext').mockResolvedValue('plaintext content');
+    jest.spyOn(files, 'getDocumentPlaintext').mockResolvedValue('plaintext content');
     getStore().set(settingsAtom, {
       languages: [
         { key: 'en', label: 'English', default: true },
@@ -88,67 +86,32 @@ describe('Entity loader with cache integration', () => {
   });
 
   describe('Plaintext loading', () => {
-    it('should fetch plaintext when not cached', async () => {
-      await loadEntity('http://localhost/entity/shared1?page=1&raw=true');
+    it('should fetch full document plaintext when not cached', async () => {
+      await loadEntity('http://localhost/entity/shared1#raw=true');
 
-      expect(files.getPagePlaintext).toHaveBeenCalledWith('doc1', 1, undefined);
+      expect(files.getDocumentPlaintext).toHaveBeenCalledWith('doc1', undefined);
     });
 
     it('should use cached plaintext and not fetch again', async () => {
-      await loadEntity('http://localhost/entity/shared1?page=1&raw=true');
-      await loadEntity('http://localhost/entity/shared1?page=1&raw=true');
+      await loadEntity('http://localhost/entity/shared1#raw=true');
+      await loadEntity('http://localhost/entity/shared1#raw=true');
 
-      expect(files.getPagePlaintext).toHaveBeenCalledTimes(1);
+      expect(files.getDocumentPlaintext).toHaveBeenCalledTimes(1);
     });
 
-    it('should use cached plaintext and not fetch again after switching pages', async () => {
-      await loadEntity('http://localhost/entity/shared1?page=1&raw=true');
-      await loadEntity('http://localhost/entity/shared1?page=2&raw=true');
-      await loadEntity('http://localhost/entity/shared1?page=1&raw=true');
+    it('should reuse full-document cache across repeated loads', async () => {
+      await loadEntity('http://localhost/entity/shared1#raw=true');
+      await loadEntity('http://localhost/entity/shared1#raw=true');
+      await loadEntity('http://localhost/entity/shared1#raw=true');
 
-      expect(files.getPagePlaintext).toHaveBeenCalledTimes(2);
+      expect(files.getDocumentPlaintext).toHaveBeenCalledTimes(1);
     });
 
     it('should not fetch if the view mode is not set for plaintext', async () => {
-      await loadEntity('http://localhost/entity/shared1?page=1');
-      await loadEntity('http://localhost/entity/shared1?page=2');
-      await loadEntity('http://localhost/entity/shared1?page=1');
+      await loadEntity('http://localhost/entity/shared1');
+      await loadEntity('http://localhost/entity/shared1');
 
-      expect(files.getPagePlaintext).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('Search results loading', () => {
-    beforeEach(() => {
-      jest.spyOn(search, 'snippets').mockResolvedValue('data' as any);
-    });
-
-    it('should fetch search results when not cached', async () => {
-      await loadEntity('http://localhost/entity/shared1?searchTerm=test');
-
-      expect(search.snippets).toHaveBeenCalledWith(
-        {
-          sharedId: 'shared1',
-          limit: 0,
-          searchString: 'test',
-        },
-        undefined
-      );
-    });
-
-    it('should use cached search results and not fetch again', async () => {
-      await loadEntity('http://localhost/entity/shared1?searchTerm=query');
-      await loadEntity('http://localhost/entity/shared1?searchTerm=query');
-
-      expect(search.snippets).toHaveBeenCalledTimes(1);
-    });
-
-    it('should fetch if the search changes and cache repeated searches', async () => {
-      await loadEntity('http://localhost/entity/shared1?searchTerm=query1');
-      await loadEntity('http://localhost/entity/shared1?searchTerm=query2');
-      await loadEntity('http://localhost/entity/shared1?searchTerm=query1');
-
-      expect(search.snippets).toHaveBeenCalledTimes(2);
+      expect(files.getDocumentPlaintext).not.toHaveBeenCalled();
     });
   });
 

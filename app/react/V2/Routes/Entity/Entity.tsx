@@ -7,12 +7,12 @@ import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
 import { BlockDirtyNavigation, useTabGroup } from '#V2/Components/UI/index.js';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import { localeAtom } from '#V2/atoms/index.js';
-import { SnippetsSearchResponse } from '#V2/api/types.js';
 import {
   SearchHintsModal,
   EntityScopedProvider,
   EntityFilesProvider,
   EntityMainPaneHeader,
+  EntitySeo,
   FilesDeleteConfirmationModal,
   AddFileModal,
   useEntityFiles,
@@ -33,10 +33,6 @@ import {
 import { useEntityViewTabs } from './Tabs/hooks/useEntityViewTabs.js';
 import { LoaderResponse } from './types.js';
 
-type EntityViewProps = {
-  searchResults?: SnippetsSearchResponse;
-};
-
 const EntityCreateRelationshipModal = () => {
   const { mainDocument } = useEntityLanguage();
   return <CreateRelationshipModal mainDocument={mainDocument} />;
@@ -47,7 +43,7 @@ const EntityFilesFromEntity = ({ children }: { children: React.ReactNode }) => {
   return <EntityFilesProvider entity={entity}>{children}</EntityFilesProvider>;
 };
 
-const EntityView = ({ searchResults }: EntityViewProps) => {
+const EntityView = () => {
   const entity = useEntityScopedEntity();
   const { mainDocument, pagePlaintext, isRtl } = useEntityLanguage();
   useResetRelationshipsOnDocumentChange();
@@ -66,7 +62,6 @@ const EntityView = ({ searchResults }: EntityViewProps) => {
     entity,
     hasMainDocument,
     mainDocumentId: mainDocument?._id,
-    searchResults,
     filesSideTabs,
   });
   const { activeTabId: atomMainTabId } = useTabGroup('entity-main');
@@ -80,6 +75,7 @@ const EntityView = ({ searchResults }: EntityViewProps) => {
 
   return (
     <>
+      <EntitySeo entity={entity} />
       <FilesDeleteConfirmationModal />
       <AddFileModal />
       <BlockDirtyNavigation when={isEditing && (isDirty || isSaving)} onDiscard={cancelEdit} />
@@ -141,7 +137,6 @@ const Entity = () => {
   const entity = loaderData?.entity;
   const mainDocument = loaderData?.mainDocument;
   const pagePlaintext = loaderData?.pagePlaintext;
-  const searchResults = loaderData?.searchResults;
   const language = entity?.language || locale;
 
   if (!entity) {
@@ -158,7 +153,7 @@ const Entity = () => {
         pagePlaintext={pagePlaintext}
       >
         <EntityFilesFromEntity>
-          <EntityView searchResults={searchResults} />
+          <EntityView />
         </EntityFilesFromEntity>
         <SearchHintsModal />
         <EntityCreateRelationshipModal />

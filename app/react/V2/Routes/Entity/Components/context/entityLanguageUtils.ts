@@ -3,7 +3,7 @@ import type { LanguagesListSchema } from '#shared/types/commonTypes.js';
 import { availableLanguages } from '#shared/language/index.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import type { Entity, FileType } from '#V2/api/entities/types.js';
-import { getPagePlaintext } from '#V2/api/files/index.js';
+import { getDocumentPlaintext } from '#V2/api/files/index.js';
 import { getMainDocument } from '#V2/formatters/index.js';
 import { httpServices } from '#V2/services/http/index.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
@@ -20,7 +20,6 @@ const resolveRtl = (languageKey: string, languages: LanguagesListSchema): boolea
 
 type PlaintextQuery = {
   isRaw: boolean;
-  page: number;
 };
 
 const seedLoaderCache = (entity: Entity, language: string, mainDocument?: FileType) => {
@@ -74,17 +73,17 @@ const resolvePlaintext = async (document: FileType | undefined, query: Plaintext
     return undefined;
   }
 
-  const cached = entityLoaderCache.getPlaintext(document._id, query.page);
+  const cached = entityLoaderCache.getPlaintext(document._id);
   if (cached !== undefined) {
     return cached;
   }
 
-  const response = await getPagePlaintext(document._id, query.page);
+  const response = await getDocumentPlaintext(document._id);
   if (response instanceof FetchResponseError) {
     return undefined;
   }
 
-  entityLoaderCache.setPlaintext(document._id, query.page, response);
+  entityLoaderCache.setPlaintext(document._id, response);
   return response;
 };
 

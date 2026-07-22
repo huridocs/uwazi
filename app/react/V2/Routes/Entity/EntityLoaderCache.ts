@@ -145,24 +145,22 @@ class EntityLoaderCache {
     }
   }
 
-  getPlaintext(documentId: string, page: number): string | undefined {
+  getPlaintext(documentId: string): string | undefined {
     if (!isClient) {
       return undefined;
     }
 
-    const key = `${documentId}:${page}`;
-    return getCachedItem(this.plaintextCache, key, this.ttls.plaintext);
+    return getCachedItem(this.plaintextCache, documentId, this.ttls.plaintext);
   }
 
-  setPlaintext(documentId: string, page: number, text: string): void {
+  setPlaintext(documentId: string, text: string): void {
     if (isClient) {
-      const key = `${documentId}:${page}`;
-      setCachedItem(this.plaintextCache, key, text, this.limits.plaintext);
+      setCachedItem(this.plaintextCache, documentId, text, this.limits.plaintext);
     }
   }
 
   invalidatePlaintext(documentId: string): void {
-    invalidateByPrefix(this.plaintextCache, `${documentId}:`);
+    this.plaintextCache.delete(documentId);
   }
 
   getSearchResults(

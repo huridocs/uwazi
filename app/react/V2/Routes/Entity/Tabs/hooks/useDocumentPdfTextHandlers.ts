@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useSearchParams } from 'react-router';
 import { useAtomValue } from 'jotai';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
 import { settingsAtom, userAtom } from '#V2/atoms/index.js';
@@ -10,12 +9,13 @@ import {
   useRelationshipsActions,
   useTocActions,
 } from '#V2/Routes/Entity/Components/context/index.js';
+import { useUpdateEntityUrl } from '../../entityUrlState.js';
 import { SIDE_TAB_PARAM } from '../../urlParams.js';
 import { SIDE_TAB } from '../tabIds.js';
 import { useEntityTabNavigation } from './useEntityTabNavigation.js';
 
 function useDocumentPdfTextHandlers() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const updateEntityUrl = useUpdateEntityUrl();
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
   const user = useAtomValue(userAtom);
   const [userIsAdminOrEditor, setUserIsAdminOrEditor] = useState(false);
@@ -65,11 +65,13 @@ function useDocumentPdfTextHandlers() {
       const tocEntry = convertTextSelectionToTocEntry(selection);
       addEntry(tocEntry);
       selectSideTab(SIDE_TAB.TOC);
-      const next = new URLSearchParams(searchParams.toString());
-      next.set(SIDE_TAB_PARAM, SIDE_TAB.TOC);
-      setSearchParams(next, { replace: true });
+      updateEntityUrl({
+        hash: next => {
+          next.set(SIDE_TAB_PARAM, SIDE_TAB.TOC);
+        },
+      });
     },
-    [addEntry, searchParams, selectSideTab, setSearchParams]
+    [addEntry, selectSideTab, updateEntityUrl]
   );
 
   return {
