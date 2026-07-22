@@ -4,7 +4,7 @@ import entities from '#api/entities/index.js';
 import users from '#api/users/users.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import connections from '#api/relationships/index.js';
+import connections from '#api/relationships/relationships.js';
 import { search } from '#api/search/index.js';
 import { cleanupRecordsOfFiles } from '#api/services/ocr/ocrRecords.js';
 import { EntityWithFilesSchema } from '#shared/types/entityType.js';

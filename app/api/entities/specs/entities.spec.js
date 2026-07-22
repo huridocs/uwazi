@@ -3,7 +3,7 @@
 import Ajv from 'ajv';
 
 import entitiesModel from '#api/entities/entitiesModel.js';
-import relationships from '#api/relationships/index.js';
+import relationships from '#api/relationships/relationships.js';
 import { search } from '#api/search/index.js';
 import date from '#api/utils/date.js';
 import db from '#api/utils/testing_db.js';
