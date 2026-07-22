@@ -1,4 +1,4 @@
-import { collectDefaultMetrics, Counter, Histogram, Registry } from 'prom-client';
+import { collectDefaultMetrics, Counter, Gauge, Histogram, Registry } from 'prom-client';
 
 const registry = new Registry();
 
@@ -27,6 +27,19 @@ const httpRequestDuration = new Histogram({
   buckets: [0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60],
 });
 
+const apiVersionInfo = new Gauge({
+  name: 'api_version_info',
+  help: 'Current API version',
+  labelNames: ['version'],
+  registers: [registry],
+});
+
 const collectNodeProcessMetrics = () => collectDefaultMetrics({ register: registry });
 
-export { registry, httpRequestTotal, httpRequestDuration, collectNodeProcessMetrics };
+export {
+  registry,
+  httpRequestTotal,
+  httpRequestDuration,
+  apiVersionInfo,
+  collectNodeProcessMetrics,
+};
