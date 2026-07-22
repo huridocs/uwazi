@@ -2,7 +2,7 @@ import { AbstractController } from '#api/common.v2/infrastructure/AbstractContro
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MultiUpdateEntity } from '#api/core/application/MultiUpdateEntity.js';
 import { MultiUpdateEntityUseCaseFactory } from '../../factories/MultiUpdateEntityUseCaseFactory.js';
-import { MongoEntitiesDAOFactory } from '../../factories/MongoEntitiesDAOFactory.js';
+import { EntitiesDAOFactory } from '../../factories/EntitiesDAOFactory.js';
 import { PropertyAssignmentInput } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
 
 type RequestDto = {
@@ -42,7 +42,7 @@ class MultiUpdateEntityController extends AbstractController<RequestDto> {
 
       const sharedIds = [...new Set(output.map(e => e.sharedId))];
 
-      const entityDAO = MongoEntitiesDAOFactory.default({ user: this.user });
+      const entityDAO = EntitiesDAOFactory.default({ user: this.user });
 
       const updatedEntities = await entityDAO.getWithFiles({
         sharedId: { $in: sharedIds },
