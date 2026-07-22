@@ -12,7 +12,7 @@ import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
 import { EntityUpdatedData, EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { TemplateSchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
-import relationships from '#api/relationships/index.js';
+import relationships from '#api/relationships/relationships.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';

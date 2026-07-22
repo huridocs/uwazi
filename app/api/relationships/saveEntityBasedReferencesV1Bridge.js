@@ -1,5 +1,4 @@
 import { ObjectId } from 'mongodb';
-import templatesAPI from '#api/core/v1_layer/templates/index.js';
 import { createError } from '#api/utils/index.js';
 import {
   getEntityReferencesByRelationshipTypes,
@@ -81,11 +80,16 @@ const separateCreatedDeletedReferences = async (property, entity, existingRefere
   return { newReferencesBase, newReferences, toDelete };
 };
 
-const prepareSaveEntityBasedReferences = async (entity, language, template) => {
+const prepareSaveEntityBasedReferences = async ({
+  entity,
+  language,
+  template,
+  getTemplateById,
+}) => {
   if (!language) throw createError('Language cant be undefined');
   if (!entity.template) return { relationshipProperties: [], existingReferences: {} };
 
-  const entityTemplate = template || (await templatesAPI.getById(entity.template));
+  const entityTemplate = template || (await getTemplateById(entity.template));
   const relationshipProperties = getPropertiesToBeConnections(entityTemplate);
 
   if (!relationshipProperties.length) {
@@ -105,14 +109,16 @@ const saveEntityBasedReferences = async ({
   entity,
   language,
   template,
+  getTemplateById,
   saveRelationships,
   deleteRelationships,
 }) => {
-  const { relationshipProperties, existingReferences } = await prepareSaveEntityBasedReferences(
+  const { relationshipProperties, existingReferences } = await prepareSaveEntityBasedReferences({
     entity,
     language,
-    template
-  );
+    template,
+    getTemplateById,
+  });
 
   const relationshipsToCreate = [];
   const relationshipsToDelete = [];

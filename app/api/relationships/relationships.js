@@ -285,6 +285,7 @@ export default {
       entity,
       language,
       template: _template,
+      getTemplateById: templatesAPI.getById,
       saveRelationships: relationships => this.save(relationships, language, false),
       deleteRelationships: query => this.delete(query, language, false),
     });
