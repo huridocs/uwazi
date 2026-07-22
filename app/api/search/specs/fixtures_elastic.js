@@ -483,7 +483,7 @@ export const fixtures = {
     },
   ],
   templates: [
-    { _id: template, properties: [] },
+    { _id: template, properties: [], commonProperties: [{ _id: db.id(), name: 'title', label: 'Title', type: 'text' }, { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' }, { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' }] },
     {
       _id: template1,
       properties: [
@@ -560,8 +560,9 @@ export const fixtures = {
           },
         },
       ],
+      commonProperties: [{ _id: db.id(), name: 'title', label: 'Title', type: 'text' }, { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' }, { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' }],
     },
-    { _id: template2, properties: [] },
+    { _id: template2, properties: [], commonProperties: [{ _id: db.id(), name: 'title', label: 'Title', type: 'text' }, { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' }, { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' }] },
     {
       _id: templateMetadata1,
       properties: [
@@ -607,6 +608,7 @@ export const fixtures = {
         },
         { _id: richTextField, name: 'rich_text', type: 'markdown', filter: true },
       ],
+      commonProperties: [{ _id: db.id(), name: 'title', label: 'Title', type: 'text' }, { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' }, { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' }],
     },
     {
       _id: templateMetadata2,
@@ -637,6 +639,7 @@ export const fixtures = {
         { _id: db.id(), name: 'country_geolocation', type: 'geolocation', filter: true },
         { _id: db.id(), name: 'auto_id', type: 'generatedid', filter: true },
       ],
+      commonProperties: [{ _id: db.id(), name: 'title', label: 'Title', type: 'text' }, { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' }, { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' }],
     },
   ],
   dictionaries: [

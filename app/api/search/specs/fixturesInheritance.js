@@ -282,6 +282,7 @@ export default {
           type: 'geolocation',
         },
       ],
+      commonProperties: [{ _id: db.id(), name: 'title', label: 'Title', type: 'text' }, { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' }, { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' }],
     },
     {
       _id: template2,
@@ -292,6 +293,7 @@ export default {
           type: 'geolocation',
         },
       ],
+      commonProperties: [{ _id: db.id(), name: 'title', label: 'Title', type: 'text' }, { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' }, { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' }],
     },
     {
       _id: template3,
@@ -336,6 +338,7 @@ export default {
           },
         },
       ],
+      commonProperties: [{ _id: db.id(), name: 'title', label: 'Title', type: 'text' }, { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' }, { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' }],
     },
     {
       _id: template4,
@@ -352,10 +355,12 @@ export default {
           },
         },
       ],
+      commonProperties: [{ _id: db.id(), name: 'title', label: 'Title', type: 'text' }, { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' }, { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' }],
     },
     {
       _id: template5,
       properties: [{ _id: db.id(), name: 'just_text', type: 'text' }],
+      commonProperties: [{ _id: db.id(), name: 'title', label: 'Title', type: 'text' }, { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' }, { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' }],
     },
   ],
   relationtypes: [

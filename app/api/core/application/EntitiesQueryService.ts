@@ -133,10 +133,10 @@ class EntitiesQueryService {
   private async loadTemplateRelationshipProperties(
     entityDBOs: EntityDBO[]
   ): Promise<Map<string, Set<string>>> {
-    const templateIds = [...new Set(entityDBOs.map(e => e.template.toString()))];
+    const templateIds = [
+      ...new Set(entityDBOs.filter(e => e.template).map(e => e.template.toString())),
+    ];
     const templates = await this.deps.templatesDS.getByIds(templateIds);
-
-    this.validateAllTemplatesLoaded(templates, templateIds);
 
     const templatePropsMap = new Map<string, Set<string>>();
 
@@ -165,6 +165,7 @@ class EntitiesQueryService {
     const allReferencedIds = new Set<string>();
 
     for (const entityDBO of entityDBOs) {
+      if (!entityDBO.template) continue;
       const relationshipProps = templatePropsMap.get(entityDBO.template.toString());
 
       if (relationshipProps && relationshipProps.size > 0) {
@@ -232,10 +233,11 @@ class EntitiesQueryService {
     filterUnauthorized: boolean,
     user: User
   ): void {
+    if (!entityDBO.template) return;
     const templateId = entityDBO.template.toString();
     const relationshipProps = templatePropsMap.get(templateId);
 
-    if (!relationshipProps || relationshipProps.size === 0) {
+    if (!relationshipProps || relationshipProps.size === 0 || !entityDBO.metadata) {
       return;
     }
 
