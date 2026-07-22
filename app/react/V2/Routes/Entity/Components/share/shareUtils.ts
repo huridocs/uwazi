@@ -29,7 +29,7 @@ const exactCollaboratorMatches = (
     if (result.type === PermissionType.GROUP) {
       return result.label.toLowerCase() === normalized;
     }
-    return true;
+    return result.type === PermissionType.USER;
   });
 };
 

@@ -50,7 +50,7 @@ type MultipartTransportInput = {
 };
 
 type TransportSuccess = {
-  body: Record<string, unknown>;
+  body: Record<string, unknown> | unknown[];
   status: number;
   headers: Headers;
   setCookie?: string;

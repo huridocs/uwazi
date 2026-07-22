@@ -5,19 +5,15 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createStore, Provider } from 'jotai';
-import * as api from '#app/Permissions/PermissionsAPI.js';
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
+import { ApiError } from '#shared/apiClient/index.js';
+import type { Entity } from '#V2/api/entities/types.js';
 import { userAtom } from '#V2/atoms/index.js';
 import { EntityProvider } from '#V2/Routes/Entity/Components/context/EntityContext.js';
-import type { Entity } from '#V2/api/entities/types.js';
+import { ServicesProvider } from '#V2/services/index.js';
+import { createTestServices } from '#V2/testing/createTestServices.js';
 import { ShareEntityModal } from '../ShareEntityModal.js';
-
-jest.mock('#app/Permissions/PermissionsAPI.js', () => ({
-  loadGrantedPermissions: jest.fn(),
-  searchCollaborators: jest.fn(),
-  savePermissions: jest.fn(),
-}));
 
 jest.mock('#V2/utils/notifyBridge.js', () => ({
   notify: jest.fn(),
@@ -43,7 +39,15 @@ const granted: MemberWithPermission[] = [
   },
 ];
 
-const renderModal = (role: 'admin' | 'collaborator' = 'admin', onClose = jest.fn()) => {
+const getPermissions = jest.fn();
+const savePermissions = jest.fn();
+const searchCollaborators = jest.fn();
+
+const renderModal = (
+  role: 'admin' | 'collaborator' = 'admin',
+  onClose = jest.fn(),
+  sharedIds: string[] = ['shared-1']
+) => {
   const store = createStore();
   store.set(userAtom, {
     _id: 'current',
@@ -52,25 +56,37 @@ const renderModal = (role: 'admin' | 'collaborator' = 'admin', onClose = jest.fn
     email: 'current@example.com',
   });
 
-  render(
+  const testServices = createTestServices({
+    entities: {
+      getPermissions,
+      savePermissions,
+      searchCollaborators,
+    },
+  });
+
+  const ui = (ids: string[]) => (
     <Provider store={store}>
-      <EntityProvider entity={entity}>
-        <ShareEntityModal sharedIds={['shared-1']} onClose={onClose} />
-      </EntityProvider>
+      <ServicesProvider value={testServices}>
+        <EntityProvider entity={entity}>
+          <ShareEntityModal sharedIds={ids} onClose={onClose} />
+        </EntityProvider>
+      </ServicesProvider>
     </Provider>
   );
 
-  return { onClose };
+  const view = render(ui(sharedIds));
+
+  return {
+    onClose,
+    rerenderWithSharedIds: (ids: string[]) => view.rerender(ui(ids)),
+  };
 };
 
 describe('ShareEntityModal', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.mocked(api.loadGrantedPermissions).mockResolvedValue(granted);
-    jest.mocked(api.savePermissions).mockResolvedValue({
-      ids: ['shared-1'],
-      permissions: [],
-    });
+    getPermissions.mockResolvedValue([granted]);
+    savePermissions.mockResolvedValue([{ ids: ['shared-1'], permissions: [] }]);
   });
 
   it('loads members and shows close when pristine', async () => {
@@ -86,12 +102,14 @@ describe('ShareEntityModal', () => {
 
   it('adds a collaborator by exact lookup without a suggestions list', async () => {
     const user = userEvent.setup();
-    jest.mocked(api.searchCollaborators).mockResolvedValue([
-      {
-        refId: 'user-2',
-        type: PermissionType.USER,
-        label: 'alice',
-      },
+    searchCollaborators.mockResolvedValue([
+      [
+        {
+          refId: 'user-2',
+          type: PermissionType.USER,
+          label: 'alice',
+        },
+      ],
     ]);
 
     renderModal();
@@ -104,7 +122,7 @@ describe('ShareEntityModal', () => {
     await user.click(screen.getByRole('button', { name: 'Add' }));
 
     await waitFor(() => {
-      expect(api.searchCollaborators).toHaveBeenCalledWith('alice');
+      expect(searchCollaborators).toHaveBeenCalledWith('alice');
     });
     expect(await screen.findByText('alice')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save changes' })).toBeInTheDocument();
@@ -112,12 +130,14 @@ describe('ShareEntityModal', () => {
 
   it('rejects prefix-only group matches and keeps focus in the lookup field', async () => {
     const user = userEvent.setup();
-    jest.mocked(api.searchCollaborators).mockResolvedValue([
-      {
-        refId: 'group-1',
-        type: PermissionType.GROUP,
-        label: 'Reviewers',
-      },
+    searchCollaborators.mockResolvedValue([
+      [
+        {
+          refId: 'group-1',
+          type: PermissionType.GROUP,
+          label: 'Reviewers',
+        },
+      ],
     ]);
 
     renderModal();
@@ -134,6 +154,49 @@ describe('ShareEntityModal', () => {
     });
   });
 
+  it('does not reload permissions when sharedIds content is unchanged', async () => {
+    const { rerenderWithSharedIds } = renderModal();
+    await screen.findByText('admin');
+    expect(getPermissions).toHaveBeenCalledTimes(1);
+
+    rerenderWithSharedIds(['shared-1']);
+    await waitFor(() => {
+      expect(getPermissions).toHaveBeenCalledTimes(1);
+    });
+    expect(screen.getByText('admin')).toBeInTheDocument();
+  });
+
+  it('rejects multiple exact collaborator matches without adding any', async () => {
+    const user = userEvent.setup();
+    searchCollaborators.mockResolvedValue([
+      [
+        {
+          refId: 'user-2',
+          type: PermissionType.USER,
+          label: 'alice',
+        },
+        {
+          refId: 'group-1',
+          type: PermissionType.GROUP,
+          label: 'alice',
+        },
+      ],
+    ]);
+
+    renderModal();
+    await screen.findByText('admin');
+
+    const input = screen.getByPlaceholderText('Username, email or group');
+    await user.type(input, 'alice');
+    await user.click(screen.getByRole('button', { name: 'Add' }));
+
+    expect(await screen.findByText('Multiple matches found')).toBeInTheDocument();
+    expect(screen.queryByText('alice')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(input).toHaveFocus();
+    });
+  });
+
   it('saves visibility and members', async () => {
     const user = userEvent.setup();
     const { onClose } = renderModal();
@@ -143,7 +206,7 @@ describe('ShareEntityModal', () => {
     await user.click(screen.getByRole('button', { name: 'Save changes' }));
 
     await waitFor(() => {
-      expect(api.savePermissions).toHaveBeenCalledWith({
+      expect(savePermissions).toHaveBeenCalledWith({
         ids: ['shared-1'],
         permissions: [
           {
@@ -169,14 +232,17 @@ describe('ShareEntityModal', () => {
   });
 
   it('shows an empty state when no people or groups are assigned', async () => {
-    jest.mocked(api.loadGrantedPermissions).mockResolvedValue([]);
+    getPermissions.mockResolvedValue([[]]);
     renderModal();
     expect(await screen.findByText('No people or groups added yet')).toBeInTheDocument();
   });
 
   it('blocks editing and saving when permissions fail to load', async () => {
     const user = userEvent.setup();
-    jest.mocked(api.loadGrantedPermissions).mockRejectedValue(new Error('fail'));
+    getPermissions.mockResolvedValue([
+      undefined,
+      new ApiError('fail', { kind: 'http', status: 500, code: 'error', retryable: true }),
+    ]);
     renderModal();
 
     expect(await screen.findByText('An error occurred')).toBeInTheDocument();
@@ -188,7 +254,7 @@ describe('ShareEntityModal', () => {
     expect(screen.queryByRole('button', { name: 'Save changes' })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('radio', { name: 'Published' }));
-    expect(api.savePermissions).not.toHaveBeenCalled();
+    expect(savePermissions).not.toHaveBeenCalled();
     expect(screen.queryByRole('button', { name: 'Save changes' })).not.toBeInTheDocument();
   });
 
@@ -249,7 +315,7 @@ describe('ShareEntityModal', () => {
     await user.click(screen.getByRole('radio', { name: 'Published' }));
     await user.click(screen.getByRole('button', { name: 'Discard changes' }));
 
-    expect(api.savePermissions).not.toHaveBeenCalled();
+    expect(savePermissions).not.toHaveBeenCalled();
     expect(onClose).toHaveBeenCalled();
   });
 

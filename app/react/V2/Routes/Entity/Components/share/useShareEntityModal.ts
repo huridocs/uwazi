@@ -1,14 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { t } from '#app/I18N/index.js';
-import {
-  loadGrantedPermissions,
-  savePermissions,
-  searchCollaborators,
-} from '#app/Permissions/PermissionsAPI.js';
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 import { AccessLevels, MixedAccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 import { useEntityContext } from '#V2/Routes/Entity/Components/context/index.js';
 import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
+import { useServices } from '#V2/services/index.js';
 import { notify } from '#V2/utils/notifyBridge.js';
 import {
   exactCollaboratorMatches,
@@ -17,7 +13,11 @@ import {
   type Visibility,
 } from './shareUtils.js';
 
+const errorOccurred = () => t('System', 'An error occurred', null, false);
+
+// eslint-disable-next-line max-statements
 const useShareEntityModal = (sharedIds: string[], onClose: () => void) => {
+  const { entities } = useServices();
   const { entity, setEntity } = useEntityContext();
   const [assignments, setAssignments] = useState<MemberWithPermission[]>([]);
   const [visibility, setVisibility] = useState<Visibility>('private');
@@ -32,6 +32,11 @@ const useShareEntityModal = (sharedIds: string[], onClose: () => void) => {
   const [adding, setAdding] = useState(false);
   const generalAccessRef = useRef<HTMLDivElement>(null);
   const lookupInputRef = useRef<HTMLInputElement>(null);
+  const entityRef = useRef(entity);
+  const sharedIdsRef = useRef(sharedIds);
+  const sharedIdsKey = JSON.stringify(sharedIds);
+  entityRef.current = entity;
+  sharedIdsRef.current = sharedIds;
   const isPublished = visibility === 'published';
   const controlsDisabled = loading || saving || loadFailed;
 
@@ -54,25 +59,33 @@ const useShareEntityModal = (sharedIds: string[], onClose: () => void) => {
     let cancelled = false;
     setLoading(true);
     setLoadFailed(false);
-    loadGrantedPermissions(sharedIds)
-      .then(permissions => {
-        if (cancelled) return;
-        setVisibility(findPublic(permissions) ? 'published' : 'private');
-        setAssignments(permissions.filter(p => p.type !== PermissionType.PUBLIC));
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setLoadFailed(true);
-          notify(t('System', 'An error occurred', null, false), 'error');
-        }
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
+    setDirty(false);
+
+    const failLoad = () => {
+      if (cancelled) return;
+      setLoadFailed(true);
+      notify(errorOccurred(), 'error');
+      setLoading(false);
+    };
+
+    const load = async () => {
+      const [permissions, error] = await entities.getPermissions(sharedIdsRef.current);
+      if (cancelled) return;
+      if (error || !permissions) {
+        failLoad();
+        return;
+      }
+      setVisibility(findPublic(permissions) ? 'published' : 'private');
+      setAssignments(permissions.filter(p => p.type !== PermissionType.PUBLIC));
+      setLoading(false);
+    };
+
+    load().catch(failLoad);
+
     return () => {
       cancelled = true;
     };
-  }, [sharedIds]);
+  }, [entities, sharedIdsKey]);
 
   const updateMember = (index: number, level: MixedAccessLevels) => {
     setAssignments(prev => {
@@ -88,16 +101,23 @@ const useShareEntityModal = (sharedIds: string[], onClose: () => void) => {
     setDirty(true);
   };
 
-  const findMatches = async (term: string) =>
-    exactCollaboratorMatches(term, await searchCollaborators(term), assignments);
+  const findMatches = async (term: string) => {
+    const [results, error] = await entities.searchCollaborators(term);
+    if (error || !results) return undefined;
+    return exactCollaboratorMatches(term, results, assignments);
+  };
 
-  const appendMatches = (matches: MemberWithPermission[]) => {
-    setAssignments(prev => [
-      ...prev,
-      ...matches.map(m => ({ ...m, level: m.level || AccessLevels.READ })),
-    ]);
+  const appendMatch = (match: MemberWithPermission) => {
+    setAssignments(prev => [...prev, { ...match, level: match.level || AccessLevels.READ }]);
     setLookupTerm('');
     setDirty(true);
+  };
+
+  const lookupMatchError = (matches: MemberWithPermission[] | undefined) => {
+    if (matches === undefined) return errorOccurred();
+    if (matches.length === 0) return t('System', 'No user or group found', null, false);
+    if (matches.length > 1) return t('System', 'Multiple matches found', null, false);
+    return '';
   };
 
   const handleAdd = async () => {
@@ -106,15 +126,11 @@ const useShareEntityModal = (sharedIds: string[], onClose: () => void) => {
 
     setAdding(true);
     setLookupError('');
-    try {
-      const matches = await findMatches(term);
-      if (!matches.length) setLookupError(t('System', 'No user or group found', null, false));
-      else appendMatches(matches);
-    } catch {
-      setLookupError(t('System', 'An error occurred', null, false));
-    } finally {
-      setAdding(false);
-    }
+    const matches = await findMatches(term);
+    const error = lookupMatchError(matches);
+    if (error) setLookupError(error);
+    else if (matches?.[0]) appendMatch(matches[0]);
+    setAdding(false);
   };
 
   const buildPermissions = () => [
@@ -126,20 +142,24 @@ const useShareEntityModal = (sharedIds: string[], onClose: () => void) => {
     ...(isPublished ? [publicReadPermission] : []),
   ];
 
+  const applySavedPermissions = () => {
+    const { current } = entityRef;
+    setEntity({ ...current, published: isPublished });
+    entityLoaderCache.invalidateEntity(current.sharedId);
+    notify(t('System', 'Permissions updated', null, false), 'success');
+    onClose();
+  };
+
   const handleSave = async () => {
     if (loadFailed || loading) return;
     setSaving(true);
-    try {
-      await savePermissions({ ids: sharedIds, permissions: buildPermissions() });
-      setEntity({ ...entity, published: isPublished });
-      entityLoaderCache.invalidateEntity(entity.sharedId);
-      notify(t('System', 'Permissions updated', null, false), 'success');
-      onClose();
-    } catch {
-      notify(t('System', 'An error occurred', null, false), 'error');
-    } finally {
-      setSaving(false);
-    }
+    const [, error] = await entities.savePermissions({
+      ids: sharedIdsRef.current,
+      permissions: buildPermissions(),
+    });
+    if (error) notify(errorOccurred(), 'error');
+    else applySavedPermissions();
+    setSaving(false);
   };
 
   const setGeneralAccess = (next: Visibility) => {

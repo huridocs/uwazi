@@ -3,39 +3,34 @@ import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 import { PermissionsDataSchema } from '#shared/types/permissionType.js';
 import { ApiResponse } from '../ApiResponse.js';
 import { apiClient } from '../client.js';
+import { requestHeaders } from '../requestHeaders.js';
 
-const requestHeaders = (headers?: IncomingHttpHeaders): Record<string, string> | undefined => {
-  const mapped = Object.fromEntries(
-    Object.entries(headers ?? {}).filter((entry): entry is [string, string] => {
-      const [, value] = entry;
-      return typeof value === 'string';
-    })
-  );
-  return Object.keys(mapped).length > 0 ? mapped : undefined;
-};
+const withHeaders = (headers?: IncomingHttpHeaders) => ({ headers: requestHeaders(headers) });
 
 const getPermissions = async (
   sharedIds: string[],
   headers?: IncomingHttpHeaders
 ): Promise<ApiResponse<MemberWithPermission[]>> =>
-  apiClient.putJson<MemberWithPermission[]>('entities/permissions', { sharedIds }, {
-    headers: requestHeaders(headers),
-  });
+  apiClient.putJson<MemberWithPermission[]>(
+    'entities/permissions',
+    { sharedIds },
+    withHeaders(headers)
+  );
 
 const savePermissions = async (
   permissionsData: PermissionsDataSchema,
   headers?: IncomingHttpHeaders
 ): Promise<ApiResponse<PermissionsDataSchema>> =>
-  apiClient.postJson<PermissionsDataSchema>('entities/permissions', permissionsData, {
-    headers: requestHeaders(headers),
-  });
+  apiClient.postJson<PermissionsDataSchema>(
+    'entities/permissions',
+    permissionsData,
+    withHeaders(headers)
+  );
 
 const searchCollaborators = async (
   filterTerm: string,
   headers?: IncomingHttpHeaders
 ): Promise<ApiResponse<MemberWithPermission[]>> =>
-  apiClient.getJson<MemberWithPermission[]>('collaborators', { filterTerm }, {
-    headers: requestHeaders(headers),
-  });
+  apiClient.getJson<MemberWithPermission[]>('collaborators', { filterTerm }, withHeaders(headers));
 
 export { getPermissions, savePermissions, searchCollaborators };
