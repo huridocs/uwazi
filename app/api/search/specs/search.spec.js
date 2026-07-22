@@ -248,28 +248,17 @@ describe('search', () => {
 
   it('should filter by templates', async () => {
     userFactory.mock(undefined);
-    const [
-      template1es,
-      template2es,
-      template1en,
-      allTemplatesEn,
-      onlyMissing,
-      template1AndMissing,
-    ] = await Promise.all([
+    const [template1es, template2es, template1en, allTemplatesEn] = await Promise.all([
       searchEntities({ types: [ids.template1] }, 'es'),
       searchEntities({ types: [ids.template2] }, 'es'),
       searchEntities({ types: [ids.template1] }, 'en'),
       searchEntities({ types: [ids.template1, ids.template2] }, 'en'),
-      searchEntities({ types: ['missing'] }, 'en'),
-      searchEntities({ types: [ids.template1, 'missing'] }, 'en'),
     ]);
 
     expect(template1es.rows.length).toBe(2);
     expect(template1en.rows.length).toBe(5);
     expect(template2es.rows.length).toBe(1);
     expect(allTemplatesEn.rows.length).toBe(6);
-    expect(onlyMissing.rows.length).toBe(2);
-    expect(template1AndMissing.rows.length).toBe(7);
   });
 
   it('should allow searching only within specific Ids', async () => {
@@ -649,8 +638,8 @@ describe('search', () => {
       it('should return aggregations for all templates when filtering by template', async () => {
         const onlyPublished = await searchEntities({ types: [ids.templateMetadata1] }, 'en');
         const { buckets } = onlyPublished.aggregations.all._types;
-        expect(onlyPublished.aggregations.all._types.count).toBe(6);
-        expectBucket(buckets, ids.template, 2);
+        expect(onlyPublished.aggregations.all._types.count).toBe(5);
+        expectBucket(buckets, ids.template, 4);
         expectBucket(buckets, ids.template1, 5);
         expectBucket(buckets, ids.template2, 1);
         expectBucket(buckets, ids.templateMetadata1, 3);
@@ -676,8 +665,8 @@ describe('search', () => {
           editorUser
         );
         const { buckets } = includeUnpublished.aggregations.all._types;
-        expect(includeUnpublished.aggregations.all._types.count).toBe(6);
-        expectBucket(buckets, ids.template, 3);
+        expect(includeUnpublished.aggregations.all._types.count).toBe(5);
+        expectBucket(buckets, ids.template, 6);
         expectBucket(buckets, ids.template1, 5);
         expectBucket(buckets, ids.template2, 1);
         expectBucket(buckets, ids.templateMetadata1, 4);

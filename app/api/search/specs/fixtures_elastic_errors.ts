@@ -73,7 +73,7 @@ const fixtures: DBFixture = {
   templates: [
     f.template(
       'indexProblems',
-      [{ _id: db.id(), name: 'text_field', type: 'text', filter: true }],
+      [{ _id: db.id(), name: 'text_field', label: 'text field', type: 'text', filter: true }],
       { _id: templateIndexProblems }
     ),
   ],

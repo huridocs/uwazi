@@ -498,8 +498,16 @@ describe('search.searchGeolocations', () => {
   });
 
   it('should return empty results if there are no templates with geolocation fields', async () => {
-    const tplWithoutGeolocation = inheritanceFixtures.templates.find(t => t._id === ids.template5);
-    await db.clearAllAndLoad({ ...inheritanceFixtures, templates: [tplWithoutGeolocation] });
+    const fixturesWithoutGeolocation = {
+      ...inheritanceFixtures,
+      templates: inheritanceFixtures.templates.map(t => ({
+        ...t,
+        properties: t.properties.filter(
+          p => p.type !== 'geolocation' && !(p.inherit && p.inherit.type === 'geolocation')
+        ),
+      })),
+    };
+    await db.clearAllAndLoad(fixturesWithoutGeolocation);
     const results = await testingEnvironment.runWithContext(async () =>
       search.searchGeolocations({ order: 'asc', sort: 'sharedId' }, 'en', user)
     );
