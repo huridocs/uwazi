@@ -12,6 +12,7 @@ import {
   serializeDatavizBucketKey,
   compareDatavizBucketKeys,
 } from '#shared/dataviz/formatDimensionKeyLabel.js';
+import { alignCompareBreakdownColumns } from '#shared/dataviz/alignCompareBreakdownColumns.js';
 import { DATAVIZ_MAX_BUCKETS } from '#shared/types/datavizSchema.js';
 import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import type { MultilingualLabelResolver } from './DatavizMultilingualLabelResolver.js';
@@ -249,12 +250,14 @@ export const normalizeCompareSeries = (params: {
   sourceLabels: string[];
   sourceLocalizedLabels: LocalizedLabels[];
   primaryDim: DimensionSpec;
+  secondaryDim?: DimensionSpec;
   resolveLabel: LabelResolver;
   datavizId: string;
   queryDurationMs: number;
   appearance?: DatavizAppearance;
   defaultLanguage: LanguageISO6391;
   missingBucketLabels: LocalizedLabels;
+  measure?: MeasureSpec;
 }): DatavizDataDTO => {
   const {
     bucketSets,
@@ -262,18 +265,21 @@ export const normalizeCompareSeries = (params: {
     sourceLabels,
     sourceLocalizedLabels,
     primaryDim,
+    secondaryDim,
     resolveLabel,
     datavizId,
     queryDurationMs,
     appearance,
     defaultLanguage,
     missingBucketLabels,
+    measure,
   } = params;
 
   const perSource = bucketSets.map((buckets, index) =>
     normalizeBuckets({
       buckets,
       primaryDim,
+      secondaryDim,
       resolveLabel,
       datavizId,
       queryDurationMs: 0,
@@ -282,6 +288,7 @@ export const normalizeCompareSeries = (params: {
       seriesLabels: sourceLocalizedLabels[index],
       defaultLanguage,
       missingBucketLabels,
+      measure,
     })
   );
 
@@ -295,13 +302,71 @@ export const normalizeCompareSeries = (params: {
   const totalEntities = perSource.reduce((sum, dto) => sum + (dto.meta.totalEntities ?? 0), 0);
   const truncated = perSource.some(dto => dto.meta.truncated);
 
-  return {
+  return alignCompareBreakdownColumns({
     datavizId,
     generatedAt: new Date().toISOString(),
     stale: false,
     meta: { totalEntities, truncated, queryDurationMs },
     series,
-  };
+  });
+};
+
+type CompositeBucketId = { primary: string | number; secondary: string | number };
+
+const isCompositeBucketId = (id: unknown): id is CompositeBucketId =>
+  typeof id === 'object' &&
+  id !== null &&
+  !Array.isArray(id) &&
+  'primary' in id &&
+  'secondary' in id;
+
+const compositeBucketKey = (id: CompositeBucketId): string => {
+  const primaryKey = serializeDatavizBucketKey(normalizeDatavizBucketKey(id.primary));
+  const secondaryKey = serializeDatavizBucketKey(normalizeDatavizBucketKey(id.secondary));
+  return `${String(primaryKey)}\u0000${String(secondaryKey)}`;
+};
+
+const mergeOneDimensionalUnionBuckets = (bucketSets: RawBucket[][]): RawBucket[] => {
+  const merged = new Map<string | number, number>();
+
+  bucketSets.forEach(buckets => {
+    buckets.forEach(bucket => {
+      const key = serializeDatavizBucketKey(bucket._id);
+      merged.set(key, (merged.get(key) ?? 0) + bucket.count);
+    });
+  });
+
+  return [...merged.entries()].map(([key, count]) => ({
+    _id: normalizeDatavizBucketKey(key),
+    count,
+  }));
+};
+
+const mergeTwoDimensionalUnionBuckets = (bucketSets: RawBucket[][]): RawBucket[] => {
+  const merged = new Map<string, number>();
+  const bucketIds = new Map<string, CompositeBucketId>();
+
+  bucketSets.forEach(buckets => {
+    buckets.forEach(bucket => {
+      if (!isCompositeBucketId(bucket._id)) {
+        return;
+      }
+
+      const composite = compositeBucketKey(bucket._id);
+      merged.set(composite, (merged.get(composite) ?? 0) + bucket.count);
+      if (!bucketIds.has(composite)) {
+        bucketIds.set(composite, {
+          primary: normalizeDatavizBucketKey(bucket._id.primary) as string | number,
+          secondary: normalizeDatavizBucketKey(bucket._id.secondary) as string | number,
+        });
+      }
+    });
+  });
+
+  return [...merged.entries()].map(([composite, count]) => ({
+    _id: bucketIds.get(composite)!,
+    count,
+  }));
 };
 
 export const mergeUnionBuckets = (
@@ -312,19 +377,14 @@ export const mergeUnionBuckets = (
     return { buckets: bucketSets[0]!, seriesLabel: sourceLabels[0] ?? 'Series' };
   }
 
-  const merged = new Map<string | number, number>();
-  bucketSets.forEach(buckets => {
-    buckets.forEach(b => {
-      const key = serializeDatavizBucketKey(b._id);
-      merged.set(key, (merged.get(key) ?? 0) + b.count);
-    });
-  });
+  const hasCompositeBuckets = bucketSets.some(buckets =>
+    buckets.some(bucket => isCompositeBucketId(bucket._id))
+  );
 
   return {
-    buckets: [...merged.entries()].map(([key, count]) => ({
-      _id: normalizeDatavizBucketKey(key),
-      count,
-    })),
+    buckets: hasCompositeBuckets
+      ? mergeTwoDimensionalUnionBuckets(bucketSets)
+      : mergeOneDimensionalUnionBuckets(bucketSets),
     seriesLabel: 'Union',
   };
 };

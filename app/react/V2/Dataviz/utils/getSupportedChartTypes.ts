@@ -3,6 +3,7 @@ import type { DimensionSpec, MeasureSpec } from '#V2/Dataviz/types/definition.js
 import {
   isCategoricalDimension,
   isNumericCrossTabQuery,
+  isSequentialCategoricalCrossTabQuery,
   isSequentialDimension,
   isTwoDimensionalQuery,
 } from './twoDimensionalQuery.js';
@@ -44,6 +45,7 @@ export const getSupportedChartTypes = (
 
   const twoD = isTwoDimensionalQuery(dimensions);
   const numericCrossTab = isNumericCrossTabQuery(dimensions);
+  const sequentialCategoricalCrossTab = isSequentialCategoricalCrossTabQuery(dimensions);
   const anyTwoD = dimensions.length >= 2;
   const hasDim = hasDimension(dimensions);
   const count = isCountMeasure(measures);
@@ -104,6 +106,34 @@ export const getSupportedChartTypes = (
       avail('horizontal_bar', false, 'Requires a single categorical dimension'),
       avail('pie', false, 'Requires a single dimension'),
       avail('donut', false, 'Requires a single dimension'),
+      avail('gauge', false, 'Not available with two dimensions'),
+      avail('metric', false, 'Not available with two dimensions'),
+    ];
+  }
+
+  if (sequentialCategoricalCrossTab) {
+    const primarySequential = isSequentialDimension(dimensions[0]);
+    const measureValue = count || sum;
+
+    return [
+      avail(
+        'line',
+        Boolean(measureValue && primarySequential),
+        'Plots one line per breakdown value over time'
+      ),
+      avail(
+        'area',
+        Boolean(measureValue && primarySequential && count),
+        'Plots one line per breakdown value over time'
+      ),
+      avail('heatmap', Boolean(count), 'Requires count measure'),
+      avail('list', Boolean(count), 'Cross-tab table of both dimensions'),
+      avail('stacked_bar', Boolean(count), 'Requires count measure'),
+      avail('bar', false, 'Requires a single dimension'),
+      avail('horizontal_bar', false, 'Requires a single dimension'),
+      avail('pie', false, 'Requires a single dimension'),
+      avail('donut', false, 'Requires a single dimension'),
+      avail('scatter', false, 'Requires numeric cross-tab dimensions'),
       avail('gauge', false, 'Not available with two dimensions'),
       avail('metric', false, 'Not available with two dimensions'),
     ];
