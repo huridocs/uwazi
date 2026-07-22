@@ -193,7 +193,8 @@ const DimensionSection = ({
       {multiSource && (
         <p className="text-xs text-ink-secondary">
           <Translate>
-            Only properties with the same name and configuration in every data source are available.
+            Only properties with the same name and configuration in every data source are available
+            for both dimensions.
           </Translate>
         </p>
       )}

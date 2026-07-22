@@ -10,7 +10,10 @@ import type {
 import type { ClientTemplateSchema } from '#app/istore.js';
 import { templatesAtom } from '#V2/atoms/index.js';
 import { isManualDataSource, MANUAL_DATA_EXAMPLE } from '#shared/dataviz/manualData.js';
-import { isTwoDimensionalQuery } from '#V2/Dataviz/utils/twoDimensionalQuery.js';
+import {
+  isTwoDimensionalQuery,
+  isSequentialCategoricalCrossTabQuery,
+} from '#V2/Dataviz/utils/twoDimensionalQuery.js';
 import { resolveChartPatchForQuery } from '#V2/Dataviz/utils/resolveChartPatchForQuery.js';
 import { ensureSourceAliases } from '#V2/Dataviz/utils/ensureSourceAliases.js';
 import { sanitizeDimensionsForSources } from '#V2/Dataviz/utils/sanitizeDimensionsForSources.js';
@@ -199,26 +202,24 @@ const DataTab = ({ definition, onPatch, onPatchQuery, onPatchChart }: DataTabPro
             dimension={primaryDimension}
             measure={measure}
             onMeasureChange={setMeasure}
-            onChange={dim => setDimensions(dim, isMultiSource ? undefined : secondaryDimension)}
+            onChange={dim => setDimensions(dim, secondaryDimension)}
             title="Primary dimension (X-axis / categories)"
             idPrefix="primary-dimension"
             allowTemplateDimension={!isMultiSource}
           />
-          {!isMultiSource && (
-            <DimensionSection
-              sources={query.sources}
-              dimension={secondaryDimension}
-              measure={measure}
-              onMeasureChange={setMeasure}
-              onChange={dim => setDimensions(primaryDimension, dim)}
-              title="Second dimension (series / stacks)"
-              idPrefix="secondary-dimension"
-              excludedProperties={primaryDimension?.property ? [primaryDimension.property] : []}
-              allowTemplateDimension={false}
-              allowNone
-            />
-          )}
-          {!isMultiSource && isTwoDimensionalQuery(query.dimensions) && (
+          <DimensionSection
+            sources={query.sources}
+            dimension={secondaryDimension}
+            measure={measure}
+            onMeasureChange={setMeasure}
+            onChange={dim => setDimensions(primaryDimension, dim)}
+            title="Second dimension (series / stacks)"
+            idPrefix="secondary-dimension"
+            excludedProperties={primaryDimension?.property ? [primaryDimension.property] : []}
+            allowTemplateDimension={false}
+            allowNone
+          />
+          {isTwoDimensionalQuery(query.dimensions) && (
             <p className="text-xs text-ink-secondary">
               <Translate>
                 Two categorical dimensions enable stacked bar charts (e.g. country with sex
@@ -226,17 +227,22 @@ const DataTab = ({ definition, onPatch, onPatchQuery, onPatchChart }: DataTabPro
               </Translate>
             </p>
           )}
-          {!isMultiSource &&
-            query.dimensions.length >= 2 &&
-            query.dimensions[1]?.propertyType === 'numeric' && (
-              <p className="text-xs text-ink-secondary">
-                <Translate>
-                  Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot
-                  the measure over the primary dimension (e.g. max engine size per registration
-                  date).
-                </Translate>
-              </p>
-            )}
+          {isSequentialCategoricalCrossTabQuery(query.dimensions) && (
+            <p className="text-xs text-ink-secondary">
+              <Translate>
+                Date or numeric × select enables line and area charts with one line per breakdown
+                value over time.
+              </Translate>
+            </p>
+          )}
+          {query.dimensions.length >= 2 && query.dimensions[1]?.propertyType === 'numeric' && (
+            <p className="text-xs text-ink-secondary">
+              <Translate>
+                Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
+                measure over the primary dimension (e.g. max engine size per registration date).
+              </Translate>
+            </p>
+          )}
           <SupportedChartTypesCallout
             dimensions={query.dimensions}
             measures={query.measures}

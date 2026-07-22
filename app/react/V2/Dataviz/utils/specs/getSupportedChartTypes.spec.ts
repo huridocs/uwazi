@@ -10,6 +10,11 @@ const numericCrossTab = [
   { property: 'engine_size', propertyType: 'numeric' as const },
 ];
 
+const sequentialCategoricalCrossTab = [
+  { property: 'date_of_birth', propertyType: 'date' as const },
+  { property: 'sex', propertyType: 'select' as const },
+];
+
 const countMeasure = [{ aggregation: 'count' as const }];
 const maxMeasure = [{ aggregation: 'max' as const, countMode: 'all' as const }];
 
@@ -33,6 +38,17 @@ describe('getSupportedChartTypes', () => {
     expect(byType.scatter?.enabled).toBe(true);
     expect(byType.heatmap?.enabled).toBe(true);
     expect(byType.stacked_bar?.enabled).toBe(false);
+  });
+
+  it('should enable line and area for date × select cross-tab', () => {
+    const availability = getSupportedChartTypes(sequentialCategoricalCrossTab, countMeasure);
+    const byType = Object.fromEntries(availability.map(item => [item.type, item]));
+
+    expect(byType.line?.enabled).toBe(true);
+    expect(byType.area?.enabled).toBe(true);
+    expect(byType.heatmap?.enabled).toBe(true);
+    expect(byType.stacked_bar?.enabled).toBe(true);
+    expect(byType.scatter?.enabled).toBe(false);
   });
 
   it('should enable line and bar for date × numeric cross-tab with value measures', () => {
