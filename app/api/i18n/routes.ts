@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import type { Application, Request } from 'express';
 
 import { createError, validation } from '#api/utils/index.js';
@@ -6,7 +5,7 @@ import settings from '#api/settings/index.js';
 import { CSVLoader } from '#api/csv/index.js';
 import { uploadMiddleware } from '#api/files/index.js';
 import { LanguageISO6391Schema, languageSchema } from '#shared/types/commonSchemas.js';
-import { LanguageISO6391, LanguageSchema } from '#shared/types/commonTypes.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { UITranslationNotAvailable } from '#api/i18n/defaultTranslations.js';
 import { AddLanguageController } from '#api/core/infrastructure/express/language/AddLanguageController.js';
 import { DeleteLanguageController } from '#api/core/infrastructure/express/language/DeleteLanguageController.js';
@@ -15,7 +14,6 @@ import translations from './translations.js';
 
 type TranslationsRequest = Request & { query: { context: string } };
 
-// eslint-disable-next-line max-statements
 export default (app: Application) => {
   app.get(
     '/api/translations',
