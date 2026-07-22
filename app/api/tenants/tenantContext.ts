@@ -21,9 +21,7 @@ type Tenant = {
     deactivateTestJob?: boolean;
     paragraphExtraction?: boolean;
     fileCacheHeaders?: boolean;
-    dataViz?: boolean;
     themeCustomization?: boolean;
-    v2GetEntity?: boolean;
     newHeader?: boolean;
     v2Languages?: boolean;
     postgresThesauri?: boolean;

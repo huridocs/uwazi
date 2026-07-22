@@ -1,6 +1,10 @@
 import serialize from 'serialize-javascript';
 import type { EChartsOption } from 'echarts';
-import type { DatavizEmbedPayload } from '#shared/types/datavizSchema.js';
+import type {
+  DatavizAppearance,
+  DatavizChartConfig,
+  DatavizEmbedPayload,
+} from '#shared/types/datavizSchema.js';
 import { mapToEChartsOption } from '#shared/dataviz/mappers/index.js';
 
 const ECHARTS_CDN = 'https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js';
@@ -24,6 +28,15 @@ const BASE_STYLES = `
 
 const escapeHtml = (value: string): string =>
   value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+export type DatavizEmbedBootstrap = {
+  id: string;
+  locale: string;
+  chart: DatavizChartConfig;
+  appearance: DatavizAppearance;
+  /** Origins allowed to send `uwazi:dataviz-filter` postMessage events. */
+  allowedOrigins: string[];
+};
 
 const renderListHtml = (payload: DatavizEmbedPayload): string => {
   const points = payload.data.series[0]?.points ?? [];
@@ -58,48 +71,85 @@ const renderMetricHtml = (payload: DatavizEmbedPayload): string => {
   return `<div class="metric"${style ? ` style="${style}"` : ''}><div class="metric-value">${escapeHtml(String(value.toLocaleString()))}</div><div class="metric-label">${escapeHtml(String(label))}</div></div>`;
 };
 
-const renderEchartsBody = (
-  payload: DatavizEmbedPayload,
-  option: EChartsOption,
-  embedScriptUrl: string
+const renderBootstrapScripts = (
+  bootstrap: DatavizEmbedBootstrap,
+  embedScriptUrl: string,
+  option?: EChartsOption | null
 ): string => {
-  const stale = payload.data.stale ? '<p class="stale">Data may be outdated.</p>' : '';
-  const height = payload.data.series.length > 1 ? 360 : 320;
-  const scripts = `
-    <script>window.__DATAVIZ_CHART_OPTION__ = ${serialize(option, { isJSON: true })};</script>
-    <script src="${ECHARTS_CDN}" crossorigin="anonymous"></script>
+  const optionScript =
+    option != null
+      ? `<script>window.__DATAVIZ_CHART_OPTION__ = ${serialize(option, { isJSON: true })};</script>`
+      : '';
+  const echartsScript =
+    option != null ? `<script src="${ECHARTS_CDN}" crossorigin="anonymous"></script>` : '';
+
+  return `
+    <script>window.__DATAVIZ_EMBED__ = ${serialize(bootstrap, { isJSON: true })};</script>
+    ${optionScript}
+    ${echartsScript}
     <script src="${embedScriptUrl}"></script>
   `;
-
-  return `${stale}<div id="dataviz-embed-root" style="height:${height}px"></div>${scripts}`;
 };
 
 type RenderDatavizEmbedHtmlInput = {
   payload: DatavizEmbedPayload;
   language: string;
+  datavizId: string;
   embedScriptUrl?: string;
+  /** Parent page origin allowed to postMessage filters (cross-origin embeds). */
+  parentOrigin?: string;
+};
+
+const resolveAllowedOrigins = (parentOrigin?: string): string[] => {
+  const origins = new Set<string>();
+  if (parentOrigin) {
+    try {
+      origins.add(new URL(parentOrigin).origin);
+    } catch {
+      // ignore invalid parentOrigin
+    }
+  }
+  return [...origins];
 };
 
 const renderDatavizEmbedHtml = ({
   payload,
   language,
+  datavizId,
   embedScriptUrl = '/dataviz-embed.js',
+  parentOrigin,
 }: RenderDatavizEmbedHtmlInput): string => {
   const chartType = payload.chart.type;
+  const bootstrap: DatavizEmbedBootstrap = {
+    id: datavizId,
+    locale: language,
+    chart: payload.chart,
+    appearance: payload.appearance,
+    allowedOrigins: resolveAllowedOrigins(parentOrigin),
+  };
+
   let body: string;
+  let option: EChartsOption | null | undefined;
 
   if (chartType === 'list') {
-    body = renderListHtml(payload);
+    body = `<div id="dataviz-embed-root" data-kind="list">${renderListHtml(payload)}</div>`;
   } else if (chartType === 'metric') {
-    body = renderMetricHtml(payload);
+    body = `<div id="dataviz-embed-root" data-kind="metric">${renderMetricHtml(payload)}</div>`;
   } else {
-    const option = mapToEChartsOption(payload.data, payload.chart, payload.appearance);
+    option = mapToEChartsOption(payload.data, payload.chart, payload.appearance);
     if (!option) {
       body = '<p class="error">This chart type cannot display the current data.</p>';
     } else {
-      body = renderEchartsBody(payload, option, embedScriptUrl);
+      const height = payload.data.series.length > 1 ? 360 : 320;
+      const stale = payload.data.stale ? '<p class="stale">Data may be outdated.</p>' : '';
+      body = `${stale}<div id="dataviz-embed-root" data-kind="echarts" style="height:${height}px"></div>`;
     }
   }
+
+  const scripts =
+    body.includes('dataviz-embed-root') || option
+      ? renderBootstrapScripts(bootstrap, embedScriptUrl, option)
+      : '';
 
   return `<!DOCTYPE html>
 <html lang="${escapeHtml(language)}">
@@ -111,6 +161,7 @@ const renderDatavizEmbedHtml = ({
 </head>
 <body>
   ${body}
+  ${scripts}
 </body>
 </html>`;
 };

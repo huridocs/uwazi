@@ -24,7 +24,6 @@ const manualListPayload: DatavizEmbedPayload = {
 
 const manualBarPayload: DatavizEmbedPayload = {
   chart: { type: 'bar', showTooltip: true, showLabels: true },
-  appearance: { colorMode: 'from_data' },
   data: {
     datavizId: 'dv-embed-list',
     generatedAt: '2026-01-01T00:00:00.000Z',
@@ -38,26 +37,37 @@ const manualBarPayload: DatavizEmbedPayload = {
     ],
     meta: { totalEntities: 12, truncated: false },
   },
+  appearance: { colorMode: 'from_data' },
 };
 
 describe('renderDatavizEmbedHtml', () => {
-  it('should render list charts as static HTML without echarts scripts', () => {
-    const html = renderDatavizEmbedHtml({ payload: manualListPayload, language: 'en' });
+  it('should render list charts with bootstrap for postMessage filters', () => {
+    const html = renderDatavizEmbedHtml({
+      payload: manualListPayload,
+      language: 'en',
+      datavizId: 'dv-embed-list',
+    });
 
     expect(html).toContain('Category A');
     expect(html).toContain('<table>');
+    expect(html).toContain('__DATAVIZ_EMBED__');
+    expect(html).toContain('dataviz-embed.js');
     expect(html).not.toContain('echarts.min.js');
-    expect(html).not.toContain('dataviz-embed.js');
   });
 
-  it('should render echarts charts with precomputed option and bootstrap', () => {
+  it('should render echarts charts with option, bootstrap and parentOrigin allowlist', () => {
     const html = renderDatavizEmbedHtml({
       payload: manualBarPayload,
       language: 'en',
+      datavizId: 'dv-embed-bar',
       embedScriptUrl: 'http://localhost:8080/dataviz-embed.js',
+      parentOrigin: 'https://partner.example',
     });
 
     expect(html).toContain('__DATAVIZ_CHART_OPTION__');
+    expect(html).toContain('__DATAVIZ_EMBED__');
+    expect(html).toContain('dv-embed-bar');
+    expect(html).toContain('partner.example');
     expect(html).toContain('Embed Category A');
     expect(html).toContain('echarts.min.js');
     expect(html).toContain('http://localhost:8080/dataviz-embed.js');

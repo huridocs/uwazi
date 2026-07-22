@@ -7,9 +7,16 @@ type DatavizChartViewProps = {
   option: EChartsOption | null;
   height?: number | string;
   className?: string;
+  /** When true, merge new options so ECharts animates data transitions (e.g. live filters). */
+  animateUpdates?: boolean;
 };
 
-const DatavizChartView = ({ option, height = 320, className }: DatavizChartViewProps) => {
+const DatavizChartView = ({
+  option,
+  height = 320,
+  className,
+  animateUpdates = false,
+}: DatavizChartViewProps) => {
   const style = useMemo(() => ({ height, width: '100%' }), [height]);
 
   if (!option) {
@@ -28,9 +35,9 @@ const DatavizChartView = ({ option, height = 320, className }: DatavizChartViewP
       className={className}
       option={option}
       style={style}
-      notMerge
-      replaceMerge={['visualMap', 'series']}
-      lazyUpdate
+      notMerge={!animateUpdates}
+      replaceMerge={animateUpdates ? undefined : ['visualMap', 'series']}
+      lazyUpdate={!animateUpdates}
       opts={{ renderer: 'canvas' }}
     />
   );

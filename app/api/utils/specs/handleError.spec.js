@@ -116,13 +116,9 @@ describe('handleError', () => {
         handleError(error);
 
         expect(legacyLogger.error).toHaveBeenCalledWith(
-          `requestId: ${contextRequestId} \n${util.inspect(error)}
-original error: {
- "name": "ConnectionError",
- "meta": {
-  "meta": "some meta"
- }
-}`,
+          `requestId: ${contextRequestId} \n${util.inspect(error)}\noriginal error: ${util.inspect(
+            error
+          )}`,
           {}
         );
       });
@@ -132,7 +128,7 @@ original error: {
         handleError(error);
 
         expect(legacyLogger.error).toHaveBeenCalledWith(
-          `requestId: ${contextRequestId} \n${error.stack}\noriginal error: {}`,
+          `requestId: ${contextRequestId} \n${error.stack}\noriginal error: ${util.inspect(error)}`,
           {}
         );
       });
@@ -223,6 +219,13 @@ original error: {
         error.name = 'Original error';
         handleError(createError(error, 400));
         expect(legacyLogger.debug.mock.calls[0][0]).toContain('Original error');
+      });
+
+      it('should preserve the stack trace of the original error', () => {
+        const error = new Error('test error');
+        error.stack = 'Error: test error\n    at someFile.js:42:10';
+        handleError(createError(error, 400));
+        expect(legacyLogger.debug.mock.calls[0][0]).toContain('someFile.js:42:10');
       });
     });
   });

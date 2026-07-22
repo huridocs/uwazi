@@ -1,13 +1,10 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
-import { tenants } from '#api/tenants/index.js';
 import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { BulkDeleteEntityController } from '#api/core/infrastructure/express/entity/BulkDeleteEntityController.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { MongoEntitiesDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntitiesDAO.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
 import { UpdateEntityController } from '#api/core/infrastructure/express/entity/UpdateEntityController.js';
 import { GetEntityController } from '#api/core/infrastructure/express/entity/GetEntityController.js';
@@ -82,13 +79,10 @@ export default app => {
       const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
 
       if (!entityToSave?.sharedId) {
-        const entityDAO = new MongoEntitiesDAO(
-          getConnection(),
-          TransactionManagerFactory.default(),
-          User.createFrom(req.user)
-        );
         const result = await EntityFacade.create(entityToSave, req.language, req.inputFiles);
-        const [entityInTargetLanguage] = await entityDAO.getWithFiles({
+        const [entityInTargetLanguage] = await EntitiesDAOFactory.default({
+          user: User.createFrom(req.user),
+        }).getWithFiles({
           language: req.language,
           sharedId: result.sharedId,
         });
@@ -136,11 +130,12 @@ export default app => {
       },
       required: ['query'],
     }),
-    (req, res, next) =>
-      entities
-        .countByTemplate(req.query.templateId)
-        .then(response => res.json(response))
-        .catch(next)
+    async (req, res) => {
+      const count = await EntitiesDAOFactory.default({
+        user: User.createFrom(req.user),
+      }).countByTemplate(req.query.templateId);
+      res.json(count);
+    }
   );
 
   app.get(
@@ -160,39 +155,7 @@ export default app => {
         },
       },
     }),
-    async (req, res, next) => {
-      // V2 implementation
-      if (tenants.current()?.featureFlags?.v2GetEntity) {
-        await GetEntityController.createHandler()(req, res, next);
-        return;
-      }
-
-      // V1 implementation
-      const { omitRelationships, include = [], ...query } = req.query;
-      const action = omitRelationships ? 'get' : 'getWithRelationships';
-      const published = req.user ? {} : { published: true };
-      const language = req.language ? { language: req.language } : {};
-      entities[action](
-        { ...query, ...published, ...language },
-        include.map(field => `+${field}`).join(' '),
-        {
-          limit: 1,
-        }
-      )
-        .then(_entities => {
-          if (!_entities.length) {
-            res.status(404);
-            res.json({ rows: [] });
-            return;
-          }
-          if (!req.user && _entities[0].relations) {
-            const entity = _entities[0];
-            entity.relations = entity.relations.filter(rel => rel.entityData.published);
-          }
-          res.json({ rows: _entities });
-        })
-        .catch(next);
-    }
+    GetEntityController.createHandler()
   );
 
   app.delete(

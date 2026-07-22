@@ -386,10 +386,8 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();
   const clientFeatureFlags: ClientFeatureFlags = {
     paragraphExtraction: featureFlags?.paragraphExtraction,
-    dataViz: featureFlags?.dataViz,
     newHeader: featureFlags?.newHeader,
     themeCustomization: featureFlags?.themeCustomization,
-    v2GetEntity: featureFlags?.v2GetEntity,
     aiAssistant: featureFlags?.aiAssistant,
   };
   const settingsWithFeatureFlags = {

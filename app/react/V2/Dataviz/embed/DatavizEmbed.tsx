@@ -9,9 +9,11 @@ import { DatavizMetricView } from '#V2/Dataviz/rendering/metric/DatavizMetricVie
 type DatavizEmbedProps = {
   payload: DatavizEmbedPayload;
   height?: number;
+  /** Merge ECharts updates for smooth transitions when data changes in place. */
+  animateUpdates?: boolean;
 };
 
-const DatavizEmbed = ({ payload, height }: DatavizEmbedProps) => {
+const DatavizEmbed = ({ payload, height, animateUpdates = false }: DatavizEmbedProps) => {
   const chartOption = useMemo(
     () => mapToEChartsOption(payload.data, payload.chart, payload.appearance),
     [payload.data, payload.chart, payload.appearance]
@@ -41,6 +43,7 @@ const DatavizEmbed = ({ payload, height }: DatavizEmbedProps) => {
     <DatavizChartView
       option={chartOption}
       height={height ?? (payload.data.series.length > 1 ? 360 : 320)}
+      animateUpdates={animateUpdates}
     />
   );
 

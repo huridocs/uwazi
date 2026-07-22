@@ -24,8 +24,8 @@ const adminClient = () =>
     host: config.postgres.host,
     port: config.postgres.port,
     database: 'postgres',
-    user: config.postgres.admin.user,
-    password: config.postgres.admin.password,
+    user: 'admin',
+    password: 'admin',
   });
 
 let pool: pg.Pool | null = null;
@@ -96,6 +96,24 @@ const testingPG = {
       await admin.query(`CREATE DATABASE "${escapeIdentifier(this.dbName)}"`);
     } finally {
       await admin.end();
+    }
+
+    // Grant migrator_user schema privileges in the new test DB (mirrors provisioning
+    // scripts that only ran for the main uwazi_development database).
+    const dbAdmin = new pg.Client({
+      host: config.postgres.host,
+      port: config.postgres.port,
+      database: this.dbName,
+      user: 'admin',
+      password: 'admin',
+    });
+    await dbAdmin.connect();
+    try {
+      await dbAdmin.query(
+        `GRANT USAGE, CREATE ON SCHEMA public TO "${escapeIdentifier(config.postgres.admin.user)}"`
+      );
+    } finally {
+      await dbAdmin.end();
     }
 
     pool = new pg.Pool({

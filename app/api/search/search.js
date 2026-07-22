@@ -25,7 +25,6 @@ import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex.js';
 import * as v2 from './v2_support.js';
 import { EntitiesQueryServiceFactory } from '#api/core/infrastructure/factories/EntitiesQueryServiceFactory.js';
 import { User } from '#api/users.v2/model/User.js';
-import { tenants } from '#api/tenants/index.js';
 import { PostgresUnrestrictedEntitiesQueryFactory } from '#api/core/infrastructure/factories/PostgresUnrestrictedEntitiesQueryFactory.js';
 
 function processParentThesauri(property, values, dictionaries, properties) {
@@ -665,10 +664,8 @@ const processResponse = async (response, templates, dictionaries, language, filt
     return result;
   });
 
-  if (tenants.current()?.featureFlags?.v2GetEntity) {
-    const entitiesQueryService = EntitiesQueryServiceFactory.default(User.createFrom(user));
-    await entitiesQueryService.applyRelationshipPermissions(rows, User.createFrom(user));
-  }
+  const entitiesQueryService = EntitiesQueryServiceFactory.default(User.createFrom(user));
+  await entitiesQueryService.applyRelationshipPermissions(rows, User.createFrom(user));
 
   const aggregationsAll = response.body.aggregations?.all || {};
   const sanitizedAggregations = await _sanitizeAggregations(
