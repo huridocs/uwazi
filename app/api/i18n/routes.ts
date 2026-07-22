@@ -3,87 +3,15 @@ import type { Application, Request } from 'express';
 
 import { createError, validation } from '#api/utils/index.js';
 import settings from '#api/settings/index.js';
-import entities from '#api/entities/index.js';
-import pages from '#api/pages/index.js';
 import { CSVLoader } from '#api/csv/index.js';
 import { uploadMiddleware } from '#api/files/index.js';
-import { sequentialPromises } from '#shared/asyncUtils.js';
 import { LanguageISO6391Schema, languageSchema } from '#shared/types/commonSchemas.js';
 import { LanguageISO6391, LanguageSchema } from '#shared/types/commonTypes.js';
 import { UITranslationNotAvailable } from '#api/i18n/defaultTranslations.js';
-import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { EntityPreviewBatchHandler } from '#api/core/infrastructure/jobs/EntityPreviewBatchHandler.js';
-import { tenants } from '#api/tenants/tenantContext.js';
 import { AddLanguageController } from '#api/core/infrastructure/express/language/AddLanguageController.js';
 import { DeleteLanguageController } from '#api/core/infrastructure/express/language/DeleteLanguageController.js';
 import needsAuthorization from '../auth/authMiddleware.js';
 import translations from './translations.js';
-
-const dispatchEntityPreviewJobs = async (languageKey: LanguageISO6391) => {
-  const transactionManager = TransactionManagerFactory.default();
-  const filesDS = FilesDataSourceFactory.default();
-  const thumbnails = await filesDS.getThumbnailsByLanguage(languageKey);
-  const sharedIds = [...new Set(thumbnails.map(t => t.entity))];
-  if (sharedIds.length === 0) return;
-  const chunks = ArrayUtils.splitInChunks(sharedIds, 100);
-  const dispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
-  await dispatcher.dispatchMany(async dispatch =>
-    chunks.forEach(chunk => dispatch(EntityPreviewBatchHandler, { languageKey, sharedIds: chunk }))
-  );
-};
-
-const importPredefinedIfAvailable = async (key: LanguageISO6391) => {
-  try {
-    await translations.importPredefined(key);
-  } catch (error) {
-    if (!(error instanceof UITranslationNotAvailable)) {
-      throw error;
-    }
-  }
-};
-
-const addLanguage = async (language: LanguageSchema) => {
-  const newSettings = await settings.addLanguage(language);
-  const addedTranslations = await translations.addLanguage(language.key);
-  const newTranslations = addedTranslations
-    ? {
-        ...addedTranslations,
-        contexts: translations.prepareContexts(addedTranslations.contexts),
-      }
-    : addedTranslations;
-  await entities.addLanguage(language.key);
-  await pages.addLanguage(language.key);
-  await dispatchEntityPreviewJobs(language.key);
-  await importPredefinedIfAvailable(language.key);
-  return { newSettings, newTranslations };
-};
-
-async function addLanguages(languages: LanguageSchema[], req: Request) {
-  let newSettings;
-  let newTranslations;
-  await sequentialPromises(languages, async (language: LanguageSchema) => {
-    ({ newSettings, newTranslations } = await addLanguage(language));
-    req.sockets.emitToCurrentTenant('translationsChange', newTranslations);
-  });
-  req.sockets.emitToCurrentTenant('updateSettings', newSettings);
-  req.emitToSessionSocket('translationsInstallDone');
-}
-
-async function deleteLanguage(key: LanguageISO6391, req: Request) {
-  const [newSettings] = await Promise.all([
-    settings.deleteLanguage(key),
-    translations.removeLanguage(key),
-    entities.removeLanguage(key),
-    pages.removeLanguage(key),
-  ]);
-
-  req.sockets.emitToCurrentTenant('updateSettings', newSettings);
-  req.sockets.emitToCurrentTenant('translationsDelete', key);
-  req.emitToSessionSocket('translationsDeleteDone');
-}
 
 type TranslationsRequest = Request & { query: { context: string } };
 
@@ -253,20 +181,7 @@ export default (app: Application) => {
     }),
 
     async (req, res) => {
-      const languages = req.body as LanguageSchema[];
-
-      if (tenants.current().featureFlags?.v2Languages) {
-        await new AddLanguageController({ request: req, response: res }).handleAsync();
-        return;
-      }
-
-      addLanguages(languages, req).catch((error: Error) => {
-        req.emitToSessionSocket('translationsInstallError', error.message);
-        // eslint-disable-next-line no-console
-        console.error(error);
-      });
-
-      res.sendStatus(204);
+      await new AddLanguageController({ request: req, response: res }).handleAsync();
     }
   );
 
@@ -282,28 +197,7 @@ export default (app: Application) => {
       },
     }),
     async (req: DeleteTranslationRequest, res) => {
-      const { key } = req.query;
-
-      if (tenants.current().featureFlags?.v2Languages) {
-        await new DeleteLanguageController({ request: req, response: res }).handleAsync();
-        return;
-      }
-
-      const currentSettings = await settings.get();
-      const language = currentSettings.languages?.find(l => l.key === key);
-      if (!language || language.installing) {
-        res.status(409).json({ error: 'Language is still being installed or does not exist' });
-        return;
-      }
-
-      deleteLanguage(key, req).catch((error: Error) => {
-        req.emitToSessionSocket('translationsDeleteError', error.message);
-        // eslint-disable-next-line no-console
-        console.error(error);
-      });
-      res.sendStatus(204);
+      await new DeleteLanguageController({ request: req, response: res }).handleAsync();
     }
   );
 };
-
-export { addLanguage };

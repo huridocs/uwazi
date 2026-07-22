@@ -23,7 +23,6 @@ type Tenant = {
     fileCacheHeaders?: boolean;
     themeCustomization?: boolean;
     newHeader?: boolean;
-    v2Languages?: boolean;
     postgresThesauri?: boolean;
     postgresFiles?: boolean;
     postgresTemplates?: boolean;
