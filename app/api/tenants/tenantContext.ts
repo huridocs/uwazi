@@ -22,12 +22,12 @@ type Tenant = {
     paragraphExtraction?: boolean;
     fileCacheHeaders?: boolean;
     themeCustomization?: boolean;
-    v2GetEntity?: boolean;
     newHeader?: boolean;
     v2Languages?: boolean;
     postgresThesauri?: boolean;
     postgresFiles?: boolean;
     postgresTemplates?: boolean;
+    postgresEntities?: boolean;
     aiAssistant?: boolean;
     aiAssistantServiceUrl?: string;
     v2UsersCreate?: boolean;

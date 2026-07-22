@@ -10,10 +10,12 @@ import {
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { TemplateMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/TemplateMigrationConfig.js';
 import { ThesaurusMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/ThesaurusMigrationConfig.js';
+import { FilesMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/FilesMigrationConfig.js';
 
 const COLLECTIONS: Record<string, MigrationConfig> = {
   thesauri: ThesaurusMigrationConfig,
   templates: TemplateMigrationConfig,
+  files: FilesMigrationConfig
 };
 
 function log(message: string) {

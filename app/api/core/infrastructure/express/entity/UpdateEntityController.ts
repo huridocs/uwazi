@@ -3,7 +3,7 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { UpdateEntityRequest, UpdateEntitySchema } from './Schemas.js';
 import { UpdateEntityUseCaseFactory } from '../../factories/UpdateEntityUseCaseFactory.js';
 import { ExpressEntityMapper } from './ExpressEntityMapper.js';
-import { MongoEntitiesDAOFactory } from '../../factories/MongoEntitiesDAOFactory.js';
+import { EntitiesDAOFactory } from '../../factories/EntitiesDAOFactory.js';
 import { MongoTransactionManager } from '../../mongodb/common/MongoTransactionManager.js';
 import { ATConflictSolver } from '#api/externalIntegrations.v2/automaticTranslation/utils/ATConflictSolver.js';
 import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
@@ -15,7 +15,7 @@ class UpdateEntityController extends AbstractController<Request> {
     const startTime = Date.now();
     try {
       const useCase = UpdateEntityUseCaseFactory.default();
-      const entityDAO = MongoEntitiesDAOFactory.default({ user: this.user });
+      const entityDAO = EntitiesDAOFactory.default({ user: this.user });
 
       let parsed: UpdateEntityRequest;
 

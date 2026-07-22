@@ -4,15 +4,14 @@ import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
 import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
 import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoEntitiesDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntitiesDAO.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import settings from '#api/settings/index.js';
 import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { publicAPIMiddleware } from '../auth/publicAPIMiddleware.js';
 import { createError } from '../utils/index.js';
 import { User } from '#api/users.v2/model/User.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 const getPublicUser = async () => {
@@ -79,12 +78,9 @@ const routes = app => {
 
         const result = await EntityFacade.create(entity, req.language, req.inputFiles);
 
-        const entityDAO = new MongoEntitiesDAO(
-          getConnection(),
-          TransactionManagerFactory.default(),
-          User.createFrom(userForContext)
-        );
-        const [entityWithFiles] = await entityDAO.getWithFiles({
+        const [entityWithFiles] = await EntitiesDAOFactory.default({
+          user: User.createFrom(userForContext),
+        }).getWithFiles({
           language: req.language,
           sharedId: result.sharedId,
         });

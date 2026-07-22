@@ -5,7 +5,7 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { V1WebSocketsWrapper } from '../services/V1WebSocketsWrapper.js';
 import { CloneLanguageEntitiesJob } from '../jobs/CloneLanguageEntitiesJob.js';
-import { MongoEntitiesDAOFactory } from './MongoEntitiesDAOFactory.js';
+import { EntitiesDAOFactory } from './EntitiesDAOFactory.js';
 import { FilesDAOFactory } from './FilesDAOFactory.js';
 
 class CloneLanguageEntitiesJobFactory {
@@ -13,7 +13,7 @@ class CloneLanguageEntitiesJobFactory {
     overrides?: Partial<ConstructorParameters<typeof CloneLanguageEntitiesJob>[0]>
   ): CloneLanguageEntitiesJob {
     const transactionManager = TransactionManagerFactory.default() as MongoTransactionManager;
-    const entityDAO = MongoEntitiesDAOFactory.default({
+    const entityDAO = EntitiesDAOFactory.default({
       transactionManager,
       user: User.createFrom(null),
     });
