@@ -4,10 +4,10 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../app/api/core/infrastructure/postgresql/provisioning" && pwd)"
 
 # Use standard PostgreSQL env vars, defaulting to local docker-like settings
-export PGHOST=${PGHOST:-127.0.0.1}
-export PGPORT=${PGPORT:-5432}
-export PGUSER=${PGUSER:-admin}
-export PGDATABASE=${PGDATABASE:-uwazi_development}
+export PGHOST=${POSTGRES_HOST:-127.0.0.1}
+export PGPORT=${POSTGRES_PORT:-5432}
+export PGUSER=${POSTGRES_USER:-admin}
+export PGDATABASE=${POSTGRES_DB:-uwazi_development}
 
 echo "Provisioning PostgreSQL roles on ${PGHOST}:${PGPORT}/${PGDATABASE}..."
 
