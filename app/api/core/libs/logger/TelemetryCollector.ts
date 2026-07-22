@@ -27,6 +27,10 @@ class TelemetryCollector {
     this.metadata = { ...this.metadata, ...metadata };
   }
 
+  mainDurationMs(): number {
+    return this.time.get(this.mainOperation)![0].duration();
+  }
+
   startTimer(operationName: string): EndTimer {
     if (!this.time.has(operationName)) {
       this.time.set(operationName, []);

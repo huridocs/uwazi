@@ -152,6 +152,10 @@ export const config = {
       v2UsersGet: false,
       v2UsersUpdate: false,
     },
+    telemetry: {
+      enabled: false,
+      thresholdMs: 0,
+    },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',
   externalServicesUrls: {

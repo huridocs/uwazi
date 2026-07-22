@@ -21,16 +21,18 @@ const dependenciesContextMiddleware = (
   const correlationId = randomUUID();
 
   response.on('finish', () => {
-    ExecutionContext.telemetryCollector.add({
+    if (!tenant.telemetry?.enabled) return;
+
+    const { telemetryCollector } = ExecutionContext;
+    if (telemetryCollector.mainDurationMs() < (tenant.telemetry.thresholdMs ?? 0)) return;
+
+    telemetryCollector.add({
       method: request.method,
       path: request.path,
       status_code: response.statusCode,
     });
 
-    ExecutionContext.logger.info(
-      'HTTP Request Telemetry',
-      ExecutionContext.telemetryCollector.build()
-    );
+    ExecutionContext.logger.info('HTTP Request Telemetry', telemetryCollector.build());
   });
 
   return ExecutionContext.run(

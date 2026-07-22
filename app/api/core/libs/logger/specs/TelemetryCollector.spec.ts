@@ -119,6 +119,26 @@ describe('TelemetryCollector', () => {
     });
   });
 
+  describe('mainDurationMs', () => {
+    it('should return the main operation duration without building timings', () => {
+      const collector = new TelemetryCollector('main_operation');
+      currentTime += 150;
+
+      expect(collector.mainDurationMs()).toBeGreaterThanOrEqual(150);
+    });
+
+    it('should be consistent with the summary total_duration_ms from build()', () => {
+      const collector = new TelemetryCollector('main_operation');
+      collector.startTimer('operation_1')();
+      currentTime += 50;
+
+      const beforeBuild = collector.mainDurationMs();
+      const result = collector.build();
+
+      expect(result.summary.total_duration_ms).toBeGreaterThanOrEqual(beforeBuild);
+    });
+  });
+
   describe('build', () => {
     it('should include all metadata in the result', () => {
       const collector = new TelemetryCollector('main_operation');
