@@ -107,12 +107,8 @@ class ExecutionContext extends AsyncLocalStorage<Context> {
     store.actor = user;
   }
 
-  get correlationId(): string {
-    const correlationId = this.getStore()?.correlationId;
-
-    if (!correlationId) throw new Error('Correlation Id is not set');
-
-    return correlationId;
+  get correlationId() {
+    return this.getStore()?.correlationId;
   }
 
   attachContext<T extends Object>(anInstance: T, method: keyof T, deps: Context): void {
