@@ -55,7 +55,7 @@ const fallbackPrettifier = (error, req) => {
 };
 
 const appendOriginalError = (message, originalError) =>
-  `${message}\noriginal error: ${JSON.stringify(originalError, null, ' ')}`;
+  `${message}\noriginal error: ${inspect(originalError)}`;
 
 const obfuscateCredentials = req => {
   const obfuscated = req;
@@ -174,8 +174,8 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
 const getErrorMessage = (data, error) => {
   const originalError = data.original || error;
   const prettyMessage = data.requestId
-    ? `requestId: ${data.requestId} ${data.prettyMessage} ${error.stack}`
-    : data.prettyMessage + error.stack;
+    ? `requestId: ${data.requestId} ${data.prettyMessage}`
+    : data.prettyMessage;
 
   if (originalError instanceof Error) {
     const extendedError = appendOriginalError(prettyMessage, originalError);
