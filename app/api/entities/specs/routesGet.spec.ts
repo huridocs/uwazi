@@ -78,10 +78,7 @@ beforeAll(() => {
   });
 });
 
-describe.each([
-  { title: 'GET /api/entities - V1', featureFlags: { v2GetEntity: false } },
-  { title: 'GET /api/entities - V2', featureFlags: { v2GetEntity: true } },
-])('$title', ({ featureFlags }) => {
+describe('GET /api/entities', () => {
   beforeEach(async () => {
     app = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
       (req as any).user = authenticatedUser;
@@ -91,8 +88,6 @@ describe.each([
     appWithoutUser = setUpApp(routes);
 
     await testingEnvironment.setUp(fixtures);
-
-    testingTenants.changeCurrentTenant({ featureFlags });
   });
 
   describe('Basic entity retrieval', () => {
@@ -636,11 +631,10 @@ let appWithUser1: Application;
 let appWithAdmin: Application;
 let appWithEditor: Application;
 
-describe('GET /api/entities - V2 - Metadata relationship permission filtering', () => {
+describe('GET /api/entities - Metadata relationship permission filtering', () => {
   beforeAll(() => {
     testingTenants.mockCurrentTenant({
       name: 'default',
-      featureFlags: { v2GetEntity: true },
     });
   });
 
@@ -678,8 +672,6 @@ describe('GET /api/entities - V2 - Metadata relationship permission filtering', 
     });
 
     await testingEnvironment.setUp(fixtures);
-
-    testingTenants.changeCurrentTenant({ featureFlags: { v2GetEntity: true } });
   });
 
   describe('not logged in', () => {
@@ -710,10 +702,6 @@ describe('GET /api/entities - V2 - Metadata relationship permission filtering', 
               filterUnauthorizedRelated: true,
             } as any,
           ],
-        });
-
-        testingTenants.changeCurrentTenant({
-          featureFlags: { v2GetEntity: true },
         });
       });
 
@@ -816,10 +804,6 @@ describe('GET /api/entities - V2 - Metadata relationship permission filtering', 
               filterUnauthorizedRelated: true,
             } as any,
           ],
-        });
-
-        testingTenants.changeCurrentTenant({
-          featureFlags: { v2GetEntity: true },
         });
       });
 
@@ -935,10 +919,6 @@ describe('GET /api/entities - V2 - Metadata relationship permission filtering', 
             } as any,
           ],
         });
-
-        testingTenants.changeCurrentTenant({
-          featureFlags: { v2GetEntity: true },
-        });
       });
 
       it('should not have access to unpublished entities without explicit permissions (authorized: false)', async () => {
@@ -984,7 +964,7 @@ describe('GET /api/entities - V2 - Metadata relationship permission filtering', 
   });
 });
 
-describe('GET /api/entities - V2 _id compatibility', () => {
+describe('GET /api/entities - _id compatibility', () => {
   beforeEach(async () => {
     app = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
       (req as any).user = authenticatedUser;
@@ -994,10 +974,6 @@ describe('GET /api/entities - V2 _id compatibility', () => {
     appWithoutUser = setUpApp(routes);
 
     await testingEnvironment.setUp(fixtures);
-
-    testingTenants.changeCurrentTenant({
-      featureFlags: { v2GetEntity: true },
-    });
   });
 
   it('should fetch entity by _id', async () => {

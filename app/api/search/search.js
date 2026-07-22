@@ -25,7 +25,7 @@ import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex.js';
 import * as v2 from './v2_support.js';
 import { EntitiesQueryServiceFactory } from '#api/core/infrastructure/factories/EntitiesQueryServiceFactory.js';
 import { User } from '#api/users.v2/model/User.js';
-import { tenants } from '#api/tenants/index.js';
+import { PostgresUnrestrictedEntitiesQueryFactory } from '#api/core/infrastructure/factories/PostgresUnrestrictedEntitiesQueryFactory.js';
 
 function processParentThesauri(property, values, dictionaries, properties) {
   if (!values) {
@@ -304,17 +304,15 @@ const _getAggregationDictionary = async (
   if (property.type === 'relationship' || property.type === propertyTypes.newRelationship) {
     const entitiesSharedId = aggregation.buckets.map(bucket => bucket.key);
 
-    const bucketEntities = await entitiesModel.getUnrestricted(
-      {
-        sharedId: { $in: entitiesSharedId },
-        language,
-      },
-      {
-        sharedId: 1,
-        title: 1,
-        icon: 1,
-      }
-    );
+    const bucketEntities = PostgresUnrestrictedEntitiesQueryFactory.isEnabled()
+      ? await PostgresUnrestrictedEntitiesQueryFactory.default().getSharedIdLabelInfo(
+          entitiesSharedId,
+          language
+        )
+      : await entitiesModel.getUnrestricted(
+          { sharedId: { $in: entitiesSharedId }, language },
+          { sharedId: 1, title: 1, icon: 1 }
+        );
 
     const dictionary = thesauri.entitiesToThesauri(bucketEntities);
     return [dictionary, indexedDictionaryValues(dictionary)];
@@ -666,10 +664,8 @@ const processResponse = async (response, templates, dictionaries, language, filt
     return result;
   });
 
-  if (tenants.current()?.featureFlags?.v2GetEntity) {
-    const entitiesQueryService = EntitiesQueryServiceFactory.default(User.createFrom(user));
-    await entitiesQueryService.applyRelationshipPermissions(rows, User.createFrom(user));
-  }
+  const entitiesQueryService = EntitiesQueryServiceFactory.default(User.createFrom(user));
+  await entitiesQueryService.applyRelationshipPermissions(rows, User.createFrom(user));
 
   const aggregationsAll = response.body.aggregations?.all || {};
   const sanitizedAggregations = await _sanitizeAggregations(

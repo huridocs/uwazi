@@ -5,7 +5,7 @@ import { MongoEntitiesDAO } from '../mongodb/entity/MongoEntitiesDAO.js';
 import { FilesDAOFactory } from './FilesDAOFactory.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
-export class MongoEntitiesDAOFactory {
+export class EntitiesDAOFactory {
   static default(overrides?: {
     user?: User;
     transactionManager?: TransactionManager;

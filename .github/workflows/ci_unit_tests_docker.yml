@@ -145,8 +145,8 @@ jobs:
       postgres:
         image: postgres:16-alpine
         env:
-          POSTGRES_USER: uwazi
-          POSTGRES_PASSWORD: uwazi
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
           POSTGRES_DB: uwazi_testing
         options: >-
           --health-cmd pg_isready
@@ -202,6 +202,19 @@ jobs:
         run: |
           nohup socat TCP-LISTEN:6379,fork,reuseaddr TCP:redis:6379 &
 
+      - name: Provision PostgreSQL
+        env:
+          POSTGRES_HOST: postgres
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: uwazi_testing
+          PGPASSWORD: admin
+        run: |
+          apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends postgresql-client
+          yarn provision-postgres
+
       - name: Run tests (shard ${{ matrix.shard }}/4)
         env:
           ELASTICSEARCH_URL: http://elasticsearch:9200
@@ -210,8 +223,10 @@ jobs:
           REDIS_PORT: 6379
           POSTGRES_HOST: postgres
           POSTGRES_PORT: 5432
-          POSTGRES_USER: uwazi
-          POSTGRES_PASSWORD: uwazi
+          POSTGRES_USER: migrator_user
+          POSTGRES_PASSWORD: migrator_user
+          POSTGRES_APP_USER: app_user
+          POSTGRES_APP_PASSWORD: app_user
         run: node --expose-gc --no-compilation-cache ./node_modules/.bin/jest app/api app/shared --logHeapUsage --forceExit --maxWorkers=3 --shard=${{ matrix.shard }}/4
 
   api_unit_tests_aggregate:

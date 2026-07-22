@@ -82,6 +82,18 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     return this.chain(qb);
   }
 
+  /** OR-groups a JSONB superset (`@>`) check across multiple candidate values for one column. */
+  whereJsonSupersetOfAny(column: string, values: Record<string, unknown>[]): PostgresTable<TRow> {
+    const qb = this.qb.clone().where(builder => {
+      values.forEach((value, i) =>
+        i === 0
+          ? builder.whereJsonSupersetOf(column, value)
+          : builder.orWhereJsonSupersetOf(column, value)
+      );
+    });
+    return this.chain(qb);
+  }
+
   whereNot(column: string, value: Knex.Value): PostgresTable<TRow> {
     return this.chain(this.qb.clone().whereNot(column, value));
   }
