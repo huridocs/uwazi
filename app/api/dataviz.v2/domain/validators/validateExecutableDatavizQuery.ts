@@ -18,13 +18,6 @@ const validateQueryStructure = (query: DatavizQuery): void => {
   if (query.join?.type === 'relationship') {
     throw new DatavizInvalidQueryError('Relationship joins are not supported yet');
   }
-
-  const joinType = query.join?.type ?? (query.sources.length > 1 ? 'compare' : undefined);
-  if (query.sources.length > 1 && joinType === 'compare' && query.dimensions.length > 1) {
-    throw new DatavizInvalidQueryError(
-      'Compare mode supports only one dimension. Use union or a single dimension.'
-    );
-  }
 };
 
 /** @alias validateQueryStructure */

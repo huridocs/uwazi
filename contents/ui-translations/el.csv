@@ -312,6 +312,9 @@ Date modified,Ημερομηνία τροποποίησης
 "Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
                 measure over the primary dimension (e.g. max engine size per registration date).","Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
                 measure over the primary dimension (e.g. max engine size per registration date)."
+"Date or numeric × select enables line and area charts with one line per breakdown
+                value over time.","Date or numeric × select enables line and area charts with one line per breakdown
+                value over time."
 Day,Ημέρα
 "Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
           the Chart tab.","Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
@@ -809,7 +812,9 @@ of,από
 Ok,Εντάξει
 OK,Εντάξει
 one character,one character
-Only properties with the same name and configuration in every data source are available.,Only properties with the same name and configuration in every data source are available.
+"Only properties with the same name and configuration in every data source are available
+            for both dimensions.","Only properties with the same name and configuration in every data source are available
+            for both dimensions."
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Μόνο τα πρότυπα που δεν χρησιμοποιούνται ως πηγή σε κανέναν άλλο εξαγωγέα και δεν έχουν 
                 επιλεγεί ως προορισμός σε αυτόν τον εξαγωγέα είναι διαθέσιμα για επιλογή."

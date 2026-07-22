@@ -1,13 +1,11 @@
 import { useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router';
 import { mergeTabGroup, type TabGroupsState } from '#V2/Components/UI/Tabs/tabsAtoms.js';
 import { Entity as EntityType } from '#V2/api/entities/types.js';
+import { useUpdateEntityUrl } from '../../entityUrlState.js';
 import { MAIN_TAB_PARAM, SIDE_TAB_PARAM } from '../../urlParams.js';
 import { getSideTabButtons, type FilesSideTabsOptions } from '../sideTabSets.js';
-import { isValidMainTab, isValidSideTab, type MainTabId } from '../tabIds.js';
+import { MAIN_TAB, isValidMainTab, isValidSideTab, type MainTabId } from '../tabIds.js';
 import { resolveSideTabId, type SideTabButton } from './resolveSideTabId.js';
-
-type SetSearchParams = ReturnType<typeof useSearchParams>[1];
 
 type UseEntityTabUrlSyncParams = {
   entity: EntityType;
@@ -17,9 +15,8 @@ type UseEntityTabUrlSyncParams = {
   activeMainTab: MainTabId;
   mainTabIds: Set<MainTabId>;
   sideTabButtons: SideTabButton[];
-  preferSearch: boolean;
   searchParams: URLSearchParams;
-  setSearchParams: SetSearchParams;
+  hashParams: URLSearchParams;
   setTabGroups: (updater: (prev: TabGroupsState) => TabGroupsState) => void;
 };
 
@@ -31,14 +28,14 @@ const useEntityTabUrlSync = ({
   activeMainTab,
   mainTabIds,
   sideTabButtons,
-  preferSearch,
   searchParams,
-  setSearchParams,
+  hashParams,
   setTabGroups,
 }: UseEntityTabUrlSyncParams) => {
+  const updateEntityUrl = useUpdateEntityUrl();
   const previousSharedId = useRef(entity.sharedId);
   const mainTabParam = searchParams.get(MAIN_TAB_PARAM);
-  const sideTabParam = searchParams.get(SIDE_TAB_PARAM);
+  const sideTabParam = hashParams.get(SIDE_TAB_PARAM);
 
   useEffect(() => {
     if (previousSharedId.current === entity.sharedId) return;
@@ -50,8 +47,8 @@ const useEntityTabUrlSync = ({
   }, [entity.sharedId, setTabGroups]);
 
   useEffect(() => {
-    const syncTabsFromParams = (params: URLSearchParams) => {
-      const mainFromUrl = params.get(MAIN_TAB_PARAM);
+    const syncTabsFromParams = (mainParams: URLSearchParams, sideParams: URLSearchParams) => {
+      const mainFromUrl = mainParams.get(MAIN_TAB_PARAM);
       const mainId =
         isValidMainTab(mainFromUrl) && mainTabIds.has(mainFromUrl) ? mainFromUrl : activeMainTab;
       const sideButtons = getSideTabButtons({
@@ -61,7 +58,7 @@ const useEntityTabUrlSync = ({
         mainDocumentId,
         filesSideTabs,
       });
-      const sideId = resolveSideTabId(params.get(SIDE_TAB_PARAM), sideButtons, preferSearch);
+      const sideId = resolveSideTabId(sideParams.get(SIDE_TAB_PARAM), sideButtons);
 
       setTabGroups(prev => {
         let next = mergeTabGroup(prev, 'entity-main', { activeTabId: mainId });
@@ -72,43 +69,50 @@ const useEntityTabUrlSync = ({
       });
     };
 
-    syncTabsFromParams(searchParams);
-    const onPopState = () => {
-      syncTabsFromParams(new URLSearchParams(window.location.search));
-    };
-    window.addEventListener('popstate', onPopState);
-    return () => window.removeEventListener('popstate', onPopState);
+    syncTabsFromParams(searchParams, hashParams);
   }, [
     entity,
     activeMainTab,
     mainTabParam,
     sideTabParam,
     searchParams,
+    hashParams,
     hasMainDocument,
     mainDocumentId,
     filesSideTabs,
     mainTabIds,
-    preferSearch,
     setTabGroups,
   ]);
 
   useEffect(() => {
-    const raw = searchParams.get(SIDE_TAB_PARAM);
+    const raw = hashParams.get(SIDE_TAB_PARAM);
     if (!raw || !isValidSideTab(raw)) return;
     if (sideTabButtons.some(button => button.id === raw)) return;
-    const next = new URLSearchParams(searchParams.toString());
-    next.delete(SIDE_TAB_PARAM);
-    setSearchParams(next, { replace: true, preventScrollReset: true });
-  }, [searchParams, activeMainTab, sideTabButtons, setSearchParams]);
+    updateEntityUrl({
+      hash: next => {
+        next.delete(SIDE_TAB_PARAM);
+      },
+    });
+  }, [hashParams, activeMainTab, sideTabButtons, updateEntityUrl]);
 
   useEffect(() => {
     const raw = searchParams.get(MAIN_TAB_PARAM);
     if (!raw || !isValidMainTab(raw)) return;
+    if (raw === MAIN_TAB.DOCUMENT && hasMainDocument) {
+      updateEntityUrl({
+        search: next => {
+          next.delete(MAIN_TAB_PARAM);
+        },
+      });
+      return;
+    }
     if (mainTabIds.has(raw)) return;
-    const next = new URLSearchParams(searchParams.toString());
-    next.delete(MAIN_TAB_PARAM);
-    setSearchParams(next, { replace: true, preventScrollReset: true });
-  }, [searchParams, mainTabIds, setSearchParams]);
+    updateEntityUrl({
+      search: next => {
+        next.delete(MAIN_TAB_PARAM);
+      },
+    });
+  }, [searchParams, mainTabIds, hasMainDocument, updateEntityUrl]);
 };
 
 export { useEntityTabUrlSync };

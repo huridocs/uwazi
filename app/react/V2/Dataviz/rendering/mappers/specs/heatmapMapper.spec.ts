@@ -191,4 +191,50 @@ describe('heatmapMapper', () => {
 
     expect(option).toBeNull();
   });
+
+  it('should render small-multiple heatmaps for compare breakdown data', () => {
+    const option = requireOption(
+      mapHeatmapOption(
+        {
+          datavizId: '1',
+          generatedAt: '2026-01-01T00:00:00.000Z',
+          stale: false,
+          meta: { totalEntities: 6, truncated: false },
+          series: [
+            {
+              id: 'owners',
+              label: 'Owners',
+              points: [
+                {
+                  key: 'spain',
+                  label: 'Spain',
+                  value: 3,
+                  breakdown: [{ key: 'male', label: 'Male', value: 3 }],
+                },
+              ],
+            },
+            {
+              id: 'owners_2',
+              label: 'Owners 2',
+              points: [
+                {
+                  key: 'france',
+                  label: 'France',
+                  value: 2,
+                  breakdown: [{ key: 'female', label: 'Female', value: 2 }],
+                },
+              ],
+            },
+          ],
+        },
+        { type: 'heatmap' },
+        { colorMode: 'theme' }
+      )
+    );
+
+    const grids = option.grid as unknown[];
+    const series = option.series as unknown[];
+    expect(grids).toHaveLength(2);
+    expect(series).toHaveLength(2);
+  });
 });
