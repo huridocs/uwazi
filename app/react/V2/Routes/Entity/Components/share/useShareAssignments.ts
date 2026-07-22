@@ -41,6 +41,9 @@ const useShareAssignments = (setDirty: (value: boolean) => void) => {
   };
 
   const appendMatch = (match: MemberWithPermission) => {
+    if (assignmentsRef.current.some(member => memberKey(member) === memberKey(match))) {
+      return false;
+    }
     commitAssignments(prev => {
       if (prev.some(member => memberKey(member) === memberKey(match))) return prev;
       return [...prev, { ...match, level: match.level || AccessLevels.READ }];
