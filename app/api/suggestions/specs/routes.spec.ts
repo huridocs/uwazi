@@ -1,7 +1,7 @@
-/* eslint-disable max-statements */
 import type { Application, NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 import { ObjectId } from 'mongodb';
+import waitForExpect from 'wait-for-expect';
 
 import entities from '#api/entities/index.js';
 import { search } from '#api/search/index.js';
@@ -15,7 +15,6 @@ import {
 } from '#api/suggestions/specs/fixtures.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { iosocket, setUpApp, TestEmitSources } from '#api/utils/testingRoutes.js';
-import waitForExpect from 'wait-for-expect';
 import { Suggestions } from '../suggestions.js';
 
 jest.mock(
@@ -115,7 +114,7 @@ describe('POST /api/suggestions/train', () => {
 
 describe('POST /api/suggestions/accept', () => {
   const expectEntityReindexed = (sharedId: string) => {
-    const calls = (search.indexEntities as jest.Mock).mock.calls;
+    const { calls } = (search.indexEntities as jest.Mock).mock;
     const hasExpectedCall = calls.some(
       ([query]) =>
         query &&

@@ -20,10 +20,6 @@ jest.mock('#api/search/index.js', () => {
     search: {
       indexEntities: jest.fn().mockResolvedValue(undefined),
       updateTemplatesMapping: jest.fn().mockResolvedValue(undefined),
-      delete: jest.fn().mockResolvedValue(undefined),
-      bulkIndex: jest.fn().mockResolvedValue(undefined),
-      bulkDelete: jest.fn().mockResolvedValue(undefined),
-      deleteLanguage: jest.fn().mockResolvedValue(undefined),
     },
     elastic,
   };
