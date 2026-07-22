@@ -9,6 +9,7 @@ type SegmentedControlItemProps = {
   active?: boolean;
   disabled?: boolean;
   title?: string;
+  ariaDescribedBy?: string;
   onSelect?: () => void;
   className?: string;
 };
@@ -20,6 +21,7 @@ const SegmentedControlItem = ({
   active: activeProp,
   disabled: disabledProp = false,
   title,
+  ariaDescribedBy,
   onSelect,
   className = '',
 }: SegmentedControlItemProps) => {
@@ -43,6 +45,7 @@ const SegmentedControlItem = ({
       data-value={value}
       aria-checked={active}
       aria-label={ariaLabel}
+      aria-describedby={ariaDescribedBy}
       title={title ?? ariaLabel}
       tabIndex={active ? 0 : -1}
       disabled={disabled}
