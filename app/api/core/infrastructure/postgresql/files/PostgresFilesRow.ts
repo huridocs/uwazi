@@ -5,7 +5,7 @@ import type { TableOfContent } from '#api/core/domain/files/domainTypes.js';
 type FilesRow = {
   _id: string;
   originalname: string;
-  filename: string;
+  filename: string | null;
   mimetype: string;
   size: number;
   creationDate: number;
