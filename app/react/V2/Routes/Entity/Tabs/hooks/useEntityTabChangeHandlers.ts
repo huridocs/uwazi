@@ -1,11 +1,9 @@
 import { useCallback } from 'react';
-import { useSearchParams } from 'react-router';
 import { Entity as EntityType } from '#V2/api/entities/types.js';
+import { useUpdateEntityUrl } from '../../entityUrlState.js';
 import { MAIN_TAB_PARAM, SIDE_TAB_PARAM } from '../../urlParams.js';
 import { getSideTabButtons, type FilesSideTabsOptions } from '../sideTabSets.js';
-import { isValidMainTab, isValidSideTab, type MainTabId } from '../tabIds.js';
-
-type SetSearchParams = ReturnType<typeof useSearchParams>[1];
+import { MAIN_TAB, isValidMainTab, isValidSideTab, type MainTabId } from '../tabIds.js';
 
 type Params = {
   entity: EntityType;
@@ -13,7 +11,7 @@ type Params = {
   mainDocumentId?: string;
   filesSideTabs: FilesSideTabsOptions;
   activeMainTab: MainTabId;
-  setSearchParams: SetSearchParams;
+  hashParams: URLSearchParams;
 };
 
 const useEntityTabChangeHandlers = ({
@@ -22,52 +20,68 @@ const useEntityTabChangeHandlers = ({
   mainDocumentId,
   filesSideTabs,
   activeMainTab,
-  setSearchParams,
+  hashParams,
 }: Params) => {
+  const updateEntityUrl = useUpdateEntityUrl();
+
   const onMainTabChange = useCallback(
     (selectedMainTab: string) => {
       if (!isValidMainTab(selectedMainTab)) return;
-      setSearchParams(
-        prev => {
-          const next = new URLSearchParams(prev);
-          if (selectedMainTab !== activeMainTab) {
-            const nextSideButtons = getSideTabButtons({
-              activeMainTab: selectedMainTab,
-              entity,
-              hasMainDocument,
-              mainDocumentId,
-              filesSideTabs,
-            });
-            const rawS = next.get(SIDE_TAB_PARAM);
-            const sStillValid =
-              Boolean(rawS) &&
-              isValidSideTab(rawS) &&
-              nextSideButtons.some(button => button.id === rawS);
-            if (!sStillValid) next.delete(SIDE_TAB_PARAM);
+
+      updateEntityUrl({
+        search: next => {
+          if (selectedMainTab === MAIN_TAB.DOCUMENT && hasMainDocument) {
+            next.delete(MAIN_TAB_PARAM);
+          } else {
+            next.set(MAIN_TAB_PARAM, selectedMainTab);
           }
-          next.set(MAIN_TAB_PARAM, selectedMainTab);
-          return next;
         },
-        { replace: true, preventScrollReset: true }
-      );
+        hash: next => {
+          if (selectedMainTab === activeMainTab) return;
+          const nextSideButtons = getSideTabButtons({
+            activeMainTab: selectedMainTab,
+            entity,
+            hasMainDocument,
+            mainDocumentId,
+            filesSideTabs,
+          });
+          const rawS = hashParams.get(SIDE_TAB_PARAM);
+          const sStillValid =
+            Boolean(rawS) &&
+            isValidSideTab(rawS) &&
+            nextSideButtons.some(button => button.id === rawS);
+          if (!sStillValid) {
+            next.delete(SIDE_TAB_PARAM);
+          }
+        },
+      });
     },
-    [activeMainTab, setSearchParams, entity, hasMainDocument, mainDocumentId, filesSideTabs]
+    [
+      activeMainTab,
+      updateEntityUrl,
+      hashParams,
+      entity,
+      hasMainDocument,
+      mainDocumentId,
+      filesSideTabs,
+    ]
   );
 
   const onSideTabChange = useCallback(
     (selectedSideTab: string) => {
       if (!isValidSideTab(selectedSideTab)) return;
-      setSearchParams(
-        prev => {
-          const next = new URLSearchParams(prev);
-          next.set(SIDE_TAB_PARAM, selectedSideTab);
-          if (!next.get(MAIN_TAB_PARAM)) next.set(MAIN_TAB_PARAM, activeMainTab);
-          return next;
+      updateEntityUrl({
+        search: next => {
+          if (!next.get(MAIN_TAB_PARAM) && activeMainTab !== MAIN_TAB.DOCUMENT) {
+            next.set(MAIN_TAB_PARAM, activeMainTab);
+          }
         },
-        { replace: true, preventScrollReset: true }
-      );
+        hash: next => {
+          next.set(SIDE_TAB_PARAM, selectedSideTab);
+        },
+      });
     },
-    [activeMainTab, setSearchParams]
+    [activeMainTab, updateEntityUrl]
   );
 
   return { onMainTabChange, onSideTabChange };

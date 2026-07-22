@@ -139,9 +139,7 @@ const DocumentTab = ({
             />
           ) : null}
         </div>
-        <div
-          className={`h-full min-h-0 overflow-auto rounded-md bg-warm ${isRaw ? 'block' : 'hidden'}`}
-        >
+        <div className={`h-full min-h-0 overflow-auto ${isRaw ? 'block' : 'hidden'}`}>
           <PlainText text={pagePlaintext || ''} dir={isRtl ? 'rtl' : 'ltr'} />
         </div>
       </div>

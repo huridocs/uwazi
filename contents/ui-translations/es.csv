@@ -307,6 +307,9 @@ Date modified,Fecha de la modificación
 "Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
                 measure over the primary dimension (e.g. max engine size per registration date).","Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
                 measure over the primary dimension (e.g. max engine size per registration date)."
+"Date or numeric × select enables line and area charts with one line per breakdown
+                value over time.","Date or numeric × select enables line and area charts with one line per breakdown
+                value over time."
 Day,Día
 "Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
           the Chart tab.","Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
@@ -630,6 +633,7 @@ Live preview,Live preview
 Live translate,Traducción en vivo
 Load example,Load example
 Loading,Cargando
+Local time,Local time
 Login,Acceder
 Login button,Inicio de Sesión
 Login failed,Error de inicio de sesión
@@ -797,7 +801,9 @@ of,de
 Ok,De acuerdo
 OK,OK
 one character,one character
-Only properties with the same name and configuration in every data source are available.,Only properties with the same name and configuration in every data source are available.
+"Only properties with the same name and configuration in every data source are available
+            for both dimensions.","Only properties with the same name and configuration in every data source are available
+            for both dimensions."
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection."

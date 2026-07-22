@@ -309,6 +309,9 @@ Date modified,수정한 날짜
 "Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
                 measure over the primary dimension (e.g. max engine size per registration date).","Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
                 measure over the primary dimension (e.g. max engine size per registration date)."
+"Date or numeric × select enables line and area charts with one line per breakdown
+                value over time.","Date or numeric × select enables line and area charts with one line per breakdown
+                value over time."
 Day,일자
 "Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
           the Chart tab.","Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
@@ -632,6 +635,7 @@ Live preview,Live preview
 Live translate,Live translate
 Load example,Load example
 Loading,Loading
+Local time,Local time
 Login,로그인
 Login button,로그인 버튼
 Login failed,로그인 실패
@@ -799,7 +803,9 @@ of,의
 Ok,확인
 OK,확인
 one character,one character
-Only properties with the same name and configuration in every data source are available.,Only properties with the same name and configuration in every data source are available.
+"Only properties with the same name and configuration in every data source are available
+            for both dimensions.","Only properties with the same name and configuration in every data source are available
+            for both dimensions."
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection."

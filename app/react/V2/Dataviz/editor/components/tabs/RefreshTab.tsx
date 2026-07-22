@@ -40,9 +40,54 @@ const REFRESH_OPTIONS: {
 
 const SNAPSHOT_MODES = new Set<RefreshMode>(['snapshot_manual', 'snapshot_scheduled']);
 
-const SCHEDULED_REFRESH_DEFAULTS: Partial<DatavizDefinition['refresh']> = {
+const SCHEDULE_TIME_STEP_MINUTES = 15;
+const LOCAL_DEFAULT_START_HOUR = 1;
+const LOCAL_DEFAULT_END_HOUR = 8;
+
+const formatTimeHHMM = (hours: number, minutes: number) =>
+  `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+
+const localTimeToUtcTime = (localTime: string) => {
+  const [hours, minutes] = localTime.split(':').map(Number);
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) {
+    return localTime;
+  }
+
+  const localDate = new Date();
+  localDate.setHours(hours, minutes, 0, 0);
+  return formatTimeHHMM(localDate.getUTCHours(), localDate.getUTCMinutes());
+};
+
+const utcTimeToLocalTime = (utcTime?: string) => {
+  if (!utcTime) {
+    return null;
+  }
+
+  const [hours, minutes] = utcTime.split(':').map(Number);
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) {
+    return null;
+  }
+
+  const utcDate = new Date();
+  utcDate.setUTCHours(hours, minutes, 0, 0);
+  return formatTimeHHMM(utcDate.getHours(), utcDate.getMinutes());
+};
+
+const randomScheduledUtcTime = () => {
+  const totalLocalMinutes =
+    (LOCAL_DEFAULT_END_HOUR - LOCAL_DEFAULT_START_HOUR) * 60 + SCHEDULE_TIME_STEP_MINUTES;
+  const totalSlots = Math.floor(totalLocalMinutes / SCHEDULE_TIME_STEP_MINUTES);
+  const randomSlot = Math.floor(Math.random() * totalSlots);
+  const minutesFromStart = randomSlot * SCHEDULE_TIME_STEP_MINUTES;
+  const localHours = LOCAL_DEFAULT_START_HOUR + Math.floor(minutesFromStart / 60);
+  const localMinutes = minutesFromStart % 60;
+  const localTime = formatTimeHHMM(localHours, localMinutes);
+
+  return localTimeToUtcTime(localTime);
+};
+
+const SCHEDULED_REFRESH_DEFAULTS: Omit<DatavizDefinition['refresh'], 'refreshMode'> = {
   schedule: 'daily',
-  scheduleTime: '02:00',
   cronTimezone: 'UTC',
 };
 
@@ -75,6 +120,7 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
   const { notify } = useRequestStatus();
   const [refreshing, setRefreshing] = useState(false);
   const [cooldownTick, setCooldownTick] = useState(0);
+  const defaultScheduledTime = useMemo(randomScheduledUtcTime, []);
   const { refresh } = definition;
   const canRefreshSnapshot = isPersistedId(definition.id);
   const recentlyRefreshed = useMemo(
@@ -155,8 +201,7 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
                         ...(option.value === 'snapshot_scheduled'
                           ? {
                               schedule: refresh.schedule ?? SCHEDULED_REFRESH_DEFAULTS.schedule,
-                              scheduleTime:
-                                refresh.scheduleTime ?? SCHEDULED_REFRESH_DEFAULTS.scheduleTime,
+                              scheduleTime: refresh.scheduleTime ?? defaultScheduledTime,
                               cronTimezone: SCHEDULED_REFRESH_DEFAULTS.cronTimezone,
                             }
                           : {}),
@@ -261,10 +306,16 @@ const RefreshTab = ({ definition, constraints, onPatchRefresh }: RefreshTabProps
             <input
               id="schedule-time"
               type="time"
-              value={refresh.scheduleTime || '02:00'}
+              value={refresh.scheduleTime || defaultScheduledTime}
               onChange={e => onPatchRefresh({ scheduleTime: e.target.value })}
               className="rounded-lg border border-border bg-paper px-3 py-2 text-sm text-ink"
             />
+            {utcTimeToLocalTime(refresh.scheduleTime || defaultScheduledTime) && (
+              <p className="text-xs text-ink-muted">
+                {utcTimeToLocalTime(refresh.scheduleTime || defaultScheduledTime)}{' '}
+                <Translate>Local time</Translate>
+              </p>
+            )}
           </label>
           <p className="text-xs text-ink-secondary">
             <Translate>Schedules run in UTC (Coordinated Universal Time).</Translate>

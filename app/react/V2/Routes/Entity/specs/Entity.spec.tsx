@@ -354,7 +354,7 @@ describe('Entity view', () => {
     const pageText = 'This is the plain text';
 
     beforeAll(() => {
-      jest.spyOn(files, 'getPagePlaintext').mockResolvedValue(pageText);
+      jest.spyOn(files, 'getDocumentPlaintext').mockResolvedValue(pageText);
     });
 
     afterAll(() => {
@@ -380,14 +380,15 @@ describe('Entity view', () => {
 
       expect(screen.getByTestId('mock-pdf')).toBeInTheDocument();
 
-      expect(screen.getByText('This is the plain text').parentElement?.classList).toContain(
-        'hidden'
-      );
+      expect(
+        screen.getByText('This is the plain text').closest('.overflow-auto')?.classList
+      ).toContain('hidden');
 
       selectPlainTextView();
 
       await waitFor(() => {
-        expect(screen.getByText(pageText).parentElement?.classList).toContain('block');
+        expect(screen.getByText(pageText).closest('.overflow-auto')?.classList).toContain('block');
+        expect(screen.getByRole('region', { name: 'Page 1' })).toHaveAttribute('id', 'page1');
       });
     });
 
@@ -411,7 +412,7 @@ describe('Entity view', () => {
       await checkEntityRendered();
 
       await waitFor(() => {
-        expect(screen.getByText(pageText).parentElement?.classList).toContain('block');
+        expect(screen.getByText(pageText).closest('.overflow-auto')?.classList).toContain('block');
       });
 
       jest.restoreAllMocks();
@@ -486,14 +487,10 @@ describe('Entity view', () => {
 
   describe('search tab', () => {
     it('should be shown by default when there is a search in the URL', async () => {
-      const snippets = {
-        data: [],
-      };
-
       render(
         <TestRouterContext
-          loaderData={{ entity: sampleEntity, pagePlaintext: '', searchResults: snippets }}
-          initialEntries={['/?searchTerm=term']}
+          loaderData={{ entity: sampleEntity, pagePlaintext: '' }}
+          initialEntries={['/#s=search&searchTerm=term']}
         >
           <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
             <Entity />
@@ -531,7 +528,7 @@ describe('Entity view', () => {
             mainDocument: sampleMainDocument,
             pagePlaintext: '',
           }}
-          initialEntries={['/?s=search&searchTerm=search']}
+          initialEntries={['/#s=search&searchTerm=search']}
         >
           <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
             <Entity />
