@@ -10,7 +10,10 @@ import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js'
 import { ApiError } from '#shared/apiClient/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { userAtom } from '#V2/atoms/index.js';
-import { EntityProvider } from '#V2/Routes/Entity/Components/context/EntityContext.js';
+import {
+  EntityProvider,
+  useEntityContext,
+} from '#V2/Routes/Entity/Components/context/EntityContext.js';
 import { ServicesProvider } from '#V2/services/index.js';
 import { createTestServices } from '#V2/testing/createTestServices.js';
 import { ShareEntityModal } from '../ShareEntityModal.js';
@@ -30,6 +33,19 @@ const entity = {
   published: false,
 } as Entity;
 
+const EntityProbe = () => {
+  const { entity: current, setEntity } = useEntityContext();
+  return (
+    <div>
+      <button type="button" onClick={() => setEntity({ ...current, title: 'Updated during save' })}>
+        Mutate entity
+      </button>
+      <span data-testid="entity-title">{current.title}</span>
+      <span data-testid="entity-published">{String(current.published)}</span>
+    </div>
+  );
+};
+
 const granted: MemberWithPermission[] = [
   {
     refId: 'user-1',
@@ -46,7 +62,8 @@ const searchCollaborators = jest.fn();
 const renderModal = (
   role: 'admin' | 'collaborator' = 'admin',
   onClose = jest.fn(),
-  sharedIds: string[] = ['shared-1']
+  sharedIds: string[] = ['shared-1'],
+  withProbe = false
 ) => {
   const store = createStore();
   store.set(userAtom, {
@@ -68,6 +85,7 @@ const renderModal = (
     <Provider store={store}>
       <ServicesProvider value={testServices}>
         <EntityProvider entity={entity}>
+          {withProbe ? <EntityProbe /> : null}
           <ShareEntityModal sharedIds={ids} onClose={onClose} />
         </EntityProvider>
       </ServicesProvider>
@@ -126,6 +144,29 @@ describe('ShareEntityModal', () => {
     });
     expect(await screen.findByText('alice')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save changes' })).toBeInTheDocument();
+  });
+
+  it('does not duplicate a collaborator when added again before re-render settles', async () => {
+    const user = userEvent.setup();
+    const alice = { refId: 'user-2', type: PermissionType.USER, label: 'alice' };
+    searchCollaborators.mockResolvedValue([[alice]]);
+
+    renderModal();
+    await screen.findByText('admin');
+
+    const input = screen.getByPlaceholderText('Username, email or group');
+    await user.type(input, 'alice');
+    await user.click(screen.getByRole('button', { name: 'Add' }));
+    expect(await screen.findByText('alice')).toBeInTheDocument();
+
+    await user.type(input, 'alice');
+    await user.click(screen.getByRole('button', { name: 'Add' }));
+
+    await waitFor(() => {
+      expect(searchCollaborators).toHaveBeenCalledTimes(2);
+    });
+    expect(screen.getAllByText('alice')).toHaveLength(1);
+    expect(await screen.findByText('No user or group found')).toBeInTheDocument();
   });
 
   it('rejects prefix-only group matches and keeps focus in the lookup field', async () => {
@@ -223,6 +264,33 @@ describe('ShareEntityModal', () => {
       });
     });
     expect(onClose).toHaveBeenCalled();
+  });
+
+  it('applies published onto the latest entity after save', async () => {
+    const user = userEvent.setup();
+    let finishSave: (value: unknown) => void = () => undefined;
+    savePermissions.mockImplementation(
+      async () =>
+        new Promise(resolve => {
+          finishSave = resolve;
+        })
+    );
+
+    const { onClose } = renderModal('admin', jest.fn(), ['shared-1'], true);
+    await screen.findByText('admin');
+
+    await user.click(screen.getByRole('radio', { name: 'Published' }));
+    await user.click(screen.getByRole('button', { name: 'Save changes' }));
+    await user.click(screen.getByRole('button', { name: 'Mutate entity' }));
+    expect(screen.getByTestId('entity-title')).toHaveTextContent('Updated during save');
+
+    finishSave([{ ids: ['shared-1'], permissions: [] }]);
+
+    await waitFor(() => {
+      expect(onClose).toHaveBeenCalled();
+    });
+    expect(screen.getByTestId('entity-title')).toHaveTextContent('Updated during save');
+    expect(screen.getByTestId('entity-published')).toHaveTextContent('true');
   });
 
   it('hides general access controls for collaborators', async () => {

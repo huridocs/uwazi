@@ -5,7 +5,7 @@ import {
   SegmentedControlItem,
   SegmentedControlRoot,
 } from '#V2/Components/UI/SegmentedControl/index.js';
-import { hintClass, isVisibility, noticeClass, type Visibility } from './shareUtils.js';
+import { isVisibility, type Visibility } from './shareUtils.js';
 
 type GeneralAccessSectionProps = {
   visibility: Visibility;
@@ -69,7 +69,7 @@ const GeneralAccessSection = ({
             <div
               id={publicTipId}
               role="tooltip"
-              className={`pointer-events-none absolute inset-e-0 top-full z-20 mt-1.5 w-56 ${hintClass}`}
+              className="pointer-events-none absolute inset-e-0 top-full z-20 mt-1.5 w-56 rounded-md border border-border bg-paper px-2.5 py-1.5 text-[10px] font-medium leading-snug text-ink"
             >
               <Translate translationKey="Public entities description">
                 Caution: the selected entities will be **public**. Anyone will be able to see them.
@@ -78,12 +78,12 @@ const GeneralAccessSection = ({
           ) : null}
         </div>
       </div>
-      <p className={noticeClass}>
+      <p className="flex items-center gap-1 text-[10px] leading-tight text-ink-secondary">
         <LockClosedIcon className="h-3 w-3 shrink-0" aria-hidden />
         <Translate>Administrators and Editors always have edit access</Translate>
       </p>
       {isPublished && !showPublicTip ? (
-        <p className={noticeClass}>
+        <p className="flex items-center gap-1 text-[10px] leading-tight text-ink-secondary">
           <ExclamationTriangleIcon className="h-3 w-3 shrink-0 text-warning" aria-hidden />
           <Translate>Anyone can see this entity</Translate>
         </p>

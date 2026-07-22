@@ -2,9 +2,9 @@
  * @jest-environment node
  */
 import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
-import { exactCollaboratorMatches } from '../shareUtils.js';
+import { filterCollaboratorCandidates } from '../shareUtils.js';
 
-describe('exactCollaboratorMatches', () => {
+describe('filterCollaboratorCandidates', () => {
   const user = {
     refId: 'u1',
     type: PermissionType.USER,
@@ -31,20 +31,20 @@ describe('exactCollaboratorMatches', () => {
   };
 
   it('keeps API-exact users even when term is an email (label is username)', () => {
-    expect(exactCollaboratorMatches('alice@example.com', [user], [])).toEqual([user]);
+    expect(filterCollaboratorCandidates('alice@example.com', [user], [])).toEqual([user]);
   });
 
   it('requires exact group label and drops prefix-only groups', () => {
-    expect(exactCollaboratorMatches('alice', [prefixGroup], [])).toEqual([]);
-    expect(exactCollaboratorMatches('alice', [group], [])).toEqual([group]);
+    expect(filterCollaboratorCandidates('alice', [prefixGroup], [])).toEqual([]);
+    expect(filterCollaboratorCandidates('alice', [group], [])).toEqual([group]);
   });
 
   it('drops public and already assigned members', () => {
-    expect(exactCollaboratorMatches('alice', [publicMember, user], [user])).toEqual([]);
+    expect(filterCollaboratorCandidates('alice', [publicMember, user], [user])).toEqual([]);
   });
 
   it('can return both a user and an exact-named group', () => {
-    expect(exactCollaboratorMatches('alice', [user, group, prefixGroup], [])).toEqual([
+    expect(filterCollaboratorCandidates('alice', [user, group, prefixGroup], [])).toEqual([
       user,
       group,
     ]);

@@ -704,6 +704,7 @@ Multi-source mode,Multi-source mode
 Multiple date,Multiple date
 Multiple date range,Multiple date range
 Multiple inherited properties warning ([property 1] affects [property 2]),etkiler
+Multiple matches found,Multiple matches found
 Multiple relationships edit description,Making changes to this property will affect other properties on this template because they all share relationships with the same configuration.
 Multiple select,Multiple select
 Name,Ad

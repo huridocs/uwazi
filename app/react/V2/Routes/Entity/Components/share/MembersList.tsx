@@ -4,7 +4,7 @@ import { Translate } from '#app/I18N/index.js';
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 import { MixedAccessLevels } from '#shared/types/permissionSchema.js';
 import { MemberRow } from './MemberRow.js';
-import { memberKey, statusMessageClass } from './shareUtils.js';
+import { memberKey } from './shareUtils.js';
 
 type MembersListProps = {
   loading: boolean;
@@ -16,7 +16,7 @@ type MembersListProps = {
 };
 
 const StatusMessage = ({ children }: { children: React.ReactNode }) => (
-  <p className={statusMessageClass}>{children}</p>
+  <p className="px-1 py-6 text-center text-sm text-ink-muted">{children}</p>
 );
 
 const MembersList = ({
