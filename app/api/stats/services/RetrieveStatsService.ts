@@ -3,6 +3,7 @@ import { elastic } from '#api/search/index.js';
 import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { MongoFilesDAO } from '#api/core/infrastructure/mongodb/files/MongoFilesDAO.js';
+import { MongoEntitiesDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntitiesDAO.js';
 
 type RoleCount = {
   _id: UserSchema['role'];
@@ -14,9 +15,12 @@ export class RetrieveStatsService {
 
   private readonly filesDAO: MongoFilesDAO;
 
-  constructor(db: Db, filesDAO: MongoFilesDAO) {
+  private readonly entitiesDAO: MongoEntitiesDAO;
+
+  constructor(db: Db, filesDAO: MongoFilesDAO, entitiesDAO: MongoEntitiesDAO) {
     this.db = db;
     this.filesDAO = filesDAO;
+    this.entitiesDAO = entitiesDAO;
   }
 
   async execute(language: string) {
@@ -69,9 +73,9 @@ export class RetrieveStatsService {
     }
   }
 
-  private async calculateEntityStats(language: string) {
+  private async calculateEntityStats(_language: string) {
     return {
-      total: await this.db.collection('entities').countDocuments({ language }),
+      total: await this.entitiesDAO.countDistinctSharedIds(),
     };
   }
 

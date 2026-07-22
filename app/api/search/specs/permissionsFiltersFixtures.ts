@@ -1,5 +1,8 @@
 import { UserRole } from '#api/core/domain/user/User.js';
 import { testingDB, DBFixture } from '#api/utils/testing_db.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+
+const f = getFixturesFactory();
 
 const users = {
   user1: {
@@ -122,6 +125,12 @@ export const permissionsLevelFixtures: DBFixture = {
       template: template3Id,
       permissions: [{ level: 'write', refId: users.user3._id, type: 'user' }],
     },
+  ],
+
+  templates: [
+    f.template('template1', [], { _id: template1Id }),
+    f.template('template2', [], { _id: template2Id }),
+    f.template('template3', [], { _id: template3Id }),
   ],
 
   users: Object.values(users),

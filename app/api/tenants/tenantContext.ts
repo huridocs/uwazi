@@ -22,7 +22,6 @@ type Tenant = {
     paragraphExtraction?: boolean;
     fileCacheHeaders?: boolean;
     themeCustomization?: boolean;
-    v2GetEntity?: boolean;
     newHeader?: boolean;
     v2Languages?: boolean;
     postgresThesauri?: boolean;

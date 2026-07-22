@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
@@ -489,6 +490,25 @@ describe('MongoEntitiesDAO', () => {
       const dao = createSut();
       const entities = await dao.findBySharedIds(['non_existent']);
       expect(entities).toHaveLength(0);
+    });
+  });
+
+  describe('getByInternalId()', () => {
+    it('returns the entity matching the provided _id with the requested projection', async () => {
+      const dao = createSut();
+      const [entity] = await dao.findBySharedIds(['entity_1']);
+
+      const found = await dao.getByInternalId(entity._id.toString(), { sharedId: 1, language: 1 });
+
+      expect(found?.sharedId).toBe('entity_1');
+      expect(found?.language).toBe('en');
+    });
+
+    it('returns null when no entity matches the provided _id', async () => {
+      const dao = createSut();
+      const found = await dao.getByInternalId(new ObjectId().toString());
+
+      expect(found).toBeNull();
     });
   });
 });

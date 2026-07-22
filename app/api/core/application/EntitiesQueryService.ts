@@ -235,7 +235,7 @@ class EntitiesQueryService {
     const templateId = entityDBO.template.toString();
     const relationshipProps = templatePropsMap.get(templateId);
 
-    if (!relationshipProps || relationshipProps.size === 0) {
+    if (!relationshipProps || relationshipProps.size === 0 || !entityDBO.metadata) {
       return;
     }
 
