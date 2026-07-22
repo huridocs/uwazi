@@ -28,4 +28,28 @@ export const documentRoutes = (app: Application) => {
         .catch(next);
     }
   );
+
+  app.get(
+    '/api/documents/fulltext',
+    validateAndCoerceRequest({
+      type: 'object',
+      properties: {
+        query: {
+          type: 'object',
+          properties: {
+            _id: { type: 'string' },
+          },
+        },
+      },
+    }),
+
+    async (req: Request, res: Response, next: NextFunction) => {
+      documents
+        .fullText(req.query._id)
+        .then((result: string) => {
+          res.json({ data: result });
+        })
+        .catch(next);
+    }
+  );
 };
