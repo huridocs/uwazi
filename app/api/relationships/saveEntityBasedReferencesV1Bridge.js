@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { createError } from '#api/utils/index.js';
 import {
   getEntityReferencesByRelationshipTypes,
@@ -104,7 +105,42 @@ const prepareSaveEntityBasedReferences = async ({
   return { relationshipProperties, existingReferences };
 };
 
-// eslint-disable-next-line max-statements
+const buildRelationshipMutations = async ({
+  relationshipProperties,
+  entity,
+  existingReferences,
+}) => {
+  const relationshipsToCreate = [];
+  const relationshipsToDelete = [];
+
+  await ArrayUtils.sequentialFor(relationshipProperties, async property => {
+    const { newReferencesBase, newReferences, toDelete } = await separateCreatedDeletedReferences(
+      property,
+      entity,
+      existingReferences
+    );
+    relationshipsToCreate.push(...newReferencesBase, ...newReferences);
+    relationshipsToDelete.push(...toDelete);
+  });
+
+  return { relationshipsToCreate, relationshipsToDelete };
+};
+
+const applyRelationshipMutations = async ({
+  relationshipsToCreate,
+  relationshipsToDelete,
+  saveRelationships,
+  deleteRelationships,
+}) => {
+  if (relationshipsToCreate.length) {
+    await saveRelationships(relationshipsToCreate);
+  }
+
+  if (relationshipsToDelete.length) {
+    await deleteRelationships({ _id: { $in: relationshipsToDelete } });
+  }
+};
+
 const saveEntityBasedReferences = async ({
   entity,
   language,
@@ -120,27 +156,18 @@ const saveEntityBasedReferences = async ({
     getTemplateById,
   });
 
-  const relationshipsToCreate = [];
-  const relationshipsToDelete = [];
+  const { relationshipsToCreate, relationshipsToDelete } = await buildRelationshipMutations({
+    relationshipProperties,
+    entity,
+    existingReferences,
+  });
 
-  for (let i = 0; i < relationshipProperties.length; i += 1) {
-    // eslint-disable-next-line no-await-in-loop
-    const { newReferencesBase, newReferences, toDelete } = await separateCreatedDeletedReferences(
-      relationshipProperties[i],
-      entity,
-      existingReferences
-    );
-    relationshipsToCreate.push(...newReferencesBase, ...newReferences);
-    relationshipsToDelete.push(...toDelete);
-  }
-
-  if (relationshipsToCreate.length) {
-    await saveRelationships(relationshipsToCreate);
-  }
-
-  if (relationshipsToDelete.length) {
-    await deleteRelationships({ _id: { $in: relationshipsToDelete } });
-  }
+  await applyRelationshipMutations({
+    relationshipsToCreate,
+    relationshipsToDelete,
+    saveRelationships,
+    deleteRelationships,
+  });
 };
 
 export { saveEntityBasedReferences };
