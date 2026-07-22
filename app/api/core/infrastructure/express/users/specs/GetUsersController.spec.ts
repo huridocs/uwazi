@@ -26,7 +26,7 @@ const app: Application = setUpApp(
 describe('GET /api/users (v2)', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
-    testingTenants.changeCurrentTenant({ featureFlags: { v2GetUsers: true } });
+    testingTenants.changeCurrentTenant({ featureFlags: { v2UsersGet: true } });
   });
 
   afterAll(async () => {

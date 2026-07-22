@@ -8,6 +8,8 @@ export { MetadataCard } from './MetadataCard.js';
 export { PropertyLabel } from './PropertyLabel.js';
 export { PropertyValue } from './PropertyValue.js';
 export { Relationship } from './Relationship.js';
+export { RelationshipCards } from './RelationshipCards.js';
+export { RelationCaption } from './RelationCaption.js';
 export { TemplateLabel } from './TemplateLabel.js';
 export { SimpleValue } from './SimpleValue.js';
 export { Select } from './Select.js';

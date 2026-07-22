@@ -7,9 +7,19 @@ import { t, Translate } from '#app/I18N/index.js';
 import { debounce } from '#app/utils/index.js';
 import { Label } from '../Label.js';
 import { Checkbox } from '../Checkbox.js';
+import { CompactSearchInput } from '../CompactSearchInput.js';
 import { MultiselectListButtonItem } from './MultiselectListButtonItem.js';
 import { MultiselectListGroup } from './MultiselectListGroup.js';
 import { InputField, RadioSelect } from '../index.js';
+
+const cx = (...classes: Array<string | false | undefined>) => classes.filter(Boolean).join(' ');
+
+const relationshipPanelClassName =
+  'flex flex-col overflow-hidden rounded-lg border border-border bg-paper';
+
+const relationshipListClassName = 'w-full max-h-[11.25rem] overflow-y-auto px-2 py-2';
+
+const defaultListClass = 'w-full grow overflow-y-auto px-2 pt-2';
 
 interface MultiselectListOption {
   label: string | React.ReactNode;
@@ -39,6 +49,7 @@ interface MultiselectListProps {
   hideFilters?: boolean;
   noItems?: string | React.ReactNode;
   id?: string;
+  panel?: boolean;
 }
 
 const WrapChild = ({ children }: { children: string | React.ReactNode }) =>
@@ -99,6 +110,7 @@ const MultiselectList = ({
   itemContainerClassName,
   id = 'search-multiselect',
   noItems = <Translate>No items available</Translate>,
+  panel = false,
 }: MultiselectListProps) => {
   const [selections, setSelections] = useState<string[]>(selectedValues || []);
   const [availableItems, setAvailableItems] = useState<MultiselectListOption[] | undefined>(items);
@@ -231,7 +243,10 @@ const MultiselectList = ({
     return (
       <li
         key={item.value}
-        className={`${!selected && searchTerm && !showAll ? 'opacity-70' : ''} ${itemClassName ?? ' rounded-lg mb-2'} `}
+        className={cx(
+          !selected && searchTerm && !showAll && 'opacity-70',
+          itemClassName ?? (panel ? '' : 'rounded-lg mb-2')
+        )}
       >
         <Checkbox
           name={item.value}
@@ -295,72 +310,111 @@ const MultiselectList = ({
     );
   };
 
+  const renderFilters = () =>
+    !hideFilters ? (
+      <div
+        className={
+          panel ? 'flex flex-nowrap border-b border-border px-3 py-2' : 'flex flex-nowrap mx-1 my-4'
+        }
+        data-testid="multiselectlist-filters"
+      >
+        <RadioSelect
+          name="filter"
+          orientation="horizontal"
+          options={[
+            {
+              label: <Translate data-testid="multiselectlist-show-all">All</Translate>,
+              value: 'true',
+              defaultChecked: !startOnSelected,
+            },
+            {
+              label: renderSelectedLabel(),
+              value: 'false',
+              disabled: selectedOrSuggestedItems.size === 0,
+              defaultChecked: startOnSelected,
+            },
+          ]}
+          onChange={e => setShowAll(e.currentTarget.value === 'true')}
+          className="grow"
+        />
+        {allowSelelectAll && (
+          <button
+            type="button"
+            className="text-gray-400 underline"
+            onClick={() => handleSelectAll()}
+          >
+            <Translate>Select all</Translate>
+          </button>
+        )}
+      </div>
+    ) : null;
+
+  const renderSearch = () =>
+    panel ? (
+      <CompactSearchInput
+        id={id}
+        placeholder={t('System', 'Search', null, false)}
+        value={searchTerm}
+        onChange={value => {
+          setSearchTerm(value);
+          setIsDirty(true);
+        }}
+      />
+    ) : (
+      <InputField
+        id={id}
+        label={label}
+        hideLabel
+        placeholder={t('System', 'Search', null, false)}
+        value={searchTerm}
+        clearFieldAction={() => {
+          setSearchTerm('');
+        }}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          setSearchTerm(e.currentTarget.value);
+          setIsDirty(true);
+        }}
+      />
+    );
+
   return (
-    <div className={`flex flex-col h-full ${className}`}>
-      <div className="w-full bg-(--bg-surface)">
+    <div className={cx(panel ? 'flex flex-col' : 'flex h-full flex-col', className)}>
+      <div className={panel ? 'flex flex-col' : 'w-full bg-paper'}>
         <Label htmlFor={id} hideLabel={!label} hasErrors={Boolean(hasErrors)}>
           {label}
         </Label>
-        <InputField
-          id={id}
-          label={label}
-          hideLabel
-          placeholder={t('System', 'Search', null, false)}
-          value={searchTerm}
-          clearFieldAction={() => {
-            setSearchTerm('');
-          }}
-          onChange={(e: any) => {
-            setSearchTerm(e.currentTarget.value);
-            setIsDirty(true);
-          }}
-          className="text-(--text-primary)"
-        />
-        {!hideFilters && (
-          <div className="flex mx-1 my-4 flex-nowrap" data-testid="multiselectlist-filters">
-            <RadioSelect
-              name="filter"
-              orientation="horizontal"
-              options={[
-                {
-                  label: <Translate data-testid="multiselectlist-show-all">All</Translate>,
-                  value: 'true',
-                  defaultChecked: !startOnSelected,
-                },
-                {
-                  label: renderSelectedLabel(),
-                  value: 'false',
-                  disabled: selectedOrSuggestedItems.size === 0,
-                  defaultChecked: startOnSelected,
-                },
-              ]}
-              onChange={e => setShowAll(e.currentTarget.value === 'true')}
-              className="grow"
-            />
-            {allowSelelectAll && (
-              <button
-                type="button"
-                className="text-gray-400 underline"
-                onClick={() => handleSelectAll()}
-              >
-                <Translate>Select all</Translate>
-              </button>
+        {panel ? (
+          <div className={cx(relationshipPanelClassName, 'mt-1.5')}>
+            {renderSearch()}
+            {renderFilters()}
+            {availableItems?.length === 0 ? (
+              <div className="px-3 py-2 text-xs text-ink-muted">
+                <WrapChild>{noItems}</WrapChild>
+              </div>
+            ) : (
+              <ul className={relationshipListClassName} ref={optionsRef}>
+                {availableItems?.map(renderItem)}
+              </ul>
             )}
           </div>
+        ) : (
+          <>
+            {renderSearch()}
+            {renderFilters()}
+          </>
         )}
       </div>
 
-      {availableItems?.length === 0 && (
-        <div className="flex grow w-full h-full justify-center items-start">
+      {!panel && availableItems?.length === 0 && (
+        <div className="flex h-full w-full grow items-start justify-center">
           <WrapChild>{noItems}</WrapChild>
         </div>
       )}
-      <ul
-        className={`${itemContainerClassName ?? ' w-full grow px-2 pt-2 overflow-y-auto'}`}
-        ref={optionsRef}
-      >
-        {availableItems?.map(renderItem)}
-      </ul>
+      {!panel && (
+        <ul className={itemContainerClassName ?? defaultListClass} ref={optionsRef}>
+          {availableItems?.map(renderItem)}
+        </ul>
+      )}
     </div>
   );
 };

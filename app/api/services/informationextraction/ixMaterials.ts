@@ -9,7 +9,7 @@ import {
   ObjectIdSchema,
   PropertyTypeSchema,
 } from '#shared/types/commonTypes.js';
-import { filesModel } from '#api/files/filesModel.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { SegmentationType } from '#shared/types/segmentationType.js';
 import entitiesModel from '#api/entities/entitiesModel.js';
 import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
@@ -587,7 +587,8 @@ async function getFilesForIdsQuery(model: EnforcedWithId<IXModelType>, BATCH_SIZ
   }
 
   // Get all files for these entities
-  const allFiles = await filesModel.get(createFilesQueryByEntities(sharedIds));
+  const dao = FilesDAOFactory.default();
+  const allFiles = await dao.getByQuery(createFilesQueryByEntities(sharedIds));
 
   // Filter to only files with ready segmentations
   const allFileIds = allFiles.map(f => f._id);
@@ -644,10 +645,10 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: numbe
     return [];
   }
 
-  const filesToProcess = await filesModel.get(
-    filesQuery,
-    'propertySelections entity language filename'
-  );
+  const dao = FilesDAOFactory.default();
+  const filesToProcess = await dao.getByQuery(filesQuery, {
+    projection: { propertySelections: 1, entity: 1, language: 1, filename: 1 },
+  });
 
   const filesWithAggregation = await getFilesWithAggregations(
     filesToProcess as (FileType & FileEnforcedNotUndefined)[]

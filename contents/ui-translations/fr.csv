@@ -23,6 +23,7 @@ Account updated,Account updated
 Accuracy,Accuracy
 Accuracy tooltip,Accuracy is defined by the amount of matches vs mismatches for labeled samples that have been processed.
 Action,Action
+Actions,Actions
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
@@ -36,6 +37,7 @@ Add as,Add as
 Add data source,Add data source
 Add date,Ajouter une date
 Add entities / documents,Ajouter des entités / documents
+Add entity,Add entity
 Add entity type,Add entity type
 Add Extractor,Add Extractor
 Add extractor,Add extractor
@@ -235,6 +237,7 @@ Copy Highlighted,Copier surligné
 Copy link,Copier le lien
 Copy properties to this entity from,Copier les propriétés de cette entité à partir de
 Copy to clipboard,Copy to clipboard
+Could not add media. Please try again.,Could not add media. Please try again.
 Could not be processed,N'a pas pu être traité
 Could not create entity,Could not create entity
 Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
@@ -345,6 +348,8 @@ Direction,Direction
 Disable,Disable
 Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
+Discard and leave,Discard and leave
+Discard and switch,Discard and switch
 Discard changes,Annuler les modifications
 Discard changes?,Discard changes?
 Dismiss,Dismiss
@@ -382,6 +387,7 @@ Duration,Durée
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
 Earlier,Earlier
 Edit,Éditer
+Edit at source,Edit at source
 Edit Extractor,Edit Extractor
 Edit File,Edit File
 Edit group,Edit group
@@ -543,30 +549,27 @@ ID:,ID:
 Image doesn't match the required size.,Image doesn't match the required size.
 Import,Importer
 Import asset,Import asset
-Import completed,Import completed. Number of entities created:
 Import CSV,Importer CSV
 Import failed. Review details below.,Import failed. Review details below.
 Import finished successfully.,Import finished successfully.
 Import finished with errors. Review details below.,Import finished with errors. Review details below.
-Import instructions,Instructions d'importation
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.
 Import theme instance file,Import theme instance file
 Import was cancelled.,Import was cancelled.
-Imported entities from file,Imported entities from file
 Imported translations from file,Imported translations from file
-Importing data in progress,Importation de données en cours
 in,dans
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,dans la file d'attente OCR
 in this document,in this document
 Incoming,Incoming
-Indexing entities may take a few minutes,L'indexation des entités peut prendre quelques minutes
 Info,Info
 Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,Hériter la propriété
 Inherit type,Inherit type
+"Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
+inherits,inherits
 Input,Input
 Install,Install
 Install Language(s),Install Language(s)
@@ -611,6 +614,7 @@ Languages installed successfully,Languages installed successfully
 Last updated,Last updated
 Last updated from collection:,Last updated from collection:
 Latitude,Latitude
+Latitude must be between -90 and 90,Latitude must be between -90 and 90
 Learn more,Learn more
 Legend,Legend
 Lengthy reindex process,Lengthy reindex process
@@ -632,6 +636,7 @@ Login button,Bouton de Connexion
 Login failed,Échec de la connexion
 Logout,Se déconnecter
 Longitude,Longitude
+Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,Bas
 Manage site settings and configuration,Gérer la configuration et les paramètres du site
@@ -724,6 +729,7 @@ No,Non
 No attachments,No attachments
 No chart types match your search.,No chart types match your search.
 No common filters,Pas de filtres communs
+No connected entities yet.,No connected entities yet.
 No Connections,Pas de connexions
 No Connections description,Connections are the direct relationships between this document and other documents and entities.
 No context,No context
@@ -738,6 +744,7 @@ No icon / flag,No icon / flag
 No items available,No items available
 No Label,Aucune étiquettes
 No label,No label
+No matching entities.,No matching entities.
 No media selected,No media selected
 No options,No options
 No options found,Aucune option trouvée
@@ -758,6 +765,7 @@ No templates available to add.,No templates available to add.
 No text match,Aucune correspondance de texte
 No text match description,You can type something different in the search box to get some results.
 No timelinks added,No timelinks added
+No translation in,No translation in
 No type,Sans type
 No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,No valid target template available
@@ -773,6 +781,7 @@ Normal view,Normal view
 Not already been use as source template in another extractor,Not already been use as source template in another extractor
 Not already been use as target template,Not already been use as target template
 Not Found,Not Found
+Nothing here yet.,Nothing here yet.
 Nothing selected,Nothing selected
 Notifications,Notifications
 Obsolete,Obsolete
@@ -950,6 +959,7 @@ Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Supprimer
+Remove from connection,Remove from connection
 Remove from training set,Remove from training set
 remove icon,Supprimer l'icône
 Removed language,Removed language
@@ -1003,6 +1013,7 @@ Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordin
 Search,Recherche
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
 Search entities...,Search entities...
+Search entities…,Search entities…
 Search item,Recherche d'éléménts
 Search related entities or documents,Rechercher des entités ou des documents liés
 Search relationships,Search relationships
@@ -1165,8 +1176,6 @@ Templates,Modèles
 Templates:,Templates:
 Text,Texte
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
-The import process threw an error:,Le processus d'importation a généré une erreur :
-The import process threw some warnings:,The import process threw some warnings:
 "The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process."
@@ -1234,6 +1243,7 @@ This property will be shown using all the width available.,Cette propriété ser
 This property will be shown without the label,This property will be shown without the label
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
+This search could not be completed. Try again later.,This search could not be completed. Try again later.
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
@@ -1293,6 +1303,7 @@ Unknown entity,Unknown entity
 Unknown template,Unknown template
 Unlink,Unlink
 Unlock account,Unlock account
+Unsaved changes,Unsaved changes
 Unsupported OCR language,Langage OCR non supporté
 Untitled,Untitled
 Untranslated Terms,Untranslated Terms
@@ -1310,7 +1321,6 @@ Updated translations,Updated translations
 Updated user,Updated user
 Updating template properties across,Updating template properties across
 Updating…,Updating…
-Upload a ZIP or CSV file.,Téléchargez un fichier ZIP ou CSV.
 Upload and select file,Télécharger et sélectionner le fichier
 Upload from computer,Télécharger à partir de l'ordinateur
 Upload image,Upload image
@@ -1322,7 +1332,6 @@ Uploaded document,Uploaded document
 Uploaded file,Uploaded file
 Uploading,Chargement
 Uploading ...,Transfert en cours ...
-Uploading file,Transférer un fichier
 Uploads,Fichiers Mis en ligne
 URL,URL
 Use,Utilisez
@@ -1355,6 +1364,7 @@ Value cannot be transformed to the correct type,Value cannot be transformed to t
 values,values
 Verify,Vérifier
 Verifying...,En cours de vérification...
+via,via
 View,Vue
 view,Vue
 View entities,View entities
@@ -1388,6 +1398,10 @@ You can create metadata templates in,Vous pouvez créer des modèles de métadon
                   button.","You can start by selecting text in the document and clicking the ""Add to ToC""
                   button."
 You do not have write permission on all entities,You do not have write permission on all entities
+You have unsaved changes. Discard them and leave this page? This action cannot be undone.,You have unsaved changes. Discard them and leave this page? This action cannot be undone.
+"You have unsaved changes. Discard them and switch language? This action cannot be
+              undone.","You have unsaved changes. Discard them and switch language? This action cannot be
+              undone."
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,Vous devriez activer cette fonction pour renforcer la sécurité du compte
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.

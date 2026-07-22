@@ -21,10 +21,10 @@ type SideTabId = (typeof SIDE_TAB)[keyof typeof SIDE_TAB];
 const MAIN_TAB_VALUES = new Set<string>(Object.values(MAIN_TAB));
 const SIDE_TAB_VALUES = new Set<string>(Object.values(SIDE_TAB));
 
-const isValidMainTab = (value: string | null): value is MainTabId =>
+const isValidMainTab = (value: string | null | undefined): value is MainTabId =>
   typeof value === 'string' && MAIN_TAB_VALUES.has(value);
 
-const isValidSideTab = (value: string | null): value is SideTabId =>
+const isValidSideTab = (value: string | null | undefined): value is SideTabId =>
   typeof value === 'string' && SIDE_TAB_VALUES.has(value);
 
 export { MAIN_TAB, SIDE_TAB, isValidMainTab, isValidSideTab };

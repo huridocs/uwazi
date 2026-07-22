@@ -82,7 +82,12 @@ class MongoFilesDAO extends MongoDataSource<FileDBO> {
     if (options?.sort) findOptions.sort = options.sort;
     if (options?.limit) findOptions.limit = options.limit;
 
-    return this.getCollection().find(query, findOptions).toArray() as Promise<T[]>;
+    const resolvedQuery = { ...query };
+    if (typeof resolvedQuery._id === 'string' && ObjectId.isValid(resolvedQuery._id)) {
+      resolvedQuery._id = new ObjectId(resolvedQuery._id);
+    }
+
+    return this.getCollection().find(resolvedQuery, findOptions).toArray() as Promise<T[]>;
   }
 
   async getNextDocumentWithoutToc<T extends FileDBO = FileDBO>(

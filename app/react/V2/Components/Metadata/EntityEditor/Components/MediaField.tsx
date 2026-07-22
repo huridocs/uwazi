@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+/* eslint-disable react/no-multi-comp, max-lines */
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ArrowUpTrayIcon,
   LinkSlashIcon,
@@ -8,9 +9,16 @@ import {
 } from '@heroicons/react/24/outline';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
+import type { ClientFile } from '#app/istore.js';
 import { FileType } from '#shared/types/fileType.js';
+import { registerMediaAttachment } from '#shared/entitySave/legacyMetadata.js';
+import { isUploadId, parseMediaSourceUrl } from '#shared/entitySave/mediaMetadata.js';
+import { resolveMediaDisplayUrl } from '#shared/entitySave/resolveMediaDisplayUrl.js';
 import { Button, MediaPlayer } from '#V2/Components/UI/index.js';
-import { MediaPickerModal, MediaPickerMode } from './MediaPickerModal.js';
+import { MediaPickerModal } from './MediaPickerModal.js';
+import type { MediaPickerMode } from './MediaPickerModal.js';
+import { EntityFieldError, getFieldErrorState } from '../functions/fieldErrorState.js';
+import { EntityField } from './EntityField.js';
 
 type PlayerRef = NonNullable<React.ComponentProps<typeof MediaPlayer>['playerRef']>;
 type PlayerInstance = PlayerRef extends React.RefObject<infer T> ? T : never;
@@ -30,10 +38,44 @@ type MediaFieldProps<TFormValues extends FieldValues = FieldValues> = {
   registerOptions?: RegisterOptions<TFormValues, Path<TFormValues>>;
   disabled?: boolean;
   attachments: FileType[];
+  pendingAttachments: ClientFile[];
+  entitySharedId: string;
+  onRegisterPendingAttachment: (attachment: ClientFile) => void;
+  onRemovePendingAttachment: (fileLocalID: string) => void;
   imageStyle?: 'contain' | 'cover' | 'fill';
 };
 
+const TIMELINK_LABEL_MAX = 40;
+
 const padTimePart = (value: string) => value.padStart(2, '0');
+
+const clampTimePart = (value: string, max?: number) => {
+  if (value === '') {
+    return '';
+  }
+
+  const parsed = Number(value);
+  if (Number.isNaN(parsed) || parsed < 0) {
+    return '0';
+  }
+
+  const floored = Math.floor(parsed);
+  return String(max !== undefined ? Math.min(floored, max) : floored);
+};
+
+const secondsToTimelink = (currentTime: number): EditableTimelink => {
+  const hours = Math.floor(currentTime / 3600);
+  const remainingSeconds = currentTime - hours * 3600;
+  const minutes = Math.floor(remainingSeconds / 60);
+  const seconds = Math.floor(remainingSeconds % 60);
+
+  return {
+    hh: padTimePart(String(hours)),
+    mm: padTimePart(String(minutes)),
+    ss: padTimePart(String(seconds)),
+    label: '',
+  };
+};
 
 const parseTimelinksFromValue = (value: string): EditableTimelink[] => {
   const match = value.match(/^\(([^,]+),\s*({.*})\)$/);
@@ -64,9 +106,8 @@ const parseFieldValue = (value?: string) => {
   }
 
   if (value.startsWith('(')) {
-    const match = value.match(/^\(([^,]+),/);
     return {
-      url: match ? match[1].trim() : value,
+      url: parseMediaSourceUrl(value),
       timelinks: parseTimelinksFromValue(value),
     };
   }
@@ -82,7 +123,7 @@ const encodeTimelinksValue = (url: string, timelinks: EditableTimelink[]) => {
   const timelinksObj = timelinks.reduce<Record<string, string>>(
     (current, timelink) => ({
       ...current,
-      [`${padTimePart(timelink.hh)}:${padTimePart(timelink.mm)}:${padTimePart(timelink.ss)}`]:
+      [`${padTimePart(timelink.hh || '0')}:${padTimePart(timelink.mm || '0')}:${padTimePart(timelink.ss || '0')}`]:
         timelink.label,
     }),
     {}
@@ -92,24 +133,12 @@ const encodeTimelinksValue = (url: string, timelinks: EditableTimelink[]) => {
 };
 
 const timelinkToSeconds = (timelink: EditableTimelink) =>
-  Number(timelink.hh) * 3600 + Number(timelink.mm) * 60 + Number(timelink.ss);
-
-const emptyTimelink = (): EditableTimelink => ({
-  hh: '00',
-  mm: '00',
-  ss: '00',
-  label: '',
-});
-
-const revokeBlobUrl = (url: string | null) => {
-  if (url?.startsWith('blob:')) {
-    URL.revokeObjectURL(url);
-  }
-};
+  Number(timelink.hh || 0) * 3600 + Number(timelink.mm || 0) * 60 + Number(timelink.ss || 0);
 
 type MediaFieldPreviewProps = {
   url: string;
   timelinks: EditableTimelink[];
+  valueKey: string;
   disabled?: boolean;
   onTimelinksChange: (timelinks: EditableTimelink[]) => void;
 };
@@ -117,32 +146,68 @@ type MediaFieldPreviewProps = {
 const MediaFieldPreview = ({
   url,
   timelinks,
+  valueKey,
   disabled,
   onTimelinksChange,
 }: MediaFieldPreviewProps) => {
   const playerRef = React.useRef<PlayerInstance>(null);
+  const [localTimelinks, setLocalTimelinks] = useState(timelinks);
+  const [playing, setPlaying] = useState(false);
 
-  const handleSeek = (timelink: EditableTimelink) => {
-    playerRef.current?.seekTo(timelinkToSeconds(timelink), 'seconds');
+  useEffect(() => {
+    setLocalTimelinks(timelinks);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- sync from committed valueKey only
+  }, [valueKey]);
+
+  const commitTimelinks = (next: EditableTimelink[]) => {
+    setLocalTimelinks(next);
+    onTimelinksChange(next);
   };
 
-  const updateTimelink = (index: number, patch: Partial<EditableTimelink>) => {
-    onTimelinksChange(
-      timelinks.map((item, itemIndex) => (itemIndex === index ? { ...item, ...patch } : item))
+  const handlePlay = (timelink: EditableTimelink) => {
+    playerRef.current?.seekTo(timelinkToSeconds(timelink), 'seconds');
+    setPlaying(true);
+  };
+
+  const updateLocalTimelink = (index: number, patch: Partial<EditableTimelink>) => {
+    setLocalTimelinks(current =>
+      current.map((item, itemIndex) => (itemIndex === index ? { ...item, ...patch } : item))
     );
   };
 
+  const commitTimePart = (index: number, part: 'hh' | 'mm' | 'ss') => {
+    const next = localTimelinks.map((item, itemIndex) =>
+      itemIndex === index ? { ...item, [part]: padTimePart(item[part] || '0') } : item
+    );
+    commitTimelinks(next);
+  };
+
+  const commitLabel = () => {
+    commitTimelinks(localTimelinks);
+  };
+
   const removeTimelink = (index: number) => {
-    onTimelinksChange(timelinks.filter((_item, itemIndex) => itemIndex !== index));
+    commitTimelinks(localTimelinks.filter((_item, itemIndex) => itemIndex !== index));
   };
 
   const addTimelink = () => {
-    onTimelinksChange([...timelinks, emptyTimelink()]);
+    const currentTime = playerRef.current?.getCurrentTime() ?? 0;
+    commitTimelinks([...localTimelinks, secondsToTimelink(currentTime)]);
   };
 
   return (
     <div className="flex flex-col gap-4">
-      <MediaPlayer className="m-auto" playerRef={playerRef} url={url} width={500} height={300} />
+      <MediaPlayer
+        className="m-auto"
+        playerRef={playerRef}
+        url={url}
+        width={500}
+        height={300}
+        playing={playing}
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+        onClickPreview={() => setPlaying(true)}
+      />
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-2">
@@ -161,13 +226,13 @@ const MediaFieldPreview = ({
           </Button>
         </div>
 
-        {timelinks.length === 0 ? (
+        {localTimelinks.length === 0 ? (
           <p className="text-sm text-ink-secondary">
             <Translate>No timelinks added</Translate>
           </p>
         ) : (
           <ul className="flex flex-col gap-2">
-            {timelinks.map((timelink, index) => (
+            {localTimelinks.map((timelink, index) => (
               <li
                 // eslint-disable-next-line react/no-array-index-key
                 key={`timelink-${index}`}
@@ -176,48 +241,61 @@ const MediaFieldPreview = ({
                 <button
                   type="button"
                   className="inline-flex items-center gap-1 text-sm"
-                  onClick={() => handleSeek(timelink)}
+                  onClick={() => handlePlay(timelink)}
                   aria-label={`${timelink.hh}:${timelink.mm}:${timelink.ss}`}
                 >
                   <PlayIcon className="w-4 h-4" />
                 </button>
                 <input
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={2}
+                  type="number"
+                  step={1}
+                  min={0}
                   disabled={disabled}
                   value={timelink.hh}
-                  onChange={event => updateTimelink(index, { hh: event.target.value })}
-                  className="w-10 rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-1 text-center text-sm"
+                  onChange={event =>
+                    updateLocalTimelink(index, { hh: clampTimePart(event.target.value) })
+                  }
+                  onBlur={() => commitTimePart(index, 'hh')}
+                  className="w-14 rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-1 text-center text-sm"
                   aria-label="Hours"
                 />
                 <span>:</span>
                 <input
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={2}
+                  type="number"
+                  step={1}
+                  min={0}
+                  max={59}
                   disabled={disabled}
                   value={timelink.mm}
-                  onChange={event => updateTimelink(index, { mm: event.target.value })}
-                  className="w-10 rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-1 text-center text-sm"
+                  onChange={event =>
+                    updateLocalTimelink(index, { mm: clampTimePart(event.target.value, 59) })
+                  }
+                  onBlur={() => commitTimePart(index, 'mm')}
+                  className="w-14 rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-1 text-center text-sm"
                   aria-label="Minutes"
                 />
                 <span>:</span>
                 <input
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={2}
+                  type="number"
+                  step={1}
+                  min={0}
+                  max={59}
                   disabled={disabled}
                   value={timelink.ss}
-                  onChange={event => updateTimelink(index, { ss: event.target.value })}
-                  className="w-10 rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-1 text-center text-sm"
+                  onChange={event =>
+                    updateLocalTimelink(index, { ss: clampTimePart(event.target.value, 59) })
+                  }
+                  onBlur={() => commitTimePart(index, 'ss')}
+                  className="w-14 rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-1 text-center text-sm"
                   aria-label="Seconds"
                 />
                 <input
                   type="text"
                   disabled={disabled}
+                  maxLength={TIMELINK_LABEL_MAX}
                   value={timelink.label}
-                  onChange={event => updateTimelink(index, { label: event.target.value })}
+                  onChange={event => updateLocalTimelink(index, { label: event.target.value })}
+                  onBlur={commitLabel}
                   placeholder="Label"
                   className="min-w-32 flex-1 rounded border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-1 text-sm"
                 />
@@ -246,23 +324,23 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
   registerOptions,
   disabled,
   attachments,
+  pendingAttachments,
+  entitySharedId,
+  onRegisterPendingAttachment,
+  onRemovePendingAttachment,
   imageStyle = 'fill',
 }: MediaFieldProps<TFormValues>) => {
   const { control } = useFormContext<TFormValues>();
   const [modalOpen, setModalOpen] = useState(false);
-  const pendingLocalFileRef = useRef<File | null>(null);
-  const previewBlobRef = useRef<string | null>(null);
   const required = Boolean(registerOptions?.required);
 
-  useEffect(
-    () => () => {
-      revokeBlobUrl(previewBlobRef.current);
-    },
-    []
+  const allAttachments = useMemo(
+    () => [...attachments, ...pendingAttachments],
+    [attachments, pendingAttachments]
   );
 
   return (
-    <div className="text-ink bg-(--bg-surface)" data-testid={String(field)}>
+    <EntityField data-testid={String(field)}>
       <Controller
         control={control}
         name={field}
@@ -272,53 +350,64 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
             if (!required) {
               return true;
             }
-
-            const { url } = parseFieldValue(typeof value === 'string' ? value : '');
+            if (typeof value !== 'string') {
+              return 'Required';
+            }
+            const { url } = parseFieldValue(value);
             return url.trim().length > 0 || 'Required';
           },
         }}
         render={({ field: mediaField, fieldState }) => {
           const rawValue = typeof mediaField.value === 'string' ? mediaField.value : '';
-          const { url, timelinks } = parseFieldValue(rawValue);
-          const hasValue = url.trim().length > 0;
-          const showRequiredError = Boolean(fieldState.error);
+          const { timelinks, url: currentUrl } = parseFieldValue(rawValue);
+          const previewUrl = resolveMediaDisplayUrl(rawValue, allAttachments);
+          const hasValue = rawValue.trim().length > 0;
+          const { showError, message } = getFieldErrorState(fieldState);
 
-          const updateValue = (
+          const releaseUploadIfReplaced = (previousUrl: string, nextValue: string) => {
+            if (!isUploadId(previousUrl)) {
+              return;
+            }
+            const nextParsedUrl = parseFieldValue(nextValue).url;
+            if (previousUrl !== nextParsedUrl) {
+              onRemovePendingAttachment(previousUrl);
+            }
+          };
+
+          const updateValue = async (
             nextUrl: string,
             localFile?: File,
             nextTimelinks: EditableTimelink[] = timelinks
           ) => {
-            if (previewBlobRef.current && previewBlobRef.current !== nextUrl) {
-              revokeBlobUrl(previewBlobRef.current);
-            }
-
-            previewBlobRef.current = nextUrl.startsWith('blob:') ? nextUrl : null;
-            pendingLocalFileRef.current =
-              localFile ?? (nextUrl.startsWith('blob:') ? pendingLocalFileRef.current : null);
-
-            if (!nextUrl.startsWith('blob:')) {
-              pendingLocalFileRef.current = null;
-            }
-
-            if (mode === 'media') {
-              mediaField.onChange(encodeTimelinksValue(nextUrl, nextTimelinks));
+            const previousUrl = currentUrl;
+            if (localFile) {
+              const attachment = await registerMediaAttachment(entitySharedId, localFile);
+              const { fileLocalID } = attachment;
+              if (!fileLocalID) {
+                return;
+              }
+              onRegisterPendingAttachment(attachment);
+              const nextValue =
+                mode === 'media' ? encodeTimelinksValue(fileLocalID, nextTimelinks) : fileLocalID;
+              mediaField.onChange(nextValue);
+              releaseUploadIfReplaced(previousUrl, nextValue);
               return;
             }
 
-            mediaField.onChange(nextUrl);
+            const nextValue =
+              mode === 'media' ? encodeTimelinksValue(nextUrl, nextTimelinks) : nextUrl;
+            mediaField.onChange(nextValue);
+            releaseUploadIfReplaced(previousUrl, nextValue);
           };
 
           const handleUnlink = () => {
-            if (previewBlobRef.current) {
-              revokeBlobUrl(previewBlobRef.current);
-              previewBlobRef.current = null;
-            }
-
-            pendingLocalFileRef.current = null;
+            const previousUrl = currentUrl;
             mediaField.onChange('');
+            releaseUploadIfReplaced(previousUrl, '');
           };
 
           const handleTimelinksChange = (nextTimelinks: EditableTimelink[]) => {
+            const { url } = parseFieldValue(rawValue);
             if (!url) {
               return;
             }
@@ -328,7 +417,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
 
           return (
             <>
-              <div className="mb-2 font-bold">
+              <div className="text-sm font-bold text-ink">
                 <Translate context={context}>{label}</Translate>
                 {registerOptions?.required && '*'}
               </div>
@@ -362,15 +451,16 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
                 <div className="mt-3 flex justify-center rounded-md bg-(--color-theme-surface-warm) p-3">
                   {mode === 'image' ? (
                     <img
-                      src={url}
+                      src={previewUrl}
                       alt={label}
                       className="max-w-full rounded-md max-h-96"
                       style={{ objectFit: imageStyle === 'cover' ? 'cover' : 'contain' }}
                     />
                   ) : (
                     <MediaFieldPreview
-                      url={url}
+                      url={previewUrl}
                       timelinks={timelinks}
+                      valueKey={rawValue}
                       disabled={disabled}
                       onTimelinksChange={handleTimelinksChange}
                     />
@@ -382,27 +472,23 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
                 </div>
               )}
 
-              {showRequiredError ? (
-                <div className="mt-2 text-sm text-(--color-theme-control-text-error)">
-                  <Translate>This field is required</Translate>
-                </div>
-              ) : null}
+              <EntityFieldError showError={showError} message={message} />
 
               <MediaPickerModal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                onSelect={(selectedUrl, localFile) =>
+                onSelect={async (selectedUrl, localFile) =>
                   updateValue(selectedUrl, localFile, mode === 'media' ? timelinks : [])
                 }
                 mode={mode}
-                attachments={attachments}
+                attachments={allAttachments}
                 currentValue={rawValue}
               />
             </>
           );
         }}
       />
-    </div>
+    </EntityField>
   );
 };
 

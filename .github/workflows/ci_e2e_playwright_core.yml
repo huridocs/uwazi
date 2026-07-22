@@ -81,7 +81,7 @@ jobs:
       - name: install dependencies
         run: yarn install
         env:
-          YARN_ENABLE_HARDENED_MODE: "0"
+          YARN_ENABLE_HARDENED_MODE: '0'
 
       - name: Get Playwright version
         id: playwright-version
@@ -152,6 +152,7 @@ jobs:
             playwright/e2e/relationship-types.contract.spec.ts \
             playwright/e2e/thesauri.contract.spec.ts \
             playwright/e2e/users.contract.spec.ts \
+            playwright/e2e/groups.contract.spec.ts \
             playwright/e2e/account-settings.contract.spec.ts \
             --workers=1
         timeout-minutes: 35

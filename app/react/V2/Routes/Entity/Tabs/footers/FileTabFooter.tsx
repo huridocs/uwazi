@@ -1,7 +1,8 @@
 import React from 'react';
 import { ArrowDownTrayIcon, ArrowLeftIcon, EyeIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
-import { Button, NeedAuthorization } from '#V2/Components/UI/index.js';
+import { Button } from '#V2/Components/UI/index.js';
+import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
 import { useEntityFiles } from '../../Components/Files/EntityFilesContext.js';
 import { EntityTabFooter } from '../EntityTabFooter.js';
 
@@ -59,7 +60,7 @@ const FileTabFooter = () => {
         </a>
         {filePanelMode === 'details' ? (
           <div className="ml-auto">
-            <NeedAuthorization roles={['admin', 'editor']}>
+            <EntityWriteAuthorization>
               <Button
                 variant="dangerSubtle"
                 onClick={() => requestDeleteRow(focusedRow)}
@@ -68,7 +69,7 @@ const FileTabFooter = () => {
                 <TrashIcon className="h-4 w-4" />
                 <Translate>Delete file</Translate>
               </Button>
-            </NeedAuthorization>
+            </EntityWriteAuthorization>
           </div>
         ) : null}
       </div>

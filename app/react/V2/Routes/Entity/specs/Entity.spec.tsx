@@ -12,11 +12,18 @@ import {
 import { settingsAtom, templatesAtom, userAtom } from '#V2/atoms/index.js';
 import * as utils from '#app/utils/index.js';
 import * as files from '#V2/api/files/index.js';
+import * as searchApi from '#V2/api/search/index.js';
 import { Entity } from '../Entity.js';
+import { entityLoaderCache } from '../EntityLoaderCache.js';
 
 jest.mock('#V2/Components/PDFViewer', () => ({
   ...jest.requireActual('#V2/Components/PDFViewer'),
-  PDF: ({ fileUrl }: any) => <div data-testid="mock-pdf">PDF: {fileUrl}</div>,
+  PDF: ({ fileUrl }: any) => (
+    <div data-testid="mock-pdf">
+      PDF: {fileUrl}
+      <div className="page" data-page-number="1" style={{ height: 800 }} />
+    </div>
+  ),
 }));
 
 class ResizeObserverMock {
@@ -34,9 +41,10 @@ global.ResizeObserver = ResizeObserverMock as typeof ResizeObserver;
 const sampleEntity: Partial<EntityType> = {
   _id: 'ent1',
   sharedId: 'shared1',
+  language: 'en',
   title: 'Sample Entity',
   template: 'template1',
-  documents: [{ filename: 'file.pdf', _id: '1' }],
+  documents: [{ filename: 'file.pdf', _id: '1', language: 'eng' }],
   metadata: {},
 };
 
@@ -65,6 +73,7 @@ const selectPlainTextView = (container?: HTMLElement) => {
 describe('Entity view', () => {
   afterEach(() => {
     jest.clearAllMocks();
+    entityLoaderCache.invalidateAll();
     mediaMock.restore();
     mediaMock = setupMatchMediaMock();
   });
@@ -266,18 +275,6 @@ describe('Entity view', () => {
     });
 
     it('should preserve active side tab when switching to a main tab that supports it', async () => {
-      render(
-        <TestRouterContext
-          loaderData={{ entity: sampleEntity, mainDocument: sampleMainDocument, pagePlaintext: '' }}
-        >
-          <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
-            <Entity />
-          </TestAtomStoreProvider>
-        </TestRouterContext>
-      );
-
-      await checkEntityRendered();
-
       let tablists = screen.getAllByTestId('tabs-comp');
       let mainTabs = within(tablists[0]);
       let sideTabs = within(tablists[1]);
@@ -313,18 +310,6 @@ describe('Entity view', () => {
     });
 
     it('should reset side tab when switching main tab drops an unsupported side id', async () => {
-      render(
-        <TestRouterContext
-          loaderData={{ entity: sampleEntity, mainDocument: sampleMainDocument, pagePlaintext: '' }}
-        >
-          <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
-            <Entity />
-          </TestAtomStoreProvider>
-        </TestRouterContext>
-      );
-
-      await checkEntityRendered();
-
       let tablists = screen.getAllByTestId('tabs-comp');
       let mainTabs = within(tablists[0]);
       let sideTabs = within(tablists[1]);
@@ -458,6 +443,45 @@ describe('Entity view', () => {
         'true'
       );
     });
+
+    it('should render the Files tab when the entity has no files', async () => {
+      const entityNoFiles = {
+        ...sampleEntity,
+        documents: [],
+        attachments: [],
+      } as EntityType;
+
+      render(
+        <TestRouterContext
+          loaderData={{ entity: entityNoFiles, mainDocument: undefined, pagePlaintext: '' }}
+        >
+          <TestAtomStoreProvider
+            initialValues={[
+              [templatesAtom, sampleTemplate],
+              [userAtom, { _id: '1', role: 'admin', name: 'admin' }],
+            ]}
+          >
+            <Entity />
+          </TestAtomStoreProvider>
+        </TestRouterContext>
+      );
+
+      await checkEntityRendered();
+
+      const tablists = screen.getAllByTestId('tabs-comp');
+      const mainTabs = within(tablists[0]);
+      expect(mainTabs.getByRole('tab', { name: /Files/ })).toBeInTheDocument();
+
+      fireEvent.click(mainTabs.getByRole('tab', { name: /Files/ }));
+
+      await waitFor(() => {
+        expect(mainTabs.getByRole('tab', { name: /Files/ })).toHaveAttribute(
+          'aria-selected',
+          'true'
+        );
+        expect(screen.getByRole('button', { name: 'Add file' })).toBeInTheDocument();
+      });
+    });
   });
 
   describe('search tab', () => {
@@ -485,17 +509,20 @@ describe('Entity view', () => {
     });
 
     it('should show seach results', async () => {
-      const snippets = {
+      const snippetsData = {
         data: [
           {
-            id: 's1',
+            _id: 's1',
             snippets: {
+              count: 2,
               metadata: [{ field: 'title', texts: ['<b>Match title</b>'] }],
               fullText: [{ page: 3, text: 'Excerpt <b>match</b>' }],
             },
           },
         ],
-      } as any;
+      };
+      entityLoaderCache.setSearchResults('shared1', 'en:1', 'search', snippetsData);
+      jest.spyOn(searchApi, 'snippets').mockResolvedValue(snippetsData);
 
       render(
         <TestRouterContext
@@ -503,8 +530,8 @@ describe('Entity view', () => {
             entity: sampleEntity,
             mainDocument: sampleMainDocument,
             pagePlaintext: '',
-            searchResults: snippets,
           }}
+          initialEntries={['/?s=search&searchTerm=search']}
         >
           <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
             <Entity />
@@ -514,7 +541,7 @@ describe('Entity view', () => {
 
       await checkEntityRendered();
 
-      expect(screen.getByText('Match title')).toBeInTheDocument();
+      expect(await screen.findByText('Match title')).toBeInTheDocument();
       expect(screen.getByText('Page 3')).toBeInTheDocument();
     });
   });

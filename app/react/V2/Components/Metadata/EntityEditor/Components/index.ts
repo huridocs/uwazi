@@ -1,4 +1,6 @@
+export { EntityField } from './EntityField.js';
 export { TextField } from './TextField.js';
+export { TitleField } from './TitleField.js';
 export { IconField } from './IconField.js';
 export { TemplateField } from './TemplateField.js';
 export { SelectField } from './SelectField.js';
@@ -10,6 +12,7 @@ export { MultiDateRangeField } from './MultiDateRangeField.js';
 export { LinkField } from './LinkField.js';
 export { GeolocationField } from './GeolocationField.js';
 export { RelationshipField } from './RelationshipField.js';
+export { RelationshipFieldEditor } from './RelationshipFieldEditor.js';
 export { MarkdownField } from './MarkdownField.js';
 export { NestedField } from './NestedField.js';
 export { MediaField } from './MediaField.js';

@@ -21,8 +21,6 @@ type Tenant = {
     deactivateTestJob?: boolean;
     paragraphExtraction?: boolean;
     fileCacheHeaders?: boolean;
-    v2CSVImport?: boolean;
-    dataViz?: boolean;
     themeCustomization?: boolean;
     newHeader?: boolean;
     v2Languages?: boolean;
@@ -31,9 +29,10 @@ type Tenant = {
     postgresTemplates?: boolean;
     aiAssistant?: boolean;
     aiAssistantServiceUrl?: string;
-    v2CreateUser?: boolean;
-    v2DeleteUser?: boolean;
-    v2GetUsers?: boolean;
+    v2UsersCreate?: boolean;
+    v2UsersDelete?: boolean;
+    v2UsersGet?: boolean;
+    v2UsersUpdate?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

@@ -3,6 +3,14 @@ export { EmbededButton } from './EmbededButton.js';
 export { Modal } from './Modal.js';
 export { Pill } from './Pill.js';
 export { Table } from './Table/index.js';
+export { DataTable } from './DataTable/index.js';
+export type { DataTableProps, DataTableColumn } from './DataTable/index.js';
+export type {
+  DataTableSort,
+  DataTableSelection,
+  DataTableReorder,
+  DataTableTree,
+} from './DataTable/types.js';
 export { ToggleButton } from './ToggleButton.js';
 export { Tabs, TabButtons, TabPanels, useTabGroup, splitTabConfig } from './Tabs/index.js';
 export type {
@@ -22,6 +30,10 @@ export { SurfacePanel, SectionHeading } from './SurfacePanel.js';
 export { Tooltip } from './Tooltip.js';
 export { PortalTooltip } from './PortalTooltip.js';
 export { ExpandableText } from './ExpandableText.js';
+export { FadeTruncate } from './FadeTruncate.js';
+export { AlertBanner } from './AlertBanner.js';
+export { StatusBadge } from './StatusBadge.js';
+export { WarmSelect } from './WarmSelect.js';
 export { CopyValueInput } from './CopyValueInput.js';
 export { Paginator } from './Paginator.js';
 export { PaginationState } from './PaginationState.js';
@@ -30,6 +42,10 @@ export { MediaPlayer } from './MediaPlayer.js';
 export { FileIcon } from './FileIcon.js';
 export { NeedAuthorization } from './NeedAuthorization.js';
 export { ConfirmNavigationModal } from './ConfirmNavigationModal.js';
+export { BlockDirtyNavigation } from './BlockDirtyNavigation.js';
+export type { BlockDirtyNavigationProps } from './BlockDirtyNavigation.js';
+export { DirtyDiscardModal } from './DirtyDiscardModal.js';
+export type { DirtyDiscardAction, DirtyDiscardModalProps } from './DirtyDiscardModal.js';
 export { Truncate } from './Truncate.js';
 export { VerticalDrawer } from './VerticalDrawer.js';
 export { BlankState } from './BlankState.js';
@@ -64,5 +80,9 @@ export type { TableProps, TableRow } from './Table/index.js';
 export type { TooltipProps } from './Tooltip.js';
 export type { PortalTooltipProps, PortalTooltipPlacement } from './PortalTooltip.js';
 export type { ExpandableTextProps } from './ExpandableText.js';
+export type { FadeTruncateProps } from './FadeTruncate.js';
+export type { AlertBannerProps, AlertBannerVariant } from './AlertBanner.js';
+export type { StatusBadgeProps, StatusBadgeTone } from './StatusBadge.js';
+export type { WarmSelectOption, WarmSelectProps } from './WarmSelect.js';
 export type { ProgressBarProps } from './ProgressBar.js';
 export type { UwaziLoaderProps } from './UwaziLoader.js';

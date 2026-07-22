@@ -1,7 +1,9 @@
 import React, { type ReactNode } from 'react';
 import { useTabGroup } from '#V2/Components/UI/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
-import { SIDE_TAB, type SideTabId } from './tabIds.js';
+import { useMetadataEditing } from '../Components/context/index.js';
+import { SIDE_TAB, isValidSideTab, type SideTabId } from './tabIds.js';
+import { keepMetadataTab, resolveActiveTabId } from './metadataTabSession.js';
 import { DocumentTab } from './tabsContent/DocumentTab.js';
 import { MetadataTab } from './tabsContent/MetadataTab.js';
 import { ToCTab } from './tabsContent/ToCTab.js';
@@ -24,9 +26,13 @@ const SideTabsContent = ({
   pagePlaintext,
 }: SideTabsContentProps) => {
   const { activeTabId: atomActiveTabId } = useTabGroup('entity-side');
-  const activeTabId = atomActiveTabId ?? urlActiveTabId;
+  const resolvedTabId = resolveActiveTabId(atomActiveTabId, urlActiveTabId);
+  const activeTabId = isValidSideTab(resolvedTabId) ? resolvedTabId : urlActiveTabId;
+  const { isEditing, editingHost } = useMetadataEditing();
+  const metadataActive = activeTabId === SIDE_TAB.METADATA;
+  const keepMetadata = keepMetadataTab(Boolean(metadataActive), isEditing, editingHost, 'side');
 
-  if (!activeTabId) return null;
+  if (!activeTabId && !keepMetadata) return null;
 
   let content: ReactNode = null;
 
@@ -44,7 +50,6 @@ const SideTabsContent = ({
       }
       break;
     case SIDE_TAB.METADATA:
-      content = <MetadataTab entity={entity} />;
       break;
     case SIDE_TAB.TOC:
       content = <ToCTab mainDocument={mainDocument} />;
@@ -65,16 +70,21 @@ const SideTabsContent = ({
       break;
   }
 
-  if (!content) return null;
+  if (!content && !keepMetadata) return null;
 
   return (
     <div
       role="tabpanel"
-      id={`entity-side-panel-${activeTabId}`}
-      aria-labelledby={`entity-side-tab-${activeTabId}`}
+      id={`entity-side-panel-${activeTabId || SIDE_TAB.METADATA}`}
+      aria-labelledby={`entity-side-tab-${activeTabId || SIDE_TAB.METADATA}`}
       className="flex h-full min-h-0 w-full flex-col"
     >
-      {content}
+      {keepMetadata ? (
+        <div className={metadataActive ? 'flex h-full min-h-0 w-full flex-col' : 'hidden'}>
+          <MetadataTab entity={entity} host="side" />
+        </div>
+      ) : null}
+      {!metadataActive ? content : null}
     </div>
   );
 };

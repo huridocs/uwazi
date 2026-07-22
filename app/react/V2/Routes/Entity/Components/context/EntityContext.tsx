@@ -19,7 +19,18 @@ const EntityProvider = ({
   const entity = entityOverride ?? loaderEntity;
 
   useEffect(() => {
-    setEntity(undefined);
+    setEntity(prev => {
+      if (!prev) {
+        return undefined;
+      }
+      if (prev.sharedId !== loaderEntity.sharedId) {
+        return undefined;
+      }
+      if (prev.language && loaderEntity.language && prev.language !== loaderEntity.language) {
+        return prev;
+      }
+      return undefined;
+    });
   }, [loaderEntity]);
 
   const value = useMemo(() => ({ entity, setEntity }), [entity]);

@@ -146,6 +146,8 @@ class DatavizFactory {
         settingsDS: SettingsDataSourceFactory.default({
           transactionManager: this.getTransactionManager(),
         }),
+        queryExecutor: this.queryExecutor(),
+        templatesDS: TemplatesDataSourceFactory.default(),
       },
       { actor, tenant, targetLanguage: overrides?.targetLanguage }
     );

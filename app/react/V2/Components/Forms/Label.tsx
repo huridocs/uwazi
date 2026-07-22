@@ -3,22 +3,22 @@ import isString from 'lodash/isString.js';
 import { Translate } from '#app/I18N/index.js';
 
 interface LabelProps {
-  htmlFor: string;
+  htmlFor?: string;
   children: string | React.ReactNode;
   hasErrors?: boolean;
   hideLabel?: boolean;
 }
 
+const cx = (...classes: Array<string | false | undefined>) => classes.filter(Boolean).join(' ');
+
 const renderChild = (child: string | React.ReactNode) =>
   isString(child) ? <Translate>{child}</Translate> : child;
 
-const Label = ({ htmlFor, children, hasErrors, hideLabel }: LabelProps) => (
+const Label = ({ htmlFor, children, hasErrors = false, hideLabel }: LabelProps) => (
   <label
     htmlFor={htmlFor}
     className={
-      hideLabel
-        ? 'sr-only'
-        : `mb-2 block ${hasErrors ? 'text-(--color-theme-control-text-error)' : 'text-ink-secondary'}`
+      hideLabel ? 'sr-only' : cx('block text-sm font-bold', hasErrors ? 'text-seal' : 'text-ink')
     }
   >
     {renderChild(children)}

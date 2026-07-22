@@ -2,7 +2,9 @@ import { Relationship } from '#api/relationships.v2/model/Relationship.js';
 import { Entity } from '#V2/api/entities/types.js';
 import {
   computeStats,
+  countEntityRelationships,
   filterAndSortMarkers,
+  filterMarkersForDocument,
   projectRelationshipsPanel,
 } from '../relationshipsPanelProjection.js';
 
@@ -185,5 +187,77 @@ describe('relationshipsPanelProjection', () => {
     });
     expect(filtered).toHaveLength(1);
     expect(filtered[0]?.anchor?.text).toContain('alpha');
+  });
+
+  it('filters markers for active document (entity-level + matching file)', () => {
+    const multiFile = {
+      ...entity,
+      relations: [
+        ...((entity.relations ?? []) as Relationship[]),
+        {
+          template: 'relC',
+          _id: 'c5',
+          hub: 'h3',
+          file: 'f2',
+          entity: 'self1',
+          reference: {
+            text: 'other file',
+            selectionRectangles: [{ top: 1, left: 0, width: 10, height: 10, page: '1' }],
+          },
+        },
+        {
+          template: null,
+          _id: 'c6',
+          hub: 'h3',
+          entity: 'target2',
+          entityData: { title: 'Other', template: 't2' },
+        },
+        {
+          template: 'relD',
+          _id: 'c7',
+          hub: 'h4',
+          entity: 'self1',
+        },
+        {
+          template: null,
+          _id: 'c8',
+          hub: 'h4',
+          entity: 'target3',
+          entityData: { title: 'Entity level', template: 't2' },
+        },
+      ],
+    } as Entity;
+    const { markers } = projectRelationshipsPanel(multiFile);
+    const filtered = filterMarkersForDocument(markers, 'f1', 'self1');
+    expect(filtered.map(m => m._id).sort()).toEqual(['c2', 'c4', 'c8']);
+  });
+
+  it('counts relationships scoped to a document', () => {
+    const multiFile = {
+      ...entity,
+      relations: [
+        ...((entity.relations ?? []) as Relationship[]),
+        {
+          template: 'relC',
+          _id: 'c5',
+          hub: 'h3',
+          file: 'f2',
+          entity: 'self1',
+          reference: {
+            text: 'other file',
+            selectionRectangles: [{ top: 1, left: 0, width: 10, height: 10, page: '1' }],
+          },
+        },
+        {
+          template: null,
+          _id: 'c6',
+          hub: 'h3',
+          entity: 'target2',
+          entityData: { title: 'Other', template: 't2' },
+        },
+      ],
+    } as Entity;
+    expect(countEntityRelationships(multiFile)).toBe(3);
+    expect(countEntityRelationships(multiFile, 'f1')).toBe(2);
   });
 });

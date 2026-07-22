@@ -10,11 +10,6 @@ describe('Upload CSVs', () => {
     cy.exec('yarn blank-state --force', { env });
     clearCookiesAndLogin('admin', 'change this password now');
     cy.injectAxe();
-    cy.window().then(win => {
-      (win as typeof window & { __featureFlags__?: { v2CSVImport: boolean } }).__featureFlags__ = {
-        v2CSVImport: true,
-      };
-    });
   });
 
   it('should setup the test', () => {

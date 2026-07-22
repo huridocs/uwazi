@@ -2,6 +2,8 @@ export {
   readFileAsBase64,
   constructFile,
   prepareHTMLMediaView,
+  revokeHTMLMediaView,
+  revokeHTMLMediaViewUrl,
   isSerializedFile,
 } from '../fileUploadUtils.js';
 export {

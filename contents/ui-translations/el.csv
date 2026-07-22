@@ -23,6 +23,7 @@ Account updated,Ο λογαριασμός ενημερώθηκε επιτυχώ�
 Accuracy,Ακρίβεια
 Accuracy tooltip,Η ακρίβεια υπολογίζεται από την αναλογία επιτυχιών προς αστοχίες στα επεξεργασμένα δείγματα.
 Action,Ενέργεια
+Actions,Actions
 Activate,Ενεργοποίηση
 Activated,Ενεργοποιημένο
 Active languages,Ενεργές γλώσσες
@@ -36,6 +37,7 @@ Add as,Add as
 Add data source,Add data source
 Add date,Προσθήκη ημερομηνίας
 Add entities / documents,Προσθήκη οντοτήτων / εγγράφων
+Add entity,Add entity
 Add entity type,Προσθήκη τύπου οντότητας
 Add Extractor,Προσθήκη εξαγωγέα
 Add extractor,Προσθήκη εξαγωγέα
@@ -237,6 +239,7 @@ Copy Highlighted,Αντιγραφή επισημασμένου
 Copy link,Αντιγραφή συνδέσμου
 Copy properties to this entity from,Αντιγραφή ιδιοτήτων σε αυτή την οντότητα από
 Copy to clipboard,Αντιγραφή στο πρόχειρο
+Could not add media. Please try again.,Could not add media. Please try again.
 Could not be processed,Δεν ήταν δυνατή η επεξεργασία
 Could not create entity,Could not create entity
 Could not detect the area for the selected text,Δεν εντοπίστηκε η περιοχή του επιλεγμένου κειμένου. Επιλέξτε ξανά.
@@ -347,6 +350,8 @@ Direction,Direction
 Disable,Απενεργοποίηση
 Disable highlights,Απενεργοποίηση επισημάνσεων
 Disabled 2FA,Απενεργοποιημένο 2FA
+Discard and leave,Discard and leave
+Discard and switch,Discard and switch
 Discard changes,Απόρριψη αλλαγών
 Discard changes?,Απόρριψη αλλαγών;
 Dismiss,Απόκρυψη
@@ -384,6 +389,7 @@ Duration,Duration
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
 Earlier,Earlier
 Edit,Επεξεργασία
+Edit at source,Edit at source
 Edit Extractor,Επεξεργασία εξαγωγέα
 Edit File,Επεξεργασία αρχείου
 Edit group,Επεξεργασία ομάδας
@@ -545,30 +551,27 @@ ID:,ID:
 Image doesn't match the required size.,Image doesn't match the required size.
 Import,Εισαγωγή
 Import asset,Εισαγωγή αρχείου
-Import completed,Η εισαγωγή ολοκληρώθηκε. Αριθμός δημιουργημένων οντοτήτων:
 Import CSV,Εισαγωγή CSV
 Import failed. Review details below.,Import failed. Review details below.
 Import finished successfully.,Import finished successfully.
 Import finished with errors. Review details below.,Import finished with errors. Review details below.
-Import instructions,Οδηγίες εισαγωγής
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.
 Import theme instance file,Import theme instance file
 Import was cancelled.,Import was cancelled.
-Imported entities from file,Εισήχθησαν οντότητες από αρχείο
 Imported translations from file,Εισήχθησαν μεταφράσεις από αρχείο
-Importing data in progress,Εισαγωγή δεδομένων σε εξέλιξη
 in,σε
 "In a group, either all relationships must have a hub or none of them.","Σε μια ομάδα, είτε όλες οι σχέσεις πρέπει να έχουν έναν κόμβο είτε καμία από αυτές."
 In OCR queue,Στην ουρά OCR
 in this document,in this document
 Incoming,Incoming
-Indexing entities may take a few minutes,Η ευρετηριοποίηση οντοτήτων μπορεί να διαρκέσει μερικά λεπτά
 Info,Πληροφορίες
 Information extraction training,Εκπαίδευση εξαγωγής πληροφοριών
 Inherit,Κληρονόμηση
 Inherit property,Κληρονομούμενη ιδιότητα
 Inherit type,Κληρονομούμενος τύπος
+"Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
+inherits,inherits
 Input,Είσοδος
 Install,Εγκατάσταση
 Install Language(s),Εγκατάσταση γλωσσών
@@ -613,6 +616,7 @@ Languages installed successfully,Languages installed successfully
 Last updated,Τελευταία ενημέρωση
 Last updated from collection:,Last updated from collection:
 Latitude,Γεωγραφικό πλάτος
+Latitude must be between -90 and 90,Latitude must be between -90 and 90
 Learn more,Μάθετε περισσότερα
 Legend,Υπόμνημα
 Lengthy reindex process,Χρονοβόρα διαδικασία επαναευρετηριοποίησης
@@ -634,6 +638,7 @@ Login button,Σύνδεση
 Login failed,Η σύνδεση απέτυχε
 Logout,Αποσύνδεση
 Longitude,Γεωγραφικό μήκος
+Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lost connection to the server. Your changes may be lost,Η σύνδεση με τον διακομιστή χάθηκε. Οι αλλαγές σας ενδέχεται να χαθούν.
 low,χαμηλό
 Manage site settings and configuration,Διαχείριση ρυθμίσεων και διαμόρφωσης ιστότοπου
@@ -726,6 +731,7 @@ No,Όχι
 No attachments,Δεν υπάρχουν συνημμένα αρχεία
 No chart types match your search.,No chart types match your search.
 No common filters,Δεν υπάρχουν κοινά φίλτρα
+No connected entities yet.,No connected entities yet.
 No Connections,Δεν υπάρχουν συνδέσεις
 No Connections description,Οι συνδέσεις είναι οι άμεσες σχέσεις μεταξύ αυτού του εγγράφου και άλλων εγγράφων και οντοτήτων.
 No context,Δεν υπάρχει πλαίσιο
@@ -740,6 +746,7 @@ No icon / flag,Χωρίς εικονίδιο/σημαία
 No items available,Δεν υπάρχουν διαθέσιμα στοιχεία
 No Label,Χωρίς ετικέτα
 No label,Χωρίς ετικέτα
+No matching entities.,No matching entities.
 No media selected,No media selected
 No options,Δεν υπάρχουν επιλογές
 No options found,Δεν βρέθηκαν επιλογές
@@ -760,6 +767,7 @@ No templates available to add.,No templates available to add.
 No text match,Δεν υπάρχει αντιστοιχία κειμένου
 No text match description,Μπορείτε να πληκτρολογήσετε κάτι διαφορετικό στο πλαίσιο αναζήτησης για να λάβετε αποτελέσματα.
 No timelinks added,No timelinks added
+No translation in,No translation in
 No type,Κανένας τύπος
 No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,Δεν υπάρχει διαθέσιμο έγκυρο πρότυπο στόχου
@@ -775,6 +783,7 @@ Normal view,Κανονική προβολή
 Not already been use as source template in another extractor,Δεν έχει ήδη χρησιμοποιηθεί ως πρότυπο πηγής σε άλλο εξαγωγέα
 Not already been use as target template,Δεν έχει ήδη χρησιμοποιηθεί ως πρότυπο στόχου
 Not Found,Δεν βρέθηκε
+Nothing here yet.,Nothing here yet.
 Nothing selected,Δεν έχει επιλεγεί τίποτα
 Notifications,Notifications
 Obsolete,Παρωχημένο
@@ -952,6 +961,7 @@ Release message,Release message
 remaining files,υπόλοιπα αρχεία
 Remote Server Unreachable,Απομακρυσμένος διακομιστής μη προσβάσιμος
 Remove,Αφαίρεση
+Remove from connection,Remove from connection
 Remove from training set,Αφαίρεση από το σύνολο εκπαίδευσης
 remove icon,αφαιρέση εικονίδιου
 Removed language,Αφαίρεση γλώσσας
@@ -1005,6 +1015,7 @@ Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordin
 Search,Αναζήτηση
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
 Search entities...,Search entities...
+Search entities…,Search entities…
 Search item,Αναζήτηση στοιχείου
 Search related entities or documents,Αναζήτηση σχετικών οντοτήτων ή εγγράφων
 Search relationships,Search relationships
@@ -1167,8 +1178,6 @@ Templates,Πρότυπα
 Templates:,Πρότυπα:
 Text,Κείμενο
 Text references limit warning,Οι αναφορές κειμένου περιορίζονται σε μέγιστο 300.
-The import process threw an error:,Η διαδικασία εισαγωγής προκάλεσε σφάλμα:
-The import process threw some warnings:,Η διαδικασία εισαγωγής προκάλεσε προειδοποιήσεις:
 "The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process.","Η διαδικασία εξαγωγής των παραγράφων ξεκίνησε επιτυχώς. Ελέγξτε τη στήλη 
               Κατάσταση για ενημερώσεις σχετικά με τη διαδικασία."
@@ -1236,6 +1245,7 @@ This property will be shown using all the width available.,Αυτή η ιδιό�
 This property will be shown without the label,Αυτή η ιδιότητα θα εμφανίζεται χωρίς την ετικέτα
 This property will be the default filter in the library for this template.,Αυτή η ιδιότητα θα είναι το προεπιλεγμένο φίλτρο στη βιβλιοθήκη για αυτό το πρότυπο.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","Αυτή η ιδιότητα θα χρησιμοποιηθεί για το φιλτράρισμα των αποτελεσμάτων βιβλιοθήκης. Όταν οι ιδιότητες ταιριάζουν σε όνομα και τύπο πεδίου με άλλους τύπους οντοτήτων, θα συνδυαστούν για φιλτράρισμα."
+This search could not be completed. Try again later.,This search could not be completed. Try again later.
 This table of contents was automatically created by the system.,Αυτός ο πίνακας περιεχομένων δημιουργήθηκε αυτόματα από το σύστημα.
 this template,αυτό το πρότυπο
 This template is in use by existing entities and cannot be deleted.,Αυτό το πρότυπο χρησιμοποιείται από υπάρχουσες οντότητες και δεν μπορεί να διαγραφεί.
@@ -1295,6 +1305,7 @@ Unknown entity,Unknown entity
 Unknown template,Unknown template
 Unlink,Αποσύνδεση
 Unlock account,Ξεκλείδωμα λογαριασμού
+Unsaved changes,Unsaved changes
 Unsupported OCR language,Μη υποστηριζόμενη γλώσσα OCR
 Untitled,Untitled
 Untranslated Terms,Αμετάφραστοι όροι
@@ -1312,7 +1323,6 @@ Updated translations,Οι μεταφράσεις ενημερώθηκαν
 Updated user,Ο χρήστης ενημερώθηκε
 Updating template properties across,Ενημερώνονται ιδιότητες προτύπου σε
 Updating…,Updating…
-Upload a ZIP or CSV file.,Μεταφόρτωση αρχείου ZIP ή CSV.
 Upload and select file,Μεταφόρτωση και επιλογή αρχείου
 Upload from computer,Μεταφόρτωση από υπολογιστή
 Upload image,Upload image
@@ -1324,7 +1334,6 @@ Uploaded document,Το έγγραφο μεταφορτώθηκε
 Uploaded file,Το αρχείο μεταφορτώθηκε
 Uploading,Μεταφόρτωση
 Uploading ...,Μεταφόρτωση...
-Uploading file,Μεταφόρτωση αρχείου
 Uploads,Μεταφορτώσεις
 URL,URL
 Use,Χρήση
@@ -1357,6 +1366,7 @@ Value cannot be transformed to the correct type,Η τιμή δεν μπορεί 
 values,τιμές
 Verify,Επαλήθευση
 Verifying...,Επαλήθευση...
+via,via
 View,Προβολή
 view,προβολή
 View entities,Προβολή οντοτήτων
@@ -1390,6 +1400,10 @@ You can create metadata templates in,Μπορείτε να δημιουργήσ�
                   button.","You can start by selecting text in the document and clicking the ""Add to ToC""
                   button."
 You do not have write permission on all entities,You do not have write permission on all entities
+You have unsaved changes. Discard them and leave this page? This action cannot be undone.,You have unsaved changes. Discard them and leave this page? This action cannot be undone.
+"You have unsaved changes. Discard them and switch language? This action cannot be
+              undone.","You have unsaved changes. Discard them and switch language? This action cannot be
+              undone."
 You have unsaved changes. Do you want to continue?,Έχετε μη αποθηκευμένες αλλαγές. Θέλετε να συνεχίσετε;
 You should activate this feature for enhanced account security,Θα πρέπει να ενεργοποιήσετε αυτή τη λειτουργία για αυξημένη ασφάλεια λογαριασμού
 You should activate this feature for enhanced account security.,Θα πρέπει να ενεργοποιήσετε αυτή τη λειτουργία για αυξημένη ασφάλεια λογαριασμού.

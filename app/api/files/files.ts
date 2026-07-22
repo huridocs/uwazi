@@ -38,6 +38,10 @@ export class UpdateFileError extends Error {
 }
 
 export const files = {
+  /**
+   * @deprecated
+   * This method is deprecated and should not be used anymore.
+   */
   async save(_file: FileType, index = true) {
     const file = deduceMimeType(_file);
 
@@ -65,9 +69,15 @@ export const files = {
 
     return savedFile;
   },
-
+  /**
+   * @deprecated
+   * This method is deprecated and should not be used anymore.
+   */
   get: filesModel.get.bind(filesModel),
-
+  /**
+   * @deprecated
+   * This method is deprecated and should not be used anymore.
+   */
   async delete(query: any = {}) {
     const hasFileName = (file: FileType): file is FileType & { filename: string } =>
       !!file.filename;

@@ -2,11 +2,17 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { PostgresFilesDAO } from '../PostgresFilesDAO.js';
 import { PostgresTable } from '#api/core/infrastructure/postgresql/common/PostgresTable.js';
+import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { FileNotFound } from '#api/core/domain/files/errors.js';
 
 const TENANT_ID = 'test-tenant';
+
+const managerFor = (tenantId: string) =>
+  new PostgresTransactionManager(PostgresDB.knex, tenantId, LoggerFactory.forTests());
 
 const factory = getFixturesFactory({ convertIdToString: true, tenantId: TENANT_ID });
 
@@ -70,6 +76,7 @@ const baseFixtures = {
 const createSut = () =>
   new PostgresFilesDAO({
     tenantId: TENANT_ID,
+    pgTransactionManager: managerFor(TENANT_ID),
   });
 
 describe('PostgresFilesDAO', () => {
@@ -607,6 +614,63 @@ describe('PostgresFilesDAO', () => {
       const files = await dao.getByQuery({ type: 'document' }, { limit: 2 });
 
       expect(files).toHaveLength(2);
+    });
+
+    it('filters by $exists:true for nullable fields', async () => {
+      const dao = createSut();
+      const files = await dao.getByQuery({ language: { $exists: true } });
+
+      expect(files.length).toBeGreaterThan(0);
+      files.forEach(f => expect(f.language).toBeTruthy());
+    });
+
+    it('filters by $exists:false for nullable fields', async () => {
+      const dao = createSut();
+      const files = await dao.getByQuery({ language: { $exists: false } });
+
+      expect(files.length).toBeGreaterThan(0);
+      files.forEach(f => expect(f.language).toBeFalsy());
+    });
+
+    it('combines $exists with other filters', async () => {
+      const dao = createSut();
+      const files = await dao.getByQuery({
+        type: 'document',
+        language: { $exists: true },
+      });
+
+      expect(files.length).toBeGreaterThan(0);
+      files.forEach(f => {
+        expect(f.type).toBe('document');
+        expect(f.language).toBeTruthy();
+      });
+    });
+
+    it('filters by $nin', async () => {
+      const dao = createSut();
+      const files = await dao.getByQuery({
+        entity: { $nin: ['entity_a', 'entity_x'] },
+      });
+
+      expect(files.length).toBeGreaterThan(0);
+      files.forEach(f => {
+        expect(f.entity).not.toBe('entity_a');
+        expect(f.entity).not.toBe('entity_x');
+      });
+    });
+
+    it('combines $nin with other filters', async () => {
+      const dao = createSut();
+      const files = await dao.getByQuery({
+        type: 'document',
+        entity: { $nin: ['entity_a'] },
+      });
+
+      expect(files.length).toBeGreaterThan(0);
+      files.forEach(f => {
+        expect(f.type).toBe('document');
+        expect(f.entity).not.toBe('entity_a');
+      });
     });
   });
 

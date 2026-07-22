@@ -1,5 +1,4 @@
 import net from 'net';
-import os from 'os';
 import { spawn } from 'child_process';
 
 const START_PORT = 3000;
@@ -9,8 +8,6 @@ const END_WEBPACK_PORT = 8180;
 const START_INSPECT_PORT = 9229;
 const END_INSPECT_PORT = 9329;
 const DB_PREFIX = 'uwazi_development';
-const SHARED_DB = 'uwazi_shared_db';
-const DEFAULT_TENANT_NAME = 'default';
 const MIGRATION_RESULT_PREFIX = '__UWAZI_MIGRATE_RESULT__=';
 const requestedOffset = process.argv[2];
 
@@ -169,42 +166,6 @@ const databaseExists = async (dbName, env) => {
   return output === 'true';
 };
 
-const syncDefaultTenant = async (tenantName, port, env) => {
-  const host = getMongoHost(env);
-  const domain = `${os.hostname()}:${port}`;
-  const rootPath = env.ROOT_PATH || process.cwd();
-  const uploads = env.UPLOADS_FOLDER || `${rootPath}/uploaded_documents/`;
-  const customUploads = env.CUSTOM_UPLOADS_FOLDER || `${rootPath}/custom_uploads/`;
-  const activityLogs = env.ACTIVITY_LOGS_FOLDER || `${rootPath}/log/`;
-  const payload = JSON.stringify({
-    sharedDb: SHARED_DB,
-    tenantName: DEFAULT_TENANT_NAME,
-    set: { dbName: tenantName, indexName: tenantName, domain },
-    setOnInsert: {
-      name: DEFAULT_TENANT_NAME,
-      uploadedDocuments: uploads,
-      attachments: uploads,
-      customUploads,
-      activityLogs,
-      featureFlags: {
-        s3Storage: false,
-        esReplicas: 0,
-        deactivateTestJob: false,
-        paragraphExtraction: true,
-        v2CSVImport: true,
-        fileCacheHeaders: true,
-        themeCustomization: true,
-        newHeader: true,
-        postgresThesauri: true,
-      },
-    },
-  });
-  const script = `const p = ${payload}; db.getSiblingDB(p.sharedDb).tenants.updateOne({ name: p.tenantName }, { $set: p.set, $setOnInsert: p.setOnInsert }, { upsert: true });`;
-
-  await runCommandCapture('mongosh', ['--quiet', '--host', host, '--eval', script], env);
-  console.log(`Synced default tenant → ${tenantName} (${domain})`);
-};
-
 const parseMigrationResult = output => {
   const resultLine = output
     .split(/\r?\n/)
@@ -273,8 +234,6 @@ const main = async () => {
     await runCommand('yarn', ['blank-state', '--force', tenantName], env);
     await runCommand('yarn', ['admin-user', tenantName], env);
   }
-
-  await syncDefaultTenant(tenantName, port, env);
 
   const { stdout: migrateOutput } = await runCommandObserve('yarn', ['migrate'], env);
   const migrationResult = parseMigrationResult(migrateOutput);
