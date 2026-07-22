@@ -1,4 +1,9 @@
-import { EmailInUse, UsernameExists, UserNotFound } from '#api/core/domain/user/errors.js';
+import {
+  EmailInUse,
+  UsernameExists,
+  UserNotFound,
+  InvalidUnlockCode,
+} from '#api/core/domain/user/errors.js';
 import { User } from '#api/core/domain/user/User.js';
 import { ResultType } from '#api/core/libs/Result.js';
 
@@ -10,6 +15,11 @@ interface UsersDataSource {
   countActiveUsers(): Promise<number>;
   checkUniqueUsername(user: User): Promise<ResultType<boolean, UsernameExists>>;
   checkUniqueEmail(user: User): Promise<ResultType<boolean, EmailInUse>>;
+  findByUsernameAndUnlockCode(
+    username: string,
+    code: string
+  ): Promise<ResultType<User, InvalidUnlockCode>>;
+  clearLockFields(userId: string): Promise<void>;
 }
 
 export type { UsersDataSource };

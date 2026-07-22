@@ -49,6 +49,12 @@ class UpdateUserError extends DomainError {
   }
 }
 
+class InvalidUnlockCode extends DomainError {
+  constructor() {
+    super('Invalid username or unlock code', 'user.invalid_unlock_code');
+  }
+}
+
 export {
   UsernameExists,
   EmailInUse,
@@ -58,4 +64,5 @@ export {
   UserNotFound,
   UsersGetError,
   UpdateUserError,
+  InvalidUnlockCode,
 };
