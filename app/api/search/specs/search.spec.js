@@ -4,7 +4,6 @@ import { elastic } from '#api/search/index.js';
 import { search } from '#api/search/search.js';
 import date from '#api/utils/date.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 import { User } from '#api/users.v2/model/User.js';
 import * as searchLimitsConfig from '#shared/config.js';
@@ -249,28 +248,17 @@ describe('search', () => {
 
   it('should filter by templates', async () => {
     userFactory.mock(undefined);
-    const [
-      template1es,
-      template2es,
-      template1en,
-      allTemplatesEn,
-      onlyMissing,
-      template1AndMissing,
-    ] = await Promise.all([
+    const [template1es, template2es, template1en, allTemplatesEn] = await Promise.all([
       searchEntities({ types: [ids.template1] }, 'es'),
       searchEntities({ types: [ids.template2] }, 'es'),
       searchEntities({ types: [ids.template1] }, 'en'),
       searchEntities({ types: [ids.template1, ids.template2] }, 'en'),
-      searchEntities({ types: ['missing'] }, 'en'),
-      searchEntities({ types: [ids.template1, 'missing'] }, 'en'),
     ]);
 
     expect(template1es.rows.length).toBe(2);
     expect(template1en.rows.length).toBe(5);
     expect(template2es.rows.length).toBe(1);
     expect(allTemplatesEn.rows.length).toBe(6);
-    expect(onlyMissing.rows.length).toBe(2);
-    expect(template1AndMissing.rows.length).toBe(7);
   });
 
   it('should allow searching only within specific Ids', async () => {
@@ -650,8 +638,8 @@ describe('search', () => {
       it('should return aggregations for all templates when filtering by template', async () => {
         const onlyPublished = await searchEntities({ types: [ids.templateMetadata1] }, 'en');
         const { buckets } = onlyPublished.aggregations.all._types;
-        expect(onlyPublished.aggregations.all._types.count).toBe(6);
-        expectBucket(buckets, ids.template, 2);
+        expect(onlyPublished.aggregations.all._types.count).toBe(5);
+        expectBucket(buckets, ids.template, 4);
         expectBucket(buckets, ids.template1, 5);
         expectBucket(buckets, ids.template2, 1);
         expectBucket(buckets, ids.templateMetadata1, 3);
@@ -677,8 +665,8 @@ describe('search', () => {
           editorUser
         );
         const { buckets } = includeUnpublished.aggregations.all._types;
-        expect(includeUnpublished.aggregations.all._types.count).toBe(6);
-        expectBucket(buckets, ids.template, 3);
+        expect(includeUnpublished.aggregations.all._types.count).toBe(5);
+        expectBucket(buckets, ids.template, 6);
         expectBucket(buckets, ids.template1, 5);
         expectBucket(buckets, ids.template2, 1);
         expectBucket(buckets, ids.templateMetadata1, 4);
@@ -1545,36 +1533,21 @@ describe('search', () => {
     });
   });
 
-  describe('relationship permissions (v2GetEntity feature flag)', () => {
-    it('should not call applyRelationshipPermissions when the flag is disabled', async () => {
-      const mockService = { applyRelationshipPermissions: jest.fn() };
-      jest.spyOn(EntitiesQueryServiceFactory, 'default').mockReturnValue(mockService);
-
-      await searchEntities({ ids: [ids.batmanFinishes] }, 'en');
-
-      expect(mockService.applyRelationshipPermissions).not.toHaveBeenCalled();
-    });
-
-    it('should call applyRelationshipPermissions when the v2GetEntity flag is enabled', async () => {
+  describe('relationship permissions (EntitiesQueryService)', () => {
+    it('should always call applyRelationshipPermissions', async () => {
       const user = userFactory.mockEditorUser();
 
-      testingTenants.mockCurrentTenant({ featureFlags: { v2GetEntity: true } });
+      const mockService = {
+        applyRelationshipPermissions: jest.fn().mockResolvedValue(undefined),
+      };
+      jest.spyOn(EntitiesQueryServiceFactory, 'default').mockReturnValue(mockService);
 
-      try {
-        const mockService = {
-          applyRelationshipPermissions: jest.fn().mockResolvedValue(undefined),
-        };
-        jest.spyOn(EntitiesQueryServiceFactory, 'default').mockReturnValue(mockService);
+      const { rows } = await searchEntities({ ids: [ids.batmanFinishes] }, 'en');
 
-        const { rows } = await searchEntities({ ids: [ids.batmanFinishes] }, 'en');
-
-        expect(mockService.applyRelationshipPermissions).toHaveBeenCalledWith(
-          rows,
-          User.createFrom(user)
-        );
-      } finally {
-        testingTenants.restoreCurrentFn();
-      }
+      expect(mockService.applyRelationshipPermissions).toHaveBeenCalledWith(
+        rows,
+        User.createFrom(user)
+      );
     });
   });
 

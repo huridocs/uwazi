@@ -73,7 +73,6 @@ type ClientFeatureFlags = {
   paragraphExtraction?: boolean;
   themeCustomization?: boolean;
   newHeader?: boolean;
-  v2GetEntity?: boolean;
   aiAssistant?: boolean;
 };
 
