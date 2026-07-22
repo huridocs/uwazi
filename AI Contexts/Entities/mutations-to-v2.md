@@ -23,6 +23,11 @@ Move legacy entity mutations from `app/api/entities/entities.js` to V2-backed pa
   - `removeValuesFromEntities`
   - `deleteFromMetadata`
   - `deleteRelatedEntityFromMetadata`
+- Helper dedup + lint-aligned refactor completed without lint suppressions:
+  - shared normalization/sanitize helpers consolidated in `app/api/entities/legacyMutationCommon.js`
+  - `app/api/entities/specs/saveEntityV2Adapter.js` split into smaller orchestration helpers
+  - `app/api/relationships/updateEntitiesMetadataV1Bridge.js` and `app/api/relationships/saveEntityBasedReferencesV1Bridge.js` split into smaller functions and sequential async orchestration
+  - all touched helper/bridge files pass eslint with no warnings in this pass.
 
 ### Still Pending For Final Objective
 
@@ -43,6 +48,12 @@ Move legacy entity mutations from `app/api/entities/entities.js` to V2-backed pa
   - `app/api/relationships/specs/relationships.spec.js`
   - `app/api/core/v1_layer/templates/specs/templateUpdateDenormalization.spec.ts`
   - `yarn check-types`
+  - `eslint` (focused helper/bridge files in this pass) with no warnings/errors.
+
+### Latest Semantic Commits
+
+- `a7aa3b665f` — `refactor(entities): extract legacy mutation helpers`
+- `213856cf66` — `refactor(relationships): split reference bridge flow`
 
 ## Mutation Inventory
 
