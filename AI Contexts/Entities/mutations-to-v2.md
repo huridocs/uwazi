@@ -8,7 +8,8 @@ Move legacy entity mutations from `app/api/entities/entities.js` to V2-backed pa
 
 ### Completed
 
-- `entities.save` persistence is V2-only through `EntityFacade.create` / `EntityFacade.update`.
+- `entities.save` is removed from `entities.js`.
+- V1 test coverage that relied on `entities.save` now uses a dedicated V2-backed test adapter (`app/api/entities/specs/saveEntityV2Adapter.js`) calling `EntityFacade.create` / `EntityFacade.update`.
 - Legacy language feature-flag branch (`v2Languages`) is removed from routes/config/schema.
 - Legacy entity language mutators (`addLanguage` / `removeLanguage`) are removed.
 - Legacy `withTransaction` utility + spec are removed, and factory bridge to `dbSessionContext` transaction manager is removed.
@@ -16,10 +17,16 @@ Move legacy entity mutations from `app/api/entities/entities.js` to V2-backed pa
   - `UpdateEntityUseCaseFactory.default().execute(...)`
   - explicit `ExecutionContext` bootstrap when caller has none
   - no relationships-path fallback branch.
+- Remaining deprecated entity mutators were removed from `entities.js`:
+  - `delete`
+  - `deleteIndexes`
+  - `removeValuesFromEntities`
+  - `deleteFromMetadata`
+  - `deleteRelatedEntityFromMetadata`
 
 ### Still Pending For Final Objective
 
-- `entities.save` remains a heavy legacy orchestrator; target is a thin boundary (create/update dispatch only).
+- Keep trimming remaining V1 non-mutation/query helpers in `entities.js` where feasible without crossing the query-scope ownership of the other workstream.
 
 ### Locked Decisions
 
@@ -41,8 +48,12 @@ Move legacy entity mutations from `app/api/entities/entities.js` to V2-backed pa
 
 | Mutator | Previous Implementation | Current Status | Decision |
 | --- | --- | --- | --- |
-| `save` | V1 `createEntity` / `updateEntity` writes via `entitiesModel` | migrated (V2-only persistence) | Delegates to `EntityFacade.create` / `EntityFacade.update`, but still has legacy orchestration/flags/side-effects in wrapper |
-| `delete` | Deprecated V1 delete path | kept (deprecated) | Restored for backward compatibility wrappers |
+| `save` | V1 upsert wrapper (`createEntity` / `updateEntity`) via `entitiesModel` | removed | Runtime callers already gone; tests moved to dedicated V2 adapter helper |
+| `delete` | Deprecated V1 delete path | removed | No runtime callers; removed with related metadata/index cleanup mutators from `entities.js` |
+| `deleteIndexes` | Deprecated V1 index cleanup path | removed | No runtime callers |
+| `removeValuesFromEntities` | Legacy bulk metadata cleanup helper | removed | Only test caller remained; test migrated off this mutator |
+| `deleteFromMetadata` | Legacy metadata id propagation helper | removed | No runtime callers |
+| `deleteRelatedEntityFromMetadata` | Legacy relationship cleanup helper | removed | No runtime callers |
 | `updateMetadataValues` (deprecated DS method) | V1 `entities.save` bridge | deleted | Removed from deprecated DS contract + mongo implementation |
 | `entitySavingManager.saveEntity` | Wrapper around `entities.save` | deleted | File removed (no runtime importers) |
 | `generatedIdPropertyAutoFiller.populateGeneratedIdByTemplate` | Legacy bulk update helper | deleted | File removed (no call sites) |
@@ -224,10 +235,23 @@ Target: decide if synchronous side effects in `entities.save` can be removed now
   - Removed obsolete `updateMetdataFromRelationships` test block from `app/api/entities/specs/entities.spec.js`.
   - Removed dead `createEntity` mutator export/implementation from `app/api/entities/entities.js` (no runtime or test callers).
   - Removed `updateEntity` mutator export/implementation from `app/api/entities/entities.js`.
+  - Removed `save` mutator export/implementation from `app/api/entities/entities.js`.
+  - Removed remaining deprecated V1 mutators from `app/api/entities/entities.js`:
+    - `delete`
+    - `deleteIndexes`
+    - `removeValuesFromEntities`
+    - `deleteFromMetadata`
+    - `deleteRelatedEntityFromMetadata`
+  - Reworked `app/api/entities/specs/entities.spec.js` to use `app/api/entities/specs/saveEntityV2Adapter.js` instead of `entities.save(...)`.
   - Reworked `app/api/entities/specs/denormalization.spec.ts` to stop calling `entities.updateEntity(...)`:
-    - updates now go through `entities.save(...)` (V2 persistence path)
+    - updates now go through `saveEntityV2Adapter(...)` (V2 persistence path)
     - denormalization assertions are preserved by explicitly invoking `denormalizeRelated(...)` in the test helper
     - relationship-target language seeding is done in helper (`en` + `es`) to satisfy V2 translation assumptions in update flows.
+  - Extracted V1->V2 relationships bridge logic from `relationships.js` into:
+    - `app/api/relationships/v1EntityMutationBridge.js`
+    - `app/api/relationships/updateEntitiesMetadataV1Bridge.js`
+    - `app/api/relationships/saveEntityBasedReferencesV1Bridge.js`
+  - Adjusted template denormalization spec import to use `#api/relationships/relationships.js` directly to avoid ESM default-export cycle issues during test bootstrap.
   - Fixed in-transaction relationship metadata refresh by:
     - running the updates sequentially (not parallel) to avoid transaction/session conflicts
     - using a reentrant transaction-manager adapter when invoking `UpdateEntityUseCase` inside an already-running transaction.
@@ -272,13 +296,9 @@ Target: decide if synchronous side effects in `entities.save` can be removed now
     - Or is current V2 behavior (target-language-only for translatable fields) the intended contract?
   - Do not "fix" this in facade; if behavior changes, it must be an explicit core contract decision.
 
-- `entities.save` façade status:
-  - compatibility fallback branches were removed; save delegates persistence through V2 facade paths only.
-  - still pending to make it a thin wrapper:
-    - reduce read/merge orchestration to a minimal adapter (or migrate remaining tests away from `entities.save` entirely).
-- Re-validate that no `entities.save(` references remain outside intended legacy tests.
-- Remaining `entities.save(` references:
-  - `app/api/entities/specs/entities.spec.js` only.
+- `entities.save` status:
+  - removed from runtime and test callsites.
+  - equivalent test coverage now routes through `saveEntityV2Adapter(...)` with explicit V2 facade usage.
 - Cleanup pass:
   - remove stale activity log parser mappings for removed routes (`POST/api/documents`, `DELETE/api/documents`)
   - remove or update any remaining deprecated docs/DS references in specs/docs.
