@@ -7,19 +7,11 @@ import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.
 import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { tenants } from '#api/tenants/tenantContext.js';
-
-const normalizeDocuments = (docs = []) =>
-  docs.filter(Boolean).map(doc => ({
-    _id: doc._id?.toString?.() || doc._id,
-    originalname: doc.originalname,
-  }));
-
-const normalizeAttachments = (attachments = []) =>
-  attachments.filter(Boolean).map(attachment => ({
-    _id: attachment._id?.toString?.() || attachment._id,
-    originalname: attachment.originalname,
-    ...(attachment.url ? { url: attachment.url } : {}),
-  }));
+import {
+  normalizeAttachments,
+  normalizeDocuments,
+  sanitizeForTemplate,
+} from '#api/entities/legacyMutationCommon.js';
 
 const toUpdateEntityInput = (entity, template, language) => {
   const files = [
@@ -109,5 +101,6 @@ export {
   reentrantTransactionManager,
   resolveEntityActorForFacade,
   runWithV2Context,
+  sanitizeForTemplate,
   toUpdateEntityInput,
 };

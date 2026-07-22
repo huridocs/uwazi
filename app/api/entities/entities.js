@@ -1,90 +1,8 @@
-/* eslint-disable no-param-reassign,max-statements */
+/* eslint-disable no-param-reassign */
 
 import relationships from '#api/relationships/relationships.js';
-import templates from '#api/core/v1_layer/templates/templates.js';
-import date from '#api/utils/date.js';
-import { propertyTypes } from '#shared/propertyTypes.js';
-import ID from '#shared/uniqueID.js';
-
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
-import { denormalizeMetadata } from './denormalize.js';
 import model from './entitiesModel.js';
-import { validateEntity } from './validateEntity.js';
-
-async function getEntityTemplate(doc, language) {
-  let template = null;
-  if (doc.template) {
-    template = await templates.getById(doc.template);
-  } else if (doc.sharedId) {
-    const storedDoc =
-      (await this.getById(doc.sharedId, language)) || (await this.getById(doc.sharedId));
-    if (storedDoc?.template) {
-      template = await templates.getById(storedDoc.template);
-    }
-  }
-  return template;
-}
-
-const uniqueMetadataObject = (elem, pos, arr) =>
-  elem.value && arr.findIndex(e => e.value === elem.value) === pos;
-
-function sanitize(doc, template) {
-  if (!doc.metadata || !template) {
-    return doc;
-  }
-
-  const metadata = template.properties.reduce((sanitizedMetadata, { type, name }) => {
-    if (!sanitizedMetadata[name]) {
-      return Object.assign(sanitizedMetadata, { [name]: [] });
-    }
-
-    if (
-      [propertyTypes.multiselect, propertyTypes.relationship].includes(type) &&
-      sanitizedMetadata[name]
-    ) {
-      return Object.assign(sanitizedMetadata, {
-        [name]: sanitizedMetadata[name].filter(uniqueMetadataObject),
-      });
-    }
-
-    if ([propertyTypes.date, propertyTypes.multidate].includes(type) && sanitizedMetadata[name]) {
-      return Object.assign(sanitizedMetadata, {
-        [name]: sanitizedMetadata[name].filter(value => value.value),
-      });
-    }
-
-    if (
-      [propertyTypes.daterange, propertyTypes.multidaterange].includes(type) &&
-      sanitizedMetadata[name]
-    ) {
-      return Object.assign(sanitizedMetadata, {
-        [name]: sanitizedMetadata[name].filter(value => value.value.from || value.value.to),
-      });
-    }
-
-    if (
-      type === propertyTypes.select &&
-      (!sanitizedMetadata[name] || !sanitizedMetadata[name][0] || !sanitizedMetadata[name][0].value)
-    ) {
-      return Object.assign(sanitizedMetadata, { [name]: [] });
-    }
-
-    if (type === propertyTypes.numeric && typeof sanitizedMetadata[name]?.[0]?.value === 'string') {
-      if (sanitizedMetadata[name][0].value === '') {
-        delete sanitizedMetadata[name];
-        return sanitizedMetadata;
-      }
-
-      return Object.assign(sanitizedMetadata, {
-        [name]: [{ value: parseFloat(sanitizedMetadata[name][0].value) }],
-      });
-    }
-
-    return sanitizedMetadata;
-  }, doc.metadata);
-
-  return Object.assign(doc, { metadata });
-}
 
 const withDocuments = async (entities, documentsFullText) => {
   const sharedIds = entities.map(entity => entity.sharedId);
@@ -127,33 +45,6 @@ const extendSelect = select => {
 };
 
 export default {
-  denormalizeMetadata,
-  sanitize,
-  getEntityTemplate,
-  async denormalize(_doc, { user, language }) {
-    await validateEntity(_doc);
-    const doc = _doc;
-    if (!doc.sharedId) {
-      doc.user = user._id;
-      doc.creationDate = date.currentUTC();
-      doc.published = false;
-    }
-
-    doc.sharedId = doc.sharedId || ID();
-    const [template, defaultTemplate] = await Promise.all([
-      this.getEntityTemplate(doc, language),
-      templates.getDefaultTemplate(),
-    ]);
-    let docTemplate = template;
-    if (!doc.template) {
-      docTemplate = defaultTemplate;
-    }
-    const entity = this.sanitize(doc, docTemplate);
-    entity.metadata = await denormalizeMetadata(entity.metadata, entity.language, docTemplate);
-
-    return entity;
-  },
-
   async getWithoutDocuments(query, select, options = {}) {
     const entities = await model.getUnrestricted(query, select, options);
     return entities;

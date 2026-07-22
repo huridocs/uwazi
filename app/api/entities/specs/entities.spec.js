@@ -20,7 +20,11 @@ import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
 import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
 import entities from '../entities.js';
-import { saveEntityV2Adapter, toActorFromUser } from './saveEntityV2Adapter.js';
+import {
+  denormalizeEntityV2Adapter,
+  saveEntityV2Adapter,
+  toActorFromUser,
+} from './saveEntityV2Adapter.js';
 
 import { EntityCreatedEvent } from '../events/EntityCreatedEvent.js';
 import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent.js';
@@ -71,8 +75,7 @@ const runRelationshipSyncJob = async ({ sharedId, language, entityTemplateId, us
   );
 };
 
-const denormalizeEntity = (entity, options) =>
-  testingEnvironment.runWithContext(() => entities.denormalize(entity, options));
+const denormalizeEntity = (entity, options) => denormalizeEntityV2Adapter(entity, options);
 
 describe('entities', () => {
   const userFactory = new UserInContextMockFactory();

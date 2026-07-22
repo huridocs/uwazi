@@ -2,6 +2,7 @@
 import entities from '#api/entities/index.js';
 import { denormalizeRelated } from '#api/entities/denormalize.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import templates from '#api/core/v1_layer/templates/templates.js';
 import entitiesModel from '#api/entities/entitiesModel.js';
 import { search } from '#api/search/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -74,7 +75,10 @@ describe('Denormalize relationships', () => {
         await saveEntityV2Adapter(doc, { language, user: { _id: db.id() } });
 
         const afterByLanguage = await entities.getAllLanguages(id);
-        const template = await entities.getEntityTemplate(afterByLanguage[0], language);
+        if (!afterByLanguage[0]?.template) {
+          throw new Error(`Missing template for entity ${id}`);
+        }
+        const template = await templates.getById(afterByLanguage[0].template);
 
         await Promise.all(
           afterByLanguage.map(async afterDoc => {

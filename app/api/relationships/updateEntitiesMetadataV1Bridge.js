@@ -7,6 +7,7 @@ import {
   reentrantTransactionManager,
   resolveEntityActorForFacade,
   runWithV2Context,
+  sanitizeForTemplate,
   toUpdateEntityInput,
 } from './v1EntityMutationBridge.js';
 
@@ -52,7 +53,7 @@ const persistEntityMetadata = async ({ entity, template, language }) => {
       transactionManager: reentrantTransactionManager(ExecutionContext.transactionManager),
     });
     await useCase.execute(
-      toUpdateEntityInput(entities.sanitize(entity, template), template, language)
+      toUpdateEntityInput(sanitizeForTemplate(entity, template), template, language)
     );
   });
 };
@@ -60,19 +61,28 @@ const persistEntityMetadata = async ({ entity, template, language }) => {
 const getTemplateForEntity = ({ templates, entity }) =>
   templates.find(template => template._id.toString() === entity.template.toString());
 
-// eslint-disable-next-line max-statements
-const processEntityMetadataUpdate = async ({ entityId, language, templates, getByDocument }) => {
+const getEntityUpdatePayload = async ({ entityId, language, templates, getByDocument }) => {
   const currentEntity = await getEntityBySharedIdAndLanguage(entityId, language);
-  const relations = await getByDocument(entityId, language);
-
   if (!currentEntity || !currentEntity.template) {
-    return;
+    return null;
   }
 
   const template = getTemplateForEntity({ templates, entity: currentEntity });
   if (!template) {
+    return null;
+  }
+
+  const relations = await getByDocument(entityId, language);
+  return { currentEntity, template, relations };
+};
+
+const processEntityMetadataUpdate = async ({ entityId, language, templates, getByDocument }) => {
+  const payload = await getEntityUpdatePayload({ entityId, language, templates, getByDocument });
+  if (!payload) {
     return;
   }
+
+  const { currentEntity, template, relations } = payload;
 
   const { relationshipProperties, nextMetadata } = buildRelationshipMetadata({
     currentMetadata: currentEntity.metadata || {},
