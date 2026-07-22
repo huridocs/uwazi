@@ -2,13 +2,23 @@
 /* eslint-disable max-lines */
 import _ from 'lodash';
 
+import { ObjectId } from 'mongodb';
 import templatesAPI from '#api/core/v1_layer/templates/index.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import settings from '#api/settings/index.js';
 import relationtypes from '#api/relationtypes/index.js';
 import entities from '#api/entities/entities.js';
+import { User } from '#api/users.v2/model/User.js';
 import { createError } from '#api/utils/index.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { UpdateEntityUseCaseFactory } from '#api/core/infrastructure/factories/UpdateEntityUseCaseFactory.js';
+import { tenants } from '#api/tenants/tenantContext.js';
 
-import { ObjectId } from 'mongodb';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import model from './model.js';
 import { generateNames } from '#api/utils/templateUtils.js';
@@ -48,6 +58,101 @@ const determinePropertyValues = (entity, propertyName) => {
   const metadata = entity.metadata || {};
   const propertyValues = metadata[propertyName] || [];
   return propertyValues.map(mo => mo.value);
+};
+
+const normalizeDocuments = (docs = []) =>
+  docs.filter(Boolean).map(doc => ({
+    _id: doc._id?.toString?.() || doc._id,
+    originalname: doc.originalname,
+  }));
+
+const normalizeAttachments = (attachments = []) =>
+  attachments.filter(Boolean).map(attachment => ({
+    _id: attachment._id?.toString?.() || attachment._id,
+    originalname: attachment.originalname,
+    ...(attachment.url ? { url: attachment.url } : {}),
+  }));
+
+const toUpdateEntityInput = (entity, template, language) => {
+  const files = [
+    ...normalizeDocuments(entity.documents).map(doc => ({
+      id: doc._id,
+      originalname: doc.originalname,
+    })),
+    ...normalizeAttachments(entity.attachments).map(attachment => ({
+      id: attachment._id,
+      originalname: attachment.originalname,
+    })),
+  ];
+
+  const propertyAssignments = [
+    {
+      name: 'title',
+      value: [{ value: entity.title }],
+    },
+    ...Object.entries(entity.metadata || {}).map(([name, value]) => ({
+      name,
+      value,
+    })),
+  ];
+
+  return {
+    sharedId: entity.sharedId,
+    language: entity.language || language,
+    propertyAssignments,
+    files,
+    templateId: template._id?.toString() || entity.template?.toString?.() || entity.template,
+  };
+};
+
+const resolveEntityActorForFacade = entity => {
+  const actorId = entity?.user?.toString?.() || entity?.user;
+  return User.createFrom({
+    _id: actorId || `relationships-sync:${entity?.sharedId || 'unknown'}`,
+    role: 'admin',
+    groups: [],
+  });
+};
+
+const runWithV2Context = async (actor, callback) => {
+  if (ExecutionContext.getStore()) {
+    await callback();
+    return;
+  }
+
+  const tenant = tenants.current();
+  await ExecutionContext.run(
+    {
+      tenant,
+      actor,
+      factories: {
+        transactionManager: TransactionManagerFactory.default,
+        postgresTransactionManager: PostgresTransactionManagerFactory.default,
+        jobsDispatcher: () => DefaultDispatcher(tenant.name, ExecutionContext.transactionManager),
+        eventEmitter: EventEmitterFactory.default,
+        idGenerator: IdGeneratorFactory.default,
+        logger: LoggerFactory.default,
+      },
+    },
+    callback
+  );
+};
+
+const reentrantTransactionManager = base => {
+  const manager = {
+    run: async callback => (base.isRunning() ? callback() : base.run(callback)),
+    onCommitted: handler => {
+      base.onCommitted(handler);
+      return manager;
+    },
+    onRetry: handler => {
+      base.onRetry(handler);
+      return manager;
+    },
+    runHandlingOnCommitted: callback => base.runHandlingOnCommitted(callback),
+    isRunning: () => base.isRunning(),
+  };
+  return manager;
 };
 
 export default {
@@ -285,11 +390,54 @@ export default {
   async updateEntitiesMetadataByHub(hubId, language) {
     const hub = await this.getHub(hubId);
     const entitiesIds = hub.map(r => r.entity);
-    return entities.updateMetdataFromRelationships(entitiesIds, language);
+    return this.updateEntitiesMetadata(entitiesIds, language);
   },
 
-  updateEntitiesMetadata(entitiesIds, language) {
-    return entities.updateMetdataFromRelationships(entitiesIds, language);
+  async updateEntitiesMetadata(entitiesIds, language) {
+    const _templates = await templatesAPI.get();
+
+    await ArrayUtils.sequentialFor(entitiesIds, async entityId => {
+      const entity =
+        (
+          await entities.getUnrestrictedWithDocuments({ sharedId: entityId, language }, undefined, {
+            limit: 1,
+          })
+        )[0] || (await entities.getById(entityId, language));
+      const relations = await this.getByDocument(entityId, language);
+
+      if (entity && entity.template) {
+        entity.metadata = entity.metadata || {};
+        const template = _templates.find(t => t._id.toString() === entity.template.toString());
+        if (!template) return;
+
+        const relationshipProperties = template.properties.filter(p => p.type === 'relationship');
+        relationshipProperties.forEach(property => {
+          const relationshipsGoingToThisProperty = relations.filter(
+            r =>
+              r.template &&
+              r.template.toString() === property.relationType.toString() &&
+              (!property.content || r.entityData.template.toString() === property.content)
+          );
+
+          entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => ({
+            value: r.entity,
+            label: r.entityData.title,
+          }));
+        });
+
+        if (relationshipProperties.length) {
+          const actor = resolveEntityActorForFacade(entity);
+          await runWithV2Context(actor, async () => {
+            const useCase = UpdateEntityUseCaseFactory.default({
+              transactionManager: reentrantTransactionManager(ExecutionContext.transactionManager),
+            });
+            await useCase.execute(
+              toUpdateEntityInput(entities.sanitize(entity, template), template, language)
+            );
+          });
+        }
+      }
+    });
   },
 
   async generateCreatedReferences(property, newValues, entity, existingReferences) {

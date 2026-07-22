@@ -4,152 +4,38 @@
 
 Move legacy entity mutations from `app/api/entities/entities.js` to V2-backed paths and remove V1-only dead code on the Mongo -> Postgres migration path.
 
-## GitHub Issue Replacement Draft
+## Current State (Short)
 
-### Current status (plainly)
+### Completed
 
-We are **not** at the target yet. `entities.js save` now routes mutations through V2 only, but it is still an orchestration-heavy legacy wrapper (not yet a thin façade).
+- `entities.save` persistence is V2-only through `EntityFacade.create` / `EntityFacade.update`.
+- Legacy language feature-flag branch (`v2Languages`) is removed from routes/config/schema.
+- Legacy entity language mutators (`addLanguage` / `removeLanguage`) are removed.
+- Legacy `withTransaction` utility + spec are removed, and factory bridge to `dbSessionContext` transaction manager is removed.
+- Relationships metadata synchronization now owns mutation persistence in `relationships.js` through V2 use case execution:
+  - `UpdateEntityUseCaseFactory.default().execute(...)`
+  - explicit `ExecutionContext` bootstrap when caller has none
+  - no relationships-path fallback branch.
 
-### 1) What still uses old logic today (runtime)
+### Still Pending For Final Objective
 
-#### A) Direct runtime callers still using `entities.save` (legacy façade)
+- `entities.save` remains a heavy legacy orchestrator; target is a thin boundary (create/update dispatch only).
 
-- none identified (runtime path now migrated; remaining references are test-only)
+### Locked Decisions
 
-#### B) `entities.js save` still contains non-trivial legacy orchestration
+- No compatibility fallback in relationships metadata sync persistence path.
+- No synthetic template auto-repair for missing-template entities; generatedToc entity updates skip invalid entities.
+- Continue migration direction toward removing `entities` V1 internals, not adding new coupling to them.
 
-Inside `app/api/entities/entities.js`, `save` still contains:
+### Latest Validation Snapshot
 
-- legacy-oriented input preparation and sanitization (`validateEntity`, `sanitize`, defaults)
-- update-time merge/readback logic (loads current entity with files, then merges into update payload)
-- include-documents hydration/readback behavior after write
-
-So while persistence now goes through V2 facade calls, `save` is still not the thin "if create/update -> delegate" boundary we want.
-
-#### C) V1-only persistence still callable in entities module
-
-- `createEntity(...)`
-- `updateEntity(...)`
-- `updateMetdataFromRelationships(...)` internally calls `updateEntity(...)`
-
-This means old write paths are still alive and reachable.
-
-### 2) Key blockers preventing "save = V2 only"
-
-1. **Thin-boundary goal not finished in `save`**
-   - `save` still does more than dispatching to `EntityFacade.create/update`.
-   - This keeps V1 behavior and V2 behavior coupled in the same wrapper.
-
-2. **Legacy orchestration still coupled to `save`**
-   - includeDocuments hydration behavior after write
-   - property selections handling
-   - update-time payload merge from current persisted entity (file preservation path)
-
-3. **Runtime V1 mutators still reachable outside `save`**
-- `updateMetdataFromRelationships` still reaches V1 `updateEntity`.
-- Language mutation methods (`addLanguage`/`removeLanguage`) are still used by legacy i18n path when `v2Languages` is not active.
-
-4. **Suggestions flow migration must preserve side effects**
-   - Suggestions acceptance now uses `EntityFacade.update`.
-   - Relationship reference sync and explicit search indexing call were reintroduced in that flow to preserve previous behavior.
-
-### 3) Non-blocking but important context
-
-- `generatedToc` is now part of V2 core update contract (`UpdateEntity` schema/mapper/use case).
-- `tocService` and `files.tocReviewed` now call `EntityFacade.update(...)` with `generatedToc`.
-- `EntityFacade.update` still contains a narrow generatedToc fallback that performs direct Mongo update + reindex when template mapping crashes.
-- This fallback should be treated as temporary inconsistency until legacy template data is fixed or explicitly excluded from V2 path.
-
-### 4) Team decisions needed (explicit)
-
-1. **Compatibility strategy**
-   - Keep a temporary adapter that rewrites legacy payloads into strict V2 input, or force caller-by-caller migration first.
-
-2. **Side-effect ownership**
-   - Decide which side effects must move into V2 use-cases vs remain in caller/orchestrator layer.
-
-3. **Deprecated documents surface**
-   - Keep temporarily for integrators (e.g. Tella) with timeline, or schedule removal now.
-
-4. **Cutover policy**
-   - Big-bang removal of fallback, or phased (update path first, then create path).
-
-5. **V2 async side-effect contract**
-   - Confirm authoritative ownership for denormalization and indexing in V2 (event listeners/jobs/hooks).
-   - If confirmed, remove synchronous side-effect calls from `entities.save` and adapt tests to wait/assert async processing (or use sync worker abstractions in tests).
-
-### 5) Proposed execution plan (recommended)
-
-#### Phase 1 — Safety inventory + hard evidence
-
-- Confirm real runtime usage of `/api/documents` (logs/integration owners).
-- Confirm real runtime usage of `updateMetadataValues` (not just static refs).
-- Lock a list of must-preserve behaviors per `entities.save` caller.
-
-#### Phase 2 — Remove fallback from UPDATE path first
-
-- Migrate update-oriented callers to V2-compatible payloads.
-- Remove `shouldForceLegacyUpdate` + update fallback branch.
-- Keep create fallback temporarily if needed.
-
-Status update:
-
-- Attempted direct removal of `shouldForceLegacyUpdate` and the update fallback branch in `entities.save`.
-- Reverted after validation because a broad legacy test surface still depends on V1 update semantics through `entities.save`, including:
-  - transaction-nesting expectations (`withTransaction` / template denormalization suites)
-  - multi-language denormalization behavior expected by legacy entities/search suites
-  - legacy template/thesauri fixture shapes that V2 update rejects in these test paths
-- Conclusion: update fallback cannot be removed safely yet without first migrating or retiring those remaining legacy test flows.
-- Progress made:
-  - `app/api/core/v1_layer/templates/specs/templateUpdateDenormalization.spec.ts` setup was migrated away from `entities.save(...)` bootstrap.
-  - New setup bootstraps relationship connections/metadata directly (via relationship sync helpers + metadata normalization), preserving suite behavior without relying on `entities.save` as a fixture-preparation side effect.
-  - Suite remains green after this change.
-  - `app/api/search.v2/specs/sorting.spec.ts` setup was migrated away from `entities.save(...)`; fixture metadata now includes normalized select labels directly.
-  - `app/api/search.v2/specs/snippetsSearch.spec.ts` setup was migrated away from `entities.save(...)`; fixture metadata now includes denormalized thesaurus label used in snippet assertions.
-  - Both search.v2 suites remain green after these setup-only migrations.
-  - `app/api/suggestions/specs/eventListeners.spec.ts` was migrated away from `entities.save(...)` for template-change updates; it now updates through `EntityFacade.update(...)` with explicit file references.
-  - Suggestion listener fixtures were normalized for strict V2 template validation (select/multiselect content + dictionary fixture), keeping behavior assertions intact.
-  - `app/api/entities/specs/v2_newRelationshipMetadata.spec.ts` was reduced to a minimal deprecated placeholder (removed stale commented legacy block).
-  - `app/api/utils/specs/withTransaction.spec.ts` was refactored to remove the legacy anti-pattern (`withTransaction` wrapping `entities.save` calls).
-  - Added a concrete V2-owned transaction-boundary pattern test: update entities through `EntityFacade.update(...)` **without** outer `withTransaction`, then assert indexed updates.
-  - This documents/enforces the migration rule: V2 facade/use-cases own transaction boundaries; do not nest them under V1 `withTransaction`.
-  - Follow-up TypeScript cleanup completed for:
-    - `app/api/suggestions/specs/eventListeners.spec.ts`
-    - `app/api/utils/specs/withTransaction.spec.ts`
-  - Both suites revalidated green after typing fixes.
-
-#### Phase 3 — Remove fallback from CREATE path
-
-- Migrate remaining create callers.
-- Delete `shouldForceLegacyCreate`, `isLegacyCompatibilityError`, `normalizeLegacyEntityForFacade` from save flow (or move to temporary adapter module if still needed during cutover).
-
-#### Phase 4 — Delete legacy internals and wrappers
-
-- Remove `createEntity/updateEntity` usage from `save`.
-- Remove deprecated `documents.save` wrapper and deprecated `/api/documents` routes once usage is confirmed zero.
-- Remove remaining `entities.save` runtime caller in suggestions by migrating acceptance update semantics to V2. (done)
-
-### 6) Definition of done for this refactor objective
-
-- `entities.js save` only orchestrates:
-  - choose create/update
-  - call V2 (`EntityFacade.create` / `EntityFacade.update`)
-  - no extra synchronous side-effect orchestration in wrapper
-  - no legacy compatibility behavior flags
-- No reachable runtime path from `entities.save` to legacy V1 persistence methods.
-- Deprecated documents compatibility surface either removed or explicitly deferred with owner + date.
-- Deprecated metadata update bridge resolved (removed).
-- Affected integration suites green after each phase.
-
-### 7) Files to focus discussion on
-
-- `app/api/entities/entities.js`
-- `app/api/core/infrastructure/express/entity/Schemas.ts`
-- `app/api/core/infrastructure/express/entity/ExpressEntityMapper.ts`
-- `app/api/core/application/UpdateEntity.ts`
-- `app/api/core/infrastructure/facades/EntitiesFacade.ts`
-- `app/api/suggestions/updateEntities.ts`
-- `AI Contexts/Entities/mutations-to-v2.md`
+- Passed:
+  - `app/api/suggestions/specs/routes.spec.ts`
+  - `app/api/i18n/specs/routes.spec.ts`
+  - `app/api/entities/specs/entities.spec.js`
+  - `app/api/relationships/specs/relationships.spec.js`
+  - `app/api/core/v1_layer/templates/specs/templateUpdateDenormalization.spec.ts`
+  - `yarn check-types`
 
 ## Mutation Inventory
 
@@ -160,6 +46,8 @@ Status update:
 | `updateMetadataValues` (deprecated DS method) | V1 `entities.save` bridge | deleted | Removed from deprecated DS contract + mongo implementation |
 | `entitySavingManager.saveEntity` | Wrapper around `entities.save` | deleted | File removed (no runtime importers) |
 | `generatedIdPropertyAutoFiller.populateGeneratedIdByTemplate` | Legacy bulk update helper | deleted | File removed (no call sites) |
+
+## Appendix — Historical Changelog
 
 ## V2 Compatibility Adjustments
 
@@ -184,7 +72,7 @@ Status update:
   - template-change metadata carry-over parity in legacy update paths
 
 Current state is V2-only persistence with a still-heavy wrapper.
-`generatedToc` is handled in V2 core update path, but a temporary direct-Mongo fallback remains in `EntityFacade.update` for legacy-template crash scenarios.
+`generatedToc` is handled in V2 core update path, and legacy direct-Mongo fallback was removed.
 
 ### Additional Compatibility Guardrails Added (CSV/template legacy shapes)
 
@@ -218,7 +106,6 @@ Implemented rule in this pass:
 
 - `entities.save` no longer routes writes to V1 create/update.
 - core V2 code changes are limited to contract support (`Schemas`, mapper, use case input), not broad legacy branching.
-- temporary generatedToc fallback in `EntitiesFacade.update` is now the remaining exception to remove.
 - numeric empty-value expectation was explicitly standardized in specs to canonical normalized output (`[]`, not `undefined`)
 
 ## Deprecated Wrapper/Route Cleanup
@@ -257,7 +144,7 @@ Target: decide if synchronous side effects in `entities.save` can be removed now
 
 - `includeDocuments` previously acted as a legacy compatibility control in `entities.save` and has now been removed.
 - They are acceptable as transitional debt if fully bypassed by runtime (feature-flag cutover complete) and then removed.
-- By this rule, flagged legacy i18n paths (`entities.addLanguage/removeLanguage`) can be considered done once `v2Languages` is universal and old branches are deleted.
+- `v2Languages` branch and legacy language mutators are already removed; V2 path is the only route.
 
 ### Clarification on `generatedToc` Core vs Fallback
 
@@ -285,18 +172,11 @@ Target: decide if synchronous side effects in `entities.save` can be removed now
 
 - `app/api/entities/specs/entities.spec.js` using `entities.save`:
   - intentional while this suite remains the V1 contract suite.
-- V1 mutators in `app/api/entities/entities.js` other than `save`:
-  - `updateMetdataFromRelationships`
-  - `addLanguage`
-  - `removeLanguage`
-- Legacy i18n branch invoking V1 language mutators when `v2Languages` is not active.
 
 ### Unblock conditions for deferred removals
 
 - Remove `entities.spec.js` dependency on `entities.save` only when:
   - we either retire this V1 suite, or split/migrate it into explicit V2 suites with equivalent intent.
-- Remove V1 language mutators only when:
-  - `v2Languages` is universal and legacy branch is deleted.
 - Remove remaining V1 mutator surface only when:
   - relationships redesign path defines replacement ownership for legacy metadata update behaviors.
 
@@ -305,6 +185,70 @@ Target: decide if synchronous side effects in `entities.save` can be removed now
 - Entities without template are invalid and must be skipped in generatedToc entity updates.
 - No auto-repair/fallback assignment is allowed for missing template entities, because template ownership cannot be inferred safely.
 - Keep strict behavior: log and skip entity-level generatedToc update; do not reintroduce mutation-path fallback for this case.
+
+## PR Follow-up Implementation Status (Team-aligned)
+
+### PR A — reviewer comments + mutation boundary
+
+- Implemented:
+  - `AsyncEventEmitter.emit` now no-ops when no listeners are registered.
+  - Removed no-listener try/catch from `EntitiesService.update`.
+  - Trimmed expanded search mocks in affected specs; retained only needed methods.
+  - Simplified suggestions routes reindex assertions.
+  - Deleted:
+    - `app/api/utils/withTransaction.ts`
+    - `app/api/utils/specs/withTransaction.spec.ts`
+  - Removed `TransactionManagerFactory.default()` fallback bridge to `dbSessionContext`.
+
+### PR B — remove `v2Languages` branch + legacy language mutation path
+
+- Implemented:
+  - `app/api/i18n/routes.ts` now always uses `AddLanguageController` / `DeleteLanguageController`.
+  - Removed legacy route helper branch.
+  - Removed `v2Languages` field from tenant schema/type/default config.
+  - Removed legacy entity language mutators from `entities.js`:
+    - `addLanguage`
+    - `removeLanguage`
+  - Updated i18n and entities specs to align with V2-only route behavior.
+
+### PR C — relationships V1 coupling to V2 mutation services
+
+- Implemented mutation-path migration (corrected):
+  - `relationships.updateEntitiesMetadata(...)` is now the mutation owner for relationship metadata refresh.
+  - Persistence is done through V2 `UpdateEntityUseCaseFactory.default().execute(...)` (not through `EntityFacade.update`).
+  - `relationships.updateEntitiesMetadataByHub(...)` no longer delegates to `entities.updateMetdataFromRelationships(...)`.
+  - V2 execution is wrapped in an explicit `ExecutionContext` bootstrap when absent (tenant + actor + infra factories), so legacy callers can execute V2 use case safely.
+  - Removed compatibility fallback from relationships metadata sync path (no Facade fallback branch there).
+  - Removed `updateMetdataFromRelationships` from `app/api/entities/entities.js`.
+  - Migrated template denormalization path to call `relationships.updateEntitiesMetadata(...)` directly.
+  - Removed obsolete `updateMetdataFromRelationships` test block from `app/api/entities/specs/entities.spec.js`.
+  - Removed dead `createEntity` mutator export/implementation from `app/api/entities/entities.js` (no runtime or test callers).
+  - Removed `updateEntity` mutator export/implementation from `app/api/entities/entities.js`.
+  - Reworked `app/api/entities/specs/denormalization.spec.ts` to stop calling `entities.updateEntity(...)`:
+    - updates now go through `entities.save(...)` (V2 persistence path)
+    - denormalization assertions are preserved by explicitly invoking `denormalizeRelated(...)` in the test helper
+    - relationship-target language seeding is done in helper (`en` + `es`) to satisfy V2 translation assumptions in update flows.
+  - Fixed in-transaction relationship metadata refresh by:
+    - running the updates sequentially (not parallel) to avoid transaction/session conflicts
+    - using a reentrant transaction-manager adapter when invoking `UpdateEntityUseCase` inside an already-running transaction.
+
+- Test boundary update:
+  - `app/api/relationships/specs/relationships.spec.js` assertions now spy on V2 use case execution (`UpdateEntityUseCaseFactory.default().execute`) instead of V1 entities mutator calls.
+  - spec lint cleanups applied (unused imports/unused disable directives/prefer-destructuring).
+
+### Validation snapshot (local)
+
+- Passed:
+  - `app/api/core/libs/eventEmitter/specs/AsyncEventEmitter.spec.ts`
+  - `app/api/suggestions/specs/routes.spec.ts`
+  - `app/api/i18n/specs/routes.spec.ts`
+  - `app/api/i18n/specs/translations.spec.ts`
+  - `app/api/entities/specs/entities.spec.js`
+  - `app/api/relationships/specs/relationships.spec.js`
+  - `app/api/core/v1_layer/templates/specs/templateUpdateDenormalization.spec.ts`
+  - `yarn check-types`
+- Note:
+  - Some broader integration suites requiring local Postgres were not revalidated in this pass due `ECONNREFUSED 127.0.0.1:5432`.
 
 ## Remaining Validation Checklist
 
@@ -329,7 +273,7 @@ Target: decide if synchronous side effects in `entities.save` can be removed now
   - Do not "fix" this in facade; if behavior changes, it must be an explicit core contract decision.
 
 - `entities.save` façade status:
-  - compatibility fallback branches were removed; save now delegates persistence through V2 facade paths only.
+  - compatibility fallback branches were removed; save delegates persistence through V2 facade paths only.
   - still pending to make it a thin wrapper:
     - reduce read/merge orchestration to a minimal adapter (or migrate remaining tests away from `entities.save` entirely).
 - Re-validate that no `entities.save(` references remain outside intended legacy tests.
@@ -340,7 +284,7 @@ Target: decide if synchronous side effects in `entities.save` can be removed now
   - remove or update any remaining deprecated docs/DS references in specs/docs.
 - Explicit checks requested:
   - verify whether any remaining synchronous side-effects in `save` are truly redundant with V2 workers/listeners (do not infer from old tests alone).
-  - treat legacy i18n `entities.addLanguage/removeLanguage` path as "done enough" when `v2Languages` flag fully bypasses it for all tenants and old flag path is removed.
+  - keep i18n language mutation ownership strictly in V2 routes/use-cases (already enforced).
   - relationships migration remains a special-case long pole due to ongoing redesign (not a simple V1->old-V2 move).
 
 ## Cleanup TODOs (Pending Deletion Assessment)

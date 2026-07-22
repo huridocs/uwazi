@@ -2,8 +2,7 @@
 /* eslint-disable no-param-reassign,max-statements */
 
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
-import * as filesystem from '#api/files/index.js';
-import { PDF, files } from '#api/files/index.js';
+import { files } from '#api/files/index.js';
 import relationships from '#api/relationships/relationships.js';
 import { search } from '#api/search/index.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
@@ -11,203 +10,14 @@ import date from '#api/utils/date.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import ID from '#shared/uniqueID.js';
 
-import { ATSolveVersionConflict } from '#api/externalIntegrations.v2/automaticTranslation/utils/ATConflictSolverDeprecated.js';
 import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
-import settings from '../settings/index.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
-import { denormalizeMetadata, denormalizeRelated } from './denormalize.js';
+import { denormalizeMetadata } from './denormalize.js';
 import model from './entitiesModel.js';
-import { EntityCreatedEvent } from './events/EntityCreatedEvent.js';
 import { EntityDeletedEvent } from './events/EntityDeletedEvent.js';
-import { EntityUpdatedEvent } from './events/EntityUpdatedEvent.js';
 import { savePropertySelections } from './metadataExtraction/saveSelections.js';
-import {
-  deleteRelatedNewRelationships,
-  denormalizeAfterEntityCreation,
-  denormalizeAfterEntityUpdate,
-  ignoreNewRelationshipsMetadata,
-  updateNewRelationships,
-} from './v2_support.js';
+import { deleteRelatedNewRelationships } from './v2_support.js';
 import { validateEntity } from './validateEntity.js';
-
-const FIELD_TYPES_TO_SYNC = [
-  propertyTypes.select,
-  propertyTypes.multiselect,
-  propertyTypes.date,
-  propertyTypes.multidate,
-  propertyTypes.multidaterange,
-  propertyTypes.nested,
-  propertyTypes.relationship,
-  propertyTypes.relationship,
-  propertyTypes.geolocation,
-  propertyTypes.numeric,
-];
-
-async function updateEntity(entity, _template, unrestricted = false) {
-  const docLanguages = await this.getAllLanguages(entity.sharedId);
-  const templateHasChanged =
-    docLanguages[0].template &&
-    entity.template &&
-    docLanguages[0].template.toString() !== entity.template.toString();
-
-  const template = _template || { properties: [] };
-  let previousTemplate;
-
-  if (templateHasChanged) {
-    await Promise.all([
-      this.deleteRelatedEntityFromMetadata(docLanguages[0]),
-      relationships.delete({ entity: entity.sharedId }, null, false),
-    ]);
-
-    previousTemplate = await templates.getById(docLanguages[0].template);
-  }
-  const toSyncProperties = template.properties
-    .filter(p => p.type.match(FIELD_TYPES_TO_SYNC.join('|')))
-    .map(p => p.name);
-  const currentDoc = docLanguages.find(d => d._id.toString() === entity._id.toString());
-  const saveFunc = !unrestricted ? model.save : model.saveUnrestricted;
-  entity = await ATSolveVersionConflict(currentDoc, entity);
-  const thesauriByKey = await templates.getRelatedThesauri(template);
-
-  const result = await Promise.all(
-    docLanguages.map(async d => {
-      if (d._id.toString() === entity._id.toString()) {
-        const toSave = { ...entity };
-        delete toSave.published;
-        delete toSave.permissions;
-
-        if (entity.metadata) {
-          toSave.metadata = await denormalizeMetadata(entity.metadata, d.language, template, {
-            thesauriByKey,
-          });
-        }
-
-        const v2RelationshipsUpdates = await ignoreNewRelationshipsMetadata(
-          currentDoc,
-          toSave,
-          template
-        );
-
-        const fullEntity = { ...currentDoc, ...toSave };
-
-        if (template._id) {
-          await denormalizeRelated(fullEntity, template, currentDoc);
-        }
-        const saveResult = await saveFunc(toSave, undefined);
-
-        await updateNewRelationships(v2RelationshipsUpdates);
-
-        return saveResult;
-      }
-
-      const toSave = { ...d };
-
-      if (entity.metadata) {
-        toSave.metadata = { ...entity.metadata, ...toSave.metadata };
-
-        if (templateHasChanged) {
-          previousTemplate.properties.forEach(prevProperty => {
-            // Delete properties that are ONLY on the previous template
-            const isUniqueToPreviousTemplate = template.properties.every(
-              property => property.name !== prevProperty.name || property.type !== prevProperty.type
-            );
-
-            if (isUniqueToPreviousTemplate) {
-              delete toSave.metadata[prevProperty.name];
-            }
-          });
-        }
-
-        toSyncProperties
-          .filter(p => entity.metadata[p])
-          .forEach(p => {
-            toSave.metadata[p] = entity.metadata[p];
-          });
-
-        toSave.metadata = await denormalizeMetadata(toSave.metadata, toSave.language, template, {
-          thesauriByKey,
-        });
-      }
-
-      if (typeof entity.template !== 'undefined') {
-        toSave.template = entity.template;
-      }
-
-      if (typeof entity.generatedToc !== 'undefined') {
-        toSave.generatedToc = entity.generatedToc;
-      }
-
-      if (template._id) {
-        await denormalizeRelated(toSave, template, d);
-      }
-
-      return saveFunc(toSave, undefined);
-    })
-  );
-
-  await denormalizeAfterEntityUpdate(entity);
-
-  const afterEntities = await model.get({ sharedId: entity.sharedId });
-  await applicationEventsBus.emit(
-    new EntityUpdatedEvent({
-      before: docLanguages,
-      after: afterEntities,
-      targetLanguageKey: entity.language,
-    })
-  );
-  return result;
-}
-
-async function createEntity(doc, [currentLanguage, languages], sharedId, docTemplate) {
-  if (!docTemplate) docTemplate = await templates.getById(doc.template);
-  const thesauriByKey = await templates.getRelatedThesauri(docTemplate);
-
-  const emptyEntity = {
-    sharedId,
-    language: languages[0].key,
-    template: docTemplate._id,
-    metadata: {},
-  };
-  const v2RelationshipsUpdates = await ignoreNewRelationshipsMetadata(
-    emptyEntity,
-    doc,
-    docTemplate
-  );
-
-  const result = await Promise.all(
-    languages.map(async lang => {
-      const langDoc = { ...doc };
-      const avoidIdDuplication = doc._id && !lang.default;
-      if (avoidIdDuplication) {
-        delete langDoc._id;
-      }
-      langDoc.language = lang.key;
-      langDoc.sharedId = sharedId;
-      langDoc.metadata = await denormalizeMetadata(
-        langDoc.metadata,
-        langDoc.language,
-        docTemplate,
-        { thesauriByKey }
-      );
-
-      return model.save(langDoc);
-    })
-  );
-
-  await updateNewRelationships(v2RelationshipsUpdates);
-
-  await Promise.all(result.map(r => denormalizeAfterEntityCreation(r)));
-
-  const createdEntities = await model.get({ sharedId });
-  await applicationEventsBus.emit(
-    new EntityCreatedEvent({
-      entities: createdEntities,
-      targetLanguageKey: currentLanguage,
-    })
-  );
-
-  return result;
-}
 
 async function getEntityTemplate(doc, language) {
   let template = null;
@@ -373,8 +183,6 @@ const extendSelect = select => {
 export default {
   denormalizeMetadata,
   sanitize,
-  updateEntity,
-  createEntity,
   getEntityTemplate,
   async save(_doc, { user, language }) {
     await validateEntity(_doc);
@@ -544,46 +352,6 @@ export default {
     return entities;
   },
 
-  /** Rebuild relationship-based metadata objects as {value = id, label: title}. */
-  async updateMetdataFromRelationships(entities, language, reindex = true) {
-    const entitiesToReindex = [];
-    const _templates = await templates.get();
-    await Promise.all(
-      entities.map(async entityId => {
-        const entity = await this.getById(entityId, language);
-        const relations = await relationships.getByDocument(entityId, language);
-
-        if (entity && entity.template) {
-          entity.metadata = entity.metadata || {};
-          const template = _templates.find(t => t._id.toString() === entity.template.toString());
-
-          const relationshipProperties = template.properties.filter(p => p.type === 'relationship');
-          relationshipProperties.forEach(property => {
-            const relationshipsGoingToThisProperty = relations.filter(
-              r =>
-                r.template &&
-                r.template.toString() === property.relationType.toString() &&
-                (!property.content || r.entityData.template.toString() === property.content)
-            );
-
-            entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => ({
-              value: r.entity,
-              label: r.entityData.title,
-            }));
-          });
-          if (relationshipProperties.length) {
-            entitiesToReindex.push(entity.sharedId);
-            await this.updateEntity(this.sanitize(entity, template), template, true);
-          }
-        }
-      })
-    );
-
-    if (reindex) {
-      await search.indexEntities({ sharedId: { $in: entitiesToReindex } });
-    }
-  },
-
   /** Handle property deletion and renames. */
   async deleteIndexes(sharedIds) {
     const deleteIndexBatch = (offset, totalRows) => {
@@ -685,89 +453,6 @@ export default {
       propertyTypes.multiselect,
       propertyTypes.relationship,
     ]);
-  },
-
-  async createThumbnail(entity) {
-    const filePath = filesystem.uploadsPath(entity.file.filename);
-    return new PDF({ filename: filePath }).createThumbnail(entity._id.toString());
-  },
-
-  async generateNewEntitiesForLanguage(entities, language) {
-    return Promise.all(
-      entities.map(async _entity => {
-        const { __v, _id, ...entity } = _entity;
-        entity.language = language;
-        entity.metadata = await this.denormalizeMetadata(
-          entity.metadata,
-          language,
-          entity.template?.toString()
-        );
-        return entity;
-      })
-    );
-  },
-
-  async addLanguage(language, limit = 50) {
-    const [languageTranslationAlreadyExists] = await this.getUnrestrictedWithDocuments(
-      { language },
-      null,
-      {
-        limit: 1,
-      }
-    );
-    if (languageTranslationAlreadyExists) {
-      return;
-    }
-
-    const { languages } = await settings.get();
-
-    const defaultLanguage = languages.find(l => l.default).key;
-    const duplicate = async (offset, totalRows) => {
-      if (offset >= totalRows) {
-        return;
-      }
-
-      const entities = await this.getUnrestrictedWithDocuments(
-        { language: defaultLanguage },
-        '+permissions',
-        {
-          skip: offset,
-          limit,
-        }
-      );
-      const newLanguageEntities = await this.generateNewEntitiesForLanguage(entities, language);
-      const newSavedEntities = await model.saveMultiple(newLanguageEntities);
-      await search.indexEntities({ _id: { $in: newSavedEntities.map(d => d._id) } }, '+fullText');
-      await newSavedEntities.reduce(async (previous, entity) => {
-        await previous;
-        if (entity.file) {
-          return this.createThumbnail(entity);
-        }
-        return Promise.resolve();
-      }, Promise.resolve());
-      await duplicate(offset + limit, totalRows);
-    };
-
-    const totalRows = await this.count({ language: defaultLanguage });
-    await duplicate(0, totalRows);
-  },
-
-  async removeLanguage(locale) {
-    const deleteFilesByLanguage = (offset, totalRows) => {
-      const limit = 200;
-      if (offset >= totalRows) {
-        return Promise.resolve();
-      }
-
-      return this.get({ language: locale }, null, { skip: offset, limit }).then(() =>
-        deleteFilesByLanguage(offset + limit, totalRows)
-      );
-    };
-
-    return this.count({ language: locale })
-      .then(totalRows => deleteFilesByLanguage(0, totalRows))
-      .then(() => model.delete({ language: locale }))
-      .then(() => search.deleteLanguage(locale));
   },
 
   count: model.count.bind(model),

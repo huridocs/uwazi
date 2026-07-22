@@ -27,7 +27,6 @@ import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent.js';
 import fixtures, {
   adminId,
   batmanFinishesId,
-  docId1,
   entityGetTestTemplateId,
   fixtureFactory,
   syncPropertiesEntityId,
@@ -76,14 +75,20 @@ const saveEntityWithEventing = (doc, options = {}, ...rest) => {
 };
 
 const runRelationshipSyncJob = async ({ sharedId, language, entityTemplateId, userId }) => {
-  const job = new RelationshipSyncJob({ relationships });
-  await job.handleDispatch(async () => {}, {
-    sharedId,
-    targetLanguage: language,
-    templateId: entityTemplateId,
-    tenantName: testingTenants.current().name,
-    userId,
-  });
+  const actor = toActorFromUser({ _id: userId });
+  await testingEnvironment.runWithContext(
+    async () => {
+      const job = new RelationshipSyncJob({ relationships });
+      await job.handleDispatch(async () => {}, {
+        sharedId,
+        targetLanguage: language,
+        templateId: entityTemplateId,
+        tenantName: testingTenants.current().name,
+        userId,
+      });
+    },
+    { actor }
+  );
 };
 
 const denormalizeEntity = (entity, options) =>
@@ -538,36 +543,6 @@ describe('entities', () => {
       });
     });
 
-    it('should not circle back to updateMetdataFromRelationships', async () => {
-      jest.spyOn(date, 'currentUTC').mockReturnValue(1);
-      jest.spyOn(entities, 'updateMetdataFromRelationships');
-      const doc = {
-        _id: batmanFinishesId,
-        sharedId: 'shared',
-        type: 'entity',
-        template: templateId,
-        language: 'en',
-        title: 'Batman finishes',
-        published: true,
-        fullText: {
-          1: 'page[[1]] 1[[1]]',
-          2: 'page[[2]] 2[[2]]',
-          3: '',
-        },
-        metadata: {
-          property1: [{ value: 'value1' }],
-          friends: [],
-        },
-        file: {
-          filename: '8202c463d6158af8065022d9b5014cc1.pdf',
-        },
-      };
-      const user = { _id: db.id() };
-
-      await saveEntity(doc, { user, language: 'es' });
-      expect(entities.updateMetdataFromRelationships).not.toHaveBeenCalled();
-    });
-
     describe('when document have _id', () => {
       it('should not assign again user and creation date', async () => {
         jest.spyOn(date, 'currentUTC').mockReturnValue(10);
@@ -721,88 +696,6 @@ describe('entities', () => {
           [commonProperty3.name]: [{ value: 4321 }],
           [exclusiveTemplateB1.name]: [],
         });
-      });
-    });
-  });
-
-  describe('updateMetdataFromRelationships', () => {
-    it('should update the metdata based on the entity relationships', async () => {
-      await testingEnvironment.runWithContext(async () =>
-        entities.updateMetdataFromRelationships(['shared', 'missingEntity'], 'en')
-      );
-      const updatedEntity = await entities.getById('shared', 'en');
-      expect(updatedEntity.metadata.friends).toEqual([
-        { icon: null, type: 'entity', label: 'shared2title', value: 'shared2' },
-      ]);
-    });
-
-    it('should not fail on newly created documents (without metadata)', async () => {
-      const doc = { title: 'Batman begins', template: templateId };
-      const user = { _id: db.id() };
-      const newEntity = await saveEntity(doc, { user, language: 'es' });
-
-      await testingEnvironment.runWithContext(async () =>
-        entities.updateMetdataFromRelationships([newEntity.sharedId], 'en')
-      );
-
-      const updatedEntity = await entities.getById(newEntity.sharedId, 'en');
-      expect(updatedEntity.metadata).toEqual({
-        date: [],
-        daterange: [],
-        description: [],
-        enemies: [],
-        field_nested: [],
-        friends: [],
-        multidate: [],
-        multidaterange: [],
-        multiselect: [],
-        numeric: [],
-        property1: [],
-        property2: [],
-        select: [],
-        text: [],
-      });
-    });
-
-    it('should sanitize the entities', async () => {
-      const sanitizationSpy = jest.spyOn(entities, 'sanitize');
-
-      await testingEnvironment.runWithContext(async () =>
-        entities.updateMetdataFromRelationships(['shared'], 'en')
-      );
-
-      expect(sanitizationSpy.mock.calls).toMatchObject([
-        [
-          {
-            sharedId: 'shared',
-            language: 'en',
-            title: 'Batman finishes',
-          },
-          {
-            name: 'template_test',
-          },
-        ],
-      ]);
-      sanitizationSpy.mockRestore();
-    });
-
-    describe('unrestricted for collaborator', () => {
-      it('should save the entity with unrestricted access', async () => {
-        userFactory.mock({
-          _id: 'user1',
-          role: UserRole.COLLABORATOR,
-          username: 'User 1',
-          email: 'col@test.com',
-        });
-
-        await testingEnvironment.runWithContext(async () =>
-          entities.updateMetdataFromRelationships(['shared'], 'en')
-        );
-        const updatedEntity = await entities.getById('shared', 'en');
-        expect(updatedEntity.metadata.friends).toEqual([
-          { icon: null, type: 'entity', label: 'shared2title', value: 'shared2' },
-        ]);
-        userFactory.mockEditorUser();
       });
     });
   });
@@ -1192,57 +1085,6 @@ describe('entities', () => {
       const _entities = await entities.get({ template: templateWithEntityAsThesauri });
       expect(_entities[0].metadata.multiselect).toEqual([]);
       expect(search.indexEntities).toHaveBeenCalled();
-    });
-  });
-
-  describe('addLanguage()', () => {
-    let createThumbnailSpy;
-
-    beforeAll(async () => {
-      createThumbnailSpy = jest.spyOn(entities, 'createThumbnail').mockImplementation(entity => {
-        if (!entity.file) {
-          return Promise.reject(
-            new Error('entities without file should not try to create thumbnail')
-          );
-        }
-        return Promise.resolve();
-      });
-    });
-
-    afterAll(() => {
-      createThumbnailSpy.mockRestore();
-    });
-
-    it('should duplicate all the entities from the default language to the new one', async () => {
-      await entitiesModel.save({ _id: docId1, file: {} });
-
-      await entities.addLanguage('ab', 2);
-      const newEntities = await entities.get({ language: 'ab' }, '+permissions');
-      expect(newEntities.length).toBe(16);
-
-      const fromCheckPermissions = fixtures.entities.find(e => e.title === 'Unpublished entity ES');
-      const toCheckPermissions = newEntities.find(e => e.title === 'Unpublished entity ES');
-      expect(toCheckPermissions.permissions).toEqual(fromCheckPermissions.permissions);
-    });
-
-    it('should not try to add already existing languages', async () => {
-      const oldCount = (await entities.get({ language: 'en' })).length;
-      await entities.addLanguage('en');
-      const newCount = (await entities.get({ language: 'en' })).length;
-      expect(newCount).toBe(oldCount);
-    });
-  });
-
-  describe('removeLanguage()', () => {
-    it('should delete all entities from the language', async () => {
-      jest.spyOn(search, 'deleteLanguage').mockImplementation(async () => Promise.resolve());
-      jest.spyOn(entities, 'createThumbnail').mockImplementation(async () => Promise.resolve());
-      await entities.addLanguage('ab');
-      await entities.removeLanguage('ab');
-      const newEntities = await entities.get({ language: 'ab' });
-
-      expect(search.deleteLanguage).toHaveBeenCalledWith('ab');
-      expect(newEntities.length).toBe(0);
     });
   });
 

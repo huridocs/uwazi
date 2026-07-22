@@ -10,7 +10,6 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
-import entities from '#api/entities/entities.js';
 import { EntityUpdatedData, EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { TemplateSchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
 import relationships from '#api/relationships/index.js';
@@ -150,7 +149,7 @@ describe('Templates Update', () => {
       const sharedIds = Array.from(
         new Set(entitiesInDefaultLanguage.map(entity => entity.sharedId))
       );
-      await entities.updateMetdataFromRelationships(sharedIds, 'en', false);
+      await relationships.updateEntitiesMetadata(sharedIds, 'en');
     });
 
     testingTenants.mockCurrentTenant({
