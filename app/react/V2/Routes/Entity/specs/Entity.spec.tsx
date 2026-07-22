@@ -380,14 +380,15 @@ describe('Entity view', () => {
 
       expect(screen.getByTestId('mock-pdf')).toBeInTheDocument();
 
-      expect(screen.getByText('This is the plain text').parentElement?.classList).toContain(
-        'hidden'
-      );
+      expect(
+        screen.getByText('This is the plain text').closest('.overflow-auto')?.classList
+      ).toContain('hidden');
 
       selectPlainTextView();
 
       await waitFor(() => {
-        expect(screen.getByText(pageText).parentElement?.classList).toContain('block');
+        expect(screen.getByText(pageText).closest('.overflow-auto')?.classList).toContain('block');
+        expect(screen.getByRole('region', { name: 'Page 1' })).toHaveAttribute('id', 'page1');
       });
     });
 
@@ -411,7 +412,7 @@ describe('Entity view', () => {
       await checkEntityRendered();
 
       await waitFor(() => {
-        expect(screen.getByText(pageText).parentElement?.classList).toContain('block');
+        expect(screen.getByText(pageText).closest('.overflow-auto')?.classList).toContain('block');
       });
 
       jest.restoreAllMocks();

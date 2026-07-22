@@ -79,7 +79,7 @@ describe('document routes', () => {
         .get('/api/documents/fulltext')
         .query({ _id: document1.toString() });
 
-      expect(res.body).toEqual({ data: 'page 1\n\npage 2' });
+      expect(res.body).toEqual({ data: 'page 1\fpage 2' });
     });
 
     it('should return error when file does not exists', async () => {

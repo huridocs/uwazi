@@ -116,7 +116,6 @@ const EntitySeo = ({ entity }: EntitySeoProps) => {
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
       <aside className="sr-only" data-testid="entity-seo-summary" aria-hidden="true">
-        <h1>{entity.title}</h1>
         {entityTemplate?.name ? <p>{entityTemplate.name}</p> : null}
         {summaryRows.length > 0 ? (
           <dl>

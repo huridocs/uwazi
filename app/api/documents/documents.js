@@ -43,11 +43,12 @@ const documents = {
     }
 
     const pageNumberMatch = /\[\[(\d+)\]\]/g;
+    // Form-feed separates pages so the client can render page containers for SEO.
     return Object.keys(document.fullText)
       .map(Number)
       .sort((a, b) => a - b)
       .map(page => document.fullText[page].replace(pageNumberMatch, ''))
-      .join('\n\n');
+      .join('\f');
   },
 
   get(query, select) {

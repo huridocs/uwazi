@@ -40,7 +40,7 @@ describe('documents', () => {
   describe('fullText', () => {
     it('should return concatenated pages without page markers', async () => {
       const text = await documents.fullText(document1);
-      expect(text).toBe('page 1\n\npage 2');
+      expect(text).toBe('page 1\fpage 2');
     });
   });
 
