@@ -25,6 +25,7 @@ import { EntityNotFoundError } from '../domain/entity/errors.js';
 import { AccessLevel } from '../domain/entityAccessPolicy/AccessLevel.js';
 import { GrantType } from '../domain/entityAccessPolicy/GrantType.js';
 import { TimedMethod } from '../libs/logger/TimedMethodDecorator.js';
+import { ExecutionContext } from '../libs/ExecutionContext.js';
 
 type Deps = {
   templatesDS: TemplatesDataSource;
@@ -36,6 +37,11 @@ type Deps = {
 
 class EntitiesQueryService {
   constructor(private deps: Deps) {}
+
+  private addTelemetry(metadata: Record<string, any>): void {
+    if (!ExecutionContext.getStore()) return;
+    ExecutionContext.telemetryCollector.add(metadata);
+  }
 
   /**
    * Gets a single entity with all computed fields (files, relationships, filtered metadata).
@@ -60,6 +66,14 @@ class EntitiesQueryService {
       throw new EntityNotFoundError(sharedId);
     }
 
+    this.addTelemetry({
+      isAuthenticated,
+      includeRelationships,
+      includePermissions,
+      documentsCount: entity.documents.length,
+      attachmentsCount: entity.attachments.length,
+    });
+
     await this.applyRelationshipPermissions([entity], user);
 
     let filteredRelations: RelationDTO[] = [];
@@ -74,6 +88,11 @@ class EntitiesQueryService {
       filteredRelations = isAuthenticated
         ? relations
         : relations.filter(rel => rel.entityData?.published !== false);
+
+      this.addTelemetry({
+        relationsCount: relations.length,
+        filteredRelationsCount: filteredRelations.length,
+      });
     }
 
     await this.applyPermissionsFieldSecurity(entity, user, includePermissions);
@@ -99,9 +118,20 @@ class EntitiesQueryService {
     }
 
     const templatePropsMap = await this.loadTemplateRelationshipProperties(entityDBOs);
+    const relationshipPropsCount = [...templatePropsMap.values()].reduce(
+      (count, props) => count + props.size,
+      0
+    );
     const referencedEntityIds = this.findAllReferencedEntities(entityDBOs, templatePropsMap);
     const accessibleEntityIds = await this.determineAccessibleEntities(referencedEntityIds, user);
     const filterUnauthorized = await this.deps.settingsDS.readFilterUnauthorizedRelated();
+
+    this.addTelemetry({
+      relationshipPropsCount,
+      referencedEntityIdsCount: referencedEntityIds.size,
+      accessibleEntityIdsCount: accessibleEntityIds.size,
+      filterUnauthorized,
+    });
 
     this.applyPermissionsToMetadata(
       entityDBOs,
