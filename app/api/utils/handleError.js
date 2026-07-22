@@ -55,7 +55,7 @@ const fallbackPrettifier = (error, req) => {
 };
 
 const appendOriginalError = (message, originalError) =>
-  `${message}\noriginal error: ${JSON.stringify(originalError, null, ' ')}`;
+  `${message}\noriginal error: ${inspect(originalError)}`;
 
 const obfuscateCredentials = req => {
   const obfuscated = req;
