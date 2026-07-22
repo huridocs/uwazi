@@ -14,32 +14,10 @@ type ShareEntityModalProps = {
 const publicTipId = 'share-public-caution';
 
 const ShareEntityModal = ({ sharedIds, onClose }: ShareEntityModalProps) => {
-  const {
-    entity,
-    assignments,
-    visibility,
-    lookupTerm,
-    lookupError,
-    showLookupHint,
-    showPublicTip,
-    dirty,
-    loading,
-    loadFailed,
-    saving,
-    adding,
-    generalAccessRef,
-    lookupInputRef,
-    isPublished,
-    controlsDisabled,
-    updateMember,
-    removeMember,
-    handleAdd,
-    handleSave,
-    setGeneralAccess,
-    setLookupTerm,
-    setLookupError,
-    setShowLookupHint,
-  } = useShareEntityModal(sharedIds, onClose);
+  const { entity, controlsDisabled, generalAccess, lookup, members, footer } = useShareEntityModal(
+    sharedIds,
+    onClose
+  );
 
   return (
     <Modal size="lg" ariaLabel={t('System', 'Share', null, false)}>
@@ -50,60 +28,60 @@ const ShareEntityModal = ({ sharedIds, onClose }: ShareEntityModalProps) => {
           </h3>
           <p className="mt-0.5 truncate text-xs text-ink-muted">{entity.title}</p>
         </div>
-        <Modal.CloseButton onClick={onClose} disabled={saving} className="ml-0!" />
+        <Modal.CloseButton onClick={onClose} disabled={footer.saving} className="ml-0!" />
       </Modal.Header>
 
       <Modal.Body className="px-0! py-0!">
         <NeedAuthorization roles={['admin', 'editor']}>
           <GeneralAccessSection
-            visibility={visibility}
+            visibility={generalAccess.visibility}
             disabled={controlsDisabled}
-            showPublicTip={showPublicTip}
+            showPublicTip={generalAccess.showPublicTip}
             publicTipId={publicTipId}
-            generalAccessRef={generalAccessRef}
-            onChange={setGeneralAccess}
+            generalAccessRef={generalAccess.generalAccessRef}
+            onChange={generalAccess.setGeneralAccess}
           />
         </NeedAuthorization>
 
         <PeopleLookupSection
-          lookupTerm={lookupTerm}
-          lookupError={lookupError}
-          showLookupHint={showLookupHint}
+          lookupTerm={lookup.lookupTerm}
+          lookupError={lookup.lookupError}
+          showLookupHint={lookup.showLookupHint}
           disabled={controlsDisabled}
-          adding={adding}
-          lookupInputRef={lookupInputRef}
+          adding={lookup.adding}
+          lookupInputRef={lookup.lookupInputRef}
           onTermChange={value => {
-            setLookupTerm(value);
-            if (lookupError) setLookupError('');
+            lookup.setLookupTerm(value);
+            if (lookup.lookupError) lookup.setLookupError('');
           }}
-          onToggleHint={() => setShowLookupHint(open => !open)}
-          onAdd={handleAdd}
+          onToggleHint={() => lookup.setShowLookupHint(open => !open)}
+          onAdd={lookup.handleAdd}
         />
 
         <section className="px-5 py-3" data-testid="share-members-list">
           <MembersList
-            loading={loading}
-            loadFailed={loadFailed}
-            assignments={assignments}
-            showCanSee={!isPublished}
-            onChange={updateMember}
-            onRemove={removeMember}
+            loading={members.loading}
+            loadFailed={members.loadFailed}
+            assignments={members.assignments}
+            showCanSee={members.showCanSee}
+            onChange={members.updateMember}
+            onRemove={members.removeMember}
           />
         </section>
       </Modal.Body>
 
       <Modal.Footer>
-        {dirty ? (
+        {footer.dirty ? (
           <>
-            <Button variant="secondary" onClick={onClose} disabled={saving}>
+            <Button variant="secondary" onClick={onClose} disabled={footer.saving}>
               <Translate>Discard changes</Translate>
             </Button>
             <Button
               variant="primary"
               onClick={() => {
-                handleSave().catch(() => undefined);
+                footer.handleSave().catch(() => undefined);
               }}
-              disabled={saving || loading || loadFailed}
+              disabled={footer.saving || footer.loading || footer.loadFailed}
             >
               <Translate>Save changes</Translate>
             </Button>

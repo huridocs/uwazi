@@ -95,21 +95,29 @@ const useShareEntityModal = (sharedIds: string[], onClose: () => void) => {
 
   return {
     entity,
-    assignments,
-    visibility,
-    ...lookup,
-    showPublicTip,
-    dirty,
-    loading,
-    loadFailed,
-    saving,
-    generalAccessRef,
-    isPublished,
     controlsDisabled,
-    updateMember,
-    removeMember,
-    handleSave,
-    setGeneralAccess,
+    generalAccess: {
+      visibility,
+      showPublicTip,
+      generalAccessRef,
+      setGeneralAccess,
+    },
+    lookup,
+    members: {
+      assignments,
+      loading,
+      loadFailed,
+      showCanSee: !isPublished,
+      updateMember,
+      removeMember,
+    },
+    footer: {
+      dirty,
+      saving,
+      loading,
+      loadFailed,
+      handleSave,
+    },
   };
 };
 
