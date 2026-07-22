@@ -1,43 +1,50 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { Bars3BottomLeftIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
-import { useSearchParams } from 'react-router';
 import { t } from '#app/I18N/index.js';
 import { isClient } from '#app/utils/index.js';
+import { useEntityHashParams, useUpdateEntityUrl } from '../../entityUrlState.js';
 import { PAGE_PARAM, VIEW_MODE_PARAM } from '../../urlParams.js';
 import { useDocumentPdf } from '#V2/Routes/Entity/Components/context/index.js';
 
 type ViewMode = 'raw' | 'normal';
 
 const DocumentViewModeSelect = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const updateEntityUrl = useUpdateEntityUrl();
   const { pdfController: pdfControls } = useDocumentPdf();
   const [ready, setReady] = useState(false);
   const [open, setOpen] = useState(false);
-  const initialPage = useRef(Number.parseInt(searchParams.get(PAGE_PARAM) || '1', 10));
+  const hashParams = useEntityHashParams();
+  const initialPage = useRef(Number.parseInt(hashParams.get(PAGE_PARAM) || '1', 10));
 
   useEffect(() => {
     setReady(true);
   }, []);
 
-  const isRaw = !isClient || !ready || searchParams.get(VIEW_MODE_PARAM) === 'true';
+  const isRaw = !isClient || !ready || hashParams.get(VIEW_MODE_PARAM) === 'true';
 
   const selectMode = useCallback(
     (value: ViewMode) => {
-      const next = new URLSearchParams(searchParams.toString());
-      const currentPage = searchParams.get(PAGE_PARAM) || '1';
-      if (value === 'raw') {
-        next.set(VIEW_MODE_PARAM, 'true');
-      } else {
-        next.delete(VIEW_MODE_PARAM);
-        next.set(PAGE_PARAM, currentPage);
-      }
+      const currentPage = hashParams.get(PAGE_PARAM) || '1';
+      updateEntityUrl({
+        search: next => {
+          next.delete(VIEW_MODE_PARAM);
+        },
+        hash: next => {
+          if (value === 'raw') {
+            next.set(VIEW_MODE_PARAM, 'true');
+          } else {
+            next.delete(VIEW_MODE_PARAM);
+          }
+        },
+      });
       initialPage.current = Number(currentPage);
-      pdfControls?.goToPage(Number(currentPage));
-      setSearchParams(next, { replace: true, preventScrollReset: true });
+      if (value !== 'raw') {
+        pdfControls?.goToPage(Number(currentPage));
+      }
       setOpen(false);
     },
-    [pdfControls, searchParams, setSearchParams]
+    [pdfControls, hashParams, updateEntityUrl]
   );
 
   const modes = [

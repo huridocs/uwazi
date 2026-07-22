@@ -69,6 +69,19 @@ const getPagePlaintext = async (
   }
 };
 
+const getDocumentPlaintext = async (
+  _id: string,
+  header?: IncomingHttpHeaders
+): Promise<string | FetchResponseError> => {
+  try {
+    const requestParams = new RequestParams({ _id }, header);
+    const response = await api.get('documents/fulltext', requestParams);
+    return response.json.data;
+  } catch (e) {
+    return e;
+  }
+};
+
 const postToOcr = async (filename: string): Promise<{ status: number } | FetchResponseError> => {
   try {
     const status = await api.post(`files/${filename}/ocr`);
@@ -94,4 +107,13 @@ const getOcrStatus = async (
 
 export { OcrStatus };
 export { UploadService } from './UploadService.js';
-export { getById, getByType, update, remove, getPagePlaintext, postToOcr, getOcrStatus };
+export {
+  getById,
+  getByType,
+  update,
+  remove,
+  getPagePlaintext,
+  getDocumentPlaintext,
+  postToOcr,
+  getOcrStatus,
+};

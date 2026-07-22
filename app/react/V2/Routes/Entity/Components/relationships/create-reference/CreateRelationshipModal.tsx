@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useAtomValue } from 'jotai';
-import { useSearchParams } from 'react-router';
 import { t } from '#app/I18N/index.js';
 import type { FileType } from '#V2/api/entities/types.js';
 import { create as createEntity, searchByTitle } from '#V2/api/entities/index.js';
@@ -20,6 +19,7 @@ import { RelationTypeStep } from './RelationTypeStep.js';
 import { TargetTextStep } from './TargetTextStep.js';
 import { CreateRelationshipModalHeader } from './CreateRelationshipModalHeader.js';
 import { useRelationshipSave } from '../hooks/useRelationshipSave.js';
+import { useEntityHashParams } from '#V2/Routes/Entity/entityUrlState.js';
 import { PAGE_PARAM } from '#V2/Routes/Entity/urlParams.js';
 
 type CreateRelationshipModalProps = {
@@ -33,7 +33,7 @@ const CreateRelationshipModal = ({ mainDocument }: CreateRelationshipModalProps)
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const templates = useAtomValue(templatesAtom);
   const { handleSaveReference } = useRelationshipSave(mainDocument);
-  const [searchParams] = useSearchParams();
+  const hashParams = useEntityHashParams();
   const [isSaving, setIsSaving] = useState(false);
 
   const lookup = useCallback(
@@ -118,7 +118,7 @@ const CreateRelationshipModal = ({ mainDocument }: CreateRelationshipModalProps)
         selection: createReferenceSelection,
         targetEntityId: selectedEntity.sharedId,
         relationshipType: selectedRelationshipType,
-        sourcePage: searchParams.get(PAGE_PARAM) ?? '1',
+        sourcePage: hashParams.get(PAGE_PARAM) ?? '1',
         ...(selectedFile && { targetFileId: String(selectedFile._id) }),
         ...(targetSelection && { targetSelection }),
       });
@@ -140,7 +140,7 @@ const CreateRelationshipModal = ({ mainDocument }: CreateRelationshipModalProps)
     entity,
     handleSaveReference,
     reset,
-    searchParams,
+    hashParams,
     selectedEntity,
     selectedFile,
     selectedRelationshipType,
