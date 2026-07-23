@@ -12,11 +12,17 @@ jest.mock('#V2/api/entities/index.js', () => {
   return {
     ...actual,
     saveWithFiles: jest.fn(),
+    getPermissions: jest.fn(),
+    savePermissions: jest.fn(),
+    searchCollaborators: jest.fn(),
   };
 });
 
 describe('HttpEntitiesService', () => {
   const saveWithFiles = jest.mocked(entitiesApi.saveWithFiles);
+  const getPermissions = jest.mocked(entitiesApi.getPermissions);
+  const savePermissions = jest.mocked(entitiesApi.savePermissions);
+  const searchCollaborators = jest.mocked(entitiesApi.searchCollaborators);
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -60,5 +66,19 @@ describe('HttpEntitiesService', () => {
       expect.objectContaining({ sharedId: '1' }),
       expect.objectContaining({ signal: controller.signal })
     );
+  });
+
+  it('forwards permission calls to the entities api', async () => {
+    getPermissions.mockResolvedValue([[]]);
+    savePermissions.mockResolvedValue([{ ids: ['s1'], permissions: [] }]);
+    searchCollaborators.mockResolvedValue([[]]);
+
+    await httpEntitiesService.getPermissions(['s1']);
+    await httpEntitiesService.savePermissions({ ids: ['s1'], permissions: [] });
+    await httpEntitiesService.searchCollaborators('alice');
+
+    expect(getPermissions).toHaveBeenCalledWith(['s1'], undefined);
+    expect(savePermissions).toHaveBeenCalledWith({ ids: ['s1'], permissions: [] }, undefined);
+    expect(searchCollaborators).toHaveBeenCalledWith('alice', undefined);
   });
 });

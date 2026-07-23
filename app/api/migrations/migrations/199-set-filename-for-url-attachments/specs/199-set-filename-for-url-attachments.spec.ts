@@ -111,7 +111,7 @@ describe('migration set-filename-for-url-attachments', () => {
     await sut.up();
     await sut.up();
 
-    const files = await testingDB.mongodb!.collection('files').find({}).toArray();
+    const files = (await testingDB.mongodb!.collection('files').find({}).toArray()) as any[];
 
     // All matches should still be correct after second run
     const byUrlAndOriginalname =

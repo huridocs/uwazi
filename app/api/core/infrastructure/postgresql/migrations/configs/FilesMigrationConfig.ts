@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 import { MigrationConfig } from '../MigrateCollectionToPostgres.js';
 import { FilesRow } from '../../files/PostgresFilesRow.js';
 import { FileDBO } from '#api/core/infrastructure/mongodb/files/schemas/FilesTypes.js';
+import { PropertySelectionSchema } from '#shared/types/commonTypes.js';
 
 /**
  * Remove C0 control characters that PostgreSQL JSONB rejects or that are
@@ -47,7 +48,8 @@ export const FilesMigrationConfig: MigrationConfig = {
       totalPages: doc.totalPages ?? null,
       generatedToc: doc.generatedToc ?? null,
       fullText: sanitizeForJsonb(doc.fullText) as Record<string, string> | null,
-      propertySelections: sanitizeForJsonb(doc.propertySelections) as unknown[] | null,
+      propertySelections: sanitizeForJsonb(doc.propertySelections) as
+        PropertySelectionSchema[] | null,
       toc: doc.toc || null,
 
       url: doc.url || null,

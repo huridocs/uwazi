@@ -14,9 +14,9 @@ const EntityMainPaneHeader = ({
 }: EntityMainPaneHeaderProps) => (
   <div className="flex h-10 shrink-0 items-center gap-2 border-b border-border px-4">
     <TemplateLabel templateId={entity.template} />
-    <span className="min-w-0 flex-1 truncate text-xs font-semibold text-ink" no-translate="true">
+    <h1 className="m-0 min-w-0 flex-1 truncate text-xs font-semibold text-ink" no-translate="true">
       {entity.title}
-    </span>
+    </h1>
     {showDocumentViewMode ? (
       <div className="shrink-0">
         <DocumentViewModeSelect />

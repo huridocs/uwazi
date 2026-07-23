@@ -1,8 +1,8 @@
 import { useEffect, useRef, type MutableRefObject } from 'react';
-import { useSearchParams } from 'react-router';
 import type { Entity, FileType } from '#V2/api/entities/types.js';
 import { entityLoaderCache } from '../../../EntityLoaderCache.js';
-import { PAGE_PARAM, VIEW_MODE_PARAM } from '../../../urlParams.js';
+import { useEntityHashParams } from '../../../entityUrlState.js';
+import { VIEW_MODE_PARAM } from '../../../urlParams.js';
 import { useMetadataEditing } from '../MetadataEditingContext.js';
 import {
   resolvePlaintext,
@@ -98,9 +98,8 @@ const useSyncPagePlaintext = ({
   mainDocument?: FileType;
   setPagePlaintext: (text: string | undefined) => void;
 }) => {
-  const [searchParams] = useSearchParams();
-  const pageParam = searchParams.get(PAGE_PARAM) || '1';
-  const isRawView = searchParams.get(VIEW_MODE_PARAM) === 'true';
+  const hashParams = useEntityHashParams();
+  const isRawView = hashParams.get(VIEW_MODE_PARAM) === 'true';
 
   useEffect(() => {
     let cancelled = false;
@@ -116,9 +115,8 @@ const useSyncPagePlaintext = ({
       };
     }
 
-    const page = Number(pageParam);
-    setPagePlaintext(entityLoaderCache.getPlaintext(mainDocument._id, page));
-    resolvePlaintext(mainDocument, { isRaw: true, page })
+    setPagePlaintext(entityLoaderCache.getPlaintext(mainDocument._id));
+    resolvePlaintext(mainDocument, { isRaw: true })
       .then(text => {
         if (!cancelled) setPagePlaintext(text);
       })
@@ -129,7 +127,7 @@ const useSyncPagePlaintext = ({
     return () => {
       cancelled = true;
     };
-  }, [mainDocument, pageParam, isRawView, setPagePlaintext]);
+  }, [mainDocument, isRawView, setPagePlaintext]);
 };
 
 export { useLoaderLanguageSync, useSyncPagePlaintext };

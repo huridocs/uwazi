@@ -3,18 +3,23 @@ import { buildApiError, normalizeHttpErrorBody } from '../normalizeError.js';
 import type { ApiErrorInit } from '../ApiError.js';
 import type { TransportEndpoint, TransportSuccess } from './types.js';
 
-type JsonBody = Record<string, unknown>;
+type JsonObject = Record<string, unknown>;
+type JsonBody = JsonObject | unknown[];
 
 type ReadBodyResult =
-  | { kind: 'empty'; body: JsonBody }
+  | { kind: 'empty'; body: JsonObject }
   | { kind: 'json'; body: JsonBody; contentType: string }
-  | { kind: 'invalid'; body: JsonBody; contentType: string; raw: string }
-  | { kind: 'unsupported'; body: JsonBody; contentType: string; raw: string };
+  | { kind: 'invalid'; body: JsonObject; contentType: string; raw: string }
+  | { kind: 'unsupported'; body: JsonObject; contentType: string; raw: string };
 
-const toJsonBody = (value: unknown): JsonBody =>
-  typeof value === 'object' && value !== null && !Array.isArray(value)
-    ? (value as JsonBody)
-    : { value };
+const isJsonObject = (value: unknown): value is JsonObject =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const toJsonBody = (value: unknown): JsonBody => {
+  if (Array.isArray(value)) return value;
+  if (isJsonObject(value)) return value;
+  return { value };
+};
 
 const tryParseJson = (text: string, contentType: string): ReadBodyResult => {
   try {
@@ -43,7 +48,11 @@ const readFetchBody = async (response: Response): Promise<ReadBodyResult> => {
 const readHeadBody = (): ReadBodyResult => ({ kind: 'empty', body: {} });
 
 const getStatusMessage = (statusText: string, bodyResult: ReadBodyResult): string => {
-  if (bodyResult.kind === 'json' && typeof bodyResult.body.message === 'string') {
+  if (
+    bodyResult.kind === 'json' &&
+    isJsonObject(bodyResult.body) &&
+    typeof bodyResult.body.message === 'string'
+  ) {
     return bodyResult.body.message;
   }
   return statusText;

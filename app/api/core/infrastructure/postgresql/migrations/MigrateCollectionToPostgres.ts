@@ -51,7 +51,10 @@ export class MigrateCollectionToPostgres {
       await table.insert(batch);
     } catch (err: unknown) {
       // eslint-disable-next-line no-console
-      console.error('[MigrateCollectionToPostgres] Insert failed for batch:', JSON.stringify(batch, null, 2));
+      console.error(
+        '[MigrateCollectionToPostgres] Insert failed for batch:',
+        JSON.stringify(batch, null, 2)
+      );
       throw err;
     }
   }
