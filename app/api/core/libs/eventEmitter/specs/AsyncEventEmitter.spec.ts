@@ -119,14 +119,13 @@ describe('AsyncEventEmitter', () => {
     ]);
   });
 
-  it('should throw when there are no listeners registered for the event', async () => {
+  it('should no-op when there are no listeners registered for the event', async () => {
     const { sut, runInTransaction } = createSut();
 
     const eventA = new EventA({ data: 'some data', userId: 'user' });
 
-    const promise = runInTransaction(async () => sut.emit(eventA));
-
-    await expect(promise).rejects.toThrow();
+    await expect(runInTransaction(async () => sut.emit(eventA))).resolves.not.toThrow();
+    expect(await getJobs()).toEqual([]);
   });
 
   it('should throw when emitting outside of a transaction', async () => {

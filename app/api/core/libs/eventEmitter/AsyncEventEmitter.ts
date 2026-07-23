@@ -18,12 +18,12 @@ class AsyncEventEmitter implements EventEmitter {
 
     const listeners = registry.getListeners(event.constructor.name);
 
-    if (!listeners) {
-      throw new Error(`There are no listeners for event ${event.constructor.name}`);
-    }
-
     if (!transactionManager.isRunning()) {
       throw new Error('Cannot emit events outside of a transaction');
+    }
+
+    if (!listeners || listeners.size === 0) {
+      return;
     }
 
     await jobsDispatcher.dispatchMany(async dispatch =>
