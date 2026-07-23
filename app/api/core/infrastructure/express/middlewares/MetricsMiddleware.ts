@@ -42,7 +42,7 @@ const getRouteLabel = (request: Request, response: Response): string | undefined
 };
 
 const metricsMiddleware = (request: Request, response: Response, next: NextFunction) => {
-  const { enabled, sampleRate = 1 } = tenants.current().metricsConfig || {};
+  const { enabled, sampleRate = 1 } = tenants.current().featureFlags?.prometheus || {};
 
   if (!enabled || sampleRate <= 0) {
     next();

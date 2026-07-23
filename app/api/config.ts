@@ -152,14 +152,14 @@ export const config = {
       v2UsersDelete: false,
       v2UsersGet: false,
       v2UsersUpdate: false,
-    },
-    telemetry: {
-      enabled: false,
-      thresholdMs: 0,
-    },
-    metricsConfig: {
-      enabled: false,
-      sampleRate: 1,
+      telemetry: {
+        enabled: false,
+        thresholdMs: 0,
+      },
+      prometheus: {
+        enabled: false,
+        sampleRate: 1,
+      },
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',
