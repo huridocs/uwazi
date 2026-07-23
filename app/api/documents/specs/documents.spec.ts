@@ -20,7 +20,9 @@ describe('documents', () => {
     });
 
     it('should fail when the document does not exist', async () => {
-      await expect(documents.page(db.id().toString(), 1)).rejects.toThrow('document does not exists');
+      await expect(documents.page(db.id().toString(), 1)).rejects.toThrow(
+        'document does not exists'
+      );
     });
   });
 
@@ -31,7 +33,9 @@ describe('documents', () => {
     });
 
     it('should fail when the document does not exist', async () => {
-      await expect(documents.fullText(db.id().toString())).rejects.toThrow('document does not exists');
+      await expect(documents.fullText(db.id().toString())).rejects.toThrow(
+        'document does not exists'
+      );
     });
   });
 });
