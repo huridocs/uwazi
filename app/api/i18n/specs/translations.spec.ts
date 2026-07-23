@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 // eslint-disable-next-line node/no-restricted-import
 import * as fs from 'fs';
 
@@ -8,9 +9,11 @@ import { TranslationSyO } from '#api/i18n.v2/schemas/TranslationSyO.js';
 import pages from '#api/pages/index.js';
 import settings from '#api/settings/index.js';
 import thesauri from '#api/core/v1_layer/thesauri/thesauri.js';
+import { AddLanguageUseCaseFactory } from '#api/core/infrastructure/factories/AddLanguageUseCaseFactory.js';
+import * as setupSockets from '#api/socketio/setupSockets.js';
 import { ContextType } from '#shared/translationSchema.js';
+import { LanguageSchema } from '#shared/types/commonTypes.js';
 import { UITranslationNotAvailable } from '../defaultTranslations.js';
-import { addLanguage } from '../routes.js';
 import translationsFn from '../translations.js';
 
 import { getTranslationsV2ByContext } from '../v2_support.js';
@@ -31,8 +34,14 @@ const translations = Object.assign(
   }
 );
 
+const addLanguage = async (language: LanguageSchema) =>
+  testingEnvironment.runWithContext(async () => {
+    await AddLanguageUseCaseFactory.default().execute({ languages: [language] });
+  });
+
 describe('translations', () => {
   beforeEach(async () => {
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
     await testingEnvironment.setUp(fixtures);
   });
 
@@ -309,7 +318,7 @@ describe('translations', () => {
         contexts: [
           {
             id: dictionaryId.toString(),
-            // eslint-disable-next-line max-lines
+
             values: [
               { key: 'repeated_key', value: 'first_value' },
               { key: 'unique_key', value: 'unique_value' },
@@ -519,9 +528,7 @@ describe('translations', () => {
 
   describe('addLanguage', () => {
     it('should clone translations of default language and change language to the one added', async () => {
-      await testingEnvironment.runWithContext(async () => {
-        await addLanguage({ key: 'fr', label: 'french' });
-      });
+      await addLanguage({ key: 'fr', label: 'french' });
       const allTranslations = await translations.get();
 
       const frTranslation = allTranslations.find(t => t.locale === 'fr');
@@ -532,16 +539,12 @@ describe('translations', () => {
 
     describe('when the language already exists', () => {
       it('should not clone it again', async () => {
-        await testingEnvironment.runWithContext(async () => {
-          await addLanguage({ key: 'fr', label: 'french' });
-        });
+        await addLanguage({ key: 'fr', label: 'french' });
 
         const firstEntitiesCount = (await entities.get({ language: 'fr' })).length;
         const firstPagesCount = (await pages.get({ language: 'fr' })).length;
 
-        await testingEnvironment.runWithContext(async () => {
-          await addLanguage({ key: 'fr', label: 'french' });
-        });
+        await addLanguage({ key: 'fr', label: 'french' });
 
         const settingsLanguages = (await settings.get()).languages?.map(l => l.key);
         expect(settingsLanguages).toEqual(['es', 'en', 'zh', 'fr']);

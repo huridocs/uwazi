@@ -1,11 +1,13 @@
 /* eslint-disable max-statements */
 import { inspect } from 'util';
 import entities from '#api/entities/index.js';
+import users from '#api/users/users.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import connections from '#api/relationships/index.js';
+import connections from '#api/relationships/relationships.js';
 import { search } from '#api/search/index.js';
 import { cleanupRecordsOfFiles } from '#api/services/ocr/ocrRecords.js';
+import { EntityWithFilesSchema } from '#shared/types/entityType.js';
 import { validateFile } from '#shared/types/fileSchema.js';
 import { FileType } from '#shared/types/fileType.js';
 import { FileCreatedEvent } from './events/FileCreatedEvent.js';
@@ -20,6 +22,8 @@ import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { FileMappers } from '#api/core/infrastructure/mongodb/files/FilesMappers.js';
+import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
+import { User } from '#api/users.v2/model/User.js';
 
 const deduceMimeType = (_file: FileType) => {
   const file = { ..._file };
@@ -29,6 +33,24 @@ const deduceMimeType = (_file: FileType) => {
   }
 
   return file;
+};
+
+const ensureEntityActor = async (entity: EntityWithFilesSchema) => {
+  if (ExecutionContext.actor) {
+    return;
+  }
+
+  const actorId = entity.user?.toString?.();
+  if (!actorId) {
+    throw new Error(`Entity actor is missing for sharedId ${entity.sharedId}`);
+  }
+
+  const actorInDb = await users.getById(actorId, '-password', false, true);
+  if (!actorInDb) {
+    throw new Error(`Entity actor not found for user ${actorId}`);
+  }
+
+  ExecutionContext.actor = User.createFrom(actorInDb);
 };
 
 export class UpdateFileError extends Error {
@@ -107,7 +129,7 @@ export const files = {
     return toDeleteFiles;
   },
 
-  async tocReviewed(_id: string, language: string) {
+  async tocReviewed(_id: string) {
     const existingFile = (
       await FilesDataSourceFactory.default().getById<PDFDocument>(_id)
     ).getDataOrThrow();
@@ -125,18 +147,49 @@ export const files = {
       .filter((f): f is PDFDocument => f instanceof PDFDocument)
       .some(f => f.generatedToc);
 
-    const [entity] = await entities.get({
-      sharedId: updatedFile.entity,
-    });
+    const [entity] = await entities.get({ sharedId: updatedFile.entity }, '+permissions');
+    await ensureEntityActor(entity);
+    const template = entity.template?.toString?.();
+    if (!template) {
+      LoggerFactory.default().info(
+        `Skipping generatedToc entity update for sharedId ${entity.sharedId}: entity is missing template`
+      );
+      return FileMappers.toDBO(updatedFile);
+    }
 
-    await entities.save(
+    const documents = (entity.documents || [])
+      .filter(
+        (
+          doc: FileType
+        ): doc is FileType & { _id: NonNullable<FileType['_id']>; originalname: string } =>
+          Boolean(doc._id && doc.originalname)
+      )
+      .map((doc: FileType & { _id: NonNullable<FileType['_id']>; originalname: string }) => ({
+        _id: doc._id.toString(),
+        originalname: doc.originalname,
+      }));
+    const attachments = (entity.attachments || [])
+      .filter((attachment: FileType): attachment is FileType & { originalname: string } =>
+        Boolean(attachment.originalname)
+      )
+      .map((attachment: FileType & { originalname: string }) => ({
+        _id: attachment._id?.toString(),
+        originalname: attachment.originalname,
+        ...(attachment.url ? { url: attachment.url } : {}),
+      }));
+
+    await EntityFacade.update(
       {
-        _id: entity._id,
+        _id: entity._id.toString(),
         sharedId: entity.sharedId,
-        template: entity.template,
+        language: entity.language,
+        title: entity.title,
+        template,
         generatedToc,
+        documents,
+        attachments,
       },
-      { user: {}, language }
+      entity.language
     );
 
     return FileMappers.toDBO(updatedFile);

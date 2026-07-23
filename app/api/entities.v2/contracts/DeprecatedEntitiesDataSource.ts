@@ -1,5 +1,5 @@
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
-import { DeprecatedEntity, EntityMetadata, MetadataValue } from '../model/Entity.js';
+import { DeprecatedEntity, EntityMetadata } from '../model/Entity.js';
 
 type MarkAsChangedCriteria = { template: string } | { sharedId: string };
 type MarkAsChangedData = { property: string } | { properties: string[] };
@@ -9,11 +9,6 @@ export interface DeprecatedEntitiesDataSource {
   updateObsoleteMetadataValues(
     id: DeprecatedEntity['_id'],
     values: Record<string, EntityMetadata[]>
-  ): Promise<void>;
-  updateMetadataValues(
-    id: DeprecatedEntity['_id'],
-    values: Record<string, { value: MetadataValue }[]>,
-    title?: string
   ): Promise<void>;
   entitiesExist(sharedIds: string[]): Promise<boolean>;
   getByIds(sharedIds: string[], language?: string): ResultSet<DeprecatedEntity>;

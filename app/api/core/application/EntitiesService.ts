@@ -130,15 +130,15 @@ class EntitiesService {
     const updatedSharedIds = changedEntities.map(e => e.sharedId);
 
     await Promise.all(
-      changedEntities.map(async entity =>
-        this.deps.eventEmitter.emit(
+      changedEntities.map(async entity => {
+        await this.deps.eventEmitter.emit(
           EntityUpdatedEvent.create({
             entity,
             targetLanguage: context.targetLanguage,
             userId: context.actorId,
           })
-        )
-      )
+        );
+      })
     );
 
     this.deps.transactionManager.onCommitted(async () => {
