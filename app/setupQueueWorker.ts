@@ -5,6 +5,7 @@ import { config } from '#api/config.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { LogEntry } from '#api/core/libs/logger/infrastructure/LogEntry.js';
+import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
 import { LogWriter } from '#api/core/libs/logger/infrastructure/LogWriter.js';
 import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
@@ -45,7 +46,7 @@ const replaceTenantWithJobNamespace =
   (writer: LogWriter): LogWriter =>
   (log: LogEntry) => {
     writer(
-      new LogEntry(log.message, log.timestamp, log.level, log.tenant, {
+      new LogEntry(log.message, log.timestamp, log.level, log.tenant, log.correlationId, {
         ...log.metadata,
         ...(log.metadata?.job?.namespace ? { tenant: log.metadata.job.namespace } : {}),
       })
@@ -80,6 +81,7 @@ function register<T extends Dispatchable>(
           eventEmitter: EventEmitterFactory.default,
           idGenerator: IdGeneratorFactory.default,
           logger: LoggerFactory.default,
+          telemetryCollector: () => new TelemetryCollector('queue_job'),
         },
       };
       instance = await ExecutionContext.run(deps, async () => factory(namespace, job));

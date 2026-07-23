@@ -19,6 +19,7 @@ import { MigrationHumanReadableWriter } from '#api/core/libs/logger/infrastructu
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
 import {
   JobRegistry,
   SyncJobsDispatcher,
@@ -155,6 +156,7 @@ class MigrationService {
           eventEmitter: this.deps.eventEmitterFactory,
           idGenerator: this.deps.idGeneratorFactory,
           logger: () => logger,
+          telemetryCollector: () => new TelemetryCollector('migration'),
         },
       },
       async () => {
