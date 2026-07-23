@@ -16,8 +16,6 @@ const meta: Meta<typeof ConfirmationModal> = {
   },
 };
 
-export default meta;
-
 type Story = StoryObj<typeof ConfirmationModal>;
 
 const Primary: Story = {
@@ -89,4 +87,23 @@ const PasswordConfirm: Story = {
   },
 };
 
-export { BasicConfirmation, TextConfirmation, WarningConfirmation, PasswordConfirm };
+const DangerConfirmation: Story = {
+  ...Primary,
+  args: {
+    header: 'Delete file?',
+    body: "Removes this file. If it's the last translation in its document, the document is removed too.",
+    acceptButton: 'Delete',
+    dangerStyle: true,
+    onAcceptClick: action('accepted'),
+    onCancelClick: action('canceled'),
+  },
+};
+
+export {
+  BasicConfirmation,
+  TextConfirmation,
+  WarningConfirmation,
+  PasswordConfirm,
+  DangerConfirmation,
+};
+export default meta;

@@ -10,7 +10,7 @@ const FilesDeleteConfirmationModal = () => {
   }
 
   const isBulk = pendingDeleteRows.length > 1;
-  const header = isBulk ? 'Delete files' : 'Delete file';
+  const header = isBulk ? `Delete ${pendingDeleteRows.length} files?` : 'Delete file?';
   const body = isBulk
     ? `Are you sure you want to delete ${pendingDeleteRows.length} files?`
     : `Are you sure you want to delete "${pendingDeleteRows[0].displayName}"?`;
