@@ -55,6 +55,12 @@ class InvalidUnlockCode extends DomainError {
   }
 }
 
+class RecoveryKeyNotFound extends DomainError {
+  constructor() {
+    super('Recovery key not found', 'user.recovery_key_not_found');
+  }
+}
+
 export {
   UsernameExists,
   EmailInUse,
@@ -65,4 +71,5 @@ export {
   UsersGetError,
   UpdateUserError,
   InvalidUnlockCode,
+  RecoveryKeyNotFound,
 };

@@ -5,6 +5,7 @@ import {
   InvalidUnlockCode,
 } from '#api/core/domain/user/errors.js';
 import { User } from '#api/core/domain/user/User.js';
+import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
 import { ResultType } from '#api/core/libs/Result.js';
 
 interface UsersDataSource {
@@ -20,6 +21,7 @@ interface UsersDataSource {
     code: string
   ): Promise<ResultType<User, InvalidUnlockCode>>;
   clearLockFields(userId: string): Promise<void>;
+  updatePassword(userId: string, password: EncryptedPassword): Promise<void>;
 }
 
 export type { UsersDataSource };

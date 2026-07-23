@@ -2,6 +2,7 @@ import { Db, ObjectId } from 'mongodb';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { UsersDataSource } from '#api/core/application/contracts/UsersDataSource.js';
 import { PUBLIC_USER_ID, User } from '#api/core/domain/user/User.js';
+import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
 import {
   EmailInUse,
   UsernameExists,
@@ -121,6 +122,13 @@ class MongoUsersDataSource extends MongoDataSource<UserDBO> implements UsersData
     await this.getCollection<UserDBO>().updateOne(
       { _id: ObjectId.createFromHexString(userId) },
       { $unset: { accountLocked: 1, accountUnlockCode: 1, failedLogins: 1 } }
+    );
+  }
+
+  async updatePassword(userId: string, password: EncryptedPassword): Promise<void> {
+    await this.getCollection<UserDBO>().updateOne(
+      { _id: ObjectId.createFromHexString(userId), deletedAt: { $exists: false } },
+      { $set: { password: password.getValue() } }
     );
   }
 }
