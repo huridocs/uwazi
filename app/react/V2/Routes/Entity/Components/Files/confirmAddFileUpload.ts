@@ -38,63 +38,77 @@ const holdUploadComplete = async (
   });
 };
 
-const confirmAddFileUpload = async (
-  { file, displayName, addAs, language }: ConfirmAddFilePayload,
-  {
-    entitySharedId,
-    mountedRef,
-    uploadServiceRef,
-    uploadHoldTimerRef,
-    uploadHoldResolveRef,
-    setUploadProgress,
-    closeAddFileModal,
-    refreshEntity,
-  }: ConfirmAddFileUploadDeps
-): Promise<void> => {
-  const serviceRef = uploadServiceRef;
-  const isMounted = mountedRef;
+const createUploadService = (
+  { file, displayName, addAs }: ConfirmAddFilePayload,
+  entitySharedId: string
+) => {
   const { extension } = getFileNameAndExtension(file.name);
   const originalname = extension ? `${displayName}.${extension}` : displayName;
-  const endpoint = addAs === 'primary' ? 'document' : 'attachment';
-  const service = new UploadService(endpoint, {
+  const service = new UploadService(addAs === 'primary' ? 'document' : 'attachment', {
     entity: entitySharedId,
     originalname,
   });
+  return { service, originalname };
+};
+
+const uploadAndMaybeUpdateLanguage = async (
+  service: UploadService,
+  file: File,
+  originalname: string,
+  language?: string
+): Promise<boolean> => {
+  const uploaded = (await service.upload([file]))[0];
+  if (!uploaded || !('_id' in uploaded)) return false;
+  if (language) await update({ ...uploaded, originalname, language });
+  return true;
+};
+
+const finishUploadUI = async ({
+  mountedRef,
+  uploadHoldTimerRef,
+  uploadHoldResolveRef,
+  setUploadProgress,
+  closeAddFileModal,
+  refreshEntity,
+}: ConfirmAddFileUploadDeps) => {
+  if (mountedRef.current) setUploadProgress(100);
+  await holdUploadComplete(uploadHoldTimerRef, uploadHoldResolveRef);
+  if (mountedRef.current) closeAddFileModal();
+  await refreshEntity();
+};
+
+const cleanupUpload = (
+  service: UploadService,
+  { uploadServiceRef, mountedRef, setUploadProgress }: ConfirmAddFileUploadDeps
+) => {
+  const serviceRef = uploadServiceRef;
+  if (serviceRef.current === service) serviceRef.current = null;
+  if (mountedRef.current) setUploadProgress(null);
+};
+
+const confirmAddFileUpload = async (
+  payload: ConfirmAddFilePayload,
+  deps: ConfirmAddFileUploadDeps
+): Promise<void> => {
+  const { service, originalname } = createUploadService(payload, deps.entitySharedId);
+  const serviceRef = deps.uploadServiceRef;
+  const isMounted = deps.mountedRef;
   serviceRef.current = service;
-  setUploadProgress(0);
+  deps.setUploadProgress(0);
   service.onProgress((_filename, percent) => {
-    if (!isMounted.current) return;
-    setUploadProgress(percent);
+    if (isMounted.current) deps.setUploadProgress(percent);
   });
 
   try {
-    const responses = await service.upload([file]);
-    const uploaded = responses[0];
-
-    if (!uploaded || !('_id' in uploaded)) {
-      return;
-    }
-
-    if (language) {
-      await update({ ...uploaded, originalname, language });
-    }
-
-    if (isMounted.current) {
-      setUploadProgress(100);
-    }
-    await holdUploadComplete(uploadHoldTimerRef, uploadHoldResolveRef);
-
-    if (isMounted.current) {
-      closeAddFileModal();
-    }
-    await refreshEntity();
+    const ok = await uploadAndMaybeUpdateLanguage(
+      service,
+      payload.file,
+      originalname,
+      payload.language
+    );
+    if (ok) await finishUploadUI(deps);
   } finally {
-    if (serviceRef.current === service) {
-      serviceRef.current = null;
-    }
-    if (isMounted.current) {
-      setUploadProgress(null);
-    }
+    cleanupUpload(service, deps);
   }
 };
 
