@@ -12,6 +12,7 @@ const SIDE_TAB = {
   RELATIONSHIPS: 'relationships',
   SEARCH: 'search',
   FILE: 'file',
+  FILES: 'files',
   TRANSLATIONS: 'translations',
 } as const;
 

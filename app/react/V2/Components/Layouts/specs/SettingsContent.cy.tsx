@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
 import { SettingsContent } from '../SettingsContent.js';
+import { logA11yViolations } from '../../../../../../cypress/support/helpers/a11y.js';
 
 describe('ConfirmationModal', () => {
   const render = () => {
@@ -35,7 +36,7 @@ describe('ConfirmationModal', () => {
   it('should be accessible', () => {
     render();
     cy.injectAxe();
-    cy.checkA11y();
+    cy.checkA11y(undefined, undefined, logA11yViolations);
   });
 
   it('should have the basic structure of settings content', () => {
