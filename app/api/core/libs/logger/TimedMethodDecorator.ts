@@ -13,13 +13,7 @@ export function TimedMethod(operationName: string) {
         return originalMethod.apply(this, args);
       }
 
-      const endTimer = telemetryCollector.startTimer(operationName);
-
-      const result = await originalMethod.apply(this, args);
-
-      endTimer();
-
-      return result;
+      return telemetryCollector.runSpan(operationName, () => originalMethod.apply(this, args));
     };
 
     return descriptor;

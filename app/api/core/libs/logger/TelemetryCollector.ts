@@ -1,26 +1,27 @@
-/* eslint-disable camelcase */
-/* eslint-disable no-return-assign */
-type Time = {
+import { AsyncLocalStorage } from 'async_hooks';
+
+type Span = {
+  id: number;
+  operation: string;
+  parentId: number | null;
   start: number;
   end: number;
-  duration: () => number;
-  finish: () => void;
 };
-
-type EndTimer = () => void;
 
 class TelemetryCollector {
   private metadata: Record<string, any>;
 
-  private time: Map<string, Time[]>;
+  private spans: Span[];
 
-  private mainOperation: string;
+  private currentSpan: AsyncLocalStorage<number>;
+
+  private rootSpanId: number;
 
   constructor(mainOperation: string) {
-    this.time = new Map<string, Time[]>();
     this.metadata = {};
-    this.mainOperation = mainOperation;
-    this.startTimer(mainOperation);
+    this.spans = [];
+    this.currentSpan = new AsyncLocalStorage<number>();
+    this.rootSpanId = this.openSpan(mainOperation, null);
   }
 
   add(metadata: Record<string, any>) {
@@ -28,49 +29,51 @@ class TelemetryCollector {
   }
 
   mainDurationMs(): number {
-    return this.time.get(this.mainOperation)![0].duration();
+    return this.duration(this.spans[this.rootSpanId]);
   }
 
-  startTimer(operationName: string): EndTimer {
-    if (!this.time.has(operationName)) {
-      this.time.set(operationName, []);
+  async runSpan<T>(operation: string, fn: () => Promise<T>): Promise<T> {
+    const parentId = this.currentSpan.getStore() ?? this.rootSpanId;
+    const spanId = this.openSpan(operation, parentId);
+
+    try {
+      return await this.currentSpan.run(spanId, fn);
+    } finally {
+      this.spans[spanId].end = Date.now();
     }
+  }
 
-    const timers = this.time.get(operationName)!;
+  private openSpan(operation: string, parentId: number | null): number {
+    const id = this.spans.length;
+    this.spans.push({ id, operation, parentId, start: Date.now(), end: 0 });
+    return id;
+  }
 
-    const time: Time = {
-      start: Date.now(),
-      end: 0,
-      duration: () => (time.end || Date.now()) - time.start,
-      finish: () => (time.end = Date.now()),
+  private duration(span: Span): number {
+    return (span.end || Date.now()) - span.start;
+  }
+
+  private buildSpan(span: Span): Record<string, any> {
+    const children = this.spans
+      .filter(candidate => candidate.parentId === span.id)
+      .map(child => this.buildSpan(child));
+
+    return {
+      operation: span.operation,
+      duration_ms: this.duration(span),
+      ...(children.length > 0 && { children }),
     };
-
-    timers.push(time);
-
-    return () => time.finish();
   }
 
   build(): Record<string, any> {
-    const mainTimer = this.time.get(this.mainOperation)![0];
-
-    const timings = Array.from(this.time.entries())
-      .filter(([operation]) => operation !== this.mainOperation)
-      .flatMap(([operation, timers]) =>
-        timers.map((timer, occurrence) => ({
-          operation: timers.length > 1 ? `${operation}[${occurrence}]` : operation,
-          duration_ms: timer.duration(),
-          start_offset_ms: timer.start - mainTimer.start,
-        }))
-      )
-      .sort((a, b) => a.start_offset_ms - b.start_offset_ms)
-      .map(({ start_offset_ms, ...timing }, index) => ({ ...timing, order: index }));
+    const root = this.spans[this.rootSpanId];
 
     return {
       ...this.metadata,
-      timings,
+      timings: this.buildSpan(root).children || [],
       summary: {
-        main_operation: this.mainOperation,
-        total_duration_ms: mainTimer.duration(),
+        main_operation: root.operation,
+        total_duration_ms: this.duration(root),
       },
     };
   }
