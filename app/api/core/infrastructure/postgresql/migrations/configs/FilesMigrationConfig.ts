@@ -8,6 +8,7 @@ import { FileDBO } from '#api/core/infrastructure/mongodb/files/schemas/FilesTyp
  * meaningless PDF extraction artifacts (null bytes, backspace, group separators,
  * etc.). Normal whitespace (tab, line feed, carriage return) is preserved.
  */
+/* eslint-disable no-control-regex */
 function sanitizeForJsonb(value: unknown): unknown {
   if (typeof value === 'string') {
     return value.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');
@@ -34,7 +35,7 @@ export const FilesMigrationConfig: MigrationConfig = {
     return {
       _id,
       creationDate: doc.creationDate,
-      filename: doc.filename || null,
+      filename: doc.filename,
       mimetype: doc.mimetype,
       originalname: doc.originalname,
       size: doc.size,
@@ -45,8 +46,8 @@ export const FilesMigrationConfig: MigrationConfig = {
       language: doc.language || null,
       totalPages: doc.totalPages ?? null,
       generatedToc: doc.generatedToc ?? null,
-      fullText: sanitizeForJsonb(doc.fullText) || null,
-      propertySelections: sanitizeForJsonb(doc.propertySelections) || null,
+      fullText: sanitizeForJsonb(doc.fullText) as Record<string, string> | null,
+      propertySelections: sanitizeForJsonb(doc.propertySelections) as unknown[] | null,
       toc: doc.toc || null,
 
       url: doc.url || null,
