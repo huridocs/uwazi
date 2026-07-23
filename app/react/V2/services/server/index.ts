@@ -2,4 +2,5 @@ export { createServerServices, buildContextFromRequest } from './createServerSer
 export { createServerThesaurusService } from './ServerThesaurusService.js';
 export { createServerUsersService } from './ServerUsersService.js';
 export { createServerUserGroupsService } from './ServerUserGroupsService.js';
+export { createServerRelationshipTypesService } from './ServerRelationshipTypesService.js';
 export type { ServerServiceContext } from './types.js';

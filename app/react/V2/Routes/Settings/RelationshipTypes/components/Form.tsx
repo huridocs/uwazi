@@ -36,7 +36,10 @@ const Form = ({ closePanel, submit, relationtype, currentTypes }: FormProps) => 
               {...register('name', {
                 required: true,
                 validate: {
-                  alreadyExists: value => !currentTypes.some(type => type.name === value),
+                  alreadyExists: value =>
+                    !currentTypes.some(
+                      type => type.name === value && type._id !== relationtype?._id
+                    ),
                 },
               })}
               hasErrors={!!errors.name}
