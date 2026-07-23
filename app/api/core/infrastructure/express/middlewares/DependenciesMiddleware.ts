@@ -9,7 +9,9 @@ import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFac
 import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
 import { User } from '#api/users.v2/model/User.js';
-import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
+
+const isRouteWatched = (routePath: unknown, watchedRoutes: string[]): boolean =>
+  typeof routePath === 'string' && watchedRoutes.includes(routePath);
 
 const dependenciesContextMiddleware = (
   request: Request,
@@ -19,12 +21,13 @@ const dependenciesContextMiddleware = (
   const tenant = tenants.current();
   const actor = User.createFrom(request.user);
   const correlationId = randomUUID();
+  const { telemetryCollector } = request;
 
   response.on('finish', () => {
-    if (!tenant.telemetry?.enabled) return;
-
-    const { telemetryCollector } = ExecutionContext;
-    if (telemetryCollector.mainDurationMs() < (tenant.telemetry.thresholdMs ?? 0)) return;
+    const { telemetry } = tenant.featureFlags || {};
+    if (!telemetry?.enabled) return;
+    if (!isRouteWatched(request.route?.path, telemetry.routes || [])) return;
+    if (telemetryCollector.mainDurationMs() < (telemetry.thresholdMs ?? 0)) return;
 
     telemetryCollector.add({
       method: request.method,
@@ -40,6 +43,7 @@ const dependenciesContextMiddleware = (
       tenant,
       actor,
       correlationId,
+      instances: { telemetryCollector },
       factories: {
         transactionManager: TransactionManagerFactory.default,
         postgresTransactionManager: PostgresTransactionManagerFactory.default,
@@ -47,7 +51,7 @@ const dependenciesContextMiddleware = (
         eventEmitter: EventEmitterFactory.default,
         idGenerator: IdGeneratorFactory.default,
         logger: LoggerFactory.default,
-        telemetryCollector: () => new TelemetryCollector('http_request'),
+        telemetryCollector: () => telemetryCollector,
       },
     },
     next

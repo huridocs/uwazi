@@ -52,6 +52,7 @@ const mongoSchema = new mongoose.Schema({
     telemetry: {
       enabled: Boolean,
       thresholdMs: Number,
+      routes: [String],
     },
     prometheus: {
       enabled: Boolean,
@@ -165,7 +166,7 @@ class TenantsModel extends EventEmitter {
 
   async setTelemetryConfig(
     tenantName: string,
-    telemetry: { enabled: boolean; thresholdMs: number }
+    telemetry: { enabled: boolean; thresholdMs: number; routes?: string[] }
   ) {
     if (!this.model) {
       throw new Error(

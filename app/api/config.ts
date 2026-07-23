@@ -155,6 +155,7 @@ export const config = {
       telemetry: {
         enabled: false,
         thresholdMs: 0,
+        routes: [],
       },
       prometheus: {
         enabled: false,

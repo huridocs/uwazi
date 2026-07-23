@@ -8,6 +8,7 @@ import { routesErrorHandler } from '#api/utils/routesErrorHandler.js';
 import { appContext } from './AppContext.js';
 import { extendSupertest } from './supertestExtensions.js';
 import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
+import { telemetryMiddleware } from '#api/core/infrastructure/express/middlewares/TelemetryMiddleware.js';
 
 extendSupertest();
 
@@ -49,6 +50,7 @@ const setUpApp = (
       .catch(next);
   });
   app.use(languageMiddleware);
+  app.use(telemetryMiddleware);
   customMiddleware.forEach(middlewareElement => app.use(middlewareElement));
   app.use(dependenciesContextMiddleware);
 

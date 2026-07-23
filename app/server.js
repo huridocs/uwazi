@@ -44,6 +44,7 @@ import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
 import { registerMetricsRoutes } from '#api/core/infrastructure/express/MetricsRoute.js';
 import { metricsMiddleware } from '#api/core/infrastructure/express/middlewares/MetricsMiddleware.js';
+import { telemetryMiddleware } from '#api/core/infrastructure/express/middlewares/TelemetryMiddleware.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -54,6 +55,7 @@ const app = express();
 
 registerMetricsRoutes(app);
 routesErrorHandler(app);
+app.use(telemetryMiddleware);
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 app.use(embedFrameHeaders);
 
