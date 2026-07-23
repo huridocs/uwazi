@@ -5,7 +5,7 @@ import { EntitiesService } from '#api/core/application/EntitiesService.js';
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { UseCase } from '#api/core/libs/UseCase.js';
-import relationshipsDS from '#api/relationships/index.js';
+import relationshipsDS from '#api/relationships/relationships.js';
 
 import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';

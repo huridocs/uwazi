@@ -1,7 +1,6 @@
 import type { Application } from 'express';
 import request from 'supertest';
 
-import entities from '#api/entities/index.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { testingDB } from '#api/utils/testing_db.js';
@@ -10,7 +9,6 @@ import { SearchQuery } from '#shared/types/SearchQueryType.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { searchRoutes } from '../routes.js';
 import { setupTestingEnviroment } from './setupTestingEnvironment.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 describe('Sorting', () => {
   const factory = getFixturesFactory();
@@ -20,23 +18,23 @@ describe('Sorting', () => {
     const entityA = factory.entity('A First title', 'templateA', {
       textProperty: [factory.metadataValue('c Third property')],
       numberProperty: [factory.metadataValue(100)],
-      selectProperty: [factory.metadataValue('zFirst')],
+      selectProperty: [factory.metadataValue('zFirst', 'a First select')],
     });
     const entityC = factory.entity('c Second title', 'templateA', {
       textProperty: [factory.metadataValue('D Last property')],
       numberProperty: [factory.metadataValue(-10)],
-      selectProperty: [factory.metadataValue('aLast')],
+      selectProperty: [factory.metadataValue('aLast', 'D Last select')],
     });
     const entityZ = factory.entity('Z Last title', 'templateA', {
       textProperty: [factory.metadataValue('a First property')],
       numberProperty: [factory.metadataValue(1)],
-      selectProperty: [factory.metadataValue('mSecond')],
+      selectProperty: [factory.metadataValue('mSecond', 'B Second select')],
       inheritedProperty: [factory.metadataValue('inherited entity 1')],
     });
     const entityJ = factory.entity('j Third title', 'templateA', {
       textProperty: [factory.metadataValue('B Second property')],
       numberProperty: [factory.metadataValue(2)],
-      selectProperty: [factory.metadataValue('yThird')],
+      selectProperty: [factory.metadataValue('yThird', 'c Third select')],
       inheritedProperty: [factory.metadataValue('inherited entity 2')],
     });
 
@@ -77,13 +75,6 @@ describe('Sorting', () => {
       },
       true
     );
-
-    await testingEnvironment.runWithContext(async () => {
-      await entities.save(entityA, { language: 'en', user: {} }, true);
-      await entities.save(entityC, { language: 'en', user: {} }, true);
-      await entities.save(entityZ, { language: 'en', user: {} }, true);
-      await entities.save(entityJ, { language: 'en', user: {} }, true);
-    });
     await elasticTesting.refresh();
   });
 

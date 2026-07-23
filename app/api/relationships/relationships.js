@@ -2,23 +2,24 @@
 /* eslint-disable max-lines */
 import _ from 'lodash';
 
+import { ObjectId } from 'mongodb';
 import templatesAPI from '#api/core/v1_layer/templates/index.js';
 import settings from '#api/settings/index.js';
 import relationtypes from '#api/relationtypes/index.js';
 import entities from '#api/entities/entities.js';
 import { createError } from '#api/utils/index.js';
 
-import { ObjectId } from 'mongodb';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import model from './model.js';
 import { generateNames } from '#api/utils/templateUtils.js';
 
 import { filterRelevantRelationships, groupRelationships } from './groupByRelationships.js';
+import { processRelationshipCollection } from './relationshipsHelpers.js';
+import { saveEntityBasedReferences as saveEntityBasedReferencesV1Bridge } from './saveEntityBasedReferencesV1Bridge.js';
 import {
-  processRelationshipCollection,
-  getEntityReferencesByRelationshipTypes,
-  guessRelationshipPropertyHub,
-} from './relationshipsHelpers.js';
+  updateEntitiesMetadata as updateEntitiesMetadataV1Bridge,
+  updateEntitiesMetadataByHub as updateEntitiesMetadataByHubV1Bridge,
+} from './updateEntitiesMetadataV1Bridge.js';
 import { validateConnectionSchema } from './validateConnectionSchema.js';
 import { relationshipsSearch } from './relationshipsSearch.js';
 import { ValidationError } from '#api/core/domain/error/ValidationError.js';
@@ -29,26 +30,6 @@ function excludeRefs(template) {
 }
 
 class RequiredParameters extends ValidationError {}
-
-function getPropertiesToBeConnections(template) {
-  const props = [];
-  template.properties.forEach(prop => {
-    const repeated = props.find(
-      p => p.content === prop.content && p.relationType === prop.relationType
-    );
-
-    if (prop.type === 'relationship' && !repeated) {
-      props.push(prop);
-    }
-  });
-  return props;
-}
-
-const determinePropertyValues = (entity, propertyName) => {
-  const metadata = entity.metadata || {};
-  const propertyValues = metadata[propertyName] || [];
-  return propertyValues.map(mo => mo.value);
-};
 
 export default {
   get(query, select, pagination) {
@@ -283,118 +264,31 @@ export default {
   },
 
   async updateEntitiesMetadataByHub(hubId, language) {
-    const hub = await this.getHub(hubId);
-    const entitiesIds = hub.map(r => r.entity);
-    return entities.updateMetdataFromRelationships(entitiesIds, language);
+    return updateEntitiesMetadataByHubV1Bridge({
+      hubId,
+      language,
+      getHub: this.getHub.bind(this),
+      updateEntitiesMetadata: this.updateEntitiesMetadata.bind(this),
+    });
   },
 
-  updateEntitiesMetadata(entitiesIds, language) {
-    return entities.updateMetdataFromRelationships(entitiesIds, language);
-  },
-
-  async generateCreatedReferences(property, newValues, entity, existingReferences) {
-    const { relationType: propertyRelationType } = property;
-    const toCreate = newValues.filter(
-      v =>
-        !(existingReferences[propertyRelationType] && existingReferences[propertyRelationType][v])
-    );
-
-    let newReferencesBase = [];
-    let newReferences = [];
-    if (toCreate.length) {
-      const candidateHub = await guessRelationshipPropertyHub(
-        entity.sharedId,
-        new ObjectId(propertyRelationType)
-      );
-
-      const hubId = (candidateHub[0] && candidateHub[0]._id) || new ObjectId();
-      newReferencesBase = candidateHub[0] ? [] : [{ entity: entity.sharedId, hub: hubId }];
-
-      newReferences = toCreate.map(value => ({
-        entity: value,
-        hub: hubId,
-        template: propertyRelationType,
-      }));
-    }
-
-    return { newReferencesBase, newReferences };
-  },
-
-  async separateCreatedDeletedReferences(property, entity, existingReferences) {
-    const newValues = determinePropertyValues(entity, property.name);
-    const newValueSet = new Set(newValues);
-
-    const { relationType: propertyRelationType, content: propertyEntityType } = property;
-
-    const { newReferencesBase, newReferences } = await this.generateCreatedReferences(
-      property,
-      newValues,
-      entity,
-      existingReferences
-    );
-
-    const toDelete = Object.entries(existingReferences[propertyRelationType] || {})
-      .map(entry => entry[1])
-      .filter(
-        r =>
-          r.rightSide.entity !== entity.sharedId &&
-          (!propertyEntityType ||
-            r.rightSide.entityData[0].template.toString() === propertyEntityType) &&
-          !newValueSet.has(r.rightSide.entity)
-      )
-      .map(r => r.rightSide._id);
-
-    return { newReferencesBase, newReferences, toDelete };
-  },
-
-  async prepareSaveEntityBasedReferences(entity, language, _template) {
-    if (!language) throw createError('Language cant be undefined');
-    if (!entity.template) return { relationshipProperties: [], existingReferences: {} };
-
-    const template = _template || (await templatesAPI.getById(entity.template));
-    const relationshipProperties = getPropertiesToBeConnections(template);
-
-    if (!relationshipProperties.length) {
-      return { relationshipProperties, existingReferences: {} };
-    }
-
-    const existingReferences = await getEntityReferencesByRelationshipTypes(
-      entity.sharedId,
-      relationshipProperties.map(p => p.relationType)
-    );
-
-    return { relationshipProperties, existingReferences };
+  async updateEntitiesMetadata(entitiesIds, language) {
+    return updateEntitiesMetadataV1Bridge({
+      entitiesIds,
+      language,
+      getByDocument: (entityId, documentLanguage) => this.getByDocument(entityId, documentLanguage),
+    });
   },
 
   async saveEntityBasedReferences(entity, language, _template) {
-    const { relationshipProperties, existingReferences } =
-      await this.prepareSaveEntityBasedReferences(entity, language, _template);
-
-    const relationshipsToCreate = [];
-    const relationshipsToDelete = [];
-
-    for (let i = 0; i < relationshipProperties.length; i += 1) {
-      const { newReferencesBase, newReferences, toDelete } =
-        // eslint-disable-next-line no-await-in-loop
-        await this.separateCreatedDeletedReferences(
-          relationshipProperties[i],
-          entity,
-          existingReferences
-        );
-      relationshipsToCreate.push(...newReferencesBase, ...newReferences);
-      relationshipsToDelete.push(...toDelete);
-    }
-
-    if (relationshipsToCreate.length) await this.save(relationshipsToCreate, language, false);
-    if (relationshipsToDelete.length) {
-      await this.delete(
-        {
-          _id: { $in: relationshipsToDelete },
-        },
-        language,
-        false
-      );
-    }
+    return saveEntityBasedReferencesV1Bridge({
+      entity,
+      language,
+      template: _template,
+      getTemplateById: templatesAPI.getById,
+      saveRelationships: relationships => this.save(relationships, language, false),
+      deleteRelationships: query => this.delete(query, language, false),
+    });
   },
 
   async search(entitySharedId, query, language, user) {

@@ -4,11 +4,10 @@ import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDa
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import entities from '#api/entities/entities.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { DeprecatedEntitiesDataSource } from '../contracts/DeprecatedEntitiesDataSource.js';
-import { DeprecatedEntity, EntityMetadata, MetadataValue } from '../model/Entity.js';
+import { DeprecatedEntity, EntityMetadata } from '../model/Entity.js';
 import { EntityMappers } from './EntityMapper.js';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 
@@ -112,30 +111,6 @@ export class MongoDeprecatedEntitiesDataSource
     });
 
     return new MongoResultSet(result, entity => entity.sharedId);
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  async updateMetadataValues(
-    id: DeprecatedEntity['_id'],
-    values: Record<string, { value: MetadataValue }[]>,
-    title?: string
-  ) {
-    // This is using V1 so that it gets denormalized to speed up development
-    // this is a hack and should be changed as soon as we finish AT
-    const entityToModify = await entities.getById(id);
-    if (!entityToModify) {
-      throw new Error(`entity does not exists: ${id}`);
-    }
-
-    entityToModify.title = title || entityToModify.title;
-
-    Object.entries(values).forEach(([propertyName, metadataValues]) => {
-      entityToModify.metadata = entityToModify.metadata || {};
-      // @ts-ignore
-      entityToModify.metadata[propertyName] = metadataValues;
-    });
-
-    await entities.save(entityToModify, { user: {}, language: entityToModify.language });
   }
 
   async updateObsoleteMetadataValues(

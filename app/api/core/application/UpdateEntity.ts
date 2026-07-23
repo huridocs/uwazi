@@ -20,6 +20,7 @@ type Input = {
   propertyAssignments: PropertyAssignmentInput[];
 
   icon?: EntityIcon;
+  generatedToc?: boolean;
   templateId?: string;
   uploadedFiles?: InputFile[];
   files?: { id: string; originalname: string }[];
@@ -47,6 +48,7 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
 
     entity.update({
       icon: input.icon,
+      generatedToc: input.generatedToc,
     });
 
     const templateHasChanged = !!input.templateId && entity.template.id !== input.templateId;
@@ -97,13 +99,18 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
       .filter((f): f is PDFDocument => f instanceof PDFDocument && f.isReady())
       .map(f => f.id);
 
-    const allEntityThumbnails = await this.deps.filesDS.getThumbnails([entity.sharedId]);
-    const remainingThumbnails = allEntityThumbnails.filter(
-      t => !removedPDFIds.some(id => t.filename === `${id}.jpg`)
-    );
+    const shouldRebuildPreview =
+      removedPDFIds.length > 0 || filesCreated.some(file => file instanceof PDFDocument);
 
-    const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
-    entity.setPreview(remainingThumbnails, defaultLanguage);
+    if (shouldRebuildPreview) {
+      const allEntityThumbnails = await this.deps.filesDS.getThumbnails([entity.sharedId]);
+      const remainingThumbnails = allEntityThumbnails.filter(
+        t => !removedPDFIds.some(id => t.filename === `${id}.jpg`)
+      );
+
+      const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
+      entity.setPreview(remainingThumbnails, defaultLanguage);
+    }
 
     await this.deps.fileService.storeFiles(filesCreated);
 
