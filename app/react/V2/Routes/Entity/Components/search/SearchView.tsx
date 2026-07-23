@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router';
 import { useForm, Controller } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
@@ -10,6 +9,7 @@ import {
   useEntityLanguage,
   useEntityScopedEntity,
 } from '#V2/Routes/Entity/Components/context/index.js';
+import { useEntityHashParams, useUpdateEntityUrl } from '../../entityUrlState.js';
 import { SEARCH_PARAM } from '../../urlParams.js';
 import { SearchResultsPanel } from './SearchResultsPanel.js';
 import { useEntitySearchSnippets } from './useEntitySearchSnippets.js';
@@ -21,8 +21,9 @@ type FormValues = {
 const SearchView = () => {
   const entity = useEntityScopedEntity();
   const { language, mainDocument } = useEntityLanguage();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const initial = searchParams.get(SEARCH_PARAM) || '';
+  const hashParams = useEntityHashParams();
+  const updateEntityUrl = useUpdateEntityUrl();
+  const initial = hashParams.get(SEARCH_PARAM) || '';
   const searchTerm = initial.trim();
   const templates = useAtomValue(templatesAtom);
   const { pdfController: mainPdfController } = useDocumentPdf();
@@ -54,14 +55,16 @@ const SearchView = () => {
   }, [mainDocument?._id, mainPdfController]);
 
   const onSubmit = async (data: FormValues) => {
-    const params = new URLSearchParams(searchParams);
     const value = data.search.trim();
-    if (value) {
-      params.set(SEARCH_PARAM, value);
-    } else {
-      params.delete(SEARCH_PARAM);
-    }
-    setSearchParams(params);
+    updateEntityUrl({
+      hash: next => {
+        if (value) {
+          next.set(SEARCH_PARAM, value);
+        } else {
+          next.delete(SEARCH_PARAM);
+        }
+      },
+    });
   };
 
   const activateSnippet = (snippetKey: string, pageText: { text: string; page: number }) => {

@@ -68,4 +68,58 @@ describe('stackedBarMapper', () => {
 
     expect(option).toBeNull();
   });
+
+  it('should render grouped stacked bars for compare breakdown data', () => {
+    const option = mapStackedBarOption(
+      {
+        datavizId: '1',
+        generatedAt: '2026-01-01T00:00:00.000Z',
+        stale: false,
+        meta: { totalEntities: 10, truncated: false },
+        series: [
+          {
+            id: 'owners',
+            label: 'Owners',
+            points: [
+              {
+                key: 'spain',
+                label: 'Spain',
+                value: 5,
+                breakdown: [
+                  { key: 'male', label: 'Male', value: 3 },
+                  { key: 'female', label: 'Female', value: 2 },
+                ],
+              },
+            ],
+          },
+          {
+            id: 'owners_2',
+            label: 'Owners 2',
+            points: [
+              {
+                key: 'spain',
+                label: 'Spain',
+                value: 1,
+                breakdown: [{ key: 'male', label: 'Male', value: 1 }],
+              },
+            ],
+          },
+        ],
+      },
+      { type: 'stacked_bar', excludeZero: false, showLabels: true },
+      { colorMode: 'theme' }
+    );
+
+    const series = option!.series as Array<{ name: string; stack: string; data: number[] }>;
+    expect(series).toHaveLength(4);
+    expect(series.map(item => item.name)).toEqual(
+      expect.arrayContaining([
+        'Owners · Male',
+        'Owners · Female',
+        'Owners 2 · Male',
+        'Owners 2 · Female',
+      ])
+    );
+    expect(new Set(series.map(item => item.stack))).toEqual(new Set(['owners', 'owners_2']));
+  });
 });

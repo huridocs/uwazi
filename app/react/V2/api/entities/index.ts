@@ -5,21 +5,13 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { SearchQuery, CompoundFilter } from '#shared/types/SearchQueryType.js';
 import { apiClient } from '../client.js';
+import { requestHeaders } from '../requestHeaders.js';
 import { EntitySearchResponse } from '../types.js';
 import { ApiResponse } from '../ApiResponse.js';
 import * as formatter from './formatter.js';
 import { Entity } from './types.js';
+import { getPermissions, savePermissions, searchCollaborators } from './permissions.js';
 import { saveWithFiles } from './save/index.js';
-
-const requestHeaders = (headers?: IncomingHttpHeaders): Record<string, string> | undefined => {
-  const mapped = Object.fromEntries(
-    Object.entries(headers ?? {}).filter((entry): entry is [string, string] => {
-      const [, value] = entry;
-      return typeof value === 'string';
-    })
-  );
-  return Object.keys(mapped).length > 0 ? mapped : undefined;
-};
 
 const withLanguage = (language: string, headers?: IncomingHttpHeaders) => ({
   ...requestHeaders(headers),
@@ -234,4 +226,7 @@ export {
   searchByTitle,
   saveWithFiles,
   remove,
+  getPermissions,
+  savePermissions,
+  searchCollaborators,
 };

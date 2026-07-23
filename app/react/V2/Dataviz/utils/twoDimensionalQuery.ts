@@ -28,5 +28,17 @@ export const isNumericCrossTabQuery = (dimensions: DimensionSpec[]) => {
   );
 };
 
+/** date × select — line / area with one series per breakdown value */
+export const isSequentialCategoricalCrossTabQuery = (dimensions: DimensionSpec[]) => {
+  const secondary = dimensions[1];
+  return (
+    hasTwoDimensions(dimensions) &&
+    isSequentialDimension(dimensions[0]) &&
+    isCategoricalDimension(secondary)
+  );
+};
+
 export const hasBreakdownData = (data: DatavizDataDTO): boolean =>
-  Boolean(data.series[0]?.points.some(p => p.breakdown && p.breakdown.length > 0));
+  data.series.some(series =>
+    series.points.some(point => point.breakdown && point.breakdown.length > 0)
+  );

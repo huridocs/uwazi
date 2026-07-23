@@ -76,6 +76,14 @@ const httpEntitiesService: EntitiesService = {
   },
 
   delete: async (sharedIds, { headers } = {}) => entitiesApi.remove(sharedIds, headers),
+
+  getPermissions: async (sharedIds, { headers } = {}) =>
+    entitiesApi.getPermissions(sharedIds, headers),
+
+  savePermissions: async (data, { headers } = {}) => entitiesApi.savePermissions(data, headers),
+
+  searchCollaborators: async (term, { headers } = {}) =>
+    entitiesApi.searchCollaborators(term, headers),
 };
 
 export { httpEntitiesService };

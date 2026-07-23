@@ -2,6 +2,7 @@ import type { IncomingHttpHeaders } from 'http';
 import { ClientUserGroupSchema, ClientUserSchema } from '#app/apiResponseTypes.js';
 import type { ApiResponse } from '#V2/api/ApiResponse.js';
 import { apiClient } from '#V2/api/client.js';
+import { requestHeaders as mapRequestHeaders } from '#V2/api/requestHeaders.js';
 
 const prepareUser = (user: ClientUserSchema & { rowId?: string }) => {
   const preparedUser = { ...user };
@@ -16,24 +17,16 @@ const prepareUser = (user: ClientUserSchema & { rowId?: string }) => {
   return preparedUser;
 };
 
-// Encode password to base64 to avoid special characters in the password
 const encodePassword = (password: string) => Buffer.from(password).toString('base64');
 
 const requestHeaders = (
   headers?: IncomingHttpHeaders,
   currentPassword?: string
 ): Record<string, string> | undefined => {
-  const mapped = Object.fromEntries(
-    Object.entries(headers ?? {}).filter((entry): entry is [string, string] => {
-      const [, value] = entry;
-      return typeof value === 'string';
-    })
-  );
-
+  const mapped = { ...(mapRequestHeaders(headers) ?? {}) };
   if (currentPassword) {
     mapped.authorization = `Basic ${encodePassword(currentPassword)}`;
   }
-
   return Object.keys(mapped).length > 0 ? mapped : undefined;
 };
 
