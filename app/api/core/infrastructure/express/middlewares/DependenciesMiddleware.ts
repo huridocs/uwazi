@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { NextFunction, Request, Response } from 'express';
 import { tenants } from '#api/tenants/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
@@ -8,19 +9,37 @@ import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFac
 import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
 import { User } from '#api/users.v2/model/User.js';
+import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
 
 const dependenciesContextMiddleware = (
   request: Request,
-  _response: Response,
+  response: Response,
   next: NextFunction
 ) => {
   const tenant = tenants.current();
   const actor = User.createFrom(request.user);
+  const correlationId = randomUUID();
+
+  response.on('finish', () => {
+    if (!tenant.telemetry?.enabled) return;
+
+    const { telemetryCollector } = ExecutionContext;
+    if (telemetryCollector.mainDurationMs() < (tenant.telemetry.thresholdMs ?? 0)) return;
+
+    telemetryCollector.add({
+      method: request.method,
+      path: request.path,
+      status_code: response.statusCode,
+    });
+
+    ExecutionContext.logger.info('HTTP Request Telemetry', telemetryCollector.build());
+  });
 
   return ExecutionContext.run(
     {
       tenant,
       actor,
+      correlationId,
       factories: {
         transactionManager: TransactionManagerFactory.default,
         postgresTransactionManager: PostgresTransactionManagerFactory.default,
@@ -28,6 +47,7 @@ const dependenciesContextMiddleware = (
         eventEmitter: EventEmitterFactory.default,
         idGenerator: IdGeneratorFactory.default,
         logger: LoggerFactory.default,
+        telemetryCollector: () => new TelemetryCollector('http_request'),
       },
     },
     next

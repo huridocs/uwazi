@@ -35,8 +35,8 @@ import type { V2Services } from '#V2/services/types.js';
 import { MenuConfig, menuConfigloader } from '#V2/Routes/Settings/MenuConfig/MenuConfig.js';
 import {
   RelationshipTypes,
-  relationshipTypesLoader,
-} from '#V2/Routes/Settings/RelationshipTypes/RelationshipTypes.js';
+  createRelationshipTypesLoader,
+} from '#V2/Routes/Settings/RelationshipTypes/index.js';
 import { LanguagesList, languagesListLoader } from '#V2/Routes/Settings/Languages/LanguagesList.js';
 import { Account, createAccountLoader } from '#V2/Routes/Settings/Account/index.js';
 import { IXdashboardLoader, IXDashboard } from '#V2/Routes/Settings/IX/IXDashboard.js';
@@ -346,7 +346,7 @@ const getRoutesLayout = (
         <Route
           index
           element={adminsOnlyRoute(<RelationshipTypes />)}
-          loader={relationshipTypesLoader(headers)}
+          loader={createRelationshipTypesLoader(services)(headers)}
         />
       </Route>
 
