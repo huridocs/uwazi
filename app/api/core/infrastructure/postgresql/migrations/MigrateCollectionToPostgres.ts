@@ -4,7 +4,7 @@ import { LoggerFactory } from '../../factories/LoggerFactory.js';
 import { PostgresTable } from '../common/PostgresTable.js';
 import { PostgresTransactionManager } from '../common/PostgresTransactionManager.js';
 
-export const BATCH_SIZE = 1000;
+export const BATCH_SIZE = 50;
 
 export interface MigrationConfig {
   mongoCollection: string;
@@ -19,24 +19,44 @@ export class MigrateCollectionToPostgres {
   ) {}
 
   private async fetchAndInsert(config: MigrationConfig, table: PostgresTable): Promise<number> {
-    const mongoDocs = await this.mongoDb
+    const cursor = this.mongoDb
       .collection<Record<string, unknown>>(config.mongoCollection)
       .find({})
-      .toArray();
+      .batchSize(BATCH_SIZE);
 
-    if (mongoDocs.length === 0) {
-      return 0;
+    let migrated = 0;
+    let batch: Record<string, unknown>[] = [];
+
+    // eslint-disable-next-line no-await-in-loop
+    for await (const doc of cursor) {
+      batch.push(config.mapDocument(doc));
+      migrated += 1;
+
+      if (batch.length === BATCH_SIZE) {
+        // eslint-disable-next-line no-await-in-loop
+        await this.insertBatch(table, batch);
+        batch = [];
+      }
     }
 
-    for (let i = 0; i < mongoDocs.length; i += BATCH_SIZE) {
-      const batch = mongoDocs.slice(i, i + BATCH_SIZE);
-      const rows = batch.map(doc => config.mapDocument(doc));
-
-      // eslint-disable-next-line no-await-in-loop
-      await table.insert(rows);
+    if (batch.length > 0) {
+      await this.insertBatch(table, batch);
     }
 
-    return mongoDocs.length;
+    return migrated;
+  }
+
+  private async insertBatch(table: PostgresTable, batch: Record<string, unknown>[]): Promise<void> {
+    try {
+      await table.insert(batch);
+    } catch (err: unknown) {
+      // eslint-disable-next-line no-console
+      console.error(
+        '[MigrateCollectionToPostgres] Insert failed for batch:',
+        JSON.stringify(batch, null, 2)
+      );
+      throw err;
+    }
   }
 
   async migrate(config: MigrationConfig): Promise<{ migrated: number; skipped: boolean }> {
