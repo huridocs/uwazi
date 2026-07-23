@@ -6,7 +6,8 @@ import { FileDetailsEditor } from '../../Components/Files/FileDetailsEditor.js';
 import { FilePreviewView } from '../../Components/Files/FilePreviewView.js';
 
 const FilesSideTab = () => {
-  const { focusedRow, isEditing, filePanelMode, setIsEditing, saveRow } = useEntityFiles();
+  const { focusedRow, isEditing, editFocus, filePanelMode, setIsEditing, saveRow } =
+    useEntityFiles();
 
   let body: React.ReactNode;
 
@@ -19,7 +20,7 @@ const FilesSideTab = () => {
   } else if (isEditing) {
     body = (
       <div className="h-full overflow-auto">
-        <FileDetailsEditor row={focusedRow} onSave={saveRow} />
+        <FileDetailsEditor row={focusedRow} onSave={saveRow} focusField={editFocus} />
       </div>
     );
   } else if (filePanelMode === 'preview') {

@@ -47,15 +47,15 @@ const EntityView = () => {
   const entity = useEntityScopedEntity();
   const { mainDocument, pagePlaintext, isRtl } = useEntityLanguage();
   useResetRelationshipsOnDocumentChange();
-  const { focusedRow, primaryRows } = useEntityFiles();
+  const { primaryRows } = useEntityFiles();
   const hasMainDocument = Boolean(mainDocument?.filename);
 
   const filesSideTabs = useMemo(
     () => ({
-      showTranslationsTab: focusedRow?.category === 'primary',
+      showTranslationsTab: true,
       translationsCount: primaryRows.length,
     }),
-    [focusedRow?.category, primaryRows.length]
+    [primaryRows.length]
   );
 
   const { activeMainTab, activeSideTab, onMainTabChange, onSideTabChange } = useEntityViewTabs({

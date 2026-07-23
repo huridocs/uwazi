@@ -8,6 +8,18 @@
 .tw-content {
   color-scheme: light;
   --tw-shadow-color: rgba(15, 23, 42, 0.12);
+  font-family: var(--font-theme-sans, var(--font-sans));
+  color: var(--text-primary, var(--color-theme-text-primary, #1a1a1a));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Portals (Drawer, notifications) reuse .tw-content + .fixed for theme vars —
+   do not paint canvas there or they cover the app. */
+.tw-content:not(.fixed) {
+  background: var(--bg-primary, var(--color-theme-bg-primary, #f5f3f0));
 }
 
 @theme {
@@ -169,12 +181,20 @@
   --breakpoint-xl: 80rem;
   --breakpoint-2xl: 96rem;
 
+  --text-pico: 8px;
+  --text-pico--line-height: 1rem;
+  --text-tiny: 9px;
+  --text-tiny--line-height: 1rem;
   --text-nano: 10px;
   --text-nano--line-height: 1rem;
   --text-micro: 11px;
   --text-micro--line-height: 1rem;
   --text-tab: 13px;
   --text-tab--line-height: 1.25rem;
+
+  --spacing-nano: 10px;
+  --spacing-micro: 11px;
+  --border-width-arrow: 7px;
 }
 
 @layer theme {
@@ -213,6 +233,10 @@
 
 @utility bg-ink {
   background-color: var(--color-theme-action-primary, var(--color-theme-text-primary));
+}
+
+@utility bg-ink-fade {
+  background-color: color-mix(in srgb, var(--text-primary) 40%, transparent);
 }
 
 @utility bg-highlight {

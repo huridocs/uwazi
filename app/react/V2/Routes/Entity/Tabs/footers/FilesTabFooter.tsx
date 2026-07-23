@@ -1,6 +1,7 @@
 import React from 'react';
 import { useEntityFiles } from '../../Components/Files/EntityFilesContext.js';
 import { FilesToolbar } from '../../Components/Files/FilesToolbar.js';
+import { isFileRowSelectable } from '../../Components/Files/fileHelpers.js';
 import { EntityTabFooter } from '../EntityTabFooter.js';
 
 const FilesTabFooter = () => {
@@ -14,15 +15,19 @@ const FilesTabFooter = () => {
   } = useEntityFiles();
 
   const allRows = [...primaryRows, ...supportingRows];
-  const hasSelection = selectedRowIds.length > 0;
+  const selectableRows = allRows.filter(isFileRowSelectable);
+  const selectedSelectableCount = selectableRows.filter(row =>
+    selectedRowIds.includes(row.rowId)
+  ).length;
+  const hasSelection = selectedSelectableCount > 0;
 
   return (
     <EntityTabFooter highlighted={hasSelection}>
       <FilesToolbar
-        totalCount={allRows.length}
-        selectedCount={selectedRowIds.length}
+        totalCount={selectableRows.length}
+        selectedCount={selectedSelectableCount}
         onAddFile={() => requestAddFile('main')}
-        onSelectAll={() => setSelectedRowIds(allRows.map(row => row.rowId))}
+        onSelectAll={() => setSelectedRowIds(selectableRows.map(row => row.rowId))}
         onDeselectAll={() => setSelectedRowIds([])}
         onDeleteSelected={requestDeleteSelected}
       />
