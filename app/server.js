@@ -42,7 +42,6 @@ import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/
 import { embedFrameHeaders } from './api/middleware/embedFrameHeaders.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
-import { metricsMiddleware } from '#api/core/infrastructure/express/middlewares/MetricsMiddleware.js';
 import { registerMetricsRoutes } from '#api/core/infrastructure/express/MetricsRoute.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -52,7 +51,6 @@ mongoose.Promise = Promise;
 
 const app = express();
 
-app.use(metricsMiddleware);
 registerMetricsRoutes(app);
 routesErrorHandler(app);
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
