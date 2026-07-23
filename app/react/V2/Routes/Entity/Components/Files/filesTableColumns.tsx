@@ -6,6 +6,7 @@ import { getRowIcon } from './fileRowIcon.js';
 import { FileProcessStatusIndicator } from './FileProcessStatusIndicator.js';
 import { FileRowKebab } from './FileRowKebab.js';
 import { EntityFileRow } from './types.js';
+import Translate from '#shared/translate.js';
 
 type FilesTableColumnsParams = {
   selectedIds: Set<string>;
@@ -108,7 +109,7 @@ const filesDataTableColumns = ({
   },
   {
     id: 'actions',
-    header: <span className="sr-only">Actions</span>,
+    header: <Translate className="sr-only">Actions</Translate>,
     width: '2rem',
     align: 'right',
     cell: row => (

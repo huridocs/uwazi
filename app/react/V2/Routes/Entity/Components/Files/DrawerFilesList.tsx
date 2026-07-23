@@ -9,9 +9,9 @@ import { isFileRowSelectable } from './fileHelpers.js';
 import { EntityFileRow, FileKind } from './types.js';
 
 const SectionHeader = ({ label }: { label: string }) => (
-  <h3 className="mb-3 px-1 text-nano font-semibold uppercase tracking-wider text-ink-tertiary">
+  <div className="mb-3 px-1 text-nano font-semibold uppercase tracking-wider text-ink-tertiary">
     <Translate>{label}</Translate>
-  </h3>
+  </div>
 );
 
 const thumbnailChipLabel = (kind: FileKind) => {
@@ -160,9 +160,9 @@ const DrawerFilesList = () => {
         ) : (
           <section className="mb-6">
             <div className="mb-2 flex items-baseline justify-between px-1">
-              <h4 className="truncate text-sm font-semibold text-ink">
+              <div className="truncate text-sm font-semibold text-ink">
                 <Translate>Documents</Translate>
-              </h4>
+              </div>
               <span className="shrink-0 text-nano tabular-nums text-ink-tertiary">
                 {primaryCountLabel}
               </span>

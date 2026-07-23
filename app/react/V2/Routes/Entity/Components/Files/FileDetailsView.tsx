@@ -15,9 +15,9 @@ const FileDetailsView = ({ row, onEdit }: { row: EntityFileRow; onEdit: () => vo
   return (
     <div className="space-y-3 rounded-md bg-warm p-4">
       <div className="flex items-center justify-between">
-        <h4 className="text-xs font-semibold uppercase tracking-wider text-ink-tertiary">
+        <div className="text-xs font-semibold uppercase tracking-wider text-ink-tertiary">
           <Translate>File details</Translate>
-        </h4>
+        </div>
         <EntityWriteAuthorization>
           <button
             type="button"
