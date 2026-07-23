@@ -143,6 +143,7 @@ export const config = {
       v2Languages: false,
       postgresFiles: false,
       postgresThesauri: false,
+      postgresEntities: false,
       postgresTemplates: false,
       newHeader: NEW_HEADER === 'true' || false,
       aiAssistant: FEATURE_FLAG_AI_ASSISTANT === 'true' || false,
@@ -152,6 +153,10 @@ export const config = {
       v2UsersGet: false,
       v2UsersUpdate: false,
       v2UsersUtilityRoutes: false,
+    },
+    telemetry: {
+      enabled: false,
+      thresholdMs: 0,
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',

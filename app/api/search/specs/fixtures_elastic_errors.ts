@@ -1,6 +1,8 @@
 import db, { DBFixture } from '#api/utils/testing_db.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 const templateIndexProblems = db.id();
+const f = getFixturesFactory();
 
 const fixtures: DBFixture = {
   entities: [
@@ -10,6 +12,7 @@ const fixtures: DBFixture = {
       language: 'en',
       title: 'Entity with index Problems 1',
       published: true,
+      template: templateIndexProblems,
       metadata: { text_field: [{ value: 1 }] },
     },
     {
@@ -18,6 +21,7 @@ const fixtures: DBFixture = {
       language: 'en',
       title: 'Entity with index Problems 2',
       published: true,
+      template: templateIndexProblems,
       metadata: { text_field: [{ value: 'text that will fail' }] },
     },
     {
@@ -26,6 +30,7 @@ const fixtures: DBFixture = {
       language: 'en',
       title: 'Entity with index Problems 3',
       published: true,
+      template: templateIndexProblems,
       metadata: { text_field: [{ value: 'another fail' }] },
     },
     {
@@ -34,6 +39,7 @@ const fixtures: DBFixture = {
       language: 'en',
       title: 'Entity with index Problems 4',
       published: true,
+      template: templateIndexProblems,
       metadata: { text_field: [{ value: 'fail on 4' }] },
     },
     {
@@ -42,6 +48,7 @@ const fixtures: DBFixture = {
       language: 'en',
       title: 'Entity with index Problems 5',
       published: true,
+      template: templateIndexProblems,
       metadata: { text_field: [{ value: 2 }] },
     },
     {
@@ -50,6 +57,7 @@ const fixtures: DBFixture = {
       language: 'en',
       title: 'Entity with index Problems 6',
       published: true,
+      template: templateIndexProblems,
       metadata: { text_field: [{ value: 3 }] },
     },
     {
@@ -58,14 +66,16 @@ const fixtures: DBFixture = {
       language: 'en',
       title: 'Entity with index Problems 7',
       published: true,
+      template: templateIndexProblems,
       metadata: { text_field: [{ value: 4 }] },
     },
   ],
   templates: [
-    {
-      _id: templateIndexProblems,
-      properties: [{ _id: db.id(), name: 'text_field', type: 'text', filter: true }],
-    },
+    f.template(
+      'indexProblems',
+      [{ _id: db.id(), name: 'text_field', label: 'text field', type: 'text', filter: true }],
+      { _id: templateIndexProblems }
+    ),
   ],
   settings: [
     {

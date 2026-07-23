@@ -1,6 +1,5 @@
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { Entity as EntityType } from '#V2/api/entities/types.js';
-import { SnippetsSearchResponse } from '#V2/api/types.js';
 import { MAIN_TAB_PARAM, SIDE_TAB_PARAM } from '../../urlParams.js';
 import { getSideTabButtons, type FilesSideTabsOptions } from '../sideTabSets.js';
 import { MAIN_TAB, isValidMainTab, type MainTabId } from '../tabIds.js';
@@ -10,22 +9,19 @@ type Params = {
   entity: EntityType;
   hasMainDocument: boolean;
   mainDocumentId?: string;
-  searchResults?: SnippetsSearchResponse;
   filesSideTabs: FilesSideTabsOptions;
   searchParams: URLSearchParams;
+  hashParams: URLSearchParams;
 };
 
 const useResolvedEntityTabs = ({
   entity,
   hasMainDocument,
   mainDocumentId,
-  searchResults,
   filesSideTabs,
   searchParams,
+  hashParams,
 }: Params) => {
-  const initialSearchResults = useRef(searchResults);
-  const preferSearch = Boolean(initialSearchResults.current);
-
   const mainTabIds = useMemo(() => {
     const ids = new Set<MainTabId>([MAIN_TAB.METADATA, MAIN_TAB.RELATIONSHIPS, MAIN_TAB.FILES]);
     if (hasMainDocument) ids.add(MAIN_TAB.DOCUMENT);
@@ -51,11 +47,11 @@ const useResolvedEntityTabs = ({
   );
 
   const activeSideTab = useMemo(
-    () => resolveSideTabId(searchParams.get(SIDE_TAB_PARAM), sideTabButtons, preferSearch),
-    [searchParams, sideTabButtons, preferSearch]
+    () => resolveSideTabId(hashParams.get(SIDE_TAB_PARAM), sideTabButtons),
+    [hashParams, sideTabButtons]
   );
 
-  return { mainTabIds, activeMainTab, sideTabButtons, activeSideTab, preferSearch };
+  return { mainTabIds, activeMainTab, sideTabButtons, activeSideTab };
 };
 
 export { useResolvedEntityTabs };

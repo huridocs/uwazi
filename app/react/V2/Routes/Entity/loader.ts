@@ -4,16 +4,15 @@ import { FetchResponseError } from '#shared/JSONRequest.js';
 import { getStore } from '#shared/atomStore/index.js';
 import { isClient } from '#app/utils/index.js';
 import { localeAtom, settingsAtom } from '#app/V2/atoms/index.js';
-import { getPagePlaintext } from '#V2/api/files/index.js';
-import { snippets } from '#V2/api/search/index.js';
-import { SnippetsSearchResponse } from '#V2/api/types.js';
+import { getDocumentPlaintext } from '#V2/api/files/index.js';
 import { ApiError } from '#shared/apiClient/index.js';
 import type { V2Services } from '#V2/services/types.js';
 import { httpServices } from '#V2/services/http/index.js';
 import { apiErrorToRequestError } from '#V2/shared/errorUtils.js';
 import { getMainDocument } from '#V2/formatters/index.js';
 import { entityLoaderCache } from './EntityLoaderCache.js';
-import { PAGE_PARAM, SEARCH_PARAM, VIEW_MODE_PARAM } from './Components/index.js';
+import { parseEntityHash } from './entityUrlState.js';
+import { VIEW_MODE_PARAM } from './Components/index.js';
 import { LoaderResponse } from './types.js';
 
 const entityNotFoundError = (sharedId: string) =>
@@ -22,6 +21,17 @@ const entityNotFoundError = (sharedId: string) =>
     status: 404,
     detail: `Entity ${sharedId} not found`,
   });
+
+const isRawFromRequest = (requestUrl: string) => {
+  const { hash } = new URL(requestUrl);
+  if (parseEntityHash(hash).get(VIEW_MODE_PARAM) === 'true') {
+    return true;
+  }
+  if (isClient && typeof window !== 'undefined') {
+    return parseEntityHash(window.location.hash).get(VIEW_MODE_PARAM) === 'true';
+  }
+  return false;
+};
 
 const createEntityLoader =
   (services: V2Services) =>
@@ -32,10 +42,7 @@ const createEntityLoader =
     const atomStore = getStore();
     const language = params.lang || atomStore.get(localeAtom);
     const defaultLanguage = atomStore.get(settingsAtom)?.languages?.find(l => l.default)?.key;
-    const { searchParams } = new URL(request.url);
-    const currentPage = searchParams.get(PAGE_PARAM) || '1';
-    const currentSearchTerm = searchParams.get(SEARCH_PARAM);
-    const isRaw = searchParams.get(VIEW_MODE_PARAM) === 'true';
+    const isRaw = isRawFromRequest(request.url);
 
     if (!entitySharedId) {
       return undefined;
@@ -46,7 +53,6 @@ const createEntityLoader =
     });
     let mainDocument = entityLoaderCache.getMainDocument(entitySharedId, language);
     let pagePlaintext: string | undefined = '';
-    let searchResults: SnippetsSearchResponse | undefined;
 
     if (!entity?._id) {
       const [fetchedEntity, error] = await services.entities.getBySharedId(entitySharedId, {
@@ -73,14 +79,10 @@ const createEntityLoader =
     }
 
     if (mainDocument?._id && (isRaw || !isClient)) {
-      pagePlaintext = entityLoaderCache.getPlaintext(mainDocument._id, Number(currentPage));
+      pagePlaintext = entityLoaderCache.getPlaintext(mainDocument._id);
 
       if (!pagePlaintext) {
-        const response = await getPagePlaintext(
-          mainDocument._id,
-          Number.parseInt(currentPage, 10),
-          headers
-        );
+        const response = await getDocumentPlaintext(mainDocument._id, headers);
 
         if (response instanceof FetchResponseError) {
           throw new Response(
@@ -99,38 +101,12 @@ const createEntityLoader =
           );
         } else {
           pagePlaintext = response;
-          entityLoaderCache.setPlaintext(mainDocument._id, Number(currentPage), pagePlaintext);
+          entityLoaderCache.setPlaintext(mainDocument._id, pagePlaintext);
         }
       }
     }
 
-    if (currentSearchTerm && entity?.sharedId) {
-      searchResults = entityLoaderCache.getSearchResults(
-        entity.sharedId,
-        language,
-        currentSearchTerm
-      );
-
-      if (!searchResults) {
-        searchResults = await snippets(
-          {
-            sharedId: entity.sharedId,
-            limit: 0,
-            searchString: currentSearchTerm,
-          },
-          headers
-        );
-
-        entityLoaderCache.setSearchResults(
-          entity.sharedId,
-          language,
-          currentSearchTerm,
-          searchResults
-        );
-      }
-    }
-
-    return { entity, mainDocument, pagePlaintext, searchResults };
+    return { entity, mainDocument, pagePlaintext };
   };
 
 const entityLoader = createEntityLoader(httpServices);

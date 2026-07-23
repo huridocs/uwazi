@@ -5,8 +5,9 @@ import { dbSessionContext } from '#api/odm/sessionsContext.js';
 import relationships from '#api/relationships/relationships.js';
 import { withConnectedData } from '#api/relationships/relationshipsHelpers.js';
 import settings from '#api/settings/index.js';
-import { Relation } from '../../../relationships/RelationsV1Collection.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import type { Relation } from '../../../relationships/RelationsV1Collection.js';
+import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { TimedMethod } from '#api/core/libs/logger/TimedMethodDecorator.js';
 
 export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
   protected collectionName = 'connections';
@@ -51,6 +52,7 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
    * @param includeUnpublished - Whether to include unpublished related entities
    * @returns Array of relationship objects with connected entity data
    */
+  @TimedMethod('MongoRelationshipsV1DataSource.getByEntity')
   async getByEntity(
     sharedId: string,
     language: LanguageISO6391,

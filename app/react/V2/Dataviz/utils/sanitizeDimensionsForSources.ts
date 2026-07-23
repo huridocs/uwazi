@@ -29,5 +29,17 @@ export const sanitizeDimensionsForSources = (
     return [];
   }
 
-  return [stripSourceAlias(primary)];
+  const sanitized = [stripSourceAlias(primary)];
+  const secondary = dimensions[1];
+
+  if (
+    secondary &&
+    secondary.property !== TEMPLATE_DIMENSION_PROPERTY &&
+    secondary.property !== primary.property &&
+    isDimensionPropertyStillValid(secondary.property, sources, templates)
+  ) {
+    sanitized.push(stripSourceAlias(secondary));
+  }
+
+  return sanitized;
 };

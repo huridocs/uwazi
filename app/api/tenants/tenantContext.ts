@@ -22,12 +22,12 @@ type Tenant = {
     paragraphExtraction?: boolean;
     fileCacheHeaders?: boolean;
     themeCustomization?: boolean;
-    v2GetEntity?: boolean;
     newHeader?: boolean;
     v2Languages?: boolean;
     postgresThesauri?: boolean;
     postgresFiles?: boolean;
     postgresTemplates?: boolean;
+    postgresEntities?: boolean;
     aiAssistant?: boolean;
     aiAssistantServiceUrl?: string;
     v2UsersCreate?: boolean;
@@ -39,6 +39,10 @@ type Tenant = {
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;
   maintenance?: boolean;
+  telemetry?: {
+    enabled?: boolean;
+    thresholdMs?: number;
+  };
 };
 
 class Tenants {
@@ -114,6 +118,7 @@ class Tenants {
       ...this.defaultTenant,
       ...tenant,
       featureFlags: { ...this.defaultTenant.featureFlags, ...tenant.featureFlags },
+      telemetry: { ...this.defaultTenant.telemetry, ...tenant.telemetry },
     };
   }
 
@@ -127,6 +132,18 @@ class Tenants {
     }
     if (this.tenants[tenantName]) {
       this.tenants[tenantName].maintenance = maintenance;
+    }
+  }
+
+  async setTelemetryConfig(
+    tenantName: string,
+    telemetry: { enabled: boolean; thresholdMs: number }
+  ) {
+    if (this.model) {
+      await this.model.setTelemetryConfig(tenantName, telemetry);
+    }
+    if (this.tenants[tenantName]) {
+      this.tenants[tenantName].telemetry = telemetry;
     }
   }
 }

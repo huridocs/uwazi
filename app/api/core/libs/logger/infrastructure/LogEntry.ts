@@ -25,6 +25,8 @@ export class LogEntry {
 
   tenant: Tenant;
 
+  correlationId: string | undefined;
+
   metadata: LogMetadata | undefined;
 
   constructor(
@@ -32,12 +34,14 @@ export class LogEntry {
     timestamp: number,
     level: LogLevel,
     tenant: Tenant,
+    correlationId: string | undefined,
     metadata?: LogMetadata
   ) {
     this.message = message;
     this.timestamp = timestamp;
     this.level = level;
     this.tenant = tenant;
+    this.correlationId = correlationId;
     this.metadata = metadata;
   }
 

@@ -40,7 +40,10 @@ const collectBreakdownTargets = (points: DataPoint[]): CustomColorTarget[] => {
 };
 
 const hasBreakdownTargets = (data: DatavizDataDTO): boolean =>
-  collectBreakdownTargets(data.series[0]?.points ?? []).length > 0;
+  data.series.some(series => collectBreakdownTargets(series.points).length > 0);
+
+const isCompareBreakdownData = (data: DatavizDataDTO): boolean =>
+  isMultiSeriesCompare(data) && hasBreakdownTargets(data);
 
 export const getCustomColorTargetKind = (
   chartType: ChartType,
@@ -59,7 +62,11 @@ export const getCustomColorTargetKind = (
   }
 
   if (COMPARE_SERIES_CHARTS.includes(chartType) && isMultiSeriesCompare(data)) {
-    return 'series';
+    return isCompareBreakdownData(data) ? 'stacked_series' : 'series';
+  }
+
+  if (SINGLE_SERIES_LINE_CHARTS.includes(chartType) && hasBreakdownTargets(data)) {
+    return 'stacked_series';
   }
 
   if (SINGLE_SERIES_LINE_CHARTS.includes(chartType)) {
@@ -92,7 +99,7 @@ export const getCustomColorTargets = (
   }
 
   if (kind === 'stacked_series') {
-    return collectBreakdownTargets(data.series[0]?.points ?? []);
+    return collectBreakdownTargets(data.series.flatMap(series => series.points));
   }
 
   const points = data.series[0]?.points ?? [];

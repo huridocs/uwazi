@@ -46,12 +46,12 @@ describe('General Error', () => {
 
   describe('when a page could not be rendered at server', () => {
     it('should show render an ErrorFallback with the error', () => {
-      requestId = '1234';
+      requestId = '3fa85f64-5717-4562-b3fc-2c963f66afa6';
       renderConnectedContainer(<GeneralError />, () => state, 'BrowserRouter');
       expect(screen.getByText('500')).toBeInTheDocument();
       expect(screen.getByText('Unexpected error')).toBeInTheDocument();
       expect(screen.getByTestId('errorInfo')).toHaveTextContent(
-        'Something went wrong. Request id #1234'
+        'Something went wrong. Request id #3fa85f64-5717-4562-b3fc-2c963f66afa6'
       );
     });
 
@@ -64,9 +64,9 @@ describe('General Error', () => {
       expect(screen.queryByText('Request id #')).not.toBeInTheDocument();
     });
 
-    it('should not pass the requestId if it is not a valid number', () => {
+    it('should not pass the requestId if it is not a valid uuid', () => {
       errorCode = 400;
-      requestId = 'notNumber';
+      requestId = 'notAUuid';
       renderConnectedContainer(<GeneralError />, () => state, 'BrowserRouter');
       expect(screen.getByText('400')).toBeInTheDocument();
       expect(screen.getByText('Bad Request')).toBeInTheDocument();

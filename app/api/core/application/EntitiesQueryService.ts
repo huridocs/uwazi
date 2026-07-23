@@ -1,3 +1,7 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable class-methods-use-this */
+/* eslint-disable max-params */
+/* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import { User } from '#api/users.v2/model/User.js';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
@@ -10,7 +14,7 @@ import {
 } from '../domain/entityAccessPolicy/EntityPermissionChecker.js';
 import { PropertyTypeEnum } from '../domain/template/PropertyType.js';
 import { Template } from '../domain/template/Template.js';
-import {
+import type {
   EntityWithFiles,
   MongoEntitiesDAO,
 } from '../infrastructure/mongodb/entity/MongoEntitiesDAO.js';
@@ -20,6 +24,8 @@ import { GetEntityResponseDTO, RelationDTO } from './GetEntityResponseDTO.js';
 import { EntityNotFoundError } from '../domain/entity/errors.js';
 import { AccessLevel } from '../domain/entityAccessPolicy/AccessLevel.js';
 import { GrantType } from '../domain/entityAccessPolicy/GrantType.js';
+import { TimedMethod } from '../libs/logger/TimedMethodDecorator.js';
+import { ExecutionContext } from '../libs/ExecutionContext.js';
 
 type Deps = {
   templatesDS: TemplatesDataSource;
@@ -32,9 +38,15 @@ type Deps = {
 class EntitiesQueryService {
   constructor(private deps: Deps) {}
 
+  private addTelemetry(metadata: Record<string, any>): void {
+    if (!ExecutionContext.getStore()) return;
+    ExecutionContext.telemetryCollector.add(metadata);
+  }
+
   /**
    * Gets a single entity with all computed fields (files, relationships, filtered metadata).
    */
+  @TimedMethod('EntitiesQueryService.getEntity')
   async getEntity(input: {
     sharedId: string;
     language: LanguageISO6391;
@@ -54,6 +66,14 @@ class EntitiesQueryService {
       throw new EntityNotFoundError(sharedId);
     }
 
+    this.addTelemetry({
+      isAuthenticated,
+      includeRelationships,
+      includePermissions,
+      documentsCount: entity.documents.length,
+      attachmentsCount: entity.attachments.length,
+    });
+
     await this.applyRelationshipPermissions([entity], user);
 
     let filteredRelations: RelationDTO[] = [];
@@ -68,9 +88,14 @@ class EntitiesQueryService {
       filteredRelations = isAuthenticated
         ? relations
         : relations.filter(rel => rel.entityData?.published !== false);
+
+      this.addTelemetry({
+        relationsCount: relations.length,
+        filteredRelationsCount: filteredRelations.length,
+      });
     }
 
-    this.applyPermissionsFieldSecurity(entity, user, includePermissions);
+    await this.applyPermissionsFieldSecurity(entity, user, includePermissions);
 
     const response: GetEntityResponseDTO = {
       ...entity,
@@ -86,15 +111,27 @@ class EntitiesQueryService {
    * Applies relationship permissions to entity metadata based on user permissions.
    * Mutates entity metadata in-place by filtering or marking inaccessible relationship references.
    */
+  @TimedMethod('EntitiesQueryService.applyRelationshipPermissions')
   async applyRelationshipPermissions(entityDBOs: EntityDBO[], user: User): Promise<void> {
     if (entityDBOs.length === 0) {
       return;
     }
 
     const templatePropsMap = await this.loadTemplateRelationshipProperties(entityDBOs);
+    const relationshipPropsCount = [...templatePropsMap.values()].reduce(
+      (count, props) => count + props.size,
+      0
+    );
     const referencedEntityIds = this.findAllReferencedEntities(entityDBOs, templatePropsMap);
     const accessibleEntityIds = await this.determineAccessibleEntities(referencedEntityIds, user);
     const filterUnauthorized = await this.deps.settingsDS.readFilterUnauthorizedRelated();
+
+    this.addTelemetry({
+      relationshipPropsCount,
+      referencedEntityIdsCount: referencedEntityIds.size,
+      accessibleEntityIdsCount: accessibleEntityIds.size,
+      filterUnauthorized,
+    });
 
     this.applyPermissionsToMetadata(
       entityDBOs,
@@ -105,11 +142,12 @@ class EntitiesQueryService {
     );
   }
 
-  private applyPermissionsFieldSecurity(
+  @TimedMethod('EntitiesQueryService.applyPermissionsFieldSecurity')
+  private async applyPermissionsFieldSecurity(
     entity: EntityWithFiles,
     user: User,
     includePermissions: boolean
-  ): void {
+  ): Promise<void> {
     if (!includePermissions || user.isAnonymous()) {
       delete entity.permissions;
       return;
@@ -130,6 +168,7 @@ class EntitiesQueryService {
     if (!hasWrite) delete entity.permissions;
   }
 
+  @TimedMethod('EntitiesQueryService.loadTemplateRelationshipProperties')
   private async loadTemplateRelationshipProperties(
     entityDBOs: EntityDBO[]
   ): Promise<Map<string, Set<string>>> {
@@ -185,6 +224,7 @@ class EntitiesQueryService {
     return allReferencedIds;
   }
 
+  @TimedMethod('EntitiesQueryService.determineAccessibleEntities')
   private async determineAccessibleEntities(
     referencedIds: Set<string>,
     user: User
@@ -235,7 +275,7 @@ class EntitiesQueryService {
     const templateId = entityDBO.template.toString();
     const relationshipProps = templatePropsMap.get(templateId);
 
-    if (!relationshipProps || relationshipProps.size === 0) {
+    if (!relationshipProps || relationshipProps.size === 0 || !entityDBO.metadata) {
       return;
     }
 

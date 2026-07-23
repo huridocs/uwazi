@@ -388,7 +388,6 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     paragraphExtraction: featureFlags?.paragraphExtraction,
     newHeader: featureFlags?.newHeader,
     themeCustomization: featureFlags?.themeCustomization,
-    v2GetEntity: featureFlags?.v2GetEntity,
     aiAssistant: featureFlags?.aiAssistant,
   };
   const settingsWithFeatureFlags = {

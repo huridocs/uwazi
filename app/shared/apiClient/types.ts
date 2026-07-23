@@ -7,7 +7,7 @@ type ApiResponse<T, E = ApiError> = [T, E?];
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'HEAD';
 
-type JsonResponseBody = Record<string, unknown>;
+type JsonResponseBody = Record<string, unknown> | unknown[];
 
 type JsonResponse = {
   json: JsonResponseBody;

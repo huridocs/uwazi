@@ -37,11 +37,11 @@ const mongoSchema = new mongoose.Schema({
     paragraphExtraction: Boolean,
     fileCacheHeaders: Boolean,
     themeCustomization: Boolean,
-    v2GetEntity: Boolean,
     v2Languages: Boolean,
     newHeader: Boolean,
     postgresThesauri: Boolean,
     postgresTemplates: Boolean,
+    postgresEntities: Boolean,
     postgresFiles: Boolean,
     aiAssistant: Boolean,
     aiAssistantServiceUrl: String,
@@ -54,6 +54,10 @@ const mongoSchema = new mongoose.Schema({
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,
   maintenance: Boolean,
+  telemetry: {
+    enabled: Boolean,
+    thresholdMs: Number,
+  },
 });
 
 type DBTenant = Partial<Tenant> & { name: string };
@@ -154,6 +158,18 @@ class TenantsModel extends EventEmitter {
       );
     }
     await this.model.updateOne({ name: tenantName }, { $set: { maintenance } });
+  }
+
+  async setTelemetryConfig(
+    tenantName: string,
+    telemetry: { enabled: boolean; thresholdMs: number }
+  ) {
+    if (!this.model) {
+      throw new Error(
+        'tenants model has not been initialized, make sure you called initialize() method'
+      );
+    }
+    await this.model.updateOne({ name: tenantName }, { $set: { telemetry } });
   }
 }
 

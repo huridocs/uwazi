@@ -9,7 +9,7 @@ import { CachedTranslationsDataSource } from '#api/i18n.v2/database/data_source_
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
-import { MongoEntitiesDAOFactory } from '#api/core/infrastructure/factories/MongoEntitiesDAOFactory.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import type {
   EntitiesReadDAO,
   TemplatesReadDAO,
@@ -24,7 +24,7 @@ const createExecutor = () =>
       translationsDS: CachedTranslationsDataSource(tm),
       templatesDAO: TemplatesDAOFactory.default() as TemplatesReadDAO,
       thesauriDAO: ThesauriDAOFactory.default(),
-      entitiesDAO: MongoEntitiesDAOFactory.default() as EntitiesReadDAO,
+      entitiesDAO: EntitiesDAOFactory.default() as EntitiesReadDAO,
     });
   });
 
@@ -32,6 +32,7 @@ const factory = getFixturesFactory();
 
 const templateId = factory.id('carsTemplate');
 const ownersTemplateId = factory.id('ownersTemplate');
+const personasTemplateId = factory.id('personasTemplate');
 const colorId = 'ba0df33d-ab09-46be-9080-00575d0804d0';
 const countryId = 'c0ffee00-0000-4000-8000-000000000001';
 const hombreId = 'a1000000-0000-4000-8000-000000000001';
@@ -52,6 +53,17 @@ const fixtures: DBFixture = {
       name: 'Owners',
       properties: [
         factory.property('country', 'select', { content: countriesThesaurusId.toString() }),
+        factory.property('date_of_birth', 'date'),
+        factory.property('sex', 'select', { content: sexThesaurusId.toString() }),
+      ],
+      commonProperties: factory.commonProperties(),
+    },
+    {
+      _id: personasTemplateId,
+      name: 'Personas',
+      properties: [
+        factory.property('date_of_birth', 'date'),
+        factory.property('sex', 'select', { content: sexThesaurusId.toString() }),
       ],
       commonProperties: factory.commonProperties(),
     },
@@ -111,7 +123,48 @@ const fixtures: DBFixture = {
       template: ownersTemplateId,
       title: 'Bob',
       published: true,
-      metadata: { country: [{ value: countryId, label: 'Argentina' }] },
+      metadata: {
+        country: [{ value: countryId, label: 'Argentina' }],
+        date_of_birth: [{ value: 946684800 }],
+        sex: [{ value: hombreId, label: 'Hombre' }],
+      },
+    },
+    {
+      _id: factory.id('owner3'),
+      sharedId: 'owner_shared_3',
+      language: 'en',
+      template: ownersTemplateId,
+      title: 'Carol',
+      published: true,
+      metadata: {
+        country: [{ value: countryId, label: 'Argentina' }],
+        date_of_birth: [{ value: 946684800 }],
+        sex: [{ value: mujerId, label: 'Mujer' }],
+      },
+    },
+    {
+      _id: factory.id('persona1'),
+      sharedId: 'persona_shared_1',
+      language: 'en',
+      template: personasTemplateId,
+      title: 'Diana',
+      published: true,
+      metadata: {
+        date_of_birth: [{ value: 946684800 }],
+        sex: [{ value: hombreId, label: 'Hombre' }],
+      },
+    },
+    {
+      _id: factory.id('persona2'),
+      sharedId: 'persona_shared_2',
+      language: 'en',
+      template: personasTemplateId,
+      title: 'Eve',
+      published: true,
+      metadata: {
+        date_of_birth: [{ value: 1104537600 }],
+        sex: [{ value: mujerId, label: 'Mujer' }],
+      },
     },
     {
       _id: factory.id('entity1'),
@@ -384,5 +437,119 @@ describe('MongoDatavizQueryExecutor', () => {
       expect.objectContaining({ key: 'total', label: 'Total', value: 12 }),
     ]);
     expect(dto.meta.totalEntities).toBe(12);
+  });
+
+  it('should union two templates with date and select dimensions into one breakdown series', async () => {
+    const executor = createExecutor();
+    const admin = User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' });
+
+    const dto = await executor.execute(
+      {
+        sources: [
+          { templateId: ownersTemplateId.toString(), alias: 'owners' },
+          { templateId: personasTemplateId.toString(), alias: 'personas' },
+        ],
+        join: { type: 'union' },
+        dimensions: [
+          {
+            property: 'date_of_birth',
+            propertyType: 'date',
+            bucketStrategy: 'date_histogram',
+            dateInterval: 'year',
+            sort: 'key_asc',
+            maxBuckets: 10,
+          },
+          {
+            property: 'sex',
+            propertyType: 'select',
+            bucketStrategy: 'terms',
+            sort: 'count_desc',
+            maxBuckets: 10,
+          },
+        ],
+        measures: [{ aggregation: 'count', countMode: 'all' }],
+        language: 'en',
+      },
+      { actor: admin, datavizId: 'test-union-date-select' }
+    );
+
+    expect(dto.series).toHaveLength(1);
+    expect(dto.series[0]?.label).toBe('Union');
+
+    const year2000 = dto.series[0]?.points.find(point => point.key === 2000);
+    const year2005 = dto.series[0]?.points.find(point => point.key === 2005);
+
+    expect(year2000?.value).toBe(3);
+    expect(year2000?.breakdown).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ key: hombreId, label: 'Hombre', value: 2 }),
+        expect.objectContaining({ key: mujerId, label: 'Mujer', value: 1 }),
+      ])
+    );
+    expect(year2005?.value).toBe(1);
+    expect(year2005?.breakdown).toEqual(
+      expect.arrayContaining([expect.objectContaining({ key: mujerId, label: 'Mujer', value: 1 })])
+    );
+    expect(dto.series[0]?.points).toEqual(
+      expect.arrayContaining([expect.objectContaining({ label: 'No data', value: 1 })])
+    );
+    expect(dto.meta.totalEntities).toBe(5);
+  });
+
+  it('should compare two templates with date and select dimensions as aligned breakdown series', async () => {
+    const executor = createExecutor();
+    const admin = User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' });
+
+    const dto = await executor.execute(
+      {
+        sources: [
+          { templateId: ownersTemplateId.toString(), alias: 'owners' },
+          { templateId: personasTemplateId.toString(), alias: 'personas' },
+        ],
+        join: { type: 'compare' },
+        dimensions: [
+          {
+            property: 'date_of_birth',
+            propertyType: 'date',
+            bucketStrategy: 'date_histogram',
+            dateInterval: 'year',
+            sort: 'key_asc',
+            maxBuckets: 10,
+          },
+          {
+            property: 'sex',
+            propertyType: 'select',
+            bucketStrategy: 'terms',
+            sort: 'count_desc',
+            maxBuckets: 10,
+          },
+        ],
+        measures: [{ aggregation: 'count', countMode: 'all' }],
+        language: 'en',
+      },
+      { actor: admin, datavizId: 'test-compare-date-select' }
+    );
+
+    expect(dto.series).toHaveLength(2);
+    expect(dto.series.map(series => series.label)).toEqual(
+      expect.arrayContaining(['Owners', 'Personas'])
+    );
+
+    const ownersYear2000 = dto.series
+      .find(series => series.label === 'Owners')
+      ?.points.find(point => point.key === 2000);
+    const personasYear2005 = dto.series
+      .find(series => series.label === 'Personas')
+      ?.points.find(point => point.key === 2005);
+
+    expect(ownersYear2000?.breakdown).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ key: hombreId, label: 'Hombre', value: 1 }),
+        expect.objectContaining({ key: mujerId, label: 'Mujer', value: 1 }),
+      ])
+    );
+    expect(personasYear2005?.breakdown).toEqual(
+      expect.arrayContaining([expect.objectContaining({ key: mujerId, label: 'Mujer', value: 1 })])
+    );
   });
 });
