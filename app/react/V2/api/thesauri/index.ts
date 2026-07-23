@@ -2,16 +2,7 @@ import type { IncomingHttpHeaders } from 'http';
 import type { Thesaurus, ThesaurusInput } from '#shared/contracts/Thesaurus.js';
 import type { ApiResponse } from '#V2/api/ApiResponse.js';
 import { apiClient } from '#V2/api/client.js';
-
-const requestHeaders = (headers?: IncomingHttpHeaders): Record<string, string> | undefined => {
-  const mapped = Object.fromEntries(
-    Object.entries(headers ?? {}).filter((entry): entry is [string, string] => {
-      const [, value] = entry;
-      return typeof value === 'string';
-    })
-  );
-  return Object.keys(mapped).length > 0 ? mapped : undefined;
-};
+import { requestHeaders } from '#V2/api/requestHeaders.js';
 
 const isThesaurus = (value: unknown): value is Thesaurus =>
   typeof value === 'object' &&

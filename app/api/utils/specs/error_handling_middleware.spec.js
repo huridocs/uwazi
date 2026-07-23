@@ -1,4 +1,4 @@
-import { appContext } from '#api/utils/AppContext.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import middleware from '../error_handling_middleware.js';
 import { legacyLogger } from '../../log.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
@@ -23,7 +23,8 @@ describe('Error handling middleware', () => {
       critical: jest.fn(),
     };
     jest.spyOn(legacyLogger, 'error').mockImplementation(() => {});
-    jest.spyOn(appContext, 'get').mockReturnValue(contextRequestId);
+    jest.spyOn(ExecutionContext, 'getStore').mockReturnValue({});
+    jest.spyOn(ExecutionContext, 'correlationId', 'get').mockReturnValue(contextRequestId);
     jest.spyOn(LoggerFactory, 'default').mockReturnValue(mockLogger);
   });
 

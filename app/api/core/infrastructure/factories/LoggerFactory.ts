@@ -6,6 +6,7 @@ import { getTenant } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { LogWriter } from '#api/core/libs/logger/infrastructure/LogWriter.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 export class LoggerFactory {
   static default(_writer = StandardJSONWriter) {
@@ -20,7 +21,7 @@ export class LoggerFactory {
       };
     }
 
-    return new StandardLogger(writer, getTenant());
+    return new StandardLogger(writer, getTenant(), ExecutionContext.correlationId);
   }
 
   static systemLogger(_writer = StandardJSONWriter) {

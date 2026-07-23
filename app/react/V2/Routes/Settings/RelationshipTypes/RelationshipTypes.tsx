@@ -1,29 +1,23 @@
 /* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
-import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
+import { useLoaderData, useRevalidator } from 'react-router';
 import { Row } from '@tanstack/react-table';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { t, Translate } from '#app/I18N/index.js';
-import * as relationshipTypesAPI from '#app/V2/api/relationshiptypes/index.js';
 import { Template } from '#app/apiResponseTypes.js';
 import { templatesAtom, relationshipTypesAtom } from '#app/V2/atoms/index.js';
 import { Button, Table, Sidepanel, ConfirmationModal } from '#app/V2/Components/UI/index.js';
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
-import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
+import { useServices } from '#V2/services/index.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { columns, Relationships, TableRelationshipType } from './components/TableComponents.js';
 import { Form } from './components/Form.js';
-import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
-
-const relationshipTypesLoader =
-  (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () =>
-    (await relationshipTypesAPI.get(headers)).map(rel => ({ ...rel, rowId: rel._id }));
 
 const RelationshipTypes = () => {
   const relationshipTypes = useLoaderData() as Relationships[];
   const revalidator = useRevalidator();
+  const { relationshipTypes: relationshipTypesService } = useServices();
 
   const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
@@ -80,49 +74,64 @@ const RelationshipTypes = () => {
 
   const submit = async (submitedData: Relationships) => {
     const { rowId, ...data } = submitedData;
-    try {
-      await relationshipTypesAPI.save(data);
+    const [, error] = await relationshipTypesService.upsert(data);
+
+    if (error) {
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        error.detail ?? error.message
+      );
+    } else {
       notify('success', t('System', 'Updated', null, false));
-      setIsSidepanelOpen(false);
-    } catch (error) {
-      handleUnexpectedError(error, 'Error saving relationship type');
-      setIsSidepanelOpen(false);
     }
+
+    setIsSidepanelOpen(false);
     await revalidator.revalidate();
   };
 
   const deleteSelected = async () => {
-    try {
-      await relationshipTypesAPI.deleteRelationtypes(selectedItems.map(item => item._id));
+    const [, error] = await relationshipTypesService.delete(selectedItems.map(item => item._id));
+
+    if (error) {
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        error.detail ?? error.message
+      );
+    } else {
       notify('success', t('System', 'Updated', null, false));
-      setShowConfirmationModal(false);
-    } catch (error) {
-      handleUnexpectedError(error, 'Error deleting relationship type');
-      setShowConfirmationModal(false);
+      setSelectedItems([]);
     }
+
+    setShowConfirmationModal(false);
     await revalidator.revalidate();
   };
 
   return (
-    <div className="w-full h-full overflow-y-auto">
+    <div className="w-full h-full overflow-y-auto" data-testid="settings-relationship-types">
       <SettingsContent>
         <SettingsContent.Header title="Relationship types" />
         <SettingsContent.Body>
-          <Table
-            enableSelections
-            columns={columns({ edit })}
-            data={tableRelationshipTypes}
-            header={
-              <Translate className="text-left text-base font-semibold text-ink">
-                Relationship types
-              </Translate>
-            }
-            onSelect={({ selectedRows }) => {
-              setSelectedItems(
-                tableRelationshipTypes.filter(relationship => relationship.rowId in selectedRows)
-              );
-            }}
-          />
+          <div data-testid="relationship-types">
+            <Table
+              enableSelections
+              columns={columns({ edit })}
+              data={tableRelationshipTypes}
+              header={
+                <Translate className="text-left text-base font-semibold text-ink">
+                  Relationship types
+                </Translate>
+              }
+              onSelect={({ selectedRows }) => {
+                setSelectedItems(
+                  tableRelationshipTypes.filter(relationship => relationship.rowId in selectedRows)
+                );
+              }}
+            />
+          </div>
         </SettingsContent.Body>
         <SettingsContent.Footer highlighted={selectedItems.length > 0}>
           {selectedItems.length > 0 && (
@@ -189,4 +198,4 @@ const RelationshipTypes = () => {
   );
 };
 
-export { RelationshipTypes, relationshipTypesLoader };
+export { RelationshipTypes };

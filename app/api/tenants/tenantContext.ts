@@ -37,6 +37,10 @@ type Tenant = {
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;
   maintenance?: boolean;
+  telemetry?: {
+    enabled?: boolean;
+    thresholdMs?: number;
+  };
 };
 
 class Tenants {
@@ -112,6 +116,7 @@ class Tenants {
       ...this.defaultTenant,
       ...tenant,
       featureFlags: { ...this.defaultTenant.featureFlags, ...tenant.featureFlags },
+      telemetry: { ...this.defaultTenant.telemetry, ...tenant.telemetry },
     };
   }
 
@@ -125,6 +130,18 @@ class Tenants {
     }
     if (this.tenants[tenantName]) {
       this.tenants[tenantName].maintenance = maintenance;
+    }
+  }
+
+  async setTelemetryConfig(
+    tenantName: string,
+    telemetry: { enabled: boolean; thresholdMs: number }
+  ) {
+    if (this.model) {
+      await this.model.setTelemetryConfig(tenantName, telemetry);
+    }
+    if (this.tenants[tenantName]) {
+      this.tenants[tenantName].telemetry = telemetry;
     }
   }
 }

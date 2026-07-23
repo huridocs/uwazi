@@ -5,6 +5,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 const buildContext = (): ExecutionContextDeps => ({
@@ -21,6 +22,7 @@ const buildContext = (): ExecutionContextDeps => ({
     jobsDispatcher: (() => ({})) as unknown as ExecutionContextDeps['factories']['jobsDispatcher'],
     idGenerator: IdGeneratorFactory.default,
     logger: LoggerFactory.forTests,
+    telemetryCollector: () => new TelemetryCollector('test'),
   },
 });
 
@@ -69,6 +71,24 @@ describe('ExecutionContext', () => {
         expect(ExecutionContext.postgresTransactionManager).not.toBe(
           ExecutionContext.transactionManager
         );
+      });
+    });
+  });
+
+  describe('correlationId', () => {
+    it('should be undefined outside a run()', () => {
+      expect(ExecutionContext.correlationId).toBeUndefined();
+    });
+
+    it('should return the value passed into run()', () => {
+      ExecutionContext.run({ ...buildContext(), correlationId: 'correlation-id-a' }, () => {
+        expect(ExecutionContext.correlationId).toBe('correlation-id-a');
+      });
+    });
+
+    it('should be undefined when not passed into run()', () => {
+      ExecutionContext.run(buildContext(), () => {
+        expect(ExecutionContext.correlationId).toBeUndefined();
       });
     });
   });

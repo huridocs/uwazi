@@ -8,6 +8,7 @@ export const StandardJSONWriter: LogWriter = (log: LogEntry) => {
       timestamp: log.timeToString(),
       level: log.level.name,
       tenant: log.tenant.name,
+      correlation_id: log.correlationId,
       process_id: process.pid,
       message: log.message,
       ...log.metadata,

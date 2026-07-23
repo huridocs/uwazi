@@ -48,4 +48,9 @@ export type { Thesaurus } from '#shared/contracts/Thesaurus.js';
 export type { UsersService, UserInput } from './contracts/UsersService.js';
 export type { User, UserGroup } from '#shared/contracts/Users.js';
 export type { UserGroupsService, UserGroupInput } from './contracts/UserGroupsService.js';
+export type {
+  RelationshipTypesService,
+  RelationshipTypeInput,
+} from './contracts/RelationshipTypesService.js';
+export type { RelationshipType } from '#shared/contracts/RelationshipType.js';
 export type { ServiceRequestOptions } from './contracts/ServiceRequestOptions.js';
