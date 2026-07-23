@@ -42,6 +42,10 @@ type Tenant = {
     enabled?: boolean;
     thresholdMs?: number;
   };
+  metricsConfig?: {
+    enabled?: boolean;
+    sampleRate?: number;
+  };
 };
 
 class Tenants {
@@ -118,6 +122,7 @@ class Tenants {
       ...tenant,
       featureFlags: { ...this.defaultTenant.featureFlags, ...tenant.featureFlags },
       telemetry: { ...this.defaultTenant.telemetry, ...tenant.telemetry },
+      metricsConfig: { ...this.defaultTenant.metricsConfig, ...tenant.metricsConfig },
     };
   }
 
@@ -143,6 +148,18 @@ class Tenants {
     }
     if (this.tenants[tenantName]) {
       this.tenants[tenantName].telemetry = telemetry;
+    }
+  }
+
+  async setMetricsConfig(
+    tenantName: string,
+    metricsConfig: { enabled: boolean; sampleRate: number }
+  ) {
+    if (this.model) {
+      await this.model.setMetricsConfig(tenantName, metricsConfig);
+    }
+    if (this.tenants[tenantName]) {
+      this.tenants[tenantName].metricsConfig = metricsConfig;
     }
   }
 }

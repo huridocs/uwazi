@@ -4,6 +4,7 @@ import {
   httpRequestDuration,
 } from '#api/core/libs/logger/PrometheusCollector.js';
 import { config } from '#api/config.js';
+import { tenants } from '#api/tenants/tenantContext.js';
 
 const EXCLUDED_ROUTES = ['/api/version', '/metrics'];
 
@@ -41,6 +42,18 @@ const getRouteLabel = (request: Request, response: Response): string | undefined
 };
 
 const metricsMiddleware = (request: Request, response: Response, next: NextFunction) => {
+  const { enabled, sampleRate = 1 } = tenants.current().metricsConfig || {};
+
+  if (!enabled || sampleRate <= 0) {
+    next();
+    return;
+  }
+
+  if (sampleRate < 1 && Math.random() >= sampleRate) {
+    next();
+    return;
+  }
+
   const startTimeMs = Date.now();
 
   response.on('finish', () => {
@@ -56,10 +69,13 @@ const metricsMiddleware = (request: Request, response: Response, next: NextFunct
       env: config.ENVIRONMENT,
     };
 
-    httpRequestTotal.inc({
-      ...labels,
-      status_code: String(response.statusCode),
-    });
+    httpRequestTotal.inc(
+      {
+        ...labels,
+        status_code: String(response.statusCode),
+      },
+      1 / sampleRate
+    );
 
     httpRequestDuration.observe(labels, durationSeconds);
   });

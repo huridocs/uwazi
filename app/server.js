@@ -43,6 +43,7 @@ import { embedFrameHeaders } from './api/middleware/embedFrameHeaders.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
 import { registerMetricsRoutes } from '#api/core/infrastructure/express/MetricsRoute.js';
+import { metricsMiddleware } from '#api/core/infrastructure/express/middlewares/MetricsMiddleware.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -128,6 +129,7 @@ app.use(appContextMiddleware);
 // this middleware should go just before any other that accesses to db
 app.use(multitenantMiddleware);
 app.use(maintenanceMiddleware);
+app.use(metricsMiddleware);
 
 console.info('==> Connecting to', maskMongoPassword(config.DBHOST));
 

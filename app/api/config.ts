@@ -157,6 +157,10 @@ export const config = {
       enabled: false,
       thresholdMs: 0,
     },
+    metricsConfig: {
+      enabled: false,
+      sampleRate: 1,
+    },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',
   externalServicesUrls: {

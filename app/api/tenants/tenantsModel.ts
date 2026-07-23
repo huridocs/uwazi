@@ -57,6 +57,10 @@ const mongoSchema = new mongoose.Schema({
     enabled: Boolean,
     thresholdMs: Number,
   },
+  metricsConfig: {
+    enabled: Boolean,
+    sampleRate: Number,
+  },
 });
 
 type DBTenant = Partial<Tenant> & { name: string };
@@ -169,6 +173,18 @@ class TenantsModel extends EventEmitter {
       );
     }
     await this.model.updateOne({ name: tenantName }, { $set: { telemetry } });
+  }
+
+  async setMetricsConfig(
+    tenantName: string,
+    metricsConfig: { enabled: boolean; sampleRate: number }
+  ) {
+    if (!this.model) {
+      throw new Error(
+        'tenants model has not been initialized, make sure you called initialize() method'
+      );
+    }
+    await this.model.updateOne({ name: tenantName }, { $set: { metricsConfig } });
   }
 }
 
