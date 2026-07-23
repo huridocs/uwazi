@@ -457,36 +457,83 @@ export default {
         property1: [{ value: 'something to be inherited' }],
       },
     },
-    { sharedId: 'source2', language: 'en' },
+    {
+      template: templateForGetWithRelationships,
+      sharedId: 'shared2',
+      language: 'es',
+      title: 'shared2title_es',
+      metadata: {
+        property1: [{ value: 'something to be inherited es' }],
+      },
+    },
+    {
+      template: templateForGetWithRelationships,
+      sharedId: 'shared2',
+      language: 'pt',
+      title: 'shared2title_pt',
+      metadata: {
+        property1: [{ value: 'something to be inherited pt' }],
+      },
+    },
+    {
+      sharedId: 'source2',
+      language: 'en',
+      template: templateForGetWithRelationships,
+      title: 'source2',
+    },
     {
       title: 'entity one',
       sharedId: 'id1',
       language: 'es',
+      template: templateForGetWithRelationships,
     },
     {
       title: 'entity two',
       sharedId: 'id2',
       language: 'es',
+      template: templateForGetWithRelationships,
     },
     {
       title: 'entity three',
       sharedId: 'id3',
       language: 'es',
+      template: templateForGetWithRelationships,
     },
     {
       title: 'entity one',
       sharedId: 'id1',
       language: 'en',
+      template: templateForGetWithRelationships,
     },
     {
       title: 'entity two',
       sharedId: 'id2',
       language: 'en',
+      template: templateForGetWithRelationships,
     },
     {
       title: 'entity three',
       sharedId: 'id3',
       language: 'en',
+      template: templateForGetWithRelationships,
+    },
+    {
+      title: 'entity one',
+      sharedId: 'id1',
+      language: 'pt',
+      template: templateForGetWithRelationships,
+    },
+    {
+      title: 'entity two',
+      sharedId: 'id2',
+      language: 'pt',
+      template: templateForGetWithRelationships,
+    },
+    {
+      title: 'entity three',
+      sharedId: 'id3',
+      language: 'pt',
+      template: templateForGetWithRelationships,
     },
     {
       title: 'value2',
@@ -599,8 +646,8 @@ export default {
       { _id: inheritedProperty, type: 'text', name: 'property1' },
       { _id: db.id(), type: 'text', name: 'property2' },
       { _id: db.id(), type: 'text', name: 'description' },
-      { _id: db.id(), type: 'select', name: 'select', content: dictionary },
-      { _id: db.id(), type: 'multiselect', name: 'multiselect', content: dictionary },
+      { _id: db.id(), type: 'select', name: 'select', content: dictionary.toString() },
+      { _id: db.id(), type: 'multiselect', name: 'multiselect', content: dictionary.toString() },
       { _id: db.id(), type: 'date', name: 'date' },
       { _id: db.id(), type: 'multidate', name: 'multidate' },
       { _id: db.id(), type: 'multidaterange', name: 'multidaterange' },
@@ -708,6 +755,12 @@ export default {
     {
       _id: templateForGetWithRelationships,
       name: 'templateForGetWithRelationships',
+      properties: [],
+      commonProperties: [
+        { _id: db.id(), name: 'title', label: 'Title', type: 'text' },
+        { _id: db.id(), name: 'creationDate', label: 'Date added', type: 'date' },
+        { _id: db.id(), name: 'editDate', label: 'Date edited', type: 'date' },
+      ],
     },
   ],
   relationtypes: [

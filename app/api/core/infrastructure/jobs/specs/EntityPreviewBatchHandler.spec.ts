@@ -10,15 +10,15 @@ import { EntityPreviewBatchHandler } from '../EntityPreviewBatchHandler.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 jest.mock('#api/search/index.js', () => {
-  const actual = jest.requireActual('#api/search/index.js') as Record<string, unknown> & {
-    search: Record<string, unknown>;
+  const { elastic } = jest.requireActual('#api/search/elastic.js') as {
+    elastic: Record<string, unknown>;
   };
   return {
-    ...actual,
     search: {
-      ...(actual.search as Record<string, unknown>),
       indexEntities: jest.fn().mockResolvedValue(undefined),
+      updateTemplatesMapping: jest.fn().mockResolvedValue(undefined),
     },
+    elastic,
   };
 });
 

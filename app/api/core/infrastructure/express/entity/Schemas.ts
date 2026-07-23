@@ -103,6 +103,7 @@ const UpdateEntitySchema = MutateEntitySchema.extend({
   _id: z.string(),
   sharedId: z.string(),
   language: z.string().min(2).max(2),
+  generatedToc: z.boolean().optional(),
   documents: z
     .array(
       z.object({
