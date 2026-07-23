@@ -1095,6 +1095,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/plugin-proposal-decorators@npm:^7.28.6":
+  version: 7.29.7
+  resolution: "@babel/plugin-proposal-decorators@npm:7.29.7"
+  dependencies:
+    "@babel/helper-create-class-features-plugin": "npm:^7.29.7"
+    "@babel/helper-plugin-utils": "npm:^7.29.7"
+    "@babel/plugin-syntax-decorators": "npm:^7.29.7"
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+  checksum: 10c0/9c0ce48ac70952d4419f0ceb250cefe2eff96d1e7393bcb7db2e15abe655ee04e25e6f7ce4346f27bdfa781a4386963e3e5c1d1ef7cb1c765a0d811debc9a645
+  languageName: node
+  linkType: hard
+
 "@babel/plugin-proposal-nullish-coalescing-operator@npm:^7.13.8, @babel/plugin-proposal-nullish-coalescing-operator@npm:^7.18.6":
   version: 7.18.6
   resolution: "@babel/plugin-proposal-nullish-coalescing-operator@npm:7.18.6"
@@ -1174,6 +1187,17 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0-0
   checksum: 10c0/95168fa186416195280b1264fb18afcdcdcea780b3515537b766cb90de6ce042d42dd6a204a39002f794ae5845b02afb0fd4861a3308a861204a55e68310a120
+  languageName: node
+  linkType: hard
+
+"@babel/plugin-syntax-decorators@npm:^7.29.7":
+  version: 7.29.7
+  resolution: "@babel/plugin-syntax-decorators@npm:7.29.7"
+  dependencies:
+    "@babel/helper-plugin-utils": "npm:^7.29.7"
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+  checksum: 10c0/5a5644ecd899345a92788c2d3a832541a09ab1558accbde396036920d76405b8cb7b073eb01fad468181719962cc0dfdf8377c4744fc4ceb042432e03f64e13e
   languageName: node
   linkType: hard
 
@@ -13430,19 +13454,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-prom-bundle@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "express-prom-bundle@npm:8.0.0"
-  dependencies:
-    "@types/express": "npm:^5.0.0"
-    on-finished: "npm:^2.3.0"
-    url-value-parser: "npm:^2.0.0"
-  peerDependencies:
-    prom-client: ">=15.0.0"
-  checksum: 10c0/778406611bbecbd2e407a55279fe45c19b04b11e91f4629c447a8fb14418f9c23d60294563ab0d40c6b6f4ec0f6387723846e1464b2f2984ce42d97287d32eec
-  languageName: node
-  linkType: hard
-
 "express-session@npm:^1.19.0":
   version: 1.19.0
   resolution: "express-session@npm:1.19.0"
@@ -19262,7 +19273,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"on-finished@npm:^2.3.0, on-finished@npm:^2.4.1, on-finished@npm:~2.4.1":
+"on-finished@npm:^2.4.1, on-finished@npm:~2.4.1":
   version: 2.4.1
   resolution: "on-finished@npm:2.4.1"
   dependencies:
@@ -24965,13 +24976,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"url-value-parser@npm:^2.0.0":
-  version: 2.1.0
-  resolution: "url-value-parser@npm:2.1.0"
-  checksum: 10c0/a0a8214cdeae2c99991e9959514d008e5c5fe4a96901640eff379b187b88502ba1cfaae44f2cd0d85b981970affc1fa20f14bce5e72dc600c2474318f19eac7b
-  languageName: node
-  linkType: hard
-
 "url@npm:^0.11.4":
   version: 0.11.4
   resolution: "url@npm:0.11.4"
@@ -25045,6 +25049,7 @@ __metadata:
     "@babel/helper-string-parser": "npm:^7.27.1"
     "@babel/parser": "npm:^7.29.3"
     "@babel/plugin-proposal-class-properties": "npm:^7.18.6"
+    "@babel/plugin-proposal-decorators": "npm:^7.28.6"
     "@babel/plugin-proposal-nullish-coalescing-operator": "npm:^7.18.6"
     "@babel/plugin-proposal-object-rest-spread": "npm:^7.20.7"
     "@babel/plugin-proposal-optional-chaining": "npm:^7.21.0"
@@ -25205,7 +25210,6 @@ __metadata:
     eslint-plugin-storybook: "npm:10.5.3"
     express: "npm:4.22.2"
     express-http-proxy: "npm:^2.1.2"
-    express-prom-bundle: "npm:^8.0.0"
     express-session: "npm:^1.19.0"
     fast-json-stable-stringify: "npm:^2.1.0"
     fetch-mock: "npm:^9.11.0"
