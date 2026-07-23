@@ -6,7 +6,7 @@ import { getRowIcon } from './fileRowIcon.js';
 import { FileProcessStatusIndicator } from './FileProcessStatusIndicator.js';
 import { FileRowKebab } from './FileRowKebab.js';
 import { EntityFileRow } from './types.js';
-import Translate from '#shared/translate.js';
+import { Translate } from '#app/I18N/index.js';
 
 type FilesTableColumnsParams = {
   selectedIds: Set<string>;
