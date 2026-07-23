@@ -129,7 +129,9 @@ const ConfirmationModal = ({
               {renderChild(warningText)}
             </div>
           ) : null}
-          <div className="mb-6 text-sm text-ink-secondary">{renderChild(body)}</div>
+          <div className="mb-6 text-sm text-ink-secondary" data-testid="modal-body">
+            {renderChild(body)}
+          </div>
           {confirmFields}
           <div className="flex justify-end gap-3">
             <Button
