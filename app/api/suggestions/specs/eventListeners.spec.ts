@@ -9,11 +9,11 @@ import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
 import { search } from '#api/search/index.js';
 import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateDeletedEvent.js';
 import { TemplateUpdatedEvent } from '#api/core/domain/template/events/TemplateUpdatedEvent.js';
+import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import db, { DBFixture, testingDB } from '#api/utils/testing_db.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { FileType } from '#shared/types/fileType.js';
-import { UserRole } from '#shared/types/userSchema.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 import { registerEventListeners } from '../eventListeners.js';
 import { Suggestions } from '../suggestions.js';
@@ -23,12 +23,7 @@ const fixturesFactory = getFixturesFactory();
 const notExtractedTemplateName = 'not_extracted_template';
 const extractedTemplateName = 'extracted_template';
 const otherExtractedTemplateName = 'other_extracted_template';
-
-const adminUser = {
-  username: 'admin',
-  role: UserRole.ADMIN,
-  email: 'user@test.com',
-};
+const suggestionsThesaurusName = 'suggestions_thesaurus';
 
 const fixtures: DBFixture = {
   templates: [
@@ -40,8 +35,12 @@ const fixtures: DBFixture = {
       fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
       fixturesFactory.property('extracted_property_1', propertyTypes.text),
       fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
-      fixturesFactory.property('select_property', propertyTypes.select),
-      fixturesFactory.property('multiselect_property', propertyTypes.multiselect),
+      fixturesFactory.property('select_property', propertyTypes.select, {
+        content: fixturesFactory.id(suggestionsThesaurusName).toString(),
+      }),
+      fixturesFactory.property('multiselect_property', propertyTypes.multiselect, {
+        content: fixturesFactory.id(suggestionsThesaurusName).toString(),
+      }),
       fixturesFactory.property('relationship_property', propertyTypes.relationship),
     ]),
     fixturesFactory.template(otherExtractedTemplateName, [
@@ -97,6 +96,12 @@ const fixtures: DBFixture = {
         },
       },
     },
+  ],
+  dictionaries: [
+    fixturesFactory.thesauri(suggestionsThesaurusName, [
+      ['value_1', 'value_1'],
+      ['value_2', 'value_2'],
+    ]),
   ],
   ixextractors: [
     fixturesFactory.ixExtractor('title_extractor', 'title', [
@@ -275,9 +280,50 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
     },
   ])('$case', async ({ sharedId, newTemplate, expectedSuggestions }) => {
     await testingEnvironment.runWithContext(async () => {
-      const current = await entities.getById(sharedId, 'en');
-      const toSave = { ...current, template: newTemplate };
-      await entities.save(toSave, { user: adminUser, language: 'en' });
+      const [current] = await entities.get({ sharedId, language: 'en' }, '+permissions');
+      if (!current) {
+        throw new Error(`Entity ${sharedId} not found`);
+      }
+
+      const documents = (current.documents || [])
+        .filter(
+          (
+            document: FileType
+          ): document is FileType & { _id: NonNullable<FileType['_id']>; originalname: string } =>
+            Boolean(document?._id && document?.originalname)
+        )
+        .map(
+          (document: FileType & { _id: NonNullable<FileType['_id']>; originalname: string }) => ({
+            _id: document._id.toString(),
+            originalname: document.originalname,
+          })
+        );
+
+      const attachments = (current.attachments || [])
+        .filter((attachment: FileType): attachment is FileType & { originalname: string } =>
+          Boolean(attachment?.originalname)
+        )
+        .map((attachment: FileType & { originalname: string }) => ({
+          _id: attachment._id?.toString(),
+          originalname: attachment.originalname,
+          ...(attachment.url ? { url: attachment.url } : {}),
+        }));
+
+      await EntityFacade.update(
+        {
+          _id: current._id.toString(),
+          sharedId: current.sharedId,
+          language: current.language,
+          title: current.title,
+          template: newTemplate.toString(),
+          user: current.user?.toString?.(),
+          metadata: current.metadata || {},
+          icon: current.icon,
+          documents,
+          attachments,
+        },
+        'en'
+      );
       const allSuggestions =
         (await db.mongodb
           ?.collection('ixsuggestions')

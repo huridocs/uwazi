@@ -21,7 +21,7 @@ import {
 } from '#api/files/index.js';
 import translations from '#api/i18n/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import relationships from '#api/relationships/index.js';
+import relationships from '#api/relationships/relationships.js';
 import relationtypes from '#api/relationtypes/index.js';
 import syncRoutes from '#api/sync/routes.js';
 import templates from '#api/core/v1_layer/templates/index.js';

@@ -462,7 +462,7 @@ describe.skip('template.save()', () => {
     it('should throw an error, if the template is still used in any query', async () => {
       const template = (await templates.getByNames(['unrelated_template']))[0];
       const [entityUsing] = await entities.get({ template: template._id });
-      await entities.delete(entityUsing.sharedId);
+      await db.mongodb?.collection('entities').deleteMany({ sharedId: entityUsing.sharedId });
       await expect(templates.delete({ _id: template._id })).rejects.toThrow(
         'The template is still used in a relationship property query.'
       );
@@ -471,7 +471,7 @@ describe.skip('template.save()', () => {
     it('should delete the template, if it is not used in any query', async () => {
       const template = (await templates.getByNames(['template_with_existing_relationship']))[0];
       const [entityUsing] = await entities.get({ template: template._id });
-      await entities.delete(entityUsing.sharedId);
+      await db.mongodb?.collection('entities').deleteMany({ sharedId: entityUsing.sharedId });
       await templates.delete({ _id: template._id });
       const allTemplates = await testingEnvironment.db.getAllFrom('templates');
       const stillInDb = allTemplates.filter(t => t._id.toString() === template._id.toString());

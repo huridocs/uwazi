@@ -3,7 +3,7 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import relationships from '#api/relationships/index.js';
+import relationships from '#api/relationships/relationships.js';
 import { tenants } from '#api/tenants/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';

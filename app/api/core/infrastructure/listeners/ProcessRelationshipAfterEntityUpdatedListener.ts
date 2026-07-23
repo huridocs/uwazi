@@ -2,7 +2,7 @@ import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { EntityUpdatedEvent } from '#api/core/domain/entity/EntityUpdatedEvent.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
-import relationships from '#api/relationships/index.js';
+import relationships from '#api/relationships/relationships.js';
 import { MongoEntityMapper } from '../mongodb/entity/MongoEntityMapper.js';
 import { MongoTemplateMapper } from '../mongodb/template/MongoTemplateMapper.js';
 import { TemplatesDataSourceFactory } from '../factories/TemplatesDataSourceFactory.js';
