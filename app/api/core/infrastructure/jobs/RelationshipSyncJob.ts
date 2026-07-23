@@ -1,4 +1,4 @@
-import relationships from '#api/relationships/index.js';
+import relationships from '#api/relationships/relationships.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { User } from '#api/users.v2/model/User.js';
 import {

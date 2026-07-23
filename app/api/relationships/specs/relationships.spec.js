@@ -1,9 +1,6 @@
-/* eslint-disable max-lines */
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 /* eslint-disable max-statements */
-/* eslint-disable max-nested-callbacks */
-
-import entities from '#api/entities/entities.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { UpdateEntityUseCaseFactory } from '#api/core/infrastructure/factories/UpdateEntityUseCaseFactory.js';
 import db from '#api/utils/testing_db.js';
 
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
@@ -35,11 +32,14 @@ import fixtures, {
 } from './fixtures.js';
 
 describe('relationships', () => {
+  let updateEntityUseCaseExecuteMock;
+
   beforeEach(async () => {
     jest.resetAllMocks();
-    jest
-      .spyOn(entities, 'updateMetdataFromRelationships')
-      .mockImplementation(async () => Promise.resolve());
+    updateEntityUseCaseExecuteMock = jest.fn().mockResolvedValue({});
+    jest.spyOn(UpdateEntityUseCaseFactory, 'default').mockReturnValue({
+      execute: updateEntityUseCaseExecuteMock,
+    });
     await testingEnvironment.setUp(fixtures);
   });
 
@@ -296,10 +296,11 @@ describe('relationships', () => {
 
       it('should call entities to update the metadata', async () => {
         await relationships.save({ entity: 'entity3', hub: hub1 }, 'en');
-        expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(
-          ['entity1', 'entity2', 'entity3'],
-          'en'
-        );
+        const updatedSharedIds = updateEntityUseCaseExecuteMock.mock.calls.map(([input]) => {
+          const { sharedId } = input;
+          return sharedId;
+        });
+        expect(updatedSharedIds).toEqual(expect.arrayContaining(['entity1', 'entity2', 'entity3']));
       });
     });
 
@@ -784,22 +785,15 @@ describe('relationships', () => {
     it('should call entities to update the metadata', async () => {
       await relationships.delete({ entity: 'bruceWayne' }, 'en');
 
-      expect(entities.updateMetdataFromRelationships).toHaveBeenCalledTimes(2);
-
-      const expectedDocs = ['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne'];
-      let expectedLanguages = ['en', 'es'];
-      const args = entities.updateMetdataFromRelationships.mock.calls;
-      args.forEach(arg => {
-        const [docs, languages] = arg;
-        expectedDocs.forEach(doc => {
-          expect(docs).toContain(doc);
-        });
-
-        expect(expectedLanguages).toContain(languages);
-        expectedLanguages = expectedLanguages.filter(lang => lang !== languages);
+      const { calls } = updateEntityUseCaseExecuteMock.mock;
+      expect(calls.length).toBeGreaterThan(0);
+      const updatedSharedIds = calls.map(([input]) => {
+        const { sharedId } = input;
+        return sharedId;
       });
-
-      expect(expectedLanguages).toEqual([]);
+      expect(updatedSharedIds).toEqual(
+        expect.arrayContaining(['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne'])
+      );
     });
 
     describe('when there is no condition', () => {

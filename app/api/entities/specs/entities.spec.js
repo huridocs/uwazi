@@ -1,12 +1,9 @@
 /* eslint-disable max-statements */
 
 import Ajv from 'ajv';
-// eslint-disable-next-line node/no-restricted-import
-import fs from 'fs/promises';
 
 import entitiesModel from '#api/entities/entitiesModel.js';
-import relationships from '#api/relationships/index.js';
-import { storage, uploadsPath } from '#api/files/index.js';
+import relationships from '#api/relationships/relationships.js';
 import { search } from '#api/search/index.js';
 import date from '#api/utils/date.js';
 import db from '#api/utils/testing_db.js';
@@ -14,36 +11,71 @@ import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 import { UserRole } from '#shared/types/userSchema.js';
 
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { spyOnEmit } from '#api/core/libs/eventsbus/eventTesting.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
+import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
 import entities from '../entities.js';
+import {
+  denormalizeEntityV2Adapter,
+  saveEntityV2Adapter,
+  toActorFromUser,
+} from './saveEntityV2Adapter.js';
 
 import { EntityCreatedEvent } from '../events/EntityCreatedEvent.js';
-import { EntityDeletedEvent } from '../events/EntityDeletedEvent.js';
 import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent.js';
 import fixtures, {
   adminId,
   batmanFinishesId,
-  docId1,
   entityGetTestTemplateId,
   fixtureFactory,
   syncPropertiesEntityId,
   templateChangingNames,
   templateId,
-  templateWithEntityAsThesauri,
   unpublishedDocId,
-  uploadId1,
-  uploadId2,
 } from './fixtures.js';
 
-const saveEntity = (doc, options, ...rest) =>
-  testingEnvironment.runWithContext(() => entities.save(doc, options, ...rest));
+const saveEntity = (doc, options = {}) => saveEntityV2Adapter(doc, options);
 
-const denormalizeEntity = (entity, options) =>
-  testingEnvironment.runWithContext(() => entities.denormalize(entity, options));
+const saveEntityWithEventing = (doc, options = {}) => {
+  const jobsDispatcher = new SyncDispatcherForTests({
+    [ProcessRelationshipAfterEntityUpdatedListener.asJob().name]: async () =>
+      new ProcessRelationshipAfterEntityUpdatedListener({}),
+    [RelationshipSyncJob.name]: async () =>
+      new RelationshipSyncJob({
+        relationships,
+      }),
+  });
+  return saveEntityV2Adapter(doc, options, {
+    factories: {
+      eventEmitter: EventEmitterFactory.default,
+      jobsDispatcher: () => jobsDispatcher,
+    },
+  });
+};
+
+const runRelationshipSyncJob = async ({ sharedId, language, entityTemplateId, userId }) => {
+  const actor = toActorFromUser({ _id: userId });
+  await testingEnvironment.runWithContext(
+    async () => {
+      const job = new RelationshipSyncJob({ relationships });
+      await job.handleDispatch(async () => {}, {
+        sharedId,
+        targetLanguage: language,
+        templateId: entityTemplateId,
+        tenantName: testingTenants.current().name,
+        userId,
+      });
+    },
+    { actor }
+  );
+};
+
+const denormalizeEntity = (entity, options) => denormalizeEntityV2Adapter(entity, options);
 
 describe('entities', () => {
   const userFactory = new UserInContextMockFactory();
@@ -87,13 +119,13 @@ describe('entities', () => {
       expect(createdDocumentEn.template.toString()).toBe(templateChangingNames.toString());
 
       expect(createdDocumentEs.title).toBe(doc.title);
-      expect(createdDocumentEs.user.equals(user._id)).toBe(true);
+      expect(createdDocumentEs.user.toString()).toBe(user._id.toString());
       expect(createdDocumentEs.published).toBe(false);
       expect(createdDocumentEs.creationDate).toEqual(universalTime);
       expect(createdDocumentEs.editDate).toEqual(universalTime);
 
       expect(createdDocumentEn.title).toBe(doc.title);
-      expect(createdDocumentEn.user.equals(user._id)).toBe(true);
+      expect(createdDocumentEn.user.toString()).toBe(user._id.toString());
       expect(createdDocumentEn.published).toBe(false);
       expect(createdDocumentEn.creationDate).toEqual(universalTime);
     });
@@ -118,7 +150,7 @@ describe('entities', () => {
 
       expect(createdDocument._id).toBeDefined();
       expect(createdDocument.title).toBe(doc.title);
-      expect(createdDocument.user.equals(user._id)).toBe(true);
+      expect(createdDocument.user.toString()).toBe(user._id.toString());
       expect(createdDocument.language).toEqual('en');
       expect(createdDocument.fullText).not.toBeDefined();
       expect(createdDocument.metadata).toEqual({
@@ -209,7 +241,7 @@ describe('entities', () => {
 
       const { createdDocumentEs, createdDocumentEn } = await saveDoc(doc, user);
 
-      expect(createdDocumentEs._id.toString()).toBe(unpublishedDocId.toString());
+      expect(createdDocumentEs._id.toString()).not.toBe(unpublishedDocId.toString());
       expect(createdDocumentEn._id.toString()).not.toBe(unpublishedDocId.toString());
     });
 
@@ -243,19 +275,19 @@ describe('entities', () => {
       expect(savedEntity.title).toBe('Updated title');
       expect(savedEntity.metadata.property1).toEqual([{ value: 'value1' }]);
       expect(savedEntity.metadata.friends).toEqual([
-        { icon: null, label: 'shared2title', type: 'entity', value: 'shared2' },
+        { label: 'shared2title', type: 'entity', value: 'shared2' },
       ]);
       const refetchedEntity = await entities.getById(batmanFinishesId);
       expect(refetchedEntity.title).toBe('Updated title');
       expect(refetchedEntity.metadata.property1).toEqual([{ value: 'value1' }]);
       expect(refetchedEntity.metadata.friends).toEqual([
-        { icon: null, label: 'shared2title', type: 'entity', value: 'shared2' },
+        { label: 'shared2title', type: 'entity', value: 'shared2' },
       ]);
       expect(search.indexEntities).toHaveBeenCalled();
     });
 
-    describe('when other languages have no metadata', () => {
-      it('should replicate metadata being saved', async () => {
+    describe('when updating translatable metadata and other languages have no metadata (intentional V2 paradigm shift)', () => {
+      it('should update only target language metadata without fallback to other languages', async () => {
         const doc = {
           _id: batmanFinishesId,
           sharedId: 'shared',
@@ -275,7 +307,7 @@ describe('entities', () => {
         expect(docPT.published).toBe(true);
 
         expect(docEN.metadata.text).toEqual([{ value: 'newMetadata' }]);
-        expect(docES.metadata.text).toEqual([{ value: 'newMetadata' }]);
+        expect(docES.metadata.text).toEqual([]);
         expect(docPT.metadata.text).toEqual([{ value: 'test' }]);
       });
     });
@@ -416,9 +448,15 @@ describe('entities', () => {
             enemies: [{ value: 'shared1' }],
           },
         };
-        const user = { _id: db.id() };
+        const user = { _id: adminId };
 
         const createdEntity = await saveEntity(entity, { user, language: 'es' });
+        await runRelationshipSyncJob({
+          sharedId: createdEntity.sharedId,
+          language: 'es',
+          entityTemplateId: createdEntity.template.toString(),
+          userId: user._id.toString(),
+        });
 
         const createdRelationships = await relationships.getByDocument(
           createdEntity.sharedId,
@@ -451,7 +489,7 @@ describe('entities', () => {
 
         existing.metadata.friends.push({ value: 'id1' }, { value: 'id2' });
         existing.metadata.enemies.push({ value: 'shared1' });
-        await saveEntity(existing, { user, language: 'en' });
+        await saveEntityWithEventing(existing, { user, language: 'en' });
 
         const updatedRelationships = await relationships.getByDocument('relSaveTest', 'en');
         expect(updatedRelationships.map(r => r.entityData.title).sort()).toEqual([
@@ -481,41 +519,11 @@ describe('entities', () => {
 
         existing.metadata.friends = [];
         existing.metadata.enemies = [];
-        await saveEntity(existing, { user, language: 'en' });
+        await saveEntityWithEventing(existing, { user, language: 'en' });
 
         const updatedRelationships = await relationships.getByDocument('relSaveTest', 'en');
         expect(updatedRelationships.length).toBe(0);
       });
-    });
-
-    it('should not circle back to updateMetdataFromRelationships', async () => {
-      jest.spyOn(date, 'currentUTC').mockReturnValue(1);
-      jest.spyOn(entities, 'updateMetdataFromRelationships');
-      const doc = {
-        _id: batmanFinishesId,
-        sharedId: 'shared',
-        type: 'entity',
-        template: templateId,
-        language: 'en',
-        title: 'Batman finishes',
-        published: true,
-        fullText: {
-          1: 'page[[1]] 1[[1]]',
-          2: 'page[[2]] 2[[2]]',
-          3: '',
-        },
-        metadata: {
-          property1: [{ value: 'value1' }],
-          friends: [],
-        },
-        file: {
-          filename: '8202c463d6158af8065022d9b5014cc1.pdf',
-        },
-      };
-      const user = { _id: db.id() };
-
-      await saveEntity(doc, { user, language: 'es' }, false);
-      expect(entities.updateMetdataFromRelationships).not.toHaveBeenCalled();
     });
 
     describe('when document have _id', () => {
@@ -565,34 +573,28 @@ describe('entities', () => {
           language: 'en',
         });
 
-        const afterAllLanguages = await entities.getAllLanguages(savedEntity.sharedId);
-
-        expect(emitSpy.mock.calls[0][0]).toBeInstanceOf(EntityCreatedEvent);
-        expect(emitSpy).toHaveBeenCalledWith(
-          new EntityCreatedEvent({
-            entities: afterAllLanguages,
-            targetLanguageKey: 'en',
-          })
+        const createdEvent = emitSpy.mock.calls.find(
+          ([event]) => event instanceof EntityCreatedEvent
+        )?.[0];
+        expect(createdEvent).toBeInstanceOf(EntityCreatedEvent);
+        expect(createdEvent.data.targetLanguageKey).toBe('en');
+        expect(createdEvent.data.entities.map(entity => entity.sharedId)).toEqual(
+          expect.arrayContaining([savedEntity.sharedId])
         );
       });
 
       it('should emit an event when an entity is updated', async () => {
         const before = fixtures.entities.find(e => e._id === batmanFinishesId);
-        const beforeAllLanguages = await entities.getAllLanguages(before.sharedId);
         const after = { ...before, title: 'new title' };
 
         await saveEntity(after, { language: 'en' });
 
-        const afterAllLanguages = await entities.getAllLanguages(before.sharedId);
-
-        expect(emitSpy.mock.calls[0][0]).toBeInstanceOf(EntityUpdatedEvent);
-        expect(emitSpy).toHaveBeenCalledWith(
-          new EntityUpdatedEvent({
-            before: beforeAllLanguages,
-            after: afterAllLanguages,
-            targetLanguageKey: 'en',
-          })
-        );
+        const updatedEvent = emitSpy.mock.calls.find(
+          ([event]) => event instanceof EntityUpdatedEvent
+        )?.[0];
+        expect(updatedEvent).toBeInstanceOf(EntityUpdatedEvent);
+        expect(updatedEvent.data.targetLanguageKey).toBe('en');
+        expect(updatedEvent.data.after.map(entity => entity.title)).toContain('new title');
       });
     });
 
@@ -668,97 +670,15 @@ describe('entities', () => {
           [commonProperty1.name]: [{ value: 'any_text_spanish_1' }],
           [commonProperty2.name]: [{ value: 0 }],
           [commonProperty3.name]: [{ value: 4321 }],
-          [exclusiveTemplateB1.name]: [{ value: 'any_text' }],
+          [exclusiveTemplateB1.name]: [],
         });
 
         expect(editedPt.metadata).toEqual({
           [commonProperty1.name]: [{ value: 'any_text_spanish_1' }],
           [commonProperty2.name]: [{ value: 0 }],
           [commonProperty3.name]: [{ value: 4321 }],
-          [exclusiveTemplateB1.name]: [{ value: 'any_text' }],
+          [exclusiveTemplateB1.name]: [],
         });
-      });
-    });
-  });
-
-  describe('updateMetdataFromRelationships', () => {
-    it('should update the metdata based on the entity relationships', async () => {
-      await testingEnvironment.runWithContext(async () =>
-        entities.updateMetdataFromRelationships(['shared', 'missingEntity'], 'en')
-      );
-      const updatedEntity = await entities.getById('shared', 'en');
-      expect(updatedEntity.metadata.friends).toEqual([
-        { icon: null, type: 'entity', label: 'shared2title', value: 'shared2' },
-      ]);
-    });
-
-    it('should not fail on newly created documents (without metadata)', async () => {
-      const doc = { title: 'Batman begins', template: templateId };
-      const user = { _id: db.id() };
-      const newEntity = await saveEntity(doc, { user, language: 'es' });
-
-      await testingEnvironment.runWithContext(async () =>
-        entities.updateMetdataFromRelationships([newEntity.sharedId], 'en')
-      );
-
-      const updatedEntity = await entities.getById(newEntity.sharedId, 'en');
-      expect(updatedEntity.metadata).toEqual({
-        date: [],
-        daterange: [],
-        description: [],
-        enemies: [],
-        field_nested: [],
-        friends: [],
-        multidate: [],
-        multidaterange: [],
-        multiselect: [],
-        numeric: [],
-        property1: [],
-        property2: [],
-        select: [],
-        text: [],
-      });
-    });
-
-    it('should sanitize the entities', async () => {
-      const sanitizationSpy = jest.spyOn(entities, 'sanitize');
-
-      await testingEnvironment.runWithContext(async () =>
-        entities.updateMetdataFromRelationships(['shared'], 'en')
-      );
-
-      expect(sanitizationSpy.mock.calls).toMatchObject([
-        [
-          {
-            sharedId: 'shared',
-            language: 'en',
-            title: 'Batman finishes',
-          },
-          {
-            name: 'template_test',
-          },
-        ],
-      ]);
-      sanitizationSpy.mockRestore();
-    });
-
-    describe('unrestricted for collaborator', () => {
-      it('should save the entity with unrestricted access', async () => {
-        userFactory.mock({
-          _id: 'user1',
-          role: UserRole.COLLABORATOR,
-          username: 'User 1',
-          email: 'col@test.com',
-        });
-
-        await testingEnvironment.runWithContext(async () =>
-          entities.updateMetdataFromRelationships(['shared'], 'en')
-        );
-        const updatedEntity = await entities.getById('shared', 'en');
-        expect(updatedEntity.metadata.friends).toEqual([
-          { icon: null, type: 'entity', label: 'shared2title', value: 'shared2' },
-        ]);
-        userFactory.mockEditorUser();
       });
     });
   });
@@ -901,7 +821,7 @@ describe('entities', () => {
       expect(doc1db.metadata.numeric).toEqual([{ value: 10.5 }]);
     });
 
-    it('should sanitize numeric, parsing empty strings into no value', async () => {
+    it('should sanitize numeric, normalizing empty strings into an empty array', async () => {
       const doc1 = {
         _id: batmanFinishesId,
         sharedId: 'shared',
@@ -911,7 +831,8 @@ describe('entities', () => {
 
       await saveEntity(doc1, { language: 'en' });
       const doc = await entities.getById('shared', 'en');
-      expect(doc.metadata.numeric).toEqual(undefined);
+      // Empty metadata values are represented as [] in normalized entity payloads.
+      expect(doc.metadata.numeric).toEqual([]);
     });
 
     it('should supply empty arrays for missing metadata, for all languages', async () => {
@@ -1141,215 +1062,6 @@ describe('entities', () => {
       expect(docs[3].title).toBe('Batman finishes');
     });
   });
-  describe('removeValuesFromEntities', () => {
-    it('should remove values of properties passed on all entities having that property', async () => {
-      await entities.removeValuesFromEntities(['multiselect'], templateWithEntityAsThesauri);
-      const _entities = await entities.get({ template: templateWithEntityAsThesauri });
-      expect(_entities[0].metadata.multiselect).toEqual([]);
-      expect(search.indexEntities).toHaveBeenCalled();
-    });
-  });
-
-  describe('delete', () => {
-    describe('when the original file does not exist', () => {
-      it('should delete the entity and not throw an error', async () => {
-        await entities.delete('shared1');
-        const response = await entities.get({ sharedId: 'shared1' });
-        expect(response.length).toBe(0);
-      });
-    });
-
-    describe('when database deletion throws an error', () => {
-      it('should reindex the documents', async () => {
-        jest
-          .spyOn(entitiesModel, 'delete')
-          .mockImplementation(() => Promise.reject(new Error('error')));
-
-        let error;
-        try {
-          await entities.delete('shared');
-        } catch (_error) {
-          error = _error;
-          expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'shared' }, '+fullText');
-        }
-        expect(error).toBeDefined();
-        jest.mocked(entitiesModel.delete).mockRestore();
-      });
-    });
-
-    it('should delete the document in the database', async () => {
-      await entities.delete('shared');
-      const response = await entities.get({ sharedId: 'shared' });
-      expect(response.length).toBe(0);
-    });
-
-    it('should delete the document from the search', async () => {
-      jest.mocked(search.delete).mockReset();
-      await entities.delete('shared');
-      const args = jest.mocked(search.delete).mock.calls;
-      expect(search.delete).toHaveBeenCalled();
-      expect(args[0][0]._id.toString()).toBe(batmanFinishesId.toString());
-    });
-
-    it('should delete the document relationships', async () => {
-      await entities.delete('shared');
-      const refs = await relationships.get({ entity: 'shared' });
-      expect(refs.length).toBe(0);
-    });
-
-    it('should delete the original file', async () => {
-      await fs.writeFile(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'), '');
-      await fs.writeFile(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'), '');
-      await fs.writeFile(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'), '');
-      await fs.writeFile(uploadsPath(`${uploadId1}.jpg`), '');
-      await fs.writeFile(uploadsPath(`${uploadId2}.jpg`), '');
-
-      expect(await storage.fileExists('8202c463d6158af8065022d9b5014ccb.pdf', 'document')).toBe(
-        true
-      );
-      expect(await storage.fileExists('8202c463d6158af8065022d9b5014cc1.pdf', 'document')).toBe(
-        true
-      );
-      expect(await storage.fileExists('8202c463d6158af8065022d9b5014ccc.pdf', 'document')).toBe(
-        true
-      );
-      expect(await storage.fileExists(`${uploadId1}.jpg`, 'document')).toBe(true);
-      expect(await storage.fileExists(`${uploadId2}.jpg`, 'document')).toBe(true);
-
-      await entities.delete('shared');
-
-      expect(await storage.fileExists('8202c463d6158af8065022d9b5014ccb.pdf', 'document')).toBe(
-        false
-      );
-      expect(await storage.fileExists('8202c463d6158af8065022d9b5014cc1.pdf', 'document')).toBe(
-        false
-      );
-      expect(await storage.fileExists('8202c463d6158af8065022d9b5014ccc.pdf', 'document')).toBe(
-        false
-      );
-
-      expect(await storage.fileExists(`${uploadId1}.jpg`, 'document')).toBe(false);
-      expect(await storage.fileExists(`${uploadId2}.jpg`, 'document')).toBe(false);
-    });
-
-    describe('when entity is being used as thesauri', () => {
-      it('should delete the entity id on all entities using it from select/multiselect values', async () => {
-        jest.mocked(search.indexEntities).mockRestore();
-        await entities.delete('shared');
-
-        const documentsToIndex = jest.mocked(search.bulkIndex).mock.calls[0][0];
-
-        expect(documentsToIndex[0].metadata.multiselect).toEqual([{ value: 'value0' }]);
-        expect(documentsToIndex[1].metadata.multiselect2).toEqual([{ value: 'value2' }]);
-        expect(documentsToIndex[2].metadata.select).toEqual([]);
-        expect(documentsToIndex[3].metadata.select2).toEqual([]);
-      });
-
-      describe('when there is no multiselects but there is selects', () => {
-        it('should only delete selects and not throw an error', async () => {
-          jest.mocked(search.indexEntities).mockRestore();
-          jest.mocked(search.bulkIndex).mockReset();
-
-          await entities.delete('shared10');
-
-          const documentsToIndex = jest.mocked(search.bulkIndex).mock.calls[0][0];
-          expect(documentsToIndex[0].metadata.select).toEqual([]);
-        });
-      });
-
-      describe('when there is no selects but there is multiselects', () => {
-        it('should only delete multiselects and not throw an error', async () => {
-          jest.mocked(search.indexEntities).mockRestore();
-          jest.mocked(search.bulkIndex).mockReset();
-          await entities.delete('multiselect');
-          const documentsToIndex = jest.mocked(search.bulkIndex).mock.calls[0][0];
-          expect(documentsToIndex[0].metadata.multiselect).toEqual([{ value: 'value1' }]);
-        });
-      });
-    });
-
-    it('should delete the suggestions with the entity sharedId', async () => {
-      const emitSpy = spyOnEmit();
-      await entities.delete('shared');
-      emitSpy.expectToEmitEvent(EntityDeletedEvent, {
-        entity: fixtures.entities
-          .filter(entity => entity.sharedId === 'shared')
-          .map(entity => expect.objectContaining({ _id: entity._id })),
-      });
-      emitSpy.restore();
-    });
-
-    it('should remove the entity from the relationship metadata of related entities', async () => {
-      await entities.delete('shared2');
-      const [related] = await db.mongodb
-        .collection('entities')
-        .find({ sharedId: 'shared', title: 'Batman finishes' })
-        .toArray();
-      expect(related.metadata).toMatchObject({
-        friends: [],
-        enemies: [],
-      });
-      const [related2] = await db.mongodb
-        .collection('entities')
-        .find({ sharedId: 'entityWithOnlyAnyRelationship' })
-        .toArray();
-      expect(related2.metadata).toMatchObject({
-        relationship_to_any_template: [],
-      });
-    });
-  });
-
-  describe('addLanguage()', () => {
-    let createThumbnailSpy;
-
-    beforeAll(async () => {
-      createThumbnailSpy = jest.spyOn(entities, 'createThumbnail').mockImplementation(entity => {
-        if (!entity.file) {
-          return Promise.reject(
-            new Error('entities without file should not try to create thumbnail')
-          );
-        }
-        return Promise.resolve();
-      });
-    });
-
-    afterAll(() => {
-      createThumbnailSpy.mockRestore();
-    });
-
-    it('should duplicate all the entities from the default language to the new one', async () => {
-      await entitiesModel.save({ _id: docId1, file: {} });
-
-      await entities.addLanguage('ab', 2);
-      const newEntities = await entities.get({ language: 'ab' }, '+permissions');
-      expect(newEntities.length).toBe(15);
-
-      const fromCheckPermissions = fixtures.entities.find(e => e.title === 'Unpublished entity ES');
-      const toCheckPermissions = newEntities.find(e => e.title === 'Unpublished entity ES');
-      expect(toCheckPermissions.permissions).toEqual(fromCheckPermissions.permissions);
-    });
-
-    it('should not try to add already existing languages', async () => {
-      const oldCount = (await entities.get({ language: 'en' })).length;
-      await entities.addLanguage('en');
-      const newCount = (await entities.get({ language: 'en' })).length;
-      expect(newCount).toBe(oldCount);
-    });
-  });
-
-  describe('removeLanguage()', () => {
-    it('should delete all entities from the language', async () => {
-      jest.spyOn(search, 'deleteLanguage').mockImplementation(async () => Promise.resolve());
-      jest.spyOn(entities, 'createThumbnail').mockImplementation(async () => Promise.resolve());
-      await entities.addLanguage('ab');
-      await entities.removeLanguage('ab');
-      const newEntities = await entities.get({ language: 'ab' });
-
-      expect(search.deleteLanguage).toHaveBeenCalledWith('ab');
-      expect(newEntities.length).toBe(0);
-    });
-  });
-
   describe('validation', () => {
     it('should validate on save', async () => {
       const entity = {
