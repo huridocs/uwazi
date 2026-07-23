@@ -5,9 +5,12 @@ import type { DatavizChartConfig } from '#shared/types/datavizSchema.js';
 import type { DatavizAppearance } from '#shared/types/datavizSchema.js';
 import type { DatavizDataDTO } from '#shared/types/datavizSchema.js';
 import {
+  resolveCompareSeriesColor,
+  resolveCompareSeriesDisplayLabel,
   resolveSeriesColors,
   type ResolveColorContext,
 } from '#shared/dataviz/utils/resolveColors.js';
+import { isCompareBreakdownChart } from '#shared/dataviz/rendering/compareBreakdownChart.js';
 import {
   buildValueAxis,
   computePaddedAxisBounds,
@@ -98,7 +101,8 @@ const mapNumericCrossTabScatter = (
   points: DataPoint[],
   _chart: DatavizChartConfig,
   appearance: DatavizAppearance,
-  context: ScatterMapperContext
+  context: ScatterMapperContext,
+  sourceColor?: string
 ): ScatterDatum[] => {
   const flat = points.flatMap(point => {
     const x = scatterDateKeyToAxisValue(point.key) ?? Number(point.key);
@@ -114,11 +118,13 @@ const mapNumericCrossTabScatter = (
   });
 
   const maxCount = Math.max(...flat.map(entry => entry.count), 1);
-  const colors = resolveSeriesColors(
-    flat.map(entry => entry.item),
-    appearance,
-    context
-  );
+  const colors = sourceColor
+    ? flat.map(() => sourceColor)
+    : resolveSeriesColors(
+        flat.map(entry => entry.item),
+        appearance,
+        context
+      );
 
   return flat.map((entry, index) => ({
     value: [entry.x, entry.y],
@@ -159,6 +165,100 @@ export const mapScatterOption = (
   appearance: DatavizAppearance,
   context: ScatterMapperContext = {}
 ): EChartsOption | null => {
+  if (isCompareBreakdownChart(dto)) {
+    const compareScatterData = dto.series.flatMap((source, sourceIndex) => {
+      if (!hasNumericBreakdown(source.points)) {
+        return [];
+      }
+
+      const sourceColor = resolveCompareSeriesColor(
+        source.id,
+        source.label,
+        appearance,
+        context,
+        sourceIndex
+      );
+
+      return mapNumericCrossTabScatter(source.points, chart, appearance, context, sourceColor).map(
+        datum => ({
+          ...datum,
+          name: `${resolveCompareSeriesDisplayLabel(source.id, source.label, context)} · ${datum.name}`,
+          primaryLabel: `${resolveCompareSeriesDisplayLabel(source.id, source.label, context)} · ${datum.primaryLabel}`,
+        })
+      );
+    });
+
+    if (!compareScatterData.length) {
+      return null;
+    }
+
+    const xValues = compareScatterData.map(point => point.value[0]);
+    const yValues = compareScatterData.map(point => point.value[1]);
+    const dateAxisMode = resolveScatterDateAxisMode(
+      dto.series.flatMap(source => source.points.map(point => point.key))
+    );
+    const xBounds =
+      dateAxisMode === 'year' ? computeYearAxisBounds(xValues) : computePaddedAxisBounds(xValues);
+    const yBounds = computePaddedAxisBounds(yValues);
+    const showAxisNames = chart.showLegend !== false;
+    const xAxisName = showAxisNames ? resolveScatterAxisName(0, context) : undefined;
+    const yAxisName = showAxisNames ? resolveScatterAxisName(1, context) : undefined;
+    const xAxis =
+      dateAxisMode !== undefined
+        ? buildScatterDateAxis({
+            axisLabelColor: appearance.themeColors?.foreground,
+            name: xAxisName,
+            nameGap: 28,
+            min: xBounds.min,
+            max: xBounds.max,
+          })
+        : buildValueAxis({
+            axisLabelColor: appearance.themeColors?.foreground,
+            name: xAxisName,
+            nameGap: 28,
+            scale: true,
+            min: xBounds.min,
+            max: xBounds.max,
+            formatTick: formatValueAxisTick,
+          });
+
+    return {
+      backgroundColor: appearance.themeColors?.background ?? 'transparent',
+      tooltip: (chart.showTooltip
+        ? {
+            trigger: 'item',
+            formatter: (params: CallbackDataParams | CallbackDataParams[]) =>
+              formatScatterTooltip(Array.isArray(params) ? params[0]! : params),
+          }
+        : undefined) as EChartsOption['tooltip'],
+      grid: {
+        left: yAxisName ? 72 : 56,
+        right: 20,
+        top: 30,
+        bottom: xAxisName ? 56 : 48,
+        containLabel: true,
+      },
+      xAxis,
+      yAxis: buildValueAxis({
+        axisLabelColor: appearance.themeColors?.foreground,
+        name: yAxisName,
+        nameGap: 50,
+        nameLocation: 'middle',
+        nameRotate: 90,
+        scale: true,
+        min: yBounds.min,
+        max: yBounds.max,
+        formatTick: formatValueAxisTick,
+      }),
+      series: [
+        {
+          type: 'scatter',
+          data: compareScatterData,
+        },
+      ],
+    };
+  }
+
   const series = dto.series[0];
   if (!series?.points.length) {
     return null;

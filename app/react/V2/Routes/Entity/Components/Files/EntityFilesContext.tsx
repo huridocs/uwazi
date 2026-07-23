@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { useAtomValue } from 'jotai';
-import { useRevalidator, useSearchParams } from 'react-router';
+import { useRevalidator } from 'react-router';
+import { useUpdateEntityUrl } from '../../entityUrlState.js';
 import { MAIN_TAB_PARAM, SIDE_TAB_PARAM } from '../../urlParams.js';
 import { FileType } from '#shared/types/fileType.js';
 import { Entity } from '#V2/api/entities/types.js';
@@ -66,7 +67,7 @@ const EntityFilesProvider = ({
   const settings = useAtomValue(settingsAtom);
   const defaultLanguage = settings?.languages?.find(language => language.default)?.key;
   const { revalidate } = useRevalidator();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const updateEntityUrl = useUpdateEntityUrl();
   const [selectedRowIds, setSelectedRowIds] = useState<string[]>([]);
   const [focusedRowId, setFocusedRowId] = useState<string>();
   const [isEditing, setIsEditing] = useState(false);
@@ -148,12 +149,16 @@ const EntityFilesProvider = ({
 
   const navigateToFilesSideTab = useCallback(
     (tab: FilesSideTabId) => {
-      const next = new URLSearchParams(searchParams.toString());
-      next.set(MAIN_TAB_PARAM, 'files');
-      next.set(SIDE_TAB_PARAM, tab);
-      setSearchParams(next, { replace: true, preventScrollReset: true });
+      updateEntityUrl({
+        search: next => {
+          next.set(MAIN_TAB_PARAM, 'files');
+        },
+        hash: hash => {
+          hash.set(SIDE_TAB_PARAM, tab);
+        },
+      });
     },
-    [searchParams, setSearchParams]
+    [updateEntityUrl]
   );
 
   const closeAddFileModal = useCallback(() => {

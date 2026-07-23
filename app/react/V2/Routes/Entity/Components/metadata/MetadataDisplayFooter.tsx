@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PencilSquareIcon, ShareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { Button } from '#V2/Components/UI/index.js';
 import {
   EntityWriteAuthorization,
+  useEntityScopedEntity,
   useMetadataEditing,
   type MetadataEditingHost,
 } from '#V2/Routes/Entity/Components/context/index.js';
+import { ShareEntityModal } from '#V2/Routes/Entity/Components/share/index.js';
 
 const iconClass = 'h-4 w-4 shrink-0';
 
@@ -15,7 +17,9 @@ type MetadataDisplayFooterProps = {
 };
 
 const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
+  const entity = useEntityScopedEntity();
   const { isEditing, isSaving, editingHost, cancelEdit, startEditing } = useMetadataEditing();
+  const [sharing, setSharing] = useState(false);
   const isOwner = isEditing && editingHost === host;
   const otherHostEditing = isEditing && editingHost !== null && editingHost !== host;
 
@@ -42,7 +46,12 @@ const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
               <PencilSquareIcon className={iconClass} />
               <Translate>Edit</Translate>
             </Button>
-            <Button variant="warm" className="inline-flex items-center gap-1.5">
+            <Button
+              variant="warm"
+              className="inline-flex items-center gap-1.5"
+              onClick={() => setSharing(true)}
+              disabled={otherHostEditing}
+            >
               <ShareIcon className={iconClass} />
               <Translate>Share</Translate>
             </Button>
@@ -54,6 +63,13 @@ const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
           </Button>
         </div>
       )}
+      {sharing ? (
+        <ShareEntityModal
+          key={entity.sharedId}
+          sharedIds={[entity.sharedId]}
+          onClose={() => setSharing(false)}
+        />
+      ) : null}
     </EntityWriteAuthorization>
   );
 };

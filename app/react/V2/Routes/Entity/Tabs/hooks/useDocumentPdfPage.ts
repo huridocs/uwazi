@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router';
 import { isClient } from '#app/utils/index.js';
 import type { PDFControls } from '#V2/Components/PDFViewer/index.js';
 import type { FileType } from '#V2/api/entities/types.js';
+import { useEntityHashParams, useUpdateEntityUrl } from '../../entityUrlState.js';
 import { PAGE_PARAM, VIEW_MODE_PARAM } from '../../urlParams.js';
 
 type UseDocumentPdfPageParams = {
@@ -16,83 +16,92 @@ function useDocumentPdfPage({
   mainPdfController,
   setPdfController,
 }: UseDocumentPdfPageParams) {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const hashParams = useEntityHashParams();
+  const updateEntityUrl = useUpdateEntityUrl();
   const [ready, setReady] = useState(false);
-  const page = searchParams.get(PAGE_PARAM) || '1';
+  const page = hashParams.get(PAGE_PARAM) || '1';
   const pageNumber = Number.parseInt(page || '1', 10);
-  const initialPage = useRef<number>(pageNumber);
+  const targetPageRef = useRef(pageNumber);
+  const pageSyncEnabledRef = useRef(false);
+  const unlockTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const documentIdRef = useRef(mainDocument._id);
-  const isRaw = !isClient || !ready || searchParams.get(VIEW_MODE_PARAM) === 'true';
+  const isRaw = !isClient || !ready || hashParams.get(VIEW_MODE_PARAM) === 'true';
 
   useEffect(() => {
     setReady(true);
   }, []);
+
+  useEffect(
+    () => () => {
+      if (unlockTimeoutRef.current) clearTimeout(unlockTimeoutRef.current);
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (pageSyncEnabledRef.current) {
+      targetPageRef.current = pageNumber;
+    }
+  }, [pageNumber]);
 
   useEffect(() => {
     if (documentIdRef.current === mainDocument._id) {
       return;
     }
     documentIdRef.current = mainDocument._id;
-    initialPage.current = 1;
+    targetPageRef.current = 1;
+    pageSyncEnabledRef.current = false;
     setPdfController(null);
-    if (searchParams.get(PAGE_PARAM) === '1') {
+    if (hashParams.get(PAGE_PARAM) === '1' || !hashParams.get(PAGE_PARAM)) {
       return;
     }
-    setSearchParams(
-      prev => {
-        const next = new URLSearchParams(prev);
+    updateEntityUrl({
+      hash: next => {
         next.set(PAGE_PARAM, '1');
-        return next;
       },
-      { replace: true, preventScrollReset: true }
-    );
-  }, [mainDocument._id, searchParams, setPdfController, setSearchParams]);
-
-  const getPageSearchParams = useCallback(
-    (pageParam: number | string) => {
-      const next = new URLSearchParams(searchParams.toString());
-      next.set(PAGE_PARAM, String(pageParam));
-      return next;
-    },
-    [searchParams]
-  );
+    });
+  }, [mainDocument._id, hashParams, setPdfController, updateEntityUrl]);
 
   const updatePageParam = useCallback(
     (pageParam: number | string) => {
-      setSearchParams(
-        prev => {
-          const next = new URLSearchParams(prev);
+      updateEntityUrl({
+        hash: next => {
           next.set(PAGE_PARAM, String(pageParam));
-          return next;
         },
-        { replace: true, preventScrollReset: true }
-      );
+      });
     },
-    [setSearchParams]
+    [updateEntityUrl]
   );
 
   const handlePageNavigation = useCallback(
     (direction: 'prev' | 'next') => {
+      if (isRaw) {
+        return;
+      }
       const targetPage =
         direction === 'prev'
           ? Math.max(1, pageNumber - 1)
           : Math.min(pageNumber + 1, mainDocument?.totalPages || 0);
-      if (isRaw) {
-        updatePageParam(targetPage);
-      } else if (mainPdfController) {
-        updatePageParam(targetPage);
-        mainPdfController.goToPage(targetPage);
-      } else {
-        updatePageParam(targetPage);
-      }
+      targetPageRef.current = targetPage;
+      pageSyncEnabledRef.current = true;
+      updatePageParam(targetPage);
+      mainPdfController?.goToPage(targetPage);
     },
     [mainDocument?.totalPages, isRaw, pageNumber, updatePageParam, mainPdfController]
   );
 
   const handlePageChange = useCallback(
     (newPageNumber: number) => {
-      if (newPageNumber !== initialPage.current) {
-        initialPage.current = newPageNumber;
+      if (!pageSyncEnabledRef.current) {
+        // Unlock once the restored page is visible; ignore earlier intersection noise.
+        if (newPageNumber === targetPageRef.current) {
+          pageSyncEnabledRef.current = true;
+          if (unlockTimeoutRef.current) clearTimeout(unlockTimeoutRef.current);
+        }
+        return;
+      }
+      if (newPageNumber !== targetPageRef.current) {
+        targetPageRef.current = newPageNumber;
         updatePageParam(newPageNumber);
       }
     },
@@ -101,11 +110,17 @@ function useDocumentPdfPage({
 
   const onPdfReady = useCallback(
     (controls: PDFControls) => {
-      const targetPage = initialPage.current || 1;
+      const targetPage = targetPageRef.current || 1;
       setPdfController(controls);
-      if (targetPage !== 1) {
-        controls.goToPage(targetPage);
+      if (targetPage === 1) {
+        pageSyncEnabledRef.current = true;
+        return;
       }
+      controls.goToPage(targetPage);
+      if (unlockTimeoutRef.current) clearTimeout(unlockTimeoutRef.current);
+      unlockTimeoutRef.current = setTimeout(() => {
+        pageSyncEnabledRef.current = true;
+      }, 400);
     },
     [setPdfController]
   );
@@ -124,7 +139,6 @@ function useDocumentPdfPage({
     prevPage,
     nextPage,
     isRaw,
-    getPageSearchParams,
     handlePageNavigation,
     handlePageChange,
     onPdfReady,
