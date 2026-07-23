@@ -55,4 +55,11 @@ const formatEntityFiles = (
   return [...metadataFiles, ...documents, ...attachments];
 };
 
-export { formatEntityFiles };
+const countEntityFiles = (
+  entity: Entity,
+  templates: ClientTemplateSchema[],
+  locale: string,
+  defaultLanguage?: string
+) => formatEntityFiles(entity, templates, locale, defaultLanguage).length;
+
+export { formatEntityFiles, countEntityFiles };

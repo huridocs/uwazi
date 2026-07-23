@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Translate, t } from '#app/I18N/index.js';
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import isString from 'lodash/isString.js';
+import { Translate, t } from '#app/I18N/index.js';
 
 import { Button, Modal } from '../UI/index.js';
 import { modalSizeType } from './Modal.js';
@@ -65,6 +66,94 @@ const ConfirmationModal = ({
 
   const wordForConfirmation = t('System', confirmWord, null, false);
 
+  const confirmFields = (
+    <>
+      {confirmWord && (
+        <div className="py-4">
+          <span className="block mb-2 text-md font-medium text-ink">
+            <label htmlFor="confirm-input">
+              <Translate>Please type in</Translate>&nbsp;
+            </label>
+            {wordForConfirmation}:
+          </span>
+          <input
+            id="confirm-input"
+            className={confirmFieldClass}
+            type="text"
+            onChange={e => setConfirmed(e.currentTarget.value === wordForConfirmation)}
+            data-testid="confirm-input"
+          />
+        </div>
+      )}
+      {usePassword && (
+        <div className="py-4">
+          <span className="block mb-2 text-md font-medium text-ink">
+            <label htmlFor="confirm-password">
+              <Translate>Enter your current password to confirm</Translate>&nbsp;
+            </label>
+          </span>
+          <input
+            id="confirm-password"
+            className={confirmFieldClass}
+            type="password"
+            autoComplete="off"
+            onChange={e => {
+              setInputValue(e.currentTarget.value);
+              setConfirmed(e.currentTarget.value.length > 0);
+            }}
+          />
+        </div>
+      )}
+    </>
+  );
+
+  if (dangerStyle) {
+    return (
+      <Modal size={size}>
+        <div className="p-6">
+          <div className="mb-4 flex items-start justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-seal-tint">
+                <ExclamationTriangleIcon className="h-5 w-5 text-seal" aria-hidden />
+              </div>
+              <h3 className="text-lg font-semibold text-ink">{renderChild(header)}</h3>
+            </div>
+            <Modal.CloseButton
+              onClick={onCancelClick}
+              disabled={disabled}
+              className="rounded-md p-1 text-ink-muted hover:bg-parchment"
+            />
+          </div>
+          {warningText ? (
+            <div className="mb-4 border-b border-t p-4 text-sm" role="alert" style={warningStyle}>
+              {renderChild(warningText)}
+            </div>
+          ) : null}
+          <div className="mb-6 text-sm text-ink-secondary">{renderChild(body)}</div>
+          {confirmFields}
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="warm"
+              onClick={onCancelClick}
+              data-testid="cancel-button"
+              disabled={disabled}
+            >
+              {renderChild(cancelButton || 'Cancel')}
+            </Button>
+            <Button
+              onClick={onAcceptClick ? () => onAcceptClick(inputValue || '') : undefined}
+              disabled={!confirmed || disabled}
+              variant="danger"
+              data-testid="accept-button"
+            >
+              {renderChild(acceptButton || 'Accept')}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+    );
+  }
+
   return (
     <Modal size={size}>
       <Modal.Header className="border-b-0">
@@ -78,43 +167,7 @@ const ConfirmationModal = ({
       )}
       <Modal.Body>
         <span className="text-ink-secondary">{renderChild(body)}</span>
-        {confirmWord && (
-          <div className="py-4">
-            <span className="block mb-2 text-md font-medium text-ink">
-              <label htmlFor="confirm-input">
-                <Translate>Please type in</Translate>&nbsp;
-              </label>
-              {wordForConfirmation}:
-            </span>
-            <input
-              id="confirm-input"
-              className={confirmFieldClass}
-              type="text"
-              onChange={e => setConfirmed(e.currentTarget.value === wordForConfirmation)}
-              data-testid="confirm-input"
-            />
-          </div>
-        )}
-
-        {usePassword && (
-          <div className="py-4">
-            <span className="block mb-2 text-md font-medium text-ink">
-              <label htmlFor="confirm-password">
-                <Translate>Enter your current password to confirm</Translate>&nbsp;
-              </label>
-            </span>
-            <input
-              id="confirm-password"
-              className={confirmFieldClass}
-              type="password"
-              autoComplete="off"
-              onChange={e => {
-                setInputValue(e.currentTarget.value);
-                setConfirmed(e.currentTarget.value.length > 0);
-              }}
-            />
-          </div>
-        )}
+        {confirmFields}
       </Modal.Body>
       <Modal.Footer>
         <Button
@@ -129,7 +182,7 @@ const ConfirmationModal = ({
         <Button
           onClick={onAcceptClick ? () => onAcceptClick(inputValue || '') : undefined}
           disabled={!confirmed || disabled}
-          variant={!warningText && !dangerStyle ? 'primary' : 'danger'}
+          variant={!warningText ? 'primary' : 'danger'}
           className="grow"
           data-testid="accept-button"
         >

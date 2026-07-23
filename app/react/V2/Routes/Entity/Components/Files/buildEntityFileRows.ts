@@ -5,22 +5,29 @@ import { Entity } from '#V2/api/entities/types.js';
 import { formatEntityFiles, getMainDocument } from '#V2/formatters/index.js';
 import { ClientTemplateSchema } from '#V2/shared/types.js';
 import { formatBytes, getMimetypeFromUrl } from '#V2/shared/formatHelpers.js';
-import { EntityFileRow, EntityFileForView } from './types.js';
+import { EntityFileRow, EntityFileForView, FileKind } from './types.js';
 
-const getTypeLabel = (file: EntityFileForView) => {
-  if (file.fileType === 'externalURL') {
-    return 'Link';
-  }
-
-  const mimeType = file.mimetype || getMimetypeFromUrl(file.url || '');
-  if (mimeType) {
-    return mimeType.split('/').at(-1)?.toUpperCase() || '';
-  }
-
-  return file.fileType === 'document'
-    ? t('System', 'Document', null, false)
-    : t('System', 'Attachment', null, false);
+const KIND_SYSTEM_KEY: Record<FileKind, string> = {
+  pdf: 'PDF',
+  audio: 'Audio',
+  video: 'Video',
+  image: 'Image',
+  link: 'Link',
+  document: 'Document',
 };
+
+const resolveFileKind = (file: EntityFileForView): FileKind => {
+  if (file.fileType === 'externalURL') return 'link';
+  const mimeType =
+    file.mimetype || getMimetypeFromUrl(file.url || file.filename || file.originalname || '');
+  if (mimeType.startsWith('audio/')) return 'audio';
+  if (mimeType.startsWith('video/')) return 'video';
+  if (mimeType.startsWith('image/') || file.fileType === 'image') return 'image';
+  if (mimeType === 'application/pdf') return 'pdf';
+  return 'document';
+};
+
+const getTypeLabel = (kind: FileKind) => t('System', KIND_SYSTEM_KEY[kind], null, false);
 
 const getLanguageLabel = (language?: string) => {
   if (!language) {
@@ -64,6 +71,8 @@ const buildEntityFileRows = (
         ? 'primary'
         : 'supporting';
 
+    const kind = resolveFileKind(entityFile);
+
     return {
       rowId,
       displayName:
@@ -71,13 +80,15 @@ const buildEntityFileRows = (
         entityFile.url ||
         entityFile.filename ||
         t('System', 'Untitled', null, false),
-      typeLabel: getTypeLabel(entityFile),
+      kind,
+      typeLabel: getTypeLabel(kind),
       sizeLabel: entityFile.size ? formatBytes(entityFile.size) : '—',
       languageKey: getLanguageLabel(entityFile.language),
       modifiedLabel: formatFileDate(modifiedTimestamp, locale),
       modifiedTimestamp,
       category,
       fileType: entityFile.fileType,
+      status: entityFile.status,
       raw: entityFile,
     };
   });

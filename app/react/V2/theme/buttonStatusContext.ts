@@ -1,5 +1,4 @@
 import {
-  getAccessibleColorPair,
   getAccessibleForegroundOnBackground,
   mixHex,
   WCAG_AA_LARGE_UI,
@@ -8,6 +7,12 @@ import { LEGACY_BUTTON_VALUES, getAccessibleForeground } from '#V2/theme/buttonT
 import { getPresetValue } from '#V2/theme/themePresetUtils.js';
 import type { ThemeRoles } from '#V2/theme/themeRoles.js';
 import type { ThemePresetId } from '#V2/theme/themes.js';
+
+type DangerSolidPair = {
+  background: string;
+  foreground: string;
+  ratio: number;
+};
 
 type ButtonStatusContext = {
   successSolidBackground: string;
@@ -23,7 +28,7 @@ type ButtonStatusContext = {
   dangerBorderOnSurface: string;
   successOnSuccessTint: string;
   dangerOnDangerTint: string;
-  dangerSolid: ReturnType<typeof getAccessibleColorPair>;
+  dangerSolid: DangerSolidPair;
 };
 
 const getStatusSecondaryTheme = ({
@@ -95,7 +100,15 @@ const getStatusButtonContext = (
       roles.feedback.success
     ),
     dangerOnDangerTint: getAccessibleForeground(roles.feedback.dangerTint, roles.feedback.danger),
-    dangerSolid: getAccessibleColorPair(roles.feedback.danger),
+    dangerSolid: (() => {
+      const background = roles.feedback.danger;
+      const { foreground, ratio } = getAccessibleForegroundOnBackground(
+        background,
+        '#FFFFFF',
+        WCAG_AA_LARGE_UI
+      );
+      return { background, foreground, ratio };
+    })(),
   };
 };
 

@@ -18,6 +18,7 @@ type GetSideTabButtonsParams = {
   mainDocumentId?: string;
   filesSideTabs?: FilesSideTabsOptions;
   metadataDirty?: boolean;
+  filesCount?: number;
 };
 
 const getSideTabButtons = ({
@@ -27,10 +28,12 @@ const getSideTabButtons = ({
   mainDocumentId,
   filesSideTabs,
   metadataDirty,
+  filesCount: filesCountOverride,
 }: GetSideTabButtonsParams): TabButtonDef[] => {
   const buttons: TabButtonDef[] = [];
   const relationshipsCount = entity ? countEntityRelationships(entity, mainDocumentId) : 0;
   const relationshipsTabLabel = <TabLabel text="Relationships" count={relationshipsCount} />;
+  const filesCount = filesCountOverride ?? 0;
 
   const pushMetadata = () => {
     if (!entity) return;
@@ -48,6 +51,13 @@ const getSideTabButtons = ({
     });
   };
 
+  const pushFilesList = () => {
+    buttons.push({
+      id: SIDE_TAB.FILES,
+      label: <TabLabel text="Files" count={filesCount} />,
+    });
+  };
+
   switch (activeMainTab) {
     case MAIN_TAB.DOCUMENT:
       pushMetadata();
@@ -59,25 +69,25 @@ const getSideTabButtons = ({
         {
           id: SIDE_TAB.RELATIONSHIPS,
           label: relationshipsTabLabel,
-        },
-        {
-          id: SIDE_TAB.SEARCH,
-          label: <TabLabel text="Search" />,
         }
       );
+      pushFilesList();
+      buttons.push({
+        id: SIDE_TAB.SEARCH,
+        label: <TabLabel text="Search" />,
+      });
       break;
     case MAIN_TAB.METADATA:
       pushDocument();
-      buttons.push(
-        {
-          id: SIDE_TAB.RELATIONSHIPS,
-          label: relationshipsTabLabel,
-        },
-        {
-          id: SIDE_TAB.SEARCH,
-          label: <TabLabel text="Search" />,
-        }
-      );
+      buttons.push({
+        id: SIDE_TAB.RELATIONSHIPS,
+        label: relationshipsTabLabel,
+      });
+      pushFilesList();
+      buttons.push({
+        id: SIDE_TAB.SEARCH,
+        label: <TabLabel text="Search" />,
+      });
       break;
     case MAIN_TAB.RELATIONSHIPS:
       pushDocument();
