@@ -17,11 +17,11 @@ class TelemetryCollector {
 
   private rootSpanId: number;
 
-  constructor(mainOperation: string) {
+  constructor(mainOperation: string, startTime: number = Date.now()) {
     this.metadata = {};
     this.spans = [];
     this.currentSpan = new AsyncLocalStorage<number>();
-    this.rootSpanId = this.openSpan(mainOperation, null);
+    this.rootSpanId = this.openSpan(mainOperation, null, startTime);
   }
 
   add(metadata: Record<string, any>) {
@@ -43,9 +43,9 @@ class TelemetryCollector {
     }
   }
 
-  private openSpan(operation: string, parentId: number | null): number {
+  private openSpan(operation: string, parentId: number | null, start: number = Date.now()): number {
     const id = this.spans.length;
-    this.spans.push({ id, operation, parentId, start: Date.now(), end: 0 });
+    this.spans.push({ id, operation, parentId, start, end: 0 });
     return id;
   }
 

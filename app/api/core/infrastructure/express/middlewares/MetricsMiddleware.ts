@@ -54,14 +54,11 @@ const metricsMiddleware = (request: Request, response: Response, next: NextFunct
     return;
   }
 
-  const startTimeMs = Date.now();
-
   response.on('finish', () => {
     const route = getRouteLabel(request, response);
     if (!route) return;
 
-    const endTimeMs = Date.now();
-    const durationSeconds = (endTimeMs - startTimeMs) / 1000;
+    const durationSeconds = (Date.now() - request.startTimeMs) / 1000;
 
     const labels = {
       method: request.method,

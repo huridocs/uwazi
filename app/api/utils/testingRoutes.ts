@@ -8,7 +8,7 @@ import { routesErrorHandler } from '#api/utils/routesErrorHandler.js';
 import { appContext } from './AppContext.js';
 import { extendSupertest } from './supertestExtensions.js';
 import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
-import { telemetryMiddleware } from '#api/core/infrastructure/express/middlewares/TelemetryMiddleware.js';
+import { requestTimingMiddleware } from '#api/core/infrastructure/express/middlewares/RequestTimingMiddleware.js';
 
 extendSupertest();
 
@@ -30,6 +30,7 @@ const setUpApp = (
     });
   const app: Application = express();
   routesErrorHandler(app);
+  app.use(requestTimingMiddleware);
   app.use((req: Request, _res: Response, next: NextFunction) => {
     req.emitToSessionSocket = (event: string, ...args: any[]) =>
       iosocket.emit(event, TestEmitSources.session, ...args);
@@ -50,7 +51,6 @@ const setUpApp = (
       .catch(next);
   });
   app.use(languageMiddleware);
-  app.use(telemetryMiddleware);
   customMiddleware.forEach(middlewareElement => app.use(middlewareElement));
   app.use(dependenciesContextMiddleware);
 

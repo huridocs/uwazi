@@ -9,6 +9,7 @@ import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFac
 import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
 import { User } from '#api/users.v2/model/User.js';
+import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
 
 const isRouteWatched = (routePath: unknown, watchedRoutes: string[]): boolean =>
   typeof routePath === 'string' && watchedRoutes.includes(routePath);
@@ -21,21 +22,23 @@ const dependenciesContextMiddleware = (
   const tenant = tenants.current();
   const actor = User.createFrom(request.user);
   const correlationId = randomUUID();
-  const { telemetryCollector } = request;
 
   response.on('finish', () => {
     const { telemetry } = tenant.featureFlags || {};
     if (!telemetry?.enabled) return;
     if (!isRouteWatched(request.route?.path, telemetry.routes || [])) return;
-    if (telemetryCollector.mainDurationMs() < (telemetry.thresholdMs ?? 0)) return;
+    if (ExecutionContext.telemetryCollector.mainDurationMs() < (telemetry.thresholdMs ?? 0)) return;
 
-    telemetryCollector.add({
+    ExecutionContext.telemetryCollector.add({
       method: request.method,
       path: request.path,
       status_code: response.statusCode,
     });
 
-    ExecutionContext.logger.info('HTTP Request Telemetry', telemetryCollector.build());
+    ExecutionContext.logger.info(
+      'HTTP Request Telemetry',
+      ExecutionContext.telemetryCollector.build()
+    );
   });
 
   return ExecutionContext.run(
@@ -43,7 +46,6 @@ const dependenciesContextMiddleware = (
       tenant,
       actor,
       correlationId,
-      instances: { telemetryCollector },
       factories: {
         transactionManager: TransactionManagerFactory.default,
         postgresTransactionManager: PostgresTransactionManagerFactory.default,
@@ -51,7 +53,7 @@ const dependenciesContextMiddleware = (
         eventEmitter: EventEmitterFactory.default,
         idGenerator: IdGeneratorFactory.default,
         logger: LoggerFactory.default,
-        telemetryCollector: () => telemetryCollector,
+        telemetryCollector: () => new TelemetryCollector('http_request', request.startTimeMs),
       },
     },
     next
