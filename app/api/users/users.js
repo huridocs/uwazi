@@ -400,4 +400,4 @@ export default {
   },
 };
 
-export { validateUserPassword, sendAccountLockedEmail };
+export { validateUserPassword };
