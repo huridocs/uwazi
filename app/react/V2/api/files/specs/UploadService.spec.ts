@@ -60,6 +60,28 @@ describe('Upload service', () => {
     expect(getIsUploading()).toBe(false);
   }, 30000);
 
+  it('should call onProgress when percent is 0', async () => {
+    const mock = mockSuperAgent();
+    let progressHandler: ((event: { percent?: number; total?: number }) => void) | undefined;
+    spyOn(mock, 'on').and.callFake(
+      (event: string, handler: (progressEvent: { percent?: number; total?: number }) => void) => {
+        if (event === 'progress') {
+          progressHandler = handler;
+        }
+        return mock;
+      }
+    );
+
+    const onProgress = jest.fn();
+    uploadService.onProgress(onProgress);
+
+    const uploadPromise = uploadService.upload([file1]);
+    progressHandler?.({ percent: 0, total: 1000 });
+    expect(onProgress).toHaveBeenCalledWith('file1.txt', 0, 1000);
+
+    await uploadPromise;
+  }, 30000);
+
   it('should abort', async () => {
     const mock = mockSuperAgent();
     const uploadPromise = uploadService.upload([file1, file2]);

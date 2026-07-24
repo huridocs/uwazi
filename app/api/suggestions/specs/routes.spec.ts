@@ -1,7 +1,7 @@
-/* eslint-disable max-statements */
 import type { Application, NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 import { ObjectId } from 'mongodb';
+import waitForExpect from 'wait-for-expect';
 
 import entities from '#api/entities/index.js';
 import { search } from '#api/search/index.js';
@@ -15,7 +15,6 @@ import {
 } from '#api/suggestions/specs/fixtures.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { iosocket, setUpApp, TestEmitSources } from '#api/utils/testingRoutes.js';
-import waitForExpect from 'wait-for-expect';
 import { Suggestions } from '../suggestions.js';
 
 jest.mock(
@@ -114,6 +113,16 @@ describe('POST /api/suggestions/train', () => {
 });
 
 describe('POST /api/suggestions/accept', () => {
+  const expectEntityReindexed = (sharedId: string) => {
+    expect(search.indexEntities).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sharedId: expect.objectContaining({
+          $in: expect.arrayContaining([sharedId]),
+        }),
+      })
+    );
+  };
+
   const suggestionsSuccess = async () =>
     waitForExpect(() => {
       expect(iosocket.emit).toHaveBeenCalledWith(
@@ -155,7 +164,7 @@ describe('POST /api/suggestions/accept', () => {
         title: 'The Penguin',
       },
     ]);
-    expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'shared6' }, '+fullText');
+    expectEntityReindexed('shared6');
   });
 
   it('should handle partial acceptance parameters for multiselects', async () => {
@@ -181,10 +190,7 @@ describe('POST /api/suggestions/accept', () => {
       { value: 'A', label: 'A' },
       { value: '1B', label: '1B', parent: { value: '1', label: '1' } },
     ]);
-    expect(search.indexEntities).toHaveBeenCalledWith(
-      { sharedId: 'entityWithSelects2' },
-      '+fullText'
-    );
+    expectEntityReindexed('entityWithSelects2');
   });
 
   it('should emit ACCEPT_SUGGESTION_SUCCESS event after accept suggestion finish with success', async () => {

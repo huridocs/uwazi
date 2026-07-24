@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { Translate, t } from '#app/I18N/index.js';
 import { DataTable } from '#V2/Components/UI/index.js';
+import { isFileRowSelectable } from './fileHelpers.js';
 import { EntityFileRow } from './types.js';
 import { filesDataTableColumns } from './filesTableColumns.js';
 
@@ -11,6 +12,10 @@ type FilesTableSectionProps = {
   focusedRowId?: string;
   onSelectRows: (ids: string[]) => void;
   onFocusRow: (row: EntityFileRow) => void;
+  onViewRow: (row: EntityFileRow) => void;
+  onRenameRow: (row: EntityFileRow) => void;
+  onChangeLanguageRow: (row: EntityFileRow) => void;
+  onDeleteRow: (row: EntityFileRow) => void;
 };
 
 const FilesTableSection = ({
@@ -20,6 +25,10 @@ const FilesTableSection = ({
   focusedRowId,
   onSelectRows,
   onFocusRow,
+  onViewRow,
+  onRenameRow,
+  onChangeLanguageRow,
+  onDeleteRow,
 }: FilesTableSectionProps) => {
   const rowIdsInSection = useMemo(() => new Set(rows.map(row => row.rowId)), [rows]);
 
@@ -27,8 +36,6 @@ const FilesTableSection = ({
     () => new Set(selectedRowIds.filter(id => rowIdsInSection.has(id))),
     [rowIdsInSection, selectedRowIds]
   );
-
-  const allSelected = rows.length > 0 && rows.every(row => selectedIds.has(row.rowId));
 
   const onToggleRow = useCallback(
     (rowId: string) => {
@@ -41,12 +48,20 @@ const FilesTableSection = ({
   );
 
   const onToggleAll = useCallback(() => {
-    if (allSelected) {
+    const selectableIds = rows.filter(isFileRowSelectable).map(row => row.rowId);
+    const allSelectableSelected =
+      selectableIds.length > 0 && selectableIds.every(id => selectedIds.has(id));
+
+    if (allSelectableSelected) {
       onSelectRows(selectedRowIds.filter(id => !rowIdsInSection.has(id)));
       return;
     }
-    onSelectRows([...new Set([...selectedRowIds, ...rows.map(row => row.rowId)])]);
-  }, [allSelected, onSelectRows, rowIdsInSection, rows, selectedRowIds]);
+    onSelectRows([...new Set([...selectedRowIds, ...selectableIds])]);
+  }, [onSelectRows, rowIdsInSection, rows, selectedIds, selectedRowIds]);
+
+  const selectableRows = useMemo(() => rows.filter(isFileRowSelectable), [rows]);
+  const allSelected =
+    selectableRows.length > 0 && selectableRows.every(row => selectedIds.has(row.rowId));
 
   const columns = useMemo(
     () =>
@@ -55,13 +70,31 @@ const FilesTableSection = ({
         allSelected,
         onToggleRow,
         onToggleAll,
+        onViewRow,
+        onRenameRow,
+        onChangeLanguageRow,
+        onDeleteRow,
       }),
-    [allSelected, onToggleAll, onToggleRow, selectedIds]
+    [
+      allSelected,
+      onChangeLanguageRow,
+      onDeleteRow,
+      onRenameRow,
+      onToggleAll,
+      onToggleRow,
+      onViewRow,
+      selectedIds,
+    ]
   );
 
+  const footerLabel =
+    rows.length === 1
+      ? `${rows.length} ${t('System', 'file', null, false)}`
+      : `${rows.length} ${t('System', 'files', null, false)}`;
+
   return (
-    <section className="flex flex-col gap-2">
-      <p className="px-1 text-xs font-semibold uppercase tracking-wider text-ink-tertiary">
+    <section className="flex flex-col">
+      <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wider text-ink-tertiary">
         <Translate>{title}</Translate>
       </p>
       <DataTable
@@ -70,8 +103,8 @@ const FilesTableSection = ({
         selectedRowId={focusedRowId ?? null}
         onRowClick={onFocusRow}
         emptyState={<Translate>No files available</Translate>}
-        footer={<span>{rows.length}</span>}
-        minWidthRem={42}
+        footer={<span>{footerLabel}</span>}
+        minWidthRem={44}
       />
     </section>
   );

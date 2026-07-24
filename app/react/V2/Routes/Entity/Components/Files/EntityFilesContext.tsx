@@ -1,47 +1,47 @@
-import React, { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { useRevalidator } from 'react-router';
 import { useUpdateEntityUrl } from '../../entityUrlState.js';
 import { MAIN_TAB_PARAM, SIDE_TAB_PARAM } from '../../urlParams.js';
-import { FileType } from '#shared/types/fileType.js';
 import { Entity } from '#V2/api/entities/types.js';
-import { remove, update, UploadService } from '#V2/api/files/index.js';
+import { update } from '#V2/api/files/index.js';
 import { settingsAtom, templatesAtom } from '#V2/atoms/index.js';
 import { localeAtom } from '#V2/atoms/translationsAtoms.js';
-import { getFileNameAndExtension } from '#V2/shared/formatHelpers.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { buildEntityFileRows } from './buildEntityFileRows.js';
-import { EntityFileRow } from './types.js';
-import { isPdfFile } from './fileUploadHelpers.js';
+import type { ConfirmAddFilePayload } from './confirmAddFileUpload.js';
+import type { AddFileMode } from './useEntityFilesAdd.js';
+import type { FilePanelMode } from './useEntityFilesPanel.js';
+import { EntityFileRow, FileEditFocus } from './types.js';
+import { useEntityFilesAdd } from './useEntityFilesAdd.js';
+import { useEntityFilesDelete } from './useEntityFilesDelete.js';
+import { useEntityFilesPanel } from './useEntityFilesPanel.js';
+import { useEntityFilesSocketRefresh } from './useEntityFilesSocketRefresh.js';
 
 type FilesSideTabId = 'file' | 'translations';
-type FilePanelMode = 'details' | 'preview';
-type AddFileMode = 'main' | 'translation';
-
-type ConfirmAddFilePayload = {
-  file: File;
-  displayName: string;
-  addAs: 'supporting' | 'primary';
-  language?: string;
-};
 
 type EntityFilesContextValue = {
   entity: Entity;
   primaryRows: EntityFileRow[];
   supportingRows: EntityFileRow[];
+  mainDocumentId?: string;
   focusedRow?: EntityFileRow;
   selectedRowIds: string[];
   isEditing: boolean;
+  editFocus: FileEditFocus;
   filePanelMode: FilePanelMode;
   pendingDeleteRows: EntityFileRow[];
   pendingAddFile: File | null;
   addFileMode: AddFileMode | null;
+  uploadProgress: number | null;
   defaultLanguageKey?: string;
   navigateToFilesSideTab: (tab: FilesSideTabId) => void;
   setIsEditing: (editing: boolean) => void;
   setFocusedRowId: (rowId: string) => void;
   setSelectedRowIds: (ids: string[]) => void;
   openFilePreview: () => void;
+  openFilePreviewForRow: (rowId: string) => void;
+  openFileEdit: (rowId: string, focus?: FileEditFocus) => void;
   closeFilePreview: () => void;
   requestDeleteRow: (row: EntityFileRow) => void;
   requestDeleteSelected: () => void;
@@ -69,14 +69,20 @@ const EntityFilesProvider = ({
   const { revalidate } = useRevalidator();
   const updateEntityUrl = useUpdateEntityUrl();
   const [selectedRowIds, setSelectedRowIds] = useState<string[]>([]);
-  const [focusedRowId, setFocusedRowId] = useState<string>();
-  const [isEditing, setIsEditing] = useState(false);
-  const [filePanelMode, setFilePanelMode] = useState<FilePanelMode>('details');
-  const [pendingDeleteRows, setPendingDeleteRows] = useState<EntityFileRow[]>([]);
-  const [pendingAddFile, setPendingAddFile] = useState<File | null>(null);
-  const [addFileMode, setAddFileMode] = useState<AddFileMode | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const addFileModeRef = useRef<AddFileMode | null>(null);
+
+  const {
+    focusedRowId,
+    setFocusedRowId,
+    isEditing,
+    editFocus,
+    filePanelMode,
+    setFocusedRow,
+    openFilePreview,
+    openFilePreviewForRow,
+    openFileEdit,
+    closeFilePreview,
+    setEditing,
+  } = useEntityFilesPanel();
 
   const { primaryRows, supportingRows, mainDocumentId } = useMemo(
     () => buildEntityFileRows(entity, templates, locale, defaultLanguage),
@@ -84,24 +90,8 @@ const EntityFilesProvider = ({
   );
 
   const allRows = useMemo(() => [...primaryRows, ...supportingRows], [primaryRows, supportingRows]);
-
   const resolvedFocusedRowId = focusedRowId || mainDocumentId || allRows[0]?.rowId;
   const focusedRow = allRows.find(row => row.rowId === resolvedFocusedRowId);
-
-  const setFocusedRow = useCallback((rowId: string) => {
-    setFocusedRowId(rowId);
-    setIsEditing(false);
-    setFilePanelMode('details');
-  }, []);
-
-  const openFilePreview = useCallback(() => {
-    setIsEditing(false);
-    setFilePanelMode('preview');
-  }, []);
-
-  const closeFilePreview = useCallback(() => {
-    setFilePanelMode('details');
-  }, []);
 
   const refreshEntity = useCallback(async () => {
     entityLoaderCache.invalidateEntity(entity.sharedId);
@@ -110,42 +100,46 @@ const EntityFilesProvider = ({
 
   const saveRow = useCallback(
     async (payload: { _id: string; originalname: string; language?: string }) => {
-      await update(payload as FileType);
+      await update(payload);
       await refreshEntity();
-      setIsEditing(false);
+      setEditing(false);
     },
-    [refreshEntity]
+    [refreshEntity, setEditing]
   );
 
-  const requestDeleteRow = useCallback((row: EntityFileRow) => {
-    setPendingDeleteRows([row]);
-  }, []);
+  const {
+    pendingDeleteRows,
+    requestDeleteRow,
+    requestDeleteSelected,
+    closeDeleteModal,
+    deleteRows,
+  } = useEntityFilesDelete({
+    allRows,
+    selectedRowIds,
+    setSelectedRowIds,
+    setFocusedRowId,
+    refreshEntity,
+  });
 
-  const requestDeleteSelected = useCallback(() => {
-    const rows = allRows.filter(row => selectedRowIds.includes(row.rowId));
-    setPendingDeleteRows(rows);
-  }, [allRows, selectedRowIds]);
+  const {
+    pendingAddFile,
+    addFileMode,
+    uploadProgress,
+    fileInputRef,
+    requestAddFile,
+    closeAddFileModal,
+    confirmAddFile,
+    handleFileInputChange,
+  } = useEntityFilesAdd({
+    entitySharedId: entity.sharedId,
+    refreshEntity,
+  });
 
-  const closeDeleteModal = useCallback(() => setPendingDeleteRows([]), []);
-
-  const deleteRows = useCallback(async () => {
-    const ids = pendingDeleteRows.map(row => row.raw._id).filter(Boolean) as string[];
-    if (!ids.length) {
-      setPendingDeleteRows([]);
-      return;
-    }
-    const deletedRowIds = new Set(pendingDeleteRows.map(row => row.rowId));
-    await Promise.all(
-      ids.map(async id => {
-        await remove(id);
-      })
-    );
-    setPendingDeleteRows([]);
-    setSelectedRowIds(prev => prev.filter(id => !deletedRowIds.has(id)));
-    setFocusedRowId(prev => (prev && deletedRowIds.has(prev) ? undefined : prev));
-    ids.forEach(id => entityLoaderCache.invalidatePlaintext(id));
-    await refreshEntity();
-  }, [pendingDeleteRows, refreshEntity]);
+  useEntityFilesSocketRefresh({
+    sharedId: entity.sharedId,
+    isFileEditing: isEditing,
+    refreshEntity,
+  });
 
   const navigateToFilesSideTab = useCallback(
     (tab: FilesSideTabId) => {
@@ -161,85 +155,29 @@ const EntityFilesProvider = ({
     [updateEntityUrl]
   );
 
-  const closeAddFileModal = useCallback(() => {
-    setPendingAddFile(null);
-    setAddFileMode(null);
-    addFileModeRef.current = null;
-  }, []);
-
-  const requestAddFile = useCallback((mode: AddFileMode) => {
-    addFileModeRef.current = mode;
-    setAddFileMode(mode);
-    if (fileInputRef.current) {
-      fileInputRef.current.accept = mode === 'translation' ? '.pdf,application/pdf' : '';
-      fileInputRef.current.click();
-    }
-  }, []);
-
-  const handleFileInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    event.target.value = '';
-
-    const mode = addFileModeRef.current;
-    if (!selectedFile || !mode) {
-      setAddFileMode(null);
-      addFileModeRef.current = null;
-      return;
-    }
-
-    if (mode === 'translation' && !isPdfFile(selectedFile)) {
-      setAddFileMode(null);
-      addFileModeRef.current = null;
-      return;
-    }
-
-    setPendingAddFile(selectedFile);
-  }, []);
-
-  const confirmAddFile = useCallback(
-    async ({ file, displayName, addAs, language }: ConfirmAddFilePayload) => {
-      const { extension } = getFileNameAndExtension(file.name);
-      const originalname = extension ? `${displayName}.${extension}` : displayName;
-      const endpoint = addAs === 'primary' ? 'document' : 'attachment';
-      const service = new UploadService(endpoint, {
-        entity: entity.sharedId,
-        originalname,
-      });
-      const responses = await service.upload([file]);
-      const uploaded = responses[0];
-
-      if (!uploaded || !('_id' in uploaded)) {
-        return;
-      }
-
-      if (language) {
-        await update({ ...uploaded, originalname, language } as FileType);
-      }
-
-      closeAddFileModal();
-      await refreshEntity();
-    },
-    [closeAddFileModal, entity.sharedId, refreshEntity]
-  );
-
   const value = useMemo(
     () => ({
       entity,
       primaryRows,
       supportingRows,
+      mainDocumentId,
       focusedRow,
       selectedRowIds,
       isEditing,
+      editFocus,
       filePanelMode,
       pendingDeleteRows,
       pendingAddFile,
       addFileMode,
+      uploadProgress,
       defaultLanguageKey: defaultLanguage,
       navigateToFilesSideTab,
-      setIsEditing,
+      setIsEditing: setEditing,
       setFocusedRowId: setFocusedRow,
       setSelectedRowIds,
       openFilePreview,
+      openFilePreviewForRow,
+      openFileEdit,
       closeFilePreview,
       requestDeleteRow,
       requestDeleteSelected,
@@ -254,19 +192,25 @@ const EntityFilesProvider = ({
       entity,
       primaryRows,
       supportingRows,
+      mainDocumentId,
       focusedRow,
       selectedRowIds,
       isEditing,
+      editFocus,
       filePanelMode,
       pendingDeleteRows,
       pendingAddFile,
       addFileMode,
+      uploadProgress,
       defaultLanguage,
       navigateToFilesSideTab,
+      setEditing,
       setFocusedRow,
       requestDeleteRow,
       requestDeleteSelected,
       openFilePreview,
+      openFilePreviewForRow,
+      openFileEdit,
       closeFilePreview,
       closeDeleteModal,
       deleteRows,

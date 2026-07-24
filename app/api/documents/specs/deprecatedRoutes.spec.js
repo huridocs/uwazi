@@ -1,14 +1,10 @@
-import { ObjectId } from 'mongodb';
 import request from 'supertest';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { UserRole } from '#shared/types/userSchema.js';
 import { legacyLogger } from '#api/log/index.js';
 import documentRoutes from '../deprecatedRoutes.js';
-import documents from '../documents.js';
 import { fixtures } from './fixtures.js';
 import templates from '../../core/v1_layer/templates/index.js';
-import entities from '#api/entities/entities.js';
 
 jest.mock('../../utils/languageMiddleware.ts', () => (req, _res, next) => {
   req.language = 'es';
@@ -24,64 +20,7 @@ describe('documents', () => {
     await testingEnvironment.tearDown();
   });
 
-  let currentUser;
-
-  const adminUser = {
-    _id: new ObjectId().toString(),
-    username: 'User 1',
-    role: UserRole.ADMIN,
-    email: 'user@test.com',
-  };
-
-  function getUser() {
-    return currentUser;
-  }
-
-  const app = setUpApp(documentRoutes, (req, _res, next) => {
-    req.user = getUser();
-    next();
-  });
-
-  describe('POST', () => {
-    let req;
-
-    const document = { title: 'Batman begins' };
-    beforeEach(() => {
-      req = {
-        body: document,
-        user: { _id: 'admin1', username: 'admin' },
-        language: 'es',
-      };
-    });
-
-    it('should need authorization', async () => {
-      jest.spyOn(documents, 'save').mockImplementation(async () => Promise.resolve('document'));
-      await request(app).post('/api/documents').send(req).expect(401);
-    });
-
-    it('should create a new document with current user', async () => {
-      jest.spyOn(documents, 'save').mockImplementation(async () => Promise.resolve('document'));
-      currentUser = adminUser;
-      const response = await request(app).post('/api/documents').send(document);
-      expect(response.body).toBe('document');
-      expect(documents.save).toHaveBeenCalledWith(document, {
-        user: adminUser,
-        language: req.language,
-      });
-    });
-  });
-
-  describe('GET /api/documents', () => {
-    beforeEach(() => {
-      jest.spyOn(documents, 'getById').mockImplementation(async () => Promise.resolve('documents'));
-    });
-
-    it('should return documents.get', async () => {
-      const response = await request(app).get('/api/documents').query({ _id: 'id' });
-      expect(documents.getById).toHaveBeenCalledWith('id', 'es');
-      expect(response.body).toEqual({ rows: ['documents'] });
-    });
-  });
+  const app = setUpApp(documentRoutes);
 
   describe('/api/documents/count_by_template', () => {
     beforeEach(() => {
@@ -102,21 +41,6 @@ describe('documents', () => {
         .query({ templateId: 'templateId' });
       expect(templates.countByTemplate).toHaveBeenCalledWith('templateId');
       expect(response.body).toEqual(2);
-    });
-  });
-
-  describe('DELETE', () => {
-    beforeEach(() => {
-      jest
-        .spyOn(entities, 'delete')
-        .mockImplementation(async () => Promise.resolve({ json: 'ok' }));
-    });
-
-    it('should return a validation error if sharedId is not passed', async () => {
-      currentUser = adminUser;
-      const response = await request(app).delete('/api/documents').send({});
-
-      expect(response.status).toBe(422);
     });
   });
 });

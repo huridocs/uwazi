@@ -502,6 +502,13 @@ describe('Settings Thesauri', () => {
         });
       });
       it('should sort the items', async () => {
+        rows = await waitFor(() => screen.getAllByRole('row'));
+        const headerCheckbox = within(rows[0]).queryByRole('checkbox');
+        if (headerCheckbox && (headerCheckbox as HTMLInputElement).checked) {
+          await act(async () => {
+            fireEvent.click(headerCheckbox);
+          });
+        }
         await act(async () => {
           fireEvent.click(
             within(screen.getByTestId('settings-content-footer')).getByText('Sort').parentNode!

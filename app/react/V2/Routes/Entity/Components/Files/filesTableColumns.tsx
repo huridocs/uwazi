@@ -1,51 +1,22 @@
 import React from 'react';
-import {
-  DocumentIcon,
-  DocumentTextIcon,
-  MusicalNoteIcon,
-  VideoCameraIcon,
-  PhotoIcon,
-  LinkIcon,
-} from '@heroicons/react/24/outline';
 import { checkboxInputClassName } from '#V2/Components/Forms/Checkbox.js';
 import type { DataTableColumn } from '#V2/Components/UI/DataTable/types.js';
+import { fileSupportsLanguage } from './fileHelpers.js';
+import { getRowIcon } from './fileRowIcon.js';
+import { FileProcessStatusIndicator } from './FileProcessStatusIndicator.js';
+import { FileRowKebab } from './FileRowKebab.js';
 import { EntityFileRow } from './types.js';
-
-const getRowIcon = (row: EntityFileRow) => {
-  const mime = row.raw.mimetype || '';
-
-  if (row.fileType === 'externalURL' || row.raw.url?.startsWith('http')) {
-    return <LinkIcon className="h-3.5 w-3.5 shrink-0 text-ink-muted" />;
-  }
-
-  if (mime.startsWith('audio/')) {
-    return <MusicalNoteIcon className="h-3.5 w-3.5 shrink-0 text-ink-muted" />;
-  }
-
-  if (mime.startsWith('video/')) {
-    return <VideoCameraIcon className="h-3.5 w-3.5 shrink-0 text-ink-muted" />;
-  }
-
-  if (mime.startsWith('image/')) {
-    return <PhotoIcon className="h-3.5 w-3.5 shrink-0 text-ink-muted" />;
-  }
-
-  if (
-    mime === 'application/pdf' ||
-    row.fileType === 'mainDocument' ||
-    row.fileType === 'document'
-  ) {
-    return <DocumentTextIcon className="h-3.5 w-3.5 shrink-0 text-ink-muted" />;
-  }
-
-  return <DocumentIcon className="h-3.5 w-3.5 shrink-0 text-ink-muted" />;
-};
+import { Translate } from '#app/I18N/index.js';
 
 type FilesTableColumnsParams = {
   selectedIds: Set<string>;
   allSelected: boolean;
   onToggleRow: (rowId: string) => void;
   onToggleAll: () => void;
+  onViewRow: (row: EntityFileRow) => void;
+  onRenameRow: (row: EntityFileRow) => void;
+  onChangeLanguageRow: (row: EntityFileRow) => void;
+  onDeleteRow: (row: EntityFileRow) => void;
 };
 
 const stopRowClick = (event: React.MouseEvent) => {
@@ -57,6 +28,10 @@ const filesDataTableColumns = ({
   allSelected,
   onToggleRow,
   onToggleAll,
+  onViewRow,
+  onRenameRow,
+  onChangeLanguageRow,
+  onDeleteRow,
 }: FilesTableColumnsParams): DataTableColumn<EntityFileRow>[] => [
   {
     id: 'select',
@@ -82,6 +57,7 @@ const filesDataTableColumns = ({
           checked={selectedIds.has(row.rowId)}
           onChange={() => onToggleRow(row.rowId)}
           onClick={stopRowClick}
+          disabled={row.status === 'processing'}
           aria-label={`Select ${row.displayName}`}
         />
       </label>
@@ -92,9 +68,14 @@ const filesDataTableColumns = ({
     header: 'File name',
     width: '2fr',
     cell: row => (
-      <div className="flex min-w-0 items-center gap-2">
-        {getRowIcon(row)}
+      <div
+        className={`flex min-w-0 items-center gap-2 ${
+          row.status === 'processing' ? 'opacity-60' : ''
+        }`}
+      >
+        <span className="shrink-0">{getRowIcon(row)}</span>
         <span className="truncate text-xs font-medium text-ink">{row.displayName}</span>
+        <FileProcessStatusIndicator status={row.status} />
       </div>
     ),
   },
@@ -126,6 +107,28 @@ const filesDataTableColumns = ({
     width: '5.5rem',
     cell: row => <span className="text-xs text-ink-tertiary">{row.modifiedLabel}</span>,
   },
+  {
+    id: 'actions',
+    header: <Translate className="sr-only">Actions</Translate>,
+    width: '2rem',
+    align: 'right',
+    cell: row => (
+      <div className="flex items-center justify-end" onClick={stopRowClick}>
+        <FileRowKebab
+          row={row}
+          onView={onViewRow}
+          onRename={onRenameRow}
+          onChangeLanguage={onChangeLanguageRow}
+          onDelete={onDeleteRow}
+          showLanguageAction={fileSupportsLanguage({
+            type: row.raw.mimetype || '',
+            name: row.raw.originalname || row.displayName,
+          })}
+          disableMutations={row.status === 'processing'}
+        />
+      </div>
+    ),
+  },
 ];
 
-export { filesDataTableColumns, getRowIcon };
+export { filesDataTableColumns };

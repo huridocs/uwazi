@@ -13,6 +13,9 @@ const FilesTab = () => {
     setFocusedRowId,
     setSelectedRowIds,
     navigateToFilesSideTab,
+    openFilePreviewForRow,
+    openFileEdit,
+    requestDeleteRow,
   } = useEntityFiles();
 
   const allRows = [...primaryRows, ...supportingRows];
@@ -25,8 +28,32 @@ const FilesTab = () => {
     [setFocusedRowId, navigateToFilesSideTab]
   );
 
+  const onView = useCallback(
+    (row: EntityFileRow) => {
+      openFilePreviewForRow(row.rowId);
+      navigateToFilesSideTab('file');
+    },
+    [navigateToFilesSideTab, openFilePreviewForRow]
+  );
+
+  const onRename = useCallback(
+    (row: EntityFileRow) => {
+      openFileEdit(row.rowId, 'name');
+      navigateToFilesSideTab('file');
+    },
+    [navigateToFilesSideTab, openFileEdit]
+  );
+
+  const onChangeLanguage = useCallback(
+    (row: EntityFileRow) => {
+      openFileEdit(row.rowId, 'language');
+      navigateToFilesSideTab('file');
+    },
+    [navigateToFilesSideTab, openFileEdit]
+  );
+
   return (
-    <div className="flex h-full min-h-0 flex-1 flex-col gap-4 overflow-auto bg-warm p-3">
+    <div className="flex h-full min-h-0 flex-1 flex-col gap-5 overflow-auto bg-warm p-4 pb-8">
       <FilesTableSection
         title="Primary documents"
         rows={primaryRows}
@@ -34,6 +61,10 @@ const FilesTab = () => {
         focusedRowId={focusedRow?.rowId}
         onSelectRows={setSelectedRowIds}
         onFocusRow={onFocus}
+        onViewRow={onView}
+        onRenameRow={onRename}
+        onChangeLanguageRow={onChangeLanguage}
+        onDeleteRow={requestDeleteRow}
       />
       <FilesTableSection
         title="Supporting files"
@@ -42,6 +73,10 @@ const FilesTab = () => {
         focusedRowId={focusedRow?.rowId}
         onSelectRows={setSelectedRowIds}
         onFocusRow={onFocus}
+        onViewRow={onView}
+        onRenameRow={onRename}
+        onChangeLanguageRow={onChangeLanguage}
+        onDeleteRow={requestDeleteRow}
       />
       {allRows.length === 0 ? (
         <div className="flex h-full items-center justify-center text-ink-muted">

@@ -8,7 +8,7 @@ import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { spyOnEmit, toEmitEvent, toEmitEventWith } from '#api/core/libs/eventsbus/eventTesting.js';
 import entities from '#api/entities/index.js';
 import { editorUser } from '#api/entities/specs/entitySavingManagerFixtures.js';
-import connections from '#api/relationships/index.js';
+import connections from '#api/relationships/relationships.js';
 import { search } from '#api/search/index.js';
 import * as ocrRecords from '#api/services/ocr/ocrRecords.js';
 import { registerEventListeners as registerOcrListeners } from '#api/services/ocr/eventListeners.js';

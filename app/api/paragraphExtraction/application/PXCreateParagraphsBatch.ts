@@ -6,7 +6,7 @@ import { PropertyAssignmentInput } from '#api/core/application/propertyAssignmen
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { UseCase } from '#api/core/libs/UseCase.js';
-import relationshipsDS from '#api/relationships/index.js';
+import relationshipsDS from '#api/relationships/relationships.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 
