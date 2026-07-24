@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { tenants } from '#api/tenants/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';

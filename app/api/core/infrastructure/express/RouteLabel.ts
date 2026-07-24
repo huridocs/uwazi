@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 const EXCLUDED_ROUTES = ['/api/version', '/metrics'];
 
