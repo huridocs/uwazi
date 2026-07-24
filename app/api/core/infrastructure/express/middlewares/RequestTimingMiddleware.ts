@@ -1,15 +1,16 @@
 import { NextFunction, Request, Response } from 'express';
+import { performance } from 'perf_hooks';
 
 declare global {
   namespace Express {
     interface Request {
-      startTimeMs: number;
+      startPerfMs: number;
     }
   }
 }
 
 const requestTimingMiddleware = (request: Request, _response: Response, next: NextFunction) => {
-  request.startTimeMs = Date.now();
+  request.startPerfMs = performance.now();
   next();
 };
 

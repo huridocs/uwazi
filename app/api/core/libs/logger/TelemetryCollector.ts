@@ -1,4 +1,7 @@
+/* eslint-disable class-methods-use-this */
+/* eslint-disable max-statements */
 import { AsyncLocalStorage } from 'async_hooks';
+import { performance } from 'perf_hooks';
 
 type Span = {
   id: number;
@@ -17,7 +20,7 @@ class TelemetryCollector {
 
   private rootSpanId: number;
 
-  constructor(mainOperation: string, startTime: number = Date.now()) {
+  constructor(mainOperation: string, startTime: number = performance.now()) {
     this.metadata = {};
     this.spans = [];
     this.currentSpan = new AsyncLocalStorage<number>();
@@ -32,25 +35,41 @@ class TelemetryCollector {
     return this.duration(this.spans[this.rootSpanId]);
   }
 
-  async runSpan<T>(operation: string, fn: () => Promise<T>): Promise<T> {
+  runSpan<T>(operation: string, fn: () => T): T {
     const parentId = this.currentSpan.getStore() ?? this.rootSpanId;
     const spanId = this.openSpan(operation, parentId);
+    const finishSpan = () => {
+      this.spans[spanId].end = performance.now();
+    };
 
+    let result: T;
     try {
-      return await this.currentSpan.run(spanId, fn);
-    } finally {
-      this.spans[spanId].end = Date.now();
+      result = this.currentSpan.run(spanId, fn);
+    } catch (error) {
+      finishSpan();
+      throw error;
     }
+
+    if (result instanceof Promise) {
+      return result.finally(finishSpan) as T;
+    }
+
+    finishSpan();
+    return result;
   }
 
-  private openSpan(operation: string, parentId: number | null, start: number = Date.now()): number {
+  private openSpan(
+    operation: string,
+    parentId: number | null,
+    start: number = performance.now()
+  ): number {
     const id = this.spans.length;
     this.spans.push({ id, operation, parentId, start, end: 0 });
     return id;
   }
 
   private duration(span: Span): number {
-    return (span.end || Date.now()) - span.start;
+    return (span.end || performance.now()) - span.start;
   }
 
   private buildSpan(span: Span): Record<string, any> {

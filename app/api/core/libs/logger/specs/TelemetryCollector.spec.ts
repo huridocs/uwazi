@@ -1,20 +1,21 @@
 /* eslint-disable max-statements */
+import { performance } from 'perf_hooks';
 import { TelemetryCollector } from '../TelemetryCollector.js';
 
 describe('TelemetryCollector', () => {
-  let dateNowSpy: jest.SpyInstance;
+  let performanceNowSpy: jest.SpyInstance;
   let currentTime: number;
 
   beforeEach(() => {
     currentTime = 1000;
-    dateNowSpy = jest.spyOn(Date, 'now').mockImplementation(() => {
+    performanceNowSpy = jest.spyOn(performance, 'now').mockImplementation(() => {
       currentTime += 1;
       return currentTime;
     });
   });
 
   afterEach(() => {
-    dateNowSpy.mockRestore();
+    performanceNowSpy.mockRestore();
   });
 
   describe('constructor', () => {
@@ -53,7 +54,7 @@ describe('TelemetryCollector', () => {
     });
   });
 
-  describe('runSpan', () => {
+  describe('runSpan with an async function', () => {
     it('should run a span and record its duration', async () => {
       const collector = new TelemetryCollector('main_operation');
 
@@ -137,7 +138,7 @@ describe('TelemetryCollector', () => {
       expect(result.timings.every((t: any) => !t.children)).toBe(true);
     });
 
-    it('should still record the span duration and propagate the error when the span throws', async () => {
+    it('should still record the span duration and propagate the error when the span rejects', async () => {
       const collector = new TelemetryCollector('main_operation');
 
       await expect(
@@ -151,6 +152,70 @@ describe('TelemetryCollector', () => {
       const timing = result.timings.find((t: any) => t.operation === 'failing_operation');
 
       expect(timing.duration_ms).toBeGreaterThanOrEqual(30);
+    });
+  });
+
+  describe('runSpan with a synchronous function', () => {
+    it('should run the span synchronously and return the plain value, not a promise', () => {
+      const collector = new TelemetryCollector('main_operation');
+
+      const result = collector.runSpan('sync_operation', () => {
+        currentTime += 40;
+        return 'done';
+      });
+
+      expect(result).toBe('done');
+
+      const timing = collector.build().timings.find((t: any) => t.operation === 'sync_operation');
+      expect(timing.duration_ms).toBeGreaterThanOrEqual(40);
+    });
+
+    it('should nest a synchronous child span inside a synchronous parent span', () => {
+      const collector = new TelemetryCollector('main_operation');
+
+      collector.runSpan('sync_parent', () => {
+        currentTime += 10;
+        collector.runSpan('sync_child', () => {
+          currentTime += 20;
+        });
+      });
+
+      const result = collector.build();
+
+      expect(result.timings[0].operation).toBe('sync_parent');
+      expect(result.timings[0].children[0].operation).toBe('sync_child');
+    });
+
+    it('should nest a synchronous child span inside an async parent span', async () => {
+      const collector = new TelemetryCollector('main_operation');
+
+      await collector.runSpan('async_parent', async () => {
+        await Promise.resolve();
+        collector.runSpan('sync_child', () => {
+          currentTime += 15;
+        });
+      });
+
+      const result = collector.build();
+
+      expect(result.timings[0].operation).toBe('async_parent');
+      expect(result.timings[0].children[0].operation).toBe('sync_child');
+    });
+
+    it('should still record the span duration and propagate the error when the span throws synchronously', () => {
+      const collector = new TelemetryCollector('main_operation');
+
+      expect(() =>
+        collector.runSpan('failing_sync_operation', () => {
+          currentTime += 25;
+          throw new Error('sync boom');
+        })
+      ).toThrow('sync boom');
+
+      const result = collector.build();
+      const timing = result.timings.find((t: any) => t.operation === 'failing_sync_operation');
+
+      expect(timing.duration_ms).toBeGreaterThanOrEqual(25);
     });
   });
 

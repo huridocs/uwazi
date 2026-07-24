@@ -10,9 +10,7 @@ import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
 import { User } from '#api/users.v2/model/User.js';
 import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
-
-const isRouteWatched = (routePath: unknown, watchedRoutes: string[]): boolean =>
-  typeof routePath === 'string' && watchedRoutes.includes(routePath);
+import { getRouteInfo } from '#api/core/infrastructure/express/RouteLabel.js';
 
 const dependenciesContextMiddleware = (
   request: Request,
@@ -26,12 +24,15 @@ const dependenciesContextMiddleware = (
   response.on('finish', () => {
     const { telemetry } = tenant.featureFlags || {};
     if (!telemetry?.enabled) return;
-    if (!isRouteWatched(request.route?.path, telemetry.routes || [])) return;
+
+    const routeInfo = getRouteInfo(request, response);
+    if (!routeInfo) return;
     if (ExecutionContext.telemetryCollector.mainDurationMs() < (telemetry.thresholdMs ?? 0)) return;
 
     ExecutionContext.telemetryCollector.add({
       method: request.method,
-      path: request.path,
+      route: routeInfo.label,
+      route_kind: routeInfo.kind,
       status_code: response.statusCode,
     });
 
@@ -53,7 +54,7 @@ const dependenciesContextMiddleware = (
         eventEmitter: EventEmitterFactory.default,
         idGenerator: IdGeneratorFactory.default,
         logger: LoggerFactory.default,
-        telemetryCollector: () => new TelemetryCollector('http_request', request.startTimeMs),
+        telemetryCollector: () => new TelemetryCollector('http_request', request.startPerfMs),
       },
     },
     next
