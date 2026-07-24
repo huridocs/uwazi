@@ -41,7 +41,6 @@ import { setupQueueWorker } from './setupQueueWorker.js';
 import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
 import { embedFrameHeaders } from './api/middleware/embedFrameHeaders.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
-import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
 import { registerMetricsRoutes } from '#api/core/infrastructure/express/MetricsRoute.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -160,22 +159,6 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
           '==> Your database needs to be migrated, please run:\n\n yarn migrate & yarn reindex\n\n'
         );
         process.exit(1);
-      }
-
-      if (!skipMigrationCheck) {
-        const pgMigrationsDir = path.resolve(
-          __dirname,
-          'api/core/infrastructure/postgresql/schema_migrations'
-        );
-        const pgMigrator = new PgMigrator(pgMigrationsDir, PostgresDB.adminPool());
-        const { pending: pendingPgMigrations } = await pgMigrator.status();
-        if (pendingPgMigrations.length > 0) {
-          console.error(
-            '\x1b[33m%s\x1b[0m',
-            '==> PostgreSQL needs to be migrated, please run:\n\n yarn migrate --new\n\n'
-          );
-          process.exit(1);
-        }
       }
     });
 
