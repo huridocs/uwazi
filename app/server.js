@@ -42,6 +42,8 @@ import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/
 import { embedFrameHeaders } from './api/middleware/embedFrameHeaders.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { registerMetricsRoutes } from '#api/core/infrastructure/express/MetricsRoute.js';
+import { metricsMiddleware } from '#api/core/infrastructure/express/middlewares/MetricsMiddleware.js';
+import { requestTimingMiddleware } from '#api/core/infrastructure/express/middlewares/RequestTimingMiddleware.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -52,6 +54,7 @@ const app = express();
 
 registerMetricsRoutes(app);
 routesErrorHandler(app);
+app.use(requestTimingMiddleware);
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 app.use(embedFrameHeaders);
 
@@ -127,6 +130,7 @@ app.use(appContextMiddleware);
 // this middleware should go just before any other that accesses to db
 app.use(multitenantMiddleware);
 app.use(maintenanceMiddleware);
+app.use(metricsMiddleware);
 
 console.info('==> Connecting to', maskMongoPassword(config.DBHOST));
 
