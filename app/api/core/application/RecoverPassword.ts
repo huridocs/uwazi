@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { AbstractUseCase } from '../libs/UseCase.js';
-import { Dispatcher } from './contracts/Dispatcher.js';
+import users from '#api/users/users.js';
 
 const RecoverPasswordInputSchema = z.object({
   email: z.string().min(3),
@@ -11,18 +11,10 @@ type Input = z.infer<typeof RecoverPasswordInputSchema>;
 
 type Output = void;
 
-type Deps = {
-  dispatcher: Dispatcher;
-};
-
-class RecoverPassword extends AbstractUseCase<Input, Output, Deps> {
+class RecoverPassword extends AbstractUseCase<Input, Output> {
   async execute(input: Input): Promise<Output> {
-    await this.deps.dispatcher.sendRecoveryEmail({
-      domain: input.domain,
-      email: input.email,
-    });
+    await users.recoverPassword(input.email, input.domain);
   }
 }
 
 export { RecoverPassword, RecoverPasswordInputSchema };
-export type { Deps as RecoverPasswordDependencies };
