@@ -4,7 +4,7 @@ import { LoggerFactory } from '../../factories/LoggerFactory.js';
 import { PostgresTable } from '../common/PostgresTable.js';
 import { PostgresTransactionManager } from '../common/PostgresTransactionManager.js';
 
-export const BATCH_SIZE = 50;
+export const BATCH_SIZE = 1;
 
 export interface MigrationConfig {
   mongoCollection: string;
