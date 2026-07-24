@@ -33,15 +33,19 @@ type Tenant = {
     v2UsersDelete?: boolean;
     v2UsersGet?: boolean;
     v2UsersUpdate?: boolean;
+    telemetry?: {
+      enabled?: boolean;
+      thresholdMs?: number;
+    };
+    prometheus?: {
+      enabled?: boolean;
+      sampleRate?: number;
+    };
     v2UsersUtilityRoutes?: Boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;
   maintenance?: boolean;
-  telemetry?: {
-    enabled?: boolean;
-    thresholdMs?: number;
-  };
 };
 
 class Tenants {
@@ -116,8 +120,18 @@ class Tenants {
     this.tenants[tenant.name] = {
       ...this.defaultTenant,
       ...tenant,
-      featureFlags: { ...this.defaultTenant.featureFlags, ...tenant.featureFlags },
-      telemetry: { ...this.defaultTenant.telemetry, ...tenant.telemetry },
+      featureFlags: {
+        ...this.defaultTenant.featureFlags,
+        ...tenant.featureFlags,
+        telemetry: {
+          ...this.defaultTenant.featureFlags?.telemetry,
+          ...tenant.featureFlags?.telemetry,
+        },
+        prometheus: {
+          ...this.defaultTenant.featureFlags?.prometheus,
+          ...tenant.featureFlags?.prometheus,
+        },
+      },
     };
   }
 
@@ -142,7 +156,25 @@ class Tenants {
       await this.model.setTelemetryConfig(tenantName, telemetry);
     }
     if (this.tenants[tenantName]) {
-      this.tenants[tenantName].telemetry = telemetry;
+      this.tenants[tenantName].featureFlags = {
+        ...this.tenants[tenantName].featureFlags,
+        telemetry,
+      };
+    }
+  }
+
+  async setPrometheusConfig(
+    tenantName: string,
+    prometheus: { enabled: boolean; sampleRate: number }
+  ) {
+    if (this.model) {
+      await this.model.setPrometheusConfig(tenantName, prometheus);
+    }
+    if (this.tenants[tenantName]) {
+      this.tenants[tenantName].featureFlags = {
+        ...this.tenants[tenantName].featureFlags,
+        prometheus,
+      };
     }
   }
 }
