@@ -16,9 +16,9 @@
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Portals (Drawer, notifications) reuse .tw-content + .fixed for theme vars —
-   do not paint canvas there or they cover the app. */
-.tw-content:not(.fixed) {
+/* Portals (.fixed) and header chrome embeds reuse .tw-content for theme vars —
+   do not paint canvas there or they cover the host surface. */
+.tw-content:not(.fixed):not(.tw-content--chrome) {
   background: var(--bg-primary, var(--color-theme-bg-primary, #f5f3f0));
 }
 
