@@ -382,6 +382,7 @@ Done extracting files,Done extracting files
 Done scanning,Done scanning
 Download,Завантажити
 Download a third-party authenticator app from your mobile store.,Завантажте сторонній додаток-автентифікатор з вашого мобільного магазину.
+Download all,Download all
 Download failed rows,Download failed rows
 Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,"Перетягніть й опустіть файл у вікно, щоб завантажити"
@@ -468,6 +469,7 @@ Favicon description,"Іконка - це невелика піктограма, 
 Favicon no images hint,Favicon no images hint
 FEATURED,ОБРАНІ
 File,Файл
+file,file
 File deleted,Файл видалено
 File details,File details
 File extraction completed successfully.,File extraction completed successfully.
@@ -475,6 +477,7 @@ File name,Ім'я файлу
 File preview unavailable,File preview unavailable
 File updated,Файл оновлено
 Files,Файли
+files,files
 Files and database usage,Використання файлів і баз даних
 Fill,Заповнити
 Filter,Filter
@@ -733,6 +736,7 @@ New group,Нова група
 New language added,Додано нову мову
 New page,Нова сторінка
 New password,Новий пароль
+New primary doc,New primary doc
 New relationship type,Новий тип відносин
 New relationships group,Група нових взаємозв'язків
 New Relationships Migration,Нові стосунки Міграція Міграція
@@ -763,6 +767,7 @@ No options,Без варіантів
 No options found,Варіантів не знайдено
 No page,No page
 No people or groups added yet,No people or groups added yet
+No primary documents,No primary documents
 No property,Товар не має цієї властивості
 No References,Немає посилань
 No References description,"Посилання - це частини цього документа, пов'язані з іншими документами та об'єктами."
@@ -772,6 +777,7 @@ No relationships found,No relationships found
 No relationships to graph,No relationships to graph
 No releases yet,No releases yet
 No results found,No results found
+No supporting files yet. Add a file to get started.,No supporting files yet. Add a file to get started.
 No table of contents,Немає змісту
 No Table of contents,No Table of contents
 No table of contents description,Ви можете почати з виділення тексту в документі та натискання кнопки Додати до змісту.
@@ -948,6 +954,7 @@ RAW,RAW
                         or editing entities—not when changing chart settings (save handles that).","Re-runs the query against your current collection. Use this after importing
                         or editing entities—not when changing chart settings (save handles that)."
 Re-uploaded document,Перезавантажений документ
+Ready,Ready
 Receiving email,Електронна пошта одержувача
 Receiving email description,"Якщо у вас є контактна форма, це адреса електронної пошти, на яку ви будете отримувати відповіді."
 Recommended,Recommended

@@ -2,8 +2,15 @@ import { Db, ObjectId } from 'mongodb';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { UsersDataSource } from '#api/core/application/contracts/UsersDataSource.js';
 import { PUBLIC_USER_ID, User } from '#api/core/domain/user/User.js';
-import { EmailInUse, UsernameExists, UserNotFound } from '#api/core/domain/user/errors.js';
+import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
+import {
+  EmailInUse,
+  UsernameExists,
+  UserNotFound,
+  InvalidUnlockCode,
+} from '#api/core/domain/user/errors.js';
 import { Result } from '#api/core/libs/Result.js';
+import type { ResultType } from '#api/core/libs/Result.js';
 import { MongoDataSource } from '../common/MongoDataSource.js';
 import { UserDBO } from './UserDBO.js';
 import { MongoUsersMapper } from './MongoUsersMapper.js';
@@ -82,6 +89,47 @@ class MongoUsersDataSource extends MongoDataSource<UserDBO> implements UsersData
     }
 
     return 0;
+  }
+
+  async findByUsernameAndUnlockCode(
+    username: string,
+    code: string
+  ): Promise<ResultType<User, InvalidUnlockCode>> {
+    const user = await this.getCollection<UserDBO>().findOne(
+      {
+        username,
+        accountUnlockCode: code,
+        deletedAt: { $exists: false },
+      },
+      { projection: { _id: 1 } }
+    );
+
+    if (!user) {
+      return Result.fail(new InvalidUnlockCode());
+    }
+
+    return Result.ok(
+      new User({
+        _id: user._id.toHexString(),
+        username: user.username,
+        role: user.role,
+        email: user.email,
+      })
+    );
+  }
+
+  async clearLockFields(userId: string): Promise<void> {
+    await this.getCollection<UserDBO>().updateOne(
+      { _id: ObjectId.createFromHexString(userId) },
+      { $unset: { accountLocked: 1, accountUnlockCode: 1, failedLogins: 1 } }
+    );
+  }
+
+  async updatePassword(userId: string, password: EncryptedPassword): Promise<void> {
+    await this.getCollection<UserDBO>().updateOne(
+      { _id: ObjectId.createFromHexString(userId), deletedAt: { $exists: false } },
+      { $set: { password: password.getValue() } }
+    );
   }
 }
 

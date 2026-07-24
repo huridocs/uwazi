@@ -56,6 +56,7 @@ const mongoSchema = new mongoose.Schema({
       enabled: Boolean,
       sampleRate: Number,
     },
+    v2UsersUtilityRoutes: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,

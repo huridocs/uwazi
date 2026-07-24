@@ -1,5 +1,9 @@
 import React, { useMemo } from 'react';
+import { useAtomValue } from 'jotai';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
+import { settingsAtom, templatesAtom } from '#V2/atoms/index.js';
+import { localeAtom } from '#V2/atoms/translationsAtoms.js';
+import { countEntityFiles } from '#V2/formatters/index.js';
 import { useMetadataEditing } from '../Components/context/index.js';
 import { getSideTabButtons, type FilesSideTabsOptions } from './sideTabSets.js';
 import { isMetadataHostDirty } from './metadataTabSession.js';
@@ -31,6 +35,14 @@ const SideTabsPanel = ({
 }: SideTabsPanelProps) => {
   const { isDirty, editingHost } = useMetadataEditing();
   const metadataDirty = isMetadataHostDirty(isDirty, editingHost, 'side');
+  const templates = useAtomValue(templatesAtom);
+  const locale = useAtomValue(localeAtom);
+  const settings = useAtomValue(settingsAtom);
+  const defaultLanguage = settings?.languages?.find(language => language.default)?.key;
+  const filesCount = useMemo(
+    () => countEntityFiles(entity, templates, locale, defaultLanguage),
+    [defaultLanguage, entity, locale, templates]
+  );
   const sideButtons = useMemo(
     () =>
       getSideTabButtons({
@@ -40,8 +52,17 @@ const SideTabsPanel = ({
         mainDocumentId: mainDocument?._id,
         filesSideTabs,
         metadataDirty,
+        filesCount,
       }),
-    [activeMainTab, entity, mainDocument?.filename, mainDocument?._id, filesSideTabs, metadataDirty]
+    [
+      activeMainTab,
+      entity,
+      mainDocument?.filename,
+      mainDocument?._id,
+      filesSideTabs,
+      metadataDirty,
+      filesCount,
+    ]
   );
 
   return (

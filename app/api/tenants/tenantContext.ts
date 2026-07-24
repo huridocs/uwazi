@@ -41,6 +41,7 @@ type Tenant = {
       enabled?: boolean;
       sampleRate?: number;
     };
+    v2UsersUtilityRoutes?: Boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

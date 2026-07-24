@@ -143,7 +143,7 @@ const MenuComponent = ({
       </li>
       {!isMobile && (
         <li className="menuNav-item only-desktop" style={legacyBeaconSlotStyle}>
-          <div className="tw-content">
+          <div className="tw-content tw-content--chrome">
             <RequestStatus />
           </div>
         </li>

@@ -1,7 +1,10 @@
 import React, { useMemo } from 'react';
+import { useAtomValue } from 'jotai';
 import { TabButtons } from '#V2/Components/UI/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
-import { countEntityRelationships } from '#V2/formatters/index.js';
+import { settingsAtom, templatesAtom } from '#V2/atoms/index.js';
+import { localeAtom } from '#V2/atoms/translationsAtoms.js';
+import { countEntityFiles, countEntityRelationships } from '#V2/formatters/index.js';
 import { useMetadataEditing } from '../Components/context/index.js';
 import { EntityLanguageBar, TabLabel } from '../Components/shared/index.js';
 import { isMetadataHostDirty } from './metadataTabSession.js';
@@ -16,9 +19,13 @@ type TabsMainButtonsProps = {
 const TabsMainButtons = ({ entity, mainDocument, onTabChange }: TabsMainButtonsProps) => {
   const { isDirty, editingHost } = useMetadataEditing();
   const metadataDirty = isMetadataHostDirty(isDirty, editingHost, 'main');
+  const templates = useAtomValue(templatesAtom);
+  const locale = useAtomValue(localeAtom);
+  const settings = useAtomValue(settingsAtom);
+  const defaultLanguage = settings?.languages?.find(language => language.default)?.key;
   const buttons = useMemo(() => {
     const items = [];
-    const filesCount = (entity.documents?.length || 0) + (entity.attachments?.length || 0);
+    const filesCount = countEntityFiles(entity, templates, locale, defaultLanguage);
     const relationshipsCount = countEntityRelationships(entity, mainDocument?._id);
 
     if (mainDocument?.filename) {
@@ -44,7 +51,15 @@ const TabsMainButtons = ({ entity, mainDocument, onTabChange }: TabsMainButtonsP
     });
 
     return items;
-  }, [entity, mainDocument?.filename, mainDocument?._id, metadataDirty]);
+  }, [
+    defaultLanguage,
+    entity,
+    locale,
+    mainDocument?.filename,
+    mainDocument?._id,
+    metadataDirty,
+    templates,
+  ]);
 
   return (
     <div className="flex items-center justify-between gap-3">
