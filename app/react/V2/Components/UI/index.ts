@@ -74,6 +74,8 @@ export { DisplayMenu, DisplayMenuRow } from './DisplayMenu.js';
 export type { DisplayMenuProps, DisplayMenuRowProps, DisplayMenuSize } from './DisplayMenu.js';
 export { SelectControls } from './SelectControls.js';
 export type { SelectControlsProps } from './SelectControls.js';
+export { AnchoredPortal } from './AnchoredPortal.js';
+export type { AnchoredPortalProps } from './AnchoredPortal.js';
 export { ColorDot } from './ColorDot.js';
 export { TemplatePill } from './TemplatePill.js';
 export { CollapsibleSectionHeader } from './CollapsibleSectionHeader.js';

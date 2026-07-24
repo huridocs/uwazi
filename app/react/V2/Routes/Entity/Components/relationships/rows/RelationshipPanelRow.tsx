@@ -127,12 +127,10 @@ const RelationshipPanelRowComponent = ({
         onHeaderClick={soleMarker ? () => handlers.onClick(soleMarker) : undefined}
         header={null}
         meta={
-          glyphDirection || (!hideRelationType && relationshipTypeName) ? (
+          !hideRelationType && relationshipTypeName ? (
             <>
               <DirectionGlyph direction={glyphDirection} />
-              {!hideRelationType && relationshipTypeName && (
-                <span className="capitalize">{relationshipTypeName}</span>
-              )}
+              <span className="capitalize">{relationshipTypeName}</span>
             </>
           ) : undefined
         }

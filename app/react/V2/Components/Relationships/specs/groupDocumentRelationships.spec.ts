@@ -35,12 +35,24 @@ describe('groupDocumentRelationships', () => {
     expect(result[1].references).toHaveLength(1);
   });
 
-  it('keeps single references on different pages as separate rail points', () => {
-    const groups = [2, 3, 4, 5, 7].map(page => singlePageGroup(page, [`p${page}`]));
+  it('merges nearby single-page references into a cluster on short documents', () => {
+    const groups = [2, 3, 4].map(page => singlePageGroup(page, [`p${page}`]));
 
     const result = groupDocumentRelationships(groups, 12);
 
-    expect(result).toHaveLength(5);
+    expect(result).toHaveLength(1);
+    expect(result[0].type).toBe('cluster');
+    expect(result[0].references).toHaveLength(3);
+    expect(result[0].startPage).toBe(2);
+    expect(result[0].endPage).toBe(4);
+  });
+
+  it('keeps single references separate when pages are outside the merge window', () => {
+    const groups = [2, 5, 8].map(page => singlePageGroup(page, [`p${page}`]));
+
+    const result = groupDocumentRelationships(groups, 12);
+
+    expect(result).toHaveLength(3);
     result.forEach(cluster => {
       expect(cluster.type).toBe('single');
       expect(cluster.references).toHaveLength(1);

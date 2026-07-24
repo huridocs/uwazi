@@ -94,9 +94,6 @@ const countGrouped = (groups: RelationshipGroups): number =>
 const countClusterReferences = (cluster: PositionedGroup[]): number =>
   cluster.reduce((count, item) => count + getGroupReferences(item.group).length, 0);
 
-const isDenseGroup = (group: PositionedGroup): boolean =>
-  getGroupReferences(group.group).length > 1;
-
 const canMergeIntoCluster = (
   cluster: PositionedGroup[],
   current: PositionedGroup,
@@ -104,8 +101,7 @@ const canMergeIntoCluster = (
 ): boolean =>
   countClusterReferences(cluster) + getGroupReferences(current.group).length <=
     DOCUMENT_CLUSTER_MERGE_MAX_REFS &&
-  current.page - cluster[0].page <= maxSpan &&
-  (cluster.some(isDenseGroup) || isDenseGroup(current));
+  current.page - cluster[0].page <= maxSpan;
 
 const shouldAllowMultiPageClustering = (groups: RelationshipGroups, safePages: number): boolean => {
   const refsPerPage = countGrouped(groups) / safePages;

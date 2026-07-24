@@ -41,7 +41,7 @@ const useRelationshipsPanelFilterSlices = () => {
     setRelTypeFilters({});
     setEntityTypeFilters({});
     setSearch('');
-    setSort('none');
+    setSort(DEFAULT_RELATIONSHIPS_SORT);
     setActiveClusterRefIds(null);
   }, []);
 
@@ -59,7 +59,6 @@ const useRelationshipsPanelFilterSlices = () => {
   const facetSlice = useMemo(() => {
     let activeFilterCount = 0;
     if (search.trim()) activeFilterCount += 1;
-    if (sort !== 'none') activeFilterCount += 1;
     activeFilterCount += Object.values(relTypeFilters).filter(Boolean).length;
     activeFilterCount += Object.values(entityTypeFilters).filter(Boolean).length;
     if (activeClusterRefIds) activeFilterCount += 1;
@@ -73,7 +72,7 @@ const useRelationshipsPanelFilterSlices = () => {
       clearFilters,
       activeFilterCount,
     };
-  }, [search, sort, relTypeFilters, entityTypeFilters, activeClusterRefIds, clearFilters]);
+  }, [search, relTypeFilters, entityTypeFilters, activeClusterRefIds, clearFilters]);
   const uiSlice = useMemo(
     () => ({
       expandAllSignal,
