@@ -2,20 +2,26 @@ import React from 'react';
 import { FunnelIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 
+type FilterDrawerButtonSize = 'sm' | 'md';
+
 type FilterDrawerButtonProps = {
   activeCount: number;
   onClick: () => void;
+  size?: FilterDrawerButtonSize;
 };
 
-const FilterDrawerButton = ({ activeCount, onClick }: FilterDrawerButtonProps) => {
+const FilterDrawerButton = ({ activeCount, onClick, size = 'sm' }: FilterDrawerButtonProps) => {
   const active = activeCount > 0;
+  const height = size === 'md' ? 'h-8' : 'h-6';
+  const padding = size === 'md' ? 'px-2.5' : 'px-2';
+  const text = size === 'md' ? 'text-xs' : 'text-micro';
 
   return (
     <button
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`relative inline-flex h-6 cursor-pointer items-center gap-1.5 rounded-md border px-2 text-micro font-medium transition-colors ${
+      className={`relative inline-flex cursor-pointer items-center gap-1.5 rounded-md border ${height} ${padding} ${text} font-medium transition-colors ${
         active
           ? 'border-border bg-vellum text-ink'
           : 'border-border bg-warm text-ink-secondary hover:bg-parchment hover:text-ink'

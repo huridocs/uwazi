@@ -36,6 +36,8 @@ describe('Relationships action bar', () => {
     await user.click(screen.getByRole('button', { name: /edit/i }));
 
     expect(screen.getByRole('button', { name: /create relationship/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /select all/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /deselect all/i })).toBeInTheDocument();
   });
 
   it('offers to delete selected relationships while editing', async () => {

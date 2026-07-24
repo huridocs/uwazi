@@ -38,7 +38,9 @@ const QuerySearchBar = ({
   useEffect(() => {
     if (!hintOpen) return undefined;
     const onClick = (event: MouseEvent) => {
-      if (!hintRef.current?.contains(event.target as Node)) setHintOpen(false);
+      if (!hintRef.current?.contains(event.target as Node)) {
+        setHintOpen(false);
+      }
     };
     document.addEventListener('mousedown', onClick);
     return () => document.removeEventListener('mousedown', onClick);
@@ -50,11 +52,12 @@ const QuerySearchBar = ({
   };
 
   return (
-    <div className={`flex items-center gap-1.5 pb-1 pt-0.5 ${className}`.trim()}>
+    <div className={`flex flex-wrap items-center gap-2 pb-1 pt-0.5 ${className}`.trim()}>
       <div
-        className="flex min-h-8 min-w-0 flex-1 cursor-text flex-wrap items-center gap-1 rounded-md border border-border bg-warm py-1 pl-2 pr-2 transition-all focus-within:border-ink/40 focus-within:ring-2 focus-within:ring-ink/20"
+        className="flex min-h-8 min-w-48 flex-1 cursor-text flex-wrap items-center gap-1.5 rounded-md border border-border bg-warm py-0.5 pl-2 pr-2 transition-all focus-within:border-ink/40 focus-within:ring-2 focus-within:ring-ink/20"
         onClick={() => inputRef.current?.focus()}
       >
+        <MagnifyingGlassIcon className="h-3.5 w-3.5 shrink-0 text-ink-muted" aria-hidden />
         {inlineSlot}
         <input
           ref={inputRef}
@@ -81,11 +84,7 @@ const QuerySearchBar = ({
                 setHintOpen(open => !open);
               }}
             >
-              {value ? (
-                <QuestionMarkCircleIcon className="h-3.5 w-3.5" />
-              ) : (
-                <MagnifyingGlassIcon className="h-3.5 w-3.5" />
-              )}
+              <QuestionMarkCircleIcon className="h-3.5 w-3.5" />
             </IconButton>
             {hintOpen && (
               <div

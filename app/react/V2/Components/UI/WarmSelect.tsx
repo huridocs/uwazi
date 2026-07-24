@@ -1,28 +1,28 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
-type WarmSelectOption = {
-  value: string;
+type WarmSelectOption<T extends string = string> = {
+  value: T;
   label: string;
 };
 
-type WarmSelectProps = {
-  value: string;
-  options: WarmSelectOption[];
-  onChange: (value: string) => void;
+type WarmSelectProps<T extends string = string> = {
+  value: T;
+  options: WarmSelectOption<T>[];
+  onChange: (value: T) => void;
   ariaLabel?: string;
   align?: 'start' | 'end';
   disabled?: boolean;
 };
 
-const WarmSelect = ({
+const WarmSelect = <T extends string>({
   value,
   options,
   onChange,
   ariaLabel,
   align = 'start',
   disabled = false,
-}: WarmSelectProps) => {
+}: WarmSelectProps<T>) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const current = options.find(option => option.value === value) ?? options[0];

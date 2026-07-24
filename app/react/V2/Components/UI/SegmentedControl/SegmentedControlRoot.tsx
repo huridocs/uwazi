@@ -9,6 +9,7 @@ type SegmentedControlRootProps = {
   className?: string;
   value?: string;
   onValueChange?: (value: string) => void;
+  size?: 'sm' | 'md';
 };
 
 const focusSegment = (container: HTMLDivElement, index: number) => {
@@ -65,10 +66,12 @@ const SegmentedControlRoot = ({
   className = '',
   value,
   onValueChange,
+  size = 'sm',
 }: SegmentedControlRootProps) => {
   const contextValue = useMemo(
-    () => (value !== undefined && onValueChange ? { value, onValueChange, disabled } : null),
-    [value, onValueChange, disabled]
+    () =>
+      value !== undefined && onValueChange ? { value, onValueChange, disabled, size } : null,
+    [value, onValueChange, disabled, size]
   );
 
   return (
