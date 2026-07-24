@@ -4,7 +4,7 @@ export function TimedMethod(operationName: string) {
   return function (_target: any, _propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
 
-    descriptor.value = function (...args: any[]) {
+    descriptor.value = async function (...args: any[]) {
       const telemetryCollector = ExecutionContext.getStore()
         ? ExecutionContext.telemetryCollector
         : undefined;
@@ -13,7 +13,13 @@ export function TimedMethod(operationName: string) {
         return originalMethod.apply(this, args);
       }
 
-      return telemetryCollector.runSpan(operationName, () => originalMethod.apply(this, args));
+      const endTimer = telemetryCollector.startTimer(operationName);
+
+      const result = await originalMethod.apply(this, args);
+
+      endTimer();
+
+      return result;
     };
 
     return descriptor;
