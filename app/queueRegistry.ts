@@ -77,6 +77,8 @@ import { DatavizScheduledRefreshJobHandler } from '#api/dataviz.v2/infrastructur
 import { DatavizScheduledRefreshJobLegacyToken } from '#api/dataviz.v2/application/contracts/DatavizScheduledRefreshJobHandlerToken.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { SendWelcomeEmailHandler } from '#api/core/infrastructure/jobs/SendWelcomeEmailHandler.js';
+import { SendRecoveryEmailHandler } from '#api/core/infrastructure/jobs/SendRecoveryEmailHandler.js';
+import { SendAccountLockedEmailHandler } from '#api/core/infrastructure/jobs/SendAccountLockedEmailHandler.js';
 import { MigrationJob } from '#api/core/infrastructure/jobs/MigrationJob.js';
 import { MigrationJobFactory } from '#api/core/infrastructure/factories/MigrationJobFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
@@ -334,6 +336,10 @@ export function registerJobs(register: Register) {
   );
 
   register(SendWelcomeEmailHandler, async () => new SendWelcomeEmailHandler());
+
+  register(SendRecoveryEmailHandler, async () => new SendRecoveryEmailHandler());
+
+  register(SendAccountLockedEmailHandler, async () => new SendAccountLockedEmailHandler());
 
   register(MigrationJob, async () =>
     MigrationJobFactory.create({
