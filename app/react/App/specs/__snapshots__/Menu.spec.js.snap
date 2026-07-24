@@ -92,7 +92,7 @@ exports[`Menu Links returns the expected HTML 1`] = `
     }
   >
     <div
-      className="tw-content"
+      className="tw-content tw-content--chrome"
     >
       <RequestStatus />
     </div>
