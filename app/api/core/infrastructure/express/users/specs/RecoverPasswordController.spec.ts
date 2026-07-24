@@ -4,6 +4,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { tenants } from '#api/tenants/tenantContext.js';
+import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { userRoutes } from '../routes.js';
 import { fixtures, f } from './fixtures.js';
 
@@ -39,7 +40,7 @@ describe('POST /api/recoverpassword', () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should send a recovery email job and return 200 with OK', async () => {
+  it('should create a send recovery email job and return 200 with OK', async () => {
     const response = await request(app)
       .post('/api/recoverpassword')
       .send({ email: 'existing@test.com' });
@@ -47,9 +48,9 @@ describe('POST /api/recoverpassword', () => {
     expect(response.status).toBe(200);
     expect(response.body).toBe('OK');
 
-    const job = await testingEnvironment.db
-      .getCollection('jobs')!
-      .findOne({ namespace, params: { email: 'existing@test.com' } });
+    const job = await getSharedConnection()
+      .collection('jobs')
+      .findOne({ name: 'SendRecoveryEmailHandler', namespace });
     expect(job).toBeDefined();
     expect(job?.params).toMatchObject({
       email: 'existing@test.com',

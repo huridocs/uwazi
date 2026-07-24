@@ -9,6 +9,7 @@ export class ResetPasswordUseCaseFactory {
       {
         usersDS: UsersDataSourceFactory.default(),
         passwordRecoveriesDS: PasswordRecoveriesDataSourceFactory.default(),
+        transactionManager: ExecutionContext.transactionManager,
         ...overrides,
       },
       { tenant: ExecutionContext.tenant }
