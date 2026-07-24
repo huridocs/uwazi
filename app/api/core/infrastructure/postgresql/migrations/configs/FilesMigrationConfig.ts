@@ -3,16 +3,19 @@ import { MigrationConfig } from '../MigrateCollectionToPostgres.js';
 import { FilesRow } from '../../files/PostgresFilesRow.js';
 import { FileDBO } from '#api/core/infrastructure/mongodb/files/schemas/FilesTypes.js';
 import { PropertySelectionSchema } from '#shared/types/commonTypes.js';
+import type { TableOfContent } from '#api/core/domain/files/domainTypes.js';
 
 /**
- * Remove C0 control characters that PostgreSQL JSONB rejects or that are
- * meaningless PDF extraction artifacts (null bytes, backspace, group separators,
- * etc.). Normal whitespace (tab, line feed, carriage return) is preserved.
+ * Strip control characters that are meaningless in extracted text and/or
+ * rejected by PostgreSQL JSONB (U+0000). Covers C0 controls (except normal
+ * whitespace: tab, line feed, carriage return), C1 controls, and corruption
+ * artifacts (U+FFFD replacement character). Arabic text, bidirectional marks,
+ * and all legitimate characters are preserved.
  */
 /* eslint-disable no-control-regex */
-function sanitizeForJsonb(value: unknown): unknown {
+export function sanitizeForJsonb(value: unknown): unknown {
   if (typeof value === 'string') {
-    return value.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');
+    return value.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F\u0080-\u009F\uFFFD]/g, '');
   }
   if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
     const result: Record<string, unknown> = {};
@@ -50,7 +53,7 @@ export const FilesMigrationConfig: MigrationConfig = {
       fullText: sanitizeForJsonb(doc.fullText) as Record<string, string> | null,
       propertySelections: sanitizeForJsonb(doc.propertySelections) as
         PropertySelectionSchema[] | null,
-      toc: doc.toc || null,
+      toc: sanitizeForJsonb(doc.toc) as TableOfContent[] | null,
 
       url: doc.url || null,
     };

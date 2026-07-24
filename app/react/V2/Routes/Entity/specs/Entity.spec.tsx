@@ -480,7 +480,7 @@ describe('Entity view', () => {
           'aria-selected',
           'true'
         );
-        expect(screen.getByRole('button', { name: 'Add file' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Add file/ })).toBeInTheDocument();
       });
     });
   });

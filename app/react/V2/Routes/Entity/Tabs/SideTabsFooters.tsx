@@ -43,6 +43,8 @@ const SideTabsFooters = ({ activeTabId: urlActiveTabId, mainDocument }: SideTabs
       return <SearchTabFooter />;
     case SIDE_TAB.FILE:
       return <FileTabFooter />;
+    case SIDE_TAB.FILES:
+      return null;
     case SIDE_TAB.TRANSLATIONS:
       return <TranslationsTabFooter />;
     default:
