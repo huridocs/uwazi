@@ -53,6 +53,16 @@ type SendWelcomeEmailParams = {
   userId: string;
 };
 
+type SendRecoveryEmailParams = {
+  domain: string;
+  email: string;
+};
+
+type SendAccountLockedEmailParams = {
+  domain: string;
+  userId: string;
+};
+
 interface Dispatcher {
   syncRelationships(items: SyncRelationshipsParams[]): Promise<void>;
   cleanupEntities(chunks: CleanupEntityParams[]): Promise<void>;
@@ -65,6 +75,8 @@ interface Dispatcher {
   cloneLanguageEntities(params: CloneLanguageEntitiesParams): Promise<void>;
   deleteLanguageEntities(params: DeleteLanguageEntitiesParams): Promise<void>;
   sendWelcomeEmail(params: SendWelcomeEmailParams): Promise<void>;
+  sendRecoveryEmail(params: SendRecoveryEmailParams): Promise<void>;
+  sendAccountLockedEmail(params: SendAccountLockedEmailParams): Promise<void>;
 }
 
 export type {
@@ -76,4 +88,6 @@ export type {
   DenormalizeThesaurusParams,
   CloneLanguageEntitiesParams,
   DeleteLanguageEntitiesParams,
+  SendRecoveryEmailParams,
+  SendAccountLockedEmailParams,
 };
