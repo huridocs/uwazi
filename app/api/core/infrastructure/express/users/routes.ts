@@ -8,6 +8,10 @@ import { CreateUserController } from './CreateUserController.js';
 import { DeleteUserController } from './DeleteUserController.js';
 import { GetUsersController } from './GetUsersController.js';
 import { UpdateUserController } from './UpdateUserController.js';
+import { UnlockAccountController } from './UnlockAccountController.js';
+import { UnlockBlockedUserController } from './UnlockBlockedUserController.js';
+import { RecoverPasswordController } from './RecoverPasswordController.js';
+import { ResetPasswordController } from './ResetPasswordController.js';
 import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 
 export const userRoutes = (app: Application) => {
@@ -75,5 +79,106 @@ export const userRoutes = (app: Application) => {
       }
     },
     GetUsersController.createHandler()
+  );
+
+  app.post(
+    '/api/users/unlock',
+    needsAuthorization(),
+    validatePasswordMiddleWare,
+    async (req: Request, res: Response, next: NextFunction) => {
+      if (tenants.current().featureFlags?.v2UsersUtilityRoutes) {
+        next();
+      } else {
+        await validation.validateRequest({
+          type: 'object',
+          properties: {
+            body: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                _id: { type: 'string' },
+              },
+              required: ['_id'],
+            },
+          },
+          required: ['body'],
+        })(req, res, next);
+      }
+    },
+    UnlockBlockedUserController.createHandler()
+  );
+
+  app.post(
+    '/api/unlockaccount',
+    async (req: Request, res: Response, next: NextFunction) => {
+      if (tenants.current().featureFlags?.v2UsersUtilityRoutes) {
+        next();
+      } else {
+        await validation.validateRequest({
+          type: 'object',
+          properties: {
+            body: {
+              type: 'object',
+              properties: {
+                username: { type: 'string' },
+                code: { type: 'string' },
+              },
+              required: ['username', 'code'],
+            },
+          },
+          required: ['body'],
+        })(req, res, next);
+      }
+    },
+    UnlockAccountController.createHandler()
+  );
+
+  app.post(
+    '/api/recoverpassword',
+    async (req: Request, res: Response, next: NextFunction) => {
+      if (tenants.current().featureFlags?.v2UsersUtilityRoutes) {
+        next();
+      } else {
+        await validation.validateRequest({
+          type: 'object',
+          properties: {
+            body: {
+              type: 'object',
+              properties: {
+                email: { type: 'string', minLength: 3 },
+              },
+              required: ['email'],
+            },
+          },
+          required: ['body'],
+        })(req, res, next);
+      }
+    },
+    RecoverPasswordController.createHandler()
+  );
+
+  app.post(
+    '/api/resetpassword',
+    async (req: Request, res: Response, next: NextFunction) => {
+      if (tenants.current().featureFlags?.v2UsersUtilityRoutes) {
+        next();
+      } else {
+        await validation.validateRequest({
+          type: 'object',
+          properties: {
+            body: {
+              type: 'object',
+              properties: {
+                key: { type: 'string' },
+                password: { type: 'string' },
+              },
+              required: ['key', 'password'],
+            },
+          },
+          required: ['body'],
+        })(req, res, next);
+      }
+    },
+    ResetPasswordController.createHandler()
   );
 };

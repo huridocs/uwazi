@@ -151,6 +151,7 @@ export const config = {
       v2UsersDelete: false,
       v2UsersGet: false,
       v2UsersUpdate: false,
+      v2UsersUtilityRoutes: false,
     },
     telemetry: {
       enabled: false,
