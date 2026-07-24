@@ -31,7 +31,7 @@ const dependenciesContextMiddleware = (
 
     ExecutionContext.telemetryCollector.add({
       method: request.method,
-      route: routeInfo.label,
+      path: routeInfo.label,
       route_kind: routeInfo.kind,
       status_code: response.statusCode,
     });
