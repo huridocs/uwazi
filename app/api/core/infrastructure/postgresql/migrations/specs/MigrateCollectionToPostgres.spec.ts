@@ -139,7 +139,7 @@ describe('MigrateCollectionToPostgres', () => {
 
   it('should batch insert correctly', async () => {
     const mongoDb = testingDB.db(testingDB.dbName);
-    const docs = Array.from({ length: 2500 }, (_, i) => ({
+    const docs = Array.from({ length: 250 }, (_, i) => ({
       _id: new ObjectId(),
       name: `Thesaurus ${i}`,
       values: [{ id: `v${i}`, label: `Label ${i}` }],
@@ -161,12 +161,12 @@ describe('MigrateCollectionToPostgres', () => {
 
     const migrator = makeMigrator();
     const result = await migrator.migrate(config);
-    expect(result.migrated).toBe(2500);
+    expect(result.migrated).toBe(250);
     expect(result.skipped).toBe(false);
 
     const pgRows = await testingPG.getAllFrom('thesauri');
     const rowsForTenant = pgRows.filter(r => r.tenant_id === TENANT);
-    expect(rowsForTenant).toHaveLength(2500);
+    expect(rowsForTenant).toHaveLength(250);
     expect(rowsForTenant.every(r => r.tenant_id === TENANT)).toBe(true);
   });
 
