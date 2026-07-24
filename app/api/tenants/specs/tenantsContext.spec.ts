@@ -75,13 +75,13 @@ describe('tenantsContext', () => {
     tenants.add({
       name: 'test-tenant-telemetry',
       dbName: 'test-tenant-telemetry-db',
-      featureFlags: { telemetry: { enabled: true } },
+      telemetry: { enabled: true },
     });
 
     await tenants.run(async () => {
-      expect(tenants.current().featureFlags?.telemetry).toEqual({
+      expect(tenants.current().telemetry).toEqual({
         enabled: true,
-        thresholdMs: config.defaultTenant.featureFlags!.telemetry!.thresholdMs,
+        thresholdMs: config.defaultTenant.telemetry!.thresholdMs,
       });
     }, 'test-tenant-telemetry');
   });
@@ -93,25 +93,8 @@ describe('tenantsContext', () => {
     });
 
     await tenants.run(async () => {
-      expect(tenants.current().featureFlags?.telemetry).toEqual(
-        config.defaultTenant.featureFlags!.telemetry
-      );
+      expect(tenants.current().telemetry).toEqual(config.defaultTenant.telemetry);
     }, 'test-tenant-no-telemetry');
-  });
-
-  it('should merge prometheus config with the default when only partially overridden', async () => {
-    tenants.add({
-      name: 'test-tenant-prometheus',
-      dbName: 'test-tenant-prometheus-db',
-      featureFlags: { prometheus: { enabled: true } },
-    });
-
-    await tenants.run(async () => {
-      expect(tenants.current().featureFlags?.prometheus).toEqual({
-        enabled: true,
-        sampleRate: config.defaultTenant.featureFlags!.prometheus!.sampleRate,
-      });
-    }, 'test-tenant-prometheus');
   });
 
   it('should only return tenants enabled for given feature flag', () => {

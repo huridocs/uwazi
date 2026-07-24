@@ -1,21 +1,20 @@
 /* eslint-disable max-statements */
-import { performance } from 'perf_hooks';
 import { TelemetryCollector } from '../TelemetryCollector.js';
 
 describe('TelemetryCollector', () => {
-  let performanceNowSpy: jest.SpyInstance;
+  let dateNowSpy: jest.SpyInstance;
   let currentTime: number;
 
   beforeEach(() => {
     currentTime = 1000;
-    performanceNowSpy = jest.spyOn(performance, 'now').mockImplementation(() => {
+    dateNowSpy = jest.spyOn(Date, 'now').mockImplementation(() => {
       currentTime += 1;
       return currentTime;
     });
   });
 
   afterEach(() => {
-    performanceNowSpy.mockRestore();
+    dateNowSpy.mockRestore();
   });
 
   describe('constructor', () => {
@@ -54,13 +53,13 @@ describe('TelemetryCollector', () => {
     });
   });
 
-  describe('runSpan with an async function', () => {
-    it('should run a span and record its duration', async () => {
+  describe('startTimer', () => {
+    it('should start a timer and return an end function', () => {
       const collector = new TelemetryCollector('main_operation');
+      const endTimer = collector.startTimer('operation_1');
 
-      await collector.runSpan('operation_1', async () => {
-        currentTime += 100;
-      });
+      currentTime += 100;
+      endTimer();
 
       const result = collector.build();
       const timing = result.timings.find((t: any) => t.operation === 'operation_1');
@@ -69,153 +68,54 @@ describe('TelemetryCollector', () => {
       expect(timing.duration_ms).toBeGreaterThanOrEqual(100);
     });
 
-    it('should nest a span started inside another span as its child', async () => {
+    it('should support multiple timers for the same operation', () => {
       const collector = new TelemetryCollector('main_operation');
 
-      await collector.runSpan('parent', async () => {
-        currentTime += 10;
-        await collector.runSpan('child', async () => {
-          currentTime += 50;
-        });
-      });
+      const endTimer1 = collector.startTimer('repeated_operation');
+      currentTime += 50;
+      endTimer1();
+
+      const endTimer2 = collector.startTimer('repeated_operation');
+      currentTime += 75;
+      endTimer2();
+
+      const endTimer3 = collector.startTimer('repeated_operation');
+      currentTime += 100;
+      endTimer3();
 
       const result = collector.build();
+      const timings = result.timings.filter((t: any) =>
+        t.operation.startsWith('repeated_operation')
+      );
 
-      expect(result.timings).toHaveLength(1);
-      expect(result.timings[0].operation).toBe('parent');
-      expect(result.timings[0].children).toHaveLength(1);
-      expect(result.timings[0].children[0].operation).toBe('child');
-      expect(result.timings[0].children[0].duration_ms).toBeGreaterThanOrEqual(50);
+      expect(timings).toHaveLength(3);
+      expect(timings[0].operation).toBe('repeated_operation[0]');
+      expect(timings[1].operation).toBe('repeated_operation[1]');
+      expect(timings[2].operation).toBe('repeated_operation[2]');
     });
 
-    it('should nest a span across an await boundary inside the parent', async () => {
+    it('should not add suffix when operation is called only once', () => {
       const collector = new TelemetryCollector('main_operation');
-
-      await collector.runSpan('parent', async () => {
-        await Promise.resolve();
-        await collector.runSpan('child', async () => {
-          currentTime += 20;
-        });
-      });
+      const endTimer = collector.startTimer('single_operation');
+      endTimer();
 
       const result = collector.build();
+      const timing = result.timings.find((t: any) => t.operation === 'single_operation');
 
-      expect(result.timings[0].operation).toBe('parent');
-      expect(result.timings[0].children[0].operation).toBe('child');
+      expect(timing).toBeDefined();
+      expect(timing.operation).toBe('single_operation');
     });
 
-    it('should keep repeated calls to the same operation as separate sibling entries', async () => {
+    it('should calculate duration even if timer is not ended', () => {
       const collector = new TelemetryCollector('main_operation');
+      collector.startTimer('unfinished_operation');
 
-      await collector.runSpan('repeated_operation', async () => {
-        currentTime += 50;
-      });
-      await collector.runSpan('repeated_operation', async () => {
-        currentTime += 75;
-      });
+      currentTime += 200;
 
       const result = collector.build();
-      const timings = result.timings.filter((t: any) => t.operation === 'repeated_operation');
+      const timing = result.timings.find((t: any) => t.operation === 'unfinished_operation');
 
-      expect(timings).toHaveLength(2);
-    });
-
-    it('should attribute concurrent sibling spans to the same parent, not to each other', async () => {
-      const collector = new TelemetryCollector('main_operation');
-
-      await Promise.all([
-        collector.runSpan('sibling_a', async () => {
-          await Promise.resolve();
-        }),
-        collector.runSpan('sibling_b', async () => {
-          await Promise.resolve();
-        }),
-      ]);
-
-      const result = collector.build();
-
-      expect(result.timings).toHaveLength(2);
-      expect(result.timings.every((t: any) => !t.children)).toBe(true);
-    });
-
-    it('should still record the span duration and propagate the error when the span rejects', async () => {
-      const collector = new TelemetryCollector('main_operation');
-
-      await expect(
-        collector.runSpan('failing_operation', async () => {
-          currentTime += 30;
-          throw new Error('boom');
-        })
-      ).rejects.toThrow('boom');
-
-      const result = collector.build();
-      const timing = result.timings.find((t: any) => t.operation === 'failing_operation');
-
-      expect(timing.duration_ms).toBeGreaterThanOrEqual(30);
-    });
-  });
-
-  describe('runSpan with a synchronous function', () => {
-    it('should run the span synchronously and return the plain value, not a promise', () => {
-      const collector = new TelemetryCollector('main_operation');
-
-      const result = collector.runSpan('sync_operation', () => {
-        currentTime += 40;
-        return 'done';
-      });
-
-      expect(result).toBe('done');
-
-      const timing = collector.build().timings.find((t: any) => t.operation === 'sync_operation');
-      expect(timing.duration_ms).toBeGreaterThanOrEqual(40);
-    });
-
-    it('should nest a synchronous child span inside a synchronous parent span', () => {
-      const collector = new TelemetryCollector('main_operation');
-
-      collector.runSpan('sync_parent', () => {
-        currentTime += 10;
-        collector.runSpan('sync_child', () => {
-          currentTime += 20;
-        });
-      });
-
-      const result = collector.build();
-
-      expect(result.timings[0].operation).toBe('sync_parent');
-      expect(result.timings[0].children[0].operation).toBe('sync_child');
-    });
-
-    it('should nest a synchronous child span inside an async parent span', async () => {
-      const collector = new TelemetryCollector('main_operation');
-
-      await collector.runSpan('async_parent', async () => {
-        await Promise.resolve();
-        collector.runSpan('sync_child', () => {
-          currentTime += 15;
-        });
-      });
-
-      const result = collector.build();
-
-      expect(result.timings[0].operation).toBe('async_parent');
-      expect(result.timings[0].children[0].operation).toBe('sync_child');
-    });
-
-    it('should still record the span duration and propagate the error when the span throws synchronously', () => {
-      const collector = new TelemetryCollector('main_operation');
-
-      expect(() =>
-        collector.runSpan('failing_sync_operation', () => {
-          currentTime += 25;
-          throw new Error('sync boom');
-        })
-      ).toThrow('sync boom');
-
-      const result = collector.build();
-      const timing = result.timings.find((t: any) => t.operation === 'failing_sync_operation');
-
-      expect(timing.duration_ms).toBeGreaterThanOrEqual(25);
+      expect(timing.duration_ms).toBeGreaterThanOrEqual(200);
     });
   });
 
@@ -227,9 +127,9 @@ describe('TelemetryCollector', () => {
       expect(collector.mainDurationMs()).toBeGreaterThanOrEqual(150);
     });
 
-    it('should be consistent with the summary total_duration_ms from build()', async () => {
+    it('should be consistent with the summary total_duration_ms from build()', () => {
       const collector = new TelemetryCollector('main_operation');
-      await collector.runSpan('operation_1', async () => {});
+      collector.startTimer('operation_1')();
       currentTime += 50;
 
       const beforeBuild = collector.mainDurationMs();
@@ -250,12 +150,19 @@ describe('TelemetryCollector', () => {
       expect(result.key2).toBe('value2');
     });
 
-    it('should list top-level spans in chronological start order', async () => {
+    it('should sort timings by start_offset_ms', () => {
       const collector = new TelemetryCollector('main_operation');
 
-      await collector.runSpan('operation_3', async () => {});
-      await collector.runSpan('operation_1', async () => {});
-      await collector.runSpan('operation_2', async () => {});
+      currentTime += 10;
+      const end1 = collector.startTimer('operation_3');
+      currentTime += 5;
+      const end2 = collector.startTimer('operation_1');
+      currentTime += 5;
+      const end3 = collector.startTimer('operation_2');
+
+      end1();
+      end2();
+      end3();
 
       const result = collector.build();
 
@@ -264,10 +171,24 @@ describe('TelemetryCollector', () => {
       expect(result.timings[2].operation).toBe('operation_2');
     });
 
-    it('should not include main operation in timings array', async () => {
+    it('should assign order based on chronological start time', () => {
       const collector = new TelemetryCollector('main_operation');
-      await collector.runSpan('operation_1', async () => {});
-      await collector.runSpan('operation_2', async () => {});
+
+      collector.startTimer('first')();
+      collector.startTimer('second')();
+      collector.startTimer('third')();
+
+      const result = collector.build();
+
+      expect(result.timings[0].order).toBe(0);
+      expect(result.timings[1].order).toBe(1);
+      expect(result.timings[2].order).toBe(2);
+    });
+
+    it('should not include main operation in timings array', () => {
+      const collector = new TelemetryCollector('main_operation');
+      collector.startTimer('operation_1')();
+      collector.startTimer('operation_2')();
 
       const result = collector.build();
 
