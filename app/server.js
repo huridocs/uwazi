@@ -42,6 +42,7 @@ import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/
 import { embedFrameHeaders } from './api/middleware/embedFrameHeaders.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { registerMetricsRoutes } from '#api/core/infrastructure/express/MetricsRoute.js';
+import { GracefulShutdown } from '#api/infrastructure/shutdown/GracefulShutdown.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -57,14 +58,11 @@ app.use(embedFrameHeaders);
 
 const http = Server(app);
 
-const gracefullShutdown = () => {
-  process.stdout.write('SIGINT signal received.\r\n');
-  http.close(async error => {
-    process.stdout.write('Gracefully closing express connections\r\n');
-    if (error) {
-      process.stderr.write(error.toString());
-      process.exit(1);
-    }
+const shutdown = new GracefulShutdown({
+  server: http,
+  app,
+  cleanup: async () => {
+    closeSockets();
 
     const tasks = [
       (async () => {
@@ -93,18 +91,18 @@ const gracefullShutdown = () => {
         }
       })(),
     ];
-
     await Promise.allSettled(tasks);
-    process.stdout.write('Server closed succesfully\r\n');
-    process.exit(0);
-  });
-  closeSockets();
-};
+  },
+  logger: {
+    log: (...args) => process.stdout.write(args.join(' ') + '\r\n'),
+    error: (...args) => process.stderr.write(args.join(' ') + '\r\n'),
+  },
+});
 
 const uncaughtError = error => {
   handleError(error, { uncaught: true });
   close(2000).then(() => {
-    gracefullShutdown();
+    shutdown.shutdown();
   });
 };
 
@@ -186,6 +184,6 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
     }
   });
 
-  process.on('SIGINT', gracefullShutdown);
-  process.on('SIGTERM', gracefullShutdown);
+  process.on('SIGINT', () => shutdown.shutdown());
+  process.on('SIGTERM', () => shutdown.shutdown());
 });
