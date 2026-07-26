@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React, { useState } from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import type { TocSchema } from '#shared/types/commonTypes.js';
 import { ToC } from '../ToC.js';
 
@@ -63,6 +63,8 @@ const nestedToc: TocSchema[] = [
   },
 ];
 
+const rowFor = (label: string) => screen.getByText(label).closest('[role="button"]')!;
+
 // Helper component to provide expanded state
 const ToCWithState = ({
   toc,
@@ -72,6 +74,7 @@ const ToCWithState = ({
   onClick?: (entry: any) => void;
   onStateChange?: (expanded: boolean, collapsed: boolean) => void;
   isEditMode?: boolean;
+  currentPage?: number;
   onIndentationChange?: (index: number, indentation: number) => void;
   onDelete?: (index: number) => void;
   onLabelChange?: (index: number, label: string) => void;
@@ -93,20 +96,25 @@ describe('ToC', () => {
       expect(screen.getByText('Chapter 2')).toBeInTheDocument();
     });
 
-    it('should display page numbers for entries with pages', () => {
+    it('should display page tags for entries with pages', () => {
       render(<ToCWithState toc={simpleToc} />);
 
-      expect(screen.getByText('1')).toBeInTheDocument();
-      expect(screen.getByText('5')).toBeInTheDocument();
-      expect(screen.getByText('10')).toBeInTheDocument();
+      expect(
+        within(rowFor('Introduction')).getByRole('button', { name: /p\.\s*1/ })
+      ).toBeInTheDocument();
+      expect(
+        within(rowFor('Chapter 1')).getByRole('button', { name: /p\.\s*5/ })
+      ).toBeInTheDocument();
+      expect(
+        within(rowFor('Chapter 2')).getByRole('button', { name: /p\.\s*10/ })
+      ).toBeInTheDocument();
     });
 
     it('should call onClick when an entry is clicked', () => {
       const handleClick = jest.fn();
       render(<ToCWithState toc={simpleToc} onClick={handleClick} />);
 
-      const introductionEntry = screen.getByText('Introduction').closest('div');
-      fireEvent.click(introductionEntry!);
+      fireEvent.click(rowFor('Introduction'));
 
       expect(handleClick).toHaveBeenCalledTimes(1);
       expect(handleClick).toHaveBeenCalledWith(
@@ -114,6 +122,12 @@ describe('ToC', () => {
           entry: expect.objectContaining({ label: 'Introduction' }),
         })
       );
+    });
+
+    it('should highlight the active entry for the current page', () => {
+      render(<ToCWithState toc={simpleToc} currentPage={5} />);
+
+      expect(rowFor('Chapter 1')).toHaveAttribute('aria-current', 'true');
     });
   });
 
@@ -128,7 +142,6 @@ describe('ToC', () => {
     it('should hide nested children when parent is collapsed', () => {
       render(<ToCWithState toc={nestedToc} />);
 
-      // Initially, nested items should be hidden
       expect(screen.queryByText('Chapter 1: Getting Started')).not.toBeInTheDocument();
       expect(screen.queryByText('Section 1.1: Installation')).not.toBeInTheDocument();
     });
@@ -136,79 +149,44 @@ describe('ToC', () => {
     it('should show nested children when parent is expanded', async () => {
       render(<ToCWithState toc={nestedToc} />);
 
-      // Find and click the expand button for "Part I: Fundamentals"
-      const partIEntry = screen.getByText('Part I: Fundamentals').closest('div');
-      const expandButton = partIEntry?.querySelector('button[aria-label="Expand section"]');
+      fireEvent.click(rowFor('Part I: Fundamentals'));
 
-      if (expandButton) {
-        fireEvent.click(expandButton);
-
-        // After expanding, nested items should be visible
-        await waitFor(() => {
-          expect(screen.getByText('Chapter 1: Getting Started')).toBeInTheDocument();
-        });
-      }
+      await waitFor(() => {
+        expect(screen.getByText('Chapter 1: Getting Started')).toBeInTheDocument();
+      });
     });
 
     it('should expand and collapse entries correctly', async () => {
       render(<ToCWithState toc={nestedToc} />);
 
-      const partIEntry = screen.getByText('Part I: Fundamentals').closest('div');
-      const expandButton = partIEntry?.querySelector('button[aria-label="Expand section"]');
+      fireEvent.click(rowFor('Part I: Fundamentals'));
+      await waitFor(() => {
+        expect(screen.getByText('Chapter 1: Getting Started')).toBeInTheDocument();
+      });
 
-      if (expandButton) {
-        // Expand
-        fireEvent.click(expandButton);
-        await waitFor(() => {
-          expect(screen.getByText('Chapter 1: Getting Started')).toBeInTheDocument();
-        });
-
-        // Collapse
-        const collapseButton = partIEntry?.querySelector('button[aria-label="Collapse section"]');
-        if (collapseButton) {
-          fireEvent.click(collapseButton);
-          await waitFor(() => {
-            expect(screen.queryByText('Chapter 1: Getting Started')).not.toBeInTheDocument();
-          });
-        }
-      }
+      fireEvent.click(rowFor('Part I: Fundamentals'));
+      await waitFor(() => {
+        expect(screen.queryByText('Chapter 1: Getting Started')).not.toBeInTheDocument();
+      });
     });
 
     it('should hide deeply nested children when intermediate parent is collapsed', async () => {
       render(<ToCWithState toc={nestedToc} />);
 
-      // Expand Part I
-      const partIEntry = screen.getByText('Part I: Fundamentals').closest('div');
-      const partIExpandButton = partIEntry?.querySelector('button[aria-label="Expand section"]');
-      if (partIExpandButton) {
-        fireEvent.click(partIExpandButton);
-      }
+      fireEvent.click(rowFor('Part I: Fundamentals'));
 
-      // Expand Chapter 1
       await waitFor(() => {
-        const chapter1Entry = screen.getByText('Chapter 1: Getting Started').closest('div');
-        const chapter1ExpandButton = chapter1Entry?.querySelector(
-          'button[aria-label="Expand section"]'
-        );
-        if (chapter1ExpandButton) {
-          fireEvent.click(chapter1ExpandButton);
-        }
+        expect(screen.getByText('Chapter 1: Getting Started')).toBeInTheDocument();
       });
 
-      // Verify Section 1.1 is visible
+      fireEvent.click(rowFor('Chapter 1: Getting Started'));
+
       await waitFor(() => {
         expect(screen.getByText('Section 1.1: Installation')).toBeInTheDocument();
       });
 
-      // Collapse Part I
-      const partICollapseButton = partIEntry?.querySelector(
-        'button[aria-label="Collapse section"]'
-      );
-      if (partICollapseButton) {
-        fireEvent.click(partICollapseButton);
-      }
+      fireEvent.click(rowFor('Part I: Fundamentals'));
 
-      // All children should be hidden
       await waitFor(() => {
         expect(screen.queryByText('Chapter 1: Getting Started')).not.toBeInTheDocument();
         expect(screen.queryByText('Section 1.1: Installation')).not.toBeInTheDocument();
@@ -217,22 +195,13 @@ describe('ToC', () => {
   });
 
   describe('Expand All / Collapse All', () => {
-    // Note: Expand/Collapse All functionality is now handled by the atom
-    // These tests are kept for UI interaction testing
-    it('should expand entries when clicked', async () => {
+    it('should expand entries when row is clicked', async () => {
       render(<ToCWithState toc={nestedToc} />);
 
-      // Initially nested items should be hidden
       expect(screen.queryByText('Chapter 1: Getting Started')).not.toBeInTheDocument();
 
-      // Click expand button
-      const partIEntry = screen.getByText('Part I: Fundamentals').closest('div');
-      const expandButton = partIEntry?.querySelector('button[aria-label="Expand section"]');
-      if (expandButton) {
-        fireEvent.click(expandButton);
-      }
+      fireEvent.click(rowFor('Part I: Fundamentals'));
 
-      // Nested items should be visible
       await waitFor(() => {
         expect(screen.getByText('Chapter 1: Getting Started')).toBeInTheDocument();
       });
@@ -244,17 +213,11 @@ describe('ToC', () => {
       const handleStateChange = jest.fn();
       render(<ToCWithState toc={nestedToc} onStateChange={handleStateChange} />);
 
-      // Initial state should be reported
       await waitFor(() => {
         expect(handleStateChange).toHaveBeenCalled();
       });
 
-      // Expand an entry
-      const partIEntry = screen.getByText('Part I: Fundamentals').closest('div');
-      const expandButton = partIEntry?.querySelector('button[aria-label="Expand section"]');
-      if (expandButton) {
-        fireEvent.click(expandButton);
-      }
+      fireEvent.click(rowFor('Part I: Fundamentals'));
 
       await waitFor(() => {
         expect(handleStateChange).toHaveBeenCalled();
@@ -263,14 +226,16 @@ describe('ToC', () => {
   });
 
   describe('Empty and undefined ToC', () => {
-    it('should render nothing when toc is empty', () => {
+    it('should render an empty container when toc is empty', () => {
       const { container } = render(<ToCWithState toc={[]} />);
-      expect(container.firstChild).toBeNull();
+      expect(container.querySelector('.pb-8')).toBeInTheDocument();
+      expect(container.querySelector('.pb-8')?.childElementCount).toBe(0);
     });
 
-    it('should render nothing when toc is undefined', () => {
+    it('should render an empty container when toc is undefined', () => {
       const { container } = render(<ToCWithState toc={undefined} />);
-      expect(container.firstChild).toBeNull();
+      expect(container.querySelector('.pb-8')).toBeInTheDocument();
+      expect(container.querySelector('.pb-8')?.childElementCount).toBe(0);
     });
   });
 
@@ -298,10 +263,8 @@ describe('ToC', () => {
       const handleClick = jest.fn();
       render(<ToCWithState toc={tocWithoutPages} onClick={handleClick} />);
 
-      const entry = screen.getByText('Section without page').closest('div');
-      fireEvent.click(entry!);
+      fireEvent.click(screen.getByText('Section without page'));
 
-      // Should not call onClick for entries without page numbers
       expect(handleClick).not.toHaveBeenCalled();
     });
   });
