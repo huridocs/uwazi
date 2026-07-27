@@ -49,7 +49,9 @@ const RelationshipsSearchTips = () => (
     </ul>
     <div className="mt-2 border-t border-border-soft pt-2 text-nano text-ink-tertiary">
       <Translate>e.g.</Translate>{' '}
-      <code className="font-mono text-ink-secondary">status AND women NOT Nicaragua</code>
+      <code className="font-mono text-ink-secondary">
+        <Translate>status AND women NOT Nicaragua</Translate>
+      </code>
     </div>
   </>
 );

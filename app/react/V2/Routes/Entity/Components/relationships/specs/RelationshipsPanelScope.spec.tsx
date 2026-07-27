@@ -68,6 +68,7 @@ describe('Relationships panel across entities', () => {
     render(<RouterProvider router={createPanelScopeRouter(entityWithRelationsB)} />);
 
     expect(searchInput()).toHaveValue('');
+    await user.click(screen.getByRole('button', { name: 'Expand all' }));
     expect(screen.getByText(/target quoted text/)).toBeInTheDocument();
     expect(screen.getByText('Other Entity')).toBeInTheDocument();
   });
