@@ -75,6 +75,7 @@ Migrate relationship types backend logic to v2 architecture so the module can la
 - [x] Remove legacy V1 relationshiptypes code.
 - [x] Migrate runtime calls from legacy V1 relationshiptypes code into v2.
 - [x] Add v2 test suites for routes/use-cases/datasource and keep cross-module behavior stable.
+- [ ] Revisit DELETE semantics for in-use relation types (currently returns `false`; evaluate explicit error response behavior).
 
 ## Current Implementation Notes
 
