@@ -9,6 +9,7 @@ Migrate relationship types backend logic to v2 architecture so the module can la
 - Backend-only (`app/api`).
 - Keep endpoint names and response/request contracts identical for `/api/relationtypes`.
 - No runtime support for legacy `relationtypes.properties` behavior in the target v2 implementation.
+- Do not implement cleanup logic for legacy `relationtypes.properties` or `connections.metadata` in this migration scope.
 - Internally split mutation flows into explicit `create` and `update` use cases (no internal upsert).
 
 ## Current Diagnosis
@@ -21,9 +22,7 @@ Migrate relationship types backend logic to v2 architecture so the module can la
 
 - Treat `relationtypes.properties` as deprecated legacy data.
 - Target implementation provides no first-class support for relationtype property semantics.
-- Add data cleanup for affected tenants:
-  - remove `relationtypes.properties`
-  - remove related keys in `connections.metadata` for affected relationship type templates
+- Assume production data cleanup is handled separately; migration code should not spend effort supporting or transforming `relationtypes.properties` or `connections.metadata`.
 
 ## Architecture Reference
 
@@ -64,9 +63,7 @@ Migrate relationship types backend logic to v2 architecture so the module can la
    - introduce v2 route/controller layer
    - move relationtypes behavior into v2-oriented module structure
    - keep `/api/relationtypes` contract stable
-2. Data cleanup tooling:
-   - tenant-aware script/migration for legacy relationtype properties and connection metadata cleanup
-3. Postgres phase:
+2. Postgres phase:
    - add Postgres adapter after v2 parity and cleanup
 
 ## TODOs
@@ -75,10 +72,8 @@ Migrate relationship types backend logic to v2 architecture so the module can la
 - [x] Keep single compatibility POST route but route internally to separate create/update use cases.
 - [x] Implement v2 CRUD use cases and datasource shape (no internal upsert).
 - [x] Move delete guards and translation behavior needed by current contract.
-- [ ] Remove runtime paths tied to relationtype property rename/unset behavior.
 - [ ] Remove legacy V1 relationshiptypes code.
 - [ ] Migrate calls from legacy V1 relationshiptypes code into v2.
-- [ ] Add cleanup script with dry-run and apply modes.
 - [x] Add v2 test suites for routes/use-cases/datasource and keep cross-module behavior stable.
 
 ## Current Implementation Notes
@@ -107,6 +102,5 @@ Migrate relationship types backend logic to v2 architecture so the module can la
 ## To Keep an Eye On
 
 - Final confirmation that dropping relationtype property behavior is acceptable for all external consumers.
-- Validate no hidden workflows depend on `connections.metadata` keys produced by old relationtype properties.
-- If production evidence contradicts this, pause rollout and record fallback options before continuing.
+- Database cleanup of old `relationtypes.properties` and `connections.metadata` is operational follow-up, not part of this implementation scope.
 - Keep enforcing "no internal mocks" in relationshiptypes v2 tests unless crossing module/system boundaries (auth/socket/etc).
