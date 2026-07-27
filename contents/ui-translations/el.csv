@@ -349,6 +349,7 @@ Deleted thesaurus,Διαγράφηκε θησαυρός
 Deleted user,Διαγράφηκε χρήστης
 Deleted user group,Διαγράφηκε ομάδα χρηστών
 Deletion success,Επιτυχία διαγραφής
+Density,Density
 Description,Περιγραφή
 Deselect all,Deselect all
 Direction,Direction
@@ -361,6 +362,7 @@ Discard changes,Απόρριψη αλλαγών
 Discard changes?,Απόρριψη αλλαγών;
 Dismiss,Απόκρυψη
 Display entity view from page,Προβολή οντότητας από σελίδα
+Display options,Display options
 Do you want disable 2FA for the following users?,Θέλετε να απενεργοποιήσετε το 2FA για τους ακόλουθους χρήστες;
 Do you want reset the password for the following users?,Θέλετε να επαναφέρετε τον κωδικό πρόσβασης για τους ακόλουθους χρήστες;
 Do you want to delete the following items?,Θέλετε να διαγράψετε τα ακόλουθα στοιχεία;
@@ -381,6 +383,7 @@ Done extracting files,Done extracting files
 Done scanning,Done scanning
 Download,Λήψη
 Download a third-party authenticator app from your mobile store.,Κατεβάστε μια εφαρμογή πιστοποίησης ταυτότητας από το το κατάστημα εφαρμογών της συσκευής σας.
+Download all,Download all
 Download failed rows,Download failed rows
 Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,Σύρετε και αποθέστε αρχείο σε αυτό το παράθυρο για μεταφόρτωση
@@ -391,6 +394,7 @@ Duplicated email,Διπλότυπο email
 Duplicated name,Διπλότυπο όνομα
 Duplicated username,Διπλότυπο όνομα χρήστη
 Duration,Duration
+e.g.,e.g.
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
 Earlier,Earlier
 Edit,Επεξεργασία
@@ -467,6 +471,7 @@ Favicon description,"Το favicon είναι ένα μικρό εικονίδι�
 Favicon no images hint,Favicon no images hint
 FEATURED,ΕΠΙΛΕΓΜΕΝΑ
 File,Αρχείο
+file,file
 File deleted,Το αρχείο διαγράφηκε
 File details,File details
 File extraction completed successfully.,File extraction completed successfully.
@@ -474,6 +479,7 @@ File name,Όνομα αρχείου
 File preview unavailable,File preview unavailable
 File updated,Το αρχείο ενημερώθηκε
 Files,Αρχεία
+files,files
 Files and database usage,Χρήση αρχείων και βάσης δεδομένων
 Fill,Συμπλήρωση
 Filter,Filter
@@ -520,7 +526,7 @@ Google Analytics,Google Analytics
 Google Analytics ID,Αναγνωριστικό Google Analytics
 Google Maps,Χάρτες Google
 Group,Ομάδα
-Group by:,Group by:
+Group by,Group by
 group expressions,group expressions
 Group Options,Επιλογές ομάδας
 Group saved,Η ομάδα αποθηκεύτηκε
@@ -651,6 +657,7 @@ Lookup help,Lookup help
 Lost connection to the server. Your changes may be lost,Η σύνδεση με τον διακομιστή χάθηκε. Οι αλλαγές σας ενδέχεται να χαθούν.
 low,χαμηλό
 Manage site settings and configuration,Διαχείριση ρυθμίσεων και διαμόρφωσης ιστότοπου
+Manage types,Manage types
 Manual data,Manual data
 Manually set a color,Manually set a color
 Map,Χάρτης
@@ -732,6 +739,7 @@ New group,Νέα ομάδα
 New language added,Προστέθηκε νέα γλώσσα
 New page,Νέα σελίδα
 New password,Νέος κωδικός πρόσβασης
+New primary doc,New primary doc
 New relationship type,Νέος τύπος σχέσης
 New relationships group,Νέα ομάδα σχέσεων
 New Relationships Migration,Μετεγκατάσταση νέων σχέσεων
@@ -762,6 +770,7 @@ No options,Δεν υπάρχουν επιλογές
 No options found,Δεν βρέθηκαν επιλογές
 No page,No page
 No people or groups added yet,No people or groups added yet
+No primary documents,No primary documents
 No property,Το στοιχείο δεν έχει αυτήν την ιδιότητα
 No References,Δεν υπάρχουν αναφορές
 No References description,Οι αναφορές είναι τμήματα αυτού του εγγράφου που σχετίζονται με άλλα έγγραφα και οντότητες.
@@ -771,6 +780,7 @@ No relationships found,No relationships found
 No relationships to graph,No relationships to graph
 No releases yet,No releases yet
 No results found,No results found
+No supporting files yet. Add a file to get started.,No supporting files yet. Add a file to get started.
 No table of contents,Δεν υπάρχει πίνακας περιεχομένων
 No Table of contents,No Table of contents
 No table of contents description,"Ο πίνακας περιεχομένων εμφανίζει τη δομή του εγγράφου για εύκολη πλοήγηση. Μπορείτε να ξεκινήσετε επιλέγοντας κείμενο στο έγγραφο και κάνοντας κλικ στο κουμπί ""Προσθήκη στον πίνακα περιεχομένων""."
@@ -947,6 +957,7 @@ RAW,RAW
                         or editing entities—not when changing chart settings (save handles that).","Re-runs the query against your current collection. Use this after importing
                         or editing entities—not when changing chart settings (save handles that)."
 Re-uploaded document,Επαναφορτωμένο έγγραφο
+Ready,Ready
 Receiving email,Λήψη email
 Receiving email description,"Εάν διαθέτετε φόρμα επικοινωνίας, αυτή είναι η διεύθυνση email στην οποία θα λαμβάνονται οι υποβολές της φόρμας."
 Recommended,Recommended
@@ -1125,7 +1136,6 @@ Sort,Ταξινόμηση
 Sort ascending,Ταξινόμηση αύξουσα
 Sort by,Ταξινόμηση κατά
 Sort descending,Ταξινόμηση φθίνουσα
-Sort order,Sort order
 Sort:,Sort:
 sorted by,Ταξινόμηση κατά
 Source,Πηγή
@@ -1141,6 +1151,7 @@ State,Πολιτεία
 Statistics,Στατιστικά στοιχεία
 Stats & Filters,Στατιστικά & φίλτρα
 Status,Κατάσταση
+status AND women NOT Nicaragua,status AND women NOT Nicaragua
 Storage,Αποθήκευση
 Streets,Δρόμοι
 Strict mode,Αυστηρή λειτουργία
@@ -1211,7 +1222,7 @@ Theme instance file invalid,Theme instance file invalid
 Theme logotype,Theme logotype
 Theme presets,Theme presets
 Theme preview,Theme preview
-Then by:,Then by:
+Then by,Then by
 There are no pages enabled for entity view,Δεν υπάρχουν σελίδες ενεργοποιημένες για την προβολή οντότητας
 There are no untranslated terms,Δεν υπάρχουν αμετάφραστοι όροι
 Thesauri,Θησαυροί
@@ -1401,6 +1412,8 @@ Welcome to Uwazi,Καλώς ήλθατε στο Uwazi
 "Well, this is awkward...","Λοιπόν, αυτό είναι άβολο..."
 Whitelisted templates,Επιτρεπόμενα πρότυπα
 wildcard,wildcard
+wildcard (many chars),wildcard (many chars)
+wildcard (one char),wildcard (one char)
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Θα επιχειρήσει να γεμίσει το περιέχον, χρησιμοποιώντας ολόκληρο το πλάτος του. Στις κάρτες, είναι πιθανό να προκύψει περικοπή."
 will be updated with the same value.,θα ενημερωθεί με την ίδια τιμή.
 Will show the entire media inside the container.,Θα εμφανίσει ολόκληρο το πολυμέσο μέσα στο περιέχον.

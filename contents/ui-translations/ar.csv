@@ -347,6 +347,7 @@ Deleted thesaurus,Deleted thesaurus
 Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
+Density,Density
 Description,وصف
 Deselect all,Deselect all
 Direction,Direction
@@ -359,6 +360,7 @@ Discard changes,تجاهل التغييرات
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,عرض معاينة الكيان (الإدخال) من الصفحة
+Display options,Display options
 Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
 Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
@@ -379,6 +381,7 @@ Done extracting files,Done extracting files
 Done scanning,Done scanning
 Download,تحميل
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
+Download all,Download all
 Download failed rows,Download failed rows
 Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,اسحب الملف وأفلته في هذه النافذة للتحميل
@@ -389,6 +392,7 @@ Duplicated email,بريد إلكتروني مكرر
 Duplicated name,اسم مكرر
 Duplicated username,اسم المستخدم مكرر
 Duration,المدة
+e.g.,e.g.
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
 Earlier,Earlier
 Edit,تحرير
@@ -465,6 +469,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 Favicon no images hint,Favicon no images hint
 FEATURED,FEATURED
 File,ملف
+file,file
 File deleted,File deleted
 File details,File details
 File extraction completed successfully.,File extraction completed successfully.
@@ -472,6 +477,7 @@ File name,File name
 File preview unavailable,File preview unavailable
 File updated,File updated
 Files,Files
+files,files
 Files and database usage,Files and database usage
 Fill,تعبئة
 Filter,Filter
@@ -518,7 +524,7 @@ Google Analytics,Google Analytics
 Google Analytics ID,معرف Google Analytics
 Google Maps,خرائط جوجل
 Group,Group
-Group by:,Group by:
+Group by,Group by
 group expressions,group expressions
 Group Options,Group Options
 Group saved,Group saved
@@ -649,6 +655,7 @@ Lookup help,Lookup help
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,منخفض/ أدنى/ قليل/ صغير
 Manage site settings and configuration,إدارة إعدادات الموقع
+Manage types,Manage types
 Manual data,Manual data
 Manually set a color,Manually set a color
 Map,خريطة
@@ -730,6 +737,7 @@ New group,New group
 New language added,أضيفت لغة جديدة
 New page,New page
 New password,كلمة المرور الجديدة
+New primary doc,New primary doc
 New relationship type,New relationship type
 New relationships group,مجموعة علاقات جديدة
 New Relationships Migration,New Relationships Migration
@@ -760,6 +768,7 @@ No options,No options
 No options found,لم يتم العثور على خيارات
 No page,No page
 No people or groups added yet,No people or groups added yet
+No primary documents,No primary documents
 No property,هذه الخاصية غير متوفرة
 No References,لا مرجع
 No References description,المراجع هي اجزاء من الوثيقة التي لها علاقة بوثائق وكيانات أخرى
@@ -769,6 +778,7 @@ No relationships found,No relationships found
 No relationships to graph,No relationships to graph
 No releases yet,No releases yet
 No results found,No results found
+No supporting files yet. Add a file to get started.,No supporting files yet. Add a file to get started.
 No table of contents,لا يوجد جدول المحتويات
 No Table of contents,No Table of contents
 No table of contents description,لا جدول محتويات الوصف
@@ -945,6 +955,7 @@ RAW,RAW
                         or editing entities—not when changing chart settings (save handles that).","Re-runs the query against your current collection. Use this after importing
                         or editing entities—not when changing chart settings (save handles that)."
 Re-uploaded document,Re-uploaded document
+Ready,Ready
 Receiving email,البريد الالكتروني المستقبل
 Receiving email description,"If you have a contact form, this is the email address that will receive the form's submissions."
 Recommended,Recommended
@@ -1123,7 +1134,6 @@ Sort,تصنيف
 Sort ascending,Sort ascending
 Sort by,ترتيب حسب
 Sort descending,Sort descending
-Sort order,Sort order
 Sort:,Sort:
 sorted by,مرتبة حسب
 Source,Source
@@ -1139,6 +1149,7 @@ State,State
 Statistics,Statistics
 Stats & Filters,Stats & Filters
 Status,Status
+status AND women NOT Nicaragua,status AND women NOT Nicaragua
 Storage,Storage
 Streets,Streets
 Strict mode,الوضع الصارم
@@ -1209,7 +1220,7 @@ Theme instance file invalid,Theme instance file invalid
 Theme logotype,Theme logotype
 Theme presets,Theme presets
 Theme preview,Theme preview
-Then by:,Then by:
+Then by,Then by
 There are no pages enabled for entity view,لا توجد صفحات ممكنة لمعاينة الكيان (الإدخال)
 There are no untranslated terms,There are no untranslated terms
 Thesauri,قائمة المفردات
@@ -1399,6 +1410,8 @@ Welcome to Uwazi,مرحباً بكم في أوازي
 "Well, this is awkward...",إنه لأمر محرج...
 Whitelisted templates,Whitelisted templates
 wildcard,wildcard
+wildcard (many chars),wildcard (many chars)
+wildcard (one char),wildcard (one char)
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
 will be updated with the same value.,سيحدث بالقيمة نفسها
 Will show the entire media inside the container.,Will show the entire media inside the container.

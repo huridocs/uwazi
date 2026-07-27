@@ -323,6 +323,29 @@ describe('formatEntityFiles', () => {
     ]);
   });
 
+  it('should list a media/image metadata once in the attachments list', () => {
+    const entityWithLinkedMedia = {
+      ...entity2,
+      metadata: {
+        image: [{ value: '/api/files/1.jpg' }],
+        video: [{ value: '/api/files/2.mp4' }],
+      },
+    } as Entity;
+
+    const result = formatEntityFiles(entityWithLinkedMedia, templates, 'es');
+
+    expect(result).toEqual([
+      {
+        fileType: 'attachment',
+        file: entity2.attachments![0],
+      },
+      {
+        fileType: 'attachment',
+        file: entity2.attachments![1],
+      },
+    ]);
+  });
+
   it('should ignore media fields with link media', () => {
     const result = formatEntityFiles(entity3 as Entity, templates, 'es');
     expect(result).toEqual([]);

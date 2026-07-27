@@ -18,6 +18,7 @@ class UploadService {
   private filesQueue: File[] = [];
 
   private route: string;
+
   private extraFields: Record<string, string>;
 
   constructor(endpoint: Endpoint, extraFields: Record<string, string> = {}) {
@@ -48,8 +49,9 @@ class UploadService {
       .field('originalname', customOriginalName ?? file.name)
       .attach('file', file as unknown as MultipartValueSingle)
       .on('progress', event => {
-        if (this.onProgressCallback && event.percent) {
-          this.onProgressCallback(file.name, Math.floor(event.percent), event.total);
+        const { percent } = event;
+        if (this.onProgressCallback && typeof percent === 'number' && Number.isFinite(percent)) {
+          this.onProgressCallback(file.name, Math.floor(percent), event.total);
         }
       });
     Object.entries(restFields).forEach(([key, value]) => {

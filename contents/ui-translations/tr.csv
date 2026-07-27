@@ -348,6 +348,7 @@ Deleted thesaurus,Deleted thesaurus
 Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
+Density,Density
 Description,Tanım
 Deselect all,Deselect all
 Direction,Direction
@@ -360,6 +361,7 @@ Discard changes,Değişiklikleri göz ardı et
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,Sayfadan varlık görünümünü görüntüle
+Display options,Display options
 Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
 Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
@@ -380,6 +382,7 @@ Done extracting files,Done extracting files
 Done scanning,Done scanning
 Download,Özel filtre için belgeler
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
+Download all,Download all
 Download failed rows,Download failed rows
 Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,Yüklemek için dosyayı bu pencerede sürükleyip bırakın
@@ -390,6 +393,7 @@ Duplicated email,Mükerrer e-posta
 Duplicated name,Mükerrer ad
 Duplicated username,Mükerrer kullanıcı adı
 Duration,Duration
+e.g.,e.g.
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
 Earlier,Earlier
 Edit,Düzenle
@@ -466,6 +470,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 Favicon no images hint,Favicon no images hint
 FEATURED,FEATURED
 File,Dosya
+file,file
 File deleted,File deleted
 File details,File details
 File extraction completed successfully.,File extraction completed successfully.
@@ -473,6 +478,7 @@ File name,File name
 File preview unavailable,File preview unavailable
 File updated,File updated
 Files,Files
+files,files
 Files and database usage,Files and database usage
 Fill,Doldur
 Filter,Filter
@@ -519,7 +525,7 @@ Google Analytics,Google Analytics
 Google Analytics ID,Google Analytics Kimliği
 Google Maps,Google Maps
 Group,Group
-Group by:,Group by:
+Group by,Group by
 group expressions,group expressions
 Group Options,Group Options
 Group saved,Group saved
@@ -650,6 +656,7 @@ Lookup help,Lookup help
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,düşük
 Manage site settings and configuration,Site ayarlarını ve yapılandırmasını yönetin
+Manage types,Manage types
 Manual data,Manual data
 Manually set a color,Manually set a color
 Map,Harita
@@ -731,6 +738,7 @@ New group,New group
 New language added,Yeni dil eklendi
 New page,New page
 New password,Yeni parola
+New primary doc,New primary doc
 New relationship type,New relationship type
 New relationships group,Yeni ilişkiler grubu
 New Relationships Migration,New Relationships Migration
@@ -761,6 +769,7 @@ No options,No options
 No options found,Seçenek bulunamadı
 No page,No page
 No people or groups added yet,No people or groups added yet
+No primary documents,No primary documents
 No property,Mülk yok
 No References,Referans Yok
 No References description,References are parts of this document related with other documents and entities.
@@ -770,6 +779,7 @@ No relationships found,No relationships found
 No relationships to graph,No relationships to graph
 No releases yet,No releases yet
 No results found,No results found
+No supporting files yet. Add a file to get started.,No supporting files yet. Add a file to get started.
 No table of contents,İçerik Tablosu yok
 No Table of contents,No Table of contents
 No table of contents description,İçerik Tablosu Yok Açıklama
@@ -946,6 +956,7 @@ RAW,RAW
                         or editing entities—not when changing chart settings (save handles that).","Re-runs the query against your current collection. Use this after importing
                         or editing entities—not when changing chart settings (save handles that)."
 Re-uploaded document,Re-uploaded document
+Ready,Ready
 Receiving email,Receiving email
 Receiving email description,"If you have a contact form, this is the email address that will receive the form's submissions."
 Recommended,Recommended
@@ -1124,7 +1135,6 @@ Sort,Sırala
 Sort ascending,Sort ascending
 Sort by,Sırala
 Sort descending,Sort descending
-Sort order,Sort order
 Sort:,Sort:
 sorted by,şuna göre sıralandı:
 Source,Source
@@ -1140,6 +1150,7 @@ State,State
 Statistics,Statistics
 Stats & Filters,Stats & Filters
 Status,Status
+status AND women NOT Nicaragua,status AND women NOT Nicaragua
 Storage,Storage
 Streets,Streets
 Strict mode,Sıkı mod
@@ -1210,7 +1221,7 @@ Theme instance file invalid,Theme instance file invalid
 Theme logotype,Theme logotype
 Theme presets,Theme presets
 Theme preview,Theme preview
-Then by:,Then by:
+Then by,Then by
 There are no pages enabled for entity view,Varlık görünümü için etkinleştirilmiş sayfa yok
 There are no untranslated terms,There are no untranslated terms
 Thesauri,Thesauri
@@ -1400,6 +1411,8 @@ Welcome to Uwazi,Uwazi'ye hoş geldiniz
 "Well, this is awkward...","Peki, bu garip bir durum..."
 Whitelisted templates,Whitelisted templates
 wildcard,wildcard
+wildcard (many chars),wildcard (many chars)
+wildcard (one char),wildcard (one char)
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
 will be updated with the same value.,aynı değerle güncellenecektir.
 Will show the entire media inside the container.,Will show the entire media inside the container.

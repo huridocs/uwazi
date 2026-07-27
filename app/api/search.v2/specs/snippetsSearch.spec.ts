@@ -7,22 +7,15 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
 
-import entities from '#api/entities/index.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { SearchQuery } from '#shared/types/SearchQueryType.js';
-import { entity1enId, entity2enId, fixturesSnippetsSearch } from './fixturesSnippetsSearch.js';
+import { entity1enId, fixturesSnippetsSearch } from './fixturesSnippetsSearch.js';
 
 describe('searchSnippets', () => {
   const app: Application = setUpApp(searchRoutes);
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixturesSnippetsSearch, true);
-    await testingEnvironment.runWithContext(async () =>
-      entities.save(await entities.getById({ _id: entity2enId.toString() }), {
-        user: {},
-        language: 'en',
-      })
-    );
     await elasticTesting.refresh();
   });
 

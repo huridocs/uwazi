@@ -25,6 +25,7 @@ const RelationshipsViewControl = () => {
       value={view}
       onChange={setView}
       ariaLabel={t('System', 'View', null, false)}
+      size="md"
       options={viewOptions.map(option => ({
         id: option.id,
         title: option.label,

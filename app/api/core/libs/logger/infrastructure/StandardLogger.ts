@@ -9,14 +9,24 @@ class StandardLogger implements Logger {
 
   private tenant: Tenant;
 
-  constructor(writer: LogWriter, tenant: Tenant) {
+  private correlationId: string | undefined;
+
+  constructor(writer: LogWriter, tenant: Tenant, correlationId?: string) {
     this.write = writer;
     this.tenant = tenant;
+    this.correlationId = correlationId;
   }
 
   private log(level: LogLevel, _message: string | string[], metadata?: LogMetadata): void {
     const message = Array.isArray(_message) ? _message.join('\n') : _message;
-    const entry = new LogEntry(message, Date.now(), level, this.tenant, metadata);
+    const entry = new LogEntry(
+      message,
+      Date.now(),
+      level,
+      this.tenant,
+      this.correlationId,
+      metadata
+    );
 
     this.write(entry);
   }
@@ -46,7 +56,7 @@ export const withFeature =
   (writer: LogWriter, featureName: string): LogWriter =>
   (log: LogEntry) => {
     writer(
-      new LogEntry(log.message, log.timestamp, log.level, log.tenant, {
+      new LogEntry(log.message, log.timestamp, log.level, log.tenant, log.correlationId, {
         ...log.metadata,
         feature: featureName,
       })

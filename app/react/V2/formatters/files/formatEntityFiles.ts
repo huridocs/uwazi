@@ -21,6 +21,24 @@ const formatEntityFiles = (
     p => p.type === 'image' || p.type === 'media'
   );
 
+  const mainDocument = getMainDocument(entity.documents, locale, defaultLanguage);
+
+  const documents: EntityFile[] = (entity.documents || []).map(doc => ({
+    fileType: doc._id === mainDocument?._id ? 'mainDocument' : 'document',
+    file: doc,
+  }));
+
+  const attachments: EntityFile[] = (entity.attachments || []).map(attachment => ({
+    fileType: attachment.url ? 'externalURL' : 'attachment',
+    file: attachment,
+  }));
+
+  const knownFilenames = new Set(
+    [...documents, ...attachments]
+      .map(({ file }) => file.filename)
+      .filter((filename): filename is string => Boolean(filename))
+  );
+
   const metadataFiles: EntityFile[] = ownFileProperties.flatMap(property => {
     const value = entity.metadata?.[property.name]?.[0]?.value as string | undefined;
 
@@ -35,24 +53,26 @@ const formatEntityFiles = (
     }
 
     const filename = fileUrl.split('/').pop() || '';
-    const mimetype = getMimetypeFromUrl(fileUrl);
+    if (!filename || knownFilenames.has(filename)) {
+      return [];
+    }
 
-    return [{ fileType: property.type as 'image' | 'media', file: { filename, mimetype } }];
+    return [
+      {
+        fileType: property.type as 'image' | 'media',
+        file: { filename, mimetype: getMimetypeFromUrl(fileUrl) },
+      },
+    ];
   });
-
-  const mainDocument = getMainDocument(entity.documents, locale, defaultLanguage);
-
-  const documents: EntityFile[] = (entity.documents || []).map(doc => ({
-    fileType: doc._id === mainDocument?._id ? 'mainDocument' : 'document',
-    file: doc,
-  }));
-
-  const attachments: EntityFile[] = (entity.attachments || []).map(attachment => ({
-    fileType: attachment.url ? 'externalURL' : 'attachment',
-    file: attachment,
-  }));
 
   return [...metadataFiles, ...documents, ...attachments];
 };
 
-export { formatEntityFiles };
+const countEntityFiles = (
+  entity: Entity,
+  templates: ClientTemplateSchema[],
+  locale: string,
+  defaultLanguage?: string
+) => formatEntityFiles(entity, templates, locale, defaultLanguage).length;
+
+export { formatEntityFiles, countEntityFiles };

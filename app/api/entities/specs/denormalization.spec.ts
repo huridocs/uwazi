@@ -1,5 +1,10 @@
-/* eslint-disable max-lines */
+/* eslint-disable max-statements */
 import entities from '#api/entities/index.js';
+import { denormalizeRelated } from '#api/entities/denormalize.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import templates from '#api/core/v1_layer/templates/templates.js';
+import entitiesModel from '#api/entities/entitiesModel.js';
+import { search } from '#api/search/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import db, { DBFixture } from '#api/utils/testing_db.js';
 
@@ -7,6 +12,7 @@ import translations from '#api/i18n/translations.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { getFixturesFactory } from '../../utils/fixturesFactory.js';
+import { saveEntityV2Adapter } from './saveEntityV2Adapter.js';
 
 const load = async (data: DBFixture, index?: string) =>
   testingEnvironment.setUp(
@@ -28,17 +34,66 @@ const load = async (data: DBFixture, index?: string) =>
 describe('Denormalize relationships', () => {
   const factory = getFixturesFactory();
   const createTranslationDBO = factory.v2.database.translationDBO;
+  const requiredLanguages = ['en', 'es'];
 
-  const saveEntity = async (entityData: any, language: string = 'en') => {
-    await testingEnvironment.runWithContext(async () =>
-      entities.save(entityData, { language, user: {} }, true)
+  const ensureEntityLanguages = async (sharedIds: string[]) => {
+    await Promise.all(
+      sharedIds.map(async sharedId => {
+        const docs = await entities.getAllLanguages(sharedId);
+        if (!docs.length) {
+          return;
+        }
+
+        const languagesInDb = new Set(docs.map(doc => doc.language));
+        await Promise.all(
+          requiredLanguages
+            .filter(language => !languagesInDb.has(language))
+            .map(async language => {
+              const base = docs[0];
+              await entitiesModel.saveUnrestricted({
+                ...base,
+                _id: db.id(),
+                language,
+              });
+            })
+        );
+      })
     );
   };
 
   const modifyEntity = async (id: string, entityData: EntitySchema, language: string = 'en') => {
-    await saveEntity(
-      { _id: factory.id(`${id}-${language}`), sharedId: id, ...entityData, language },
-      language
+    await testingEnvironment.runWithContext(
+      async () => {
+        const relationshipValues = Object.values(entityData?.metadata || {})
+          .flat()
+          .map(value => value?.value)
+          .filter((value): value is string => typeof value === 'string');
+        await ensureEntityLanguages([...new Set(relationshipValues)]);
+
+        const beforeByLanguage = await entities.getAllLanguages(id);
+        const doc = { _id: factory.id(`${id}-${language}`), sharedId: id, ...entityData, language };
+        await saveEntityV2Adapter(doc, { language, user: { _id: db.id() } });
+
+        const afterByLanguage = await entities.getAllLanguages(id);
+        if (!afterByLanguage[0]?.template) {
+          throw new Error(`Missing template for entity ${id}`);
+        }
+        const template = await templates.getById(afterByLanguage[0].template);
+
+        await Promise.all(
+          afterByLanguage.map(async afterDoc => {
+            const beforeDoc = beforeByLanguage.find(
+              candidate => candidate.language === afterDoc.language
+            );
+            await denormalizeRelated(afterDoc as any, template as any, beforeDoc as any);
+          })
+        );
+
+        await search.indexEntities({ sharedId: id }, '+fullText');
+      },
+      {
+        factories: { eventEmitter: EventEmitterFactory.forTesting },
+      }
     );
   };
 

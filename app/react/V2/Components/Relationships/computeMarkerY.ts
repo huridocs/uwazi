@@ -1,3 +1,5 @@
+import { RAIL_MARKER_SIZE } from './markerMetrics.js';
+
 type MarkerMode = 'full' | 'page';
 
 const TRACK = {
@@ -49,5 +51,43 @@ const computeMarkerY = ({
 const computeClusterOuterSize = (count: number): number =>
   CLUSTER_BASE_SIZE + Math.min(Math.sqrt(count) * CLUSTER_GROWTH_FACTOR, CLUSTER_MAX_GROWTH);
 
-export { computeMarkerY, computeClusterOuterSize, normalizeTop, TRACK };
-export type { MarkerMode, ComputeMarkerYInput };
+const resolveFullRailMarkerSize = (type: 'cluster' | 'single', referenceCount: number): number =>
+  type === 'cluster' ? computeClusterOuterSize(referenceCount) : RAIL_MARKER_SIZE;
+
+type FullRailMarkerLayoutInput = {
+  layerHeight: number;
+  page: number;
+  top: number;
+  totalPages: number;
+  type: 'cluster' | 'single';
+  referenceCount: number;
+};
+
+const computeFullRailMarkerLayout = ({
+  layerHeight,
+  page,
+  top,
+  totalPages,
+  type,
+  referenceCount,
+}: FullRailMarkerLayoutInput): { y: number; size: number } => {
+  const size = resolveFullRailMarkerSize(type, referenceCount);
+  const y = computeMarkerY({
+    mode: 'full',
+    layerHeight,
+    page,
+    top,
+    totalPages,
+    markerSize: size,
+  });
+  return { y, size };
+};
+
+export {
+  computeMarkerY,
+  computeClusterOuterSize,
+  computeFullRailMarkerLayout,
+  normalizeTop,
+  TRACK,
+};
+export type { MarkerMode, ComputeMarkerYInput, FullRailMarkerLayoutInput };

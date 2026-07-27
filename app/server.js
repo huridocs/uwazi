@@ -1,9 +1,9 @@
+/* eslint-disable max-statements */
 /* eslint-disable no-console */
 
 import './initSentryEarly.js';
 import compression from 'compression';
 import express from 'express';
-import promBundle from 'express-prom-bundle';
 
 import helmet from 'helmet';
 import { Server } from 'http';
@@ -16,7 +16,6 @@ import { close } from '@sentry/node-core/light';
 import { registerEventListeners } from '#api/eventListeners.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
-import { requestIdMiddleware } from '#api/utils/requestIdMiddleware.js';
 import { Redis } from '#api/infrastructure/Redis.js';
 import { maskMongoPassword } from '#api/utils/maskMongoPassword.js';
 import { elasticClient } from '#api/search/elastic.js';
@@ -42,7 +41,9 @@ import { setupQueueWorker } from './setupQueueWorker.js';
 import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
 import { embedFrameHeaders } from './api/middleware/embedFrameHeaders.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
-import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
+import { registerMetricsRoutes } from '#api/core/infrastructure/express/MetricsRoute.js';
+import { HttpServerGracefulShutdown } from '#api/infrastructure/shutdown/HttpServerGracefulShutdown.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -50,73 +51,43 @@ const __dirname = dirname(__filename);
 mongoose.Promise = Promise;
 
 const app = express();
-const metricsMiddleware = promBundle({
-  includeMethod: false,
-  includePath: false,
-  customLabels: {
-    port: config.PORT,
-    env: config.ENVIRONMENT,
-  },
-  promClient: {
-    collectDefaultMetrics: {},
-  },
-});
 
-app.use(metricsMiddleware);
+registerMetricsRoutes(app);
 routesErrorHandler(app);
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 app.use(embedFrameHeaders);
 
 const http = Server(app);
 
-const gracefullShutdown = () => {
-  process.stdout.write('SIGINT signal received.\r\n');
-  http.close(async error => {
-    process.stdout.write('Gracefully closing express connections\r\n');
-    if (error) {
-      process.stderr.write(error.toString());
-      process.exit(1);
-    }
+const shutdown = new HttpServerGracefulShutdown({
+  server: http,
+  app,
+  timeout: 30000,
+  cleanup: async () => {
+    const logger = LoggerFactory.systemLogger();
+    const disconnect = async (name, fn) => {
+      try {
+        await fn();
+        logger.info(`Disconnected from ${name}`);
+      } catch (e) {
+        logger.error(`Failed to disconnect from ${name}: ${e}`);
+      }
+    };
 
-    const tasks = [
-      (async () => {
-        try {
-          await Redis.disconnect();
-          process.stdout.write('Disconnected from Redis\r\n');
-        } catch (e) {
-          // ignore
-        }
-      })(),
-      (async () => {
-        try {
-          await DB.disconnect();
-          await PostgresDB.disconnect();
-          process.stdout.write('Disconnected from database\r\n');
-        } catch (e) {
-          // ignore
-        }
-      })(),
-      (async () => {
-        try {
-          await elasticClient.close();
-          process.stdout.write('Disconnected from Elasticsearch\r\n');
-        } catch (e) {
-          // ignore
-        }
-      })(),
-    ];
-
-    await Promise.allSettled(tasks);
-    process.stdout.write('Server closed succesfully\r\n');
-    process.exit(0);
-  });
-  closeSockets();
-};
+    await Promise.all([
+      disconnect('Redis', () => Redis.disconnect()),
+      disconnect('MongoDB', () => DB.disconnect()),
+      disconnect('PostgreSQL', () => PostgresDB.disconnect()),
+      disconnect('Elasticsearch', () => elasticClient.close()),
+    ]);
+  },
+  closeSockets: () => closeSockets(),
+});
 
 const uncaughtError = error => {
   handleError(error, { uncaught: true });
   close(2000).then(() => {
-    gracefullShutdown();
+    shutdown.shutdown();
   });
 };
 
@@ -139,11 +110,9 @@ app.use(appContextMiddleware);
 // this middleware should go just before any other that accesses to db
 app.use(multitenantMiddleware);
 app.use(maintenanceMiddleware);
-app.use(requestIdMiddleware);
 
 console.info('==> Connecting to', maskMongoPassword(config.DBHOST));
 
-// eslint-disable-next-line max-statements
 DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
   await Redis.connect();
   await tenants.setupTenants();
@@ -174,22 +143,6 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
         );
         process.exit(1);
       }
-
-      if (!skipMigrationCheck) {
-        const pgMigrationsDir = path.resolve(
-          __dirname,
-          'api/core/infrastructure/postgresql/schema_migrations'
-        );
-        const pgMigrator = new PgMigrator(pgMigrationsDir, PostgresDB.adminPool());
-        const { pending: pendingPgMigrations } = await pgMigrator.status();
-        if (pendingPgMigrations.length > 0) {
-          console.error(
-            '\x1b[33m%s\x1b[0m',
-            '==> PostgreSQL needs to be migrated, please run:\n\n yarn migrate --new\n\n'
-          );
-          process.exit(1);
-        }
-      }
     });
 
     setupQueueWorker({ standAloneProcess: false });
@@ -216,6 +169,6 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
     }
   });
 
-  process.on('SIGINT', gracefullShutdown);
-  process.on('SIGTERM', gracefullShutdown);
+  process.on('SIGINT', () => shutdown.shutdown());
+  process.on('SIGTERM', () => shutdown.shutdown());
 });

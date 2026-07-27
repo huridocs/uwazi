@@ -346,6 +346,7 @@ Deleted thesaurus,Tesauro eliminado
 Deleted user,Usuario eliminado
 Deleted user group,Grupo de usuarios eliminado
 Deletion success,Eliminación exitosa
+Density,Densidad
 Description,Descripción
 Deselect all,Deselect all
 Direction,Direction
@@ -358,6 +359,7 @@ Discard changes,Descartar cambios
 Discard changes?,Descartar cambios?
 Dismiss,Descartar
 Display entity view from page,Mostrar entidad de visualización desde la página
+Display options,Opciones de visualización
 Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
 Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
@@ -378,6 +380,7 @@ Done extracting files,Done extracting files
 Done scanning,Done scanning
 Download,Descargar
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
+Download all,Descargar todo
 Download failed rows,Download failed rows
 Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,Arrastrar y soltar el archivo en esta ventana para subir.
@@ -388,6 +391,7 @@ Duplicated email,Correo electrónico duplicado
 Duplicated name,Nombre duplicado
 Duplicated username,Nombre de usuario duplicado
 Duration,Duración
+e.g.,ej.
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
 Earlier,Más temprano
 Edit,Editar
@@ -464,6 +468,7 @@ Favicon description,"Un favicon es un pequeño ícono que representa a tu colecc
 Favicon no images hint,Favicon no images hint
 FEATURED,DESTACADO
 File,Archivo
+file,archivo
 File deleted,Archivo eliminado
 File details,File details
 File extraction completed successfully.,File extraction completed successfully.
@@ -471,6 +476,7 @@ File name,File name
 File preview unavailable,File preview unavailable
 File updated,Archivo actualizado
 Files,Archivos
+files,archivos
 Files and database usage,Uso de archivos y base de datos
 Fill,Rellenar/completar
 Filter,Filter
@@ -517,8 +523,8 @@ Google Analytics,Google Analytics
 Google Analytics ID,ID de Google Analytics
 Google Maps,Google Maps
 Group,Grupo
-Group by:,Agrupar por:
-group expressions,group expressions
+Group by,Agrupar por
+group expressions,expresiones de agrupación
 Group Options,Opciones de agrupación
 Group saved,Grupo guardado
 Group updated,Grupo actualizado
@@ -533,7 +539,7 @@ Header bar text,Header bar text
 help,ayuda
 here,aquí
 "Hi, I'm Bert.","Hi, I'm Bert."
-Hide,Hide
+Hide,Ocultar
 Hide actions,Ocultar acciones
 Hide details,Ocultar detalles
 Hide label,Ocultar etiqueta
@@ -541,7 +547,7 @@ Hide restricted relationships from public,Hide restricted relationships from pub
 Hide toolbar,Ocultar barra de herramientas
 HTML,HTML
 https://yourdomain,https://tudominio
-hub,hub
+hub,nodo
 hubs,nodos
 Hybrid,Híbrido
 Icon,Icono
@@ -648,6 +654,7 @@ Lookup help,Lookup help
 Lost connection to the server. Your changes may be lost,Se perdió la conexión con el servidor. Los cambios pueden perderse
 low,bajo
 Manage site settings and configuration,Administrar la configuración del sitio
+Manage types,Administrar tipos
 Manual data,Manual data
 Manually set a color,Manually set a color
 Map,Mapa
@@ -729,6 +736,7 @@ New group,Grupo nuevo
 New language added,Nuevo idioma añadido
 New page,Nueva página
 New password,Nueva contraseña
+New primary doc,Nuevo documento primario
 New relationship type,Nuevo tipo de relación
 New relationships group,Nuevo grupo de relaciones
 New Relationships Migration,New Relationships Migration
@@ -759,6 +767,7 @@ No options,No options
 No options found,Opciones no encontradas
 No page,No hay página
 No people or groups added yet,No people or groups added yet
+No primary documents,Sin documentos primarios
 No property,Ninguna propiedad
 No References,Sin referencias
 No References description,Las referencias son partes de este documento relacionadas con otros documentos y entidades.
@@ -768,6 +777,7 @@ No relationships found,No se encontraron relaciones
 No relationships to graph,No relationships to graph
 No releases yet,No releases yet
 No results found,No se encontraron resultados
+No supporting files yet. Add a file to get started.,Sin archivos de soporte. Añade un archivo para empezar.
 No table of contents,Sin Tabla de Contenidos
 No Table of contents,Sin Tabla de Contenidos
 No table of contents description,Sin descripción de Tabla de Contenidos
@@ -944,6 +954,7 @@ RAW,SIN FORMATO
                         or editing entities—not when changing chart settings (save handles that).","Re-runs the query against your current collection. Use this after importing
                         or editing entities—not when changing chart settings (save handles that)."
 Re-uploaded document,Documento recargado
+Ready,Listo
 Receiving email,Correo electrónico de recepción
 Receiving email description,"Si tienes un formulario de contacto, esta es la dirección de correo electrónico que recibirá los envíos del formulario."
 Recommended,Recommended
@@ -1122,7 +1133,6 @@ Sort,Ordenar
 Sort ascending,Orden ascendente
 Sort by,Ordenar por
 Sort descending,Orden descendiente
-Sort order,Ordenamiento
 Sort:,Ordenar:
 sorted by,ordenado por
 Source,Source
@@ -1138,6 +1148,7 @@ State,Estado
 Statistics,Statistics
 Stats & Filters,Stats & Filters
 Status,Status
+status AND women NOT Nicaragua,status AND women NOT Nicaragua
 Storage,Almacenamiento
 Streets,Calles
 Strict mode,Modo estricto
@@ -1207,7 +1218,7 @@ Theme instance file invalid,Theme instance file invalid
 Theme logotype,Theme logotype
 Theme presets,Theme presets
 Theme preview,Theme preview
-Then by:,Luego por:
+Then by,Entonces por
 There are no pages enabled for entity view,No hay páginas habilitadas para la vista de entidad
 There are no untranslated terms,No hay términos sin traducir
 Thesauri,Tesauros
@@ -1397,6 +1408,8 @@ Welcome to Uwazi,Bienvenido a Uwazi
 "Well, this is awkward...","Bueno, esto es incómodo..."
 Whitelisted templates,Whitelisted templates
 wildcard,wildcard
+wildcard (many chars),comodín (muchos caracteres)
+wildcard (one char),comodín (un carácter)
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
 will be updated with the same value.,se actualizará con el mismo valor
 Will show the entire media inside the container.,Will show the entire media inside the container.

@@ -1,20 +1,27 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-params */
 /* eslint-disable max-lines */
+import { ObjectId } from 'mongodb';
 import entities from '#api/entities/index.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { checkTypeIsAllowed } from '#api/services/informationextraction/ixextractors.js';
 import thesauri from '#api/core/v1_layer/thesauri/index.js';
 import { flatThesaurusValues } from '#api/core/v1_layer/thesauri/thesauri.js';
-import { ObjectId } from 'mongodb';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { arrayBidirectionalDiff } from '#shared/data_utils/arrayBidirectionalDiff.js';
 import { IndexTypes, objectIndex } from '#shared/data_utils/objectIndex.js';
 import { setIntersection } from '#shared/data_utils/setUtils.js';
 import { ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';
-import { EntitySchema } from '#shared/types/entityType.js';
+import { EntitySchema, EntityWithFilesSchema } from '#shared/types/entityType.js';
+import { FileType } from '#shared/types/fileType.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
+import type { UpdateEntityRequest } from '#api/core/infrastructure/express/entity/Schemas.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import users from '#api/users/users.js';
+import { User } from '#api/users.v2/model/User.js';
+import type { LanguageISO6391, MetadataSchema } from '#shared/types/commonTypes.js';
 
 class SuggestionAcceptanceError extends Error {}
 
@@ -27,6 +34,84 @@ interface AcceptedSuggestion {
 }
 
 type EntityInfo = Record<string, { sharedId: string; template: ObjectId }>;
+type UpdateMetadata = NonNullable<UpdateEntityRequest['metadata']>;
+type UpdateMetadataValue = UpdateMetadata[string][number];
+
+const ensureEntityActor = async (entity: EntitySchema) => {
+  if (ExecutionContext.actor) {
+    return;
+  }
+
+  const actorId = entity.user?.toString?.();
+  if (!actorId) {
+    throw new Error(`Entity actor is missing for sharedId ${entity.sharedId}`);
+  }
+
+  const actorInDb = await users.getById(actorId, '-password', false, true);
+  if (!actorInDb) {
+    throw new Error(`Entity actor not found for user ${actorId}`);
+  }
+
+  ExecutionContext.actor = User.createFrom(actorInDb);
+};
+
+const normalizeMetadata = (metadata?: MetadataSchema): UpdateMetadata | undefined => {
+  if (!metadata) {
+    return undefined;
+  }
+
+  const entries = Object.entries(metadata).filter(([, values]) => Array.isArray(values));
+  if (!entries.length) {
+    return undefined;
+  }
+
+  return Object.fromEntries(entries) as Record<string, UpdateMetadataValue[]>;
+};
+
+const toEntityUpdatePayload = (entity: EntityWithFilesSchema): UpdateEntityRequest => {
+  const id = entity._id?.toString();
+  const { sharedId } = entity;
+  const { language } = entity;
+  const { title } = entity;
+  if (!id || !sharedId || !language || !title) {
+    throw new Error(`Missing required entity fields for suggestion update on ${entity.sharedId}`);
+  }
+
+  const documents = (entity.documents || [])
+    .filter(
+      (
+        doc: FileType
+      ): doc is FileType & { _id: NonNullable<FileType['_id']>; originalname: string } =>
+        Boolean(doc._id && doc.originalname)
+    )
+    .map(doc => ({
+      _id: doc._id.toString(),
+      originalname: doc.originalname,
+    }));
+  const attachments = (entity.attachments || [])
+    .filter((attachment: FileType): attachment is FileType & { originalname: string } =>
+      Boolean(attachment.originalname)
+    )
+    .map(attachment => ({
+      _id: attachment._id?.toString(),
+      originalname: attachment.originalname,
+      ...(attachment.url ? { url: attachment.url } : {}),
+    }));
+
+  return {
+    _id: id,
+    sharedId,
+    language,
+    title,
+    template: entity.template?.toString?.(),
+    user: entity.user?.toString?.(),
+    icon: entity.icon,
+    metadata: normalizeMetadata(entity.metadata),
+    generatedToc: entity.generatedToc,
+    documents,
+    attachments,
+  };
+};
 
 const fetchNoResources = async () => ({});
 
@@ -364,7 +449,7 @@ const updateEntitiesWithSuggestion = async (
       const [current] = (await entities.get(
         { _id: new ObjectId(as.entityId) },
         '+permissions'
-      )) as EntitySchema[];
+      )) as EntityWithFilesSchema[];
       if (!current) {
         LoggerFactory.default().info('IX accept: entity not found for update', {
           entityId: as.entityId,
@@ -394,7 +479,9 @@ const updateEntitiesWithSuggestion = async (
               title: getRawValue(current, suggestionsById, acceptedSuggestionsByEntityId),
             };
 
-      await entities.save(updated, { user: {}, language: current.language });
+      await ensureEntityActor(current);
+      const payload = toEntityUpdatePayload(updated as EntityWithFilesSchema);
+      await EntityFacade.update(payload, payload.language as LanguageISO6391);
     } catch (e) {
       if (e instanceof SuggestionAcceptanceError) {
         throw e; // bubble validation errors (e.g., invalid select IDs)
