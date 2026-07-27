@@ -7,6 +7,7 @@ interface HttpServerGracefulShutdownOptions {
   server: Server;
   app: Application;
   cleanup: () => Promise<void>;
+  closeSockets?: () => void;
   timeout?: number;
   exit?: (code: number) => void;
   logger?: Logger;
@@ -15,13 +16,14 @@ interface HttpServerGracefulShutdownOptions {
 /**
  * Manages graceful HTTP server shutdown:
  *
- * 1. Sets a flag — the 503 middleware rejects new requests on
+ * 1. Closes socket.io connections (if any) — must happen before http.close()
+ *    or persistent WebSocket connections keep http.close() from firing.
+ * 2. Sets a flag — the 503 middleware rejects new requests on
  *    already-established connections and destroys the socket.
- * 2. Closes idle keep-alive connections immediately.
- * 3. Stops accepting new TCP connections (http.close).
- * 4. Runs cleanup (DB, Redis, ES, socket.io) once all connections
- *    are drained.
- * 5. Force-exits after a configurable timeout if shutdown stalls.
+ * 3. Closes idle keep-alive connections immediately.
+ * 4. Stops accepting new TCP connections (http.close).
+ * 5. Runs cleanup (DB, Redis, ES) once all connections are drained.
+ * 6. Force-exits after a configurable timeout if shutdown stalls.
  */
 export class HttpServerGracefulShutdown {
   private isShuttingDown = false;
@@ -29,6 +31,8 @@ export class HttpServerGracefulShutdown {
   private server: Server;
 
   private cleanup: () => Promise<void>;
+
+  private closeSockets: () => void;
 
   private timeout: number;
 
@@ -41,6 +45,9 @@ export class HttpServerGracefulShutdown {
   constructor(options: HttpServerGracefulShutdownOptions) {
     this.server = options.server;
     this.cleanup = options.cleanup;
+    this.closeSockets =
+      options.closeSockets ?? // eslint-disable-next-line no-empty-function
+      (() => {});
     this.timeout = options.timeout ?? 10000;
     this.exit = options.exit ?? (code => process.exit(code));
     this.logger = options.logger ?? LoggerFactory.systemLogger();
@@ -56,6 +63,8 @@ export class HttpServerGracefulShutdown {
     if (this.isShuttingDown) {
       return;
     }
+
+    this.closeSockets();
 
     this.isShuttingDown = true;
     this.logger.info('SIGINT signal received.');

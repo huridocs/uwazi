@@ -43,7 +43,12 @@ interface TestContext {
   url(): string;
 }
 
-function createTestServer({ delay = 50, timeout = 500 } = {}): TestContext {
+function createTestServer({
+  delay = 50,
+  timeout = 500,
+  // eslint-disable-next-line no-empty-function
+  closeSockets = () => {},
+} = {}): TestContext {
   const app = express();
   const server = http.createServer(app);
 
@@ -57,6 +62,7 @@ function createTestServer({ delay = 50, timeout = 500 } = {}): TestContext {
     cleanup: async () => {
       cleanupCalls.push('cleanup');
     },
+    closeSockets,
     timeout,
     exit: code => {
       exitCalls.push(code);
@@ -229,6 +235,36 @@ describe('HttpServerGracefulShutdown', () => {
       await sleep(600);
       expect(t.exitCalls).toContain(1);
       socket.destroy();
+    });
+
+    it('completes shutdown even with persistent connections', async () => {
+      let persistentSocket: net.Socket | null = null;
+
+      const oldT = t;
+      t = createTestServer({
+        closeSockets: () => {
+          persistentSocket?.destroy();
+        },
+      });
+      t._baseUrl = await startServer(t);
+
+      // Simulate a socket.io-like persistent connection:
+      // open TCP, send partial HTTP (parser becomes active, not idle)
+      persistentSocket = await openSocket(t);
+      persistentSocket.write('GET /slow HTTP/1.1\r\n'); // incomplete request
+
+      t.shutdown.shutdown();
+
+      // With closeSockets() called BEFORE http.close(),
+      // persistent connections are destroyed immediately.
+      // http.close() fires its callback, cleanup runs, exit is 0.
+      await sleep(600);
+
+      expect(t.cleanupCalls).toContain('cleanup');
+      expect(t.exitCalls).toEqual([0]);
+
+      stopServer(t);
+      t = oldT;
     });
 
     it('logs each step of the shutdown sequence', async () => {
