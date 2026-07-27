@@ -64,8 +64,6 @@ const shutdown = new HttpServerGracefulShutdown({
   app,
   timeout: 30000,
   cleanup: async () => {
-    closeSockets();
-
     const logger = LoggerFactory.systemLogger();
     const disconnect = async (name, fn) => {
       try {
@@ -83,6 +81,7 @@ const shutdown = new HttpServerGracefulShutdown({
       disconnect('Elasticsearch', () => elasticClient.close()),
     ]);
   },
+  closeSockets: () => closeSockets(),
 });
 
 const uncaughtError = error => {
