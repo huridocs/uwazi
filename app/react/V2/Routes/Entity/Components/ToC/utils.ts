@@ -139,4 +139,79 @@ const findItemsWithChildren = (normalizedToc: ProcessedTocEntry[]): number[] =>
     )
     .map(item => item.index);
 
-export { convertTextSelectionToTocEntry, getPageNumber, normalizeToc, findItemsWithChildren };
+const hasDirectChildren = (
+  item: ProcessedTocEntry,
+  normalizedToc: ProcessedTocEntry[]
+): boolean => {
+  const nextItem = normalizedToc.find(otherItem => otherItem.index > item.index);
+  return (
+    nextItem !== undefined &&
+    nextItem.topIndex === item.topIndex &&
+    nextItem.indentation > item.indentation
+  );
+};
+
+const findAllAncestors = (
+  currentItem: ProcessedTocEntry,
+  normalizedToc: ProcessedTocEntry[]
+): ProcessedTocEntry[] => {
+  if (currentItem.isTopLevel) {
+    return [];
+  }
+
+  const ancestors: ProcessedTocEntry[] = [];
+  let currentIndentation = currentItem.indentation;
+
+  for (let i = currentItem.index - 1; i >= 0; i -= 1) {
+    const candidate = normalizedToc[i];
+    if (candidate.topIndex === currentItem.topIndex && candidate.indentation < currentIndentation) {
+      ancestors.push(candidate);
+      currentIndentation = candidate.indentation;
+      if (candidate.isTopLevel) {
+        break;
+      }
+    }
+  }
+
+  return ancestors.reverse();
+};
+
+/** Active entry = the latest ToC entry whose page <= currentPage. */
+const findActivePath = (
+  normalizedToc: ProcessedTocEntry[],
+  currentPage?: number
+): { activeIndex: number | null; activeAncestorIndexes: Set<number> } => {
+  if (currentPage === undefined || normalizedToc.length === 0) {
+    return { activeIndex: null, activeAncestorIndexes: new Set() };
+  }
+
+  let active: ProcessedTocEntry | undefined;
+  for (const item of normalizedToc) {
+    const page = getPageNumber(item.entry);
+    if (page !== null && page <= currentPage) {
+      active = item;
+    } else if (page !== null && page > currentPage) {
+      break;
+    }
+  }
+
+  if (!active) {
+    return { activeIndex: null, activeAncestorIndexes: new Set() };
+  }
+
+  const ancestors = findAllAncestors(active, normalizedToc);
+  return {
+    activeIndex: active.index,
+    activeAncestorIndexes: new Set(ancestors.map(ancestor => ancestor.index)),
+  };
+};
+
+export {
+  convertTextSelectionToTocEntry,
+  getPageNumber,
+  normalizeToc,
+  findItemsWithChildren,
+  hasDirectChildren,
+  findAllAncestors,
+  findActivePath,
+};
