@@ -59,6 +59,7 @@ import {
 } from './fixtures.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
+import { requestTimingMiddleware } from '#api/core/infrastructure/express/middlewares/RequestTimingMiddleware.js';
 
 async function runAllTenants() {
   try {
@@ -172,6 +173,7 @@ describe('syncWorker', () => {
 
     //@ts-ignore
     app.use(multitenantMiddleware);
+    app.use(requestTimingMiddleware);
     app.use(dependenciesContextMiddleware);
 
     authRoutes(app);
