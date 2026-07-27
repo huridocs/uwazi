@@ -346,6 +346,7 @@ Deleted thesaurus,Tesauro eliminado
 Deleted user,Usuario eliminado
 Deleted user group,Grupo de usuarios eliminado
 Deletion success,Eliminación exitosa
+Density,Densidad
 Description,Descripción
 Deselect all,Deselect all
 Direction,Direction
@@ -358,6 +359,7 @@ Discard changes,Descartar cambios
 Discard changes?,Descartar cambios?
 Dismiss,Descartar
 Display entity view from page,Mostrar entidad de visualización desde la página
+Display options,Opciones de visualización
 Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
 Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
@@ -389,6 +391,7 @@ Duplicated email,Correo electrónico duplicado
 Duplicated name,Nombre duplicado
 Duplicated username,Nombre de usuario duplicado
 Duration,Duración
+e.g.,ej.
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
 Earlier,Más temprano
 Edit,Editar
@@ -520,8 +523,8 @@ Google Analytics,Google Analytics
 Google Analytics ID,ID de Google Analytics
 Google Maps,Google Maps
 Group,Grupo
-Group by:,Agrupar por:
-group expressions,group expressions
+Group by,Agrupar por
+group expressions,expresiones de agrupación
 Group Options,Opciones de agrupación
 Group saved,Grupo guardado
 Group updated,Grupo actualizado
@@ -536,7 +539,7 @@ Header bar text,Header bar text
 help,ayuda
 here,aquí
 "Hi, I'm Bert.","Hi, I'm Bert."
-Hide,Hide
+Hide,Ocultar
 Hide actions,Ocultar acciones
 Hide details,Ocultar detalles
 Hide label,Ocultar etiqueta
@@ -544,7 +547,7 @@ Hide restricted relationships from public,Hide restricted relationships from pub
 Hide toolbar,Ocultar barra de herramientas
 HTML,HTML
 https://yourdomain,https://tudominio
-hub,hub
+hub,nodo
 hubs,nodos
 Hybrid,Híbrido
 Icon,Icono
@@ -651,6 +654,7 @@ Lookup help,Lookup help
 Lost connection to the server. Your changes may be lost,Se perdió la conexión con el servidor. Los cambios pueden perderse
 low,bajo
 Manage site settings and configuration,Administrar la configuración del sitio
+Manage types,Administrar tipos
 Manual data,Manual data
 Manually set a color,Manually set a color
 Map,Mapa
@@ -1129,7 +1133,6 @@ Sort,Ordenar
 Sort ascending,Orden ascendente
 Sort by,Ordenar por
 Sort descending,Orden descendiente
-Sort order,Ordenamiento
 Sort:,Ordenar:
 sorted by,ordenado por
 Source,Source
@@ -1145,6 +1148,7 @@ State,Estado
 Statistics,Statistics
 Stats & Filters,Stats & Filters
 Status,Status
+status AND women NOT Nicaragua,status AND women NOT Nicaragua
 Storage,Almacenamiento
 Streets,Calles
 Strict mode,Modo estricto
@@ -1214,7 +1218,7 @@ Theme instance file invalid,Theme instance file invalid
 Theme logotype,Theme logotype
 Theme presets,Theme presets
 Theme preview,Theme preview
-Then by:,Luego por:
+Then by,Entonces por
 There are no pages enabled for entity view,No hay páginas habilitadas para la vista de entidad
 There are no untranslated terms,No hay términos sin traducir
 Thesauri,Tesauros
@@ -1404,6 +1408,8 @@ Welcome to Uwazi,Bienvenido a Uwazi
 "Well, this is awkward...","Bueno, esto es incómodo..."
 Whitelisted templates,Whitelisted templates
 wildcard,wildcard
+wildcard (many chars),comodín (muchos caracteres)
+wildcard (one char),comodín (un carácter)
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
 will be updated with the same value.,se actualizará con el mismo valor
 Will show the entire media inside the container.,Will show the entire media inside the container.

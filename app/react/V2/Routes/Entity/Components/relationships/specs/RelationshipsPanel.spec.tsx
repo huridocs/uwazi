@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import userEvent, { type UserEvent } from '@testing-library/user-event';
 import { defaultPdf, renderRelationshipsPanel } from './helpers/renderRelationshipsPanel.js';
 
 beforeAll(() => {
@@ -11,9 +11,17 @@ beforeAll(() => {
 
 const getSelectionState = () => screen.getByTestId('selection-state');
 
+const expandAll = async (user: UserEvent) => {
+  await user.click(screen.getByRole('button', { name: 'Expand all' }));
+};
+
 describe('Relationships panel', () => {
-  it('lists the relationships connected to the current entity', () => {
+  it('lists the relationships connected to the current entity', async () => {
+    const user = userEvent.setup();
     renderRelationshipsPanel();
+
+    expect(screen.getByRole('button', { name: 'Expand all' })).toBeEnabled();
+    await expandAll(user);
 
     expect(screen.getByText(/target quoted text/)).toBeInTheDocument();
     expect(screen.getByText('Related Entity')).toBeInTheDocument();
@@ -25,6 +33,7 @@ describe('Relationships panel', () => {
       const user = userEvent.setup();
       const { onFocusDocument } = renderRelationshipsPanel({ focusDocumentOnSelect: true });
 
+      await expandAll(user);
       await user.click(screen.getByText('Related Entity'));
 
       expect(onFocusDocument).toHaveBeenCalledTimes(1);
@@ -35,6 +44,7 @@ describe('Relationships panel', () => {
       const onFocusDocument = jest.fn();
       renderRelationshipsPanel({ focusDocumentOnSelect: false, onFocusDocument });
 
+      await expandAll(user);
       await user.click(screen.getByText('Related Entity'));
 
       expect(onFocusDocument).not.toHaveBeenCalled();
@@ -47,6 +57,7 @@ describe('Relationships panel', () => {
       const pdf = defaultPdf();
       renderRelationshipsPanel({ pdf });
 
+      await expandAll(user);
       await user.click(screen.getByText('Related Entity'));
 
       expect(pdf.goToPage).toHaveBeenCalledWith(2);
@@ -63,6 +74,7 @@ describe('Relationships panel', () => {
       const pdf = defaultPdf();
       renderRelationshipsPanel({ pdf });
 
+      await expandAll(user);
       await user.click(screen.getByText('Related Entity'));
       expect(getSelectionState().getAttribute('data-active')).not.toBe('');
 
@@ -80,7 +92,7 @@ describe('Relationships panel', () => {
 
       await user.click(screen.getByRole('radio', { name: 'Tree' }));
 
-      expect(screen.getByRole('button', { name: 'Collapse all' })).toBeDisabled();
+      expect(screen.getByRole('button', { name: 'Collapse all' })).toBeEnabled();
       expect(screen.getAllByText('Related Entity').length).toBeGreaterThanOrEqual(1);
       expect(screen.getAllByText('Other Entity').length).toBeGreaterThanOrEqual(1);
     });
@@ -95,12 +107,13 @@ describe('Relationships panel', () => {
       renderRelationshipsPanel();
 
       await user.type(searchInput(), 'alpha');
+      await expandAll(user);
 
       expect(screen.getByText(/target quoted text/)).toBeInTheDocument();
       expect(screen.queryByText('Other Entity')).not.toBeInTheDocument();
       expect(screen.getByText('"alpha"')).toBeInTheDocument();
       expect(filtersButton()).toHaveAttribute('aria-pressed', 'true');
-      expect(filtersButton()).toHaveTextContent('2');
+      expect(filtersButton()).toHaveTextContent('1');
     });
 
     it('restores the full list when the search chip is cleared', async () => {
@@ -110,12 +123,12 @@ describe('Relationships panel', () => {
       await user.type(searchInput(), 'alpha');
       const chip = screen.getByText('"alpha"').parentElement;
       await user.click(within(chip!).getByRole('button', { name: 'Clear search' }));
+      await expandAll(user);
 
       expect(screen.getByText(/target quoted text/)).toBeInTheDocument();
       expect(screen.getByText('Other Entity')).toBeInTheDocument();
       expect(screen.queryByText('"alpha"')).not.toBeInTheDocument();
-      expect(filtersButton()).toHaveAttribute('aria-pressed', 'true');
-      expect(filtersButton()).toHaveTextContent('1');
+      expect(filtersButton()).toHaveAttribute('aria-pressed', 'false');
     });
 
     it('restores the full list when all filters are cleared', async () => {
@@ -125,6 +138,7 @@ describe('Relationships panel', () => {
       await user.type(searchInput(), 'alpha');
       await user.click(filtersButton());
       await user.click(screen.getByRole('button', { name: /clear all filters/i }));
+      await expandAll(user);
 
       expect(screen.getByText(/target quoted text/)).toBeInTheDocument();
       expect(screen.getByText('Other Entity')).toBeInTheDocument();

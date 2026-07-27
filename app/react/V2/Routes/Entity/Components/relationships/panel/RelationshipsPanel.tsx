@@ -6,13 +6,10 @@ import { ConfirmationModal, BlankState } from '#V2/Components/UI/index.js';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { RelationshipsPanelBody } from './RelationshipsPanelBody.js';
 import { RelationshipsListInfoRow } from './RelationshipsListInfoRow.js';
-import { RelationshipsPanelToolbarControls } from './RelationshipsPanelToolbarControls.js';
 import { RelationshipsSearchBar } from '../filters/RelationshipsSearchBar.js';
 import {
   useRelationshipsPanelData,
-  useRelationshipsPanelFacetFilters,
   useRelationshipsPanelLayout,
-  useRelationshipsPanelUi,
   useRelationshipsSelectionActions,
   useEntityOverlay,
   useEntityWriteAuthorized,
@@ -35,8 +32,6 @@ const RelationshipsPanel = ({
   const { markers, stats, hasRelationships } = useRelationshipsPanelData();
   const groupContext = useGroupLabelContext();
   const { view } = useRelationshipsPanelLayout();
-  const { activeFilterCount } = useRelationshipsPanelFacetFilters();
-  const { setFiltersDrawerOpen } = useRelationshipsPanelUi();
   const { setSelectedRelationshipIds, setRelationshipsEditMode } =
     useRelationshipsSelectionActions();
   const canWrite = useEntityWriteAuthorized();
@@ -114,10 +109,6 @@ const RelationshipsPanel = ({
         {hasRelationships && (
           <div className="flex shrink-0 flex-col gap-2 border-b border-border/50 pb-2 pt-1">
             <RelationshipsSearchBar />
-            <RelationshipsPanelToolbarControls
-              activeFilterCount={activeFilterCount}
-              onOpenFilters={() => setFiltersDrawerOpen(true)}
-            />
             {view !== 'graph' && <RelationshipsListInfoRow stats={stats} />}
           </div>
         )}

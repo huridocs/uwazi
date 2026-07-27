@@ -4,6 +4,7 @@ import { Translate } from '#app/I18N/index.js';
 import { ActiveFilterChip } from '#V2/Components/UI/ActiveFilterChip.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import {
+  DEFAULT_RELATIONSHIPS_SORT,
   useRelationshipsPanelFacetFilters,
   useRelationshipsPanelSearch,
   useRelationshipsPanelSort,
@@ -57,14 +58,14 @@ const RelationshipsActiveFilterChips = () => {
       {sort === 'asc' && (
         <ActiveFilterChip
           label={sortOptionLabel('asc')}
-          onRemove={() => setSort('none')}
+          onRemove={() => setSort(DEFAULT_RELATIONSHIPS_SORT)}
           removeAriaLabel="Clear sort"
         />
       )}
       {sort === 'desc' && (
         <ActiveFilterChip
           label={sortOptionLabel('desc')}
-          onRemove={() => setSort('none')}
+          onRemove={() => setSort(DEFAULT_RELATIONSHIPS_SORT)}
           removeAriaLabel="Clear sort"
         />
       )}
