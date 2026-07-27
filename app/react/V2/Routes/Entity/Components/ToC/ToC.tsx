@@ -1,9 +1,9 @@
-/* eslint-disable max-lines, react/require-default-props */
+/* eslint-disable react/require-default-props */
 import React, { useMemo, useEffect } from 'react';
 import { TocSchema } from '#shared/types/commonTypes.js';
 import { ToCItem } from './ToCItem.js';
 import type { ProcessedTocEntry } from './types.js';
-import { normalizeToc, findItemsWithChildren } from './utils.js';
+import { normalizeToc, findItemsWithChildren, findActivePath } from './utils.js';
 
 // Sort ToC entries by page, then by position (top, then left)
 const sortTocEntries = (toc: TocSchema[]): TocSchema[] => {
@@ -18,6 +18,7 @@ type ToCProps = {
   onClick?: (entry: ProcessedTocEntry) => void;
   onStateChange?: (isAllExpanded: boolean, isAllCollapsed: boolean) => void;
   isEditMode?: boolean;
+  currentPage?: number;
   onIndentationChange?: (index: number, newIndentation: number) => void;
   onDelete?: (index: number) => void;
   onLabelChange?: (index: number, newLabel: string) => void;
@@ -30,30 +31,34 @@ const ToC = ({
   onClick,
   onStateChange,
   isEditMode = false,
+  currentPage,
   onIndentationChange,
   onDelete,
   onLabelChange,
 }: ToCProps) => {
   const normalizedToc = useMemo(() => normalizeToc(toc), [toc]);
 
-  // Get all items that have children (at any level)
   const itemsWithChildren = useMemo(() => findItemsWithChildren(normalizedToc), [normalizedToc]);
+
+  const { activeIndex, activeAncestorIndexes } = useMemo(
+    () => findActivePath(normalizedToc, isEditMode ? undefined : currentPage),
+    [normalizedToc, currentPage, isEditMode]
+  );
 
   const isAllExpanded = useMemo(() => {
     if (itemsWithChildren.length === 0) {
-      return true; // No items to expand, consider as "all expanded"
+      return true;
     }
     return itemsWithChildren.every(index => expanded[index] === true);
   }, [itemsWithChildren, expanded]);
 
   const isAllCollapsed = useMemo(() => {
     if (itemsWithChildren.length === 0) {
-      return true; // No items to collapse, consider as "all collapsed"
+      return true;
     }
     return itemsWithChildren.every(index => expanded[index] !== true);
   }, [itemsWithChildren, expanded]);
 
-  // Notify parent component when state changes
   useEffect(() => {
     if (onStateChange) {
       onStateChange(isAllExpanded, isAllCollapsed);
@@ -61,7 +66,7 @@ const ToC = ({
   }, [expanded, isAllExpanded, isAllCollapsed, onStateChange]);
 
   return (
-    <>
+    <div className="pb-8">
       {normalizedToc.map(item => (
         <ToCItem
           key={`toc-${item.index}`}
@@ -69,6 +74,8 @@ const ToC = ({
           normalizedToc={normalizedToc}
           expanded={expanded}
           isEditMode={isEditMode}
+          isActive={activeIndex === item.index}
+          isOnActivePath={activeAncestorIndexes.has(item.index)}
           onClick={onClick}
           onIndentationChange={onIndentationChange}
           onDelete={onDelete}
@@ -76,7 +83,7 @@ const ToC = ({
           toggleExpand={onToggleExpand}
         />
       ))}
-    </>
+    </div>
   );
 };
 

@@ -1,5 +1,8 @@
+import http from 'http';
+import https from 'https';
 import net from 'net';
 import { spawn } from 'child_process';
+import { URL } from 'url';
 
 const START_PORT = 3000;
 const END_PORT = 3100;
@@ -166,6 +169,47 @@ const databaseExists = async (dbName, env) => {
   return output === 'true';
 };
 
+const getElasticsearchBaseUrl = env => {
+  const firstNode = (env.ELASTICSEARCH_URL || 'http://localhost:9200').split(',')[0].trim();
+  return firstNode.replace(/\/$/, '');
+};
+
+const elasticIndexExists = (indexName, env) =>
+  new Promise(resolve => {
+    const indexUrl = new URL(`${getElasticsearchBaseUrl(env)}/${encodeURIComponent(indexName)}`);
+    const transport = indexUrl.protocol === 'https:' ? https : http;
+    const headers = {};
+    if (env.ELASTICSEARCH_API_KEY) {
+      headers.Authorization = `ApiKey ${env.ELASTICSEARCH_API_KEY}`;
+    }
+
+    const request = transport.request(
+      {
+        method: 'HEAD',
+        hostname: indexUrl.hostname,
+        port: indexUrl.port || (indexUrl.protocol === 'https:' ? 443 : 80),
+        path: indexUrl.pathname,
+        headers,
+        timeout: 5000,
+      },
+      response => {
+        response.resume();
+        resolve(response.statusCode === 200);
+      }
+    );
+
+    request.on('timeout', () => {
+      request.destroy();
+      resolve(false);
+    });
+
+    request.on('error', () => {
+      resolve(false);
+    });
+
+    request.end();
+  });
+
 const parseMigrationResult = output => {
   const resultLine = output
     .split(/\r?\n/)
@@ -237,8 +281,18 @@ const main = async () => {
 
   const { stdout: migrateOutput } = await runCommandObserve('yarn', ['migrate'], env);
   const migrationResult = parseMigrationResult(migrateOutput);
+  const indexAlreadyExists = await elasticIndexExists(tenantName, env);
+
   if (migrationResult.migrated) {
+    console.log('Migrations applied. Running reindex...');
     await runCommand('yarn', ['reindex'], env);
+  } else if (!indexAlreadyExists) {
+    console.log(
+      `Elasticsearch index ${tenantName} does not exist. Creating index and running reindex...`
+    );
+    await runCommand('yarn', ['reindex'], env);
+  } else {
+    console.log(`Elasticsearch index ${tenantName} already exists. Skipping reindex.`);
   }
 
   await runCommand('yarn', ['hot'], env);
