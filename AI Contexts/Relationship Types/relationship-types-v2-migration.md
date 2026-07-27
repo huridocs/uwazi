@@ -76,6 +76,8 @@ Migrate relationship types backend logic to v2 architecture so the module can la
 - [x] Implement v2 CRUD use cases and datasource shape (no internal upsert).
 - [x] Move delete guards and translation behavior needed by current contract.
 - [ ] Remove runtime paths tied to relationtype property rename/unset behavior.
+- [ ] Remove legacy V1 relationshiptypes code.
+- [ ] Migrate calls from legacy V1 relationshiptypes code into v2.
 - [ ] Add cleanup script with dry-run and apply modes.
 - [x] Add v2 test suites for routes/use-cases/datasource and keep cross-module behavior stable.
 
