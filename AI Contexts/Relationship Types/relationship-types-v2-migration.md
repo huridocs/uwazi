@@ -72,7 +72,7 @@ Migrate relationship types backend logic to v2 architecture so the module can la
 - [x] Keep single compatibility POST route but route internally to separate create/update use cases.
 - [x] Implement v2 CRUD use cases and datasource shape (no internal upsert).
 - [x] Move delete guards and translation behavior needed by current contract.
-- [ ] Remove legacy V1 relationshiptypes code.
+- [x] Remove legacy V1 relationshiptypes code.
 - [x] Migrate runtime calls from legacy V1 relationshiptypes code into v2.
 - [x] Add v2 test suites for routes/use-cases/datasource and keep cross-module behavior stable.
 
@@ -93,11 +93,13 @@ Migrate relationship types backend logic to v2 architecture so the module can la
   - HTTP routes/controllers and Zod schemas
   - translation adapter behavior via persisted translation context changes
   - model, mapper, and error files
+  - parity scenarios ported from removed v1 relationtypes tests (excluding `.properties` behavior by design)
 - Current test policy for this module:
   - prefer integration tests over mocks/spies
   - allow auth middleware mocking in route tests to isolate the HTTP contract surface
 - Current run status:
   - `app/api/relationshiptypes.v2` test suites passing (14 suites / 45 tests).
+  - dependent regressions passing (`syncWorker`, `relationships`, `PXCreateExtractor`).
 
 ## To Keep an Eye On
 

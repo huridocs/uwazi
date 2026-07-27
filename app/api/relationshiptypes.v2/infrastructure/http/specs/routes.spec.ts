@@ -18,6 +18,7 @@ const fixtures: DBFixture = {
   relationtypes: [
     { _id: factory.id('rel1'), name: 'Type 1', properties: [] },
     { _id: factory.id('rel2'), name: 'Type 2', properties: [] },
+    { _id: factory.id('inConnections'), name: 'In Connections', properties: [] },
     { _id: factory.id('inTemplateProp'), name: 'In Template Prop', properties: [] },
   ],
   templates: [
@@ -26,6 +27,14 @@ const fixtures: DBFixture = {
         relationType: factory.id('inTemplateProp').toHexString(),
       }),
     ]),
+  ],
+  connections: [
+    {
+      _id: factory.id('connection1'),
+      title: 'used relation type',
+      sourceDocument: 'source1',
+      template: factory.id('inConnections'),
+    },
   ],
 };
 
@@ -71,6 +80,15 @@ describe('relationshiptypes.v2 routes', () => {
       expect(response).toHaveStatus(200);
       expect(response.body.rows).toHaveLength(1);
       expect(response.body.rows[0]).toMatchObject({ _id: factory.id('rel1').toHexString() });
+    });
+
+    it('should return empty rows when relation type id does not exist', async () => {
+      const response = await request(app).get(
+        `/api/relationtypes?_id=${factory.id('unknown').toHexString()}`
+      );
+
+      expect(response).toHaveStatus(200);
+      expect(response.body.rows).toEqual([]);
     });
   });
 
@@ -122,6 +140,15 @@ describe('relationshiptypes.v2 routes', () => {
 
       expect(response).toHaveStatus(400);
       expect(response.body.error).toContain('Cannot delete type being used in templates');
+    });
+
+    it('should return false if relation type is used in connections', async () => {
+      const response = await request(app).delete(
+        `/api/relationtypes?_id=${factory.id('inConnections').toHexString()}`
+      );
+
+      expect(response).toHaveStatus(200);
+      expect(response.body).toBe(false);
     });
 
     it('should validate query schema', async () => {
