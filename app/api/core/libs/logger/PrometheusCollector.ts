@@ -10,14 +10,14 @@ const httpRequestTotal = new Counter({
   // Whenever changing the labels, be sure to really think about the cardinality of the metrics.
   // High cardinality can lead to performance issues in Prometheus and Client-server.
   // Methods [10] * Status Codes [10] * Endpoints [application dependent, needs to be normalized!]
-  labelNames: ['method', 'status_code', 'route', 'env'],
+  labelNames: ['method', 'status_code', 'route', 'route_kind', 'env'],
 });
 
 const httpRequestDuration = new Histogram({
   name: 'http_request_duration_seconds',
   help: 'Duration of HTTP requests in seconds',
   registers: [registry],
-  labelNames: ['method', 'route', 'env'],
+  labelNames: ['method', 'route', 'route_kind', 'env'],
 
   // 10ms: fast API endpoints (version, health)
   // 50ms-250ms: typical API calls, small queries

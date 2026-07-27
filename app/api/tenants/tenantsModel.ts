@@ -48,15 +48,19 @@ const mongoSchema = new mongoose.Schema({
     v2UsersDelete: Boolean,
     v2UsersGet: Boolean,
     v2UsersUpdate: Boolean,
+    telemetry: {
+      enabled: Boolean,
+      sampleRate: Number,
+    },
+    prometheus: {
+      enabled: Boolean,
+      sampleRate: Number,
+    },
     v2UsersUtilityRoutes: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,
   maintenance: Boolean,
-  telemetry: {
-    enabled: Boolean,
-    thresholdMs: Number,
-  },
 });
 
 type DBTenant = Partial<Tenant> & { name: string };
@@ -161,14 +165,32 @@ class TenantsModel extends EventEmitter {
 
   async setTelemetryConfig(
     tenantName: string,
-    telemetry: { enabled: boolean; thresholdMs: number }
+    telemetry: { enabled: boolean; sampleRate: number }
   ) {
     if (!this.model) {
       throw new Error(
         'tenants model has not been initialized, make sure you called initialize() method'
       );
     }
-    await this.model.updateOne({ name: tenantName }, { $set: { telemetry } });
+    await this.model.updateOne(
+      { name: tenantName },
+      { $set: { 'featureFlags.telemetry': telemetry } }
+    );
+  }
+
+  async setPrometheusConfig(
+    tenantName: string,
+    prometheus: { enabled: boolean; sampleRate: number }
+  ) {
+    if (!this.model) {
+      throw new Error(
+        'tenants model has not been initialized, make sure you called initialize() method'
+      );
+    }
+    await this.model.updateOne(
+      { name: tenantName },
+      { $set: { 'featureFlags.prometheus': prometheus } }
+    );
   }
 }
 

@@ -27,6 +27,7 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import templatesApi from '#api/core/v1_layer/templates/templates.js';
 import thesauriApi from '../api/core/v1_layer/thesauri/thesauri.js';
 import relationtypes from '../api/relationtypes/relationtypes.js';
@@ -51,7 +52,21 @@ import type { ClientFeatureFlags } from '#V2/shared/types.js';
 
 loadIcons();
 
+declare global {
+  namespace Express {
+    interface Request {
+      ssrRoutePattern?: string;
+    }
+  }
+}
+
 const convertObjectIdsToStrings = (data: any) => JSON.parse(JSON.stringify(data));
+
+// eslint-disable-next-line comma-spacing
+const withSpan = <T,>(operation: string, fn: () => T): T =>
+  ExecutionContext.isTelemetryEnabled
+    ? ExecutionContext.telemetryCollector.runSpan(operation, fn)
+    : fn();
 
 api.APIURL(`http://localhost:${process.env.PORT || 3000}/api/`);
 apiClient.setBaseUrl(`http://localhost:${process.env.PORT || 3000}/api/`);
@@ -317,19 +332,20 @@ const prepareRouteData = async (req: ExpressRequest, routes: RouteObject[]) => {
 const EntryServer = async (req: ExpressRequest, res: Response) => {
   const ssrStart = process.hrtime.bigint();
   RouteHandler.renderedFromServer = true;
-  const [settings, assets] = await Promise.all([
-    settingsApi.get() as Promise<ClientSettings>,
-    getAssets(),
-  ]);
+  const [settings, assets] = await withSpan('settings_and_assets', async () =>
+    Promise.all([settingsApi.get() as Promise<ClientSettings>, getAssets()])
+  );
   const { connection, ...headers } = req.headers;
 
-  const [lib, cards, table, map, login] = await Promise.all([
-    import('./Library/Library.js'),
-    import('./Library/LibraryCards.js'),
-    import('./Library/LibraryTable.js'),
-    import('./Library/LibraryMap.js'),
-    import('./Users/Login.js'),
-  ]);
+  const [lib, cards, table, map, login] = await withSpan('dynamic_imports', async () =>
+    Promise.all([
+      import('./Library/Library.js'),
+      import('./Library/LibraryCards.js'),
+      import('./Library/LibraryTable.js'),
+      import('./Library/LibraryMap.js'),
+      import('./Users/Login.js'),
+    ])
+  );
 
   const indexComponents: IndexComponents | undefined = {
     LibraryRoot: (lib as { LibraryRoot: IndexComponents['LibraryRoot'] }).LibraryRoot,
@@ -355,6 +371,15 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     return;
   }
 
+  const languageKeys = (settings?.languages?.map(lang => lang.key) as string[]) || [];
+
+  req.ssrRoutePattern =
+    matched
+      .map(m => m.route.path)
+      .filter((segment): segment is string => Boolean(segment) && segment !== '/')
+      .filter(segment => !languageKeys.includes(segment))
+      .join('/') || 'home';
+
   if (req.aborted) {
     logSSRAborted(req, 'Matching routes', ssrStart);
     return;
@@ -377,7 +402,6 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   //extract the language from the route pathName, i.e /en/library
   const pathPossibleLanguage = lastRouteMatched?.pathname.split('/')[1] || '';
 
-  const languageKeys = (settings?.languages?.map(lang => lang.key) as string[]) || [];
   const language = languageKeys.includes(pathPossibleLanguage)
     ? pathPossibleLanguage
     : req.language;
@@ -403,10 +427,8 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     return;
   }
 
-  const { reduxState, atomStore, atomStoreData } = await prepareStoreData(
-    req,
-    settingsWithFeatureFlags,
-    language
+  const { reduxState, atomStore, atomStoreData } = await withSpan('prepare_store_data', async () =>
+    prepareStoreData(req, settingsWithFeatureFlags, language)
   );
 
   if (req.aborted) {
@@ -414,16 +436,16 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     return;
   }
 
-  const { staticHandleContext, router, ssrError } = await prepareRouteData(req, routes);
+  const { staticHandleContext, router, ssrError } = await withSpan('prepare_route_data', async () =>
+    prepareRouteData(req, routes)
+  );
 
   if (req.aborted) {
     logSSRAborted(req, 'Before requestStates', ssrStart, routeName);
     return;
   }
-  const { initialStore, initialState, loadingError } = await setReduxState(
-    req,
-    reduxState,
-    matched
+  const { initialStore, initialState, loadingError } = await withSpan('set_redux_state', async () =>
+    setReduxState(req, reduxState, matched)
   );
 
   const resolvedLoadingError = loadingError;
@@ -437,41 +459,45 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     return;
   }
 
-  const componentHtml = ReactDOMServer.renderToString(
-    <ReduxProvider store={initialStore as any}>
-      <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
-        <Provider store={atomStore}>
-          <React.StrictMode>
-            <ErrorBoundary error={resolvedLoadingError || ssrError}>
-              <StaticRouterProvider
-                router={router}
-                context={staticHandleContext as any}
-                nonce="the-nonce"
-              />
-            </ErrorBoundary>
-          </React.StrictMode>
-        </Provider>
-      </CustomProvider>
-    </ReduxProvider>
+  const componentHtml = withSpan('render_component_html', () =>
+    ReactDOMServer.renderToString(
+      <ReduxProvider store={initialStore as any}>
+        <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
+          <Provider store={atomStore}>
+            <React.StrictMode>
+              <ErrorBoundary error={resolvedLoadingError || ssrError}>
+                <StaticRouterProvider
+                  router={router}
+                  context={staticHandleContext as any}
+                  nonce="the-nonce"
+                />
+              </ErrorBoundary>
+            </React.StrictMode>
+          </Provider>
+        </CustomProvider>
+      </ReduxProvider>
+    )
   );
 
   if (req.aborted) {
     logSSRAborted(req, 'Root HTML', ssrStart, routeName);
     return;
   }
-  const html = ReactDOMServer.renderToString(
-    <Root
-      language={atomStoreData.locale}
-      content={componentHtml}
-      head={Helmet.rewind()}
-      user={req.user}
-      reduxData={initialState}
-      documentHeadPageCss={documentHeadPageCss}
-      assets={assets}
-      loadingError={resolvedLoadingError || ssrError}
-      featureFlags={clientFeatureFlags}
-      atomStoreData={{ ...atomStoreData, ...(globalMatomo && { globalMatomo }), ciMatomoActive }}
-    />
+  const html = withSpan('render_root_html', () =>
+    ReactDOMServer.renderToString(
+      <Root
+        language={atomStoreData.locale}
+        content={componentHtml}
+        head={Helmet.rewind()}
+        user={req.user}
+        reduxData={initialState}
+        documentHeadPageCss={documentHeadPageCss}
+        assets={assets}
+        loadingError={resolvedLoadingError || ssrError}
+        featureFlags={clientFeatureFlags}
+        atomStoreData={{ ...atomStoreData, ...(globalMatomo && { globalMatomo }), ciMatomoActive }}
+      />
+    )
   );
 
   if (req.aborted) {
