@@ -1,6 +1,6 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
-import { Button } from '#V2/Components/UI/index.js';
+import { Button, SelectControls } from '#V2/Components/UI/index.js';
 import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
 
 type FilesToolbarProps = {
@@ -22,8 +22,6 @@ const FilesToolbar = ({
 }: FilesToolbarProps) => {
   const hasSelection = selectedCount > 0;
   const allSelected = totalCount > 0 && selectedCount === totalCount;
-  const selectDisabled = totalCount === 0 || allSelected;
-  const deselectDisabled = !hasSelection;
 
   return (
     <div className="flex w-full items-center justify-between gap-2">
@@ -34,32 +32,13 @@ const FilesToolbar = ({
             <Translate>Add file</Translate>
           </Button>
         </EntityWriteAuthorization>
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            className={`px-1 text-micro font-medium transition-colors ${
-              selectDisabled
-                ? 'cursor-default text-ink-muted'
-                : 'cursor-pointer text-ink hover:text-ink-secondary'
-            }`}
-            onClick={onSelectAll}
-            disabled={selectDisabled}
-          >
-            <Translate>Select all</Translate>
-          </button>
-          <button
-            type="button"
-            className={`px-1 text-micro font-medium transition-colors ${
-              deselectDisabled
-                ? 'cursor-default text-ink-muted'
-                : 'cursor-pointer text-ink hover:text-ink-secondary'
-            }`}
-            onClick={onDeselectAll}
-            disabled={deselectDisabled}
-          >
-            <Translate>Deselect all</Translate>
-          </button>
-        </div>
+        <SelectControls
+          allSelected={allSelected}
+          hasSelection={hasSelection}
+          totalCount={totalCount}
+          onSelectAll={onSelectAll}
+          onDeselectAll={onDeselectAll}
+        />
       </div>
       {hasSelection ? (
         <div className="flex items-center gap-4">
