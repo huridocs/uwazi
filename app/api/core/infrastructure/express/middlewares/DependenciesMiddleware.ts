@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { tenants } from '#api/tenants/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
@@ -10,6 +10,7 @@ import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
 import { User } from '#api/users.v2/model/User.js';
 import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
+import { getRouteInfo } from '#api/core/infrastructure/express/RouteLabel.js';
 
 const dependenciesContextMiddleware = (
   request: Request,
@@ -21,18 +22,22 @@ const dependenciesContextMiddleware = (
   const correlationId = randomUUID();
 
   response.on('finish', () => {
-    if (!tenant.telemetry?.enabled) return;
+    if (!ExecutionContext.isTelemetryEnabled) return;
 
-    const { telemetryCollector } = ExecutionContext;
-    if (telemetryCollector.mainDurationMs() < (tenant.telemetry.thresholdMs ?? 0)) return;
+    const routeInfo = getRouteInfo(request, response);
+    if (!routeInfo) return;
 
-    telemetryCollector.add({
+    ExecutionContext.telemetryCollector.add({
       method: request.method,
-      path: request.path,
+      path: routeInfo.label,
+      route_kind: routeInfo.kind,
       status_code: response.statusCode,
     });
 
-    ExecutionContext.logger.info('HTTP Request Telemetry', telemetryCollector.build());
+    ExecutionContext.logger.info(
+      'HTTP Request Telemetry',
+      ExecutionContext.telemetryCollector.build()
+    );
   });
 
   return ExecutionContext.run(
@@ -47,7 +52,7 @@ const dependenciesContextMiddleware = (
         eventEmitter: EventEmitterFactory.default,
         idGenerator: IdGeneratorFactory.default,
         logger: LoggerFactory.default,
-        telemetryCollector: () => new TelemetryCollector('http_request'),
+        telemetryCollector: () => new TelemetryCollector('http_request', request.startPerfMs),
       },
     },
     next
