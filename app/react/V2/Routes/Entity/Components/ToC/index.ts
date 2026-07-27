@@ -9,4 +9,7 @@ export {
   getPageNumber,
   normalizeToc,
   findItemsWithChildren,
+  hasDirectChildren,
+  findAllAncestors,
+  findActivePath,
 } from './utils.js';
