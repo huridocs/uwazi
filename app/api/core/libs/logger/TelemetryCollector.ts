@@ -1,26 +1,34 @@
-/* eslint-disable camelcase */
-/* eslint-disable no-return-assign */
-type Time = {
+/* eslint-disable class-methods-use-this */
+/* eslint-disable max-statements */
+import { AsyncLocalStorage } from 'async_hooks';
+import { performance } from 'perf_hooks';
+
+type Span = {
+  id: number;
+  operation: string;
+  parentId: number | null;
   start: number;
   end: number;
-  duration: () => number;
-  finish: () => void;
 };
 
-type EndTimer = () => void;
+type SpanContext = {
+  collector: TelemetryCollector;
+  spanId: number;
+};
+
+const spanContext = new AsyncLocalStorage<SpanContext>();
 
 class TelemetryCollector {
   private metadata: Record<string, any>;
 
-  private time: Map<string, Time[]>;
+  private spans: Span[];
 
-  private mainOperation: string;
+  private rootSpanId: number;
 
-  constructor(mainOperation: string) {
-    this.time = new Map<string, Time[]>();
+  constructor(mainOperation: string, startTime: number = performance.now()) {
     this.metadata = {};
-    this.mainOperation = mainOperation;
-    this.startTimer(mainOperation);
+    this.spans = [];
+    this.rootSpanId = this.openSpan(mainOperation, null, startTime);
   }
 
   add(metadata: Record<string, any>) {
@@ -28,49 +36,68 @@ class TelemetryCollector {
   }
 
   mainDurationMs(): number {
-    return this.time.get(this.mainOperation)![0].duration();
+    return this.duration(this.spans[this.rootSpanId]);
   }
 
-  startTimer(operationName: string): EndTimer {
-    if (!this.time.has(operationName)) {
-      this.time.set(operationName, []);
-    }
-
-    const timers = this.time.get(operationName)!;
-
-    const time: Time = {
-      start: Date.now(),
-      end: 0,
-      duration: () => (time.end || Date.now()) - time.start,
-      finish: () => (time.end = Date.now()),
+  runSpan<T>(operation: string, fn: () => T): T {
+    const current = spanContext.getStore();
+    const parentId = current?.collector === this ? current.spanId : this.rootSpanId;
+    const spanId = this.openSpan(operation, parentId);
+    const finishSpan = () => {
+      this.spans[spanId].end = performance.now();
     };
 
-    timers.push(time);
+    let result: T;
+    try {
+      result = spanContext.run({ collector: this, spanId }, fn);
+    } catch (error) {
+      finishSpan();
+      throw error;
+    }
 
-    return () => time.finish();
+    if (result instanceof Promise) {
+      return result.finally(finishSpan) as T;
+    }
+
+    finishSpan();
+    return result;
+  }
+
+  private openSpan(
+    operation: string,
+    parentId: number | null,
+    start: number = performance.now()
+  ): number {
+    const id = this.spans.length;
+    this.spans.push({ id, operation, parentId, start, end: 0 });
+    return id;
+  }
+
+  private duration(span: Span): number {
+    return (span.end || performance.now()) - span.start;
+  }
+
+  private buildSpan(span: Span): Record<string, any> {
+    const children = this.spans
+      .filter(candidate => candidate.parentId === span.id)
+      .map(child => this.buildSpan(child));
+
+    return {
+      operation: span.operation,
+      duration_ms: this.duration(span),
+      ...(children.length > 0 && { children }),
+    };
   }
 
   build(): Record<string, any> {
-    const mainTimer = this.time.get(this.mainOperation)![0];
-
-    const timings = Array.from(this.time.entries())
-      .filter(([operation]) => operation !== this.mainOperation)
-      .flatMap(([operation, timers]) =>
-        timers.map((timer, occurrence) => ({
-          operation: timers.length > 1 ? `${operation}[${occurrence}]` : operation,
-          duration_ms: timer.duration(),
-          start_offset_ms: timer.start - mainTimer.start,
-        }))
-      )
-      .sort((a, b) => a.start_offset_ms - b.start_offset_ms)
-      .map(({ start_offset_ms, ...timing }, index) => ({ ...timing, order: index }));
+    const root = this.spans[this.rootSpanId];
 
     return {
       ...this.metadata,
-      timings,
+      timings: this.buildSpan(root).children || [],
       summary: {
-        main_operation: this.mainOperation,
-        total_duration_ms: mainTimer.duration(),
+        main_operation: root.operation,
+        total_duration_ms: this.duration(root),
       },
     };
   }
