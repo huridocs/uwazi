@@ -73,7 +73,7 @@ Migrate relationship types backend logic to v2 architecture so the module can la
 - [x] Implement v2 CRUD use cases and datasource shape (no internal upsert).
 - [x] Move delete guards and translation behavior needed by current contract.
 - [ ] Remove legacy V1 relationshiptypes code.
-- [ ] Migrate calls from legacy V1 relationshiptypes code into v2.
+- [x] Migrate runtime calls from legacy V1 relationshiptypes code into v2.
 - [x] Add v2 test suites for routes/use-cases/datasource and keep cross-module behavior stable.
 
 ## Current Implementation Notes
@@ -104,3 +104,4 @@ Migrate relationship types backend logic to v2 architecture so the module can la
 - Final confirmation that dropping relationtype property behavior is acceptable for all external consumers.
 - Database cleanup of old `relationtypes.properties` and `connections.metadata` is operational follow-up, not part of this implementation scope.
 - Keep enforcing "no internal mocks" in relationshiptypes v2 tests unless crossing module/system boundaries (auth/socket/etc).
+- Remaining legacy relationtypes references are now test-only; runtime callers are migrated to v2.

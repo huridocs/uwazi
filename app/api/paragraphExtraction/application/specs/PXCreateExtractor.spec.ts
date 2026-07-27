@@ -7,12 +7,12 @@ import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdG
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import relationshipTypeDS from '#api/relationtypes/index.js';
 import { PXErrorCode } from '#api/paragraphExtraction/domain/PXValidationError.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { MongoPXExtractorDBO } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
 import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { RelationshipTypesDataSourceFactory } from '#api/relationshiptypes.v2/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { CreateParagraphExtractionEntityStatusesJob } from '../../jobs/CreateParagraphExtractionEntityStatusesJob.js';
@@ -31,6 +31,7 @@ const setUpUseCase = () => {
     connection,
     mongoTransactionManager,
   });
+  const relationshipTypeDS = RelationshipTypesDataSourceFactory.default(mongoTransactionManager);
 
   const mockDispatcher = TestUtils.mockClass<JobsDispatcher>({
     dispatch: jest.fn().mockResolvedValue(undefined),

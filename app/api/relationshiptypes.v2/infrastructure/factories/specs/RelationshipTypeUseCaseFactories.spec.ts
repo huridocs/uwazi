@@ -1,11 +1,14 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { CreateRelationshipTypeUseCase } from '../../../application/CreateRelationshipType.js';
 import { DeleteRelationshipTypeUseCase } from '../../../application/DeleteRelationshipType.js';
 import { GetRelationshipTypesUseCase } from '../../../application/GetRelationshipTypes.js';
 import { UpdateRelationshipTypeUseCase } from '../../../application/UpdateRelationshipType.js';
+import { MongoRelationshipTypesDataSource } from '../../../database/MongoRelationshipTypesDataSource.js';
 import { CreateRelationshipTypeUseCaseFactory } from '../CreateRelationshipTypeUseCaseFactory.js';
 import { DeleteRelationshipTypeUseCaseFactory } from '../DeleteRelationshipTypeUseCaseFactory.js';
 import { GetRelationshipTypesUseCaseFactory } from '../GetRelationshipTypesUseCaseFactory.js';
+import { RelationshipTypesDataSourceFactory } from '../RelationshipTypesDataSourceFactory.js';
 import { UpdateRelationshipTypeUseCaseFactory } from '../UpdateRelationshipTypeUseCaseFactory.js';
 
 describe('RelationshipType use case factories', () => {
@@ -43,5 +46,12 @@ describe('RelationshipType use case factories', () => {
       GetRelationshipTypesUseCaseFactory.default()
     );
     expect(sut).toBeInstanceOf(GetRelationshipTypesUseCase);
+  });
+
+  it('should build relationship types data source', () => {
+    const sut = testingEnvironment.runWithContext(() =>
+      RelationshipTypesDataSourceFactory.default(TransactionManagerFactory.default())
+    );
+    expect(sut).toBeInstanceOf(MongoRelationshipTypesDataSource);
   });
 });

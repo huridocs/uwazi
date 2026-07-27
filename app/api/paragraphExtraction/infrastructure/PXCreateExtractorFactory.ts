@@ -2,8 +2,8 @@ import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdG
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import relationshipTypeDS from '#api/relationtypes/index.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { RelationshipTypesDataSourceFactory } from '#api/relationshiptypes.v2/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 
 import { PXCreateExtractor } from '../application/PXCreateExtractor.js';
 import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory.js';
@@ -20,6 +20,7 @@ export class PXCreateExtractorFactory {
     const dispatcher = DefaultDispatcher(props.tenantName, mongoTransactionManager, {
       lockWindow: 1000 * 60,
     });
+    const relationshipTypeDS = RelationshipTypesDataSourceFactory.default(mongoTransactionManager);
 
     return new PXCreateExtractor({
       relationshipTypeDS,
