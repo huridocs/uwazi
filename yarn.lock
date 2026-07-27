@@ -20750,7 +20750,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:8.5.16, postcss@npm:^8.3.11, postcss@npm:^8.4.21, postcss@npm:^8.4.40, postcss@npm:^8.5.15":
+"postcss@npm:8.5.18":
+  version: 8.5.18
+  resolution: "postcss@npm:8.5.18"
+  dependencies:
+    nanoid: "npm:^3.3.12"
+    picocolors: "npm:^1.1.1"
+    source-map-js: "npm:^1.2.1"
+  checksum: 10c0/6fbab24a457ca5b90d423c333d0bab13e6646fda646e83235eed892f9e4f2dc6c50689ddc5ac1632fc085be2e096d2e8e03779ac092de6353e1cfcbbc3681685
+  languageName: node
+  linkType: hard
+
+"postcss@npm:^8.3.11, postcss@npm:^8.4.21, postcss@npm:^8.4.40, postcss@npm:^8.5.15":
   version: 8.5.16
   resolution: "postcss@npm:8.5.16"
   dependencies:
@@ -25268,7 +25279,7 @@ __metadata:
     pdfjs-dist: "npm:5.4.624"
     pg: "npm:^8.22.0"
     plop: "npm:^4.0.5"
-    postcss: "npm:8.5.16"
+    postcss: "npm:8.5.18"
     postcss-loader: "npm:^8.2.1"
     postcss-nesting: "npm:^13.0.2"
     postcss-prefix-selector: "npm:^2.1.1"
