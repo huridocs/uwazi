@@ -11,19 +11,23 @@ type Span = {
   end: number;
 };
 
+type SpanContext = {
+  collector: TelemetryCollector;
+  spanId: number;
+};
+
+const spanContext = new AsyncLocalStorage<SpanContext>();
+
 class TelemetryCollector {
   private metadata: Record<string, any>;
 
   private spans: Span[];
-
-  private currentSpan: AsyncLocalStorage<number>;
 
   private rootSpanId: number;
 
   constructor(mainOperation: string, startTime: number = performance.now()) {
     this.metadata = {};
     this.spans = [];
-    this.currentSpan = new AsyncLocalStorage<number>();
     this.rootSpanId = this.openSpan(mainOperation, null, startTime);
   }
 
@@ -36,7 +40,8 @@ class TelemetryCollector {
   }
 
   runSpan<T>(operation: string, fn: () => T): T {
-    const parentId = this.currentSpan.getStore() ?? this.rootSpanId;
+    const current = spanContext.getStore();
+    const parentId = current?.collector === this ? current.spanId : this.rootSpanId;
     const spanId = this.openSpan(operation, parentId);
     const finishSpan = () => {
       this.spans[spanId].end = performance.now();
@@ -44,7 +49,7 @@ class TelemetryCollector {
 
     let result: T;
     try {
-      result = this.currentSpan.run(spanId, fn);
+      result = spanContext.run({ collector: this, spanId }, fn);
     } catch (error) {
       finishSpan();
       throw error;

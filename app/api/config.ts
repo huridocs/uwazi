@@ -153,7 +153,6 @@ export const config = {
       v2UsersUpdate: false,
       telemetry: {
         enabled: false,
-        thresholdMs: 300,
         sampleRate: 0.5,
       },
       prometheus: {

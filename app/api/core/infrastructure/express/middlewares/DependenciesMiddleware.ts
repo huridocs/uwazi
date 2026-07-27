@@ -26,8 +26,6 @@ const dependenciesContextMiddleware = (
 
     const routeInfo = getRouteInfo(request, response);
     if (!routeInfo) return;
-    const { thresholdMs = 0 } = tenant.featureFlags?.telemetry || {};
-    if (ExecutionContext.telemetryCollector.mainDurationMs() < thresholdMs) return;
 
     ExecutionContext.telemetryCollector.add({
       method: request.method,
