@@ -57,7 +57,6 @@ const RelationshipRowCompact = ({
   marker,
   representedIds,
   hideTargetPill,
-  hideRelationType,
   relationshipTypeName,
   direction,
   referencePage,
@@ -70,7 +69,7 @@ const RelationshipRowCompact = ({
         <RelationshipRowCheckbox relationshipIds={representedIds} />
         <TargetPill marker={marker} hideTargetPill={hideTargetPill} />
         <DirectionGlyph direction={direction} />
-        {!hideRelationType && relationshipTypeName && (
+        {relationshipTypeName && (
           <span className="truncate text-nano capitalize text-ink-tertiary">
             {relationshipTypeName}
           </span>
@@ -87,7 +86,6 @@ const RelationshipRowDetail = ({
   representedIds,
   hideTargetPill,
   hideTemplateName,
-  hideRelationType,
   templateName,
   relationshipTypeName,
   direction,
@@ -143,9 +141,7 @@ const RelationshipRowDetail = ({
       <div className="mt-1 flex items-center justify-between text-nano text-ink-tertiary">
         <span className="flex items-center gap-1">
           <DirectionGlyph direction={direction} />
-          {!hideRelationType && relationshipTypeName && (
-            <span className="capitalize">{relationshipTypeName}</span>
-          )}
+          {relationshipTypeName && <span className="capitalize">{relationshipTypeName}</span>}
         </span>
         <div className="flex items-center gap-0.5">
           {!editMode && onView && (
