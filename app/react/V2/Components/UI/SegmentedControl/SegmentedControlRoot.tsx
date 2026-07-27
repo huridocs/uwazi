@@ -69,8 +69,7 @@ const SegmentedControlRoot = ({
   size = 'sm',
 }: SegmentedControlRootProps) => {
   const contextValue = useMemo(
-    () =>
-      value !== undefined && onValueChange ? { value, onValueChange, disabled, size } : null,
+    () => (value !== undefined && onValueChange ? { value, onValueChange, disabled, size } : null),
     [value, onValueChange, disabled, size]
   );
 

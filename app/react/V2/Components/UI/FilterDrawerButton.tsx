@@ -21,7 +21,9 @@ const FilterDrawerButton = ({ activeCount, onClick, size = 'sm' }: FilterDrawerB
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`relative inline-flex cursor-pointer items-center gap-1.5 rounded-md border ${height} ${padding} ${text} font-medium transition-colors ${
+      className={`relative inline-flex cursor-pointer items-center gap-1.5 rounded-md border ${
+        height
+      } ${padding} ${text} font-medium transition-colors ${
         active
           ? 'border-border bg-vellum text-ink'
           : 'border-border bg-warm text-ink-secondary hover:bg-parchment hover:text-ink'
