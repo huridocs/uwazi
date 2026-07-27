@@ -2,8 +2,10 @@ import React from 'react';
 import { Tooltip } from 'flowbite-react';
 import { ListBulletIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
-import { BlankState } from '#V2/Components/UI/index.js';
+import { useEntityHashParams } from '../../entityUrlState.js';
+import { PAGE_PARAM } from '../../urlParams.js';
 import { ToC } from './ToC.js';
+import { findItemsWithChildren, normalizeToc } from './utils.js';
 import type { useToCPanel } from './useToCPanel.js';
 
 type ToCViewProps = {
@@ -26,13 +28,40 @@ const ToCView = ({ generatedToc, panel }: ToCViewProps) => {
     handleLabelChange,
   } = panel;
 
-  return (
-    <div className="flex h-full flex-col gap-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 py-2">
-          <p className="text-sm font-bold text-ink">
-            <Translate>Table of contents</Translate>
+  const hashParams = useEntityHashParams();
+  const currentPage = Number.parseInt(hashParams.get(PAGE_PARAM) || '1', 10);
+  const hasEntries = Boolean(tocState.toc && tocState.toc.length > 0);
+  const hasAnyChildren = hasEntries
+    ? findItemsWithChildren(normalizeToc(tocState.toc)).length > 0
+    : false;
+
+  if (!hasEntries) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center gap-3 px-4 text-center">
+        <ListBulletIcon className="h-8 w-8 text-ink-tertiary/40" />
+        <div>
+          <p className="text-sm font-semibold text-ink-tertiary">
+            <Translate>No Table of contents</Translate>
           </p>
+          <p className="mt-1 text-xs text-ink-tertiary">
+            <Translate>
+              You can start by selecting text in the document and clicking the "Add to ToC" button.
+            </Translate>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const sparkles = <SparklesIcon className="h-3.5 w-3.5 text-ink-tertiary" aria-hidden />;
+
+  return (
+    <div className="flex h-full min-h-0 flex-col">
+      <div className="flex shrink-0 items-center justify-between px-3 py-2.5">
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm font-semibold text-ink">
+            <Translate>Table of contents</Translate>
+          </span>
           {generatedToc ? (
             <Tooltip
               // eslint-disable-next-line react/style-prop-object
@@ -40,35 +69,38 @@ const ToCView = ({ generatedToc, panel }: ToCViewProps) => {
               arrow={false}
               content="This table of contents was automatically created by the system."
             >
-              <span className="flex items-center gap-1 rounded-full bg-warm px-2 py-0.5 text-micro font-semibold tracking-wide text-ink">
+              <span className="inline-flex">
                 <Translate className="sr-only">auto created</Translate>
-                <SparklesIcon className="h-5 w-5 text-ink" />
+                {sparkles}
               </span>
             </Tooltip>
-          ) : null}
+          ) : (
+            sparkles
+          )}
         </div>
-        {tocState.toc && tocState.toc.length > 0 && !tocState.isEditMode ? (
-          <div className="flex gap-4">
-            <button
-              type="button"
-              onClick={expandAll}
-              disabled={isAllExpanded}
-              className="text-sm font-medium text-ink transition hover:text-ink-secondary disabled:cursor-not-allowed disabled:text-ink-muted"
-            >
-              <Translate>Expand All</Translate>
-            </button>
+        {hasAnyChildren && !tocState.isEditMode ? (
+          <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={collapseAll}
               disabled={isAllCollapsed}
-              className="text-sm font-medium text-ink transition hover:text-ink-secondary disabled:cursor-not-allowed disabled:text-ink-muted"
+              className="cursor-pointer text-xs text-ink-tertiary transition-colors hover:text-ink-secondary disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Translate>Collapse All</Translate>
+            </button>
+            <button
+              type="button"
+              onClick={expandAll}
+              disabled={isAllExpanded}
+              className="cursor-pointer text-xs font-medium text-ink-secondary transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Translate>Expand All</Translate>
             </button>
           </div>
         ) : null}
       </div>
-      {tocState.toc && tocState.toc.length > 0 ? (
+
+      <div className="min-h-0 flex-1 overflow-auto px-1">
         <ToC
           toc={tocState.toc}
           expanded={tocState.expanded}
@@ -76,23 +108,12 @@ const ToCView = ({ generatedToc, panel }: ToCViewProps) => {
           onClick={handleToCEntryClick}
           onStateChange={handleStateChange}
           isEditMode={tocState.isEditMode}
+          currentPage={currentPage}
           onIndentationChange={handleIndentationChange}
           onDelete={handleDelete}
           onLabelChange={handleLabelChange}
         />
-      ) : (
-        <BlankState
-          icon={
-            <ListBulletIcon className="h-7 w-7 rounded-full bg-[color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] p-1 text-ink" />
-          }
-          title={<Translate>No Table of contents</Translate>}
-          description={
-            <Translate>
-              You can start by selecting text in the document and clicking the "Add to ToC" button.
-            </Translate>
-          }
-        />
-      )}
+      </div>
     </div>
   );
 };

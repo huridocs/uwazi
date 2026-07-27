@@ -3,85 +3,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
+  ChevronDownIcon,
   TrashIcon,
   CheckIcon,
 } from '@heroicons/react/24/outline';
-import { TriangleIcon } from '#V2/Components/UI/TriangleIcon.js';
+import { PageTag } from '../relationships/rows/PageTag.js';
 import type { ProcessedTocEntry } from './types.js';
 import { DeleteConfirmation } from './DeleteConfirmation.js';
-
-const getPageNumber = (entry: { selectionRectangles?: Array<{ page?: string }> }) => {
-  const page = entry.selectionRectangles?.find(rect => rect.page)?.page;
-  if (!page) {
-    return null;
-  }
-  const parsed = Number.parseInt(page, 10);
-  return Number.isNaN(parsed) ? null : parsed;
-};
-
-const findAllAncestors = (
-  currentItem: ProcessedTocEntry,
-  normalizedToc: ProcessedTocEntry[]
-): ProcessedTocEntry[] => {
-  if (currentItem.isTopLevel) {
-    return [];
-  }
-
-  const ancestors: ProcessedTocEntry[] = [];
-  let currentIndentation = currentItem.indentation;
-
-  // Traverse backwards to find all ancestors
-  for (let i = currentItem.index - 1; i >= 0; i -= 1) {
-    const candidate = normalizedToc[i];
-    if (candidate.topIndex === currentItem.topIndex && candidate.indentation < currentIndentation) {
-      ancestors.push(candidate);
-      currentIndentation = candidate.indentation;
-      // If we found a top-level item, we can stop
-      if (candidate.isTopLevel) {
-        break;
-      }
-    }
-  }
-
-  return ancestors.reverse(); // Return in order from top to bottom
-};
-
-const hasDirectChildren = (
-  item: ProcessedTocEntry,
-  normalizedToc: ProcessedTocEntry[]
-): boolean => {
-  // Find the next item after this one
-  const nextItem = normalizedToc.find(otherItem => otherItem.index > item.index);
-  // It's a direct child if it has more indentation and same topIndex
-  return (
-    nextItem !== undefined &&
-    nextItem.topIndex === item.topIndex &&
-    nextItem.indentation > item.indentation
-  );
-};
-
-const getInteractiveProps = (
-  isInteractive: boolean,
-  handleEntryClick: () => void
-): Record<string, unknown> => {
-  if (!isInteractive) {
-    return {};
-  }
-  return {
-    role: 'button' as const,
-    tabIndex: 0,
-    onClick: handleEntryClick,
-    onKeyDown: (event: React.KeyboardEvent) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        handleEntryClick();
-      }
-    },
-  };
-};
+import { findAllAncestors, getPageNumber, hasDirectChildren } from './utils.js';
 
 type EditControlsProps = {
-  isEditMode: boolean;
   isFirstEntry: boolean;
   canDecreaseIndentation: boolean;
   canIncreaseIndentation: boolean;
@@ -89,93 +20,32 @@ type EditControlsProps = {
   handleIncreaseIndentation: (e: React.MouseEvent) => void;
 };
 
-const renderEditControls = (props: EditControlsProps): React.ReactNode => (
-  <div className="flex items-center gap-0.5 shrink-0">
+const EditControls = ({
+  isFirstEntry,
+  canDecreaseIndentation,
+  canIncreaseIndentation,
+  handleDecreaseIndentation,
+  handleIncreaseIndentation,
+}: EditControlsProps) => (
+  <div className="flex shrink-0 items-center gap-0.5">
     <button
       type="button"
-      onClick={props.handleDecreaseIndentation}
-      disabled={props.isFirstEntry || !props.canDecreaseIndentation}
-      className="w-[20px] h-[20px] rounded hover:bg-(--color-theme-surface-warm) disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus:ring-1 focus:ring-(--color-theme-control-border-focus) transition"
+      onClick={handleDecreaseIndentation}
+      disabled={isFirstEntry || !canDecreaseIndentation}
+      className="h-5 w-5 cursor-pointer rounded transition hover:bg-warm focus:outline-none focus:ring-1 focus:ring-carbon/30 disabled:cursor-not-allowed disabled:opacity-50"
       aria-label="Decrease indentation"
     >
-      <ChevronLeftIcon className="w-4 h-4 text-ink-secondary" />
+      <ChevronLeftIcon className="h-4 w-4 text-ink-secondary" />
     </button>
     <button
       type="button"
-      onClick={props.handleIncreaseIndentation}
-      disabled={props.isFirstEntry || !props.canIncreaseIndentation}
-      className="w-[20px] h-[20px] rounded hover:bg-(--color-theme-surface-warm) disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus:ring-1 focus:ring-(--color-theme-control-border-focus) transition"
+      onClick={handleIncreaseIndentation}
+      disabled={isFirstEntry || !canIncreaseIndentation}
+      className="h-5 w-5 cursor-pointer rounded transition hover:bg-warm focus:outline-none focus:ring-1 focus:ring-carbon/30 disabled:cursor-not-allowed disabled:opacity-50"
       aria-label="Increase indentation"
     >
-      <ChevronRightIcon className="w-4 h-4 text-ink-secondary" />
+      <ChevronRightIcon className="h-4 w-4 text-ink-secondary" />
     </button>
-  </div>
-);
-
-type ExpandButtonProps = {
-  hasChildren: boolean;
-  isEditMode: boolean;
-  isExpanded: boolean;
-  toggleExpand: (index: number) => void;
-  itemIndex: number;
-};
-
-const renderExpandButton = (props: ExpandButtonProps): React.ReactNode => {
-  if (!props.hasChildren || props.isEditMode) {
-    return null;
-  }
-  return (
-    <button
-      type="button"
-      onClick={e => {
-        e.stopPropagation();
-        props.toggleExpand(props.itemIndex);
-      }}
-      onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          props.toggleExpand(props.itemIndex);
-        }
-      }}
-      className="shrink-0 p-0.5 rounded focus:outline-none focus:ring-1 focus:ring-(--color-theme-control-border-focus) transition cursor-pointer min-w-[20px] h-[20px] items-center justify-center"
-      aria-label={props.isExpanded ? 'Collapse section' : 'Expand section'}
-      aria-expanded={props.isExpanded}
-    >
-      <TriangleIcon
-        isExpanded={props.isExpanded}
-        className={props.isExpanded ? 'text-ink-secondary' : 'text-ink-muted'}
-      />
-    </button>
-  );
-};
-
-type RightSideContentProps = {
-  pageNumber: number | null;
-  isEditMode: boolean;
-  handleDelete: () => void;
-};
-
-const renderRightSideContent = (props: RightSideContentProps): React.ReactNode => (
-  <div className="relative flex items-center gap-2">
-    {typeof props.pageNumber === 'number' && !props.isEditMode && (
-      <p className="text-micro font-medium text-ink-muted whitespace-nowrap shrink-0">
-        {props.pageNumber}
-      </p>
-    )}
-    {props.isEditMode && (
-      <DeleteConfirmation
-        onConfirm={props.handleDelete}
-        triggerButton={
-          <button
-            type="button"
-            className="w-[20px] h-[20px] rounded hover:bg-[color-mix(in_srgb,var(--color-theme-feedback-danger)_18%,transparent)] focus:outline-none focus:ring-1 focus:ring-(--color-theme-feedback-danger) transition cursor-pointer"
-            aria-label="Delete entry"
-          >
-            <TrashIcon className="w-4 h-4 stroke-error-500" />
-          </button>
-        }
-      />
-    )}
   </div>
 );
 
@@ -184,6 +54,8 @@ export type ToCItemProps = {
   normalizedToc: ProcessedTocEntry[];
   expanded: Record<number, boolean>;
   isEditMode: boolean;
+  isActive?: boolean;
+  isOnActivePath?: boolean;
   onClick?: (entry: ProcessedTocEntry) => void;
   onIndentationChange?: (index: number, newIndentation: number) => void;
   onDelete?: (index: number) => void;
@@ -196,6 +68,8 @@ export const ToCItem = ({
   normalizedToc,
   expanded,
   isEditMode,
+  isActive = false,
+  isOnActivePath = false,
   onClick,
   onIndentationChange,
   onDelete,
@@ -219,8 +93,7 @@ export const ToCItem = ({
 
   const pageNumber = getPageNumber(item.entry);
   const label = item.entry.label?.trim() || `Section ${item.index + 1}`;
-  const paddingLeft = item.isTopLevel ? 8 : item.indentation * 16 + 16;
-  const isInteractive = typeof pageNumber === 'number' && !isEditMode;
+  const indent = item.indentation * 16;
   const ancestors = findAllAncestors(item, normalizedToc);
   // In edit mode, always show all items regardless of expansion state
   const shouldHide =
@@ -230,43 +103,56 @@ export const ToCItem = ({
   if (shouldHide) {
     return null;
   }
+
   const hasChildren = hasDirectChildren(item, normalizedToc);
   const isExpanded = expanded[item.index] ?? false;
 
-  const handleEntryClick = () => {
-    if (!isEditMode) {
+  const handleJump = () => {
+    if (!isEditMode && pageNumber !== null) {
       onClick?.(item);
     }
   };
 
-  const interactiveProps = getInteractiveProps(isInteractive, handleEntryClick);
-  const topLevelClasses = item.isTopLevel ? 'bg-selected hover:bg-warm' : 'hover:bg-warm';
-  const baseClasses = `flex items-center justify-between gap-4 py-1.5 pr-2 transition ${
-    isInteractive ? 'cursor-pointer' : ''
-  } focus:outline-none focus:ring-2 focus:ring-(--color-theme-control-border-focus) focus:ring-inset rounded`;
+  const handleRowClick = () => {
+    if (isEditMode) {
+      return;
+    }
+    if (hasChildren) {
+      toggleExpand(item.index);
+    }
+    handleJump();
+  };
 
-  // Edit mode controls
-  const editControls = {
-    canDecreaseIndentation: item.indentation > 0,
-    canIncreaseIndentation: item.indentation < 2,
-    isFirstEntry: item.index === 0,
-    handleDecreaseIndentation: (e: React.MouseEvent) => {
-      e.stopPropagation();
-      if (item.indentation > 0 && onIndentationChange) {
-        onIndentationChange(item.originalIndex, item.indentation - 1);
-      }
-    },
-    handleIncreaseIndentation: (e: React.MouseEvent) => {
-      e.stopPropagation();
-      if (item.indentation < 2 && onIndentationChange) {
-        onIndentationChange(item.originalIndex, item.indentation + 1);
-      }
-    },
-    handleDelete: () => {
-      if (onDelete) {
-        onDelete(item.originalIndex);
-      }
-    },
+  const handleRowKeyDown = (event: React.KeyboardEvent) => {
+    if (isEditMode) {
+      return;
+    }
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleRowClick();
+    }
+  };
+
+  const canDecreaseIndentation = item.indentation > 0;
+  const canIncreaseIndentation = item.indentation < 2;
+  const isFirstEntry = item.index === 0;
+
+  const handleDecreaseIndentation = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (item.indentation > 0 && onIndentationChange) {
+      onIndentationChange(item.originalIndex, item.indentation - 1);
+    }
+  };
+
+  const handleIncreaseIndentation = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (item.indentation < 2 && onIndentationChange) {
+      onIndentationChange(item.originalIndex, item.indentation + 1);
+    }
+  };
+
+  const handleDelete = () => {
+    onDelete?.(item.originalIndex);
   };
 
   const handleLabelClick = (e: React.MouseEvent) => {
@@ -278,9 +164,7 @@ export const ToCItem = ({
   };
 
   const handleLabelSave = () => {
-    if (onLabelChange) {
-      onLabelChange(item.originalIndex, editedLabel.trim() || label);
-    }
+    onLabelChange?.(item.originalIndex, editedLabel.trim() || label);
     setIsEditingLabel(false);
   };
 
@@ -295,10 +179,33 @@ export const ToCItem = ({
     }
   };
 
+  let labelTone = 'font-medium text-ink-secondary';
+  if (item.indentation === 0) {
+    labelTone = 'font-bold uppercase text-ink';
+  } else if (isActive) {
+    labelTone = 'font-semibold text-ink';
+  }
+  const labelClassName = `flex-1 truncate text-xs leading-relaxed ${labelTone}`;
+
+  let rowTone = 'hover:bg-warm';
+  if (isActive) {
+    rowTone = 'bg-parchment';
+  } else if (isOnActivePath) {
+    rowTone = 'bg-warm/50';
+  }
+  const rowClassName = `group flex w-full items-center gap-2 rounded px-2 py-2 text-left transition-colors ${
+    isEditMode ? '' : 'cursor-pointer'
+  } ${rowTone}`;
+
+  let expandLabel: string | undefined;
+  if (hasChildren) {
+    expandLabel = isExpanded ? 'Collapse section' : 'Expand section';
+  }
+
   const renderLabel = () => {
     if (isEditMode && isEditingLabel) {
       return (
-        <div className="flex-1 min-w-0 flex items-cente  gap-1">
+        <div className="flex min-w-0 flex-1 items-center gap-1">
           <input
             ref={inputRef}
             type="text"
@@ -306,7 +213,7 @@ export const ToCItem = ({
             onChange={e => setEditedLabel(e.target.value)}
             onKeyDown={handleLabelKeyDown}
             onClick={e => e.stopPropagation()}
-            className="flex-1 text-sm font-semibold text-ink px-2 h-5 leading-5 pt-0 pb-0 border border-[color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] rounded focus:outline-none focus:ring-2 focus:ring-(--color-theme-control-border-focus) bg-(--color-theme-surface-raised)"
+            className="h-5 flex-1 rounded border border-border-soft bg-paper px-2 py-0 text-sm font-semibold leading-5 text-ink focus:outline-none focus:ring-2 focus:ring-carbon/30"
           />
           <button
             type="button"
@@ -314,18 +221,19 @@ export const ToCItem = ({
               e.stopPropagation();
               handleLabelSave();
             }}
-            className="rounded hover:bg-(--color-theme-surface-warm) focus:outline-none focus:ring-1 focus:ring-(--color-theme-control-border-focus) transition cursor-pointer shrink-0"
+            className="shrink-0 cursor-pointer rounded transition hover:bg-warm focus:outline-none focus:ring-1 focus:ring-carbon/30"
             aria-label="Save label"
           >
-            <CheckIcon className="w-4 h-4 text-ink-secondary" />
+            <CheckIcon className="h-4 w-4 text-ink-secondary" />
           </button>
         </div>
       );
     }
+
     if (isEditMode) {
       return (
         <div
-          className="text-sm font-semibold text-ink truncate cursor-text"
+          className={`${labelClassName} cursor-text`}
           onClick={handleLabelClick}
           onKeyDown={e => {
             if (e.key === 'Enter' || e.key === ' ') {
@@ -341,37 +249,65 @@ export const ToCItem = ({
         </div>
       );
     }
-    return <p className="text-sm font-semibold text-ink trunc te">{label}</p>;
+
+    return <span className={labelClassName}>{label}</span>;
   };
 
+  const chevronOrEdit = isEditMode ? (
+    <EditControls
+      isFirstEntry={isFirstEntry}
+      canDecreaseIndentation={canDecreaseIndentation}
+      canIncreaseIndentation={canIncreaseIndentation}
+      handleDecreaseIndentation={handleDecreaseIndentation}
+      handleIncreaseIndentation={handleIncreaseIndentation}
+    />
+  ) : (
+    <span className="flex w-3.5 shrink-0 items-center justify-center">
+      {hasChildren ? (
+        <ChevronDownIcon
+          className={`h-3 w-3 text-ink-tertiary transition-transform ${
+            isExpanded ? '' : '-rotate-90'
+          }`}
+          aria-hidden
+        />
+      ) : null}
+    </span>
+  );
+
+  const rightSide = isEditMode ? (
+    <DeleteConfirmation
+      onConfirm={handleDelete}
+      triggerButton={
+        <button
+          type="button"
+          className="h-5 w-5 cursor-pointer rounded transition hover:bg-seal-tint focus:outline-none focus:ring-1 focus:ring-(--color-theme-feedback-danger)"
+          aria-label="Delete entry"
+        >
+          <TrashIcon className="h-4 w-4 text-seal" />
+        </button>
+      }
+    />
+  ) : (
+    typeof pageNumber === 'number' && <PageTag page={pageNumber} onClick={handleJump} />
+  );
+
+  const interactiveProps = isEditMode
+    ? {}
+    : {
+        role: 'button' as const,
+        tabIndex: 0,
+        onClick: handleRowClick,
+        onKeyDown: handleRowKeyDown,
+        'aria-current': isActive ? ('true' as const) : undefined,
+        'aria-expanded': hasChildren ? isExpanded : undefined,
+        'aria-label': expandLabel,
+      };
+
   return (
-    <div
-      key={`toc-${item.index}`}
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      {...interactiveProps}
-      className={`${baseClasses} ${topLevelClasses}`}
-      style={{ paddingLeft }}
-    >
-      <div className="flex items-center gap-1 flex-1 min-w 0">
-        {isEditMode
-          ? renderEditControls({
-              isEditMode,
-              isFirstEntry: editControls.isFirstEntry,
-              canDecreaseIndentation: editControls.canDecreaseIndentation,
-              canIncreaseIndentation: editControls.canIncreaseIndentation,
-              handleDecreaseIndentation: editControls.handleDecreaseIndentation,
-              handleIncreaseIndentation: editControls.handleIncreaseIndentation,
-            })
-          : renderExpandButton({
-              hasChildren,
-              isEditMode,
-              isExpanded,
-              toggleExpand,
-              itemIndex: item.index,
-            })}
-        {renderLabel()}
-      </div>
-      {renderRightSideContent({ pageNumber, isEditMode, handleDelete: editControls.handleDelete })}
+    <div className={rowClassName} style={{ paddingLeft: 8 + indent }} {...interactiveProps}>
+      {chevronOrEdit}
+      {renderLabel()}
+      {rightSide}
     </div>
   );
 };
