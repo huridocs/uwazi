@@ -1,14 +1,8 @@
 import type { Path, UseFormSetError } from 'react-hook-form';
 import type { ApiValidation } from '#shared/apiClient/index.js';
+import type { EditEntityFormValues } from './buildEditEntityDefaultValues.js';
 import type { FormMetadataProperty } from './formatMetadataForForm.js';
-
-type EditEntityFormValues = {
-  title: string;
-  template: string;
-  showIcon: boolean;
-  icon: unknown;
-  metadata: Record<string, unknown[]>;
-};
+import { relationshipGroupKey } from './relationshipGrouping.js';
 
 type EditEntityErrors = {
   title?: string;
@@ -73,7 +67,7 @@ const buildRelationshipPrimaryNames = (properties: FormMetadataProperty[]) => {
       return;
     }
 
-    const groupKey = `${property.content ?? ''}::${property.relationType ?? ''}`;
+    const groupKey = relationshipGroupKey(property);
     const primaryName = primaryByGroupKey.get(groupKey) ?? property.name;
 
     if (!primaryByGroupKey.has(groupKey)) {

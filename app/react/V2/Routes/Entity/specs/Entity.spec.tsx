@@ -406,7 +406,7 @@ describe('Entity view', () => {
       ).toHaveTextContent('*');
     });
 
-    it('relocates formMountHost via Edit on the other pane without clearing draft', async () => {
+    it('relocates formMountHost when the other pane opens Metadata without clearing draft', async () => {
       render(
         <TestRouterContext
           loaderData={{
@@ -430,23 +430,23 @@ describe('Entity view', () => {
 
       await checkEntityRendered();
 
-      const tablists = screen.getAllByTestId('tabs-comp');
-      fireEvent.click(within(tablists[1]).getByRole('tab', { name: 'Metadata' }));
+      let tablists = screen.getAllByTestId('tabs-comp');
       fireEvent.click(within(tablists[0]).getByRole('tab', { name: 'Metadata' }));
 
       await waitFor(() => {
-        expect(screen.getAllByRole('button', { name: 'Edit' }).length).toBeGreaterThan(0);
+        expect(screen.getByRole('button', { name: 'Edit' })).toBeInTheDocument();
       });
+      fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
 
-      fireEvent.click(screen.getAllByRole('button', { name: 'Edit' })[0]);
       const titleInput = await screen.findByRole('textbox', { name: /Title/ });
       fireEvent.change(titleInput, { target: { value: 'Joined draft' } });
 
-      const editButtons = screen.getAllByRole('button', { name: 'Edit' });
-      expect(editButtons.length).toBeGreaterThan(0);
-      fireEvent.click(editButtons[editButtons.length - 1]);
+      fireEvent.click(within(tablists[0]).getByRole('tab', { name: 'Document' }));
+      tablists = screen.getAllByTestId('tabs-comp');
+      fireEvent.click(within(tablists[1]).getByRole('tab', { name: 'Metadata' }));
 
       await waitFor(() => {
+        expect(screen.getByTestId('entity-edit-form')).toBeInTheDocument();
         expect(screen.getByRole('textbox', { name: /Title/ })).toHaveValue('Joined draft');
         expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
       });

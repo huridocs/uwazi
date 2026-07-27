@@ -1,367 +1,69 @@
-/* eslint-disable max-lines, max-statements */
-import React, { Fragment, useEffect, useMemo } from 'react';
-import { FieldErrors, FormProvider, useForm, type UseFormReturn } from 'react-hook-form';
+import React, { useEffect, useMemo } from 'react';
 import { useAtomValue } from 'jotai';
-import { t, Translate } from '#app/I18N/index.js';
-import { ClientThesaurus } from '#app/apiResponseTypes.js';
-import { Entity } from '#V2/api/entities/types.js';
-import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js';
-import { lookup as lookupEntities } from '#V2/api/search/index.js';
-import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
-import {
-  filterReferencedPendingAttachments,
-  extractUploadIdFromMediaValue,
-} from '#shared/entitySave/mediaMetadata.js';
+import { t } from '#app/I18N/index.js';
+import { extractUploadIdFromMediaValue } from '#shared/entitySave/mediaMetadata.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { thesauriAtom } from '#V2/atoms/thesauriAtom.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
-import {
-  TextField,
-  TitleField,
-  IconField,
-  SelectField,
-  TemplateField,
-  MultiselectField,
-  DateField,
-  DateRangeField,
-  MultidateField,
-  MultiDateRangeField,
-  LinkField,
-  GeolocationField,
-  RelationshipField,
-  MarkdownField,
-  NestedField,
-  MediaField,
-  PreviewField,
-} from './Components/index.js';
-import { EMPTY_ICON } from './Components/IconField.js';
 import { MultiselectListOption } from '../../Forms/index.js';
+import { TitleField, IconField, TemplateField } from './Components/index.js';
+import { EditEntityPropertyField } from './EditEntityPropertyField.js';
+import type { EditEntityProps } from './editEntityTypes.js';
 import {
-  formatMetadataForForm,
-  type FormMetadataProperty,
-} from './functions/formatMetadataForForm.js';
-import {
-  buildEditEntityDefaultValues,
   mapTemplateProperty,
   type EditEntityFormValues,
 } from './functions/buildEditEntityDefaultValues.js';
-import { toMetadataObjectSchema } from './functions/toMetadataObjectSchema.js';
+import {
+  buildEditEntitySaveInput,
+  planSharedMetadataSync,
+} from './functions/editEntityMetadata.js';
 import {
   applyEditEntityErrors,
   getFirstEditEntityErrorPath,
   type EditEntityErrors,
 } from './functions/editEntityErrors.js';
-import { useEntityMediaUpload, type EntityMediaUpload } from './hooks/useEntityMediaUpload.js';
-import { planSharedMetadataSync } from './functions/mergeSharedFormMetadata.js';
+import { findFirstErrorPath, focusAndScrollToInvalidField } from './functions/focusInvalidField.js';
+import {
+  getGroupedRelationshipSyncPairs,
+  groupRelationshipProperties,
+  type DisplayProperty,
+} from './functions/relationshipGrouping.js';
+import {
+  defaultRelationshipLookup,
+  mergeRelationshipLookupOptions,
+} from './functions/relationshipFieldHelpers.js';
 
-type EditEntityBaseProps = {
-  formId: string;
-  entity?: Entity;
-  onSave?: (editedEntity: EntitySaveInput) => void | Promise<void>;
-  disabled?: boolean;
-  errors?: EditEntityErrors;
-  onDirtyChange?: (isDirty: boolean) => void;
-  onEditSource?: (entityId: string, label: string, templateId?: string) => void;
-  relationshipLookup?: (params: {
-    search: string;
-    template?: string;
-    limit?: number;
-  }) => Promise<{ value: string; label: string }[]>;
-};
-
-type EditEntityOwnFormProps = EditEntityBaseProps & {
-  form?: never;
-  mediaUpload?: never;
-};
-
-type EditEntitySharedFormProps = EditEntityBaseProps & {
-  form: UseFormReturn<EditEntityFormValues>;
-  mediaUpload: EntityMediaUpload;
-};
-
-type EditEntityProps = EditEntityOwnFormProps | EditEntitySharedFormProps;
-
-type Properties = FormMetadataProperty;
-type DisplayProperty = Properties & {
-  groupedRelationshipNames?: string[];
-};
-
-const DEFAULT_RELATIONSHIP_LOOKUP_LIMIT = 50;
-
-const defaultRelationshipLookup = async ({
-  search,
-  template,
-  limit = DEFAULT_RELATIONSHIP_LOOKUP_LIMIT,
-}: {
-  search: string;
-  template?: string;
-  limit?: number;
-}): Promise<{ value: string; label: string }[]> => {
-  const response = await lookupEntities({
-    entityTitle: search,
-    template,
-    limit,
-  });
-
-  if (!response || !('rows' in response) || !Array.isArray(response.rows)) {
-    return [];
-  }
-
-  return response.rows
-    .filter(row => typeof row.sharedId === 'string')
-    .map(row => ({
-      value: row.sharedId as string,
-      label: (row.title as string) || (row.sharedId as string),
-    }));
-};
-
-const groupRelationshipProperties = (properties: Properties[]): DisplayProperty[] => {
-  const groupedProperties = new Map<string, DisplayProperty>();
-
-  properties.forEach(property => {
-    if (property.type !== 'relationship') {
-      groupedProperties.set(property._id, property);
-      return;
-    }
-
-    const groupKey = `${property.content ?? ''}::${property.relationType ?? ''}`;
-    const existing = groupedProperties.get(groupKey);
-
-    if (!existing) {
-      groupedProperties.set(groupKey, {
-        ...property,
-        groupedRelationshipNames: [property.name],
-      });
-      return;
-    }
-
-    groupedProperties.set(groupKey, {
-      ...existing,
-      label: `${existing.label} / ${property.label}`,
-      required: Boolean(existing.required || property.required),
-      groupedRelationshipNames: [
-        ...(existing.groupedRelationshipNames ?? [existing.name]),
-        property.name,
-      ],
-    });
-  });
-
-  return [...groupedProperties.values()];
-};
-
-const findFirstErrorPath = (
-  errors: FieldErrors<EditEntityFormValues>,
-  currentPath = ''
-): string | undefined => {
-  for (const [key, value] of Object.entries(errors)) {
-    if (value) {
-      const nextPath = currentPath ? `${currentPath}.${key}` : key;
-
-      if (typeof value === 'object' && value !== null) {
-        const maybeFieldError = value as { ref?: unknown; message?: unknown; type?: unknown };
-        if (maybeFieldError.ref || maybeFieldError.message || maybeFieldError.type) {
-          return nextPath;
-        }
-
-        const nestedPath = findFirstErrorPath(value as FieldErrors<EditEntityFormValues>, nextPath);
-        if (nestedPath) {
-          return nestedPath;
-        }
-      }
-    }
-  }
-
-  return undefined;
-};
-
-const escapeCssAttributeValue = (value: string) =>
-  value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-
-const focusAndScrollToInvalidField = (path?: string) => {
-  if (!path || typeof document === 'undefined') {
-    return;
-  }
-
-  const escapedPath = escapeCssAttributeValue(path);
-  const fieldElement =
-    document.getElementById(path) ||
-    document.querySelector<HTMLElement>(`[name="${escapedPath}"]`) ||
-    document.querySelector<HTMLElement>(`[id^="${escapedPath}"]`);
-
-  if (!fieldElement) {
-    return;
-  }
-
-  scrollIntoView(fieldElement, { behavior: 'smooth', block: 'center' });
-
-  if ('focus' in fieldElement && typeof fieldElement.focus === 'function') {
-    fieldElement.focus();
-  } else {
-    fieldElement
-      .querySelector<HTMLElement>('input, textarea, button, [tabindex]:not([tabindex="-1"])')
-      ?.focus();
-  }
-
-  const originalTransition = fieldElement.style.transition;
-  const originalBoxShadow = fieldElement.style.boxShadow;
-  fieldElement.style.transition = 'box-shadow 180ms ease';
-  fieldElement.style.boxShadow = '0 0 0 3px var(--color-theme-control-error-ring)';
-  window.setTimeout(() => {
-    fieldElement.style.boxShadow = originalBoxShadow;
-    fieldElement.style.transition = originalTransition;
-  }, 900);
-};
-
-const formatMetadataForEntity = (
-  metadata: EditEntityFormValues['metadata'],
-  metadataProperties: Properties[]
-): Entity['metadata'] => {
-  const syncedMetadata = { ...metadata };
-
-  groupRelationshipProperties(metadataProperties)
-    .filter(
-      property =>
-        property.type === 'relationship' &&
-        property.groupedRelationshipNames &&
-        property.groupedRelationshipNames.length > 1
-    )
-    .forEach(property => {
-      const [mainName, ...otherNames] = property.groupedRelationshipNames ?? [];
-      const sourceValues = syncedMetadata[mainName] ?? [];
-
-      otherNames.forEach(name => {
-        syncedMetadata[name] = sourceValues;
-      });
-    });
-
-  return metadataProperties.reduce<NonNullable<Entity['metadata']>>((acc, property) => {
-    const mapped = (syncedMetadata[property.name] ?? []).map(toMetadataObjectSchema);
-    acc[property.name] =
-      property.type === 'geolocation' ? mapped.filter(entry => entry.value !== null) : mapped;
-    return acc;
-  }, {});
-};
-
-const thesaurusToOptions = (
-  thesauri: ClientThesaurus[],
-  property: Properties
-): MultiselectListOption[] =>
-  thesauri
-    .find(thesaurus => thesaurus._id === property.content)
-    ?.values.map(value => ({
-      label: value.label,
-      searchLabel: value.label,
-      value: value.id || value.label,
-      items: value.values?.map(child => ({
-        label: child.label,
-        searchLabel: child.label,
-        value: child.id || child.label,
-      })),
-    })) || [];
-
-const inheritedCellText = (
-  values: { value?: unknown; inheritedValue?: { label?: string; value?: unknown }[] }[] | undefined,
-  entityId: string
-): string | undefined => {
-  const row = values?.find(value => String(value.value ?? '') === entityId);
-  if (!row?.inheritedValue?.length) return undefined;
-  const parts = row.inheritedValue
-    .map(item => {
-      if (typeof item.label === 'string' && item.label.length > 0) return item.label;
-      return typeof item.value === 'string' ? item.value : undefined;
-    })
-    .filter((part): part is string => Boolean(part));
-  return parts.length > 0 ? parts.join(', ') : undefined;
-};
-
-const inheritColumnLabel = (
-  property: Properties,
-  templates: { _id: string; properties?: { _id?: string; label: string }[] }[]
-): string => {
-  const inheritPropertyId = property.inherit?.property;
-  if (inheritPropertyId && property.content) {
-    const targetTemplate = templates.find(template => template._id === property.content);
-    const inheritedProperty = targetTemplate?.properties?.find(
-      candidate => candidate._id === inheritPropertyId
-    );
-    if (inheritedProperty?.label) return inheritedProperty.label;
-  }
-  return property.label;
-};
-
-const buildInheritColumns = (
-  property: DisplayProperty,
-  metadataProperties: Properties[],
-  templates: { _id: string; properties?: { _id?: string; label: string }[] }[],
-  sourceMetadata?: Entity['metadata']
-) =>
-  metadataProperties
-    .filter(
-      candidate =>
-        candidate.type === 'relationship' &&
-        candidate.inherited &&
-        candidate.content === property.content &&
-        candidate.relationType === property.relationType
-    )
-    .map(candidate => {
-      const values = sourceMetadata?.[candidate.name];
-      const cellsByEntityId: Record<string, string | undefined> = {};
-      (values ?? []).forEach(row => {
-        const entityId = String(row.value ?? '');
-        if (entityId) {
-          cellsByEntityId[entityId] = inheritedCellText(values, entityId);
-        }
-      });
-      return {
-        label: inheritColumnLabel(candidate, templates),
-        cellsByEntityId,
-      };
-    });
-
-type EditEntityFieldsProps = EditEntityBaseProps & {
-  form: UseFormReturn<EditEntityFormValues>;
-  mediaUpload?: EntityMediaUpload;
-  wrapProvider: boolean;
-};
-
-const EditEntityFields = ({
+/* eslint-disable max-statements -- orchestrator: watches, sync effects, submit, lookup cache */
+const EditEntity = ({
   formId,
   entity,
   form: formContext,
-  mediaUpload: mediaUploadProp,
+  mediaUpload,
   onSave,
   disabled = false,
   errors,
   onDirtyChange,
   onEditSource,
   relationshipLookup = defaultRelationshipLookup,
-  wrapProvider,
-}: EditEntityFieldsProps) => {
+}: EditEntityProps) => {
   const templates = useAtomValue(templatesAtom);
   const thesauri = useAtomValue(thesauriAtom);
+  const { handleSubmit, watch, reset, getValues, setValue, setError, formState } = formContext;
+  const selectedTemplate = watch('template');
+  const metadata = watch('metadata');
+
+  useEffect(() => {
+    onDirtyChange?.(formState.isDirty);
+  }, [formState.isDirty, onDirtyChange]);
 
   const availableTemplates = useMemo(
     () =>
       templates.map(template => {
         const label = t(template._id, template.name, null, false);
-
-        return {
-          label,
-          searchLabel: label,
-          value: template._id,
-        };
+        return { label, searchLabel: label, value: template._id };
       }),
     [templates]
   );
-
-  const { handleSubmit, watch, reset, getValues, setValue, setError, formState } = formContext;
-  const { isDirty } = formState;
-  const selectedTemplate = watch('template');
-  const metadata = watch('metadata');
-
-  useEffect(() => {
-    onDirtyChange?.(isDirty);
-  }, [isDirty, onDirtyChange]);
 
   const activeTemplate = useMemo(
     () =>
@@ -382,16 +84,12 @@ const EditEntityFields = ({
     property => property.type === 'relationship'
   )?._id;
 
-  const internalMediaUpload = useEntityMediaUpload(
-    mediaUploadProp ? undefined : entity,
-    mediaUploadProp ? undefined : selectedTemplate
-  );
   const {
     entityAttachments,
     pendingAttachments,
     registerPendingAttachment,
     removePendingAttachment,
-  } = mediaUploadProp ?? internalMediaUpload;
+  } = mediaUpload;
 
   const mediaPropertyNames = useMemo(
     () =>
@@ -411,9 +109,7 @@ const EditEntityFields = ({
         typeof rawValue === 'string' && extractUploadIdFromMediaValue(rawValue) === fileLocalID
       );
     });
-    if (!stillReferenced) {
-      removePendingAttachment(fileLocalID);
-    }
+    if (!stillReferenced) removePendingAttachment(fileLocalID);
   };
 
   const isMetadataReady = metadataProperties.every(
@@ -421,40 +117,21 @@ const EditEntityFields = ({
   );
 
   useEffect(() => {
-    if (wrapProvider === false) {
-      const plan = planSharedMetadataSync(getValues(), metadataProperties, entity?.metadata);
-      if (plan.type === 'noop') return;
-      reset(plan.values, plan.options);
-      return;
-    }
-
-    if (isDirty) return;
-    reset({
-      ...getValues(),
-      metadata: formatMetadataForForm(metadataProperties, entity?.metadata),
-    });
-  }, [entity?.metadata, getValues, isDirty, metadataProperties, reset, wrapProvider]);
+    const plan = planSharedMetadataSync(getValues(), metadataProperties, entity?.metadata);
+    if (plan.type === 'noop') return;
+    reset(plan.values, plan.options);
+  }, [entity?.metadata, getValues, metadataProperties, reset]);
 
   useEffect(() => {
-    displayProperties
-      .filter(
-        property =>
-          property.type === 'relationship' &&
-          Array.isArray(property.groupedRelationshipNames) &&
-          property.groupedRelationshipNames.length > 1
-      )
-      .forEach(property => {
-        const [mainName, ...otherNames] = property.groupedRelationshipNames ?? [];
-        const sourceValues = metadata?.[mainName] ?? [];
-
-        otherNames.forEach(name => {
-          const targetValues = metadata?.[name] ?? [];
-          if (JSON.stringify(targetValues) !== JSON.stringify(sourceValues)) {
-            setValue(`metadata.${name}`, sourceValues);
-          }
-        });
+    getGroupedRelationshipSyncPairs(displayProperties).forEach(({ mainName, otherNames }) => {
+      const sourceValues = metadata?.[mainName] ?? [];
+      otherNames.forEach(name => {
+        if (JSON.stringify(metadata?.[name] ?? []) !== JSON.stringify(sourceValues)) {
+          setValue(`metadata.${name}`, sourceValues);
+        }
       });
-  }, [displayProperties, metadata, metadataProperties, setValue]);
+    });
+  }, [displayProperties, metadata, setValue]);
 
   const relationshipLookupCache = useMemo(
     () => new Map<string, MultiselectListOption[]>(),
@@ -467,46 +144,20 @@ const EditEntityFields = ({
     selectedValues: MetadataValue[],
     lookedUpOptions: MultiselectListOption[] = [],
     includeCachedOptions = true
-  ): Promise<MultiselectListOption[]> => {
-    const cacheKey = `${property.content ?? ''}::${property.relationType ?? ''}`;
-    const cachedOptions = includeCachedOptions ? (relationshipLookupCache.get(cacheKey) ?? []) : [];
-    const selectedOptions = selectedValues
-      .filter(value => value?.value)
-      .map(value => {
-        const valueId = String(value.value);
-        const cached = cachedOptions.find(option => option.value === valueId);
-        const lookedUp = lookedUpOptions.find(option => option.value === valueId);
-        const label =
-          (typeof value.label === 'string' ? value.label : undefined) ||
-          (typeof cached?.label === 'string' ? cached.label : undefined) ||
-          (typeof lookedUp?.label === 'string' ? lookedUp.label : undefined) ||
-          valueId;
-
-        return {
-          label,
-          searchLabel: label.toLowerCase(),
-          value: valueId,
-        };
-      });
-
-    const merged = [...selectedOptions, ...cachedOptions, ...lookedUpOptions].filter(
-      (option, index, options) => options.findIndex(other => other.value === option.value) === index
+  ) =>
+    Promise.resolve(
+      mergeRelationshipLookupOptions({
+        property,
+        selectedValues,
+        lookedUpOptions,
+        cache: relationshipLookupCache,
+        includeCachedOptions,
+      })
     );
 
-    if (includeCachedOptions) {
-      relationshipLookupCache.set(cacheKey, merged);
-    }
-
-    return merged;
-  };
-
   useEffect(() => {
-    if (!errors) {
-      return;
-    }
-
+    if (!errors) return;
     applyEditEntityErrors(setError, errors, metadataProperties);
-
     const firstErrorPath = getFirstEditEntityErrorPath(errors, metadataProperties);
     if (firstErrorPath) {
       requestAnimationFrame(() => focusAndScrollToInvalidField(firstErrorPath));
@@ -516,29 +167,20 @@ const EditEntityFields = ({
   const submit = handleSubmit(
     async values => {
       if (!entity) return;
-      const formattedMetadata = formatMetadataForEntity(values.metadata, metadataProperties);
-      const referencedPending = filterReferencedPendingAttachments(
-        pendingAttachments,
-        formattedMetadata,
-        mediaPropertyNames
+      await onSave?.(
+        buildEditEntitySaveInput({
+          entity,
+          values,
+          metadataProperties,
+          pendingAttachments,
+          mediaPropertyNames,
+        })
       );
-      const entityToSave = {
-        ...entity,
-        title: values.title || entity.title,
-        template: values.template || entity.template,
-        icon: (values.showIcon ? values.icon : EMPTY_ICON) as Entity['icon'],
-        metadata: formattedMetadata,
-        attachments: [...(entity.attachments ?? []), ...referencedPending],
-      };
-      await onSave?.(entityToSave);
     },
-    invalidErrors => {
-      const firstErrorPath = findFirstErrorPath(invalidErrors);
-      focusAndScrollToInvalidField(firstErrorPath);
-    }
+    invalidErrors => focusAndScrollToInvalidField(findFirstErrorPath(invalidErrors))
   );
 
-  const formContent = (
+  return (
     <form
       id={formId}
       onSubmit={submit}
@@ -552,9 +194,7 @@ const EditEntityFields = ({
         registerOptions={{ required: true }}
         disabled={disabled}
       />
-
       <IconField disabled={disabled} />
-
       <TemplateField<EditEntityFormValues>
         context="System"
         label="Template"
@@ -565,319 +205,31 @@ const EditEntityFields = ({
         hideFilters
       />
       {isMetadataReady &&
-        displayProperties.map(property => {
-          if (property.type === 'text' || property.type === 'generatedid') {
-            return (
-              <TextField<EditEntityFormValues>
-                context={activeTemplate?._id ?? ''}
-                label={property.label}
-                field={`metadata.${property.name}.0.value`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-                type="text"
-                key={property._id}
-              />
-            );
-          }
-
-          if (property.type === 'numeric') {
-            return (
-              <TextField<EditEntityFormValues>
-                context={activeTemplate?._id ?? ''}
-                label={property.label}
-                field={`metadata.${property.name}.0.value`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-                type="number"
-                key={property._id}
-              />
-            );
-          }
-
-          if (property.type === 'select') {
-            return (
-              <SelectField<EditEntityFormValues>
-                context={property.content || 'System'}
-                label={property.label}
-                field={`metadata.${property.name}`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-                options={thesaurusToOptions(thesauri, property)}
-                hideFilters
-                key={property._id}
-              />
-            );
-          }
-
-          if (property.type === 'multiselect') {
-            return (
-              <MultiselectField<EditEntityFormValues>
-                context={property.content || 'System'}
-                label={property.label}
-                field={`metadata.${property.name}`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-                options={thesaurusToOptions(thesauri, property)}
-                key={property._id}
-              />
-            );
-          }
-
-          if (property.type === 'relationship') {
-            const fieldName = property.groupedRelationshipNames?.[0] ?? property.name;
-            const inheritColumns = buildInheritColumns(
-              property,
-              metadataProperties,
-              templates,
-              entity?.metadata
-            );
-            return (
-              <Fragment key={property._id}>
-                {property._id === firstEditableRelationshipId ? (
-                  <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
-                    <Translate>Relationships</Translate>
-                  </p>
-                ) : null}
-                <RelationshipField<EditEntityFormValues>
-                  context={activeTemplate?._id ?? ''}
-                  label={property.label}
-                  field={`metadata.${fieldName}`}
-                  registerOptions={{ required: property.required }}
-                  disabled={disabled}
-                  targetTemplateId={property.content}
-                  relationTypeId={property.relationType}
-                  inheritColumns={inheritColumns}
-                  onEditSource={
-                    onEditSource
-                      ? (entityId, label) => onEditSource(entityId, label, property.content)
-                      : undefined
-                  }
-                  lookupSearch={async search => {
-                    const selectedValues = metadata?.[fieldName] ?? [];
-                    const lookedUp = await relationshipLookup({
-                      search,
-                      template: property.content,
-                      limit: DEFAULT_RELATIONSHIP_LOOKUP_LIMIT,
-                    });
-                    const lookedUpOptions = lookedUp.map(option => ({
-                      label: option.label,
-                      searchLabel: option.label,
-                      value: option.value,
-                    }));
-                    return relationshipLookupSearch(
-                      property,
-                      selectedValues,
-                      lookedUpOptions.filter(
-                        option =>
-                          !search.trim() ||
-                          option.searchLabel.toLowerCase().includes(search.trim().toLowerCase())
-                      ),
-                      !search.trim()
-                    );
-                  }}
-                />
-              </Fragment>
-            );
-          }
-
-          if (property.type === 'date') {
-            return (
-              <DateField<EditEntityFormValues>
-                context={activeTemplate?._id ?? ''}
-                label={property.label}
-                field={`metadata.${property.name}.0.value`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-                key={property._id}
-              />
-            );
-          }
-
-          if (property.type === 'daterange') {
-            return (
-              <DateRangeField<EditEntityFormValues>
-                context={activeTemplate?._id ?? ''}
-                label={property.label}
-                field={`metadata.${property.name}.0.value`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-                key={property._id}
-              />
-            );
-          }
-
-          if (property.type === 'multidate') {
-            return (
-              <MultidateField<EditEntityFormValues>
-                context={activeTemplate?._id ?? ''}
-                label={property.label}
-                field={`metadata.${property.name}`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-                key={property._id}
-              />
-            );
-          }
-
-          if (property.type === 'multidaterange') {
-            return (
-              <MultiDateRangeField<EditEntityFormValues>
-                context={activeTemplate?._id ?? ''}
-                label={property.label}
-                field={`metadata.${property.name}`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-                key={property._id}
-              />
-            );
-          }
-
-          if (property.type === 'link') {
-            return (
-              <LinkField<EditEntityFormValues>
-                context={activeTemplate?._id ?? ''}
-                label={property.label}
-                field={`metadata.${property.name}.0.value`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-                key={property._id}
-              />
-            );
-          }
-
-          if (property.type === 'geolocation') {
-            return (
-              <GeolocationField<EditEntityFormValues>
-                context={activeTemplate?._id ?? ''}
-                label={property.label}
-                field={`metadata.${property.name}`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-                key={property._id}
-              />
-            );
-          }
-
-          if (property.type === 'markdown') {
-            return (
-              <MarkdownField<EditEntityFormValues>
-                context={activeTemplate?._id ?? ''}
-                label={property.label}
-                field={`metadata.${property.name}.0.value`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-                key={property._id}
-              />
-            );
-          }
-
-          if (property.type === 'nested') {
-            return (
-              <NestedField<EditEntityFormValues>
-                context={activeTemplate?._id ?? ''}
-                label={property.label}
-                field={`metadata.${property.name}`}
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-                key={property._id}
-              />
-            );
-          }
-
-          if (property.type === 'image') {
-            return (
-              <MediaField<EditEntityFormValues>
-                context={activeTemplate?._id ?? ''}
-                label={property.label}
-                field={`metadata.${property.name}.0.value`}
-                mode="image"
-                imageStyle={
-                  property.style === 'contain' || property.style === 'cover'
-                    ? property.style
-                    : 'fill'
-                }
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-                attachments={entityAttachments}
-                pendingAttachments={pendingAttachments}
-                entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
-                onRegisterPendingAttachment={registerPendingAttachment}
-                onRemovePendingAttachment={removePendingAttachmentIfUnused}
-                key={property._id}
-              />
-            );
-          }
-
-          if (property.type === 'media') {
-            return (
-              <MediaField<EditEntityFormValues>
-                context={activeTemplate?._id ?? ''}
-                label={property.label}
-                field={`metadata.${property.name}.0.value`}
-                mode="media"
-                registerOptions={{ required: property.required }}
-                disabled={disabled}
-                attachments={entityAttachments}
-                pendingAttachments={pendingAttachments}
-                entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
-                onRegisterPendingAttachment={registerPendingAttachment}
-                onRemovePendingAttachment={removePendingAttachmentIfUnused}
-                key={property._id}
-              />
-            );
-          }
-
-          if (property.type === 'preview') {
-            return (
-              <PreviewField
-                context={activeTemplate?._id ?? ''}
-                label={property.label}
-                value={
-                  typeof metadata?.[property.name]?.[0]?.value === 'string'
-                    ? metadata[property.name][0].value
-                    : undefined
-                }
-                key={property._id}
-              />
-            );
-          }
-
-          return undefined;
-        })}
+        displayProperties.map(property => (
+          <EditEntityPropertyField
+            key={property._id}
+            property={property}
+            disabled={disabled}
+            activeTemplateId={activeTemplate?._id ?? ''}
+            thesauri={thesauri}
+            templates={templates}
+            metadataProperties={metadataProperties}
+            metadata={metadata}
+            entityMetadata={entity?.metadata}
+            entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
+            firstEditableRelationshipId={firstEditableRelationshipId}
+            entityAttachments={entityAttachments}
+            pendingAttachments={pendingAttachments}
+            registerPendingAttachment={registerPendingAttachment}
+            removePendingAttachmentIfUnused={removePendingAttachmentIfUnused}
+            onEditSource={onEditSource}
+            relationshipLookup={relationshipLookup}
+            relationshipLookupSearch={relationshipLookupSearch}
+          />
+        ))}
     </form>
   );
-
-  if (!wrapProvider) {
-    return formContent;
-  }
-
-  // eslint-disable-next-line react/jsx-props-no-spreading
-  return <FormProvider {...formContext}>{formContent}</FormProvider>;
-};
-
-const EditEntityWithOwnForm = (props: EditEntityOwnFormProps) => {
-  const templates = useAtomValue(templatesAtom);
-  const form = useForm<EditEntityFormValues>({
-    defaultValues: buildEditEntityDefaultValues(props.entity, templates),
-  });
-
-  return <EditEntityFields {...props} form={form} wrapProvider />;
-};
-
-const EditEntity = (props: EditEntityProps) => {
-  if (props.form) {
-    return (
-      <EditEntityFields
-        {...props}
-        form={props.form}
-        mediaUpload={props.mediaUpload}
-        wrapProvider={false}
-      />
-    );
-  }
-
-  return <EditEntityWithOwnForm {...props} />;
 };
 
 export { EditEntity };
-export type { EditEntityErrors, EditEntityFormValues };
+export type { EditEntityErrors, EditEntityFormValues, EditEntityProps };

@@ -1,7 +1,8 @@
+/* eslint-disable react/no-multi-comp */
 /**
  * @jest-environment jsdom
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { ApiError } from '#shared/apiClient/index.js';
 import type { ClientFile } from '#app/istore.js';
@@ -41,14 +42,17 @@ const pendingFile = (fileLocalID: string): ClientFile => ({
 
 type SessionApi = ReturnType<typeof useMetadataEditing>;
 
-const SessionBridge = ({ sessionRef }: { sessionRef: { current: SessionApi | null } }) => {
-  sessionRef.current = useMetadataEditing();
+const SessionBridge = ({ onSession }: { onSession: (session: SessionApi) => void }) => {
+  const session = useMetadataEditing();
+  useEffect(() => {
+    onSession(session);
+  }, [session, onSession]);
   return null;
 };
 
-const HostPair = ({ sessionRef }: { sessionRef: { current: SessionApi | null } }) => (
+const HostPair = ({ onSession }: { onSession: (session: SessionApi) => void }) => (
   <>
-    <SessionBridge sessionRef={sessionRef} />
+    <SessionBridge onSession={onSession} />
     <MetadataTab entity={entity} host="side" />
     <MetadataTab entity={entity} host="main" />
     <MetadataDisplayFooter host="side" />
@@ -56,8 +60,11 @@ const HostPair = ({ sessionRef }: { sessionRef: { current: SessionApi | null } }
   </>
 );
 
-const renderSession = (upsert: jest.Mock) => {
+const renderSession = async (upsert: jest.Mock) => {
   const sessionRef: { current: SessionApi | null } = { current: null };
+  const onSession = (session: SessionApi) => {
+    sessionRef.current = session;
+  };
   const services = createTestServices({ entities: { upsert } });
 
   render(
@@ -70,19 +77,23 @@ const renderSession = (upsert: jest.Mock) => {
           ]}
         >
           <EntityScopedProvider entity={entity} language="en">
-            <HostPair sessionRef={sessionRef} />
+            <HostPair onSession={onSession} />
           </EntityScopedProvider>
         </TestAtomStoreProvider>
       </ServicesProvider>
     </TestRouterContext>
   );
 
-  const getSession = () => {
-    if (!sessionRef.current) throw new Error('session not ready');
-    return sessionRef.current;
-  };
+  await waitFor(() => {
+    expect(sessionRef.current).not.toBeNull();
+  });
 
-  return { getSession };
+  return {
+    getSession: () => {
+      if (!sessionRef.current) throw new Error('session not ready');
+      return sessionRef.current;
+    },
+  };
 };
 
 describe('MetadataTab shared session', () => {
@@ -95,7 +106,7 @@ describe('MetadataTab shared session', () => {
         })
     );
 
-    const { getSession } = renderSession(upsert);
+    const { getSession } = await renderSession(upsert);
 
     await act(async () => {
       getSession().registerMetadataActive('side', true);
@@ -106,15 +117,18 @@ describe('MetadataTab shared session', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
     await waitFor(() => expect(upsert).toHaveBeenCalledTimes(1));
-    const signal = upsert.mock.calls[0]?.[1]?.signal as AbortSignal;
-    expect(signal.aborted).toBe(false);
+    const [, saveOptions] = upsert.mock.calls[0] as unknown as [
+      unknown,
+      { signal?: AbortSignal } | undefined,
+    ];
+    expect(saveOptions?.signal?.aborted).toBe(false);
 
     await act(async () => {
       getSession().registerMetadataActive('main', true);
       getSession().startEditing('main');
     });
 
-    expect(signal.aborted).toBe(false);
+    expect(saveOptions?.signal?.aborted).toBe(false);
     expect(getSession().formMountHost).toBe('main');
 
     await act(async () => {
@@ -129,7 +143,7 @@ describe('MetadataTab shared session', () => {
 
   it('keeps pending media when the editor remounts on the other host', async () => {
     const upsert = jest.fn(async (): Promise<[Entity, undefined]> => [entity, undefined]);
-    const { getSession } = renderSession(upsert);
+    const { getSession } = await renderSession(upsert);
 
     await act(async () => {
       getSession().registerMetadataActive('side', true);
@@ -160,7 +174,7 @@ describe('MetadataTab shared session', () => {
         })
     );
 
-    const { getSession } = renderSession(upsert);
+    const { getSession } = await renderSession(upsert);
 
     await act(async () => {
       getSession().registerMetadataActive('side', true);
