@@ -156,4 +156,64 @@ describe('relationshiptypes.v2 routes', () => {
       expect(response).toHaveStatus(422);
     });
   });
+
+  describe('contract parity lifecycle', () => {
+    const createType = async (name: string) =>
+      request(app).post('/api/relationtypes').send({ name }).expect(200);
+
+    const getTypeById = async (id: string) =>
+      request(app).get(`/api/relationtypes?_id=${id}`).expect(200);
+
+    const updateType = async (id: string, name: string) =>
+      request(app)
+        .post('/api/relationtypes')
+        .send({ _id: id, name, properties: [{ ignored: true }] })
+        .expect(200);
+
+    const deleteType = async (id: string) =>
+      request(app).delete(`/api/relationtypes?_id=${id}`).expect(200);
+
+    // eslint-disable-next-line max-statements
+    it('should keep create/get/update/delete contract shape end-to-end', async () => {
+      const created = await createType('Lifecycle Type');
+
+      expect(created.body).toMatchObject({
+        _id: expect.any(String),
+        name: 'Lifecycle Type',
+      });
+
+      const createdId = created.body._id;
+
+      const fetched = await getTypeById(createdId);
+      expect(fetched.body.rows).toEqual([
+        expect.objectContaining({
+          _id: createdId,
+          name: 'Lifecycle Type',
+        }),
+      ]);
+
+      const updated = await updateType(createdId, 'Lifecycle Type Updated');
+
+      expect(updated.body).toMatchObject({
+        _id: createdId,
+        name: 'Lifecycle Type Updated',
+      });
+
+      const all = await request(app).get('/api/relationtypes').expect(200);
+      expect(all.body.rows).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            _id: createdId,
+            name: 'Lifecycle Type Updated',
+          }),
+        ])
+      );
+
+      const deleted = await deleteType(createdId);
+      expect(deleted.body).toBe(true);
+
+      const afterDelete = await getTypeById(createdId);
+      expect(afterDelete.body.rows).toEqual([]);
+    });
+  });
 });

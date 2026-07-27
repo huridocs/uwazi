@@ -98,8 +98,37 @@ Migrate relationship types backend logic to v2 architecture so the module can la
   - prefer integration tests over mocks/spies
   - allow auth middleware mocking in route tests to isolate the HTTP contract surface
 - Current run status:
-  - `app/api/relationshiptypes.v2` test suites passing (14 suites / 45 tests).
-  - dependent regressions passing (`syncWorker`, `relationships`, `PXCreateExtractor`).
+  - targeted v2 regression set passing (`relationshiptypes.v2`, `syncWorker`, `relationships`, `PXCreateExtractor`, `ServerRelationshipTypesService`) with all suites green.
+
+## Legacy Sweep (Final)
+
+- No remaining runtime imports of `#api/relationtypes`.
+- Legacy `app/api/relationtypes` module has been removed.
+- Remaining `relationtypes` naming is intentional compatibility surface:
+  - Mongo collection name: `relationtypes`
+  - sync namespace/config key: `relationtypes`
+  - API route path: `/api/relationtypes`
+  - activity log route keys for `/api/relationtypes`
+- `LegacyRelationshipTypesTranslationService` remains intentionally named as an infrastructure adapter to existing translations behavior.
+- `properties` is only accepted at request-schema boundary for compatibility and ignored internally.
+
+## V2 Complete Checklist
+
+- [x] `/api/relationtypes` served by `relationshiptypes.v2` controller/use-case flow.
+- [x] Create/update internally split into distinct use cases.
+- [x] Runtime callers migrated from legacy relationtypes module to v2 paths.
+- [x] Legacy `app/api/relationtypes` runtime module removed.
+- [x] Contract-compatible route behavior validated through integration tests.
+- [x] End-to-end contract parity lifecycle test present (create/get/update/delete).
+- [x] Translation side effects validated through integration tests.
+- [x] No internal mocks in relationshiptypes v2 tests (except auth middleware in route tests).
+
+## Explicit Non-Goals (Current Scope)
+
+- Do not reintroduce runtime support for `relationtypes.properties`.
+- Do not implement migration cleanup logic for legacy `relationtypes.properties`.
+- Do not implement migration cleanup logic for `connections.metadata`.
+- Do not start Postgres adapter work before v2 migration closure sign-off.
 
 ## To Keep an Eye On
 

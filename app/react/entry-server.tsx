@@ -29,8 +29,8 @@ import { ClientSettings } from '#app/apiResponseTypes.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import templatesApi from '#api/core/v1_layer/templates/templates.js';
+import { GetRelationshipTypesUseCaseFactory } from '#api/relationshiptypes.v2/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js';
 import thesauriApi from '../api/core/v1_layer/thesauri/thesauri.js';
-import relationtypes from '../api/relationtypes/relationtypes.js';
 import translationsApi, { IndexedTranslations } from '../api/i18n/translations.js';
 import settingsApi from '../api/settings/settings.js';
 import { tenants } from '../api/tenants/index.js';
@@ -87,6 +87,9 @@ const onlySystemTranslations = (translations: IndexedTranslations[]) =>
     const systemTranslation = translation?.contexts?.find(c => c.id === 'System');
     return { ...translation, contexts: [systemTranslation] };
   });
+
+const toLegacyRelationshipTypesShape = (rows: { id: string; name: string }[]) =>
+  rows.map(row => ({ _id: row.id, name: row.name }));
 
 const createFetchHeaders = (requestHeaders: ExpressRequest['headers']): Headers => {
   const headers = new Headers();
@@ -197,7 +200,9 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
           Promise.resolve(settings),
           templatesApi.get(),
           thesauriApi.dictionaries(),
-          relationtypes.get(),
+          GetRelationshipTypesUseCaseFactory.default()
+            .execute({})
+            .then(toLegacyRelationshipTypesShape),
           Promise.resolve(translations),
         ])
       : [];
