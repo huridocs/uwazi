@@ -1,16 +1,21 @@
-import { createServer, IncomingMessage } from 'http';
-import http from 'http';
-import net from 'net';
+import http, { IncomingMessage } from 'http';
+import net, { AddressInfo } from 'net';
 import express, { Application } from 'express';
-import { GracefulShutdown } from '../GracefulShutdown';
+import { HttpServerGracefulShutdown } from '../HttpServerGracefulShutdown.js';
 
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = async (ms: number) =>
+  new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
 
-function httpGet(url: string): Promise<{ status: number; body: unknown }> {
+async function httpGet(url: string): Promise<{ status: number; body: unknown }> {
   return new Promise((resolve, reject) => {
-    const req = http.get(url, (res: IncomingMessage) => {
+    // Use a fresh non-keep-alive agent to avoid polluting the global pool
+    const req = http.get(url, { agent: false }, (res: IncomingMessage) => {
       let data = '';
-      res.on('data', (chunk: string) => (data += chunk));
+      res.on('data', (chunk: string) => {
+        data += chunk;
+      });
       res.on('end', () => {
         try {
           resolve({ status: res.statusCode!, body: JSON.parse(data) });
@@ -29,8 +34,8 @@ function httpGet(url: string): Promise<{ status: number; body: unknown }> {
 
 interface TestContext {
   app: Application;
-  server: ReturnType<typeof createServer>;
-  shutdown: GracefulShutdown;
+  server: ReturnType<typeof http.createServer>;
+  shutdown: HttpServerGracefulShutdown;
   exitCalls: number[];
   loggerCalls: { log: unknown[][]; error: unknown[][] };
   cleanupCalls: string[];
@@ -40,13 +45,13 @@ interface TestContext {
 
 function createTestServer({ delay = 50, timeout = 500 } = {}): TestContext {
   const app = express();
-  const server = createServer(app);
+  const server = http.createServer(app);
 
   const exitCalls: number[] = [];
   const loggerCalls = { log: [] as unknown[][], error: [] as unknown[][] };
   const cleanupCalls: string[] = [];
 
-  const shutdown = new GracefulShutdown({
+  const shutdown = new HttpServerGracefulShutdown({
     server,
     app,
     cleanup: async () => {
@@ -57,8 +62,19 @@ function createTestServer({ delay = 50, timeout = 500 } = {}): TestContext {
       exitCalls.push(code);
     },
     logger: {
-      log: (...args: unknown[]) => loggerCalls.log.push(args),
-      error: (...args: unknown[]) => loggerCalls.error.push(args),
+      info: (...args: unknown[]) => {
+        loggerCalls.log.push(args);
+      },
+      warning: (...args: unknown[]) => {
+        loggerCalls.log.push(args);
+      },
+      error: (...args: unknown[]) => {
+        loggerCalls.error.push(args);
+      },
+      // eslint-disable-next-line no-empty-function
+      debug: () => {},
+      // eslint-disable-next-line no-empty-function
+      critical: () => {},
     },
   });
 
@@ -72,7 +88,7 @@ function createTestServer({ delay = 50, timeout = 500 } = {}): TestContext {
     res.json({ ok: true });
   });
 
-  return {
+  const ctx: TestContext = {
     app,
     server,
     shutdown,
@@ -84,30 +100,66 @@ function createTestServer({ delay = 50, timeout = 500 } = {}): TestContext {
       return this._baseUrl!;
     },
   };
+
+  return ctx;
 }
 
-function startServer(t: TestContext): Promise<void> {
+async function startServer(t: TestContext): Promise<string> {
   return new Promise(resolve => {
     t.server.listen(0, () => {
-      t._baseUrl = `http://localhost:${t.server.address()!.port}`;
-      resolve();
+      const url = `http://localhost:${(t.server.address() as AddressInfo).port}`;
+      resolve(url);
     });
   });
 }
 
 function stopServer(t: TestContext): void {
   try {
-    (t.server as any).closeAllConnections?.();
-  } catch {}
+    t.server.closeAllConnections?.();
+  } catch {
+    // server may already be closed
+  }
   t.server.close();
 }
 
-describe('GracefulShutdown', () => {
+async function openSocket(t: TestContext): Promise<net.Socket> {
+  return new Promise((resolve, reject) => {
+    const socket = new net.Socket();
+    socket.connect((t.server.address() as AddressInfo).port, '127.0.0.1', () => {
+      resolve(socket);
+    });
+    socket.on('error', reject);
+  });
+}
+
+async function sendHttpRequest(socket: net.Socket): Promise<string> {
+  return new Promise((resolve, reject) => {
+    socket.write('GET /fast HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n');
+    let data = '';
+    const timer = setTimeout(() => {
+      socket.destroy();
+      reject(new Error('timeout'));
+    }, 1000);
+    socket.on('data', (chunk: Buffer) => {
+      data += chunk.toString();
+    });
+    socket.on('end', () => {
+      clearTimeout(timer);
+      resolve(data);
+    });
+    socket.on('error', (err: Error) => {
+      clearTimeout(timer);
+      reject(err);
+    });
+  });
+}
+
+describe('HttpServerGracefulShutdown', () => {
   let t: TestContext;
 
   beforeEach(async () => {
     t = createTestServer();
-    await startServer(t);
+    t._baseUrl = await startServer(t);
   });
 
   afterEach(() => {
@@ -122,22 +174,9 @@ describe('GracefulShutdown', () => {
     });
 
     it('returns 503 on connections established before shutdown', async () => {
-      const socket = new net.Socket();
-      await new Promise<void>(resolve => {
-        socket.connect(t.server.address()!.port, '127.0.0.1', resolve);
-      });
-
+      const socket = await openSocket(t);
       t.shutdown.shutdown();
-
-      const response = await new Promise<string>((resolve, reject) => {
-        socket.write('GET /fast HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n');
-        let data = '';
-        socket.on('data', (chunk: Buffer) => (data += chunk.toString()));
-        socket.on('end', () => resolve(data));
-        socket.on('error', reject);
-        setTimeout(() => reject(new Error('timeout')), 1000);
-      });
-
+      const response = await sendHttpRequest(socket);
       expect(response).toContain('503');
       expect(response).toContain('Server is shutting down');
       socket.destroy();
@@ -146,12 +185,9 @@ describe('GracefulShutdown', () => {
     it('refuses new TCP connections after shutdown', async () => {
       t.shutdown.shutdown();
 
-      try {
-        await httpGet(`${t.url()}/fast`);
-        fail('should have thrown');
-      } catch (err: any) {
-        expect(err.code).toMatch(/ECONNREFUSED|ECONNRESET/);
-      }
+      await expect(httpGet(`${t.url()}/fast`)).rejects.toMatchObject({
+        code: expect.stringMatching(/ECONNREFUSED|ECONNRESET/),
+      });
     });
 
     it('allows in-flight requests to complete normally', async () => {
@@ -188,26 +224,23 @@ describe('GracefulShutdown', () => {
     });
 
     it('force-exits with code 1 after timeout', async () => {
-      const socket = new net.Socket();
-      await new Promise<void>(resolve => {
-        socket.connect(t.server.address()!.port, '127.0.0.1', resolve);
-      });
-
+      const socket = await openSocket(t);
       t.shutdown.shutdown();
-
       await sleep(600);
       expect(t.exitCalls).toContain(1);
-
       socket.destroy();
     });
 
-    it('logs each step of the shutdown sequence', () => {
+    it('logs each step of the shutdown sequence', async () => {
       t.shutdown.shutdown();
+      await sleep(200);
       expect(t.loggerCalls.log).toEqual(
         expect.arrayContaining([
           ['SIGINT signal received.'],
           ['Closed idle connections'],
-        ]),
+          ['Gracefully closing express connections'],
+          ['Server closed successfully'],
+        ])
       );
     });
   });
@@ -230,29 +263,15 @@ describe('GracefulShutdown', () => {
     });
 
     it('503 on existing connection while another request is in-flight', async () => {
-      const socket = new net.Socket();
-      await new Promise<void>(resolve => {
-        socket.connect(t.server.address()!.port, '127.0.0.1', resolve);
-      });
-
+      const socket = await openSocket(t);
       const slowPromise = httpGet(`${t.url()}/slow`);
       await sleep(10);
 
       t.shutdown.shutdown();
 
-      const response = await new Promise<string>((resolve, reject) => {
-        socket.write('GET /fast HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n');
-        let data = '';
-        socket.on('data', (chunk: Buffer) => (data += chunk.toString()));
-        socket.on('end', () => resolve(data));
-        socket.on('error', reject);
-        setTimeout(() => reject(new Error('timeout')), 1000);
-      });
-
+      const [response, slowRes] = await Promise.all([sendHttpRequest(socket), slowPromise]);
       expect(response).toContain('503');
       expect(response).toContain('Server is shutting down');
-
-      const slowRes = await slowPromise;
       expect(slowRes.status).toBe(200);
 
       socket.destroy();

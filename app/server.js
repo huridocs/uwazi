@@ -42,7 +42,8 @@ import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/
 import { embedFrameHeaders } from './api/middleware/embedFrameHeaders.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { registerMetricsRoutes } from '#api/core/infrastructure/express/MetricsRoute.js';
-import { GracefulShutdown } from '#api/infrastructure/shutdown/GracefulShutdown.js';
+import { HttpServerGracefulShutdown } from '#api/infrastructure/shutdown/HttpServerGracefulShutdown.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -58,44 +59,29 @@ app.use(embedFrameHeaders);
 
 const http = Server(app);
 
-const shutdown = new GracefulShutdown({
+const shutdown = new HttpServerGracefulShutdown({
   server: http,
   app,
+  timeout: 30000,
   cleanup: async () => {
     closeSockets();
 
-    const tasks = [
-      (async () => {
-        try {
-          await Redis.disconnect();
-          process.stdout.write('Disconnected from Redis\r\n');
-        } catch (e) {
-          // ignore
-        }
-      })(),
-      (async () => {
-        try {
-          await DB.disconnect();
-          await PostgresDB.disconnect();
-          process.stdout.write('Disconnected from database\r\n');
-        } catch (e) {
-          // ignore
-        }
-      })(),
-      (async () => {
-        try {
-          await elasticClient.close();
-          process.stdout.write('Disconnected from Elasticsearch\r\n');
-        } catch (e) {
-          // ignore
-        }
-      })(),
-    ];
-    await Promise.allSettled(tasks);
-  },
-  logger: {
-    log: (...args) => process.stdout.write(args.join(' ') + '\r\n'),
-    error: (...args) => process.stderr.write(args.join(' ') + '\r\n'),
+    const logger = LoggerFactory.systemLogger();
+    const disconnect = async (name, fn) => {
+      try {
+        await fn();
+        logger.info(`Disconnected from ${name}`);
+      } catch (e) {
+        logger.error(`Failed to disconnect from ${name}: ${e}`);
+      }
+    };
+
+    await Promise.all([
+      disconnect('Redis', () => Redis.disconnect()),
+      disconnect('MongoDB', () => DB.disconnect()),
+      disconnect('PostgreSQL', () => PostgresDB.disconnect()),
+      disconnect('Elasticsearch', () => elasticClient.close()),
+    ]);
   },
 });
 
