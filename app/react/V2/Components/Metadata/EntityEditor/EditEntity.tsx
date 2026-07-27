@@ -1,6 +1,6 @@
 /* eslint-disable max-lines, max-statements */
 import React, { Fragment, useEffect, useMemo } from 'react';
-import { FieldErrors, FormProvider, useForm } from 'react-hook-form';
+import { FieldErrors, FormProvider, useForm, type UseFormReturn } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { t, Translate } from '#app/I18N/index.js';
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
@@ -34,29 +34,27 @@ import {
   MediaField,
   PreviewField,
 } from './Components/index.js';
-import { EMPTY_ICON, hasEntityIcon, type EntityIcon } from './Components/IconField.js';
+import { EMPTY_ICON } from './Components/IconField.js';
 import { MultiselectListOption } from '../../Forms/index.js';
 import {
   formatMetadataForForm,
   type FormMetadataProperty,
 } from './functions/formatMetadataForForm.js';
+import {
+  buildEditEntityDefaultValues,
+  mapTemplateProperty,
+  type EditEntityFormValues,
+} from './functions/buildEditEntityDefaultValues.js';
 import { toMetadataObjectSchema } from './functions/toMetadataObjectSchema.js';
 import {
   applyEditEntityErrors,
   getFirstEditEntityErrorPath,
   type EditEntityErrors,
 } from './functions/editEntityErrors.js';
-import { useEntityMediaUpload } from './hooks/useEntityMediaUpload.js';
+import { useEntityMediaUpload, type EntityMediaUpload } from './hooks/useEntityMediaUpload.js';
+import { planSharedMetadataSync } from './functions/mergeSharedFormMetadata.js';
 
-type EditEntityFormValues = {
-  title: Entity['title'];
-  template: Entity['template'];
-  showIcon: boolean;
-  icon: EntityIcon;
-  metadata: Record<string, MetadataValue[]>;
-};
-
-type EditEntityProps = {
+type EditEntityBaseProps = {
   formId: string;
   entity?: Entity;
   onSave?: (editedEntity: EntitySaveInput) => void | Promise<void>;
@@ -71,34 +69,22 @@ type EditEntityProps = {
   }) => Promise<{ value: string; label: string }[]>;
 };
 
+type EditEntityOwnFormProps = EditEntityBaseProps & {
+  form?: never;
+  mediaUpload?: never;
+};
+
+type EditEntitySharedFormProps = EditEntityBaseProps & {
+  form: UseFormReturn<EditEntityFormValues>;
+  mediaUpload: EntityMediaUpload;
+};
+
+type EditEntityProps = EditEntityOwnFormProps | EditEntitySharedFormProps;
+
 type Properties = FormMetadataProperty;
 type DisplayProperty = Properties & {
   groupedRelationshipNames?: string[];
 };
-
-const mapTemplateProperty = (property: {
-  _id?: string;
-  name: string;
-  type: Properties['type'];
-  label: string;
-  required?: boolean;
-  content?: string;
-  relationType?: string;
-  style?: string;
-  inherit?: { property?: string; type?: Properties['inheritedType'] };
-}): Properties => ({
-  _id: String(property._id ?? property.name),
-  type: property.type,
-  name: property.name,
-  label: property.label,
-  required: property.required,
-  content: property.content,
-  relationType: property.relationType,
-  style: property.style,
-  inherited: Boolean(property.inherit),
-  inheritedType: property.inherit?.type,
-  inherit: property.inherit,
-});
 
 const DEFAULT_RELATIONSHIP_LOOKUP_LIMIT = 50;
 
@@ -332,16 +318,25 @@ const buildInheritColumns = (
       };
     });
 
-const EditEntity = ({
+type EditEntityFieldsProps = EditEntityBaseProps & {
+  form: UseFormReturn<EditEntityFormValues>;
+  mediaUpload?: EntityMediaUpload;
+  wrapProvider: boolean;
+};
+
+const EditEntityFields = ({
   formId,
   entity,
+  form: formContext,
+  mediaUpload: mediaUploadProp,
   onSave,
   disabled = false,
   errors,
   onDirtyChange,
   onEditSource,
   relationshipLookup = defaultRelationshipLookup,
-}: EditEntityProps) => {
+  wrapProvider,
+}: EditEntityFieldsProps) => {
   const templates = useAtomValue(templatesAtom);
   const thesauri = useAtomValue(thesauriAtom);
 
@@ -358,21 +353,6 @@ const EditEntity = ({
       }),
     [templates]
   );
-
-  const formContext = useForm<EditEntityFormValues>({
-    defaultValues: {
-      title: entity?.title || '',
-      template: entity?.template || '',
-      showIcon: hasEntityIcon(entity?.icon),
-      icon: entity?.icon ?? EMPTY_ICON,
-      metadata: formatMetadataForForm(
-        templates
-          .find(template => template._id === entity?.template)
-          ?.properties?.map(mapTemplateProperty) || [],
-        entity?.metadata
-      ),
-    },
-  });
 
   const { handleSubmit, watch, reset, getValues, setValue, setError, formState } = formContext;
   const { isDirty } = formState;
@@ -402,12 +382,16 @@ const EditEntity = ({
     property => property.type === 'relationship'
   )?._id;
 
+  const internalMediaUpload = useEntityMediaUpload(
+    mediaUploadProp ? undefined : entity,
+    mediaUploadProp ? undefined : selectedTemplate
+  );
   const {
     entityAttachments,
     pendingAttachments,
     registerPendingAttachment,
     removePendingAttachment,
-  } = useEntityMediaUpload(entity, selectedTemplate);
+  } = mediaUploadProp ?? internalMediaUpload;
 
   const mediaPropertyNames = useMemo(
     () =>
@@ -437,11 +421,19 @@ const EditEntity = ({
   );
 
   useEffect(() => {
+    if (wrapProvider === false) {
+      const plan = planSharedMetadataSync(getValues(), metadataProperties, entity?.metadata);
+      if (plan.type === 'noop') return;
+      reset(plan.values, plan.options);
+      return;
+    }
+
+    if (isDirty) return;
     reset({
       ...getValues(),
       metadata: formatMetadataForForm(metadataProperties, entity?.metadata),
     });
-  }, [entity?.metadata, getValues, metadataProperties, reset]);
+  }, [entity?.metadata, getValues, isDirty, metadataProperties, reset, wrapProvider]);
 
   useEffect(() => {
     displayProperties
@@ -546,314 +538,346 @@ const EditEntity = ({
     }
   );
 
-  return (
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    <FormProvider {...formContext}>
-      <form
-        id={formId}
-        onSubmit={submit}
-        className="flex w-full flex-col gap-3 font-sans text-base text-ink"
-        data-testid="entity-edit-form"
-      >
-        <TitleField<EditEntityFormValues>
-          context="System"
-          label="Title"
-          field="title"
-          registerOptions={{ required: true }}
-          disabled={disabled}
-        />
+  const formContent = (
+    <form
+      id={formId}
+      onSubmit={submit}
+      className="flex w-full flex-col gap-3 font-sans text-base text-ink"
+      data-testid="entity-edit-form"
+    >
+      <TitleField<EditEntityFormValues>
+        context="System"
+        label="Title"
+        field="title"
+        registerOptions={{ required: true }}
+        disabled={disabled}
+      />
 
-        <IconField disabled={disabled} />
+      <IconField disabled={disabled} />
 
-        <TemplateField<EditEntityFormValues>
-          context="System"
-          label="Template"
-          field="template"
-          registerOptions={{ required: true }}
-          disabled={disabled}
-          options={availableTemplates}
-          hideFilters
-        />
-        {isMetadataReady &&
-          displayProperties.map(property => {
-            if (property.type === 'text' || property.type === 'generatedid') {
-              return (
-                <TextField<EditEntityFormValues>
+      <TemplateField<EditEntityFormValues>
+        context="System"
+        label="Template"
+        field="template"
+        registerOptions={{ required: true }}
+        disabled={disabled}
+        options={availableTemplates}
+        hideFilters
+      />
+      {isMetadataReady &&
+        displayProperties.map(property => {
+          if (property.type === 'text' || property.type === 'generatedid') {
+            return (
+              <TextField<EditEntityFormValues>
+                context={activeTemplate?._id ?? ''}
+                label={property.label}
+                field={`metadata.${property.name}.0.value`}
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+                type="text"
+                key={property._id}
+              />
+            );
+          }
+
+          if (property.type === 'numeric') {
+            return (
+              <TextField<EditEntityFormValues>
+                context={activeTemplate?._id ?? ''}
+                label={property.label}
+                field={`metadata.${property.name}.0.value`}
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+                type="number"
+                key={property._id}
+              />
+            );
+          }
+
+          if (property.type === 'select') {
+            return (
+              <SelectField<EditEntityFormValues>
+                context={property.content || 'System'}
+                label={property.label}
+                field={`metadata.${property.name}`}
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+                options={thesaurusToOptions(thesauri, property)}
+                hideFilters
+                key={property._id}
+              />
+            );
+          }
+
+          if (property.type === 'multiselect') {
+            return (
+              <MultiselectField<EditEntityFormValues>
+                context={property.content || 'System'}
+                label={property.label}
+                field={`metadata.${property.name}`}
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+                options={thesaurusToOptions(thesauri, property)}
+                key={property._id}
+              />
+            );
+          }
+
+          if (property.type === 'relationship') {
+            const fieldName = property.groupedRelationshipNames?.[0] ?? property.name;
+            const inheritColumns = buildInheritColumns(
+              property,
+              metadataProperties,
+              templates,
+              entity?.metadata
+            );
+            return (
+              <Fragment key={property._id}>
+                {property._id === firstEditableRelationshipId ? (
+                  <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
+                    <Translate>Relationships</Translate>
+                  </p>
+                ) : null}
+                <RelationshipField<EditEntityFormValues>
                   context={activeTemplate?._id ?? ''}
                   label={property.label}
-                  field={`metadata.${property.name}.0.value`}
+                  field={`metadata.${fieldName}`}
                   registerOptions={{ required: property.required }}
                   disabled={disabled}
-                  type="text"
-                  key={property._id}
-                />
-              );
-            }
-
-            if (property.type === 'numeric') {
-              return (
-                <TextField<EditEntityFormValues>
-                  context={activeTemplate?._id ?? ''}
-                  label={property.label}
-                  field={`metadata.${property.name}.0.value`}
-                  registerOptions={{ required: property.required }}
-                  disabled={disabled}
-                  type="number"
-                  key={property._id}
-                />
-              );
-            }
-
-            if (property.type === 'select') {
-              return (
-                <SelectField<EditEntityFormValues>
-                  context={property.content || 'System'}
-                  label={property.label}
-                  field={`metadata.${property.name}`}
-                  registerOptions={{ required: property.required }}
-                  disabled={disabled}
-                  options={thesaurusToOptions(thesauri, property)}
-                  hideFilters
-                  key={property._id}
-                />
-              );
-            }
-
-            if (property.type === 'multiselect') {
-              return (
-                <MultiselectField<EditEntityFormValues>
-                  context={property.content || 'System'}
-                  label={property.label}
-                  field={`metadata.${property.name}`}
-                  registerOptions={{ required: property.required }}
-                  disabled={disabled}
-                  options={thesaurusToOptions(thesauri, property)}
-                  key={property._id}
-                />
-              );
-            }
-
-            if (property.type === 'relationship') {
-              const fieldName = property.groupedRelationshipNames?.[0] ?? property.name;
-              const inheritColumns = buildInheritColumns(
-                property,
-                metadataProperties,
-                templates,
-                entity?.metadata
-              );
-              return (
-                <Fragment key={property._id}>
-                  {property._id === firstEditableRelationshipId ? (
-                    <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
-                      <Translate>Relationships</Translate>
-                    </p>
-                  ) : null}
-                  <RelationshipField<EditEntityFormValues>
-                    context={activeTemplate?._id ?? ''}
-                    label={property.label}
-                    field={`metadata.${fieldName}`}
-                    registerOptions={{ required: property.required }}
-                    disabled={disabled}
-                    targetTemplateId={property.content}
-                    relationTypeId={property.relationType}
-                    inheritColumns={inheritColumns}
-                    onEditSource={
-                      onEditSource
-                        ? (entityId, label) => onEditSource(entityId, label, property.content)
-                        : undefined
-                    }
-                    lookupSearch={async search => {
-                      const selectedValues = metadata?.[fieldName] ?? [];
-                      const lookedUp = await relationshipLookup({
-                        search,
-                        template: property.content,
-                        limit: DEFAULT_RELATIONSHIP_LOOKUP_LIMIT,
-                      });
-                      const lookedUpOptions = lookedUp.map(option => ({
-                        label: option.label,
-                        searchLabel: option.label,
-                        value: option.value,
-                      }));
-                      return relationshipLookupSearch(
-                        property,
-                        selectedValues,
-                        lookedUpOptions.filter(
-                          option =>
-                            !search.trim() ||
-                            option.searchLabel.toLowerCase().includes(search.trim().toLowerCase())
-                        ),
-                        !search.trim()
-                      );
-                    }}
-                  />
-                </Fragment>
-              );
-            }
-
-            if (property.type === 'date') {
-              return (
-                <DateField<EditEntityFormValues>
-                  context={activeTemplate?._id ?? ''}
-                  label={property.label}
-                  field={`metadata.${property.name}.0.value`}
-                  registerOptions={{ required: property.required }}
-                  disabled={disabled}
-                  key={property._id}
-                />
-              );
-            }
-
-            if (property.type === 'daterange') {
-              return (
-                <DateRangeField<EditEntityFormValues>
-                  context={activeTemplate?._id ?? ''}
-                  label={property.label}
-                  field={`metadata.${property.name}.0.value`}
-                  registerOptions={{ required: property.required }}
-                  disabled={disabled}
-                  key={property._id}
-                />
-              );
-            }
-
-            if (property.type === 'multidate') {
-              return (
-                <MultidateField<EditEntityFormValues>
-                  context={activeTemplate?._id ?? ''}
-                  label={property.label}
-                  field={`metadata.${property.name}`}
-                  registerOptions={{ required: property.required }}
-                  disabled={disabled}
-                  key={property._id}
-                />
-              );
-            }
-
-            if (property.type === 'multidaterange') {
-              return (
-                <MultiDateRangeField<EditEntityFormValues>
-                  context={activeTemplate?._id ?? ''}
-                  label={property.label}
-                  field={`metadata.${property.name}`}
-                  registerOptions={{ required: property.required }}
-                  disabled={disabled}
-                  key={property._id}
-                />
-              );
-            }
-
-            if (property.type === 'link') {
-              return (
-                <LinkField<EditEntityFormValues>
-                  context={activeTemplate?._id ?? ''}
-                  label={property.label}
-                  field={`metadata.${property.name}.0.value`}
-                  registerOptions={{ required: property.required }}
-                  disabled={disabled}
-                  key={property._id}
-                />
-              );
-            }
-
-            if (property.type === 'geolocation') {
-              return (
-                <GeolocationField<EditEntityFormValues>
-                  context={activeTemplate?._id ?? ''}
-                  label={property.label}
-                  field={`metadata.${property.name}`}
-                  registerOptions={{ required: property.required }}
-                  disabled={disabled}
-                  key={property._id}
-                />
-              );
-            }
-
-            if (property.type === 'markdown') {
-              return (
-                <MarkdownField<EditEntityFormValues>
-                  context={activeTemplate?._id ?? ''}
-                  label={property.label}
-                  field={`metadata.${property.name}.0.value`}
-                  registerOptions={{ required: property.required }}
-                  disabled={disabled}
-                  key={property._id}
-                />
-              );
-            }
-
-            if (property.type === 'nested') {
-              return (
-                <NestedField<EditEntityFormValues>
-                  context={activeTemplate?._id ?? ''}
-                  label={property.label}
-                  field={`metadata.${property.name}`}
-                  registerOptions={{ required: property.required }}
-                  disabled={disabled}
-                  key={property._id}
-                />
-              );
-            }
-
-            if (property.type === 'image') {
-              return (
-                <MediaField<EditEntityFormValues>
-                  context={activeTemplate?._id ?? ''}
-                  label={property.label}
-                  field={`metadata.${property.name}.0.value`}
-                  mode="image"
-                  imageStyle={
-                    property.style === 'contain' || property.style === 'cover'
-                      ? property.style
-                      : 'fill'
+                  targetTemplateId={property.content}
+                  relationTypeId={property.relationType}
+                  inheritColumns={inheritColumns}
+                  onEditSource={
+                    onEditSource
+                      ? (entityId, label) => onEditSource(entityId, label, property.content)
+                      : undefined
                   }
-                  registerOptions={{ required: property.required }}
-                  disabled={disabled}
-                  attachments={entityAttachments}
-                  pendingAttachments={pendingAttachments}
-                  entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
-                  onRegisterPendingAttachment={registerPendingAttachment}
-                  onRemovePendingAttachment={removePendingAttachmentIfUnused}
-                  key={property._id}
+                  lookupSearch={async search => {
+                    const selectedValues = metadata?.[fieldName] ?? [];
+                    const lookedUp = await relationshipLookup({
+                      search,
+                      template: property.content,
+                      limit: DEFAULT_RELATIONSHIP_LOOKUP_LIMIT,
+                    });
+                    const lookedUpOptions = lookedUp.map(option => ({
+                      label: option.label,
+                      searchLabel: option.label,
+                      value: option.value,
+                    }));
+                    return relationshipLookupSearch(
+                      property,
+                      selectedValues,
+                      lookedUpOptions.filter(
+                        option =>
+                          !search.trim() ||
+                          option.searchLabel.toLowerCase().includes(search.trim().toLowerCase())
+                      ),
+                      !search.trim()
+                    );
+                  }}
                 />
-              );
-            }
+              </Fragment>
+            );
+          }
 
-            if (property.type === 'media') {
-              return (
-                <MediaField<EditEntityFormValues>
-                  context={activeTemplate?._id ?? ''}
-                  label={property.label}
-                  field={`metadata.${property.name}.0.value`}
-                  mode="media"
-                  registerOptions={{ required: property.required }}
-                  disabled={disabled}
-                  attachments={entityAttachments}
-                  pendingAttachments={pendingAttachments}
-                  entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
-                  onRegisterPendingAttachment={registerPendingAttachment}
-                  onRemovePendingAttachment={removePendingAttachmentIfUnused}
-                  key={property._id}
-                />
-              );
-            }
+          if (property.type === 'date') {
+            return (
+              <DateField<EditEntityFormValues>
+                context={activeTemplate?._id ?? ''}
+                label={property.label}
+                field={`metadata.${property.name}.0.value`}
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+                key={property._id}
+              />
+            );
+          }
 
-            if (property.type === 'preview') {
-              return (
-                <PreviewField
-                  context={activeTemplate?._id ?? ''}
-                  label={property.label}
-                  value={metadata?.[property.name]?.[0]?.value as string | undefined}
-                  key={property._id}
-                />
-              );
-            }
+          if (property.type === 'daterange') {
+            return (
+              <DateRangeField<EditEntityFormValues>
+                context={activeTemplate?._id ?? ''}
+                label={property.label}
+                field={`metadata.${property.name}.0.value`}
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+                key={property._id}
+              />
+            );
+          }
 
-            return undefined;
-          })}
-      </form>
-    </FormProvider>
+          if (property.type === 'multidate') {
+            return (
+              <MultidateField<EditEntityFormValues>
+                context={activeTemplate?._id ?? ''}
+                label={property.label}
+                field={`metadata.${property.name}`}
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+                key={property._id}
+              />
+            );
+          }
+
+          if (property.type === 'multidaterange') {
+            return (
+              <MultiDateRangeField<EditEntityFormValues>
+                context={activeTemplate?._id ?? ''}
+                label={property.label}
+                field={`metadata.${property.name}`}
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+                key={property._id}
+              />
+            );
+          }
+
+          if (property.type === 'link') {
+            return (
+              <LinkField<EditEntityFormValues>
+                context={activeTemplate?._id ?? ''}
+                label={property.label}
+                field={`metadata.${property.name}.0.value`}
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+                key={property._id}
+              />
+            );
+          }
+
+          if (property.type === 'geolocation') {
+            return (
+              <GeolocationField<EditEntityFormValues>
+                context={activeTemplate?._id ?? ''}
+                label={property.label}
+                field={`metadata.${property.name}`}
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+                key={property._id}
+              />
+            );
+          }
+
+          if (property.type === 'markdown') {
+            return (
+              <MarkdownField<EditEntityFormValues>
+                context={activeTemplate?._id ?? ''}
+                label={property.label}
+                field={`metadata.${property.name}.0.value`}
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+                key={property._id}
+              />
+            );
+          }
+
+          if (property.type === 'nested') {
+            return (
+              <NestedField<EditEntityFormValues>
+                context={activeTemplate?._id ?? ''}
+                label={property.label}
+                field={`metadata.${property.name}`}
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+                key={property._id}
+              />
+            );
+          }
+
+          if (property.type === 'image') {
+            return (
+              <MediaField<EditEntityFormValues>
+                context={activeTemplate?._id ?? ''}
+                label={property.label}
+                field={`metadata.${property.name}.0.value`}
+                mode="image"
+                imageStyle={
+                  property.style === 'contain' || property.style === 'cover'
+                    ? property.style
+                    : 'fill'
+                }
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+                attachments={entityAttachments}
+                pendingAttachments={pendingAttachments}
+                entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
+                onRegisterPendingAttachment={registerPendingAttachment}
+                onRemovePendingAttachment={removePendingAttachmentIfUnused}
+                key={property._id}
+              />
+            );
+          }
+
+          if (property.type === 'media') {
+            return (
+              <MediaField<EditEntityFormValues>
+                context={activeTemplate?._id ?? ''}
+                label={property.label}
+                field={`metadata.${property.name}.0.value`}
+                mode="media"
+                registerOptions={{ required: property.required }}
+                disabled={disabled}
+                attachments={entityAttachments}
+                pendingAttachments={pendingAttachments}
+                entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
+                onRegisterPendingAttachment={registerPendingAttachment}
+                onRemovePendingAttachment={removePendingAttachmentIfUnused}
+                key={property._id}
+              />
+            );
+          }
+
+          if (property.type === 'preview') {
+            return (
+              <PreviewField
+                context={activeTemplate?._id ?? ''}
+                label={property.label}
+                value={
+                  typeof metadata?.[property.name]?.[0]?.value === 'string'
+                    ? metadata[property.name][0].value
+                    : undefined
+                }
+                key={property._id}
+              />
+            );
+          }
+
+          return undefined;
+        })}
+    </form>
   );
+
+  if (!wrapProvider) {
+    return formContent;
+  }
+
+  // eslint-disable-next-line react/jsx-props-no-spreading
+  return <FormProvider {...formContext}>{formContent}</FormProvider>;
+};
+
+const EditEntityWithOwnForm = (props: EditEntityOwnFormProps) => {
+  const templates = useAtomValue(templatesAtom);
+  const form = useForm<EditEntityFormValues>({
+    defaultValues: buildEditEntityDefaultValues(props.entity, templates),
+  });
+
+  return <EditEntityFields {...props} form={form} wrapProvider />;
+};
+
+const EditEntity = (props: EditEntityProps) => {
+  if (props.form) {
+    return (
+      <EditEntityFields
+        {...props}
+        form={props.form}
+        mediaUpload={props.mediaUpload}
+        wrapProvider={false}
+      />
+    );
+  }
+
+  return <EditEntityWithOwnForm {...props} />;
 };
 
 export { EditEntity };
-export type { EditEntityErrors };
+export type { EditEntityErrors, EditEntityFormValues };

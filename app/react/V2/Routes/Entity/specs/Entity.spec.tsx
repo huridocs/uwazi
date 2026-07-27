@@ -9,6 +9,8 @@ import {
   TestRouterContext,
   setupMatchMediaMock,
 } from '#V2/testing/index.js';
+import { createTestServices } from '#V2/testing/createTestServices.js';
+import { ServicesProvider } from '#V2/services/ServicesProvider.js';
 import { settingsAtom, templatesAtom, userAtom } from '#V2/atoms/index.js';
 import * as utils from '#app/utils/index.js';
 import * as files from '#V2/api/files/index.js';
@@ -346,6 +348,107 @@ describe('Entity view', () => {
           'aria-selected',
           'true'
         );
+      });
+    });
+  });
+
+  describe('metadata editing session', () => {
+    it('keeps dirty draft when editing on side then opening main Metadata', async () => {
+      render(
+        <TestRouterContext
+          loaderData={{
+            entity: sampleEntity,
+            mainDocument: sampleMainDocument,
+            pagePlaintext: '',
+          }}
+        >
+          <ServicesProvider value={createTestServices()}>
+            <TestAtomStoreProvider
+              initialValues={[
+                [templatesAtom, sampleTemplate],
+                [userAtom, { _id: '1', role: 'admin', name: 'admin' }],
+              ]}
+            >
+              <Entity />
+            </TestAtomStoreProvider>
+          </ServicesProvider>
+        </TestRouterContext>
+      );
+
+      await checkEntityRendered();
+
+      let tablists = screen.getAllByTestId('tabs-comp');
+      const sideTabs = within(tablists[1]);
+      fireEvent.click(sideTabs.getByRole('tab', { name: 'Metadata' }));
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: 'Edit' })).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+
+      const titleInput = await screen.findByRole('textbox', { name: /Title/ });
+      fireEvent.change(titleInput, { target: { value: 'Dirty from side' } });
+      expect(titleInput).toHaveValue('Dirty from side');
+
+      tablists = screen.getAllByTestId('tabs-comp');
+      const mainTabs = within(tablists[0]);
+      fireEvent.click(mainTabs.getByRole('tab', { name: 'Metadata' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('entity-edit-form')).toBeInTheDocument();
+        expect(screen.getByRole('textbox', { name: /Title/ })).toHaveValue('Dirty from side');
+        expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
+      });
+
+      expect(
+        within(screen.getAllByTestId('tabs-comp')[0]).getByRole('tab', { name: /Metadata/ })
+      ).toHaveTextContent('*');
+    });
+
+    it('relocates formMountHost via Edit on the other pane without clearing draft', async () => {
+      render(
+        <TestRouterContext
+          loaderData={{
+            entity: sampleEntity,
+            mainDocument: sampleMainDocument,
+            pagePlaintext: '',
+          }}
+        >
+          <ServicesProvider value={createTestServices()}>
+            <TestAtomStoreProvider
+              initialValues={[
+                [templatesAtom, sampleTemplate],
+                [userAtom, { _id: '1', role: 'admin', name: 'admin' }],
+              ]}
+            >
+              <Entity />
+            </TestAtomStoreProvider>
+          </ServicesProvider>
+        </TestRouterContext>
+      );
+
+      await checkEntityRendered();
+
+      const tablists = screen.getAllByTestId('tabs-comp');
+      fireEvent.click(within(tablists[1]).getByRole('tab', { name: 'Metadata' }));
+      fireEvent.click(within(tablists[0]).getByRole('tab', { name: 'Metadata' }));
+
+      await waitFor(() => {
+        expect(screen.getAllByRole('button', { name: 'Edit' }).length).toBeGreaterThan(0);
+      });
+
+      fireEvent.click(screen.getAllByRole('button', { name: 'Edit' })[0]);
+      const titleInput = await screen.findByRole('textbox', { name: /Title/ });
+      fireEvent.change(titleInput, { target: { value: 'Joined draft' } });
+
+      const editButtons = screen.getAllByRole('button', { name: 'Edit' });
+      expect(editButtons.length).toBeGreaterThan(0);
+      fireEvent.click(editButtons[editButtons.length - 1]);
+
+      await waitFor(() => {
+        expect(screen.getByRole('textbox', { name: /Title/ })).toHaveValue('Joined draft');
+        expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
       });
     });
   });

@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useRevalidator } from 'react-router';
 import { useAtomValue } from 'jotai';
 import type { Entity } from '#V2/api/entities/types.js';
 import { mediaContextFromTemplate } from '#shared/entitySave/mediaContext.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.js';
-import { EditEntity, type EditEntityErrors } from '#V2/Components/Metadata/EntityEditor/index.js';
+import { EditEntity } from '#V2/Components/Metadata/EntityEditor/index.js';
 import { apiValidationsToEditEntityErrors } from '#V2/Components/Metadata/EntityEditor/functions/editEntityErrors.js';
 import {
   useMetadataEditing,
@@ -32,52 +32,40 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
     isEditing,
     isSaving,
     saveError,
-    editingHost,
-    setIsEditing,
+    editErrors,
+    form,
+    formId,
+    formMountHost,
+    mediaUpload,
     setIsSaving,
     setIsDirty,
     setSaveError,
-    setEditingHost,
+    setEditErrors,
+    finishEditing,
     registerCancelEdit,
+    beginSaveAbort,
+    clearSaveAbort,
   } = useMetadataEditing();
   const { openEntityOverlayTarget } = useEntityOverlay();
   const revalidator = useRevalidator();
   const savingRef = useRef(false);
-  const abortRef = useRef<AbortController | null>(null);
-  const mountedRef = useRef(true);
-  const [editErrors, setEditErrors] = useState<EditEntityErrors>();
-  const isOwner = isEditing && editingHost === host;
+  const showEditor = isEditing && formMountHost === host;
 
   useEffect(() => {
-    mountedRef.current = true;
-    if (!isOwner) {
-      return () => {
-        mountedRef.current = false;
-      };
-    }
+    if (!showEditor) return undefined;
 
     const unregister = registerCancelEdit(() => {
-      abortRef.current?.abort();
-      abortRef.current = null;
       savingRef.current = false;
       setEditErrors(undefined);
-      setSaveError(undefined);
-      setIsSaving(false);
-      setIsEditing(false);
-      setEditingHost(null);
     });
 
-    return () => {
-      mountedRef.current = false;
-      abortRef.current?.abort();
-      unregister();
-    };
-  }, [isOwner, registerCancelEdit, setIsEditing, setIsSaving, setSaveError, setEditingHost]);
+    return unregister;
+  }, [showEditor, registerCancelEdit, setEditErrors]);
 
   const handleUpsertError = (
     error: NonNullable<Awaited<ReturnType<typeof entities.upsert>>[1]>
   ) => {
-    if (error.kind === 'cancelled' || !mountedRef.current) return;
+    if (error.kind === 'cancelled') return;
 
     const fieldErrors = apiValidationsToEditEntityErrors(error.validations);
     setEditErrors(fieldErrors);
@@ -90,11 +78,7 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
     entityLoaderCache.setEntity(entity.sharedId, savedLanguage, saved);
     setEntity(saved);
     await revalidator.revalidate();
-    if (mountedRef.current) {
-      setIsDirty(false);
-      setIsEditing(false);
-      setEditingHost(null);
-    }
+    finishEditing();
   };
 
   // eslint-disable-next-line max-statements
@@ -105,19 +89,17 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
     setIsSaving(true);
     setSaveError(undefined);
     setEditErrors(undefined);
-    abortRef.current = new AbortController();
+    const abortController = beginSaveAbort();
 
     try {
       const template = templates.find(t => t._id === editedEntity.template);
       if (!template) {
-        if (mountedRef.current) {
-          setSaveError('Template not found');
-        }
+        setSaveError('Template not found');
         return;
       }
       const saveMediaContext = mediaContextFromTemplate(template);
       const [data, error] = await entities.upsert(editedEntity, {
-        signal: abortRef.current.signal,
+        signal: abortController.signal,
         saveMediaContext,
       });
       if (error) {
@@ -128,16 +110,16 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
 
       await completeSave(data);
     } finally {
-      abortRef.current = null;
+      clearSaveAbort();
       savingRef.current = false;
-      if (mountedRef.current) setIsSaving(false);
+      setIsSaving(false);
     }
   };
 
   return (
     <div className="h-full min-h-0 flex-1 overflow-y-auto px-4 py-3">
-      {!isOwner && <MetadataDisplay entity={entity} />}
-      {isOwner && (
+      {!showEditor && <MetadataDisplay entity={entity} />}
+      {showEditor && (
         <>
           {saveError && (
             <p className="mb-3 text-sm text-red-600" role="alert">
@@ -145,9 +127,10 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
             </p>
           )}
           <EditEntity
-            key={entity._id}
-            formId="edit-entity-form"
+            formId={formId}
+            form={form}
             entity={entity}
+            mediaUpload={mediaUpload}
             onSave={onSave}
             disabled={isSaving}
             errors={editErrors}

@@ -23,7 +23,7 @@ export {
 } from './DocumentInteractionContext.js';
 export { useToc, useTocActions, useTocStateActions } from './TocContext.js';
 export { useMetadataEditing } from './MetadataEditingContext.js';
-export type { MetadataEditingHost } from './MetadataEditingContext.js';
+export type { MetadataEditingHost } from './metadataEditingSession.js';
 export { EntityWriteAuthorization, useEntityWriteAuthorized } from './EntityWriteAuthorization.js';
 export { useEntityOverlay } from './EntityOverlayContext.js';
 export type { RelationshipsPanelView, RelationshipsPanelZoom } from './types.js';
