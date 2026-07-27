@@ -34,19 +34,23 @@ const RelationshipsSearchTips = () => (
         <code className="font-mono text-nano text-ink">
           <Translate>stat*</Translate>
         </code>{' '}
-        — <Translate>wildcard</Translate>
+        — <Translate>wildcard (many chars)</Translate>
       </li>
       <li>
         <code className="font-mono text-nano text-ink">
           <Translate>wom?n</Translate>
         </code>{' '}
-        <Translate>one character</Translate>
+        — <Translate>wildcard (one char)</Translate>
       </li>
       <li>
         <code className="font-mono text-nano text-ink">( ... )</code> —{' '}
         <Translate>group expressions</Translate>
       </li>
     </ul>
+    <div className="mt-2 border-t border-border-soft pt-2 text-nano text-ink-tertiary">
+      <Translate>e.g.</Translate>{' '}
+      <code className="font-mono text-ink-secondary">status AND women NOT Nicaragua</code>
+    </div>
   </>
 );
 
