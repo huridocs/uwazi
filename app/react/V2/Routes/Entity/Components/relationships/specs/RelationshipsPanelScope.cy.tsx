@@ -4,6 +4,7 @@ import type { Entity } from '#V2/api/entities/types.js';
 import { apiEntity } from '#app/stories/fixtures/referencesFixtures.js';
 import { RelationshipsStoryShell } from '#app/stories/EntityViewer/relationshipsStoryShell.js';
 import {
+  expandAllRelationships,
   prepareRelationshipsViewport,
   suppressResizeObserverLoop,
 } from '#V2/Components/Relationships/specs/relationshipsCyHelpers.js';
@@ -34,6 +35,7 @@ describe('Relationships panel across entities', () => {
 
     mount(<RelationshipsStoryShell locale="en" entity={nextEntity} />);
     cy.get('[aria-label="Search relationships"]', { timeout: 20000 }).should('have.value', '');
+    expandAllRelationships();
     cy.contains('Person 1').should('be.visible');
   });
 });

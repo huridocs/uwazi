@@ -94,18 +94,13 @@ const countGrouped = (groups: RelationshipGroups): number =>
 const countClusterReferences = (cluster: PositionedGroup[]): number =>
   cluster.reduce((count, item) => count + getGroupReferences(item.group).length, 0);
 
-const isDenseGroup = (group: PositionedGroup): boolean =>
-  getGroupReferences(group.group).length > 1;
-
 const canMergeIntoCluster = (
   cluster: PositionedGroup[],
   current: PositionedGroup,
   maxSpan: number
 ): boolean =>
   countClusterReferences(cluster) + getGroupReferences(current.group).length <=
-    DOCUMENT_CLUSTER_MERGE_MAX_REFS &&
-  current.page - cluster[0].page <= maxSpan &&
-  (cluster.some(isDenseGroup) || isDenseGroup(current));
+    DOCUMENT_CLUSTER_MERGE_MAX_REFS && current.page - cluster[0].page <= maxSpan;
 
 const shouldAllowMultiPageClustering = (groups: RelationshipGroups, safePages: number): boolean => {
   const refsPerPage = countGrouped(groups) / safePages;
@@ -114,32 +109,14 @@ const shouldAllowMultiPageClustering = (groups: RelationshipGroups, safePages: n
   );
 };
 
-const groupDocumentRelationships = (
-  perPageGroups: RelationshipGroups,
-  totalPages: number = 1
+const mergeMultiPageClusters = (
+  perPageGroupsOnly: PositionedGroup[],
+  safePages: number
 ): DocumentRelationshipGroups => {
-  const safePages = Math.max(totalPages, 1);
-  const allowMultiPageClustering = shouldAllowMultiPageClustering(perPageGroups, safePages);
-  const positionedGroups = perPageGroups
-    .map(group => {
-      const parsedPage = Number.parseInt(group.page, 10);
-      const page = Number.isNaN(parsedPage) ? 1 : parsedPage;
-      return { group, page };
-    })
-    .sort((a, b) => {
-      const pageDiff = a.page - b.page;
-      return pageDiff !== 0 ? pageDiff : a.group.top - b.group.top;
-    });
-
-  const perPageGroupsOnly = collapseToSingleGroupPerPage(positionedGroups);
-
-  if (!perPageGroupsOnly.length) {
-    return [];
-  }
-
-  const thresholdPages = allowMultiPageClustering
-    ? Math.max(DOCUMENT_CLUSTER_MIN_PAGES, Math.ceil(safePages * DOCUMENT_CLUSTER_RATIO))
-    : DOCUMENT_CLUSTER_MIN_PAGES;
+  const thresholdPages = Math.max(
+    DOCUMENT_CLUSTER_MIN_PAGES,
+    Math.ceil(safePages * DOCUMENT_CLUSTER_RATIO)
+  );
   const maxSpan = Math.max(
     DOCUMENT_CLUSTER_MIN_SPAN,
     Math.floor(safePages * DOCUMENT_CLUSTER_MAX_SPAN_RATIO)
@@ -171,6 +148,39 @@ const groupDocumentRelationships = (
   );
 
   return appendDocumentCluster(finalState.grouped, finalState.cluster);
+};
+
+const groupDocumentRelationships = (
+  perPageGroups: RelationshipGroups,
+  totalPages: number = 1
+): DocumentRelationshipGroups => {
+  const safePages = Math.max(totalPages, 1);
+  const allowMultiPageClustering = shouldAllowMultiPageClustering(perPageGroups, safePages);
+  const positionedGroups = perPageGroups
+    .map(group => {
+      const parsedPage = Number.parseInt(group.page, 10);
+      const page = Number.isNaN(parsedPage) ? 1 : parsedPage;
+      return { group, page };
+    })
+    .sort((a, b) => {
+      const pageDiff = a.page - b.page;
+      return pageDiff !== 0 ? pageDiff : a.group.top - b.group.top;
+    });
+
+  const perPageGroupsOnly = collapseToSingleGroupPerPage(positionedGroups);
+
+  if (!perPageGroupsOnly.length) {
+    return [];
+  }
+
+  if (!allowMultiPageClustering) {
+    return perPageGroupsOnly.reduce<DocumentRelationshipGroups>(
+      (grouped, item) => appendDocumentCluster(grouped, [item]),
+      []
+    );
+  }
+
+  return mergeMultiPageClusters(perPageGroupsOnly, safePages);
 };
 
 export type { DocumentRelationshipGroup };

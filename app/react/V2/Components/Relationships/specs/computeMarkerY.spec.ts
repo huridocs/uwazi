@@ -1,4 +1,10 @@
-import { computeMarkerY, computeClusterOuterSize, normalizeTop } from '../computeMarkerY.js';
+import {
+  computeMarkerY,
+  computeClusterOuterSize,
+  computeFullRailMarkerLayout,
+  normalizeTop,
+} from '../computeMarkerY.js';
+import { RAIL_MARKER_SIZE } from '../markerMetrics.js';
 
 describe('computeMarkerY', () => {
   describe('marker placement', () => {
@@ -49,6 +55,44 @@ describe('computeMarkerY', () => {
   describe('computeClusterOuterSize', () => {
     it('should grow with reference count', () => {
       expect(computeClusterOuterSize(25)).toBeGreaterThan(computeClusterOuterSize(3));
+    });
+  });
+
+  describe('computeFullRailMarkerLayout', () => {
+    it('returns CSS top and size matching computeMarkerY for singles', () => {
+      const layout = computeFullRailMarkerLayout({
+        layerHeight: 500,
+        page: 2,
+        top: 0.25,
+        totalPages: 10,
+        type: 'single',
+        referenceCount: 1,
+      });
+
+      expect(layout.size).toBe(RAIL_MARKER_SIZE);
+      expect(layout.y).toBe(
+        computeMarkerY({
+          mode: 'full',
+          layerHeight: 500,
+          page: 2,
+          top: 0.25,
+          totalPages: 10,
+          markerSize: RAIL_MARKER_SIZE,
+        })
+      );
+    });
+
+    it('uses cluster outer size for clusters', () => {
+      const layout = computeFullRailMarkerLayout({
+        layerHeight: 500,
+        page: 1,
+        top: 0,
+        totalPages: 10,
+        type: 'cluster',
+        referenceCount: 9,
+      });
+
+      expect(layout.size).toBe(computeClusterOuterSize(9));
     });
   });
 });

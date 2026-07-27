@@ -16,6 +16,12 @@ export {
   useRelationshipsPanelFilterInputs,
 } from './RelationshipsPanelFiltersContext.js';
 export {
+  DEFAULT_RELATIONSHIPS_GROUP_BY,
+  DEFAULT_RELATIONSHIPS_SUB_GROUP_BY,
+  DEFAULT_RELATIONSHIPS_SORT,
+  DEFAULT_RELATIONSHIPS_ZOOM,
+} from './hooks/useRelationshipsPanelFilterSlices.js';
+export {
   useDocumentPdf,
   useDocumentPdfActions,
   useDocumentRelationshipNav,

@@ -9,6 +9,7 @@ import {
   groupRelationships,
   groupDocumentRelationships,
 } from './groupRelationships.js';
+import { mergeOverlappingRailGroups } from './mergeOverlappingRailGroups.js';
 import { FullMode, PageMode } from './Components/index.js';
 import { RelationshipMarker } from './types.js';
 
@@ -70,10 +71,13 @@ const RelationshipsDisplay = ({
     return groupRelationships(onPage, { trackHeight: markerLayerHeight, pageHeight });
   }, [anchoredMarkers, markerLayerHeight, pageHeight, currentPage]);
 
-  const documentClusters = useMemo(
-    () => groupDocumentRelationships(fullRelationshipGroups, document.totalPages ?? 1),
-    [document.totalPages, fullRelationshipGroups]
-  );
+  const documentClusters = useMemo(() => {
+    const totalPages = document.totalPages ?? 1;
+    const grouped = groupDocumentRelationships(fullRelationshipGroups, totalPages);
+    return markerLayerHeight > 0
+      ? mergeOverlappingRailGroups(grouped, totalPages, markerLayerHeight)
+      : grouped;
+  }, [document.totalPages, fullRelationshipGroups, markerLayerHeight]);
 
   useEffect(() => {
     const markerLayerElement = markerLayerRef.current;

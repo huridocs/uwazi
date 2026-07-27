@@ -9,8 +9,10 @@ import {
 } from '#app/stories/fixtures/entityOverlayFixtures.js';
 import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
 import { RelationshipsPanel } from '#V2/Routes/Entity/Components/relationships/index.js';
+import { expandAllRelationships } from '#V2/Components/Relationships/specs/relationshipsCyHelpers.js';
 
 const openOverlay = () => {
+  expandAllRelationships();
   cy.contains('.group', 'Person 1')
     .first()
     .find('[aria-label="Preview entity"]')

@@ -28,6 +28,7 @@ const SegmentedControlItem = ({
   const context = useSegmentedControlContext();
   const active = context ? context.value === value : Boolean(activeProp);
   const disabled = disabledProp || context?.disabled || false;
+  const size = context?.size ?? 'sm';
 
   const select = () => {
     if (disabled) return;
@@ -50,7 +51,7 @@ const SegmentedControlItem = ({
       tabIndex={active ? 0 : -1}
       disabled={disabled}
       onClick={select}
-      className={segmentItemClass(active, disabled, className)}
+      className={segmentItemClass(active, disabled, className, size)}
     >
       {children}
     </button>
