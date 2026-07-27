@@ -12,6 +12,56 @@ export class MongoRelationshipTypesDataSource
 {
   protected collectionName = 'relationtypes';
 
+  async getAll(): Promise<RelationshipType[]> {
+    return (await this.getCollection().find({}).toArray()).map(mapRelationshipTypeToApp);
+  }
+
+  async getById(id: string): Promise<RelationshipType | null> {
+    const dbo = await this.getCollection().findOne({ _id: MongoIdHandler.mapToDb(id) });
+    return dbo ? mapRelationshipTypeToApp(dbo) : null;
+  }
+
+  async create(input: { name: string }): Promise<RelationshipType> {
+    const response = await this.getCollection().insertOne({
+      name: input.name,
+    } as RelationshipTypeDBO);
+    const created = await this.getCollection().findOne({ _id: response.insertedId });
+    if (!created) {
+      throw new Error('Relationship type creation failed');
+    }
+    return mapRelationshipTypeToApp(created);
+  }
+
+  async update(input: { id: string; name: string }): Promise<RelationshipType> {
+    await this.getCollection().updateOne(
+      { _id: MongoIdHandler.mapToDb(input.id) },
+      { $set: { name: input.name } }
+    );
+    const updated = await this.getCollection().findOne({ _id: MongoIdHandler.mapToDb(input.id) });
+    if (!updated) {
+      throw new Error('Relationship type update failed');
+    }
+    return mapRelationshipTypeToApp(updated);
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.getCollection().deleteOne({ _id: MongoIdHandler.mapToDb(id) });
+  }
+
+  async existsByName(name: string, excludeId?: string): Promise<boolean> {
+    const normalized = name.trim().toLowerCase();
+    const query: any = {
+      $expr: {
+        $eq: [{ $toLower: { $trim: { input: '$name' } } }, normalized],
+      },
+    };
+    if (excludeId) {
+      query._id = { $ne: MongoIdHandler.mapToDb(excludeId) };
+    }
+    const existing = await this.getCollection().findOne(query);
+    return Boolean(existing);
+  }
+
   async typesExist(ids: string[]): Promise<boolean> {
     const uniqueIds = Array.from(new Set(ids));
     const countInExistence = await this.getCollection().countDocuments({
