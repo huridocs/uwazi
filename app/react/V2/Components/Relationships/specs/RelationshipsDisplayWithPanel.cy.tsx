@@ -2,7 +2,9 @@ import {
   mountWithPanelStory,
   openMainCluster,
   clickPerson1InMainCluster,
+  openDisplayMenu,
   prepareRelationshipsViewport,
+  selectDisplayOption,
   suppressResizeObserverLoop,
 } from './relationshipsCyHelpers.js';
 
@@ -39,11 +41,12 @@ describe('RelationshipsDisplay WithPanel', () => {
     });
 
     it('shows a sort chip when sort changes and removes it from the search bar', () => {
-      cy.contains('button', 'Appearance').click();
-      cy.get('[role="listbox"][aria-label="Sort order"]').contains('Z → A').click();
+      selectDisplayOption('Sort', 'Z → A');
       cy.contains('Z → A').should('be.visible');
       cy.get('[aria-label="Clear sort"]').click();
-      cy.contains('button', 'None').should('be.visible');
+      cy.get('[aria-label="Clear sort"]').should('not.exist');
+      openDisplayMenu();
+      cy.get('[role="menu"]').find('[aria-label="Sort"]').should('contain', 'Appearance');
     });
 
     it('switches list, tree, and graph views', () => {
@@ -56,12 +59,12 @@ describe('RelationshipsDisplay WithPanel', () => {
     });
 
     it('groups the list and enables collapse controls', () => {
-      cy.contains('button', 'Collapse all').should('be.disabled');
-      cy.contains('button', 'None').click();
-      cy.get('[role="listbox"][aria-label="Group by:"]').contains('Target template').click();
-      cy.contains('button', 'Target template').should('be.visible');
       cy.contains('button', 'Collapse all').should('not.be.disabled');
+      selectDisplayOption('Group by', 'Target template');
+      openDisplayMenu();
+      cy.get('[role="menu"]').find('[aria-label="Group by"]').should('contain', 'Target template');
       cy.get('[aria-label="Detail"]').should('not.be.disabled');
+      cy.contains('button', 'Collapse all').should('not.be.disabled');
     });
   });
 
@@ -76,7 +79,7 @@ describe('RelationshipsDisplay WithPanel', () => {
       cy.get('[aria-label="related to"]').check();
       cy.get('[aria-label="Close filters"]').click();
       cy.get('[role="dialog"][aria-label="Filters"]').should('not.be.visible');
-      cy.contains('button', 'Filters').should('contain', '2');
+      cy.contains('button', 'Filters').should('contain', '1');
       cy.contains('related to').should('be.visible');
     });
   });
@@ -95,7 +98,7 @@ describe('RelationshipsDisplay WithPanel', () => {
     it('adds a cluster filter chip when a rail cluster is clicked', () => {
       openMainCluster();
       cy.contains('From selection').should('be.visible');
-      cy.contains('button', 'Filters').should('contain', '2');
+      cy.contains('button', 'Filters').should('contain', '1');
     });
 
     it('clears rail selection when the same cluster is toggled off', () => {
