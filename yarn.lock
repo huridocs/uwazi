@@ -7246,10 +7246,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^16.18.3":
-  version: 16.18.58
-  resolution: "@types/node@npm:16.18.58"
-  checksum: 10c0/ec39c4245f47cd0784ca037108ee4df09aea90bc070f9281c952c5096126b6600e6eaa950d5be05fa3fe2c5099be9c06d8920c08284f9c7fc215ecf10f6e44e2
+"@types/node@npm:20.19.6":
+  version: 20.19.6
+  resolution: "@types/node@npm:20.19.6"
+  dependencies:
+    undici-types: "npm:~6.21.0"
+  checksum: 10c0/207272e83b0397959d434c901b71539d7e8316ddc2b27fe51f977e3210dc2b504796b29e46d389010f04767cf9b384f19ae5991ea87102c07c74d368c58e2f0b
   languageName: node
   linkType: hard
 
@@ -24811,6 +24813,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"undici-types@npm:~6.21.0":
+  version: 6.21.0
+  resolution: "undici-types@npm:6.21.0"
+  checksum: 10c0/c01ed51829b10aa72fc3ce64b747f8e74ae9b60eafa19a7b46ef624403508a54c526ffab06a14a26b3120d055e1104d7abe7c9017e83ced038ea5cf52f8d5e04
+  languageName: node
+  linkType: hard
+
 "unicode-canonical-property-names-ecmascript@npm:^2.0.0":
   version: 2.0.0
   resolution: "unicode-canonical-property-names-ecmascript@npm:2.0.0"
@@ -25138,7 +25147,7 @@ __metadata:
     "@types/markdown-it": "npm:^14.1.2"
     "@types/mime-types": "npm:^2.1.1"
     "@types/multer": "npm:^1.4.7"
-    "@types/node": "npm:^16.18.3"
+    "@types/node": "npm:20.19.6"
     "@types/node-uuid": "npm:^0.0.28"
     "@types/nodemailer": "npm:^8.0.0"
     "@types/pg": "npm:^8.20.0"
