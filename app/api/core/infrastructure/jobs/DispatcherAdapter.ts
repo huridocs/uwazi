@@ -21,14 +21,6 @@ import {
   SendWelcomeEmailHandler,
   SendWelcomeEmailHandlerParams,
 } from './SendWelcomeEmailHandler.js';
-import {
-  SendRecoveryEmailHandler,
-  SendRecoveryEmailHandlerParams,
-} from './SendRecoveryEmailHandler.js';
-import {
-  SendAccountLockedEmailHandler,
-  SendAccountLockedEmailHandlerParams,
-} from './SendAccountLockedEmailHandler.js';
 
 class DispatcherAdapter implements Dispatcher {
   constructor(private jobsDispatcher: JobsDispatcher) {}
@@ -82,14 +74,6 @@ class DispatcherAdapter implements Dispatcher {
 
   async sendWelcomeEmail(params: SendWelcomeEmailHandlerParams): Promise<void> {
     await this.jobsDispatcher.dispatch(SendWelcomeEmailHandler, params);
-  }
-
-  async sendRecoveryEmail(params: SendRecoveryEmailHandlerParams): Promise<void> {
-    await this.jobsDispatcher.dispatch(SendRecoveryEmailHandler, params);
-  }
-
-  async sendAccountLockedEmail(params: SendAccountLockedEmailHandlerParams): Promise<void> {
-    await this.jobsDispatcher.dispatch(SendAccountLockedEmailHandler, params);
   }
 }
 

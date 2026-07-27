@@ -3,8 +3,8 @@ import request from 'supertest';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-import { tenants } from '#api/tenants/tenantContext.js';
-import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import mailer from '#api/utils/mailer.js';
 import { userRoutes } from '../routes.js';
 import { fixtures, f } from './fixtures.js';
 
@@ -25,22 +25,21 @@ const app: Application = setUpApp(
 );
 
 describe('POST /api/recoverpassword', () => {
-  let namespace: string;
-
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
     testingTenants.changeCurrentTenant({
       domain: 'uwazi',
       featureFlags: { v2UsersUtilityRoutes: true },
     });
-    namespace = tenants.current().name;
   });
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should create a send recovery email job and return 200 with OK', async () => {
+  it('should create a password recovery key and return 200 with OK', async () => {
+    jest.spyOn(mailer, 'send').mockResolvedValue({} as any);
+
     const response = await request(app)
       .post('/api/recoverpassword')
       .send({ email: 'existing@test.com' });
@@ -48,14 +47,14 @@ describe('POST /api/recoverpassword', () => {
     expect(response.status).toBe(200);
     expect(response.body).toBe('OK');
 
-    const job = await getSharedConnection()
-      .collection('jobs')
-      .findOne({ name: 'SendRecoveryEmailHandler', namespace });
-    expect(job).toBeDefined();
-    expect(job?.params).toMatchObject({
-      email: 'existing@test.com',
-      domain: 'http://uwazi',
-    });
+    const recovery = await getConnection()
+      .collection('passwordrecoveries')
+      .findOne({ user: f.id('existinguser') });
+    expect(recovery).toBeDefined();
+    expect(recovery?.key).toBeDefined();
+    expect(recovery?.key.length).toBeGreaterThan(0);
+
+    jest.restoreAllMocks();
   });
 
   it('should return 422 when body is empty', async () => {
