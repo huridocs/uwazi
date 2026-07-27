@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 import React, { useRef, useState, type ReactNode } from 'react';
 import { AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
 import { AnchoredPortal } from './AnchoredPortal.js';
@@ -28,6 +29,14 @@ const DisplayMenu = ({ ariaLabel, children, modified = false, size = 'md' }: Dis
   const buttonRef = useRef<HTMLButtonElement>(null);
   const box = size === 'sm' ? 'h-6 w-6' : 'h-8 w-8';
   const icon = size === 'sm' ? 'h-3 w-3' : 'h-3.5 w-3.5';
+  const buttonClass = [
+    'relative inline-flex cursor-pointer items-center justify-center rounded-md',
+    'transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-carbon/30',
+    box,
+    open || modified
+      ? 'bg-vellum text-ink'
+      : 'bg-warm text-ink-secondary hover:bg-parchment hover:text-ink',
+  ].join(' ');
 
   return (
     <div className="relative shrink-0">
@@ -38,16 +47,12 @@ const DisplayMenu = ({ ariaLabel, children, modified = false, size = 'md' }: Dis
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen(current => !current)}
-        className={`relative inline-flex cursor-pointer items-center justify-center rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-carbon/30 ${box} ${
-          open || modified
-            ? 'bg-vellum text-ink'
-            : 'bg-warm text-ink-secondary hover:bg-parchment hover:text-ink'
-        }`}
+        className={buttonClass}
       >
         <AdjustmentsHorizontalIcon className={icon} aria-hidden />
         {modified && (
           <span
-            className="absolute -top-0.5 -end-0.5 h-1.5 w-1.5 rounded-full"
+            className="absolute -top-0.5 -inset-e-0.5 h-1.5 w-1.5 rounded-full"
             style={{ backgroundColor: 'var(--accent-blue)' }}
             aria-hidden
           />

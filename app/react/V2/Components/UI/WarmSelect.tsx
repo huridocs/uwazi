@@ -31,7 +31,7 @@ const WarmSelect = <T extends string>({
       <button
         type="button"
         disabled={disabled}
-        onClick={() => !disabled && setOpen(current => !current)}
+        onClick={() => !disabled && setOpen(currentValue => !currentValue)}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={ariaLabel}
@@ -49,7 +49,7 @@ const WarmSelect = <T extends string>({
           <div
             role="listbox"
             className={`absolute top-full z-20 mt-1 min-w-40 rounded-md border border-border bg-paper py-1 shadow-[0_6px_18px_rgba(0,0,0,0.12)] ${
-              align === 'end' ? 'end-0' : 'start-0'
+              align === 'end' ? 'inset-e-0' : 'inset-s-0'
             }`}
           >
             {options.map(option => (

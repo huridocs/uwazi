@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState, type ReactNode } from 'react';
+import React, { useRef, useState, type ReactNode } from 'react';
 import {
   MagnifyingGlassIcon,
   QuestionMarkCircleIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
+import { AnchoredPortal } from './AnchoredPortal.js';
 import { IconButton } from './IconButton.js';
 
 type QuerySearchBarProps = {
@@ -35,17 +36,6 @@ const QuerySearchBar = ({
   const hintRef = useRef<HTMLDivElement>(null);
   const [hintOpen, setHintOpen] = useState(false);
 
-  useEffect(() => {
-    if (!hintOpen) return undefined;
-    const onClick = (event: MouseEvent) => {
-      if (!hintRef.current?.contains(event.target as Node)) {
-        setHintOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', onClick);
-    return () => document.removeEventListener('mousedown', onClick);
-  }, [hintOpen]);
-
   const clear = () => {
     onChange('');
     inputRef.current?.focus();
@@ -66,7 +56,7 @@ const QuerySearchBar = ({
           onChange={event => onChange(event.target.value)}
           placeholder={placeholder}
           aria-label={ariaLabel}
-          className="h-6 min-w-[100px] flex-1 bg-transparent text-xs font-medium placeholder:text-ink-muted focus:outline-none"
+          className="h-6 min-w-25 flex-1 bg-transparent text-xs font-medium placeholder:text-ink-muted focus:outline-none"
         />
         {value && (
           <IconButton variant="clear" aria-label={clearAriaLabel} onClick={clear}>
@@ -86,15 +76,18 @@ const QuerySearchBar = ({
             >
               <QuestionMarkCircleIcon className="h-3.5 w-3.5" />
             </IconButton>
-            {hintOpen && (
-              <div
-                role="dialog"
-                aria-label={tipsAriaLabel}
-                className="absolute right-0 top-full z-40 mt-1 w-64 rounded-md border border-border bg-paper p-3 text-micro leading-snug shadow-lg"
-              >
+            <AnchoredPortal
+              open={hintOpen}
+              anchorRef={hintRef}
+              prefer="end"
+              width={256}
+              onClose={() => setHintOpen(false)}
+              className="rounded-md border border-border bg-paper p-3 text-micro leading-snug shadow-[0_6px_18px_rgba(0,0,0,0.12)]"
+            >
+              <div role="dialog" aria-label={tipsAriaLabel}>
                 {tipsContent}
               </div>
-            )}
+            </AnchoredPortal>
           </div>
         )}
       </div>
