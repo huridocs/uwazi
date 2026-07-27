@@ -63,7 +63,8 @@ const nestedToc: TocSchema[] = [
   },
 ];
 
-const rowFor = (label: string) => screen.getByText(label).closest('[role="button"]')!;
+const rowFor = (label: string): HTMLElement =>
+  screen.getByText(label).closest('[role="button"]') as HTMLElement;
 
 // Helper component to provide expanded state
 const ToCWithState = ({

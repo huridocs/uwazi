@@ -41,7 +41,7 @@ const ToCView = ({ generatedToc, panel }: ToCViewProps) => {
         <ListBulletIcon className="h-8 w-8 text-ink-tertiary/40" />
         <div>
           <p className="text-sm font-semibold text-ink-tertiary">
-            <Translate>No ToC</Translate>
+            <Translate>No Table of contents</Translate>
           </p>
           <p className="mt-1 text-xs text-ink-tertiary">
             <Translate>
