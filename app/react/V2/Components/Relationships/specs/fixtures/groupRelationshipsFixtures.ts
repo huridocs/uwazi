@@ -59,6 +59,34 @@ const refPage1Another = makeMarker(
 const refPage3 = makeMarker('ref5', [{ page: 3, top: 300, left: 100, width: 90, height: 20 }]);
 const refNoRectangles = makeMarker('ref6', null);
 
+const CASELAW_TOTAL_PAGES = 18;
+
+const CASELAW_PAGE_REF_COUNTS: Record<number, number> = {
+  2: 115,
+  3: 592,
+  4: 132,
+  5: 224,
+  6: 61,
+  7: 48,
+  8: 20,
+  9: 5,
+  10: 1,
+  12: 5,
+  13: 2,
+  14: 7,
+  15: 72,
+  16: 11,
+};
+
+const buildCaselawMarkers = () =>
+  Object.entries(CASELAW_PAGE_REF_COUNTS).flatMap(([page, count]) =>
+    Array.from({ length: count }, (_, index) =>
+      makeMarker(`caselaw-p${page}-r${index}`, [
+        { page: Number(page), top: 100 + index * 2, left: 0, width: 10, height: 10 },
+      ])
+    )
+  );
+
 export {
   makeMarker,
   refPage1,
@@ -67,4 +95,6 @@ export {
   refPage1Another,
   refPage3,
   refNoRectangles,
+  CASELAW_TOTAL_PAGES,
+  buildCaselawMarkers,
 };

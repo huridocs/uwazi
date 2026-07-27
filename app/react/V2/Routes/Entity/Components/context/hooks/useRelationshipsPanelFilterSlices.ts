@@ -6,13 +6,22 @@ import type {
   RelationshipsPanelZoom,
 } from '../types.js';
 
+const DEFAULT_RELATIONSHIPS_GROUP_BY: RelationshipsPanelGroupBy = 'relation-type';
+const DEFAULT_RELATIONSHIPS_SUB_GROUP_BY: RelationshipsPanelGroupBy = 'none';
+const DEFAULT_RELATIONSHIPS_SORT: RelationshipsPanelSort = 'appearance';
+const DEFAULT_RELATIONSHIPS_ZOOM: RelationshipsPanelZoom = 'detail';
+
 const useRelationshipsPanelFilterSlices = () => {
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<RelationshipsPanelSort>('appearance');
-  const [groupBy, setGroupByState] = useState<RelationshipsPanelGroupBy>('none');
-  const [subGroupBy, setSubGroupBy] = useState<RelationshipsPanelGroupBy>('none');
+  const [sort, setSort] = useState<RelationshipsPanelSort>(DEFAULT_RELATIONSHIPS_SORT);
+  const [groupBy, setGroupByState] = useState<RelationshipsPanelGroupBy>(
+    DEFAULT_RELATIONSHIPS_GROUP_BY
+  );
+  const [subGroupBy, setSubGroupBy] = useState<RelationshipsPanelGroupBy>(
+    DEFAULT_RELATIONSHIPS_SUB_GROUP_BY
+  );
   const [view, setView] = useState<RelationshipsPanelView>('list');
-  const [zoom, setZoom] = useState<RelationshipsPanelZoom>('detail');
+  const [zoom, setZoom] = useState<RelationshipsPanelZoom>(DEFAULT_RELATIONSHIPS_ZOOM);
   const [relTypeFilters, setRelTypeFilters] = useState<Record<string, boolean>>({});
   const [entityTypeFilters, setEntityTypeFilters] = useState<Record<string, boolean>>({});
   const [activeClusterRefIds, setActiveClusterRefIds] = useState<string[] | null>(null);
@@ -32,7 +41,7 @@ const useRelationshipsPanelFilterSlices = () => {
     setRelTypeFilters({});
     setEntityTypeFilters({});
     setSearch('');
-    setSort('none');
+    setSort(DEFAULT_RELATIONSHIPS_SORT);
     setActiveClusterRefIds(null);
   }, []);
 
@@ -50,7 +59,6 @@ const useRelationshipsPanelFilterSlices = () => {
   const facetSlice = useMemo(() => {
     let activeFilterCount = 0;
     if (search.trim()) activeFilterCount += 1;
-    if (sort !== 'none') activeFilterCount += 1;
     activeFilterCount += Object.values(relTypeFilters).filter(Boolean).length;
     activeFilterCount += Object.values(entityTypeFilters).filter(Boolean).length;
     if (activeClusterRefIds) activeFilterCount += 1;
@@ -64,7 +72,7 @@ const useRelationshipsPanelFilterSlices = () => {
       clearFilters,
       activeFilterCount,
     };
-  }, [search, sort, relTypeFilters, entityTypeFilters, activeClusterRefIds, clearFilters]);
+  }, [search, relTypeFilters, entityTypeFilters, activeClusterRefIds, clearFilters]);
   const uiSlice = useMemo(
     () => ({
       expandAllSignal,
@@ -88,4 +96,10 @@ const useRelationshipsPanelFilterSlices = () => {
   };
 };
 
-export { useRelationshipsPanelFilterSlices };
+export {
+  useRelationshipsPanelFilterSlices,
+  DEFAULT_RELATIONSHIPS_GROUP_BY,
+  DEFAULT_RELATIONSHIPS_SUB_GROUP_BY,
+  DEFAULT_RELATIONSHIPS_SORT,
+  DEFAULT_RELATIONSHIPS_ZOOM,
+};

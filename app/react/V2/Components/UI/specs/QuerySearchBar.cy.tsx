@@ -32,7 +32,7 @@ describe('QuerySearchBar', () => {
     cy.get('button[aria-label="Search tips"]').click();
     cy.get('[role="dialog"][aria-label="Search tips"]').should('be.visible');
     cy.contains('AND OR NOT').should('be.visible');
-    cy.get('button[aria-label="Search tips"]').click();
+    cy.get('body').click(0, 0);
     cy.get('[role="dialog"][aria-label="Search tips"]').should('not.exist');
   });
 

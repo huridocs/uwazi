@@ -17,6 +17,7 @@ type SegmentedControlProps<T extends string> = {
   disabled?: boolean;
   showLabels?: boolean;
   className?: string;
+  size?: 'sm' | 'md';
 };
 
 const SegmentedControl = <T extends string>({
@@ -27,6 +28,7 @@ const SegmentedControl = <T extends string>({
   disabled = false,
   showLabels = false,
   className = '',
+  size = 'sm',
 }: SegmentedControlProps<T>) => (
   <SegmentedControlRoot
     ariaLabel={ariaLabel}
@@ -34,6 +36,7 @@ const SegmentedControl = <T extends string>({
     className={className}
     value={value}
     onValueChange={next => onChange(next as T)}
+    size={size}
   >
     {options.map(option => {
       const { Icon } = option;

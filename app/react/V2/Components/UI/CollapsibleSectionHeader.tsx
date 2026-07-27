@@ -23,13 +23,14 @@ const buttonClass: Record<CollapsibleSectionHeaderVariant, string> = {
 
 const titleClass: Record<CollapsibleSectionHeaderVariant, string> = {
   facet: 'min-w-0 flex-1 truncate text-left text-xs font-semibold text-ink-secondary',
-  group: 'min-w-0 flex-1 truncate text-left text-sm font-medium text-ink',
+  group: 'min-w-0 shrink truncate text-left text-sm font-medium text-ink',
   tree: 'min-w-0 truncate text-left text-sm font-medium text-ink',
 };
 
 const countClass: Record<CollapsibleSectionHeaderVariant, string> = {
   facet: 'shrink-0 text-micro tabular-nums text-ink-tertiary',
-  group: 'shrink-0 rounded bg-warm px-1.5 text-nano font-semibold tabular-nums text-ink-tertiary',
+  group:
+    'inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-md bg-parchment px-1.5 text-xs font-medium tabular-nums text-ink-tertiary',
   tree: 'shrink-0 text-micro tabular-nums text-ink-tertiary',
 };
 

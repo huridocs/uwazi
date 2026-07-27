@@ -8,6 +8,7 @@ import {
   RelationshipsPanel,
 } from '#V2/Routes/Entity/Components/relationships/index.js';
 import { useRelationshipsActions } from '#V2/Routes/Entity/Components/context/index.js';
+import { expandAllRelationships } from '#V2/Components/Relationships/specs/relationshipsCyHelpers.js';
 
 const selection: TextSelection = {
   text: 'Selected text for relationship',
@@ -120,6 +121,7 @@ describe('Create relationship dialog', () => {
 
   it('returns to the relationships list after the user cancels', () => {
     mountCreateRelationshipModal({ withPanel: true });
+    expandAllRelationships();
     cy.contains('Person 1').should('be.visible');
     openModal();
     cy.get('[aria-label="Close modal"]').click();

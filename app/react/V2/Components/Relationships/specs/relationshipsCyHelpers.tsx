@@ -116,6 +116,36 @@ const clickStandalonePerson2 = () => {
     .click({ force: true });
 };
 
+const expandAllRelationships = () => {
+  cy.contains('button', 'Expand all').should('not.be.disabled').click();
+};
+
+const openDisplayMenu = () => {
+  cy.get('[aria-label="Display options"]').then($button => {
+    if ($button.attr('aria-expanded') !== 'true') {
+      cy.wrap($button).click();
+    }
+  });
+  cy.get('[role="menu"]').should('be.visible');
+};
+
+const closeDisplayMenu = () => {
+  cy.get('body').then($body => {
+    if ($body.find('[role="menu"]').length === 0) {
+      return;
+    }
+    cy.get('.fixed.inset-0.z-50[aria-hidden="true"]').first().click({ force: true });
+  });
+  cy.get('[role="menu"]').should('not.exist');
+};
+
+const selectDisplayOption = (controlAriaLabel: string, optionLabel: string) => {
+  openDisplayMenu();
+  cy.get('[role="menu"]').find(`[aria-label="${controlAriaLabel}"]`).click();
+  cy.get('[role="listbox"]').contains('[role="option"]', optionLabel).click();
+  closeDisplayMenu();
+};
+
 export {
   Basic,
   suppressResizeObserverLoop,
@@ -129,4 +159,8 @@ export {
   openMainCluster,
   clickPerson1InMainCluster,
   clickStandalonePerson2,
+  expandAllRelationships,
+  openDisplayMenu,
+  closeDisplayMenu,
+  selectDisplayOption,
 };

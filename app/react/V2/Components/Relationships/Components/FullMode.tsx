@@ -3,8 +3,8 @@ import { Cluster } from './Cluster.js';
 import { Point } from './Point.js';
 import { FileType } from '#V2/api/entities/types.js';
 import type { DocumentRelationshipGroup } from '../groupRelationships.js';
-import { computeClusterOuterSize, computeMarkerY } from '../computeMarkerY.js';
-import { RelationshipMarker } from '../types.js';
+import { computeFullRailMarkerLayout } from '../computeMarkerY.js';
+import { RelationshipMarker, markerTop } from '../types.js';
 
 type FullModeProps = {
   document: FileType;
@@ -14,13 +14,6 @@ type FullModeProps = {
   onMoreClick?: (markers: RelationshipMarker[]) => void;
   onClusterClick?: (markers: RelationshipMarker[]) => void;
   documentClusters?: DocumentRelationshipGroup[];
-};
-
-const POINT_MARKER_SIZE = 10;
-
-const getMarkerTop = (marker: RelationshipMarker): number => {
-  const selection = marker.anchor?.selections?.[0];
-  return typeof selection?.top === 'number' ? selection.top : 0;
 };
 
 const FullModeComponent = ({
@@ -39,18 +32,13 @@ const FullModeComponent = ({
     const items =
       documentClusters?.map((element, index) => {
         const key = `doc-${element.startPage}-${element.endPage}-${index}`;
-        const top = getMarkerTop(element.references[0]);
-        const markerSize =
-          element.type === 'cluster'
-            ? computeClusterOuterSize(element.references.length)
-            : POINT_MARKER_SIZE;
-        const position = computeMarkerY({
-          mode: 'full',
+        const { y: position } = computeFullRailMarkerLayout({
           layerHeight: markerLayerHeight,
           page: element.page,
-          top,
+          top: markerTop(element.references[0]),
           totalPages: documentPages,
-          markerSize,
+          type: element.type,
+          referenceCount: element.references.length,
         });
         return { key, element, position };
       }) ?? [];

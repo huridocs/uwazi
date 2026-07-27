@@ -1,7 +1,12 @@
-import React, { useCallback, useState } from 'react';
-import { PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
-import { Translate } from '#app/I18N/index.js';
-import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Cog6ToothIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { I18NLinkV2, Translate } from '#app/I18N/index.js';
+import {
+  Button,
+  ConfirmationModal,
+  NeedAuthorization,
+  SelectControls,
+} from '#V2/Components/UI/index.js';
 import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 import {
   EntityWriteAuthorization,
@@ -30,6 +35,9 @@ const RelationshipsActionBar = () => {
   const totalCount = sourceMarkers.length;
   const selectedCount = selected.size;
   const hasSelection = selectedCount > 0;
+  const allSelected = totalCount > 0 && selectedCount === totalCount;
+
+  const allIds = useMemo(() => sourceMarkers.map(marker => marker._id), [sourceMarkers]);
 
   const clearSelection = useCallback(() => {
     setSelected(new Set());
@@ -75,15 +83,33 @@ const RelationshipsActionBar = () => {
             <Translate>Edit</Translate>
           </Button>
         ) : (
-          <Button
-            variant="secondary"
-            size="small"
-            className="inline-flex items-center gap-1.5"
-            onClick={handleCreate}
-          >
-            <PlusIcon className="h-3 w-3" />
-            <Translate>Create relationship</Translate>
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant="secondary"
+              size="small"
+              className="inline-flex items-center gap-1.5"
+              onClick={handleCreate}
+            >
+              <PlusIcon className="h-3 w-3" />
+              <Translate>Create relationship</Translate>
+            </Button>
+            <NeedAuthorization roles={['admin']}>
+              <I18NLinkV2
+                to="/settings/relationship-types"
+                className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-warm hover:text-ink"
+              >
+                <Cog6ToothIcon className="h-3 w-3 text-ink-tertiary" />
+                <Translate>Manage types</Translate>
+              </I18NLinkV2>
+            </NeedAuthorization>
+            <SelectControls
+              allSelected={allSelected}
+              hasSelection={hasSelection}
+              totalCount={totalCount}
+              onSelectAll={() => setSelected(new Set(allIds))}
+              onDeselectAll={() => setSelected(new Set())}
+            />
+          </div>
         )}
         {editMode && (
           <div className="flex items-center gap-2">

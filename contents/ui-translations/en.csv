@@ -350,6 +350,7 @@ Deleted thesaurus,Deleted thesaurus
 Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
+Density,Density
 Description,Description
 Deselect all,Deselect all
 Direction,Direction
@@ -362,6 +363,7 @@ Discard changes,Discard changes
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,Display entity view from page
+Display options,Display options
 Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
 Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
@@ -393,6 +395,7 @@ Duplicated email,Duplicated email
 Duplicated name,Duplicated name
 Duplicated username,Duplicated username
 Duration,Duration
+e.g.,e.g.
 Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
 Earlier,Earlier
 Edit,Edit
@@ -524,7 +527,7 @@ Google Analytics,Google Analytics
 Google Analytics ID,Google Analytics ID
 Google Maps,Google Maps
 Group,Group
-Group by:,Group by:
+Group by,Group by
 group expressions,group expressions
 Group Options,Group Options
 Group saved,Group saved
@@ -655,6 +658,7 @@ Lookup help,Lookup help
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,low
 Manage site settings and configuration,Manage site settings and configuration
+Manage types,Manage types
 Manual data,Manual data
 Manually set a color,Manually set a color
 Map,Map
@@ -1133,7 +1137,6 @@ Sort,Sort
 Sort ascending,Sort ascending
 Sort by,Sort by
 Sort descending,Sort descending
-Sort order,Sort order
 Sort:,Sort:
 sorted by,sorted by
 Source,Source
@@ -1149,6 +1152,7 @@ State,State
 Statistics,Statistics
 Stats & Filters,Stats & Filters
 Status,Status
+status AND women NOT Nicaragua,status AND women NOT Nicaragua
 Storage,Storage
 Streets,Streets
 Strict mode,Strict mode
@@ -1219,7 +1223,7 @@ Theme instance file invalid,Theme instance file invalid
 Theme logotype,Theme logotype
 Theme presets,Theme presets
 Theme preview,Theme preview
-Then by:,Then by:
+Then by,Then by
 There are no pages enabled for entity view,There are no pages enabled for entity view
 There are no untranslated terms,There are no untranslated terms
 Thesauri,Thesauri
@@ -1409,6 +1413,8 @@ Welcome to Uwazi,Welcome to Uwazi
 "Well, this is awkward...","Well, this is awkward..."
 Whitelisted templates,Whitelisted templates
 wildcard,wildcard
+wildcard (many chars),wildcard (many chars)
+wildcard (one char),wildcard (one char)
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
 will be updated with the same value.,will be updated with the same value.
 Will show the entire media inside the container.,Will show the entire media inside the container.
