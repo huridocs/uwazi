@@ -1,7 +1,7 @@
 {
   "packageManager": "yarn@4.13.0",
   "name": "uwazi",
-  "version": "1.229.0-rc453",
+  "version": "1.229.0-rc454",
   "type": "module",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
@@ -332,7 +332,7 @@
     "@types/luxon": "^3.7.1",
     "@types/markdown-it": "^14.1.2",
     "@types/multer": "^1.4.7",
-    "@types/node": "^16.18.3",
+    "@types/node": "20.19.6",
     "@types/node-uuid": "^0.0.28",
     "@types/nodemailer": "^8.0.0",
     "@types/prop-types": "^15.7.15",
