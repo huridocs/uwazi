@@ -154,6 +154,7 @@ export const config = {
       telemetry: {
         enabled: false,
         thresholdMs: 300,
+        sampleRate: 0.5,
       },
       prometheus: {
         enabled: false,

@@ -36,6 +36,7 @@ type Tenant = {
     telemetry?: {
       enabled?: boolean;
       thresholdMs?: number;
+      sampleRate?: number;
     };
     prometheus?: {
       enabled?: boolean;
@@ -150,7 +151,7 @@ class Tenants {
 
   async setTelemetryConfig(
     tenantName: string,
-    telemetry: { enabled: boolean; thresholdMs: number }
+    telemetry: { enabled: boolean; thresholdMs: number; sampleRate: number }
   ) {
     if (this.model) {
       await this.model.setTelemetryConfig(tenantName, telemetry);

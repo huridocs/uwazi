@@ -22,12 +22,12 @@ const dependenciesContextMiddleware = (
   const correlationId = randomUUID();
 
   response.on('finish', () => {
-    const { telemetry } = tenant.featureFlags || {};
-    if (!telemetry?.enabled) return;
+    if (!ExecutionContext.isTelemetryEnabled) return;
 
     const routeInfo = getRouteInfo(request, response);
     if (!routeInfo) return;
-    if (ExecutionContext.telemetryCollector.mainDurationMs() < (telemetry.thresholdMs ?? 0)) return;
+    const { thresholdMs = 0 } = tenant.featureFlags?.telemetry || {};
+    if (ExecutionContext.telemetryCollector.mainDurationMs() < thresholdMs) return;
 
     ExecutionContext.telemetryCollector.add({
       method: request.method,

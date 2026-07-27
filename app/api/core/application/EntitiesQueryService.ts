@@ -39,7 +39,7 @@ class EntitiesQueryService {
   constructor(private deps: Deps) {}
 
   private addTelemetry(metadata: Record<string, any>): void {
-    if (!ExecutionContext.getStore()) return;
+    if (!ExecutionContext.isTelemetryEnabled) return;
     ExecutionContext.telemetryCollector.add(metadata);
   }
 

@@ -82,6 +82,7 @@ describe('tenantsContext', () => {
       expect(tenants.current().featureFlags?.telemetry).toEqual({
         enabled: true,
         thresholdMs: config.defaultTenant.featureFlags!.telemetry!.thresholdMs,
+        sampleRate: config.defaultTenant.featureFlags!.telemetry!.sampleRate,
       });
     }, 'test-tenant-telemetry');
   });

@@ -5,15 +5,13 @@ export function TimedMethod(operationName: string) {
     const originalMethod = descriptor.value;
 
     descriptor.value = function (...args: any[]) {
-      const telemetryCollector = ExecutionContext.getStore()
-        ? ExecutionContext.telemetryCollector
-        : undefined;
-
-      if (!telemetryCollector) {
+      if (!ExecutionContext.isTelemetryEnabled) {
         return originalMethod.apply(this, args);
       }
 
-      return telemetryCollector.runSpan(operationName, () => originalMethod.apply(this, args));
+      return ExecutionContext.telemetryCollector.runSpan(operationName, () =>
+        originalMethod.apply(this, args)
+      );
     };
 
     return descriptor;

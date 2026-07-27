@@ -64,7 +64,9 @@ const convertObjectIdsToStrings = (data: any) => JSON.parse(JSON.stringify(data)
 
 // eslint-disable-next-line comma-spacing
 const withSpan = <T,>(operation: string, fn: () => T): T =>
-  ExecutionContext.getStore() ? ExecutionContext.telemetryCollector.runSpan(operation, fn) : fn();
+  ExecutionContext.isTelemetryEnabled
+    ? ExecutionContext.telemetryCollector.runSpan(operation, fn)
+    : fn();
 
 api.APIURL(`http://localhost:${process.env.PORT || 3000}/api/`);
 apiClient.setBaseUrl(`http://localhost:${process.env.PORT || 3000}/api/`);
