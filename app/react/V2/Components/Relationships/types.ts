@@ -59,10 +59,16 @@ const toMarker = (view: RelationshipView, selfSharedId: string): RelationshipMar
 const firstPageOf = (marker: RelationshipMarker): number | undefined =>
   marker.anchor?.selections[0]?.page;
 
+const markerTop = (marker: RelationshipMarker): number => {
+  const top = marker.anchor?.selections?.[0]?.top;
+  return typeof top === 'number' ? top : 0;
+};
+
 export type { RelationshipMarker };
 export {
   toMarker,
   firstPageOf,
+  markerTop,
   markerReferenceText,
   markerEvidenceKey,
   markerNestedEvidenceKey,

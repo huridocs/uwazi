@@ -4,6 +4,7 @@ type SegmentedControlContextValue = {
   value: string;
   onValueChange: (value: string) => void;
   disabled: boolean;
+  size: 'sm' | 'md';
 };
 
 const SegmentedControlContext = createContext<SegmentedControlContextValue | null>(null);
