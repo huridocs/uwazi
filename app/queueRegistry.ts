@@ -78,6 +78,7 @@ import { DatavizScheduledRefreshJobHandler } from '#api/dataviz.v2/infrastructur
 import { DatavizScheduledRefreshJobLegacyToken } from '#api/dataviz.v2/application/contracts/DatavizScheduledRefreshJobHandlerToken.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { SendWelcomeEmailHandler } from '#api/core/infrastructure/jobs/SendWelcomeEmailHandler.js';
+import { SendWelcomeEmailFactory } from '#api/core/infrastructure/factories/SendWelcomeEmailFactory.js';
 import { SendPasswordRecoveryEmailHandler } from '#api/core/infrastructure/jobs/SendPasswordRecoveryEmailHandler.js';
 import { EmailSenderFactory } from '#api/core/infrastructure/factories/EmailSenderFactory.js';
 import { MigrationJob } from '#api/core/infrastructure/jobs/MigrationJob.js';
@@ -340,7 +341,10 @@ export function registerJobs(register: Register) {
     DatavizFactory.scheduledRefreshJobHandler(namespace)
   );
 
-  register(SendWelcomeEmailHandler, async () => new SendWelcomeEmailHandler());
+  register(
+    SendWelcomeEmailHandler,
+    async () => new SendWelcomeEmailHandler({ sendWelcomeEmail: SendWelcomeEmailFactory.default() })
+  );
 
   register(
     SendPasswordRecoveryEmailHandler,

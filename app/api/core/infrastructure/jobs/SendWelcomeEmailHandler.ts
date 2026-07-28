@@ -1,11 +1,8 @@
-import { ObjectId } from 'mongodb';
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
 } from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
-import users from '#api/users/users.js';
-import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
-import { UserNotFound } from '#api/core/domain/user/errors.js';
+import { SendWelcomeEmail } from '#api/core/application/SendWelcomeEmail.js';
 
 type SendWelcomeEmailHandlerParams = UserAwareDispatchableParams & {
   domain: string;
@@ -13,16 +10,15 @@ type SendWelcomeEmailHandlerParams = UserAwareDispatchableParams & {
 };
 
 class SendWelcomeEmailHandler extends UserAwareDispatchable<SendWelcomeEmailHandlerParams> {
+  constructor(private deps: { sendWelcomeEmail: SendWelcomeEmail }) {
+    super();
+  }
+
   async handle() {
-    const user = await UsersDAOFactory.default().findOne({
-      _id: ObjectId.createFromHexString(this.params.userId),
+    await this.deps.sendWelcomeEmail.execute({
+      userId: this.params.userId,
+      domain: this.params.domain,
     });
-
-    if (!user) {
-      throw new UserNotFound(this.params.userId);
-    }
-
-    await users.recoverPassword(user.email, this.params.domain, { newUser: true });
   }
 }
 
