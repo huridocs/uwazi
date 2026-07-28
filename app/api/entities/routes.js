@@ -150,6 +150,7 @@ export default app => {
             sharedId: { type: 'string' },
             _id: { type: 'string' },
             omitRelationships: { type: 'boolean' },
+            includeMetadataRelationships: { type: 'boolean' },
             include: { type: 'array', items: { type: 'string', enum: ['permissions'] } },
           },
         },
