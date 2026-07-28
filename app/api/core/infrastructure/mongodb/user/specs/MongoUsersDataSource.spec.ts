@@ -130,6 +130,28 @@ describe('MongoUsersDataSource', () => {
     });
   });
 
+  describe('getByEmail', () => {
+    it('should return the user when the email exists', async () => {
+      const { ds } = createDs();
+      const result = await ds.getByEmail('existing1@provider.tld');
+      expect(result.isOk()).toBe(true);
+      expect(result.getData()!.username).toBe('existing1');
+    });
+
+    it('should return fail with UserNotFound when the email does not exist', async () => {
+      const { ds } = createDs();
+      const result = await ds.getByEmail('nobody@provider.tld');
+      expect(result.isError()).toBe(true);
+      expect(result.getError()!.name).toBe('UserNotFound');
+    });
+
+    it('should return fail with UserNotFound when the email belongs to a soft-deleted user', async () => {
+      const { ds } = createDs();
+      const result = await ds.getByEmail('deleted1@provider.tld');
+      expect(result.isError()).toBe(true);
+    });
+  });
+
   describe('insert', () => {
     it('should insert a user into the database', async () => {
       const { ds } = createDs();

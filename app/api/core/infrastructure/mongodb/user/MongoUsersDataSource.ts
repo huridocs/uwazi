@@ -56,6 +56,19 @@ class MongoUsersDataSource extends MongoDataSource<UserDBO> implements UsersData
     return Result.ok(MongoUsersMapper.toDomain(result.getData()));
   }
 
+  async getByEmail(email: string): Promise<ResultType<User, UserNotFound>> {
+    const user = await this.getCollection<UserDBO>().findOne({
+      email,
+      deletedAt: { $exists: false },
+    });
+
+    if (!user) {
+      return Result.fail(new UserNotFound(email));
+    }
+
+    return Result.ok(MongoUsersMapper.toDomain(user));
+  }
+
   async countActiveUsers(): Promise<number> {
     const collection = this.getCollection<UserDBO>();
     const count = await collection.countDocuments({
