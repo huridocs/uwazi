@@ -1,10 +1,15 @@
+import { z } from 'zod';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { UsersDataSource } from './contracts/UsersDataSource.js';
 import { UsergroupsDataSource } from './contracts/UsergroupsDataSource.js';
 import { IsDeletingSelf, IsDeleteOfLastUser, IsDeleteOfPublicUser } from '../domain/user/errors.js';
 import { PUBLIC_USER_ID } from '../domain/user/User.js';
 
-type Input = { ids: string[] };
+const Schema = z.object({
+  ids: z.array(z.string()),
+});
+
+type Input = z.infer<typeof Schema>;
 
 type Output = number;
 
@@ -37,5 +42,5 @@ class DeleteUsers extends AbstractUseCase<Input, Output, Deps> {
   }
 }
 
-export { DeleteUsers };
+export { DeleteUsers, Schema as DeleteUserInputSchema };
 export type { Deps as DeleteUsersDependencies };

@@ -1,39 +1,38 @@
+/* eslint-disable max-statements */
 import { z } from 'zod';
 import type { DeleteUserRequest, DeleteUserResponse } from '#shared/contracts/Users.js';
 import users from '#api/users/users.js';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DeleteUsersUseCaseFactory } from '../../factories/DeleteUsersUseCaseFactory.js';
+import { DeleteUserInputSchema } from '#api/core/application/DeleteUsers.js';
 
-const DeleteUsersInputSchema = z.object({
-  ids: z.string().transform((value, context) => {
-    try {
-      const parsed = JSON.parse(value);
-      if (!Array.isArray(parsed) || !parsed.every(item => typeof item === 'string')) {
-        context.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'ids must be an array of strings',
-        });
-        return z.NEVER;
-      }
-      return parsed;
-    } catch {
-      context.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'ids must be a valid JSON array',
-      });
-      return z.NEVER;
-    }
-  }),
+const IdsSchema = z.string().transform((value, context) => {
+  try {
+    const parsed = JSON.parse(value);
+    return parsed;
+  } catch {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'ids must be a valid JSON array',
+    });
+    return z.NEVER;
+  }
 });
 
 class DeleteUserController extends AbstractController<DeleteUserRequest> {
-  // eslint-disable-next-line max-statements
   protected async handle(): Promise<void> {
+    const parsed = {
+      ids:
+        typeof this.request.query.ids === 'string'
+          ? IdsSchema.parse(this.request.query.ids)
+          : this.request.query.ids,
+    };
+
     if (ExecutionContext.tenant.featureFlags?.v2UsersDelete) {
       const startTime = Date.now();
       try {
-        const input = DeleteUsersInputSchema.parse(this.request.query);
+        const input = DeleteUserInputSchema.parse(parsed);
 
         const useCase = DeleteUsersUseCaseFactory.default();
 
@@ -63,11 +62,10 @@ class DeleteUserController extends AbstractController<DeleteUserRequest> {
         throw error;
       }
     } else {
-      const { ids } = DeleteUsersInputSchema.parse(this.request.query);
-      const result = await users.delete(ids, this.request.user);
+      const result = await users.delete(parsed.ids, this.request.user);
       const response: DeleteUserResponse = {
         acknowledged: true,
-        deletedCount: result.deletedCount ?? ids.length,
+        deletedCount: result.deletedCount ?? parsed.ids.length,
       };
       this.response.json(response);
     }
