@@ -401,9 +401,10 @@ describe('Entity view', () => {
         expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
       });
 
-      expect(
-        within(screen.getAllByTestId('tabs-comp')[0]).getByRole('tab', { name: /Metadata/ })
-      ).toHaveTextContent('*');
+      const metadataTab = within(screen.getAllByTestId('tabs-comp')[0]).getByRole('tab', {
+        name: /Metadata/,
+      });
+      expect(within(metadataTab).getByTestId('accent-dot')).toBeInTheDocument();
     });
   });
 
