@@ -178,17 +178,11 @@ class Root extends Component {
       const reduxDataForClient = omitSharedReduxCatalog(this.props.reduxData);
       innerHtml += `window.__reduxData__ = ${serialize(reduxDataForClient, { isJSON: true })};`;
     }
-    if (this.props.user) {
-      innerHtml += `window.__user__ = ${serialize(this.props.user, { isJSON: true })};`;
-    }
     if (this.props.loadingError) {
       innerHtml += `window.__loadingError__ = ${serialize(this.props.loadingError, { isJSON: true })};`;
     }
     if (this.props.atomStoreData) {
       innerHtml += `window.__atomStoreData__ = ${serialize(this.props.atomStoreData, { isJSON: true })};`;
-    }
-    if (this.props.featureFlags) {
-      innerHtml += `window.__featureFlags__ = ${serialize(this.props.featureFlags, { isJSON: true })};`;
     }
     return (
       <script dangerouslySetInnerHTML={{ __html: innerHtml }} /> //eslint-disable-line
@@ -237,7 +231,6 @@ class Root extends Component {
 }
 
 Root.propTypes = {
-  user: PropTypes.object,
   children: PropTypes.object,
   reduxData: PropTypes.object,
   /** Custom page CSS for first paint (set by SSR from route data, not read from reduxData here). */
@@ -248,7 +241,6 @@ Root.propTypes = {
   assets: PropTypes.object,
   loadingError: PropTypes.object,
   atomStoreData: PropTypes.object,
-  featureFlags: PropTypes.object,
   environment: PropTypes.string,
   version: PropTypes.string,
 };
