@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
@@ -5,6 +6,7 @@ import {
 import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
 import { EmailSender } from '#api/core/application/contracts/EmailSender.js';
 import { passwordRecoveryEmail } from '#api/core/domain/email/templates/passwordRecoveryEmail.js';
+import { UserNotFound } from '#api/core/domain/user/errors.js';
 
 type SendPasswordRecoveryEmailHandlerParams = UserAwareDispatchableParams & {
   domain: string;
@@ -18,7 +20,13 @@ class SendPasswordRecoveryEmailHandler extends UserAwareDispatchable<SendPasswor
   }
 
   async handle() {
-    const user = (await UsersDAOFactory.default().getById(this.params.userId)).getDataOrThrow();
+    const user = await UsersDAOFactory.default().findOne({
+      _id: ObjectId.createFromHexString(this.params.userId),
+    });
+
+    if (!user) {
+      throw new UserNotFound(this.params.userId);
+    }
 
     const message = passwordRecoveryEmail({
       to: user.email,

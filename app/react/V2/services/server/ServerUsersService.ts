@@ -1,4 +1,4 @@
-import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
+import { UsersQueryServiceFactory } from '#api/core/infrastructure/factories/UsersQueryServiceFactory.js';
 import type { User } from '#shared/contracts/Users.js';
 import { ApiError } from '#shared/apiClient/ApiError.js';
 import { toApiError } from '#shared/apiClient/index.js';
@@ -10,7 +10,7 @@ import { notImplemented } from './notImplemented.js';
 import type { ServerServiceContext } from './types.js';
 
 const mapUsers = (
-  rows: Awaited<ReturnType<ReturnType<typeof UsersDAOFactory.default>['get']>>
+  rows: Awaited<ReturnType<ReturnType<typeof UsersQueryServiceFactory.default>['listWithGroups']>>
 ): User[] =>
   rows.map(user => ({
     _id: user._id.toString(),
@@ -38,7 +38,7 @@ const mapCurrentUser = (user: UserSchema): User => ({
 const createServerUsersService = (ctx: ServerServiceContext): UsersService => ({
   getAll: async (_options?: ServiceRequestOptions): Promise<ApiResponse<User[]>> => {
     try {
-      const rows = await UsersDAOFactory.default().get({});
+      const rows = await UsersQueryServiceFactory.default().listWithGroups({});
       return [mapUsers(rows), undefined];
     } catch (e) {
       return [undefined as never, toApiError(e)];

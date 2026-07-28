@@ -1,8 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { PUBLIC_USER_ID, User, UserRole } from '#api/core/domain/user/User.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { MongoUsersDataSource } from '../MongoUsersDataSource.js';
@@ -19,20 +17,22 @@ const fixtures = {
     },
     f.user({ username: 'existing1', role: UserRole.ADMIN }),
     f.user({ username: 'existing2', role: UserRole.EDITOR }),
-    f.user({ username: 'deleted1', role: UserRole.COLLABORATOR, deletedAt: new Date() }),
+    {
+      ...f.user({ username: 'deleted1', role: UserRole.COLLABORATOR, deletedAt: new Date() }),
+      accountUnlockCode: 'code123',
+    },
     f.user({ username: 'deleted2', role: UserRole.COLLABORATOR, deletedAt: new Date() }),
+    {
+      ...f.user({ username: 'lockeduser', role: UserRole.EDITOR, email: 'locked@provider.tld' }),
+      accountUnlockCode: 'code123',
+    },
   ],
 };
 
 const createDs = () => {
-  const transactionManager = TransactionManagerFactory.default();
   const dao = UsersDAOFactory.default();
-  const ds = new MongoUsersDataSource({
-    db: getConnection(),
-    transactionManager,
-    dao,
-  });
-  return { ds, transactionManager };
+  const ds = new MongoUsersDataSource({ dao });
+  return { ds };
 };
 
 describe('MongoUsersDataSource', () => {
@@ -125,8 +125,35 @@ describe('MongoUsersDataSource', () => {
       it('should return count of active users excluding the public user and deleted users', async () => {
         const { ds } = createDs();
         const count = await ds.countActiveUsers();
-        expect(count).toBe(2);
+        expect(count).toBe(3);
       });
+    });
+  });
+
+  describe('getById', () => {
+    it('should return the user without sensitive fields', async () => {
+      const { ds } = createDs();
+      const result = await ds.getById(f.idString('existing1'));
+
+      expect(result.isOk()).toBe(true);
+      const user = result.getData()!;
+      expect(user.username).toBe('existing1');
+      expect(user.password).toBeUndefined();
+    });
+
+    it('should return fail with UserNotFound when the id does not exist', async () => {
+      const { ds } = createDs();
+      const result = await ds.getById(new ObjectId().toHexString());
+
+      expect(result.isError()).toBe(true);
+      expect(result.getError()!.name).toBe('UserNotFound');
+    });
+
+    it('should return fail with UserNotFound when the user is soft-deleted', async () => {
+      const { ds } = createDs();
+      const result = await ds.getById(f.idString('deleted1'));
+
+      expect(result.isError()).toBe(true);
     });
   });
 
@@ -163,7 +190,7 @@ describe('MongoUsersDataSource', () => {
       });
       await ds.insert(user);
       const users = await testingEnvironment.db.getAllFrom('users');
-      expect(users.length).toBe(6);
+      expect(users.length).toBe(7);
     });
   });
 
@@ -185,6 +212,30 @@ describe('MongoUsersDataSource', () => {
       const { ds } = createDs();
       const modifiedCount = await ds.delete([]);
       expect(modifiedCount).toBe(0);
+    });
+  });
+
+  describe('findByUsernameAndUnlockCode', () => {
+    it('should return the user with its role and email', async () => {
+      const { ds } = createDs();
+      const result = await ds.findByUsernameAndUnlockCode('lockeduser', 'code123');
+      expect(result.isOk()).toBe(true);
+      const user = result.getData()!;
+      expect(user.username).toBe('lockeduser');
+      expect(user.role).toBe(UserRole.EDITOR);
+      expect(user.email).toBe('locked@provider.tld');
+    });
+
+    it('should return fail with InvalidUnlockCode when the code does not match', async () => {
+      const { ds } = createDs();
+      const result = await ds.findByUsernameAndUnlockCode('lockeduser', 'wrong-code');
+      expect(result.isError()).toBe(true);
+    });
+
+    it('should return fail with InvalidUnlockCode when the user is soft-deleted', async () => {
+      const { ds } = createDs();
+      const result = await ds.findByUsernameAndUnlockCode('deleted1', 'code123');
+      expect(result.isError()).toBe(true);
     });
   });
 });

@@ -1,14 +1,14 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { GetUsersResponse } from '#shared/contracts/Users.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { UsersDAOFactory } from '../../factories/UsersDAOFactory.js';
+import { UsersQueryServiceFactory } from '../../factories/UsersQueryServiceFactory.js';
 
 class GetUsersController extends AbstractController {
   protected async handle(): Promise<void> {
     const startTime = Date.now();
     try {
-      const dao = UsersDAOFactory.default();
-      const users = await dao.get({});
+      const queryService = UsersQueryServiceFactory.default();
+      const users = await queryService.listWithGroups({});
 
       const response: GetUsersResponse = users.map(user => ({
         _id: user._id.toString(),
