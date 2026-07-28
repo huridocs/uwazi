@@ -1,36 +1,43 @@
-import { ObjectId } from 'mongodb';
-import { GetRelationshipTypesUseCaseFactory } from '#api/core/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import type { DBFixture } from '#api/utils/testing_db.js';
 import { createServerRelationshipTypesService } from '../ServerRelationshipTypesService.js';
 
-jest.mock(
-  '#api/core/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js',
-  () => ({
-    GetRelationshipTypesUseCaseFactory: { default: jest.fn() },
-  })
-);
-
-const mockExecute = jest.fn();
+const factory = getFixturesFactory();
 const ctx = { headers: { cookie: 'session=1' } };
 const service = createServerRelationshipTypesService(ctx);
 
+const fixtures: DBFixture = {
+  settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
+  relationtypes: [
+    { _id: factory.id('rel1'), name: 'Related to', properties: [] },
+    { _id: factory.id('rel2'), name: 'Part of', properties: [] },
+  ],
+};
+
 describe('ServerRelationshipTypesService', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    jest.mocked(GetRelationshipTypesUseCaseFactory.default).mockReturnValue({
-      execute: mockExecute,
-    } as never);
+  beforeAll(async () => {
+    await testingEnvironment.setUp(fixtures);
+  });
+
+  afterEach(async () => {
+    await testingEnvironment.setFixtures(fixtures);
+  });
+
+  afterAll(async () => {
+    await testingEnvironment.tearDown();
   });
 
   it('getAll returns rows with string _id', async () => {
-    const id = new ObjectId();
-    mockExecute.mockResolvedValue([{ id: id.toString(), name: 'Related to' }] as never);
+    const [data, error] = await testingEnvironment.runWithContext(async () => service.getAll());
 
-    const [data, error] = await service.getAll();
-
-    expect(GetRelationshipTypesUseCaseFactory.default).toHaveBeenCalledWith();
-    expect(mockExecute).toHaveBeenCalledWith({});
     expect(error).toBeUndefined();
-    expect(data).toEqual([{ _id: id.toString(), name: 'Related to' }]);
+    expect(data).toEqual(
+      expect.arrayContaining([
+        { _id: factory.id('rel1').toHexString(), name: 'Related to' },
+        { _id: factory.id('rel2').toHexString(), name: 'Part of' },
+      ])
+    );
   });
 
   it('upsert returns not implemented', async () => {
