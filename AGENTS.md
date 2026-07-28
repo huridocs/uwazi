@@ -166,3 +166,7 @@ Non-obvious caveats for running this repo in the Cursor Cloud VM. Standard comma
 ### Running the app
 - No `.env` file is needed — `config.ts` defaults target Mongo/ES on localhost, Redis off (CLUSTER_MODE=false), and local-filesystem storage. Do **not** copy `.env.example` verbatim, as it enables `EXTERNAL_SERVICES`/AI-assistant which expect extra services.
 - `yarn hot` serves the app on http://localhost:3000. Default login: `admin` / `change this password now`. First webpack build takes ~40s.
+
+### Viewing the app through the Cursor Cloud proxy (single-port ingress)
+- `yarn hot` serves HTML on port 3000 but references CSS/JS as absolute URLs to the **webpack dev server on port 8080** (a separate origin). This works via `localhost` inside the VM, but through the public per-port ingress (`p-3000-...agent.cvm.dev`) the browser cannot reach port 8080, so the page loads **unstyled**. The port-8080 ingress does not share the login session with the port-3000 ingress, so pointing `WEBPACK_PUBLIC_URL` at it does not fix this.
+- To share a working preview link, serve everything from the single port-3000 origin with a production build: `yarn build-production` then `yarn run-production` (uses relative, same-origin asset paths; connects to the same `uwazi_development` DB/index). Trade-off: no hot reload — rebuild to see changes. Use `yarn hot` for active local development.
