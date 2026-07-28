@@ -29,7 +29,7 @@ import { ClientSettings } from '#app/apiResponseTypes.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import templatesApi from '#api/core/v1_layer/templates/templates.js';
-import { GetRelationshipTypesUseCaseFactory } from '#api/relationshiptypes.v2/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js';
+import { GetRelationshipTypesUseCaseFactory } from '#api/core/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js';
 import thesauriApi from '../api/core/v1_layer/thesauri/thesauri.js';
 import translationsApi, { IndexedTranslations } from '../api/i18n/translations.js';
 import settingsApi from '../api/settings/settings.js';

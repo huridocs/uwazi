@@ -12,7 +12,7 @@ import { DBFixture } from '#api/utils/testing_db.js';
 import { MongoPXExtractorDBO } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
 import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { RelationshipTypesDataSourceFactory } from '#api/relationshiptypes.v2/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
+import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { CreateParagraphExtractionEntityStatusesJob } from '../../jobs/CreateParagraphExtractionEntityStatusesJob.js';

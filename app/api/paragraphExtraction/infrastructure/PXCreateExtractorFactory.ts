@@ -3,7 +3,7 @@ import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/T
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { RelationshipTypesDataSourceFactory } from '#api/relationshiptypes.v2/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
+import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 
 import { PXCreateExtractor } from '../application/PXCreateExtractor.js';
 import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory.js';

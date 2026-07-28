@@ -38,7 +38,7 @@ import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source
 import { CreateTranslationsService } from '#api/i18n.v2/services/CreateTranslationsService.js';
 import { ValidateTranslationsService } from '#api/i18n.v2/services/ValidateTranslationsService.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { RelationshipTypesDataSourceFactory } from '#api/relationshiptypes.v2/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
+import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';

@@ -28,9 +28,9 @@ export default async (app, server) => {
   (await import('./search/routes.js')).default(app);
   (await import('./search.v2/routes.js')).searchRoutes(app);
   (await import('./core/v1_layer/thesauri/routes.js')).default(app);
-  (await import('./relationshiptypes.v2/infrastructure/http/routes.js')).relationshipTypesRoutes(
-    app
-  );
+  (
+    await import('./core/infrastructure/express/relationshipType/routes.js')
+  ).relationshipTypesRoutes(app);
   (await import('./documents/deprecatedRoutes.js')).default(app);
   (await import('./documents/routes.js')).documentRoutes(app);
   (await import('./contact/routes.js')).default(app);

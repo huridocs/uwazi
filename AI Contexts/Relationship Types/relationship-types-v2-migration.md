@@ -14,7 +14,7 @@ Migrate relationship types backend logic to v2 architecture so the module can la
 
 ## Current Diagnosis
 
-- `app/api/relationshiptypes.v2` now contains full CRUD-oriented application/infrastructure wiring.
+- Relationship types v2 logic now lives in `app/api/core` (domain/application/infrastructure/factories/express).
 - `/api/relationtypes` is now routed through v2 controllers/use cases while preserving the same external contract.
 - Legacy relationship type properties (`properties`) are accepted at the HTTP boundary for compatibility but intentionally ignored internally.
 
@@ -34,7 +34,7 @@ Migrate relationship types backend logic to v2 architecture so the module can la
   - `app/api/core/application/CreateTemplate.ts`
   - `app/api/core/application/UpdateTemplate.ts`
 
-## Target Hex Architecture (Relationship Types v2)
+## Target Hex Architecture (Relationship Types v2 in core)
 
 - **Domain**
   - `RelationshipType` model (`id`, `name`) as core aggregate root.
@@ -74,12 +74,13 @@ Migrate relationship types backend logic to v2 architecture so the module can la
 - [x] Move delete guards and translation behavior needed by current contract.
 - [x] Remove legacy V1 relationshiptypes code.
 - [x] Migrate runtime calls from legacy V1 relationshiptypes code into v2.
+- [x] Move relationshiptypes v2 implementation into `app/api/core` structure.
 - [x] Add v2 test suites for routes/use-cases/datasource and keep cross-module behavior stable.
 - [ ] Revisit DELETE semantics for in-use relation types (currently returns `false`; evaluate explicit error response behavior).
 
 ## Current Implementation Notes
 
-- The v2 HTTP layer is now controller-based and uses Zod schemas at controller boundaries.
+- The v2 HTTP layer is now controller-based and uses Zod schemas at controller boundaries inside `app/api/core/infrastructure/express/relationshipType`.
 - `POST /api/relationtypes` is now a compatibility mutation endpoint that delegates to:
   - `create` use case when `_id` is missing
   - `update` use case when `_id` is present
@@ -99,12 +100,13 @@ Migrate relationship types backend logic to v2 architecture so the module can la
   - prefer integration tests over mocks/spies
   - allow auth middleware mocking in route tests to isolate the HTTP contract surface
 - Current run status:
-  - targeted v2 regression set passing (`relationshiptypes.v2`, `syncWorker`, `relationships`, `PXCreateExtractor`, `ServerRelationshipTypesService`) with all suites green.
+  - targeted v2 regression set passing (`core` relationship type suites, `syncWorker`, `relationships`, `PXCreateExtractor`, `ServerRelationshipTypesService`) with all suites green.
 
 ## Legacy Sweep (Final)
 
 - No remaining runtime imports of `#api/relationtypes`.
 - Legacy `app/api/relationtypes` module has been removed.
+- Runtime relationship-type routes/factories/use cases now resolve from `app/api/core`.
 - Remaining `relationtypes` naming is intentional compatibility surface:
   - Mongo collection name: `relationtypes`
   - sync namespace/config key: `relationtypes`
@@ -115,10 +117,11 @@ Migrate relationship types backend logic to v2 architecture so the module can la
 
 ## V2 Complete Checklist
 
-- [x] `/api/relationtypes` served by `relationshiptypes.v2` controller/use-case flow.
+- [x] `/api/relationtypes` served by core controller/use-case flow (`app/api/core/infrastructure/express/relationshipType`).
 - [x] Create/update internally split into distinct use cases.
 - [x] Runtime callers migrated from legacy relationtypes module to v2 paths.
 - [x] Legacy `app/api/relationtypes` runtime module removed.
+- [x] Relationship types v2 module ownership moved to `app/api/core`.
 - [x] Contract-compatible route behavior validated through integration tests.
 - [x] End-to-end contract parity lifecycle test present (create/get/update/delete).
 - [x] Translation side effects validated through integration tests.
@@ -136,4 +139,4 @@ Migrate relationship types backend logic to v2 architecture so the module can la
 - Final confirmation that dropping relationtype property behavior is acceptable for all external consumers.
 - Database cleanup of old `relationtypes.properties` and `connections.metadata` is operational follow-up, not part of this implementation scope.
 - Keep enforcing "no internal mocks" in relationshiptypes v2 tests unless crossing module/system boundaries (auth/socket/etc).
-- Remaining legacy relationtypes references are now test-only; runtime callers are migrated to v2.
+- Remaining legacy relationtypes references are now test-only; runtime callers are migrated to core-based v2 implementation.

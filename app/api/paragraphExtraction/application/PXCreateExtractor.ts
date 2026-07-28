@@ -3,7 +3,7 @@ import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { UseCase } from '#api/core/libs/UseCase.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
+import { RelationshipTypesDataSource } from '#api/core/application/contracts/RelationshipTypesDataSource.js';
 import { CreateParagraphExtractionEntityStatusesJob } from '../jobs/CreateParagraphExtractionEntityStatusesJob.js';
 
 import { PXExtractor } from '../domain/PXExtractor.js';

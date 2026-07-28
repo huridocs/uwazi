@@ -1,9 +1,9 @@
 import { ObjectId } from 'mongodb';
-import { GetRelationshipTypesUseCaseFactory } from '#api/relationshiptypes.v2/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js';
+import { GetRelationshipTypesUseCaseFactory } from '#api/core/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js';
 import { createServerRelationshipTypesService } from '../ServerRelationshipTypesService.js';
 
 jest.mock(
-  '#api/relationshiptypes.v2/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js',
+  '#api/core/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js',
   () => ({
     GetRelationshipTypesUseCaseFactory: { default: jest.fn() },
   })

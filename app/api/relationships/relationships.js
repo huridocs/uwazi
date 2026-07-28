@@ -8,7 +8,7 @@ import settings from '#api/settings/index.js';
 import entities from '#api/entities/entities.js';
 import { createError } from '#api/utils/index.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { RelationshipTypesDataSourceFactory } from '#api/relationshiptypes.v2/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
+import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import model from './model.js';

@@ -1,4 +1,4 @@
-import { GetRelationshipTypesUseCaseFactory } from '#api/relationshiptypes.v2/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js';
+import { GetRelationshipTypesUseCaseFactory } from '#api/core/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js';
 import type { RelationshipType } from '#shared/contracts/RelationshipType.js';
 import { toApiError } from '#shared/apiClient/index.js';
 import type { ApiResponse } from '#V2/api/ApiResponse.js';
