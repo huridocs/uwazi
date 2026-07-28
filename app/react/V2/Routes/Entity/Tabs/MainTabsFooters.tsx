@@ -3,7 +3,10 @@ import { useTabGroup } from '#V2/Components/UI/index.js';
 import type { FileType } from '#V2/api/entities/types.js';
 import { useMetadataEditing } from '../Components/context/index.js';
 import { MAIN_TAB, isValidMainTab, type MainTabId } from './tabIds.js';
-import { resolveActiveTabId } from './metadataTabSession.js';
+import {
+  keepMetadataTab,
+  resolveActiveTabId,
+} from '../Components/context/metadataEditingSession.js';
 import { DocumentTabFooter } from './footers/DocumentTabFooter.js';
 import { MetadataTabFooter } from './footers/MetadataTabFooter.js';
 import { RelationshipsTabFooter } from './footers/RelationshipsTabFooter.js';
@@ -18,9 +21,10 @@ const MainTabsFooters = ({ activeTabId: urlActiveTabId, mainDocument }: MainTabs
   const { activeTabId: atomActiveTabId } = useTabGroup('entity-main');
   const resolvedTabId = resolveActiveTabId(atomActiveTabId, urlActiveTabId);
   const activeTabId = isValidMainTab(resolvedTabId) ? resolvedTabId : urlActiveTabId;
-  const { isEditing, editingHost } = useMetadataEditing();
+  const { isEditing, formMountHost } = useMetadataEditing();
+  const metadataActive = activeTabId === MAIN_TAB.METADATA;
 
-  if (isEditing && editingHost === 'main') {
+  if (keepMetadataTab(metadataActive, isEditing, formMountHost, 'main')) {
     return <MetadataTabFooter host="main" />;
   }
 
