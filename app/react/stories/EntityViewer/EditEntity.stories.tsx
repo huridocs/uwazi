@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+/* eslint-disable max-lines */
+import React, { useMemo, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { BrowserRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
@@ -13,6 +15,11 @@ import { Translate } from '#app/I18N/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js';
 import { EditEntity, type EditEntityErrors } from '#V2/Components/Metadata/EntityEditor/index.js';
+import {
+  buildEditEntityDefaultValues,
+  type EditEntityFormValues,
+} from '#V2/Components/Metadata/EntityEditor/functions/buildEditEntityDefaultValues.js';
+import { useEntityMediaUpload } from '#V2/Components/Metadata/EntityEditor/hooks/useEntityMediaUpload.js';
 import { Button } from '#V2/Components/UI/index.js';
 import { apiEntity, templates, thesauri } from '../fixtures/EditEntityFixtures.js';
 
@@ -52,36 +59,44 @@ const EditEntityComponent = ({
   }) => Promise<{ value: string; label: string }[]>;
 }) => {
   const [savedEntity, setSavedEntity] = useState<Entity | EntitySaveInput>(entity);
+  const form = useForm<EditEntityFormValues>({
+    defaultValues: buildEditEntityDefaultValues(entity, templatesForStory),
+  });
+  const templateId = form.watch('template');
+  const mediaUpload = useEntityMediaUpload(entity, templateId);
 
-  const store = createStore();
-  store.set(settingsAtom, { mapLayers: ['Streets', 'Hybrid', 'Satellite'] });
-  store.set(templatesAtom, templatesForStory);
-  store.set(thesauriAtom, thesauri);
-  store.set(localeAtom, locale);
-  store.set(translationsAtom, [
-    {
-      locale: 'en',
-      contexts: [
-        {
-          id: 'System',
-          label: 'User Interface',
-          type: 'Uwazi UI',
-          values: {},
-        },
-      ],
-    },
-    {
-      locale: 'es',
-      contexts: [
-        {
-          id: 'System',
-          label: 'User Interface',
-          type: 'Uwazi UI',
-          values: {},
-        },
-      ],
-    },
-  ]);
+  const store = useMemo(() => {
+    const nextStore = createStore();
+    nextStore.set(settingsAtom, { mapLayers: ['Streets', 'Hybrid', 'Satellite'] });
+    nextStore.set(templatesAtom, templatesForStory);
+    nextStore.set(thesauriAtom, thesauri);
+    nextStore.set(localeAtom, locale);
+    nextStore.set(translationsAtom, [
+      {
+        locale: 'en',
+        contexts: [
+          {
+            id: 'System',
+            label: 'User Interface',
+            type: 'Uwazi UI',
+            values: {},
+          },
+        ],
+      },
+      {
+        locale: 'es',
+        contexts: [
+          {
+            id: 'System',
+            label: 'User Interface',
+            type: 'Uwazi UI',
+            values: {},
+          },
+        ],
+      },
+    ]);
+    return nextStore;
+  }, [locale, templatesForStory]);
 
   const formId = 'edit-entity-form';
   const mockedRelationshipLookup = async ({
@@ -150,13 +165,17 @@ const EditEntityComponent = ({
           <div className="border rounded p-4 bg-(--bg-surface) text-ink mb-2">
             <h2 className="text-lg font-bold py-2">Entity editor</h2>
             <div className="mb-4">
-              <EditEntity
-                entity={entity}
-                formId={formId}
-                onSave={handleSave}
-                errors={errors}
-                relationshipLookup={relationshipLookup ?? mockedRelationshipLookup}
-              />
+              <FormProvider {...form}>
+                <EditEntity
+                  entity={entity}
+                  formId={formId}
+                  form={form}
+                  mediaUpload={mediaUpload}
+                  onSave={handleSave}
+                  errors={errors}
+                  relationshipLookup={relationshipLookup ?? mockedRelationshipLookup}
+                />
+              </FormProvider>
             </div>
             <div className="flex flex-row items-center gap-2">
               <Button variant="secondary">

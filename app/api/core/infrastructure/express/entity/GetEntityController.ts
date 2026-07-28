@@ -10,6 +10,10 @@ const GetEntityQuerySchema = z.object({
   sharedId: z.string().optional(),
   _id: z.string().optional(),
   omitRelationships: z.boolean().optional(),
+  // When true, the returned entity.relations only includes relationships whose
+  // target entity is referenced by a relationship property in the entity metadata.
+  // This flag overrides omitRelationships.
+  includeMetadataRelationships: z.boolean().optional(),
   include: z
     .array(z.enum(['permissions']))
     .optional()
@@ -54,11 +58,14 @@ class GetEntityController extends AbstractController<any> {
 
       const queryService = EntitiesQueryServiceFactory.default(user);
 
+      const scopeRelationshipsToMetadata = query.includeMetadataRelationships === true;
+
       const entity = await queryService.getEntity({
         sharedId: resolvedSharedId,
         language: resolvedLanguage,
-        includeRelationships: !query.omitRelationships,
+        includeRelationships: scopeRelationshipsToMetadata || !query.omitRelationships,
         includePermissions: query.include.includes('permissions'),
+        scopeRelationshipsToMetadata,
         user,
       });
 

@@ -14,11 +14,10 @@ import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
 import { RelationCaption } from '#V2/Components/Metadata/Components/RelationCaption.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import type { MultiselectListOption } from '#V2/Components/Forms/index.js';
-
-type RelationshipInheritColumn = {
-  label: string;
-  cellsByEntityId?: Record<string, string | undefined>;
-};
+import {
+  inheritedCellText,
+  type RelationshipInheritColumn,
+} from '../functions/relationshipFieldHelpers.js';
 
 type RelationshipFieldEditorProps = {
   title: string;
@@ -42,13 +41,7 @@ const inheritedCellValue = (
   if (column.cellsByEntityId) {
     return column.cellsByEntityId[entityId];
   }
-  const inherited = row.inheritedValue;
-  if (!inherited?.length) return undefined;
-  const item = inherited[0];
-  if (!item) return undefined;
-  const { label } = item;
-  if (typeof label === 'string' && label.length > 0) return label;
-  return typeof item.value === 'string' ? item.value : undefined;
+  return inheritedCellText([row], entityId);
 };
 
 const RelationshipFieldEditor = ({

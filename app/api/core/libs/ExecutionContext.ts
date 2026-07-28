@@ -29,9 +29,26 @@ type Context = {
   tenant?: Tenant;
   actor?: User;
   correlationId?: string;
+  telemetrySampled?: boolean;
+};
+
+const isTelemetrySampled = (tenant?: Tenant): boolean => {
+  const { enabled, sampleRate = 1 } = tenant?.featureFlags?.telemetry || {};
+  if (!enabled) return false;
+  if (sampleRate >= 1) return true;
+  if (sampleRate <= 0) return false;
+  return Math.random() < sampleRate;
 };
 
 class ExecutionContext extends AsyncLocalStorage<Context> {
+  run<R>(store: Context, callback: (...args: any[]) => R, ...args: any[]): R {
+    return super.run(
+      { ...store, telemetrySampled: isTelemetrySampled(store.tenant) },
+      callback,
+      ...args
+    );
+  }
+
   private getOrInitialize<K extends keyof DependencyFactories>(key: K): Dependencies[K] {
     const store = this.getStore();
     if (!store) {
@@ -55,6 +72,10 @@ class ExecutionContext extends AsyncLocalStorage<Context> {
 
   get telemetryCollector(): TelemetryCollector {
     return this.getOrInitialize('telemetryCollector');
+  }
+
+  get isTelemetryEnabled(): boolean {
+    return Boolean(this.getStore()?.telemetrySampled);
   }
 
   get postgresTransactionManager(): PostgresTransactionManager {

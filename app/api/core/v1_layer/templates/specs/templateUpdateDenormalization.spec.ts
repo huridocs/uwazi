@@ -2,6 +2,7 @@
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -75,7 +76,8 @@ async function updateTemplate(template: TemplateSchema, fullReindex = false) {
           entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
           relationshipsV1DS: new MongoRelationshipsV1DataSource(
             getConnection(),
-            transactionManager
+            transactionManager,
+            EntitiesDAOFactory.default()
           ),
           templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
           transactionManager,

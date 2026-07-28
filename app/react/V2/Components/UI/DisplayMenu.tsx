@@ -1,6 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useRef, useState, type ReactNode } from 'react';
 import { AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
+import { AccentDot } from './AccentDot.js';
 import { AnchoredPortal } from './AnchoredPortal.js';
 
 type DisplayMenuSize = 'sm' | 'md';
@@ -50,13 +51,7 @@ const DisplayMenu = ({ ariaLabel, children, modified = false, size = 'md' }: Dis
         className={buttonClass}
       >
         <AdjustmentsHorizontalIcon className={icon} aria-hidden />
-        {modified && (
-          <span
-            className="absolute -top-0.5 -inset-e-0.5 h-1.5 w-1.5 rounded-full"
-            style={{ backgroundColor: 'var(--accent-blue)' }}
-            aria-hidden
-          />
-        )}
+        {modified && <AccentDot className="absolute -top-0.5 -inset-e-0.5" />}
       </button>
       <AnchoredPortal
         open={open}

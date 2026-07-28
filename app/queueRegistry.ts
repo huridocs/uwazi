@@ -31,6 +31,7 @@ import { DeleteLanguagePagesListener } from '#api/pages.v2/infrastructure/listen
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import {
@@ -222,7 +223,11 @@ export function registerJobs(register: Register) {
       useCase: new TemplateUpdateDenormalizeEntitiesBatch({
         entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
         filesDS: FilesDataSourceFactory.default(),
-        relationshipsV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
+        relationshipsV1DS: new MongoRelationshipsV1DataSource(
+          getConnection(),
+          transactionManager,
+          EntitiesDAOFactory.default()
+        ),
         templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
         transactionManager,
       }),
