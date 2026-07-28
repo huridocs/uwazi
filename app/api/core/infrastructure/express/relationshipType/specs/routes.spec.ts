@@ -142,13 +142,13 @@ describe('relationship type core routes', () => {
       expect(response.body.error).toContain('Cannot delete type being used in templates');
     });
 
-    it('should return false if relation type is used in connections', async () => {
+    it('should return 400 if relation type is used in relationships', async () => {
       const response = await request(app).delete(
         `/api/relationtypes?_id=${factory.id('inConnections').toHexString()}`
       );
 
-      expect(response).toHaveStatus(200);
-      expect(response.body).toBe(false);
+      expect(response).toHaveStatus(400);
+      expect(response.body.error).toContain('Cannot delete type being used in relationships');
     });
 
     it('should validate query schema', async () => {

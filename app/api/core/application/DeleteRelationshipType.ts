@@ -28,26 +28,33 @@ const validateTypeInTemplates = async (id: string) => {
   }
 };
 
+const validateTypeInRelationships = async (id: string) => {
+  const relationTypeObjectId = new ObjectId(id);
+  const connectionCount = await relationships.countByRelationType(id);
+  const newRelationshipCount =
+    await relationshipsV2Support.getNewRelationshipCount(relationTypeObjectId);
+  const relationTypeIsUsedInQueries =
+    await relationshipsV2Support.relationTypeIsUsedInQueries(relationTypeObjectId);
+
+  if (connectionCount > 0 || newRelationshipCount > 0) {
+    throw createError('Cannot delete type being used in relationships', 400);
+  }
+
+  if (relationTypeIsUsedInQueries) {
+    throw createError('Cannot delete type being used in relationship queries', 400);
+  }
+};
+
 class DeleteRelationshipTypeUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
     await validateTypeInTemplates(input.id);
-    const relationTypeObjectId = new ObjectId(input.id);
+    await validateTypeInRelationships(input.id);
 
-    const connectionCount = await relationships.countByRelationType(input.id);
-    const newRelationshipCount =
-      await relationshipsV2Support.getNewRelationshipCount(relationTypeObjectId);
-    const relationTypeIsUsedInQueries =
-      await relationshipsV2Support.relationTypeIsUsedInQueries(relationTypeObjectId);
-
-    if (connectionCount === 0 && newRelationshipCount === 0 && !relationTypeIsUsedInQueries) {
-      await this.transactionManager.run(async () => {
-        await this.deps.translationService.delete(input.id);
-        await this.deps.relationshipTypesDS.delete(input.id);
-      });
-      return true;
-    }
-
-    return false;
+    await this.transactionManager.run(async () => {
+      await this.deps.translationService.delete(input.id);
+      await this.deps.relationshipTypesDS.delete(input.id);
+    });
+    return true;
   }
 }
 

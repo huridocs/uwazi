@@ -66,13 +66,13 @@ describe('DeleteRelationshipTypeController integration', () => {
     expect(response.body).toBe(true);
   });
 
-  it('should return false when relation type is used in connections', async () => {
+  it('should return 400 when relation type is used in relationships', async () => {
     const response = await request(app).delete(
       `/api/relationtypes?_id=${factory.id('inConnections').toHexString()}`
     );
 
-    expect(response).toHaveStatus(200);
-    expect(response.body).toBe(false);
+    expect(response).toHaveStatus(400);
+    expect(response.body.error).toContain('Cannot delete type being used in relationships');
   });
 
   it('should return 400 when relation type is used in template properties', async () => {

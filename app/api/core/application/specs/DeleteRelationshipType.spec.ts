@@ -64,14 +64,16 @@ describe('DeleteRelationshipTypeUseCase', () => {
     expect(relationtypes).not.toContainEqual(expect.objectContaining({ name: 'Deletable' }));
   });
 
-  it('should return false when relation type is used in connections', async () => {
-    const result = await testingEnvironment.runWithContext(async () =>
-      DeleteRelationshipTypeUseCaseFactory.default().execute({
-        id: factory.id('inConnections').toHexString(),
-      })
-    );
-
-    expect(result).toBe(false);
+  it('should throw when relation type is used in relationships', async () => {
+    await expect(
+      testingEnvironment.runWithContext(async () =>
+        DeleteRelationshipTypeUseCaseFactory.default().execute({
+          id: factory.id('inConnections').toHexString(),
+        })
+      )
+    ).rejects.toMatchObject({
+      message: 'Cannot delete type being used in relationships',
+    });
   });
 
   it('should throw when relation type is used in template properties', async () => {
