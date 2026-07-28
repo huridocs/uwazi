@@ -89,6 +89,7 @@ const useMetadataEditingController = (): {
 
   const startEditing = useCallback(
     (host: MetadataEditingHost) => {
+      if (saveInFlightRef.current) return;
       if (!isEditingRef.current) {
         form.reset(buildEditEntityDefaultValues(entity, templates));
       }

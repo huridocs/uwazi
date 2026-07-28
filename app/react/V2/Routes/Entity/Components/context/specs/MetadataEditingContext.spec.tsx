@@ -268,6 +268,25 @@ describe('MetadataEditingContext', () => {
     expect(result.current.isSaving).toBe(false);
   });
 
+  it('ignores startEditing join while a save is in flight', () => {
+    const { result } = renderHook(() => useMetadataEditing(), { wrapper });
+
+    act(() => {
+      result.current.registerMetadataActive('side', true);
+      result.current.registerMetadataActive('main', true);
+      result.current.startEditing('side');
+      result.current.tryBeginSave();
+    });
+    expect(result.current.formMountHost).toBe('side');
+    expect(result.current.isSaving).toBe(true);
+
+    act(() => {
+      result.current.startEditing('main');
+    });
+    expect(result.current.formMountHost).toBe('side');
+    expect(result.current.lastMetadataAnchor).toBe('side');
+  });
+
   it('does not expose setIsEditing on the public API', () => {
     const { result } = renderHook(() => useMetadataEditing(), { wrapper });
     expect('setIsEditing' in result.current).toBe(false);

@@ -41,6 +41,7 @@ const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
               variant="warm"
               className="inline-flex items-center gap-1.5"
               onClick={() => startEditing(host)}
+              disabled={isSaving}
             >
               <PencilSquareIcon className={iconClass} />
               <Translate>Edit</Translate>
