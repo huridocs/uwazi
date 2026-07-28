@@ -76,7 +76,9 @@ Migrate relationship types backend logic to v2 architecture so the module can la
 - [x] Migrate runtime calls from legacy V1 relationshiptypes code into v2.
 - [x] Move relationshiptypes v2 implementation into `app/api/core` structure.
 - [x] Add v2 test suites for routes/use-cases/datasource and keep cross-module behavior stable.
-- [ ] Revisit DELETE semantics for in-use relation types (currently returns `false`; evaluate explicit error response behavior).
+- [x] Revisit DELETE semantics for in-use relation types:
+  - now returns `400` with `Cannot delete type being used in relationships` when linked to relationships
+  - now returns `400` with `Cannot delete type being used in relationship queries` when referenced by relationship queries
 
 ## Current Implementation Notes
 
@@ -86,6 +88,7 @@ Migrate relationship types backend logic to v2 architecture so the module can la
   - `update` use case when `_id` is present
 - Internal naming and flow now follow create/update semantics, mirroring templates v2 patterns.
 - Legacy translation context updates are now tested through real persistence behavior (integration tests), not method spies.
+- `DELETE /api/relationtypes` now returns explicit client errors for in-use relation types instead of `200 false`.
 
 ## Test Status
 
@@ -126,6 +129,7 @@ Migrate relationship types backend logic to v2 architecture so the module can la
 - [x] End-to-end contract parity lifecycle test present (create/get/update/delete).
 - [x] Translation side effects validated through integration tests.
 - [x] No internal mocks in relationshiptypes v2 tests (except auth middleware in route tests).
+- [x] In-use delete cases return explicit `400` errors with relationship-focused wording.
 
 ## Explicit Non-Goals (Current Scope)
 
@@ -140,3 +144,4 @@ Migrate relationship types backend logic to v2 architecture so the module can la
 - Database cleanup of old `relationtypes.properties` and `connections.metadata` is operational follow-up, not part of this implementation scope.
 - Keep enforcing "no internal mocks" in relationshiptypes v2 tests unless crossing module/system boundaries (auth/socket/etc).
 - Remaining legacy relationtypes references are now test-only; runtime callers are migrated to core-based v2 implementation.
+- Keep temporary `notify: true` in relationship type controller error logs until monitoring validation is complete; then remove notify flag and keep logs.
