@@ -19,7 +19,6 @@ class CreateUserController extends AbstractController<CreateUserRequest> {
         ExecutionContext.logger.info('User created successfully', {
           namespace: 'Users_Creation',
           success: true,
-
           durationMs: Date.now() - startTime,
         });
 
@@ -39,6 +38,7 @@ class CreateUserController extends AbstractController<CreateUserRequest> {
             namespace: 'Users_Creation',
             success: false,
             error: JSON.stringify(error),
+            notify: true,
           }
         );
 
