@@ -55,7 +55,7 @@ Migrate relationship types backend logic to v2 architecture so the module can la
   - No dedicated facade layer for relationshiptypes v2 (controllers call use-case factories directly).
   - HTTP compatibility layer:
     - keep single `POST /api/relationtypes` route
-    - internally branch create/update by `_id` presence in `RelationshipTypeMutationController`
+    - internally branch create/update by `_id` presence in route dispatcher to dedicated create/update controllers
 
 ## Delivery Phases
 
