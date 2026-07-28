@@ -192,9 +192,8 @@ const applyEditEntityErrors = (
 export {
   apiValidationsToEditEntityErrors,
   applyEditEntityErrors,
-  buildRelationshipPrimaryNames,
   getFirstEditEntityErrorPath,
   getMetadataFieldPath,
   resolveMetadataErrorPath,
 };
-export type { EditEntityErrors, EditEntityFormValues };
+export type { EditEntityErrors };

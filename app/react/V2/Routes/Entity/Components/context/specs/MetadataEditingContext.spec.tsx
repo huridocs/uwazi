@@ -1,12 +1,16 @@
+/* eslint-disable react/no-multi-comp */
 /**
  * @jest-environment jsdom
  */
-import React, { type ReactNode } from 'react';
-import { act, renderHook } from '@testing-library/react';
+import React, { type ReactNode, useEffect } from 'react';
+import { act, render, renderHook, screen, waitFor } from '@testing-library/react';
 import type { ClientFile } from '#app/istore.js';
+import type { Template } from '#app/apiResponseTypes.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
+import { thesauriAtom } from '#V2/atoms/thesauriAtom.js';
+import { EditEntity } from '#V2/Components/Metadata/EntityEditor/index.js';
 import { EntityProvider } from '../EntityContext.js';
 import { MetadataEditingProvider, useMetadataEditing } from '../MetadataEditingContext.js';
 
@@ -16,7 +20,10 @@ const entity: Entity = {
   title: 'Entity',
   template: 't1',
   language: 'en',
-  metadata: {},
+  metadata: {
+    simple_text: [{ value: 'entity-text' }],
+    report: [{ value: 'entity-report' }],
+  },
   creationDate: 0,
   user: 'user1',
 };
@@ -231,6 +238,30 @@ describe('MetadataEditingContext', () => {
     expect(result.current.isEditing).toBe(false);
   });
 
+  it('tryBeginSave rejects a second in-flight save', () => {
+    const { result } = renderHook(() => useMetadataEditing(), { wrapper });
+
+    act(() => {
+      result.current.startEditing('main');
+    });
+
+    let first: AbortController | null = null;
+    let second: AbortController | null = null;
+    act(() => {
+      first = result.current.tryBeginSave();
+      second = result.current.tryBeginSave();
+    });
+
+    expect(first).not.toBeNull();
+    expect(second).toBeNull();
+    expect(result.current.isSaving).toBe(true);
+
+    act(() => {
+      result.current.endSave();
+    });
+    expect(result.current.isSaving).toBe(false);
+  });
+
   it('does not expose setIsEditing on the public API', () => {
     const { result } = renderHook(() => useMetadataEditing(), { wrapper });
     expect('setIsEditing' in result.current).toBe(false);
@@ -249,5 +280,121 @@ describe('MetadataEditingContext', () => {
       result.current.finishEditing();
     });
     expect(result.current.editErrors).toBeUndefined();
+  });
+});
+
+const switchTemplates: Template[] = [
+  {
+    _id: 't1',
+    name: 'T1',
+    properties: [{ _id: 'p1', type: 'text', name: 'simple_text', label: 'Simple' }],
+  },
+  {
+    _id: 't2',
+    name: 'T2',
+    properties: [{ _id: 'p2', type: 'text', name: 'report', label: 'Report' }],
+  },
+];
+
+const SharedEditorHarness = () => {
+  const { isEditing, form, formId, mediaUpload, startEditing, registerMetadataActive } =
+    useMetadataEditing();
+
+  useEffect(() => {
+    registerMetadataActive('main', true);
+    startEditing('main');
+  }, [registerMetadataActive, startEditing]);
+
+  if (!isEditing) return null;
+
+  return <EditEntity formId={formId} form={form} entity={entity} mediaUpload={mediaUpload} />;
+};
+
+describe('MetadataEditingContext shared FormProvider template switch', () => {
+  it('reshapes metadata keys on T1→T2→T1→T2 and keeps dirty title', async () => {
+    const sessionRef: { current: ReturnType<typeof useMetadataEditing> | null } = {
+      current: null,
+    };
+    const SessionProbe = () => {
+      sessionRef.current = useMetadataEditing();
+      return null;
+    };
+
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [templatesAtom, switchTemplates],
+          [thesauriAtom, []],
+        ]}
+      >
+        <EntityProvider entity={entity}>
+          <MetadataEditingProvider>
+            <SessionProbe />
+            <SharedEditorHarness />
+          </MetadataEditingProvider>
+        </EntityProvider>
+      </TestAtomStoreProvider>
+    );
+
+    await waitFor(() => {
+      expect(sessionRef.current?.isEditing).toBe(true);
+    });
+
+    const getSession = () => {
+      if (!sessionRef.current) throw new Error('session not ready');
+      return sessionRef.current;
+    };
+
+    act(() => {
+      getSession().form.setValue('title', 'Dirty title', { shouldDirty: true });
+    });
+
+    const switchTo = async (
+      templateId: string,
+      expectedKeys: string[],
+      visible: { label: string; fieldId: string },
+      hiddenLabel: string
+    ) => {
+      act(() => {
+        getSession().form.setValue('template', templateId, { shouldDirty: true });
+      });
+      await waitFor(() => {
+        expect(Object.keys(getSession().form.getValues('metadata') ?? {}).sort()).toEqual(
+          [...expectedKeys].sort()
+        );
+      });
+      await waitFor(() => {
+        expect(screen.getByLabelText(visible.label)).toBeInTheDocument();
+        expect(document.getElementById(visible.fieldId)).toBeTruthy();
+        expect(screen.queryByLabelText(hiddenLabel)).not.toBeInTheDocument();
+      });
+    };
+
+    await switchTo(
+      't2',
+      ['report'],
+      { label: 'Report', fieldId: 'metadata.report.0.value' },
+      'Simple'
+    );
+    await switchTo(
+      't1',
+      ['simple_text'],
+      { label: 'Simple', fieldId: 'metadata.simple_text.0.value' },
+      'Report'
+    );
+    await switchTo(
+      't2',
+      ['report'],
+      { label: 'Report', fieldId: 'metadata.report.0.value' },
+      'Simple'
+    );
+    await switchTo(
+      't1',
+      ['simple_text'],
+      { label: 'Simple', fieldId: 'metadata.simple_text.0.value' },
+      'Report'
+    );
+
+    expect(getSession().form.getValues('title')).toBe('Dirty title');
   });
 });

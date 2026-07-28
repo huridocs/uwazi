@@ -5,11 +5,20 @@ import type { FormMetadataProperty } from '../formatMetadataForForm.js';
 import type { DisplayProperty } from '../relationshipGrouping.js';
 import {
   buildInheritColumns,
+  defaultRelationshipLookup,
   inheritColumnLabel,
   inheritedCellText,
   mergeRelationshipLookupOptions,
   thesaurusToOptions,
 } from '../relationshipFieldHelpers.js';
+
+jest.mock('#V2/api/search/index.js', () => ({
+  lookup: jest.fn(),
+}));
+
+const { lookup: lookupEntities } = jest.requireMock('#V2/api/search/index.js') as {
+  lookup: jest.Mock;
+};
 
 describe('thesaurusToOptions', () => {
   const thesauri: ClientThesaurus[] = [
@@ -170,5 +179,35 @@ describe('buildInheritColumns', () => {
         cellsByEntityId: { 'entity-1': 'Nested' },
       },
     ]);
+  });
+});
+
+describe('defaultRelationshipLookup', () => {
+  beforeEach(() => {
+    lookupEntities.mockReset();
+  });
+
+  it('maps search rows to value/label pairs', async () => {
+    lookupEntities.mockResolvedValue({
+      rows: [
+        { sharedId: 'e1', title: 'One' },
+        { sharedId: 'e2', title: '' },
+      ],
+    });
+
+    await expect(defaultRelationshipLookup({ search: 'o', template: 'tpl' })).resolves.toEqual([
+      { value: 'e1', label: 'One' },
+      { value: 'e2', label: 'e2' },
+    ]);
+    expect(lookupEntities).toHaveBeenCalledWith({
+      entityTitle: 'o',
+      template: 'tpl',
+      limit: 50,
+    });
+  });
+
+  it('returns an empty list for unexpected responses', async () => {
+    lookupEntities.mockResolvedValue(null);
+    await expect(defaultRelationshipLookup({ search: 'x' })).resolves.toEqual([]);
   });
 });

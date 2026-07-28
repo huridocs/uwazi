@@ -3,7 +3,7 @@ import { filterReferencedPendingAttachments } from '#shared/entitySave/mediaMeta
 import type { Entity } from '#V2/api/entities/types.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js';
-import { EMPTY_ICON } from '../Components/IconField.js';
+import { hasEntityIcon, type EntityIcon } from '../Components/IconField.js';
 import type { EditEntityFormValues } from './buildEditEntityDefaultValues.js';
 import { formatMetadataForForm, type FormMetadataProperty } from './formatMetadataForForm.js';
 import {
@@ -25,8 +25,13 @@ type SharedMetadataSync =
   | {
       type: 'reset';
       values: EditEntityFormValues;
-      options: { keepDirty: true; keepDirtyValues: true };
+      options: { keepDirty: true };
     };
+
+const toSaveIcon = (showIcon: boolean, icon: EntityIcon): Entity['icon'] | undefined => {
+  if (!showIcon || !hasEntityIcon(icon) || icon._id === null) return undefined;
+  return { _id: icon._id, type: icon.type, label: icon.label };
+};
 
 const formatMetadataForEntity = (
   metadata: EditEntityFormValues['metadata'],
@@ -57,7 +62,7 @@ const buildEditEntitySaveInput = ({
     ...entity,
     title: values.title || entity.title,
     template: values.template || entity.template,
-    icon: (values.showIcon ? values.icon : EMPTY_ICON) as Entity['icon'],
+    icon: toSaveIcon(values.showIcon, values.icon),
     metadata: formattedMetadata,
     attachments: [
       ...(entity.attachments ?? []),
@@ -74,12 +79,7 @@ const mergeSharedFormMetadata = (
   current: Record<string, MetadataValue[] | undefined>,
   metadataProperties: FormMetadataProperty[],
   entityMetadata?: Entity['metadata']
-): Record<string, MetadataValue[]> | undefined => {
-  const sameShape =
-    metadataProperties.length === Object.keys(current).length &&
-    metadataProperties.every(property => current[property.name] !== undefined);
-  if (sameShape) return undefined;
-
+): Record<string, MetadataValue[]> => {
   const defaults = formatMetadataForForm(metadataProperties, entityMetadata);
   return metadataProperties.reduce<Record<string, MetadataValue[]>>((acc, property) => {
     acc[property.name] = current[property.name] ?? defaults[property.name] ?? [];
@@ -87,22 +87,42 @@ const mergeSharedFormMetadata = (
   }, {});
 };
 
+const isSameMetadataShape = (
+  current: Record<string, MetadataValue[] | undefined>,
+  metadataProperties: FormMetadataProperty[]
+): boolean => {
+  const currentKeys = Object.keys(current);
+  if (currentKeys.length !== metadataProperties.length) return false;
+
+  const propertyNames = new Set(metadataProperties.map(property => property.name));
+  return (
+    currentKeys.every(key => propertyNames.has(key)) &&
+    metadataProperties.every(property => current[property.name] !== undefined)
+  );
+};
+
+type PlanSharedMetadataSyncOptions = {
+  force?: boolean;
+};
+
 const planSharedMetadataSync = (
   currentValues: EditEntityFormValues,
   metadataProperties: FormMetadataProperty[],
-  entityMetadata?: Entity['metadata']
+  entityMetadata?: Entity['metadata'],
+  options?: PlanSharedMetadataSyncOptions
 ): SharedMetadataSync => {
-  const metadata = mergeSharedFormMetadata(
-    currentValues.metadata ?? {},
-    metadataProperties,
-    entityMetadata
-  );
-  if (!metadata) return { type: 'noop' };
+  const currentMetadata = currentValues.metadata ?? {};
+  if (!options?.force && isSameMetadataShape(currentMetadata, metadataProperties)) {
+    return { type: 'noop' };
+  }
 
   return {
     type: 'reset',
-    values: { ...currentValues, metadata },
-    options: { keepDirty: true, keepDirtyValues: true },
+    values: {
+      ...currentValues,
+      metadata: mergeSharedFormMetadata(currentMetadata, metadataProperties, entityMetadata),
+    },
+    options: { keepDirty: true },
   };
 };
 

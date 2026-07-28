@@ -1,8 +1,10 @@
 import type { Dispatch, SetStateAction } from 'react';
 import type { UseFormReturn } from 'react-hook-form';
-import type { EditEntityFormValues } from '#V2/Components/Metadata/EntityEditor/functions/buildEditEntityDefaultValues.js';
-import type { EditEntityErrors } from '#V2/Components/Metadata/EntityEditor/functions/editEntityErrors.js';
-import type { EntityMediaUpload } from '#V2/Components/Metadata/EntityEditor/hooks/useEntityMediaUpload.js';
+import type {
+  EditEntityFormValues,
+  EditEntityErrors,
+  EntityMediaUpload,
+} from '#V2/Components/Metadata/EntityEditor/index.js';
 import type { MetadataEditingHost } from './metadataEditingSession.js';
 
 const EDIT_ENTITY_FORM_ID = 'edit-entity-form' as const;
@@ -30,6 +32,8 @@ type MetadataEditingActions = {
   finishEditing: () => void;
   registerCancelEdit: (handler: () => void) => () => void;
   beginSaveAbort: () => AbortController;
+  tryBeginSave: () => AbortController | null;
+  endSave: () => void;
   clearSaveAbort: () => void;
   cancelEdit: () => void;
 };

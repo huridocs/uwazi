@@ -13,7 +13,7 @@ type InheritColumnTemplate = {
 
 type InheritColumn = {
   label: string;
-  cellsByEntityId: Record<string, string | undefined>;
+  cellsByEntityId?: Record<string, string | undefined>;
 };
 
 type MergeRelationshipLookupArgs = {
@@ -182,4 +182,4 @@ export {
   inheritedCellText,
   inheritColumnLabel,
 };
-export type { InheritColumn, InheritColumnTemplate };
+export type { InheritColumn as RelationshipInheritColumn, InheritColumn, InheritColumnTemplate };

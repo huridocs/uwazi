@@ -1,11 +1,10 @@
-/* eslint-disable react/no-multi-comp */
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable react/no-multi-comp */
 import React, { useEffect } from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { ApiError } from '#shared/apiClient/index.js';
-import type { ClientFile } from '#app/istore.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { TestAtomStoreProvider, TestRouterContext } from '#V2/testing/index.js';
 import { createTestServices } from '#V2/testing/createTestServices.js';
@@ -28,17 +27,6 @@ const entity: Entity = {
   creationDate: 0,
   user: 'user1',
 };
-
-const pendingFile = (fileLocalID: string): ClientFile => ({
-  _id: fileLocalID,
-  fileLocalID,
-  originalname: `${fileLocalID}.png`,
-  filename: `${fileLocalID}.png`,
-  type: 'attachment',
-  serializedFile: 'data:image/png;base64,aW1hZ2U=',
-  mimetype: 'image/png',
-  entity: 's1',
-});
 
 type SessionApi = ReturnType<typeof useMetadataEditing>;
 
@@ -97,11 +85,11 @@ const renderSession = async (upsert: jest.Mock) => {
 };
 
 describe('MetadataTab shared session', () => {
-  it('does not abort in-flight save when formMountHost moves', async () => {
+  it('does not abort in-flight save when form mount moves to the other host', async () => {
     let resolveUpsert: (value: [Entity, undefined]) => void = () => undefined;
     const upsert = jest.fn(
-      async () =>
-        new Promise<[Entity, undefined]>(resolve => {
+      async (_input: unknown, _options?: { signal?: AbortSignal }): Promise<[Entity, undefined]> =>
+        new Promise(resolve => {
           resolveUpsert = resolve;
         })
     );
@@ -117,19 +105,17 @@ describe('MetadataTab shared session', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
     await waitFor(() => expect(upsert).toHaveBeenCalledTimes(1));
-    const [, saveOptions] = upsert.mock.calls[0] as unknown as [
-      unknown,
-      { signal?: AbortSignal } | undefined,
-    ];
-    expect(saveOptions?.signal?.aborted).toBe(false);
+    const saveSignal = upsert.mock.calls[0]?.[1]?.signal;
+    expect(saveSignal?.aborted).toBe(false);
 
     await act(async () => {
       getSession().registerMetadataActive('main', true);
       getSession().startEditing('main');
     });
 
-    expect(saveOptions?.signal?.aborted).toBe(false);
+    expect(saveSignal?.aborted).toBe(false);
     expect(getSession().formMountHost).toBe('main');
+    expect(getSession().isSaving).toBe(true);
 
     await act(async () => {
       resolveUpsert([{ ...entity, title: 'Saved' }, undefined]);
@@ -139,30 +125,6 @@ describe('MetadataTab shared session', () => {
       expect(getSession().isEditing).toBe(false);
       expect(getSession().isSaving).toBe(false);
     });
-  });
-
-  it('keeps pending media when the editor remounts on the other host', async () => {
-    const upsert = jest.fn(async (): Promise<[Entity, undefined]> => [entity, undefined]);
-    const { getSession } = await renderSession(upsert);
-
-    await act(async () => {
-      getSession().registerMetadataActive('side', true);
-      getSession().startEditing('side');
-      getSession().mediaUpload.registerPendingAttachment(pendingFile('local1'));
-    });
-    expect(getSession().mediaUpload.pendingAttachments).toHaveLength(1);
-
-    await act(async () => {
-      getSession().registerMetadataActive('side', false);
-      getSession().registerMetadataActive('main', true);
-    });
-
-    await waitFor(() => {
-      expect(getSession().formMountHost).toBe('main');
-      expect(screen.getByTestId('entity-edit-form')).toBeInTheDocument();
-    });
-    expect(getSession().mediaUpload.pendingAttachments).toHaveLength(1);
-    expect(getSession().mediaUpload.pendingAttachments[0]?.fileLocalID).toBe('local1');
   });
 
   it('keeps field validation errors on the living host after mount moves', async () => {

@@ -1,12 +1,14 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { useRevalidator } from 'react-router';
 import { useAtomValue } from 'jotai';
 import type { Entity } from '#V2/api/entities/types.js';
 import { mediaContextFromTemplate } from '#shared/entitySave/mediaContext.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.js';
-import { EditEntity } from '#V2/Components/Metadata/EntityEditor/index.js';
-import { apiValidationsToEditEntityErrors } from '#V2/Components/Metadata/EntityEditor/functions/editEntityErrors.js';
+import {
+  EditEntity,
+  apiValidationsToEditEntityErrors,
+} from '#V2/Components/Metadata/EntityEditor/index.js';
 import {
   useMetadataEditing,
   useEntityOverlay,
@@ -37,29 +39,23 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
     formId,
     formMountHost,
     mediaUpload,
-    setIsSaving,
-    setIsDirty,
     setSaveError,
     setEditErrors,
+    setIsDirty,
     finishEditing,
     registerCancelEdit,
-    beginSaveAbort,
-    clearSaveAbort,
+    tryBeginSave,
+    endSave,
   } = useMetadataEditing();
   const { openEntityOverlayTarget } = useEntityOverlay();
   const revalidator = useRevalidator();
-  const savingRef = useRef(false);
   const showEditor = isEditing && formMountHost === host;
 
   useEffect(() => {
     if (!showEditor) return undefined;
-
-    const unregister = registerCancelEdit(() => {
-      savingRef.current = false;
+    return registerCancelEdit(() => {
       setEditErrors(undefined);
     });
-
-    return unregister;
   }, [showEditor, registerCancelEdit, setEditErrors]);
 
   const handleUpsertError = (
@@ -80,16 +76,12 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
     await revalidator.revalidate();
     finishEditing();
   };
-
-  // eslint-disable-next-line max-statements
   const onSave = async (editedEntity: EntitySaveInput) => {
-    if (savingRef.current) return;
+    const abortController = tryBeginSave();
+    if (!abortController) return;
 
-    savingRef.current = true;
-    setIsSaving(true);
     setSaveError(undefined);
     setEditErrors(undefined);
-    const abortController = beginSaveAbort();
 
     try {
       const template = templates.find(t => t._id === editedEntity.template);
@@ -110,9 +102,7 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
 
       await completeSave(data);
     } finally {
-      clearSaveAbort();
-      savingRef.current = false;
-      setIsSaving(false);
+      endSave();
     }
   };
 

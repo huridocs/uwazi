@@ -88,20 +88,19 @@ describe('buildEditEntitySaveInput', () => {
   };
 
   it('should format metadata and clear icon when showIcon is false', () => {
-    expect(
-      buildEditEntitySaveInput({
-        entity,
-        values,
-        metadataProperties: properties,
-        pendingAttachments: [],
-        mediaPropertyNames: new Set(),
-      })
-    ).toMatchObject({
+    const saved = buildEditEntitySaveInput({
+      entity,
+      values,
+      metadataProperties: properties,
+      pendingAttachments: [],
+      mediaPropertyNames: new Set(),
+    });
+    expect(saved).toMatchObject({
       title: 'Updated',
-      icon: { _id: null, type: 'Empty', label: '' },
       metadata: { simple_text: [{ value: 'hello' }] },
       attachments: [{ _id: 'a1', filename: 'existing.pdf' }],
     });
+    expect(saved.icon).toBeUndefined();
   });
 });
 
@@ -121,13 +120,6 @@ const baseValues = (metadata: EditEntityFormValues['metadata']): EditEntityFormV
 });
 
 describe('mergeSharedFormMetadata', () => {
-  it('returns undefined on same-shape no-op', () => {
-    const properties = [textProp('a'), textProp('b')];
-    const current = { a: [{ value: '1' }], b: [{ value: '2' }] };
-
-    expect(mergeSharedFormMetadata(current, properties)).toBeUndefined();
-  });
-
   it('rebuilds shape while keeping existing dirty field values', () => {
     const properties = [textProp('a'), textProp('b'), textProp('c')];
     const current = { a: [{ value: 'dirty-a' }] };
@@ -143,12 +135,31 @@ describe('mergeSharedFormMetadata', () => {
       c: [{ value: 'entity-c' }],
     });
   });
+
+  it('strips keys that are not on the target template', () => {
+    expect(
+      mergeSharedFormMetadata({ report: [{ value: 'x' }], leftover: [{ value: 'y' }] }, [
+        textProp('report'),
+      ])
+    ).toEqual({ report: [{ value: 'x' }] });
+  });
 });
 
 describe('planSharedMetadataSync', () => {
-  it('returns noop when shape matches', () => {
+  it('returns noop when shape matches exactly', () => {
     const plan = planSharedMetadataSync(baseValues({ a: [{ value: '1' }] }), [textProp('a')]);
     expect(plan).toEqual({ type: 'noop' });
+  });
+
+  it('does not noop when current metadata has extra keys from a prior template', () => {
+    const plan = planSharedMetadataSync(
+      baseValues({ a: [{ value: '1' }], leftover: [{ value: 'old' }] }),
+      [textProp('a')]
+    );
+
+    expect(plan.type).toBe('reset');
+    if (plan.type !== 'reset') return;
+    expect(plan.values.metadata).toEqual({ a: [{ value: '1' }] });
   });
 
   it('preserves dirty via keepDirty options on rebuild', () => {
@@ -160,12 +171,12 @@ describe('planSharedMetadataSync', () => {
     expect(plan.type).toBe('reset');
     if (plan.type !== 'reset') return;
 
-    expect(plan.options).toEqual({ keepDirty: true, keepDirtyValues: true });
+    expect(plan.options).toEqual({ keepDirty: true });
     expect(plan.values.metadata.a).toEqual([{ value: 'dirty' }]);
     expect(plan.values.metadata.b).toEqual([]);
   });
 
-  // Own-form and shared both use this planner: never restore bare isDirty early-return
+  // Shared planner: never restore bare isDirty early-return
   // (blocks template-switch reshape / EditEntity.cy looking for new fields).
   it('adds missing keys for template switch without wiping existing values', () => {
     const plan = planSharedMetadataSync(
@@ -178,5 +189,77 @@ describe('planSharedMetadataSync', () => {
     if (plan.type !== 'reset') return;
     expect(plan.values.metadata.title_field).toEqual([{ value: 'in-progress' }]);
     expect(plan.values.metadata.report).toEqual([{ value: 'from-entity' }]);
+  });
+
+  it('reshapes again on a second template switch', () => {
+    const first = planSharedMetadataSync(baseValues({ simple_text: [{ value: 'doc' }] }), [
+      textProp('report'),
+    ]);
+    expect(first.type).toBe('reset');
+    if (first.type !== 'reset') return;
+    expect(first.values.metadata).toEqual({ report: [] });
+
+    const second = planSharedMetadataSync(first.values, [
+      textProp('simple_text'),
+      textProp('location'),
+    ]);
+    expect(second.type).toBe('reset');
+    if (second.type !== 'reset') return;
+    expect(second.values.metadata.simple_text).toEqual([]);
+    expect(second.values.metadata.location).toEqual([]);
+    expect(second.values.metadata).not.toHaveProperty('report');
+  });
+
+  it('force rebuilds even when shape already matches', () => {
+    const values = baseValues({ a: [{ value: 'kept' }] });
+    const properties = [textProp('a')];
+    expect(planSharedMetadataSync(values, properties)).toEqual({ type: 'noop' });
+
+    const forced = planSharedMetadataSync(values, properties, undefined, { force: true });
+    expect(forced.type).toBe('reset');
+    if (forced.type !== 'reset') return;
+    expect(forced.options).toEqual({ keepDirty: true });
+    expect(forced.values.metadata).toEqual({ a: [{ value: 'kept' }] });
+  });
+
+  // eslint-disable-next-line max-statements
+  it('force multi-switch T1→T2→T1→T2 keeps merge overlap and final keys', () => {
+    const t1 = [textProp('simple_text'), textProp('location')];
+    const t2 = [textProp('report')];
+    const entityMetadata = {
+      simple_text: [{ value: 'from-entity' }],
+      location: [{ value: 'loc' }],
+      report: [{ value: 'entity-report' }],
+    };
+
+    const toT2 = planSharedMetadataSync(
+      baseValues({ simple_text: [{ value: 'dirty' }] }),
+      t2,
+      entityMetadata,
+      { force: true }
+    );
+    expect(toT2.type).toBe('reset');
+    if (toT2.type !== 'reset') return;
+    expect(toT2.values.metadata).toEqual({ report: [{ value: 'entity-report' }] });
+    expect(toT2.values.title).toBe('Title');
+
+    const backT1 = planSharedMetadataSync(toT2.values, t1, entityMetadata, { force: true });
+    expect(backT1.type).toBe('reset');
+    if (backT1.type !== 'reset') return;
+    expect(backT1.values.metadata).toEqual({
+      simple_text: [{ value: 'from-entity' }],
+      location: [{ value: 'loc' }],
+    });
+
+    const againT2 = planSharedMetadataSync(backT1.values, t2, entityMetadata, { force: true });
+    expect(againT2.type).toBe('reset');
+    if (againT2.type !== 'reset') return;
+    expect(Object.keys(againT2.values.metadata)).toEqual(['report']);
+    expect(againT2.values.metadata.report).toEqual([{ value: 'entity-report' }]);
+
+    const againT1 = planSharedMetadataSync(againT2.values, t1, entityMetadata, { force: true });
+    expect(againT1.type).toBe('reset');
+    if (againT1.type !== 'reset') return;
+    expect(Object.keys(againT1.values.metadata).sort()).toEqual(['location', 'simple_text']);
   });
 });

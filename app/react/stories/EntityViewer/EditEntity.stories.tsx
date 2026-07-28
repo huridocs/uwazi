@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { BrowserRouter } from 'react-router';
@@ -65,35 +65,38 @@ const EditEntityComponent = ({
   const templateId = form.watch('template');
   const mediaUpload = useEntityMediaUpload(entity, templateId);
 
-  const store = createStore();
-  store.set(settingsAtom, { mapLayers: ['Streets', 'Hybrid', 'Satellite'] });
-  store.set(templatesAtom, templatesForStory);
-  store.set(thesauriAtom, thesauri);
-  store.set(localeAtom, locale);
-  store.set(translationsAtom, [
-    {
-      locale: 'en',
-      contexts: [
-        {
-          id: 'System',
-          label: 'User Interface',
-          type: 'Uwazi UI',
-          values: {},
-        },
-      ],
-    },
-    {
-      locale: 'es',
-      contexts: [
-        {
-          id: 'System',
-          label: 'User Interface',
-          type: 'Uwazi UI',
-          values: {},
-        },
-      ],
-    },
-  ]);
+  const store = useMemo(() => {
+    const nextStore = createStore();
+    nextStore.set(settingsAtom, { mapLayers: ['Streets', 'Hybrid', 'Satellite'] });
+    nextStore.set(templatesAtom, templatesForStory);
+    nextStore.set(thesauriAtom, thesauri);
+    nextStore.set(localeAtom, locale);
+    nextStore.set(translationsAtom, [
+      {
+        locale: 'en',
+        contexts: [
+          {
+            id: 'System',
+            label: 'User Interface',
+            type: 'Uwazi UI',
+            values: {},
+          },
+        ],
+      },
+      {
+        locale: 'es',
+        contexts: [
+          {
+            id: 'System',
+            label: 'User Interface',
+            type: 'Uwazi UI',
+            values: {},
+          },
+        ],
+      },
+    ]);
+    return nextStore;
+  }, [locale, templatesForStory]);
 
   const formId = 'edit-entity-form';
   const mockedRelationshipLookup = async ({
@@ -162,7 +165,6 @@ const EditEntityComponent = ({
           <div className="border rounded p-4 bg-(--bg-surface) text-ink mb-2">
             <h2 className="text-lg font-bold py-2">Entity editor</h2>
             <div className="mb-4">
-              {}
               <FormProvider {...form}>
                 <EditEntity
                   entity={entity}

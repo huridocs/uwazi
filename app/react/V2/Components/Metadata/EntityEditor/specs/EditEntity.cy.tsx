@@ -215,6 +215,23 @@ describe('Entity edit', () => {
           cy.get(`input[id="${id}"]`).should('have.value', value);
         });
       });
+
+      it('should show fields after repeated A→B→A→B switches and keep dirty title', () => {
+        titleField().clear();
+        titleField().type('Kept dirty title');
+
+        selectSearchSelectOption('template', 'Event Report');
+        cy.get('textarea[id="metadata.report.0.value"]').should('exist');
+        selectSearchSelectOption('template', 'Documents');
+        cy.contains('label', 'A basic simple text');
+        selectSearchSelectOption('template', 'Event Report');
+        cy.get('textarea[id="metadata.report.0.value"]').should('exist');
+        selectSearchSelectOption('template', 'Documents');
+        cy.contains('label', 'A basic simple text');
+        cy.get('input[id="metadata.simple_text.0.value"]').should('exist');
+
+        titleField().should('have.value', 'Kept dirty title');
+      });
     });
 
     describe('Metadata', () => {

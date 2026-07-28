@@ -4,17 +4,17 @@ import { useAtomValue } from 'jotai';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import {
   buildEditEntityDefaultValues,
+  useEntityMediaUpload,
   type EditEntityFormValues,
-} from '#V2/Components/Metadata/EntityEditor/functions/buildEditEntityDefaultValues.js';
-import type { EditEntityErrors } from '#V2/Components/Metadata/EntityEditor/functions/editEntityErrors.js';
-import { useEntityMediaUpload } from '#V2/Components/Metadata/EntityEditor/hooks/useEntityMediaUpload.js';
+  type EditEntityErrors,
+} from '#V2/Components/Metadata/EntityEditor/index.js';
+import { useEntityContext } from '../EntityContext.js';
+import { resolveFormMountHost, type MetadataEditingHost } from '../metadataEditingSession.js';
 import {
   EDIT_ENTITY_FORM_ID,
   type MetadataEditingActions,
   type MetadataEditingState,
-} from '#V2/Routes/Entity/Components/context/metadataEditingTypes.js';
-import { useEntityContext } from '../EntityContext.js';
-import { resolveFormMountHost, type MetadataEditingHost } from '../metadataEditingSession.js';
+} from '../metadataEditingTypes.js';
 
 type MetadataActiveByHost = Record<MetadataEditingHost, boolean>;
 
@@ -38,6 +38,7 @@ const useMetadataEditingController = (): {
   const [editErrors, setEditErrors] = useState<EditEntityErrors>();
   const cancelEditRef = useRef<(() => void) | null>(null);
   const saveAbortRef = useRef<AbortController | null>(null);
+  const saveInFlightRef = useRef(false);
   const isEditingRef = useRef(false);
   isEditingRef.current = isEditing;
 
@@ -64,6 +65,19 @@ const useMetadataEditingController = (): {
     const controller = new AbortController();
     saveAbortRef.current = controller;
     return controller;
+  }, []);
+
+  const tryBeginSave = useCallback((): AbortController | null => {
+    if (saveInFlightRef.current) return null;
+    saveInFlightRef.current = true;
+    setIsSaving(true);
+    return beginSaveAbort();
+  }, [beginSaveAbort]);
+
+  const endSave = useCallback(() => {
+    saveInFlightRef.current = false;
+    saveAbortRef.current = null;
+    setIsSaving(false);
   }, []);
 
   const clearSaveAbort = useCallback(() => {
@@ -93,6 +107,7 @@ const useMetadataEditingController = (): {
   );
 
   const finishEditing = useCallback(() => {
+    saveInFlightRef.current = false;
     clearPendingAttachments();
     form.reset(buildEditEntityDefaultValues(entity, templates));
     setSaveError(undefined);
@@ -106,6 +121,7 @@ const useMetadataEditingController = (): {
   const cancelEdit = useCallback(() => {
     saveAbortRef.current?.abort();
     saveAbortRef.current = null;
+    saveInFlightRef.current = false;
     cancelEditRef.current?.();
     finishEditing();
   }, [finishEditing]);
@@ -146,12 +162,16 @@ const useMetadataEditingController = (): {
       finishEditing,
       registerCancelEdit,
       beginSaveAbort,
+      tryBeginSave,
+      endSave,
       clearSaveAbort,
       cancelEdit,
     }),
     [
       registerCancelEdit,
       beginSaveAbort,
+      tryBeginSave,
+      endSave,
       clearSaveAbort,
       registerMetadataActive,
       cancelEdit,

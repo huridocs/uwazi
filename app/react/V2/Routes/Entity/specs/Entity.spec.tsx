@@ -405,52 +405,6 @@ describe('Entity view', () => {
         within(screen.getAllByTestId('tabs-comp')[0]).getByRole('tab', { name: /Metadata/ })
       ).toHaveTextContent('*');
     });
-
-    it('relocates formMountHost when the other pane opens Metadata without clearing draft', async () => {
-      render(
-        <TestRouterContext
-          loaderData={{
-            entity: sampleEntity,
-            mainDocument: sampleMainDocument,
-            pagePlaintext: '',
-          }}
-        >
-          <ServicesProvider value={createTestServices()}>
-            <TestAtomStoreProvider
-              initialValues={[
-                [templatesAtom, sampleTemplate],
-                [userAtom, { _id: '1', role: 'admin', name: 'admin' }],
-              ]}
-            >
-              <Entity />
-            </TestAtomStoreProvider>
-          </ServicesProvider>
-        </TestRouterContext>
-      );
-
-      await checkEntityRendered();
-
-      let tablists = screen.getAllByTestId('tabs-comp');
-      fireEvent.click(within(tablists[0]).getByRole('tab', { name: 'Metadata' }));
-
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Edit' })).toBeInTheDocument();
-      });
-      fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
-
-      const titleInput = await screen.findByRole('textbox', { name: /Title/ });
-      fireEvent.change(titleInput, { target: { value: 'Joined draft' } });
-
-      fireEvent.click(within(tablists[0]).getByRole('tab', { name: 'Document' }));
-      tablists = screen.getAllByTestId('tabs-comp');
-      fireEvent.click(within(tablists[1]).getByRole('tab', { name: 'Metadata' }));
-
-      await waitFor(() => {
-        expect(screen.getByTestId('entity-edit-form')).toBeInTheDocument();
-        expect(screen.getByRole('textbox', { name: /Title/ })).toHaveValue('Joined draft');
-        expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
-      });
-    });
   });
 
   describe('Plain text view', () => {

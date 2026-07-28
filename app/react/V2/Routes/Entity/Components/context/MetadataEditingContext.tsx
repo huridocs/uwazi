@@ -1,11 +1,7 @@
 import React, { createContext, useContext } from 'react';
 import { FormProvider } from 'react-hook-form';
 import { useMetadataEditingController } from './hooks/useMetadataEditingController.js';
-import {
-  EDIT_ENTITY_FORM_ID,
-  type MetadataEditingActions,
-  type MetadataEditingState,
-} from './metadataEditingTypes.js';
+import type { MetadataEditingActions, MetadataEditingState } from './metadataEditingTypes.js';
 
 const MetadataEditingStateContext = createContext<MetadataEditingState | null>(null);
 const MetadataEditingActionsContext = createContext<MetadataEditingActions | null>(null);
@@ -16,6 +12,7 @@ const MetadataEditingProvider = ({ children }: { children: React.ReactNode }) =>
   return (
     <MetadataEditingActionsContext.Provider value={actions}>
       <MetadataEditingStateContext.Provider value={state}>
+        {/* FormProvider stays entity-scoped so host remounts keep the same RHF subscription tree. */}
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         <FormProvider {...state.form}>{children}</FormProvider>
       </MetadataEditingStateContext.Provider>
@@ -40,4 +37,4 @@ const useMetadataEditing = () => ({
   ...useMetadataEditingActions(),
 });
 
-export { MetadataEditingProvider, useMetadataEditing, EDIT_ENTITY_FORM_ID };
+export { MetadataEditingProvider, useMetadataEditing };

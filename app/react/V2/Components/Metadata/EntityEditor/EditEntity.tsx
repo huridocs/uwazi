@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { Fragment, useEffect, useMemo, useRef } from 'react';
 import { useAtomValue } from 'jotai';
+import { useWatch } from 'react-hook-form';
 import { t } from '#app/I18N/index.js';
 import { extractUploadIdFromMediaValue } from '#shared/entitySave/mediaMetadata.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
@@ -48,9 +49,10 @@ const EditEntity = ({
 }: EditEntityProps) => {
   const templates = useAtomValue(templatesAtom);
   const thesauri = useAtomValue(thesauriAtom);
-  const { handleSubmit, watch, reset, getValues, setValue, setError, formState } = formContext;
-  const selectedTemplate = watch('template');
-  const metadata = watch('metadata');
+  const { handleSubmit, control, getValues, setValue, reset, setError, formState } = formContext;
+  const selectedTemplate = useWatch({ control, name: 'template' });
+  const metadata = useWatch({ control, name: 'metadata' });
+  const previousTemplateRef = useRef(selectedTemplate);
 
   useEffect(() => {
     onDirtyChange?.(formState.isDirty);
@@ -117,10 +119,14 @@ const EditEntity = ({
   );
 
   useEffect(() => {
-    const plan = planSharedMetadataSync(getValues(), metadataProperties, entity?.metadata);
+    const templateChanged = previousTemplateRef.current !== selectedTemplate;
+    previousTemplateRef.current = selectedTemplate;
+    const plan = planSharedMetadataSync(getValues(), metadataProperties, entity?.metadata, {
+      force: templateChanged,
+    });
     if (plan.type === 'noop') return;
     reset(plan.values, plan.options);
-  }, [entity?.metadata, getValues, metadataProperties, reset]);
+  }, [entity?.metadata, getValues, metadataProperties, reset, selectedTemplate]);
 
   useEffect(() => {
     getGroupedRelationshipSyncPairs(displayProperties).forEach(({ mainName, otherNames }) => {
@@ -204,29 +210,32 @@ const EditEntity = ({
         options={availableTemplates}
         hideFilters
       />
-      {isMetadataReady &&
-        displayProperties.map(property => (
-          <EditEntityPropertyField
-            key={property._id}
-            property={property}
-            disabled={disabled}
-            activeTemplateId={activeTemplate?._id ?? ''}
-            thesauri={thesauri}
-            templates={templates}
-            metadataProperties={metadataProperties}
-            metadata={metadata}
-            entityMetadata={entity?.metadata}
-            entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
-            firstEditableRelationshipId={firstEditableRelationshipId}
-            entityAttachments={entityAttachments}
-            pendingAttachments={pendingAttachments}
-            registerPendingAttachment={registerPendingAttachment}
-            removePendingAttachmentIfUnused={removePendingAttachmentIfUnused}
-            onEditSource={onEditSource}
-            relationshipLookup={relationshipLookup}
-            relationshipLookupSearch={relationshipLookupSearch}
-          />
-        ))}
+      {isMetadataReady && (
+        <Fragment key={selectedTemplate}>
+          {displayProperties.map(property => (
+            <EditEntityPropertyField
+              key={property._id}
+              property={property}
+              disabled={disabled}
+              activeTemplateId={activeTemplate?._id ?? ''}
+              thesauri={thesauri}
+              templates={templates}
+              metadataProperties={metadataProperties}
+              metadata={metadata}
+              entityMetadata={entity?.metadata}
+              entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
+              firstEditableRelationshipId={firstEditableRelationshipId}
+              entityAttachments={entityAttachments}
+              pendingAttachments={pendingAttachments}
+              registerPendingAttachment={registerPendingAttachment}
+              removePendingAttachmentIfUnused={removePendingAttachmentIfUnused}
+              onEditSource={onEditSource}
+              relationshipLookup={relationshipLookup}
+              relationshipLookupSearch={relationshipLookupSearch}
+            />
+          ))}
+        </Fragment>
+      )}
     </form>
   );
 };
