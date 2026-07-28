@@ -109,27 +109,33 @@ socket.on('thesauriDelete', payload => {
 socket.on('translationsChange', languageTranslations => {
   const atomStore = getStore();
   const translations = atomStore.get(translationsAtom);
+  // SSR only hydrates the active locale; ignore updates for other languages.
   const modifiedLanguage = translations.find(
     translation => translation.locale === languageTranslations.locale
   );
-  if (modifiedLanguage) {
-    modifiedLanguage.contexts = languageTranslations.contexts;
-  } else {
-    translations.push(languageTranslations);
+  if (!modifiedLanguage) {
+    return;
   }
+  modifiedLanguage.contexts = languageTranslations.contexts;
   atomStore.set(translationsAtom, [...translations]);
 });
 
 socket.on('translationKeysChange', translationsEntries => {
   const atomStore = getStore();
   const translations = atomStore.get(translationsAtom);
+  let hasUpdates = false;
   translationsEntries.forEach(item => {
-    const modifiedContext = translations
-      .find(translation => translation.locale === item.language)
-      .contexts.find(c => c.id && c.id === item.context.id);
+    const translation = translations.find(t => t.locale === item.language);
+    const modifiedContext = translation?.contexts.find(c => c.id && c.id === item.context.id);
+    if (!modifiedContext) {
+      return;
+    }
     modifiedContext.values[item.key] = item.value;
+    hasUpdates = true;
   });
-  atomStore.set(translationsAtom, [...translations]);
+  if (hasUpdates) {
+    atomStore.set(translationsAtom, [...translations]);
+  }
 });
 
 socket.on('translationsInstallDone', () => {

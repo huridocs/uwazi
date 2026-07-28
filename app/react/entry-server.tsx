@@ -49,6 +49,7 @@ import { ProtectedRoute } from './ProtectedRoute.js';
 import { isMobileDevice } from '../shared/detectDevice.js';
 import { loadIcons } from '#UI/Icon/library.js';
 import type { ClientFeatureFlags } from '#V2/shared/types.js';
+import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 loadIcons();
 
@@ -177,7 +178,8 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   api.locale(locale);
   const userAgent = req.get('user-agent') || '';
 
-  const translations = await translationsApi.get();
+  // Only hydrate the active locale — language switches trigger a full navigation / SSR.
+  const translations = await translationsApi.get({ locale: locale as LanguageISO6391 });
 
   const [
     userApiResponse = {},
