@@ -308,7 +308,11 @@ const fixtures: DBFixture = {
     fixtureFactory.entity(
       'getWithRelRoot',
       'templateForGetWithRelationships',
-      {},
+      {
+        relProp: [
+          { icon: null, label: 'public entity', type: 'entity', value: 'getWithRelPublic' },
+        ],
+      },
       {
         language: 'es',
         title: 'root entity',
@@ -513,9 +517,17 @@ const fixtures: DBFixture = {
       fixtureFactory.property('field_nested', 'nested'),
       fixtureFactory.property('numeric', 'numeric'),
     ]),
-    fixtureFactory.template('templateForGetWithRelationships', [], {
-      _id: templateForGetWithRelationships,
-    }),
+    fixtureFactory.template(
+      'templateForGetWithRelationships',
+      [
+        fixtureFactory.relationshipProp('relProp', undefined, {
+          relationType: relationType4.toString(),
+        }),
+      ],
+      {
+        _id: templateForGetWithRelationships,
+      }
+    ),
   ],
 
   relationtypes: [
@@ -528,6 +540,7 @@ const fixtures: DBFixture = {
       { entity: 'getWithRelPublic', template: 'relationType4' },
       { entity: 'getWithRelPrivate', template: 'relationType4' },
     ]),
+    ...fixtureFactory.hub('hub9', 'shared', [{ entity: 'shared2', template: 'relationType1' }]),
   ],
 
   dictionaries: [

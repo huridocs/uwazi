@@ -19,6 +19,7 @@ import type {
   MongoEntitiesDAO,
 } from '../infrastructure/mongodb/entity/MongoEntitiesDAO.js';
 import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { MongoEntityMapper } from '../infrastructure/mongodb/entity/MongoEntityMapper.js';
 import { FileDTO } from '../domain/files/domainTypes.js';
 import { GetEntityResponseDTO, RelationDTO } from './GetEntityResponseDTO.js';
 import { EntityNotFoundError } from '../domain/entity/errors.js';
@@ -26,9 +27,13 @@ import { AccessLevel } from '../domain/entityAccessPolicy/AccessLevel.js';
 import { GrantType } from '../domain/entityAccessPolicy/GrantType.js';
 import { TimedMethod } from '../libs/logger/TimedMethodDecorator.js';
 import { ExecutionContext } from '../libs/ExecutionContext.js';
+import { TemplatesDAOFactory } from '../infrastructure/factories/TemplatesDAOFactory.js';
+
+type TemplatesDAO = Awaited<ReturnType<typeof TemplatesDAOFactory.default>>;
 
 type Deps = {
   templatesDS: TemplatesDataSource;
+  templatesDAO: TemplatesDAO;
   settingsDS: SettingsDataSource;
   entityPermissionChecker: EntityPermissionChecker;
   entityDAO: MongoEntitiesDAO;
@@ -52,9 +57,17 @@ class EntitiesQueryService {
     language: LanguageISO6391;
     includeRelationships: boolean;
     includePermissions: boolean;
+    scopeRelationshipsToMetadata?: boolean;
     user: User;
   }): Promise<GetEntityResponseDTO> {
-    const { sharedId, language, includeRelationships, includePermissions, user } = input;
+    const {
+      sharedId,
+      language,
+      includeRelationships,
+      includePermissions,
+      scopeRelationshipsToMetadata,
+      user,
+    } = input;
     const isAuthenticated = !user.isAnonymous();
 
     const [entity] = await this.deps.entityDAO.getWithFiles({
@@ -79,11 +92,27 @@ class EntitiesQueryService {
     let filteredRelations: RelationDTO[] = [];
     if (includeRelationships) {
       const includeUnpublished = isAuthenticated;
-      const relations = (await this.deps.relationshipsDataSource.getByEntity(
-        sharedId,
-        language,
-        includeUnpublished
-      )) as RelationDTO[];
+      let relations: RelationDTO[];
+
+      if (scopeRelationshipsToMetadata) {
+        const [templateDBO] = await this.deps.templatesDAO.get([entity.template.toString()]);
+        if (!templateDBO) {
+          relations = [];
+        } else {
+          const domainEntity = MongoEntityMapper.toDomain([entity], templateDBO);
+          relations = (await this.deps.relationshipsDataSource.getEntityMetadataRelationships(
+            domainEntity,
+            language,
+            includeUnpublished
+          )) as RelationDTO[];
+        }
+      } else {
+        relations = (await this.deps.relationshipsDataSource.getByEntity(
+          sharedId,
+          language,
+          includeUnpublished
+        )) as RelationDTO[];
+      }
 
       filteredRelations = isAuthenticated
         ? relations

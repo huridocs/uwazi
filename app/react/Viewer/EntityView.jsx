@@ -16,7 +16,12 @@ class Entity extends Component {
   static async requestState(requestParams, state) {
     const [[entity], relationTypes, [connectionsGroups, searchResults, sort, filters]] =
       await Promise.all([
-        entitiesAPI.get(requestParams.set({ sharedId: requestParams.data.sharedId })),
+        entitiesAPI.get(
+          requestParams.set({
+            sharedId: requestParams.data.sharedId,
+            includeMetadataRelationships: true,
+          })
+        ),
         relationTypesAPI.get(requestParams.onlyHeaders()),
         relationships.requestState(requestParams, state),
       ]);

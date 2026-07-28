@@ -285,6 +285,19 @@ class Entity {
     });
   }
 
+  getReferencedRelationshipEntitySharedIds(language: LanguageISO6391): Set<string> {
+    const referenced = new Set<string>();
+    for (const property of this.template.getRelationshipProperties()) {
+      const assignment = this.getValue<RelationshipEntry>(property.name, language);
+      for (const entry of assignment.value) {
+        if (typeof entry.value === 'string') {
+          referenced.add(entry.value);
+        }
+      }
+    }
+    return referenced;
+  }
+
   denormalizeRelationshipProps(relatedEntities: Record<IndexTypes, Entity | undefined>) {
     this.template.getRelationshipProperties().forEach(property => {
       this.languages.forEach(language => {
