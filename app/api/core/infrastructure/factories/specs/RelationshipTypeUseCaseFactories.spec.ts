@@ -42,7 +42,9 @@ describe('RelationshipType use case factories', () => {
   });
 
   it('should build GetRelationshipTypesUseCase', () => {
-    const sut = testingEnvironment.runWithContext(() => GetRelationshipTypesUseCaseFactory.default());
+    const sut = testingEnvironment.runWithContext(() =>
+      GetRelationshipTypesUseCaseFactory.default()
+    );
     expect(sut).toBeInstanceOf(GetRelationshipTypesUseCase);
   });
 
