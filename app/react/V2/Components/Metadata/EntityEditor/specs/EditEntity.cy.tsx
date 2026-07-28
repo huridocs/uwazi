@@ -215,6 +215,32 @@ describe('Entity edit', () => {
           cy.get(`input[id="${id}"]`).should('have.value', value);
         });
       });
+
+      it('should show fields after repeated A→B→A→B switches and keep dirty title', () => {
+        titleField().clear();
+        titleField().type('Kept dirty title');
+
+        selectSearchSelectOption('template', 'Event Report');
+        cy.get('textarea[id="metadata.report.0.value"]').should('exist');
+        selectSearchSelectOption('template', 'Documents');
+        cy.contains('label', 'A basic simple text');
+        selectSearchSelectOption('template', 'Event Report');
+        cy.get('textarea[id="metadata.report.0.value"]').should('exist');
+        selectSearchSelectOption('template', 'Documents');
+        cy.contains('label', 'A basic simple text');
+        cy.get('input[id="metadata.simple_text.0.value"]').should('exist');
+
+        cy.get('input[name="metadata.location_on_map.lat"]').should('have.value', '40.7128');
+        cy.get('input[name="metadata.location_on_map.lon"]').should('have.value', '-74.006');
+        [
+          { id: 'metadata.date_range.0.value.from', value: '2024-01-01' },
+          { id: 'metadata.date_range.0.value.to', value: '2024-01-02' },
+        ].forEach(({ id, value }) => {
+          cy.get(`input[id="${id}"]`).should('have.value', value);
+        });
+
+        titleField().should('have.value', 'Kept dirty title');
+      });
     });
 
     describe('Metadata', () => {

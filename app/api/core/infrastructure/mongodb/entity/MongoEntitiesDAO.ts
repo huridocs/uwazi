@@ -203,11 +203,13 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> {
     }
   }
 
-  async findBySharedIds(sharedIds: string[]): Promise<EntityDBO[]> {
+  async findBySharedIds(sharedIds: string[], language?: LanguageISO6391): Promise<EntityDBO[]> {
     if (sharedIds.length === 0) return [];
-    return this.getCollection()
-      .find({ sharedId: { $in: sharedIds } })
-      .toArray();
+    const filter: Record<string, unknown> = { sharedId: { $in: sharedIds } };
+    if (language) {
+      filter.language = language;
+    }
+    return this.getCollection().find(filter).toArray();
   }
 
   async getBySharedId(sharedId: string, language?: LanguageISO6391): Promise<EntityDBO | null> {

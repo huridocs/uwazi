@@ -18,19 +18,19 @@ type MetadataDisplayFooterProps = {
 
 const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
   const entity = useEntityScopedEntity();
-  const { isEditing, isSaving, editingHost, cancelEdit, startEditing } = useMetadataEditing();
+  const { isEditing, isSaving, formMountHost, formId, cancelEdit, startEditing } =
+    useMetadataEditing();
   const [sharing, setSharing] = useState(false);
-  const isOwner = isEditing && editingHost === host;
-  const otherHostEditing = isEditing && editingHost !== null && editingHost !== host;
+  const showSaveCancel = isEditing && formMountHost === host;
 
   return (
     <EntityWriteAuthorization>
-      {isOwner ? (
+      {showSaveCancel ? (
         <div className="flex w-full items-center justify-end gap-3">
           <Button type="button" variant="warm" onClick={cancelEdit}>
             <Translate>Cancel</Translate>
           </Button>
-          <Button type="submit" variant="success" form="edit-entity-form" disabled={isSaving}>
+          <Button type="submit" variant="success" form={formId} disabled={isSaving}>
             <Translate>Save</Translate>
           </Button>
         </div>
@@ -41,7 +41,7 @@ const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
               variant="warm"
               className="inline-flex items-center gap-1.5"
               onClick={() => startEditing(host)}
-              disabled={otherHostEditing}
+              disabled={isSaving}
             >
               <PencilSquareIcon className={iconClass} />
               <Translate>Edit</Translate>
@@ -50,7 +50,6 @@ const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
               variant="warm"
               className="inline-flex items-center gap-1.5"
               onClick={() => setSharing(true)}
-              disabled={otherHostEditing}
             >
               <ShareIcon className={iconClass} />
               <Translate>Share</Translate>
