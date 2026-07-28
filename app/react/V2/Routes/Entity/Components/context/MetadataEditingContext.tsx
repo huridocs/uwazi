@@ -1,85 +1,20 @@
-import React, { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
-
-type MetadataEditingHost = 'main' | 'side';
-
-type MetadataEditingState = {
-  isEditing: boolean;
-  isSaving: boolean;
-  isDirty: boolean;
-  editingHost: MetadataEditingHost | null;
-  saveError?: string;
-};
-type MetadataEditingActions = {
-  setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsSaving: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsDirty: React.Dispatch<React.SetStateAction<boolean>>;
-  setSaveError: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setEditingHost: React.Dispatch<React.SetStateAction<MetadataEditingHost | null>>;
-  startEditing: (host: MetadataEditingHost) => void;
-  registerCancelEdit: (handler: () => void) => () => void;
-  cancelEdit: () => void;
-};
+import React, { createContext, useContext } from 'react';
+import { FormProvider } from 'react-hook-form';
+import { useMetadataEditingController } from './hooks/useMetadataEditingController.js';
+import type { MetadataEditingActions, MetadataEditingState } from './metadataEditingTypes.js';
 
 const MetadataEditingStateContext = createContext<MetadataEditingState | null>(null);
 const MetadataEditingActionsContext = createContext<MetadataEditingActions | null>(null);
 
 const MetadataEditingProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isDirty, setIsDirty] = useState(false);
-  const [editingHost, setEditingHost] = useState<MetadataEditingHost | null>(null);
-  const [saveError, setSaveError] = useState<string>();
-  const cancelEditRef = useRef<(() => void) | null>(null);
-  const sessionRef = useRef({ isEditing: false, editingHost: null as MetadataEditingHost | null });
-  sessionRef.current = { isEditing, editingHost };
-
-  const registerCancelEdit = useCallback((handler: () => void) => {
-    cancelEditRef.current = handler;
-    return () => {
-      if (cancelEditRef.current === handler) cancelEditRef.current = null;
-    };
-  }, []);
-
-  const startEditing = useCallback((host: MetadataEditingHost) => {
-    const session = sessionRef.current;
-    if (session.isEditing && session.editingHost && session.editingHost !== host) {
-      return;
-    }
-    setEditingHost(host);
-    setIsEditing(true);
-  }, []);
-
-  const cancelEdit = useCallback(() => {
-    cancelEditRef.current?.();
-    setSaveError(undefined);
-    setIsDirty(false);
-    setIsSaving(false);
-    setIsEditing(false);
-    setEditingHost(null);
-  }, []);
-
-  const state = useMemo(
-    () => ({ isEditing, isSaving, isDirty, editingHost, saveError }),
-    [isEditing, isSaving, isDirty, editingHost, saveError]
-  );
-  const actions = useMemo(
-    () => ({
-      setIsEditing,
-      setIsSaving,
-      setIsDirty,
-      setSaveError,
-      setEditingHost,
-      startEditing,
-      registerCancelEdit,
-      cancelEdit,
-    }),
-    [registerCancelEdit, cancelEdit, startEditing]
-  );
+  const { state, actions } = useMetadataEditingController();
 
   return (
     <MetadataEditingActionsContext.Provider value={actions}>
       <MetadataEditingStateContext.Provider value={state}>
-        {children}
+        {/* FormProvider stays entity-scoped so host remounts keep the same RHF subscription tree. */}
+        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+        <FormProvider {...state.form}>{children}</FormProvider>
       </MetadataEditingStateContext.Provider>
     </MetadataEditingActionsContext.Provider>
   );
@@ -102,5 +37,4 @@ const useMetadataEditing = () => ({
   ...useMetadataEditingActions(),
 });
 
-export type { MetadataEditingHost };
 export { MetadataEditingProvider, useMetadataEditing };

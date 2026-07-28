@@ -53,13 +53,31 @@ const useEntityMediaUpload = (entity?: EntityMediaSource, templateId?: string) =
     []
   );
 
-  return {
-    entityAttachments,
-    pendingAttachments,
-    registerPendingAttachment,
-    removePendingAttachment,
-    clearPendingAttachments,
-  };
+  return useMemo(
+    () => ({
+      entityAttachments,
+      pendingAttachments,
+      registerPendingAttachment,
+      removePendingAttachment,
+      clearPendingAttachments,
+    }),
+    [
+      entityAttachments,
+      pendingAttachments,
+      registerPendingAttachment,
+      removePendingAttachment,
+      clearPendingAttachments,
+    ]
+  );
+};
+
+type EntityMediaUpload = {
+  entityAttachments: ClientFile[];
+  pendingAttachments: ClientFile[];
+  registerPendingAttachment: (attachment: ClientFile) => void;
+  removePendingAttachment: (fileLocalID: string) => void;
+  clearPendingAttachments: () => void;
 };
 
 export { useEntityMediaUpload };
+export type { EntityMediaUpload, EntityMediaSource };

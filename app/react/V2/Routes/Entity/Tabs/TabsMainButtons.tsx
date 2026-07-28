@@ -7,7 +7,6 @@ import { localeAtom } from '#V2/atoms/translationsAtoms.js';
 import { countEntityFiles, countEntityRelationships } from '#V2/formatters/index.js';
 import { useMetadataEditing } from '../Components/context/index.js';
 import { EntityLanguageBar, TabLabel } from '../Components/shared/index.js';
-import { isMetadataHostDirty } from './metadataTabSession.js';
 import { MAIN_TAB } from './tabIds.js';
 
 type TabsMainButtonsProps = {
@@ -17,8 +16,7 @@ type TabsMainButtonsProps = {
 };
 
 const TabsMainButtons = ({ entity, mainDocument, onTabChange }: TabsMainButtonsProps) => {
-  const { isDirty, editingHost } = useMetadataEditing();
-  const metadataDirty = isMetadataHostDirty(isDirty, editingHost, 'main');
+  const { isDirty } = useMetadataEditing();
   const templates = useAtomValue(templatesAtom);
   const locale = useAtomValue(localeAtom);
   const settings = useAtomValue(settingsAtom);
@@ -37,7 +35,7 @@ const TabsMainButtons = ({ entity, mainDocument, onTabChange }: TabsMainButtonsP
 
     items.push({
       id: MAIN_TAB.METADATA,
-      label: <TabLabel text="Metadata" dirty={metadataDirty} />,
+      label: <TabLabel text="Metadata" dirty={isDirty} />,
     });
 
     items.push({
@@ -54,10 +52,10 @@ const TabsMainButtons = ({ entity, mainDocument, onTabChange }: TabsMainButtonsP
   }, [
     defaultLanguage,
     entity,
+    isDirty,
     locale,
     mainDocument?.filename,
     mainDocument?._id,
-    metadataDirty,
     templates,
   ]);
 

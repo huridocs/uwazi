@@ -1,5 +1,6 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
+import { AccentDot } from '#V2/Components/UI/AccentDot.js';
 
 const TabLabel = ({
   text,
@@ -19,11 +20,7 @@ const TabLabel = ({
         {icon}
       </span>
     ) : null}
-    {dirty ? (
-      <span className="shrink-0 font-semibold text-ink" aria-hidden="true">
-        *
-      </span>
-    ) : null}
+    {dirty ? <AccentDot /> : null}
     {count !== undefined && (
       <span className="text-xs font-semibold text-ink-tertiary px-1 rounded shrink-0 bg-warm">
         {count}
