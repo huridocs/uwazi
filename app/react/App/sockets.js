@@ -1,4 +1,3 @@
-import { actions } from '#app/BasicReducer/index.js';
 import { getStore } from '#shared/atomStore/index.js';
 import { t } from '#app/I18N/index.js';
 import { documentProcessed } from '#app/Uploads/actions/uploadsActions.js';
@@ -95,7 +94,6 @@ socket.on('thesauriChange', thesaurus => {
       ? [...currentThesauri, thesaurus]
       : [...currentThesauri.slice(0, index), thesaurus, ...currentThesauri.slice(index + 1)]
   );
-  store?.dispatch(actions.update('thesauris', thesaurus));
 });
 
 socket.on('thesauriDelete', payload => {

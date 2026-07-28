@@ -6,6 +6,7 @@ import Immutable from 'immutable';
 import { PAGE_STYLE_ELEMENT_ID } from '#app/Pages/components/PageStyle.js';
 import { availableLanguages } from '#shared/language/index.js';
 import { getThemeAsset } from '#V2/theme/themes.js';
+import { omitSharedReduxCatalog } from './omitSharedReduxCatalog.js';
 
 const determineHotAssets = query => {
   const webpackPort = process.env.WEBPACK_PORT || 8080;
@@ -173,7 +174,9 @@ class Root extends Component {
   renderInitialData() {
     let innerHtml = '';
     if (this.props.reduxData) {
-      innerHtml += `window.__reduxData__ = ${serialize(this.props.reduxData, { isJSON: true })};`;
+      // Catalog data is serialized only in __atomStoreData__; Redux keeps route/UI state.
+      const reduxDataForClient = omitSharedReduxCatalog(this.props.reduxData);
+      innerHtml += `window.__reduxData__ = ${serialize(reduxDataForClient, { isJSON: true })};`;
     }
     if (this.props.user) {
       innerHtml += `window.__user__ = ${serialize(this.props.user, { isJSON: true })};`;

@@ -149,7 +149,7 @@ describe('sockets', () => {
       );
     });
 
-    it('should emit a thesauriChange event and update the stores', () => {
+    it('should emit a thesauriChange event and update the atom store', () => {
       const updatedThesaurus = {
         ...thesauri[0],
         name: 'Updated categories',
@@ -166,14 +166,14 @@ describe('sockets', () => {
 
       socket._callbacks.$thesauriChange[0](updatedThesaurus);
 
-      expect(store.dispatch).toHaveBeenCalledWith({
-        type: 'thesauris/UPDATE',
-        value: updatedThesaurus,
-      });
       expect(atomStore.set).toHaveBeenCalledWith(
         thesauriAtom,
         expect.arrayContaining([updatedThesaurus, thesauri[1]])
       );
+      expect(store.dispatch).not.toHaveBeenCalledWith({
+        type: 'thesauris/UPDATE',
+        value: updatedThesaurus,
+      });
     });
 
     it('should emit a thesauriChange event and add the thesaurus to the store', () => {

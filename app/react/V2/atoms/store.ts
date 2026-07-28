@@ -1,5 +1,4 @@
 import { createStore } from 'jotai';
-import sortBy from 'lodash/sortBy.js';
 import { isClient } from '#app/utils/index.js';
 import { store as reduxStore } from '#app/store.js';
 import { ClientSettings, ClientThesaurus, ClientUserSchema } from '#app/apiResponseTypes.js';
@@ -19,6 +18,7 @@ import { userAtom } from './userAtom.js';
 import { thesauriAtom } from './thesauriAtom.js';
 import { serverIsMobileAtom } from './isMobileAtom.js';
 import { acceptedSuggestions as ixAcceptedSuggestions } from '../Routes/Settings/IX/components/atoms/index.js';
+import { syncAtomStoreToRedux, subscribeAtomStoreToRedux } from './syncReduxFromAtoms.js';
 
 type AtomStoreData = {
   globalMatomo?: { url: string; id: string };
@@ -53,28 +53,11 @@ if (isClient && window.__atomStoreData__) {
   const atomStore = getStore();
   hydrateAtomStore(window.__atomStoreData__, atomStore);
 
-  //sync deprecated redux store
-  atomStore.sub(settingsAtom, () => {
-    const value = atomStore.get(settingsAtom);
-    reduxStore?.dispatch({ type: 'settings/collection/SET', value });
-  });
-  atomStore.sub(templatesAtom, () => {
-    const value = sortBy(atomStore.get(templatesAtom), 'name');
-    reduxStore?.dispatch({ type: 'templates/SET', value });
-  });
-  atomStore.sub(relationshipTypesAtom, () => {
-    const value = sortBy(atomStore.get(relationshipTypesAtom), 'name');
-    reduxStore?.dispatch({ type: 'relationTypes/SET', value });
-  });
-  atomStore.sub(thesauriAtom, () => {
-    const value = atomStore.get(thesauriAtom);
-    reduxStore?.dispatch({ type: 'dictionaries/SET', value });
-  });
-  atomStore.sub(translationsAtom, () => {
-    const value = atomStore.get(translationsAtom);
-    reduxStore?.dispatch({ type: 'translations/SET', value });
-  });
+  // Shared catalogs live only in __atomStoreData__; seed deprecated Redux before hydrateRoot.
+  syncAtomStoreToRedux(atomStore, reduxStore);
+  subscribeAtomStoreToRedux(atomStore, reduxStore);
 }
 
 export type { AtomStoreData };
 export { hydrateAtomStore };
+export { syncAtomStoreToRedux, subscribeAtomStoreToRedux } from './syncReduxFromAtoms.js';
