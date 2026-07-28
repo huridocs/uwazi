@@ -39,6 +39,7 @@ const getEntity = async (
   sharedId: string,
   options: {
     omitRelationships?: boolean;
+    includeMetadataRelationships?: boolean;
     include?: string[];
     language?: string;
     _id?: string;
@@ -53,6 +54,9 @@ const getEntity = async (
     query.sharedId = sharedId;
   }
   if (options.omitRelationships !== undefined) query.omitRelationships = options.omitRelationships;
+  if (options.includeMetadataRelationships !== undefined) {
+    query.includeMetadataRelationships = options.includeMetadataRelationships;
+  }
   if (options.include) query.include = JSON.stringify(options.include);
 
   const req = request(appInstance).get('/api/entities').query(query);
@@ -445,6 +449,87 @@ describe('GET /api/entities', () => {
         const entityIds = entity.relations.map((r: any) => r.entity);
         expect(entityIds).toContain('getWithRelPublic');
         expect(entityIds).toContain('getWithRelPrivate');
+      });
+    });
+
+    describe('when includeMetadataRelationships=true', () => {
+      it('should include only relationships referenced in the entity metadata', async () => {
+        const adminUser = {
+          _id: adminId,
+          role: UserRole.ADMIN,
+          username: 'admin',
+          email: 'admin@test.com',
+        };
+        const appWithAdmin = setUpApp(
+          routes,
+          (req: Request, _res: Response, next: NextFunction) => {
+            (req as any).user = adminUser;
+            next();
+          }
+        );
+        new UserInContextMockFactory().mock(adminUser);
+
+        const entity = await getEntity(appWithAdmin, 'getWithRelRoot', {
+          includeMetadataRelationships: true,
+        });
+
+        expect(entity.relations).toEqual(expect.any(Array));
+        const relatedEntityIds = entity.relations.map((r: any) => r.entity);
+        expect(relatedEntityIds).toContain('getWithRelPublic');
+        expect(relatedEntityIds).not.toContain('getWithRelPrivate');
+      });
+
+      it('should differ from default behavior by excluding non-metadata relationships', async () => {
+        const adminUser = {
+          _id: adminId,
+          role: UserRole.ADMIN,
+          username: 'admin',
+          email: 'admin@test.com',
+        };
+        const appWithAdmin = setUpApp(
+          routes,
+          (req: Request, _res: Response, next: NextFunction) => {
+            (req as any).user = adminUser;
+            next();
+          }
+        );
+        new UserInContextMockFactory().mock(adminUser);
+
+        const defaultEntity = await getEntity(appWithAdmin, 'getWithRelRoot');
+        const scopedEntity = await getEntity(appWithAdmin, 'getWithRelRoot', {
+          includeMetadataRelationships: true,
+        });
+
+        const defaultIds = defaultEntity.relations.map((r: any) => r.entity);
+        const scopedIds = scopedEntity.relations.map((r: any) => r.entity);
+
+        expect(defaultIds).toContain('getWithRelPublic');
+        expect(defaultIds).toContain('getWithRelPrivate');
+        expect(scopedIds).toContain('getWithRelPublic');
+        expect(scopedIds).not.toContain('getWithRelPrivate');
+      });
+
+      it('should override omitRelationships=true', async () => {
+        new UserInContextMockFactory().mock(authenticatedUser);
+        const entity = await getEntity(app, 'getWithRelRoot', {
+          includeMetadataRelationships: true,
+          omitRelationships: true,
+        });
+
+        expect(entity.relations).toEqual(expect.any(Array));
+        const relatedEntityIds = entity.relations.map((r: any) => r.entity);
+        expect(relatedEntityIds).toContain('getWithRelPublic');
+        expect(entity.relationships).toBeUndefined();
+      });
+
+      it('should return empty relations when entity has no relationship metadata', async () => {
+        new UserInContextMockFactory().mock(authenticatedUser);
+        const entity = await getEntity(app, 'shared2', {
+          includeMetadataRelationships: true,
+          language: 'en',
+        });
+
+        expect(entity.relations).toEqual([]);
       });
     });
 
