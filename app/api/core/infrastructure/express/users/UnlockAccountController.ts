@@ -31,6 +31,7 @@ class UnlockAccountController extends AbstractController<UnlockAccountRequest> {
             namespace: 'Users_Utilities',
             success: false,
             error: JSON.stringify(error),
+            notify: true,
           }
         );
 

@@ -33,6 +33,7 @@ class RecoverPasswordController extends AbstractController<RecoverPasswordReques
             namespace: 'Users_Utilities',
             success: false,
             error: JSON.stringify(error),
+            notify: true,
           }
         );
 

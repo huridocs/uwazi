@@ -34,6 +34,7 @@ class GetUsersController extends AbstractController {
           namespace: 'Users_Get',
           success: false,
           error: JSON.stringify(error),
+          notify: true,
         }
       );
 

@@ -39,6 +39,7 @@ class UpdateUserController extends AbstractController<UpdateUserRequest> {
           {
             namespace: 'Users_Update',
             success: false,
+            notify: true,
             error: JSON.stringify(error),
           }
         );
