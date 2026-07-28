@@ -137,3 +137,32 @@ Code shared between frontend and backend is in `app/shared/`:
 
 - Import alias: `#shared/*` (configured in package.json imports)
 - Used for common types, utilities, or constants needed by both layers
+
+## Cursor Cloud specific instructions
+
+Non-obvious caveats for running this repo in the Cursor Cloud VM. Standard commands (`yarn hot`, `yarn test`, lint) live in the sections above and in `package.json`.
+
+### Node version
+- Use Node **20.19.6** via nvm. The VM has a default `/exec-daemon/node` (v22) that wins on `PATH` in non-interactive shells, so prefix commands with `export PATH="$HOME/.nvm/versions/node/v20.19.6/bin:$PATH"` (already done in interactive shells via `~/.bashrc`). The update script also does this before `yarn install`.
+
+### Backing services (Docker)
+- No systemd: start the Docker daemon manually once per VM boot with `sudo dockerd` (run it in a background/tmux session), then wait a few seconds for it to be ready.
+- Infra is defined in `docker-compose.yml` (`./run start`). Mongo (replica set, auto-initialized), Postgres, Redis, and MinIO start fine.
+- **ElasticSearch caveat:** the `elasticsearch` service has `mem_limit: 4g`, which fails in this nested VM because the root cgroup is in threaded mode and the `memory` controller isn't delegated (`cannot enter cgroupv2 ... it is in threaded mode`). Bring up the other services with `sudo docker compose up -d mongo mongoreplicaset_start_script redis postgres minio`, then run the ES image **without** `mem_limit`:
+  ```
+  sudo docker run -d --name uwazi-elasticsearch --network workspace_default -p 9200:9200 \
+    --ulimit memlock=-1:-1 -e bootstrap.memory_lock=true -e discovery.type=single-node \
+    -e xpack.security.enabled=false -e cluster.routing.allocation.disk.threshold_enabled=false \
+    -e "ES_JAVA_OPTS=-Xms2g -Xmx2g" -e indices.query.bool.max_clause_count=2048 \
+    -v workspace_esdata01:/usr/share/elasticsearch/data workspace-elasticsearch:latest
+  ```
+  If `mongoreplicaset_start_script` didn't run (was left in `Created`), start it with `sudo docker start mongoreplicaset_start_script` to initialize the single-node replica set.
+
+### Database initialization
+- `blank-state` / `dump`/`restore` scripts and `yarn hot` run on the host and need `mongosh` + `mongodb-database-tools` (installed via the MongoDB 7.0 `jammy` apt repo) plus `pdftotext` (poppler-utils).
+- **Migrations are coupled to the Postgres schema.** Plain `yarn migrate` (and therefore `yarn blank-state`) gets **blocked** (`{"blocked":{"delta":...,"requiresSchema":5}}`) until the Postgres schema migrations are applied. Use the new flow instead: `yarn migrate --new` (applies PG schema migrations 1-5 + pending Mongo data migrations), then `yarn reindex` to (re)build the ES index. So a full blank init is: `yarn blank-state` → `yarn migrate --new` → `yarn reindex`.
+- Postgres is provisioned automatically by the compose init scripts (creates `migrator_user` / `app_user`); `config.ts` defaults (`migrator_user`) match, so no `.env` is required.
+
+### Running the app
+- No `.env` file is needed — `config.ts` defaults target Mongo/ES on localhost, Redis off (CLUSTER_MODE=false), and local-filesystem storage. Do **not** copy `.env.example` verbatim, as it enables `EXTERNAL_SERVICES`/AI-assistant which expect extra services.
+- `yarn hot` serves the app on http://localhost:3000. Default login: `admin` / `change this password now`. First webpack build takes ~40s.
