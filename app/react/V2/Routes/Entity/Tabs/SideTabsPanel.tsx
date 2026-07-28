@@ -6,7 +6,6 @@ import { localeAtom } from '#V2/atoms/translationsAtoms.js';
 import { countEntityFiles } from '#V2/formatters/index.js';
 import { useMetadataEditing } from '../Components/context/index.js';
 import { getSideTabButtons, type FilesSideTabsOptions } from './sideTabSets.js';
-import { isMetadataHostDirty } from './metadataTabSession.js';
 import { SIDE_TAB, type MainTabId, type SideTabId } from './tabIds.js';
 import { TabsSideButtons } from './TabsSideButtons.js';
 import { SideTabsContent } from './SideTabsContent.js';
@@ -33,8 +32,7 @@ const SideTabsPanel = ({
   pagePlaintext,
   filesSideTabs,
 }: SideTabsPanelProps) => {
-  const { isDirty, editingHost } = useMetadataEditing();
-  const metadataDirty = isMetadataHostDirty(isDirty, editingHost, 'side');
+  const { isDirty } = useMetadataEditing();
   const templates = useAtomValue(templatesAtom);
   const locale = useAtomValue(localeAtom);
   const settings = useAtomValue(settingsAtom);
@@ -51,7 +49,7 @@ const SideTabsPanel = ({
         hasMainDocument: Boolean(mainDocument?.filename),
         mainDocumentId: mainDocument?._id,
         filesSideTabs,
-        metadataDirty,
+        metadataDirty: isDirty,
         filesCount,
       }),
     [
@@ -60,7 +58,7 @@ const SideTabsPanel = ({
       mainDocument?.filename,
       mainDocument?._id,
       filesSideTabs,
-      metadataDirty,
+      isDirty,
       filesCount,
     ]
   );
