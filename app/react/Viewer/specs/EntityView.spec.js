@@ -76,7 +76,10 @@ describe('EntityView', () => {
     });
 
     it('should get the entity, and all connectionsList items', async () => {
-      const request = new RequestParams({ sharedId: '123' }, 'headers');
+      const request = new RequestParams(
+        { sharedId: '123', includeMetadataRelationships: true },
+        'headers'
+      );
       const actions = await EntityView.requestState(request, { templates });
 
       expect(relationships.requestState).toHaveBeenCalledWith(request, { templates });
