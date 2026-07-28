@@ -11,6 +11,7 @@ import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.j
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory.js';
 import { EntitiesDAOFactory } from './EntitiesDAOFactory.js';
+import { TemplatesDAOFactory } from './TemplatesDAOFactory.js';
 
 type FactoryDeps = Partial<EntitiesQueryServiceDeps> & {
   transactionManager?: MongoTransactionManager;
@@ -26,10 +27,15 @@ class EntitiesQueryServiceFactory {
         new MongoEntityPermissionChecker(getConnection(), transactionManager),
       settingsDS: deps?.settingsDS ?? SettingsDataSourceFactory.cached({ transactionManager }),
       templatesDS: deps?.templatesDS ?? TemplatesDataSourceFactory.cached({ transactionManager }),
+      templatesDAO: deps?.templatesDAO ?? TemplatesDAOFactory.default(),
       entityDAO: deps?.entityDAO ?? EntitiesDAOFactory.default({ user, transactionManager }),
       relationshipsDataSource:
         deps?.relationshipsDataSource ??
-        new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
+        new MongoRelationshipsV1DataSource(
+          getConnection(),
+          transactionManager,
+          EntitiesDAOFactory.default({ user, transactionManager })
+        ),
     });
   }
 }

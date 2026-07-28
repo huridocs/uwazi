@@ -7,6 +7,7 @@ import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/Te
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { files } from '#api/files/index.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import testingDB from '#api/utils/testing_db.js';
@@ -33,7 +34,8 @@ async function updateTemplate(template: TemplateSchema) {
           entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
           relationshipsV1DS: new MongoRelationshipsV1DataSource(
             getConnection(),
-            transactionManager
+            transactionManager,
+            EntitiesDAOFactory.default()
           ),
           templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
           transactionManager,
