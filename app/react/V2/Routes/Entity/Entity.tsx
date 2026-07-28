@@ -66,11 +66,11 @@ const EntityView = () => {
   });
   const { activeTabId: atomMainTabId } = useTabGroup('entity-main');
   const mainTabId = isValidMainTab(atomMainTabId) ? atomMainTabId : activeMainTab;
-  const { isEditing, isDirty, isSaving, editingHost, cancelEdit } = useMetadataEditing();
+  const { isEditing, isDirty, isSaving, cancelEdit, formMountHost } = useMetadataEditing();
   const showMainPaneHeader = !(
     mainTabId === MAIN_TAB.METADATA &&
     isEditing &&
-    editingHost === 'main'
+    formMountHost === 'main'
   );
 
   return (
@@ -114,7 +114,7 @@ const EntityView = () => {
               </div>
             </div>
           </PaneLayout.Pane>
-          <PaneLayout.Pane key={editingHost === 'side' ? 'side-editing' : mainTabId}>
+          <PaneLayout.Pane key="entity-side-pane">
             <SideTabsPanel
               activeMainTab={mainTabId}
               activeSideTab={activeSideTab}

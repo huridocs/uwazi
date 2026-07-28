@@ -5,13 +5,9 @@ import { MultiselectListOption } from '#V2/Components/Forms/index.js';
 import { relationshipTypesAtom } from '#V2/atoms/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import { EntityFieldError, getFieldErrorState } from '../functions/fieldErrorState.js';
+import type { RelationshipInheritColumn } from '../functions/relationshipFieldHelpers.js';
 import { RelationshipFieldEditor } from './RelationshipFieldEditor.js';
 import { EntityField } from './EntityField.js';
-
-type RelationshipInheritColumn = {
-  label: string;
-  cellsByEntityId?: Record<string, string | undefined>;
-};
 
 type RelationshipFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context?: string;

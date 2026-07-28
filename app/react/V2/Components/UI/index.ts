@@ -70,6 +70,8 @@ export { FilterDrawerButton } from './FilterDrawerButton.js';
 export type { FilterDrawerButtonProps } from './FilterDrawerButton.js';
 export { QuerySearchBar } from './QuerySearchBar.js';
 export type { QuerySearchBarProps } from './QuerySearchBar.js';
+export { AccentDot } from './AccentDot.js';
+export type { AccentDotProps } from './AccentDot.js';
 export { DisplayMenu, DisplayMenuRow } from './DisplayMenu.js';
 export type { DisplayMenuProps, DisplayMenuRowProps, DisplayMenuSize } from './DisplayMenu.js';
 export { SelectControls } from './SelectControls.js';

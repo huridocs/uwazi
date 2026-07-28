@@ -1,9 +1,12 @@
-import React, { type ReactNode } from 'react';
+import React, { useEffect, type ReactNode } from 'react';
 import { useTabGroup } from '#V2/Components/UI/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { useMetadataEditing } from '../Components/context/index.js';
 import { MAIN_TAB, isValidMainTab, type MainTabId } from './tabIds.js';
-import { keepMetadataTab, resolveActiveTabId } from './metadataTabSession.js';
+import {
+  keepMetadataTab,
+  resolveActiveTabId,
+} from '../Components/context/metadataEditingSession.js';
 import { useEntityTabNavigation } from './hooks/useEntityTabNavigation.js';
 import { DocumentTab } from './tabsContent/DocumentTab.js';
 import { MetadataTab } from './tabsContent/MetadataTab.js';
@@ -30,9 +33,14 @@ const MainTabsContent = ({
   const resolvedTabId = resolveActiveTabId(atomActiveTabId, urlActiveTabId);
   const activeTabId = isValidMainTab(resolvedTabId) ? resolvedTabId : urlActiveTabId;
   const { focusDocumentPanel, relationshipsOnMain } = useEntityTabNavigation();
-  const { isEditing, editingHost } = useMetadataEditing();
+  const { isEditing, formMountHost, registerMetadataActive } = useMetadataEditing();
   const metadataActive = activeTabId === MAIN_TAB.METADATA;
-  const keepMetadata = keepMetadataTab(metadataActive, isEditing, editingHost, 'main');
+  const keepMetadata = keepMetadataTab(metadataActive, isEditing, formMountHost, 'main');
+
+  useEffect(() => {
+    registerMetadataActive('main', metadataActive);
+    return () => registerMetadataActive('main', false);
+  }, [metadataActive, registerMetadataActive]);
 
   let content: ReactNode = null;
 
