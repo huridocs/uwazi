@@ -60,28 +60,20 @@ const useMetadataEditingController = (): {
     };
   }, []);
 
-  const beginSaveAbort = useCallback(() => {
+  const tryBeginSave = useCallback((): AbortController | null => {
+    if (saveInFlightRef.current) return null;
+    saveInFlightRef.current = true;
+    setIsSaving(true);
     saveAbortRef.current?.abort();
     const controller = new AbortController();
     saveAbortRef.current = controller;
     return controller;
   }, []);
 
-  const tryBeginSave = useCallback((): AbortController | null => {
-    if (saveInFlightRef.current) return null;
-    saveInFlightRef.current = true;
-    setIsSaving(true);
-    return beginSaveAbort();
-  }, [beginSaveAbort]);
-
   const endSave = useCallback(() => {
     saveInFlightRef.current = false;
     saveAbortRef.current = null;
     setIsSaving(false);
-  }, []);
-
-  const clearSaveAbort = useCallback(() => {
-    saveAbortRef.current = null;
   }, []);
 
   const registerMetadataActive = useCallback((host: MetadataEditingHost, active: boolean) => {
@@ -161,18 +153,14 @@ const useMetadataEditingController = (): {
       registerMetadataActive,
       finishEditing,
       registerCancelEdit,
-      beginSaveAbort,
       tryBeginSave,
       endSave,
-      clearSaveAbort,
       cancelEdit,
     }),
     [
       registerCancelEdit,
-      beginSaveAbort,
       tryBeginSave,
       endSave,
-      clearSaveAbort,
       registerMetadataActive,
       cancelEdit,
       startEditing,

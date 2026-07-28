@@ -3,7 +3,7 @@ import { filterReferencedPendingAttachments } from '#shared/entitySave/mediaMeta
 import type { Entity } from '#V2/api/entities/types.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js';
-import { hasEntityIcon, type EntityIcon } from '../Components/IconField.js';
+import { EMPTY_ICON, hasEntityIcon, type EntityIcon } from '../Components/IconField.js';
 import type { EditEntityFormValues } from './buildEditEntityDefaultValues.js';
 import { formatMetadataForForm, type FormMetadataProperty } from './formatMetadataForForm.js';
 import {
@@ -28,9 +28,11 @@ type SharedMetadataSync =
       options: { keepDirty: true };
     };
 
-const toSaveIcon = (showIcon: boolean, icon: EntityIcon): Entity['icon'] | undefined => {
-  if (!showIcon || !hasEntityIcon(icon) || icon._id === null) return undefined;
-  return { _id: icon._id, type: icon.type, label: icon.label };
+const toSaveIcon = (showIcon: boolean, icon: EntityIcon): EntityIcon => {
+  if (showIcon && hasEntityIcon(icon) && icon._id !== null) {
+    return { _id: icon._id, type: icon.type, label: icon.label };
+  }
+  return EMPTY_ICON;
 };
 
 const formatMetadataForEntity = (

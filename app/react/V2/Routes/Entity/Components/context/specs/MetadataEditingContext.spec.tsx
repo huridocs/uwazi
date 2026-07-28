@@ -1,7 +1,7 @@
-/* eslint-disable react/no-multi-comp */
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable react/no-multi-comp */
 import React, { type ReactNode, useEffect } from 'react';
 import { act, render, renderHook, screen, waitFor } from '@testing-library/react';
 import type { ClientFile } from '#app/istore.js';
@@ -220,7 +220,7 @@ describe('MetadataEditingContext', () => {
     act(() => {
       result.current.startEditing('side');
       result.current.registerMetadataActive('side', true);
-      signal = result.current.beginSaveAbort().signal;
+      signal = result.current.tryBeginSave()?.signal;
     });
     expect(signal?.aborted).toBe(false);
 
@@ -236,6 +236,12 @@ describe('MetadataEditingContext', () => {
     });
     expect(signal?.aborted).toBe(true);
     expect(result.current.isEditing).toBe(false);
+  });
+
+  it('does not expose beginSaveAbort or clearSaveAbort on the public API', () => {
+    const { result } = renderHook(() => useMetadataEditing(), { wrapper });
+    expect('beginSaveAbort' in result.current).toBe(false);
+    expect('clearSaveAbort' in result.current).toBe(false);
   });
 
   it('tryBeginSave rejects a second in-flight save', () => {

@@ -100,7 +100,30 @@ describe('buildEditEntitySaveInput', () => {
       metadata: { simple_text: [{ value: 'hello' }] },
       attachments: [{ _id: 'a1', filename: 'existing.pdf' }],
     });
-    expect(saved.icon).toBeUndefined();
+    expect(saved.icon).toEqual(EMPTY_ICON);
+  });
+
+  it('should clear icon when showIcon is true but icon is empty', () => {
+    const saved = buildEditEntitySaveInput({
+      entity,
+      values: { ...values, showIcon: true, icon: EMPTY_ICON },
+      metadataProperties: properties,
+      pendingAttachments: [],
+      mediaPropertyNames: new Set(),
+    });
+    expect(saved.icon).toEqual(EMPTY_ICON);
+  });
+
+  it('should keep icon when showIcon is true and icon is set', () => {
+    const icon = { _id: 'icon-1', type: 'Icons', label: 'Icon' };
+    const saved = buildEditEntitySaveInput({
+      entity,
+      values: { ...values, showIcon: true, icon },
+      metadataProperties: properties,
+      pendingAttachments: [],
+      mediaPropertyNames: new Set(),
+    });
+    expect(saved.icon).toEqual(icon);
   });
 });
 

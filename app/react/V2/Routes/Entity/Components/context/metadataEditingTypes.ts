@@ -31,10 +31,8 @@ type MetadataEditingActions = {
   registerMetadataActive: (host: MetadataEditingHost, active: boolean) => void;
   finishEditing: () => void;
   registerCancelEdit: (handler: () => void) => () => void;
-  beginSaveAbort: () => AbortController;
   tryBeginSave: () => AbortController | null;
   endSave: () => void;
-  clearSaveAbort: () => void;
   cancelEdit: () => void;
 };
 

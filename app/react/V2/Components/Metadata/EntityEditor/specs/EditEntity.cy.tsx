@@ -230,6 +230,15 @@ describe('Entity edit', () => {
         cy.contains('label', 'A basic simple text');
         cy.get('input[id="metadata.simple_text.0.value"]').should('exist');
 
+        cy.get('input[name="metadata.location_on_map.lat"]').should('have.value', '40.7128');
+        cy.get('input[name="metadata.location_on_map.lon"]').should('have.value', '-74.006');
+        [
+          { id: 'metadata.date_range.0.value.from', value: '2024-01-01' },
+          { id: 'metadata.date_range.0.value.to', value: '2024-01-02' },
+        ].forEach(({ id, value }) => {
+          cy.get(`input[id="${id}"]`).should('have.value', value);
+        });
+
         titleField().should('have.value', 'Kept dirty title');
       });
     });
