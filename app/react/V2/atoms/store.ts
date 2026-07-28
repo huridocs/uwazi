@@ -1,6 +1,5 @@
 import { createStore } from 'jotai';
 import { isClient } from '#app/utils/index.js';
-import { store as reduxStore } from '#app/store.js';
 import { ClientSettings, ClientThesaurus, ClientUserSchema } from '#app/apiResponseTypes.js';
 import {
   ClientTemplateSchema,
@@ -18,7 +17,6 @@ import { userAtom } from './userAtom.js';
 import { thesauriAtom } from './thesauriAtom.js';
 import { serverIsMobileAtom } from './isMobileAtom.js';
 import { acceptedSuggestions as ixAcceptedSuggestions } from '../Routes/Settings/IX/components/atoms/index.js';
-import { syncAtomStoreToRedux, subscribeAtomStoreToRedux } from './syncReduxFromAtoms.js';
 
 type AtomStoreData = {
   globalMatomo?: { url: string; id: string };
@@ -49,13 +47,9 @@ const hydrateAtomStore = (data: AtomStoreData, store: ReturnType<typeof createSt
   store.set(ixAcceptedSuggestions, new Set<string>());
 };
 
+// Hydrate atoms only — do not touch Redux here (circular import with #app/store).
 if (isClient && window.__atomStoreData__) {
-  const atomStore = getStore();
-  hydrateAtomStore(window.__atomStoreData__, atomStore);
-
-  // Shared catalogs live only in __atomStoreData__; seed deprecated Redux before hydrateRoot.
-  syncAtomStoreToRedux(atomStore, reduxStore);
-  subscribeAtomStoreToRedux(atomStore, reduxStore);
+  hydrateAtomStore(window.__atomStoreData__, getStore());
 }
 
 export type { AtomStoreData };
