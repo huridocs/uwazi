@@ -1,4 +1,4 @@
-import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
+import { RelationshipTypesDataSource } from '#api/core/application/contracts/RelationshipTypesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js'; // Todo
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource.js';

@@ -4,8 +4,8 @@ import { TransactionManager } from '#api/core/application/contracts/TransactionM
 import { DeprecatedEntitiesDataSource } from '#api/entities.v2/contracts/DeprecatedEntitiesDataSource.js';
 import { MissingEntityError } from '#api/entities.v2/errors/entityErrors.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
-import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
-import { MissingRelationshipTypeError } from '#api/relationshiptypes.v2/errors/relationshipTypeErrors.js';
+import { RelationshipTypesDataSource } from '#api/core/application/contracts/RelationshipTypesDataSource.js';
+import { MissingRelationshipTypeError } from '#api/core/domain/relationshipType/errors.js';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource.js';
 import {
   EntityPointer,

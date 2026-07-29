@@ -5,9 +5,10 @@ import _ from 'lodash';
 import { ObjectId } from 'mongodb';
 import templatesAPI from '#api/core/v1_layer/templates/index.js';
 import settings from '#api/settings/index.js';
-import relationtypes from '#api/relationtypes/index.js';
 import entities from '#api/entities/entities.js';
 import { createError } from '#api/utils/index.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import model from './model.js';
@@ -30,6 +31,9 @@ function excludeRefs(template) {
 }
 
 class RequiredParameters extends ValidationError {}
+
+const getRelationshipTypesDS = () =>
+  RelationshipTypesDataSourceFactory.default(TransactionManagerFactory.default());
 
 export default {
   get(query, select, pagination) {
@@ -113,7 +117,7 @@ export default {
     return Promise.all([
       this.getByDocument(id, language, undefined, undefined, undefined, false),
       templatesAPI.get(),
-      relationtypes.get(),
+      getRelationshipTypesDS().getAll(),
     ]).then(([references, templates, relationTypes]) => {
       const relevantReferences = filterRelevantRelationships(
         references,
@@ -185,11 +189,11 @@ export default {
         .filter(r => r)
     );
 
-    const existingRelationshipTypes = await relationtypes.count({
-      _id: { $in: Array.from(relTypesToSave) },
-    });
+    const existingRelationshipTypes = await getRelationshipTypesDS().typesExist(
+      Array.from(relTypesToSave).map(id => id.toString())
+    );
 
-    if (relTypesToSave.size !== existingRelationshipTypes) {
+    if (!existingRelationshipTypes) {
       throw new Error('Some relationship types do not exist');
     }
 

@@ -8,7 +8,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { DefaultDeprecatedEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
+import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 import { search } from '#api/search/index.js';
 import { User } from '#api/users.v2/model/User.js';
 import { UserRole } from '#shared/types/userSchema.js';
@@ -119,7 +119,7 @@ const GetRelationshipService = () => {
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
   const entitiesDS = DefaultDeprecatedEntitiesDataSource(transactionManager);
   const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
-  const relationshipTypeDS = DefaultRelationshipTypesDataSource(transactionManager);
+  const relationshipTypeDS = RelationshipTypesDataSourceFactory.default(transactionManager);
 
   const authService = new AuthorizationService(permissionsDS, userFromRequest());
 
@@ -137,7 +137,7 @@ const GetRelationshipService = () => {
 const CreateRelationshipService = async () => {
   const transactionManager = TransactionManagerFactory.default();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
-  const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
+  const relationshipTypesDS = RelationshipTypesDataSourceFactory.default(transactionManager);
   const entitiesDS = DefaultDeprecatedEntitiesDataSource(transactionManager);
   const idGenerator = IdGeneratorFactory.default();
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
