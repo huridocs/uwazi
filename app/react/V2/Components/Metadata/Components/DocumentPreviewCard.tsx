@@ -1,8 +1,9 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowDownTrayIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
+import { settingsAtom } from '#V2/atoms/index.js';
 import { localeAtom } from '#V2/atoms/translationsAtoms.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import type { MetadataProperty } from '#V2/formatters/types.js';
@@ -46,14 +47,23 @@ const isPdf = (mimetype?: string, filename?: string) => {
 
 const DocumentPreviewCard = ({ entity, previewField }: DocumentPreviewCardProps) => {
   const locale = useAtomValue(localeAtom);
+  const settings = useAtomValue(settingsAtom);
+  const defaultLanguage = settings?.languages?.find(language => language.default)?.key;
+  const [previewFailed, setPreviewFailed] = useState(false);
   const [thumbFailed, setThumbFailed] = useState(false);
-  const document = getMainDocument(entity.documents, entity.language);
+  const document = getMainDocument(entity.documents, entity.language, defaultLanguage);
   const previewValues =
     previewField && (previewField.type === 'preview' || previewField.type === 'image')
       ? previewField.values
       : undefined;
   const previewSrc = previewValues?.find(value => Boolean(value.value))?.value;
   const hasPreview = Boolean(previewSrc);
+  const documentId = document?._id ? String(document._id) : undefined;
+
+  useEffect(() => {
+    setPreviewFailed(false);
+    setThumbFailed(false);
+  }, [previewSrc, documentId, entity._id, entity.sharedId, entity.language]);
 
   if (!document && !hasPreview) {
     return null;
@@ -76,13 +86,13 @@ const DocumentPreviewCard = ({ entity, previewField }: DocumentPreviewCardProps)
   const downloadUrl = document?.filename && fileUrl ? `${fileUrl}?download=true` : fileUrl;
   const fileThumbSrc =
     document?._id && !thumbFailed ? `/api/files/${String(document._id)}.jpg` : undefined;
-  const thumbSrc = previewSrc || fileThumbSrc;
+  const activePreviewSrc = previewSrc && !previewFailed ? previewSrc : undefined;
+  const thumbSrc = activePreviewSrc || fileThumbSrc;
   const showPdfBadge = isPdf(document?.mimetype, document?.filename || document?.originalname);
 
   const facts: FactItem[] = [
     ...(type ? [{ label: 'Type', value: type }] : []),
     ...(size ? [{ label: 'Size', value: size, ltr: true }] : []),
-    ...(added ? [{ label: 'Last Edited', value: added, ltr: true }] : []),
     ...(added ? [{ label: 'Added', value: added, ltr: true }] : []),
   ];
 
@@ -97,7 +107,11 @@ const DocumentPreviewCard = ({ entity, previewField }: DocumentPreviewCardProps)
                 alt={name || ''}
                 className="h-full w-full object-cover object-top"
                 onError={() => {
-                  if (!previewSrc) setThumbFailed(true);
+                  if (activePreviewSrc) {
+                    setPreviewFailed(true);
+                    return;
+                  }
+                  setThumbFailed(true);
                 }}
               />
             ) : null}

@@ -88,6 +88,7 @@ type RelationshipProps = {
   relationTypeId?: string;
   targetTemplateId?: string;
   inheritLabel?: string;
+  inheritedContent?: React.ReactNode;
 };
 
 const Relationship = ({
@@ -99,6 +100,7 @@ const Relationship = ({
   relationTypeId,
   targetTemplateId,
   inheritLabel,
+  inheritedContent,
 }: RelationshipProps) => {
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const relationLabel = useMemo(() => {
@@ -124,6 +126,7 @@ const Relationship = ({
       <dd className="mt-1 flex flex-col gap-1.5">
         <RelationCaption relationLabel={relationLabel} inheritLabel={inheritLabel} />
         <ConnectionPills values={values} targetTemplateId={targetTemplateId} />
+        {inheritedContent || null}
       </dd>
     </MetadataCard>
   );

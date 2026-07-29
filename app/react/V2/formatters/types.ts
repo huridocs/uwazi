@@ -38,9 +38,10 @@ interface BaseMetadataProperty {
   readonly label: string;
   readonly type: AllowedPropertyTypes;
   readonly propertyGroup?: Array<{
+    _id?: string;
     name: string;
     label: string;
-    inhertied?: boolean;
+    inherited?: boolean;
     content?: string;
     property?: string;
   }>;

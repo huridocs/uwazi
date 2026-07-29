@@ -1,11 +1,12 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import type { ClientProperty, ClientTemplateSchema } from '#V2/shared/types.js';
-import type { RelationshipMetadataProperty } from '#V2/formatters/types.js';
+import type { MetadataProperty, RelationshipMetadataProperty } from '#V2/formatters/types.js';
 import {
   FULL_ROW_METADATA_FIELD_LAYOUT,
   isInheritingRelationship,
 } from '../metadataPropertyLayout.js';
+import { renderFieldContent } from './metadataFieldContent.js';
 import { Relationship } from './Relationship.js';
 
 type RelationshipCardsProps = {
@@ -13,6 +14,7 @@ type RelationshipCardsProps = {
   translationContext: string;
   templatePropertyById: Map<string, ClientProperty>;
   templates?: ClientTemplateSchema[];
+  inheritingTerminalById?: Map<string, MetadataProperty>;
   /** Skip link-only connections — host renders those in the Details table. */
   inheritingOnly?: boolean;
   masonry?: boolean;
@@ -45,6 +47,7 @@ const RelationshipCards = ({
   translationContext,
   templatePropertyById,
   templates,
+  inheritingTerminalById,
   inheritingOnly = false,
   masonry = false,
 }: RelationshipCardsProps) => {
@@ -64,6 +67,8 @@ const RelationshipCards = ({
 
   const list = visibleFields.map(data => {
     const templateProperty = templatePropertyById.get(data._id);
+    const terminal = inheritingTerminalById?.get(data._id);
+    const inheritedContent = terminal ? renderFieldContent(terminal, true) : null;
     return (
       <div key={data._id} data-field-key={data._id}>
         <Relationship
@@ -79,6 +84,7 @@ const RelationshipCards = ({
               ? inheritLabelForProperty(templateProperty, templates)
               : undefined
           }
+          inheritedContent={inheritedContent || undefined}
         />
       </div>
     );

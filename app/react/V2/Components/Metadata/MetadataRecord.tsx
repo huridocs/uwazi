@@ -3,7 +3,7 @@ import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { Entity } from '#V2/api/entities/types.js';
-import { formatRelationshipLinks } from '#V2/formatters/index.js';
+import { formatGeolocationProperty, formatRelationshipLinks } from '#V2/formatters/index.js';
 import {
   Date,
   RelationshipCards,
@@ -15,6 +15,7 @@ import {
 } from './Components/index.js';
 import type { MetadataItem } from './Components/MetadataItemsTable.js';
 import type { MetadataProperty, RelationshipMetadataProperty } from '#V2/formatters/types.js';
+import type { ClientTemplateSchema } from '#V2/shared/types.js';
 import { useFormatMetadata } from './hooks/useFormatMetadata.js';
 import { buildTemplatePropertyById } from './buildTemplatePropertyById.js';
 import {
@@ -28,8 +29,64 @@ type MetadataRecordProps = {
   entity: Entity;
 };
 
+type PropertyGroupMember = NonNullable<MetadataProperty['propertyGroup']>[number];
+
 const isRelationshipProperty = (data: MetadataProperty): data is RelationshipMetadataProperty =>
   data.type === 'relationship';
+
+const terminalGeoForMember = (
+  member: PropertyGroupMember & { _id: string },
+  entity: Entity,
+  templates: ClientTemplateSchema[]
+) =>
+  formatGeolocationProperty(
+    {
+      _id: member._id,
+      name: member.name,
+      label: member.label,
+      type: 'relationship',
+      inherited: true,
+      inheritedType: 'geolocation',
+      relationShipTarget: member.content || '',
+    },
+    entity,
+    templates
+  );
+
+const ownGeoFromMembers = (
+  field: MetadataProperty,
+  members: PropertyGroupMember[],
+  entity: Entity,
+  templates: ClientTemplateSchema[]
+) => {
+  if (members.length === 0) {
+    return null;
+  }
+  if (members.length === 1) {
+    const [member] = members;
+    return formatGeolocationProperty(
+      {
+        _id: typeof member._id === 'string' ? member._id : field._id,
+        name: member.name,
+        label: member.label,
+        type: 'geolocation',
+      },
+      entity,
+      templates
+    );
+  }
+  return formatGeolocationProperty(
+    {
+      _id: field._id,
+      name: field.name,
+      label: field.label,
+      type: 'geolocation',
+      propertyGroup: members,
+    },
+    entity,
+    templates
+  );
+};
 
 const fieldTitle = (label: string, translationContext: string, hideLabel?: boolean) => (
   <Translate className={hideLabel ? 'sr-only' : undefined} context={translationContext}>
@@ -60,9 +117,10 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
     [entityTemplate?.properties]
   );
 
-  const { relationshipFields, otherFields } = useMemo(() => {
+  const { relationshipFields, otherFields, inheritingTerminalById } = useMemo(() => {
     const relationships: RelationshipMetadataProperty[] = [];
     const others: MetadataProperty[] = [];
+    const terminals = new Map<string, MetadataProperty>();
     const inheritingIds = new Set<string>();
 
     templatePropertyById.forEach((tpl, id) => {
@@ -95,16 +153,47 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
 
     metadata.forEach(field => {
       if (inheritingIds.has(field._id)) {
+        if (!isRelationshipProperty(field)) {
+          terminals.set(field._id, field);
+        }
         return;
       }
+
+      if (field.type === 'geolocation' && field.propertyGroup?.length) {
+        const ownMembers = field.propertyGroup.filter(
+          member => typeof member._id !== 'string' || !inheritingIds.has(member._id)
+        );
+        const inheritingMembers = field.propertyGroup.filter(
+          (member): member is PropertyGroupMember & { _id: string } =>
+            typeof member._id === 'string' && inheritingIds.has(member._id)
+        );
+        if (inheritingMembers.length > 0) {
+          inheritingMembers.forEach(member => {
+            const terminal = terminalGeoForMember(member, entity, templates);
+            if (terminal) {
+              terminals.set(member._id, terminal);
+            }
+          });
+          const ownField = ownGeoFromMembers(field, ownMembers, entity, templates);
+          if (ownField?.values.length) {
+            others.push(ownField);
+          }
+          return;
+        }
+      }
+
       if (isRelationshipProperty(field)) {
         relationships.push(field);
       } else {
         others.push(field);
       }
     });
-    return { relationshipFields: relationships, otherFields: others };
-  }, [metadata, templatePropertyById, entity.metadata]);
+    return {
+      relationshipFields: relationships,
+      otherFields: others,
+      inheritingTerminalById: terminals,
+    };
+  }, [metadata, templatePropertyById, entity, templates]);
 
   const translationContext = entityTemplate?._id || '';
   const hasPrimaryDocument = Boolean(entity.documents?.length);
@@ -254,6 +343,7 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
         translationContext={translationContext}
         templatePropertyById={templatePropertyById}
         templates={templates}
+        inheritingTerminalById={inheritingTerminalById}
         inheritingOnly
       />
     </div>
